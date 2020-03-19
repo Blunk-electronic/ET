@@ -7738,8 +7738,8 @@ package body schematic_ops is
 	-- Places a label next to a segment at position.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		segment_position: in et_coordinates.type_position; -- sheet/x/y
-		label_position	: in type_point; -- x/y
-		rotation		: in et_text.type_rotation_documentation; -- 0 / 90 degree
+		label_position	: in type_point := origin; -- x/y
+		rotation		: in et_coordinates.type_rotation; -- 0, 90, 180, ...
 		appearance 		: in type_net_label_appearance; -- simple/tag label
 		direction		: in et_schematic.type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level) is
@@ -7787,7 +7787,6 @@ package body schematic_ops is
 						move (label.position, segment_position);
 						-- now label.position is absolute
 						
-						label.rotation := rotation; -- the given rotation
 						-- CS: label size, style and line width assume default. could be provided by further
 						-- parameters passed to procedure place_net_label.
 
@@ -7795,16 +7794,20 @@ package body schematic_ops is
 							when SIMPLE =>
 								append (
 									container	=> segment.labels,
-									new_item	=> (label with 
-										appearance	=> SIMPLE)
+									new_item	=> (label with
+										appearance		=> SIMPLE,
+
+										-- snap given rotation to either 0 or 90 degree
+										rotation_simple	=> pac_text.snap (rotation))
 									   );
 								
 							when TAG =>
 								append (
 									container	=> segment.labels,
 									new_item	=> (label with
-										appearance	=> TAG,
-										direction	=> direction) -- the given direction
+										appearance		=> TAG,
+										rotation_tag	=> rotation, -- take the given rotation as it is
+										direction		=> direction) -- the given direction
 									   );
 
 						end case;
@@ -7862,7 +7865,7 @@ package body schematic_ops is
 			et_coordinates.to_string (position => segment_position) &
 			" with " & to_string (appearance) & " label at" &
 			to_string (point => label_position) &
-			" rotation" & et_schematic.pac_text.to_string (rotation),
+			" rotation" & et_coordinates.geometry.to_string (rotation),
 			level => log_threshold);
 		
 		log_indentation_up;

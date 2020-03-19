@@ -238,7 +238,6 @@ package et_schematic is
 	
 	type type_net_label_base is tagged record
 		position	: et_coordinates.geometry.type_point;
-		rotation	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
         size		: et_symbols.pac_text.type_text_size := et_symbols.text_size_default;
         style		: et_symbols.type_text_style := et_symbols.type_text_style'first;
 		width		: et_symbols.type_text_line_width := et_symbols.type_text_line_width'first;
@@ -247,9 +246,14 @@ package et_schematic is
 	type type_net_label (appearance : type_net_label_appearance) is new type_net_label_base with record
 		case appearance is
 			when TAG => 
-				direction : type_net_label_direction;
-				-- CS: coordinates of next tag of this net (by sheet coord. or area ?)
-			when SIMPLE => null;
+				direction		: type_net_label_direction;
+
+				-- The tag label ran be rotated arbitrary:
+				rotation_tag	: et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation;
+
+			when SIMPLE =>
+				-- The simple label can be read from the front or from the right:
+				rotation_simple	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
 		end case;
 	end record;
 

@@ -285,14 +285,17 @@ schematic led_driver delete junction 1 230 100 # sheet x y
 A simple net label requires the sheet, x and y of the related net. 
 There is no need to specify the net name. x/y must be a point that is run over by the net.
 The next arguments are the relative distance from the position and rotation.
+The rotation can either be 0 or 90 degree so that the label can be read from 
+the front or from the right. Other angles are always "snapped" to 0 or 90 degree.
 ```
 schematic led_driver place label 1 120 100 0 5 90 # sheet 1 120/100 relative 0/5  angle 90
 ```
 
-A tag label additionally expresses the signal direction as follows:
+A tag label indicates the signal direction and the next sheet where the net appears again.
+The label can only be attached to a stub of a net.
 ### TAG LABELS
 ```
-schematic led_driver place label 1 120 100 0 -5 90 output # sheet 1 120/100 relative 0/-5 angle 90 direction
+schematic led_driver place label 1 120 100 90 output # sheet 1 120/100 angle 90 direction
 ```
 
 ### DELETING LABELS

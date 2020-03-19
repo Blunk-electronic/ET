@@ -1213,7 +1213,7 @@ package body scripting is
 																x => to_distance (f (8)),
 																y => to_distance (f (9)))),
 
-									rotation			=> et_schematic.pac_text.to_rotation_doc (f (10)), -- 0 / 90
+									rotation			=> et_coordinates.geometry.to_rotation (f (10)), -- 0 / 90
 									appearance 			=> et_schematic.SIMPLE,
 
 									-- A simple label does not indicate the direction
@@ -1224,7 +1224,7 @@ package body scripting is
 
 									log_threshold		=> log_threshold + 1);
 
-							when 11 =>
+							when 9 =>
 								schematic_ops.place_net_label
 									(
 									module_name			=> module,
@@ -1235,20 +1235,16 @@ package body scripting is
 																y => to_distance (f (7)))),
 															sheet => to_sheet (f (5))), -- sheet number
 
-									label_position		=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-
-									rotation			=> et_schematic.pac_text.to_rotation_doc (f (10)), -- 0 / 90
+									rotation			=> et_coordinates.geometry.to_rotation (f (8)), -- 0, 90, 180, ...
 									appearance 			=> et_schematic.TAG,
 
 									-- A tag label requires specification of direction
 									-- which is specified by the 11th argument:
-									direction			=> et_schematic.to_direction (f (11)), -- INPUT, OUTPUT, PASSIVE, ...
+									direction			=> et_schematic.to_direction (f (9)), -- INPUT, OUTPUT, PASSIVE, ...
 
 									log_threshold		=> log_threshold + 1);
 								
-							when 12 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 								
 							when others => command_incomplete (cmd);
 						end case;

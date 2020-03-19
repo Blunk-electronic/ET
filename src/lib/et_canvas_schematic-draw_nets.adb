@@ -102,7 +102,7 @@ procedure draw_nets (
 								-- Text rotation around its anchor point.
 								-- This is documentational text.
 								-- It is readable from the front or the right.
-								rotation	=> to_rotation (element (c).rotation),
+								rotation	=> to_rotation (element (c).rotation_simple),
 								alignment	=> (others => <>), -- CS
 								height		=> self.drawing.frame_bounding_box.height
 								);
@@ -121,7 +121,7 @@ procedure draw_nets (
 								-- Text rotation around its anchor point.
 								-- This is documentational text.
 								-- It is readable from the front or the right.
-								rotation	=> to_rotation (element (c).rotation),
+								rotation	=> element (c).rotation_tag,
 								alignment	=> (others => <>), -- CS
 								height		=> self.drawing.frame_bounding_box.height
 								);

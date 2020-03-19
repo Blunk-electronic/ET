@@ -2571,12 +2571,12 @@ package body et_kicad_to_native is
 						et_schematic.type_net_labels.append (
 							container	=> labels,
 							new_item	=> (
-								appearance	=> et_schematic.SIMPLE,
-								position	=> element (simple_label_cursor).coordinates,
-								rotation	=> to_rotation (rk => element (simple_label_cursor).rotation),
-								size		=> element (simple_label_cursor).size,
-								style		=> element (simple_label_cursor).style,
-								width		=> element (simple_label_cursor).width)
+								appearance		=> et_schematic.SIMPLE,
+								position		=> element (simple_label_cursor).coordinates,
+								rotation_simple	=> to_rotation (rk => element (simple_label_cursor).rotation),
+								size			=> element (simple_label_cursor).size,
+								style			=> element (simple_label_cursor).style,
+								width			=> element (simple_label_cursor).width)
 						);
 						
 						next (simple_label_cursor);
@@ -2592,14 +2592,13 @@ package body et_kicad_to_native is
 						et_schematic.type_net_labels.append (
 							container	=> labels,
 							new_item	=> (
-								appearance	=> et_schematic.TAG,
-								position	=> element (tag_label_cursor).coordinates,
-								rotation	=> to_rotation (rk => element (tag_label_cursor).rotation),
-								size		=> element (tag_label_cursor).size,
-								style		=> element (tag_label_cursor).style,
-								width		=> element (tag_label_cursor).width,
-								direction	=> element (tag_label_cursor).direction
-								)
+								appearance		=> et_schematic.TAG,
+								position		=> element (tag_label_cursor).coordinates,
+								rotation_tag	=> element (tag_label_cursor).rotation,
+								size			=> element (tag_label_cursor).size,
+								style			=> element (tag_label_cursor).style,
+								width			=> element (tag_label_cursor).width,
+								direction		=> element (tag_label_cursor).direction)
 						);
 						
 						next (tag_label_cursor);

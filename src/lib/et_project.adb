@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -902,14 +902,26 @@ package body et_project is
 						use type_net_labels;
 						label_cursor : type_net_labels.cursor := segment.labels.first;
 						use et_symbols;
-					begin -- query_labels
+					begin
 						if not is_empty (segment.labels) then
 							section_mark (section_labels, HEADER);
 							while label_cursor /= type_net_labels.no_element loop
 								section_mark (section_label, HEADER);
 								
 								write (keyword => keyword_position, parameters => position (element (label_cursor).position));
-								write (keyword => keyword_rotation, parameters => et_schematic.pac_text.to_string (element (label_cursor).rotation));
+
+								case element (label_cursor).appearance is
+									when SIMPLE =>
+										-- The simple label can be read from the front or from the right:
+										write (keyword => keyword_rotation, parameters => 
+											et_schematic.pac_text.to_string (element (label_cursor).rotation_simple));
+
+									when TAG =>
+										-- The tag label ran be rotated arbitrary:
+										write (keyword => keyword_rotation, parameters =>
+											et_coordinates.geometry.to_string (element (label_cursor).rotation_tag));
+								end case;
+								
 								write (keyword => et_text.keyword_size, parameters => to_string (element (label_cursor).size));
 								write (keyword => keyword_style, parameters => to_string (element (label_cursor).style));
 								write (keyword => et_text.keyword_line_width, parameters => to_string (element (label_cursor).width));
@@ -2357,9 +2369,10 @@ package body et_project is
 		net_segments : et_schematic.type_net_segments.list;
 		net_segment	: et_schematic.type_net_segment;
 		
-		net_labels : et_schematic.type_net_labels.list;
-		net_label : et_schematic.type_net_label_base;
-		net_label_appearance : et_schematic.type_net_label_appearance := et_schematic.type_net_label_appearance'first;
+		net_labels				: et_schematic.type_net_labels.list;
+		net_label 				: et_schematic.type_net_label_base;
+		net_label_rotation		: et_coordinates.type_rotation := geometry.zero_rotation;
+		net_label_appearance	: et_schematic.type_net_label_appearance := et_schematic.type_net_label_appearance'first;
 
 		-- The net label direction is relevant if appearance is TAG:
 		net_label_direction : et_schematic.type_net_label_direction := et_schematic.type_net_label_direction'first;
@@ -4771,8 +4784,10 @@ package body et_project is
 										et_schematic.type_net_labels.append (
 											container	=> net_labels,
 											new_item	=> (
-												net_label with 
-												appearance => et_schematic.SIMPLE));
+												net_label with
+												appearance		=> et_schematic.SIMPLE,
+												rotation_simple	=> et_schematic.pac_text.snap (net_label_rotation)
+												));
 
 										-- CS warn about parameter "direction" being ignored
 										
@@ -4783,13 +4798,16 @@ package body et_project is
 											container	=> net_labels,
 											new_item	=> (
 												net_label with 
-												appearance	=> et_schematic.TAG,
-												direction	=> net_label_direction));
+												appearance		=> et_schematic.TAG,
+												direction		=> net_label_direction,
+												rotation_tag	=> net_label_rotation
+												));
 
 								end case;
 
 								-- clean up for next label
 								net_label := (others => <>);
+								net_label_rotation := et_coordinates.geometry.zero_rotation;
 								net_label_appearance := et_schematic.type_net_label_appearance'first;
 								net_label_direction := et_schematic.type_net_label_direction'first;
 
@@ -6235,7 +6253,7 @@ package body et_project is
 										
 									elsif kw = keyword_rotation then -- rotation 0.0
 										expect_field_count (line, 2);
-										net_label.rotation := et_schematic.pac_text.to_rotation_doc (f (line, 2));
+										net_label_rotation := geometry.to_rotation (f (line, 2));
 
 									elsif kw = et_text.keyword_size then -- size 1.3
 										expect_field_count (line, 2);
