@@ -146,6 +146,10 @@ procedure draw_nets (
 					
 					while segment_cursor /= type_net_segments.no_element loop
 
+						-- set line width for net segments:
+						cairo.set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
+
+						-- draw the net segment:
 						pac_draw_misc.draw_line (
 							area		=> in_area,
 							context		=> context,
@@ -188,7 +192,6 @@ procedure draw_nets (
 		end query_strands;
 		
 	begin -- query_nets
-		cairo.set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
 		cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
 
 		-- iterate nets

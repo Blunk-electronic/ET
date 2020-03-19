@@ -38,6 +38,8 @@
 with ada.text_io;				use ada.text_io;
 with ada.numerics;				use ada.numerics;
 with glib;						use glib;
+-- with glib.types;				use glib.types;
+with Interfaces.C.Strings;
 
 package body et_canvas_primitive_draw_ops is
 	
@@ -382,7 +384,11 @@ package body pac_draw is
 		alignment	: in type_text_alignment;
 		height		: in pac_shapes.geometry.type_distance) is
 
-		text_area : cairo.cairo_text_extents;
+		text_area : aliased cairo.cairo_text_extents;
+-- 		type text_acc is access cairo.cairo_text_extents;
+
+		use interfaces.c.strings;
+		text : interfaces.c.strings.chars_ptr := new_string (to_string (content));
 		
 		-- compute the boundaries (greatest/smallest x/y) of the given text:
 -- 		boundaries : type_boundaries; -- := pac_shapes.boundaries (circle);
@@ -433,8 +439,12 @@ package body pac_draw is
 		
 		use cairo;
 	begin
-		--text_extents (cr => context.cr, utf8 => utf8, extents => text_area'access);
-		
+-- 		text_acc := new 
+		text_extents (cr => context.cr, utf8 => text, extents => text_area'access);
+
+		put_line ("length " & gdouble'image (abs (text_area.x_bearing)));
+		put_line ("height " & gdouble'image (abs (text_area.y_bearing)));
+		--text_area := text_extents (context.cr, "test");
 		-- We draw the text if:
 		--  - no area given or
 		--  - if the bounding box of the text intersects the given area
