@@ -58,6 +58,33 @@ procedure draw_nets (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
+	procedure draw_tag_label (
+		net		: in et_general.type_net_name.bounded_string;
+		label	: in type_net_label) is
+		use et_text;
+	begin
+		
+		pac_draw_misc.draw_text (
+			area		=> in_area,
+			context		=> context,
+			content		=> to_content (to_string (net)),
+			-- CS append to content the position of the net on the next sheet
+			
+			size		=> label.size,
+			position	=> label.position,
+			origin		=> true, -- CS must be false on export to image
+			
+			-- Text rotation around its anchor point.
+			-- This is documentational text.
+			-- It is readable from the front or the right.
+			rotation	=> label.rotation_tag,
+			alignment	=> (others => <>), -- CS
+			height		=> self.drawing.frame_bounding_box.height
+			);
+
+	-- CS paint a box around the text depending on element (c).direction
+	end draw_tag_label;
+	
 	procedure query_nets (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
@@ -108,25 +135,8 @@ procedure draw_nets (
 								);
 
 						when TAG =>
-							pac_draw_misc.draw_text (
-								area		=> in_area,
-								context		=> context,
-								content		=> to_content (to_string (key (net_cursor))),
-								-- CS append to content the position of the net on the next sheet
-								
-								size		=> element (c).size,
-								position	=> element (c).position,
-								origin		=> true, -- CS must be false on export to image
-								
-								-- Text rotation around its anchor point.
-								-- This is documentational text.
-								-- It is readable from the front or the right.
-								rotation	=> element (c).rotation_tag,
-								alignment	=> (others => <>), -- CS
-								height		=> self.drawing.frame_bounding_box.height
-								);
+							draw_tag_label (net_name, element (c));
 
-							-- CS paint a box around the text depending on element (c).direction
 					end case;
 				end query_label; 
 					
@@ -178,15 +188,6 @@ procedure draw_nets (
 		end query_strands;
 		
 	begin -- query_nets
--- 		save (context.cr);
--- 		
--- 		-- Prepare the current transformation matrix (CTM) so that
--- 		-- all following drawing is relative to the upper left frame corner.
--- 		translate (
--- 			context.cr,
--- 			convert_x (self.drawing.frame_bounding_box.x),
--- 			convert_y (self.drawing.frame_bounding_box.y));
-
 		cairo.set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
 		cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
 
@@ -201,8 +202,6 @@ procedure draw_nets (
 		end loop;
 
 		cairo.stroke (context.cr);
-
--- 		restore (context.cr);
 	end query_nets;
 	
 begin
