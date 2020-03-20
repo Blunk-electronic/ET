@@ -421,35 +421,54 @@ package body pac_draw is
 		x,y			: in gdouble;
 		rotation	: in pac_shapes.geometry.type_rotation;
 		alignment	: in type_text_alignment) is
-
+		
 		use cairo;
 
+		-- Here we will store the extents of the given text:
+		text_area : aliased cairo.cairo_text_extents;
+
+		-- Convert the given content and store it in variable text:
+		use interfaces.c.strings;
+		text : constant interfaces.c.strings.chars_ptr := new_string (to_string (content));
+
+		-- The point where we will start drawing the text:
+		sp : type_view_point;
+		
 	begin
+		save (context.cr);
+
+		draw_origin (context, (x, y));
+
 		cairo.select_font_face (
 			context.cr, 
 			family	=> "monospace", -- serif",
 			slant	=> CAIRO_FONT_SLANT_NORMAL,
 			weight	=> CAIRO_FONT_WEIGHT_NORMAL);
-
-		save (context.cr);
-
-		draw_origin (context, (x, y));
-		
+	
 		cairo.set_font_size (context.cr, (to_points (size)));
 
+		-- Get the extents of the text to be displayed and store it in text_area:
+		text_extents (cr => context.cr, utf8 => text, extents => text_area'access);
+		
+		-- depending on alignment compute position to start drawing the text:
+		sp := start_point (
+				width		=> text_area.width,
+				height		=> text_area.height,
+				alignment	=> alignment,
+				origin		=> (x, y));
+		
+		-- draw the text. start at calculated start position
+		cairo.move_to (context.cr, sp.x, sp.y);
+		cairo.show_text (context.cr, to_string (content));
+
+		-- Rotate the text around the origin.
 		-- In cairo all angles increase in clockwise direction.
 		-- Since our angles increase in counterclockwise direction (mathematically)
 		-- the angle must change the sign.		
-
 		cairo.move_to (context.cr, x, y);
 		cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
-			
-		cairo.show_text (context.cr, to_string (content));
-
-		-- CS alignment. http://zetcode.com/gfx/cairo/cairotext/
 
 		restore (context.cr);
-
 	end draw_text;
 
 	procedure draw_text (
@@ -464,22 +483,22 @@ package body pac_draw is
 		height		: in pac_shapes.geometry.type_distance) is
 
 		text_area : aliased cairo.cairo_text_extents;
--- 		type text_acc is access cairo.cairo_text_extents;
 
 		use interfaces.c.strings;
 		text : interfaces.c.strings.chars_ptr := new_string (to_string (content));
 		
-		-- compute the boundaries (greatest/smallest x/y) of the given text:
--- 		boundaries : type_boundaries; -- := pac_shapes.boundaries (circle);
+		-- the boundaries (greatest/smallest x/y) of the given text:
+-- 		boundaries : type_boundaries;
 
-		-- compute the bounding box of the given text
--- 		bounding_box : type_rectangle; -- := make_bounding_box (height, boundaries);
+		-- the bounding box of the given text
+-- 		bounding_box : type_rectangle;
 
+		-- The point where we will start drawing the text:
 		sp : type_view_point;
 
 		-- The position of the origin:
-		px : constant gdouble := convert_x (x (position));
-		py : constant gdouble := shift_y (y (position), height);
+		px : constant type_view_coordinate := convert_x (x (position));
+		py : constant type_view_coordinate := shift_y (y (position), height);
 
 		use cairo;
 	begin
@@ -499,8 +518,8 @@ package body pac_draw is
 
 		text_extents (cr => context.cr, utf8 => text, extents => text_area'access);
 
-		put_line ("length " & gdouble'image (abs (text_area.width)));
-		put_line ("height " & gdouble'image (abs (text_area.height)));
+-- 		put_line ("length " & gdouble'image (abs (text_area.width)));
+-- 		put_line ("height " & gdouble'image (abs (text_area.height)));
 
 		-- depending on alignment compute position to start drawing the text:
 		sp := start_point (
@@ -510,6 +529,7 @@ package body pac_draw is
 				origin		=> (px, py)
 				);
 		
+		-- 		bounding_box.x := sp.x - text_area.height;
 		
 		-- We draw the text if:
 		--  - no area given or
