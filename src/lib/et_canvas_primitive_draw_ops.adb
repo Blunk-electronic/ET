@@ -337,6 +337,83 @@ package body pac_draw is
 		return gdouble (size) * conversion_factor_mm_to_pt;
 	end to_points;
 
+	procedure draw_origin (
+		context		: in type_draw_context;
+		position	: in type_view_point) is
+
+		use cairo;
+	begin
+	-- The text origin (or anchor point) is drawn directly on the context,
+	-- means the y-axis increases downwards.
+	-- The origin is never rotated.
+		
+		set_line_width (context.cr, type_view_coordinate (origin_line_width));
+		
+		-- horizontal line from left to right
+		move_to (
+			context.cr,
+			position.x - type_view_coordinate (origin_half_size),
+			position.y
+			);
+
+		line_to (
+			context.cr,
+			position.x + type_view_coordinate (origin_half_size),
+			position.y
+			);
+
+		-- vertical line downwards
+		-- upper end of line
+		move_to (
+			context.cr,
+			position.x,
+			position.y - type_view_coordinate (origin_half_size) -- y increases downwards.
+			);
+
+		-- lower end of line
+		line_to (
+			context.cr,
+			position.x,
+			position.y + type_view_coordinate (origin_half_size)
+			);
+
+		stroke (context.cr);
+	end draw_origin;
+	
+	function start_point (
+		width		: in type_view_coordinate;
+		height		: in type_view_coordinate;
+		alignment	: in type_text_alignment;
+		origin		: in type_view_point)
+		return type_view_point is
+
+		sp : type_view_point; -- to be returned
+	begin
+		case alignment.horizontal is
+			when LEFT => 
+				sp.x := origin.x;
+
+			when CENTER =>
+				sp.x := origin.x - width/2.0;
+
+			when RIGHT =>
+				sp.x := origin.x - width;
+		end case;
+
+		case alignment.vertical is
+			when BOTTOM => 
+				sp.y := origin.y;
+
+			when CENTER =>
+				sp.y := origin.y + height/2.0;
+
+			when TOP =>
+				sp.y := origin.y + height;
+		end case;
+
+		return sp;
+	end start_point;
+	
 	procedure draw_text (
 		context		: in type_draw_context;
 		content		: in type_text_content.bounded_string;
@@ -356,6 +433,8 @@ package body pac_draw is
 
 		save (context.cr);
 
+		draw_origin (context, (x, y));
+		
 		cairo.set_font_size (context.cr, (to_points (size)));
 
 		-- In cairo all angles increase in clockwise direction.
@@ -396,55 +475,42 @@ package body pac_draw is
 		-- compute the bounding box of the given text
 -- 		bounding_box : type_rectangle; -- := make_bounding_box (height, boundaries);
 
+		sp : type_view_point;
+
+		-- The position of the origin:
 		px : constant gdouble := convert_x (x (position));
 		py : constant gdouble := shift_y (y (position), height);
 
-		procedure draw_origin is begin
-		-- The text origin (or anchor point) is drawn directly on the context,
-		-- means the y-axis increases downwards.
-		-- The origin is never rotated.
-			
-			cairo.set_line_width (context.cr, type_view_coordinate (origin_line_width));
-			
-			-- horizontal line from left to right
-			cairo.move_to (
-				context.cr,
-				px - type_view_coordinate (origin_half_size),
-				py
-				);
-
-			cairo.line_to (
-				context.cr,
-				px + type_view_coordinate (origin_half_size),
-				py
-				);
-
-			-- vertical line downwards
-			-- upper end of line
-			cairo.move_to (
-				context.cr,
-				px,
-				py - type_view_coordinate (origin_half_size) -- y increases downwards.
-				);
-
-			-- lower end of line
-			cairo.line_to (
-				context.cr,
-				px,
-				py + type_view_coordinate (origin_half_size)
-				);
-
-			cairo.stroke (context.cr);
-		end draw_origin;
-		
 		use cairo;
 	begin
--- 		text_acc := new 
+		save (context.cr);
+
+		if origin then 
+			draw_origin (context, (px, py));
+		end if;
+
+		cairo.select_font_face (
+			context.cr, 
+			family	=> "monospace", -- serif",
+			slant	=> CAIRO_FONT_SLANT_NORMAL,
+			weight	=> CAIRO_FONT_WEIGHT_NORMAL);
+		
+		cairo.set_font_size (context.cr, (to_points (size)));
+
 		text_extents (cr => context.cr, utf8 => text, extents => text_area'access);
 
-		put_line ("length " & gdouble'image (abs (text_area.x_bearing)));
-		put_line ("height " & gdouble'image (abs (text_area.y_bearing)));
-		--text_area := text_extents (context.cr, "test");
+		put_line ("length " & gdouble'image (abs (text_area.width)));
+		put_line ("height " & gdouble'image (abs (text_area.height)));
+
+		-- depending on alignment compute position to start drawing the text:
+		sp := start_point (
+				width		=> text_area.width,
+				height		=> text_area.height,
+				alignment	=> alignment,
+				origin		=> (px, py)
+				);
+		
+		
 		-- We draw the text if:
 		--  - no area given or
 		--  - if the bounding box of the text intersects the given area
@@ -456,31 +522,19 @@ package body pac_draw is
 	-- 				return;
 	-- 			end if;
 
-			cairo.select_font_face (
-				context.cr, 
-				family	=> "monospace", -- serif",
-				slant	=> CAIRO_FONT_SLANT_NORMAL,
-				weight	=> CAIRO_FONT_WEIGHT_NORMAL);
 
-			save (context.cr);
 
-			if origin then 
-				draw_origin;
-			end if;
 
-			cairo.set_font_size (context.cr, (to_points (size)));
-
+			
 			-- In cairo all angles increase in clockwise direction.
 			-- Since our angles increase in counterclockwise direction (mathematically)
 			-- the angle must change the sign.		
 
-			cairo.move_to (context.cr, px, py);
+			cairo.move_to (context.cr, sp.x, sp.y);
 			cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
 				
 			cairo.show_text (context.cr, to_string (content));
 
-			
-			-- CS alignment. http://zetcode.com/gfx/cairo/cairotext/
 
 			restore (context.cr);
 

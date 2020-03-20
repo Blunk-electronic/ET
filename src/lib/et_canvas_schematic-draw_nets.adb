@@ -130,7 +130,7 @@ procedure draw_nets (
 								-- This is documentational text.
 								-- It is readable from the front or the right.
 								rotation	=> to_rotation (element (c).rotation_simple),
-								alignment	=> (others => <>), -- CS
+								alignment	=> (LEFT, BOTTOM),
 								height		=> self.drawing.frame_bounding_box.height
 								);
 
