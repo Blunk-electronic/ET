@@ -134,31 +134,30 @@ package pac_draw is
 	function to_points (size : in pac_text.type_text_size)
 		return gdouble;
 
-	-- If a text is rigid, it will rotate its position and
-	-- orientation in the same sense as the given rotation.
--- 	type type_rigid_text is (YES, NO); -- CS no need
-	
+	-- Draws a text right in the view.
+	-- Does not care about area and bounding box. It is assumed that the calling
+	-- unit has decided whether the text is to be drawn or not.
 	procedure draw_text (
 		context		: in type_draw_context;
 		content		: in type_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
-		x,y			: in gdouble;
+		x,y			: in gdouble; -- the anchor point in the view
 		rotation	: in pac_shapes.geometry.type_rotation;
--- 		rigid		: in type_rigid_text;
 		alignment	: in type_text_alignment);
 
-	-- Draw a text.
+	-- Draws a text in the drawing plane.
+	-- Draws the text in case it is inside the given area or whether the
+	-- text intersects the given area.
 	procedure draw_text (
-		area		: in type_rectangle;
+		area		: in type_rectangle; -- in model plane
 		context		: in type_draw_context;
 		content		: in type_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
-		position	: in type_point; -- the anchor point
+		position	: in type_point; -- the anchor point in the drawing, the origin
 		origin		: in boolean; -- when true, an origin is drawn at the position
 		rotation	: in type_rotation;
 		alignment	: in type_text_alignment;
-		height		: in pac_shapes.geometry.type_distance
-		);
+		height		: in pac_shapes.geometry.type_distance); -- the height of the drawing frame
 	
 end pac_draw;
 

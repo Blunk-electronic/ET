@@ -77,10 +77,10 @@ package body pac_draw is
 		return (
 			-- The bounding box origin is the upper left corner.
 			-- The box position in x is the smallest_x.
-			-- The box position in y is the greatest_y (upwards).
-			-- The box position in y is additonally converted to y axis going downwards.
+			-- The box position in y is the greatest_y (upwards going axis).
+			-- Since the bounding box is something required in the model plane,
+			-- the box position in y is afterwards converted to y axis going downwards.
 			x		=> boundaries.smallest_x,
-			--y		=> shift_y (boundaries.smallest_y, height),
 			y		=> shift_y (boundaries.greatest_y, height),
 
 			-- The box width is the difference between greatest x and smallest x.
@@ -476,11 +476,12 @@ package body pac_draw is
 		context		: in type_draw_context;
 		content		: in type_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
-		position	: in type_point;
+		position	: in type_point; -- anchor point in the drawing, the origin
 		origin		: in boolean;		
 		rotation	: in type_rotation;
 		alignment	: in type_text_alignment;
-		height		: in pac_shapes.geometry.type_distance) is
+		height		: in pac_shapes.geometry.type_distance)  -- the height of the drawing frame
+	is
 
 		text_area : aliased cairo.cairo_text_extents;
 
@@ -488,10 +489,10 @@ package body pac_draw is
 		text : interfaces.c.strings.chars_ptr := new_string (to_string (content));
 		
 		-- the boundaries (greatest/smallest x/y) of the given text:
--- 		boundaries : type_boundaries;
+		boundaries : type_boundaries;
 
 		-- the bounding box of the given text
--- 		bounding_box : type_rectangle;
+		bounding_box : type_rectangle;
 
 		-- The point where we will start drawing the text:
 		sp : type_view_point;
@@ -503,10 +504,6 @@ package body pac_draw is
 		use cairo;
 	begin
 		save (context.cr);
-
-		if origin then 
-			draw_origin (context, (px, py));
-		end if;
 
 		cairo.select_font_face (
 			context.cr, 
@@ -521,30 +518,46 @@ package body pac_draw is
 -- 		put_line ("length " & gdouble'image (abs (text_area.width)));
 -- 		put_line ("height " & gdouble'image (abs (text_area.height)));
 
-		-- depending on alignment compute position to start drawing the text:
+		-- Depending on alignment compute position to start drawing the text.
+		-- NOTE: The start point is the lower right corner of the text.
 		sp := start_point (
 				width		=> text_area.width,
 				height		=> text_area.height,
 				alignment	=> alignment,
 				origin		=> (px, py)
 				);
+
+		-- Compute the bounding box of the text. The bounding box
+		-- is the text enclosing rectangle that exists in the model plane.
+		-- In the model plane the y-axis increases downwards.
+		-- The bounding box position is where it has its upper left corner.
+		boundaries.smallest_x := type_distance (sp.x);
+		boundaries.greatest_x := type_distance (sp.x) + type_distance_positive (text_area.width);
+		boundaries.smallest_y := type_distance (sp.y);
+		boundaries.greatest_y := type_distance (sp.y) + type_distance_positive (text_area.height);
+
 		
-		-- 		bounding_box.x := sp.x - text_area.height;
+		bounding_box := make_bounding_box (height, boundaries);
+		
+-- 		bounding_box.x := type_distance (sp.x);
+-- 		bounding_box.y := type_distance (sp.y - text_area.height);
+-- 		bounding_box.width	:= type_distance (text_area.width);
+-- 		bounding_box.height	:= type_distance (text_area.height);
 		
 		-- We draw the text if:
 		--  - no area given or
 		--  - if the bounding box of the text intersects the given area
--- 		if (area = no_rectangle
--- 			or else intersects (area, bounding_box)) 
--- 		then
+		if (area = no_rectangle
+			or else intersects (area, bounding_box)) 
+		then
 	-- CS test size 
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;
 	-- 			end if;
 
-
-
-
+			if origin then 
+				draw_origin (context, (px, py));
+			end if;
 			
 			-- In cairo all angles increase in clockwise direction.
 			-- Since our angles increase in counterclockwise direction (mathematically)
@@ -554,11 +567,9 @@ package body pac_draw is
 			cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
 				
 			cairo.show_text (context.cr, to_string (content));
+		end if;
 
-
-			restore (context.cr);
-
--- 		end if;
+		restore (context.cr);
 	end draw_text;
 
 	

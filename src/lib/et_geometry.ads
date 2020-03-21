@@ -105,7 +105,8 @@ package et_geometry is
 
 		
 		-- The GUI frequently requires the area (a rectanglular box around an object)
-		-- occupied by the object. For preparation we need the type_boundaries:
+		-- occupied by the object. For preparation we need the type_boundaries.
+		-- Boundaries are to be set in the drawing plane where the y-axis increases upwards.
 		type type_boundaries is record
 			smallest_x, smallest_y : type_distance := type_distance'last;
 			greatest_x, greatest_y : type_distance := type_distance'first;
@@ -134,8 +135,9 @@ package et_geometry is
 			boundaries	: in out type_boundaries;
 			rotation	: in type_rotation);
 		
-		-- In connection with boundaries and bounding boxes a type for
-		-- a rectangular area of the drawing is required:
+		-- In the GUI, in connection with boundaries and bounding boxes a type for
+		-- a rectangular area of the drawing is required.
+		-- NOTE: The bounding box is something required in the model plane only.
 		type type_rectangle is record
 			x, y			: type_distance; -- position, upper left corner
 			width, height	: type_distance_positive; -- size
