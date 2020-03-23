@@ -456,18 +456,19 @@ package body pac_draw is
 				height		=> text_area.height,
 				alignment	=> alignment,
 				origin		=> (x, y));
-		
-		-- draw the text. start at calculated start position
-		cairo.move_to (context.cr, sp.x, sp.y);
-		cairo.show_text (context.cr, to_string (content));
 
 		-- Rotate the text around the origin.
 		-- In cairo all angles increase in clockwise direction.
 		-- Since our angles increase in counterclockwise direction (mathematically)
 		-- the angle must change the sign.		
-		cairo.move_to (context.cr, x, y);
+		cairo.translate (context.cr, x, y);
 		cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
+		cairo.translate (context.cr, -x, -y);
+		
+		-- draw the text. start at calculated start position
+		cairo.move_to (context.cr, sp.x, sp.y);
 
+		cairo.show_text (context.cr, to_string (content));
 		restore (context.cr);
 	end draw_text;
 
@@ -483,6 +484,7 @@ package body pac_draw is
 		height		: in pac_shapes.geometry.type_distance)  -- the height of the drawing frame
 	is
 
+-- 		text_area_pre : aliased cairo.cairo_text_extents;
 		text_area : aliased cairo.cairo_text_extents;
 
 		use interfaces.c.strings;
@@ -493,6 +495,7 @@ package body pac_draw is
 
 		-- the bounding box of the given text
 		bounding_box : type_rectangle;
+-- 		bounding_box_position : type_point;
 
 		-- The point where we will start drawing the text:
 		sp : type_view_point;
@@ -531,17 +534,10 @@ package body pac_draw is
 		-- is the text enclosing rectangle that exists in the model plane.
 		-- In the model plane the y-axis increases downwards.
 		-- The bounding box position is where it has its upper left corner.
--- 		boundaries.smallest_x := type_distance (sp.x);
--- 		boundaries.greatest_x := type_distance (sp.x) + type_distance_positive (text_area.width);
--- 		boundaries.smallest_y := type_distance (sp.y);
--- 		boundaries.greatest_y := type_distance (sp.y) + type_distance_positive (text_area.height);
-		
--- 		bounding_box := make_bounding_box (height, boundaries);
-		
-		bounding_box.x := type_distance (sp.x);
-		bounding_box.y := type_distance (sp.y - text_area.height);
-		bounding_box.width	:= type_distance (text_area.width);
-		bounding_box.height	:= type_distance (text_area.height);
+		bounding_box.x := type_distance (px - (abs (text_area.width)));
+		bounding_box.y := type_distance (py - (abs (text_area.width)));
+		bounding_box.width	:= type_distance (abs (2.0 * text_area.width));
+		bounding_box.height	:= type_distance (abs (2.0 * text_area.width));
 		
 		-- We draw the text if:
 		--  - no area given or
@@ -557,14 +553,17 @@ package body pac_draw is
 			if origin then 
 				draw_origin (context, (px, py));
 			end if;
-			
+
 			-- In cairo all angles increase in clockwise direction.
 			-- Since our angles increase in counterclockwise direction (mathematically)
 			-- the angle must change the sign.		
-
-			cairo.move_to (context.cr, sp.x, sp.y);
+			cairo.translate (context.cr, px, py);
 			cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
-				
+			cairo.translate (context.cr, -px, -py);
+			
+			-- draw the text. start at calculated start position
+			cairo.move_to (context.cr, sp.x, sp.y);
+
 			cairo.show_text (context.cr, to_string (content));
 		end if;
 

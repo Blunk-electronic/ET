@@ -322,6 +322,13 @@ package et_geometry is
 			point		: in out type_point'class;
 			rotation	: in type_rotation);
 
+-- 		procedure rotate_by (
+-- 		-- Rotates the given point BY the given angle around the given center point.
+-- 		-- Changes point.x and point.y only.
+-- 			point		: in out type_point'class;
+-- 			center		: in type_point;
+-- 			rotation	: in type_rotation);
+		
 		-- Returns a distance rounded according to given grid.		
 		function round (
 			distance	: in type_distance;
