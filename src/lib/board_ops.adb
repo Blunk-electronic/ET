@@ -1143,7 +1143,7 @@ package body board_ops is
 		end if;
 
 		-- rotate
-		rotate (point => terminal_position_base, rotation => rot (package_position));
+		rotate_by (point => terminal_position_base, rotation => rot (package_position));
 
 		-- move
 		move (point => terminal_position_base, offset => package_position);

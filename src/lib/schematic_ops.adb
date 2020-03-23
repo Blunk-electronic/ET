@@ -623,7 +623,7 @@ package body schematic_ops is
 						-- Calculate the absolute port position in schematic by
 						-- first rotating port_xy, and then moving port_xy:
 						
-						rotate (
+						rotate_by (
 							point		=> port_position,
 							rotation	=> rot (element (unit_cursor).position));
 						
@@ -801,7 +801,7 @@ package body schematic_ops is
 				-- Calculate the absolute port position in schematic by
 				-- first rotating port_xy, and then moving port_xy:
 				
-				rotate (
+				rotate_by (
 					point		=> port_xy,
 					rotation	=> rot (nc_position));
 				
@@ -1459,7 +1459,7 @@ package body schematic_ops is
 			name	: in type_port_name.bounded_string;
 			port	: in out type_port) is
 		begin
-			geometry.rotate (port.position, angle);
+			geometry.rotate_by (port.position, angle);
 		end;
 
 		procedure query_port (cursor : in et_symbols.type_ports.cursor) is begin
@@ -1735,7 +1735,7 @@ package body schematic_ops is
 						unit.name.rotation := snap (unit.name.rotation + rot);
 
 						-- rotate the placeholder anchor point around the symbol origin:
-						rotate (unit.name.position, rot);
+						rotate_by (unit.name.position, rot);
 
 						log (text => "name" & preamble & to_string (unit.name.position), 
 							 level => log_threshold + 2);
@@ -1747,7 +1747,7 @@ package body schematic_ops is
 						unit.value.rotation := snap (unit.value.rotation + rot);
 
 						-- rotate the placeholder anchor point around the symbol origin:
-						rotate (unit.value.position, rot);
+						rotate_by (unit.value.position, rot);
 
 						log (text => "value" & preamble & to_string (unit.value.position), 
 							 level => log_threshold + 2);
@@ -1759,7 +1759,7 @@ package body schematic_ops is
 						unit.purpose.rotation := snap (unit.purpose.rotation + rot);
 
 						-- rotate the placeholder anchor point around the symbol origin:
-						rotate (unit.purpose.position, rot);
+						rotate_by (unit.purpose.position, rot);
 
 						log (text => "purpose" & preamble & to_string (unit.purpose.position), 
 							 level => log_threshold + 2);

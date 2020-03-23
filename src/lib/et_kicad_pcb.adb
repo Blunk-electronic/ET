@@ -429,11 +429,11 @@ package body et_kicad_pcb is
 		p22 := type_point (set (x => xp, y => yn));
 
 		-- rotate supportive points
-		rotate (p11, angle);
-		rotate (p11, angle);
+		rotate_by (p11, angle);
+		rotate_by (p11, angle);
 
-		rotate (p21, angle);
-		rotate (p21, angle);
+		rotate_by (p21, angle);
+		rotate_by (p21, angle);
 
 		-- move supportive points by given offset
 		move (p11, offset);
@@ -520,14 +520,14 @@ package body et_kicad_pcb is
 		p42 := type_point (set (x => zero, y => y2n));			
 
 		-- rotate supportive points 
-		rotate (p11, angle);
-		rotate (p12, angle);
+		rotate_by (p11, angle);
+		rotate_by (p12, angle);
 		
-		rotate (p21, angle);
-		rotate (p22, angle);
+		rotate_by (p21, angle);
+		rotate_by (p22, angle);
 		
-		rotate (p41, angle);
-		rotate (p42, angle);		
+		rotate_by (p41, angle);
+		rotate_by (p42, angle);		
 
 		-- move supportive points by given offset
 		move (p11, offset);
@@ -608,11 +608,11 @@ package body et_kicad_pcb is
 		p22 := type_point (set (x => xp, y => yn));
 
 		-- rotate supportive points
-		rotate (p11, angle);
-		rotate (p11, angle);
+		rotate_by (p11, angle);
+		rotate_by (p11, angle);
 
-		rotate (p21, angle);
-		rotate (p21, angle);
+		rotate_by (p21, angle);
+		rotate_by (p21, angle);
 
 		-- move supportive points by given offset
 		move (p11, offset);

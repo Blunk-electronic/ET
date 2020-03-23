@@ -9973,7 +9973,7 @@ package body et_kicad is
 						position	=> element (port_cursor).position);
 
 					-- rotate port coordinates
-					rotate (
+					rotate_by (
 						point		=> port_coordinates,
 						rotation	=> orientation_of_unit (unit_name_lib, units_sch)
 						);

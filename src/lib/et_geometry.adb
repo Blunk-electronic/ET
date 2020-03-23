@@ -210,7 +210,7 @@ package body et_geometry is
 			-- sits somewhere inside the rectangle. The four corners are now rotated
 			-- around the origin by the given angle:
 			for c in corners'first .. corners'last loop
-				rotate (corners (c), rotation);
+				rotate_by (corners (c), rotation);
 			end loop;
 
 			-- reset boundaries
@@ -627,7 +627,7 @@ package body et_geometry is
 			position.rotation := position.rotation + offset;
 		end;
 		
-		procedure rotate (
+		procedure rotate_by (
 		-- Rotates the given point BY the given angle around the origin.
 		-- Changes point.x and point.y only.							 
 			point		: in out type_point'class;
@@ -707,7 +707,7 @@ package body et_geometry is
 		
 			end if; -- if angle not zero
 			
-		end rotate;
+		end rotate_by;
 
 		procedure rotate_to (
 			point		: in out type_point'class;
@@ -869,8 +869,8 @@ package body et_geometry is
 			line		: in out type_line;
 			rotation	: in type_rotation) 
 		is begin
-			rotate (line.start_point, rotation);
-			rotate (line.end_point, rotation);
+			rotate_by (line.start_point, rotation);
+			rotate_by (line.end_point, rotation);
 		end rotate;
 
 		
@@ -1152,9 +1152,9 @@ package body et_geometry is
 			arc			: in out type_arc;
 			rotation	: in type_rotation) is
 		begin
-			rotate (arc.center, rotation);
-			rotate (arc.start_point, rotation);
-			rotate (arc.end_point, rotation);
+			rotate_by (arc.center, rotation);
+			rotate_by (arc.start_point, rotation);
+			rotate_by (arc.end_point, rotation);
 		end;
 		
 		function to_arc_angles (arc : in type_arc) return type_arc_angles is
@@ -1463,7 +1463,7 @@ package body et_geometry is
 			circle		: in out type_circle;
 			rotation	: in type_rotation) is
 		begin
-			rotate (circle.center, rotation);
+			rotate_by (circle.center, rotation);
 		end;
 		
 		function boundaries (circle : in type_circle) return type_boundaries is

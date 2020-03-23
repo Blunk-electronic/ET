@@ -281,7 +281,7 @@ procedure draw_units (
 			cairo.new_sub_path (context.cr); -- required to suppress an initial line
 
 			-- We have to rotate just the center of the circle:
-			rotate (center, unit_rotation);
+			rotate_by (center, unit_rotation);
 			
 			cairo.arc (
 				cr		=> context.cr,
@@ -316,7 +316,7 @@ procedure draw_units (
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 			
 			-- We start drawing at the port position:
-			rotate (start_point, unit_rotation);
+			rotate_by (start_point, unit_rotation);
 			
 			cairo.move_to (
 				context.cr,
@@ -342,7 +342,7 @@ procedure draw_units (
 			end if;
 
 			-- draw the end point
-			rotate (end_point, unit_rotation);
+			rotate_by (end_point, unit_rotation);
 			
 			cairo.line_to (
 				context.cr,
@@ -386,7 +386,7 @@ procedure draw_units (
 		begin
 			-- Rotate the position of the text.
 			-- This adds the unit_rotation to the given rotation.
-			rotate (position, unit_rotation);
+			rotate_by (position, unit_rotation);
 			
 			pac_draw_misc.draw_text 
 				(
