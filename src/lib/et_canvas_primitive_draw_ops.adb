@@ -489,7 +489,7 @@ package body pac_draw is
 		text : interfaces.c.strings.chars_ptr := new_string (to_string (content));
 		
 		-- the boundaries (greatest/smallest x/y) of the given text:
-		boundaries : type_boundaries;
+-- 		boundaries : type_boundaries;
 
 		-- the bounding box of the given text
 		bounding_box : type_rectangle;
@@ -531,18 +531,17 @@ package body pac_draw is
 		-- is the text enclosing rectangle that exists in the model plane.
 		-- In the model plane the y-axis increases downwards.
 		-- The bounding box position is where it has its upper left corner.
-		boundaries.smallest_x := type_distance (sp.x);
-		boundaries.greatest_x := type_distance (sp.x) + type_distance_positive (text_area.width);
-		boundaries.smallest_y := type_distance (sp.y);
-		boundaries.greatest_y := type_distance (sp.y) + type_distance_positive (text_area.height);
-
+-- 		boundaries.smallest_x := type_distance (sp.x);
+-- 		boundaries.greatest_x := type_distance (sp.x) + type_distance_positive (text_area.width);
+-- 		boundaries.smallest_y := type_distance (sp.y);
+-- 		boundaries.greatest_y := type_distance (sp.y) + type_distance_positive (text_area.height);
 		
-		bounding_box := make_bounding_box (height, boundaries);
+-- 		bounding_box := make_bounding_box (height, boundaries);
 		
--- 		bounding_box.x := type_distance (sp.x);
--- 		bounding_box.y := type_distance (sp.y - text_area.height);
--- 		bounding_box.width	:= type_distance (text_area.width);
--- 		bounding_box.height	:= type_distance (text_area.height);
+		bounding_box.x := type_distance (sp.x);
+		bounding_box.y := type_distance (sp.y - text_area.height);
+		bounding_box.width	:= type_distance (text_area.width);
+		bounding_box.height	:= type_distance (text_area.height);
 		
 		-- We draw the text if:
 		--  - no area given or

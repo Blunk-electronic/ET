@@ -107,6 +107,8 @@ package et_geometry is
 		-- The GUI frequently requires the area (a rectanglular box around an object)
 		-- occupied by the object. For preparation we need the type_boundaries.
 		-- Boundaries are to be set in the drawing plane where the y-axis increases upwards.
+		-- The boundaries are always relative to a certain origin that
+		-- sits somewhere inside the rectangle. 
 		type type_boundaries is record
 			smallest_x, smallest_y : type_distance := type_distance'last;
 			greatest_x, greatest_y : type_distance := type_distance'first;
