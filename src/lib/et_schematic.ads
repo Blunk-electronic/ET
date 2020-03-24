@@ -295,6 +295,9 @@ package et_schematic is
 	
 	function to_string (segment : in type_net_segments.cursor) return string;
 	-- Returns a string that tells about start and end coordinates of the net segment.
+
+
+	
 	
 	-- A strand is a collection of net segments which belong to each other. 
 	-- Segments belong to each other because their start/end points meet.
@@ -323,6 +326,27 @@ package et_schematic is
 		element_type	=> type_net);
 
 
+	
+	
+	-- A stub of a net is modelled this way:
+	type type_stub_direction is (
+		LEFT,	-- points to the left
+		RIGHT,	-- points to the right
+		UP,		-- points up
+		DOWN);	-- points down
+
+	type type_stub (is_stub : boolean) is record
+		case is_stub is
+			when TRUE => direction : type_stub_direction;
+			when FALSE => null;
+		end case;
+	end record;
+
+
+
+
+	
+	
 	type type_ports is record
 		devices		: type_ports_device.set;
 		submodules	: type_ports_submodule.set;

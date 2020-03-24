@@ -178,7 +178,7 @@ package body et_schematic is
 			position => point_1);
 
 	end set_strand_position;
-	
+
 	function ports (
 		net		: in type_nets.cursor;
 		variant	: in assembly_variants.pac_variants.cursor)

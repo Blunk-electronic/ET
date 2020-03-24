@@ -7802,14 +7802,20 @@ package body schematic_ops is
 									   );
 								
 							when TAG =>
-								append (
-									container	=> segment.labels,
-									new_item	=> (label with
-										appearance		=> TAG,
-										rotation_tag	=> rotation, -- take the given rotation as it is
-										direction		=> direction) -- the given direction
-									   );
+								-- A tag label can be attached to a stub only.
+								if query_stub (module_name, net_name, segment_position, log_threshold + 1).is_stub then
+									
+									append (
+										container	=> segment.labels,
+										new_item	=> (label with
+											appearance		=> TAG,
+											rotation_tag	=> rotation, -- take the given rotation as it is
+											direction		=> direction) -- the given direction
+										);
 
+								else
+									log (WARNING, "The given net has no stub at" & no_label_placed);
+								end if;
 						end case;
 					end attach_label;
 					
@@ -13397,6 +13403,80 @@ package body schematic_ops is
 		end if;
 		
 	end unit_position;
+
+	function query_stub (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		position		: in et_coordinates.type_position; -- sheet/x/y		
+		log_threshold	: in type_log_level)
+		return type_stub is
+
+		module_cursor : type_modules.cursor; -- points to the module
+		net_cursor : type_nets.cursor; -- points to the net
+		
+		use et_coordinates;
+		use type_nets;
+		use type_strands;
+
+		stub_found : boolean := false;
+		
+		procedure query_strands (
+			net_name	: in et_general.type_net_name.bounded_string;
+			net			: in type_net) is
+			
+			strand_cursor : type_strands.cursor := net.strands.first;
+
+			procedure query_segments (strand : in type_strand) is
+				use type_net_segments;
+				segment_cursor : type_net_segments.cursor := strand.segments.first;
+			begin
+				while segment_cursor = type_net_segments.no_element loop
+					if element (segment_cursor).start_point = type_point (position) then
+						null;
+					elsif element (segment_cursor).end_point = type_point (position) then
+						null;
+					end if;
+
+					if stub_found then exit; end if;
+					next (segment_cursor);
+				end loop;
+			end query_segments;
+			
+		begin -- query_strands
+			while strand_cursor /= type_strands.no_element loop
+
+				if element (strand_cursor).position.sheet = sheet (position) then
+					query_element (
+						position	=> strand_cursor,
+						process		=> query_segments'access);
+				end if;
+
+				if stub_found then exit; end if;
+				
+				next (strand_cursor);
+			end loop;
+		end query_strands;
+
+	begin -- query_stub
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- locate the net (it should exist)
+		net_cursor := locate_net (module_cursor, net_name);
+		
+		query_element (
+			position	=> net_cursor,
+			process		=> query_strands'access);
+
+		if not stub_found then
+			return (is_stub => false);
+		else
+			return (is_stub => false); -- CS
+		end if;
+	end query_stub;
+
+
 	
 end schematic_ops;
 	

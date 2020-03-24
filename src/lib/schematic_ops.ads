@@ -689,7 +689,16 @@ package schematic_ops is
 	-- CS type_port_query
 
 	-- CS function port_position 
-							   
+
+	-- Queries the position of the given net. If a stub is at the
+	-- given position returns the direction of the stub.
+	function query_stub (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		position		: in et_coordinates.type_position; -- sheet/x/y
+		log_threshold	: in type_log_level)
+		return type_stub;
+	
 end schematic_ops;
 
 -- Soli Deo Gloria
