@@ -353,6 +353,9 @@ package schematic_ops is
 		netchangers	: netlists.type_ports_netchanger.set;
 	end record;
 
+	function no_ports (ports : in type_ports) return boolean;
+	-- Returns true if the given record of ports is completely emtpty.
+	
 	function ports_at_place (
 	-- Returns lists of device, netchanger and submodule ports at the given place.
 		module_name		: in type_module_name.bounded_string;

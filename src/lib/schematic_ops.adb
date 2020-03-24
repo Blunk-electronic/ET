@@ -6289,6 +6289,27 @@ package body schematic_ops is
 		log_indentation_down;		
 	end delete_segment;
 
+	function no_ports (ports : in type_ports) return boolean is
+		result : boolean := true;
+		use type_ports_device;
+		use type_ports_submodule;
+		use netlists.type_ports_netchanger;
+	begin
+		if length (ports.devices) > 0 then
+			return false;
+		end if;
+
+		if length (ports.submodules) > 0 then
+			result := false;
+		end if;
+
+		if length (ports.netchangers) > 0 then
+			result := false;
+		end if;
+
+		return result;
+	end no_ports;
+	
 	function ports_at_place (
 	-- Returns lists of device, netchanger and submodule ports at the given place.
 		module_name		: in type_module_name.bounded_string;
@@ -13418,7 +13439,11 @@ package body schematic_ops is
 		use type_nets;
 		use type_strands;
 
+		-- Query ports at the given position.
+		ports : type_ports := ports_at_place (module_name, position, log_threshold + 1);
+		
 		stub_found : boolean := false;
+		stub_direction : type_stub_direction;
 		
 		procedure query_strands (
 			net_name	: in et_general.type_net_name.bounded_string;
@@ -13430,14 +13455,26 @@ package body schematic_ops is
 				use type_net_segments;
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
 			begin
-				while segment_cursor = type_net_segments.no_element loop
+				while segment_cursor /= type_net_segments.no_element loop
+
+					-- If the given position is a start or end point of a segment,
+					-- we regard the segment as a stub.
+					-- CS: Test junctions and other segments
+					-- CS: Test stub direction
 					if element (segment_cursor).start_point = type_point (position) then
-						null;
+						log (text => "match with start point of a segment", level => log_threshold + 2);
+						stub_found := true;
+						stub_direction := LEFT;
+						
 					elsif element (segment_cursor).end_point = type_point (position) then
-						null;
+						log (text => "match with end point of a segment", level => log_threshold + 2);						
+						stub_found := true;
+						stub_direction := LEFT;
 					end if;
 
+					-- Abort on first stub that has been found: -- CS good idea ?
 					if stub_found then exit; end if;
+					
 					next (segment_cursor);
 				end loop;
 			end query_segments;
@@ -13445,7 +13482,10 @@ package body schematic_ops is
 		begin -- query_strands
 			while strand_cursor /= type_strands.no_element loop
 
+				
+				-- We are interested in strands on the given sheet only:
 				if element (strand_cursor).position.sheet = sheet (position) then
+
 					query_element (
 						position	=> strand_cursor,
 						process		=> query_segments'access);
@@ -13459,21 +13499,32 @@ package body schematic_ops is
 
 	begin -- query_stub
 
-		-- locate module
-		module_cursor := locate_module (module_name);
-
-		-- locate the net (it should exist)
-		net_cursor := locate_net (module_cursor, net_name);
+		-- If there are no ports then examine the net further.
+		-- If there are devices, submodule or netchanger ports, then the given position
+		-- is definitely not a stub.
+		if no_ports (ports) then
+			log (text => "no ports here. examining net further ...", level => log_threshold + 1);
 		
-		query_element (
-			position	=> net_cursor,
-			process		=> query_strands'access);
+			-- locate module
+			module_cursor := locate_module (module_name);
 
-		if not stub_found then
+			-- locate the net (it should exist)
+			net_cursor := locate_net (module_cursor, net_name);
+			
+			query_element (
+				position	=> net_cursor,
+				process		=> query_strands'access);
+
+			if not stub_found then
+				return (is_stub => false);
+			else
+				return (is_stub => true, direction => stub_direction);
+			end if;
+
+		else -- means there are ports at the given position
 			return (is_stub => false);
-		else
-			return (is_stub => false); -- CS
 		end if;
+		
 	end query_stub;
 
 

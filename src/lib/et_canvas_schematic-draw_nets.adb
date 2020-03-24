@@ -51,8 +51,6 @@ use et_schematic.type_nets;
 use et_schematic.type_strands;
 use et_schematic.type_net_segments;
 
-with schematic_ops;
-
 separate (et_canvas_schematic)
 
 procedure draw_nets (
@@ -61,42 +59,31 @@ procedure draw_nets (
 	context : in type_draw_context) is
 
 	procedure draw_tag_label (
-		module	: in type_module_name.bounded_string;
 		net		: in et_general.type_net_name.bounded_string;
 		label	: in type_net_label) is
 		use et_text;
-		use schematic_ops;
-
--- 		stub : type_stub := query_stub (
--- 				module_name		=> module,
--- 				net_name		=> net,
--- 				point			=> label.position,
--- 				sheet			=> self.drawing.sheet,
--- 				log_threshold	=> log_threshold);
 									
 	begin
--- 		if stub.is_stub then
-			pac_draw_misc.draw_text (
-				area		=> in_area,
-				context		=> context,
-				content		=> to_content (to_string (net)),
-				-- CS append to content the position of the net on the next sheet
-				
-				size		=> label.size,
-				position	=> label.position,
-				origin		=> true, -- CS must be false on export to image
-				
-				-- Text rotation about its anchor point.
-				-- This is documentational text.
-				-- It is readable from the front or the right.
-				rotation	=> label.rotation_tag,
-				alignment	=> (others => <>), -- CS
-				height		=> self.drawing.frame_bounding_box.height
-				);
+		pac_draw_misc.draw_text (
+			area		=> in_area,
+			context		=> context,
+			content		=> to_content (to_string (net)),
+			-- CS append to content the position of the net on the next sheet
+			
+			size		=> label.size,
+			position	=> label.position,
+			origin		=> true, -- CS must be false on export to image
+			
+			-- Text rotation about its anchor point.
+			-- This is documentational text.
+			-- It is readable from the front or the right.
+			rotation	=> label.rotation_tag,
+			alignment	=> (others => <>), -- CS
+			height		=> self.drawing.frame_bounding_box.height
+			);
 
 			-- CS paint a box around the text depending on element (c).direction
-			
--- 		end if;
+
 	end draw_tag_label;
 	
 	procedure query_nets (
@@ -149,7 +136,7 @@ procedure draw_nets (
 								);
 
 						when TAG =>
-							draw_tag_label (module_name, net_name, element (c));
+							draw_tag_label (net_name, element (c));
 
 					end case;
 				end query_label; 
