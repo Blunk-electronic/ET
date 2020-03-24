@@ -1148,7 +1148,8 @@ package body et_geometry is
 			return boolean is
 			distance : type_distance_point_line;
 		begin
-			distance := distance_point_line (point, line, BETWEEN_END_POINTS);
+			--distance := distance_point_line (point, line, BETWEEN_END_POINTS);
+			distance := distance_point_line (point, line, WITH_END_POINTS);
 
 			if not distance.out_of_range and distance.distance <= accuracy then
 				return true;
