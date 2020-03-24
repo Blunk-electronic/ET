@@ -483,31 +483,23 @@ package body pac_draw is
 		alignment	: in type_text_alignment;
 		height		: in pac_shapes.geometry.type_distance)  -- the height of the drawing frame
 	is
-
--- 		text_area_pre : aliased cairo.cairo_text_extents;
 		text_area : aliased cairo.cairo_text_extents;
 
 		use interfaces.c.strings;
 		text : interfaces.c.strings.chars_ptr := new_string (to_string (content));
-		
-		-- the boundaries (greatest/smallest x/y) of the given text:
--- 		boundaries : type_boundaries;
 
 		-- the bounding box of the given text
 		bounding_box : type_rectangle;
--- 		bounding_box_position : type_point;
 
 		-- The point where we will start drawing the text:
 		sp : type_view_point;
 
 		-- The position of the origin:
-		px : constant type_view_coordinate := convert_x (x (position));
-		py : constant type_view_coordinate := shift_y (y (position), height);
+		ox : constant type_view_coordinate := convert_x (x (position));
+		oy : constant type_view_coordinate := shift_y (y (position), height);
 
 		use cairo;
 	begin
-		save (context.cr);
-
 		cairo.select_font_face (
 			context.cr, 
 			family	=> "monospace", -- serif",
@@ -527,17 +519,20 @@ package body pac_draw is
 				width		=> text_area.width,
 				height		=> text_area.height,
 				alignment	=> alignment,
-				origin		=> (px, py)
+				origin		=> (ox, oy)
 				);
 
-		-- Compute the bounding box of the text. The bounding box
+		-- Now we build the ounding box of the text. The bounding box
 		-- is the text enclosing rectangle that exists in the model plane.
 		-- In the model plane the y-axis increases downwards.
 		-- The bounding box position is where it has its upper left corner.
-		bounding_box.x := type_distance (px - (abs (text_area.width)));
-		bounding_box.y := type_distance (py - (abs (text_area.width)));
-		bounding_box.width	:= type_distance (abs (2.0 * text_area.width));
-		bounding_box.height	:= type_distance (abs (2.0 * text_area.width));
+		-- To keep things simple, we assume the largest possible bonding box
+		-- for the text. This way the text will be inside the box regardless
+		-- of alignment and rotation:
+		bounding_box.x := type_distance (ox - (text_area.width));
+		bounding_box.y := type_distance (oy - (text_area.width));
+		bounding_box.width	:= type_distance (2.0 * text_area.width);
+		bounding_box.height	:= type_distance (2.0 * text_area.width);
 		
 		-- We draw the text if:
 		--  - no area given or
@@ -545,29 +540,32 @@ package body pac_draw is
 		if (area = no_rectangle
 			or else intersects (area, bounding_box)) 
 		then
+			save (context.cr);
+			
 	-- CS test size 
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;
 	-- 			end if;
 
 			if origin then 
-				draw_origin (context, (px, py));
+				draw_origin (context, (ox, oy));
 			end if;
 
 			-- In cairo all angles increase in clockwise direction.
 			-- Since our angles increase in counterclockwise direction (mathematically)
 			-- the angle must change the sign.		
-			cairo.translate (context.cr, px, py);
+			cairo.translate (context.cr, ox, oy);
 			cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
-			cairo.translate (context.cr, -px, -py);
+			cairo.translate (context.cr, -ox, -oy);
 			
 			-- draw the text. start at calculated start position
 			cairo.move_to (context.cr, sp.x, sp.y);
 
 			cairo.show_text (context.cr, to_string (content));
+
+			restore (context.cr);
 		end if;
 
-		restore (context.cr);
 	end draw_text;
 
 	
