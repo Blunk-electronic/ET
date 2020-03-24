@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -7835,7 +7835,7 @@ package body schematic_ops is
 										);
 
 								else
-									log (WARNING, "The given net has no stub at" & no_label_placed);
+									log (WARNING, "Net has no stub at" & no_label_placed, console => true);
 								end if;
 						end case;
 					end attach_label;
@@ -13454,34 +13454,40 @@ package body schematic_ops is
 			procedure query_segments (strand : in type_strand) is
 				use type_net_segments;
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+				segment_counter : natural := 0;
+				procedure count is begin segment_counter := segment_counter + 1; end;
+				
 			begin
 				while segment_cursor /= type_net_segments.no_element loop
 
 					-- If the given position is a start or end point of a segment,
 					-- we regard the segment as a stub.
-					-- CS: Test junctions and other segments
 					-- CS: Test stub direction
 					if element (segment_cursor).start_point = type_point (position) then
+						count;
 						log (text => "match with start point of a segment", level => log_threshold + 2);
-						stub_found := true;
 						stub_direction := LEFT;
 						
 					elsif element (segment_cursor).end_point = type_point (position) then
+						count;
 						log (text => "match with end point of a segment", level => log_threshold + 2);						
-						stub_found := true;
 						stub_direction := LEFT;
 					end if;
 
-					-- Abort on first stub that has been found: -- CS good idea ?
-					if stub_found then exit; end if;
-					
 					next (segment_cursor);
 				end loop;
+
+				-- After probing all segments of the strand there must have been found only one
+				-- segment at the given position. In this case we have a stub. 
+				-- If more segments have been found, it is a junction or a corner.
+				if segment_counter = 1 then
+					stub_found := true;
+				end if;
 			end query_segments;
 			
 		begin -- query_strands
 			while strand_cursor /= type_strands.no_element loop
-
 				
 				-- We are interested in strands on the given sheet only:
 				if element (strand_cursor).position.sheet = sheet (position) then
@@ -13491,6 +13497,7 @@ package body schematic_ops is
 						process		=> query_segments'access);
 				end if;
 
+				-- exit this loop once a stub has been found
 				if stub_found then exit; end if;
 				
 				next (strand_cursor);
