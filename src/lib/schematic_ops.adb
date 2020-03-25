@@ -13451,7 +13451,7 @@ package body schematic_ops is
 		ports : constant type_ports := ports_at_place (module_name, position, log_threshold + 1);
 		
 		stub_found : boolean := false;
-		stub_direction : type_stub_direction;
+		direction : type_stub_direction;
 		
 		procedure query_strands (
 			net_name	: in et_general.type_net_name.bounded_string;
@@ -13466,24 +13466,33 @@ package body schematic_ops is
 				segment_counter : natural := 0;
 				procedure count is begin segment_counter := segment_counter + 1; end;
 
--- 				segment_orientation : type_net_segment_orientation;
-			begin
+				procedure get_stub_direction is
+					-- Get the stub direction. If the segment is sloped then it
+					-- does not qualify as stub.
+					s : constant type_stub := stub_direction (segment_cursor, type_point (position));
+				begin
+					if s.is_stub then
+						direction := s.direction;
+						stub_found := true;
+					end if;
+				end get_stub_direction;
+					
+			begin -- query_segments
 				while segment_cursor /= type_net_segments.no_element loop
 					
--- 					segment_orientation := orientation (segment_cursor);
-					
-					-- If the given position is a start or end point of a segment,
-					-- we regard the segment as a stub.
-					-- CS: Test stub direction
+					-- The given position must be a start or end point of a segment,
 					if element (segment_cursor).start_point = type_point (position) then
+						get_stub_direction;
+						
 						count;
 						log (text => "match with start point of a segment", level => log_threshold + 2);
-						stub_direction := LEFT;
 						
 					elsif element (segment_cursor).end_point = type_point (position) then
+						get_stub_direction;
+						
 						count;
 						log (text => "match with end point of a segment", level => log_threshold + 2);						
-						stub_direction := LEFT;
+
 					end if;
 
 					next (segment_cursor);
@@ -13536,7 +13545,7 @@ package body schematic_ops is
 			if not stub_found then
 				return (is_stub => false);
 			else
-				return (is_stub => true, direction => stub_direction);
+				return (is_stub => true, direction => direction);
 			end if;
 
 		else -- means there are ports at the given position
