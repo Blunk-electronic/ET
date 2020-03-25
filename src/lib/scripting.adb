@@ -1199,6 +1199,7 @@ package body scripting is
 					when NOUN_LABEL =>
 						case fields is
 							when 10 =>
+								-- SIMPLE LABEL
 								schematic_ops.place_net_label
 									(
 									module_name			=> module,
@@ -1224,7 +1225,8 @@ package body scripting is
 
 									log_threshold		=> log_threshold + 1);
 
-							when 9 =>
+							when 8 =>
+								-- TAG LABEL
 								schematic_ops.place_net_label
 									(
 									module_name			=> module,
@@ -1235,18 +1237,16 @@ package body scripting is
 																y => to_distance (f (7)))),
 															sheet => to_sheet (f (5))), -- sheet number
 
-									rotation			=> et_coordinates.geometry.to_rotation (f (8)), -- 0, 90, 180, ...
 									appearance 			=> et_schematic.TAG,
 
-									-- A tag label requires specification of direction
-									-- which is specified by the 11th argument:
-									direction			=> et_schematic.to_direction (f (9)), -- INPUT, OUTPUT, PASSIVE, ...
+									-- A tag label requires specification of signal direction:
+									direction			=> et_schematic.to_direction (f (8)), -- INPUT, OUTPUT, PASSIVE, ...
 
 									log_threshold		=> log_threshold + 1);
 								
 							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete (cmd);
+							when others => command_incomplete (cmd); -- incl. field count of 9
 						end case;
 						
 					when others => invalid_noun (to_string (noun));

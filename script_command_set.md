@@ -292,10 +292,13 @@ schematic led_driver place label 1 120 100 0 5 90 # sheet 1 120/100 relative 0/5
 ```
 
 A tag label indicates the signal direction and the next sheet where the net appears again.
-The label can only be attached to a stub of a net.
+The label can only be attached to a stub of a net. A stub is a net segment that has a dead
+end. The segment must run in either horizonal or vertical direction. 
+A tag label can not be attached to a sloped net segment.
+
 ### TAG LABELS
 ```
-schematic led_driver place label 1 120 100 90 output # sheet 1 120/100 angle 90 direction
+schematic led_driver place label 1 120 100 output # sheet 1 120/100 direction
 ```
 
 ### DELETING LABELS

@@ -296,7 +296,15 @@ package et_schematic is
 	function to_string (segment : in type_net_segments.cursor) return string;
 	-- Returns a string that tells about start and end coordinates of the net segment.
 
+	-- A net segment may run in those directions:
+	type type_net_segment_orientation is (
+		HORIZONTAL,
+		VERTICAL,
+		SLOPING);
 
+	-- Returns the orientation of a net segment.
+	function segment_orientation (segment : in type_net_segments.cursor) 
+		return type_net_segment_orientation;
 	
 	
 	-- A strand is a collection of net segments which belong to each other. 
@@ -330,10 +338,10 @@ package et_schematic is
 	
 	-- A stub of a net is modelled this way:
 	type type_stub_direction is (
-		LEFT,	-- points to the left
-		RIGHT,	-- points to the right
-		UP,		-- points up
-		DOWN);	-- points down
+		LEFT,	-- dead end points to the left
+		RIGHT,	-- dead end points to the right
+		UP,		-- dead end points up
+		DOWN);	-- dead end points down
 
 	type type_stub (is_stub : boolean) is record
 		case is_stub is
@@ -342,7 +350,21 @@ package et_schematic is
 		end case;
 	end record;
 
-
+	-- Maps from stub direction to rotation:
+	function to_label_rotation (direction : in type_stub_direction)
+		return et_coordinates.type_rotation;
+	
+	-- Detects whether the given segment is a stub and if so
+	-- detects the direction of the stub relative to the given point.
+	-- If the segment is neither horizontal or vertical then it is NOT a stub.
+	-- Examples: 
+	-- - If point is right of a horizontal segment then then it is a stub that points to the right.
+	-- - If point is above of a vertical segment then then it is a stub that points up.
+	function stub_direction (
+		segment	: in type_net_segments.cursor;
+		point	: in et_coordinates.geometry.type_point)
+		return type_stub;
+		
 
 
 	

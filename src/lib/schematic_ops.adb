@@ -7760,7 +7760,7 @@ package body schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		segment_position: in et_coordinates.type_position; -- sheet/x/y
 		label_position	: in type_point := origin; -- x/y
-		rotation		: in et_coordinates.type_rotation; -- 0, 90, 180, ...
+		rotation		: in et_coordinates.type_rotation := zero_rotation; -- 0, 90, 180. Relevant for simple labels only.
 		appearance 		: in type_net_label_appearance; -- simple/tag label
 		direction		: in et_schematic.type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level) is
@@ -7824,19 +7824,26 @@ package body schematic_ops is
 								
 							when TAG =>
 								-- A tag label can be attached to a stub only.
-								if query_stub (module_name, net_name, segment_position, log_threshold + 1).is_stub then
+								declare
+									s : constant type_stub := query_stub (module_name, net_name, segment_position, log_threshold + 1);
+								begin
+									if s.is_stub then
 									
-									append (
-										container	=> segment.labels,
-										new_item	=> (label with
-											appearance		=> TAG,
-											rotation_tag	=> rotation, -- take the given rotation as it is
-											direction		=> direction) -- the given direction
-										);
+										append (
+											container	=> segment.labels,
+											new_item	=> (label with 
+												appearance		=> TAG,
 
-								else
-									log (WARNING, "Net has no stub at" & no_label_placed, console => true);
-								end if;
+												-- derive the label rotation from the stub direction:
+												rotation_tag	=> to_label_rotation (s.direction),
+															
+												direction		=> direction) -- the given signal direction
+										   );
+										
+									else
+										log (WARNING, "Net has no stub at" & no_label_placed, console => true);
+									end if;
+								end;
 						end case;
 					end attach_label;
 					
@@ -7894,6 +7901,7 @@ package body schematic_ops is
 			to_string (point => label_position) &
 			" rotation" & et_coordinates.geometry.to_string (rotation),
 			level => log_threshold);
+		-- CS rework. log message does not need rotation in case of tag label.
 		
 		log_indentation_up;
 
@@ -13440,7 +13448,7 @@ package body schematic_ops is
 		use type_strands;
 
 		-- Query ports at the given position.
-		ports : type_ports := ports_at_place (module_name, position, log_threshold + 1);
+		ports : constant type_ports := ports_at_place (module_name, position, log_threshold + 1);
 		
 		stub_found : boolean := false;
 		stub_direction : type_stub_direction;
@@ -13457,10 +13465,13 @@ package body schematic_ops is
 
 				segment_counter : natural := 0;
 				procedure count is begin segment_counter := segment_counter + 1; end;
-				
+
+-- 				segment_orientation : type_net_segment_orientation;
 			begin
 				while segment_cursor /= type_net_segments.no_element loop
-
+					
+-- 					segment_orientation := orientation (segment_cursor);
+					
 					-- If the given position is a start or end point of a segment,
 					-- we regard the segment as a stub.
 					-- CS: Test stub direction

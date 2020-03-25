@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -132,6 +132,29 @@ package body et_schematic is
 			to_string (point => element (segment).end_point)
 			);
 	end to_string;
+
+	function segment_orientation (segment : in type_net_segments.cursor) 
+		return type_net_segment_orientation is
+		use et_coordinates;
+		use type_net_segments;
+		
+		result : type_net_segment_orientation;
+		
+		dx : constant et_coordinates.type_distance := x (element (segment).start_point) - x (element (segment).end_point);
+		dy : constant et_coordinates.type_distance := y (element (segment).start_point) - y (element (segment).end_point);
+	begin
+		if dx = zero then 
+			result := HORIZONTAL;
+		
+		elsif dy = zero then
+			result := VERTICAL;
+			
+		else 
+			result := SLOPING;
+		end if;
+		
+		return result;
+	end segment_orientation;
 	
 	procedure set_strand_position (strand : in out type_strand) is
 	-- Calculates and sets the lowest x/y position of the given strand.
@@ -179,6 +202,65 @@ package body et_schematic is
 
 	end set_strand_position;
 
+	function to_label_rotation (direction : in type_stub_direction) 
+		return et_coordinates.type_rotation is
+		use et_coordinates;
+	begin
+		case direction is
+			when RIGHT	=> return zero_rotation;
+			when LEFT	=> return 180.0;
+			when UP		=> return 90.0;
+			when DOWN	=> return -90.0;
+		end case;
+	end to_label_rotation;
+	
+	function stub_direction (
+		segment	: in type_net_segments.cursor;
+		point	: in et_coordinates.geometry.type_point)
+		return type_stub is
+
+		use et_coordinates;
+		use type_net_segments;
+
+		is_stub : boolean := true;
+		direction : type_stub_direction;
+		orientation : constant type_net_segment_orientation := segment_orientation (segment);
+	begin
+		case orientation is
+			when HORIZONTAL =>
+				if x (point) >= x (element (segment).start_point) and
+					x (point) >= x (element (segment).end_point) then
+					direction := RIGHT;
+				end if;
+
+				if x (point) <= x (element (segment).start_point) and
+					x (point) <= x (element (segment).end_point) then
+					direction := LEFT;
+				end if;
+				
+			when VERTICAL =>
+				if y (point) >= y (element (segment).start_point) and
+					y (point) >= y (element (segment).end_point) then
+					direction := UP;
+				end if;
+
+				if y (point) <= y (element (segment).start_point) and
+					y (point) <= y (element (segment).end_point) then
+					direction := DOWN;
+				end if;
+				
+			when SLOPING =>
+				is_stub := false;
+		end case;
+
+		if is_stub then
+			return (is_stub => TRUE, direction => direction);
+		else
+			return (is_stub => FALSE);
+		end if;
+
+	end stub_direction;
+	
 	function ports (
 		net		: in type_nets.cursor;
 		variant	: in assembly_variants.pac_variants.cursor)
