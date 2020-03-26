@@ -7772,7 +7772,7 @@ package body schematic_ops is
 
 		function no_label_placed return string is begin
 			return (et_coordinates.to_string (position => segment_position) & " !" &
-				" No label placed ! Specify another segment position and try again.");
+				" No label placed ! Specify another position and try again.");
 		end;
 		
 		use type_net_names;
@@ -13464,34 +13464,33 @@ package body schematic_ops is
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 				segment_counter : natural := 0;
-				procedure count is begin segment_counter := segment_counter + 1; end;
 
-				procedure get_stub_direction is
+				procedure probe_direction is
 					-- Get the stub direction. If the segment is sloped then it
 					-- does not qualify as stub.
 					s : constant type_stub := stub_direction (segment_cursor, type_point (position));
 				begin
-					if s.is_stub then
+					-- get stub direction
+					if s.is_stub then -- stub is horizontal or vertical
 						direction := s.direction;
 						stub_found := true;
 					end if;
-				end get_stub_direction;
+
+					-- count the match (regardless if it is a stub or not)
+					segment_counter := segment_counter + 1;
+				end probe_direction;
 					
 			begin -- query_segments
 				while segment_cursor /= type_net_segments.no_element loop
 					
 					-- The given position must be a start or end point of a segment,
 					if element (segment_cursor).start_point = type_point (position) then
-						get_stub_direction;
-						
-						count;
 						log (text => "match with start point of a segment", level => log_threshold + 2);
+						probe_direction;
 						
 					elsif element (segment_cursor).end_point = type_point (position) then
-						get_stub_direction;
-						
-						count;
 						log (text => "match with end point of a segment", level => log_threshold + 2);						
+						probe_direction;
 
 					end if;
 
@@ -13500,9 +13499,10 @@ package body schematic_ops is
 
 				-- After probing all segments of the strand there must have been found only one
 				-- segment at the given position. In this case we have a stub. 
-				-- If more segments have been found, it is a junction or a corner.
-				if segment_counter = 1 then
-					stub_found := true;
+				-- If more segments have been found, it is a junction or a corner/bend. The flag
+				-- stub_found would be reset.
+				if segment_counter /= 1 then
+					stub_found := false; -- reset flag
 				end if;
 			end query_segments;
 			
@@ -13545,6 +13545,7 @@ package body schematic_ops is
 			if not stub_found then
 				return (is_stub => false);
 			else
+				-- put_line (type_stub_direction'image (direction));
 				return (is_stub => true, direction => direction);
 			end if;
 

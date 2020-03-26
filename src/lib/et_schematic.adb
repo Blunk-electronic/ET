@@ -144,15 +144,16 @@ package body et_schematic is
 		dy : constant et_coordinates.type_distance := y (element (segment).start_point) - y (element (segment).end_point);
 	begin
 		if dx = zero then 
-			result := HORIZONTAL;
+			result := VERTICAL;
 		
 		elsif dy = zero then
-			result := VERTICAL;
+			result := HORIZONTAL;
 			
 		else 
 			result := SLOPING;
 		end if;
-		
+
+		--put_line (type_net_segment_orientation'image (result));
 		return result;
 	end segment_orientation;
 	
