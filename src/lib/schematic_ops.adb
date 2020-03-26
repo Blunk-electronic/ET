@@ -156,6 +156,12 @@ package body schematic_ops is
 		raise constraint_error;
 	end;
 
+	procedure junction_in_sloping_segment (point : in et_coordinates.type_position) is begin
+		log (ERROR, "Junction not allowed in a sloping net segment at" & to_string (point),
+			 console => true);
+		raise constraint_error;
+	end;
+	
 	procedure set_grid (
 	-- Sets the grid of the module.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -3487,8 +3493,8 @@ package body schematic_ops is
 							-- It is not allowed to place a junction in a sloped segment,
 							-- because splitting sloping segments seems a rare, difficult and dangerous task.
 							if old_segment_orientation = SLOPING then
-								log (ERROR, "Junction not allowed in a sloping net segment !", console => true);
-								raise constraint_error;
+								log_indentation_reset;
+								junction_in_sloping_segment (place);
 							end if;
 							
 							-- delete the targeted segment. it will later be replaced by two new segments.
@@ -7398,10 +7404,17 @@ package body schematic_ops is
 							if on_line (
 								point 	=> type_point (place),
 								line	=> element (segment_cursor)) then
-								
+
+								-- It is not allowed to place a junction in a sloped segment,
+								-- because splitting sloping segments seems a rare, difficult and dangerous task.
+								if segment_orientation (segment_cursor) = SLOPING then
+									log_indentation_reset;
+									junction_in_sloping_segment (place);
+								end if;
+
 								-- signal "strand iterator" to abort search prematurely
 								segment_found := true;
-
+								
 								-- test whether a junction is required at place
 								if between_start_and_end_point (type_point (place), segment_cursor) then
 									result.junction_required := true;
@@ -7677,11 +7690,11 @@ package body schematic_ops is
 				
 			end if;
 
-			exception
-				when event: others =>
-					log_indentation_reset;
-					log (text => ada.exceptions.exception_information (event), console => true);
-					raise;
+-- 			exception
+-- 				when event: others =>
+-- 					log_indentation_reset;
+-- 					log (text => ada.exceptions.exception_information (event), console => true);
+-- 					raise;
 			
 		end extend_net;
 		
