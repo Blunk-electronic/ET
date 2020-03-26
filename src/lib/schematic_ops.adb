@@ -3484,8 +3484,12 @@ package body schematic_ops is
 							old_segment := element (segment_cursor);
 							old_segment_orientation := segment_orientation (segment_cursor);
 
-							-- CS At this point it makes sense to abort in case the old segment is sloping.
-							-- Because splitting sloping segments seems a rare, difficult and dangerous task.
+							-- It is not allowed to place a junction in a sloped segment,
+							-- because splitting sloping segments seems a rare, difficult and dangerous task.
+							if old_segment_orientation = SLOPING then
+								log (ERROR, "Junction not allowed in a sloping net segment !", console => true);
+								raise constraint_error;
+							end if;
 							
 							-- delete the targeted segment. it will later be replaced by two new segments.
 							delete (strand.segments, segment_cursor);

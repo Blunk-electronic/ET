@@ -271,11 +271,14 @@ schematic led_driver remove submodule low_cost FLT1
 ```
 schematic led_driver draw net reset_n 1 200 140 10 40 # net segment on sheet 1 from 230/150 to 10/40
 ```
+Note: Creating a stub in a sloping net segment is not possible !
 
 ### JUNCTION
+A junction can be placed in a net segment with this command:
 ```
 schematic led_driver place junction 1 230 100 # sheet x y
 ```
+Note: Junctions can not be placed in a sloping net segment !
 <!--CS:
 ```
 schematic led_driver delete junction 1 230 100 # sheet x y
