@@ -3210,10 +3210,50 @@ package body schematic_ops is
 					use type_net_segments;
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 					old_segment : type_net_segment; -- here a backup of the old segment lives
+					old_segment_orientation : type_net_segment_orientation; -- horizontal, vertical, sloped
 					
 					procedure insert_two_new_segments is
 						segment_1, segment_2 : type_net_segment;
 
+						procedure update_labels is
+							use type_net_labels;
+
+							procedure query_labels_horizontal (cursor : in type_net_labels.cursor) is begin
+								-- All labels left of place go into segment_1,
+								-- whereas labels on the right go into segment_2:
+								if x (element (cursor).position) < x (place) then
+									append (segment_1.labels, element (cursor));
+								else
+									append (segment_2.labels, element (cursor));
+								end if;									  
+							end query_labels_horizontal;
+
+							procedure query_labels_vertical (cursor : in type_net_labels.cursor) is begin
+								-- All labels below place go into segment_1,
+								-- whereas labels above go into segment_2:
+								if y (element (cursor).position) < y (place) then
+									append (segment_1.labels, element (cursor));
+								else
+									append (segment_2.labels, element (cursor));
+								end if;									  
+							end query_labels_vertical;
+							
+						begin -- update_labels
+							log (text => "updating net labels ...", level => log_threshold + 1);
+							log_indentation_up;
+
+							case old_segment_orientation is
+								when HORIZONTAL =>
+									iterate (old_segment.labels, query_labels_horizontal'access);
+
+								when VERTICAL =>
+									iterate (old_segment.labels, query_labels_vertical'access);
+
+								when SLOPING => raise constraint_error; -- CS should never happen
+							end case;
+							log_indentation_down;
+						end update_labels;
+						
 						procedure update_device_ports is 
 						-- Queries the positions of the device ports in the old_segment. 
 						-- By the position assigns the ports to the new segments. 
@@ -3374,8 +3414,9 @@ package body schematic_ops is
 						segment_2.junctions.start_point := false; -- no need for another junction at the same place
 						segment_2.junctions.end_point := old_segment.junctions.end_point;
 
-						-- Ports which were part of the old segment must now be assigned to the 
-						-- two new segments.
+						-- Labels and ports which were part of the old segment
+						-- must now be assigned to the two new segments.
+						update_labels;
 						update_device_ports;
 						update_submodule_ports;
 						update_netchanger_ports;
@@ -3439,9 +3480,13 @@ package body schematic_ops is
 								 to_string (position => strand.position), level => log_threshold + 1);
 							log (text => to_string (segment_cursor), level => log_threshold + 1);
 
-							-- backup old segment (it contains port and junction information)
+							-- Backup properties of old segment (it provides information on labels, ports and junctions):
 							old_segment := element (segment_cursor);
+							old_segment_orientation := segment_orientation (segment_cursor);
 
+							-- CS At this point it makes sense to abort in case the old segment is sloping.
+							-- Because splitting sloping segments seems a rare, difficult and dangerous task.
+							
 							-- delete the targeted segment. it will later be replaced by two new segments.
 							delete (strand.segments, segment_cursor);
 
