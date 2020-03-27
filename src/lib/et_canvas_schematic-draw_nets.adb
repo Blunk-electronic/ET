@@ -62,8 +62,70 @@ procedure draw_nets (
 		net		: in et_general.type_net_name.bounded_string;
 		label	: in type_net_label) is
 		use et_text;
-									
+		use pac_draw_misc;
+
+		-- type type_line is new pac_shapes.type_line with null record;
+		-- line_left : type_line;
+
+		-- The position, width and height of the enshrouding box (lower left corner)
+		-- as if the box was drawn for a label in zero rotation:
+		box_position : type_point;
+		box_width	: type_distance_positive := 20.0; -- CS calculate !
+		box_height	: constant type_distance_positive := type_distance_positive (label.size) * 1.8;
+
+		-- The text rotation must be either 0 or 90 degree (documentational text) and is thus
+		-- to be calculated according to the rotation of the label:
+		text_rotation : type_rotation;
+
+		-- The alignment is assigned as if the text were drawn at zero rotation.
+		-- The vertical alignment is always CENTER. Horizontal alignment changes depending on 
+		-- the rotation of the label:
+		text_alignment : type_text_alignment := (vertical => CENTER, horizontal => <>);
+
+		-- The text position is not the same as the label position, thus it must be 
+		-- calculated according to the label rotation and tag_label_text_offset (see et_schematic specs):
+		text_position : type_point;
 	begin
+		cairo.set_line_width (context.cr, type_view_coordinate (tag_label_box_line_width));
+		
+		-- CS paint box outline depending on label signal direction
+
+		if label.rotation_tag = zero_rotation then
+			box_position := type_point (set (x (label.position), y (label.position) - box_height * 0.5));
+			draw_rectangle (in_area, context, box_position, box_width, box_height, self.drawing.frame_bounding_box.height);
+
+			text_rotation := zero_rotation;
+			text_position := type_point (set (x (label.position) + tag_label_text_offset, y (label.position)));
+			text_alignment.horizontal := LEFT;
+		end if;
+
+		if label.rotation_tag = 90.0 then
+			box_position := type_point (set (x (label.position) - box_height * 0.5, y (label.position)));
+			draw_rectangle (in_area, context, box_position, box_height, box_width, self.drawing.frame_bounding_box.height);
+
+			text_rotation := 90.0;
+			text_position := type_point (set (x (label.position), y (label.position) + tag_label_text_offset));
+			text_alignment.horizontal := LEFT;
+		end if;
+
+		if label.rotation_tag = 180.0 then
+			box_position := type_point (set (x (label.position) - box_width, y (label.position) - box_height * 0.5));
+			draw_rectangle (in_area, context, box_position, box_width, box_height, self.drawing.frame_bounding_box.height);
+
+			text_rotation := zero_rotation;
+			text_position := type_point (set (x (label.position) - tag_label_text_offset, y (label.position)));
+			text_alignment.horizontal := RIGHT;
+		end if;
+
+		if label.rotation_tag = -90.0 then
+			box_position := type_point (set (x (label.position) - box_height * 0.5, y (label.position) - box_width));
+			draw_rectangle (in_area, context, box_position, box_height, box_width, self.drawing.frame_bounding_box.height);
+
+			text_rotation := 90.0;
+			text_position := type_point (set (x (label.position), y (label.position) - tag_label_text_offset));
+			text_alignment.horizontal := RIGHT;
+		end if;
+			
 		pac_draw_misc.draw_text (
 			area		=> in_area,
 			context		=> context,
@@ -71,19 +133,19 @@ procedure draw_nets (
 			-- CS append to content the position of the net on the next sheet
 			
 			size		=> label.size,
-			position	=> label.position,
-			origin		=> true, -- CS must be false on export to image
+			position	=> text_position,
+			origin		=> false, -- no origin for net names required
 			
-			-- Text rotation about its anchor point.
-			-- This is documentational text.
+			-- Text rotation about its anchor point. This is documentational text.
 			-- It is readable from the front or the right.
-			rotation	=> label.rotation_tag,
-			alignment	=> (others => <>), -- CS
+			rotation	=> text_rotation,
+
+			alignment	=> text_alignment,
 			height		=> self.drawing.frame_bounding_box.height
 			);
 
-			-- CS paint a box around the text depending on element (c).direction
 
+		cairo.stroke (context.cr);
 	end draw_tag_label;
 	
 	procedure query_nets (

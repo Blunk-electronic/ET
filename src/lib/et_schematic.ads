@@ -248,7 +248,7 @@ package et_schematic is
 			when TAG => 
 				direction		: type_net_label_direction;
 
-				-- The tag label ran be rotated arbitrary:
+				-- The tag label can be rotated arbitrary about the position:
 				rotation_tag	: et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation;
 
 			when SIMPLE =>
@@ -258,8 +258,18 @@ package et_schematic is
 	end record;
 
 	package type_net_labels is new indefinite_doubly_linked_lists (type_net_label);
-	
 
+
+	
+	-- GUI relevant only: The line width of the box that enshroudes the net name of a tag label:
+	tag_label_box_line_width : constant type_distance_positive := 0.2;
+
+	-- GUI relevant only: The spacing between anchor point of tag label and net name:
+	tag_label_text_offset : constant type_distance_positive := 1.0;
+
+
+
+	
 	-- This is a net:
 	type type_net_base is tagged record
 		route	: et_pcb.type_route; -- routing information -> pcb related

@@ -235,7 +235,7 @@ package body pac_draw is
 	procedure draw_rectangle (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
-		position		: in type_point'class;
+		position		: in type_point'class; -- the lower left corner
 		width			: in pac_shapes.geometry.type_distance;
 		height			: in pac_shapes.geometry.type_distance;
 		frame_height	: in pac_shapes.geometry.type_distance;
