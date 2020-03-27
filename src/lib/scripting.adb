@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017-2020 Mario Blunk, Blunk electronic            --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -1653,9 +1653,10 @@ package body scripting is
 		
 		exception when event: others => 
 		
-			log (ERROR, "schematic command '" &
-				to_string (cmd) & "' invalid !", console => true);
+			log (ERROR, "schematic command " & enclose_in_quotes (to_string (cmd)) &
+				" invalid !", console => true);
 
+			log_indentation_reset;
 			log (text => ada.exceptions.exception_information (event), console => true);		
 
 		return ERROR;

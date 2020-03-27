@@ -3493,7 +3493,6 @@ package body schematic_ops is
 							-- It is not allowed to place a junction in a sloped segment,
 							-- because splitting sloping segments seems a rare, difficult and dangerous task.
 							if old_segment_orientation = SLOPING then
-								log_indentation_reset;
 								junction_in_sloping_segment (place);
 							end if;
 							
@@ -7193,7 +7192,7 @@ package body schematic_ops is
 		start_point		: in et_coordinates.type_position; -- sheet/x/y
 		end_point		: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
-
+		
 		module_cursor : type_modules.cursor; -- points to the module
 
 		use et_schematic.type_nets;
@@ -7408,7 +7407,6 @@ package body schematic_ops is
 								-- It is not allowed to place a junction in a sloped segment,
 								-- because splitting sloping segments seems a rare, difficult and dangerous task.
 								if segment_orientation (segment_cursor) = SLOPING then
-									log_indentation_reset;
 									junction_in_sloping_segment (place);
 								end if;
 
@@ -7689,21 +7687,15 @@ package body schematic_ops is
 					process		=> create_strand'access);
 				
 			end if;
-
--- 			exception
--- 				when event: others =>
--- 					log_indentation_reset;
--- 					log (text => ada.exceptions.exception_information (event), console => true);
--- 					raise;
 			
 		end extend_net;
-		
+
 	begin -- draw_net
 		log (text => "module " & to_string (module_name) &
 			" drawing net " & to_string (net_name) &
 			" segment from" & to_string (position => start_point) &
 			" to" & to_string (end_point), level => log_threshold);
-
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 
@@ -7722,7 +7714,7 @@ package body schematic_ops is
 		-- If the net already exists, extend it by a net segment.
 		if net_cursor = type_nets.no_element then
 
-			-- net does not exists yet
+			-- net does not exist yet
 			log (text => "creating new net " & to_string (net_name), level => log_threshold + 1);
 
 			update_element (
@@ -7758,7 +7750,8 @@ package body schematic_ops is
 			log_indentation_down;
 		end if;
 
-		log_indentation_down;		
+		log_indentation_down;
+		
 	end draw_net;
 
 	procedure set_scope (
