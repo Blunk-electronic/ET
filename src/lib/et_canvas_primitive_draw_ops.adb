@@ -418,12 +418,11 @@ package body pac_draw is
 		context		: in type_draw_context;
 		content		: in type_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
+		font		: in et_text.type_font;
 		x,y			: in gdouble;
 		rotation	: in pac_shapes.geometry.type_rotation;
 		alignment	: in type_text_alignment) is
 		
-		use cairo;
-
 		-- Here we will store the extents of the given text:
 		text_area : aliased cairo_text_extents;
 
@@ -441,9 +440,9 @@ package body pac_draw is
 
 		select_font_face (
 			context.cr, 
-			family	=> "monospace", -- serif",
-			slant	=> CAIRO_FONT_SLANT_NORMAL,
-			weight	=> CAIRO_FONT_WEIGHT_NORMAL);
+			family	=> to_string (font.family),
+			slant	=> font.slant,
+			weight	=> font.weight);
 	
 		set_font_size (context.cr, (to_points (size)));
 

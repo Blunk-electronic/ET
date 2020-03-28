@@ -141,6 +141,7 @@ package pac_draw is
 		context		: in type_draw_context;
 		content		: in type_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
+		font		: in et_text.type_font;
 		x,y			: in gdouble; -- the anchor point in the view
 		rotation	: in pac_shapes.geometry.type_rotation;
 		alignment	: in type_text_alignment);

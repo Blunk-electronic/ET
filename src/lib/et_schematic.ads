@@ -263,7 +263,7 @@ package et_schematic is
 
 	
 	-- GUI relevant only: The font of a net label:
-	net_label_font : et_text.type_font := (
+	net_label_font : constant et_text.type_font := (
 		family	=> et_text.to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);

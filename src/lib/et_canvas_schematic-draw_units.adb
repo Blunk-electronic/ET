@@ -393,6 +393,7 @@ procedure draw_units (
 				context		=> context,
 				content		=> element (c).content,
 				size		=> element (c).size,
+				font		=> et_symbols.text_font,
 
 				-- text position x/y relative to symbol origin:
 				x			=> transpose_x (x (position)),
@@ -425,7 +426,8 @@ procedure draw_units (
 				context		=> context,
 				content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
 				size		=> symbol.name.size,
-
+				font		=> et_symbols.name_font,
+				
 				-- text position x/y relative to symbol origin:
 				x			=> transpose_x (x (position)),
 				y			=> transpose_y (y (position)),
@@ -447,7 +449,8 @@ procedure draw_units (
 					context		=> context,
 					content		=> to_content (to_string (device_value)), -- 100R
 					size		=> symbol.value.size,
-
+					font		=> et_symbols.value_font,
+					
 					-- text position x/y relative to symbol origin:
 					x			=> transpose_x (x (position)),
 					y			=> transpose_y (y (position)),
@@ -470,6 +473,7 @@ procedure draw_units (
 					context		=> context,
 					content		=> to_content (to_string (device_purpose)), -- "brightness control"
 					size		=> symbol.purpose.size,
+					font		=> et_symbols.purpose_font,
 
 					-- text position x/y relative to symbol origin:
 					x			=> transpose_x (x (position)),

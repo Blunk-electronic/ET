@@ -49,6 +49,8 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with cairo;
+
 with et_coordinates;			use et_coordinates;
 with et_geometry;
 with et_string_processing;
@@ -110,12 +112,29 @@ package et_symbols is
 	function to_meaning (meaning : in string) return type_placeholder_meaning;
 
 
+	-- GUI relevant only:
+	name_font : constant et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+
+	value_font : constant et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_ITALIC,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+
+	purpose_font : constant et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 	
 
 	
+	
 	-- These are basic properties a text has got:
 	type type_text_basic is new pac_text.type_text with record
-        style		: type_text_style := type_text_style'first;
+		style		: type_text_style := type_text_style'first;
+		-- CS instead of style use:  font : type_font; ?
         rotation	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
 	end record;
 	
@@ -135,6 +154,12 @@ package et_symbols is
 		position	: type_point;		
         content		: et_text.type_text_content.bounded_string;
 	end record;
+
+	-- GUI relevant only:
+	text_font : constant et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 	
 
 	procedure write_text_properies (
@@ -150,6 +175,8 @@ package et_symbols is
 	
 
 
+
+	
 	
 -- TERMINALS
 
