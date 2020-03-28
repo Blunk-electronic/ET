@@ -67,11 +67,14 @@ procedure draw_nets (
 		-- type type_line is new pac_shapes.type_line with null record;
 		-- line_left : type_line;
 
+		content : type_text_content.bounded_string := to_content (to_string (net));
+		-- CS append to content the position of the net on the next sheet (strand position)
+		
 		-- The position, width and height of the enshrouding box (lower left corner)
 		-- as if the box was drawn for a label in zero rotation:
 		box_position : type_point;
-		box_width	: type_distance_positive := 20.0; -- CS calculate !
-		box_height	: constant type_distance_positive := type_distance_positive (label.size) * 1.8;
+		box_width	: type_distance_positive;
+		box_height	: constant type_distance_positive := type_distance_positive (label.size) * tag_label_height_to_size_ratio;
 
 		-- The text rotation must be either 0 or 90 degree (documentational text) and is thus
 		-- to be calculated according to the rotation of the label:
@@ -86,9 +89,13 @@ procedure draw_nets (
 		-- calculated according to the label rotation and tag_label_text_offset (see et_schematic specs):
 		text_position : type_point;
 	begin
-		cairo.set_line_width (context.cr, type_view_coordinate (tag_label_box_line_width));
+		set_line_width (context.cr, type_view_coordinate (tag_label_box_line_width));
 		
 		-- CS paint box outline depending on label signal direction
+
+		-- Calculate the box width according to text content, size and font:
+		box_width := type_distance_positive (get_text_extents (context, content, label.size, net_label_font).width)
+					 + 2.0 * tag_label_text_offset;
 
 		if label.rotation_tag = zero_rotation then
 			box_position := type_point (set (x (label.position), y (label.position) - box_height * 0.5));
@@ -129,9 +136,7 @@ procedure draw_nets (
 		pac_draw_misc.draw_text (
 			area		=> in_area,
 			context		=> context,
-			content		=> to_content (to_string (net)),
-			-- CS append to content the position of the net on the next sheet
-			
+			content		=> content,
 			size		=> label.size,
 			font		=> net_label_font,
 			position	=> text_position,

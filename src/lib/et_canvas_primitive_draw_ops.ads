@@ -145,6 +145,14 @@ package pac_draw is
 		rotation	: in pac_shapes.geometry.type_rotation;
 		alignment	: in type_text_alignment);
 
+	-- Computes for the given text content, size and font the extents.
+	function get_text_extents (
+		context		: in type_draw_context;
+		content		: in type_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		font		: in et_text.type_font)
+		return cairo_text_extents;
+	
 	-- Draws a text in the drawing plane.
 	-- Draws the text in case it is inside the given area or whether the
 	-- text intersects the given area.
