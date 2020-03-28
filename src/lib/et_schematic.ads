@@ -52,6 +52,8 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with cairo;						--use cairo;
+
 with et_general;				use et_general;
 
 with et_coordinates;
@@ -188,11 +190,16 @@ package et_schematic is
 
 	subtype type_net_label_text_size is et_coordinates.type_distance range 1.0 .. 5.0; -- unit is mm
 	net_label_text_size_default : constant type_net_label_text_size := 1.3;
-
+	
 	function to_net_label_text_size (text : in string) return type_net_label_text_size;
 	-- Converts a string to type_net_label_text_size.
 
-
+	-- GUI relevant only:
+-- 	type type_net_label_font is record
+-- 		family	: string := "monospace";
+-- 		slant	: cairo.cairo_font_slant := cairo.CAIRO_FONT_SLANT_NORMAL;
+-- 		weight	: cairo.cairo_font_weight := cairo.CAIRO_FONT_WEIGHT_NORMAL;
+-- 	end record;
 
 
 	

@@ -472,21 +472,42 @@ package body pac_draw is
 		restore (context.cr);
 	end draw_text;
 
+	function get_text_extents (
+		context		: in type_draw_context;
+		content		: in type_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		family		: in string;
+		slant		: in cairo.cairo_font_slant;
+		weight		: in cairo.cairo_font_weight)
+		return cairo.cairo_text_extents is
+
+		result : aliased cairo.cairo_text_extents; -- to be returned
+
+		use interfaces.c.strings;
+		text : interfaces.c.strings.chars_ptr := new_string (to_string (content));
+	begin
+		cairo.select_font_face (context.cr, family, slant, weight);
+		cairo.set_font_size (context.cr, (to_points (size)));
+		text_extents (cr => context.cr, utf8 => text, extents => result'access);
+		return result;
+	end get_text_extents;
+	
 	procedure draw_text (
 		area		: in type_rectangle;
 		context		: in type_draw_context;
 		content		: in type_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
+-- 		family		: in string;
+-- 		slant		: in cairo.cairo_font_slant;
+-- 		weight		: in cairo.cairo_font_weight)
+
 		position	: in type_point; -- anchor point in the drawing, the origin
 		origin		: in boolean;		
 		rotation	: in type_rotation;
 		alignment	: in type_text_alignment;
 		height		: in pac_shapes.geometry.type_distance)  -- the height of the drawing frame
 	is
-		text_area : aliased cairo.cairo_text_extents;
-
-		use interfaces.c.strings;
-		text : interfaces.c.strings.chars_ptr := new_string (to_string (content));
+		text_area : cairo.cairo_text_extents;
 
 		-- the bounding box of the given text
 		bounding_box : type_rectangle;
@@ -508,8 +529,14 @@ package body pac_draw is
 		
 		cairo.set_font_size (context.cr, (to_points (size)));
 
-		text_extents (cr => context.cr, utf8 => text, extents => text_area'access);
-
+		text_area := get_text_extents (
+			context		=> context,
+			content		=> content,
+			size		=> size,
+			family		=> "monospace",
+			slant		=> CAIRO_FONT_SLANT_NORMAL,
+			weight		=> CAIRO_FONT_WEIGHT_NORMAL);
+		
 -- 		put_line ("length " & gdouble'image (abs (text_area.width)));
 -- 		put_line ("height " & gdouble'image (abs (text_area.height)));
 
