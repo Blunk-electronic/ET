@@ -133,6 +133,7 @@ procedure draw_nets (
 			-- CS append to content the position of the net on the next sheet
 			
 			size		=> label.size,
+			font		=> net_label_font,
 			position	=> text_position,
 			origin		=> false, -- no origin for net names required
 			
@@ -186,6 +187,7 @@ procedure draw_nets (
 								context		=> context,
 								content		=> to_content (to_string (key (net_cursor))),
 								size		=> element (c).size,
+								font		=> net_label_font,
 								position	=> element (c).position,
 								origin		=> true, -- CS must be false on export to image
 								

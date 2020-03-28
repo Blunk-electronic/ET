@@ -476,9 +476,7 @@ package body pac_draw is
 		context		: in type_draw_context;
 		content		: in type_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
-		family		: in string;
-		slant		: in cairo.cairo_font_slant;
-		weight		: in cairo.cairo_font_weight)
+		font		: in et_text.type_font)
 		return cairo.cairo_text_extents is
 
 		result : aliased cairo.cairo_text_extents; -- to be returned
@@ -486,7 +484,7 @@ package body pac_draw is
 		use interfaces.c.strings;
 		text : interfaces.c.strings.chars_ptr := new_string (to_string (content));
 	begin
-		cairo.select_font_face (context.cr, family, slant, weight);
+		cairo.select_font_face (context.cr, to_string (font.family), font.slant, font.weight);
 		cairo.set_font_size (context.cr, (to_points (size)));
 		text_extents (cr => context.cr, utf8 => text, extents => result'access);
 		return result;
@@ -497,10 +495,7 @@ package body pac_draw is
 		context		: in type_draw_context;
 		content		: in type_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
--- 		family		: in string;
--- 		slant		: in cairo.cairo_font_slant;
--- 		weight		: in cairo.cairo_font_weight)
-
+		font		: in et_text.type_font;
 		position	: in type_point; -- anchor point in the drawing, the origin
 		origin		: in boolean;		
 		rotation	: in type_rotation;
@@ -523,9 +518,9 @@ package body pac_draw is
 	begin
 		cairo.select_font_face (
 			context.cr, 
-			family	=> "monospace", -- serif",
-			slant	=> CAIRO_FONT_SLANT_NORMAL,
-			weight	=> CAIRO_FONT_WEIGHT_NORMAL);
+			family	=> to_string (font.family),
+			slant	=> font.slant,
+			weight	=> font.weight);
 		
 		cairo.set_font_size (context.cr, (to_points (size)));
 
@@ -533,9 +528,7 @@ package body pac_draw is
 			context		=> context,
 			content		=> content,
 			size		=> size,
-			family		=> "monospace",
-			slant		=> CAIRO_FONT_SLANT_NORMAL,
-			weight		=> CAIRO_FONT_WEIGHT_NORMAL);
+			font		=> font);
 		
 -- 		put_line ("length " & gdouble'image (abs (text_area.width)));
 -- 		put_line ("height " & gdouble'image (abs (text_area.height)));

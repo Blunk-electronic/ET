@@ -194,12 +194,6 @@ package et_schematic is
 	function to_net_label_text_size (text : in string) return type_net_label_text_size;
 	-- Converts a string to type_net_label_text_size.
 
-	-- GUI relevant only:
--- 	type type_net_label_font is record
--- 		family	: string := "monospace";
--- 		slant	: cairo.cairo_font_slant := cairo.CAIRO_FONT_SLANT_NORMAL;
--- 		weight	: cairo.cairo_font_weight := cairo.CAIRO_FONT_WEIGHT_NORMAL;
--- 	end record;
 
 
 	
@@ -267,6 +261,12 @@ package et_schematic is
 	package type_net_labels is new indefinite_doubly_linked_lists (type_net_label);
 
 
+	
+	-- GUI relevant only: The font of a net label:
+	net_label_font : et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 	
 	-- GUI relevant only: The line width of the box that enshroudes the net name of a tag label:
 	tag_label_box_line_width : constant type_distance_positive := 0.2;

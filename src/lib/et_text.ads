@@ -36,6 +36,7 @@
 --
 
 with ada.strings.bounded; 		use ada.strings.bounded;
+with cairo;
 with et_geometry;
 with et_string_processing;
 
@@ -66,8 +67,22 @@ package et_text is
 		return type_text_alignment;
 	
 	function to_string (alignment : in type_text_alignment) return string;
+
+-- FONT
+	font_family_length_max : constant positive := 50;
+	package pac_font_family is new generic_bounded_length (font_family_length_max);
+
+	function to_string (family : in pac_font_family.bounded_string) return string;
+	function to_family (family : in string) return pac_font_family.bounded_string;
 	
--- TEXT CONTENT
+	type type_font is record
+		family	: pac_font_family.bounded_string; -- string := "monospace";
+		slant	: cairo.cairo_font_slant := cairo.CAIRO_FONT_SLANT_NORMAL;
+		weight	: cairo.cairo_font_weight := cairo.CAIRO_FONT_WEIGHT_NORMAL;
+	end record;
+
+	
+-- CONTENT
 	-- A text may have up to 200 characters which seems sufficient for now.
 	keyword_content : constant string := "content";
 	

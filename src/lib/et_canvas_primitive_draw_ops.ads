@@ -153,6 +153,7 @@ package pac_draw is
 		context		: in type_draw_context;
 		content		: in type_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
+		font		: in et_text.type_font;
 		position	: in type_point; -- the anchor point in the drawing, the origin
 		origin		: in boolean; -- when true, an origin is drawn at the position
 		rotation	: in type_rotation;
