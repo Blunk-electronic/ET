@@ -117,14 +117,14 @@ package body pac_draw is
 	-- 			end if;
 			
 			-- start point
-			cairo.move_to (
+			move_to (
 				context.cr,
 				convert_x (line.start_point.x),
 				shift_y (line.start_point.y, height)
 				);
 
 			-- end point
-			cairo.line_to (
+			line_to (
 				context.cr,
 				convert_x (line.end_point.x),
 				shift_y (line.end_point.y, height)
@@ -159,7 +159,7 @@ package body pac_draw is
 	-- 				return;
 	-- 			end if;
 			
-			cairo.new_sub_path (context.cr); -- required to suppress an initial line
+			new_sub_path (context.cr); -- required to suppress an initial line
 
 			if arc.direction = CW then
 				
@@ -211,7 +211,7 @@ package body pac_draw is
 	-- 				return;
 	-- 			end if;
 			
-			cairo.new_sub_path (context.cr); -- required to suppress an initial line
+			new_sub_path (context.cr); -- required to suppress an initial line
 
 			cairo.arc (
 				context.cr,
@@ -225,7 +225,7 @@ package body pac_draw is
 				);
 
 			case filled is
-				when YES => cairo.fill_preserve (context.cr);
+				when YES => fill_preserve (context.cr);
 				when NO => null;
 			end case;
 			
@@ -267,18 +267,18 @@ package body pac_draw is
 			-- We draw the four lines of the rectangle starting at
 			-- the lower left corner. proceed counterclockwise:
 
-			-- CS use cairo.rectangle instead if filling required.
+			-- CS use rectangle instead if filling required.
 
 			-- LINE 1:
 			
 			-- start point
-			cairo.move_to (
+			move_to (
 				context.cr,
 				convert_x (position.x),
 				shift_y (position.y, frame_height));
 
 			-- end point
-			cairo.line_to (
+			line_to (
 				context.cr,
 				convert_x (position.x + width),
 				shift_y (position.y, frame_height));
@@ -286,13 +286,13 @@ package body pac_draw is
 			-- LINE 2:
 			
 			-- start point
-			cairo.move_to (
+			move_to (
 				context.cr,
 				convert_x (position.x + width),
 				shift_y (position.y, frame_height));
 
 			-- end point
-			cairo.line_to (
+			line_to (
 				context.cr,
 				convert_x (position.x + width),
 				shift_y (position.y + height, frame_height));
@@ -300,13 +300,13 @@ package body pac_draw is
 			-- LINE 3:
 			
 			-- start point
-			cairo.move_to (
+			move_to (
 				context.cr,
 				convert_x (position.x + width),
 				shift_y (position.y + height, frame_height));
 
 			-- end point
-			cairo.line_to (
+			line_to (
 				context.cr,
 				convert_x (position.x),
 				shift_y (position.y + height, frame_height));
@@ -314,13 +314,13 @@ package body pac_draw is
 			-- LINE 4:
 			
 			-- start point
-			cairo.move_to (
+			move_to (
 				context.cr,
 				convert_x (position.x),
 				shift_y (position.y + height, frame_height));
 
 			-- end point
-			cairo.line_to (
+			line_to (
 				context.cr,
 				convert_x (position.x),
 				shift_y (position.y, frame_height));
@@ -425,7 +425,7 @@ package body pac_draw is
 		use cairo;
 
 		-- Here we will store the extents of the given text:
-		text_area : aliased cairo.cairo_text_extents;
+		text_area : aliased cairo_text_extents;
 
 		-- Convert the given content and store it in variable text:
 		use interfaces.c.strings;
@@ -439,13 +439,13 @@ package body pac_draw is
 
 		draw_origin (context, (x, y));
 
-		cairo.select_font_face (
+		select_font_face (
 			context.cr, 
 			family	=> "monospace", -- serif",
 			slant	=> CAIRO_FONT_SLANT_NORMAL,
 			weight	=> CAIRO_FONT_WEIGHT_NORMAL);
 	
-		cairo.set_font_size (context.cr, (to_points (size)));
+		set_font_size (context.cr, (to_points (size)));
 
 		-- Get the extents of the text to be displayed and store it in text_area:
 		text_extents (cr => context.cr, utf8 => text, extents => text_area'access);
@@ -461,14 +461,14 @@ package body pac_draw is
 		-- In cairo all angles increase in clockwise direction.
 		-- Since our angles increase in counterclockwise direction (mathematically)
 		-- the angle must change the sign.		
-		cairo.translate (context.cr, x, y);
-		cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
-		cairo.translate (context.cr, -x, -y);
+		translate (context.cr, x, y);
+		rotate (context.cr, gdouble (to_radians (- rotation)));
+		translate (context.cr, -x, -y);
 		
 		-- draw the text. start at calculated start position
-		cairo.move_to (context.cr, sp.x, sp.y);
+		move_to (context.cr, sp.x, sp.y);
 
-		cairo.show_text (context.cr, to_string (content));
+		show_text (context.cr, to_string (content));
 		restore (context.cr);
 	end draw_text;
 
@@ -477,15 +477,15 @@ package body pac_draw is
 		content		: in type_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font)
-		return cairo.cairo_text_extents is
+		return cairo_text_extents is
 
-		result : aliased cairo.cairo_text_extents; -- to be returned
+		result : aliased cairo_text_extents; -- to be returned
 
 		use interfaces.c.strings;
 		text : interfaces.c.strings.chars_ptr := new_string (to_string (content));
 	begin
-		cairo.select_font_face (context.cr, to_string (font.family), font.slant, font.weight);
-		cairo.set_font_size (context.cr, (to_points (size)));
+		select_font_face (context.cr, to_string (font.family), font.slant, font.weight);
+		set_font_size (context.cr, (to_points (size)));
 		text_extents (cr => context.cr, utf8 => text, extents => result'access);
 		return result;
 	end get_text_extents;
@@ -502,7 +502,7 @@ package body pac_draw is
 		alignment	: in type_text_alignment;
 		height		: in pac_shapes.geometry.type_distance)  -- the height of the drawing frame
 	is
-		text_area : cairo.cairo_text_extents;
+		text_area : cairo_text_extents;
 
 		-- the bounding box of the given text
 		bounding_box : type_rectangle;
@@ -514,15 +514,14 @@ package body pac_draw is
 		ox : constant type_view_coordinate := convert_x (x (position));
 		oy : constant type_view_coordinate := shift_y (y (position), height);
 
-		use cairo;
 	begin
-		cairo.select_font_face (
+		select_font_face (
 			context.cr, 
 			family	=> to_string (font.family),
 			slant	=> font.slant,
 			weight	=> font.weight);
 		
-		cairo.set_font_size (context.cr, (to_points (size)));
+		set_font_size (context.cr, (to_points (size)));
 
 		text_area := get_text_extents (
 			context		=> context,
@@ -574,14 +573,14 @@ package body pac_draw is
 			-- In cairo all angles increase in clockwise direction.
 			-- Since our angles increase in counterclockwise direction (mathematically)
 			-- the angle must change the sign.		
-			cairo.translate (context.cr, ox, oy);
-			cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
-			cairo.translate (context.cr, -ox, -oy);
+			translate (context.cr, ox, oy);
+			rotate (context.cr, gdouble (to_radians (- rotation)));
+			translate (context.cr, -ox, -oy);
 			
 			-- draw the text. start at calculated start position
-			cairo.move_to (context.cr, sp.x, sp.y);
+			move_to (context.cr, sp.x, sp.y);
 
-			cairo.show_text (context.cr, to_string (content));
+			show_text (context.cr, to_string (content));
 
 			restore (context.cr);
 		end if;
