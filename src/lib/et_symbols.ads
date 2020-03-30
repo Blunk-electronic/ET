@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -208,9 +208,8 @@ package et_symbols is
 	
 	-- A port is something where a net can be attached to.
 	-- The name of a port represents the function of the port like (A14 or RST_N)
-	-- CS: Port length may assume zero length in kicad. Consider changing minimum length to zero.
-	subtype type_port_length is type_distance_positive range 2.0 .. 20.0; -- unit is millimeters. CS: reasonable limits ?
-	port_length_default : constant type_port_length := 4.0;
+	subtype type_port_length is type_distance_positive range 0.0 .. 20.0; -- unit is millimeters.
+	port_length_default : constant type_port_length := 2.5;
 	
 	-- The port has an electrical direction:
 
@@ -265,6 +264,7 @@ package et_symbols is
 	subtype type_line_width is type_distance_positive range 0.1 .. 10.0;
 	
 	-- A port is basically a line. Its start point is the port position.
+	-- At the start point a net will be attached.
 	-- The end point points towards the symbol body. Depending on the port
 	-- rotation the end tail points:
 	--  to the left if rotation is 0 degree

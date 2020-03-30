@@ -64,9 +64,10 @@ schematic led_driver add device $HOME/git/BEL/ET_component_library/devices/passi
 
 A quad-NAND IC like the famous 7400 offers four symbols (named A..D):
 
-This command places the first available unit at sheet 1 x/y 250/150 with rotation 90 degrees. The last optional argument (D) is the package variant.
+This command places the first available unit at sheet 1 x/y 250/150 with rotation 90 degrees.
+The last argument (D) is the package variant.
 ```
-schematic led_driver add device $HOME/git/BEL/ET_component_library/devices/active/logic/7400.dev A 1 250 150 90 D # sheet 1 x y rotation [variant]
+schematic led_driver add device $HOME/git/BEL/ET_component_library/devices/active/logic/7400.dev 1 250 150 90 D # sheet 1 x y rotation variant
 ```
 
 This command invokes from IC1 the unit P and places it at sheet 4 at x/y 60/90 with zero rotation:

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -1026,6 +1026,7 @@ package body symbol_rw is
 									elsif kw = keyword_length then -- length 5
 										expect_field_count (line, 2);
 										port.length := to_distance (f (line, 2));
+										-- CS warning on zero length ?
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
