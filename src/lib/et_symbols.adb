@@ -392,17 +392,29 @@ package body et_symbols is
 				union (symbol.boundaries, boundaries (element (c)));
 			end;
 
-			procedure query_port (c : in type_ports.cursor) is begin
+			procedure query_port (c : in type_ports.cursor) is 
 				-- The port position is the point of connection with a net.
 				-- Regardless of the rotation or length of the port,
 				-- this end of the port points always away from the
 				-- symbol center.
-				union (symbol.boundaries, element (c).position);
+				-- To make things easy, we just add the circle that indicates
+				-- a port to the boundaries. This way the circle becomes completely
+				-- part of the boundaries:
+
+				type circle is new pac_shapes.type_circle with null record;
+				cr : constant circle := (
+						center => element (c).position,
+						radius => port_circle_radius);
+			begin
+				union (symbol.boundaries, boundaries (cr));
 			end;
 
 			procedure query_text (c : in type_texts.cursor) is begin
 				-- CS Currently we care for the position of the text
 				-- only. The text length and size is ignored.
+				-- We assume the text is completely inside the symbol body.
+				-- In that sense there is no sense in adding the text
+				-- position to the boundaries which is done by this statement:
 				union (symbol.boundaries, element (c).position);
 			end;
 			
