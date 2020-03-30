@@ -430,6 +430,9 @@ package body symbol_rw is
 		symbol_arc			: type_arc;
 		symbol_circle		: type_circle;
 		symbol_text_base	: type_text_basic;
+
+		symbol_cursor		: type_symbols.cursor;
+		symbol_inserted		: boolean;
 		
 		symbol_text_position		: et_coordinates.geometry.type_point;
 		symbol_text_content			: et_text.type_text_content.bounded_string;
@@ -1146,15 +1149,15 @@ package body symbol_rw is
 			type_symbols.insert (
 				container	=> symbols, 
 				key			=> file_name, -- libraries/symbols/nand.sym
+				position	=> symbol_cursor,
+				inserted	=> symbol_inserted,
 				new_item	=> symbol.all);
-
-
 			
 			-- The GUI needs to know the area occupied by the symbol:
-			compute_boundaries (symbols.last, log_threshold + 1);
+			compute_boundaries (symbol_cursor, log_threshold + 1);
 			
 			-- CS Check integrity of symbol (style guides, conventions ...)
-			-- use function "last" to fetch latest symbol
+			-- use symbol_cursor to access the symbol
 		end if;
 
 		log_indentation_down;

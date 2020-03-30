@@ -407,6 +407,7 @@ package body et_symbols is
 			end;
 			
 		begin -- query_items
+			log_indentation_up;
 
 			-- Probe elements of the symbol and unite them in symbol.boundaries:
 			iterate (symbol.shapes.lines, query_line'access);
@@ -422,7 +423,9 @@ package body et_symbols is
 				union (symbol.boundaries, symbol.value.position);
 				union (symbol.boundaries, symbol.purpose.position);
 			end if;
-			
+
+			log (text => to_string (symbol.boundaries), level => log_threshold + 1);
+			log_indentation_down;
 		end query_items;
 		
 	begin -- compute_boundaries
