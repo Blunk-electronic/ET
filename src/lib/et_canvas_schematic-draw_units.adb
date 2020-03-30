@@ -421,6 +421,8 @@ procedure draw_units (
 
 			-- DEVICE NAME:
 			position := sch_placeholder_name.position;
+
+			--put_line (to_string (device_name) & " " & to_string (unit_name) & " " & to_string (unit_count));
 			
 			pac_draw_misc.draw_text (
 				context		=> context,
@@ -659,8 +661,9 @@ procedure draw_units (
 					sch_placeholder_value := element (unit_cursor).value;
 					sch_placeholder_purpose := element (unit_cursor).purpose;
 				end if;
-				
+
 				device_cursor_lib := locate_device (device_model);
+				unit_count := units_total (device_cursor_lib);
 				locate_symbol (locate_unit (device_cursor_lib, unit_name));
 			end if;
 		end query_units;
@@ -677,7 +680,7 @@ procedure draw_units (
 			device_purpose := element (device_cursor).purpose; -- like "brightness control"
 		end if;
 		
-		unit_count := et_devices.type_unit_count (length (element (device_cursor).units));
+-- 		unit_count := et_devices.type_unit_count (length (element (device_cursor).units));
 
 		-- Iterate the units of the current device:
 		iterate (element (device_cursor).units, query_units'access);

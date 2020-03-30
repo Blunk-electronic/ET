@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -429,7 +429,7 @@ package et_devices is
 	
 
 	
-	package type_devices is new indefinite_ordered_maps (
+	package type_devices is new indefinite_ordered_maps ( -- CS rename to pac_devices
 		key_type 		=> type_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
 		"<"				=> type_device_model_file."<",
 		element_type	=> type_device);
@@ -439,6 +439,11 @@ package et_devices is
 	-- HERE RIG WIDE DEVICES ARE KEPT:
 	devices : type_devices.map;
 
+	-- Returns the total number of units the given device provides:
+	function units_total (
+		device_cursor	: in type_devices.cursor)
+		return type_unit_count;
+							 
 	function variant_available (
 	-- Returns true if given device provides the given package variant.								   
 	-- The given device must be real. Means appearance SCH_PCB.

@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -693,6 +693,18 @@ package body et_devices is
 	end to_string;
 
 
+	function units_total (
+		device_cursor	: in type_devices.cursor)
+		return type_unit_count is
+		use type_devices;
+		use pac_units_external;
+		use pac_units_internal;
+		e, i : count_type;
+	begin
+		e := length (element (device_cursor).units_external);
+		i := length (element (device_cursor).units_internal);
+		return type_unit_count (e + i);
+	end units_total;
 
 
 	
