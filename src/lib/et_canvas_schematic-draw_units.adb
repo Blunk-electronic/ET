@@ -309,7 +309,21 @@ procedure draw_units (
 				use pac_text;
 				alignment : type_text_alignment := (horizontal => center, vertical => center);
 			begin
-									
+				rotate_by (pos_port_name, unit_rotation);
+
+				if unit_rotation = 0.0 then
+					alignment.horizontal := LEFT;
+				elsif unit_rotation = 90.0 then
+					alignment.horizontal := RIGHT;
+				elsif unit_rotation = 180.0 then
+					alignment.horizontal := RIGHT;
+				elsif unit_rotation = 270.0 then
+					alignment.horizontal := LEFT;
+				else
+					raise constraint_error; -- CS should never happen
+				end if;
+-- alignment.horizontal := LEFT;
+					
 				pac_draw_misc.draw_text 
 					(
 					context		=> context,
@@ -412,10 +426,13 @@ procedure draw_units (
 
 			cairo.stroke (context.cr);
 			
-			-- CS draw terminal and port name, direction, sensitivity, level
-			rotate_by (pos_port_name, unit_rotation);
-			draw_port_name;
+			-- draw terminal port name
+			if element (c).port_name_visible = YES then
+				draw_port_name;
+			end if;
 
+			-- CS draw terminal and port name, direction, sensitivity, level
+			
 		end draw_port;
 
 		-- This procedure draws fixed documetational texts like "MUX" or "CT16" as they 
