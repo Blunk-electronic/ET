@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -1508,7 +1508,13 @@ package body et_kicad is
 				
 				-- read line width (field #5)
 				pos := 5;
-				polyline.width := type_line_width'value (f (line, pos));
+
+				-- If line width is too small, use a lower limit instead.
+				if mil_to_distance (f (line, pos)) < type_line_width'first then
+					polyline.width := type_line_width'first;
+				else
+					polyline.width := mil_to_distance (f (line, pos));
+				end if;
 
 				-- From the next field (#6) on, we find the coordinates of the 
 				-- start point, the bend point(s) and the end point:
@@ -1570,8 +1576,14 @@ package body et_kicad is
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => rectangle.corner_B, axis => x);
+
+				-- If line width is too small, use a lower limit instead.
+				if mil_to_distance (f (line, 8)) < type_line_width'first then
+					rectangle.width := type_line_width'first;
+				else
+					rectangle.width := mil_to_distance (f (line, 8));
+				end if;
 				
-				rectangle.width	:= type_line_width'value (f (line,8));
 				rectangle.fill := to_fill (f (line,9));
 
 				-- CS: log properties
@@ -1606,7 +1618,14 @@ package body et_kicad is
 				mirror (point => circle.center, axis => x);
 	
 				circle.radius	:= mil_to_distance (mil => f (line,4));
-				circle.width	:= type_line_width'value (f (line,7));
+
+				-- If line width is too small, use a lower limit instead.
+				if mil_to_distance (f (line,7)) < type_line_width'first then
+					circle.width := type_line_width'first;
+				else
+					circle.width := mil_to_distance (f (line,7));
+				end if;
+				
 				circle.fill		:= to_fill (f (line,8));
 
 				-- CS: log properties
