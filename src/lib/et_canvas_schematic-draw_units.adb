@@ -349,14 +349,6 @@ procedure draw_units (
 			end;
 
 		begin
-			-- A port is basically a line. Its start point is the port position.
-			-- The end point points towards the symbol body. Depending on the port
-			-- rotation the end tail points:
-			--  to the right if rotation is 0 degree
-			--  to the left if rotation is 180 degree
-			--  downwards if the rottion is 90 degree
-			--  upwards if the rotation is 270 degree
-
 			-- set line width
 			cairo.set_line_width (context.cr, type_view_coordinate (et_symbols.port_line_width));
 
@@ -364,10 +356,10 @@ procedure draw_units (
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 			
 			-- Compute the end point according to port rotation and length:
-			if element (c).rotation = 0.0 then -- end point points to the right
-				set (axis => X, value => x (start_point) + element (c).length, point => end_point);
+			if element (c).rotation = 0.0 then -- end point points to the left
+				set (axis => X, value => x (start_point) - element (c).length, point => end_point);
 				pos_port_name := end_point;
-				set (axis => X, value => x (end_point) + spacing_port_name, point => pos_port_name);
+				set (axis => X, value => x (end_point) - spacing_port_name, point => pos_port_name);
 				
 			elsif element (c).rotation = 90.0 then -- end point points downwards
 				set (axis => Y, value => y (start_point) - element (c).length, point => end_point);
@@ -375,9 +367,9 @@ procedure draw_units (
 				set (axis => Y, value => y (end_point) - spacing_port_name, point => pos_port_name);
 				
 			elsif element (c).rotation = 180.0 then  -- end point points to the left
-				set (axis => X, value => x (start_point) - element (c).length, point => end_point);
+				set (axis => X, value => x (start_point) + element (c).length, point => end_point);
 				pos_port_name := end_point;
-				set (axis => X, value => x (end_point) - spacing_port_name, point => pos_port_name);
+				set (axis => X, value => x (end_point) + spacing_port_name, point => pos_port_name);
 				
 			elsif element (c).rotation = 270.0 then -- end point points upwards
 				set (axis => Y, value => y (start_point) + element (c).length, point => end_point);
