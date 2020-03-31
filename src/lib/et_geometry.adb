@@ -533,8 +533,8 @@ package body et_geometry is
 				
 		function add (left, right : in type_rotation) return type_rotation is
 		-- Adds two angles.
-		-- If result greater or equal 360 degree then 360 degree is subtracted from result.
-		-- If result less or equal 360 degree then 360 degree is added to the result.
+		-- If result greater 360 degree then 360 degree is subtracted from result.
+		-- If result less than 360 degree then 360 degree is added to the result.
 			subtype type_rotation_wide is float range -720.0 .. +720.0;
 			scratch : type_rotation_wide;
 			result : type_rotation; -- to be returned

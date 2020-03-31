@@ -275,6 +275,9 @@ package et_symbols is
 	port_line_width : constant type_line_width := 0.2;				-- relevant for GUI only
 	port_circle_line_width : constant type_line_width := 0.1; 		-- relevant for GUI only
 	port_circle_radius : constant type_distance_positive := 1.5;	-- relevant for GUI only
+
+	-- The distance between port end point and port name:
+	port_name_spacing : constant type_distance_positive := 2.0;		-- relevant for GUI only
 	
 	type type_port_base is tagged record
 		position			: type_point; -- this is the point of connection with a net

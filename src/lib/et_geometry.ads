@@ -253,8 +253,8 @@ package et_geometry is
 
 		function add (left, right : in type_rotation) return type_rotation;
 		-- Adds two angles.
-		-- If result greater or equal 360 degree then 360 degree is subtracted from result.
-		-- If result less or equal 360 degree then 360 degree is added to the result.
+		-- If result greater 360 degree then 360 degree is subtracted from result.
+		-- If result less than 360 degree then 360 degree is added to the result.
 		
 		type type_position is new type_point with private;
 

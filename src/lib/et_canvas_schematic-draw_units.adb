@@ -302,28 +302,46 @@ procedure draw_units (
 			end_point			: type_point := element (c).position;
 			pos_port_name		: type_point;
 			pos_terminal_name	: type_point;
-			spacing_port_name	: type_distance_positive := 2.0;
 			
 			procedure draw_port_name is
 				use et_text;
 				use pac_text;
-				alignment : type_text_alignment := (horizontal => center, vertical => center);
-			begin
-				rotate_by (pos_port_name, unit_rotation);
 
-				if unit_rotation = 0.0 then
-					alignment.horizontal := LEFT;
-				elsif unit_rotation = 90.0 then
+				-- Set the default alignment.
+				-- The vertical alignment is untouched.
+				-- The horizontal alignment depends on the total rotation
+				-- which is a sum of port rotation and unit rotation.
+				alignment : type_text_alignment := (horizontal => center, vertical => center);
+				rotation_total : constant type_rotation := add (element (c).rotation, unit_rotation);
+			begin
+				if rotation_total = 0.0 then
 					alignment.horizontal := RIGHT;
-				elsif unit_rotation = 180.0 then
+				elsif rotation_total = 360.0 then
 					alignment.horizontal := RIGHT;
-				elsif unit_rotation = 270.0 then
+				elsif rotation_total = -360.0 then
+					alignment.horizontal := RIGHT;
+
+				elsif rotation_total = 90.0 then
+					alignment.horizontal := RIGHT;
+				elsif rotation_total = -270.0 then
+					alignment.horizontal := RIGHT;
+					
+				elsif rotation_total = 180.0 then
 					alignment.horizontal := LEFT;
+				elsif rotation_total = -180.0 then
+					alignment.horizontal := LEFT;
+					
+				elsif rotation_total = -90.0 then
+					alignment.horizontal := LEFT;
+				elsif rotation_total = 270.0 then
+					alignment.horizontal := LEFT;
+					
 				else
 					raise constraint_error; -- CS should never happen
 				end if;
--- alignment.horizontal := LEFT;
 					
+				rotate_by (pos_port_name, unit_rotation);
+				
 				pac_draw_misc.draw_text 
 					(
 					context		=> context,
@@ -359,22 +377,22 @@ procedure draw_units (
 			if element (c).rotation = 0.0 then -- end point points to the left
 				set (axis => X, value => x (start_point) - element (c).length, point => end_point);
 				pos_port_name := end_point;
-				set (axis => X, value => x (end_point) - spacing_port_name, point => pos_port_name);
+				set (axis => X, value => x (end_point) - port_name_spacing, point => pos_port_name);
 				
 			elsif element (c).rotation = 90.0 then -- end point points downwards
 				set (axis => Y, value => y (start_point) - element (c).length, point => end_point);
 				pos_port_name := end_point;
-				set (axis => Y, value => y (end_point) - spacing_port_name, point => pos_port_name);
+				set (axis => Y, value => y (end_point) - port_name_spacing, point => pos_port_name);
 				
 			elsif element (c).rotation = 180.0 then  -- end point points to the left
 				set (axis => X, value => x (start_point) + element (c).length, point => end_point);
 				pos_port_name := end_point;
-				set (axis => X, value => x (end_point) + spacing_port_name, point => pos_port_name);
+				set (axis => X, value => x (end_point) + port_name_spacing, point => pos_port_name);
 				
 			elsif element (c).rotation = 270.0 then -- end point points upwards
 				set (axis => Y, value => y (start_point) + element (c).length, point => end_point);
 				pos_port_name := end_point;
-				set (axis => Y, value => y (end_point) + spacing_port_name, point => pos_port_name);
+				set (axis => Y, value => y (end_point) + port_name_spacing, point => pos_port_name);
 
 			else
 				raise constraint_error; -- CS do something helpful. should never happen
