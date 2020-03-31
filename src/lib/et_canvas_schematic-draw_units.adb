@@ -298,43 +298,18 @@ procedure draw_units (
 		end draw_circle;
 
 		procedure draw_port (c : in type_ports.cursor) is
-			start_point : type_point := element (c).position;
-			end_point : type_point := element (c).position;
-
+			start_point			: type_point := element (c).position;
+			end_point			: type_point := element (c).position;
+			pos_port_name		: type_point;
+			pos_terminal_name	: type_point;
+			spacing_port_name	: type_distance_positive := 2.0;
+			
 			procedure draw_port_name is
-				-- 				use pac_draw_misc;
 				use et_text;
 				use pac_text;
-				position : type_point := end_point;
-				spacing : type_distance_positive := 2.0;
 				alignment : type_text_alignment := (horizontal => center, vertical => center);
 			begin
-				
-				if unit_rotation = 0.0 then -- end point points to the right
--- 					set (axis => X, value => x (position) + spacing, point => position);
--- 					alignment.horizontal := RIGHT;
-					null;
-					
-				elsif unit_rotation = 90.0 then -- end point points downwards
-	-- 				set (axis => Y, value => y (position) - spacing, point => position);
--- 					alignment.horizontal := RIGHT;
-					null;
-					
-				elsif unit_rotation = 180.0 then  -- end point points to the left
--- 					set (axis => X, value => x (position) - spacing, point => position);
--- 					alignment.horizontal := LEFT;
-					null;
-					
-				elsif unit_rotation = 270.0 then -- end point points upwards
-	-- 				set (axis => Y, value => y (position) + spacing, point => position);
-					-- 					alignment.horizontal := LEFT;
-					null;
-					
-				else
-					raise constraint_error; -- CS do something helpful
-				end if;
-
-					
+									
 				pac_draw_misc.draw_text 
 					(
 					context		=> context,
@@ -343,8 +318,8 @@ procedure draw_units (
 					font		=> et_symbols.text_font,
 
 					-- text position x/y relative to symbol origin:
-					x			=> transpose_x (x (position)),
-					y			=> transpose_y (y (position)),
+					x			=> transpose_x (x (pos_port_name)),
+					y			=> transpose_y (y (pos_port_name)),
 
 					-- Text rotation around its anchor point.
 					-- This is documetational text. Its rotation must
@@ -358,7 +333,6 @@ procedure draw_units (
 				cairo.stroke (context.cr);
 			
 			end;
-
 
 		begin
 			-- A port is basically a line. Its start point is the port position.
@@ -378,16 +352,24 @@ procedure draw_units (
 			-- Compute the end point according to port rotation and length:
 			if element (c).rotation = 0.0 then -- end point points to the right
 				set (axis => X, value => x (start_point) + element (c).length, point => end_point);
+				pos_port_name := end_point;
+				set (axis => X, value => x (end_point) + spacing_port_name, point => pos_port_name);
 				
 			elsif element (c).rotation = 90.0 then -- end point points downwards
 				set (axis => Y, value => y (start_point) - element (c).length, point => end_point);
+				pos_port_name := end_point;
+				set (axis => Y, value => y (end_point) - spacing_port_name, point => pos_port_name);
 				
 			elsif element (c).rotation = 180.0 then  -- end point points to the left
 				set (axis => X, value => x (start_point) - element (c).length, point => end_point);
+				pos_port_name := end_point;
+				set (axis => X, value => x (end_point) - spacing_port_name, point => pos_port_name);
 				
 			elsif element (c).rotation = 270.0 then -- end point points upwards
 				set (axis => Y, value => y (start_point) + element (c).length, point => end_point);
-				
+				pos_port_name := end_point;
+				set (axis => Y, value => y (end_point) + spacing_port_name, point => pos_port_name);
+
 			else
 				raise constraint_error; -- CS do something helpful. should never happen
 			end if;
@@ -431,6 +413,7 @@ procedure draw_units (
 			cairo.stroke (context.cr);
 			
 			-- CS draw terminal and port name, direction, sensitivity, level
+			rotate_by (pos_port_name, unit_rotation);
 			draw_port_name;
 
 		end draw_port;
