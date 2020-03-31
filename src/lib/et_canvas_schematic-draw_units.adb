@@ -300,12 +300,72 @@ procedure draw_units (
 		procedure draw_port (c : in type_ports.cursor) is
 			start_point : type_point := element (c).position;
 			end_point : type_point := element (c).position;
+
+			procedure draw_port_name is
+				-- 				use pac_draw_misc;
+				use et_text;
+				use pac_text;
+				position : type_point := end_point;
+				spacing : type_distance_positive := 2.0;
+				alignment : type_text_alignment := (horizontal => center, vertical => center);
+			begin
+				
+				if unit_rotation = 0.0 then -- end point points to the right
+-- 					set (axis => X, value => x (position) + spacing, point => position);
+-- 					alignment.horizontal := RIGHT;
+					null;
+					
+				elsif unit_rotation = 90.0 then -- end point points downwards
+	-- 				set (axis => Y, value => y (position) - spacing, point => position);
+-- 					alignment.horizontal := RIGHT;
+					null;
+					
+				elsif unit_rotation = 180.0 then  -- end point points to the left
+-- 					set (axis => X, value => x (position) - spacing, point => position);
+-- 					alignment.horizontal := LEFT;
+					null;
+					
+				elsif unit_rotation = 270.0 then -- end point points upwards
+	-- 				set (axis => Y, value => y (position) + spacing, point => position);
+					-- 					alignment.horizontal := LEFT;
+					null;
+					
+				else
+					raise constraint_error; -- CS do something helpful
+				end if;
+
+					
+				pac_draw_misc.draw_text 
+					(
+					context		=> context,
+					content		=> to_content (to_string (key (c))),
+					size		=> element (c).port_name_size,
+					font		=> et_symbols.text_font,
+
+					-- text position x/y relative to symbol origin:
+					x			=> transpose_x (x (position)),
+					y			=> transpose_y (y (position)),
+
+					-- Text rotation around its anchor point.
+					-- This is documetational text. Its rotation must
+					-- be snapped to either HORIZONAL or VERTICAL so that
+					-- it is readable from the front or the right.
+					rotation	=> to_rotation (snap (unit_rotation)),
+
+					alignment	=> alignment
+					);
+
+				cairo.stroke (context.cr);
+			
+			end;
+
+
 		begin
 			-- A port is basically a line. Its start point is the port position.
 			-- The end point points towards the symbol body. Depending on the port
 			-- rotation the end tail points:
-			--  to the left if rotation is 0 degree
-			--  to the right if rotation is 180 degree
+			--  to the right if rotation is 0 degree
+			--  to the left if rotation is 180 degree
 			--  downwards if the rottion is 90 degree
 			--  upwards if the rotation is 270 degree
 
@@ -315,34 +375,33 @@ procedure draw_units (
 			-- set color
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 			
-			-- We start drawing at the port position:
+			-- Compute the end point according to port rotation and length:
+			if element (c).rotation = 0.0 then -- end point points to the right
+				set (axis => X, value => x (start_point) + element (c).length, point => end_point);
+				
+			elsif element (c).rotation = 90.0 then -- end point points downwards
+				set (axis => Y, value => y (start_point) - element (c).length, point => end_point);
+				
+			elsif element (c).rotation = 180.0 then  -- end point points to the left
+				set (axis => X, value => x (start_point) - element (c).length, point => end_point);
+				
+			elsif element (c).rotation = 270.0 then -- end point points upwards
+				set (axis => Y, value => y (start_point) + element (c).length, point => end_point);
+				
+			else
+				raise constraint_error; -- CS do something helpful. should never happen
+			end if;
+
+			-- Rotate the start and end point by rotation of unit:
 			rotate_by (start_point, unit_rotation);
-			
+			rotate_by (end_point, unit_rotation);
+
+			-- Draw the line of the port:
 			cairo.move_to (
 				context.cr,
 				transpose_x (x (start_point)),
 				transpose_y (y (start_point))
 				);
-
-			-- set the end point
-			if element (c).rotation = 0.0 then -- end point points to the left
-				set (axis => X, value => - (element (c).length), point => end_point);
-				
-			elsif element (c).rotation = 90.0 then -- end point points downwards
-				set (axis => Y, value => - (element (c).length), point => end_point);
-
-			elsif element (c).rotation = 180.0 then  -- end point points to the right
-				set (axis => X, value => element (c).length, point => end_point);
-				
-			elsif element (c).rotation = 270.0 then -- end point points upwards
-				set (axis => Y, value => element (c).length, point => end_point);
-				
-			else
-				raise constraint_error; -- CS do something helpful
-			end if;
-
-			-- draw the end point
-			rotate_by (end_point, unit_rotation);
 			
 			cairo.line_to (
 				context.cr,
@@ -352,9 +411,7 @@ procedure draw_units (
 
 			cairo.stroke (context.cr);
 
-
 			-- The start point of the port must have a small green circle around it.
-
 			-- set color and line width
 			cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
 			cairo.set_line_width (context.cr, type_view_coordinate (port_circle_line_width));
@@ -374,6 +431,7 @@ procedure draw_units (
 			cairo.stroke (context.cr);
 			
 			-- CS draw terminal and port name, direction, sensitivity, level
+			draw_port_name;
 
 		end draw_port;
 

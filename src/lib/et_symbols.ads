@@ -267,10 +267,10 @@ package et_symbols is
 	-- At the start point a net will be attached.
 	-- The end point points towards the symbol body. Depending on the port
 	-- rotation the end tail points:
-	--  to the left if rotation is 0 degree
-	--  to the right if rotation is 180 degree
-	--  downwards if the rottion is 90 degree
-	--  upwards if the rotation is 270 degree
+	--  to the right if rotation is 0 degree. net attached from the left.
+	--  to the left if rotation is 180 degree. net attached from the right.
+	--  downwards if the rotation is 90 degree. net attached from above.
+	--  upwards if the rotation is 270 degree. net attached from below.
 	
 	port_line_width : constant type_line_width := 0.2;				-- relevant for GUI only
 	port_circle_line_width : constant type_line_width := 0.1; 		-- relevant for GUI only
