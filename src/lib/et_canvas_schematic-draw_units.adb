@@ -54,7 +54,9 @@ use et_schematic.type_units;
 
 with et_devices;
 with et_symbols;
+with et_packages;
 with et_text;
+with schematic_ops;
 
 separate (et_canvas_schematic)
 
@@ -366,6 +368,11 @@ procedure draw_units (
 				-- which is a sum of port rotation and unit rotation.
 				alignment : type_text_alignment := (horizontal => CENTER, vertical => BOTTOM);
 				rotation_total : constant type_rotation := add (element (c).rotation, unit_rotation);
+
+				use et_packages;
+				use et_devices;
+				properties : type_port_properties_access;
+								
 			begin
 				-- Rotate the position of the terminal name by the unit rotation:
 				rotate_by (pos_terminal_name, unit_rotation);
@@ -391,12 +398,18 @@ procedure draw_units (
 				else
 					raise constraint_error; -- CS should never happen
 				end if;
-					
+
+				-- Get the properties of the port. Properties is a record that provides
+				-- the terminal name. Other things of properties are not relevant here:
+				properties := schematic_ops.port_properties (
+					module_cursor	=> current_active_module,
+					device_name		=> device_name,
+					port_name		=> key (c));
 				
 				pac_draw_misc.draw_text 
 					(
 					context		=> context,
-					content		=> to_content ("T12"),
+					content		=> to_content (to_string (properties.terminal)), -- H4, 1, 16
 					size		=> element (c).terminal_name_size,
 					font		=> et_symbols.text_font,
 
@@ -529,12 +542,13 @@ procedure draw_units (
 				draw_port_name;
 			end if;
 
-			-- draw terminal name
-			if element (c).terminal_name_visible = YES then
+			-- Draw terminal name if this is the symbol of a real device. 
+			-- Virtual symbols do not have terminal names.
+			if symbol.appearance = PCB and then element (c).terminal_name_visible = YES then
 				draw_terminal_name;
 			end if;
 			
-			-- CS direction, sensitivity, level
+			-- CS draw port direction, sensitivity, level
 			
 		end draw_port;
 
