@@ -420,6 +420,7 @@ package body pac_draw is
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;
 		x,y			: in gdouble;
+		origin		: in boolean;
 		rotation	: in pac_shapes.geometry.type_rotation;
 		alignment	: in type_text_alignment) is
 		
@@ -436,7 +437,9 @@ package body pac_draw is
 	begin
 		save (context.cr);
 
-		draw_origin (context, (x, y));
+		if origin then
+			draw_origin (context, (x, y));
+		end if;
 
 		select_font_face (
 			context.cr, 

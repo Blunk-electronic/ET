@@ -343,6 +343,8 @@ procedure draw_units (
 					x			=> transpose_x (x (pos_port_name)),
 					y			=> transpose_y (y (pos_port_name)),
 
+					origin		=> false, -- no origin required
+					
 					-- Text rotation around its anchor point.
 					-- This is documentational text. Its rotation must
 					-- be snapped to either HORIZONAL or VERTICAL so that
@@ -402,6 +404,8 @@ procedure draw_units (
 					x			=> transpose_x (x (pos_terminal_name)),
 					y			=> transpose_y (y (pos_terminal_name)),
 
+					origin		=> false, -- no origin required
+					
 					-- Text rotation around its anchor point.
 					-- This is documentational text. Its rotation must
 					-- be snapped to either HORIZONAL or VERTICAL so that
@@ -556,6 +560,8 @@ procedure draw_units (
 				x			=> transpose_x (x (position)),
 				y			=> transpose_y (y (position)),
 
+				origin		=> false, -- no origin required
+				
 				-- Text rotation around its anchor point.
 				-- This is documetational text. Its rotation must
 				-- be snapped to either HORIZONAL or VERTICAL so that
@@ -591,6 +597,8 @@ procedure draw_units (
 				x			=> transpose_x (x (position)),
 				y			=> transpose_y (y (position)),
 
+				origin		=> true, -- origin required
+				
 				-- Text rotation around its anchor point.
 				-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
 				-- This has been done in schematic_ops.rotate_unit already.
@@ -614,6 +622,8 @@ procedure draw_units (
 					x			=> transpose_x (x (position)),
 					y			=> transpose_y (y (position)),
 
+					origin		=> true, -- origin required
+					
 					-- Text rotation around its anchor point.
 					-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
 					-- This has been done in schematic_ops.rotate_unit already.
@@ -638,6 +648,8 @@ procedure draw_units (
 					x			=> transpose_x (x (position)),
 					y			=> transpose_y (y (position)),
 
+					origin		=> true, -- origin required
+					
 					-- Text rotation around its anchor point.
 					-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
 					-- This has been done in schematic_ops.rotate_unit already.
@@ -649,6 +661,7 @@ procedure draw_units (
 		end draw_placeholders;
 
 		procedure draw_origin is begin
+		-- NOTE: This is about the origin of the symbol !
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 			cairo.set_line_width (context.cr, type_view_coordinate (origin_line_width));
 
