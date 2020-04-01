@@ -313,32 +313,23 @@ procedure draw_units (
 				alignment : type_text_alignment := (horizontal => center, vertical => center);
 				rotation_total : constant type_rotation := add (element (c).rotation, unit_rotation);
 			begin
-				if rotation_total = 0.0 then
-					alignment.horizontal := RIGHT;
-				elsif rotation_total = 360.0 then
-					alignment.horizontal := RIGHT;
-				elsif rotation_total = -360.0 then
+				if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
 					alignment.horizontal := RIGHT;
 
-				elsif rotation_total = 90.0 then
-					alignment.horizontal := RIGHT;
-				elsif rotation_total = -270.0 then
+				elsif rotation_total = 90.0 or rotation_total = -270.0 then
 					alignment.horizontal := RIGHT;
 					
-				elsif rotation_total = 180.0 then
-					alignment.horizontal := LEFT;
-				elsif rotation_total = -180.0 then
+				elsif rotation_total = 180.0 or rotation_total = -180.0 then
 					alignment.horizontal := LEFT;
 					
-				elsif rotation_total = -90.0 then
-					alignment.horizontal := LEFT;
-				elsif rotation_total = 270.0 then
+				elsif rotation_total = -90.0 or rotation_total = 270.0 then
 					alignment.horizontal := LEFT;
 					
 				else
 					raise constraint_error; -- CS should never happen
 				end if;
-					
+
+				-- Rotate the position of the port name by the unit rotation:
 				rotate_by (pos_port_name, unit_rotation);
 				
 				pac_draw_misc.draw_text 
