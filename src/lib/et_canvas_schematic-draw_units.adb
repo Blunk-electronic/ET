@@ -307,8 +307,7 @@ procedure draw_units (
 				use et_text;
 				use pac_text;
 
-				-- Set the default alignment.
-				-- The vertical alignment is untouched.
+				-- The vertical alignment is untouched and is always CENTER.
 				-- The horizontal alignment depends on the total rotation
 				-- which is a sum of port rotation and unit rotation.
 				alignment : type_text_alignment := (horizontal => center, vertical => center);
@@ -354,7 +353,7 @@ procedure draw_units (
 					y			=> transpose_y (y (pos_port_name)),
 
 					-- Text rotation around its anchor point.
-					-- This is documetational text. Its rotation must
+					-- This is documentational text. Its rotation must
 					-- be snapped to either HORIZONAL or VERTICAL so that
 					-- it is readable from the front or the right.
 					rotation	=> to_rotation (snap (unit_rotation)),
@@ -363,37 +362,131 @@ procedure draw_units (
 					);
 
 				cairo.stroke (context.cr);
-			
-			end;
+			end draw_port_name;
 
-		begin
+			procedure draw_terminal_name is
+				use et_text;
+				use pac_text;
+
+				-- The vertical alignment is untouched and is always BOTTOM.
+				-- The horizontal alignment depends on the total rotation
+				-- which is a sum of port rotation and unit rotation.
+				alignment : type_text_alignment := (horizontal => CENTER, vertical => BOTTOM);
+				rotation_total : constant type_rotation := add (element (c).rotation, unit_rotation);
+			begin
+				-- Rotate the position of the terminal name by the unit rotation:
+				rotate_by (pos_terminal_name, unit_rotation);
+
+				-- Compute the position of the origin of the terminal name regarding 
+				-- its distance from the line of the port:
+				if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
+					set (axis => Y, value => y (start_point) + terminal_name_spacing_line, point => pos_terminal_name);
+					alignment.horizontal := RIGHT;
+
+				elsif rotation_total = 90.0 or rotation_total = -270.0 then
+					set (axis => X, value => x (start_point) - terminal_name_spacing_line, point => pos_terminal_name);
+					alignment.horizontal := RIGHT;
+					
+				elsif rotation_total = 180.0 or rotation_total = -180.0 then
+					set (axis => Y, value => y (start_point) + terminal_name_spacing_line, point => pos_terminal_name);
+					alignment.horizontal := LEFT;
+					
+				elsif rotation_total = -90.0 or rotation_total = 270.0 then
+					set (axis => X, value => x (start_point) - terminal_name_spacing_line, point => pos_terminal_name);
+					alignment.horizontal := LEFT;
+					
+				else
+					raise constraint_error; -- CS should never happen
+				end if;
+					
+				
+				pac_draw_misc.draw_text 
+					(
+					context		=> context,
+					content		=> to_content ("T12"),
+					size		=> element (c).terminal_name_size,
+					font		=> et_symbols.text_font,
+
+					-- text position x/y relative to symbol origin:
+					x			=> transpose_x (x (pos_terminal_name)),
+					y			=> transpose_y (y (pos_terminal_name)),
+
+					-- Text rotation around its anchor point.
+					-- This is documentational text. Its rotation must
+					-- be snapped to either HORIZONAL or VERTICAL so that
+					-- it is readable from the front or the right.
+					rotation	=> to_rotation (snap (unit_rotation)),
+
+					alignment	=> alignment
+					);
+
+				cairo.stroke (context.cr);
+			end draw_terminal_name;
+			
+		begin -- draw_port
 			-- set line width
 			cairo.set_line_width (context.cr, type_view_coordinate (et_symbols.port_line_width));
 
 			-- set color
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 			
-			-- Compute the end point according to port rotation and length:
+			-- Compute following positions according to port rotation and length:
+			-- - end point of port
+			-- - position of port name
+			-- - position of terminal name (Distance from start point only.
+			--   distance from line of port will be computed later 
+			--   by procedure draw_terminal_name.)
+			--
+			-- NOTE: These computations leave the rotation of the unit outside. For the moment we
+			-- assume the unit is not rotated. The positions will be rotated later.
 			if element (c).rotation = 0.0 then -- end point points to the left
 				set (axis => X, value => x (start_point) - element (c).length, point => end_point);
+
+				-- compute the position of the port name:
 				pos_port_name := end_point;
 				set (axis => X, value => x (end_point) - port_name_spacing, point => pos_port_name);
+
+				-- Compute the position of the origin of the terminal name regarding its distance
+				-- from the start point:
+				pos_terminal_name := start_point;				
+				set (axis => X, value => x (start_point) - terminal_name_spacing_start, point => pos_terminal_name);
 				
 			elsif element (c).rotation = 90.0 then -- end point points downwards
 				set (axis => Y, value => y (start_point) - element (c).length, point => end_point);
+
+				-- compute the position of the port name:
 				pos_port_name := end_point;
 				set (axis => Y, value => y (end_point) - port_name_spacing, point => pos_port_name);
+
+				-- Compute the position of the origin of the terminal name regarding its distance
+				-- from the start point:
+				pos_terminal_name := start_point;				
+				set (axis => Y, value => y (start_point) - terminal_name_spacing_start, point => pos_terminal_name);
 				
 			elsif element (c).rotation = 180.0 then  -- end point points to the left
 				set (axis => X, value => x (start_point) + element (c).length, point => end_point);
+
+				-- compute the position of the port name:
 				pos_port_name := end_point;
 				set (axis => X, value => x (end_point) + port_name_spacing, point => pos_port_name);
+
+				-- Compute the position of the origin of the terminal name regarding its distance
+				-- from the start point:
+				pos_terminal_name := start_point;				
+				set (axis => X, value => x (start_point) + terminal_name_spacing_start, point => pos_terminal_name);
 				
 			elsif element (c).rotation = 270.0 then -- end point points upwards
 				set (axis => Y, value => y (start_point) + element (c).length, point => end_point);
+
+				-- compute the position of the port name:
 				pos_port_name := end_point;
 				set (axis => Y, value => y (end_point) + port_name_spacing, point => pos_port_name);
 
+				-- Compute the position of the origin of the terminal name regarding its distance
+				-- from the start point:
+				pos_terminal_name := start_point;
+				set (axis => Y, value => y (start_point) + terminal_name_spacing_start, point => pos_terminal_name);
+				
 			else
 				raise constraint_error; -- CS do something helpful. should never happen
 			end if;
@@ -436,12 +529,17 @@ procedure draw_units (
 
 			cairo.stroke (context.cr);
 			
-			-- draw terminal port name
+			-- draw port name
 			if element (c).port_name_visible = YES then
 				draw_port_name;
 			end if;
 
-			-- CS draw terminal and port name, direction, sensitivity, level
+			-- draw terminal name
+			if element (c).terminal_name_visible = YES then
+				draw_terminal_name;
+			end if;
+			
+			-- CS direction, sensitivity, level
 			
 		end draw_port;
 
