@@ -200,8 +200,8 @@ package et_schematic is
 	-- This is the port of a device as it appears in a net segment:
 	type type_port_device is record
 		device_name	: et_devices.type_name;
+		unit_name	: et_devices.type_unit_name.bounded_string;
 		port_name	: et_symbols.type_port_name.bounded_string;
-		-- CS unit_name	: et_devices.type_unit_name.bounded_string;
 	end record;
 
 	function "<" (left, right : in type_port_device) return boolean;

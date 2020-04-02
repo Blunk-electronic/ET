@@ -2723,6 +2723,7 @@ package body et_kicad_to_native is
 									container	=> ports_of_segment,
 									new_item	=> (
 										device_name	=> element (port_cursor_kicad).reference,
+										unit_name	=> to_name ("test unit"), -- CS
 										port_name	=> element (port_cursor_kicad).name));
 							end if;
 

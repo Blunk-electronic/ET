@@ -1055,14 +1055,21 @@ package body schematic_ops is
 								-- Otherwise it must not be appended again. constraint_error would arise.
 								if type_ports_device.contains (
 									container	=> segment.ports_devices,
-									item		=> (device, key (port_cursor)) -- IC23, VCC_IO
+									item		=> (
+											device_name	=> device,
+											unit_name	=> et_devices.to_name ("test unit"), -- CS
+											port_name	=> key (port_cursor)) -- IC23, VCC_IO
 									) then 
 
 									log (text => " already there -> skipped", level => log_threshold + 3);
 								else
 									type_ports_device.insert (
 										container	=> segment.ports_devices,
-										new_item	=> (device, key (port_cursor))); -- IC23, VCC_IO
+										new_item	=> (
+											device_name	=> device,
+											unit_name	=> et_devices.to_name ("test unit"), -- CS
+											port_name	=> key (port_cursor)) -- IC23, VCC_IO
+											);
 
 									log (text => " sits on segment -> inserted", level => log_threshold + 3);
 								end if;
@@ -2311,7 +2318,7 @@ package body schematic_ops is
 					-- Make sure at point are no ports of devices, submodules or other 
 					-- netchangers (except the unit port to be dragged):
 
-					port := (device_name, key (port_cursor)); -- IC12, CE
+					port := (device_name, unit_name, key (port_cursor)); -- IC12, CE
 					
 					-- Collect all ports of possible other devices, submodules and netchangers
 					-- at given point:
@@ -2598,6 +2605,7 @@ package body schematic_ops is
 												position	=> port_cursor,
 												new_item	=> (
 														device_name	=> device_after, -- IC23
+														unit_name	=> to_name ("test unit"), -- CS
 														port_name 	=> element (port_cursor).port_name) -- unchanged
 												);
 										end if;
@@ -6409,6 +6417,7 @@ package body schematic_ops is
 								new_item	=> 
 									(
 									device_name => key (device_cursor),
+									unit_name	=> to_name ("test unit"), -- CS
 									port_name	=> key (port_cursor)
 									)
 								);
