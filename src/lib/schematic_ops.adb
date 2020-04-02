@@ -12398,6 +12398,7 @@ package body schematic_ops is
 	-- in case exception occurs here.
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
 		return type_port_properties_access is
 
@@ -12432,9 +12433,10 @@ package body schematic_ops is
 					use type_port_name;
 				begin
 					while terminal_cursor /= type_terminal_port_map.no_element loop
-						if element (terminal_cursor).name = port_name then
-							terminal_name := key (terminal_cursor);
-							exit;
+						--if	element (terminal_cursor).unit = unit_name and then
+						if	element (terminal_cursor).name = port_name then
+								terminal_name := key (terminal_cursor);
+								exit;
 						end if;
 						next (terminal_cursor);
 					end loop;
@@ -12517,7 +12519,11 @@ package body schematic_ops is
 			more_properties	: type_port_properties_access;
 		begin
 			-- get further properties of the current port
-			more_properties := port_properties (module_cursor, port_sch.device_name, port_sch.port_name);
+			more_properties := port_properties (
+				module_cursor	=> module_cursor, 
+				device_name		=> port_sch.device_name, 
+				unit_name		=> to_name ("test unit"), -- port_sch.unit_name,
+				port_name		=> port_sch.port_name);
 			
 			netlists.type_device_ports_extended.insert (
 				container	=> ports_extended,

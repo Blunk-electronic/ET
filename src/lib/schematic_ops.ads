@@ -635,6 +635,7 @@ package schematic_ops is
 	-- in case exception occurs here.
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
 		return type_port_properties_access;
 	

@@ -404,6 +404,7 @@ procedure draw_units (
 				properties := schematic_ops.port_properties (
 					module_cursor	=> current_active_module,
 					device_name		=> device_name,
+					unit_name		=> unit_name,
 					port_name		=> key (c));
 				
 				pac_draw_misc.draw_text 
