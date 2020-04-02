@@ -351,7 +351,7 @@ procedure draw_units (
 					-- This is documentational text. Its rotation must
 					-- be snapped to either HORIZONAL or VERTICAL so that
 					-- it is readable from the front or the right.
-					rotation	=> to_rotation (snap (unit_rotation)),
+					rotation	=> to_rotation (snap (rotation_total)),
 
 					alignment	=> alignment
 					);
@@ -424,7 +424,7 @@ procedure draw_units (
 					-- This is documentational text. Its rotation must
 					-- be snapped to either HORIZONAL or VERTICAL so that
 					-- it is readable from the front or the right.
-					rotation	=> to_rotation (snap (unit_rotation)),
+					rotation	=> to_rotation (snap (rotation_total)),
 
 					alignment	=> alignment
 					);
@@ -484,7 +484,7 @@ procedure draw_units (
 				pos_terminal_name := start_point;				
 				set (axis => X, value => x (start_point) + terminal_name_spacing_start, point => pos_terminal_name);
 				
-			elsif element (c).rotation = 270.0 then -- end point points upwards
+			elsif element (c).rotation = 270.0 or element (c).rotation = -90.0 then -- end point points upwards
 				set (axis => Y, value => y (start_point) + element (c).length, point => end_point);
 
 				-- compute the position of the port name:
