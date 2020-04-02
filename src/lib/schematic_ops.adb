@@ -1013,9 +1013,10 @@ package body schematic_ops is
 	-- CS: Automatic splitting the segment into two and placing a junction is not supported
 	-- jet and probably not a good idea.
 		module			: in type_modules.cursor;		-- the module
-		device			: in type_name;			-- the device
+		device			: in type_name;					-- the device
+		unit			: in type_unit_name.bounded_string;	-- the unit name like A, C, PWR
 		ports			: in et_symbols.type_ports.map; -- the ports to be inserted
-		sheet			: in type_sheet;	-- the sheet to look at
+		sheet			: in type_sheet;				-- the sheet to look at
 		log_threshold	: in type_log_level) is
 
 		procedure query_nets (
@@ -1057,7 +1058,7 @@ package body schematic_ops is
 									container	=> segment.ports_devices,
 									item		=> (
 											device_name	=> device,
-											unit_name	=> et_devices.to_name ("test unit"), -- CS
+											unit_name	=> unit, -- A, C, PWR
 											port_name	=> key (port_cursor)) -- IC23, VCC_IO
 									) then 
 
@@ -1067,7 +1068,7 @@ package body schematic_ops is
 										container	=> segment.ports_devices,
 										new_item	=> (
 											device_name	=> device,
-											unit_name	=> et_devices.to_name ("test unit"), -- CS
+											unit_name	=> unit, -- A, C, PWR
 											port_name	=> key (port_cursor)) -- IC23, VCC_IO
 											);
 
@@ -1289,6 +1290,7 @@ package body schematic_ops is
 				insert_ports (
 					module			=> module_cursor,
 					device			=> device_name,
+					unit			=> unit_name,
 					ports			=> ports,
 					sheet			=> et_coordinates.sheet (position_of_unit_new),
 					log_threshold	=> log_threshold + 1);
@@ -1886,6 +1888,7 @@ package body schematic_ops is
 				insert_ports (
 					module			=> module_cursor,
 					device			=> device_name,
+					unit			=> unit_name,
 					ports			=> ports_lib,
 					sheet			=> et_coordinates.sheet (position_of_unit),
 					log_threshold	=> log_threshold + 1);
@@ -2529,6 +2532,7 @@ package body schematic_ops is
 				insert_ports (
 					module			=> module_cursor,
 					device			=> device_name,
+					unit			=> unit_name,
 					ports			=> ports_new,
 					sheet			=> et_coordinates.sheet (position_of_unit_new),
 					log_threshold	=> log_threshold + 1);
@@ -3977,6 +3981,7 @@ package body schematic_ops is
 			end add_unit_external;
 
 			ports : et_symbols.type_ports.map;
+			unit_name : et_devices.type_unit_name.bounded_string;
 			
 		begin -- add
 			log (text => "adding device " & to_string (next_name), level => log_threshold + 1);
@@ -4057,6 +4062,8 @@ package body schematic_ops is
 					device_cursor	=> device_cursor_sch,
 					unit_name		=> key (unit_cursors.int));
 
+				unit_name := key (unit_cursors.int);
+				
 			-- no internal unit available -> add external unit
 			elsif unit_cursors.ext /= pac_units_external.no_element then
 				
@@ -4073,6 +4080,8 @@ package body schematic_ops is
 				ports := ports_of_unit (
 					device_cursor	=> device_cursor_sch,
 					unit_name		=> key (unit_cursors.ext));
+
+				unit_name := key (unit_cursors.ext);
 				
 			else
 				raise constraint_error; -- CS should never happen. function first_unit excludes this case.
@@ -4090,6 +4099,7 @@ package body schematic_ops is
 			insert_ports (
 				module			=> module_cursor,
 				device			=> next_name,
+				unit			=> unit_name,
 				ports			=> ports,
 				sheet			=> et_coordinates.sheet (place),
 				log_threshold	=> log_threshold + 2);
@@ -4165,6 +4175,7 @@ package body schematic_ops is
 
 			unit_cursors : type_unit_cursors_lib;
 			ports : et_symbols.type_ports.map;
+			unit_name : et_devices.type_unit_name.bounded_string;
 
 			use pac_units_internal;
 			use pac_units_external;
@@ -4324,6 +4335,8 @@ package body schematic_ops is
 						device_cursor	=> device_cursor_sch,
 						unit_name		=> key (unit_cursors.int));
 
+					unit_name := key (unit_cursors.int);
+
 				-- no internal unit available -> add external unit
 				elsif unit_cursors.ext /= pac_units_external.no_element then
 					
@@ -4340,7 +4353,8 @@ package body schematic_ops is
 					ports := ports_of_unit (
 						device_cursor	=> device_cursor_sch,
 						unit_name		=> key (unit_cursors.ext));
-					
+
+					unit_name := key (unit_cursors.ext);
 				else
 					raise constraint_error; -- CS should never happen. function first_unit excludes this case.
 				end if;
@@ -4357,6 +4371,7 @@ package body schematic_ops is
 				insert_ports (
 					module			=> module_cursor,
 					device			=> next_name,
+					unit			=> unit_name,
 					ports			=> ports,
 					sheet			=> et_coordinates.sheet (destination),
 					log_threshold	=> log_threshold + 2);
@@ -4582,6 +4597,7 @@ package body schematic_ops is
 				insert_ports (
 					module			=> module_cursor,
 					device			=> device_name,
+					unit			=> unit_name,
 					ports			=> ports,
 					sheet			=> et_coordinates.sheet (place),
 					log_threshold	=> log_threshold + 2);
