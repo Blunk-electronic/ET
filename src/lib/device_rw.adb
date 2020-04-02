@@ -307,6 +307,7 @@ package body device_rw is
 
 			-- CS: detect missing parameters
 			-- CS: warn about wrong misplaced keywords
+			-- CS: test if terminal, unit and port exist
 		begin
 			while place <= positive (field_count (line)) loop
 			

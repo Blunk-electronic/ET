@@ -2569,10 +2569,12 @@ package body schematic_ops is
 
 	end drag_unit;
 
+	-- Renames the device ports of the net segements affected by a rename operation.
+	-- Leaves the unit and port names as they are because this is solely about device names.
 	procedure rename_ports (
 		module			: in type_modules.cursor;		-- the module
-		device_before	: in type_name;			-- the device name before like IC1
-		device_after	: in type_name;			-- the device name after like IC23
+		device_before	: in type_name;					-- the device name before like IC1
+		device_after	: in type_name;					-- the device name after like IC23
 		sheets			: in type_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
 		log_threshold	: in type_log_level) is
 
@@ -2608,9 +2610,9 @@ package body schematic_ops is
 												container	=> segment.ports_devices,
 												position	=> port_cursor,
 												new_item	=> (
-														device_name	=> device_after, -- IC23
-														unit_name	=> to_name ("test unit"), -- CS
-														port_name 	=> element (port_cursor).port_name) -- unchanged
+													device_name	=> device_after, -- IC23
+													unit_name	=> element (port_cursor).unit_name, -- unchanged
+													port_name 	=> element (port_cursor).port_name) -- unchanged
 												);
 										end if;
 									end query_port;
@@ -12547,7 +12549,7 @@ package body schematic_ops is
 			more_properties := port_properties (
 				module_cursor	=> module_cursor, 
 				device_name		=> port_sch.device_name, 
-				unit_name		=> to_name ("test unit"), -- port_sch.unit_name,
+				unit_name		=> port_sch.unit_name,
 				port_name		=> port_sch.port_name);
 			
 			netlists.type_device_ports_extended.insert (
