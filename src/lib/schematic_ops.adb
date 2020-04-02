@@ -12431,10 +12431,11 @@ package body schematic_ops is
 					use type_terminal_port_map;
 					terminal_cursor : type_terminal_port_map.cursor := variant.terminal_port_map.first;
 					use type_port_name;
+					use et_devices.type_unit_name;
 				begin
 					while terminal_cursor /= type_terminal_port_map.no_element loop
-						--if	element (terminal_cursor).unit = unit_name and then
-						if	element (terminal_cursor).name = port_name then
+						if	element (terminal_cursor).unit = unit_name and then
+							element (terminal_cursor).name = port_name then
 								terminal_name := key (terminal_cursor);
 								exit;
 						end if;
