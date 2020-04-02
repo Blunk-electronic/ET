@@ -6395,14 +6395,14 @@ package body schematic_ops is
 					use et_schematic.type_units;
 					use type_unit_name;
 					unit_position : et_coordinates.type_position;
--- 					unit_rotation : et_coordinates.type_rotation;
 					ports : et_symbols.type_ports.map;
 
 					procedure query_port (port_cursor : in et_symbols.type_ports.cursor) is
 						use et_symbols;
 						use et_symbols.type_ports;
 					begin
-						log (text => "port " & to_string (key (port_cursor)) &
+						log (text => "unit " & et_devices.to_string (key (unit_cursor)) &
+							 " port " & to_string (key (port_cursor)) &
 							 " at" & to_string (element (port_cursor).position),
 							 level => log_threshold + 2);
 
@@ -6417,7 +6417,7 @@ package body schematic_ops is
 								new_item	=> 
 									(
 									device_name => key (device_cursor),
-									unit_name	=> to_name ("test unit"), -- CS
+									unit_name	=> key (unit_cursor),
 									port_name	=> key (port_cursor)
 									)
 								);
@@ -6427,7 +6427,6 @@ package body schematic_ops is
 					
 				begin -- query_units
 					unit_position := element (unit_cursor).position;
--- 					unit_rotation := element (unit_cursor).rotation;
 
 					-- Look at units on the given sheet of place:
 					if sheet (unit_position) = sheet (place) then
