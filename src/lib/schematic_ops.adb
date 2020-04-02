@@ -1104,7 +1104,8 @@ package body schematic_ops is
 					while port_cursor /= et_symbols.type_ports.no_element loop
 						-- CS: If the current net is not on the targeted sheet then this log message
 						-- is issued many times without providing any useful information. Rework required:
-						log (text => "probing port " & to_string (key (port_cursor)), level => log_threshold + 1);
+						log (text => "probing port " & to_string (key (port_cursor))
+							& " at" & to_string (element (port_cursor).position), level => log_threshold + 1);
 						log_indentation_up;
 						
 						-- If the current port sits on a strand, this flag will go true. Other 
