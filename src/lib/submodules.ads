@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017-2020 Mario Blunk, Blunk electronic            --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -45,7 +45,10 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 
+with cairo;
+
 with et_general;
+with et_text;
 with et_coordinates;		use et_coordinates;
 with et_pcb;
 with et_pcb_stack;
@@ -146,6 +149,46 @@ package submodules is
 
 	-- GUI relevant only: The line width of the box:
 	submod_box_line_width : constant type_distance := 0.2;
+
+
+	
+	-- GUI relevant only: The font of the instance name:
+	instance_font : constant et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+
+	instance_font_size : constant et_symbols.pac_text.type_text_size := 2.0;
+
+
+
+	-- GUI relevant only: The font of the file name:
+	file_font : constant et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_ITALIC,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+
+	file_font_size : constant et_symbols.pac_text.type_text_size := 2.0;
+
+
+	
+
+	-- GUI relevant only: The font of the position in board:
+	position_board_font : constant et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+
+	position_board_font_size : constant et_symbols.pac_text.type_text_size := 2.0;
+
+
+	
+	-- GUI relevant only: The space between lower box edge, instance name, 
+	-- file name, board position, view mode:
+	text_spacing : constant et_coordinates.geometry.type_distance_positive := 1.0;
+
+
+	
 	
 	package type_submodules is new ordered_maps (
 		key_type		=> et_general.type_module_instance_name.bounded_string, -- MOT_DRV_3

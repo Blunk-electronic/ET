@@ -39,10 +39,13 @@ with ada.text_io;				use ada.text_io;
 with cairo;						use cairo;
 with pango.layout;				use pango.layout;
 
+with et_text;					use et_text;
 with et_general;				use et_general;
 with et_project;				use et_project;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
+
+with et_pcb_coordinates;
 
 with et_schematic;
 with submodules;				use submodules;
@@ -58,16 +61,18 @@ procedure draw_submodules (
 	use type_submodules;
 	
 	procedure query_submods (cursor : in type_submodules.cursor) is
+
+		-- The lower left corner of the submodule box in the schematic:
+		submod_position : constant type_point := type_point (element (cursor).position);
 		
 		procedure draw_box is begin
-
 			cairo.set_line_width (context.cr, type_view_coordinate (submod_box_line_width));
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (0), gdouble (1)); -- mangenta
 
 			pac_draw_misc.draw_rectangle (
 				area			=> in_area,
 				context			=> context,
-				position		=> element (cursor).position,
+				position		=> submod_position,
 				width			=> element (cursor).size.x,
 				height			=> element (cursor).size.y,
 				frame_height	=> self.drawing.frame_bounding_box.height);
@@ -75,6 +80,88 @@ procedure draw_submodules (
 			cairo.stroke (context.cr);
 		end draw_box;
 
+		-- The position of the instance name is below the lower left corner of the box.
+		-- Position and size are fixed and can not be changed by the operator:
+		procedure draw_instance_name is
+			position : type_point := submod_position;
+			offset : constant type_point := type_point (set (
+					x => zero,
+					y => - text_spacing));
+		begin
+			move (position, offset);
+			
+			pac_draw_misc.draw_text (
+				area		=> in_area,
+				context		=> context,
+				content		=> et_text.to_content ("instance: " & to_string (key (cursor))),
+				size		=> instance_font_size,
+				font		=> instance_font,
+				position	=> position,
+				origin		=> true,
+				rotation	=> zero_rotation,
+				alignment	=> (LEFT, TOP),
+				height		=> self.drawing.frame_bounding_box.height);
+
+		end draw_instance_name;
+		
+		-- The position of the file name is below the instance name.
+		-- Position and size are fixed and can not be changed by the operator:
+		procedure draw_file_name is
+			position : type_point := submod_position;
+			offset : constant type_point := type_point (set (
+					x => zero,
+					y => - (2.0 * text_spacing + instance_font_size)));
+		begin
+			move (position, offset);
+			
+			pac_draw_misc.draw_text (
+				area		=> in_area,
+				context		=> context,
+				content		=> et_text.to_content ("file: " & to_string (element (cursor).file)),
+				size		=> file_font_size,
+				font		=> file_font,
+				position	=> position,
+				origin		=> true,
+				rotation	=> zero_rotation,
+				alignment	=> (LEFT, TOP),
+				height		=> self.drawing.frame_bounding_box.height);
+
+		end draw_file_name;
+
+		-- The position of module in the board is below the file name.
+		-- Position and size are fixed and can not be changed by the operator:
+		procedure draw_position_in_board is
+			position : type_point := submod_position;
+			offset : constant type_point := type_point (set (
+					x => zero,
+					y => - (3.0 * text_spacing + instance_font_size + file_font_size)));
+
+			use et_pcb_coordinates.geometry;
+			pos_x : constant string := to_string (x (element (cursor).position_in_board));
+			pos_y : constant string := to_string (y (element (cursor).position_in_board));
+			rotation : constant string := to_string (rot (element (cursor).position_in_board));
+			
+			text : constant string := "board (x/y/rot.):" &
+					pos_x & et_pcb_coordinates.geometry.axis_separator &
+					pos_y & et_pcb_coordinates.geometry.axis_separator &
+					rotation;
+		begin
+			move (position, offset);
+			
+			pac_draw_misc.draw_text (
+				area		=> in_area,
+				context		=> context,
+				content		=> et_text.to_content (text),
+				size		=> position_board_font_size,
+				font		=> position_board_font,
+				position	=> position,
+				origin		=> true,
+				rotation	=> et_coordinates.geometry.zero_rotation,
+				alignment	=> (LEFT, TOP),
+				height		=> self.drawing.frame_bounding_box.height);
+
+		end draw_position_in_board;
+		
 		procedure draw_ports is 
 			use type_submodule_ports;
 
@@ -86,7 +173,8 @@ procedure draw_submodules (
 				-- CS detect the edge where the port sits at. Depending on the edge
 				-- the port must be drawn 0, 90, 180 or 270 degree.
 				
-				-- Move pos_port by the position of the port:
+				-- Move pos_port by the position of the port. 
+				-- The port position is relative to the module (box) position:
 				move (pos_port, element (pc).position);
 
 				-- Move pos_port down so that the port sits excatly at
@@ -120,23 +208,14 @@ procedure draw_submodules (
 	begin -- query_submods
 		-- We want to draw only those submodules which are on the active sheet:
 		if sheet (element (cursor).position) = self.drawing.sheet then
-			
--- 			save (context.cr);
--- 			
--- 			-- Prepare the current transformation matrix (CTM) so that
--- 			-- all following drawing is relative to the upper left frame corner.
--- 			translate (
--- 				context.cr,
--- 				convert_x (self.drawing.frame_bounding_box.x),
--- 				convert_y (self.drawing.frame_bounding_box.y));
-
 
 			draw_box;
 			draw_ports;
+			draw_file_name;
+			draw_instance_name;
+			draw_position_in_board;
 
-			-- CS draw file name, instance name, position in board, view mode
-
--- 			restore (context.cr);
+			-- CS view mode
 
 		end if;
 	end query_submods;
