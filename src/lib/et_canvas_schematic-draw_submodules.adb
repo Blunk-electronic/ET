@@ -168,7 +168,7 @@ procedure draw_submodules (
 			procedure draw_port (pc : in type_submodule_ports.cursor) is 
 
 				-- First get the position of the submodule box:
-				pos_port : type_point := type_point (element (cursor).position);
+				pos_port : type_point := submod_position;
 			begin
 				-- CS detect the edge where the port sits at. Depending on the edge
 				-- the port must be drawn 0, 90, 180 or 270 degree.
@@ -215,7 +215,7 @@ procedure draw_submodules (
 			draw_instance_name;
 			draw_position_in_board;
 
-			-- CS view mode
+			-- CS view mode ?
 
 		end if;
 	end query_submods;
