@@ -2668,10 +2668,13 @@ package body et_kicad_to_native is
 					use pac_shapes;
 
 					distance : pac_shapes.type_distance_point_line;
+
+					terminal : et_devices.type_terminal;
 				begin
 					log_indentation_up;
 					
-					-- get all ports connected with the current net (in the kicad module):
+					-- Get all ports connected with the current net (in the kicad module):
+					-- CS: No need to do that on every net segment anew. Move up one level.
 					all_ports_of_net := et_kicad.components_in_net (
 						module			=> key (module_cursor_kicad), -- the name of the kicad module
 						net				=> net_name, -- the net in question 
@@ -2711,19 +2714,27 @@ package body et_kicad_to_native is
 							
 							-- If port sits on segment, append it to ports_of_segment.
 							if (not distance.out_of_range) and distance.distance = zero then
+
+								-- Get the name of the unit:
+								terminal := et_kicad.to_terminal (
+										port			=> element (port_cursor_kicad),
+										module			=> key (module_cursor_kicad),  -- the name of the kicad module
+										log_threshold	=> log_threshold + 6);
+
 								log (text => to_string (element (port_cursor_kicad).reference) 
+									 & " unit " & to_string (terminal.unit)
 									 & " port "
 									 & et_symbols.to_string (element (port_cursor_kicad).name)
 									 & kicad_coordinates.to_string (
 											position	=> element (port_cursor_kicad).coordinates,
 											scope		=> kicad_coordinates.XY),
 									 level => log_threshold + 5);
-
+								
 								et_schematic.type_ports_device.insert (
 									container	=> ports_of_segment,
 									new_item	=> (
 										device_name	=> element (port_cursor_kicad).reference,
-										unit_name	=> to_name ("test unit"), -- CS
+										unit_name	=> terminal.unit, -- IO-BANK1, C, A, ...
 										port_name	=> element (port_cursor_kicad).name));
 							end if;
 
