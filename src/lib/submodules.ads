@@ -72,6 +72,9 @@ package submodules is
 
 	function at_edge (
 	-- Returns true if the given point sits at the edge of a submodule box.
+	-- Issues a warning if the point sits at the lower edge of the box
+	-- because the attached net may overlap with the text (instance, file,
+	-- position in board, ...) below the box.
 		point	: in et_coordinates.geometry.type_point;
 		size	: in submodules.type_submodule_size)
 		return boolean;

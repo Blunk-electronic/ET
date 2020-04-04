@@ -47,6 +47,7 @@ with et_general;				use et_general;
 with et_coordinates;
 with et_pcb;
 with et_pcb_coordinates;
+with et_string_processing;		use et_string_processing;
 
 package body submodules is
 
@@ -60,7 +61,6 @@ package body submodules is
 	end;
 
 	function at_edge (
-	-- Returns true if the given point sits at the edge of a submodule box.
 		point	: in et_coordinates.geometry.type_point; -- P
 		size	: in submodules.type_submodule_size) -- sx, sy
 		return boolean is
@@ -89,6 +89,11 @@ package body submodules is
 				-- If P is within x extension of box:
 				if x (point) >= zero and x (point) <= size.x then
 					result := true;
+
+					if y (point) = zero then
+						log (WARNING, "Net connected with port at lower edge of submodule at" & 
+							to_string (point) & " may overlap with texts !");
+					end if;
 				end if;
 			end if;
 		end if;

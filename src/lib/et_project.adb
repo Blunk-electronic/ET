@@ -7082,6 +7082,10 @@ package body et_project is
 												-- extract port position starting at field 2
 												submodule_port.position := to_position (line, 2);
 
+												if not submodules.at_edge (submodule_port.position, submodule.size) then
+													null;
+												end if;
+
 											elsif kw = submodules.keyword_direction then -- direction master/slave
 												expect_field_count (line, 2);
 
