@@ -166,34 +166,109 @@ procedure draw_submodules (
 			use type_submodule_ports;
 
 			procedure draw_port (pc : in type_submodule_ports.cursor) is 
+				-- First get the position of the submodule box.
+				pos : type_point := submod_position;
 
-				-- First get the position of the submodule box:
-				pos_port : type_point := submod_position;
-			begin
-				-- CS detect the edge where the port sits at. Depending on the edge
+				procedure draw_horizontal is begin
+					-- Draw the port horizontal:
+					pac_draw_misc.draw_rectangle (
+						area			=> in_area,
+						context			=> context,
+						position		=> pos,
+						width			=> port_symbol_width,
+						height			=> port_symbol_height,
+						frame_height	=> self.drawing.frame_bounding_box.height);
+				end draw_horizontal;
+
+				procedure draw_vertical is begin
+					-- Draw the port vertical:					
+					pac_draw_misc.draw_rectangle (
+						area			=> in_area,
+						context			=> context,
+						position		=> pos,
+						width			=> port_symbol_height,
+						height			=> port_symbol_width,
+						frame_height	=> self.drawing.frame_bounding_box.height);
+				end draw_vertical;
+				
+			begin -- draw_port
+				-- Detect the edge where the port sits at. Depending on the edge
 				-- the port must be drawn 0, 90, 180 or 270 degree.
-				
-				-- Move pos_port by the position of the port. 
+
+				-- Move pos by the position of the port. 
 				-- The port position is relative to the module (box) position:
-				move (pos_port, element (pc).position);
+				move (pos, element (pc).position);
 
-				-- Move pos_port down so that the port sits excatly at
-				-- the point where a net will be connected:
-				move (pos_port, set (zero, - port_symbol_height / 2.0));
+				-- According to the edge where the port sits, pos will now be fine
+				-- adjusted, because the port is a rectangle which position is at 
+				-- its lower left corner.
 				
-				pac_draw_misc.draw_rectangle (
-					area			=> in_area,
-					context			=> context,
-					position		=> pos_port,
-					width			=> port_symbol_width,
-					height			=> port_symbol_height,
-					frame_height	=> self.drawing.frame_bounding_box.height);
+				-- Does the port sit on the LEFT edge of the box ?
+				if x (element (pc).position) + x (submod_position) = x (submod_position) then 
 
-				-- CS draw something that indicates the direction (master/slave).
-				-- element (pc).direction
+					-- Move pos down so that the port sits excatly at
+					-- the point where a net will be connected:
+					move (pos, set (x => zero, y => - port_symbol_height / 2.0));
 
-				-- CS draw port name
-				-- key (pc)
+					draw_horizontal;
+
+					-- CS draw something that indicates the direction (master/slave).
+					-- element (pc).direction
+
+					-- CS draw port name
+					-- key (pc)
+
+				-- Does the port sit on the RIGHT edge of the box ?
+				elsif x (element (pc).position) + x (submod_position) = x (submod_position) + element (cursor).size.x then 
+
+					-- Move pos down and left so that the port sits excatly at
+					-- the point where a net will be connected:
+					move (pos, set (x => - port_symbol_width, y => - port_symbol_height / 2.0));
+
+					draw_horizontal;
+
+					-- CS draw something that indicates the direction (master/slave).
+					-- element (pc).direction
+
+					-- CS draw port name
+					-- key (pc)
+
+				-- Does the port sit on the LOWER edge of the box ?
+				elsif y (element (pc).position) + y (submod_position) = y (submod_position) then
+
+					-- Move pos left so that the port sits excatly at
+					-- the point where a net will be connected:
+					move (pos, set (x => - port_symbol_height / 2.0, y => zero));
+
+					draw_vertical;
+
+					-- CS draw something that indicates the direction (master/slave).
+					-- element (pc).direction
+
+					-- CS draw port name
+					-- key (pc)
+
+				-- Does the port sit on the UPPER edge of the box ?
+				elsif y (element (pc).position) + y (submod_position) = y (submod_position) + element (cursor).size.y then 
+
+					-- Move pos up and left so that the port sits excatly at
+					-- the point where a net will be connected:
+					move (pos, set (x => - port_symbol_height / 2.0, y => - port_symbol_width));
+
+					draw_vertical;
+
+					-- CS draw something that indicates the direction (master/slave).
+					-- element (pc).direction
+
+					-- CS draw port name
+					-- key (pc)
+
+					
+				else
+					-- port does not sit on any edge
+					raise constraint_error; -- CS should never happen
+				end if;
+
 			end draw_port;
 			
 		begin -- draw_ports
