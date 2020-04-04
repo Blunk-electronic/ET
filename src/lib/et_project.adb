@@ -124,6 +124,15 @@ package body et_project is
 		return find (modules, name);
 	end;
 
+	procedure port_not_at_edge (name : in et_general.type_net_name.bounded_string) is 
+		use et_string_processing;
+	begin
+		log (ERROR, "port " & enclose_in_quotes (et_general.to_string (name)) &
+			" must be at the edge of the submodule !", console => true);
+		raise constraint_error;
+	end;
+
+	
 	function port_connected (
 	-- Returns true if given port of netchanger is connected with any net.
 		module	: in type_modules.cursor;
@@ -5264,21 +5273,28 @@ package body et_project is
 											cursor : submodules.type_submodule_ports.cursor;
 											inserted : boolean;
 										begin
-											-- append port to collection of submodule ports
-											submodules.type_submodule_ports.insert (
-												container	=> submodule_ports,
-												key			=> submodule_port_name, -- RESET
-												new_item	=> submodule_port,
-												inserted	=> inserted,
-												position	=> cursor
-												);
-
-											if not inserted then
-												log (ERROR, "port " & 
-													 et_general.to_string (submodule_port_name) & " already used !",
-													 console => true
+											-- Test whether the port sits at the edge of the submodule box:
+											if submodules.at_edge (submodule_port.position, submodule.size) then
+												
+												-- append port to collection of submodule ports
+												submodules.type_submodule_ports.insert (
+													container	=> submodule_ports,
+													key			=> submodule_port_name, -- RESET
+													new_item	=> submodule_port,
+													inserted	=> inserted,
+													position	=> cursor
 													);
-												raise constraint_error;
+
+												if not inserted then
+													log (ERROR, "port " & 
+														et_general.to_string (submodule_port_name) & " already used !",
+														console => true
+														);
+													raise constraint_error;
+												end if;
+
+											else
+												port_not_at_edge (submodule_port_name);
 											end if;
 										end;
 
@@ -7081,10 +7097,6 @@ package body et_project is
 
 												-- extract port position starting at field 2
 												submodule_port.position := to_position (line, 2);
-
-												if not submodules.at_edge (submodule_port.position, submodule.size) then
-													null;
-												end if;
 
 											elsif kw = submodules.keyword_direction then -- direction master/slave
 												expect_field_count (line, 2);

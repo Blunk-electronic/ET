@@ -131,12 +131,6 @@ package body schematic_ops is
 			 enclose_in_quotes (to_variant (variant)) & " not found !", console => true);
 		raise constraint_error;
 	end;
-	
-	procedure port_not_at_edge (name : in et_general.type_net_name.bounded_string) is begin
-		log (ERROR, "port " & enclose_in_quotes (to_string (name)) &
-			" must be at the edge of the submodule !", console => true);
-		raise constraint_error;
-	end;
 
 	procedure port_not_provided (port_name : in et_general.type_net_name.bounded_string) is begin
 		log (ERROR, "submodule does not provide a port named " &

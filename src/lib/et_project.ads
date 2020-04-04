@@ -197,6 +197,8 @@ package et_project is
 	-- Locates the given module in the global container "modules".
 		return type_modules.cursor;
 
+	procedure port_not_at_edge (name : in et_general.type_net_name.bounded_string);
+	
 	function port_connected (
 	-- Returns true if given port of netchanger is connected with any net.
 		module	: in type_modules.cursor;	
