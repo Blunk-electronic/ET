@@ -245,9 +245,6 @@ procedure draw_submodules (
 					-- CS draw something that indicates the direction (master/slave).
 					-- element (pc).direction
 
-					-- CS draw port name
-					-- key (pc)
-
 				-- Does the port sit on the RIGHT edge of the box ?
 				elsif x (element (pc).position) + x (submod_position) = x (submod_position) + element (cursor).size.x then 
 
@@ -273,9 +270,6 @@ procedure draw_submodules (
 
 					-- CS draw something that indicates the direction (master/slave).
 					-- element (pc).direction
-
-					-- CS draw port name
-					-- key (pc)
 
 				-- Does the port sit on the LOWER edge of the box ?
 				elsif y (element (pc).position) + y (submod_position) = y (submod_position) then
@@ -303,9 +297,6 @@ procedure draw_submodules (
 					-- CS draw something that indicates the direction (master/slave).
 					-- element (pc).direction
 
-					-- CS draw port name
-					-- key (pc)
-
 				-- Does the port sit on the UPPER edge of the box ?
 				elsif y (element (pc).position) + y (submod_position) = y (submod_position) + element (cursor).size.y then 
 
@@ -331,10 +322,6 @@ procedure draw_submodules (
 
 					-- CS draw something that indicates the direction (master/slave).
 					-- element (pc).direction
-
-					-- CS draw port name
-					-- key (pc)
-
 					
 				else
 					-- port does not sit on any edge

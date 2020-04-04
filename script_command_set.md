@@ -595,9 +595,22 @@ schematic led_driver delete submodule FLT1
 ```
 
 ## SUBMODULE PORTS
+The port of a submodule is named after a net which must exist inside the submodule.
+The net becomes visible to the outside world if it is connected with a netchanger.
+If a net inside the submodule is not connected with a netchanger, then it can not
+be seen from outside.
+To place a port of a submodule the module instance, the exported net, the port position
+and the port direction must be given. See the follwing example command where
+FLT1 is the instance, RF_OUT is the port name, 0/10 is the position and slave is the
+direction.
+The direction has nothing to do with energy or information flow. It can either be 
+"master" or "slave". The direction is relevant for
+netlist generation. A master port enforces its name onto the connected net whereas a
+slave port propagates the name of the connected net into the submodule.
+
 ### ADDING
 ```
-schematic led_driver add port FLT1 RF_OUT 0 10 slave
+schematic led_driver add port FLT1 RF_OUT 0 10 slave 
 ```
 
 ### DELETING
