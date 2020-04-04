@@ -59,7 +59,7 @@ package submodules is
 
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
 
-	subtype type_submodule_edge_length is type_distance range 20.0 .. 1000.0;
+	subtype type_submodule_edge_length is et_coordinates.geometry.type_distance_positive range 20.0 .. 1000.0;
 
 	keyword_size	: constant string := "size";
 	keyword_file	: constant string := "file";
@@ -107,14 +107,27 @@ package submodules is
 
 	
 	-- GUI relevant only: The port of a submodule is just a small rectangle:
-	port_symbol_width	: constant type_distance := 4.0;
-	port_symbol_height	: constant type_distance := 2.0;
+	port_symbol_width	: constant et_coordinates.geometry.type_distance_positive := 4.0;
+	port_symbol_height	: constant et_coordinates.geometry.type_distance_positive := 2.0;
 	type type_port_symbol is record
-		width, height	: type_distance;
+		width, height : et_coordinates.geometry.type_distance_positive;
 	end record;
 
 	port_symbol : constant type_port_symbol := (port_symbol_width, port_symbol_height);
-	port_symbol_line_width : constant type_distance := 0.2;
+	port_symbol_line_width : constant et_symbols.type_line_width := 0.2;
+
+	
+	-- GUI relevant only: The font of the port name:
+	port_name_font : constant et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+
+	-- The font size of the port name:
+	port_name_font_size : constant et_symbols.pac_text.type_text_size := 2.0;
+
+	-- The spacing between port rectangel and port name
+	port_name_spacing : constant et_coordinates.geometry.type_distance_positive := 0.5;
 	
 	type type_submodule_port is record
 		-- the position somewhere at the edge of the box
@@ -151,7 +164,7 @@ package submodules is
 	end record;
 
 	-- GUI relevant only: The line width of the box:
-	submod_box_line_width : constant type_distance := 0.2;
+	submod_box_line_width : constant et_symbols.type_line_width := 0.2;
 
 
 	

@@ -59,6 +59,20 @@ procedure draw_submodules (
 	context : in type_draw_context) is
 
 	use type_submodules;
+
+	-- Transposes the x-value from the drawing to the view.
+	function transpose_x (x : in type_distance) return type_view_coordinate is begin
+		--return convert_x (x - boundaries.smallest_x);
+		return convert_x (x);
+	end;
+
+	-- Transposes the y-value from the drawing to the view.
+	function transpose_y (y : in type_distance) return type_view_coordinate is begin
+		--return convert_y (abs (y - boundaries.greatest_y));
+		return convert_y (- y);
+	end;
+
+
 	
 	procedure query_submods (cursor : in type_submodules.cursor) is
 
@@ -178,6 +192,7 @@ procedure draw_submodules (
 						width			=> port_symbol_width,
 						height			=> port_symbol_height,
 						frame_height	=> self.drawing.frame_bounding_box.height);
+					
 				end draw_horizontal;
 
 				procedure draw_vertical is begin
@@ -189,6 +204,7 @@ procedure draw_submodules (
 						width			=> port_symbol_height,
 						height			=> port_symbol_width,
 						frame_height	=> self.drawing.frame_bounding_box.height);
+
 				end draw_vertical;
 				
 			begin -- draw_port
@@ -206,6 +222,20 @@ procedure draw_submodules (
 				-- Does the port sit on the LEFT edge of the box ?
 				if x (element (pc).position) + x (submod_position) = x (submod_position) then 
 
+					-- Draw the port name. The text is placed on the RIGHT of the port rectangle:
+					pac_draw_misc.draw_text 
+						(
+						area		=> in_area,
+						context		=> context,
+						content		=> to_content (to_string (key (pc))),
+						size		=> port_name_font_size,
+						font		=> port_name_font,
+						position	=> type_point (move (pos, 0.0, port_symbol_width + port_name_spacing)),
+						origin		=> false, -- no origin required
+						rotation	=> zero_rotation,
+						alignment	=> (LEFT, CENTER),
+						height		=> self.drawing.frame_bounding_box.height);
+					
 					-- Move pos down so that the port sits excatly at
 					-- the point where a net will be connected:
 					move (pos, set (x => zero, y => - port_symbol_height / 2.0));
@@ -221,6 +251,20 @@ procedure draw_submodules (
 				-- Does the port sit on the RIGHT edge of the box ?
 				elsif x (element (pc).position) + x (submod_position) = x (submod_position) + element (cursor).size.x then 
 
+					-- Draw the port name. The text is placed on the LEFT of the port rectangle:
+					pac_draw_misc.draw_text 
+						(
+						area		=> in_area,
+						context		=> context,
+						content		=> to_content (to_string (key (pc))),
+						size		=> port_name_font_size,
+						font		=> port_name_font,
+						position	=> type_point (move (pos, 180.0, port_symbol_width + port_name_spacing)),
+						origin		=> false, -- no origin required
+						rotation	=> zero_rotation,
+						alignment	=> (RIGHT, CENTER),
+						height		=> self.drawing.frame_bounding_box.height);
+					
 					-- Move pos down and left so that the port sits excatly at
 					-- the point where a net will be connected:
 					move (pos, set (x => - port_symbol_width, y => - port_symbol_height / 2.0));
@@ -236,6 +280,20 @@ procedure draw_submodules (
 				-- Does the port sit on the LOWER edge of the box ?
 				elsif y (element (pc).position) + y (submod_position) = y (submod_position) then
 
+					-- Draw the port name. The text is placed ABOVE the port rectangle:
+					pac_draw_misc.draw_text 
+						(
+						area		=> in_area,
+						context		=> context,
+						content		=> to_content (to_string (key (pc))),
+						size		=> port_name_font_size,
+						font		=> port_name_font,
+						position	=> type_point (move (pos, 90.0, port_symbol_width + port_name_spacing)),
+						origin		=> false, -- no origin required
+						rotation	=> 90.0,
+						alignment	=> (LEFT, CENTER),
+						height		=> self.drawing.frame_bounding_box.height);
+					
 					-- Move pos left so that the port sits excatly at
 					-- the point where a net will be connected:
 					move (pos, set (x => - port_symbol_height / 2.0, y => zero));
@@ -251,6 +309,20 @@ procedure draw_submodules (
 				-- Does the port sit on the UPPER edge of the box ?
 				elsif y (element (pc).position) + y (submod_position) = y (submod_position) + element (cursor).size.y then 
 
+					-- Draw the port name. The text is placed BELOW the port rectangle:
+					pac_draw_misc.draw_text 
+						(
+						area		=> in_area,
+						context		=> context,
+						content		=> to_content (to_string (key (pc))),
+						size		=> port_name_font_size,
+						font		=> port_name_font,
+						position	=> type_point (move (pos, 270.0, port_symbol_width + port_name_spacing)),
+						origin		=> false, -- no origin required
+						rotation	=> 90.0,
+						alignment	=> (RIGHT, CENTER),
+						height		=> self.drawing.frame_bounding_box.height);
+					
 					-- Move pos up and left so that the port sits excatly at
 					-- the point where a net will be connected:
 					move (pos, set (x => - port_symbol_height / 2.0, y => - port_symbol_width));
