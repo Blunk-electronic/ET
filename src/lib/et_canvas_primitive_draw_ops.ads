@@ -80,6 +80,7 @@ package pac_draw is
 	-- The line is shifted in y to a plane of given height. This plane
 	-- has y-axis going downwards.
 	-- The line will be drawn if its bounding box intersects the given area.
+	-- If area is no_rectangle then the line would be drawn in any case.
 	procedure draw_line (
 		area			: in type_rectangle;	
 		context			: in type_draw_context;
@@ -91,6 +92,7 @@ package pac_draw is
 	-- The arc is shifted in y to a plane of given height. This plane
 	-- has y-axis going downwards.
 	-- The arc will be drawn if its bounding box intersects the given area.
+	-- If area is no_rectangle then the arc would be drawn in any case.
 	procedure draw_arc (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
@@ -101,6 +103,7 @@ package pac_draw is
 	-- The circle is shifted in y to a plane of given height. This plane
 	-- has y-axis going downwards.
 	-- The circle will be drawn if its bounding box intersects the given area.
+	-- If area is no_rectangle then the circle would be drawn in any case.
 	procedure draw_circle (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
@@ -113,6 +116,7 @@ package pac_draw is
 	-- The rectangle is shifted in y to a plane of given height. This plane
 	-- has y-axis going downwards.
 	-- The rectangle will be drawn if its bounding box intersects the given area.
+	-- If area is no_rectangle then the rectangle would be drawn in any case.
 	procedure draw_rectangle (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
@@ -136,7 +140,7 @@ package pac_draw is
 
 	-- Draws a text right in the view.
 	-- Does not care about area and bounding box. It is assumed that the calling
-	-- unit has decided whether the text is to be drawn or not.
+	-- unit has decided whether the text is to be drawn or not. No area check here.
 	procedure draw_text (
 		context		: in type_draw_context;
 		content		: in type_text_content.bounded_string;
@@ -158,6 +162,7 @@ package pac_draw is
 	-- Draws a text in the drawing plane.
 	-- Draws the text in case it is inside the given area or whether the
 	-- text intersects the given area.
+	-- If area is no_rectangle then the text would be drawn in any case.
 	procedure draw_text (
 		area		: in type_rectangle; -- in model plane
 		context		: in type_draw_context;

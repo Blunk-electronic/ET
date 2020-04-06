@@ -543,7 +543,7 @@ package body pac_draw is
 				origin		=> (ox, oy)
 				);
 
-		-- Now we build the ounding box of the text. The bounding box
+		-- Now we build the bounding box of the text. The bounding box
 		-- is the text enclosing rectangle that exists in the model plane.
 		-- In the model plane the y-axis increases downwards.
 		-- The bounding box position is where it has its upper left corner.
