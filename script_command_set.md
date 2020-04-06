@@ -558,6 +558,8 @@ schematic led_driver copy submodule FLT1 FLT2 1 300 90 # position sheet/x/y
 ```
 
 ### MOVING
+As with units, moving a submodule disconnects it from attached nets.
+The arguments for the move operation are sheet, x and y (see moving units):
 ```
 schematic led_driver move submodule FLT1 absolute 4 210 100
 ```

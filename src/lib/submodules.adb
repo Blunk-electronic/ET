@@ -119,7 +119,14 @@ package body submodules is
 		name := to_module_name (remove_extension (to_string (path)));
 		return name;
 	end to_module_name;
-		
+
+	function to_direction_abbrevation (direction : in type_netchanger_port_name) return string is begin
+		case direction is 
+			when MASTER => return port_direction_abbrevation_master;
+			when SLAVE => return port_direction_abbrevation_slave;
+		end case;
+	end to_direction_abbrevation;
+	
 	procedure move_ports (
 	-- Moves the given ports by the given offset.
 		ports	: in out type_submodule_ports.map; -- the portlist

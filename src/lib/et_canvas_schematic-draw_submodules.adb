@@ -222,6 +222,20 @@ procedure draw_submodules (
 				-- Does the port sit on the LEFT edge of the box ?
 				if x (element (pc).position) + x (submod_position) = x (submod_position) then 
 
+					-- Draw the port direction (the letter M or S) inside the port rectangle:
+					pac_draw_misc.draw_text 
+						(
+						area		=> in_area,
+						context		=> context,
+						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
+						size		=> port_direction_font_size,
+						font		=> port_direction_font,
+						position	=> type_point (move (pos, 0.0, port_symbol_width / 2.0)),
+						origin		=> false, -- no origin required
+						rotation	=> zero_rotation,
+						alignment	=> (CENTER, CENTER),
+						height		=> self.drawing.frame_bounding_box.height);
+					
 					-- Draw the port name. The text is placed on the RIGHT of the port rectangle:
 					pac_draw_misc.draw_text 
 						(
@@ -241,13 +255,24 @@ procedure draw_submodules (
 					move (pos, set (x => zero, y => - port_symbol_height / 2.0));
 
 					draw_horizontal;
-
-					-- CS draw something that indicates the direction (master/slave).
-					-- element (pc).direction
-
+					
 				-- Does the port sit on the RIGHT edge of the box ?
 				elsif x (element (pc).position) + x (submod_position) = x (submod_position) + element (cursor).size.x then 
 
+					-- Draw the port direction (the letter M or S) inside the port rectangle:
+					pac_draw_misc.draw_text 
+						(
+						area		=> in_area,
+						context		=> context,
+						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
+						size		=> port_direction_font_size,
+						font		=> port_direction_font,
+						position	=> type_point (move (pos, 180.0, port_symbol_width / 2.0)),
+						origin		=> false, -- no origin required
+						rotation	=> zero_rotation,
+						alignment	=> (CENTER, CENTER),
+						height		=> self.drawing.frame_bounding_box.height);
+					
 					-- Draw the port name. The text is placed on the LEFT of the port rectangle:
 					pac_draw_misc.draw_text 
 						(
@@ -268,12 +293,23 @@ procedure draw_submodules (
 
 					draw_horizontal;
 
-					-- CS draw something that indicates the direction (master/slave).
-					-- element (pc).direction
-
 				-- Does the port sit on the LOWER edge of the box ?
 				elsif y (element (pc).position) + y (submod_position) = y (submod_position) then
 
+					-- Draw the port direction (the letter M or S) inside the port rectangle:
+					pac_draw_misc.draw_text 
+						(
+						area		=> in_area,
+						context		=> context,
+						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
+						size		=> port_direction_font_size,
+						font		=> port_direction_font,
+						position	=> type_point (move (pos, 90.0, port_symbol_width / 2.0)),
+						origin		=> false, -- no origin required
+						rotation	=> zero_rotation,
+						alignment	=> (CENTER, CENTER),
+						height		=> self.drawing.frame_bounding_box.height);
+					
 					-- Draw the port name. The text is placed ABOVE the port rectangle:
 					pac_draw_misc.draw_text 
 						(
@@ -294,12 +330,23 @@ procedure draw_submodules (
 
 					draw_vertical;
 
-					-- CS draw something that indicates the direction (master/slave).
-					-- element (pc).direction
-
 				-- Does the port sit on the UPPER edge of the box ?
 				elsif y (element (pc).position) + y (submod_position) = y (submod_position) + element (cursor).size.y then 
 
+					-- Draw the port direction (the letter M or S) inside the port rectangle:
+					pac_draw_misc.draw_text 
+						(
+						area		=> in_area,
+						context		=> context,
+						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
+						size		=> port_direction_font_size,
+						font		=> port_direction_font,
+						position	=> type_point (move (pos, 270.0, port_symbol_width / 2.0)),
+						origin		=> false, -- no origin required
+						rotation	=> zero_rotation,
+						alignment	=> (CENTER, CENTER),
+						height		=> self.drawing.frame_bounding_box.height);
+					
 					-- Draw the port name. The text is placed BELOW the port rectangle:
 					pac_draw_misc.draw_text 
 						(
@@ -319,9 +366,6 @@ procedure draw_submodules (
 					move (pos, set (x => - port_symbol_height / 2.0, y => - port_symbol_width));
 
 					draw_vertical;
-
-					-- CS draw something that indicates the direction (master/slave).
-					-- element (pc).direction
 					
 				else
 					-- port does not sit on any edge

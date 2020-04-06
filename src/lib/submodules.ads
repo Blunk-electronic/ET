@@ -37,9 +37,13 @@
 --   ToDo: 
 
 
--- with ada.text_io;				use ada.text_io;
--- with ada.strings.maps;			use ada.strings.maps;
+with ada.text_io;				use ada.text_io;
+with ada.characters;			use ada.characters;
+with ada.characters.handling;	use ada.characters.handling;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed;			use ada.strings.fixed;
 with ada.strings.bounded;       use ada.strings.bounded;
+with ada.strings.maps;			use ada.strings.maps;
 with ada.containers;            use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
@@ -98,6 +102,10 @@ package submodules is
 		return et_general.type_module_name.bounded_string;
 	-- Removes the file extension from given path and returns the module name.
 
+
+
+
+	
 	type type_netchanger_port_name is (MASTER, SLAVE);
 	
 	keyword_direction : constant string := "direction";
@@ -105,6 +113,8 @@ package submodules is
 	function to_port_name (name : in string) return type_netchanger_port_name;
 	function to_string (name : in type_netchanger_port_name) return string;	
 
+
+	
 	
 	-- GUI relevant only: The port of a submodule is just a small rectangle:
 	port_symbol_width	: constant et_coordinates.geometry.type_distance_positive := 4.0;
@@ -126,8 +136,30 @@ package submodules is
 	-- The font size of the port name:
 	port_name_font_size : constant et_symbols.pac_text.type_text_size := 2.0;
 
-	-- The spacing between port rectangel and port name
+	-- The spacing between port rectangle and port name
 	port_name_spacing : constant et_coordinates.geometry.type_distance_positive := 0.5;
+
+
+	-- GUI relevant only: The font of the port direction:
+	port_direction_font : constant et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+
+	-- The font size of the port direction:
+	port_direction_font_size : constant et_symbols.pac_text.type_text_size :=
+		port_symbol_height - 3.0 * port_symbol_line_width;
+
+	-- Required in the GUI to indicate the direction of a submodule port:
+	port_direction_abbrevation_master : constant string := "M";
+	port_direction_abbrevation_slave  : constant string := "S";
+
+	-- Returns an M for MASTER and an S for SLAVE.
+	function to_direction_abbrevation (direction : in type_netchanger_port_name) return string;
+	
+
+
+	
 	
 	type type_submodule_port is record
 		-- the position somewhere at the edge of the box
