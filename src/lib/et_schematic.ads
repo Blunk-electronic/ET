@@ -102,6 +102,14 @@ package et_schematic is
 		content		: et_text.type_text_content.bounded_string;
 	end record;
 
+	type type_text2 is new pac_text.type_text with record
+		position	: et_coordinates.geometry.type_point;
+		rotation	: et_text.type_rotation_documentation;
+		sheet		: et_coordinates.type_sheet;
+		content		: et_text.type_text_content.bounded_string;
+		font		: et_text.type_font;
+	end record;
+		
 	package type_texts is new doubly_linked_lists (type_text); -- CS rename to pac_texts
 
 	

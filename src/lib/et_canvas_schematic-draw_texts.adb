@@ -83,7 +83,7 @@ procedure draw_texts (
 				
 				alignment	=> element (cursor).alignment,
 				height		=> self.drawing.frame_bounding_box.height);
-;
+
 		end if;
 	end query_text;
 		
