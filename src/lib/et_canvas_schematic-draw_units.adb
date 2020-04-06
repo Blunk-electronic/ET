@@ -549,8 +549,6 @@ procedure draw_units (
 				draw_terminal_name;
 			end if;
 			
-			-- CS draw port direction, sensitivity, level
-			
 		end draw_port;
 
 		-- This procedure draws fixed documetational texts like "MUX" or "CT16" as they 
