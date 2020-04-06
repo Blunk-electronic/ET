@@ -576,7 +576,7 @@ procedure draw_units (
 				origin		=> false, -- no origin required
 				
 				-- Text rotation around its anchor point.
-				-- This is documetational text. Its rotation must
+				-- This is documentational text. Its rotation must
 				-- be snapped to either HORIZONAL or VERTICAL so that
 				-- it is readable from the front or the right.
 				rotation	=> to_rotation (snap (element (c).rotation + unit_rotation)),

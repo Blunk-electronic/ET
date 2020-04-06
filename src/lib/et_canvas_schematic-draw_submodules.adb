@@ -59,20 +59,6 @@ procedure draw_submodules (
 	context : in type_draw_context) is
 
 	use type_submodules;
-
-	-- Transposes the x-value from the drawing to the view.
-	function transpose_x (x : in type_distance) return type_view_coordinate is begin
-		--return convert_x (x - boundaries.smallest_x);
-		return convert_x (x);
-	end;
-
-	-- Transposes the y-value from the drawing to the view.
-	function transpose_y (y : in type_distance) return type_view_coordinate is begin
-		--return convert_y (abs (y - boundaries.greatest_y));
-		return convert_y (- y);
-	end;
-
-
 	
 	procedure query_submods (cursor : in type_submodules.cursor) is
 

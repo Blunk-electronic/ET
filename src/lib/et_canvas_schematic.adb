@@ -135,6 +135,11 @@ package body et_canvas_schematic is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	procedure draw_texts (
+		self    : not null access type_view;
+		in_area	: in type_rectangle := no_rectangle;
+		context : in type_draw_context) is separate;
+	
 	procedure draw_units (
 		self	: not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
@@ -194,7 +199,7 @@ package body et_canvas_schematic is
 
 		draw_cursor (self, area_shifted, context, cursor_main);
 		draw_nets (self, area_shifted, context);
-		-- CS self.model.draw_texts (area, context);
+		draw_texts (self, area_shifted, context);
 		draw_submodules (self, area_shifted, context);
 
 		restore (context.cr);

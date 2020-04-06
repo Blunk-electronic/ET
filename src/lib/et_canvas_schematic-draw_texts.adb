@@ -1,0 +1,103 @@
+------------------------------------------------------------------------------
+--                                                                          --
+--                              SYSTEM ET                                   --
+--                                                                          --
+--                              DRAW TEXTS                                  --
+--                                                                          --
+--                               B o d y                                    --
+--                                                                          --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--                                                                          --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
+--                                                                          --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
+--                                                                          --
+------------------------------------------------------------------------------
+
+--   For correct displaying set tab width in your editor to 4.
+
+--   The two letters "CS" indicate a "construction site" where things are not
+--   finished yet or intended for the future.
+
+--   Please send your questions and comments to:
+--
+--   info@blunk-electronic.de
+--   or visit <http://www.blunk-electronic.de> for more contact data
+--
+--   history of changes:
+--
+
+with ada.text_io;				use ada.text_io;
+with cairo;						use cairo;
+with pango.layout;				use pango.layout;
+
+with et_text;					use et_text;
+with et_general;				use et_general;
+with et_project;				use et_project;
+with et_coordinates;			use et_coordinates;
+use et_coordinates.geometry;
+
+with et_schematic;				use et_schematic;
+use et_schematic.type_texts;
+use et_project.type_modules;
+
+separate (et_canvas_schematic)
+
+procedure draw_texts (
+	self	: not null access type_view;
+	in_area	: in type_rectangle := no_rectangle;
+	context : in type_draw_context) is
+
+	procedure query_text (cursor : in type_texts.cursor) is
+
+		-- 		text_position : constant type_position := int (element (cursor).position);
+		font : constant et_text.type_font := (
+			family	=> et_text.to_family ("monospace"),
+			slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+			weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+	
+		
+	begin -- query_submods
+		-- We want to draw only those submodules which are on the active sheet:
+		if sheet (element (cursor).position) = self.drawing.sheet then
+
+			pac_draw_misc.draw_text (
+				area		=> in_area,
+				context		=> context,
+				content		=> element (cursor).content,
+				size		=> element (cursor).size,
+				font		=> font,
+				position	=> type_point (element (cursor).position),
+				origin		=> true,
+
+				-- This is documentational text. Tt is readable from the front or the right.
+				rotation	=> pac_text.to_rotation (element (cursor).rotation),
+				
+				alignment	=> element (cursor).alignment,
+				height		=> self.drawing.frame_bounding_box.height);
+;
+		end if;
+	end query_text;
+		
+begin
+	--put_line ("draw texts ...");
+
+	iterate (element (current_active_module).texts, query_text'access);
+	
+end draw_texts;
+
+
+-- Soli Deo Gloria
+
+-- For God so loved the world that he gave 
+-- his one and only Son, that whoever believes in him 
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16
