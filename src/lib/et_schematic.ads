@@ -97,12 +97,12 @@ package et_schematic is
 -- TEXT FIELD
 
 	-- A text/note in the schematic:
-	type type_text is new et_symbols.type_text_basic with record
-		position	: et_coordinates.type_position;
-		content		: et_text.type_text_content.bounded_string;
-	end record;
+-- 	type type_text is new et_symbols.type_text_basic with record
+-- 		position	: et_coordinates.type_position;
+-- 		content		: et_text.type_text_content.bounded_string;
+-- 	end record;
 
-	type type_text2 is new pac_text.type_text with record
+	type type_text is new pac_text.type_text with record
 		position	: et_coordinates.geometry.type_point;
 		rotation	: et_text.type_rotation_documentation;
 		sheet		: et_coordinates.type_sheet;

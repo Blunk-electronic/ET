@@ -67,7 +67,7 @@ procedure draw_texts (
 		
 	begin -- query_submods
 		-- We want to draw only those submodules which are on the active sheet:
-		if sheet (element (cursor).position) = self.drawing.sheet then
+		if element (cursor).sheet = self.drawing.sheet then
 
 			pac_draw_misc.draw_text (
 				area		=> in_area,

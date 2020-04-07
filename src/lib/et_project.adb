@@ -1558,15 +1558,29 @@ package body et_project is
 		end query_submodules;
 
 		procedure query_texts is		
+			use et_coordinates;
+			use et_coordinates.geometry;
 			use et_schematic;
 			use type_texts;
-
+			use et_schematic.pac_text;
+			
 			procedure write (text_cursor : in type_texts.cursor) is begin
 				section_mark (section_text, HEADER);
 				write (keyword => keyword_position, parameters => position (element (text_cursor).position));
+				write (keyword => keyword_rotation, 
+					   parameters => to_string (to_rotation (element (text_cursor).rotation)));
+				
+				write (keyword => keyword_sheet, parameters => to_sheet (element (text_cursor).sheet));
 				write (keyword => keyword_content, wrap => true,
 					   parameters => to_string (element (text_cursor).content));
-				write_text_properties (element (text_cursor));
+				
+				--write_text_properties (element (text_cursor));
+				
+				write (keyword => keyword_size, parameters => to_string (element (text_cursor).size));
+				write (keyword => keyword_alignment, parameters => to_string (element (text_cursor).alignment));
+
+				-- CS font
+				
 				section_mark (section_text, FOOTER);
 			end write;
 		
@@ -2525,6 +2539,53 @@ package body et_project is
 			end if;
 		end set_junction;
 
+		procedure read_schematic_text is
+			use et_coordinates.geometry;
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_position then -- position sheet 2 x 91.44 y 118.56
+				expect_field_count (line, 7);
+
+				declare
+					-- extract position of note starting at field 2
+					pos : constant et_coordinates.type_position := to_position (line, 2);
+				begin
+					note.position := type_point (pos);
+					note.sheet := sheet (pos);
+				end;
+
+			elsif kw = keyword_content then -- content "DUMMY TEXT IN CORE MODULE"
+				expect_field_count (line, 2); -- actual content in quotes !
+				note.content := et_text.to_content (f (line, 2));
+
+			elsif kw = et_text.keyword_size then -- size 1.4
+				expect_field_count (line, 2);
+				note.size := to_distance (f (line, 2));
+
+			elsif kw = et_text.keyword_line_width then -- line_width 0.1
+				expect_field_count (line, 2);
+				note.line_width := to_distance (f (line, 2));
+
+			elsif kw = keyword_rotation then -- rotation 90
+				expect_field_count (line, 2);
+				note.rotation := et_symbols.pac_text.to_rotation_doc (f (line, 2));
+
+			elsif kw = keyword_style then -- stlye normal/italic
+				expect_field_count (line, 2);
+				--note.style := et_symbols.to_text_style (f (line, 2)); -- CS
+
+			elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+				expect_field_count (line, 5);
+
+				-- extract alignment starting at field 2
+				note.alignment := et_text.to_alignment (line, 2);
+				
+			else
+				invalid_keyword (kw);
+			end if;
+		end read_schematic_text;
+		
 		procedure read_layer is
 			kw : constant string := f (line, 1);
 			use et_pcb_stack;
@@ -7133,47 +7194,7 @@ package body et_project is
 					when SEC_TEXT =>
 						case stack.parent is
 							when SEC_TEXTS => -- in schematic
-								declare
-									use et_coordinates.geometry;
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_position then -- position sheet 2 x 91.44 y 118.56
-										expect_field_count (line, 7);
-
-										-- extract position of note starting at field 2
-										note.position := to_position (line, 2);
-
-									elsif kw = keyword_content then -- content "DUMMY TEXT IN CORE MODULE"
-										expect_field_count (line, 2); -- actual content in quotes !
-										note.content := et_text.to_content (f (line, 2));
-
-									elsif kw = et_text.keyword_size then -- size 1.4
-										expect_field_count (line, 2);
-										note.size := to_distance (f (line, 2));
-
-									elsif kw = et_text.keyword_line_width then -- line_width 0.1
-										expect_field_count (line, 2);
-										note.line_width := to_distance (f (line, 2));
-
-									elsif kw = keyword_rotation then -- rotation 90
-										expect_field_count (line, 2);
-										note.rotation := et_symbols.pac_text.to_rotation_doc (f (line, 2));
-
-									elsif kw = keyword_style then -- stlye normal/italic
-										expect_field_count (line, 2);
-										note.style := et_symbols.to_text_style (f (line, 2));
-
-									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
-										expect_field_count (line, 5);
-
-										-- extract alignment starting at field 2
-										note.alignment := et_text.to_alignment (line, 2);
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+								read_schematic_text;
 
 							when SEC_TOP | SEC_BOTTOM =>
 								case stack.parent (degree => 2) is

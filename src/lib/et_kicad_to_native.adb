@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -2227,8 +2227,11 @@ package body et_kicad_to_native is
 				text_kicad : et_kicad.type_text := et_kicad.type_texts.element (cursor);
 				text_native : et_schematic.type_text;
 			begin
-				-- copy the coordinates x,y,sheet from kicad text to native text
-				text_native.position := to_native_coordinates (text_kicad.position);
+				-- copy the coordinates x/y, sheet and rotation from kicad text to native text
+				--text_native.position := to_native_coordinates (text_kicad.position);
+				text_native.position := et_coordinates.geometry.type_point (text_kicad.position);
+				text_native.sheet := kicad_coordinates.sheet (text_kicad.position);
+				text_native.rotation := et_schematic.pac_text.snap (text_kicad.rotation);
 				
 				-- copy the content
 				text_native.content := text_kicad.content;
