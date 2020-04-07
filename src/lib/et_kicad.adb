@@ -2509,7 +2509,7 @@ package body et_kicad is
 							--style		=> field_reference.style,
 							rotation	=> snap (field_reference.rotation),
 							size		=> field_reference.size,
-							line_width	=> field_reference.line_width,
+							--line_width	=> field_reference.line_width,
 							alignment	=> field_reference.alignment);
 
 					unit.symbol.value := (
@@ -2518,7 +2518,7 @@ package body et_kicad is
 							--style		=> field_value.style,
 							rotation	=> snap (field_value.rotation),
 							size		=> field_value.size,
-							line_width	=> field_value.line_width,
+							--line_width	=> field_value.line_width,
 							alignment	=> field_value.alignment);
 
 				end set;
@@ -7290,13 +7290,13 @@ package body et_kicad is
 				
 				--note.style := to_text_style (style_in => f (element (line_cursor), 7), text => true);
 
-				-- If the line width is too small, assume default and issue warning:
-				if mil_to_distance (f (element (line_cursor), 8)) < pac_text.type_text_line_width'first then
-					log (WARNING, "Line width too small. Defaulting to minimal width !");
-					note.line_width := pac_text.type_text_line_width'first;
-				else
-					note.line_width := mil_to_distance (f (element (line_cursor), 8));
-				end if;
+-- 				-- If the line width is too small, assume default and issue warning:
+-- 				if mil_to_distance (f (element (line_cursor), 8)) < pac_text.type_text_line_width'first then
+-- 					log (WARNING, "Line width too small. Defaulting to minimal width !");
+-- 					note.line_width := pac_text.type_text_line_width'first;
+-- 				else
+-- 					note.line_width := mil_to_distance (f (element (line_cursor), 8));
+-- 				end if;
 
 				next (line_cursor);
 
@@ -7409,7 +7409,7 @@ package body et_kicad is
 
 				-- These are the actual fields that describe the component more detailled.
 				-- They are contextual validated once the given lines are read completely.
-				field_reference		: type_text_placeholder (meaning => NAME); -- like IC5 (redundant information with referenc, see above)
+				field_reference		: type_text_placeholder (meaning => NAME); -- like IC5 (redundant information with reference, see above)
 				field_value			: type_text_placeholder (meaning => VALUE);	-- like 74LS00
 				field_package		: type_text_placeholder (meaning => PACKGE); -- like "bel_primiteves:S_SOT23"
 				field_datasheet		: type_text_placeholder (meaning => DATASHEET); -- might be useful for some special components
@@ -7446,7 +7446,7 @@ package body et_kicad is
 										
 						size		=> size,
 						--style		=> to_text_style (style_in => f (element (line_cursor), 10), text => false),
-						line_width	=> text_line_width_default,
+						--line_width	=> text_line_width_default,
 
 						-- build text visibility
 						--visible		=> to_field_visible (
@@ -7962,7 +7962,6 @@ package body et_kicad is
 											--style		=> field_reference.style,
 											rotation	=> snap (field_reference.rotation),
 											size		=> field_reference.size,
-											line_width	=> field_reference.line_width,
 											alignment	=> field_reference.alignment),
 
 									value			=> (
@@ -7971,7 +7970,6 @@ package body et_kicad is
 											--style		=> field_value.style,
 											rotation	=> snap (field_value.rotation),
 											size		=> field_value.size,
-											line_width	=> field_value.line_width,
 											alignment	=> field_value.alignment)
 											),
 								
@@ -8001,7 +7999,6 @@ package body et_kicad is
 											--style		=> field_reference.style,
 											rotation	=> snap (field_reference.rotation),
 											size		=> field_reference.size,
-											line_width	=> field_reference.line_width,
 											alignment	=> field_reference.alignment),
 
 									value			=> (
@@ -8010,7 +8007,6 @@ package body et_kicad is
 											--style		=> field_value.style,
 											rotation	=> snap (field_value.rotation),
 											size		=> field_value.size,
-											line_width	=> field_value.line_width,
 											alignment	=> field_value.alignment)
 									),
 								log_threshold => log_threshold + 2
@@ -13829,7 +13825,7 @@ package body et_kicad is
 -- 			log (text => "style " & to_lower (to_string (note.style)));
 
 			-- line width
-			log (text => "line width" & to_string (note.line_width));
+-- 			log (text => "line width" & to_string (note.line_width));
 
 			-- rotation
 			log (text => "rotation" & to_string (note.rotation));

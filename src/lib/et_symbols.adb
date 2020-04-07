@@ -97,10 +97,6 @@ package body et_symbols is
 		-- size
 		log (text => to_string (placeholder.size), level => log_threshold);
 
-		-- line width
-		log (text => "line width"
-			& to_string (placeholder.line_width), level => log_threshold);
-
 		-- rotation
 		log (text => to_string (placeholder.rotation), level => log_threshold); 
 
@@ -142,10 +138,6 @@ package body et_symbols is
 		-- style
 -- 		log (text => "style " & to_lower (type_text_style'image (text.style)),
 -- 			 level => log_threshold + 1);
-
-		-- line width
-		log (text => "line width" & geometry.to_string (text.line_width),
-			level => log_threshold + 1);
 
 		-- rotation
 		log (text => to_string (text.rotation), level => log_threshold + 1);

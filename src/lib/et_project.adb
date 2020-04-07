@@ -2563,10 +2563,6 @@ package body et_project is
 				expect_field_count (line, 2);
 				note.size := to_distance (f (line, 2));
 
-			elsif kw = et_text.keyword_line_width then -- line_width 0.1
-				expect_field_count (line, 2);
-				note.line_width := to_distance (f (line, 2));
-
 			elsif kw = keyword_rotation then -- rotation 90
 				expect_field_count (line, 2);
 				note.rotation := et_symbols.pac_text.to_rotation_doc (f (line, 2));
@@ -7435,11 +7431,6 @@ package body et_project is
 											elsif kw = et_text.keyword_size then -- size 3.0
 												expect_field_count (line, 2);
 												unit_placeholder.size := to_distance (f (line, 2));
-
-											elsif kw = et_text.keyword_line_width then -- line_width 0.15
-												expect_field_count (line, 2);
-
-												unit_placeholder.line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_rotation then -- rotation 90.0
 												expect_field_count (line, 2);

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -215,7 +215,7 @@ package body et_text is
 			return
 				"size" 
 				& to_string (text.size)
-				& " line width" & to_string (text.line_width)
+--				& " line width" & to_string (text.line_width)
 -- 				& " rotation" & to_string (rot (text.position))
 				& to_string (text.alignment)
 				;

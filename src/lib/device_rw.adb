@@ -1247,9 +1247,9 @@ package body device_rw is
 										expect_field_count (line, 2);
 										symbol_text_base.size := to_distance (f (line, 2));
 
-									elsif kw = et_text.keyword_line_width then -- line_width 0.2
-										expect_field_count (line, 2);
-										symbol_text_base.line_width := to_distance (f (line, 2));
+-- 									elsif kw = et_text.keyword_line_width then -- line_width 0.2
+-- 										expect_field_count (line, 2);
+-- 										symbol_text_base.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
@@ -1298,9 +1298,9 @@ package body device_rw is
 										expect_field_count (line, 2);
 										symbol_text_base.size := to_distance (f (line, 2));
 
-									elsif kw = et_text.keyword_line_width then -- line_width 0.2
-										expect_field_count (line, 2);
-										symbol_text_base.line_width := to_distance (f (line, 2));
+-- 									elsif kw = et_text.keyword_line_width then -- line_width 0.2
+-- 										expect_field_count (line, 2);
+-- 										symbol_text_base.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);

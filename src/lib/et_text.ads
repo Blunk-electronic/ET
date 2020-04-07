@@ -129,11 +129,6 @@ package et_text is
 		
 		type type_text is abstract tagged record
 			size		: type_text_size := size_default;
-			
-			line_width	: type_text_line_width := line_width_default; 
-			-- CS not always relevant. The layout and packages require line width.
-			-- Schematic and symbols do not require line_width.
-			
 			alignment	: type_text_alignment;
 		end record;
 
