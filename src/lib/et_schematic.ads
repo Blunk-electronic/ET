@@ -97,11 +97,6 @@ package et_schematic is
 -- TEXT FIELD
 
 	-- A text/note in the schematic:
--- 	type type_text is new et_symbols.type_text_basic with record
--- 		position	: et_coordinates.type_position;
--- 		content		: et_text.type_text_content.bounded_string;
--- 	end record;
-
 	type type_text is new pac_text.type_text with record
 		position	: et_coordinates.geometry.type_point;
 		rotation	: et_text.type_rotation_documentation;
@@ -110,7 +105,7 @@ package et_schematic is
 		font		: et_text.type_font;
 	end record;
 		
-	package type_texts is new doubly_linked_lists (type_text); -- CS rename to pac_texts
+	package pac_texts is new doubly_linked_lists (type_text);
 
 	
 	-- Units can be placed mirrored along the x or y axis or not at all.
@@ -458,7 +453,7 @@ package et_schematic is
 		submods			: submodules.type_submodules.map;		-- instances of submodules (boxes)
 		netchangers		: submodules.type_netchangers.map;		-- netchangers
 		
-		texts       	: type_texts.list; -- general notes, not related to drawing frames !
+		texts       	: pac_texts.list; -- general notes in schematic, not related to drawing frames !
 
 		-- the nets of the module (incl. routing information from the board):
 		nets 	    	: type_nets.map;

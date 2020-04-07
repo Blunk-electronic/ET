@@ -46,7 +46,7 @@ with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
 
 with et_schematic;				use et_schematic;
-use et_schematic.type_texts;
+use et_schematic.pac_texts;
 use et_project.type_modules;
 
 separate (et_canvas_schematic)
@@ -56,7 +56,7 @@ procedure draw_texts (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
-	procedure query_text (cursor : in type_texts.cursor) is
+	procedure query_text (cursor : in pac_texts.cursor) is
 
 		-- 		text_position : constant type_position := int (element (cursor).position);
 		font : constant et_text.type_font := (

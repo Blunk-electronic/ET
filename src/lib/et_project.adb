@@ -1561,10 +1561,10 @@ package body et_project is
 			use et_coordinates;
 			use et_coordinates.geometry;
 			use et_schematic;
-			use type_texts;
+			use pac_texts;
 			use et_schematic.pac_text;
 			
-			procedure write (text_cursor : in type_texts.cursor) is begin
+			procedure write (text_cursor : in pac_texts.cursor) is begin
 				section_mark (section_text, HEADER);
 				write (keyword => keyword_position, parameters => position (element (text_cursor).position));
 				write (keyword => keyword_rotation, 
@@ -2833,8 +2833,8 @@ package body et_project is
 					module_name	: in type_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					-- append note to collection of notes
-					et_schematic.type_texts.append (module.texts, note);
+					-- append schematic note to collection of notes
+					et_schematic.pac_texts.append (module.texts, note);
 
 					-- clean up for next note
 					note := (others => <>);

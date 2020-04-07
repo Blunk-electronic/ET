@@ -2219,9 +2219,9 @@ package body et_kicad_to_native is
 		-- This is a single native target module used as scratch.
 		module : et_schematic.type_module; 
 
-		function to_texts (texts_in : et_kicad.type_texts.list) return et_schematic.type_texts.list is
+		function to_texts (texts_in : et_kicad.type_texts.list) return et_schematic.pac_texts.list is
 		-- Converts kicad texts to native texts.
-			texts_out : et_schematic.type_texts.list;
+			texts_out : et_schematic.pac_texts.list;
 
 			procedure query_texts (cursor : in et_kicad.type_texts.cursor) is
 				text_kicad : et_kicad.type_text := et_kicad.type_texts.element (cursor);
@@ -2237,7 +2237,7 @@ package body et_kicad_to_native is
 				text_native.content := text_kicad.content;
 
 				-- append native text to list of native texts
-				et_schematic.type_texts.append (
+				et_schematic.pac_texts.append (
 					container	=> texts_out,
 					new_item	=> text_native);
 
