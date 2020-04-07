@@ -96,13 +96,19 @@ package et_schematic is
 	
 -- TEXT FIELD
 
+	-- GUI relevant only: The font of a text/note in the schematic:
+	text_font : constant et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+	
 	-- A text/note in the schematic:
 	type type_text is new pac_text.type_text with record
 		position	: et_coordinates.geometry.type_point;
 		rotation	: et_text.type_rotation_documentation;
 		sheet		: et_coordinates.type_sheet;
 		content		: et_text.type_text_content.bounded_string;
-		font		: et_text.type_font;
+		--font		: et_text.type_font;
 	end record;
 		
 	package pac_texts is new doubly_linked_lists (type_text);
@@ -243,7 +249,6 @@ package et_schematic is
 	type type_net_label_base is tagged record
 		position	: et_coordinates.geometry.type_point;
         size		: et_symbols.pac_text.type_text_size := et_symbols.text_size_default;
-        style		: et_symbols.type_text_style := et_symbols.type_text_style'first;
 		width		: et_symbols.type_text_line_width := et_symbols.type_text_line_width'first;
 	end record;
 	

@@ -61,6 +61,8 @@ associated with the project live.
 There is also an import report where log messages can be found. See "ET/reports". Depending on the log level this report
 contains more or less debug information.
 
+NOTE: Currently all kinds of text styles (normal, italic, bold) are ignored and replaced
+by ET internal hard coded fonts.
 
 #### Creating a conventions file
 The conventions file is the place where file where prefixes, units of measurement and other things are defined. It is

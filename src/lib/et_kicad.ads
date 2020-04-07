@@ -197,7 +197,8 @@ package et_kicad is
 
 	-- These are basic properties a text has got:
 	type type_text_basic is new pac_text.type_text with record
-		style		: et_symbols.type_text_style := et_symbols.type_text_style'first;
+		-- CS: currently the style of text is ignored
+		-- style : ???
 		content		: et_text.type_text_content.bounded_string;		
 		rotation	: et_coordinates.type_rotation := 0.0;
 	end record;
@@ -737,7 +738,6 @@ package et_kicad is
 		rotation	: et_coordinates.type_rotation;
         text		: et_general.type_net_name.bounded_string;
         size		: et_symbols.pac_text.type_text_size;
-        style		: et_symbols.type_text_style;
         width		: et_symbols.type_text_line_width;
 		processed	: boolean := false; -- used for associating label with net segment
 		case label_appearance is

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -1255,9 +1255,9 @@ package body device_rw is
 										expect_field_count (line, 2);
 										symbol_text_base.rotation := et_symbols.pac_text.to_rotation_doc (f (line, 2));
 										
-									elsif kw = keyword_style then -- style italic
-										expect_field_count (line, 2);
-										symbol_text_base.style := to_text_style (f (line, 2));
+-- 									elsif kw = keyword_style then -- style italic
+-- 										expect_field_count (line, 2);
+-- 										symbol_text_base.style := to_text_style (f (line, 2));
 
 									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
@@ -1305,10 +1305,6 @@ package body device_rw is
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
 										symbol_text_base.rotation := et_symbols.pac_text.to_rotation_doc (f (line, 2));
-										
-									elsif kw = keyword_style then -- style italic
-										expect_field_count (line, 2);
-										symbol_text_base.style := to_text_style (f (line, 2));
 
 									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);

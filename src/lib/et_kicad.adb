@@ -964,57 +964,57 @@ package body et_kicad is
 		return a;
 	end to_alignment_vertical;
 
-	function to_text_style (
-	-- Converts a vertical kicad text style to type_text_style.
-	-- The given style_in is something like CNN or "Italic" (if it is about a text field or a simple text).
-	-- We are interested in the 2nd and 3rd character only.
-		style_in : in string;
-		text : in boolean -- true if it is about the style of a text, false if it is about the style of a field
-		-- Explanation: The style of a text is something like "~" or "Italic".
-		-- The style of a field comes with the letters 2 and 3 of a string like CNN.
-		) return type_text_style is
-		
-		a : type_text_style;
-		s_field : string (1..2);
-	
-		procedure invalid_style is
-		begin
-			log (ERROR, "invalid text style '" & style_in & "' !");
-			raise constraint_error;
-		end invalid_style;
-		
-	begin -- to_text_style
-		case text is
-			when true =>
-				if style_in = text_schematic_style_normal then
-					a := type_text_style'first;
-				elsif style_in = text_schematic_style_italic then
-					a := ITALIC;
-				else
-					invalid_style;
-				end if;
-				
-			when false =>
-				s_field := style_in (style_in'first + 1 .. style_in'last);
-				
-				if    s_field = field_style_default then 		a := type_text_style'first;
-				elsif s_field = field_style_bold then 			a := BOLD;
-				elsif s_field = field_style_italic then 		a := ITALIC;
-				elsif s_field = field_style_italic_bold then 	a := ITALIC_BOLD;
-				else
-					invalid_style;
-				end if;
-		end case;
-
-		return a;
-		
-		exception
-			when constraint_error =>
-				invalid_style;
-
-				return a; -- CS: never reached
-				
-	end to_text_style;
+-- 	function to_text_style (
+-- 	-- Converts a vertical kicad text style to type_text_style.
+-- 	-- The given style_in is something like CNN or "Italic" (if it is about a text field or a simple text).
+-- 	-- We are interested in the 2nd and 3rd character only.
+-- 		style_in : in string;
+-- 		text : in boolean -- true if it is about the style of a text, false if it is about the style of a field
+-- 		-- Explanation: The style of a text is something like "~" or "Italic".
+-- 		-- The style of a field comes with the letters 2 and 3 of a string like CNN.
+-- 		) return type_text_style is
+-- 		
+-- 		a : type_text_style;
+-- 		s_field : string (1..2);
+-- 	
+-- 		procedure invalid_style is
+-- 		begin
+-- 			log (ERROR, "invalid text style '" & style_in & "' !");
+-- 			raise constraint_error;
+-- 		end invalid_style;
+-- 		
+-- 	begin -- to_text_style
+-- 		case text is
+-- 			when true =>
+-- 				if style_in = text_schematic_style_normal then
+-- 					a := type_text_style'first;
+-- 				elsif style_in = text_schematic_style_italic then
+-- 					a := ITALIC;
+-- 				else
+-- 					invalid_style;
+-- 				end if;
+-- 				
+-- 			when false =>
+-- 				s_field := style_in (style_in'first + 1 .. style_in'last);
+-- 				
+-- 				if    s_field = field_style_default then 		a := type_text_style'first;
+-- 				elsif s_field = field_style_bold then 			a := BOLD;
+-- 				elsif s_field = field_style_italic then 		a := ITALIC;
+-- 				elsif s_field = field_style_italic_bold then 	a := ITALIC_BOLD;
+-- 				else
+-- 					invalid_style;
+-- 				end if;
+-- 		end case;
+-- 
+-- 		return a;
+-- 		
+-- 		exception
+-- 			when constraint_error =>
+-- 				invalid_style;
+-- 
+-- 				return a; -- CS: never reached
+-- 				
+-- 	end to_text_style;
 	
 -- 	function to_field_visible ( 
 -- 	-- Converts the kicad field visible flag to the type_text_visible.
@@ -1716,42 +1716,42 @@ package body et_kicad is
 				-- #12 : horizontal alignment left/center/right L/C/R
 				-- #13 : vertical alignment top/center/bottom T/C/B
 
-				function to_style ( style_in : in string; bold_in : in string) return type_text_style is
-				-- Composes from style_in and bold_in a type_text_style
-					a : type_text_style;
-
-					procedure invalid_style is begin
-						log (ERROR, "invalid text style '" & style_in & "' !");
-						raise constraint_error;
-					end invalid_style;
-
-				begin -- to_style
-					if bold_in = library_text_bold_off then -- "0" -- bold disabled
-						
-						if style_in = text_library_style_normal then
-							a := normal;
-						elsif style_in = text_library_style_italic then
-							a := italic;
-						else
-							invalid_style;
-						end if;
-
-					elsif bold_in = library_text_bold_on then -- "1" -- bold enabled
-
-						if style_in = text_library_style_normal then
-							a := bold;
-						elsif style_in = text_library_style_italic then
-							a := italic_bold;
-						else
-							invalid_style;
-						end if;
-
-					else -- "bold" flag invalid
-						raise constraint_error; -- CS : write message on invaid "bold" flag
-					end if;
-
-					return a;
-				end to_style;
+-- 				function to_style ( style_in : in string; bold_in : in string) return type_text_style is
+-- 				-- Composes from style_in and bold_in a type_text_style
+-- 					a : type_text_style;
+-- 
+-- 					procedure invalid_style is begin
+-- 						log (ERROR, "invalid text style '" & style_in & "' !");
+-- 						raise constraint_error;
+-- 					end invalid_style;
+-- 
+-- 				begin -- to_style
+-- 					if bold_in = library_text_bold_off then -- "0" -- bold disabled
+-- 						
+-- 						if style_in = text_library_style_normal then
+-- 							a := normal;
+-- 						elsif style_in = text_library_style_italic then
+-- 							a := italic;
+-- 						else
+-- 							invalid_style;
+-- 						end if;
+-- 
+-- 					elsif bold_in = library_text_bold_on then -- "1" -- bold enabled
+-- 
+-- 						if style_in = text_library_style_normal then
+-- 							a := bold;
+-- 						elsif style_in = text_library_style_italic then
+-- 							a := italic_bold;
+-- 						else
+-- 							invalid_style;
+-- 						end if;
+-- 
+-- 					else -- "bold" flag invalid
+-- 						raise constraint_error; -- CS : write message on invaid "bold" flag
+-- 					end if;
+-- 
+-- 					return a;
+-- 				end to_style;
 
 				function to_content (text_in : in string) return et_text.type_text_content.bounded_string is
 				-- Replaces tildss in given string by space and returns a type_text_content.bounded_string.
@@ -1780,7 +1780,7 @@ package body et_kicad is
 				text.size := mil_to_distance (mil => f (line,5));
 
 				-- compose from fields 10 and 11 the text style
-				text.style := to_style (f (line,10), f (line,11));
+				--text.style := to_style (f (line,10), f (line,11));
 
 				-- compose alignment
 				text.alignment.horizontal	:= to_alignment_horizontal (f (line,12));
@@ -2059,7 +2059,7 @@ package body et_kicad is
 
 				text.alignment.vertical   := to_alignment_vertical (f (line,9));
 
-				text.style := to_text_style (style_in => f (line,9), text => false);
+				--text.style := to_text_style (style_in => f (line,9), text => false);
 				
 				-- NOTE: text.line_width assumes default as no explicit line width is provided here.
 				return text;
@@ -2506,7 +2506,7 @@ package body et_kicad is
 					unit.symbol.name := (
 							meaning		=> NAME,
 							position	=> field_reference.position,
-							style		=> field_reference.style,
+							--style		=> field_reference.style,
 							rotation	=> snap (field_reference.rotation),
 							size		=> field_reference.size,
 							line_width	=> field_reference.line_width,
@@ -2515,7 +2515,7 @@ package body et_kicad is
 					unit.symbol.value := (
 							meaning		=> VALUE,
 							position	=> field_value.position,
-							style		=> field_value.style,
+							--style		=> field_value.style,
 							rotation	=> snap (field_value.rotation),
 							size		=> field_value.size,
 							line_width	=> field_value.line_width,
@@ -7109,7 +7109,7 @@ package body et_kicad is
 
 				label.rotation := to_angle (f (element (line_cursor), 5));
 				label.size := mil_to_distance (f (element (line_cursor), 6));
-				label.style := to_text_style (style_in => f (element (line_cursor), 7), text => true);
+				--label.style := to_text_style (style_in => f (element (line_cursor), 7), text => true);
 				label.width := type_text_line_width'value (f (element (line_cursor), 8));
 
 				next (line_cursor);
@@ -7193,7 +7193,7 @@ package body et_kicad is
 
 				-- build text attributes from size, font and line width
 				label.size := mil_to_distance (f (element (line_cursor), 6));
-				label.style := to_text_style (style_in => f (element (line_cursor), 8), text => true);
+				--label.style := to_text_style (style_in => f (element (line_cursor), 8), text => true);
 				label.width := type_text_line_width'value (f (element (line_cursor), 9));
 
 				next (line_cursor);
@@ -7288,7 +7288,7 @@ package body et_kicad is
 				-- set text size and check for excessive size
 				note.size := et_kicad.pac_text.to_text_size (mil_to_distance (f (element (line_cursor), 6)));
 				
-				note.style := to_text_style (style_in => f (element (line_cursor), 7), text => true);
+				--note.style := to_text_style (style_in => f (element (line_cursor), 7), text => true);
 
 				-- If the line width is too small, assume default and issue warning:
 				if mil_to_distance (f (element (line_cursor), 8)) < pac_text.type_text_line_width'first then
@@ -7445,7 +7445,7 @@ package body et_kicad is
 						position	=> text_position,
 										
 						size		=> size,
-						style		=> to_text_style (style_in => f (element (line_cursor), 10), text => false),
+						--style		=> to_text_style (style_in => f (element (line_cursor), 10), text => false),
 						line_width	=> text_line_width_default,
 
 						-- build text visibility
@@ -7959,7 +7959,7 @@ package body et_kicad is
 									reference		=> (
 											meaning		=> NAME,
 											position	=> field_reference.position,
-											style		=> field_reference.style,
+											--style		=> field_reference.style,
 											rotation	=> snap (field_reference.rotation),
 											size		=> field_reference.size,
 											line_width	=> field_reference.line_width,
@@ -7968,7 +7968,7 @@ package body et_kicad is
 									value			=> (
 											meaning		=> VALUE,
 											position	=> field_value.position,
-											style		=> field_value.style,
+											--style		=> field_value.style,
 											rotation	=> snap (field_value.rotation),
 											size		=> field_value.size,
 											line_width	=> field_value.line_width,
@@ -7998,7 +7998,7 @@ package body et_kicad is
 									reference		=> (
 											meaning		=> NAME,
 											position	=> field_reference.position,
-											style		=> field_reference.style,
+											--style		=> field_reference.style,
 											rotation	=> snap (field_reference.rotation),
 											size		=> field_reference.size,
 											line_width	=> field_reference.line_width,
@@ -8007,7 +8007,7 @@ package body et_kicad is
 									value			=> (
 											meaning		=> VALUE,
 											position	=> field_value.position,
-											style		=> field_value.style,
+											--style		=> field_value.style,
 											rotation	=> snap (field_value.rotation),
 											size		=> field_value.size,
 											line_width	=> field_value.line_width,
@@ -13825,8 +13825,8 @@ package body et_kicad is
 			-- size
 			log (text => "size" & to_string (note.size));
 
-			-- style
-			log (text => "style " & to_lower (to_string (note.style)));
+-- 			-- style
+-- 			log (text => "style " & to_lower (to_string (note.style)));
 
 			-- line width
 			log (text => "line width" & to_string (note.line_width));

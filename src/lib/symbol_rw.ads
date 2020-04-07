@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -41,7 +41,7 @@ with et_symbols;			use et_symbols;
 
 package symbol_rw is
 
-	keyword_style		: constant string := "style";
+-- 	keyword_style		: constant string := "style";
 	keyword_width 		: constant string := "width";
 	
 	section_draw		: constant string := "[DRAW";

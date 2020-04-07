@@ -148,12 +148,11 @@ package body symbol_rw is
 		write (keyword => keyword_size, parameters => to_string (t.size));
 		write (keyword => et_text.keyword_line_width, parameters => to_string (t.line_width));
 		write (keyword => keyword_rotation, parameters => pac_text.to_string (t.rotation));
-		write (keyword => keyword_style, parameters => to_string (t.style));
+-- 		write (keyword => keyword_style, parameters => to_string (t.style));
 		write (keyword => keyword_alignment, parameters =>
 				keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
 				keyword_vertical   & space & to_string (t.alignment.vertical)
 				);
-		--write (keyword => keyword_hidden, parameters => et_libraries.to_string (text.visible)); -- CS: no need. probably useless
 	end write_text_properties;
 
 	procedure create_symbol (
@@ -948,9 +947,9 @@ package body symbol_rw is
 										expect_field_count (line, 2);
 										symbol_text_base.rotation := pac_text.to_rotation_doc (f (line, 2));
 										
-									elsif kw = keyword_style then -- style italic
-										expect_field_count (line, 2);
-										symbol_text_base.style := to_text_style (f (line, 2));
+-- 									elsif kw = keyword_style then -- style italic
+-- 										expect_field_count (line, 2);
+-- 										symbol_text_base.style := to_text_style (f (line, 2));
 
 									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
@@ -992,10 +991,6 @@ package body symbol_rw is
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
 										symbol_text_base.rotation := pac_text.to_rotation_doc (f (line, 2));
-										
-									elsif kw = keyword_style then -- style italic
-										expect_field_count (line, 2);
-										symbol_text_base.style := to_text_style (f (line, 2));
 
 									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);

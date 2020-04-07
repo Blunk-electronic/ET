@@ -59,14 +59,9 @@ procedure draw_texts (
 	procedure query_text (cursor : in pac_texts.cursor) is
 
 		-- 		text_position : constant type_position := int (element (cursor).position);
-		font : constant et_text.type_font := (
-			family	=> et_text.to_family ("monospace"),
-			slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
-			weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
-	
 		
 	begin -- query_submods
-		-- We want to draw only those submodules which are on the active sheet:
+		-- We want to draw only those texts which are on the active sheet:
 		if element (cursor).sheet = self.drawing.sheet then
 
 			pac_draw_misc.draw_text (
@@ -74,7 +69,7 @@ procedure draw_texts (
 				context		=> context,
 				content		=> element (cursor).content,
 				size		=> element (cursor).size,
-				font		=> font,
+				font		=> text_font,
 				position	=> type_point (element (cursor).position),
 				origin		=> true,
 

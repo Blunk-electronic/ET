@@ -93,10 +93,10 @@ package et_symbols is
 
 	use pac_text; 
 	
-
-	type type_text_style is (NORMAL, ITALIC, BOLD, ITALIC_BOLD);
-	function to_string (style : in type_text_style) return string;
-	function to_text_style (style : in string) return type_text_style;
+-- CS: if required some day, move to package et_text:
+-- 	type type_text_style is (NORMAL, ITALIC, BOLD, ITALIC_BOLD);
+-- 	function to_string (style : in type_text_style) return string;
+-- 	function to_text_style (style : in string) return type_text_style;
 	
 
 	-- Text placeholders have a meaning:
@@ -133,8 +133,7 @@ package et_symbols is
 	
 	-- These are basic properties a text has got:
 	type type_text_basic is new pac_text.type_text with record
-		style		: type_text_style := type_text_style'first;
-		-- CS instead of style use:  font : type_font; ?
+		-- CS font : type_font; ?
         rotation	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
 	end record;
 	

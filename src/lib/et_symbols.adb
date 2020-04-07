@@ -58,13 +58,13 @@ package body et_symbols is
 	
 	use geometry;
 
-	function to_string (style : in type_text_style) return string is begin
-		return to_lower (type_text_style'image (style));
-	end;
-	
-	function to_text_style (style : in string) return type_text_style is begin
-		return type_text_style'value (style);
-	end;
+-- 	function to_string (style : in type_text_style) return string is begin
+-- 		return to_lower (type_text_style'image (style));
+-- 	end;
+-- 	
+-- 	function to_text_style (style : in string) return type_text_style is begin
+-- 		return type_text_style'value (style);
+-- 	end;
 
 
 
@@ -96,10 +96,6 @@ package body et_symbols is
 
 		-- size
 		log (text => to_string (placeholder.size), level => log_threshold);
-
-		-- style
-		log (text => "style "
-			& to_lower (type_text_style'image (placeholder.style)), level => log_threshold);
 
 		-- line width
 		log (text => "line width"
@@ -144,8 +140,8 @@ package body et_symbols is
 		log (text => "size" & geometry.to_string (text.size), level => log_threshold + 1);
 
 		-- style
-		log (text => "style " & to_lower (type_text_style'image (text.style)),
-			 level => log_threshold + 1);
+-- 		log (text => "style " & to_lower (type_text_style'image (text.style)),
+-- 			 level => log_threshold + 1);
 
 		-- line width
 		log (text => "line width" & geometry.to_string (text.line_width),

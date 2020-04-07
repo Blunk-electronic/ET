@@ -932,7 +932,7 @@ package body et_project is
 								end case;
 								
 								write (keyword => et_text.keyword_size, parameters => to_string (element (label_cursor).size));
-								write (keyword => keyword_style, parameters => to_string (element (label_cursor).style));
+								-- write (keyword => keyword_style, parameters => to_string (element (label_cursor).style));
 								write (keyword => et_text.keyword_line_width, parameters => to_string (element (label_cursor).width));
 
 								write (keyword => keyword_appearance, parameters =>
@@ -2571,9 +2571,10 @@ package body et_project is
 				expect_field_count (line, 2);
 				note.rotation := et_symbols.pac_text.to_rotation_doc (f (line, 2));
 
-			elsif kw = keyword_style then -- stlye normal/italic
-				expect_field_count (line, 2);
-				--note.style := et_symbols.to_text_style (f (line, 2)); -- CS
+-- 			elsif kw = keyword_style then -- style normal/italic
+-- 				expect_field_count (line, 2);
+				-- note.font := et_symbols.to_text_style (f (line, 2)); -- CS
+				-- CS: currently font and style are ignored.
 
 			elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 				expect_field_count (line, 5);
@@ -6336,9 +6337,9 @@ package body et_project is
 										expect_field_count (line, 2);
 										net_label.size := geometry.to_distance (f (line, 2));
 
-									elsif kw = keyword_style then -- style normal
-										expect_field_count (line, 2);
-										net_label.style := et_symbols.to_text_style (f (line, 2));
+-- 									elsif kw = keyword_style then -- style normal
+-- 										expect_field_count (line, 2);
+-- 										net_label.style := et_symbols.to_text_style (f (line, 2));
 
 									elsif kw = et_text.keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
@@ -7445,10 +7446,10 @@ package body et_project is
 
 												unit_placeholder.rotation := et_symbols.pac_text.to_rotation_doc (f (line, 2));
 
-											elsif kw = keyword_style then -- stlye italic
-												expect_field_count (line, 2);
-
-												unit_placeholder.style := et_symbols.to_text_style (f (line, 2));
+-- 											elsif kw = keyword_style then -- stlye italic
+-- 												expect_field_count (line, 2);
+-- 
+-- 												unit_placeholder.style := et_symbols.to_text_style (f (line, 2));
 
 											elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 												expect_field_count (line, 5);
