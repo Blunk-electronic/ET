@@ -181,7 +181,6 @@ package body et_canvas_board is
 		set_source_rgb (context.cr, 0.0, 0.0, 0.0);
 		paint (context.cr);
 
-		-- draw the grid:
 		draw_grid (self, context, area);
 		
 		draw_frame (self, area, context);

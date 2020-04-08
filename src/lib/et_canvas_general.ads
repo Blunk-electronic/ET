@@ -373,9 +373,11 @@ package pac_canvas is
 		max_scale : in type_scale := 4.0);
 
 	-- This function converts a x-value from the drawing to a x-value in the view.
+	-- It just converts from type_distance to type_view_coordinate. No shifting, no inverting.
 	function convert_x (x : in type_distance) return type_view_coordinate;
 
 	-- This function converts a y-value from the drawing to a y-value in the view.	
+	-- It just converts from type_distance to type_view_coordinate. No shifting, no inverting.	
 	function convert_y (y : in type_distance) return type_view_coordinate renames convert_x;
 	
 

@@ -45,6 +45,12 @@ use et_coordinates.geometry;
 
 separate (et_canvas_schematic)
 
+-- IMPORTANT: The lines of the frame are drawn directly in the view plane, means with y-axis 
+-- increasing downwards.
+-- It is assumed, that the calling unit has already performed a cairo.translate operation
+-- of the current transformation matrix (CTM) so that all following drawing is relative to the
+-- upper left corner of the frame.
+
 procedure draw_frame (
 	self	: not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;

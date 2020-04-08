@@ -47,7 +47,6 @@ with et_general;				use et_general;
 with et_text;
 
 with glib;
--- with cairo;
 
 package et_frames is
 

@@ -119,7 +119,10 @@ begin
 			convert_x (self.drawing.frame_bounding_box.x),
 			convert_y (self.drawing.frame_bounding_box.y));
 
-		cairo.set_line_width (context.cr, 1.0);
+		-- IMPORTANT: The lines of the frame are now drawn directly in the view plane,
+		-- means with y-axis increasing downwards.
+		
+		cairo.set_line_width (context.cr, line_width_thin);
 
 		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (0), gdouble (0)); -- red
 
