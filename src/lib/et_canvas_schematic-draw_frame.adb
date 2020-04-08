@@ -109,17 +109,8 @@ begin
 -- 			if not size_above_threshold (self, context.view) then
 -- 				return;
 -- 			end if;
-		
-		save (context.cr);
 
-		-- Prepare the current transformation matrix (CTM) so that
-		-- all following drawing is relative to the upper left frame corner.
-		translate (
-			context.cr,
-			convert_x (self.drawing.frame_bounding_box.x),
-			convert_y (self.drawing.frame_bounding_box.y));
-
-		cairo.set_line_width (context.cr, 1.0);
+		cairo.set_line_width (context.cr, line_width_thin);
 
 		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (0), gdouble (0)); -- red
 
@@ -152,8 +143,6 @@ begin
 		-- CS texts according to current drawing.sheet
 		
 		cairo.stroke (context.cr);
-		
-		restore (context.cr);
 	end if;
 	
 end draw_frame;

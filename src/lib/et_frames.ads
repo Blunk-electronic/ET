@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -46,6 +46,8 @@ with et_coordinates;			use et_coordinates;
 with et_general;				use et_general;
 with et_text;
 
+with glib;
+-- with cairo;
 
 package et_frames is
 
@@ -66,6 +68,8 @@ package et_frames is
 	template_file_name_length_max : constant positive := 300;
 	template_file_name_dummy : constant string := "dummy_frame";
 
+	line_width_thin : constant glib.gdouble := 0.3;
+	line_width_thick : constant glib.gdouble := 1.0;
 	
 	-- A drawing frame is divided in columns and rows. The columns run from 1 to maximal 26.
 	-- The rows run from A to Z.
@@ -338,8 +342,8 @@ package et_frames is
 		sheet_category	: type_schematic_sheet_category := schematic_sheet_category_default;
 	end record;
 		
-	-- For each sheet a description is required. The descriptions 
-	-- are ordered by the sheet numbers:
+	-- For each sheet of a schematic a description is required. 
+	-- The descriptions are ordered by the sheet numbers:
 	package pac_schematic_descriptions is new ordered_maps (
 		key_type		=> et_coordinates.type_sheet,
 		element_type	=> type_schematic_description);

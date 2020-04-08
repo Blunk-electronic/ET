@@ -178,8 +178,6 @@ package body et_canvas_schematic is
 		-- draw the grid
 		draw_grid (self, context, area);
 		
-		draw_frame (self, area, context);
-
 		-- move area_shifted
 		move_by (area_shifted, area_shifted_new_position);
 
@@ -197,6 +195,8 @@ package body et_canvas_schematic is
 			convert_x (self.drawing.frame_bounding_box.x),
 			convert_y (self.drawing.frame_bounding_box.y));
 
+		draw_frame (self, area, context);
+		
 		draw_cursor (self, area_shifted, context, cursor_main);
 		draw_nets (self, area_shifted, context);
 		draw_texts (self, area_shifted, context);
