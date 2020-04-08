@@ -45,68 +45,130 @@ use et_coordinates.geometry;
 
 separate (et_canvas_schematic)
 
--- IMPORTANT: The lines of the frame are drawn directly in the view plane, means with y-axis 
--- increasing downwards.
--- It is assumed, that the calling unit has already performed a cairo.translate operation
--- of the current transformation matrix (CTM) so that all following drawing is relative to the
--- upper left corner of the frame.
-
 procedure draw_frame (
 	self	: not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
+	type type_line is new et_schematic.pac_shapes.type_line with null record;
+	line : type_line;
+
+	procedure draw_line is begin
+		pac_draw_misc.draw_line (
+			area		=> in_area,
+			context		=> context,
+			line		=> line,
+			height		=> self.drawing.frame_bounding_box.height);
+	end draw_line;
+
 	use et_frames;
 	use pac_lines;
 
-	-- Draw the line of the title block. The line is offset by the position of the
-	-- title block. The y-cooordinate is converted to the y-axis going downwards.
-	procedure draw_line (cursor : in pac_lines.cursor) is begin
+	procedure draw_border is begin
+	-- OUTER BORDER
+		-- left line from bottom to top
+		line.start_point := type_point (set (0.0, 0.0));
+		
+		line.end_point := type_point (set (
+			x => 0.0,
+			y => type_distance_positive (self.drawing.frame.size.y)));
+		
+		draw_line;
 
-		-- start point
-		cairo.move_to 
-			(
-			context.cr,
+		-- right line from bottom to top
+		line.start_point := type_point (set (
+			x => type_distance_positive (self.drawing.frame.size.x),
+			y => 0.0));
+		
+		line.end_point := type_point (set (
+			x => type_distance_positive (self.drawing.frame.size.x),
+			y => type_distance_positive (self.drawing.frame.size.y)));
+		
+		draw_line;
 
-			-- x position
-			convert_x (et_coordinates.type_distance
-				(
-				element (cursor).start_point.x 
-				+ self.drawing.title_block_position.x -- x position of title block
-				)),
-				
-			-- y position
-			convert_and_shift_y (self, et_coordinates.type_distance 
-				(
-				element (cursor).start_point.y 
-				+ self.drawing.title_block_position.y -- y position of title block
-				))
-			);
+		-- lower line from left to right
+		line.start_point := type_point (set (0.0, 0.0));
+		line.end_point := type_point (set (
+			x => type_distance_positive (self.drawing.frame.size.x),
+			y => 0.0));
+		
+		draw_line;
 
-			
-		-- end point
-		cairo.line_to 
-			(
-			context.cr,
+		-- upper line from left to right
+		line.start_point := type_point (set (
+			x => 0.0,
+			y => type_distance_positive (self.drawing.frame.size.y)));
+		
+		line.end_point := type_point (set (
+			x => type_distance_positive (self.drawing.frame.size.x),
+			y => type_distance_positive (self.drawing.frame.size.y)));
+		
+		draw_line;
 
-			-- x position	
-			convert_x (et_coordinates.type_distance
-				(
-				element (cursor).end_point.x 
-				+ self.drawing.title_block_position.x -- x position of title block
-				)),
+		
+	-- INNER BORDER
+		-- left line from bottom to top
+		line.start_point := type_point (set (
+			x => type_distance_positive (self.drawing.frame.border_width),
+			y => type_distance_positive (self.drawing.frame.border_width)));
+		
+		line.end_point := type_point (set (
+			x => type_distance_positive (self.drawing.frame.border_width),
+			y => type_distance_positive (self.drawing.frame.size.y - self.drawing.frame.border_width)));
+		
+		draw_line;
 
-			-- y position
-			convert_and_shift_y (self, et_coordinates.type_distance 
-				(
-				element (cursor).end_point.y 
-				+ self.drawing.title_block_position.y -- y position of title block
-				))
-			);
-	end;
+		-- right line from bottom to top
+		line.start_point := type_point (set (
+			x => type_distance_positive (self.drawing.frame.size.x - self.drawing.frame.border_width),
+			y => type_distance_positive (self.drawing.frame.border_width)));
+		
+		line.end_point := type_point (set (
+			x => type_distance_positive (self.drawing.frame.size.x - self.drawing.frame.border_width),
+			y => type_distance_positive (self.drawing.frame.size.y - self.drawing.frame.border_width)));
+		
+		draw_line;
 
+		-- lower line from left to right
+		line.start_point := type_point (set (
+			x => type_distance_positive (self.drawing.frame.border_width),
+			y => type_distance_positive (self.drawing.frame.border_width)));
+		
+		line.end_point := type_point (set (
+			x => type_distance_positive (self.drawing.frame.size.x - self.drawing.frame.border_width),
+			y => type_distance_positive (self.drawing.frame.border_width)));
+		
+		draw_line;
+
+		-- upper line from left to right
+		line.start_point := type_point (set (
+			x => type_distance_positive (self.drawing.frame.border_width),
+			y => type_distance_positive (self.drawing.frame.size.y - self.drawing.frame.border_width)));
+		
+		line.end_point := type_point (set (
+			x => type_distance_positive (self.drawing.frame.size.x - self.drawing.frame.border_width),
+			y => type_distance_positive (self.drawing.frame.size.y - self.drawing.frame.border_width)));
+		
+		draw_line;
+		
+	end draw_border;
+
+	-- Draw the line of the title block. The line is offset by the position of the title block.
+	procedure query_line (cursor : in pac_lines.cursor) is begin
+
+		line.start_point := type_point (set (
+			x => type_distance_positive (element (cursor).start_point.x + self.drawing.title_block_position.x),
+			y => type_distance_positive (element (cursor).start_point.y + self.drawing.title_block_position.y)));
+
+		line.end_point := type_point (set (
+			x => type_distance_positive (element (cursor).end_point.x + self.drawing.title_block_position.x),
+			y => type_distance_positive (element (cursor).end_point.y + self.drawing.title_block_position.y)));
+
+		draw_line;
+	end query_line;
+	
 begin
---		put_line ("draw frame ...");
+-- 	put_line ("draw frame ...");
 
 	if (in_area = no_rectangle)
 		or else intersects (in_area, self.drawing.frame_bounding_box) 
@@ -121,25 +183,11 @@ begin
 		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (0), gdouble (0)); -- red
 
 		-- FRAME BORDER
-		-- draw the outer border
-		cairo.rectangle (
-			context.cr,
-			convert_x (et_coordinates.type_distance (0.0)),
-			convert_y (et_coordinates.type_distance (0.0)),
-			convert_x (et_coordinates.type_distance (self.drawing.frame.size.x)),
-			convert_y (et_coordinates.type_distance (self.drawing.frame.size.y)));
-
-		-- draw the inner border
-		cairo.rectangle (
-			context.cr,
-			convert_x (et_coordinates.type_distance (self.drawing.frame.border_width)),
-			convert_y (et_coordinates.type_distance (self.drawing.frame.border_width)),
-			convert_x (et_coordinates.type_distance (self.drawing.frame.size.x - 2 * self.drawing.frame.border_width)),
-			convert_y (et_coordinates.type_distance (self.drawing.frame.size.y - 2 * self.drawing.frame.border_width)));
-
+		draw_border;
+		
 		-- TITLE BLOCK
 		-- lines
-		iterate (self.drawing.frame.title_block_schematic.lines, draw_line'access);
+		iterate (self.drawing.frame.title_block_schematic.lines, query_line'access);
 
 		
 		-- CS draw the sector delimiters

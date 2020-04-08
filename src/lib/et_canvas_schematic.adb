@@ -183,8 +183,6 @@ package body et_canvas_schematic is
 
 		-- draw objects inside the drawing frame:
 		draw_units (self, area_shifted, context);
-
-
 		
 		save (context.cr);
 			
@@ -195,8 +193,7 @@ package body et_canvas_schematic is
 			convert_x (self.drawing.frame_bounding_box.x),
 			convert_y (self.drawing.frame_bounding_box.y));
 
-		draw_frame (self, area, context);
-		
+		draw_frame (self, area_shifted, context);
 		draw_cursor (self, area_shifted, context, cursor_main);
 		draw_nets (self, area_shifted, context);
 		draw_texts (self, area_shifted, context);
