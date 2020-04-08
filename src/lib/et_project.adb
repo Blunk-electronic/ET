@@ -932,8 +932,6 @@ package body et_project is
 								end case;
 								
 								write (keyword => et_text.keyword_size, parameters => to_string (element (label_cursor).size));
-								-- write (keyword => keyword_style, parameters => to_string (element (label_cursor).style));
-								write (keyword => et_text.keyword_line_width, parameters => to_string (element (label_cursor).width));
 
 								write (keyword => keyword_appearance, parameters =>
 									et_schematic.to_string (appearance => element (label_cursor).appearance));
@@ -1574,10 +1572,11 @@ package body et_project is
 				write (keyword => keyword_content, wrap => true,
 					   parameters => to_string (element (text_cursor).content));
 				
-				--write_text_properties (element (text_cursor));
-				
 				write (keyword => keyword_size, parameters => to_string (element (text_cursor).size));
-				write (keyword => keyword_alignment, parameters => to_string (element (text_cursor).alignment));
+				write (keyword => keyword_alignment, parameters =>
+					keyword_horizontal & space & to_string (element (text_cursor).alignment.horizontal)
+					& space & keyword_vertical & space
+					& to_string (element (text_cursor).alignment.vertical));
 
 				-- CS font
 				
