@@ -56,11 +56,8 @@ procedure draw_texts (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
-	procedure query_text (cursor : in pac_texts.cursor) is
-
-		-- 		text_position : constant type_position := int (element (cursor).position);
+	procedure query_text (cursor : in pac_texts.cursor) is begin
 		
-	begin -- query_submods
 		-- We want to draw only those texts which are on the active sheet:
 		if element (cursor).sheet = self.drawing.sheet then
 
@@ -84,6 +81,7 @@ procedure draw_texts (
 		
 begin
 	--put_line ("draw texts ...");
+	cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (1)); -- turquise
 
 	iterate (element (current_active_module).texts, query_text'access);
 	
