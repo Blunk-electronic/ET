@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -2549,7 +2549,7 @@ package body conventions is
 		put_line (to_string (PORT_NAME) & to_string (et_symbols.text_size_default));
 		put_line (to_string (TERMINAL_NAME) & to_string (et_symbols.text_size_default));
 		put_line (to_string (COMPONENT_ATTRIBUTE) & to_string (et_symbols.text_size_default));
-		put_line (to_string (SHEET_NAME) & to_string (et_project.sheet_name_text_size_default));
+		put_line (to_string (SHEET_NAME) & to_string (et_project.sheet_name_text_size_default)); -- CS no longer required ?
 		put_line (to_string (conventions.FILE_NAME) & to_string (et_project.file_name_text_size_default));
 		
 		new_line;

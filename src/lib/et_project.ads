@@ -240,13 +240,13 @@ package et_project is
 	
 	
     -- A sheet title may have 100 characters which seems sufficient for now.
- 	sheet_title_length : constant natural := 100;    
-	package type_sheet_title is new generic_bounded_length (sheet_title_length);
+--  	sheet_title_length : constant natural := 100;    -- CS no longer required
+-- 	package type_sheet_title is new generic_bounded_length (sheet_title_length); -- CS no longer required
 
-	subtype type_sheet_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
-	sheet_name_text_size_default : constant type_sheet_name_text_size := 1.3;
+	subtype type_sheet_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm -- CS no longer required ?
+	sheet_name_text_size_default : constant type_sheet_name_text_size := 1.3; -- CS no longer required ?
 
-	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size;
+	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size; -- CS no longer required ?
 	-- Converts a string to type_sheet_name_text_size.
 
 	

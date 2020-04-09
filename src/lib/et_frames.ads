@@ -345,10 +345,13 @@ package et_frames is
 		);
 
 	schematic_sheet_category_default : constant type_schematic_sheet_category := DEVELOPMENT;
-		
+
+	function to_string (cat : in type_schematic_sheet_category) return string;
+	function to_category (cat : in string) return type_schematic_sheet_category;
+	
 	type type_schematic_description is record
-		content			: et_text.type_text_content.bounded_string;
-		sheet_category	: type_schematic_sheet_category := schematic_sheet_category_default;
+		content		: et_text.type_text_content.bounded_string := et_text.to_content ("no description");
+		category	: type_schematic_sheet_category := schematic_sheet_category_default;
 	end record;
 		
 	-- For each sheet of a schematic a description is required. 

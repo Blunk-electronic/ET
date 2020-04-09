@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -154,6 +154,14 @@ package body et_frames is
 		return type_domain'value (domain);
 	end;
 	
+
+	function to_string (cat : in type_schematic_sheet_category) return string is begin
+		return type_schematic_sheet_category'image (cat);
+	end;
+
+	function to_category (cat : in string) return type_schematic_sheet_category is begin
+		return type_schematic_sheet_category'value (cat);
+	end;
 	
 end et_frames;
 

@@ -218,6 +218,26 @@ procedure draw_frame (
 
 		use et_general;
 		use et_meta;
+
+		procedure draw_sheet_description is
+			des : constant type_schematic_description := 
+					sheet_description (current_active_module, self.drawing.sheet);
+		begin
+			-- category (development, product, routing)
+			draw (
+				content	=> to_content (to_string (des.category)),
+				size	=> phs.category.size,
+				font	=> font_placeholders,
+				pos		=> phs.category.position);
+
+			-- description
+			draw (
+				content	=> to_content (to_string (des.content)),
+				size	=> phs.description.size,
+				font	=> font_placeholders,
+				pos		=> phs.description.position);
+			
+		end draw_sheet_description;
 		
 	begin -- draw_title_block_texts
 	-- COMMON PLACEHOLDERS
@@ -330,19 +350,9 @@ procedure draw_frame (
 			font	=> font_placeholders,
 			pos		=> phs.sheet_number.position);
 
-		-- description
-		draw (
-			content	=> to_content ("description"), -- CS
-			size	=> phs.description.size,
-			font	=> font_placeholders,
-			pos		=> phs.description.position);
+		draw_sheet_description;
+		
 
-		-- category
-		draw (
-			content	=> to_content ("cat"), -- CS
-			size	=> phs.category.size,
-			font	=> font_placeholders,
-			pos		=> phs.category.position);
 		
 	-- OTHER TEXTS
 		-- CS

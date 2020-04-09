@@ -129,10 +129,20 @@ package body et_project is
 		sheet	: in type_sheet)
 		return et_frames.type_schematic_description is
 		use et_frames;
-		description : type_schematic_description; -- to be returned
-	begin
 
-		return description;
+		use pac_schematic_descriptions;
+		cursor : pac_schematic_descriptions.cursor;
+
+		use type_modules;
+	begin
+		cursor := find (element (module).frames.descriptions, sheet);
+
+		if cursor /= pac_schematic_descriptions.no_element then
+			return element (cursor);
+		else
+		-- If the sheet has no description, then return the defaults.
+			return (others => <>);
+		end if;
 	end sheet_description;
 	
 	procedure port_not_at_edge (name : in et_general.type_net_name.bounded_string) is 
