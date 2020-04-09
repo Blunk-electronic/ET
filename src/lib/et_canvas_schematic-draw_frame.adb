@@ -157,28 +157,24 @@ procedure draw_frame (
 			y => type_distance_positive (self.drawing.frame.size.y - self.drawing.frame.border_width)));
 		
 		draw_line;
-		
+
+		cairo.stroke (context.cr);
 	end draw_border;
 
 	-- The sector delimiters are short lines between outer an inner border of the frame.
 	procedure draw_sector_delimiters is
 		sectors			: constant type_sectors := self.drawing.frame.sectors;
-		orientation		: constant type_orientation := self.drawing.frame.orientation;
 		border_width	: constant type_border_width := self.drawing.frame.border_width;
 		size 			: constant type_size := self.drawing.frame.size;
 
-		sector_width, sector_height : et_frames.type_distance;
+		sector_width  : constant et_frames.type_distance := 
+			(size.x - 2 * border_width) / et_frames.type_distance (sectors.columns);
+		
+		sector_height : constant et_frames.type_distance := 
+			(size.y - 2 * border_width) / et_frames.type_distance (sectors.rows);
+		
 		x, y : type_distance_positive;
 	begin
-		case orientation is
-			when LANDSCAPE =>
-				sector_width := (size.x - 2 * border_width) / et_frames.type_distance (sectors.columns);
-				sector_height := (size.y - 2 * border_width) / et_frames.type_distance (sectors.rows);
-				
-			when PORTRAIT =>
-				null;
-		end case;
-		
 		-- COLUMN DELIMITERS:
 		-- The lines are drawn upwards, from bottom to top.
 		for i in 1 .. sectors.columns - 1 loop
@@ -255,6 +251,7 @@ procedure draw_frame (
 			draw_line;
 		end loop;
 
+		cairo.stroke (context.cr);
 		
 	end draw_sector_delimiters;
 		
@@ -473,6 +470,7 @@ procedure draw_frame (
 begin -- draw_frame
 -- 	put_line ("draw frame ...");
 
+	-- We draw the frame if it is inside the given area or if it itersects the given area:
 	if (in_area = no_rectangle)
 		or else intersects (in_area, self.drawing.frame_bounding_box) 
 	then
@@ -491,7 +489,8 @@ begin -- draw_frame
 		-- TITLE BLOCK
 		-- lines
 		iterate (self.drawing.frame.title_block_schematic.lines, query_line'access);
-
+		cairo.stroke (context.cr);
+		
 		-- placeholders and other texts
 		draw_title_block_texts;
 		
@@ -500,8 +499,6 @@ begin -- draw_frame
 
 		-- CS draw the sector rows and columns
 
-		
-		cairo.stroke (context.cr);
 	end if;
 	
 end draw_frame;
