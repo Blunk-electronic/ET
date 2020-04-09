@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -608,7 +608,8 @@ procedure et is
 			when MODE_MODULE => 
 -- 				generic_module_name := key (module_cursor);
 				single_module (
-					module			=> module_cursor,
+					project			=> project_name_open,	-- blood_sample_analyzer
+					module			=> module_cursor,		-- cursor to generic module
 					sheet			=> et_coordinates.type_sheet'first, -- CS via cmd argument
 					log_threshold	=> 0);
 			when others => null;

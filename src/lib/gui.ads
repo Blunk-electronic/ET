@@ -42,8 +42,10 @@ with et_coordinates;			use et_coordinates;
 
 package gui is
 
+	-- Starts the GUI and displays the given module (schematic and board):
 	procedure single_module (
-		module			: in type_modules.cursor; -- cursor of generic module
+		project			: in type_project_name.bounded_string;	-- blood_sample_analyzer
+		module			: in type_modules.cursor;				-- cursor of generic module
 		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 		log_threshold	: in type_log_level
 		);

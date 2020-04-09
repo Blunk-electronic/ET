@@ -49,10 +49,12 @@ with gui_board;
 package body gui is
 
 	procedure single_module (
-		module			: in type_modules.cursor; -- cursor of generic module to be edited
+		project			: in type_project_name.bounded_string;	-- blood_sample_analyzer
+		module			: in type_modules.cursor;				-- cursor of generic module
 		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 		log_threshold	: in type_log_level) is
 	begin
+		log (text => "project " & to_string (project), level => log_threshold);
 		log (text => "launching mode " & to_string (MODE_MODULE), level => log_threshold);
 		log (text => "opening module " & enclose_in_quotes (to_string (type_modules.key (module))), level => log_threshold);
 		log (text => "sheet" & to_sheet (sheet), level => log_threshold);
@@ -60,12 +62,12 @@ package body gui is
 		gtk.main.init; -- initialize the main gtk stuff
 
 		-- set up the schematic window
-		gui_schematic.init_window (module, sheet, log_threshold + 1);
+		gui_schematic.init_window (project, module, sheet, log_threshold + 1);
 
 		-- CS test if board available (see et_schematic.type_module)
 		
 		-- set up the board window
-		gui_board.init_window (module, log_threshold + 1);
+		gui_board.init_window (project, module, log_threshold + 1);
 
 
 

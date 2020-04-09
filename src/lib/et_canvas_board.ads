@@ -93,7 +93,7 @@ package et_canvas_board is
 
 
 	
-	-- Frequently used things to draw the board layout.
+	-- Frequently used things to draw the board layout:
 	type type_drawing is record	
 
 		-- These variables are frequently used. Procedure init_drawing

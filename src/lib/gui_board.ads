@@ -60,6 +60,7 @@ with et_string_processing;		use et_string_processing;
 package gui_board is
 	
 	procedure init_window (
+		project			: in type_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in type_modules.cursor; -- cursor of generic module to be edited
 		log_threshold_in: in type_log_level);
 

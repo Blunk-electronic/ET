@@ -40,6 +40,7 @@ with ada.text_io;				use ada.text_io;
 with cairo;						use cairo;
 with pango.layout;				use pango.layout;
 
+with et_general;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
 
@@ -47,6 +48,8 @@ with et_text;
 with et_schematic;				--use et_schematic;
 with et_project;				use et_project;
 use et_project.type_modules;
+
+with et_meta;
 
 separate (et_canvas_schematic)
 
@@ -213,25 +216,28 @@ procedure draw_frame (
 				height		=> self.drawing.frame_bounding_box.height);
 		end draw;
 
+		use et_general;
+		use et_meta;
+		
 	begin -- draw_title_block_texts
 	-- COMMON PLACEHOLDERS
 		-- project name:
 		draw (
-			content	=> to_content ("Project Name"), -- CS
+			content	=> to_content (to_string (current_active_project)), -- blood_sample_analyzer
 			size	=> phc.project_name.size,
 			font	=> font_placeholders,
 			pos		=> phc.project_name.position);
 		
 		-- module file name:
 		draw (
-			content	=> to_content ("Module File Name"), -- CS
+			content	=> to_content (to_string (key (current_active_module))), -- motor_driver
 			size	=> phc.module_file_name.size,
 			font	=> font_placeholders,
 			pos		=> phc.module_file_name.position);
 
 		-- active assembly variant:
 		draw (
-			content	=> to_content ("Assembly Veriant"), -- CS
+			content	=> to_content (to_variant (element (current_active_module).active_variant)), -- low_cost
 			size	=> phc.active_assembly_variant.size,
 			font	=> font_placeholders,
 			pos		=> phc.active_assembly_variant.position);
@@ -239,77 +245,77 @@ procedure draw_frame (
 	-- PLACEHOLDERS
 		-- company
 		draw (
-			content	=> to_content ("company"), -- CS
+			content	=> to_content (to_string (element (current_active_module).meta.schematic.company)), -- BEL
 			size	=> phs.company.size,
 			font	=> font_placeholders,
 			pos		=> phs.company.position);
 
 		-- company
 		draw (
-			content	=> to_content ("customer"), -- CS
+			content	=> to_content (to_string (element (current_active_module).meta.schematic.customer)), -- medlab
 			size	=> phs.customer.size,
 			font	=> font_placeholders,
 			pos		=> phs.customer.position);
 
 		-- partcode
 		draw (
-			content	=> to_content ("partcode"), -- CS
+			content	=> to_content (to_string (element (current_active_module).meta.schematic.partcode)), -- TR4452
 			size	=> phs.partcode.size,
 			font	=> font_placeholders,
 			pos		=> phs.partcode.position);
 
 		-- drawing number
 		draw (
-			content	=> to_content ("drawing number"), -- CS
+			content	=> to_content (to_string (element (current_active_module).meta.schematic.drawing_number)), -- NCC1701
 			size	=> phs.drawing_number.size,
 			font	=> font_placeholders,
 			pos		=> phs.drawing_number.position);
 
 		-- revision
 		draw (
-			content	=> to_content ("revision"), -- CS
+			content	=> to_content (to_string (element (current_active_module).meta.schematic.revision)), -- V2.0
 			size	=> phs.revision.size,
 			font	=> font_placeholders,
 			pos		=> phs.revision.position);
 
 		-- drawn by
 		draw (
-			content	=> to_content ("drawn by"), -- CS
+			content	=> to_content (to_string (element (current_active_module).meta.schematic.drawn_by)), -- Dieter Krause
 			size	=> phs.drawn_by.size,
 			font	=> font_placeholders,
 			pos		=> phs.drawn_by.position);
 
 		-- checked by
 		draw (
-			content	=> to_content ("checked by"), -- CS
+			content	=> to_content (to_string (element (current_active_module).meta.schematic.checked_by)), -- John Carpenter
 			size	=> phs.checked_by.size,
 			font	=> font_placeholders,
 			pos		=> phs.checked_by.position);
 
 		-- approved by
 		draw (
-			content	=> to_content ("approved by"), -- CS
+			content	=> to_content (to_string (element (current_active_module).meta.schematic.approved_by)), -- Wasily Mishin
 			size	=> phs.approved_by.size,
 			font	=> font_placeholders,
 			pos		=> phs.approved_by.position);
 
 		-- drawn date
 		draw (
-			content	=> to_content ("drawn date"), -- CS
+			content	=> to_content (to_string (element (current_active_module).meta.schematic.drawn_date)), -- 2010-04-23
 			size	=> phs.drawn_date.size,
 			font	=> font_placeholders,
 			pos		=> phs.drawn_date.position);
 
 		-- checked date
 		draw (
-			content	=> to_content ("checked date"), -- CS
+			content	=> to_content (to_string (element (current_active_module).meta.schematic.checked_date)), -- 2010-04-23
 			size	=> phs.checked_date.size,
 			font	=> font_placeholders,
 			pos		=> phs.checked_date.position);
 
 		-- approved date
 		draw (
-			content	=> to_content ("approved date"), -- CS
+			content	=> to_content (to_string (element (current_active_module).meta.schematic.approved_date)), -- 2010-04-23
 			size	=> phs.approved_date.size,
 			font	=> font_placeholders,
 			pos		=> phs.approved_date.position);
@@ -319,7 +325,7 @@ procedure draw_frame (
 		
 		-- sheet number n of m
 		draw (
-			content	=> to_content ("sheet n/m"), -- CS
+			content	=> to_content (to_sheet (self.drawing.sheet)), -- CS complete with "/of total"
 			size	=> phs.sheet_number.size,
 			font	=> font_placeholders,
 			pos		=> phs.sheet_number.position);

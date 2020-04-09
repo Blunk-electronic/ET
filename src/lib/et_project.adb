@@ -124,6 +124,17 @@ package body et_project is
 		return find (modules, name);
 	end;
 
+	function sheet_description (
+		module	: in type_modules.cursor;
+		sheet	: in type_sheet)
+		return et_frames.type_schematic_description is
+		use et_frames;
+		description : type_schematic_description; -- to be returned
+	begin
+
+		return description;
+	end sheet_description;
+	
 	procedure port_not_at_edge (name : in et_general.type_net_name.bounded_string) is 
 		use et_string_processing;
 	begin

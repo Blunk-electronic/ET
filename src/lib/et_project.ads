@@ -58,6 +58,7 @@ with et_packages;
 with et_pcb;
 with et_pcb_stack;
 with et_devices;				use et_devices;
+with et_frames;
 
 package et_project is
 	comment_mark : constant string := ("--");
@@ -197,6 +198,12 @@ package et_project is
 	-- Locates the given module in the global container "modules".
 		return type_modules.cursor;
 
+	-- Returns the description of a sheet of a generic module:
+	function sheet_description (
+		module	: in type_modules.cursor;
+		sheet	: in type_sheet)
+		return et_frames.type_schematic_description;
+								   
 	procedure port_not_at_edge (name : in et_general.type_net_name.bounded_string);
 	
 	function port_connected (

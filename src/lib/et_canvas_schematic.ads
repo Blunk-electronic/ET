@@ -97,7 +97,8 @@ package et_canvas_schematic is
 
 	use et_coordinates.geometry; -- CS
 
-
+	-- The currently active project is stored here:
+	current_active_project : et_project.type_project_name.bounded_string; -- blood_sample_analyzer
 	
 	-- The current active module is stored here. Whenever objects of the schematic
 	-- or board are to be drawn, this variable must be read.
@@ -106,7 +107,7 @@ package et_canvas_schematic is
 
 
 	
-	-- Frequently used things to draw the board layout.
+	-- Frequently used things to draw the schematic:
 	type type_drawing is record	
 
 		-- These variables are frequently used. Procedure init_drawing
