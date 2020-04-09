@@ -238,6 +238,22 @@ procedure draw_frame (
 				pos		=> phs.description.position);
 			
 		end draw_sheet_description;
+
+		procedure draw_other_texts is
+			use pac_texts;
+
+			procedure query_text (cursor : in pac_texts.cursor) is begin
+				draw (
+					content	=> element (cursor).content,
+					size	=> element (cursor).size,
+					font	=> font_texts,
+					pos		=> element (cursor).position);
+	
+			end query_text;
+		
+		begin -- draw_other_texts
+			iterate (element (current_active_module).frames.frame.title_block_schematic.texts, query_text'access);
+		end draw_other_texts;
 		
 	begin -- draw_title_block_texts
 	-- COMMON PLACEHOLDERS
@@ -351,12 +367,9 @@ procedure draw_frame (
 			pos		=> phs.sheet_number.position);
 
 		draw_sheet_description;
-		
-
-		
+				
 	-- OTHER TEXTS
-		-- CS
-
+		draw_other_texts;
 		
 	end draw_title_block_texts;
 	
