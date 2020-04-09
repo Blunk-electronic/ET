@@ -41,11 +41,10 @@ with cairo;						use cairo;
 with pango.layout;				use pango.layout;
 
 with et_general;
-with et_coordinates;			use et_coordinates;
-use et_coordinates.geometry;
+with et_coordinates;
 
 with et_text;
-with et_schematic;				--use et_schematic;
+with et_schematic;
 with et_project;				use et_project;
 use et_project.type_modules;
 
@@ -161,6 +160,63 @@ procedure draw_frame (
 		
 	end draw_border;
 
+	procedure draw_sector_delimiters is 
+		sectors			: constant type_sectors := self.drawing.frame.sectors;
+		orientation		: constant type_orientation := self.drawing.frame.orientation;
+		border_width	: constant type_border_width := self.drawing.frame.border_width;
+		size 			: constant type_size := self.drawing.frame.size;
+
+		sector_width, sector_height : et_frames.type_distance;
+		x, y : type_distance_positive;
+	begin
+		case orientation is
+			when LANDSCAPE =>
+				sector_width := (size.x - 2 * border_width) / et_frames.type_distance (sectors.columns);
+				sector_height := (size.y - 2 * border_width) / et_frames.type_distance (sectors.rows);
+				
+			when PORTRAIT =>
+				null;
+		end case;
+
+		-- draw column delimiters
+		for i in 1 .. sectors.columns - 1 loop
+
+			-- compute x coordinates
+			x := type_distance_positive (et_frames.type_distance (i) * sector_width)
+				 + type_distance_positive (border_width);
+
+			-- LOWER BORDER
+			
+			-- draw the line bottom-up:
+			-- lower end:
+			line.start_point := type_point (set (
+				x => x,
+				y => zero));
+
+			-- upper end:
+			line.end_point := type_point (set (
+				x => x,
+				y => type_distance_positive (border_width)));
+
+			draw_line;
+			
+			-- UPPER BORDER
+			-- draw the line bottom-up:
+			-- lower end:
+			line.start_point := type_point (set (
+				x => x,
+				y => type_distance_positive (size.y - border_width)));
+
+			-- upper end:
+			line.end_point := type_point (set (
+				x => x,
+				y => type_distance_positive (size.y)));
+			
+			draw_line;
+		end loop;
+		
+	end draw_sector_delimiters;
+		
 	-- Draw the line of the title block. The line is offset by the position of the title block.
 	procedure query_line (cursor : in pac_lines.cursor) is begin
 
@@ -252,7 +308,7 @@ procedure draw_frame (
 			end query_text;
 		
 		begin -- draw_other_texts
-			iterate (element (current_active_module).frames.frame.title_block_schematic.texts, query_text'access);
+			iterate (self.drawing.frame.title_block_schematic.texts, query_text'access);
 		end draw_other_texts;
 		
 	begin -- draw_title_block_texts
@@ -398,7 +454,8 @@ begin -- draw_frame
 		-- placeholders and other texts
 		draw_title_block_texts;
 		
-		-- CS draw the sector delimiters
+		-- draw the sector delimiters
+		draw_sector_delimiters;
 
 		-- CS draw the sector rows and columns
 
