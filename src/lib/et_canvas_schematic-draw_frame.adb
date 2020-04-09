@@ -160,7 +160,8 @@ procedure draw_frame (
 		
 	end draw_border;
 
-	procedure draw_sector_delimiters is 
+	-- The sector delimiters are short lines between outer an inner border of the frame.
+	procedure draw_sector_delimiters is
 		sectors			: constant type_sectors := self.drawing.frame.sectors;
 		orientation		: constant type_orientation := self.drawing.frame.orientation;
 		border_width	: constant type_border_width := self.drawing.frame.border_width;
@@ -177,13 +178,14 @@ procedure draw_frame (
 			when PORTRAIT =>
 				null;
 		end case;
-
-		-- draw column delimiters
+		
+		-- COLUMN DELIMITERS:
+		-- The lines are drawn upwards, from bottom to top.
 		for i in 1 .. sectors.columns - 1 loop
 
-			-- compute x coordinates
+			-- compute x coordinate
 			x := type_distance_positive (et_frames.type_distance (i) * sector_width)
-				 + type_distance_positive (border_width);
+				 + type_distance_positive (border_width); -- offset to the right
 
 			-- LOWER BORDER
 			
@@ -214,6 +216,45 @@ procedure draw_frame (
 			
 			draw_line;
 		end loop;
+
+		-- ROW DELIMITERS:
+		-- The lines are drawn from the left to the right.
+		for i in 1 .. sectors.rows - 1 loop
+
+			-- compute y coordinate
+			y := type_distance_positive (et_frames.type_distance (i) * sector_height)
+				 + type_distance_positive (border_width); -- offset upwards
+
+			-- LEFT BORDER
+			
+			-- draw the line from the left to the right:
+			-- left end:
+			line.start_point := type_point (set (
+				x => zero,
+				y => y));
+
+			-- right end:
+			line.end_point := type_point (set (
+				x => type_distance_positive (border_width),
+				y => y));
+
+			draw_line;
+			
+			-- RIGHT BORDER
+			-- draw the line from the left to the right:
+			-- left end:
+			line.start_point := type_point (set (
+				x => type_distance_positive (size.x - border_width),
+				y => y));
+
+			-- right end:
+			line.end_point := type_point (set (
+				x => type_distance_positive (size.x),
+				y => y));
+			
+			draw_line;
+		end loop;
+
 		
 	end draw_sector_delimiters;
 		
