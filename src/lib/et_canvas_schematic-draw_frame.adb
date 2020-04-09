@@ -162,6 +162,7 @@ procedure draw_frame (
 	end draw_border;
 
 	-- The sector delimiters are short lines between outer an inner border of the frame.
+	-- Between the delimiters are the row and column indexes.
 	procedure draw_sector_delimiters is
 		sectors			: constant type_sectors := self.drawing.frame.sectors;
 		border_width	: constant type_border_width := self.drawing.frame.border_width;
@@ -173,8 +174,28 @@ procedure draw_frame (
 		sector_height : constant et_frames.type_distance := 
 			(size.y - 2 * border_width) / et_frames.type_distance (sectors.rows);
 		
-		x, y : type_distance_positive;
-	begin
+		use et_text;
+		procedure draw_index (
+			content	: in type_text_content.bounded_string;
+			pos		: in geometry.type_point) is
+		begin
+			pac_draw_misc.draw_text (
+				area		=> in_area,
+				context		=> context,
+				content		=> content,
+				size		=> type_distance_positive (font_indexes_size),
+				font		=> font_indexes,
+				position	=> pos,
+				origin		=> false,
+				rotation	=> zero_rotation,
+				alignment	=> (CENTER, CENTER),
+				height		=> self.drawing.frame_bounding_box.height);
+		end draw_index;
+		
+		x, y  	: type_distance_positive;
+		xo, yo	: et_coordinates.type_distance;
+		
+	begin -- draw_sector_delimiters
 		-- COLUMN DELIMITERS:
 		-- The lines are drawn upwards, from bottom to top.
 		for i in 1 .. sectors.columns - 1 loop
@@ -197,6 +218,8 @@ procedure draw_frame (
 				y => type_distance_positive (border_width)));
 
 			draw_line;
+
+
 			
 			-- UPPER BORDER
 			-- draw the line bottom-up:
@@ -252,6 +275,57 @@ procedure draw_frame (
 		end loop;
 
 		cairo.stroke (context.cr);
+
+	
+		-- COLUMN INDEX
+		y := type_distance_positive (border_width / 2);
+
+		-- x requires offset to the right
+		xo := type_distance_positive (border_width) - type_distance_positive (sector_width / 2);
+		
+		for i in 1 .. sectors.columns loop
+
+			-- compute x coordinate
+			x := type_distance_positive (et_frames.type_distance (i) * sector_width) + xo;
+			
+			-- draw index in lower border
+			draw_index (
+				content	=> to_content (to_string (i)),
+				pos		=> type_point (set (x, y)));
+
+			-- draw index in upper border
+			draw_index (
+				content	=> to_content (to_string (i)),
+				pos		=> type_point (set (
+							x => x,
+							y => type_distance_positive (size.y) - y)));
+			
+		end loop;
+
+		-- ROW INDEX
+		x := type_distance_positive (border_width / 2);
+
+		-- y requires offset upwards
+		yo := type_distance_positive (border_width) - type_distance_positive (sector_height / 2);
+		
+		for i in 1 .. sectors.rows loop
+
+			-- compute y coordinate
+			y := type_distance_positive (et_frames.type_distance (i) * sector_height) + yo;
+			
+			-- draw index in left border
+			draw_index (
+				content	=> to_content (to_string (i)),
+				pos		=> type_point (set (x, y)));
+
+			-- draw index in right border
+			draw_index (
+				content	=> to_content (to_string (i)),
+				pos		=> type_point (set (
+							x => type_distance_positive (size.x) - x,
+							y => y)));
+			
+		end loop;
 		
 	end draw_sector_delimiters;
 		
@@ -496,8 +570,6 @@ begin -- draw_frame
 		
 		-- draw the sector delimiters
 		draw_sector_delimiters;
-
-		-- CS draw the sector rows and columns
 
 	end if;
 	

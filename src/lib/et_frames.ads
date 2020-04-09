@@ -104,7 +104,7 @@ package et_frames is
 		y	: type_distance := 200;
 	end record;
 
-	subtype type_border_width is type_distance range 5 .. 20;
+	subtype type_border_width is type_distance range 4 .. 10;
 	border_width_default : constant type_border_width := 7;
 
 	paper_size_A3_x : constant type_distance := 420;
@@ -213,8 +213,14 @@ package et_frames is
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);	
 
+	-- GUI relevant only: The font of column and row indexes:
+	font_indexes : constant et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);	
 
-
+	-- GUI relevant only: The font size of column and row indexes:
+	font_indexes_size : constant type_distance := 3;
 	
 
 
