@@ -70,6 +70,9 @@ package body gui_board.callbacks is
 	begin
 		-- Assign the scale anew:
 		set_scale (canvas, scale);
+
+		-- fit drawing in window
+		scale_to_fit (canvas);
 		
 		return true;
 	end;
