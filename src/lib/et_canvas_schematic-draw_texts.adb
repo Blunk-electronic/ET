@@ -70,7 +70,7 @@ procedure draw_texts (
 				position	=> type_point (element (cursor).position),
 				origin		=> true,
 
-				-- This is documentational text. Tt is readable from the front or the right.
+				-- This is documentational text. It is readable from the front or the right.
 				rotation	=> pac_text.to_rotation (element (cursor).rotation),
 				
 				alignment	=> element (cursor).alignment,

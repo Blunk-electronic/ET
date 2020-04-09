@@ -43,6 +43,11 @@ with pango.layout;				use pango.layout;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
 
+with et_text;
+with et_schematic;				--use et_schematic;
+with et_project;				use et_project;
+use et_project.type_modules;
+
 separate (et_canvas_schematic)
 
 procedure draw_frame (
@@ -166,8 +171,180 @@ procedure draw_frame (
 
 		draw_line;
 	end query_line;
+
+	procedure draw_title_block_texts is
+		
+		-- get placeholders common with schematic and board:
+		phc : constant type_placeholders_common := 
+			self.drawing.frame.title_block_schematic.placeholders;
+
+		-- get schematic placeholders:
+		phs : constant type_placeholders_schematic := 
+			self.drawing.frame.title_block_schematic.additional_placeholders;
+
+		-- get other texts
+		texts : constant pac_texts.list := self.drawing.frame.title_block_schematic.texts;
+
+		use et_text;
+		
+		procedure draw (
+			content	: in type_text_content.bounded_string;
+			size	: in type_text_size;
+			font	: in type_font;
+			pos		: in et_frames.type_position) is
+
+			-- The given position is given in frame coordinates and must be 
+			-- converted to schematic coordinates and shifted by the position
+			-- of the title block.
+			ps : constant geometry.type_point := type_point (set (
+					x => type_distance_positive (pos.x + self.drawing.title_block_position.x),
+					y => type_distance_positive (pos.y + self.drawing.title_block_position.y)));
+		begin
+			pac_draw_misc.draw_text (
+				area		=> in_area,
+				context		=> context,
+				content		=> content,
+				size		=> type_distance_positive (size),
+				font		=> font,
+				position	=> ps,
+				origin		=> true,
+				rotation	=> zero_rotation,
+				alignment	=> (LEFT, BOTTOM),
+				height		=> self.drawing.frame_bounding_box.height);
+		end draw;
+
+	begin -- draw_title_block_texts
+	-- COMMON PLACEHOLDERS
+		-- project name:
+		draw (
+			content	=> to_content ("Project Name"), -- CS
+			size	=> phc.project_name.size,
+			font	=> font_placeholders,
+			pos		=> phc.project_name.position);
+		
+		-- module file name:
+		draw (
+			content	=> to_content ("Module File Name"), -- CS
+			size	=> phc.module_file_name.size,
+			font	=> font_placeholders,
+			pos		=> phc.module_file_name.position);
+
+		-- active assembly variant:
+		draw (
+			content	=> to_content ("Assembly Veriant"), -- CS
+			size	=> phc.active_assembly_variant.size,
+			font	=> font_placeholders,
+			pos		=> phc.active_assembly_variant.position);
+
+	-- PLACEHOLDERS
+		-- company
+		draw (
+			content	=> to_content ("company"), -- CS
+			size	=> phs.company.size,
+			font	=> font_placeholders,
+			pos		=> phs.company.position);
+
+		-- company
+		draw (
+			content	=> to_content ("customer"), -- CS
+			size	=> phs.customer.size,
+			font	=> font_placeholders,
+			pos		=> phs.customer.position);
+
+		-- partcode
+		draw (
+			content	=> to_content ("partcode"), -- CS
+			size	=> phs.partcode.size,
+			font	=> font_placeholders,
+			pos		=> phs.partcode.position);
+
+		-- drawing number
+		draw (
+			content	=> to_content ("drawing number"), -- CS
+			size	=> phs.drawing_number.size,
+			font	=> font_placeholders,
+			pos		=> phs.drawing_number.position);
+
+		-- revision
+		draw (
+			content	=> to_content ("revision"), -- CS
+			size	=> phs.revision.size,
+			font	=> font_placeholders,
+			pos		=> phs.revision.position);
+
+		-- drawn by
+		draw (
+			content	=> to_content ("drawn by"), -- CS
+			size	=> phs.drawn_by.size,
+			font	=> font_placeholders,
+			pos		=> phs.drawn_by.position);
+
+		-- checked by
+		draw (
+			content	=> to_content ("checked by"), -- CS
+			size	=> phs.checked_by.size,
+			font	=> font_placeholders,
+			pos		=> phs.checked_by.position);
+
+		-- approved by
+		draw (
+			content	=> to_content ("approved by"), -- CS
+			size	=> phs.approved_by.size,
+			font	=> font_placeholders,
+			pos		=> phs.approved_by.position);
+
+		-- drawn date
+		draw (
+			content	=> to_content ("drawn date"), -- CS
+			size	=> phs.drawn_date.size,
+			font	=> font_placeholders,
+			pos		=> phs.drawn_date.position);
+
+		-- checked date
+		draw (
+			content	=> to_content ("checked date"), -- CS
+			size	=> phs.checked_date.size,
+			font	=> font_placeholders,
+			pos		=> phs.checked_date.position);
+
+		-- approved date
+		draw (
+			content	=> to_content ("approved date"), -- CS
+			size	=> phs.approved_date.size,
+			font	=> font_placeholders,
+			pos		=> phs.approved_date.position);
+		
+		
+	-- ADDITIONAL PLACEHOLDERS
+		
+		-- sheet number n of m
+		draw (
+			content	=> to_content ("sheet n/m"), -- CS
+			size	=> phs.sheet_number.size,
+			font	=> font_placeholders,
+			pos		=> phs.sheet_number.position);
+
+		-- description
+		draw (
+			content	=> to_content ("description"), -- CS
+			size	=> phs.description.size,
+			font	=> font_placeholders,
+			pos		=> phs.description.position);
+
+		-- category
+		draw (
+			content	=> to_content ("cat"), -- CS
+			size	=> phs.category.size,
+			font	=> font_placeholders,
+			pos		=> phs.category.position);
+		
+	-- OTHER TEXTS
+		-- CS
+
+		
+	end draw_title_block_texts;
 	
-begin
+begin -- draw_frame
 -- 	put_line ("draw frame ...");
 
 	if (in_area = no_rectangle)
@@ -189,12 +366,13 @@ begin
 		-- lines
 		iterate (self.drawing.frame.title_block_schematic.lines, query_line'access);
 
+		-- placeholders and other texts
+		draw_title_block_texts;
 		
 		-- CS draw the sector delimiters
 
 		-- CS draw the sector rows and columns
 
-		-- CS texts according to current drawing.sheet
 		
 		cairo.stroke (context.cr);
 	end if;
