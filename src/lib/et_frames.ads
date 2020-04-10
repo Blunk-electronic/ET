@@ -376,7 +376,6 @@ package et_frames is
 		
 		descriptions	: pac_schematic_descriptions.map;
 	end record;
-
 	
 end et_frames;
 

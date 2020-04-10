@@ -388,6 +388,8 @@ procedure draw_frame (
 		use et_meta;
 
 		procedure draw_sheet_description is
+
+			-- Get the description of the current active sheet:
 			des : constant type_schematic_description := 
 					sheet_description (current_active_module, self.drawing.sheet);
 		begin

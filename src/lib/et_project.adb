@@ -134,9 +134,18 @@ package body et_project is
 		cursor : pac_schematic_descriptions.cursor;
 
 		use type_modules;
-	begin
-		cursor := find (element (module).frames.descriptions, sheet);
 
+-- 		procedure query_descriptions (
+										 
+	begin
+-- 		put_line ("A");
+		cursor := find (element (module).frames.descriptions, sheet);
+-- 		put_line ("B");
+
+-- 		query_element (
+-- 			position	=> module,
+-- 			process		=> query_descriptions'access);
+		
 		if cursor /= pac_schematic_descriptions.no_element then
 			return element (cursor);
 		else
@@ -1499,7 +1508,38 @@ package body et_project is
 			section_mark (section_netchangers, FOOTER);
 		end query_netchangers;
 		
-		procedure query_frames is begin
+		procedure query_frames is 
+			
+			procedure write_sheet_descriptions is
+				use et_frames;
+				use pac_schematic_descriptions;
+
+				procedure query_sheet (s : in pac_schematic_descriptions.cursor) is
+				begin
+					section_mark (section_sheet, HEADER);
+					write (
+						keyword		=> keyword_sheet_number,
+						parameters	=> to_sheet (key (s)));
+
+					write (
+						keyword		=> keyword_sheet_category,
+						parameters	=> to_string (element (s).category));
+
+					write (
+						keyword		=> keyword_sheet_description,
+						wrap		=> true,
+						parameters	=> to_string (element (s).content));
+					
+					section_mark (section_sheet, FOOTER);
+				end query_sheet;
+				
+			begin -- write_sheet_descriptions
+				section_mark (section_sheet_descriptions, HEADER);
+				iterate (element (module_cursor).frames.descriptions, query_sheet'access);
+				section_mark (section_sheet_descriptions, FOOTER);
+			end write_sheet_descriptions;
+			
+		begin -- query_frames
 			-- schematic frames:
 			section_mark (section_drawing_frames, HEADER);
 			section_mark (section_schematic, HEADER);
@@ -1510,7 +1550,8 @@ package body et_project is
 				parameters	=> et_frames.to_string (element (module_cursor).frames.template));
 			
 			-- CS frame count ?
-			-- CS description ?
+
+			write_sheet_descriptions;
 			
 			section_mark (section_schematic, FOOTER);			
 
@@ -2432,9 +2473,15 @@ package body et_project is
 		route		: et_pcb.type_route;
 		route_via	: et_pcb.type_via;
 
+		sheet_descriptions			: et_frames.pac_schematic_descriptions.map;
+		sheet_description_category	: et_frames.type_schematic_sheet_category := 
+			et_frames.schematic_sheet_category_default; -- product/develpment/routing
 		
-		frame_template_schematic	: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
+		sheet_description_number	: type_sheet := type_sheet'first;				-- 1, 2. 3, ...
+		sheet_description_text		: et_text.type_text_content.bounded_string;		-- "voltage regulator"
+
 		-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
+		frame_template_schematic	: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
 		frame_template_board		: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
 		frame_board_origin : et_pcb_coordinates.geometry.type_point := et_pcb.origin_default; -- x 40 y 60
 
@@ -2470,6 +2517,28 @@ package body et_project is
 			end if;
 		end;
 
+		-- Reads the description of a schematic sheet:
+		procedure read_sheet_description is
+			use et_frames;
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_sheet_number then -- number 2
+				expect_field_count (line, 2);
+				sheet_description_number := to_sheet (f (line, 2));
+
+			elsif kw = keyword_sheet_category then -- category develompent/product/routing
+				expect_field_count (line, 2);
+				sheet_description_category := to_category (f (line, 2));
+
+			elsif kw = keyword_sheet_description then -- description "voltage regulator"
+				expect_field_count (line, 2);
+				sheet_description_text := to_content (f (line, 2));
+				
+			else
+				invalid_keyword (kw);
+			end if;
+		end read_sheet_description;
 		
 		-- submodules
 		submodule_port			: submodules.type_submodule_port;
@@ -2818,6 +2887,13 @@ package body et_project is
 					-- set the frame template name
 					module.frames.template := frame_template_schematic;
 
+					-- assign the sheet descriptions:
+					module.frames.descriptions := sheet_descriptions;
+
+					-- Clean up sheet descriptions even if
+					-- there should not be another section for sheet descriptions:
+					pac_schematic_descriptions.clear (sheet_descriptions);
+					
 					-- read the frame template file
 					module.frames.frame := frame_rw.read_frame (
 						file_name		=> frame_template_schematic,
@@ -2825,6 +2901,26 @@ package body et_project is
 						log_threshold	=> log_threshold + 2);
 					
 				end set_frame_schematic;
+
+				procedure add_sheet_description is 
+					use et_frames;
+					use pac_schematic_descriptions;
+					inserted : boolean;
+					position : pac_schematic_descriptions.cursor;
+				begin
+					insert (
+						container	=> sheet_descriptions,
+						key			=> sheet_description_number,
+						inserted	=> inserted,
+						position	=> position,
+						new_item	=> (sheet_description_text, sheet_description_category)
+						);
+
+					-- clean up for next sheet description
+					sheet_description_category := schematic_sheet_category_default;
+					sheet_description_number := type_sheet'first;
+					sheet_description_text := to_content("");
+				end add_sheet_description;
 				
 				procedure set_frame_board (
 					module_name	: in type_module_name.bounded_string;
@@ -5430,6 +5526,22 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
+					when SEC_SHEET_DESCRIPTIONS =>
+						case stack.parent is
+							when SEC_SCHEMATIC => null; 
+								-- We assign the sheet_descriptions once parent 
+								-- section SCHEMATIC closes.
+								-- See procdure set_frame_schematic.
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_SHEET =>
+						case stack.parent is
+							when SEC_SHEET_DESCRIPTIONS => add_sheet_description;
+							when others => invalid_section;
+						end case;
+						
 					when SEC_TEXT =>
 						case stack.parent is
 							when SEC_TEXTS =>
@@ -5795,6 +5907,8 @@ package body et_project is
 			elsif set (section_submodule, SEC_SUBMODULE) then null;
 			elsif set (section_drawing_frames, SEC_DRAWING_FRAMES) then null;
 			elsif set (section_schematic, SEC_SCHEMATIC) then null;
+			elsif set (section_sheet_descriptions, SEC_SHEET_DESCRIPTIONS) then null;
+			elsif set (section_sheet, SEC_SHEET) then null;
 			elsif set (section_board, SEC_BOARD) then null;
 			elsif set (section_devices, SEC_DEVICES) then null;
 			elsif set (section_device, SEC_DEVICE) then null;
@@ -6054,7 +6168,7 @@ package body et_project is
 							when SEC_INIT => null; -- nothing to do								
 							when others => invalid_section;
 						end case;
-
+						
 					when SEC_META =>
 						case stack.parent is
 							when SEC_INIT => null; -- nothing to do
@@ -7205,6 +7319,18 @@ package body et_project is
 							when SEC_DRAWING_FRAMES => read_frame_template_board;
 							when SEC_DRAWING_GRID => read_drawing_grid_board;
 							when SEC_META => read_meta_board;
+							when others => invalid_section;
+						end case;
+
+					when SEC_SHEET_DESCRIPTIONS =>
+						case stack.parent is
+							when SEC_SCHEMATIC => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+
+					when SEC_SHEET =>
+						case stack.parent is
+							when SEC_SHEET_DESCRIPTIONS => read_sheet_description;
 							when others => invalid_section;
 						end case;
 						

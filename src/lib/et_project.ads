@@ -326,6 +326,9 @@ package et_project is
 	keyword_variant					: constant string := "variant";
 	keyword_mirrored				: constant string := "mirrored";
 
+	keyword_sheet_number			: constant string := "number";
+	keyword_sheet_category			: constant string := "category";
+	keyword_sheet_description		: constant string := "text";
 
 	
 -- SECTION NAMES
@@ -355,8 +358,9 @@ package et_project is
 	section_submodule			: constant string := "[SUBMODULE";
 
 	section_drawing_frames		: constant string := "[DRAWING_FRAMES";
-	section_title_block			: constant string := "[TITLE_BLOCK";
-
+	section_sheet_descriptions	: constant string := "[SHEET_DESCRIPTIONS";
+	section_sheet				: constant string := "[SHEET";
+	
 	section_schematic			: constant string := "[SCHEMATIC";
 
 	section_devices				: constant string := "[DEVICES";
@@ -375,7 +379,7 @@ package et_project is
 	section_port_begin			: constant string := "[PORT";
 	
 	
-	type type_section is (
+	type type_section is ( -- CS: sort aphabetically
 		SEC_BOARD_LAYER_STACK,
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,
@@ -400,6 +404,8 @@ package et_project is
 		SEC_VIA,
 		SEC_SUBMODULES,
 		SEC_SUBMODULE,
+		SEC_SHEET_DESCRIPTIONS,
+		SEC_SHEET,
 		SEC_DRAWING_FRAMES,
 		SEC_SCHEMATIC,
 		SEC_BOARD,
