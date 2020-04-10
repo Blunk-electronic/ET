@@ -133,18 +133,20 @@ package body et_project is
 		use pac_schematic_descriptions;
 		cursor : pac_schematic_descriptions.cursor;
 
-		use type_modules;
+		use et_schematic;
+		use et_project.type_modules;
 
--- 		procedure query_descriptions (
+		procedure query_descriptions (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+		begin
+			cursor := find (module.frames.descriptions, sheet);
+		end query_descriptions;
 										 
-	begin
--- 		put_line ("A");
-		cursor := find (element (module).frames.descriptions, sheet);
--- 		put_line ("B");
-
--- 		query_element (
--- 			position	=> module,
--- 			process		=> query_descriptions'access);
+	begin -- sheet_description
+		query_element (
+			position	=> module,
+			process		=> query_descriptions'access);
 		
 		if cursor /= pac_schematic_descriptions.no_element then
 			return element (cursor);
