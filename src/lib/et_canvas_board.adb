@@ -183,11 +183,22 @@ package body et_canvas_board is
 
 		draw_grid (self, context, area);
 		
-		draw_frame (self, area, context);
-
 		-- move area_shifted according to frame position:
 		move_by (area_shifted, area_shifted_new_position);
 
+		-- draw the frame:
+		save (context.cr);
+		-- Prepare the current transformation matrix (CTM) so that
+		-- all following drawing is relative to the upper left frame corner.
+		translate (
+			context.cr,
+			convert_x (self.drawing.frame_bounding_box.x),
+			convert_y (self.drawing.frame_bounding_box.y));
+
+		draw_frame (self, area_shifted, context);
+		restore (context.cr);
+
+		
 		-- move area_shifted according to board position:
 		move_by (area_shifted, type_point (invert (self.drawing.board_origin, X)));
 		

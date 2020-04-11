@@ -43,6 +43,8 @@ with pango.layout;				use pango.layout;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 use et_pcb_coordinates.geometry;
 
+with et_canvas_draw_frame;
+
 separate (et_canvas_board)
 
 procedure draw_frame (
@@ -50,6 +52,21 @@ procedure draw_frame (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
+	package pac_draw_frame is new et_canvas_draw_frame.pac_draw_frame (
+-- 		geometry		=> et_pcb_coordinates.geometry,
+-- 		shapes			=> et_packages.pac_shapes,
+		draw_ops		=> et_canvas_board.pac_draw_package,
+		in_area			=> in_area,
+		context			=> context,
+		frame_height	=> self.drawing.frame_bounding_box.height,
+		frame_size		=> self.drawing.frame.frame.size,
+		border_width	=> self.drawing.frame.frame.border_width,
+		title_block_pos	=> (x => self.drawing.title_block_position.x,
+							y => self.drawing.title_block_position.y)
+		);
+
+	use pac_draw_frame;
+	
 	use et_frames;
 	use pac_lines;
 
@@ -109,44 +126,20 @@ begin
 -- 			if not size_above_threshold (self, context.view) then
 -- 				return;
 -- 			end if;
-		
-		save (context.cr);
 
-		-- Prepare the current transformation matrix (CTM) so that
-		-- all following drawing is relative to the upper left frame corner.
-		translate (
-			context.cr,
-			convert_x (self.drawing.frame_bounding_box.x),
-			convert_y (self.drawing.frame_bounding_box.y));
-
-		-- IMPORTANT: The lines of the frame are now drawn directly in the view plane,
-		-- means with y-axis increasing downwards.
 		
 		cairo.set_line_width (context.cr, line_width_thin);
 
 		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (0), gdouble (0)); -- red
 
+		
 		-- FRAME BORDER
-		-- draw the outer border
-		cairo.rectangle (
-			context.cr,
-			convert_x (et_pcb_coordinates.type_distance (0.0)),
-			convert_y (et_pcb_coordinates.type_distance (0.0)),
-			convert_x (et_pcb_coordinates.type_distance (self.drawing.frame.frame.size.x)),
-			convert_y (et_pcb_coordinates.type_distance (self.drawing.frame.frame.size.y)));
-
-		-- draw the inner border
-		cairo.rectangle (
-			context.cr,
-			convert_x (et_pcb_coordinates.type_distance (self.drawing.frame.frame.border_width)),
-			convert_y (et_pcb_coordinates.type_distance (self.drawing.frame.frame.border_width)),
-			convert_x (et_pcb_coordinates.type_distance (self.drawing.frame.frame.size.x - 2 * self.drawing.frame.frame.border_width)),
-			convert_y (et_pcb_coordinates.type_distance (self.drawing.frame.frame.size.y - 2 * self.drawing.frame.frame.border_width)));
+		draw_border;
 
 		-- TITLE BLOCK
 		-- lines
-		iterate (self.drawing.frame.frame.title_block_pcb.lines, draw_line'access);
-
+		iterate (self.drawing.frame.frame.title_block_pcb.lines, query_line'access);
+		cairo.stroke (context.cr);
 		
 		-- CS draw the sector delimiters
 
@@ -154,9 +147,9 @@ begin
 
 		-- CS texts according to current drawing.sheet
 		
-		cairo.stroke (context.cr);
+-- 		cairo.stroke (context.cr);
 		
-		restore (context.cr);
+-- 		restore (context.cr);
 	end if;
 	
 end draw_frame;
