@@ -35,12 +35,9 @@
 --   history of changes:
 --
 
-
-with ada.text_io;				use ada.text_io;
-with cairo;						use cairo;
 with et_general;
 with et_text;
-with et_project;				use et_project;
+with et_project;
 use et_project.type_modules;
 
 with et_meta;
@@ -358,7 +355,6 @@ package body pac_draw_frame is
 		end draw;
 
 		use et_general;
--- 		use et_meta;
 
 		procedure draw_other_texts is
 			use pac_texts;
@@ -376,6 +372,8 @@ package body pac_draw_frame is
 			iterate (title_block.texts, query_text'access);
 		end draw_other_texts;
 
+		use et_project;
+		use et_meta;
 		use et_canvas_schematic;
 		
 	begin -- draw_title_block_texts
@@ -401,134 +399,89 @@ package body pac_draw_frame is
 			font	=> font_placeholders,
 			pos		=> title_block.placeholders.active_assembly_variant.position);
 
--- 	-- PLACEHOLDERS
--- 		-- company
--- 		draw (
--- 			content	=> to_content (to_string (element (current_active_module).meta.schematic.company)), -- BEL
--- 			size	=> phs.company.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.company.position);
--- 
--- 		-- company
--- 		draw (
--- 			content	=> to_content (to_string (element (current_active_module).meta.schematic.customer)), -- medlab
--- 			size	=> phs.customer.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.customer.position);
--- 
--- 		-- partcode
--- 		draw (
--- 			content	=> to_content (to_string (element (current_active_module).meta.schematic.partcode)), -- TR4452
--- 			size	=> phs.partcode.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.partcode.position);
--- 
--- 		-- drawing number
--- 		draw (
--- 			content	=> to_content (to_string (element (current_active_module).meta.schematic.drawing_number)), -- NCC1701
--- 			size	=> phs.drawing_number.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.drawing_number.position);
--- 
--- 		-- revision
--- 		draw (
--- 			content	=> to_content (to_string (element (current_active_module).meta.schematic.revision)), -- V2.0
--- 			size	=> phs.revision.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.revision.position);
--- 
--- 		-- drawn by
--- 		draw (
--- 			content	=> to_content (to_string (element (current_active_module).meta.schematic.drawn_by)), -- Dieter Krause
--- 			size	=> phs.drawn_by.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.drawn_by.position);
--- 
--- 		-- checked by
--- 		draw (
--- 			content	=> to_content (to_string (element (current_active_module).meta.schematic.checked_by)), -- John Carpenter
--- 			size	=> phs.checked_by.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.checked_by.position);
--- 
--- 		-- approved by
--- 		draw (
--- 			content	=> to_content (to_string (element (current_active_module).meta.schematic.approved_by)), -- Wasily Mishin
--- 			size	=> phs.approved_by.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.approved_by.position);
--- 
--- 		-- drawn date
--- 		draw (
--- 			content	=> to_content (to_string (element (current_active_module).meta.schematic.drawn_date)), -- 2010-04-23
--- 			size	=> phs.drawn_date.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.drawn_date.position);
--- 
--- 		-- checked date
--- 		draw (
--- 			content	=> to_content (to_string (element (current_active_module).meta.schematic.checked_date)), -- 2010-04-23
--- 			size	=> phs.checked_date.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.checked_date.position);
--- 
--- 		-- approved date
--- 		draw (
--- 			content	=> to_content (to_string (element (current_active_module).meta.schematic.approved_date)), -- 2010-04-23
--- 			size	=> phs.approved_date.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.approved_date.position);
--- 		
--- 		
--- 	-- ADDITIONAL PLACEHOLDERS
--- 		
--- 		-- sheet number n of m
--- 		draw (
--- 			content	=> to_content (to_sheet (self.drawing.sheet)), -- CS complete with "/of total"
--- 			size	=> phs.sheet_number.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.sheet_number.position);
--- 
--- 		draw_sheet_description;
-				
+	-- BASIC PLACEHOLDERS
+		-- company
+		draw (
+			content	=> to_content (to_string (meta.company)), -- BEL
+			size	=> placeholders.company.size,
+			font	=> font_placeholders,
+			pos		=> placeholders.company.position);
+
+		-- customer
+		draw (
+			content	=> to_content (to_string (meta.customer)), -- medlab
+			size	=> placeholders.customer.size,
+			font	=> font_placeholders,
+			pos		=> placeholders.customer.position);
+
+		-- partcode
+		draw (
+			content	=> to_content (to_string (meta.partcode)), -- TR4452
+			size	=> placeholders.partcode.size,
+			font	=> font_placeholders,
+			pos		=> placeholders.partcode.position);
+
+		-- drawing number
+		draw (
+			content	=> to_content (to_string (meta.drawing_number)), -- NCC1701
+			size	=> placeholders.drawing_number.size,
+			font	=> font_placeholders,
+			pos		=> placeholders.drawing_number.position);
+
+		-- revision
+		draw (
+			content	=> to_content (to_string (meta.revision)), -- V2.0
+			size	=> placeholders.revision.size,
+			font	=> font_placeholders,
+			pos		=> placeholders.revision.position);
+
+		-- drawn by
+		draw (
+			content	=> to_content (to_string (meta.drawn_by)), -- Dieter Krause
+			size	=> placeholders.drawn_by.size,
+			font	=> font_placeholders,
+			pos		=> placeholders.drawn_by.position);
+
+		-- checked by
+		draw (
+			content	=> to_content (to_string (meta.checked_by)), -- John Carpenter
+			size	=> placeholders.checked_by.size,
+			font	=> font_placeholders,
+			pos		=> placeholders.checked_by.position);
+
+		-- approved by
+		draw (
+			content	=> to_content (to_string (meta.approved_by)), -- Wasily Mishin
+			size	=> placeholders.approved_by.size,
+			font	=> font_placeholders,
+			pos		=> placeholders.approved_by.position);
+
+		-- drawn date
+		draw (
+			content	=> to_content (to_string (meta.drawn_date)), -- 2010-04-23
+			size	=> placeholders.drawn_date.size,
+			font	=> font_placeholders,
+			pos		=> placeholders.drawn_date.position);
+
+		-- checked date
+		draw (
+			content	=> to_content (to_string (meta.checked_date)), -- 2010-04-23
+			size	=> placeholders.checked_date.size,
+			font	=> font_placeholders,
+			pos		=> placeholders.checked_date.position);
+
+		-- approved date
+		draw (
+			content	=> to_content (to_string (meta.approved_date)), -- 2010-04-23
+			size	=> placeholders.approved_date.size,
+			font	=> font_placeholders,
+			pos		=> placeholders.approved_date.position);
+		
+			
 	-- OTHER TEXTS
 		draw_other_texts;
 
 	end draw_title_block_texts;
-	
--- begin -- draw_frame
--- -- 	put_line ("draw frame ...");
--- 
--- 	-- We draw the frame if it is inside the given area or if it itersects the given area:
--- 	if (in_area = no_rectangle)
--- 		or else intersects (in_area, self.drawing.frame_bounding_box) 
--- 	then
--- 		-- CS test size 
--- -- 			if not size_above_threshold (self, context.view) then
--- -- 				return;
--- -- 			end if;
--- 
--- 		cairo.set_line_width (context.cr, line_width_thin);
--- 
--- 		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (0), gdouble (0)); -- red
--- 
--- 		-- FRAME BORDER
--- 		draw_border;
--- 		
--- 		-- TITLE BLOCK
--- 		-- lines
--- 		iterate (self.drawing.frame.title_block_schematic.lines, query_line'access);
--- 		cairo.stroke (context.cr);
--- 		
--- 		-- placeholders and other texts
--- 		draw_title_block_texts;
--- 		
--- 		-- draw the sector delimiters
--- 		draw_sector_delimiters;
--- 
--- 	end if;
--- 	
--- end draw_frame;
 
 end pac_draw_frame;
 

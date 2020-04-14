@@ -35,15 +35,14 @@
 --   history of changes:
 --
 
-
 with ada.text_io;				use ada.text_io;
-with cairo;						use cairo;
-with pango.layout;				use pango.layout;
-
 with et_pcb_coordinates;		use et_pcb_coordinates;
 use et_pcb_coordinates.geometry;
 
 with et_canvas_draw_frame;
+
+with et_meta;
+with et_project;
 
 separate (et_canvas_board)
 
@@ -52,6 +51,10 @@ procedure draw_frame (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
+	use et_frames;
+	use et_project.type_modules;
+	use et_canvas_schematic;
+	
 	package pac_draw_frame is new et_canvas_draw_frame.pac_draw_frame (
 		draw_ops		=> et_canvas_board.pac_draw_package,
 		in_area			=> in_area,
@@ -60,61 +63,13 @@ procedure draw_frame (
 		frame_size		=> self.drawing.frame.frame.size,
 		border_width	=> self.drawing.frame.frame.border_width,
 		sectors			=> self.drawing.frame.frame.sectors,
-		title_block		=> et_frames.type_title_block (self.drawing.frame.frame.title_block_pcb)
--- 		title_block_pos	=> (x => self.drawing.title_block_position.x,
--- 							y => self.drawing.title_block_position.y)
+		title_block		=> type_title_block (self.drawing.frame.frame.title_block_pcb), -- incl. common placeholders
+		meta			=> et_meta.type_basic (element (current_active_module).meta.board),
+		placeholders	=> type_placeholders_basic (self.drawing.frame.frame.title_block_pcb.additional_placeholders)
 		);
 
 	use pac_draw_frame;
-	
-	use et_frames;
 	use pac_lines;
-
-	-- Draw the line of the title block. The line is offset by the position of the
-	-- title block. The y-cooordinate is converted to the y-axis going downwards.
-	procedure draw_line (cursor : in pac_lines.cursor) is begin
-
-		-- start point
-		cairo.move_to 
-			(
-			context.cr,
-
-			-- x position
-			convert_x (et_pcb_coordinates.type_distance
-				(
-				element (cursor).start_point.x 
-				+ self.drawing.title_block_position.x -- x position of title block
-				)),
-				
-			-- y position
-			convert_and_shift_y (self, et_pcb_coordinates.type_distance 
-				(
-				element (cursor).start_point.y 
-				+ self.drawing.title_block_position.y -- y position of title block
-				))
-			);
-
-			
-		-- end point
-		cairo.line_to 
-			(
-			context.cr,
-
-			-- x position	
-			convert_x (et_pcb_coordinates.type_distance
-				(
-				element (cursor).end_point.x 
-				+ self.drawing.title_block_position.x -- x position of title block
-				)),
-
-			-- y position
-			convert_and_shift_y (self, et_pcb_coordinates.type_distance 
-				(
-				element (cursor).end_point.y 
-				+ self.drawing.title_block_position.y -- y position of title block
-				))
-			);
-	end;
 
 begin
 --		put_line ("draw frame ...");
@@ -146,6 +101,11 @@ begin
 
 		-- draw common placeholders and other texts
 		draw_title_block_texts;
+
+		-- CS draw additional_placeholders.face
+		-- CS draw additional_placeholders.signal_layer
+		
+		-- CS draw cam markers
 		
 -- 		cairo.stroke (context.cr);
 		

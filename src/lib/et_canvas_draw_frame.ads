@@ -45,6 +45,7 @@ with gdk.rgba;
 with cairo;						use cairo;
 with et_geometry;
 with et_frames;
+with et_meta;
 with et_canvas_general;
 with et_canvas_primitive_draw_ops;
 
@@ -59,8 +60,9 @@ generic
 	frame_size		: et_frames.type_size;
 	border_width	: et_frames.type_border_width;
 	sectors			: et_frames.type_sectors;
-	title_block		: et_frames.type_title_block;
--- 	title_block_pos	: et_frames.type_position;
+	title_block		: et_frames.type_title_block;  -- incl. common placeholders
+	meta			: et_meta.type_basic;
+	placeholders	: et_frames.type_placeholders_basic;
 	
 package pac_draw_frame is
 	use draw_ops;

@@ -157,7 +157,7 @@ package et_frames is
 		active_assembly_variant	: type_placeholder; -- the active assembly variant
 	end record;
 
-	-- Basic placeholders are available for schematic and pcb.
+	-- Basic placeholders are separately available for schematic and pcb.
 	-- For example the revision in schematic is not necessarily the same as in the layout.
 	-- Another example: The person who has drawn the schematic is not necessarily the
 	-- same as the one who did the layout.
