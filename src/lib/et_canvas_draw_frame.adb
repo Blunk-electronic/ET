@@ -36,7 +36,6 @@
 --
 
 with et_general;
-with et_text;
 with et_project;
 use et_project.type_modules;
 
@@ -326,33 +325,35 @@ package body pac_draw_frame is
 		draw_line;
 	end query_line;
 
-	procedure draw_title_block_texts is
-		use et_text;		
-		procedure draw (
-			content	: in type_text_content.bounded_string;
-			size	: in type_text_size;
-			font	: in type_font;
-			pos		: in et_frames.type_position) is
+	procedure draw_text (
+		content	: in type_text_content.bounded_string;
+		size	: in type_text_size;
+		font	: in type_font;
+		pos		: in et_frames.type_position) is
 
-			-- The given position is given in frame coordinates and must be 
-			-- converted to schematic coordinates and shifted by the position
-			-- of the title block.
-			ps : constant pac_shapes.geometry.type_point := type_point (set (
-					x => type_distance_positive (pos.x + title_block.position.x),
-					y => type_distance_positive (pos.y + title_block.position.y)));
-		begin
-			draw_ops.draw_text (
-				area		=> in_area,
-				context		=> context,
-				content		=> content,
-				size		=> pac_text.geometry.type_distance_positive (size),
-				font		=> font,
-				position	=> ps,
-				origin		=> true,
-				rotation	=> zero_rotation,
-				alignment	=> (LEFT, BOTTOM),
-				height		=> frame_height);
-		end draw;
+		-- The given position is given in frame coordinates and must be 
+		-- converted to schematic coordinates and shifted by the position
+		-- of the title block.
+		ps : constant pac_shapes.geometry.type_point := type_point (set (
+				x => type_distance_positive (pos.x + title_block.position.x),
+				y => type_distance_positive (pos.y + title_block.position.y)));
+
+		use pac_text;
+	begin
+		draw_ops.draw_text (
+			area		=> in_area,
+			context		=> context,
+			content		=> content,
+			size		=> geometry.type_distance_positive (size),
+			font		=> font,
+			position	=> ps,
+			origin		=> true,
+			rotation	=> zero_rotation,
+			alignment	=> (LEFT, BOTTOM),
+			height		=> frame_height);
+	end draw_text;
+	
+	procedure draw_title_block_texts is
 
 		use et_general;
 
@@ -360,7 +361,7 @@ package body pac_draw_frame is
 			use pac_texts;
 
 			procedure query_text (cursor : in pac_texts.cursor) is begin
-				draw (
+				draw_text (
 					content	=> element (cursor).content,
 					size	=> element (cursor).size,
 					font	=> font_texts,
@@ -379,21 +380,21 @@ package body pac_draw_frame is
 	begin -- draw_title_block_texts
 	-- COMMON PLACEHOLDERS
 		-- project name:
-		draw (
+		draw_text (
 			content	=> to_content (to_string (current_active_project)), -- blood_sample_analyzer
 			size	=> title_block.placeholders.project_name.size,
 			font	=> font_placeholders,
 			pos		=> title_block.placeholders.project_name.position);
 		
 		-- module file name:
-		draw (
+		draw_text (
 			content	=> to_content (to_string (key (current_active_module))), -- motor_driver
 			size	=> title_block.placeholders.module_file_name.size,
 			font	=> font_placeholders,
 			pos		=> title_block.placeholders.module_file_name.position);
 
 		-- active assembly variant:
-		draw (
+		draw_text (
 			content	=> to_content (to_variant (element (current_active_module).active_variant)), -- low_cost
 			size	=> title_block.placeholders.active_assembly_variant.size,
 			font	=> font_placeholders,
@@ -401,77 +402,77 @@ package body pac_draw_frame is
 
 	-- BASIC PLACEHOLDERS
 		-- company
-		draw (
+		draw_text (
 			content	=> to_content (to_string (meta.company)), -- BEL
 			size	=> placeholders.company.size,
 			font	=> font_placeholders,
 			pos		=> placeholders.company.position);
 
 		-- customer
-		draw (
+		draw_text (
 			content	=> to_content (to_string (meta.customer)), -- medlab
 			size	=> placeholders.customer.size,
 			font	=> font_placeholders,
 			pos		=> placeholders.customer.position);
 
 		-- partcode
-		draw (
+		draw_text (
 			content	=> to_content (to_string (meta.partcode)), -- TR4452
 			size	=> placeholders.partcode.size,
 			font	=> font_placeholders,
 			pos		=> placeholders.partcode.position);
 
 		-- drawing number
-		draw (
+		draw_text (
 			content	=> to_content (to_string (meta.drawing_number)), -- NCC1701
 			size	=> placeholders.drawing_number.size,
 			font	=> font_placeholders,
 			pos		=> placeholders.drawing_number.position);
 
 		-- revision
-		draw (
+		draw_text (
 			content	=> to_content (to_string (meta.revision)), -- V2.0
 			size	=> placeholders.revision.size,
 			font	=> font_placeholders,
 			pos		=> placeholders.revision.position);
 
 		-- drawn by
-		draw (
+		draw_text (
 			content	=> to_content (to_string (meta.drawn_by)), -- Dieter Krause
 			size	=> placeholders.drawn_by.size,
 			font	=> font_placeholders,
 			pos		=> placeholders.drawn_by.position);
 
 		-- checked by
-		draw (
+		draw_text (
 			content	=> to_content (to_string (meta.checked_by)), -- John Carpenter
 			size	=> placeholders.checked_by.size,
 			font	=> font_placeholders,
 			pos		=> placeholders.checked_by.position);
 
 		-- approved by
-		draw (
+		draw_text (
 			content	=> to_content (to_string (meta.approved_by)), -- Wasily Mishin
 			size	=> placeholders.approved_by.size,
 			font	=> font_placeholders,
 			pos		=> placeholders.approved_by.position);
 
 		-- drawn date
-		draw (
+		draw_text (
 			content	=> to_content (to_string (meta.drawn_date)), -- 2010-04-23
 			size	=> placeholders.drawn_date.size,
 			font	=> font_placeholders,
 			pos		=> placeholders.drawn_date.position);
 
 		-- checked date
-		draw (
+		draw_text (
 			content	=> to_content (to_string (meta.checked_date)), -- 2010-04-23
 			size	=> placeholders.checked_date.size,
 			font	=> font_placeholders,
 			pos		=> placeholders.checked_date.position);
 
 		-- approved date
-		draw (
+		draw_text (
 			content	=> to_content (to_string (meta.approved_date)), -- 2010-04-23
 			size	=> placeholders.approved_date.size,
 			font	=> font_placeholders,

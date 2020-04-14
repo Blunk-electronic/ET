@@ -70,40 +70,11 @@ procedure draw_frame (
 
 	procedure draw_additional_placeholders is
 		
-		-- get schematic placeholders:
+		-- get placeholders:
 		phs : constant type_placeholders_schematic := 
 			self.drawing.frame.title_block_schematic.additional_placeholders;
 
 		use et_text;
-		
-		procedure draw (
-			content	: in type_text_content.bounded_string;
-			size	: in type_text_size;
-			font	: in type_font;
-			pos		: in et_frames.type_position) is
-
-			-- The given position is given in frame coordinates and must be 
-			-- converted to schematic coordinates and shifted by the position
-			-- of the title block.
-			ps : constant geometry.type_point := type_point (set (
-					x => type_distance_positive (pos.x + self.drawing.title_block_position.x),
-					y => type_distance_positive (pos.y + self.drawing.title_block_position.y)));
-		begin
-			pac_draw_misc.draw_text (
-				area		=> in_area,
-				context		=> context,
-				content		=> content,
-				size		=> type_distance_positive (size),
-				font		=> font,
-				position	=> ps,
-				origin		=> true,
-				rotation	=> zero_rotation,
-				alignment	=> (LEFT, BOTTOM),
-				height		=> self.drawing.frame_bounding_box.height);
-		end draw;
-
-		use et_general;
-		use et_meta;
 
 		procedure draw_sheet_description is
 			use et_project;
@@ -113,14 +84,14 @@ procedure draw_frame (
 					sheet_description (current_active_module, self.drawing.sheet);
 		begin
 			-- category (development, product, routing)
-			draw (
+			draw_text (
 				content	=> to_content (to_string (des.category)),
 				size	=> phs.category.size,
 				font	=> font_placeholders,
 				pos		=> phs.category.position);
 
 			-- description
-			draw (
+			draw_text (
 				content	=> to_content (to_string (des.content)),
 				size	=> phs.description.size,
 				font	=> font_placeholders,
@@ -131,7 +102,7 @@ procedure draw_frame (
 	begin -- draw_additional_placeholders
 		
 		-- sheet number n of m
-		draw (
+		draw_text (
 			content	=> to_content (to_sheet (self.drawing.sheet)), -- CS complete with "/of total"
 			size	=> phs.sheet_number.size,
 			font	=> font_placeholders,

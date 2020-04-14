@@ -42,8 +42,9 @@
 
 -- with ada.text_io;
 with gdk.rgba;
-with cairo;						use cairo;
+with cairo;							use cairo;
 with et_geometry;
+with et_text;						use et_text;
 with et_frames;
 with et_meta;
 with et_canvas_general;
@@ -80,6 +81,12 @@ package pac_draw_frame is
 	-- Draws a line of the title block. The line is offset by the position of the title block.
 	procedure query_line (cursor : in pac_lines.cursor);
 
+	procedure draw_text (
+		content	: in type_text_content.bounded_string;
+		size	: in type_text_size;
+		font	: in type_font;
+		pos		: in et_frames.type_position);
+	
 	-- Draw common placeholders (for both schematic and layout) and other texts:
 	procedure draw_title_block_texts;
 	
