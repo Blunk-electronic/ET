@@ -38,11 +38,13 @@
 
 with ada.text_io;				use ada.text_io;
 with cairo;						use cairo;
+with et_general;
 with et_text;
 with et_project;				use et_project;
 use et_project.type_modules;
 
 with et_meta;
+with et_canvas_schematic;
 
 package body et_canvas_draw_frame is
 
@@ -312,127 +314,93 @@ package body pac_draw_frame is
 		end loop;
 		
 	end draw_sector_delimiters;
-			
-	
+				
 	-- Draw a line of the title block.
 	procedure query_line (cursor : in pac_lines.cursor) is begin
 
 		line.start_point := type_point (set (
-			x => type_distance_positive (element (cursor).start_point.x + title_block_pos.x),
-			y => type_distance_positive (element (cursor).start_point.y + title_block_pos.y)));
+			x => type_distance_positive (element (cursor).start_point.x + title_block.position.x),
+			y => type_distance_positive (element (cursor).start_point.y + title_block.position.y)));
 
 		line.end_point := type_point (set (
-			x => type_distance_positive (element (cursor).end_point.x + title_block_pos.x),
-			y => type_distance_positive (element (cursor).end_point.y + title_block_pos.y)));
+			x => type_distance_positive (element (cursor).end_point.x + title_block.position.x),
+			y => type_distance_positive (element (cursor).end_point.y + title_block.position.y)));
 
 		draw_line;
 	end query_line;
 
--- 	procedure draw_title_block_texts is
--- 		
--- 		-- get placeholders common with schematic and board:
--- 		phc : constant type_placeholders_common := 
--- 			self.drawing.frame.title_block_schematic.placeholders;
--- 
--- 		-- get schematic placeholders:
--- 		phs : constant type_placeholders_schematic := 
--- 			self.drawing.frame.title_block_schematic.additional_placeholders;
--- 
--- 		-- get other texts
--- 		texts : constant pac_texts.list := self.drawing.frame.title_block_schematic.texts;
--- 
--- 		use et_text;
--- 		
--- 		procedure draw (
--- 			content	: in type_text_content.bounded_string;
--- 			size	: in type_text_size;
--- 			font	: in type_font;
--- 			pos		: in et_frames.type_position) is
--- 
--- 			-- The given position is given in frame coordinates and must be 
--- 			-- converted to schematic coordinates and shifted by the position
--- 			-- of the title block.
--- 			ps : constant geometry.type_point := type_point (set (
--- 					x => type_distance_positive (pos.x + title_block_pos.x),
--- 					y => type_distance_positive (pos.y + title_block_pos.y)));
--- 		begin
--- 			pac_draw_misc.draw_text (
--- 				area		=> in_area,
--- 				context		=> context,
--- 				content		=> content,
--- 				size		=> type_distance_positive (size),
--- 				font		=> font,
--- 				position	=> ps,
--- 				origin		=> true,
--- 				rotation	=> zero_rotation,
--- 				alignment	=> (LEFT, BOTTOM),
--- 				height		=> self.drawing.frame_bounding_box.height);
--- 		end draw;
--- 
--- 		use et_general;
+	procedure draw_title_block_texts is
+		use et_text;		
+		procedure draw (
+			content	: in type_text_content.bounded_string;
+			size	: in type_text_size;
+			font	: in type_font;
+			pos		: in et_frames.type_position) is
+
+			-- The given position is given in frame coordinates and must be 
+			-- converted to schematic coordinates and shifted by the position
+			-- of the title block.
+			ps : constant pac_shapes.geometry.type_point := type_point (set (
+					x => type_distance_positive (pos.x + title_block.position.x),
+					y => type_distance_positive (pos.y + title_block.position.y)));
+		begin
+			draw_ops.draw_text (
+				area		=> in_area,
+				context		=> context,
+				content		=> content,
+				size		=> pac_text.geometry.type_distance_positive (size),
+				font		=> font,
+				position	=> ps,
+				origin		=> true,
+				rotation	=> zero_rotation,
+				alignment	=> (LEFT, BOTTOM),
+				height		=> frame_height);
+		end draw;
+
+		use et_general;
 -- 		use et_meta;
--- 
--- 		procedure draw_sheet_description is
--- 
--- 			-- Get the description of the current active sheet:
--- 			des : constant type_schematic_description := 
--- 					sheet_description (current_active_module, self.drawing.sheet);
--- 		begin
--- 			-- category (development, product, routing)
--- 			draw (
--- 				content	=> to_content (to_string (des.category)),
--- 				size	=> phs.category.size,
--- 				font	=> font_placeholders,
--- 				pos		=> phs.category.position);
--- 
--- 			-- description
--- 			draw (
--- 				content	=> to_content (to_string (des.content)),
--- 				size	=> phs.description.size,
--- 				font	=> font_placeholders,
--- 				pos		=> phs.description.position);
--- 			
--- 		end draw_sheet_description;
--- 
--- 		procedure draw_other_texts is
--- 			use pac_texts;
--- 
--- 			procedure query_text (cursor : in pac_texts.cursor) is begin
--- 				draw (
--- 					content	=> element (cursor).content,
--- 					size	=> element (cursor).size,
--- 					font	=> font_texts,
--- 					pos		=> element (cursor).position);
--- 	
--- 			end query_text;
--- 		
--- 		begin -- draw_other_texts
--- 			iterate (self.drawing.frame.title_block_schematic.texts, query_text'access);
--- 		end draw_other_texts;
--- 		
--- 	begin -- draw_title_block_texts
--- 	-- COMMON PLACEHOLDERS
--- 		-- project name:
--- 		draw (
--- 			content	=> to_content (to_string (current_active_project)), -- blood_sample_analyzer
--- 			size	=> phc.project_name.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phc.project_name.position);
--- 		
--- 		-- module file name:
--- 		draw (
--- 			content	=> to_content (to_string (key (current_active_module))), -- motor_driver
--- 			size	=> phc.module_file_name.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phc.module_file_name.position);
--- 
--- 		-- active assembly variant:
--- 		draw (
--- 			content	=> to_content (to_variant (element (current_active_module).active_variant)), -- low_cost
--- 			size	=> phc.active_assembly_variant.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phc.active_assembly_variant.position);
--- 
+
+		procedure draw_other_texts is
+			use pac_texts;
+
+			procedure query_text (cursor : in pac_texts.cursor) is begin
+				draw (
+					content	=> element (cursor).content,
+					size	=> element (cursor).size,
+					font	=> font_texts,
+					pos		=> element (cursor).position);
+	
+			end query_text;
+		
+		begin -- draw_other_texts
+			iterate (title_block.texts, query_text'access);
+		end draw_other_texts;
+
+		use et_canvas_schematic;
+		
+	begin -- draw_title_block_texts
+	-- COMMON PLACEHOLDERS
+		-- project name:
+		draw (
+			content	=> to_content (to_string (current_active_project)), -- blood_sample_analyzer
+			size	=> title_block.placeholders.project_name.size,
+			font	=> font_placeholders,
+			pos		=> title_block.placeholders.project_name.position);
+		
+		-- module file name:
+		draw (
+			content	=> to_content (to_string (key (current_active_module))), -- motor_driver
+			size	=> title_block.placeholders.module_file_name.size,
+			font	=> font_placeholders,
+			pos		=> title_block.placeholders.module_file_name.position);
+
+		-- active assembly variant:
+		draw (
+			content	=> to_content (to_variant (element (current_active_module).active_variant)), -- low_cost
+			size	=> title_block.placeholders.active_assembly_variant.size,
+			font	=> font_placeholders,
+			pos		=> title_block.placeholders.active_assembly_variant.position);
+
 -- 	-- PLACEHOLDERS
 -- 		-- company
 -- 		draw (
@@ -522,12 +490,12 @@ package body pac_draw_frame is
 -- 			pos		=> phs.sheet_number.position);
 -- 
 -- 		draw_sheet_description;
--- 				
--- 	-- OTHER TEXTS
--- 		draw_other_texts;
--- 		
--- 	end draw_title_block_texts;
--- 	
+				
+	-- OTHER TEXTS
+		draw_other_texts;
+
+	end draw_title_block_texts;
+	
 -- begin -- draw_frame
 -- -- 	put_line ("draw frame ...");
 -- 

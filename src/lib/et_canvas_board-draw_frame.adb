@@ -60,8 +60,9 @@ procedure draw_frame (
 		frame_size		=> self.drawing.frame.frame.size,
 		border_width	=> self.drawing.frame.frame.border_width,
 		sectors			=> self.drawing.frame.frame.sectors,
-		title_block_pos	=> (x => self.drawing.title_block_position.x,
-							y => self.drawing.title_block_position.y)
+		title_block		=> et_frames.type_title_block (self.drawing.frame.frame.title_block_pcb)
+-- 		title_block_pos	=> (x => self.drawing.title_block_position.x,
+-- 							y => self.drawing.title_block_position.y)
 		);
 
 	use pac_draw_frame;
@@ -143,10 +144,8 @@ begin
 		-- draw the sector delimiters
 		draw_sector_delimiters;
 
-		
-		-- CS draw the sector rows and columns
-
-		-- CS texts according to current drawing.sheet
+		-- draw common placeholders and other texts
+		draw_title_block_texts;
 		
 -- 		cairo.stroke (context.cr);
 		

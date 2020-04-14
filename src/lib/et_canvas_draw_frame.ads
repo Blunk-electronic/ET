@@ -59,7 +59,8 @@ generic
 	frame_size		: et_frames.type_size;
 	border_width	: et_frames.type_border_width;
 	sectors			: et_frames.type_sectors;
-	title_block_pos	: et_frames.type_position;
+	title_block		: et_frames.type_title_block;
+-- 	title_block_pos	: et_frames.type_position;
 	
 package pac_draw_frame is
 	use draw_ops;
@@ -77,7 +78,8 @@ package pac_draw_frame is
 	-- Draws a line of the title block. The line is offset by the position of the title block.
 	procedure query_line (cursor : in pac_lines.cursor);
 
-
+	-- Draw common placeholders (for both schematic and layout) and other texts:
+	procedure draw_title_block_texts;
 	
 end pac_draw_frame;
 	
