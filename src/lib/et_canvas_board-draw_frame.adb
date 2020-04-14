@@ -36,11 +36,9 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with et_pcb_coordinates;		use et_pcb_coordinates;
-use et_pcb_coordinates.geometry;
 
+with et_text;
 with et_canvas_draw_frame;
-
 with et_meta;
 with et_project;
 
