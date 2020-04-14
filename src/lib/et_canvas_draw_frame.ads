@@ -39,15 +39,8 @@
 --
 -- DESCRIPTION:
 --
---	This package provides general things required to set up a canvas. A canvas
---  is also referred to as "view". 
---  Since the canvas is used in various drawings like schematic, pcb-layout, ...
---  it must be instantiated with the package that provides the respective
---  measurement system.
 
 -- with ada.text_io;
-
-
 with gdk.rgba;
 with cairo;						use cairo;
 with et_geometry;
@@ -59,28 +52,32 @@ package et_canvas_draw_frame is
 
 generic
 
-	-- The system of measurement:
--- 	with package geometry is new et_geometry.geometry_operations_2d (<>);
--- 	with package shapes is new et_geometry.shapes_2d (<>);
 	with package draw_ops is new et_canvas_primitive_draw_ops.pac_draw (<>);
 	in_area			: draw_ops.pac_shapes.geometry.type_rectangle;
 	context			: draw_ops.pac_canvas.type_draw_context;
 	frame_height	: draw_ops.pac_shapes.geometry.type_distance_positive; -- CS this is bounding box height
 	frame_size		: et_frames.type_size;
 	border_width	: et_frames.type_border_width;
+	sectors			: et_frames.type_sectors;
 	title_block_pos	: et_frames.type_position;
 	
 package pac_draw_frame is
 	use draw_ops;
 	use draw_ops.pac_shapes.geometry;
-
-	procedure draw_border;
-
 	use et_frames;
 	use pac_lines;
 
--- Draw the line of the title block. The line is offset by the position of the title block.
+	-- The sector delimiters are short lines between outer an inner border of the frame.
+	-- Between the delimiters are the row and column indexes.
+	procedure draw_sector_delimiters;
+
+	-- Draws the outer an inder border of the frame:
+	procedure draw_border;
+
+	-- Draws a line of the title block. The line is offset by the position of the title block.
 	procedure query_line (cursor : in pac_lines.cursor);
+
+
 	
 end pac_draw_frame;
 	

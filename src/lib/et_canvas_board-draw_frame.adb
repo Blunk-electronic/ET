@@ -53,14 +53,13 @@ procedure draw_frame (
 	context : in type_draw_context) is
 
 	package pac_draw_frame is new et_canvas_draw_frame.pac_draw_frame (
--- 		geometry		=> et_pcb_coordinates.geometry,
--- 		shapes			=> et_packages.pac_shapes,
 		draw_ops		=> et_canvas_board.pac_draw_package,
 		in_area			=> in_area,
 		context			=> context,
 		frame_height	=> self.drawing.frame_bounding_box.height,
 		frame_size		=> self.drawing.frame.frame.size,
 		border_width	=> self.drawing.frame.frame.border_width,
+		sectors			=> self.drawing.frame.frame.sectors,
 		title_block_pos	=> (x => self.drawing.title_block_position.x,
 							y => self.drawing.title_block_position.y)
 		);
@@ -141,8 +140,10 @@ begin
 		iterate (self.drawing.frame.frame.title_block_pcb.lines, query_line'access);
 		cairo.stroke (context.cr);
 		
-		-- CS draw the sector delimiters
+		-- draw the sector delimiters
+		draw_sector_delimiters;
 
+		
 		-- CS draw the sector rows and columns
 
 		-- CS texts according to current drawing.sheet
