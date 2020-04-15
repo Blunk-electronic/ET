@@ -57,7 +57,6 @@ procedure draw_frame (
 		draw_ops		=> et_canvas_board.pac_draw_package,
 		in_area			=> in_area,
 		context			=> context,
-		frame_height	=> self.drawing.frame_bounding_box.height,
 		frame_size		=> self.drawing.frame.frame.size,
 		border_width	=> self.drawing.frame.frame.border_width,
 		sectors			=> self.drawing.frame.frame.sectors,

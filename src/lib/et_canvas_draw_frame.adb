@@ -54,7 +54,7 @@ package body pac_draw_frame is
 			area		=> in_area,
 			context		=> context,
 			line		=> line,
-			height		=> frame_height);
+			height		=> type_distance_positive (frame_size.y));
 	end draw_line;
 
 	procedure draw_border is begin
@@ -171,7 +171,7 @@ package body pac_draw_frame is
 				origin		=> false,
 				rotation	=> geometry.zero_rotation,
 				alignment	=> (CENTER, CENTER),
-				height		=> frame_height);
+				height		=> type_distance_positive (frame_size.y));
 		end draw_index;
 		
 		x, y  	: type_distance_positive;
@@ -350,7 +350,7 @@ package body pac_draw_frame is
 			origin		=> true,
 			rotation	=> zero_rotation,
 			alignment	=> (LEFT, BOTTOM),
-			height		=> frame_height);
+			height		=> type_distance_positive (frame_size.y));
 	end draw_text;
 	
 	procedure draw_texts is

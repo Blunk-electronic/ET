@@ -57,7 +57,6 @@ generic
 	with package draw_ops is new et_canvas_primitive_draw_ops.pac_draw (<>);
 	in_area			: draw_ops.pac_shapes.geometry.type_rectangle;
 	context			: draw_ops.pac_canvas.type_draw_context;
-	frame_height	: draw_ops.pac_shapes.geometry.type_distance_positive; -- CS this is bounding box height
 	frame_size		: et_frames.type_size;
 	border_width	: et_frames.type_border_width;
 	sectors			: et_frames.type_sectors;
@@ -70,7 +69,7 @@ package pac_draw_frame is
 	use draw_ops.pac_shapes.geometry;
 	use et_frames;
 	use pac_lines;
-
+	
 	-- The sector delimiters are short lines between outer an inner border of the frame.
 	-- Between the delimiters are the row and column indexes.
 	procedure draw_sector_delimiters;
