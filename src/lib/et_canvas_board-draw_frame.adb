@@ -67,9 +67,93 @@ procedure draw_frame (
 		);
 
 	use pac_draw_frame;
-	use pac_lines;
 
-begin
+	procedure draw_additional_placeholders is 
+
+		-- get placeholders:
+		phs : constant type_placeholders_pcb := 
+			self.drawing.frame.frame.title_block_pcb.additional_placeholders;
+
+		use et_text;
+	begin
+		draw_text (
+			content	=> to_content ("1..16"), -- CS
+			size	=> phs.signal_layer.size,
+			font	=> font_placeholders,
+			pos		=> phs.signal_layer.position);
+
+		draw_text (
+			content	=> to_content ("TOP/BOT"), -- CS
+			size	=> phs.face.size,
+			font	=> font_placeholders,
+			pos		=> phs.face.position);
+
+	end draw_additional_placeholders;
+
+	procedure draw_cam_markers is
+
+		cms : constant type_cam_markers :=
+			self.drawing.frame.frame.title_block_pcb.cam_markers;
+
+		use et_text;
+	begin
+		draw_text (
+			content	=> to_content (to_string (cms.face.content)),
+			size	=> cms.face.size,
+			font	=> font_placeholders,
+			pos		=> cms.face.position);
+
+		draw_text (
+			content	=> to_content (to_string (cms.silk_screen.content)),
+			size	=> cms.silk_screen.size,
+			font	=> font_placeholders,
+			pos		=> cms.silk_screen.position);
+
+		draw_text (
+			content	=> to_content (to_string (cms.assy_doc.content)),
+			size	=> cms.assy_doc.size,
+			font	=> font_placeholders,
+			pos		=> cms.assy_doc.position);
+
+		draw_text (
+			content	=> to_content (to_string (cms.keepout.content)),
+			size	=> cms.keepout.size,
+			font	=> font_placeholders,
+			pos		=> cms.keepout.position);
+
+		draw_text (
+			content	=> to_content (to_string (cms.plated_millings.content)),
+			size	=> cms.plated_millings.size,
+			font	=> font_placeholders,
+			pos		=> cms.plated_millings.position);
+
+		draw_text (
+			content	=> to_content (to_string (cms.pcb_outline.content)),
+			size	=> cms.pcb_outline.size,
+			font	=> font_placeholders,
+			pos		=> cms.pcb_outline.position);
+
+		draw_text (
+			content	=> to_content (to_string (cms.route_restrict.content)),
+			size	=> cms.route_restrict.size,
+			font	=> font_placeholders,
+			pos		=> cms.route_restrict.position);
+
+		draw_text (
+			content	=> to_content (to_string (cms.via_restrict.content)),
+			size	=> cms.via_restrict.size,
+			font	=> font_placeholders,
+			pos		=> cms.via_restrict.position);
+
+		draw_text (
+			content	=> to_content (to_string (cms.signal_layer.content)),
+			size	=> cms.signal_layer.size,
+			font	=> font_placeholders,
+			pos		=> cms.signal_layer.position);
+		
+	end draw_cam_markers;
+	
+begin -- draw_frame
 --		put_line ("draw frame ...");
 
 	if (in_area = no_rectangle)
@@ -86,12 +170,11 @@ begin
 		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (0), gdouble (0)); -- red
 
 		
-		-- FRAME BORDER
+		-- frame border
 		draw_border;
 
-		-- TITLE BLOCK
-		-- lines
-		iterate (self.drawing.frame.frame.title_block_pcb.lines, query_line'access);
+		-- title block lines
+		pac_lines.iterate (self.drawing.frame.frame.title_block_pcb.lines, query_line'access);
 		cairo.stroke (context.cr);
 		
 		-- draw the sector delimiters
@@ -100,14 +183,10 @@ begin
 		-- draw common placeholders and other texts
 		draw_texts;
 
-		-- CS draw additional_placeholders.face
-		-- CS draw additional_placeholders.signal_layer
+		draw_additional_placeholders;
 		
-		-- CS draw cam markers
+		draw_cam_markers;
 		
--- 		cairo.stroke (context.cr);
-		
--- 		restore (context.cr);
 	end if;
 	
 end draw_frame;
