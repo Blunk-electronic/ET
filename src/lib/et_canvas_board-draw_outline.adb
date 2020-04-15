@@ -66,7 +66,7 @@ procedure draw_outline (
 			area		=> in_area,
 			context		=> context,
 			line		=> element (c),
-			height		=> self.drawing.frame_bounding_box.height);
+			height		=> self.frame_height);
 
 	end query_line;
 
@@ -75,7 +75,7 @@ procedure draw_outline (
 			area		=> in_area,
 			context		=> context,
 			arc			=> element (c),
-			height		=> self.drawing.frame_bounding_box.height);
+			height		=> self.frame_height);
 	end query_arc;
 
 	procedure query_circle (c : in type_pcb_contour_circles.cursor) is begin
@@ -84,7 +84,7 @@ procedure draw_outline (
 			context		=> context,
 			circle		=> element (c),
 			filled		=> NO, -- circles in outline are never filled
-			height		=> self.drawing.frame_bounding_box.height);
+			height		=> self.frame_height);
 	end query_circle;
 	
 	procedure query_segments (

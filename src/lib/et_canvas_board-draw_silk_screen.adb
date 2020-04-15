@@ -69,7 +69,7 @@ procedure draw_silk_screen (
 			area		=> in_area,
 			context		=> context,
 			line		=> element (c),
-			height		=> self.drawing.frame_bounding_box.height);
+			height		=> self.frame_height);
 
 		cairo.stroke (context.cr);
 	end query_line;
@@ -81,7 +81,7 @@ procedure draw_silk_screen (
 			area		=> in_area,
 			context		=> context,
 			arc			=> element (c),
-			height		=> self.drawing.frame_bounding_box.height);
+			height		=> self.frame_height);
 
 		cairo.stroke (context.cr);		
 	end query_arc;
@@ -99,7 +99,7 @@ procedure draw_silk_screen (
 					context		=> context,
 					circle		=> element (c),
 					filled		=> NO,
-					height		=> self.drawing.frame_bounding_box.height);
+					height		=> self.frame_height);
 				
 			when YES =>
 				-- We draw a filled circle with a certain fill style:
@@ -110,7 +110,7 @@ procedure draw_silk_screen (
 							context		=> context,
 							circle		=> element (c),
 							filled		=> YES,
-							height		=> self.drawing.frame_bounding_box.height);
+							height		=> self.frame_height);
 
 					when HATCHED 	=> null; -- CS
 				end case;

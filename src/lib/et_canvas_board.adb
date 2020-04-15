@@ -294,7 +294,7 @@ package body et_canvas_board is
 	begin
 		return type_view_coordinate 
 			(
-			self.drawing.frame_bounding_box.height 
+			self.frame_height 
 			- y
 			);
 	end;
@@ -305,7 +305,7 @@ package body et_canvas_board is
 		return type_distance_total is 
 	begin
 		return (
-			self.drawing.frame_bounding_box.height 
+			self.frame_height 
 			- y
 			);
 	end;
@@ -351,13 +351,13 @@ package body et_canvas_board is
 			area		=> in_area,
 			context		=> context,
 			line		=> lh,
-			height		=> self.drawing.frame_bounding_box.height);
+			height		=> self.frame_height);
 
 		pac_draw_package.draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> lv,
-			height		=> self.drawing.frame_bounding_box.height);
+			height		=> self.frame_height);
 		
 		cairo.stroke (context.cr);		
 	end draw_cursor;

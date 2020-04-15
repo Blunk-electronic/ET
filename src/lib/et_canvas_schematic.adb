@@ -315,7 +315,7 @@ package body et_canvas_schematic is
 	begin
 		return type_view_coordinate 
 			(
-			self.drawing.frame_bounding_box.height 
+			self.frame_height 
 			- y
 			);
 	end;
@@ -326,7 +326,7 @@ package body et_canvas_schematic is
 		return type_distance is 
 	begin
 		return (
-			self.drawing.frame_bounding_box.height 
+			self.frame_height 
 			- y
 			);
 	end;
@@ -371,13 +371,13 @@ package body et_canvas_schematic is
 			area		=> in_area,
 			context		=> context,
 			line		=> lh,
-			height		=> self.drawing.frame_bounding_box.height);
+			height		=> self.frame_height);
 
 		pac_draw_misc.draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> lv,
-			height		=> self.drawing.frame_bounding_box.height);
+			height		=> self.frame_height);
 		
 		cairo.stroke (context.cr);		
 	end draw_cursor;
