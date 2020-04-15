@@ -397,7 +397,6 @@ package body et_canvas_schematic is
 
 		use et_project.type_modules;
 	begin
-		--return type_distance_positive (self.drawing.frame.size.y);
 		return type_distance_positive (element (current_active_module).frames.frame.size.y);
 	end frame_height;
 
@@ -405,14 +404,28 @@ package body et_canvas_schematic is
 		self : not null access type_view)
 		return type_rectangle is
 		box : type_rectangle; -- to be returned
+
+		use et_general;
+		use et_frames;
+
+		paper_height : constant type_distance_positive := type_distance_positive (paper_dimension (
+						paper_size	=> self.get_frame.paper,
+						orientation	=> self.get_frame.orientation,
+						axis		=> Y));
+
+		paper_width : constant type_distance_positive := type_distance_positive (paper_dimension (
+						paper_size	=> self.get_frame.paper,
+						orientation	=> self.get_frame.orientation,
+						axis		=> X));
+		
 	begin
 		-- position (upper left corner):
-		box.x := (self.drawing.paper_width - type_distance_positive (self.drawing.frame.size.x)) / 2.0;
-		box.y := (self.drawing.paper_height - type_distance_positive (self.drawing.frame.size.y)) / 2.0;
+		box.x := (paper_width - type_distance_positive (self.get_frame.size.x)) / 2.0;
+		box.y := (paper_height - type_distance_positive (self.get_frame.size.y)) / 2.0;
 
 		-- width and height
-		box.width := type_distance_positive (self.drawing.frame.size.x);
-		box.height := type_distance_positive (self.drawing.frame.size.y);
+		box.width := type_distance_positive (self.get_frame.size.x);
+		box.height := type_distance_positive (self.get_frame.size.y);
 
 		return box;
 	end frame_bounding_box;
