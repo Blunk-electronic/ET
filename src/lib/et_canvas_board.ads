@@ -186,6 +186,9 @@ package et_canvas_board is
 		cursor		: in type_cursor);
 
 
+	overriding function get_frame (
+		self : not null access type_view)
+		return et_frames.type_frame;
 	
 	overriding function frame_height (
 		self : not null access type_view)

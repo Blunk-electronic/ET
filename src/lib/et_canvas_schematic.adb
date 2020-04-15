@@ -382,7 +382,14 @@ package body et_canvas_schematic is
 		cairo.stroke (context.cr);		
 	end draw_cursor;
 
+	function get_frame (
+		self : not null access type_view)
+		return et_frames.type_frame is
 
+		use et_project.type_modules;
+	begin
+		return element (current_active_module).frames.frame;
+	end get_frame;
 
 	function frame_height (
 		self : not null access type_view)

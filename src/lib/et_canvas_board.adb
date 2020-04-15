@@ -363,6 +363,15 @@ package body et_canvas_board is
 	end draw_cursor;
 
 
+	function get_frame (
+		self : not null access type_view)
+		return et_frames.type_frame is
+
+		use et_canvas_schematic;
+		use et_project.type_modules;
+	begin
+		return element (current_active_module).board.frame.frame;
+	end get_frame;
 
 	function frame_height (
 		self : not null access type_view)

@@ -472,7 +472,11 @@ package pac_canvas is
 		context 	: in type_draw_context;
 		cursor		: in type_cursor) is null;
 
-
+	-- Returns the frame:
+	function get_frame (
+		self : not null access type_view)
+		return et_frames.type_frame is abstract;
+	
 	-- Returns the height of the drawing frame:
 	function frame_height (
 		self : not null access type_view)
