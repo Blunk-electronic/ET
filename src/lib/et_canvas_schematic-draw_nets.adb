@@ -99,7 +99,7 @@ procedure draw_nets (
 
 		if label.rotation_tag = zero_rotation then
 			box_position := type_point (set (x (label.position), y (label.position) - box_height * 0.5));
-			draw_rectangle (in_area, context, box_position, box_width, box_height, self.drawing.frame_bounding_box.height);
+			draw_rectangle (in_area, context, box_position, box_width, box_height, self.frame_height);
 
 			text_rotation := zero_rotation;
 			text_position := type_point (set (x (label.position) + tag_label_text_offset, y (label.position)));
@@ -108,7 +108,7 @@ procedure draw_nets (
 
 		if label.rotation_tag = 90.0 then
 			box_position := type_point (set (x (label.position) - box_height * 0.5, y (label.position)));
-			draw_rectangle (in_area, context, box_position, box_height, box_width, self.drawing.frame_bounding_box.height);
+			draw_rectangle (in_area, context, box_position, box_height, box_width, self.frame_height);
 
 			text_rotation := 90.0;
 			text_position := type_point (set (x (label.position), y (label.position) + tag_label_text_offset));
@@ -117,7 +117,7 @@ procedure draw_nets (
 
 		if label.rotation_tag = 180.0 then
 			box_position := type_point (set (x (label.position) - box_width, y (label.position) - box_height * 0.5));
-			draw_rectangle (in_area, context, box_position, box_width, box_height, self.drawing.frame_bounding_box.height);
+			draw_rectangle (in_area, context, box_position, box_width, box_height, self.frame_height);
 
 			text_rotation := zero_rotation;
 			text_position := type_point (set (x (label.position) - tag_label_text_offset, y (label.position)));
@@ -126,7 +126,7 @@ procedure draw_nets (
 
 		if label.rotation_tag = -90.0 then
 			box_position := type_point (set (x (label.position) - box_height * 0.5, y (label.position) - box_width));
-			draw_rectangle (in_area, context, box_position, box_height, box_width, self.drawing.frame_bounding_box.height);
+			draw_rectangle (in_area, context, box_position, box_height, box_width, self.frame_height);
 
 			text_rotation := 90.0;
 			text_position := type_point (set (x (label.position), y (label.position) - tag_label_text_offset));
@@ -147,7 +147,7 @@ procedure draw_nets (
 			rotation	=> text_rotation,
 
 			alignment	=> text_alignment,
-			height		=> self.drawing.frame_bounding_box.height
+			height		=> self.frame_height
 			);
 
 
@@ -175,7 +175,7 @@ procedure draw_nets (
 						context		=> context,
 						circle		=> junction,
 						filled		=> YES,
-						height		=> self.drawing.frame_bounding_box.height);
+						height		=> self.frame_height);
 				end draw_junction;
 
 				procedure query_label (c : in type_net_labels.cursor) is 
@@ -201,7 +201,7 @@ procedure draw_nets (
 								-- It is readable from the front or the right.
 								rotation	=> to_rotation (element (c).rotation_simple),
 								alignment	=> (LEFT, BOTTOM),
-								height		=> self.drawing.frame_bounding_box.height
+								height		=> self.frame_height
 								);
 
 						when TAG =>
@@ -224,7 +224,7 @@ procedure draw_nets (
 							area		=> in_area,
 							context		=> context,
 							line		=> element (segment_cursor),
-							height		=> self.drawing.frame_bounding_box.height
+							height		=> self.frame_height
 							);
 
 						cairo.stroke (context.cr);

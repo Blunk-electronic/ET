@@ -74,7 +74,7 @@ procedure draw_texts (
 				rotation	=> pac_text.to_rotation (element (cursor).rotation),
 				
 				alignment	=> element (cursor).alignment,
-				height		=> self.drawing.frame_bounding_box.height);
+				height		=> self.frame_height);
 
 		end if;
 	end query_text;

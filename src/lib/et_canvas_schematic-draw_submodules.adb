@@ -75,7 +75,7 @@ procedure draw_submodules (
 				position		=> submod_position,
 				width			=> element (cursor).size.x,
 				height			=> element (cursor).size.y,
-				frame_height	=> self.drawing.frame_bounding_box.height);
+				frame_height	=> self.frame_height);
 								
 			cairo.stroke (context.cr);
 		end draw_box;
@@ -100,7 +100,7 @@ procedure draw_submodules (
 				origin		=> true,
 				rotation	=> zero_rotation,
 				alignment	=> (LEFT, TOP),
-				height		=> self.drawing.frame_bounding_box.height);
+				height		=> self.frame_height);
 
 		end draw_instance_name;
 		
@@ -124,7 +124,7 @@ procedure draw_submodules (
 				origin		=> true,
 				rotation	=> zero_rotation,
 				alignment	=> (LEFT, TOP),
-				height		=> self.drawing.frame_bounding_box.height);
+				height		=> self.frame_height);
 
 		end draw_file_name;
 
@@ -158,7 +158,7 @@ procedure draw_submodules (
 				origin		=> true,
 				rotation	=> et_coordinates.geometry.zero_rotation,
 				alignment	=> (LEFT, TOP),
-				height		=> self.drawing.frame_bounding_box.height);
+				height		=> self.frame_height);
 
 		end draw_position_in_board;
 		
@@ -177,7 +177,7 @@ procedure draw_submodules (
 						position		=> pos,
 						width			=> port_symbol_width,
 						height			=> port_symbol_height,
-						frame_height	=> self.drawing.frame_bounding_box.height);
+						frame_height	=> self.frame_height);
 					
 				end draw_horizontal;
 
@@ -189,7 +189,7 @@ procedure draw_submodules (
 						position		=> pos,
 						width			=> port_symbol_height,
 						height			=> port_symbol_width,
-						frame_height	=> self.drawing.frame_bounding_box.height);
+						frame_height	=> self.frame_height);
 
 				end draw_vertical;
 				
@@ -220,7 +220,7 @@ procedure draw_submodules (
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER),
-						height		=> self.drawing.frame_bounding_box.height);
+						height		=> self.frame_height);
 					
 					-- Draw the port name. The text is placed on the RIGHT of the port rectangle:
 					pac_draw_misc.draw_text 
@@ -234,7 +234,7 @@ procedure draw_submodules (
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (LEFT, CENTER),
-						height		=> self.drawing.frame_bounding_box.height);
+						height		=> self.frame_height);
 					
 					-- Move pos down so that the port sits excatly at
 					-- the point where a net will be connected:
@@ -257,7 +257,7 @@ procedure draw_submodules (
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER),
-						height		=> self.drawing.frame_bounding_box.height);
+						height		=> self.frame_height);
 					
 					-- Draw the port name. The text is placed on the LEFT of the port rectangle:
 					pac_draw_misc.draw_text 
@@ -271,7 +271,7 @@ procedure draw_submodules (
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (RIGHT, CENTER),
-						height		=> self.drawing.frame_bounding_box.height);
+						height		=> self.frame_height);
 					
 					-- Move pos down and left so that the port sits excatly at
 					-- the point where a net will be connected:
@@ -294,7 +294,7 @@ procedure draw_submodules (
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER),
-						height		=> self.drawing.frame_bounding_box.height);
+						height		=> self.frame_height);
 					
 					-- Draw the port name. The text is placed ABOVE the port rectangle:
 					pac_draw_misc.draw_text 
@@ -308,7 +308,7 @@ procedure draw_submodules (
 						origin		=> false, -- no origin required
 						rotation	=> 90.0,
 						alignment	=> (LEFT, CENTER),
-						height		=> self.drawing.frame_bounding_box.height);
+						height		=> self.frame_height);
 					
 					-- Move pos left so that the port sits excatly at
 					-- the point where a net will be connected:
@@ -331,7 +331,7 @@ procedure draw_submodules (
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER),
-						height		=> self.drawing.frame_bounding_box.height);
+						height		=> self.frame_height);
 					
 					-- Draw the port name. The text is placed BELOW the port rectangle:
 					pac_draw_misc.draw_text 
@@ -345,7 +345,7 @@ procedure draw_submodules (
 						origin		=> false, -- no origin required
 						rotation	=> 90.0,
 						alignment	=> (RIGHT, CENTER),
-						height		=> self.drawing.frame_bounding_box.height);
+						height		=> self.frame_height);
 					
 					-- Move pos up and left so that the port sits excatly at
 					-- the point where a net will be connected:
