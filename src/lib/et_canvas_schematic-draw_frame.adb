@@ -116,7 +116,7 @@ begin -- draw_frame
 
 	-- We draw the frame if it is inside the given area or if it itersects the given area:
 	if (in_area = no_rectangle)
-		or else intersects (in_area, self.drawing.frame_bounding_box) 
+		or else intersects (in_area, self.frame_bounding_box) 
 	then
 		-- CS test size 
 -- 			if not size_above_threshold (self, context.view) then

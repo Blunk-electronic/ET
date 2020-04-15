@@ -64,13 +64,13 @@ package body et_canvas_schematic is
 	begin
 		set (point	=> p,
 			 axis	=> X, 
-			 value	=> model_point.x - self.drawing.frame_bounding_box.x);
+			 value	=> model_point.x - self.frame_bounding_box.x);
 		
 		set (point	=> p,
 			 axis	=> Y,
 			 value	=> type_distance (self.drawing.frame.size.y) 
 						- model_point.y 
-						+ self.drawing.frame_bounding_box.y);
+						+ self.frame_bounding_box.y);
 	
 		return p;
 	end;
@@ -84,13 +84,13 @@ package body et_canvas_schematic is
 	begin
 		set (point	=> p,
 			 axis	=> X, 
-			 value	=> drawing_point.x + self.drawing.frame_bounding_box.x);
+			 value	=> drawing_point.x + self.frame_bounding_box.x);
 		
 		set (point	=> p,
 			 axis	=> Y,
 			 value	=> type_distance (self.drawing.frame.size.y) 
 						- drawing_point.y 
-						+ self.drawing.frame_bounding_box.y);
+						+ self.frame_bounding_box.y);
 
 		return p;
 	end;
@@ -163,8 +163,8 @@ package body et_canvas_schematic is
 
 		-- Calculate the new position of area_shifted:
 		area_shifted_new_position : type_point := type_point (set (
-						x => - self.drawing.frame_bounding_box.x,
-						y => - self.drawing.frame_bounding_box.y));
+						x => - self.frame_bounding_box.x,
+						y => - self.frame_bounding_box.y));
 	begin
 -- 		put_line ("draw internal ...");
 -- 		shift_area (self, area_shifted, cursor_main);
@@ -190,8 +190,8 @@ package body et_canvas_schematic is
 		-- all following drawing is relative to the upper left frame corner.
 		translate (
 			context.cr,
-			convert_x (self.drawing.frame_bounding_box.x),
-			convert_y (self.drawing.frame_bounding_box.y));
+			convert_x (self.frame_bounding_box.x),
+			convert_y (self.frame_bounding_box.y));
 
 		draw_frame (self, area_shifted, context);
 		draw_cursor (self, area_shifted, context, cursor_main);
@@ -272,12 +272,12 @@ package body et_canvas_schematic is
 		-- The drawing frame has a bounding box:
 
 		-- position (upper left corner):
-		self.drawing.frame_bounding_box.x := (self.drawing.paper_width - type_distance_positive (self.drawing.frame.size.x)) / 2.0;
-		self.drawing.frame_bounding_box.y := (self.drawing.paper_height - type_distance_positive (self.drawing.frame.size.y)) / 2.0;
-
-		-- width and height
-		self.drawing.frame_bounding_box.width := type_distance_positive (self.drawing.frame.size.x);
-		self.drawing.frame_bounding_box.height := type_distance_positive (self.drawing.frame.size.y);
+-- 		self.drawing.frame_bounding_box.x := (self.drawing.paper_width - type_distance_positive (self.drawing.frame.size.x)) / 2.0;
+-- 		self.drawing.frame_bounding_box.y := (self.drawing.paper_height - type_distance_positive (self.drawing.frame.size.y)) / 2.0;
+-- 
+-- 		-- width and height
+-- 		self.drawing.frame_bounding_box.width := type_distance_positive (self.drawing.frame.size.x);
+-- 		self.drawing.frame_bounding_box.height := type_distance_positive (self.drawing.frame.size.y);
 
 		-- The sheet has a drawing box:
 		self.drawing.paper_bounding_box := (0.0, 0.0, self.drawing.paper_width, self.drawing.paper_height);

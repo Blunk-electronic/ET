@@ -712,14 +712,14 @@ procedure draw_units (
 		-- Build the center point of the symbol:
 		center : constant type_point := type_point (set (
 			x	=> 	x (position)
-					+ self.drawing.frame_bounding_box.x, -- shift right by the x position of the frame
+					+ self.frame_bounding_box.x, -- shift right by the x position of the frame
 
 			-- y must be transposed from the drawing plane (y-axis going upwards)
 			-- to the view plane (y-axis going downwards):
 			-- (Height of drawing frame) - y + (position of frame):
 			y	=> 		et_coordinates.type_distance (self.drawing.frame.size.y)
 					- 	y (position)
-					+	self.drawing.frame_bounding_box.y) -- shift down by frame position
+					+	self.frame_bounding_box.y) -- shift down by frame position
 			);
 		
 	begin -- draw_symbol

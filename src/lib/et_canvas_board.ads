@@ -99,7 +99,7 @@ package et_canvas_board is
 		-- These variables are frequently used. Procedure init_drawing
 		-- sets them. Other operations are free to access them.
 		frame				: et_frames.type_frame_pcb;
-		frame_bounding_box	: type_rectangle;
+-- 		frame_bounding_box	: type_rectangle;
 
 		paper_bounding_box	: type_rectangle;
 		paper_height		: geometry.type_distance_positive;

@@ -66,7 +66,7 @@ package body et_canvas_board is
 		set (point	=> p,
 			 axis	=> X, 
 			 value	=> model_point.x 
-						- self.drawing.frame_bounding_box.x
+						- self.frame_bounding_box.x
 						- x (self.drawing.board_origin) -- because board origin is not the same as drawing origin
 			);
 		
@@ -74,7 +74,7 @@ package body et_canvas_board is
 			 axis	=> Y,
 			 value	=> type_distance (self.drawing.frame.frame.size.y) 
 						- model_point.y 
-						+ self.drawing.frame_bounding_box.y
+						+ self.frame_bounding_box.y
 						- y (self.drawing.board_origin)  -- because board origin is not the same as drawing origin
 			);
 
@@ -91,7 +91,7 @@ package body et_canvas_board is
 		set (point	=> p,
 			 axis	=> X, 
 			 value	=> drawing_point.x 
-						+ self.drawing.frame_bounding_box.x
+						+ self.frame_bounding_box.x
 						+ x (self.drawing.board_origin) -- because board origin is not the same as drawing origin
 			);
 		
@@ -99,7 +99,7 @@ package body et_canvas_board is
 			 axis	=> Y,
 			 value	=> type_distance (self.drawing.frame.frame.size.y) 
 						- drawing_point.y 
-						+ self.drawing.frame_bounding_box.y
+						+ self.frame_bounding_box.y
 						- y (self.drawing.board_origin)  -- because board origin is not the same as drawing origin
 			);
 
@@ -171,8 +171,8 @@ package body et_canvas_board is
 
 		-- Calculate the new position of area_shifted:
 		area_shifted_new_position : type_point := type_point (set (
-						x => - self.drawing.frame_bounding_box.x,
-						y => - self.drawing.frame_bounding_box.y));
+						x => - self.frame_bounding_box.x,
+						y => - self.frame_bounding_box.y));
 
 	begin
 -- 		put_line ("draw internal ...");
@@ -192,8 +192,8 @@ package body et_canvas_board is
 		-- all following drawing is relative to the upper left frame corner.
 		translate (
 			context.cr,
-			convert_x (self.drawing.frame_bounding_box.x),
-			convert_y (self.drawing.frame_bounding_box.y));
+			convert_x (self.frame_bounding_box.x),
+			convert_y (self.frame_bounding_box.y));
 
 		draw_frame (self, area_shifted, context);
 		restore (context.cr);
@@ -210,8 +210,8 @@ package body et_canvas_board is
 		-- so that the board origin is not at the lower left corner of the frame.
 		translate (
 			context.cr,
-			convert_x (self.drawing.frame_bounding_box.x + x (self.drawing.board_origin)),
-			convert_y (self.drawing.frame_bounding_box.y - y (self.drawing.board_origin)));
+			convert_x (self.frame_bounding_box.x + x (self.drawing.board_origin)),
+			convert_y (self.frame_bounding_box.y - y (self.drawing.board_origin)));
 
 		draw_cursor (self, area_shifted, context, cursor_main);
 		draw_outline (self, area_shifted, context);
@@ -261,12 +261,12 @@ package body et_canvas_board is
 		-- The drawing frame has a bounding box:
 
 		-- position (upper left corner):
-		self.drawing.frame_bounding_box.x := (self.drawing.paper_width - type_distance_positive (self.drawing.frame.frame.size.x)) / 2.0;
-		self.drawing.frame_bounding_box.y := (self.drawing.paper_height - type_distance_positive (self.drawing.frame.frame.size.y)) / 2.0;
-
-		-- width and height
-		self.drawing.frame_bounding_box.width := type_distance_positive (self.drawing.frame.frame.size.x);
-		self.drawing.frame_bounding_box.height := type_distance_positive (self.drawing.frame.frame.size.y);
+-- 		self.drawing.frame_bounding_box.x := (self.drawing.paper_width - type_distance_positive (self.drawing.frame.frame.size.x)) / 2.0;
+-- 		self.drawing.frame_bounding_box.y := (self.drawing.paper_height - type_distance_positive (self.drawing.frame.frame.size.y)) / 2.0;
+-- 
+-- 		-- width and height
+-- 		self.drawing.frame_bounding_box.width := type_distance_positive (self.drawing.frame.frame.size.x);
+-- 		self.drawing.frame_bounding_box.height := type_distance_positive (self.drawing.frame.frame.size.y);
 
 		-- The sheet has a drawing box:
 		self.drawing.paper_bounding_box := (0.0, 0.0, self.drawing.paper_width, self.drawing.paper_height);
