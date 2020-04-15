@@ -391,6 +391,23 @@ package body et_canvas_schematic is
 		return type_distance_positive (self.drawing.frame.size.y);
 	end frame_height;
 
+	function frame_bounding_box (
+		self : not null access type_view)
+		return type_rectangle is
+		box : type_rectangle; -- to be returned
+	begin
+		-- position (upper left corner):
+		box.x := (self.drawing.paper_width - type_distance_positive (self.drawing.frame.size.x)) / 2.0;
+		box.y := (self.drawing.paper_height - type_distance_positive (self.drawing.frame.size.y)) / 2.0;
+
+		-- width and height
+		box.width := type_distance_positive (self.drawing.frame.size.x);
+		box.height := type_distance_positive (self.drawing.frame.size.y);
+
+		return box;
+	end frame_bounding_box;
+
+
 	
 end et_canvas_schematic;
 

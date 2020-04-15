@@ -477,7 +477,12 @@ package pac_canvas is
 	function frame_height (
 		self : not null access type_view)
 		return type_distance_positive is abstract;
-	
+
+	-- Returns the bounding box of the drawing frame:
+	function frame_bounding_box (
+		self : not null access type_view)
+		return type_rectangle is abstract;
+									
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);
 	-- Called when one of the scrollbars has changed value.

@@ -191,7 +191,11 @@ package et_canvas_board is
 		self : not null access type_view)
 		return type_distance_positive;
 
-	
+	overriding function frame_bounding_box (
+		self : not null access type_view)
+		return type_rectangle;
+
+		
 end et_canvas_board;
 
 -- Soli Deo Gloria
