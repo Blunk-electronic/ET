@@ -120,7 +120,7 @@ package body et_canvas_board is
 	function bounding_box (self : not null access type_view)
 		return type_rectangle is
 	begin
-		return self.drawing.paper_bounding_box; -- CS should include all items of the current sheet.
+		return self.paper_bounding_box; -- CS should include all items of the current sheet.
 		-- means: also items outside the frame
 	end;
 
@@ -248,29 +248,6 @@ package body et_canvas_board is
 		-- set some variables frequently used regarding frame and paper:
 		self.drawing.frame := type_modules.element (am).board.frame;
 		
--- 		self.drawing.paper_height := type_distance_positive (paper_dimension (
--- 							paper_size	=> self.drawing.frame.frame.paper,
--- 							orientation	=> self.drawing.frame.frame.orientation,
--- 							axis		=> Y));
--- 
--- 		self.drawing.paper_width := type_distance_positive (paper_dimension (
--- 							paper_size	=> self.drawing.frame.frame.paper,
--- 							orientation	=> self.drawing.frame.frame.orientation,
--- 							axis		=> X));
-
-		-- The drawing frame has a bounding box:
-
-		-- position (upper left corner):
--- 		self.drawing.frame_bounding_box.x := (self.drawing.paper_width - type_distance_positive (self.drawing.frame.frame.size.x)) / 2.0;
--- 		self.drawing.frame_bounding_box.y := (self.drawing.paper_height - type_distance_positive (self.drawing.frame.frame.size.y)) / 2.0;
--- 
--- 		-- width and height
--- 		self.drawing.frame_bounding_box.width := type_distance_positive (self.drawing.frame.frame.size.x);
--- 		self.drawing.frame_bounding_box.height := type_distance_positive (self.drawing.frame.frame.size.y);
-
-		-- The sheet has a drawing box:
--- 		self.drawing.paper_bounding_box := (0.0, 0.0, self.drawing.paper_width, self.drawing.paper_height);
-
 		-- Drawing of the title block items is relative to the title block position:
 		self.drawing.title_block_position := self.drawing.frame.frame.title_block_pcb.position;
 
@@ -413,7 +390,26 @@ package body et_canvas_board is
 		return box;
 	end frame_bounding_box;
 
-	
+	function paper_bounding_box (
+		self : not null access type_view)
+		return type_rectangle is
+
+		use et_general;
+		use et_frames;
+
+		paper_height : constant type_distance_positive := type_distance_positive (paper_dimension (
+						paper_size	=> self.get_frame.paper,
+						orientation	=> self.get_frame.orientation,
+						axis		=> Y));
+
+		paper_width : constant type_distance_positive := type_distance_positive (paper_dimension (
+						paper_size	=> self.get_frame.paper,
+						orientation	=> self.get_frame.orientation,
+						axis		=> X));
+
+	begin
+		return (0.0, 0.0, paper_width, paper_height);
+	end paper_bounding_box;	
 	
 end et_canvas_board;
 

@@ -113,12 +113,6 @@ package et_canvas_schematic is
 		-- These variables are frequently used. Procedure init_drawing
 		-- sets them. Other operations are free to access them.
 		frame				: et_frames.type_frame (et_frames.SCHEMATIC);
--- 		frame_bounding_box	: type_rectangle;
-
-		paper_bounding_box	: type_rectangle;
--- 		paper_height		: et_coordinates.geometry.type_distance_positive; -- CS
--- 		paper_width			: et_coordinates.geometry.type_distance_positive;
-
 		title_block_position	: et_frames.type_position;
 
 		-- the active sheet
@@ -235,6 +229,9 @@ package et_canvas_schematic is
 		self : not null access type_view)
 		return type_rectangle;
 
+	overriding function paper_bounding_box (
+		self : not null access type_view)
+		return type_rectangle;
 	
 	
 end et_canvas_schematic;

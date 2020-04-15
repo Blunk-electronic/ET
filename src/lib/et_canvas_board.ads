@@ -99,12 +99,6 @@ package et_canvas_board is
 		-- These variables are frequently used. Procedure init_drawing
 		-- sets them. Other operations are free to access them.
 		frame				: et_frames.type_frame_pcb;
--- 		frame_bounding_box	: type_rectangle;
-
-		paper_bounding_box	: type_rectangle;
--- 		paper_height		: geometry.type_distance_positive;
--- 		paper_width			: geometry.type_distance_positive;
-
 		title_block_position	: et_frames.type_position;
 
 		-- The position of the board origin relative to the lower left
@@ -198,6 +192,9 @@ package et_canvas_board is
 		self : not null access type_view)
 		return type_rectangle;
 
+	overriding function paper_bounding_box (
+		self : not null access type_view)
+		return type_rectangle;
 		
 end et_canvas_board;
 
