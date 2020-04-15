@@ -1226,6 +1226,57 @@ package body pac_canvas is
 		self.shift_area (cursor);
 	end move_cursor;
 
+
+	function frame_bounding_box (
+		self : not null access type_view'class)
+		return type_rectangle is
+		box : type_rectangle; -- to be returned
+
+		use et_general;
+		use et_frames;
+
+		paper_height : constant type_distance_positive := type_distance_positive (paper_dimension (
+						paper_size	=> self.get_frame.paper,
+						orientation	=> self.get_frame.orientation,
+						axis		=> Y));
+
+		paper_width : constant type_distance_positive := type_distance_positive (paper_dimension (
+						paper_size	=> self.get_frame.paper,
+						orientation	=> self.get_frame.orientation,
+						axis		=> X));
+
+	begin
+		-- position (upper left corner):
+		box.x := (paper_width - type_distance_positive (self.get_frame.size.x)) / 2.0;
+		box.y := (paper_height - type_distance_positive (self.get_frame.size.y)) / 2.0;
+
+		-- width and height
+		box.width := type_distance_positive (self.get_frame.size.x);
+		box.height := type_distance_positive (self.get_frame.size.y);
+
+		return box;
+	end frame_bounding_box;
+	
+	function paper_bounding_box (
+		self : not null access type_view'class)
+		return type_rectangle is
+
+		use et_general;
+		use et_frames;
+
+		paper_height : constant type_distance_positive := type_distance_positive (paper_dimension (
+						paper_size	=> self.get_frame.paper,
+						orientation	=> self.get_frame.orientation,
+						axis		=> Y));
+
+		paper_width : constant type_distance_positive := type_distance_positive (paper_dimension (
+						paper_size	=> self.get_frame.paper,
+						orientation	=> self.get_frame.orientation,
+						axis		=> X));
+		
+	begin
+		return (0.0, 0.0, paper_width, paper_height);
+	end paper_bounding_box;
 	
 end pac_canvas;
 	

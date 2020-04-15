@@ -484,13 +484,13 @@ package pac_canvas is
 
 	-- Returns the bounding box of the drawing frame:
 	function frame_bounding_box (
-		self : not null access type_view)
-		return type_rectangle is abstract;
+		self : not null access type_view'class)
+		return type_rectangle;
 
 	-- Returns the bounding box of the paper:
 	function paper_bounding_box (
-		self : not null access type_view)
-		return type_rectangle is abstract;
+		self : not null access type_view'class)
+		return type_rectangle;
 
 									
 private

@@ -187,14 +187,6 @@ package et_canvas_board is
 	overriding function frame_height (
 		self : not null access type_view)
 		return type_distance_positive;
-
-	overriding function frame_bounding_box (
-		self : not null access type_view)
-		return type_rectangle;
-
-	overriding function paper_bounding_box (
-		self : not null access type_view)
-		return type_rectangle;
 		
 end et_canvas_board;
 
