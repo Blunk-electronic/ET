@@ -102,8 +102,8 @@ package et_canvas_board is
 -- 		frame_bounding_box	: type_rectangle;
 
 		paper_bounding_box	: type_rectangle;
-		paper_height		: geometry.type_distance_positive;
-		paper_width			: geometry.type_distance_positive;
+-- 		paper_height		: geometry.type_distance_positive;
+-- 		paper_width			: geometry.type_distance_positive;
 
 		title_block_position	: et_frames.type_position;
 

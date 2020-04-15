@@ -259,15 +259,15 @@ package body et_canvas_schematic is
 		-- set some variables frequently used regarding frame and paper:
 		self.drawing.frame := type_modules.element (current_active_module).frames.frame;
 		
-		self.drawing.paper_height := type_distance_positive (paper_dimension (
-							paper_size	=> self.drawing.frame.paper,
-							orientation	=> self.drawing.frame.orientation,
-							axis		=> Y));
-
-		self.drawing.paper_width := type_distance_positive (paper_dimension (
-							paper_size	=> self.drawing.frame.paper,
-							orientation	=> self.drawing.frame.orientation,
-							axis		=> X));
+-- 		self.drawing.paper_height := type_distance_positive (paper_dimension (
+-- 							paper_size	=> self.drawing.frame.paper,
+-- 							orientation	=> self.drawing.frame.orientation,
+-- 							axis		=> Y));
+-- 
+-- 		self.drawing.paper_width := type_distance_positive (paper_dimension (
+-- 							paper_size	=> self.drawing.frame.paper,
+-- 							orientation	=> self.drawing.frame.orientation,
+-- 							axis		=> X));
 
 		-- The drawing frame has a bounding box:
 
@@ -280,7 +280,7 @@ package body et_canvas_schematic is
 -- 		self.drawing.frame_bounding_box.height := type_distance_positive (self.drawing.frame.size.y);
 
 		-- The sheet has a drawing box:
-		self.drawing.paper_bounding_box := (0.0, 0.0, self.drawing.paper_width, self.drawing.paper_height);
+-- 		self.drawing.paper_bounding_box := (0.0, 0.0, self.drawing.paper_width, self.drawing.paper_height);
 
 		-- Drawing of the title block items is relative to the title block position:
 		self.drawing.title_block_position := self.drawing.frame.title_block_schematic.position;

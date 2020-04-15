@@ -116,8 +116,8 @@ package et_canvas_schematic is
 -- 		frame_bounding_box	: type_rectangle;
 
 		paper_bounding_box	: type_rectangle;
-		paper_height		: et_coordinates.geometry.type_distance_positive; -- CS
-		paper_width			: et_coordinates.geometry.type_distance_positive;
+-- 		paper_height		: et_coordinates.geometry.type_distance_positive; -- CS
+-- 		paper_width			: et_coordinates.geometry.type_distance_positive;
 
 		title_block_position	: et_frames.type_position;
 

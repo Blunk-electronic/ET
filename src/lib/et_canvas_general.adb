@@ -465,7 +465,7 @@ package body pac_canvas is
 			return;
 		end if;
 
-		-- Get the bounding box of the whole drawing sheet:
+		-- Get the bounding box of the whole drawing:
 		box := bounding_box (self);
 
 		--  we set the adjustments to include the model area, but also at least
