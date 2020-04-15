@@ -319,7 +319,7 @@ package pac_canvas is
 		return type_point is abstract;
 
 	
-	
+	-- Returns the bounding box of all items.	
 	function bounding_box (self : not null access type_view)
 		return type_rectangle is abstract;
 	
@@ -472,6 +472,11 @@ package pac_canvas is
 		context 	: in type_draw_context;
 		cursor		: in type_cursor) is null;
 
+
+	-- Returns the height of the drawing frame:
+	function frame_height (
+		self : not null access type_view)
+		return type_distance_positive is abstract;
 	
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);

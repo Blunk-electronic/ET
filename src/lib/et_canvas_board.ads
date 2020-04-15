@@ -123,7 +123,6 @@ package et_canvas_board is
 		drawing	: type_drawing;
 	end record;
 
-	-- Returns the bounding box of all items.
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;
 
@@ -185,6 +184,13 @@ package et_canvas_board is
 		in_area		: in type_rectangle := no_rectangle;
 		context 	: in type_draw_context;
 		cursor		: in type_cursor);
+
+
+	
+	overriding function frame_height (
+		self : not null access type_view)
+		return type_distance_positive;
+
 	
 end et_canvas_board;
 

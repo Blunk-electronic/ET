@@ -223,7 +223,11 @@ package et_canvas_schematic is
 		cursor		: in type_cursor);
 
 
+	overriding function frame_height (
+		self : not null access type_view)
+		return type_distance_positive;
 
+	
 	
 end et_canvas_schematic;
 

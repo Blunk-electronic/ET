@@ -362,6 +362,16 @@ package body et_canvas_board is
 		cairo.stroke (context.cr);		
 	end draw_cursor;
 
+
+
+	function frame_height (
+		self : not null access type_view)
+		return type_distance_positive is 
+	begin
+		return type_distance_positive (self.drawing.frame.frame.size.y);
+	end frame_height;
+
+
 	
 end et_canvas_board;
 
