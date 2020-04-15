@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         SCHEMATIC DRAW FRAME                             --
+--                          CANVAS DRAW FRAME                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -353,7 +353,7 @@ package body pac_draw_frame is
 			height		=> frame_height);
 	end draw_text;
 	
-	procedure draw_title_block_texts is
+	procedure draw_texts is
 
 		use et_general;
 
@@ -377,7 +377,7 @@ package body pac_draw_frame is
 		use et_meta;
 		use et_canvas_schematic;
 		
-	begin -- draw_title_block_texts
+	begin -- draw_texts
 	-- COMMON PLACEHOLDERS
 		-- project name:
 		draw_text (
@@ -482,7 +482,7 @@ package body pac_draw_frame is
 	-- OTHER TEXTS
 		draw_other_texts;
 
-	end draw_title_block_texts;
+	end draw_texts;
 
 end pac_draw_frame;
 

@@ -137,7 +137,7 @@ begin -- draw_frame
 		cairo.stroke (context.cr);
 		
 		-- draw common placeholders and other texts
-		draw_title_block_texts;
+		draw_texts;
 
 		draw_additional_placeholders;
 		

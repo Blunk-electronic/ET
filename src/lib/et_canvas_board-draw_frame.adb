@@ -98,7 +98,7 @@ begin
 		draw_sector_delimiters;
 
 		-- draw common placeholders and other texts
-		draw_title_block_texts;
+		draw_texts;
 
 		-- CS draw additional_placeholders.face
 		-- CS draw additional_placeholders.signal_layer

@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            CANVAS GENERAL                                --
+--                          CANVAS DRAW FRAME                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -78,17 +78,23 @@ package pac_draw_frame is
 	-- Draws the outer an inder border of the frame:
 	procedure draw_border;
 
-	-- Draws a line of the title block. The line is offset by the position of the title block.
+	-- Draws a line of the title block. 
+	-- The line position is relative to the lower left corner of the title block.
+	-- A cairo.strock (context.cr) must be called once all lines have been drawn.
 	procedure query_line (cursor : in pac_lines.cursor);
 
+	-- Draws a single text of the title block.
+	-- The line position is relative to the lower left corner of the title block.	
 	procedure draw_text (
 		content	: in type_text_content.bounded_string;
 		size	: in type_text_size;
 		font	: in type_font;
 		pos		: in et_frames.type_position);
 	
-	-- Draw common placeholders (for both schematic and layout) and other texts:
-	procedure draw_title_block_texts;
+	-- Draw common placeholders. They apply to both schematic and layout.
+	-- Common placeholders are project name, module file name and assembly variant.
+	-- Draws other texts such as "approved" or "edited". Such texts have no placeholders:
+	procedure draw_texts;
 	
 end pac_draw_frame;
 	
