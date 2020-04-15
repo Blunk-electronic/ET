@@ -367,8 +367,11 @@ package body et_canvas_board is
 	function frame_height (
 		self : not null access type_view)
 		return type_distance_positive is 
+
+		use et_canvas_schematic;
+		use et_project.type_modules;
 	begin
-		return type_distance_positive (self.drawing.frame.frame.size.y);
+		return type_distance_positive (element (current_active_module).board.frame.frame.size.y);
 	end frame_height;
 
 	function frame_bounding_box (
