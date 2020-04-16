@@ -158,7 +158,7 @@ package body gui_schematic is
 		gtk_new (canvas);
 		
 		-- set the module to be opened and optionally the sheet to be displayed:
-		init_drawing (canvas, module, sheet);
+		init_drawing (module, sheet);
 
 		-- draw the schematic sheet
 		redraw (canvas);

@@ -176,8 +176,7 @@ package et_canvas_schematic is
 	
 	-- Init the drawing:
 	procedure init_drawing (
-		view	: in type_view_ptr;
-		module	: in et_project.type_modules.cursor; -- the module to be drawn
+		module	: in et_project.type_modules.cursor; -- the module to be drawn in schematic and layout
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be drawn
 
 	-- Redraws the schematic:

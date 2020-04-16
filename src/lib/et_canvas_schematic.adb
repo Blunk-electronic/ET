@@ -232,13 +232,9 @@ package body et_canvas_schematic is
 	end set_module;
 
 	procedure init_drawing (
-		view	: in type_view_ptr;							 
 		module	: in et_project.type_modules.cursor; -- the module to be drawn
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be drawn
-	is
-		type type_local_view_ptr is access all type_view;
-		self : type_local_view_ptr := type_local_view_ptr (view);
-	begin
+	is begin
 		-- set the active module:
 		current_active_module := module;
 		
