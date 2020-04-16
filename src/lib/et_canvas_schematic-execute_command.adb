@@ -107,7 +107,7 @@ procedure execute_command (
 		
 		if location.exists then
 			-- show the sheet where the unit is:
-			self.set_sheet (sheet (location.position));
+			current_active_sheet := sheet (location.position);
 
 			-- center on the unit
 			center_on (canvas, type_point (location.position));
@@ -137,7 +137,7 @@ procedure execute_command (
 		
 		if location.exists then
 			-- show the sheet where the unit is:
-			self.set_sheet (sheet (location.position));
+			current_active_sheet := sheet (location.position);
 
 			-- center on the unit
 			center_on (canvas, type_point (location.position));
@@ -153,10 +153,10 @@ procedure execute_command (
 
 		-- CS test if sheet exists
 		
-		self.set_sheet (sheet);
+		current_active_sheet := sheet;
 
 		-- Update module name and sheet number in the schematic window title bar:
-		set_title_bar (active_module, self.get_sheet);
+		set_title_bar (active_module, current_active_sheet);
 	end show_sheet;
 
 	procedure show_module is
@@ -168,10 +168,10 @@ procedure execute_command (
 	begin
 		log (text => "set module " & enclose_in_quotes (to_string (module)), level => log_threshold + 1);
 		set_module (module);
-		self.set_sheet (1);
+		current_active_sheet := 1;
 
 		-- Update module name and sheet number in the schematic window title bar:
-		set_title_bar (module, self.get_sheet);
+		set_title_bar (module, current_active_sheet);
 		
 		-- Update the board window title bar:
 		et_canvas_board.set_title_bar (module);
@@ -186,10 +186,10 @@ procedure execute_command (
 		log (text => "set module " & enclose_in_quotes (to_string (module))
 			 & " sheet " & to_sheet (sheet), level => log_threshold + 1);
 		set_module (module);
-		self.set_sheet (sheet);
+		current_active_sheet := sheet;
 
 		-- Update module name and sheet number in the schematic window title bar:
-		set_title_bar (module, self.get_sheet);
+		set_title_bar (module, current_active_sheet);
 		
 		-- Update the board window title bar:
 		et_canvas_board.set_title_bar (module);

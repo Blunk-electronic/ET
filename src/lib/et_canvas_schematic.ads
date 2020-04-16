@@ -170,16 +170,6 @@ package et_canvas_schematic is
 	-- Copies the drawing grid as specified in the module to drawing.grid.
 	procedure set_grid (view : in type_view_ptr);
 
-	-- Sets the active sheet to be displayed in the canvas:
-	procedure set_sheet (
-		self    : not null access type_view;
-		sheet	: in et_coordinates.type_sheet);
-
-	-- Returns the current active sheet (being displayed in the canvas):
-	function get_sheet (
-		self    : not null access type_view)
-		return et_coordinates.type_sheet;
-	
 	-- Sets the active module to be displayed in the canvas:
 	procedure set_module (
 		module	: in et_general.type_module_name.bounded_string); -- motor_driver

@@ -211,20 +211,6 @@ package body et_canvas_schematic is
 		self.grid := type_modules.element (current_active_module).grid;
 	end set_grid;
 
-	procedure set_sheet ( -- CS no need ?
-		self    : not null access type_view; -- CS no need
-		sheet	: in et_coordinates.type_sheet) is
-	begin
-		current_active_sheet := sheet;
-	end set_sheet;
-
-	function get_sheet ( -- CS no need ?
-		self    : not null access type_view)  -- CS no need
-		return et_coordinates.type_sheet is
-	begin
-		return current_active_sheet;
-	end get_sheet;
-	
 	procedure set_module (
 		module	: in et_general.type_module_name.bounded_string)  -- motor_driver
 	is
