@@ -92,11 +92,11 @@ package scripting is
 	function to_string (domain : in type_domain) return string;
 	function to_domain (domain : in string) return type_domain;
 	
-	type type_verb_project is ( -- CS prepend prefix VERB_
-		CREATE,
-		DELETE,
-		OPEN,
-		SAVE
+	type type_verb_project is (
+		VERB_CREATE,
+		VERB_DELETE,
+		VERB_OPEN,
+		VERB_SAVE
 		);
 
 	
@@ -105,8 +105,8 @@ package scripting is
 	function to_string (verb : in type_verb_project) return string;
 	function to_verb (verb : in string) return type_verb_project;
 	
-	type type_noun_project is ( -- CS prepend prefix NOUN_
-		MODULE
+	type type_noun_project is (
+		NOUN_MODULE
 		);
 
 	function to_string (noun : in type_noun_project) return string;
@@ -116,28 +116,28 @@ package scripting is
 	
 -- SCHEMATIC
 	
-	type type_verb_schematic is ( -- CS prepend prefix VERB_
-		ADD,
-		BUILD,
-		CHECK,
-		COPY,
-		CREATE,
-		DELETE,
-		DESCRIBE,
-		DRAG,
-		DRAW,
-		INVOKE,
-		MAKE,
-		MOVE,
-		MOUNT,
-		PLACE,
-		REMOVE,
-		RENAME,
-		RENUMBER,
-		ROTATE,
-		SET,
-		UNMOUNT,
-		WRITE
+	type type_verb_schematic is (
+		VERB_ADD,
+		VERB_BUILD,
+		VERB_CHECK,
+		VERB_COPY,
+		VERB_CREATE,
+		VERB_DELETE,
+		VERB_DESCRIBE,
+		VERB_DRAG,
+		VERB_DRAW,
+		VERB_INVOKE,
+		VERB_MAKE,
+		VERB_MOVE,
+		VERB_MOUNT,
+		VERB_PLACE,
+		VERB_REMOVE,
+		VERB_RENAME,
+		VERB_RENUMBER,
+		VERB_ROTATE,
+		VERB_SET,
+		VERB_UNMOUNT,
+		VERB_WRITE
 		);
 
 	function to_string (verb : in type_verb_schematic) return string;
@@ -184,19 +184,19 @@ package scripting is
 	
 -- BOARD
 	
-	type type_verb_board is ( -- CS prepend prefix VERB_
-		ADD,
-		DELETE,
+	type type_verb_board is (
+		VERB_ADD,
+		VERB_DELETE,
 		--DRAG,
-		DRAW,		
-		FLIP,
-		MAKE,
-		MOVE,
+		VERB_DRAW,		
+		VERB_FLIP,
+		VERB_MAKE,
+		VERB_MOVE,
 		--PLACE,
-		RIPUP,
-		ROTATE,
-		ROUTE,
-		SET
+		VERB_RIPUP,
+		VERB_ROTATE,
+		VERB_ROUTE,
+		VERB_SET
 		--WRITE
 		);
 
@@ -204,33 +204,33 @@ package scripting is
 	function to_verb (verb : in string) return type_verb_board;
 	
 
-	type type_noun_board is ( -- CS prepend prefix NOUN_
-		ASSY, -- assembly documentation
-		BOARD,
-		DEVICE,
-		FREETRACK,
-		GRID,
-		KEEPOUT,
-		LAYER, 	-- signal layer with dielectic
-		NAME,
-		NET,
-		OUTLINE,
-		PARTCODE,
-		PNP, -- pick & place
-		PURPOSE,
-		ROUTE_RESTRICT,
-		SILK, -- silk screen
-		STENCIL, -- solder mask
-		STOP, -- solder stop mask
-		SUBMODULE,
-		TEXT,
-		TEXT_SIZE,
-		TEXT_LINE_WIDTH,
+	type type_noun_board is (
+		NOUN_ASSY, -- assembly documentation
+		NOUN_BOARD,
+		NOUN_DEVICE,
+		NOUN_FREETRACK,
+		NOUN_GRID,
+		NOUN_KEEPOUT,
+		NOUN_LAYER, 	-- signal layer with dielectic
+		NOUN_NAME,
+		NOUN_NET,
+		NOUN_OUTLINE,
+		NOUN_PARTCODE,
+		NOUN_PNP, -- pick & place
+		NOUN_PURPOSE,
+		NOUN_ROUTE_RESTRICT,
+		NOUN_SILK, -- silk screen
+		NOUN_STENCIL, -- solder mask
+		NOUN_STOP, -- solder stop mask
+		NOUN_SUBMODULE,
+		NOUN_TEXT,
+		NOUN_TEXT_SIZE,
+		NOUN_TEXT_LINE_WIDTH,
 -- 		TRACK,
-		VALUE,
-		VIA,
-		VIA_DRILL,
-		VIA_RESTRICT
+		NOUN_VALUE,
+		NOUN_VIA,
+		NOUN_VIA_DRILL,
+		NOUN_VIA_RESTRICT
 		);
 
 	function to_string (noun : in type_noun_board) return string;

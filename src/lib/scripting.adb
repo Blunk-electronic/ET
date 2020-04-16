@@ -98,45 +98,65 @@ package body scripting is
 			raise;
 	end;
 
-	function to_string (verb : in type_verb_project) return string is begin
-		return type_verb_project'image (verb);
+	function to_string (verb : in type_verb_project) return string is 
+		s : string := type_verb_project'image (verb);
+	begin
+		return s (verb_prefix'length + 1 .. s'last);
 	end;
 
 	function to_verb (verb : in string) return type_verb_project is begin
-		return type_verb_project'value (verb);
+		return type_verb_project'value (verb_prefix & verb);
+	
 		exception when event: others => 
 			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
 			raise;
 	end;
 	
-	function to_string (noun : in type_noun_project) return string is begin
-		return type_noun_project'image (noun);
+	function to_string (noun : in type_noun_project) return string is 
+		s : string := type_noun_project'image (noun);
+	begin
+		return s (verb_prefix'length + 1 .. s'last);
 	end;
 
 	function to_noun (noun : in string) return type_noun_project is begin
-		return type_noun_project'value (noun);
+		return type_noun_project'value (noun_prefix & noun);
+	
 		exception when event: others => 
 			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
 			raise;
 	end;
 	
-	function to_string (verb : in type_verb_board) return string is begin
-		return type_verb_board'image (verb);
+	function to_string (verb : in type_verb_board) return string is 
+	-- Removes the verb_prefix from verb and returns the remainder as string.
+	-- VERB_ADD becomes ADD.
+		s : string := type_verb_board'image (verb);
+	begin
+		return s (verb_prefix'length + 1 .. s'last);
 	end;
 
 	function to_verb (verb : in string) return type_verb_board is begin
-		return type_verb_board'value (verb);
+	-- Prepends the verb_prefix to the given string and returns a type_verb_board.
+	-- ADD becomes VERB_ADD.
+		return type_verb_board'value (verb_prefix & verb);
+	
 		exception when event: others => 
 			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
 			raise;
 	end;
 	
-	function to_string (verb : in type_verb_schematic) return string is begin
-		return type_verb_schematic'image (verb);
+	function to_string (verb : in type_verb_schematic) return string is 
+	-- Removes the domain_prefix from verb and returns the remainder as string.
+	-- VERB_ADD becomes ADD.
+		s : string := type_verb_schematic'image (verb);
+	begin
+		return s (verb_prefix'length + 1 .. s'last);
 	end;
 
 	function to_verb (verb : in string) return type_verb_schematic is begin
-		return type_verb_schematic'value (verb);
+	-- Prepends the verb_prefix to the given string and returns a type_verb_schematic.
+	-- ADD becomes VERB_ADD.
+		return type_verb_schematic'value (verb_prefix & verb);
+	
 		exception when event: others => 
 			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
 			raise;
@@ -155,12 +175,15 @@ package body scripting is
 			raise;
 	end;
 
-	function to_string (noun : in type_noun_board) return string is begin
-		return type_noun_board'image (noun);
+	function to_string (noun : in type_noun_board) return string is 
+		s : string := type_noun_board'image (noun);
+	begin
+		return s (noun_prefix'length + 1 .. s'last);
 	end;
 
 	function to_noun (noun : in string) return type_noun_board is begin
-		return type_noun_board'value (noun);
+		return type_noun_board'value (noun_prefix & noun);
+	
 		exception when event: others => 
 			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
 			raise;
@@ -322,7 +345,7 @@ package body scripting is
 		noun := to_noun (f (4));
 	
 		case verb is
-			when ADD =>
+			when VERB_ADD =>
 				case noun is
 					when NOUN_DEVICE =>
 						case fields is
@@ -444,7 +467,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when BUILD =>
+			when VERB_BUILD =>
 				case noun is
 					when NOUN_SUBMODULES_TREE =>
 						case fields is
@@ -462,7 +485,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 				
-			when CHECK =>
+			when VERB_CHECK =>
 				case noun is
 					when NOUN_INTEGRITY =>
 						case fields is
@@ -479,7 +502,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when COPY =>
+			when VERB_COPY =>
 				case noun is
 					when NOUN_DEVICE =>
 						case fields is
@@ -532,7 +555,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when CREATE =>
+			when VERB_CREATE =>
 				case noun is
 					when NOUN_VARIANT => 
 						case fields is
@@ -551,7 +574,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 																	
-			when DELETE =>
+			when VERB_DELETE =>
 				case noun is
 					when NOUN_DEVICE =>
 						case fields is
@@ -736,7 +759,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when DESCRIBE =>
+			when VERB_DESCRIBE =>
 				case noun is
 					when NOUN_VARIANT => 
 						case fields is
@@ -756,7 +779,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 				
-			when DRAG =>
+			when VERB_DRAG =>
 				case noun is
 					when NOUN_UNIT =>
 						case fields is
@@ -862,7 +885,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 				
-			when DRAW =>
+			when VERB_DRAW =>
 				case noun is
 					when NOUN_NET =>
 						case fields is
@@ -891,7 +914,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when INVOKE =>
+			when VERB_INVOKE =>
 				case noun is
 					when NOUN_UNIT =>
 						case fields is
@@ -921,7 +944,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when MOVE =>
+			when VERB_MOVE =>
 				case noun is
 					when NOUN_NAME =>
 						case fields is
@@ -1073,7 +1096,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when MAKE =>
+			when VERB_MAKE =>
 				case noun is
 					when NOUN_BOM => 
 						case fields is
@@ -1104,7 +1127,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 				
-			when MOUNT =>
+			when VERB_MOUNT =>
 				case noun is
 					when NOUN_DEVICE => 
 						declare
@@ -1171,7 +1194,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 				
-			when PLACE =>
+			when VERB_PLACE =>
 				case noun is
 					when NOUN_JUNCTION =>
 						case fields is
@@ -1252,7 +1275,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when REMOVE =>
+			when VERB_REMOVE =>
 				case noun is
 					when NOUN_DEVICE => 
 						case fields is
@@ -1287,7 +1310,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 				
-			when RENAME =>
+			when VERB_RENAME =>
 				case noun is
 					when NOUN_DEVICE =>
 						case fields is
@@ -1378,7 +1401,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when RENUMBER =>
+			when VERB_RENUMBER =>
 				case noun is
 					when NOUN_DEVICES =>
 						case fields is
@@ -1398,7 +1421,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 				
-			when ROTATE =>
+			when VERB_ROTATE =>
 				case noun is
 					when NOUN_TEXT =>
 						NULL; -- CS
@@ -1494,7 +1517,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when SET =>
+			when VERB_SET =>
 				case noun is
 					when NOUN_GRID =>
 						case fields is
@@ -1619,7 +1642,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when UNMOUNT =>
+			when VERB_UNMOUNT =>
 				case noun is
 					when NOUN_DEVICE => 
 						case fields is
@@ -1639,7 +1662,7 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 				
-			when WRITE =>
+			when VERB_WRITE =>
 				case noun is
 					when NOUN_TEXT =>
 						NULL; -- CS
@@ -2574,9 +2597,9 @@ package body scripting is
 		noun := to_noun (f (4));
 
 		case verb is
-			when ADD =>
+			when VERB_ADD =>
 				case noun is
-					when LAYER =>
+					when NOUN_LAYER =>
 						case fields is
 							when 6 =>
 								-- board tree_1 add layer 0.12 0.2
@@ -2591,9 +2614,9 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 				
-			when DELETE =>
+			when VERB_DELETE =>
 				case noun is
-					when LAYER =>
+					when NOUN_LAYER =>
 						case fields is
 							when 5 =>
 								-- board tree_1 delete layer 2
@@ -2609,7 +2632,7 @@ package body scripting is
 
 						end case;
 
-					when OUTLINE =>
+					when NOUN_OUTLINE =>
 						case fields is
 							when 7 =>
 								-- delete a segment of board outline
@@ -2627,7 +2650,7 @@ package body scripting is
 							when others => command_incomplete (cmd);
 						end case;
 
-					when SILK =>
+					when NOUN_SILK =>
 						-- board led_driver delete silk top 40 50 1
 						case fields is
 							when 8 =>
@@ -2650,7 +2673,7 @@ package body scripting is
 								command_incomplete (cmd);
 						end case;
 
-					when ASSY =>
+					when NOUN_ASSY =>
 						-- board led_driver delete assy top 40 50 1
 						case fields is
 							when 8 =>
@@ -2671,7 +2694,7 @@ package body scripting is
 							when others => command_incomplete (cmd);
 						end case;
 
-					when KEEPOUT =>
+					when NOUN_KEEPOUT =>
 						-- board led_driver delete keepout top 40 50 1
 						case fields is
 							when 8 =>
@@ -2692,7 +2715,7 @@ package body scripting is
 							when others => command_incomplete (cmd);
 						end case;
 
-					when STENCIL =>
+					when NOUN_STENCIL =>
 						-- board led_driver delete stencil top 40 50 1
 						case fields is
 							when 8 =>
@@ -2713,7 +2736,7 @@ package body scripting is
 							when others => command_incomplete (cmd);
 						end case;
 						
-					when STOP =>
+					when NOUN_STOP =>
 						-- board led_driver delete stop top 40 50 1
 						case fields is
 							when 8 =>
@@ -2734,7 +2757,7 @@ package body scripting is
 							when others => command_incomplete (cmd);
 						end case;
 
-					when ROUTE_RESTRICT =>
+					when NOUN_ROUTE_RESTRICT =>
 						-- board led_driver delete route_restrict 40 50 1
 						case fields is
 							when 7 =>
@@ -2754,7 +2777,7 @@ package body scripting is
 							when others => command_incomplete (cmd);
 						end case;
 
-					when VIA_RESTRICT =>
+					when NOUN_VIA_RESTRICT =>
 						-- board led_driver delete via_restrict 40 50 1
 						case fields is
 							when 7 =>
@@ -2778,9 +2801,9 @@ package body scripting is
 
 				end case;
 					
-			when DRAW =>
+			when VERB_DRAW =>
 				case noun is
-					when OUTLINE =>
+					when NOUN_OUTLINE =>
 						declare
 							shape : type_shape := to_shape (f (5));
 						begin
@@ -2864,7 +2887,7 @@ package body scripting is
 							end case;
 						end;
 
-					when SILK =>
+					when NOUN_SILK =>
 						declare
 							use et_packages.pac_shapes;
 							shape : type_shape := to_shape (f (6));
@@ -3039,7 +3062,7 @@ package body scripting is
 							end case;
 						end;
 
-					when ASSY =>
+					when NOUN_ASSY =>
 						declare
 							use et_packages.pac_shapes;
 							shape : type_shape := to_shape (f (6));
@@ -3215,27 +3238,27 @@ package body scripting is
 							end case;
 						end;
 
-					when KEEPOUT =>
+					when NOUN_KEEPOUT =>
 						draw_keepout;
 						
-					when ROUTE_RESTRICT =>
+					when NOUN_ROUTE_RESTRICT =>
 						draw_route_restrict;
 
-					when STENCIL =>
+					when NOUN_STENCIL =>
 						draw_stencil;
 						
-					when STOP =>
+					when NOUN_STOP =>
 						draw_stop_mask;
 
-					when VIA_RESTRICT =>
+					when NOUN_VIA_RESTRICT =>
 						draw_via_restrict;
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when FLIP =>
+			when VERB_FLIP =>
 				case noun is
-					when DEVICE =>
+					when NOUN_DEVICE =>
 						case fields is
 							when 6 =>
 								board_ops.flip_device (
@@ -3253,9 +3276,9 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when ROUTE =>
+			when VERB_ROUTE =>
 				case noun is
-					when FREETRACK =>
+					when NOUN_FREETRACK =>
 						declare
 							shape : type_track_shape := to_shape (f (6));
 						begin
@@ -3322,15 +3345,15 @@ package body scripting is
 							end case;
 						end;
 
-					when NET =>
+					when NOUN_NET =>
 						route_net;
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when RIPUP =>
+			when VERB_RIPUP =>
 				case noun is
-					when FREETRACK =>
+					when NOUN_FREETRACK =>
 						case fields is
 							when 8 =>
 								-- ripup a segment of a freetrack
@@ -3353,7 +3376,7 @@ package body scripting is
 								command_incomplete (cmd);
 						end case;
 
-					when NET =>
+					when NOUN_NET =>
 						case fields is
 							when 9 =>
 								-- ripup a segment of a named track
@@ -3380,9 +3403,9 @@ package body scripting is
 
 				end case;
 				
-			when ROTATE =>
+			when VERB_ROTATE =>
 				case noun is
-					when DEVICE =>
+					when NOUN_DEVICE =>
 						case fields is
 							when 7 =>
 								board_ops.rotate_device (
@@ -3403,9 +3426,9 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when MAKE =>
+			when VERB_MAKE =>
 				case noun is
-					when PNP =>
+					when NOUN_PNP =>
 						case fields is
 							when 4 =>
 								board_ops.make_pick_and_place 
@@ -3423,9 +3446,9 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 				
-			when MOVE =>
+			when VERB_MOVE =>
 				case noun is
-					when BOARD =>
+					when NOUN_BOARD =>
 						case fields is
 							when 7 => -- board led_driver move board absolute 20 50
 								board_ops.move_board (
@@ -3444,7 +3467,7 @@ package body scripting is
 								command_incomplete (cmd);
 						end case;
 						
-					when DEVICE =>
+					when NOUN_DEVICE =>
 						case fields is
 							when 8 =>
 								board_ops.move_device (
@@ -3464,7 +3487,7 @@ package body scripting is
 								command_incomplete (cmd);
 						end case;
 
-					when SUBMODULE =>
+					when NOUN_SUBMODULE =>
 						case fields is
 							when 8 =>
 								board_ops.move_submodule (
@@ -3487,9 +3510,9 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when SET =>
+			when VERB_SET =>
 				case noun is
-					when GRID =>
+					when NOUN_GRID =>
 						case fields is
 							-- board led_driver set grid 0.5 0.5
 							when 6 =>
@@ -3554,9 +3577,9 @@ package body scripting is
 			use et_project;
 		begin
 			case verb is
-				when OPEN =>
+				when VERB_OPEN =>
 					case noun is
-						when scripting.MODULE =>
+						when NOUN_MODULE =>
 							case fields is
 								when 4 =>
 									-- The script command provides the module name only.
@@ -3577,9 +3600,9 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
-				when CREATE =>
+				when VERB_CREATE =>
 					case noun is
-						when scripting.MODULE =>
+						when NOUN_MODULE =>
 							case fields is
 								when 4 =>
 
@@ -3597,9 +3620,9 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
-				when SAVE =>
+				when VERB_SAVE =>
 					case noun is
-						when scripting.MODULE =>
+						when NOUN_MODULE =>
 							case fields is
 								when 4 =>
 
@@ -3617,9 +3640,9 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 					
-				when DELETE =>
+				when VERB_DELETE =>
 					case noun is
-						when scripting.MODULE =>
+						when NOUN_MODULE =>
 							case fields is
 								when 4 =>
 
