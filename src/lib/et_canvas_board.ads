@@ -187,6 +187,10 @@ package et_canvas_board is
 	overriding function frame_height (
 		self : not null access type_view)
 		return type_distance_positive;
+
+	overriding function title_block_position (
+		self : not null access type_view)
+		return et_frames.type_position;
 		
 end et_canvas_board;
 

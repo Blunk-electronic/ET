@@ -492,7 +492,11 @@ package pac_canvas is
 		self : not null access type_view'class)
 		return type_rectangle;
 
-									
+	-- Returns the position of the title block:
+	function title_block_position (
+		self : not null access type_view)
+		return et_frames.type_position is abstract;
+									  
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);
 	-- Called when one of the scrollbars has changed value.

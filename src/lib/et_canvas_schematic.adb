@@ -377,6 +377,13 @@ package body et_canvas_schematic is
 		return type_distance_positive (element (current_active_module).frames.frame.size.y);
 	end frame_height;
 
+	function title_block_position (
+		self : not null access type_view)
+		return et_frames.type_position is
+	begin
+		return self.get_frame.title_block_schematic.position;
+	end title_block_position;
+	
 end et_canvas_schematic;
 
 -- Soli Deo Gloria

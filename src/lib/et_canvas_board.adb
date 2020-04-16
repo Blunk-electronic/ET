@@ -360,6 +360,13 @@ package body et_canvas_board is
 		return type_distance_positive (element (current_active_module).board.frame.frame.size.y);
 	end frame_height;
 
+	function title_block_position (
+		self : not null access type_view)
+		return et_frames.type_position is
+	begin
+		return self.get_frame.title_block_pcb.position;
+	end title_block_position;
+	
 end et_canvas_board;
 
 -- Soli Deo Gloria
