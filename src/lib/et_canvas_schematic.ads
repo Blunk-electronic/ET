@@ -110,9 +110,6 @@ package et_canvas_schematic is
 	-- Frequently used things to draw the schematic:
 	type type_drawing is record	
 
-		-- These variables are frequently used. Procedure init_drawing
-		-- sets them. Other operations are free to access them.
-
 		-- the active sheet
 		sheet	: et_coordinates.type_sheet := type_sheet'first;
 	end record;

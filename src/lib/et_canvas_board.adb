@@ -232,26 +232,8 @@ package body et_canvas_board is
 		self.grid := type_modules.element (current_active_module).board.grid;
 	end set_grid;
 	
-	procedure init_drawing (
-		view	: in type_view_ptr)
-	is
-		use et_general;
-		use et_frames;
-		use et_project;
-
-		type type_local_view_ptr is access all type_view;
-		self : type_local_view_ptr := type_local_view_ptr (view);
-
-		-- set a cursor to the currently active module:
-		am : et_project.type_modules.cursor := et_canvas_schematic.current_active_module;
-	begin
-		-- The schematic drawing has a grid:
-		set_grid (view);
-
-	end init_drawing;
-
 	procedure redraw (view : in type_view_ptr) is begin
-		init_drawing (view);
+		set_grid (view);
 		queue_draw (view);
 	end;
 	
