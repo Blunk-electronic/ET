@@ -193,6 +193,13 @@ package et_canvas_board is
 	overriding function title_block_position (
 		self : not null access type_view)
 		return et_frames.type_position;
+
+	-- Returns the position of the board origin relative to the lower left
+	-- corner of the drawing frame:
+	function board_origin (
+		self : not null access type_view)
+		return geometry.type_point;
+
 		
 end et_canvas_board;
 

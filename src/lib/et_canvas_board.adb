@@ -370,6 +370,16 @@ package body et_canvas_board is
 	begin
 		return self.get_frame.title_block_pcb.position;
 	end title_block_position;
+
+	function board_origin (
+		self : not null access type_view)
+		return geometry.type_point is
+
+		use et_canvas_schematic;
+		use et_project.type_modules;
+	begin
+		return element (current_active_module).board.origin;
+	end board_origin;
 	
 end et_canvas_board;
 
