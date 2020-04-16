@@ -104,15 +104,14 @@ package et_canvas_schematic is
 	-- or board are to be drawn, this variable must be read.
 	current_active_module : et_project.type_modules.cursor; -- the currently active module
 
+	-- The current active sheet:
+	current_active_sheet : et_coordinates.type_sheet := type_sheet'first;
 
 
 	
 	-- Frequently used things to draw the schematic:
-	type type_drawing is record	
+	type type_drawing is null record;
 
-		-- the active sheet
-		sheet	: et_coordinates.type_sheet := type_sheet'first;
-	end record;
 
 	
 -- 	-- Initializes the internal data so that the model can send signals:

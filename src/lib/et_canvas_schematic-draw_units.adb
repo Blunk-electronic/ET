@@ -832,7 +832,7 @@ procedure draw_units (
 			device_cursor_lib : type_devices.cursor;
 		begin
 			-- we want to draw only those units which are on the active sheet:
-			if element (unit_cursor).position.sheet = self.drawing.sheet then
+			if element (unit_cursor).position.sheet = current_active_sheet then
 				unit_name := key (unit_cursor);
 				unit_position := type_point (element (unit_cursor).position);
 				unit_rotation := rot (element (unit_cursor).position);

@@ -371,7 +371,7 @@ procedure draw_submodules (
 			
 	begin -- query_submods
 		-- We want to draw only those submodules which are on the active sheet:
-		if sheet (element (cursor).position) = self.drawing.sheet then
+		if sheet (element (cursor).position) = current_active_sheet then
 
 			draw_box;
 			draw_ports;

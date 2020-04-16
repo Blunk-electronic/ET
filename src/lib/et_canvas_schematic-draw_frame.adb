@@ -80,7 +80,7 @@ procedure draw_frame (
 
 			-- Get the description of the current active sheet:
 			des : constant type_schematic_description := 
-					sheet_description (current_active_module, self.drawing.sheet);
+					sheet_description (current_active_module, current_active_sheet);
 		begin
 			-- category (development, product, routing)
 			draw_text (
@@ -102,7 +102,7 @@ procedure draw_frame (
 		
 		-- sheet number n of m
 		draw_text (
-			content	=> to_content (to_sheet (self.drawing.sheet)), -- CS complete with "/of total"
+			content	=> to_content (to_sheet (current_active_sheet)), -- CS complete with "/of total"
 			size	=> phs.sheet_number.size,
 			font	=> font_placeholders,
 			pos		=> phs.sheet_number.position);

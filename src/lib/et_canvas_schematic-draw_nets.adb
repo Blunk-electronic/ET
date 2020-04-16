@@ -212,7 +212,7 @@ procedure draw_nets (
 					
 			begin -- query_segments
 				-- draw nets of the active sheet only:
-				if strand.position.sheet = self.drawing.sheet then
+				if strand.position.sheet = current_active_sheet then
 					
 					while segment_cursor /= type_net_segments.no_element loop
 

@@ -211,18 +211,18 @@ package body et_canvas_schematic is
 		self.grid := type_modules.element (current_active_module).grid;
 	end set_grid;
 
-	procedure set_sheet (
-		self    : not null access type_view;
+	procedure set_sheet ( -- CS no need ?
+		self    : not null access type_view; -- CS no need
 		sheet	: in et_coordinates.type_sheet) is
 	begin
-		self.drawing.sheet := sheet;
+		current_active_sheet := sheet;
 	end set_sheet;
 
-	function get_sheet (
-		self    : not null access type_view)
+	function get_sheet ( -- CS no need ?
+		self    : not null access type_view)  -- CS no need
 		return et_coordinates.type_sheet is
 	begin
-		return self.drawing.sheet;
+		return current_active_sheet;
 	end get_sheet;
 	
 	procedure set_module (
@@ -257,7 +257,7 @@ package body et_canvas_schematic is
 		current_active_module := module;
 		
 		-- set active sheet:
-		self.drawing.sheet := sheet;
+		current_active_sheet := sheet;
 	end init_drawing;
 
 	procedure redraw (view : in type_view_ptr) is begin
