@@ -94,15 +94,15 @@ package et_canvas_board is
 
 	
 	-- Frequently used things to draw the board layout:
-	type type_drawing is record	
+	type type_drawing is null record;
 
 		-- These variables are frequently used. Procedure init_drawing
 		-- sets them. Other operations are free to access them.
 
 		-- The position of the board origin relative to the lower left
 		-- corner of the drawing frame:
-		board_origin : geometry.type_point;
-	end record;
+-- 		board_origin : geometry.type_point;
+-- 	end record;
 	
 
 -- 	-- Initializes the internal data so that the model can send signals:

@@ -67,7 +67,7 @@ package body et_canvas_board is
 			 axis	=> X, 
 			 value	=> model_point.x 
 						- self.frame_bounding_box.x
-						- x (self.drawing.board_origin) -- because board origin is not the same as drawing origin
+						- x (self.board_origin) -- because board origin is not the same as drawing origin
 			);
 		
 		set (point	=> p,
@@ -75,7 +75,7 @@ package body et_canvas_board is
 			 value	=> type_distance (self.frame_height) 
 						- model_point.y 
 						+ self.frame_bounding_box.y
-						- y (self.drawing.board_origin)  -- because board origin is not the same as drawing origin
+						- y (self.board_origin)  -- because board origin is not the same as drawing origin
 			);
 
 		return p;
@@ -92,7 +92,7 @@ package body et_canvas_board is
 			 axis	=> X, 
 			 value	=> drawing_point.x 
 						+ self.frame_bounding_box.x
-						+ x (self.drawing.board_origin) -- because board origin is not the same as drawing origin
+						+ x (self.board_origin) -- because board origin is not the same as drawing origin
 			);
 		
 		set (point	=> p,
@@ -100,7 +100,7 @@ package body et_canvas_board is
 			 value	=> type_distance (self.frame_height) 
 						- drawing_point.y 
 						+ self.frame_bounding_box.y
-						- y (self.drawing.board_origin)  -- because board origin is not the same as drawing origin
+						- y (self.board_origin)  -- because board origin is not the same as drawing origin
 			);
 
 		return p;
@@ -200,7 +200,7 @@ package body et_canvas_board is
 
 		
 		-- move area_shifted according to board position:
-		move_by (area_shifted, type_point (invert (self.drawing.board_origin, X)));
+		move_by (area_shifted, type_point (invert (self.board_origin, X)));
 		
 		save (context.cr);
 		-- Prepare the current transformation matrix (CTM) so that
@@ -210,8 +210,8 @@ package body et_canvas_board is
 		-- so that the board origin is not at the lower left corner of the frame.
 		translate (
 			context.cr,
-			convert_x (self.frame_bounding_box.x + x (self.drawing.board_origin)),
-			convert_y (self.frame_bounding_box.y - y (self.drawing.board_origin)));
+			convert_x (self.frame_bounding_box.x + x (self.board_origin)),
+			convert_y (self.frame_bounding_box.y - y (self.board_origin)));
 
 		draw_cursor (self, area_shifted, context, cursor_main);
 		draw_outline (self, area_shifted, context);
@@ -247,9 +247,6 @@ package body et_canvas_board is
 	begin
 		-- The schematic drawing has a grid:
 		set_grid (view);
-
-		-- Get the board position (distance relative to the lower left corner of the drawing frame):
-		self.drawing.board_origin := type_modules.element (am).board.origin;
 
 	end init_drawing;
 
