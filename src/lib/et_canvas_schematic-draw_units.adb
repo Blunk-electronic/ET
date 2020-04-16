@@ -717,7 +717,7 @@ procedure draw_units (
 			-- y must be transposed from the drawing plane (y-axis going upwards)
 			-- to the view plane (y-axis going downwards):
 			-- (Height of drawing frame) - y + (position of frame):
-			y	=> 		et_coordinates.type_distance (self.drawing.frame.size.y)
+			y	=> 		et_coordinates.type_distance (self.frame_height)
 					- 	y (position)
 					+	self.frame_bounding_box.y) -- shift down by frame position
 			);

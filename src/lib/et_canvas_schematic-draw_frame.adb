@@ -56,12 +56,12 @@ procedure draw_frame (
 		draw_ops		=> et_canvas_schematic.pac_draw_misc,
 		in_area			=> in_area,
 		context			=> context,
-		frame_size		=> self.drawing.frame.size,
-		border_width	=> self.drawing.frame.border_width,
-		sectors			=> self.drawing.frame.sectors,
-		title_block		=> type_title_block (self.drawing.frame.title_block_schematic), -- incl. common placeholders
+		frame_size		=> self.get_frame.size,
+		border_width	=> self.get_frame.border_width,
+		sectors			=> self.get_frame.sectors,
+		title_block		=> type_title_block (self.get_frame.title_block_schematic), -- incl. common placeholders
 		meta			=> et_meta.type_basic (element (current_active_module).meta.schematic),
-		placeholders	=> type_placeholders_basic (self.drawing.frame.title_block_schematic.additional_placeholders)
+		placeholders	=> type_placeholders_basic (self.get_frame.title_block_schematic.additional_placeholders)
 		);
 
 	use pac_draw_frame;
@@ -71,7 +71,7 @@ procedure draw_frame (
 		
 		-- get placeholders:
 		phs : constant type_placeholders_schematic := 
-			self.drawing.frame.title_block_schematic.additional_placeholders;
+			self.get_frame.title_block_schematic.additional_placeholders;
 
 		use et_text;
 
@@ -132,7 +132,7 @@ begin -- draw_frame
 		
 		-- TITLE BLOCK
 		-- lines
-		iterate (self.drawing.frame.title_block_schematic.lines, query_line'access);
+		iterate (self.get_frame.title_block_schematic.lines, query_line'access);
 		cairo.stroke (context.cr);
 		
 		-- draw common placeholders and other texts

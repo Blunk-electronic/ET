@@ -68,7 +68,7 @@ package body et_canvas_schematic is
 		
 		set (point	=> p,
 			 axis	=> Y,
-			 value	=> type_distance (self.drawing.frame.size.y) 
+			 value	=> type_distance (self.frame_height) 
 						- model_point.y 
 						+ self.frame_bounding_box.y);
 	
@@ -88,7 +88,7 @@ package body et_canvas_schematic is
 		
 		set (point	=> p,
 			 axis	=> Y,
-			 value	=> type_distance (self.drawing.frame.size.y) 
+			 value	=> type_distance (self.frame_height) 
 						- drawing_point.y 
 						+ self.frame_bounding_box.y);
 
