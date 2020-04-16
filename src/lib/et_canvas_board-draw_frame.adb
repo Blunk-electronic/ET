@@ -57,12 +57,12 @@ procedure draw_frame (
 		draw_ops		=> et_canvas_board.pac_draw_package,
 		in_area			=> in_area,
 		context			=> context,
-		frame_size		=> self.drawing.frame.frame.size,
-		border_width	=> self.drawing.frame.frame.border_width,
-		sectors			=> self.drawing.frame.frame.sectors,
-		title_block		=> type_title_block (self.drawing.frame.frame.title_block_pcb), -- incl. common placeholders
+		frame_size		=> self.get_frame.size,
+		border_width	=> self.get_frame.border_width,
+		sectors			=> self.get_frame.sectors,
+		title_block		=> type_title_block (self.get_frame.title_block_pcb), -- incl. common placeholders
 		meta			=> et_meta.type_basic (element (current_active_module).meta.board),
-		placeholders	=> type_placeholders_basic (self.drawing.frame.frame.title_block_pcb.additional_placeholders)
+		placeholders	=> type_placeholders_basic (self.get_frame.title_block_pcb.additional_placeholders)
 		);
 
 	use pac_draw_frame;
@@ -71,7 +71,7 @@ procedure draw_frame (
 
 		-- get placeholders:
 		phs : constant type_placeholders_pcb := 
-			self.drawing.frame.frame.title_block_pcb.additional_placeholders;
+			self.get_frame.title_block_pcb.additional_placeholders;
 
 		use et_text;
 	begin
@@ -92,7 +92,7 @@ procedure draw_frame (
 	procedure draw_cam_markers is
 
 		cms : constant type_cam_markers :=
-			self.drawing.frame.frame.title_block_pcb.cam_markers;
+			self.get_frame.title_block_pcb.cam_markers;
 
 		use et_text;
 	begin
@@ -173,7 +173,7 @@ begin -- draw_frame
 		draw_border;
 
 		-- title block lines
-		pac_lines.iterate (self.drawing.frame.frame.title_block_pcb.lines, query_line'access);
+		pac_lines.iterate (self.get_frame.title_block_pcb.lines, query_line'access);
 		cairo.stroke (context.cr);
 		
 		-- draw the sector delimiters

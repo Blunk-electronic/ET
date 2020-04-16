@@ -98,7 +98,6 @@ package et_canvas_board is
 
 		-- These variables are frequently used. Procedure init_drawing
 		-- sets them. Other operations are free to access them.
-		frame				: et_frames.type_frame_pcb;
 
 		-- The position of the board origin relative to the lower left
 		-- corner of the drawing frame:

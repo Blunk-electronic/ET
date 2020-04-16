@@ -72,7 +72,7 @@ package body et_canvas_board is
 		
 		set (point	=> p,
 			 axis	=> Y,
-			 value	=> type_distance (self.drawing.frame.frame.size.y) 
+			 value	=> type_distance (self.frame_height) 
 						- model_point.y 
 						+ self.frame_bounding_box.y
 						- y (self.drawing.board_origin)  -- because board origin is not the same as drawing origin
@@ -97,7 +97,7 @@ package body et_canvas_board is
 		
 		set (point	=> p,
 			 axis	=> Y,
-			 value	=> type_distance (self.drawing.frame.frame.size.y) 
+			 value	=> type_distance (self.frame_height) 
 						- drawing_point.y 
 						+ self.frame_bounding_box.y
 						- y (self.drawing.board_origin)  -- because board origin is not the same as drawing origin
@@ -245,9 +245,6 @@ package body et_canvas_board is
 		-- set a cursor to the currently active module:
 		am : et_project.type_modules.cursor := et_canvas_schematic.current_active_module;
 	begin
-		-- set some variables frequently used regarding frame and paper:
-		self.drawing.frame := type_modules.element (am).board.frame;
-	
 		-- The schematic drawing has a grid:
 		set_grid (view);
 
