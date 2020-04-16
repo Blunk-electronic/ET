@@ -224,6 +224,10 @@ package et_canvas_schematic is
 		self : not null access type_view)
 		return type_distance_positive;
 
+	overriding function frame_width (
+		self : not null access type_view)
+		return type_distance_positive;
+	
 	overriding function title_block_position (
 		self : not null access type_view)
 		return et_frames.type_position;

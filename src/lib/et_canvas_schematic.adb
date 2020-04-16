@@ -374,6 +374,15 @@ package body et_canvas_schematic is
 		return type_distance_positive (element (current_active_module).frames.frame.size.y);
 	end frame_height;
 
+	function frame_width (
+		self : not null access type_view)
+		return type_distance_positive is 
+
+		use et_project.type_modules;
+	begin
+		return type_distance_positive (element (current_active_module).frames.frame.size.x);
+	end frame_width;
+	
 	function title_block_position (
 		self : not null access type_view)
 		return et_frames.type_position is
