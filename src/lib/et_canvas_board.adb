@@ -247,10 +247,7 @@ package body et_canvas_board is
 	begin
 		-- set some variables frequently used regarding frame and paper:
 		self.drawing.frame := type_modules.element (am).board.frame;
-		
-		-- Drawing of the title block items is relative to the title block position:
-		self.drawing.title_block_position := self.drawing.frame.frame.title_block_pcb.position;
-
+	
 		-- The schematic drawing has a grid:
 		set_grid (view);
 

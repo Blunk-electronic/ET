@@ -113,7 +113,6 @@ package et_canvas_schematic is
 		-- These variables are frequently used. Procedure init_drawing
 		-- sets them. Other operations are free to access them.
 		frame				: et_frames.type_frame (et_frames.SCHEMATIC);
-		title_block_position	: et_frames.type_position;
 
 		-- the active sheet
 		sheet	: et_coordinates.type_sheet := type_sheet'first;
