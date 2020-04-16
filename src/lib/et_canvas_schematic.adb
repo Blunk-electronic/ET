@@ -245,22 +245,6 @@ package body et_canvas_schematic is
 		end if;
 	end set_module;
 
--- 	procedure init_frame (
--- 		view	: in type_view_ptr)
--- 	is
--- 		use et_general;
--- 		use et_frames;
--- 		use et_project;
--- 
--- 		type type_local_view_ptr is access all type_view;
--- 		self : type_local_view_ptr := type_local_view_ptr (view);
--- 
--- 	begin
--- 		-- set some variables frequently used regarding frame and paper:
--- 		self.drawing.frame := type_modules.element (current_active_module).frames.frame;
--- 
--- 	end init_frame;
-	
 	procedure init_drawing (
 		view	: in type_view_ptr;							 
 		module	: in et_project.type_modules.cursor; -- the module to be drawn
@@ -277,7 +261,6 @@ package body et_canvas_schematic is
 	end init_drawing;
 
 	procedure redraw (view : in type_view_ptr) is begin
--- 		init_frame (view); -- set the frame stuff (paper, sheet size, title block, ...)
 		set_grid (view);
 		queue_draw (view);
 	end;
