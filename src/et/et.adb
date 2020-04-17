@@ -82,6 +82,9 @@ procedure et is
 	project_name_import		: et_project.type_project_name.bounded_string; -- the project to be imported
 	project_name_open 		: et_project.type_project_name.bounded_string; -- the project to be opened
 	project_name_save_as	: et_project.type_project_name.bounded_string; -- the "save as" name of the project
+
+	module_file_name		: et_project.type_module_file_name.bounded_string; -- the name of the module file like "motor_driver.mod"
+	-- CS sheet
 	
 	package_name_create		: et_packages.type_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
 	package_name_import		: et_packages.type_package_model_file.bounded_string; -- the package to be imported
@@ -129,6 +132,8 @@ procedure et is
 						& space & switch_native_project_create & equals
 						& space & switch_native_project_open & equals
 						& space & switch_native_project_save_as & equals
+						& space & switch_native_project_module & equals
+						-- CS sheet
 
 						-- package
 						& space & switch_native_package_create -- no parameter
@@ -202,7 +207,12 @@ procedure et is
 						log (text => arg & full_switch & space & parameter);
 						project_name_save_as := et_project.to_project_name (remove_trailing_directory_separator (parameter));
 
-
+					elsif full_switch = switch_native_project_module then
+						log (text => arg & full_switch & space & parameter);
+						module_file_name := et_project.to_module_file_name (parameter);
+						
+					-- CS sheet
+						
 					-- package
 					elsif full_switch = switch_native_package_create then
 						log (text => arg & full_switch); -- no parameter
@@ -600,13 +610,29 @@ procedure et is
 		use gui;
 		use et_project;
 		use et_project.type_modules;
--- 		generic_module_name : et_general.type_module_name.bounded_string;
-		module_cursor : type_modules.cursor := modules.first; -- CS use name of module file as provided by cmd line
+		use type_module_file_name;
+		use type_module_name;
+
+		-- If no module name was given via command line, then the first
+		-- available module will be opened.
+		-- Note: This is about a generic module.
+		generic_module_name : et_general.type_module_name.bounded_string;
+		
+		module_cursor : type_modules.cursor;
 	begin
+		if length (module_file_name) = 0 then -- module name not specified via cmd line
+			module_cursor := modules.first; -- select first available generic module
+		else
+			-- Convert the optionally given module file name to a module name.
+			generic_module_name := to_module_name (remove_extension (
+				simple_name (type_module_file_name.to_string (module_file_name))));
+			
+			module_cursor := find (modules, generic_module_name);
+		end if;
+			
 		case runmode is 
 			when MODE_HEADLESS => null;
 			when MODE_MODULE => 
--- 				generic_module_name := key (module_cursor);
 				single_module (
 					project			=> project_name_open,	-- blood_sample_analyzer
 					module			=> module_cursor,		-- cursor to generic module

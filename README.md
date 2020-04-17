@@ -92,7 +92,22 @@ To open a native project like 'my_et_project' run this command:
 $ et --open-project my_et_project/
 ```
 
-Or if the project lives somewhere else:
+Optionally the file name of the generic module to be opened can be added:
+
+```sh
+$ et --open-project my_et_project/ --module my_et_project/power_supply.mod
+```
+
+or just
+
+```sh
+$ et --open-project my_et_project/ --module power_supply.mod
+```
+
+The module file must exist in the project directory.
+
+
+If the project lives somewhere else:
 
 ```sh
 $ et --open-project /home/user/ecad/my_et_project/

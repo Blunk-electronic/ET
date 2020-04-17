@@ -128,7 +128,8 @@ package et_general is
 	switch_native_project_create	: constant string := "-create-project";	
 	switch_native_project_open		: constant string := "-open-project";
 	switch_native_project_save_as	: constant string := "-save-project-as";
-
+	switch_native_project_module	: constant string := "-module";
+	
 	switch_native_package_create	: constant string := "-create-package";		
 	switch_native_package_open		: constant string := "-open-package";	
 	switch_native_package_save_as	: constant string := "-save-package-as";	
