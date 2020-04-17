@@ -546,7 +546,7 @@ package et_packages is
 
 
 
--- STENCIL
+-- STENCIL / SOLDER PASTE MASK
 	type type_stencil_line is new type_line with record
 		width	: type_general_line_width;
 	end record;
