@@ -317,6 +317,7 @@ package body scripting is
 		use et_coordinates;
 		use geometry;
 		use et_devices;
+		use et_canvas_schematic.pac_canvas;
 		
 		function f (place : in positive) return string is begin
 			return et_string_processing.field (cmd, place);
@@ -1697,6 +1698,7 @@ package body scripting is
 		use et_pcb_coordinates;
 		use et_pcb_coordinates.geometry;
 		use et_pcb_stack;
+		use et_canvas_board.pac_canvas;
 
 		function f (place : in positive) return string is begin
 			return et_string_processing.field (cmd, place);

@@ -52,8 +52,6 @@ with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
-with scripting;
-
 package body gui_board.callbacks is
 
 	procedure terminate_main (self : access gtk_widget_record'class) is begin

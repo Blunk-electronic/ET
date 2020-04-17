@@ -45,7 +45,8 @@ with glib.object;			--use glib.object;
 with gtk.gentry;
 with gtk.combo_box_text;	use gtk.combo_box_text;	
 with gtkada.style;			use gtkada.style;
-
+	
+with scripting;
 
 package gui_schematic.callbacks is
 

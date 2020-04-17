@@ -48,6 +48,9 @@ with schematic_ops;
 -- with board_ops;
 with netlists;
 
+with et_canvas_schematic;
+with et_canvas_board;
+
 package scripting is
 	comment_mark : constant string := ("#");
 
