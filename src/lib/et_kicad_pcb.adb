@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -7322,6 +7322,39 @@ package body et_kicad_pcb is
 		
 		return lines;
 	end;
+
+	procedure floating_copper_polygon_properties (
+	-- Logs the properties of the given floating copper polygon.
+		cursor			: in et_pcb.pac_copper_polygons_floating_solid.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use et_pcb;
+		use et_pcb.pac_copper_polygons_floating_solid;
+		use et_pcb_stack;
+		use et_packages;
+	begin
+		-- general stuff
+		log (text => "polygon" & 
+			 " " & text_polygon_signal_layer & to_string (element (cursor).layer) &
+			 " " & text_polygon_width_min & to_string (element (cursor).width_min) &
+			 " " & et_packages.keyword_corner_easing & to_string (element (cursor).easing.style) &
+			 " " & et_packages.keyword_easing_radius & to_string (element (cursor).easing.radius),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		-- corner points
+		-- CS show shapes instead
+-- 		log (text => text_polygon_corner_points, level => log_threshold);
+-- 		points := element (cursor).corners;
+-- 		point_cursor := points.first;
+-- 		while point_cursor /= type_polygon_points.no_element loop
+-- 			log (text => to_string (element (point_cursor)), level => log_threshold);
+-- 			next (point_cursor);
+-- 		end loop;
+		
+		log_indentation_down;
+	end floating_copper_polygon_properties;
+
 	
 	procedure read_board (
 	-- Reads the board file. Copies general board stuff to the schematic module.
@@ -7966,7 +7999,7 @@ package body et_kicad_pcb is
 									others => <>
 								));
 
-							et_pcb.floating_copper_polygon_properties (module.board.copper.polygons.solid.last, log_threshold + 2);
+							floating_copper_polygon_properties (module.board.copper.polygons.solid.last, log_threshold + 2);
 							log (WARNING, "polygon is not connected with any net !", level => log_threshold + 2);
 
 						end if;

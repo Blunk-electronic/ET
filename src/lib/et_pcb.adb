@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -311,36 +311,7 @@ package body et_pcb is
 -- 		log_indentation_down;
 -- 	end route_polygon_properties;
 
-	procedure floating_copper_polygon_properties (
-	-- Logs the properties of the given floating copper polygon.
-		cursor			: in pac_copper_polygons_floating_solid.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use pac_copper_polygons_floating_solid;
-	begin
-		-- general stuff
-		log (text => "polygon" & 
-			 " " & text_polygon_signal_layer & to_string (element (cursor).layer) &
-			 " " & text_polygon_width_min & to_string (element (cursor).width_min) &
-			 " " & et_packages.keyword_corner_easing & to_string (element (cursor).easing.style) &
-			 " " & et_packages.keyword_easing_radius & to_string (element (cursor).easing.radius),
-			 level => log_threshold);
 
-		log_indentation_up;
-		
-		-- corner points
-		-- CS show shapes instead
--- 		log (text => text_polygon_corner_points, level => log_threshold);
--- 		points := element (cursor).corners;
--- 		point_cursor := points.first;
--- 		while point_cursor /= type_polygon_points.no_element loop
--- 			log (text => to_string (element (point_cursor)), level => log_threshold);
--- 			next (point_cursor);
--- 		end loop;
-		
-		log_indentation_down;
-	end floating_copper_polygon_properties;
-
-	
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	procedure line_pcb_contour_properties (
 	-- Logs the properties of the given line of pcb contour

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -512,18 +512,6 @@ package et_pcb is
 	text_polygon_width_min : constant string := "minimum_width";	
 	text_polygon_signal_layer : constant string := "signal_layer";
 	
--- 	procedure route_polygon_properties ( -- CS move to et_kicad_pcb
--- 	-- Logs the properties of the given polygon of a route
--- 		cursor			: in pac_copper_polygons_signal.cursor;
--- 		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure floating_copper_polygon_properties ( -- CS move to et_kicad_pcb
-	-- Logs the properties of the given floating solid copper polygon.
-		cursor			: in pac_copper_polygons_floating_solid.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	-- CS procedure floating_copper_polygon_hatched_properties
-	
 	procedure line_pcb_contour_properties (
 	-- Logs the properties of the given line of pcb contour
 		cursor			: in type_pcb_contour_lines.cursor;
@@ -559,7 +547,7 @@ package et_pcb is
 		keepout			: et_packages.type_keepout_both_sides;
 		route_restrict	: type_route_restrict;
 		via_restrict	: type_via_restrict;
-		copper			: type_copper; -- non-electric copper stuff, incl. floating polygons !
+		copper			: type_copper; -- non-electric copper stuff, incl. floating polygons ! rename to conductors
 		contours		: type_pcb_contours;
 	end record;
 

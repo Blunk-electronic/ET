@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -770,6 +770,12 @@ package et_kicad_pcb is
 	end record;
 
 	package type_polygons is new doubly_linked_lists (type_polygon);
+
+	procedure floating_copper_polygon_properties (
+	-- Logs the properties of the given floating solid copper polygon.
+		cursor			: in et_pcb.pac_copper_polygons_floating_solid.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
 	
 	-- This is the type for the Kicad board design:
 	type type_board is record
