@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          BOARD DRAW SILK SCREEN                          --
+--                          BOARD DRAW KEEPOUT                              --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -52,18 +52,17 @@ with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
 
-procedure draw_silk_screen (
+procedure draw_keepout (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context;
 	face	: in type_face) is
 	
-	use type_silk_lines;
-	use type_silk_arcs;
-	use type_silk_circles;
+	use type_keepout_lines;
+	use type_keepout_arcs;
+	use type_keepout_circles;
 	
-	procedure query_line (c : in type_silk_lines.cursor) is begin
-		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
+	procedure query_line (c : in type_keepout_lines.cursor) is begin
 		
 		pac_draw_package.draw_line (
 			area		=> in_area,
@@ -71,11 +70,9 @@ procedure draw_silk_screen (
 			line		=> element (c),
 			height		=> self.frame_height);
 
-		cairo.stroke (context.cr);
 	end query_line;
 
-	procedure query_arc (c : in type_silk_arcs.cursor) is begin
-		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
+	procedure query_arc (c : in type_keepout_arcs.cursor) is begin
 		
 		pac_draw_package.draw_arc (
 			area		=> in_area,
@@ -83,17 +80,14 @@ procedure draw_silk_screen (
 			arc			=> element (c),
 			height		=> self.frame_height);
 
-		cairo.stroke (context.cr);		
 	end query_arc;
 
-	procedure query_circle (c : in type_silk_circles.cursor) is 
+	procedure query_circle (c : in type_keepout_circles.cursor) is 
 		use et_packages.pac_shapes;
 	begin
 		case element (c).filled is
 			when NO =>
 				-- We draw a normal non-filled circle:
-				cairo.set_line_width (context.cr, type_view_coordinate (element (c).border_width));
-
 				pac_draw_package.draw_circle (
 					area		=> in_area,
 					context		=> context,
@@ -102,21 +96,16 @@ procedure draw_silk_screen (
 					height		=> self.frame_height);
 				
 			when YES =>
-				-- We draw a filled circle with a certain fill style:
-				case element (c).fill_style is
-					when SOLID =>
-						pac_draw_package.draw_circle (
-							area		=> in_area,
-							context		=> context,
-							circle		=> element (c),
-							filled		=> YES,
-							height		=> self.frame_height);
+				-- We draw a solid filled circle:
+				pac_draw_package.draw_circle (
+					area		=> in_area,
+					context		=> context,
+					circle		=> element (c),
+					filled		=> YES,
+					height		=> self.frame_height);
 
-					when HATCHED 	=> null; -- CS
-				end case;
 		end case;
 
-		cairo.stroke (context.cr);
 	end query_circle;
 	
 	procedure query_items (
@@ -126,35 +115,36 @@ procedure draw_silk_screen (
 		-- All outline segments will be drawn with the same color:
 		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 
+		cairo.set_line_width (context.cr, type_view_coordinate (keepout_line_width));
+		
 		case face is
 			when TOP =>
-				iterate (module.board.silk_screen.top.lines, query_line'access);
-				iterate (module.board.silk_screen.top.arcs, query_arc'access);
-				iterate (module.board.silk_screen.top.circles, query_circle'access);
-				-- CS iterate (module.board.silk_screen.top.polygons, query_polygon'access);
-				-- CS iterate (module.board.silk_screen.top.cutouts, query_polygon'cutout);
-				-- CS iterate (module.board.silk_screen.top.placeholders, query_placeholder'access);
-				-- CS iterate (module.board.silk_screen.top.texts, query_text'access);
+				iterate (module.board.keepout.top.lines, query_line'access);
+				iterate (module.board.keepout.top.arcs, query_arc'access);
+				iterate (module.board.keepout.top.circles, query_circle'access);
+				-- CS iterate (module.board.keepout.top.polygons, query_polygon'access);
+				-- CS iterate (module.board.keepout.top.cutouts, query_polygon'cutout);
 
 			when BOTTOM =>
-				iterate (module.board.silk_screen.bottom.lines, query_line'access);
-				iterate (module.board.silk_screen.bottom.arcs, query_arc'access);
-				iterate (module.board.silk_screen.bottom.circles, query_circle'access);
+				iterate (module.board.keepout.bottom.lines, query_line'access);
+				iterate (module.board.keepout.bottom.arcs, query_arc'access);
+				iterate (module.board.keepout.bottom.circles, query_circle'access);
 				-- CS see above
 		end case;
 
 		-- CS query packages
-
+		
+		cairo.stroke (context.cr);
 	end query_items;
 	
-begin -- draw_silk_screen
--- 	put_line ("draw board silk screen ...");
+begin -- draw_keepout
+-- 	put_line ("draw board keepout ...");
 	
 	type_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 	
-end draw_silk_screen;
+end draw_keepout;
 
 
 -- Soli Deo Gloria
