@@ -83,8 +83,8 @@ procedure et is
 	project_name_open 		: et_project.type_project_name.bounded_string; -- the project to be opened
 	project_name_save_as	: et_project.type_project_name.bounded_string; -- the "save as" name of the project
 
-	module_file_name		: et_project.type_module_file_name.bounded_string; -- the name of the module file like "motor_driver.mod"
-	-- CS sheet
+	module_file_name		: et_project.type_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
+	module_sheet			: et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 	
 	package_name_create		: et_packages.type_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
 	package_name_import		: et_packages.type_package_model_file.bounded_string; -- the package to be imported
@@ -133,7 +133,7 @@ procedure et is
 						& space & switch_native_project_open & equals
 						& space & switch_native_project_save_as & equals
 						& space & switch_native_project_module & equals
-						-- CS sheet
+						& space & switch_native_project_sheet & equals
 
 						-- package
 						& space & switch_native_package_create -- no parameter
@@ -211,7 +211,9 @@ procedure et is
 						log (text => arg & full_switch & space & parameter);
 						module_file_name := et_project.to_module_file_name (parameter);
 						
-					-- CS sheet
+					elsif full_switch = switch_native_project_sheet then
+						log (text => arg & full_switch & space & parameter);
+						module_sheet := et_coordinates.to_sheet (parameter);
 						
 					-- package
 					elsif full_switch = switch_native_package_create then
@@ -636,7 +638,7 @@ procedure et is
 				single_module (
 					project			=> project_name_open,	-- blood_sample_analyzer
 					module			=> module_cursor,		-- cursor to generic module
-					sheet			=> et_coordinates.type_sheet'first, -- CS via cmd argument
+					sheet			=> module_sheet, 		-- 1, 3, 10, ... as given via cmd line
 					log_threshold	=> 0);
 			when others => null;
 		end case;

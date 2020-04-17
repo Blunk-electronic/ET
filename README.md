@@ -106,6 +106,11 @@ $ et --open-project my_et_project/ --module power_supply.mod
 
 The module file must exist in the project directory.
 
+further-on a sheet can be specified so that the desired sheet gets opened right away:
+
+```sh
+$ et --open-project my_et_project/ --module power_supply.mod --sheet 3
+```
 
 If the project lives somewhere else:
 
