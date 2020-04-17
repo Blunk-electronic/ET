@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          BOARD DRAW OUTLINE                              --
+--                      BOARD DRAW ROUTE RESTRICT                           --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -43,7 +43,7 @@ with et_general;				use et_general;
 with et_schematic;				use et_schematic;
 with et_project;				use et_project;
 with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_packages;				--use et_packages;
+with et_packages;				use et_packages;
 use et_pcb_coordinates.geometry;
 
 with et_pcb;					use et_pcb;
@@ -52,16 +52,19 @@ with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
 
-procedure draw_outline (
+procedure draw_route_restrict (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 	
-	use type_pcb_contour_lines;
-	use type_pcb_contour_arcs;
-	use type_pcb_contour_circles;
+	use type_route_restrict_lines;
+	use type_route_restrict_arcs;
+	use type_route_restrict_circles;
 	
-	procedure query_line (c : in type_pcb_contour_lines.cursor) is begin
+	procedure query_line (c : in type_route_restrict_lines.cursor) is begin
+
+		-- CS draw if signal layer is displayed (query element (c).layers)
+		
 		pac_draw_package.draw_line (
 			area		=> in_area,
 			context		=> context,
@@ -70,46 +73,72 @@ procedure draw_outline (
 
 	end query_line;
 
-	procedure query_arc (c : in type_pcb_contour_arcs.cursor) is begin
+	procedure query_arc (c : in type_route_restrict_arcs.cursor) is begin
+
+		-- CS draw if signal layer is displayed (query element (c).layers)
+		
 		pac_draw_package.draw_arc (
 			area		=> in_area,
 			context		=> context,
 			arc			=> element (c),
 			height		=> self.frame_height);
+
 	end query_arc;
 
-	procedure query_circle (c : in type_pcb_contour_circles.cursor) is begin
-		pac_draw_package.draw_circle (
-			area		=> in_area,
-			context		=> context,
-			circle		=> element (c),
-			filled		=> NO, -- circles in outline are never filled
-			height		=> self.frame_height);
+	procedure query_circle (c : in type_route_restrict_circles.cursor) is 
+		use et_packages.pac_shapes;
+	begin
+
+		-- CS draw if signal layer is displayed (query element (c).layers)
+		
+		case element (c).filled is
+			when NO =>
+				-- We draw a normal non-filled circle:
+				pac_draw_package.draw_circle (
+					area		=> in_area,
+					context		=> context,
+					circle		=> element (c),
+					filled		=> NO,
+					height		=> self.frame_height);
+				
+			when YES =>
+				-- We draw a solid filled circle:
+				pac_draw_package.draw_circle (
+					area		=> in_area,
+					context		=> context,
+					circle		=> element (c),
+					filled		=> YES,
+					height		=> self.frame_height);
+
+		end case;
 	end query_circle;
 	
-	procedure query_segments (
+	procedure query_items (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
 	begin
-		-- All outline segments will be drawn with the same line width and color:
-		cairo.set_line_width (context.cr, type_view_coordinate (et_packages.pcb_contour_line_width));
-		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (0)); -- yellow
+		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (0), gdouble (0)); -- red
+		cairo.set_line_width (context.cr, type_view_coordinate (route_restrict_line_width));
 		
-		iterate (module.board.contours.lines, query_line'access);
-		iterate (module.board.contours.arcs, query_arc'access);
-		iterate (module.board.contours.circles, query_circle'access);
+		iterate (module.board.route_restrict.lines, query_line'access);
+		iterate (module.board.route_restrict.arcs, query_arc'access);
+		iterate (module.board.route_restrict.circles, query_circle'access);
+		-- CS iterate (module.board.route_restrict.polygons, query_polygon'access);
+		-- CS iterate (module.board.route_restrict.cutouts, query_polygon'cutout);
+
+		-- CS query packages
 
 		cairo.stroke (context.cr);
-	end query_segments;
+	end query_items;
 	
-begin -- draw_outline
--- 	put_line ("draw board outline ...");
+begin -- route_restrict
+-- 	put_line ("draw route restrict ...");
 	
 	type_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
-		process		=> query_segments'access);
+		process		=> query_items'access);
 	
-end draw_outline;
+end draw_route_restrict;
 
 
 -- Soli Deo Gloria

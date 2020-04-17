@@ -710,6 +710,9 @@ package et_packages is
 
 	
 -- ROUTE RESTRICT
+
+	-- GUI relevant only: The line width of route restrict:
+	route_restrict_line_width : constant type_general_line_width := line_width_min;
 	
 	type type_route_restrict_line is new type_line with record
 		layers 	: type_signal_layers.set;
