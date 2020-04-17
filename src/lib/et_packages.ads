@@ -760,6 +760,9 @@ package et_packages is
 	
 
 -- VIA RESTRICT
+
+	-- GUI relevant only: The line width of via restrict:
+	via_restrict_line_width : constant type_general_line_width := line_width_min;
 	
 	type type_via_restrict_line is new type_line with record
 		layers	: type_signal_layers.set;

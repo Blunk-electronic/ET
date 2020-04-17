@@ -184,6 +184,10 @@ package body et_canvas_board is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	procedure draw_via_restrict (
+		self    : not null access type_view;
+		in_area	: in type_rectangle := no_rectangle;
+		context : in type_draw_context) is separate;
 	
 	procedure draw_internal (
 		self    : not null access type_view;
@@ -250,6 +254,7 @@ package body et_canvas_board is
 		draw_stencil (self, area_shifted, context, TOP);
 		draw_keepout (self, area_shifted, context, TOP);
 		draw_route_restrict (self, area_shifted, context);
+		draw_via_restrict (self, area_shifted, context);
 		-- CS draw_packages (self, area, context); -- separate unit
 
 		restore (context.cr);
