@@ -146,10 +146,6 @@ package body gui_schematic.callbacks is
 
 		exit_code : type_exit_code := SUCCESSFUL;
 
--- 		-- build an access to the schematic canvas:
--- 		type type_local_view_ptr is access all et_canvas_schematic.type_view;
--- 		canvas_schematic : type_local_view_ptr := type_local_view_ptr (canvas);
-
 	begin
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
 		log_indentation_up;
@@ -166,25 +162,10 @@ package body gui_schematic.callbacks is
 
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
-		-- The 3rd field of the command indicates whether it is
-		-- drawing related or canvas related.
--- 		if is_canvas_related (et_string_processing.field (cmd, 3)) then
--- 			log (text => "command is canvas related", level => log_threshold);
--- 
--- 			-- execute the canvas schematic command
--- 			et_canvas_schematic.execute_command (
--- 				self			=> canvas_schematic,
--- 				cmd				=> remove (cmd, 1, 2), -- field 1..2 no longer required
--- 				log_threshold	=> log_threshold);
--- 		else
--- 			log (text => "command is schematic related", level => log_threshold);
+		-- execute the schematic command
+		exit_code := schematic_cmd (cmd, log_threshold);
 
-			-- execute the schematic command
-			exit_code := schematic_cmd (cmd, log_threshold);
-
-			-- CS evaluate exit_code
-			
--- 		end if;
+		-- CS evaluate exit_code
 
 		-- The majority of commands requires refreshing the schematic and board drawing.
 		

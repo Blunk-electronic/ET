@@ -270,11 +270,6 @@ package body et_canvas_schematic is
 			);
 	end;
 
-	procedure execute_command (
-		self			: not null access type_view;
-		cmd				: in type_fields_of_line;
-		log_threshold	: in type_log_level) is separate;
-	
 	procedure draw_cursor (
 		self		: not null access type_view;
 		in_area		: in type_rectangle := no_rectangle;
