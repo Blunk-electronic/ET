@@ -463,6 +463,43 @@ procedure et is
 				log_threshold	=> 0);
 		end if;
 	end;
+
+	procedure launch_gui is 
+		use gui;
+		use et_project;
+		use et_project.type_modules;
+		use type_module_file_name;
+		use type_module_name;
+
+		-- If no module name was given via command line, then the first
+		-- available module will be opened.
+		-- Note: This is about a generic module.
+		generic_module_name : et_general.type_module_name.bounded_string;
+		
+		module_cursor : type_modules.cursor;
+	begin
+		if length (module_file_name) = 0 then -- module name not specified via cmd line
+			module_cursor := modules.first; -- select first available generic module
+		else
+			-- Convert the optionally given module file name to a module name.
+			generic_module_name := to_module_name (remove_extension (
+				simple_name (type_module_file_name.to_string (module_file_name))));
+			
+			module_cursor := find (modules, generic_module_name);
+		end if;
+			
+		case runmode is 
+			when MODE_HEADLESS => null;
+			when MODE_MODULE => 
+				single_module (
+					project			=> project_name_open,	-- blood_sample_analyzer
+					module			=> module_cursor,		-- cursor to generic module
+					sheet			=> module_sheet, 		-- 1, 3, 10, ... as given via cmd line
+					log_threshold	=> 0);
+			when others => null;
+		end case;
+		
+	end launch_gui;
 	
 	procedure process_commandline_arguments is
 		use et_project.type_project_name;
@@ -608,41 +645,6 @@ procedure et is
 		
 	end process_commandline_arguments;
 
-	procedure launch_gui is 
-		use gui;
-		use et_project;
-		use et_project.type_modules;
-		use type_module_file_name;
-		use type_module_name;
-
-		-- If no module name was given via command line, then the first
-		-- available module will be opened.
-		-- Note: This is about a generic module.
-		generic_module_name : et_general.type_module_name.bounded_string;
-		
-		module_cursor : type_modules.cursor;
-	begin
-		if length (module_file_name) = 0 then -- module name not specified via cmd line
-			module_cursor := modules.first; -- select first available generic module
-		else
-			-- Convert the optionally given module file name to a module name.
-			generic_module_name := to_module_name (remove_extension (
-				simple_name (type_module_file_name.to_string (module_file_name))));
-			
-			module_cursor := find (modules, generic_module_name);
-		end if;
-			
-		case runmode is 
-			when MODE_HEADLESS => null;
-			when MODE_MODULE => 
-				single_module (
-					project			=> project_name_open,	-- blood_sample_analyzer
-					module			=> module_cursor,		-- cursor to generic module
-					sheet			=> module_sheet, 		-- 1, 3, 10, ... as given via cmd line
-					log_threshold	=> 0);
-			when others => null;
-		end case;
-	end;
 
 	
 begin -- main
