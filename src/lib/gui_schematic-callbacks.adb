@@ -133,9 +133,9 @@ package body gui_schematic.callbacks is
 		use scripting;
 
 		-- The operator enters a command like "rename device R1 R2".
-		-- The operator is not required to type domain and schematic name.
-		-- Since we are editing a schematic, the domain and schematic name itelf
-		-- are known. By prepending domain and schematic name here the full 
+		-- The operator is not required to type domain and module name.
+		-- Since we are editing a schematic, the domain and module name itelf
+		-- are known. By prepending domain and module name here the full 
 		-- command after this declaration will be "schematic led_driver rename device R1 R2".
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_SCHEMATIC)) & latin_1.space &
@@ -146,9 +146,9 @@ package body gui_schematic.callbacks is
 
 		exit_code : type_exit_code := SUCCESSFUL;
 
-		-- build an access to the schematic canvas:
-		type type_local_view_ptr is access all et_canvas_schematic.type_view;
-		canvas_schematic : type_local_view_ptr := type_local_view_ptr (canvas);
+-- 		-- build an access to the schematic canvas:
+-- 		type type_local_view_ptr is access all et_canvas_schematic.type_view;
+-- 		canvas_schematic : type_local_view_ptr := type_local_view_ptr (canvas);
 
 	begin
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
@@ -168,23 +168,23 @@ package body gui_schematic.callbacks is
 
 		-- The 3rd field of the command indicates whether it is
 		-- drawing related or canvas related.
-		if is_canvas_related (et_string_processing.field (cmd, 3)) then
-			log (text => "command is canvas related", level => log_threshold);
-
-			-- execute the canvas schematic command
-			et_canvas_schematic.execute_command (
-				self			=> canvas_schematic,
-				cmd				=> remove (cmd, 1, 2), -- field 1..2 no longer required
-				log_threshold	=> log_threshold);
-		else
-			log (text => "command is schematic related", level => log_threshold);
+-- 		if is_canvas_related (et_string_processing.field (cmd, 3)) then
+-- 			log (text => "command is canvas related", level => log_threshold);
+-- 
+-- 			-- execute the canvas schematic command
+-- 			et_canvas_schematic.execute_command (
+-- 				self			=> canvas_schematic,
+-- 				cmd				=> remove (cmd, 1, 2), -- field 1..2 no longer required
+-- 				log_threshold	=> log_threshold);
+-- 		else
+-- 			log (text => "command is schematic related", level => log_threshold);
 
 			-- execute the schematic command
 			exit_code := schematic_cmd (cmd, log_threshold);
 
 			-- CS evaluate exit_code
 			
-		end if;
+-- 		end if;
 
 		-- The majority of commands requires refreshing the schematic and board drawing.
 		

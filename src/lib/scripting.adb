@@ -70,6 +70,8 @@ with et_geometry;		use et_geometry; -- due to frequently used keywords
 with et_symbols;
 with et_devices;		use et_devices;
 
+with glib;
+
 package body scripting is
 	
 	function to_string (name : in type_script_name.bounded_string) return string is begin
@@ -240,7 +242,7 @@ package body scripting is
 		log (text => " -> Excessive arguments after no." & count_type'image (from) & " ignored !",
 			 console => true);
 	end;
-		
+
 	procedure validate_module_name (module : in type_module_name.bounded_string) is 
 		use et_project;
 	begin
@@ -327,6 +329,157 @@ package body scripting is
 			return et_string_processing.field_count (cmd);
 		end;
 
+		procedure too_long is begin -- CS use it more often
+			command_too_long (cmd, fields - 1);
+		end;
+
+		procedure zoom_center is -- GUI related
+			-- Build the center point:
+			c : type_point := type_point (set (
+					x => to_distance (f (5)),
+					y => to_distance (f (6))));
+		begin
+			log (text => "center on point", level => log_threshold + 1);
+			center_on (canvas, c);
+		end zoom_center;
+
+		procedure set_scale (scale : in string) is  -- GUI related -- CS should be percent of scale_to_fit
+			use glib;
+			s : gdouble := gdouble'value (scale);
+		begin
+			log (text => "zoom level", level => log_threshold + 1);
+			set_scale (canvas, s);
+		end set_scale;
+
+		-- Positions the cursor absolute or relative:
+		procedure position_cursor is  -- GUI related
+			use et_geometry;
+			coordinates : type_coordinates := to_coordinates (f (5));
+			position : type_point := type_point (set (
+					x => to_distance (f (6)),
+					y => to_distance (f (7))));
+		begin
+			log (text => "place cursor" & to_string (coordinates) 
+				& to_string (position), level => log_threshold + 1);
+			
+			canvas.move_cursor (coordinates, cursor_main, position);
+		end position_cursor;		
+
+		-- CS unify procedures show_unit and show_first_unit. They differ only in 
+		-- the way the unit_name is assigned.
+		
+		-- Locates the unit of the given device.
+		procedure show_unit is -- GUI related
+			use schematic_ops;
+			use et_devices;
+			use et_canvas_schematic;
+			
+			device_name : et_devices.type_name := to_name (f (5)); -- IC45
+			unit_name	: et_devices.type_unit_name.bounded_string := to_name (f (6)); -- C
+			
+			-- Locate the requested device and unit.
+			location : type_unit_query := unit_position (
+					module_cursor	=> current_active_module,
+					device_name		=> device_name,
+					unit_name		=> unit_name);
+		begin
+			-- CS log message ?
+			
+			if location.exists then
+				-- show the sheet where the unit is:
+				current_active_sheet := sheet (location.position);
+
+				-- center on the unit
+				center_on (canvas, type_point (location.position));
+			end if;
+			
+			log (text => to_string (device_name, unit_name, location), console => true);
+		end show_unit;
+
+		-- Locates the one and only unit of the given device.
+		procedure show_first_unit is -- GUI related
+			use schematic_ops;
+			use et_devices;
+			use et_canvas_schematic;
+			
+			device_name : et_devices.type_name := to_name (f (5)); -- IC45
+
+			-- The assumption is that the device has only one unit:
+			unit_name	: et_devices.type_unit_name.bounded_string := to_name ("");
+			
+			-- Locate the requested device and unit.
+			location : type_unit_query := unit_position (
+					module_cursor	=> current_active_module,
+					device_name		=> device_name,
+					unit_name		=> unit_name);
+		begin
+			-- CS log message ?
+			
+			if location.exists then
+				-- show the sheet where the unit is:
+				current_active_sheet := sheet (location.position);
+
+				-- center on the unit
+				center_on (canvas, type_point (location.position));
+			end if;
+
+			log (text => to_string (device_name, unit_name, location), console => true);
+		end show_first_unit;
+
+		procedure show_sheet is -- GUI related
+			use et_canvas_schematic;
+			sheet : et_coordinates.type_sheet := to_sheet (f (5));
+		begin
+			log (text => "set sheet" & to_sheet (sheet), level => log_threshold + 1); 
+
+			-- CS test if sheet exists
+			
+			current_active_sheet := sheet;
+
+			-- Update module name and sheet number in the schematic window title bar:
+			set_title_bar (active_module, current_active_sheet);
+		end show_sheet;
+
+		-- Sets the active module and first sheet.
+		procedure show_module is -- GUI related
+			use et_general;
+			use et_project;
+			use et_canvas_schematic;
+			
+			module : type_module_name.bounded_string := to_module_name (f (5));
+		begin
+			log (text => "set module " & enclose_in_quotes (to_string (module)), level => log_threshold + 1);
+			set_module (module);
+			current_active_sheet := 1;
+
+			-- Update module name and sheet number in the schematic window title bar:
+			set_title_bar (module, current_active_sheet);
+			
+			-- Update the board window title bar:
+			et_canvas_board.set_title_bar (module);
+		end show_module;
+
+		procedure show_module_and_sheet is  -- GUI related
+		-- Sets the active module and sheet.
+			use et_general;
+			use et_canvas_schematic;
+			
+			module : type_module_name.bounded_string := to_module_name (f (5));
+			sheet : et_coordinates.type_sheet := to_sheet (f (6));
+		begin
+			log (text => "set module " & enclose_in_quotes (to_string (module))
+				& " sheet " & to_sheet (sheet), level => log_threshold + 1);
+			set_module (module);
+			current_active_sheet := sheet;
+
+			-- Update module name and sheet number in the schematic window title bar:
+			set_title_bar (module, current_active_sheet);
+			
+			-- Update the board window title bar:
+			et_canvas_board.set_title_bar (module);
+		end show_module_and_sheet;
+		
+		
 		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
 		exit_code : type_exit_code := SUCCESSFUL;
 		
@@ -779,6 +932,8 @@ package body scripting is
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
+
+			when VERB_DISPLAY => null; -- GUI related
 				
 			when VERB_DRAG =>
 				case noun is
@@ -1276,6 +1431,18 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+			when VERB_POSITION => -- GUI related
+				case noun is 
+					when NOUN_CURSOR =>
+						case fields is
+							when 7 => position_cursor; -- position cursor absolute/relative 25 30
+							when 8 .. count_type'last => too_long;
+							when others => command_incomplete (cmd);
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
 			when VERB_REMOVE =>
 				case noun is
 					when NOUN_DEVICE => 
@@ -1643,6 +1810,34 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+			when VERB_SHOW => -- GUI related
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 5 => show_first_unit; -- show device R1
+							when 6 => show_unit; -- show device IC45 C
+							when 7 .. count_type'last => too_long;
+							when others => command_incomplete (cmd);
+						end case;
+
+					when NOUN_MODULE =>
+						case fields is
+							when 5 => show_module; -- show module LED-driver
+							when 6 => show_module_and_sheet; -- show module LED-driver 2
+							when 7 .. count_type'last => too_long;
+							when others => command_incomplete (cmd);
+						end case;
+						
+					when NOUN_SHEET =>
+						case fields is
+							when 5 => show_sheet;
+							when 6 .. count_type'last => too_long;
+							when others => command_incomplete (cmd);
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
 			when VERB_UNMOUNT =>
 				case noun is
 					when NOUN_DEVICE => 
@@ -1671,6 +1866,46 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+			when VERB_ZOOM => -- GUI related
+				case noun is
+					when NOUN_FIT => -- zoom fit
+						case fields is
+							when 4 => 
+								log (text => "zoom to fit", level => log_threshold + 1);
+								scale_to_fit (canvas);
+
+							when 5 .. count_type'last => too_long;
+
+							when others => command_incomplete (cmd);
+						end case;
+
+					when NOUN_LEVEL => -- zoom level 3
+						case fields is
+							when 5 => 
+								set_scale (f (5));
+
+							when 6 .. count_type'last => too_long;
+
+							when others => command_incomplete (cmd);
+						end case;
+						
+					when NOUN_CENTER => -- zoom center 10 10
+						case fields is
+							when 6 =>  -- zoom center 10 10
+								zoom_center;
+
+							when 7 =>  -- zoom center 10 10 0.5
+								zoom_center;
+								set_scale (f (7));
+
+							when 8 .. count_type'last => too_long;
+
+							when others => command_incomplete (cmd);
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
 		end case;
 		
 		return exit_code;

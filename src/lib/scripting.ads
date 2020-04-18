@@ -127,6 +127,7 @@ package scripting is
 		VERB_CREATE,
 		VERB_DELETE,
 		VERB_DESCRIBE,
+		VERB_DISPLAY,
 		VERB_DRAG,
 		VERB_DRAW,
 		VERB_INVOKE,
@@ -134,13 +135,16 @@ package scripting is
 		VERB_MOVE,
 		VERB_MOUNT,
 		VERB_PLACE,
+		VERB_POSITION,
 		VERB_REMOVE,
 		VERB_RENAME,
 		VERB_RENUMBER,
 		VERB_ROTATE,
 		VERB_SET,
+		VERB_SHOW,
 		VERB_UNMOUNT,
-		VERB_WRITE
+		VERB_WRITE,
+		VERB_ZOOM		
 		);
 
 	function to_string (verb : in type_verb_schematic) return string;
@@ -148,16 +152,21 @@ package scripting is
 	
 	type type_noun_schematic is (
 		NOUN_BOM,
+		NOUN_CENTER,
+		NOUN_CURSOR,
 		NOUN_DEVICE,
 		NOUN_DEVICES,
 		--DEVICE_PARTCODE,
 		--DEVICE_PURPOSE,
 		--DEVICE_VALUE,
+ 		NOUN_FIT,
 		NOUN_GRID,
 		NOUN_INTEGRITY,
 		NOUN_JUNCTION,
 		NOUN_LABEL,
+		NOUN_LEVEL,
 		NOUN_NAME,
+		NOUN_MODULE,
 		NOUN_NET,
 		NOUN_NETCHANGER,
 		NOUN_NETLISTS,
@@ -166,6 +175,7 @@ package scripting is
 		NOUN_PURPOSE,
 		NOUN_SCOPE,
 		NOUN_SEGMENT, -- net segment
+		NOUN_SHEET,
 		NOUN_SUBMODULE,
 		NOUN_SUBMODULE_FILE,		
 		NOUN_SUBMODULES_TREE,
