@@ -270,25 +270,25 @@ package body scripting is
 			raise;
 	end;
 
-	function is_canvas_related (verb : in string) return boolean is
-		verb_full : constant string := to_lower (verb_prefix & verb);
-	begin
-		-- Iterate all verbs of type_verb_canvas.
-		for v in type_verb_canvas'pos (type_verb_canvas'first) .. type_verb_canvas'pos (type_verb_canvas'last) loop
+-- 	function is_canvas_related (verb : in string) return boolean is
+-- 		verb_full : constant string := to_lower (verb_prefix & verb);
+-- 	begin
+-- 		-- Iterate all verbs of type_verb_canvas.
+-- 		for v in type_verb_canvas'pos (type_verb_canvas'first) .. type_verb_canvas'pos (type_verb_canvas'last) loop
+-- 
+-- 			-- If any verb matches the given verb, then exit and return true.
+-- 			if to_lower (type_verb_canvas'image (type_verb_canvas'val (v))) = verb_full then
+-- 				return true;
+-- 			end if;
+-- 		end loop;
+-- 
+-- 		-- No matching verb found.
+-- 		return false;
+-- 	end is_canvas_related;
 
-			-- If any verb matches the given verb, then exit and return true.
-			if to_lower (type_verb_canvas'image (type_verb_canvas'val (v))) = verb_full then
-				return true;
-			end if;
-		end loop;
-
-		-- No matching verb found.
-		return false;
-	end is_canvas_related;
-
-	procedure warn_canvas_command (cmd : in type_fields_of_line) is begin
-		log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) & " is canvas related -> skipped !");
-	end;
+-- 	procedure warn_canvas_command (cmd : in type_fields_of_line) is begin
+-- 		log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) & " is canvas related -> skipped !");
+-- 	end;
 	
 
 	function to_string (noun : in type_noun_canvas) return string is 
@@ -4022,21 +4022,21 @@ package body scripting is
 						file_name		=> append_extension (to_string (module)), 
 						log_threshold	=> log_threshold + 1); 
 
-					-- The 3rd field of the command indicates whether it is
-					-- drawing related or canvas related.
-					-- If the command is drawing related, execute schematic command.
-					-- Otherwise skip the command.
-					if is_canvas_related (f (3)) then -- skip command
-						warn_canvas_command (cmd);
-						exit_code := WARNINGS;
-					else
+-- 					-- The 3rd field of the command indicates whether it is
+-- 					-- drawing related or canvas related.
+-- 					-- If the command is drawing related, execute schematic command.
+-- 					-- Otherwise skip the command.
+-- 					if is_canvas_related (f (3)) then -- skip command
+-- 						warn_canvas_command (cmd);
+-- 						exit_code := WARNINGS;
+-- 					else
 						-- The command must have at least four fields.
 						if field_count (cmd) >= 4 then
 							exit_code := schematic_cmd (cmd, log_threshold + 1);
 						else
 							command_incomplete (cmd);
 						end if;
-					end if;
+-- 					end if;
 					
 					if exit_code = ERROR then
 						raise constraint_error;
@@ -4050,21 +4050,21 @@ package body scripting is
 						file_name		=> append_extension (to_string (module)), 
 						log_threshold	=> log_threshold + 1); 
 
-					-- The 3rd field of the command indicates whether it is
-					-- drawing related or canvas related.
-					-- If the command is drawing related, execute board command.
-					-- Otherwise skip the command.
-					if is_canvas_related (f (3)) then -- skip command
-						warn_canvas_command (cmd);
-						exit_code := WARNINGS;
-					else
+-- 					-- The 3rd field of the command indicates whether it is
+-- 					-- drawing related or canvas related.
+-- 					-- If the command is drawing related, execute board command.
+-- 					-- Otherwise skip the command.
+-- 					if is_canvas_related (f (3)) then -- skip command
+-- 						warn_canvas_command (cmd);
+-- 						exit_code := WARNINGS;
+-- 					else
 						-- The command must have at least four fields.
 						if field_count (cmd) >= 4 then
 							exit_code := board_cmd (cmd, log_threshold + 1);
 						else
 							command_incomplete (cmd);
 						end if;
-					end if;
+-- 					end if;
 
 					if exit_code = ERROR then
 						raise constraint_error;

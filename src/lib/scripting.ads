@@ -276,7 +276,7 @@ package scripting is
 	function to_verb (verb : in string) return type_verb_canvas;
 
 	-- Returns true if the given verb (as string) is a canvas related verb.
-	function is_canvas_related (verb : in string) return boolean;
+-- 	function is_canvas_related (verb : in string) return boolean;
 
 	type type_noun_canvas is (
 		NOUN_CENTER,
