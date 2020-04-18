@@ -1942,6 +1942,10 @@ package body scripting is
 		function fields return count_type is begin
 			return et_string_processing.field_count (cmd);
 		end;
+
+		procedure too_long is begin -- CS use it more often
+			command_too_long (cmd, fields - 1);
+		end;
 		
 		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
 		exit_code : type_exit_code := SUCCESSFUL;
@@ -2824,6 +2828,39 @@ package body scripting is
 				log_threshold	=> log_threshold + 1);
 
 		end add_layer;
+
+		procedure zoom_center is -- GUI related
+			-- Build the center point:
+			c : type_point := type_point (set (
+					x => to_distance (f (5)),
+					y => to_distance (f (6))));
+		begin
+			log (text => "center on point", level => log_threshold + 1);
+			center_on (canvas, c);
+		end zoom_center;
+
+		procedure set_scale (scale : in string) is  -- GUI related -- CS should be percent of scale_to_fit
+			use glib;
+			s : gdouble := gdouble'value (scale);
+		begin
+			log (text => "zoom level", level => log_threshold + 1);
+			set_scale (canvas, s);
+		end set_scale;
+		
+		-- Positions the cursor absolute or relative:
+		procedure position_cursor is -- GUI related
+			use et_geometry;
+			
+			coordinates : type_coordinates := to_coordinates (f (5));
+			position : type_point := type_point (set (
+					x => to_distance (f (6)),
+					y => to_distance (f (7))));
+		begin
+			log (text => "place cursor" & to_string (coordinates) 
+				& to_string (position), level => log_threshold + 1);
+			
+			canvas.move_cursor (coordinates, cursor_main, position);
+		end position_cursor;
 		
 	begin -- board_cmd
 		log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
@@ -3037,7 +3074,9 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 
 				end case;
-					
+
+			when VERB_DISPLAY => null; -- GUI related
+				
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_OUTLINE =>
@@ -3513,6 +3552,18 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+			when VERB_POSITION => -- GUI related
+				case noun is 
+					when NOUN_CURSOR =>
+						case fields is
+							when 7 => position_cursor; -- position cursor absolute/relative 25 30
+							when 8 .. count_type'last => too_long;
+							when others => command_incomplete (cmd);
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
 			when VERB_ROUTE =>
 				case noun is
 					when NOUN_FREETRACK =>
@@ -3769,6 +3820,58 @@ package body scripting is
 
 				end case;
 
+-- 			when VERB_SHOW => -- GUI related
+-- 				case noun is
+-- 					when NOUN_DEVICE =>
+-- 						case fields is
+-- 							when 5 => null; -- CS
+-- 							when 6 .. count_type'last => too_long;
+-- 							when others => command_incomplete (cmd);
+-- 						end case;
+-- 						
+-- 					when others => invalid_noun (to_string (noun));
+-- 				end case;
+
+			when VERB_ZOOM => -- GUI related
+				case noun is
+					when NOUN_FIT => -- zoom fit
+						case fields is
+							when 4 => 
+								log (text => "zoom to fit", level => log_threshold + 1);
+								scale_to_fit (canvas);
+
+							when 5 .. count_type'last => too_long;
+
+							when others => command_incomplete (cmd);
+						end case;
+
+					when NOUN_LEVEL => -- zoom level 3
+						case fields is
+							when 4 => 
+								set_scale (f (5));
+
+							when 6 .. count_type'last => too_long;
+
+							when others => command_incomplete (cmd);
+						end case;
+						
+					when NOUN_CENTER => -- zoom center 10 10
+						case fields is
+							when 6 =>  -- zoom center 10 10
+								zoom_center;
+
+							when 7 =>  -- zoom center 10 10 0.5
+								zoom_center;
+								set_scale (f (7));
+
+							when 8 .. count_type'last => too_long;
+
+							when others => command_incomplete (cmd);
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
 		end case;
 	
 		return exit_code;

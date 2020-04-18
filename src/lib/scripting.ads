@@ -200,16 +200,20 @@ package scripting is
 	type type_verb_board is (
 		VERB_ADD,
 		VERB_DELETE,
+		VERB_DISPLAY,
 		--DRAG,
 		VERB_DRAW,		
 		VERB_FLIP,
 		VERB_MAKE,
 		VERB_MOVE,
 		--PLACE,
+		VERB_POSITION,
 		VERB_RIPUP,
 		VERB_ROTATE,
 		VERB_ROUTE,
-		VERB_SET
+		VERB_SET,
+		--VERB_SHOW CS
+		VERB_ZOOM
 		--WRITE
 		);
 
@@ -220,11 +224,15 @@ package scripting is
 	type type_noun_board is (
 		NOUN_ASSY, -- assembly documentation
 		NOUN_BOARD,
+		NOUN_CENTER,
+		NOUN_CURSOR,
 		NOUN_DEVICE,
 		NOUN_FREETRACK,
+		NOUN_FIT,
 		NOUN_GRID,
 		NOUN_KEEPOUT,
 		NOUN_LAYER, 	-- signal layer with dielectic
+		NOUN_LEVEL,
 		NOUN_NAME,
 		NOUN_NET,
 		NOUN_OUTLINE,

@@ -146,10 +146,6 @@ package body gui_board.callbacks is
 		cmd : et_string_processing.type_fields_of_line;
 
 		exit_code : type_exit_code := SUCCESSFUL;
-
-		-- build an access to the board canvas:
-		type type_local_view_ptr is access all et_canvas_board.type_view;
-		canvas_board : type_local_view_ptr := type_local_view_ptr (canvas);
 		
 	begin
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
@@ -165,26 +161,10 @@ package body gui_board.callbacks is
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> latin_1.space); -- fields are separated by space
 
-		-- The 3rd field of the command indicates whether it is
-		-- drawing related or canvas related.
-		if is_canvas_related (et_string_processing.field (cmd, 3)) then
-			log (text => "command is canvas related", level => log_threshold);
+		-- execute the board command
+		exit_code := board_cmd (cmd, log_threshold);
 
-			-- execute the canvas board command
-			et_canvas_board.execute_command (
-				self			=> canvas_board,
-				cmd				=> remove (cmd, 1, 2), -- field 1..2 no longer required
-				log_threshold	=> log_threshold);
-
-		else
-			log (text => "command is board related", level => log_threshold);
-
-			-- execute the board command
-			exit_code := board_cmd (cmd, log_threshold);
-
-			-- CS evaluate exit_code
-			
-		end if;
+		-- CS evaluate exit_code
 		
 		-- The majority of commands requires refreshing the schematic and board drawing.
 

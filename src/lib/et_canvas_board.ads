@@ -153,11 +153,6 @@ package et_canvas_board is
 	-- Redraws the board:
 	procedure redraw (view : in type_view_ptr);
 
-	-- Executes a canvas related command:
-	overriding procedure execute_command (
-		self    		: not null access type_view;
-		cmd				: in type_fields_of_line;
-		log_threshold	: in type_log_level);
 
 	
 	cursor_line_width : constant type_distance_positive := et_packages.line_width_min;
