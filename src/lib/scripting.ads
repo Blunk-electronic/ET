@@ -130,6 +130,7 @@ package scripting is
 		VERB_DISPLAY,
 		VERB_DRAG,
 		VERB_DRAW,
+		VERB_EXECUTE,
 		VERB_INVOKE,
 		VERB_MAKE,
 		VERB_MOVE,
@@ -174,6 +175,7 @@ package scripting is
 		NOUN_PORT, -- of a submodule instance
 		NOUN_PURPOSE,
 		NOUN_SCOPE,
+		NOUN_SCRIPT,
 		NOUN_SEGMENT, -- net segment
 		NOUN_SHEET,
 		NOUN_SUBMODULE,

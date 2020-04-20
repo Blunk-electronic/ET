@@ -478,7 +478,90 @@ package body scripting is
 			-- Update the board window title bar:
 			et_canvas_board.set_title_bar (module);
 		end show_module_and_sheet;
-		
+
+		procedure execute_script_pre is
+			use ada.directories;
+			use et_canvas_schematic;
+			--file_name : type_script_name.bounded_string := to_script_name (f (5)); -- dummy_module/my_script.scr
+			file_handle : ada.text_io.file_type;
+			line : et_string_processing.type_fields_of_line;
+			exit_code : type_exit_code := SUCCESSFUL;
+
+-- 			cur_act_proj : constant string := to_string (current_active_project);
+			script_name : type_script_name.bounded_string := to_script_name (f (5));
+		begin
+			put_line ("current directory: " & current_directory);
+			put_line ("script: " & to_string (script_name));
+			
+-- 			exit_code := execute_script (
+-- 			put_line (compose (current_directory, cur_act_proj));
+-- 			script_name := to_script_name (compose (cur_act_proj, f (5)));
+			-- 			put_line (to_string (script_name));
+
+-- 			log (text => row_separator_double, level => log_threshold);
+			log (text => "A executing script " & enclose_in_quotes (to_string (script_name)),
+				level => log_threshold, console => true);
+			log_indentation_up;
+			
+			-- make sure the script file exists:
+			if exists (to_string (script_name)) then
+
+				-- open script file
+				open (
+					file => file_handle,
+					mode => in_file, 
+					name => to_string (script_name)); -- demo.scr
+
+				set_input (file_handle);
+				
+				-- read the file line by line
+				while not end_of_file loop
+					
+					line := et_string_processing.read_line (
+						line 			=> get_line,
+						number			=> ada.text_io.line (current_input),
+						comment_mark 	=> comment_mark, -- comments start with "--"
+						delimiter_wrap	=> true, -- strings are enclosed in quotations
+						ifs 			=> latin_1.space); -- fields are separated by space
+
+					-- we are interested in lines that contain something. emtpy lines are skipped:
+					if field_count (line) > 0 then
+						put_line (to_string (line));
+						
+						-- execute the line as command
+						exit_code := execute_command (script_name, line, log_threshold + 1);
+
+						-- evaluate exit code and do things necessary (abort, log messages, ...)
+						case exit_code is
+							when ERROR => exit;
+							when others => null;
+						end case;
+						
+					end if;
+				end loop;
+
+				set_input (standard_input);
+				close (file_handle);
+				
+			else -- script file not found
+				log (ERROR, "script file " & 
+					enclose_in_quotes (to_string (script_name)) &
+					" not found !", console => true);
+				raise constraint_error;
+			end if;
+
+			log_indentation_down;
+			
+-- -- 			return exit_code;
+-- 
+-- 			exception when event: others =>
+-- 				if is_open (file_handle) then close (file_handle); end if;
+-- 				set_input (standard_input);
+-- 				--raise;
+-- -- 				return ERROR;
+
+			
+		end execute_script_pre;
 		
 		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
 		exit_code : type_exit_code := SUCCESSFUL;
@@ -1070,6 +1153,18 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+			when VERB_EXECUTE =>
+				case noun is
+					when NOUN_SCRIPT =>
+						case fields is
+							when 5 => execute_script_pre;
+							when 6 .. count_type'last => too_long;								
+							when others => command_incomplete (cmd);
+						end case;
+							
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
 			when VERB_INVOKE =>
 				case noun is
 					when NOUN_UNIT =>
@@ -4126,20 +4221,20 @@ package body scripting is
 	begin -- execute_script
 		log (text => row_separator_double, level => log_threshold);
 		log (text => "executing script " & enclose_in_quotes (to_string (file_name)),
-			 level => log_threshold);
+			 level => log_threshold, console => true);
 		log_indentation_up;
 
 		-- build the directory where the script is located:
 		script_directory := to_script_name (full_name (to_string (file_name)));
 		script_directory := to_script_name (containing_directory (to_string (script_directory)));
-
+		
 		-- backup the current working directory
 		projects_directory := to_script_name (containing_directory (to_string (script_directory)));
 		--log (text => "projects directory " & to_string (projects_directory), level => log_threshold);
 
 		-- change in directory where the script is:
 		log (text => "changing to directory " & enclose_in_quotes (to_string (script_directory)),
-			 level => log_threshold + 1);
+			 level => log_threshold + 1, console => true);
 		
 		set_directory (to_string (script_directory));
 
