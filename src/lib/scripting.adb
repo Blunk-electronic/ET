@@ -487,20 +487,29 @@ package body scripting is
 			line : et_string_processing.type_fields_of_line;
 			exit_code : type_exit_code := SUCCESSFUL;
 
--- 			cur_act_proj : constant string := to_string (current_active_project);
+			cur_act_proj : constant string := to_string (current_active_project);
 			script_name : type_script_name.bounded_string := to_script_name (f (5));
+			cur_dir_bak : constant string := current_directory;
 		begin
-			put_line ("current directory: " & current_directory);
-			put_line ("script: " & to_string (script_name));
+			log (text => "current directory: " & enclose_in_quotes (current_directory), level => log_threshold);
+			log (text => "project directory: " & enclose_in_quotes (cur_act_proj), level => log_threshold);
+			log (text => "project directory: " & enclose_in_quotes (containing_directory (cur_act_proj)), level => log_threshold);
+			
+			if current_directory /= full_name (cur_act_proj) then
+				set_directory (cur_act_proj);
+				log (text => "changing into directory: " & enclose_in_quotes (current_directory), level => log_threshold);
+			end if;
+			
+			log (text => "executing project internal script: " & enclose_in_quotes (to_string (script_name)), level => log_threshold);
 			
 -- 			exit_code := execute_script (
 -- 			put_line (compose (current_directory, cur_act_proj));
--- 			script_name := to_script_name (compose (cur_act_proj, f (5)));
+-- 			script_name := to_script_name (compose (cur_act_proj, to_string (script_name)));
 			-- 			put_line (to_string (script_name));
 
 -- 			log (text => row_separator_double, level => log_threshold);
-			log (text => "A executing script " & enclose_in_quotes (to_string (script_name)),
-				level => log_threshold, console => true);
+-- 			log (text => "executing project internal script " & enclose_in_quotes (to_string (script_name)),
+-- 				level => log_threshold, console => true);
 			log_indentation_up;
 			
 			-- make sure the script file exists:
@@ -550,6 +559,8 @@ package body scripting is
 				raise constraint_error;
 			end if;
 
+			set_directory (cur_dir_bak);
+			
 			log_indentation_down;
 			
 -- -- 			return exit_code;

@@ -7945,14 +7945,16 @@ package body et_project is
 		use ada.directories;
 		
 	begin -- read_module_file
-		log (text => "opening file " & file_name & " ...", level => log_threshold);
+		log (text => "opening file " & enclose_in_quotes (file_name) & " ...", level => log_threshold);
+		--log (text => "full name " & enclose_in_quotes (full_file_name), level => log_threshold + 1);
 		log_indentation_up;
-
+		
 		-- Make sure the module file exists.
 		-- The file is identified by its full path and name.
 		if exists (full_file_name) then
 
-			log (text => "expanded name: " & full_name (full_file_name), level => log_threshold + 1);
+			log (text => "expanded name: " & enclose_in_quotes (full_name (full_file_name)),
+				 level => log_threshold + 1);
 			
 			-- Create an empty module named after the module file (omitting extension *.mod).
 			-- So the module names are things like "motor_driver", "templates/clock_generator" or
