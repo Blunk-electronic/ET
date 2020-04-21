@@ -2122,6 +2122,8 @@ package body et_project is
 
 	procedure read_module_file (
 	-- Reads a module file and stores its content as generic module in container modules.
+	-- The file name may contain environment variables.
+	-- The file must exist, must be visible from the current working directory.
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 		log_threshold	: in et_string_processing.type_log_level) 
 		is
@@ -2129,15 +2131,19 @@ package body et_project is
 
 		use et_string_processing;
 
-		-- This is the full file name with its path after expanding
-		-- (environment variables could be in file name):
-		full_file_name : constant string := expand (file_name);
+		-- Environment variables like $templates could be in file name.
+		-- In order to test whether the given module file exists, file name_name must be expanded
+		-- so that the environment variables are replaced by the real paths like:
+		-- templates/clock_generator.mod or
+		-- /home/user/et_templates/pwr_supply.mod.
+		file_name_expanded : constant string := expand (file_name);
 			
 		file_handle : ada.text_io.file_type;
 		use type_modules;
 		module_cursor : type_modules.cursor;
 		module_inserted : boolean;
 
+		-- The line read from the the module file:
 		line : et_string_processing.type_fields_of_line;
 
 		-- This is the section stack of the module. 
@@ -7946,14 +7952,18 @@ package body et_project is
 		
 	begin -- read_module_file
 		log (text => "opening file " & enclose_in_quotes (file_name) & " ...", level => log_threshold);
-		--log (text => "full name " & enclose_in_quotes (full_file_name), level => log_threshold + 1);
+		--log (text => "full name " & enclose_in_quotes (file_name_expanded), level => log_threshold + 1);
 		log_indentation_up;
 		
 		-- Make sure the module file exists.
-		-- The file is identified by its full path and name.
-		if exists (full_file_name) then
+		-- The file_name may contain environment variables (like $templates). 
+		-- In order to test whether the given module file exists, file name_name must be expanded
+		-- so that the environment variables are replaced by the real paths like:
+		-- templates/clock_generator.mod or
+		-- /home/user/et_templates/pwr_supply.mod.
+		if exists (file_name_expanded) then
 
-			log (text => "expanded name: " & enclose_in_quotes (full_name (full_file_name)),
+			log (text => "expanded name: " & enclose_in_quotes (full_name (file_name_expanded)),
 				 level => log_threshold + 1);
 			
 			-- Create an empty module named after the module file (omitting extension *.mod).
@@ -7973,7 +7983,7 @@ package body et_project is
 				open (
 					file => file_handle,
 					mode => in_file, 
-					name => full_file_name); -- full path and name
+					name => file_name_expanded);
 				
 				set_input (file_handle);
 				

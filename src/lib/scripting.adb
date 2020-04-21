@@ -310,7 +310,7 @@ package body scripting is
 	
 	
 	function schematic_cmd (
-		cmd				: in type_fields_of_line;
+		cmd				: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
 		log_threshold	: in type_log_level)
 		return type_exit_code is
 
@@ -2029,7 +2029,7 @@ package body scripting is
 	end schematic_cmd;
 
 	function board_cmd (
-		cmd				: in type_fields_of_line;
+		cmd				: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
 		log_threshold	: in type_log_level)
 		return type_exit_code is
 
@@ -3994,7 +3994,7 @@ package body scripting is
 	end board_cmd;
 		
 	function execute_command (
-		file_name		: in type_script_name.bounded_string;
+		file_name		: in type_script_name.bounded_string; -- for debug messages only
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 		return type_exit_code is
@@ -4119,30 +4119,27 @@ package body scripting is
 			-- field 1 contains the domain of operation
 			domain := to_domain (f (1));
 
+			-- Dispatch the command to schematic, board or project:
 			case domain is
 				when DOM_SCHEMATIC =>
 					module := to_module_name (f (2));
 					-- CS character and length check
 
+					-- We are inside the project directory right now.
+					-- The module should be visible either because it is
+					-- in the current project directory or because a environment
+					-- variable (like $templates/power_supply.mod) directs to
+					-- its real location.
 					et_project.read_module_file (
 						file_name		=> append_extension (to_string (module)), 
 						log_threshold	=> log_threshold + 1); 
 
--- 					-- The 3rd field of the command indicates whether it is
--- 					-- drawing related or canvas related.
--- 					-- If the command is drawing related, execute schematic command.
--- 					-- Otherwise skip the command.
--- 					if is_canvas_related (f (3)) then -- skip command
--- 						warn_canvas_command (cmd);
--- 						exit_code := WARNINGS;
--- 					else
-						-- The command must have at least four fields.
-						if field_count (cmd) >= 4 then
-							exit_code := schematic_cmd (cmd, log_threshold + 1);
-						else
-							command_incomplete (cmd);
-						end if;
--- 					end if;
+					-- The command must have at least four fields.
+					if field_count (cmd) >= 4 then
+						exit_code := schematic_cmd (cmd, log_threshold + 1);
+					else
+						command_incomplete (cmd);
+					end if;
 					
 					if exit_code = ERROR then
 						raise constraint_error;
@@ -4151,26 +4148,22 @@ package body scripting is
 				when DOM_BOARD =>
 					module := to_module_name (f (2));
 					-- CS character and length check
-					
+
+					-- We are inside the project directory right now.
+					-- The module should be visible either because it is
+					-- in the current project directory or because a environment
+					-- variable (like $templates/power_supply.mod) directs to
+					-- its real location.
 					et_project.read_module_file (
 						file_name		=> append_extension (to_string (module)), 
 						log_threshold	=> log_threshold + 1); 
 
--- 					-- The 3rd field of the command indicates whether it is
--- 					-- drawing related or canvas related.
--- 					-- If the command is drawing related, execute board command.
--- 					-- Otherwise skip the command.
--- 					if is_canvas_related (f (3)) then -- skip command
--- 						warn_canvas_command (cmd);
--- 						exit_code := WARNINGS;
--- 					else
-						-- The command must have at least four fields.
-						if field_count (cmd) >= 4 then
-							exit_code := board_cmd (cmd, log_threshold + 1);
-						else
-							command_incomplete (cmd);
-						end if;
--- 					end if;
+					-- The command must have at least four fields.
+					if field_count (cmd) >= 4 then
+						exit_code := board_cmd (cmd, log_threshold + 1);
+					else
+						command_incomplete (cmd);
+					end if;
 
 					if exit_code = ERROR then
 						raise constraint_error;
@@ -4209,9 +4202,6 @@ package body scripting is
 
 	
 	function execute_script (
-	-- Executes the given script file.
-	-- Changes into the directory where the script lives and starts
-	-- execution there.
 		file_name		: in type_script_name.bounded_string; -- dummy_module/my_script.scr
 		log_threshold	: in type_log_level)
 		return type_exit_code is
