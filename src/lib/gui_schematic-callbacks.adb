@@ -50,6 +50,7 @@ with et_string_processing;		use et_string_processing;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
+with ada.directories;
 
 package body gui_schematic.callbacks is
 
@@ -128,6 +129,7 @@ package body gui_schematic.callbacks is
 -- 	end;
 
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class) is 
+		use ada.directories;	
 		use gtk.gentry;
 		use et_string_processing;
 		use scripting;
@@ -146,6 +148,7 @@ package body gui_schematic.callbacks is
 
 		exit_code : type_exit_code := SUCCESSFUL;
 
+		cur_dir_bak : constant string := current_directory;
 	begin
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
 		log_indentation_up;
@@ -162,9 +165,13 @@ package body gui_schematic.callbacks is
 
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
+		set_directory (to_string (current_active_project));
+		
 		-- execute the schematic command
 		exit_code := schematic_cmd (cmd, log_threshold);
 
+		set_directory (cur_dir_bak);
+		
 		-- CS evaluate exit_code
 
 		-- The majority of commands requires refreshing the schematic and board drawing.

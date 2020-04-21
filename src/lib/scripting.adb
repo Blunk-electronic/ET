@@ -479,37 +479,26 @@ package body scripting is
 			et_canvas_board.set_title_bar (module);
 		end show_module_and_sheet;
 
-		procedure execute_script_pre is
+		procedure execute_nested_script is
 			use ada.directories;
 			use et_canvas_schematic;
-			--file_name : type_script_name.bounded_string := to_script_name (f (5)); -- dummy_module/my_script.scr
+
+			-- Backup previous input:
+			previous_input : ada.text_io.file_type renames current_input;
+			
 			file_handle : ada.text_io.file_type;
+
+			-- The line read from the script:
 			line : et_string_processing.type_fields_of_line;
+
+			-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
 			exit_code : type_exit_code := SUCCESSFUL;
 
-			cur_act_proj : constant string := to_string (current_active_project);
 			script_name : type_script_name.bounded_string := to_script_name (f (5));
-			cur_dir_bak : constant string := current_directory;
 		begin
 			log (text => "current directory: " & enclose_in_quotes (current_directory), level => log_threshold);
-			log (text => "project directory: " & enclose_in_quotes (cur_act_proj), level => log_threshold);
-			log (text => "project directory: " & enclose_in_quotes (containing_directory (cur_act_proj)), level => log_threshold);
-			
-			if current_directory /= full_name (cur_act_proj) then
-				set_directory (cur_act_proj);
-				log (text => "changing into directory: " & enclose_in_quotes (current_directory), level => log_threshold);
-			end if;
-			
 			log (text => "executing project internal script: " & enclose_in_quotes (to_string (script_name)), level => log_threshold);
 			
--- 			exit_code := execute_script (
--- 			put_line (compose (current_directory, cur_act_proj));
--- 			script_name := to_script_name (compose (cur_act_proj, to_string (script_name)));
-			-- 			put_line (to_string (script_name));
-
--- 			log (text => row_separator_double, level => log_threshold);
--- 			log (text => "executing project internal script " & enclose_in_quotes (to_string (script_name)),
--- 				level => log_threshold, console => true);
 			log_indentation_up;
 			
 			-- make sure the script file exists:
@@ -528,51 +517,60 @@ package body scripting is
 					
 					line := et_string_processing.read_line (
 						line 			=> get_line,
-						number			=> ada.text_io.line (current_input),
-						comment_mark 	=> comment_mark, -- comments start with "--"
+						number			=> ada.text_io.line,
+						comment_mark 	=> comment_mark,
 						delimiter_wrap	=> true, -- strings are enclosed in quotations
 						ifs 			=> latin_1.space); -- fields are separated by space
 
 					-- we are interested in lines that contain something. emtpy lines are skipped:
 					if field_count (line) > 0 then
-						put_line (to_string (line));
-						
+
 						-- execute the line as command
 						exit_code := execute_command (script_name, line, log_threshold + 1);
 
 						-- evaluate exit code and do things necessary (abort, log messages, ...)
 						case exit_code is
-							when ERROR => exit;
+							when ERROR => raise constraint_error;
 							when others => null;
 						end case;
 						
 					end if;
 				end loop;
 
-				set_input (standard_input);
+				--log (text => "closing script file " & enclose_in_quotes (to_string (script_name)), level => log_threshold + 1);
 				close (file_handle);
 				
 			else -- script file not found
-				log (ERROR, "script file " & 
-					enclose_in_quotes (to_string (script_name)) &
+				log (ERROR, "script file " & enclose_in_quotes (to_string (script_name)) &
 					" not found !", console => true);
 				raise constraint_error;
 			end if;
 
-			set_directory (cur_dir_bak);
+			-- A script can be called from inside a script (nested scripts).
+			-- When the top level script finishes then there might be no previous
+			-- input to switch to. So we test whether the previous_input is open
+			-- before swtiching back to it:
+			if is_open (previous_input) then
+				--log (text => "reset to previous input " & name (previous_input) & " ...", level => log_threshold + 1);
+				set_input (previous_input);
+			end if;
 			
 			log_indentation_down;
-			
--- -- 			return exit_code;
--- 
--- 			exception when event: others =>
--- 				if is_open (file_handle) then close (file_handle); end if;
--- 				set_input (standard_input);
--- 				--raise;
--- -- 				return ERROR;
 
+			exception when event: others =>
+				log (
+					importance => ERROR,
+					text => "Execution of project internal script " 
+						& enclose_in_quotes (to_string (script_name))
+						& " failed !",
+					level => log_threshold + 1,
+					console => true
+					);
 			
-		end execute_script_pre;
+				if is_open (file_handle) then close (file_handle); end if;
+				if is_open (previous_input) then set_input (previous_input); end if;
+	
+		end execute_nested_script;
 		
 		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
 		exit_code : type_exit_code := SUCCESSFUL;
@@ -1168,7 +1166,7 @@ package body scripting is
 				case noun is
 					when NOUN_SCRIPT =>
 						case fields is
-							when 5 => execute_script_pre;
+							when 5 => execute_nested_script;
 							when 6 .. count_type'last => too_long;								
 							when others => command_incomplete (cmd);
 						end case;
@@ -4256,7 +4254,7 @@ package body scripting is
 				line := et_string_processing.read_line (
 					line 			=> get_line,
 					number			=> ada.text_io.line (current_input),
-					comment_mark 	=> comment_mark, -- comments start with "--"
+					comment_mark 	=> comment_mark,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
 					ifs 			=> latin_1.space); -- fields are separated by space
 
