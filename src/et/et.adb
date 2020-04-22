@@ -107,7 +107,7 @@ procedure et is
 	frame_name_save_as		: et_frames.pac_template_name.bounded_string;
 	frame_domain			: et_frames.type_domain := et_frames.SCHEMATIC;
 	
-	script_name	: scripting.type_script_name.bounded_string;
+	script_name				: type_script_name.bounded_string;
 
 	runmode : type_runmode := runmode_default;
 	
@@ -302,7 +302,7 @@ procedure et is
 					-- script
 					elsif full_switch = switch_execute_script then
 						log (text => arg & full_switch & space & parameter);
-						script_name := scripting.to_script_name (parameter);
+						script_name := to_script_name (parameter);
 						
 					elsif full_switch = switch_log_level then
 						log (text => arg & full_switch & space & parameter);
@@ -492,14 +492,14 @@ procedure et is
 			project			=> project_name_open,	-- blood_sample_analyzer
 			module			=> module_cursor,		-- cursor to generic module
 			sheet			=> module_sheet, 		-- 1, 3, 10, ... as given via cmd line
--- 			script			=> script_name,			-- rename_nets.scr
+			script			=> script_name,			-- rename_nets.scr
 			log_threshold	=> 0);
 		
 	end launch_gui;
 	
 	procedure process_commandline_arguments is
 		use et_project.type_project_name;
-		use scripting.type_script_name;
+		use type_script_name;
 		use conventions.type_conventions_file_name;
 		use et_packages.type_package_model_file;
 		use et_symbols.type_symbol_model_file;
@@ -556,16 +556,16 @@ procedure et is
 							-- evaluate exit code
 							case exit_code_script is
 								when scripting.ERROR =>
-									log (ERROR, " execution of script " & to_string (script_name) &
+									log (ERROR, " execution of script " & et_general.to_string (script_name) &
 										" failed !", console => true);
 									raise constraint_error;
 
 								when scripting.WARNINGS =>
-									log (WARNING, " execution of script " & to_string (script_name) &
+									log (WARNING, " execution of script " & et_general.to_string (script_name) &
 										" produced warnings !", console => true);
 
 								when scripting.SUCCESSFUL =>
-									log (text => "execution of script " & to_string (script_name) & " successful");
+									log (text => "execution of script " & et_general.to_string (script_name) & " successful");
 									
 							end case;
 

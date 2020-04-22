@@ -36,29 +36,16 @@
 --
 --   ToDo: 
 
-with ada.text_io;				use ada.text_io;
-with ada.characters.latin_1;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;			use ada.containers;
 
-with et_general;
+with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
-with schematic_ops;
--- with board_ops;
-with netlists;
 
 with et_canvas_schematic;
 with et_canvas_board;
 
 package scripting is
 	comment_mark : constant string := ("#");
-
-	script_name_length_max : constant positive := 100; -- CS increase if necessary
-	package type_script_name is new generic_bounded_length (script_name_length_max);
-	
-	function to_string (name : in type_script_name.bounded_string) return string;
-	function to_script_name (name : in string) return type_script_name.bounded_string;
 	
 	script_name : type_script_name.bounded_string;
 

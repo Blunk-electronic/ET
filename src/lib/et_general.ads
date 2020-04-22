@@ -231,6 +231,15 @@ package et_general is
 	function to_variant (variant : in type_variant_name.bounded_string) return string;
 	function to_variant (variant : in string) return type_variant_name.bounded_string;
 
+
+	script_name_length_max : constant positive := 100; -- CS increase if necessary
+	package type_script_name is new generic_bounded_length (script_name_length_max);
+	
+	function to_string (name : in type_script_name.bounded_string) return string;
+	function to_script_name (name : in string) return type_script_name.bounded_string;
+
+
+	
 -- SHAPES
 	type type_shape is (LINE, ARC, CIRCLE);
 

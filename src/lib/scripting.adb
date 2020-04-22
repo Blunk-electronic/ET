@@ -46,10 +46,6 @@ with ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
 
-with ada.containers;            use ada.containers;
-
-with et_general;				use et_general;
-with et_string_processing;
 with et_project;
 
 with et_coordinates;
@@ -73,14 +69,6 @@ with et_devices;		use et_devices;
 with glib;
 
 package body scripting is
-	
-	function to_string (name : in type_script_name.bounded_string) return string is begin
-		return type_script_name.to_string (name);
-	end;
-		
-	function to_script_name (name : in string) return type_script_name.bounded_string is begin
-		return type_script_name.to_bounded_string (name);
-	end;
 
 	function to_string (domain : in type_domain) return string is 
 	-- Removes the domain_prefix from a domain name and returns the remainder as string.

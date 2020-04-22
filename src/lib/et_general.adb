@@ -331,6 +331,20 @@ package body et_general is
 	end;
 
 
+
+	function to_string (name : in type_script_name.bounded_string) return string is begin
+		return type_script_name.to_string (name);
+	end;
+		
+	function to_script_name (name : in string) return type_script_name.bounded_string is begin
+		return type_script_name.to_bounded_string (name);
+	end;
+
+
+
+
+	
+
 	function to_shape (shape : in string) return type_shape is begin
 		return type_shape'value (shape);
 	end;
