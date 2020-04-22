@@ -51,6 +51,7 @@ with et_string_processing;		use et_string_processing;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
+with ada.directories;
 
 package body gui_board.callbacks is
 
@@ -129,6 +130,7 @@ package body gui_board.callbacks is
 	end set_cursor_position_y;
 	
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class) is 
+		use ada.directories;
 		use gtk.gentry;
 		use et_string_processing;
 		use scripting;
@@ -146,7 +148,16 @@ package body gui_board.callbacks is
 		cmd : et_string_processing.type_fields_of_line;
 
 		exit_code : type_exit_code := SUCCESSFUL;
-		
+
+		-- The command might launch a script. To prepare for this case we must change
+		-- into the project directory. The current directory is the parent directory
+		-- of the active project. 
+		-- Example: The curreent directory is /home/user/my_projects . The directory
+		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
+		--  Executing scripts requires changing into the project directory blood_sample_analyzer.
+
+		-- Backup the current directory (like /home/user/my_projects):
+		cur_dir_bak : constant string := current_directory;
 	begin
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
 		log_indentation_up;
@@ -157,13 +168,20 @@ package body gui_board.callbacks is
 		cmd := read_line (
 			line 			=> line_as_typed_by_operator,
 			number			=> 1, -- this is the one and only line
-			comment_mark 	=> scripting.comment_mark, -- comments start with "--"
+			comment_mark 	=> scripting.comment_mark,
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> latin_1.space); -- fields are separated by space
 
+		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
+		
+		set_directory (to_string (et_canvas_schematic.current_active_project));
+		
 		-- execute the board command
 		exit_code := board_cmd (cmd, log_threshold);
 
+		-- Return to previous directory (like  /home/user/my_projects):
+		set_directory (cur_dir_bak);
+		
 		-- CS evaluate exit_code
 		
 		-- The majority of commands requires refreshing the schematic and board drawing.

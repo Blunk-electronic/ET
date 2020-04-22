@@ -204,7 +204,8 @@ package scripting is
 		VERB_DELETE,
 		VERB_DISPLAY,
 		--DRAG,
-		VERB_DRAW,		
+		VERB_DRAW,	
+		VERB_EXECUTE,
 		VERB_FLIP,
 		VERB_MAKE,
 		VERB_MOVE,
@@ -242,6 +243,7 @@ package scripting is
 		NOUN_PNP, -- pick & place
 		NOUN_PURPOSE,
 		NOUN_ROUTE_RESTRICT,
+		NOUN_SCRIPT,
 		NOUN_SILK, -- silk screen
 		NOUN_STENCIL, -- solder mask
 		NOUN_STOP, -- solder stop mask

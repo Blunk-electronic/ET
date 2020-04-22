@@ -148,6 +148,14 @@ package body gui_schematic.callbacks is
 
 		exit_code : type_exit_code := SUCCESSFUL;
 
+		-- The command might launch a script. To prepare for this case we must change
+		-- into the project directory. The current directory is the parent directory
+		-- of the active project. 
+		-- Example: The curreent directory is /home/user/my_projects . The directory
+		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
+		--  Executing scripts requires changing into the project directory blood_sample_analyzer.
+
+		-- Backup the current directory (like /home/user/my_projects):
 		cur_dir_bak : constant string := current_directory;
 	begin
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
@@ -159,7 +167,7 @@ package body gui_schematic.callbacks is
 		cmd := read_line (
 			line 			=> line_as_typed_by_operator,
 			number			=> 1,  -- this is the one and only line
-			comment_mark 	=> scripting.comment_mark, -- comments start with "--"
+			comment_mark 	=> scripting.comment_mark,
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> latin_1.space); -- fields are separated by space
 
@@ -170,6 +178,7 @@ package body gui_schematic.callbacks is
 		-- execute the schematic command
 		exit_code := schematic_cmd (cmd, log_threshold);
 
+		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
 		
 		-- CS evaluate exit_code

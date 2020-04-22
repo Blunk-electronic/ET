@@ -1,5 +1,7 @@
 # SYSTEM ET SCRIPT PROCESSOR COMMAND SET
 
+The two letters "CS" indicate a "construction site" where things are not finished yet or intended for the future.
+
 ## BASICS
 Scripting is an important feature of advanced CAE tools. It allows:
 - repeating and automating of tedious or error prone tasks.
@@ -7,9 +9,10 @@ Scripting is an important feature of advanced CAE tools. It allows:
 - generating schematics, layouts and device models via third party software
 - The acronym 'CS' indicates a construction site where things are not complete or intended for the future.
 
-A script in general is just a list of things to do by the CAE system. This list
-is a plain ASCII file. Comments start with #. 
-The two letters "CS" indicate a "construction site" where things are not finished yet or intended for the future.
+The script file must exist in the project directory.
+A script in general is just a list of things to do by the CAE system.
+CS: link to example script
+This list Is a plain ASCII file. Comments start with #. 
 The script commands have a domain-verb-noun structure.
 Their meaning should be obvious in most cases. Additional explanation is provided in comments
 if required. The domain-verb-noun structure is: DOMAIN MODULE VERB NOUN PARAMETERS
@@ -648,6 +651,19 @@ schematic led_driver check integrity
 ```
 
 ## MISC
+
+### NESTED SCRIPTS
+A script can be launched from inside a script. The domain does not matter 
+as only the content of the called script is relevant.
+The called script must exist in the project directory:
+```
+schematic led_driver execute script rename_nets.scr
+```
+```
+board led_driver execute script rename_nets.scr
+```
+
+### SUBMODULE TREE
 ```
 schematic led_driver build submodules_tree
 ```
