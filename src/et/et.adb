@@ -488,16 +488,12 @@ procedure et is
 			module_cursor := find (modules, generic_module_name);
 		end if;
 			
-		case runmode is 
-			when MODE_HEADLESS => null;
-			when MODE_MODULE => 
-				single_module (
-					project			=> project_name_open,	-- blood_sample_analyzer
-					module			=> module_cursor,		-- cursor to generic module
-					sheet			=> module_sheet, 		-- 1, 3, 10, ... as given via cmd line
-					log_threshold	=> 0);
-			when others => null;
-		end case;
+		single_module (
+			project			=> project_name_open,	-- blood_sample_analyzer
+			module			=> module_cursor,		-- cursor to generic module
+			sheet			=> module_sheet, 		-- 1, 3, 10, ... as given via cmd line
+-- 			script			=> script_name,			-- rename_nets.scr
+			log_threshold	=> 0);
 		
 	end launch_gui;
 	
@@ -551,23 +547,31 @@ procedure et is
 
 				-- If operator whishes to execute a script on the native project:
 				if length (script_name) > 0 then
-					exit_code_script := scripting.execute_script (script_name, log_threshold => 0);
 
-					-- evaluate exit code
-					case exit_code_script is
-						when scripting.ERROR =>
-							log (ERROR, " execution of script " & to_string (script_name) &
-								" failed !", console => true);
-							raise constraint_error;
+					case runmode is
+						when MODE_HEADLESS =>
+					
+							exit_code_script := scripting.execute_script (script_name, log_threshold => 0);
 
-						when scripting.WARNINGS =>
-							log (WARNING, " execution of script " & to_string (script_name) &
-								 " produced warnings !", console => true);
+							-- evaluate exit code
+							case exit_code_script is
+								when scripting.ERROR =>
+									log (ERROR, " execution of script " & to_string (script_name) &
+										" failed !", console => true);
+									raise constraint_error;
 
-						when scripting.SUCCESSFUL =>
-							log (text => "execution of script " & to_string (script_name) & " successful");
-							
+								when scripting.WARNINGS =>
+									log (WARNING, " execution of script " & to_string (script_name) &
+										" produced warnings !", console => true);
+
+								when scripting.SUCCESSFUL =>
+									log (text => "execution of script " & to_string (script_name) & " successful");
+									
+							end case;
+
+						when others => null;
 					end case;
+					
 				end if;
 				
 				-- optionally the project can be saved elsewhere
@@ -667,7 +671,11 @@ begin -- main
 
 		process_commandline_arguments;
 
-		launch_gui;
+		case runmode is
+			when MODE_HEADLESS => null;
+			when MODE_MODULE => launch_gui;
+			when others => null;
+		end case;
 		
 		close_report;
 	end if;
