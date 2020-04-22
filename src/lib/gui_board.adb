@@ -157,14 +157,15 @@ package body gui_board is
 		scale_to_fit (canvas);
 
 -- 		-- If a script was given, execute it now:
-		if pac_script_name.length (script) > 0 then
-			execute_script (script);
-		end if;
-		set_scale (canvas, 5.0);
+-- 		if pac_script_name.length (script) > 0 then
+-- 			execute_script (script);
+-- 		end if;
+
 
 		
 		-- display the board:
 		window.show_all;
+
 		
 	end init_window;
 	
