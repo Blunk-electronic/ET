@@ -43,11 +43,11 @@ with et_string_processing;		use et_string_processing;
 
 package gui_schematic is
 
+	-- Creates and displays the board editor window.
 	procedure init_window (
 		project			: in type_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in type_modules.cursor; -- cursor of generic module to be edited
 		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
-		script			: in pac_script_name.bounded_string; -- rename_nets.scr
 		log_threshold_in: in type_log_level);
 
 end gui_schematic;

@@ -44,7 +44,7 @@ with gtk.button;    	 	--use gtk.button;
 with glib.object;			--use glib.object;
 with gtk.gentry;
 with gtk.combo_box_text;	with gtk.combo_box_text;	
-with gtkada.style;			use gtkada.style;
+-- with gtkada.style;			use gtkada.style;
 
 with scripting;
 
@@ -66,7 +66,9 @@ package gui_board.callbacks is
 
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class);
 	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class);
-	
+
+	-- Executes a script.
+	procedure execute_script (script : in pac_script_name.bounded_string);	
 	
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class);
 

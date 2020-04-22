@@ -45,6 +45,7 @@ with et_string_processing;		use et_string_processing;
 
 with gui_schematic;
 with gui_board;
+with gui_board.callbacks;		use gui_board.callbacks;
 
 package body gui is
 
@@ -69,21 +70,27 @@ package body gui is
 		gtk.main.init; -- initialize the main gtk stuff
 
 		-- Set up the schematic window.
-		-- We pass the script name (even if empty) to the schematic so
-		-- that it gets executed from there.
-		gui_schematic.init_window (project, module, sheet, script, log_threshold + 1);
+		gui_schematic.init_window (project, module, sheet, log_threshold + 1);
 
 		-- CS test if board available (see et_schematic.type_module)
 		
-		-- set up the board window
-		gui_board.init_window (project, module, log_threshold + 1);
+		-- Set up the board window.
+		-- We pass the script name (even if empty) to the board so
+		-- that it gets executed from there.
+		-- NOTE: The script execution must be AFTER schematic and board 
+		-- have been completely displayed.
+		gui_board.init_window (project, module, script, log_threshold + 1);
 
-
-
+		-- If a script was given, execute it now:
+-- 		if pac_script_name.length (script) > 0 then
+-- 			execute_script (script);
+-- 		end if;
 		
 		-- Start the main gtk loop. This is a loop that permanently draws the widgets and
 		-- samples them for possible signals sent.
 		gtk.main.main;
+
+
 		
 	end single_module;
 	

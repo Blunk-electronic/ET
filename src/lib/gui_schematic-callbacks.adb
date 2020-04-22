@@ -127,7 +127,7 @@ package body gui_schematic.callbacks is
 -- 		end if;
 -- -- 		put_line (to_string (get_scale (canvas)));
 -- 	end;
-
+	
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class) is 
 		use ada.directories;	
 		use gtk.gentry;
@@ -151,7 +151,7 @@ package body gui_schematic.callbacks is
 		-- The command might launch a script. To prepare for this case we must change
 		-- into the project directory. The current directory is the parent directory
 		-- of the active project. 
-		-- Example: The curreent directory is /home/user/my_projects . The directory
+		-- Example: The current directory is /home/user/my_projects . The directory
 		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
 		--  Executing scripts requires changing into the project directory blood_sample_analyzer.
 

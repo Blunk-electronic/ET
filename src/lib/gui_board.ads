@@ -35,33 +35,19 @@
 --   history of changes:
 --
 
-with gtk.main;
-with gtk.window; 			use gtk.window;
-with gtk.widget;  			use gtk.widget;
-with gtk.box;				use gtk.box;
-with gtk.button;     		use gtk.button;
-with gtk.toolbar; 			use gtk.toolbar;
-with gtk.tool_button;		use gtk.tool_button;
-with gtk.enums;				use gtk.enums;
-with gtk.gentry;			use gtk.gentry;
-with gtk.combo_box_text;	use gtk.combo_box_text;
-with gtk.frame;				use gtk.frame;
-with gtk.scrolled_window;	use gtk.scrolled_window;
-with glib.object;			use glib.object;
-
-with ada.text_io;			use ada.text_io;
--- with ada.directories;
-
--- with et_general;				use et_general;
+with et_general;				use et_general;
 with et_project;				use et_project;
 with et_string_processing;		use et_string_processing;
 
 
 package gui_board is
-	
+
+	-- Creates and displays the board editor window.
+	-- Executes the given script (if "script" is empty, no script will be executed.
 	procedure init_window (
 		project			: in type_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in type_modules.cursor; -- cursor of generic module to be edited
+		script			: in pac_script_name.bounded_string; -- rename_nets.scr
 		log_threshold_in: in type_log_level);
 
 	

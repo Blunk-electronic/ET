@@ -495,7 +495,11 @@ procedure et is
 			project			=> project_name_open,	-- blood_sample_analyzer
 			module			=> module_cursor,		-- cursor to generic module
 			sheet			=> module_sheet, 		-- 1, 3, 10, ... as given via cmd line
-			script			=> script_name,			-- rename_nets.scr
+
+			-- The script name must be given as simple name like rename_nets.scr.
+			-- So we render something like motor_driver/rename_nets.scr to just rename_nets.scr:
+			-- CS: error if no script given. 
+			script			=> to_script_name (simple_name (to_string (script_name))), -- rename_nets.scr
 			log_threshold	=> 0);
 		
 	end launch_gui;

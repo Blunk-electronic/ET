@@ -63,7 +63,6 @@ package body gui_schematic is
 		project			: in type_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in type_modules.cursor; -- cursor of generic module to be edited
 		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
-		script			: in pac_script_name.bounded_string; -- rename_nets.scr		
 		log_threshold_in: in type_log_level) is
 	begin
 		-- Set the log threshold. Everything that happens in the gui may be logged
@@ -156,12 +155,12 @@ package body gui_schematic is
 		init_drawing (module, sheet);
 
 		-- draw the schematic sheet
-		redraw (canvas);
+		redraw (canvas); -- CS no need
 		
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 		
 		scale_to_fit (canvas);
-		
+
 		-- display the schematic:
 		window.show_all;
 
