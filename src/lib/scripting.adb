@@ -313,7 +313,7 @@ package body scripting is
 		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
 		exit_code : type_exit_code := SUCCESSFUL;
 
-		script_name : type_script_name.bounded_string := to_script_name (file);
+		script_name : pac_script_name.bounded_string := to_script_name (file);
 	begin
 		log (text => "current directory: " & enclose_in_quotes (current_directory), level => log_threshold);
 		log (text => "executing project internal script: " & enclose_in_quotes (to_string (script_name)), level => log_threshold);
@@ -4003,7 +4003,7 @@ package body scripting is
 	end board_cmd;
 		
 	function execute_command (
-		file_name		: in type_script_name.bounded_string; -- for debug messages only
+		file_name		: in pac_script_name.bounded_string; -- for debug messages only
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 		return type_exit_code is
@@ -4211,7 +4211,7 @@ package body scripting is
 
 	
 	function execute_script (
-		file_name		: in type_script_name.bounded_string; -- dummy_module/my_script.scr
+		file_name		: in pac_script_name.bounded_string; -- dummy_module/my_script.scr
 		log_threshold	: in type_log_level)
 		return type_exit_code is
 		
@@ -4220,10 +4220,10 @@ package body scripting is
 		use ada.directories;
 
 		-- Here we backup the current working directory:
-		projects_directory : type_script_name.bounded_string;
+		projects_directory : pac_script_name.bounded_string;
 
 		-- Here we store the directory where the script resides:
-		script_directory : type_script_name.bounded_string;
+		script_directory : pac_script_name.bounded_string;
 		
 		file_handle : ada.text_io.file_type;
 		line : et_string_processing.type_fields_of_line;

@@ -107,7 +107,7 @@ procedure et is
 	frame_name_save_as		: et_frames.pac_template_name.bounded_string;
 	frame_domain			: et_frames.type_domain := et_frames.SCHEMATIC;
 	
-	script_name				: type_script_name.bounded_string;
+	script_name				: pac_script_name.bounded_string;
 
 	runmode : type_runmode := runmode_default;
 	
@@ -487,8 +487,11 @@ procedure et is
 			
 			module_cursor := find (modules, generic_module_name);
 		end if;
-			
-		single_module (
+
+		-- We pass the script name (even if empty) to the schematic so
+		-- that it gets executed from there. If the script name is empty,
+		-- no script will be executed by the gui.
+		gui.single_module (
 			project			=> project_name_open,	-- blood_sample_analyzer
 			module			=> module_cursor,		-- cursor to generic module
 			sheet			=> module_sheet, 		-- 1, 3, 10, ... as given via cmd line
@@ -499,7 +502,7 @@ procedure et is
 	
 	procedure process_commandline_arguments is
 		use et_project.type_project_name;
-		use type_script_name;
+		use pac_script_name;
 		use conventions.type_conventions_file_name;
 		use et_packages.type_package_model_file;
 		use et_symbols.type_symbol_model_file;

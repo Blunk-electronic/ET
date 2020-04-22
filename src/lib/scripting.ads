@@ -47,7 +47,7 @@ with et_canvas_board;
 package scripting is
 	comment_mark : constant string := ("#");
 	
-	script_name : type_script_name.bounded_string;
+	script_name : pac_script_name.bounded_string;
 
 	procedure invalid_noun (noun : in string);
 	
@@ -317,7 +317,7 @@ package scripting is
 	-- project like my_projects/blood_sample_analyzer.
 	function execute_command (
 		-- The script file that contains the command. for debug messages only:
-		file_name		: in type_script_name.bounded_string; 
+		file_name		: in pac_script_name.bounded_string; 
 		-- The command like "schematic motor_driver draw net motor_on 1 150 100 150 130":
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level)
@@ -330,7 +330,7 @@ package scripting is
 	-- ET via command line. This function must NOT be called when a script
 	-- is to be executed from inside a script !
 	function execute_script (
-		file_name		: in type_script_name.bounded_string;
+		file_name		: in pac_script_name.bounded_string;
 		log_threshold	: in type_log_level)
 		return type_exit_code;
 
