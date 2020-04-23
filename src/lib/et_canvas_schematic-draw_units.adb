@@ -57,6 +57,7 @@ with et_symbols;
 with et_packages;
 with et_text;
 with schematic_ops;
+with et_display;				use et_display;
 
 separate (et_canvas_schematic)
 
@@ -430,6 +431,7 @@ procedure draw_units (
 					);
 
 				cairo.stroke (context.cr);
+
 			end draw_terminal_name;
 			
 		begin -- draw_port
@@ -519,30 +521,47 @@ procedure draw_units (
 
 			cairo.stroke (context.cr);
 
-			-- The start point of the port must have a small green circle around it.
-			-- set color and line width
-			cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
-			cairo.set_line_width (context.cr, type_view_coordinate (port_circle_line_width));
+			-- Draw the circle around a port if the layer is enabled:
+			if et_display.schematic_layers.ports = ON then
+			
+				-- The start point of the port must have a small green circle around it.
+				-- set color and line width
+				cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
+				cairo.set_line_width (context.cr, type_view_coordinate (port_circle_line_width));
 
-			cairo.new_sub_path (context.cr); -- required to suppress an initial line
-			cairo.arc (
-				cr		=> context.cr,
-				xc		=> transpose_x (x (start_point)),
-				yc		=> transpose_y (y (start_point)),
-				radius	=> type_view_coordinate (port_circle_radius),
+				cairo.new_sub_path (context.cr); -- required to suppress an initial line
+				cairo.arc (
+					cr		=> context.cr,
+					xc		=> transpose_x (x (start_point)),
+					yc		=> transpose_y (y (start_point)),
+					radius	=> type_view_coordinate (port_circle_radius),
 
-				-- it must be a full circle starting at 0 degree and ending at 360 degree:
-				angle1	=> 0.0,
-				angle2	=> type_view_coordinate (2 * pi)
-				);
+					-- it must be a full circle starting at 0 degree and ending at 360 degree:
+					angle1	=> 0.0,
+					angle2	=> type_view_coordinate (2 * pi)
+					);
 
-			cairo.stroke (context.cr);
+				cairo.stroke (context.cr);
+
+				-- CS draw port direction, weakness, power level ?
+				-- probably better in draw_terminal_name or draw_port_name ?
+
+	-- 				use properties := schematic_ops.port_properties (
+	-- 					module_cursor	=> current_active_module,
+	-- 					device_name		=> device_name,
+	-- 					unit_name		=> unit_name,
+	-- 					port_name		=> key (c));
+				
+			end if;
+
+			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (0)); -- yellow
 			
 			-- draw port name
 			if element (c).port_name_visible = YES then
 				draw_port_name;
 			end if;
-
+		
+			
 			-- Draw terminal name if this is the symbol of a real device. 
 			-- Virtual symbols do not have terminal names.
 			if symbol.appearance = PCB and then element (c).terminal_name_visible = YES then
@@ -551,7 +570,7 @@ procedure draw_units (
 			
 		end draw_port;
 
-		-- This procedure draws fixed documetational texts like "MUX" or "CT16" as they 
+		-- This procedure draws fixed documentational texts like "MUX" or "CT16" as they 
 		-- are frequently placed inside symbols:
 		procedure draw_text (c : in type_texts.cursor) is 
 			position : type_point := element (c).position;
@@ -766,7 +785,6 @@ procedure draw_units (
 			
 			-- SYMBOL PORTS
 			iterate (symbol.ports, draw_port'access); -- has internal color settings
-
 
 			-- SYMBOL TEXTS
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white

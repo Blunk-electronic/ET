@@ -36,7 +36,7 @@
 --
 
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.latin_1;	--use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
@@ -65,6 +65,7 @@ with netlists;
 with et_geometry;		use et_geometry; -- due to frequently used keywords
 with et_symbols;
 with et_devices;		use et_devices;
+with et_display;		use et_display;
 
 with glib;
 
@@ -257,27 +258,6 @@ package body scripting is
 			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
 			raise;
 	end;
-
--- 	function is_canvas_related (verb : in string) return boolean is
--- 		verb_full : constant string := to_lower (verb_prefix & verb);
--- 	begin
--- 		-- Iterate all verbs of type_verb_canvas.
--- 		for v in type_verb_canvas'pos (type_verb_canvas'first) .. type_verb_canvas'pos (type_verb_canvas'last) loop
--- 
--- 			-- If any verb matches the given verb, then exit and return true.
--- 			if to_lower (type_verb_canvas'image (type_verb_canvas'val (v))) = verb_full then
--- 				return true;
--- 			end if;
--- 		end loop;
--- 
--- 		-- No matching verb found.
--- 		return false;
--- 	end is_canvas_related;
-
--- 	procedure warn_canvas_command (cmd : in type_fields_of_line) is begin
--- 		log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) & " is canvas related -> skipped !");
--- 	end;
-	
 
 	function to_string (noun : in type_noun_canvas) return string is 
 		s : constant string := type_noun_canvas'image (noun);
@@ -562,6 +542,37 @@ package body scripting is
 			-- Update the board window title bar:
 			et_canvas_board.set_title_bar (module);
 		end show_module_and_sheet;
+
+		-- Enables a certain layer. If status is empty, the layer will be enabled.
+		procedure display ( -- GUI related
+			layer	: in type_noun_schematic;
+			status	: in string := "") is
+
+			ls : type_layer_status;
+		begin
+			-- Convert the given status to type_layer_status.
+			-- If no status given, assume status ON:
+			if status = "" then
+				ls := ON;
+			else
+				ls := to_layer_status (status);
+			end if;
+			
+			log (text => "display " & to_lower (to_string (layer)) 
+				 & space & to_string (ls),
+				 level => log_threshold + 1);
+			
+			case layer is
+				when NOUN_PORTS =>
+					schematic_layers.ports := ls;
+
+				when others => 
+					log (importance => ERROR, text => "invalid layer !", console => true);
+			end case;
+
+			-- CS exception handler if status is invalid
+		end display;
+
 		
 		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
 		exit_code : type_exit_code := SUCCESSFUL;
@@ -1016,8 +1027,19 @@ package body scripting is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when VERB_DISPLAY => null; -- GUI related
-				
+			when VERB_DISPLAY => -- GUI related
+				case noun is
+					when NOUN_PORTS => -- like "schematic led_driver display ports [on/off]"
+						case fields is
+							when 4 => display (noun); -- if status is omitted like
+							when 5 => display (noun, f (5));
+							when 6 .. count_type'last => too_long; 
+							when others => command_incomplete (cmd);
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+						
 			when VERB_DRAG =>
 				case noun is
 					when NOUN_UNIT =>

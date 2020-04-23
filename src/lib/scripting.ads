@@ -160,6 +160,7 @@ package scripting is
 		NOUN_NETLISTS,
 		NOUN_PARTCODE,
 		NOUN_PORT, -- of a submodule instance
+		NOUN_PORTS,
 		NOUN_PURPOSE,
 		NOUN_SCOPE,
 		NOUN_SCRIPT,
