@@ -155,7 +155,7 @@ package body gui_schematic is
 		init_drawing (module, sheet);
 
 		-- draw the schematic sheet
-		redraw (canvas); -- CS no need
+-- 		redraw (canvas); -- CS no need
 		
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 		

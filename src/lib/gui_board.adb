@@ -149,7 +149,7 @@ package body gui_board is
 		gtk_new (canvas);
 
 		-- draw the board layout
-		redraw (canvas);  -- CS no need
+-- 		redraw (canvas);  -- CS no need
 		
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 		
