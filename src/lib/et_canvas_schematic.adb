@@ -38,6 +38,7 @@
 with ada.text_io;				use ada.text_io;
 
 with et_general;
+with et_display;
 with et_project;
 with et_frames;
 with et_coordinates;			use et_coordinates;
@@ -165,6 +166,8 @@ package body et_canvas_schematic is
 		area_shifted_new_position : type_point := type_point (set (
 						x => - self.frame_bounding_box.x,
 						y => - self.frame_bounding_box.y));
+		
+		use et_display;
 	begin
 -- 		put_line ("draw internal ...");
 -- 		shift_area (self, area_shifted, cursor_main);
@@ -195,8 +198,17 @@ package body et_canvas_schematic is
 
 		draw_frame (self, area_shifted, context);
 		draw_cursor (self, area_shifted, context, cursor_main);
-		draw_nets (self, area_shifted, context);
-		draw_texts (self, area_shifted, context);
+
+		-- Draw nets if layer is enabled:
+		if schematic_layers.nets = ON then
+			draw_nets (self, area_shifted, context);
+		end if;
+
+		-- Draw texts if layer is enabled:
+		if schematic_layers.texts = ON then
+			draw_texts (self, area_shifted, context);
+		end if;
+		
 		draw_submodules (self, area_shifted, context);
 
 		restore (context.cr);

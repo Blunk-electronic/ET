@@ -151,19 +151,22 @@ CS: todo
 ## DISPLAY
 
 ### In Schematc
-```
-schematic led_driver display nets on
-```
 
 The parameter "on/off" may be left off. The default is "on":
 ```
-schematic led_driver display nets
+schematic led_driver display nets [on/off]
 ```
 ```
-schematic led_driver display ports on
+schematic led_driver display ports [on/off]
 ```
 ```
-schematic led_driver display ports off
+schematic led_driver display names [on/off]
+```
+```
+schematic led_driver display values [on/off]
+```
+```
+schematic led_driver display purposes [on/off]
 ```
 
 

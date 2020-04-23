@@ -563,9 +563,13 @@ package body scripting is
 				 level => log_threshold + 1);
 			
 			case layer is
-				when NOUN_PORTS =>
-					schematic_layers.ports := ls;
-
+				when NOUN_NAMES		=> schematic_layers.device_names := ls;
+				when NOUN_NETS		=> schematic_layers.nets := ls;
+				when NOUN_PORTS		=> schematic_layers.ports := ls;
+				when NOUN_PURPOSES	=> schematic_layers.device_purposes := ls;
+				when NOUN_TEXTS		=> schematic_layers.texts := ls;
+				when NOUN_VALUES	=> schematic_layers.device_values := ls;
+				
 				when others => 
 					log (importance => ERROR, text => "invalid layer !", console => true);
 			end case;
@@ -1029,14 +1033,18 @@ package body scripting is
 
 			when VERB_DISPLAY => -- GUI related
 				case noun is
-					when NOUN_PORTS => -- like "schematic led_driver display ports [on/off]"
+					when NOUN_PORTS		-- like "schematic led_driver display ports [on/off]"
+						| NOUN_NETS		-- like "schematic led_driver display nets [on/off]"
+						| NOUN_NAMES | NOUN_VALUES | NOUN_PURPOSES
+						| NOUN_TEXTS
+						=>
 						case fields is
-							when 4 => display (noun); -- if status is omitted like
+							when 4 => display (noun); -- if status is omitted
 							when 5 => display (noun, f (5));
 							when 6 .. count_type'last => too_long; 
 							when others => command_incomplete (cmd);
 						end case;
-
+						
 					when others => invalid_noun (to_string (noun));
 				end case;
 						

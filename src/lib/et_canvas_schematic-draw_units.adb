@@ -618,37 +618,14 @@ procedure draw_units (
 			position := sch_placeholder_name.position;
 
 			--put_line (to_string (device_name) & " " & to_string (unit_name) & " " & to_string (unit_count));
-			
-			pac_draw_misc.draw_text (
-				context		=> context,
-				content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
-				size		=> symbol.name.size,
-				font		=> et_symbols.name_font,
-				
-				-- text position x/y relative to symbol origin:
-				x			=> transpose_x (x (position)),
-				y			=> transpose_y (y (position)),
 
-				origin		=> true, -- origin required
-				
-				-- Text rotation around its anchor point.
-				-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
-				-- This has been done in schematic_ops.rotate_unit already.
-				rotation	=> to_rotation (sch_placeholder_name.rotation),
-				
-				alignment	=> sch_placeholder_name.alignment);
-			
-			-- VALUE
-			-- The value may be empty. We do not draw it in this case:
-			if not is_empty (device_value) then
-
-				position := sch_placeholder_value.position;
+			if et_display.schematic_layers.device_names = ON then
 				
 				pac_draw_misc.draw_text (
 					context		=> context,
-					content		=> to_content (to_string (device_value)), -- 100R
-					size		=> symbol.value.size,
-					font		=> et_symbols.value_font,
+					content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
+					size		=> symbol.name.size,
+					font		=> et_symbols.name_font,
 					
 					-- text position x/y relative to symbol origin:
 					x			=> transpose_x (x (position)),
@@ -659,35 +636,67 @@ procedure draw_units (
 					-- Text rotation around its anchor point.
 					-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
 					-- This has been done in schematic_ops.rotate_unit already.
-					rotation	=> to_rotation (sch_placeholder_value.rotation),
+					rotation	=> to_rotation (sch_placeholder_name.rotation),
+					
+					alignment	=> sch_placeholder_name.alignment);
+			end if;
+			
+			-- VALUE
+			if et_display.schematic_layers.device_values = ON then
+				
+				-- The value may be empty. We do not draw it in this case:
+				if not is_empty (device_value) then
 
-					alignment	=> sch_placeholder_value.alignment);
+					position := sch_placeholder_value.position;
+					
+					pac_draw_misc.draw_text (
+						context		=> context,
+						content		=> to_content (to_string (device_value)), -- 100R
+						size		=> symbol.value.size,
+						font		=> et_symbols.value_font,
+						
+						-- text position x/y relative to symbol origin:
+						x			=> transpose_x (x (position)),
+						y			=> transpose_y (y (position)),
+
+						origin		=> true, -- origin required
+						
+						-- Text rotation around its anchor point.
+						-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
+						-- This has been done in schematic_ops.rotate_unit already.
+						rotation	=> to_rotation (sch_placeholder_value.rotation),
+
+						alignment	=> sch_placeholder_value.alignment);
+				end if;
 			end if;
 			
 			-- PURPOSE
-			-- The purpose may be empty. We do not draw it in this case:
-			if not is_empty (device_purpose) then
+			if et_display.schematic_layers.device_purposes = ON then
+			
+				-- The purpose may be empty. We do not draw it in this case:
+				if not is_empty (device_purpose) then
 
-				position := sch_placeholder_purpose.position;
-					
-				pac_draw_misc.draw_text (
-					context		=> context,
-					content		=> to_content (to_string (device_purpose)), -- "brightness control"
-					size		=> symbol.purpose.size,
-					font		=> et_symbols.purpose_font,
+					position := sch_placeholder_purpose.position;
+						
+					pac_draw_misc.draw_text (
+						context		=> context,
+						content		=> to_content (to_string (device_purpose)), -- "brightness control"
+						size		=> symbol.purpose.size,
+						font		=> et_symbols.purpose_font,
 
-					-- text position x/y relative to symbol origin:
-					x			=> transpose_x (x (position)),
-					y			=> transpose_y (y (position)),
+						-- text position x/y relative to symbol origin:
+						x			=> transpose_x (x (position)),
+						y			=> transpose_y (y (position)),
 
-					origin		=> true, -- origin required
-					
-					-- Text rotation around its anchor point.
-					-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
-					-- This has been done in schematic_ops.rotate_unit already.
-					rotation	=> to_rotation (sch_placeholder_purpose.rotation),
+						origin		=> true, -- origin required
+						
+						-- Text rotation around its anchor point.
+						-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
+						-- This has been done in schematic_ops.rotate_unit already.
+						rotation	=> to_rotation (sch_placeholder_purpose.rotation),
 
-					alignment	=> sch_placeholder_purpose.alignment);
+						alignment	=> sch_placeholder_purpose.alignment);
+				end if;
 			end if;
 			
 		end draw_placeholders;

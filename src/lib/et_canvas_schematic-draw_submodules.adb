@@ -51,6 +51,8 @@ with et_schematic;
 with submodules;				use submodules;
 use et_project.type_modules;
 
+with et_display;
+
 separate (et_canvas_schematic)
 
 procedure draw_submodules (
@@ -97,7 +99,7 @@ procedure draw_submodules (
 				size		=> instance_font_size,
 				font		=> instance_font,
 				position	=> position,
-				origin		=> true,
+				origin		=> false,
 				rotation	=> zero_rotation,
 				alignment	=> (LEFT, TOP),
 				height		=> self.frame_height);
@@ -121,7 +123,7 @@ procedure draw_submodules (
 				size		=> file_font_size,
 				font		=> file_font,
 				position	=> position,
-				origin		=> true,
+				origin		=> false,
 				rotation	=> zero_rotation,
 				alignment	=> (LEFT, TOP),
 				height		=> self.frame_height);
@@ -155,7 +157,7 @@ procedure draw_submodules (
 				size		=> position_board_font_size,
 				font		=> position_board_font,
 				position	=> position,
-				origin		=> true,
+				origin		=> false,
 				rotation	=> et_coordinates.geometry.zero_rotation,
 				alignment	=> (LEFT, TOP),
 				height		=> self.frame_height);
@@ -368,16 +370,23 @@ procedure draw_submodules (
 		
 			cairo.stroke (context.cr);
 		end draw_ports;
-			
+
+		use et_display;
+		
 	begin -- query_submods
 		-- We want to draw only those submodules which are on the active sheet:
 		if sheet (element (cursor).position) = current_active_sheet then
 
 			draw_box;
 			draw_ports;
-			draw_file_name;
-			draw_instance_name;
-			draw_position_in_board;
+
+			-- Draw file and instance name and position in board if
+			-- layer device_names is enabled:
+			if et_display.schematic_layers.device_names = ON then
+				draw_file_name;
+				draw_instance_name;
+				draw_position_in_board;
+			end if;
 
 			-- CS view mode ?
 

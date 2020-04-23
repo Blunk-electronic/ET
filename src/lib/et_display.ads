@@ -53,10 +53,11 @@ package et_display is
 	type type_schematic is record
 		nets			: type_layer_status := ON;
 		ports			: type_layer_status := OFF; -- the circles around the start point of ports
-		net_labels		: type_layer_status := ON;
-		device_names	: type_layer_status := ON;
-		device_values	: type_layer_status := ON;
-		device_purposes	: type_layer_status := ON;
+		-- ?? net_labels		: type_layer_status := ON;
+		device_names	: type_layer_status := ON; -- for things like IC12, submodule names, instances and position
+		device_values	: type_layer_status := ON; -- things like 220R or 7400
+		device_purposes	: type_layer_status := ON; -- things like "brightness control"
+		texts			: type_layer_status := ON; -- general notes
 	end record;
 
 	schematic_layers : type_schematic;

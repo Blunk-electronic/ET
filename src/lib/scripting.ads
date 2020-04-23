@@ -154,14 +154,17 @@ package scripting is
 		NOUN_LABEL,
 		NOUN_LEVEL,
 		NOUN_NAME,
+		NOUN_NAMES,
 		NOUN_MODULE,
 		NOUN_NET,
+		NOUN_NETS,
 		NOUN_NETCHANGER,
 		NOUN_NETLISTS,
 		NOUN_PARTCODE,
 		NOUN_PORT, -- of a submodule instance
 		NOUN_PORTS,
 		NOUN_PURPOSE,
+		NOUN_PURPOSES,		
 		NOUN_SCOPE,
 		NOUN_SCRIPT,
 		NOUN_SEGMENT, -- net segment
@@ -170,6 +173,7 @@ package scripting is
 		NOUN_SUBMODULE_FILE,		
 		NOUN_SUBMODULES_TREE,
 		NOUN_TEXT,
+		NOUN_TEXTS,
 		NOUN_TEXT_SIZE,
 		NOUN_UNIT,
 -- 		UNIT_NAME,
@@ -177,7 +181,8 @@ package scripting is
 -- 		UNIT_PURPOSE,
 		-- 		UNIT_VALUE
 		NOUN_VARIANT,
-		NOUN_VALUE
+		NOUN_VALUE,
+		NOUN_VALUES
 		);
 
 	function to_string (noun : in type_noun_schematic) return string;
