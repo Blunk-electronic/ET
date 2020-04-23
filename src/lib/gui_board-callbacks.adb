@@ -70,8 +70,9 @@ package body gui_board.callbacks is
 		-- Assign the scale anew:
 		set_scale (canvas, scale);
 
-		-- fit drawing in window
-		scale_to_fit (canvas);
+		-- NOTE: Do not call scale_to_fit here !
+		-- It would undo zoom operations called by a script that is passed
+		-- on startup.
 		
 		return true;
 	end;

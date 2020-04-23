@@ -69,7 +69,8 @@ package gui_board.callbacks is
 
 	-- Executes a script.
 	procedure execute_script (script : in pac_script_name.bounded_string);	
-	
+
+	-- Executes a command typed on the console by the operator:
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class);
 
 

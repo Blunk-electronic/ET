@@ -981,7 +981,7 @@ package body pac_canvas is
 		p   : type_point;
 
 	begin
-		put_line (type_scale'image (scale));
+		--put_line (type_scale'image (scale));
 				  
 		if preserve /= origin then
 			-- set p at the point given by preserve

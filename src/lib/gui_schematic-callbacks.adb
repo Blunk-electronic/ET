@@ -69,8 +69,10 @@ package body gui_schematic.callbacks is
 		-- Assign the scale anew:
 		set_scale (canvas, scale);
 
-		-- fit drawing in window
-		scale_to_fit (canvas);
+		-- NOTE: Do not call scale_to_fit here !
+		-- It would undo zoom operations called by a script that is passed
+		-- on startup.
+		
 		return true;
 	end;
 
@@ -127,6 +129,71 @@ package body gui_schematic.callbacks is
 -- 		end if;
 -- -- 		put_line (to_string (get_scale (canvas)));
 -- 	end;
+
+	procedure execute_script (script : in pac_script_name.bounded_string) is
+		use ada.directories;
+		use et_string_processing;
+		use scripting;
+		use pac_script_name;
+
+		-- We assemble a command that executes a script
+		-- like "schematic motor_driver execute script my_script.scr:
+		line_as_typed_by_operator : constant string := 
+			to_lower (to_string (DOM_SCHEMATIC)) & space &
+			et_general.to_string (et_canvas_schematic.active_module) & space &
+			"execute" & space & "script" & space &
+			et_general.to_string (script); -- "my_script.scr"
+		
+		cmd : et_string_processing.type_fields_of_line;
+
+		exit_code : type_exit_code := SUCCESSFUL;
+
+		-- The command launches a script. Change into the project directory. 
+		-- The current directory is the parent directory of the active project. 
+		-- Example: The current directory is /home/user/my_projects . The directory
+		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
+		--  Executing a script requires changing into the project directory blood_sample_analyzer.
+
+		-- Backup the current directory (like /home/user/my_projects):
+		cur_dir_bak : constant string := current_directory;
+	begin
+		log (text => "executing command " & enclose_in_quotes (line_as_typed_by_operator), level => log_threshold);
+		log_indentation_up;
+		
+		-- Store the command in the command history:
+		console.prepend_text (line_as_typed_by_operator);
+
+		cmd := read_line (
+			line 			=> line_as_typed_by_operator,
+			number			=> 1,  -- this is the one and only line
+			comment_mark 	=> scripting.comment_mark,
+			delimiter_wrap	=> true, -- strings are enclosed in quotations
+			ifs 			=> latin_1.space); -- fields are separated by space
+
+		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
+
+		set_directory (to_string (et_canvas_schematic.current_active_project));
+		
+		-- execute the schematic command
+		exit_code := schematic_cmd (cmd, log_threshold);
+
+		-- Return to previous directory (like  /home/user/my_projects):
+		set_directory (cur_dir_bak);
+		
+		-- CS evaluate exit_code
+
+		-- The majority of commands requires refreshing the schematic and board drawing.
+		
+		-- refresh schematic and board
+		redraw (canvas);
+		et_canvas_board.redraw (et_canvas_board.pac_canvas.canvas);
+		
+		-- CS output error message in gui
+
+
+		log_indentation_down;
+
+	end execute_script;
 	
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class) is 
 		use ada.directories;	

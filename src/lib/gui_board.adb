@@ -68,7 +68,6 @@ package body gui_board is
 	procedure init_window (
 		project			: in type_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in type_modules.cursor; -- cursor of generic module to be edited
-		script			: in pac_script_name.bounded_string; -- rename_nets.scr
 		log_threshold_in: in type_log_level) is
 	begin
 		-- Set the log threshold. Everything that happens in the gui may be logged
@@ -155,13 +154,6 @@ package body gui_board is
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 		
 		scale_to_fit (canvas);
-
--- 		-- If a script was given, execute it now:
--- 		if pac_script_name.length (script) > 0 then
--- 			execute_script (script);
--- 		end if;
-
-
 		
 		-- display the board:
 		window.show_all;
