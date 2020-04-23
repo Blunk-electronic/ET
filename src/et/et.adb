@@ -477,6 +477,8 @@ procedure et is
 		generic_module_name : et_general.type_module_name.bounded_string;
 		
 		module_cursor : type_modules.cursor;
+
+		script_name_tmp : pac_script_name.bounded_string;
 	begin
 		if length (module_file_name) = 0 then -- module name not specified via cmd line
 			module_cursor := modules.first; -- select first available generic module
@@ -488,6 +490,12 @@ procedure et is
 			module_cursor := find (modules, generic_module_name);
 		end if;
 
+		-- The script name must be passed to gui.single_module as simple name like rename_nets.scr.
+		-- So we render something like motor_driver/rename_nets.scr to just rename_nets.scr:
+		if pac_script_name.length (script_name) > 0 then
+			script_name_tmp := to_script_name (simple_name (to_string (script_name))); -- rename_nets.scr
+		end if;
+		
 		-- We pass the script name (even if empty) to the schematic so
 		-- that it gets executed from there. If the script name is empty,
 		-- no script will be executed by the gui.
@@ -495,11 +503,7 @@ procedure et is
 			project			=> project_name_open,	-- blood_sample_analyzer
 			module			=> module_cursor,		-- cursor to generic module
 			sheet			=> module_sheet, 		-- 1, 3, 10, ... as given via cmd line
-
-			-- The script name must be given as simple name like rename_nets.scr.
-			-- So we render something like motor_driver/rename_nets.scr to just rename_nets.scr:
-			-- CS: error if no script given. 
-			script			=> to_script_name (simple_name (to_string (script_name))), -- rename_nets.scr
+			script			=> script_name_tmp,
 			log_threshold	=> 0);
 		
 	end launch_gui;
