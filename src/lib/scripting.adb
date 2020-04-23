@@ -2075,6 +2075,52 @@ package body scripting is
 		procedure too_long is begin -- CS use it more often
 			command_too_long (cmd, fields - 1);
 		end;
+
+		-- Enables a certain layer. If status is empty, the layer will be enabled.
+		procedure display ( -- GUI related
+			layer	: in type_noun_board;
+			face	: in string; -- top/bottom
+			status	: in string := "") is 
+
+			ls : type_layer_status;
+			fc : type_face;
+		begin
+			-- Convert the given status to type_layer_status.
+			-- If no status given, assume status ON:
+			if status = "" then
+				ls := ON;
+			else
+				ls := to_layer_status (status);
+			end if;
+
+			-- Convert the given face to type_face:
+			fc := to_face (face);
+			
+			log (text => "display " & to_lower (to_string (layer)) 
+				 & space & to_string (ls),
+				 level => log_threshold + 1);
+
+			case fc is
+				when TOP =>
+					case layer is
+						when NOUN_SILK		=> board_layers.silk.top := ls;
+						
+						when others => 
+							log (importance => ERROR, text => "invalid layer !", console => true);
+					end case;
+
+				when BOTTOM =>
+					case layer is
+						when NOUN_SILK		=> board_layers.silk.bottom := ls;
+						
+						when others => 
+							log (importance => ERROR, text => "invalid layer !", console => true);
+					end case;
+			end case;
+			
+			-- CS exception handler if status is invalid
+		end display;
+
 		
 		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
 		exit_code : type_exit_code := SUCCESSFUL;
@@ -3204,7 +3250,19 @@ package body scripting is
 
 				end case;
 
-			when VERB_DISPLAY => null; -- GUI related
+			when VERB_DISPLAY => -- GUI related
+				case noun is
+					when NOUN_SILK -- "like board led_driver display silk top [on/off]"
+						=>
+						case fields is
+							when 5 => display (noun, f (5)); -- if status is omitted
+							when 6 => display (noun, f (5), f (6));
+							when 7 .. count_type'last => too_long;
+							when others => command_incomplete (cmd);
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
 				
 			when VERB_DRAW =>
 				case noun is

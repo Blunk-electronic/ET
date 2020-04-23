@@ -50,7 +50,8 @@ package et_display is
 	function to_string (on_off : in type_layer_status) return string;
 	function to_layer_status (on_off : in string) return type_layer_status;
 
-	type type_schematic is record
+-- SCHEMATIC
+	type type_schematic_layers is record
 		nets			: type_layer_status := ON;
 		ports			: type_layer_status := OFF; -- the circles around the start point of ports
 		-- ?? net_labels		: type_layer_status := ON;
@@ -60,7 +61,20 @@ package et_display is
 		texts			: type_layer_status := ON; -- general notes
 	end record;
 
-	schematic_layers : type_schematic;
+	-- This global variable is read whenever things are displayed in a schematic:
+	schematic_layers : type_schematic_layers;
+
+
+-- BOARD
+	type type_paired is record
+		top, bottom : type_layer_status := OFF;
+	end record;
+
+	type type_board_layers is record
+		silk	: type_paired;
+	end record;
+
+	board_layers : type_board_layers;
 	
 end et_display;
 

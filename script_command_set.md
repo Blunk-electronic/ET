@@ -172,15 +172,13 @@ schematic led_driver display purposes [on/off]
 
 ### In Board
 ```
-board led_driver display silk top on
+board led_driver display silk top [on/off]
 ```
 ```
-board led_driver display silk top off
+board led_driver display silk bottom [on/off]
 ```
-
-
 ```
-board led_driver display dimensions on
+board led_driver display dimensions [on/off]
 ```
 
 ```

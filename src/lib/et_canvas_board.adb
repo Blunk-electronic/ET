@@ -35,7 +35,6 @@
 --   history of changes:
 --
 
-
 with ada.text_io;			use ada.text_io;
 with et_general;
 with et_project;
@@ -44,6 +43,7 @@ with et_pcb_coordinates;	use et_pcb_coordinates;
 use et_pcb_coordinates.geometry;
 
 with et_canvas_schematic;
+with et_display;
 
 package body et_canvas_board is
 
@@ -212,6 +212,7 @@ package body et_canvas_board is
 						x => - self.frame_bounding_box.x,
 						y => - self.frame_bounding_box.y));
 
+		use et_display;
 	begin
 -- 		put_line ("draw internal ...");
 		
@@ -253,7 +254,16 @@ package body et_canvas_board is
 
 		draw_cursor (self, area_shifted, context, cursor_main);
 		draw_outline (self, area_shifted, context);
-		draw_silk_screen (self, area_shifted, context, TOP);
+
+		if et_display.board_layers.silk.top = ON then
+			draw_silk_screen (self, area_shifted, context, TOP);
+		end if;
+
+		if et_display.board_layers.silk.bottom = ON then
+			draw_silk_screen (self, area_shifted, context, BOTTOM);
+		end if;
+
+		
 		draw_assy_doc (self, area_shifted, context, TOP);
 		draw_stop (self, area_shifted, context, TOP);
 		draw_stencil (self, area_shifted, context, TOP);
