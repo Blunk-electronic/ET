@@ -46,6 +46,42 @@ package body et_display is
 		return type_layer_status'value (on_off);
 	end;
 
+	function route_restrict_layer_active (layers : in type_signal_layers.set)
+		return boolean is
+		result : boolean := false;
+	begin
+		for r in type_route_restrict'first .. type_route_restrict'last loop
+
+			if board_layers.route_restrict (r) = ON then
+				if layers.contains (r) then
+					result := true;
+					exit; -- no need to probe remaining layers
+				end if;
+			end if;
+			
+		end loop;
+
+		return result;
+	end route_restrict_layer_active;
+
+	function via_restrict_layer_active (layers : in type_signal_layers.set)
+		return boolean is
+		result : boolean := false;
+	begin
+		for r in type_via_restrict'first .. type_via_restrict'last loop
+
+			if board_layers.via_restrict (r) = ON then
+				if layers.contains (r) then
+					result := true;
+					exit; -- no need to probe remaining layers
+				end if;
+			end if;
+			
+		end loop;
+
+		return result;
+	end via_restrict_layer_active;
+
 	
 end et_display;
 

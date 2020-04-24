@@ -64,44 +64,50 @@ procedure draw_via_restrict (
 	
 	procedure query_line (c : in type_via_restrict_lines.cursor) is begin
 
-		-- Draw the line if signal layer is enabled:
-		--if board_layers.via_restrict (element (c).l displayed (query element (c).layers)
+		-- Draw the line if restrict layer is enabled:
+		if via_restrict_layer_active (element (c).layers) then
 		
-		pac_draw_package.draw_line (
-			area		=> in_area,
-			context		=> context,
-			line		=> element (c),
-			height		=> self.frame_height);
+			pac_draw_package.draw_line (
+				area		=> in_area,
+				context		=> context,
+				line		=> element (c),
+				height		=> self.frame_height);
 
+		end if;
 	end query_line;
 
 	procedure query_arc (c : in type_via_restrict_arcs.cursor) is begin
 
-		-- CS draw if signal layer is displayed (query element (c).layers)
+		-- Draw the arc if restrict layer is enabled:
+		if via_restrict_layer_active (element (c).layers) then
 		
-		pac_draw_package.draw_arc (
-			area		=> in_area,
-			context		=> context,
-			arc			=> element (c),
-			height		=> self.frame_height);
+			pac_draw_package.draw_arc (
+				area		=> in_area,
+				context		=> context,
+				arc			=> element (c),
+				height		=> self.frame_height);
 
-		-- CS For some reason the arc is drawn filled. Should not be filled instead.
+			-- CS For some reason the arc is drawn filled. Should not be filled instead.
+
+		end if;
 	end query_arc;
 
 	procedure query_circle (c : in type_via_restrict_circles.cursor) is 
 		use et_packages.pac_shapes;
 	begin
 
-		-- CS draw if signal layer is displayed (query element (c).layers)
+		-- Draw the circle if restrict layer is enabled:
+		if via_restrict_layer_active (element (c).layers) then
 
-		-- We draw a solid filled circle:
-		pac_draw_package.draw_circle (
-			area		=> in_area,
-			context		=> context,
-			circle		=> element (c),
-			filled		=> YES,
-			height		=> self.frame_height);
+			-- We draw a solid filled circle:
+			pac_draw_package.draw_circle (
+				area		=> in_area,
+				context		=> context,
+				circle		=> element (c),
+				filled		=> YES,
+				height		=> self.frame_height);
 
+		end if;
 	end query_circle;
 	
 	procedure query_items (

@@ -76,7 +76,15 @@ package et_display is
 	type type_via_restrict is array (type_signal_layer'first .. type_signal_layer'last) 
 		of type_layer_status;
 
+	-- Returns true if at least one of the given route restrict layers has status ON.
+	function route_restrict_layer_active (layers : in type_signal_layers.set)
+		return boolean;
 
+	-- Returns true if at least one of the given via restrict layers has status ON.
+	function via_restrict_layer_active (layers : in type_signal_layers.set)
+		return boolean;
+
+	
 	keyword_route	: constant string := "route";
 	keyword_via		: constant string := "via";
 		

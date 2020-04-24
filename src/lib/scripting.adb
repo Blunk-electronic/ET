@@ -3346,7 +3346,7 @@ package body scripting is
 							when others => command_incomplete (cmd);
 						end case;
 
-					when NOUN_RESTRICT => -- like "board led_driver display restrict route 2 [on/off]"
+					when NOUN_RESTRICT => -- like "board led_driver display restrict route/via 2 [on/off]"
 						case fields is
 							when 6 => display_restrict_layer (f (5), f (6)); -- if status is omitted
 							when 7 => display_restrict_layer (f (5), f (6), f (7));

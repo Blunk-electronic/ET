@@ -64,54 +64,61 @@ procedure draw_route_restrict (
 	
 	procedure query_line (c : in type_route_restrict_lines.cursor) is begin
 
-		-- CS draw if signal layer is displayed (query element (c).layers)
-		
-		pac_draw_package.draw_line (
-			area		=> in_area,
-			context		=> context,
-			line		=> element (c),
-			height		=> self.frame_height);
+		-- Draw the line if restrict layer is enabled:
+		if route_restrict_layer_active (element (c).layers) then
+			
+			pac_draw_package.draw_line (
+				area		=> in_area,
+				context		=> context,
+				line		=> element (c),
+				height		=> self.frame_height);
 
+		end if;
 	end query_line;
 
 	procedure query_arc (c : in type_route_restrict_arcs.cursor) is begin
 
-		-- CS draw if signal layer is displayed (query element (c).layers)
-		
-		pac_draw_package.draw_arc (
-			area		=> in_area,
-			context		=> context,
-			arc			=> element (c),
-			height		=> self.frame_height);
+		-- Draw the arc if restrict layer is enabled:
+		if route_restrict_layer_active (element (c).layers) then
+			
+			pac_draw_package.draw_arc (
+				area		=> in_area,
+				context		=> context,
+				arc			=> element (c),
+				height		=> self.frame_height);
 
+		end if;
 	end query_arc;
 
 	procedure query_circle (c : in type_route_restrict_circles.cursor) is 
 		use et_packages.pac_shapes;
 	begin
 
-		-- CS draw if signal layer is displayed (query element (c).layers)
+		-- Draw the circle if restrict layer is enabled:
+		if route_restrict_layer_active (element (c).layers) then
 		
-		case element (c).filled is
-			when NO =>
-				-- We draw a normal non-filled circle:
-				pac_draw_package.draw_circle (
-					area		=> in_area,
-					context		=> context,
-					circle		=> element (c),
-					filled		=> NO,
-					height		=> self.frame_height);
-				
-			when YES =>
-				-- We draw a solid filled circle:
-				pac_draw_package.draw_circle (
-					area		=> in_area,
-					context		=> context,
-					circle		=> element (c),
-					filled		=> YES,
-					height		=> self.frame_height);
+			case element (c).filled is
+				when NO =>
+					-- We draw a normal non-filled circle:
+					pac_draw_package.draw_circle (
+						area		=> in_area,
+						context		=> context,
+						circle		=> element (c),
+						filled		=> NO,
+						height		=> self.frame_height);
+					
+				when YES =>
+					-- We draw a solid filled circle:
+					pac_draw_package.draw_circle (
+						area		=> in_area,
+						context		=> context,
+						circle		=> element (c),
+						filled		=> YES,
+						height		=> self.frame_height);
 
-		end case;
+			end case;
+
+		end if;
 	end query_circle;
 	
 	procedure query_items (
