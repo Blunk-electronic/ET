@@ -70,6 +70,9 @@ package et_display is
 	type type_conductors is array (type_signal_layer'first .. type_signal_layer'last) 
 		of type_layer_status;
 
+	type type_vias is array (type_signal_layer'first .. type_signal_layer'last) 
+		of type_layer_status;
+		
 	type type_route_restrict is array (type_signal_layer'first .. type_signal_layer'last) 
 		of type_layer_status;
 
@@ -94,6 +97,7 @@ package et_display is
 		-- keepout ...
 
 		conductors		: type_conductors := (others => OFF);
+		vias			: type_vias := (others => OFF);
 		route_restrict	: type_route_restrict := (others => OFF);
 		via_restrict	: type_via_restrict := (others => OFF);		
 	end record;

@@ -271,6 +271,9 @@ package body et_canvas_board is
 		draw_route_restrict (self, area_shifted, context);
 		draw_via_restrict (self, area_shifted, context);
 		draw_conductors (self, area_shifted, context);
+
+		-- CS draw tracks
+		-- CS draw unrouted
 		-- CS draw_packages (self, area, context); -- separate unit
 
 		restore (context.cr);

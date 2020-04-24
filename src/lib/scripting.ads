@@ -249,6 +249,7 @@ package scripting is
 -- 		TRACK,
 		NOUN_VALUE,
 		NOUN_VIA,
+		NOUN_VIAS,
 		NOUN_VIA_DRILL,
 		NOUN_VIA_RESTRICT
 		);

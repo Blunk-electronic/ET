@@ -2143,7 +2143,7 @@ package body scripting is
 			-- Convert the given layer to type_signal_layer:
 			ly := to_signal_layer (layer);
 			
-			log (text => "display " & to_string (ly) & space & to_string (ls),
+			log (text => "display conductor layer " & to_string (ly) & space & to_string (ls),
 				 level => log_threshold + 1);
 
 			board_layers.conductors (ly) := ls;
@@ -2151,6 +2151,34 @@ package body scripting is
 			-- CS exception handler if status is invalid
 		end display_conductor_layer;
 
+		-- Enables/disables a certain via layer. 
+		-- If status is empty, the layer will be enabled.
+		procedure display_vias ( -- GUI related
+			layer	: in string;
+			status	: in string := "") is 
+
+			ls : type_layer_status;
+			ly : type_signal_layer;
+		begin
+			-- Convert the given status to type_layer_status.
+			-- If no status given, assume status ON:
+			if status = "" then
+				ls := ON;
+			else
+				ls := to_layer_status (status);
+			end if;
+
+			-- Convert the given layer to type_signal_layer:
+			ly := to_signal_layer (layer);
+			
+			log (text => "display via layer " & to_string (ly) & space & to_string (ls),
+				 level => log_threshold + 1);
+
+			board_layers.vias (ly) := ls;
+			
+			-- CS exception handler if status is invalid
+		end display_vias;
+		
 		-- Enables/disables a certain restrict layer. 
 		-- If status is empty, the layer will be enabled.
 		procedure display_restrict_layer ( -- GUI related
@@ -3354,6 +3382,14 @@ package body scripting is
 							when others => command_incomplete (cmd);
 						end case;
 
+					when NOUN_VIAS => -- like "board led_driver display vias 2 [on/off]"
+						case fields is
+							when 5 => display_vias (f (5)); -- if status is omitted
+							when 6 => display_vias (f (5), f (6));
+							when 7 .. count_type'last => too_long;
+							when others => command_incomplete (cmd);
+						end case;
+						
 					when others => invalid_noun (to_string (noun));
 				end case;
 				

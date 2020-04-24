@@ -189,6 +189,11 @@ board led_driver display conductors 17 [on/off]
 ```
 
 ```
+board led_driver display vias 3 [on/off]
+```
+
+
+```
 board led_driver display restrict via 3 [on/off]
 ```
 ```
@@ -197,12 +202,12 @@ board led_driver display restrict route 5 [on/off]
 
 
 <!--```
-CS board led_driver display conductors all
+CS board led_driver display conductors all/none
+```-->
+<!--```
+CS board led_driver display vias all/none
 ```-->
 
-```
-board led_driver display vias 3 [on/off]
-```
 
 
 
