@@ -92,13 +92,13 @@ package et_display is
 	keyword_via		: constant string := "via";
 		
 	type type_board_layers is record
-		dimensions	: type_layer_status;
+		outline		: type_layer_status := ON;
 		
-		silkscreen	: type_paired;
-		assy_doc	: type_paired;
-		keepout		: type_paired;
-		stop_mask	: type_paired;
-		stencil		: type_paired;
+		silkscreen	: type_paired := (top => ON, bottom => OFF);
+		assy_doc	: type_paired := (top => ON, bottom => OFF);
+		keepout		: type_paired := (others => OFF);
+		stop_mask	: type_paired := (others => OFF);
+		stencil		: type_paired := (others => OFF);
 
 		conductors		: type_conductors := (others => OFF);
 		vias			: type_vias := (others => OFF);

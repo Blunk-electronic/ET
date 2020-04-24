@@ -253,21 +253,57 @@ package body et_canvas_board is
 			convert_y (self.frame_bounding_box.y - y (self.board_origin)));
 
 		draw_cursor (self, area_shifted, context, cursor_main);
-		draw_outline (self, area_shifted, context);
 
-		if et_display.board_layers.silk.top = ON then
+		-- outline
+		if et_display.board_layers.outline = ON then		
+			draw_outline (self, area_shifted, context);
+		end if;
+
+		-- silkscreen
+		if et_display.board_layers.silkscreen.top = ON then
 			draw_silk_screen (self, area_shifted, context, TOP);
 		end if;
 
-		if et_display.board_layers.silk.bottom = ON then
+		if et_display.board_layers.silkscreen.bottom = ON then
 			draw_silk_screen (self, area_shifted, context, BOTTOM);
 		end if;
 
-		
-		draw_assy_doc (self, area_shifted, context, TOP);
-		draw_stop (self, area_shifted, context, TOP);
-		draw_stencil (self, area_shifted, context, TOP);
-		draw_keepout (self, area_shifted, context, TOP);
+		-- assembly documentation
+		if et_display.board_layers.assy_doc.top = ON then
+			draw_assy_doc (self, area_shifted, context, TOP);
+		end if;
+
+		if et_display.board_layers.assy_doc.bottom = ON then
+			draw_assy_doc (self, area_shifted, context, BOTTOM);
+		end if;
+
+		-- stop mask
+		if et_display.board_layers.stop_mask.top = ON then
+			draw_stop (self, area_shifted, context, TOP);
+		end if;
+
+		if et_display.board_layers.stop_mask.bottom = ON then
+			draw_stop (self, area_shifted, context, BOTTOM);
+		end if;
+
+		-- stencil / solder paste / solder cream
+		if et_display.board_layers.stencil.top = ON then
+			draw_stencil (self, area_shifted, context, TOP);
+		end if;
+
+		if et_display.board_layers.stencil.bottom = ON then
+			draw_stencil (self, area_shifted, context, BOTTOM);
+		end if;
+
+		-- keepout
+		if et_display.board_layers.keepout.top = ON then
+			draw_keepout (self, area_shifted, context, TOP);
+		end if;
+
+		if et_display.board_layers.keepout.bottom = ON then
+			draw_keepout (self, area_shifted, context, BOTTOM);
+		end if;
+
 		draw_route_restrict (self, area_shifted, context);
 		draw_via_restrict (self, area_shifted, context);
 		draw_conductors (self, area_shifted, context);

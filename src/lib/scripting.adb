@@ -2076,6 +2076,29 @@ package body scripting is
 			command_too_long (cmd, fields - 1);
 		end;
 
+		-- Enables/disables the outline layer. If status is empty,
+		-- the layer will be enabled.
+		procedure display_outline ( -- GUI related
+			status	: in string := "") is 
+
+			ls : type_layer_status;
+		begin
+			-- Convert the given status to type_layer_status.
+			-- If no status given, assume status ON:
+			if status = "" then
+				ls := ON;
+			else
+				ls := to_layer_status (status);
+			end if;
+
+			log (text => "display outline layer" & space & to_string (ls),
+				 level => log_threshold + 1);
+
+			board_layers.outline := ls;
+			
+			-- CS exception handler if status is invalid
+		end display_outline;
+		
 		-- Enables/disables a certain non-conductor layer. If status is empty,
 		-- the layer will be enabled.
 		procedure display_non_conductor_layer ( -- GUI related
@@ -2104,8 +2127,11 @@ package body scripting is
 			case fc is
 				when TOP =>
 					case layer is
-						when NOUN_SILKSCREEN => board_layers.silk.top := ls;
-						-- CS NOUN_ASSY ..
+						when NOUN_SILKSCREEN 	=> board_layers.silkscreen.top	:= ls;
+						when NOUN_ASSY			=> board_layers.assy_doc.top	:= ls;
+						when NOUN_KEEPOUT		=> board_layers.keepout.top		:= ls;
+						when NOUN_STENCIL		=> board_layers.stencil.top		:= ls;
+						when NOUN_STOP			=> board_layers.stop_mask.top	:= ls;
 						
 						when others => 
 							log (importance => ERROR, text => "invalid layer !", console => true);
@@ -2113,7 +2139,11 @@ package body scripting is
 
 				when BOTTOM =>
 					case layer is
-						when NOUN_SILKSCREEN => board_layers.silk.bottom := ls;
+						when NOUN_SILKSCREEN 	=> board_layers.silkscreen.bottom	:= ls;
+						when NOUN_ASSY			=> board_layers.assy_doc.bottom		:= ls;
+						when NOUN_KEEPOUT		=> board_layers.keepout.bottom		:= ls;
+						when NOUN_STENCIL		=> board_layers.stencil.bottom		:= ls;
+						when NOUN_STOP			=> board_layers.stop_mask.bottom	:= ls;
 						
 						when others => 
 							log (importance => ERROR, text => "invalid layer !", console => true);
@@ -3357,8 +3387,7 @@ package body scripting is
 			when VERB_DISPLAY => -- GUI related
 				case noun is
 					when NOUN_SILKSCREEN -- like "board led_driver display silk top [on/off]"
-						-- CS NOUN_ASSY ...
-						=>
+						| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOP | NOUN_STENCIL =>
 						case fields is
 							when 5 => display_non_conductor_layer (noun, f (5)); -- if status is omitted
 							when 6 => display_non_conductor_layer (noun, f (5), f (6));
@@ -3374,6 +3403,14 @@ package body scripting is
 							when others => command_incomplete (cmd);
 						end case;
 
+					when NOUN_OUTLINE => -- like "board led_driver display outline [on/off]"
+						case fields is
+							when 4 => display_outline; -- if status is omitted
+							when 5 => display_outline (f (5));
+							when 6 .. count_type'last => too_long;
+							when others => command_incomplete (cmd);
+						end case;
+						
 					when NOUN_RESTRICT => -- like "board led_driver display restrict route/via 2 [on/off]"
 						case fields is
 							when 6 => display_restrict_layer (f (5), f (6)); -- if status is omitted

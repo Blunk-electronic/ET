@@ -171,16 +171,55 @@ schematic led_driver display purposes [on/off]
 
 
 ### In Board
+Board outline or dimensions:
+```
+board led_driver display outline [on/off]
+```
+
+Silkscreen:
 ```
 board led_driver display silkscreen top [on/off]
 ```
 ```
 board led_driver display silkscreen bottom [on/off]
 ```
+
+Assembly documentation:
 ```
-board led_driver display dimensions [on/off]
+board led_driver display assy top [on/off]
+```
+```
+board led_driver display assy bottom [on/off]
 ```
 
+Keepout:
+```
+board led_driver display keepout top [on/off]
+```
+```
+board led_driver display keepout bottom [on/off]
+```
+
+Solder stop mask:
+```
+board led_driver display stop top [on/off]
+```
+```
+board led_driver display stop bottom [on/off]
+```
+
+
+Stencil, solder cream mask or solder paste:
+```
+board led_driver display stencil top [on/off]
+```
+```
+board led_driver display stencil bottom [on/off]
+```
+
+
+
+Conductor or signal layers (usually copper):
 ```
 board led_driver display conductors 1 [on/off]
 ```
@@ -188,14 +227,17 @@ board led_driver display conductors 1 [on/off]
 board led_driver display conductors 17 [on/off]
 ```
 
+Vias:
 ```
 board led_driver display vias 3 [on/off]
 ```
 
-
+Via restrict:
 ```
 board led_driver display restrict via 3 [on/off]
 ```
+
+Route restrict:
 ```
 board led_driver display restrict route 5 [on/off]
 ```
