@@ -2104,7 +2104,7 @@ package body scripting is
 			case fc is
 				when TOP =>
 					case layer is
-						when NOUN_SILK		=> board_layers.silk.top := ls;
+						when NOUN_SILKSCREEN => board_layers.silk.top := ls;
 						-- CS NOUN_ASSY ..
 						
 						when others => 
@@ -2113,7 +2113,7 @@ package body scripting is
 
 				when BOTTOM =>
 					case layer is
-						when NOUN_SILK		=> board_layers.silk.bottom := ls;
+						when NOUN_SILKSCREEN => board_layers.silk.bottom := ls;
 						
 						when others => 
 							log (importance => ERROR, text => "invalid layer !", console => true);
@@ -3203,8 +3203,8 @@ package body scripting is
 							when others => command_incomplete (cmd);
 						end case;
 
-					when NOUN_SILK =>
-						-- board led_driver delete silk top 40 50 1
+					when NOUN_SILKSCREEN =>
+						-- board led_driver delete silkscreen top 40 50 1
 						case fields is
 							when 8 =>
 								-- delete a segment of silk screen
@@ -3356,7 +3356,7 @@ package body scripting is
 
 			when VERB_DISPLAY => -- GUI related
 				case noun is
-					when NOUN_SILK -- like "board led_driver display silk top [on/off]"
+					when NOUN_SILKSCREEN -- like "board led_driver display silk top [on/off]"
 						-- CS NOUN_ASSY ...
 						=>
 						case fields is
@@ -3479,7 +3479,7 @@ package body scripting is
 							end case;
 						end;
 
-					when NOUN_SILK =>
+					when NOUN_SILKSCREEN =>
 						declare
 							use et_packages.pac_shapes;
 							shape : type_shape := to_shape (f (6));

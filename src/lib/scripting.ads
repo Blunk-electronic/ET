@@ -239,8 +239,8 @@ package scripting is
 		NOUN_RESTRICT,
 		NOUN_ROUTE_RESTRICT,
 		NOUN_SCRIPT,
-		NOUN_SILK, -- silk screen
-		NOUN_STENCIL, -- solder mask
+		NOUN_SILKSCREEN,
+		NOUN_STENCIL, -- solder mask or solder paste
 		NOUN_STOP, -- solder stop mask
 		NOUN_SUBMODULE,
 		NOUN_TEXT,
