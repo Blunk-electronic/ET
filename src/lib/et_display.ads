@@ -36,10 +36,7 @@
 --
 --   ToDo: 
 
--- with ada.containers;			use ada.containers;
-
--- with et_general;				use et_general;
--- with et_string_processing;		use et_string_processing;
+with et_pcb_stack;				use et_pcb_stack;
 
 package et_display is
 
@@ -70,8 +67,27 @@ package et_display is
 		top, bottom : type_layer_status := OFF;
 	end record;
 
+	type type_conductors is array (type_signal_layer'first .. type_signal_layer'last) 
+		of type_layer_status;
+
+	type type_route_restrict is array (type_signal_layer'first .. type_signal_layer'last) 
+		of type_layer_status;
+
+	type type_via_restrict is array (type_signal_layer'first .. type_signal_layer'last) 
+		of type_layer_status;
+
+
+	keyword_route	: constant string := "route";
+	keyword_via		: constant string := "via";
+		
 	type type_board_layers is record
-		silk	: type_paired;
+		silk		: type_paired;
+		-- assy doc
+		-- keepout ...
+
+		conductors		: type_conductors := (others => OFF);
+		route_restrict	: type_route_restrict := (others => OFF);
+		via_restrict	: type_via_restrict := (others => OFF);		
 	end record;
 
 	board_layers : type_board_layers;

@@ -47,6 +47,7 @@ with et_packages;				use et_packages;
 use et_pcb_coordinates.geometry;
 
 with et_pcb;					use et_pcb;
+with et_display;				use et_display;
 
 with et_canvas_primitive_draw_ops;
 
@@ -62,69 +63,83 @@ procedure draw_conductors (
 	use et_pcb.pac_copper_circles;
 	
 	procedure query_line (c : in pac_copper_lines.cursor) is begin
-		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 
-		cairo.set_source_rgb (context.cr, gdouble (0), gdouble (0), gdouble (1)); -- blue
-		-- CS set color according to layer (query element (c).layer
-		
-		pac_draw_package.draw_line (
-			area		=> in_area,
-			context		=> context,
-			line		=> element (c),
-			height		=> self.frame_height);
+		-- Draw the line if the conductor layer is enabled:
+		if et_display.board_layers.conductors (element (c).layer) = ON then
+			
+			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 
-		cairo.stroke (context.cr);
+			cairo.set_source_rgb (context.cr, gdouble (0), gdouble (0), gdouble (1)); -- blue
+			-- CS set color according to layer (query element (c).layer
+			
+			pac_draw_package.draw_line (
+				area		=> in_area,
+				context		=> context,
+				line		=> element (c),
+				height		=> self.frame_height);
+
+			cairo.stroke (context.cr);
+		end if;
 	end query_line;
 
 	procedure query_arc (c : in pac_copper_arcs.cursor) is begin
-		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 
-		cairo.set_source_rgb (context.cr, gdouble (0), gdouble (0), gdouble (1)); -- blue
-		-- CS set color according to layer (query element (c).layer
-		
-		pac_draw_package.draw_arc (
-			area		=> in_area,
-			context		=> context,
-			arc			=> element (c),
-			height		=> self.frame_height);
+		-- Draw the arc if the conductor layer is enabled:
+		if et_display.board_layers.conductors (element (c).layer) = ON then
 
-		cairo.stroke (context.cr);		
+			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
+
+			cairo.set_source_rgb (context.cr, gdouble (0), gdouble (0), gdouble (1)); -- blue
+			-- CS set color according to layer (query element (c).layer
+			
+			pac_draw_package.draw_arc (
+				area		=> in_area,
+				context		=> context,
+				arc			=> element (c),
+				height		=> self.frame_height);
+
+			cairo.stroke (context.cr);
+		end if;
 	end query_arc;
 
 	procedure query_circle (c : in et_pcb.pac_copper_circles.cursor) is 
 		use et_packages.pac_shapes;
 	begin
-		cairo.set_source_rgb (context.cr, gdouble (0), gdouble (0), gdouble (1)); -- blue
-		-- CS set color according to layer (query element (c).layer
+		-- Draw the circle if the conductor layer is enabled:
+		if et_display.board_layers.conductors (element (c).layer) = ON then
+			
+			cairo.set_source_rgb (context.cr, gdouble (0), gdouble (0), gdouble (1)); -- blue
+			-- CS set color according to layer (query element (c).layer
 
-		case element (c).filled is
-			when NO =>
-				-- We draw a normal non-filled circle:
-				cairo.set_line_width (context.cr, type_view_coordinate (element (c).border_width));
+			case element (c).filled is
+				when NO =>
+					-- We draw a normal non-filled circle:
+					cairo.set_line_width (context.cr, type_view_coordinate (element (c).border_width));
 
-				pac_draw_package.draw_circle (
-					area		=> in_area,
-					context		=> context,
-					circle		=> element (c),
-					filled		=> NO,
-					height		=> self.frame_height);
-				
-			when YES =>
-				-- We draw a filled circle with a certain fill style:
-				case element (c).fill_style is
-					when SOLID =>
-						pac_draw_package.draw_circle (
-							area		=> in_area,
-							context		=> context,
-							circle		=> element (c),
-							filled		=> YES,
-							height		=> self.frame_height);
+					pac_draw_package.draw_circle (
+						area		=> in_area,
+						context		=> context,
+						circle		=> element (c),
+						filled		=> NO,
+						height		=> self.frame_height);
+					
+				when YES =>
+					-- We draw a filled circle with a certain fill style:
+					case element (c).fill_style is
+						when SOLID =>
+							pac_draw_package.draw_circle (
+								area		=> in_area,
+								context		=> context,
+								circle		=> element (c),
+								filled		=> YES,
+								height		=> self.frame_height);
 
-					when HATCHED 	=> null; -- CS
-				end case;
-		end case;
+						when HATCHED 	=> null; -- CS
+					end case;
+			end case;
 
-		cairo.stroke (context.cr);
+			cairo.stroke (context.cr);
+		end if;
 	end query_circle;
 	
 	procedure query_items (

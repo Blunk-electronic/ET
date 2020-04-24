@@ -47,6 +47,7 @@ with et_packages;				use et_packages;
 use et_pcb_coordinates.geometry;
 
 with et_pcb;					use et_pcb;
+with et_display;				use et_display;
 
 with et_canvas_primitive_draw_ops;
 
@@ -63,7 +64,8 @@ procedure draw_via_restrict (
 	
 	procedure query_line (c : in type_via_restrict_lines.cursor) is begin
 
-		-- CS draw if signal layer is displayed (query element (c).layers)
+		-- Draw the line if signal layer is enabled:
+		--if board_layers.via_restrict (element (c).l displayed (query element (c).layers)
 		
 		pac_draw_package.draw_line (
 			area		=> in_area,

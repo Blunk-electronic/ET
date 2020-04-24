@@ -47,6 +47,7 @@ with et_packages;				use et_packages;
 use et_pcb_coordinates.geometry;
 
 with et_pcb;					use et_pcb;
+with et_display;				use et_display;
 
 with et_canvas_primitive_draw_ops;
 

@@ -182,24 +182,28 @@ board led_driver display dimensions [on/off]
 ```
 
 ```
-board led_driver display conductors 3 4 6
+board led_driver display conductors 1 [on/off]
 ```
 ```
-board led_driver display conductors -4 -6
-```
-
-
-```
-board led_driver display conductors all
+board led_driver display conductors 17 [on/off]
 ```
 
 ```
-board led_driver display vias 3 6 23
+board led_driver display restrict via 3 [on/off]
+```
+```
+board led_driver display restrict route 5 [on/off]
 ```
 
+
+<!--```
+CS board led_driver display conductors all
+```-->
+
 ```
-board led_driver display via-restrict 3 5 21
+board led_driver display vias 3 [on/off]
 ```
+
 
 
 

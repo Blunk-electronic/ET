@@ -221,6 +221,7 @@ package scripting is
 		NOUN_ASSY, -- assembly documentation
 		NOUN_BOARD,
 		NOUN_CENTER,
+		NOUN_CONDUCTORS,
 		NOUN_CURSOR,
 		NOUN_DEVICE,
 		NOUN_FREETRACK,
@@ -235,6 +236,7 @@ package scripting is
 		NOUN_PARTCODE,
 		NOUN_PNP, -- pick & place
 		NOUN_PURPOSE,
+		NOUN_RESTRICT,
 		NOUN_ROUTE_RESTRICT,
 		NOUN_SCRIPT,
 		NOUN_SILK, -- silk screen
