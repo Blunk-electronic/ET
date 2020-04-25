@@ -46,6 +46,14 @@ package body et_colors.schematic is
 			background.blue);
 	end set_color_background;
 
+	procedure set_color_frame (context : in cairo_context) is begin
+		set_source_rgb (
+			context, 
+			frame.red,
+			frame.green,
+			frame.blue);
+	end set_color_frame;
+	
 	procedure set_color_nets (context : in cairo_context) is begin
 		set_source_rgb (
 			context, 
@@ -54,6 +62,53 @@ package body et_colors.schematic is
 			nets.blue);
 	end set_color_nets;
 
+	procedure set_color_origin (context : in cairo_context) is begin
+		set_source_rgb (
+			context, 
+			origin.red,
+			origin.green,
+			origin.blue);
+	end set_color_origin;
+	
+	procedure set_color_placeholders (context : in cairo_context) is begin
+		set_source_rgb (
+			context, 
+			placeholders.red,
+			placeholders.green,
+			placeholders.blue);
+	end set_color_placeholders;
+
+	procedure set_color_ports (context : in cairo_context) is begin
+		set_source_rgb (
+			context, 
+			ports.red,
+			ports.green,
+			ports.blue);
+	end set_color_ports;
+
+	procedure set_color_submodules (context : in cairo_context) is begin
+		set_source_rgb (
+			context, 
+			submodules.red,
+			submodules.green,
+			submodules.blue);
+	end set_color_submodules;
+	
+	procedure set_color_symbols (context : in cairo_context) is begin
+		set_source_rgb (
+			context, 
+			symbols.red,
+			symbols.green,
+			symbols.blue);
+	end set_color_symbols;
+
+	procedure set_color_texts (context : in cairo_context) is begin
+		set_source_rgb (
+			context, 
+			texts.red,
+			texts.green,
+			texts.blue);
+	end set_color_texts;
 	
 end et_colors.schematic;
 

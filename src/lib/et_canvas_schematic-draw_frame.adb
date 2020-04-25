@@ -125,7 +125,7 @@ begin -- draw_frame
 
 		cairo.set_line_width (context.cr, line_width_thin);
 
-		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (0), gdouble (0)); -- red
+		set_color_frame (context.cr);
 
 		-- FRAME BORDER
 		draw_border;

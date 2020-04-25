@@ -81,7 +81,8 @@ procedure draw_texts (
 		
 begin
 	--put_line ("draw texts ...");
-	cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (1)); -- turquise
+	
+	set_color_texts (context.cr);
 
 	iterate (element (current_active_module).texts, query_text'access);
 	

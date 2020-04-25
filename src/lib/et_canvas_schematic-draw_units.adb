@@ -334,6 +334,8 @@ procedure draw_units (
 
 				-- Rotate the position of the port name by the unit rotation:
 				rotate_by (pos_port_name, unit_rotation);
+
+				set_color_symbols (context.cr);
 				
 				pac_draw_misc.draw_text 
 					(
@@ -400,6 +402,8 @@ procedure draw_units (
 					raise constraint_error; -- CS should never happen
 				end if;
 
+				set_color_symbols (context.cr);
+
 				-- Get the properties of the port. Properties is a record that provides
 				-- the terminal name. Other things of properties are not relevant here:
 				properties := schematic_ops.port_properties (
@@ -437,9 +441,6 @@ procedure draw_units (
 		begin -- draw_port
 			-- set line width
 			cairo.set_line_width (context.cr, type_view_coordinate (et_symbols.port_line_width));
-
-			-- set color
-			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 			
 			-- Compute following positions according to port rotation and length:
 			-- - end point of port
@@ -526,7 +527,7 @@ procedure draw_units (
 			
 				-- The start point of the port must have a small green circle around it.
 				-- set color and line width
-				cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
+				set_color_ports (context.cr);
 				cairo.set_line_width (context.cr, type_view_coordinate (port_circle_line_width));
 
 				cairo.new_sub_path (context.cr); -- required to suppress an initial line
@@ -554,7 +555,7 @@ procedure draw_units (
 				
 			end if;
 
-			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (0)); -- yellow
+
 			
 			-- draw port name
 			if element (c).port_name_visible = YES then
@@ -612,8 +613,9 @@ procedure draw_units (
 			use pac_text;
 			
 			position : type_point;
-		begin -- draw_placeholders
-
+		begin
+			set_color_placeholders (context.cr);
+			
 			-- DEVICE NAME:
 			position := sch_placeholder_name.position;
 
@@ -703,7 +705,7 @@ procedure draw_units (
 
 		procedure draw_origin is begin
 		-- NOTE: This is about the origin of the symbol !
-			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+			set_color_origin (context.cr);
 			cairo.set_line_width (context.cr, type_view_coordinate (origin_line_width));
 
 			-- NOTE: The origin is never rotated.
@@ -784,8 +786,7 @@ procedure draw_units (
 				convert_y (y (center)));
 			
 			-- SYMBOL BODY
-			-- set color
-			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+			set_color_symbols (context.cr);
 
 			iterate (symbol.shapes.lines, draw_line'access);
 			iterate (symbol.shapes.arcs, draw_arc'access);
@@ -796,7 +797,7 @@ procedure draw_units (
 			iterate (symbol.ports, draw_port'access); -- has internal color settings
 
 			-- SYMBOL TEXTS
-			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+			set_color_symbols (context.cr);
 			iterate (symbol.texts, draw_text'access);
 			
 			-- Draw placeholders if this is the symbol of a real device. 

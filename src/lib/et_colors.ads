@@ -48,8 +48,16 @@ package et_colors is
 		red, green, blue : color_range := 0.0;
 	end record;
 
-	white : constant type_color := (1.0, 1.0, 1.0);
-	black : constant type_color := (0.0, 0.0, 0.0);
+	white		: constant type_color := (1.0, 1.0, 1.0);
+	black		: constant type_color := (0.0, 0.0, 0.0);
+	red			: constant type_color := (1.0, 0.0, 0.0);
+	green		: constant type_color := (0.0, 1.0, 0.0);	
+	blue		: constant type_color := (0.0, 0.0, 1.0);
+
+	gray		: constant type_color := (0.5, 0.5, 0.5);
+	yellow		: constant type_color := (1.0, 1.0, 0.0);
+	mangenta	: constant type_color := (1.0, 0.0, 1.0);
+	turquise	: constant type_color := (0.0, 1.0, 1.0);
 	
 end et_colors;
 

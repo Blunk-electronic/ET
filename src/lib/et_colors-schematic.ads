@@ -46,11 +46,24 @@ package et_colors.schematic is
 
 	grid : type_color := white;
 	
-	nets : type_color := (0.0, 1.0, 0.0);
+	nets 			: type_color := green;
+	frame			: type_color := white;
+	origin			: type_color := gray;	
+	placeholders	: type_color := white;
+	ports			: type_color := green;	
+	submodules		: type_color := mangenta;
+	symbols			: type_color := red;
+	texts			: type_color := turquise;
 	
 	procedure set_color_background (context : in cairo_context);
-
+	procedure set_color_frame (context : in cairo_context);	
 	procedure set_color_nets (context : in cairo_context);
+	procedure set_color_origin (context : in cairo_context);	
+	procedure set_color_placeholders (context : in cairo_context);	
+	procedure set_color_ports (context : in cairo_context);	
+	procedure set_color_submodules (context : in cairo_context);	
+	procedure set_color_symbols (context : in cairo_context);
+	procedure set_color_texts (context : in cairo_context);	
 
 end et_colors.schematic;
 
