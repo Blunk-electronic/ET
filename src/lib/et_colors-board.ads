@@ -44,7 +44,7 @@ package et_colors.board is
 
 	background : type_color := (0.0, 0.0, 0.0);
 	
-	--net : type_color := (0.0, 1.0, 0.0);
+	grid : type_color := white;
 	
 	procedure set_color_background (context : in cairo_context);
 

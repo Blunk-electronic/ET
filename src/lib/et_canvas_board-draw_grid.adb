@@ -65,7 +65,9 @@ begin
 	-- CS: Currently the start point is at -area.height. Means very far below the given area.
 	-- On drawing the grid this consumes useless computing power.
 
-	pac_canvas.draw_grid (context, area, self.grid, start_x, start_y);
+	pac_canvas.draw_grid (context, area, self.grid, start_x, start_y,
+						  grid -- color
+						 );
 
 end draw_grid;
 

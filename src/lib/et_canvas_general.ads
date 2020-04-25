@@ -80,6 +80,7 @@ with et_general;
 with et_geometry;				use et_geometry;
 with et_frames;
 with et_string_processing;		use et_string_processing;
+with et_colors;
 
 package et_canvas_general is
 
@@ -414,7 +415,8 @@ package pac_canvas is
 		area	: in type_rectangle;  -- the area of the drawing to be displayed
 		grid	: in geometry.type_grid;		
 		start_x	: in type_view_coordinate;
-		start_y	: in type_view_coordinate);
+		start_y	: in type_view_coordinate;
+		color	: in et_colors.type_color);
 
 	-- Moves the view so that the given point is on the center.
 	-- Uses the current scale and leaves it as it is.

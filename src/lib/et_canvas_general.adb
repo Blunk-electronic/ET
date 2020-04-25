@@ -64,7 +64,6 @@ with gdk.types.keysyms;
 with et_general;
 with et_project;
 with et_frames;
-with et_colors;
 
 package body et_canvas_general is
 
@@ -1136,7 +1135,8 @@ package body pac_canvas is
 		area	: in type_rectangle; -- the area of the drawing to be displayed
 		grid	: in geometry.type_grid;
 		start_x	: in type_view_coordinate;
-		start_y	: in type_view_coordinate) is
+		start_y	: in type_view_coordinate;
+		color	: in et_colors.type_color) is
 
 		use gtkada.style;
 
@@ -1150,7 +1150,11 @@ package body pac_canvas is
 		dot_line_width : constant type_view_coordinate := 0.005; --type_distance'small; -- the width of the lines that form the dot
 		
 		-- prepare draing style so that white grid dots will be drawn.
-		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
+		--style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
+
+		c : constant gdk.rgba.gdk_rgba := (color.red, color.green, color.blue, 1.0);
+		
+		style : drawing_style := gtk_new (stroke => c);
 	begin
 		if style.get_fill /= null_pattern then -- CS remove ?
 			set_source (context.cr, style.get_fill);

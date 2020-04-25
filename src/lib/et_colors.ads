@@ -45,9 +45,12 @@ package et_colors is
 	procedure dummy;
 	
 	type type_color is record
-		red, green, blue : color_range;
+		red, green, blue : color_range := 0.0;
 	end record;
 
+	white : constant type_color := (1.0, 1.0, 1.0);
+	black : constant type_color := (0.0, 0.0, 0.0);
+	
 end et_colors;
 
 -- Soli Deo Gloria
