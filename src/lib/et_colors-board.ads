@@ -42,11 +42,20 @@ with cairo;						use cairo;
 
 package et_colors.board is
 
-	background : type_color := (0.0, 0.0, 0.0);
-	
-	grid : type_color := white;
+	background 		: type_color := black;
+	frame			: type_color := white;
+	grid 			: type_color := white;	
+	origin			: type_color := gray;	
+	placeholders	: type_color := white;
+-- 	submodules		: type_color := mangenta;
+
 	
 	procedure set_color_background (context : in cairo_context);
+-- 	procedure set_color_frame (context : in cairo_context);	
+
+-- 	procedure set_color_origin (context : in cairo_context);	
+-- 	procedure set_color_placeholders (context : in cairo_context);	
+-- 	procedure set_color_submodules (context : in cairo_context);	
 
 end et_colors.board;
 

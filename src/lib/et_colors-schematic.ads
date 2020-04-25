@@ -42,12 +42,10 @@ with cairo;						use cairo;
 
 package et_colors.schematic is
 
-	background : type_color := (0.0, 0.0, 0.0);
-
-	grid : type_color := white;
-	
-	nets 			: type_color := green;
+	background 		: type_color := black;
 	frame			: type_color := white;
+	grid 			: type_color := white;	
+	nets 			: type_color := green;
 	origin			: type_color := gray;	
 	placeholders	: type_color := white;
 	ports			: type_color := green;	
