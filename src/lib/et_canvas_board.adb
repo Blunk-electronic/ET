@@ -35,15 +35,16 @@
 --   history of changes:
 --
 
-with ada.text_io;			use ada.text_io;
+with ada.text_io;				use ada.text_io;
 with et_general;
 with et_project;
 with et_frames;
-with et_pcb_coordinates;	use et_pcb_coordinates;
+with et_pcb_coordinates;		use et_pcb_coordinates;
 use et_pcb_coordinates.geometry;
 
 with et_canvas_schematic;
 with et_display;
+with et_colors.board;			use et_colors.board;
 
 package body et_canvas_board is
 
@@ -216,8 +217,7 @@ package body et_canvas_board is
 	begin
 -- 		put_line ("draw internal ...");
 		
-		-- draw a black background:
-		set_source_rgb (context.cr, 0.0, 0.0, 0.0);
+		set_color_background (context.cr);
 		paint (context.cr);
 
 		draw_grid (self, context, area);

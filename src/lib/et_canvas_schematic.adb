@@ -35,14 +35,16 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+with ada.text_io;					use ada.text_io;
 
 with et_general;
 with et_display;
 with et_project;
 with et_frames;
-with et_coordinates;			use et_coordinates;
+with et_coordinates;				use et_coordinates;
 use et_coordinates.geometry;
+
+with et_colors.schematic;			use et_colors.schematic;
 
 package body et_canvas_schematic is
 
@@ -172,10 +174,8 @@ package body et_canvas_schematic is
 -- 		put_line ("draw internal ...");
 -- 		shift_area (self, area_shifted, cursor_main);
 -- 		shift_area (self, area_shifted_new_position, cursor_main);
-
 		
-		-- draw a black background:
-		set_source_rgb (context.cr, 0.0, 0.0, 0.0);
+		set_color_background (context.cr);
 		paint (context.cr);
 
 		-- draw the grid

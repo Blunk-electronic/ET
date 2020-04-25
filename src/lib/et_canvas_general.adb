@@ -64,6 +64,7 @@ with gdk.types.keysyms;
 with et_general;
 with et_project;
 with et_frames;
+with et_colors;
 
 package body et_canvas_general is
 

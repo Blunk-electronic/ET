@@ -264,7 +264,7 @@ procedure draw_nets (
 		end query_strands;
 		
 	begin -- query_nets
-		cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
+		set_color_nets (context.cr);
 
 		-- iterate nets
 		while net_cursor /= type_nets.no_element loop
