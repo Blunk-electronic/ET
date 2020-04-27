@@ -38,6 +38,14 @@
 
 package body et_colors.board is
 
+	procedure set_color_cursor (context : in cairo_context) is begin		
+		set_source_rgb (
+			context, 
+			cursor.red,
+			cursor.green,
+			cursor.blue);
+	end set_color_cursor;
+	
 	procedure set_color_background (context : in cairo_context) is begin		
 		set_source_rgb (
 			context, 
@@ -45,6 +53,143 @@ package body et_colors.board is
 			background.green,
 			background.blue);
 	end set_color_background;
+
+	procedure set_color_frame (context : in cairo_context) is begin		
+		set_source_rgb (
+			context, 
+			frame.red,
+			frame.green,
+			frame.blue);
+	end set_color_frame;
+
+	procedure set_color_outline (context : in cairo_context) is begin		
+		set_source_rgb (
+			context, 
+			outline.red,
+			outline.green,
+			outline.blue);
+	end set_color_outline;
+
+	procedure set_color_silkscreen (
+		context : in cairo_context;
+		face	: in type_face) 
+	is begin
+		case face is
+			when TOP =>
+				set_source_rgb (
+					context, 
+					silkscreen_top.red,
+					silkscreen_top.green,
+					silkscreen_top.blue);
+
+			when BOTTOM =>
+				set_source_rgb (
+					context, 
+					silkscreen_bottom.red,
+					silkscreen_bottom.green,
+					silkscreen_bottom.blue);
+		end case;
+	end set_color_silkscreen;
+
+	procedure set_color_assy_doc (
+		context : in cairo_context;
+		face	: in type_face) 
+	is begin
+		case face is
+			when TOP =>
+				set_source_rgb (
+					context, 
+					assy_doc_top.red,
+					assy_doc_top.green,
+					assy_doc_top.blue);
+
+			when BOTTOM =>
+				set_source_rgb (
+					context, 
+					assy_doc_bottom.red,
+					assy_doc_bottom.green,
+					assy_doc_bottom.blue);
+		end case;
+	end set_color_assy_doc;
+
+	procedure set_color_stop_mask (
+		context : in cairo_context;
+		face	: in type_face) 
+	is begin
+		case face is
+			when TOP =>
+				set_source_rgb (
+					context, 
+					stop_mask_top.red,
+					stop_mask_top.green,
+					stop_mask_top.blue);
+
+			when BOTTOM =>
+				set_source_rgb (
+					context, 
+					stop_mask_bottom.red,
+					stop_mask_bottom.green,
+					stop_mask_bottom.blue);
+		end case;
+	end set_color_stop_mask;
+
+	procedure set_color_stencil (
+		context : in cairo_context;
+		face	: in type_face) 
+	is begin
+		case face is
+			when TOP =>
+				set_source_rgb (
+					context, 
+					stencil_top.red,
+					stencil_top.green,
+					stencil_top.blue);
+
+			when BOTTOM =>
+				set_source_rgb (
+					context, 
+					stencil_bottom.red,
+					stencil_bottom.green,
+					stencil_bottom.blue);
+		end case;
+	end set_color_stencil;
+
+	procedure set_color_keepout (
+		context : in cairo_context;
+		face	: in type_face) 
+	is begin
+		case face is
+			when TOP =>
+				set_source_rgb (
+					context, 
+					keepout_top.red,
+					keepout_top.green,
+					keepout_top.blue);
+
+			when BOTTOM =>
+				set_source_rgb (
+					context, 
+					keepout_bottom.red,
+					keepout_bottom.green,
+					keepout_bottom.blue);
+		end case;
+	end set_color_keepout;
+
+	procedure set_color_route_restrict (context : in cairo_context) is begin		
+		set_source_rgb (
+			context, 
+			route_restrict.red,
+			route_restrict.green,
+			route_restrict.blue);
+	end set_color_route_restrict;
+
+	procedure set_color_via_restrict (context : in cairo_context) is begin		
+		set_source_rgb (
+			context, 
+			via_restrict.red,
+			via_restrict.green,
+			via_restrict.blue);
+	end set_color_via_restrict;
 
 	
 end et_colors.board;

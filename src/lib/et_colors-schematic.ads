@@ -42,6 +42,7 @@ with cairo;						use cairo;
 
 package et_colors.schematic is
 
+	cursor			: type_color := white;
 	background 		: type_color := black;
 	frame			: type_color := white;
 	grid 			: type_color := white;	
@@ -52,7 +53,8 @@ package et_colors.schematic is
 	submodules		: type_color := mangenta;
 	symbols			: type_color := red;
 	texts			: type_color := turquise;
-	
+
+	procedure set_color_cursor (context : in cairo_context);	
 	procedure set_color_background (context : in cairo_context);
 	procedure set_color_frame (context : in cairo_context);	
 	procedure set_color_nets (context : in cairo_context);

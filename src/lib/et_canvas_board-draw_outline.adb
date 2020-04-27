@@ -93,7 +93,7 @@ procedure draw_outline (
 	begin
 		-- All outline segments will be drawn with the same line width and color:
 		cairo.set_line_width (context.cr, type_view_coordinate (et_packages.pcb_contour_line_width));
-		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (0)); -- yellow
+		set_color_outline (context.cr);
 		
 		iterate (module.board.contours.lines, query_line'access);
 		iterate (module.board.contours.arcs, query_arc'access);

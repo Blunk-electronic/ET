@@ -114,16 +114,15 @@ procedure draw_via_restrict (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
 	begin
-		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (0), gdouble (0)); -- red
 		cairo.set_line_width (context.cr, type_view_coordinate (via_restrict_line_width));
+
+		set_color_via_restrict (context.cr);
 		
 		iterate (module.board.via_restrict.lines, query_line'access);
 		iterate (module.board.via_restrict.arcs, query_arc'access);
 		iterate (module.board.via_restrict.circles, query_circle'access);
 		-- CS iterate (module.board.via_restrict.polygons, query_polygon'access);
 		-- CS iterate (module.board.via_restrict.cutouts, query_polygon'cutout);
-
-		-- CS query packages
 
 		cairo.stroke (context.cr);
 	end query_items;

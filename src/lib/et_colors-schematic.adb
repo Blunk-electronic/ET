@@ -38,6 +38,14 @@
 
 package body et_colors.schematic is
 
+	procedure set_color_cursor (context : in cairo_context) is begin		
+		set_source_rgb (
+			context, 
+			cursor.red,
+			cursor.green,
+			cursor.blue);
+	end set_color_cursor;
+	
 	procedure set_color_background (context : in cairo_context) is begin
 		set_source_rgb (
 			context, 

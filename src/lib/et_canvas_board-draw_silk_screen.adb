@@ -123,8 +123,8 @@ procedure draw_silk_screen (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
 	begin
-		-- All outline segments will be drawn with the same color:
-		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+		-- All silkscreen segments will be drawn with the same color:
+		set_color_silkscreen (context.cr, face);
 
 		case face is
 			when TOP =>
@@ -142,8 +142,6 @@ procedure draw_silk_screen (
 				iterate (module.board.silk_screen.bottom.circles, query_circle'access);
 				-- CS see above
 		end case;
-
-		-- CS query packages
 
 	end query_items;
 	

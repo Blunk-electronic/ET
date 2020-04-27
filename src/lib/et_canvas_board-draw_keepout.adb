@@ -112,8 +112,8 @@ procedure draw_keepout (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
 	begin
-		-- All outline segments will be drawn with the same color:
-		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+		-- All keepout segments will be drawn with the same color:
+		set_color_keepout (context.cr, face);
 
 		cairo.set_line_width (context.cr, type_view_coordinate (keepout_line_width));
 		
@@ -132,8 +132,6 @@ procedure draw_keepout (
 				-- CS see above
 		end case;
 
-		-- CS query packages
-		
 		cairo.stroke (context.cr);
 	end query_items;
 	

@@ -123,8 +123,8 @@ procedure draw_stop (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
 	begin
-		-- All outline segments will be drawn with the same color:
-		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+		-- All stop mask segments will be drawn with the same color:
+		set_color_stop_mask (context.cr, face);
 
 		case face is
 			when TOP =>
@@ -141,8 +141,6 @@ procedure draw_stop (
 				iterate (module.board.stop_mask.bottom.circles, query_circle'access);
 				-- CS see above
 		end case;
-
-		-- CS query packages
 
 	end query_items;
 	

@@ -311,7 +311,7 @@ package body et_canvas_schematic is
 
 		-- draw the cursor
 		cairo.set_line_width (context.cr, type_view_coordinate (cursor_line_width));
-		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+		set_color_cursor (context.cr);
 
 		pac_draw_misc.draw_line (
 			area		=> in_area,

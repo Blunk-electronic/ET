@@ -36,23 +36,74 @@
 --
 --   ToDo: 
 
+with et_pcb_coordinates;		use et_pcb_coordinates;
 with cairo;						use cairo;
 -- with cairo.pattern;				use cairo.pattern;
 -- with gtkada.style;
 
 package et_colors.board is
 
+	cursor			: type_color := white;
 	background 		: type_color := black;
 	frame			: type_color := white;
+	outline			: type_color := white;
 	grid 			: type_color := white;	
 	origin			: type_color := gray;	
 	placeholders	: type_color := white;
+	
+	silkscreen_top		: type_color := white;
+	silkscreen_bottom	: type_color := white;	
+
+	assy_doc_top		: type_color := yellow;
+	assy_doc_bottom		: type_color := yellow;	
+
+	stop_mask_top		: type_color := yellow;
+	stop_mask_bottom	: type_color := yellow;	
+
+	stencil_top			: type_color := yellow;
+	stencil_bottom		: type_color := yellow;	
+
+	keepout_top			: type_color := yellow;
+	keepout_bottom		: type_color := yellow;	
+
+	route_restrict		: type_color := red;
+	via_restrict		: type_color := red;
+		
 -- 	submodules		: type_color := mangenta;
 
-	
-	procedure set_color_background (context : in cairo_context);
--- 	procedure set_color_frame (context : in cairo_context);	
 
+	procedure set_color_cursor (context : in cairo_context);
+	procedure set_color_background (context : in cairo_context);
+	procedure set_color_frame (context : in cairo_context);	
+	procedure set_color_outline (context : in cairo_context);
+
+	procedure set_color_silkscreen (
+		context : in cairo_context;
+		face	: in type_face);
+
+	procedure set_color_assy_doc (
+		context : in cairo_context;
+		face	: in type_face);
+
+	procedure set_color_stop_mask (
+		context : in cairo_context;
+		face	: in type_face);
+
+	procedure set_color_stencil (
+		context : in cairo_context;
+		face	: in type_face);
+
+	procedure set_color_keepout (
+		context : in cairo_context;
+		face	: in type_face);
+
+	procedure set_color_route_restrict (
+		context : in cairo_context);
+
+	procedure set_color_via_restrict (
+		context : in cairo_context);
+
+	
 -- 	procedure set_color_origin (context : in cairo_context);	
 -- 	procedure set_color_placeholders (context : in cairo_context);	
 -- 	procedure set_color_submodules (context : in cairo_context);	
