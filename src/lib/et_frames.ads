@@ -293,7 +293,7 @@ package et_frames is
 	
 	type type_placeholders_pcb is new type_placeholders_basic with record
 		face			: type_placeholder; -- to be filled with the word "TOP" or "BOTTOM"
-		signal_layer	: type_placeholder; -- to be filled with the signal layer id like 1,2,3, .. 16
+		signal_layer	: type_placeholder; -- to be filled with the signal layer id like 1,2,3, 8..16
 	end record;
 	
 	type type_title_block_pcb is new type_title_block with record

@@ -100,13 +100,15 @@ package et_display is
 		stop_mask	: type_paired := (others => OFF);
 		stencil		: type_paired := (others => OFF);
 
-		conductors		: type_conductors := (others => OFF);
+		conductors		: type_conductors := (type_conductors'first => ON, others => OFF);
 		vias			: type_vias := (others => OFF);
 		route_restrict	: type_route_restrict := (others => OFF);
 		via_restrict	: type_via_restrict := (others => OFF);		
 	end record;
 
 	board_layers : type_board_layers;
+
+	function active_conductor_layers return string;
 	
 end et_display;
 

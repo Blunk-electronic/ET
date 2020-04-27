@@ -74,9 +74,10 @@ procedure draw_frame (
 			self.get_frame.title_block_pcb.additional_placeholders;
 
 		use et_text;
+		use et_display;
 	begin
 		draw_text (
-			content	=> to_content ("1..16"), -- CS get enabled signal layers
+			content	=> to_content (active_conductor_layers),
 			size	=> phs.signal_layer.size,
 			font	=> font_placeholders,
 			pos		=> phs.signal_layer.position);
@@ -91,10 +92,10 @@ procedure draw_frame (
 
 	procedure draw_cam_markers is
 
-		cms : constant type_cam_markers :=
-			self.get_frame.title_block_pcb.cam_markers;
+		cms : constant type_cam_markers := self.get_frame.title_block_pcb.cam_markers;
 
 		use et_text;
+		use et_display;
 	begin
 		draw_text (
 			content	=> to_content (to_string (cms.face.content)),
@@ -102,12 +103,15 @@ procedure draw_frame (
 			font	=> font_placeholders,
 			pos		=> cms.face.position);
 
-		draw_text (
-			content	=> to_content (to_string (cms.silk_screen.content)),
-			size	=> cms.silk_screen.size,
-			font	=> font_placeholders,
-			pos		=> cms.silk_screen.position);
-
+		-- 
+		if board_layers.silkscreen.top = ON then
+			draw_text (
+				content	=> to_content (to_string (cms.silk_screen.content)),
+				size	=> cms.silk_screen.size,
+				font	=> font_placeholders,
+				pos		=> cms.silk_screen.position);
+		end if;
+		
 		draw_text (
 			content	=> to_content (to_string (cms.assy_doc.content)),
 			size	=> cms.assy_doc.size,

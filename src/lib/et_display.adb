@@ -36,6 +36,10 @@
 --
 --   ToDo: 
 
+with ada.text_io;
+with ada.strings;
+with ada.strings.bounded;
+
 package body et_display is
 
 	function to_string (on_off : in type_layer_status) return string is begin
@@ -81,6 +85,27 @@ package body et_display is
 
 		return result;
 	end via_restrict_layer_active;
+
+	function active_conductor_layers return string is
+		use ada.text_io;
+		use ada.strings;
+ 		use ada.strings.bounded;
+		package pac_layers is new generic_bounded_length (positive (2 * type_signal_layer'last)); -- CS sufficent long ?
+		use pac_layers;
+		layers : pac_layers.bounded_string;
+		separator_1 : constant character := space;
+		separator_2 : constant string := "..";
+	begin
+		for l in type_signal_layer'first .. type_signal_layer'last loop
+
+			if board_layers.conductors (l) = ON then
+				layers := layers & to_bounded_string (separator_1 & to_string (l));
+			end if;
+			
+		end loop;
+		
+		return to_string (layers);
+	end active_conductor_layers;
 
 	
 end et_display;
