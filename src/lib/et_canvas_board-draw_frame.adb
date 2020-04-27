@@ -76,7 +76,7 @@ procedure draw_frame (
 		use et_text;
 	begin
 		draw_text (
-			content	=> to_content ("1..16"), -- CS
+			content	=> to_content ("1..16"), -- CS get enabled signal layers
 			size	=> phs.signal_layer.size,
 			font	=> font_placeholders,
 			pos		=> phs.signal_layer.position);
@@ -138,6 +138,18 @@ procedure draw_frame (
 			font	=> font_placeholders,
 			pos		=> cms.route_restrict.position);
 
+		draw_text (
+			content	=> to_content (to_string (cms.stop_mask.content)),
+			size	=> cms.stop_mask.size,
+			font	=> font_placeholders,
+			pos		=> cms.stop_mask.position);
+
+		draw_text (
+			content	=> to_content (to_string (cms.stencil.content)),
+			size	=> cms.stencil.size,
+			font	=> font_placeholders,
+			pos		=> cms.stencil.position);
+		
 		draw_text (
 			content	=> to_content (to_string (cms.via_restrict.content)),
 			size	=> cms.via_restrict.size,

@@ -77,7 +77,7 @@ package et_colors.board is
 		type_signal_layer'first	=> red,
 		others					=> blue);
 	
--- 	submodules		: type_color := mangenta;
+-- 	submodules		: type_color := mangenta; -- boundaries
 
 
 	procedure set_color_cursor (context : in cairo_context);

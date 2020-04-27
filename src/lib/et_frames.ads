@@ -273,19 +273,23 @@ package et_frames is
 	-- They are texts in the title block that indicate what it is about.
 	-- Depending on the structures being displayed or exported, they are displayed or not.
 	-- Their content may be specified by the operator in the respective sections in the frame file (*.frb).
+	-- The content specified there overrides the default content. 
+	-- CS: defaults do not work
 	-- If they are not specified by the frame file, default position, size and content is used (see below).
 	type type_cam_marker is new type_text with null record;
 
 	type type_cam_markers is record
 		face			: type_cam_marker := (content => et_text.to_content ("FACE"), others => <>);
-		silk_screen		: type_cam_marker := (content => et_text.to_content ("SILK SCREEN"), others => <>);
-		assy_doc		: type_cam_marker := (content => et_text.to_content ("ASSEMBLY DOCUMENTATION"), others => <>);
+		silk_screen		: type_cam_marker := (content => et_text.to_content ("SILKSCREEN"), others => <>);
+		assy_doc		: type_cam_marker := (content => et_text.to_content ("ASSEMBLY"), others => <>);
 		keepout			: type_cam_marker := (content => et_text.to_content ("KEEPOUT"), others => <>);
-		plated_millings	: type_cam_marker := (content => et_text.to_content ("PLATED MILLINGS"), others => <>); 
-		pcb_outline 	: type_cam_marker := (content => et_text.to_content ("PCB CONTOURS"), others => <>);
-		route_restrict	: type_cam_marker := (content => et_text.to_content ("ROUTE RESTRICT"), others => <>);
-		via_restrict	: type_cam_marker := (content => et_text.to_content ("VIA RESTRICT"), others => <>);		
-		signal_layer	: type_cam_marker := (content => et_text.to_content ("SIGNAL LAYER"), others => <>);
+		plated_millings	: type_cam_marker := (content => et_text.to_content ("PLTD_MILLINGS"), others => <>); 
+		pcb_outline 	: type_cam_marker := (content => et_text.to_content ("OUTLINE"), others => <>);
+		route_restrict	: type_cam_marker := (content => et_text.to_content ("ROUTE_RESTRICT"), others => <>);
+		via_restrict	: type_cam_marker := (content => et_text.to_content ("VIA_RESTRICT"), others => <>);		
+		signal_layer	: type_cam_marker := (content => et_text.to_content ("SIGNAL_LAYER"), others => <>);
+		stencil			: type_cam_marker := (content => et_text.to_content ("STENCIL"), others => <>);		
+		stop_mask		: type_cam_marker := (content => et_text.to_content ("STOP_MASK"), others => <>);
 	end record;
 	
 	type type_placeholders_pcb is new type_placeholders_basic with record
