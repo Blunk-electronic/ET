@@ -81,11 +81,11 @@ procedure draw_frame (
 			font	=> font_placeholders,
 			pos		=> phs.signal_layer.position);
 
-		draw_text (
-			content	=> to_content ("TOP/BOT"), -- CS
-			size	=> phs.face.size,
-			font	=> font_placeholders,
-			pos		=> phs.face.position);
+-- 		draw_text (
+-- 			content	=> to_content ("TOP/BOT"), -- CS
+-- 			size	=> phs.face.size,
+-- 			font	=> font_placeholders,
+-- 			pos		=> phs.face.position);
 
 	end draw_additional_placeholders;
 
