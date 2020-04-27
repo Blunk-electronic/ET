@@ -69,8 +69,8 @@ procedure draw_conductors (
 			
 			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 
-			cairo.set_source_rgb (context.cr, gdouble (0), gdouble (0), gdouble (1)); -- blue
-			-- CS set color according to layer (query element (c).layer
+			-- set color according to layer
+			set_color_conductor (context.cr, element (c).layer);
 			
 			pac_draw_package.draw_line (
 				area		=> in_area,
@@ -89,8 +89,8 @@ procedure draw_conductors (
 
 			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 
-			cairo.set_source_rgb (context.cr, gdouble (0), gdouble (0), gdouble (1)); -- blue
-			-- CS set color according to layer (query element (c).layer
+			-- set color according to layer
+			set_color_conductor (context.cr, element (c).layer);
 			
 			pac_draw_package.draw_arc (
 				area		=> in_area,
@@ -108,8 +108,8 @@ procedure draw_conductors (
 		-- Draw the circle if the conductor layer is enabled:
 		if et_display.board_layers.conductors (element (c).layer) = ON then
 			
-			cairo.set_source_rgb (context.cr, gdouble (0), gdouble (0), gdouble (1)); -- blue
-			-- CS set color according to layer (query element (c).layer
+			-- set color according to layer
+			set_color_conductor (context.cr, element (c).layer);
 
 			case element (c).filled is
 				when NO =>
@@ -153,8 +153,6 @@ procedure draw_conductors (
 		-- CS iterate (module.board.silk_screen.top.cutouts, query_polygon'cutout);
 		-- CS iterate (module.board.silk_screen.top.placeholders, query_placeholder'access);
 		-- CS iterate (module.board.silk_screen.top.texts, query_text'access);
-
-		-- CS query packages
 
 	end query_items;
 	

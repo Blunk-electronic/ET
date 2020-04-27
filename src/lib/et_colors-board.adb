@@ -191,6 +191,20 @@ package body et_colors.board is
 			via_restrict.blue);
 	end set_color_via_restrict;
 
+	procedure set_color_conductor (
+		context : in cairo_context;
+		layer	: in type_signal_layer)
+	is begin
+		set_source_rgb (
+			context, 
+			conductors (layer).red,
+			conductors (layer).green,
+			conductors (layer).blue);
+	end set_color_conductor;
+
+		
+
+	
 	
 end et_colors.board;
 

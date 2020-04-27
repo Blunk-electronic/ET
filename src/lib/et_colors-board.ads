@@ -36,6 +36,7 @@
 --
 --   ToDo: 
 
+with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with cairo;						use cairo;
 -- with cairo.pattern;				use cairo.pattern;
@@ -68,7 +69,14 @@ package et_colors.board is
 
 	route_restrict		: type_color := red;
 	via_restrict		: type_color := red;
-		
+
+	type type_conductors is array (type_signal_layer'first .. type_signal_layer'last) 
+		of type_color;
+
+	conductors : type_conductors := (
+		type_signal_layer'first	=> red,
+		others					=> blue);
+	
 -- 	submodules		: type_color := mangenta;
 
 
@@ -102,6 +110,11 @@ package et_colors.board is
 
 	procedure set_color_via_restrict (
 		context : in cairo_context);
+
+	procedure set_color_conductor (
+		context : in cairo_context;
+		layer	: in type_signal_layer);
+
 
 	
 -- 	procedure set_color_origin (context : in cairo_context);	
