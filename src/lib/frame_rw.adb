@@ -672,6 +672,16 @@ package body frame_rw is
 			clear (tb_texts);
 			tb_placeholders_common := (others => <>);
 		end;
+
+		-- The content of a cam marker may not be specified via the frame template.
+		-- In this case the default content must be assigned to the tb_cam_marker.
+		procedure set_content (content : in et_text.type_text_content.bounded_string) is 
+			use et_text.type_text_content;
+		begin
+			if length (tb_cam_marker.content) = 0 then
+				tb_cam_marker.content := content;
+			end if;
+		end set_content;
 		
 		procedure process_line is 
 
@@ -869,7 +879,11 @@ package body frame_rw is
 								
 								case stack.parent is
 									when SEC_PLACEHOLDERS => tb_face := tb_placeholder;
-									when SEC_CAM_MARKERS => 
+									when SEC_CAM_MARKERS =>
+
+										-- If no content provided, use default content of cam marker:
+										set_content (frame.title_block_pcb.cam_markers.face.content);
+										
 										frame.title_block_pcb.cam_markers.face := tb_cam_marker;
 										reset_cam_marker;
 										
@@ -885,7 +899,11 @@ package body frame_rw is
 								
 								case stack.parent is
 									when SEC_PLACEHOLDERS => tb_signal_layer := tb_placeholder;
-									when SEC_CAM_MARKERS => 
+									when SEC_CAM_MARKERS =>
+
+										-- If no content provided, use default content of cam marker:
+										set_content (frame.title_block_pcb.cam_markers.signal_layer.content);
+										
 										frame.title_block_pcb.cam_markers.signal_layer := tb_cam_marker;
 										reset_cam_marker;
 										
@@ -901,6 +919,10 @@ package body frame_rw is
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS => 
+
+										-- If no content provided, use default content of cam marker:
+										set_content (frame.title_block_pcb.cam_markers.silk_screen.content);
+										
 										frame.title_block_pcb.cam_markers.silk_screen := tb_cam_marker;
 										reset_cam_marker;
 										
@@ -910,12 +932,54 @@ package body frame_rw is
 							when others => invalid_section;
 						end case;
 
+					when SEC_STENCIL => -- NOTE: this section exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_CAM_MARKERS => 
+
+										-- If no content provided, use default content of cam marker:
+										set_content (frame.title_block_pcb.cam_markers.stencil.content);
+										
+										frame.title_block_pcb.cam_markers.stencil := tb_cam_marker;
+										reset_cam_marker;
+										
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_STOP_MASK => -- NOTE: this section exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_CAM_MARKERS => 
+
+										-- If no content provided, use default content of cam marker:
+										set_content (frame.title_block_pcb.cam_markers.stop_mask.content);
+										
+										frame.title_block_pcb.cam_markers.stop_mask := tb_cam_marker;
+										reset_cam_marker;
+										
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+						end case;
+						
 					when SEC_ASSY_DOC => -- NOTE: this section exists in pcb only !
 						case domain is
 							when PCB =>
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS => 
+
+										-- If no content provided, use default content of cam marker:
+										set_content (frame.title_block_pcb.cam_markers.assy_doc.content);
+										
 										frame.title_block_pcb.cam_markers.assy_doc := tb_cam_marker;
 										reset_cam_marker;
 										
@@ -931,6 +995,10 @@ package body frame_rw is
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS =>
+
+										-- If no content provided, use default content of cam marker:
+										set_content (frame.title_block_pcb.cam_markers.keepout.content);
+										
 										frame.title_block_pcb.cam_markers.keepout := tb_cam_marker;
 										reset_cam_marker;
 										
@@ -946,6 +1014,10 @@ package body frame_rw is
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS => 
+
+										-- If no content provided, use default content of cam marker:
+										set_content (frame.title_block_pcb.cam_markers.plated_millings.content);
+										
 										frame.title_block_pcb.cam_markers.plated_millings := tb_cam_marker;
 										reset_cam_marker;
 										
@@ -960,7 +1032,11 @@ package body frame_rw is
 							when PCB =>
 								
 								case stack.parent is
-									when SEC_CAM_MARKERS => 
+									when SEC_CAM_MARKERS =>
+
+										-- If no content provided, use default content of cam marker:
+										set_content (frame.title_block_pcb.cam_markers.pcb_outline.content);
+										
 										frame.title_block_pcb.cam_markers.pcb_outline := tb_cam_marker;
 										reset_cam_marker;
 										
@@ -975,7 +1051,11 @@ package body frame_rw is
 							when PCB =>
 								
 								case stack.parent is
-									when SEC_CAM_MARKERS => 
+									when SEC_CAM_MARKERS =>
+
+										-- If no content provided, use default content of cam marker:
+										set_content (frame.title_block_pcb.cam_markers.route_restrict.content);
+										
 										frame.title_block_pcb.cam_markers.route_restrict := tb_cam_marker;
 										reset_cam_marker;
 										
@@ -991,6 +1071,10 @@ package body frame_rw is
 								
 								case stack.parent is
 									when SEC_CAM_MARKERS =>
+
+										-- If no content provided, use default content of cam marker:
+										set_content (frame.title_block_pcb.cam_markers.via_restrict.content);
+										
 										frame.title_block_pcb.cam_markers.via_restrict := tb_cam_marker;
 										reset_cam_marker;
 										
@@ -1082,6 +1166,8 @@ package body frame_rw is
 			elsif set (section_sheet_number, SEC_SHEET_NUMBER) then null;
 			elsif set (section_signal_layer, SEC_SIGNAL_LAYER) then null;
 			elsif set (section_silk_screen, SEC_SILK_SCREEN) then null;
+			elsif set (section_stencil, SEC_STENCIL) then null;
+			elsif set (section_stop_mask, SEC_STOP_MASK) then null;
 			elsif set (section_text, SEC_TEXT) then null;	
 			elsif set (section_texts, SEC_TEXTS) then null;
 			elsif set (section_title_block, SEC_TITLE_BLOCK) then null;
@@ -1168,7 +1254,8 @@ package body frame_rw is
 						end case;
 
 					when SEC_SILK_SCREEN | SEC_ASSY_DOC | SEC_KEEPOUT | SEC_PLATED_MILLINGS |
-						SEC_PCB_OUTLINE | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => -- NOTE: these sections exists in pcb only !
+						SEC_PCB_OUTLINE | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
+						SEC_STENCIL | SEC_STOP_MASK => -- NOTE: these sections exists in pcb only !
 						case domain is
 							when PCB =>
 								

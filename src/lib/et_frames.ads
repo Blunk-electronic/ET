@@ -273,8 +273,7 @@ package et_frames is
 	-- They are texts in the title block that indicate what it is about.
 	-- Depending on the structures being displayed or exported, they are displayed or not.
 	-- Their content may be specified by the operator in the respective sections in the frame file (*.frb).
-	-- The content specified there overrides the default content. 
-	-- CS: defaults do not work
+	-- The content specified in the frame file overrides the default content. 
 	-- If they are not specified by the frame file, default position, size and content is used (see below).
 	type type_cam_marker is new type_text with null record;
 

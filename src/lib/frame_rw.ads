@@ -103,7 +103,8 @@ package frame_rw is
 	section_route_restrict	: constant string := "[ROUTE_RESTRICT";
 	section_via_restrict	: constant string := "[VIA_RESTRICT";
 	section_signal_layer	: constant string := "[SIGNAL_LAYER";
-
+	section_stencil			: constant string := "[STENCIL";
+	section_stop_mask		: constant string := "[STOP_MASK";
 
 	
 	type type_section is (
@@ -137,6 +138,8 @@ package frame_rw is
 		SEC_SHEET_NUMBER,
 		SEC_SIGNAL_LAYER,
 		SEC_SILK_SCREEN,
+		SEC_STENCIL,
+		SEC_STOP_MASK,
 		SEC_TEXT,
 		SEC_TEXTS,
 		SEC_TITLE_BLOCK,
