@@ -57,7 +57,7 @@ with et_symbols;
 with et_packages;
 with et_text;
 with schematic_ops;
-with et_display;				use et_display;
+with et_display.schematic;		use et_display.schematic;
 
 separate (et_canvas_schematic)
 
@@ -523,7 +523,7 @@ procedure draw_units (
 			cairo.stroke (context.cr);
 
 			-- Draw the circle around a port if the layer is enabled:
-			if et_display.schematic_layers.ports = ON then
+			if ports_enabled then
 			
 				-- The start point of the port must have a small green circle around it.
 				-- set color and line width
@@ -621,7 +621,7 @@ procedure draw_units (
 
 			--put_line (to_string (device_name) & " " & to_string (unit_name) & " " & to_string (unit_count));
 
-			if et_display.schematic_layers.device_names = ON then
+			if device_names_enabled then
 				
 				pac_draw_misc.draw_text (
 					context		=> context,
@@ -644,7 +644,7 @@ procedure draw_units (
 			end if;
 			
 			-- VALUE
-			if et_display.schematic_layers.device_values = ON then
+			if device_values_enabled then
 				
 				-- The value may be empty. We do not draw it in this case:
 				if not is_empty (device_value) then
@@ -673,7 +673,7 @@ procedure draw_units (
 			end if;
 			
 			-- PURPOSE
-			if et_display.schematic_layers.device_purposes = ON then
+			if device_purposes_enabled then
 			
 				-- The purpose may be empty. We do not draw it in this case:
 				if not is_empty (device_purpose) then

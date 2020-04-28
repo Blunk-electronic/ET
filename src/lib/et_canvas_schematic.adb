@@ -38,7 +38,7 @@
 with ada.text_io;					use ada.text_io;
 
 with et_general;
-with et_display;
+with et_display.schematic;
 with et_project;
 with et_frames;
 with et_coordinates;				use et_coordinates;
@@ -169,7 +169,7 @@ package body et_canvas_schematic is
 						x => - self.frame_bounding_box.x,
 						y => - self.frame_bounding_box.y));
 		
-		use et_display;
+		use et_display.schematic;
 	begin
 -- 		put_line ("draw internal ...");
 -- 		shift_area (self, area_shifted, cursor_main);
@@ -200,12 +200,12 @@ package body et_canvas_schematic is
 		draw_cursor (self, area_shifted, context, cursor_main);
 
 		-- Draw nets if layer is enabled:
-		if schematic_layers.nets = ON then
+		if nets_enabled then
 			draw_nets (self, area_shifted, context);
 		end if;
 
 		-- Draw texts if layer is enabled:
-		if schematic_layers.texts = ON then
+		if texts_enabled then
 			draw_texts (self, area_shifted, context);
 		end if;
 		

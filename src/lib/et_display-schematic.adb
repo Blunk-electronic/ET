@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                            LAYER DISPLAY                                 --
+--                        LAYER DISPLAY SCHEMATIC                           --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 --         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -36,16 +36,62 @@
 --
 --   ToDo: 
 
-package et_display is
+-- with ada.text_io;
+-- with ada.strings;
+-- with ada.strings.bounded;
 
-	type type_layer_status is (ON, OFF);
+package body et_display.schematic is
 
-	default : constant type_layer_status := OFF;
+	function device_names_enabled return boolean is begin
+		if schematic_layers.device_names = ON then
+			return true;
+		else
+			return false;
+		end if;
+	end device_names_enabled;	
 
-	function to_string (on_off : in type_layer_status) return string;
-	function to_layer_status (on_off : in string) return type_layer_status;
+	function device_values_enabled return boolean is begin
+		if schematic_layers.device_values = ON then
+			return true;
+		else
+			return false;
+		end if;
+	end device_values_enabled;	
 
-end et_display;
+	function device_purposes_enabled return boolean is begin
+		if schematic_layers.device_purposes = ON then
+			return true;
+		else
+			return false;
+		end if;
+	end device_purposes_enabled;	
+	
+	function ports_enabled return boolean is begin
+		if schematic_layers.ports = ON then
+			return true;
+		else
+			return false;
+		end if;
+	end ports_enabled;
+	
+	function nets_enabled return boolean is begin
+		if schematic_layers.nets = ON then
+			return true;
+		else
+			return false;
+		end if;
+	end nets_enabled;
+
+	function texts_enabled return boolean is begin
+		if schematic_layers.texts= ON then
+			return true;
+		else
+			return false;
+		end if;
+	end texts_enabled;
+
+	
+end et_display.schematic;
 
 -- Soli Deo Gloria
 

@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                            LAYER DISPLAY                                 --
+--                      LAYER DISPLAY SCHEMATIC                             --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,16 +36,41 @@
 --
 --   ToDo: 
 
-package et_display is
+package et_display.schematic is
 
-	type type_layer_status is (ON, OFF);
+	type type_schematic_layers is record
+		nets			: type_layer_status := ON;
+		ports			: type_layer_status := OFF; -- the circles around the start point of ports
+		-- ?? net_labels		: type_layer_status := ON;
+		device_names	: type_layer_status := ON; -- for things like IC12, submodule names, instances and position
+		device_values	: type_layer_status := ON; -- things like 220R or 7400
+		device_purposes	: type_layer_status := ON; -- things like "brightness control"
+		texts			: type_layer_status := ON; -- general notes
+	end record;
 
-	default : constant type_layer_status := OFF;
+	-- This global variable is read whenever things are displayed in a schematic:
+	schematic_layers : type_schematic_layers;
 
-	function to_string (on_off : in type_layer_status) return string;
-	function to_layer_status (on_off : in string) return type_layer_status;
+	-- Returns true if device names layer is enabled:
+	function device_names_enabled return boolean;
 
-end et_display;
+	-- Returns true if device values layer is enabled:
+	function device_values_enabled return boolean;
+
+	-- Returns true if device purposes layer is enabled:
+	function device_purposes_enabled return boolean;
+	
+	-- Returns true if port layer is enabled:
+	function ports_enabled return boolean;
+	
+	-- Returns true if net layer is enabled:
+	function nets_enabled return boolean;
+
+	-- Returns true if text layer is enabled:
+	function texts_enabled return boolean;
+
+	
+end et_display.schematic;
 
 -- Soli Deo Gloria
 

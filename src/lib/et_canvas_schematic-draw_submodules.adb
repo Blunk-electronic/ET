@@ -51,7 +51,7 @@ with et_schematic;
 with submodules;				use submodules;
 use et_project.type_modules;
 
-with et_display;
+with et_display.schematic;
 
 separate (et_canvas_schematic)
 
@@ -370,7 +370,7 @@ procedure draw_submodules (
 			cairo.stroke (context.cr);
 		end draw_ports;
 
-		use et_display;
+		use et_display.schematic;
 		
 	begin -- query_submods
 		-- We want to draw only those submodules which are on the active sheet:
@@ -381,7 +381,7 @@ procedure draw_submodules (
 
 			-- Draw file and instance name and position in board if
 			-- layer device_names is enabled:
-			if et_display.schematic_layers.device_names = ON then
+			if device_names_enabled then
 
 				set_color_placeholders (context.cr);
 				
