@@ -278,7 +278,7 @@ package et_frames is
 	type type_cam_marker is new type_text with null record;
 
 	type type_cam_markers is record
-		face			: type_cam_marker := (content => et_text.to_content ("FACE"), others => <>);
+		face			: type_cam_marker := (content => et_text.to_content ("FACE:"), others => <>);
 		silk_screen		: type_cam_marker := (content => et_text.to_content ("SILKSCREEN"), others => <>);
 		assy_doc		: type_cam_marker := (content => et_text.to_content ("ASSEMBLY"), others => <>);
 		keepout			: type_cam_marker := (content => et_text.to_content ("KEEPOUT"), others => <>);
