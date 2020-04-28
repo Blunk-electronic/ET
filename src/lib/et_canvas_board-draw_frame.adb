@@ -67,28 +67,17 @@ procedure draw_frame (
 
 	use pac_draw_frame;
 
-	procedure draw_additional_placeholders is 
-
-		-- get placeholders:
-		phs : constant type_placeholders_pcb := 
-			self.get_frame.title_block_pcb.additional_placeholders;
-
+	procedure draw_enabled_conductor_layers is 
 		use et_text;
 		use et_display.board;
 	begin
 		draw_text (
 			content	=> to_content (enabled_conductor_layers),
-			size	=> phs.signal_layer.size,
+			size	=> self.get_frame.title_block_pcb.additional_placeholders.signal_layer.size,
 			font	=> font_placeholders,
-			pos		=> phs.signal_layer.position);
+			pos		=> self.get_frame.title_block_pcb.additional_placeholders.signal_layer.position);
 
--- 		draw_text (
--- 			content	=> to_content ("TOP/BOT"), -- CS
--- 			size	=> phs.face.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.face.position);
-
-	end draw_additional_placeholders;
+	end draw_enabled_conductor_layers;
 
 	procedure draw_cam_markers is
 
@@ -98,7 +87,16 @@ procedure draw_frame (
 		use et_display;
 		use et_display.board;
 
--- 		face : type_face;
+		face : type_face;
+
+		procedure silkscreen is begin
+			draw_text (
+				content	=> to_content (to_string (cms.silk_screen.content)),
+				size	=> cms.silk_screen.size,
+				font	=> font_placeholders,
+				pos		=> cms.silk_screen.position);
+		end silkscreen;
+	
 	begin
 		draw_text (
 			content	=> to_content (to_string (cms.face.content)),
@@ -106,14 +104,16 @@ procedure draw_frame (
 			font	=> font_placeholders,
 			pos		=> cms.face.position);
 
-		if silkscreen_enabled (TOP) or else silkscreen_enabled (BOTTOM) then
-			draw_text (
-				content	=> to_content (to_string (cms.silk_screen.content)),
-				size	=> cms.silk_screen.size,
-				font	=> font_placeholders,
-				pos		=> cms.silk_screen.position);
+		if silkscreen_enabled (TOP) then
+			silkscreen;
+			face := TOP;
 		end if;
 
+		if silkscreen_enabled (BOTTOM) then
+			silkscreen;
+			face := BOTTOM;
+		end if;
+			
 		if assy_doc_enabled (TOP) or else assy_doc_enabled (BOTTOM) then
 			draw_text (
 				content	=> to_content (to_string (cms.assy_doc.content)),
@@ -185,7 +185,14 @@ procedure draw_frame (
 				font	=> font_placeholders,
 				pos		=> cms.signal_layer.position);
 		end if;
-		
+
+		-- FACE (depends on variable "face"):
+		draw_text (
+			content	=> to_content (to_string (face)),
+			size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size,
+			font	=> font_placeholders,
+			pos		=> self.get_frame.title_block_pcb.additional_placeholders.face.position);
+				
 	end draw_cam_markers;
 	
 begin -- draw_frame
@@ -218,7 +225,7 @@ begin -- draw_frame
 		-- draw common placeholders and other texts
 		draw_texts;
 
-		draw_additional_placeholders;
+		draw_enabled_conductor_layers;
 		
 		draw_cam_markers;
 		
