@@ -36,8 +36,6 @@
 --
 --   ToDo: 
 
-with et_pcb_stack;				use et_pcb_stack;
-
 package et_display is
 
 	type type_layer_status is (ON, OFF);
@@ -61,55 +59,6 @@ package et_display is
 	-- This global variable is read whenever things are displayed in a schematic:
 	schematic_layers : type_schematic_layers;
 
-
--- BOARD
-	type type_paired is record
-		top, bottom : type_layer_status := OFF;
-	end record;
-
-	type type_conductors is array (type_signal_layer'first .. type_signal_layer'last) 
-		of type_layer_status;
-
-	type type_vias is array (type_signal_layer'first .. type_signal_layer'last) 
-		of type_layer_status;
-		
-	type type_route_restrict is array (type_signal_layer'first .. type_signal_layer'last) 
-		of type_layer_status;
-
-	type type_via_restrict is array (type_signal_layer'first .. type_signal_layer'last) 
-		of type_layer_status;
-
-	-- Returns true if at least one of the given route restrict layers has status ON.
-	function route_restrict_layer_active (layers : in type_signal_layers.set)
-		return boolean;
-
-	-- Returns true if at least one of the given via restrict layers has status ON.
-	function via_restrict_layer_active (layers : in type_signal_layers.set)
-		return boolean;
-
-	
-	keyword_route	: constant string := "route";
-	keyword_via		: constant string := "via";
-		
-	type type_board_layers is record
-		outline		: type_layer_status := ON;
-		
-		silkscreen	: type_paired := (top => ON, bottom => OFF);
-		assy_doc	: type_paired := (top => ON, bottom => OFF);
-		keepout		: type_paired := (others => OFF);
-		stop_mask	: type_paired := (others => OFF);
-		stencil		: type_paired := (others => OFF);
-
-		conductors		: type_conductors := (type_conductors'first => ON, others => OFF);
-		vias			: type_vias := (others => OFF);
-		route_restrict	: type_route_restrict := (others => OFF);
-		via_restrict	: type_via_restrict := (others => OFF);		
-	end record;
-
-	board_layers : type_board_layers;
-
-	function active_conductor_layers return string;
-	
 end et_display;
 
 -- Soli Deo Gloria

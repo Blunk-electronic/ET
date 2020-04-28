@@ -47,7 +47,7 @@ with et_packages;				use et_packages;
 use et_pcb_coordinates.geometry;
 
 with et_pcb;					use et_pcb;
-with et_display;				use et_display;
+with et_display.board;			use et_display.board;
 
 with et_canvas_primitive_draw_ops;
 
@@ -65,7 +65,7 @@ procedure draw_route_restrict (
 	procedure query_line (c : in type_route_restrict_lines.cursor) is begin
 
 		-- Draw the line if restrict layer is enabled:
-		if route_restrict_layer_active (element (c).layers) then
+		if route_restrict_layer_enabled (element (c).layers) then
 			
 			pac_draw_package.draw_line (
 				area		=> in_area,
@@ -79,7 +79,7 @@ procedure draw_route_restrict (
 	procedure query_arc (c : in type_route_restrict_arcs.cursor) is begin
 
 		-- Draw the arc if restrict layer is enabled:
-		if route_restrict_layer_active (element (c).layers) then
+		if route_restrict_layer_enabled (element (c).layers) then
 			
 			pac_draw_package.draw_arc (
 				area		=> in_area,
@@ -95,7 +95,7 @@ procedure draw_route_restrict (
 	begin
 
 		-- Draw the circle if restrict layer is enabled:
-		if route_restrict_layer_active (element (c).layers) then
+		if route_restrict_layer_enabled (element (c).layers) then
 		
 			case element (c).filled is
 				when NO =>

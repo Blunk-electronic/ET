@@ -43,7 +43,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 use et_pcb_coordinates.geometry;
 
 with et_canvas_schematic;
-with et_display;
+with et_display.board;
 with et_colors.board;			use et_colors.board;
 
 package body et_canvas_board is
@@ -213,7 +213,7 @@ package body et_canvas_board is
 						x => - self.frame_bounding_box.x,
 						y => - self.frame_bounding_box.y));
 
-		use et_display;
+		use et_display.board;
 	begin
 -- 		put_line ("draw internal ...");
 		
@@ -255,52 +255,52 @@ package body et_canvas_board is
 		draw_cursor (self, area_shifted, context, cursor_main);
 
 		-- outline
-		if et_display.board_layers.outline = ON then		
+		if outline_enabled then		
 			draw_outline (self, area_shifted, context);
 		end if;
 
 		-- silkscreen
-		if et_display.board_layers.silkscreen.top = ON then
+		if silkscreen_enabled (TOP) then
 			draw_silk_screen (self, area_shifted, context, TOP);
 		end if;
 
-		if et_display.board_layers.silkscreen.bottom = ON then
+		if silkscreen_enabled (BOTTOM) then
 			draw_silk_screen (self, area_shifted, context, BOTTOM);
 		end if;
 
-		-- assembly documentation
-		if et_display.board_layers.assy_doc.top = ON then
+		-- assy doc
+		if assy_doc_enabled (TOP) then
 			draw_assy_doc (self, area_shifted, context, TOP);
 		end if;
 
-		if et_display.board_layers.assy_doc.bottom = ON then
+		if assy_doc_enabled (BOTTOM) then
 			draw_assy_doc (self, area_shifted, context, BOTTOM);
 		end if;
 
 		-- stop mask
-		if et_display.board_layers.stop_mask.top = ON then
+		if stop_mask_enabled (TOP) then
 			draw_stop (self, area_shifted, context, TOP);
 		end if;
 
-		if et_display.board_layers.stop_mask.bottom = ON then
+		if stop_mask_enabled (BOTTOM) then
 			draw_stop (self, area_shifted, context, BOTTOM);
 		end if;
 
 		-- stencil / solder paste / solder cream
-		if et_display.board_layers.stencil.top = ON then
+		if stencil_enabled (TOP) then
 			draw_stencil (self, area_shifted, context, TOP);
 		end if;
 
-		if et_display.board_layers.stencil.bottom = ON then
+		if stencil_enabled (BOTTOM) then
 			draw_stencil (self, area_shifted, context, BOTTOM);
 		end if;
 
 		-- keepout
-		if et_display.board_layers.keepout.top = ON then
+		if keepout_enabled (TOP) then
 			draw_keepout (self, area_shifted, context, TOP);
 		end if;
 
-		if et_display.board_layers.keepout.bottom = ON then
+		if keepout_enabled (BOTTOM) then
 			draw_keepout (self, area_shifted, context, BOTTOM);
 		end if;
 

@@ -74,10 +74,10 @@ procedure draw_frame (
 			self.get_frame.title_block_pcb.additional_placeholders;
 
 		use et_text;
-		use et_display;
+		use et_display.board;
 	begin
 		draw_text (
-			content	=> to_content (active_conductor_layers),
+			content	=> to_content (enabled_conductor_layers),
 			size	=> phs.signal_layer.size,
 			font	=> font_placeholders,
 			pos		=> phs.signal_layer.position);
@@ -96,6 +96,9 @@ procedure draw_frame (
 
 		use et_text;
 		use et_display;
+		use et_display.board;
+
+-- 		face : type_face;
 	begin
 		draw_text (
 			content	=> to_content (to_string (cms.face.content)),
@@ -103,68 +106,85 @@ procedure draw_frame (
 			font	=> font_placeholders,
 			pos		=> cms.face.position);
 
-		-- 
-		if board_layers.silkscreen.top = ON then
+		if silkscreen_enabled (TOP) or else silkscreen_enabled (BOTTOM) then
 			draw_text (
 				content	=> to_content (to_string (cms.silk_screen.content)),
 				size	=> cms.silk_screen.size,
 				font	=> font_placeholders,
 				pos		=> cms.silk_screen.position);
 		end if;
-		
-		draw_text (
-			content	=> to_content (to_string (cms.assy_doc.content)),
-			size	=> cms.assy_doc.size,
-			font	=> font_placeholders,
-			pos		=> cms.assy_doc.position);
 
-		draw_text (
-			content	=> to_content (to_string (cms.keepout.content)),
-			size	=> cms.keepout.size,
-			font	=> font_placeholders,
-			pos		=> cms.keepout.position);
+		if assy_doc_enabled (TOP) or else assy_doc_enabled (BOTTOM) then
+			draw_text (
+				content	=> to_content (to_string (cms.assy_doc.content)),
+				size	=> cms.assy_doc.size,
+				font	=> font_placeholders,
+				pos		=> cms.assy_doc.position);
+		end if;
 
-		draw_text (
-			content	=> to_content (to_string (cms.plated_millings.content)),
-			size	=> cms.plated_millings.size,
-			font	=> font_placeholders,
-			pos		=> cms.plated_millings.position);
+		if keepout_enabled (TOP) or else keepout_enabled (BOTTOM) then
+			draw_text (
+				content	=> to_content (to_string (cms.keepout.content)),
+				size	=> cms.keepout.size,
+				font	=> font_placeholders,
+				pos		=> cms.keepout.position);
+		end if;
 
-		draw_text (
-			content	=> to_content (to_string (cms.pcb_outline.content)),
-			size	=> cms.pcb_outline.size,
-			font	=> font_placeholders,
-			pos		=> cms.pcb_outline.position);
+		if plated_millings_enabled then
+			draw_text (
+				content	=> to_content (to_string (cms.plated_millings.content)),
+				size	=> cms.plated_millings.size,
+				font	=> font_placeholders,
+				pos		=> cms.plated_millings.position);
+		end if;
+			
+		if outline_enabled then
+			draw_text (
+				content	=> to_content (to_string (cms.pcb_outline.content)),
+				size	=> cms.pcb_outline.size,
+				font	=> font_placeholders,
+				pos		=> cms.pcb_outline.position);
+		end if;
 
-		draw_text (
-			content	=> to_content (to_string (cms.route_restrict.content)),
-			size	=> cms.route_restrict.size,
-			font	=> font_placeholders,
-			pos		=> cms.route_restrict.position);
+		if route_restrict_enabled then
+			draw_text (
+				content	=> to_content (to_string (cms.route_restrict.content)),
+				size	=> cms.route_restrict.size,
+				font	=> font_placeholders,
+				pos		=> cms.route_restrict.position);
+		end if;
 
-		draw_text (
-			content	=> to_content (to_string (cms.stop_mask.content)),
-			size	=> cms.stop_mask.size,
-			font	=> font_placeholders,
-			pos		=> cms.stop_mask.position);
+		if stop_mask_enabled (TOP) or else stop_mask_enabled (BOTTOM) then
+			draw_text (
+				content	=> to_content (to_string (cms.stop_mask.content)),
+				size	=> cms.stop_mask.size,
+				font	=> font_placeholders,
+				pos		=> cms.stop_mask.position);
+		end if;
 
-		draw_text (
-			content	=> to_content (to_string (cms.stencil.content)),
-			size	=> cms.stencil.size,
-			font	=> font_placeholders,
-			pos		=> cms.stencil.position);
-		
-		draw_text (
-			content	=> to_content (to_string (cms.via_restrict.content)),
-			size	=> cms.via_restrict.size,
-			font	=> font_placeholders,
-			pos		=> cms.via_restrict.position);
+		if stencil_enabled (TOP) or else stencil_enabled (BOTTOM) then
+			draw_text (
+				content	=> to_content (to_string (cms.stencil.content)),
+				size	=> cms.stencil.size,
+				font	=> font_placeholders,
+				pos		=> cms.stencil.position);
+		end if;
 
-		draw_text (
-			content	=> to_content (to_string (cms.signal_layer.content)),
-			size	=> cms.signal_layer.size,
-			font	=> font_placeholders,
-			pos		=> cms.signal_layer.position);
+		if via_restrict_enabled then
+			draw_text (
+				content	=> to_content (to_string (cms.via_restrict.content)),
+				size	=> cms.via_restrict.size,
+				font	=> font_placeholders,
+				pos		=> cms.via_restrict.position);
+		end if;
+
+		if conductors_enabled then
+			draw_text (
+				content	=> to_content (to_string (cms.signal_layer.content)),
+				size	=> cms.signal_layer.size,
+				font	=> font_placeholders,
+				pos		=> cms.signal_layer.position);
+		end if;
 		
 	end draw_cam_markers;
 	

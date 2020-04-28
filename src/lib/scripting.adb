@@ -66,7 +66,8 @@ with et_geometry;		use et_geometry; -- due to frequently used keywords
 with et_symbols;
 with et_devices;		use et_devices;
 with et_display;		use et_display;
-
+-- with et_display.schematic;
+with et_display.board;
 with glib;
 
 package body scripting is
@@ -384,6 +385,7 @@ package body scripting is
 		use geometry;
 		use et_devices;
 		use et_canvas_schematic.pac_canvas;
+		--use et_display.schematic;
 		
 		function f (place : in positive) return string is begin
 			return et_string_processing.field (cmd, place);
@@ -2063,6 +2065,7 @@ package body scripting is
 		use et_pcb_coordinates.geometry;
 		use et_pcb_stack;
 		use et_canvas_board.pac_canvas;
+		use et_display.board;
 
 		function f (place : in positive) return string is begin
 			return et_string_processing.field (cmd, place);

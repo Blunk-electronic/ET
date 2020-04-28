@@ -47,7 +47,7 @@ with et_packages;				use et_packages;
 use et_pcb_coordinates.geometry;
 
 with et_pcb;					use et_pcb;
-with et_display;				use et_display;
+with et_display.board;			use et_display.board;
 
 with et_canvas_primitive_draw_ops;
 
@@ -65,7 +65,7 @@ procedure draw_conductors (
 	procedure query_line (c : in pac_copper_lines.cursor) is begin
 
 		-- Draw the line if the conductor layer is enabled:
-		if et_display.board_layers.conductors (element (c).layer) = ON then
+		if conductor_enabled (element (c).layer) then
 			
 			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 
@@ -85,7 +85,7 @@ procedure draw_conductors (
 	procedure query_arc (c : in pac_copper_arcs.cursor) is begin
 
 		-- Draw the arc if the conductor layer is enabled:
-		if et_display.board_layers.conductors (element (c).layer) = ON then
+		if conductor_enabled (element (c).layer) then
 
 			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 
@@ -106,7 +106,7 @@ procedure draw_conductors (
 		use et_packages.pac_shapes;
 	begin
 		-- Draw the circle if the conductor layer is enabled:
-		if et_display.board_layers.conductors (element (c).layer) = ON then
+		if conductor_enabled (element (c).layer) then
 			
 			-- set color according to layer
 			set_color_conductor (context.cr, element (c).layer);
