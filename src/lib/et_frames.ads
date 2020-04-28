@@ -282,11 +282,11 @@ package et_frames is
 		silk_screen		: type_cam_marker := (content => et_text.to_content ("SILKSCREEN"), others => <>);
 		assy_doc		: type_cam_marker := (content => et_text.to_content ("ASSEMBLY"), others => <>);
 		keepout			: type_cam_marker := (content => et_text.to_content ("KEEPOUT"), others => <>);
-		plated_millings	: type_cam_marker := (content => et_text.to_content ("PLTD_MILLINGS"), others => <>); 
+		plated_millings	: type_cam_marker := (content => et_text.to_content ("PLTD_MILLGS"), others => <>); 
 		pcb_outline 	: type_cam_marker := (content => et_text.to_content ("OUTLINE"), others => <>);
-		route_restrict	: type_cam_marker := (content => et_text.to_content ("ROUTE_RESTRICT"), others => <>);
-		via_restrict	: type_cam_marker := (content => et_text.to_content ("VIA_RESTRICT"), others => <>);		
-		signal_layer	: type_cam_marker := (content => et_text.to_content ("SIGNAL_LAYER"), others => <>);
+		route_restrict	: type_cam_marker := (content => et_text.to_content ("ROUTE_RESTR:"), others => <>);
+		via_restrict	: type_cam_marker := (content => et_text.to_content ("VIA_RESTR:"), others => <>);		
+		signal_layer	: type_cam_marker := (content => et_text.to_content ("SGNL_LYR:"), others => <>);
 		stencil			: type_cam_marker := (content => et_text.to_content ("STENCIL"), others => <>);		
 		stop_mask		: type_cam_marker := (content => et_text.to_content ("STOP_MASK"), others => <>);
 	end record;
