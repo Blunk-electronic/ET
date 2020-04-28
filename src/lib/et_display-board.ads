@@ -60,7 +60,7 @@ package et_display.board is
 	keyword_route	: constant string := "route";
 	keyword_via		: constant string := "via";
 		
-	type type_board_layers is record
+	type type_layers is record
 		outline			: type_layer_status := ON;
 		plated_millings	: type_layer_status := ON;
 		
@@ -76,7 +76,7 @@ package et_display.board is
 		via_restrict	: type_via_restrict := (others => OFF);		
 	end record;
 
-	board_layers : type_board_layers;
+	layers : type_layers;
 
 	function outline_enabled return boolean;
 	function plated_millings_enabled return boolean;

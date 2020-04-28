@@ -43,7 +43,7 @@ with ada.strings.bounded;
 package body et_display.board is
 
 	function outline_enabled return boolean is begin
-		if board_layers.outline = ON then 
+		if layers.outline = ON then 
 			return true;
 		else
 			return false;
@@ -51,7 +51,7 @@ package body et_display.board is
 	end outline_enabled;
 
 	function plated_millings_enabled return boolean is begin
-		if board_layers.plated_millings = ON then 
+		if layers.plated_millings = ON then 
 			return true;
 		else
 			return false;
@@ -61,9 +61,9 @@ package body et_display.board is
 	function silkscreen_enabled (face : in type_face) return boolean is begin
 		case face is
 			when TOP =>
-				if board_layers.silkscreen.top = ON then return true; end if;
+				if layers.silkscreen.top = ON then return true; end if;
 			when BOTTOM =>
-				if board_layers.silkscreen.bottom = ON then return true; end if;
+				if layers.silkscreen.bottom = ON then return true; end if;
 		end case;
 		return false;
 	end silkscreen_enabled;
@@ -71,9 +71,9 @@ package body et_display.board is
 	function assy_doc_enabled (face : in type_face) return boolean is begin
 		case face is
 			when TOP =>
-				if board_layers.assy_doc.top = ON then return true; end if;
+				if layers.assy_doc.top = ON then return true; end if;
 			when BOTTOM =>
-				if board_layers.assy_doc.bottom = ON then return true; end if;
+				if layers.assy_doc.bottom = ON then return true; end if;
 		end case;
 		return false;
 	end assy_doc_enabled;
@@ -81,9 +81,9 @@ package body et_display.board is
 	function keepout_enabled (face : in type_face) return boolean is begin
 		case face is
 			when TOP =>
-				if board_layers.keepout.top = ON then return true; end if;
+				if layers.keepout.top = ON then return true; end if;
 			when BOTTOM =>
-				if board_layers.keepout.bottom = ON then return true; end if;
+				if layers.keepout.bottom = ON then return true; end if;
 		end case;
 		return false;
 	end keepout_enabled;
@@ -91,9 +91,9 @@ package body et_display.board is
 	function stop_mask_enabled (face : in type_face) return boolean is begin
 		case face is
 			when TOP =>
-				if board_layers.stop_mask.top = ON then return true; end if;
+				if layers.stop_mask.top = ON then return true; end if;
 			when BOTTOM =>
-				if board_layers.stop_mask.bottom = ON then return true; end if;
+				if layers.stop_mask.bottom = ON then return true; end if;
 		end case;
 		return false;
 	end stop_mask_enabled;
@@ -101,16 +101,16 @@ package body et_display.board is
 	function stencil_enabled (face : in type_face) return boolean is begin
 		case face is
 			when TOP =>
-				if board_layers.stencil.top = ON then return true; end if;
+				if layers.stencil.top = ON then return true; end if;
 			when BOTTOM =>
-				if board_layers.stencil.bottom = ON then return true; end if;
+				if layers.stencil.bottom = ON then return true; end if;
 		end case;
 		return false;
 	end stencil_enabled;
 	
 	function route_restrict_enabled return boolean is begin
 		for r in type_route_restrict'first .. type_route_restrict'last loop
-			if board_layers.route_restrict (r) = ON then
+			if layers.route_restrict (r) = ON then
 				return true;
 			end if;
 		end loop;
@@ -120,7 +120,7 @@ package body et_display.board is
 
 	function via_restrict_enabled return boolean is begin
 		for r in type_via_restrict'first .. type_via_restrict'last loop
-			if board_layers.via_restrict (r) = ON then
+			if layers.via_restrict (r) = ON then
 				return true;
 			end if;
 		end loop;
@@ -130,7 +130,7 @@ package body et_display.board is
 
 	function conductors_enabled return boolean is begin
 		for r in type_conductors'first .. type_conductors'last loop
-			if board_layers.conductors (r) = ON then
+			if layers.conductors (r) = ON then
 				return true;
 			end if;
 		end loop;
@@ -139,7 +139,7 @@ package body et_display.board is
 	end conductors_enabled;
 
 	function conductor_enabled (layer : in type_signal_layer) return boolean is begin
-		if board_layers.conductors (layer) = ON then
+		if layers.conductors (layer) = ON then
 			return true;
 		else
 			return false;
@@ -152,7 +152,7 @@ package body et_display.board is
 	begin
 		for r in type_route_restrict'first .. type_route_restrict'last loop
 
-			if board_layers.route_restrict (r) = ON then
+			if et_display.board.layers.route_restrict (r) = ON then
 				if layers.contains (r) then
 					result := true;
 					exit; -- no need to probe remaining layers
@@ -170,7 +170,7 @@ package body et_display.board is
 	begin
 		for r in type_via_restrict'first .. type_via_restrict'last loop
 
-			if board_layers.via_restrict (r) = ON then
+			if et_display.board.layers.via_restrict (r) = ON then
 				if layers.contains (r) then
 					result := true;
 					exit; -- no need to probe remaining layers
@@ -188,21 +188,20 @@ package body et_display.board is
  		use ada.strings.bounded;
 		package pac_layers is new generic_bounded_length (positive (2 * type_signal_layer'last)); -- CS sufficent long ?
 		use pac_layers;
-		layers : pac_layers.bounded_string;
+		ly : pac_layers.bounded_string;
 		separator_1 : constant character := space;
 		separator_2 : constant string := "..";
 	begin
 		for l in type_signal_layer'first .. type_signal_layer'last loop
 
-			if board_layers.conductors (l) = ON then
-				layers := layers & to_bounded_string (separator_1 & to_string (l));
+			if layers.conductors (l) = ON then
+				ly := ly & to_bounded_string (separator_1 & to_string (l));
 			end if;
 			
 		end loop;
 		
-		return to_string (layers);
+		return to_string (ly);
 	end enabled_conductor_layers;
-
 	
 end et_display.board;
 

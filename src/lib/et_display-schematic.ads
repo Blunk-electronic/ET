@@ -38,7 +38,7 @@
 
 package et_display.schematic is
 
-	type type_schematic_layers is record
+	type type_layers is record
 		nets			: type_layer_status := ON;
 		ports			: type_layer_status := OFF; -- the circles around the start point of ports
 		-- ?? net_labels		: type_layer_status := ON;
@@ -49,7 +49,7 @@ package et_display.schematic is
 	end record;
 
 	-- This global variable is read whenever things are displayed in a schematic:
-	schematic_layers : type_schematic_layers;
+	layers : type_layers;
 
 	-- Returns true if device names layer is enabled:
 	function device_names_enabled return boolean;

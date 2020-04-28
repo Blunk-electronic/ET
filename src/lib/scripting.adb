@@ -565,12 +565,12 @@ package body scripting is
 				 level => log_threshold + 1);
 			
 			case layer is
-				when NOUN_NAMES		=> schematic_layers.device_names := ls;
-				when NOUN_NETS		=> schematic_layers.nets := ls;
-				when NOUN_PORTS		=> schematic_layers.ports := ls;
-				when NOUN_PURPOSES	=> schematic_layers.device_purposes := ls;
-				when NOUN_TEXTS		=> schematic_layers.texts := ls;
-				when NOUN_VALUES	=> schematic_layers.device_values := ls;
+				when NOUN_NAMES		=> layers.device_names := ls;
+				when NOUN_NETS		=> layers.nets := ls;
+				when NOUN_PORTS		=> layers.ports := ls;
+				when NOUN_PURPOSES	=> layers.device_purposes := ls;
+				when NOUN_TEXTS		=> layers.texts := ls;
+				when NOUN_VALUES	=> layers.device_values := ls;
 				
 				when others => 
 					log (importance => ERROR, text => "invalid layer !", console => true);
@@ -2097,7 +2097,7 @@ package body scripting is
 			log (text => "display outline layer" & space & to_string (ls),
 				 level => log_threshold + 1);
 
-			board_layers.outline := ls;
+			layers.outline := ls;
 			
 			-- CS exception handler if status is invalid
 		end display_outline;
@@ -2130,11 +2130,11 @@ package body scripting is
 			case fc is
 				when TOP =>
 					case layer is
-						when NOUN_SILKSCREEN 	=> board_layers.silkscreen.top	:= ls;
-						when NOUN_ASSY			=> board_layers.assy_doc.top	:= ls;
-						when NOUN_KEEPOUT		=> board_layers.keepout.top		:= ls;
-						when NOUN_STENCIL		=> board_layers.stencil.top		:= ls;
-						when NOUN_STOP			=> board_layers.stop_mask.top	:= ls;
+						when NOUN_SILKSCREEN 	=> layers.silkscreen.top	:= ls;
+						when NOUN_ASSY			=> layers.assy_doc.top		:= ls;
+						when NOUN_KEEPOUT		=> layers.keepout.top		:= ls;
+						when NOUN_STENCIL		=> layers.stencil.top		:= ls;
+						when NOUN_STOP			=> layers.stop_mask.top		:= ls;
 						
 						when others => 
 							log (importance => ERROR, text => "invalid layer !", console => true);
@@ -2142,11 +2142,11 @@ package body scripting is
 
 				when BOTTOM =>
 					case layer is
-						when NOUN_SILKSCREEN 	=> board_layers.silkscreen.bottom	:= ls;
-						when NOUN_ASSY			=> board_layers.assy_doc.bottom		:= ls;
-						when NOUN_KEEPOUT		=> board_layers.keepout.bottom		:= ls;
-						when NOUN_STENCIL		=> board_layers.stencil.bottom		:= ls;
-						when NOUN_STOP			=> board_layers.stop_mask.bottom	:= ls;
+						when NOUN_SILKSCREEN 	=> layers.silkscreen.bottom	:= ls;
+						when NOUN_ASSY			=> layers.assy_doc.bottom	:= ls;
+						when NOUN_KEEPOUT		=> layers.keepout.bottom	:= ls;
+						when NOUN_STENCIL		=> layers.stencil.bottom	:= ls;
+						when NOUN_STOP			=> layers.stop_mask.bottom	:= ls;
 						
 						when others => 
 							log (importance => ERROR, text => "invalid layer !", console => true);
@@ -2179,7 +2179,7 @@ package body scripting is
 			log (text => "display conductor layer " & to_string (ly) & space & to_string (ls),
 				 level => log_threshold + 1);
 
-			board_layers.conductors (ly) := ls;
+			layers.conductors (ly) := ls;
 			
 			-- CS exception handler if status is invalid
 		end display_conductor_layer;
@@ -2207,7 +2207,7 @@ package body scripting is
 			log (text => "display via layer " & to_string (ly) & space & to_string (ls),
 				 level => log_threshold + 1);
 
-			board_layers.vias (ly) := ls;
+			layers.vias (ly) := ls;
 			
 			-- CS exception handler if status is invalid
 		end display_vias;
@@ -2237,13 +2237,13 @@ package body scripting is
 				log (text => "display route restrict layer " & to_string (ly) & space & to_string (ls),
 					level => log_threshold + 1);
 
-				board_layers.route_restrict (ly) := ls;
+				layers.route_restrict (ly) := ls;
 				
 			elsif objects = keyword_via then
 				log (text => "display via restrict layer " & to_string (ly) & space & to_string (ls),
 					level => log_threshold + 1);
 
-				board_layers.via_restrict (ly) := ls;
+				layers.via_restrict (ly) := ls;
 				
 			else
 				log (importance => ERROR, 

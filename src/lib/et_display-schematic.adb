@@ -43,7 +43,7 @@
 package body et_display.schematic is
 
 	function device_names_enabled return boolean is begin
-		if schematic_layers.device_names = ON then
+		if layers.device_names = ON then
 			return true;
 		else
 			return false;
@@ -51,7 +51,7 @@ package body et_display.schematic is
 	end device_names_enabled;	
 
 	function device_values_enabled return boolean is begin
-		if schematic_layers.device_values = ON then
+		if layers.device_values = ON then
 			return true;
 		else
 			return false;
@@ -59,7 +59,7 @@ package body et_display.schematic is
 	end device_values_enabled;	
 
 	function device_purposes_enabled return boolean is begin
-		if schematic_layers.device_purposes = ON then
+		if layers.device_purposes = ON then
 			return true;
 		else
 			return false;
@@ -67,7 +67,7 @@ package body et_display.schematic is
 	end device_purposes_enabled;	
 	
 	function ports_enabled return boolean is begin
-		if schematic_layers.ports = ON then
+		if layers.ports = ON then
 			return true;
 		else
 			return false;
@@ -75,7 +75,7 @@ package body et_display.schematic is
 	end ports_enabled;
 	
 	function nets_enabled return boolean is begin
-		if schematic_layers.nets = ON then
+		if layers.nets = ON then
 			return true;
 		else
 			return false;
@@ -83,7 +83,7 @@ package body et_display.schematic is
 	end nets_enabled;
 
 	function texts_enabled return boolean is begin
-		if schematic_layers.texts= ON then
+		if layers.texts= ON then
 			return true;
 		else
 			return false;
