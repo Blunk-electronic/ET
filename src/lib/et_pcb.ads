@@ -396,6 +396,7 @@ package et_pcb is
 	type type_route is record 
 		lines 		: pac_copper_lines.list;
 		arcs		: pac_copper_arcs.list;
+		-- CS: circles ?
 		vias		: pac_vias.list;
 		polygons_2	: type_signal_polygons;
 		cutouts		: pac_copper_cutouts.list;

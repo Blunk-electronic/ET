@@ -107,6 +107,14 @@ package body et_display.board is
 		end case;
 		return false;
 	end stencil_enabled;
+
+	function vias_enabled return boolean is begin
+		if layers.vias = ON then
+			return true;
+		else
+			return false;
+		end if;
+	end vias_enabled;
 	
 	function route_restrict_enabled return boolean is begin
 		for r in type_route_restrict'first .. type_route_restrict'last loop

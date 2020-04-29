@@ -48,8 +48,8 @@ package et_display.board is
 	type type_conductors is array (type_signal_layer'first .. type_signal_layer'last) 
 		of type_layer_status;
 
-	type type_vias is array (type_signal_layer'first .. type_signal_layer'last) 
-		of type_layer_status;
+-- 	type type_vias is array (type_signal_layer'first .. type_signal_layer'last) 
+-- 		of type_layer_status;
 		
 	type type_route_restrict is array (type_signal_layer'first .. type_signal_layer'last) 
 		of type_layer_status;
@@ -70,8 +70,16 @@ package et_display.board is
 		stop_mask	: type_paired := (others => OFF);
 		stencil		: type_paired := (others => OFF);
 
-		conductors		: type_conductors := (type_conductors'first => ON, others => OFF);
-		vias			: type_vias := (others => OFF);
+		-- By default conductor layers 1..4 are displayed:
+		conductors		: type_conductors := (
+							1 => ON,
+							2 => ON,
+							3 => ON,
+							4 => ON,
+							others => OFF);
+		
+		--vias			: type_vias := (others => OFF);
+		vias			: type_layer_status := ON;
 		route_restrict	: type_route_restrict := (others => OFF);
 		via_restrict	: type_via_restrict := (others => OFF);		
 	end record;
@@ -93,6 +101,9 @@ package et_display.board is
 	-- Returns true if the given conductor layer is enabled:
 	function conductor_enabled (layer : in type_signal_layer) return boolean;
 
+	-- Returns true if via layer is enabled:
+	function vias_enabled return boolean;
+	
 	-- Returns true if any route restrict layer is enabled:
 	function route_restrict_enabled return boolean;
 

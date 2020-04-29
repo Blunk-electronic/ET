@@ -51,6 +51,7 @@ package et_colors.board is
 	grid 			: type_color := white;	
 	origin			: type_color := gray;	
 	placeholders	: type_color := white;
+	via				: type_color := green;
 	
 	silkscreen_top		: type_color := white;
 	silkscreen_bottom	: type_color := white;	
@@ -73,9 +74,13 @@ package et_colors.board is
 	type type_conductors is array (type_signal_layer'first .. type_signal_layer'last) 
 		of type_color;
 
+	-- These are the default colors for conductor layers 1 .. 4. CS: needs refinement
 	conductors : type_conductors := (
-		type_signal_layer'first	=> red,
-		others					=> blue);
+		1		=> red,
+		2		=> yellow,
+		3		=> green,
+		4		=> blue,
+		others	=> blue);
 	
 -- 	submodules		: type_color := mangenta; -- boundaries
 
@@ -84,6 +89,7 @@ package et_colors.board is
 	procedure set_color_background (context : in cairo_context);
 	procedure set_color_frame (context : in cairo_context);	
 	procedure set_color_outline (context : in cairo_context);
+	procedure set_color_vias (context : in cairo_context);	
 
 	procedure set_color_silkscreen (
 		context : in cairo_context;

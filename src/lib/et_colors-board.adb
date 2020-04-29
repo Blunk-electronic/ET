@@ -70,6 +70,14 @@ package body et_colors.board is
 			outline.blue);
 	end set_color_outline;
 
+	procedure set_color_vias (context : in cairo_context) is begin		
+		set_source_rgb (
+			context, 
+			via.red,
+			via.green,
+			via.blue);
+	end set_color_vias;
+	
 	procedure set_color_silkscreen (
 		context : in cairo_context;
 		face	: in type_face) 
