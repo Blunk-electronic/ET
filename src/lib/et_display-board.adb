@@ -38,7 +38,7 @@
 
 with ada.text_io;
 with ada.strings;
-with ada.strings.bounded;
+with ada.strings.unbounded;
 
 package body et_display.board is
 
@@ -185,23 +185,44 @@ package body et_display.board is
 	function enabled_conductor_layers return string is
 		use ada.text_io;
 		use ada.strings;
- 		use ada.strings.bounded;
-		package pac_layers is new generic_bounded_length (positive (2 * type_signal_layer'last)); -- CS sufficent long ?
-		use pac_layers;
-		ly : pac_layers.bounded_string;
-		separator_1 : constant character := space;
+		use ada.strings.unbounded;
+
+		ly : unbounded_string;
+		separator_1 : constant character := ',';
 		separator_2 : constant string := "..";
+
+		in_range : boolean := false;
+		min, max : type_signal_layer := type_signal_layer'first;
 	begin
 		for l in type_signal_layer'first .. type_signal_layer'last loop
 
 			if layers.conductors (l) = ON then
-				ly := ly & to_bounded_string (separator_1 & to_string (l));
+				if not in_range then
+					min := l;
+					in_range := true;
+				end if;
+								
+			else -- OFF
+				if in_range then
+					max := l - 1;
+					in_range := false;
+
+					if min = max then -- avoids output like "2..2"
+						ly := ly & to_unbounded_string (to_string (min) & separator_1);
+					else
+						ly := ly & to_unbounded_string (to_string (min) &
+								separator_2 & to_string (max) & separator_1);
+					end if;
+					
+				end if;
 			end if;
 			
 		end loop;
-		
-		return to_string (ly);
+
+		-- Remove the trailing separator_1:
+		return slice (ly, 1, length (ly) - 1);
 	end enabled_conductor_layers;
+
 	
 end et_display.board;
 
