@@ -152,18 +152,63 @@ procedure draw_conductors (
 		end if;
 	end query_circle;
 
-	procedure query_via (v : in pac_vias.cursor) is begin
+	procedure query_via (v : in pac_vias.cursor) is 
+		type type_circle is new et_packages.pac_shapes.type_circle with null record;
+		circle : type_circle;
+
+		function greatest_restring return type_restring_width is begin
+			if element (v).restring_inner > element (v).restring_outer then
+				return element (v).restring_inner;
+			else
+				return element (v).restring_outer;
+			end if;
+		end greatest_restring;
+		
+	begin -- query_via
 
 		if vias_enabled then
 			set_color_vias (context.cr);
+
+			circle.center := element (v).position;
+
+			-- Draw a filled circle with the greatest available restring:
+			circle.radius := element (v).diameter / 2.0 + greatest_restring;
+
+			pac_draw_package.draw_circle (
+				area		=> in_area,
+				context		=> context,
+				circle		=> circle,
+				filled		=> YES,
+				height		=> self.frame_height);
+
+			cairo.stroke (context.cr);
+
+			-- Draw the drill hole. It is a filled circle with background color
+			-- and diameter as given by the drill:
+			set_color_background (context.cr);
+
+			circle.radius := element (v).diameter / 2.0;
+
+			pac_draw_package.draw_circle (
+				area		=> in_area,
+				context		=> context,
+				circle		=> circle,
+				filled		=> YES,
+				height		=> self.frame_height);
+
+			cairo.stroke (context.cr);
+			
 		end if;
 
+		-- CS draw layer numbers
+		
 -- 		type type_via is new type_drill with record
 -- 			restring_outer	: type_restring_width;	-- restring in outer layers (top/bottom)
 -- 			restring_inner	: type_restring_width;	-- restring in inner layers (mostly wider than restring_outer)
 -- 			layer_start		: type_signal_layer;
 -- 			layer_end		: type_signal_layer;
 -- 		end record;
+
 
 		
 	end query_via;

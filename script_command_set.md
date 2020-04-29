@@ -229,7 +229,7 @@ board led_driver display conductors 17 [on/off]
 
 Vias:
 ```
-board led_driver display vias 3 [on/off]
+board led_driver display vias [on/off]
 ```
 
 Via restrict:
