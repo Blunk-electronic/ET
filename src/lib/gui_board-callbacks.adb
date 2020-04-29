@@ -239,6 +239,10 @@ package body gui_board.callbacks is
 			ifs 			=> latin_1.space); -- fields are separated by space
 
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
+
+		log (text => "change to directory " &
+				enclose_in_quotes (to_string (et_canvas_schematic.current_active_project)) & " ...",
+			level => log_threshold + 1);
 		
 		set_directory (to_string (et_canvas_schematic.current_active_project));
 		
@@ -246,6 +250,9 @@ package body gui_board.callbacks is
 		exit_code := board_cmd (cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
+		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",
+			level => log_threshold + 1);
+
 		set_directory (cur_dir_bak);
 		
 		-- CS evaluate exit_code

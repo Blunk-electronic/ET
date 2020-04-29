@@ -240,28 +240,30 @@ package body gui_schematic.callbacks is
 
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
+		log (text => "change to directory " &
+				enclose_in_quotes (to_string (current_active_project)) & " ...",
+			level => log_threshold + 1);
+		
 		set_directory (to_string (current_active_project));
 		
 		-- execute the schematic command
 		exit_code := schematic_cmd (cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
+		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",
+			level => log_threshold + 1);
+		
 		set_directory (cur_dir_bak);
 		
 		-- CS evaluate exit_code
 
 		-- The majority of commands requires refreshing the schematic and board drawing.
 		
-		-- refresh schematic
+		-- refresh schematic and board
 		redraw (canvas);
-
-		-- refresh board (because some commands also affect the board)
 		et_canvas_board.redraw (et_canvas_board.pac_canvas.canvas);
-
-
 		
 		-- CS output error message in gui
-
 
 		log_indentation_down;
 	end execute_command;

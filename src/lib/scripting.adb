@@ -386,6 +386,16 @@ package body scripting is
 		use et_devices;
 		use et_canvas_schematic.pac_canvas;
 		use et_display.schematic;
+
+		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
+		exit_code : type_exit_code := SUCCESSFUL;
+		
+		domain	: type_domain; -- DOM_SCHEMATIC
+		module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		
+		verb : type_verb_schematic;
+		noun : type_noun_schematic;
+
 		
 		function f (place : in positive) return string is begin
 			return et_string_processing.field (cmd, place);
@@ -578,16 +588,6 @@ package body scripting is
 
 			-- CS exception handler if status is invalid
 		end display;
-
-		
-		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
-		exit_code : type_exit_code := SUCCESSFUL;
-		
-		domain	: type_domain; -- DOM_SCHEMATIC
-		module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		
-		verb : type_verb_schematic;
-		noun : type_noun_schematic;
 		
 	begin -- schematic_cmd
 		log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
@@ -2046,7 +2046,6 @@ package body scripting is
 			log (ERROR, "schematic command " & enclose_in_quotes (to_string (cmd)) &
 				" invalid !", console => true);
 
-			log_indentation_reset;
 			log (text => ada.exceptions.exception_information (event), console => true);		
 
 		return ERROR;
@@ -2067,6 +2066,16 @@ package body scripting is
 		use et_canvas_board.pac_canvas;
 		use et_display.board;
 
+		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
+		exit_code : type_exit_code := SUCCESSFUL;
+		
+		domain	: type_domain; -- DOM_BOARD
+		module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+
+		verb	: type_verb_board;
+		noun	: type_noun_board;
+		
+		
 		function f (place : in positive) return string is begin
 			return et_string_processing.field (cmd, place);
 		end;
@@ -2257,16 +2266,7 @@ package body scripting is
 			
 			-- CS exception handler if status is invalid
 		end display_restrict_layer;
-
 		
-		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
-		exit_code : type_exit_code := SUCCESSFUL;
-		
-		domain	: type_domain; -- DOM_BOARD
-		module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-
-		verb	: type_verb_board := to_verb (f (3));
-		noun	: type_noun_board := to_noun (f (4));
 
 		procedure draw_keepout is
 			shape : type_shape := to_shape (f (6));
@@ -3389,7 +3389,7 @@ package body scripting is
 
 			when VERB_DISPLAY => -- GUI related
 				case noun is
-					when NOUN_SILKSCREEN -- like "board led_driver display silk top [on/off]"
+					when NOUN_SILKSCREEN -- like "board led_driver display silkscreen top [on/off]"
 						| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOP | NOUN_STENCIL =>
 						case fields is
 							when 5 => display_non_conductor_layer (noun, f (5)); -- if status is omitted
@@ -4250,8 +4250,8 @@ package body scripting is
 
 		exception when event: others => 
 		
-			log (ERROR, "board command '" &
-				to_string (cmd) & "' invalid !", console => true);
+			log (ERROR, "board command " & enclose_in_quotes (to_string (cmd)) &
+				 " invalid !", console => true);
 
 			log (text => ada.exceptions.exception_information (event), console => true);		
 
