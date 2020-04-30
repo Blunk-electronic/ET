@@ -171,41 +171,58 @@ procedure draw_conductors (
 		end greatest_restring;
 		
 	begin -- query_via
+		circle.center := element (v).position;
 
 		if vias_enabled then
 			set_color_vias (context.cr);
 
-			circle.center := element (v).position;
-
 			-- Draw a filled circle with the greatest available restring:
 			circle.radius := element (v).diameter / 2.0 + greatest_restring;
+		else
+			if current_layer = bottom_layer or current_layer = top_layer then
 
-			pac_draw_package.draw_circle (
-				area		=> in_area,
-				context		=> context,
-				circle		=> circle,
-				filled		=> YES,
-				height		=> self.frame_height);
+				-- Draw a filled circle with the restring of outer layers:
+				circle.radius := element (v).diameter / 2.0 + element (v).restring_outer;
+				cairo.set_line_width (context.cr, type_view_coordinate (element (v).restring_outer));
+				put_line ("outer " & to_string (distance => circle.radius * 2.0));
+				
+			else
+				-- Draw a filled circle with the restring of inner layers:
+				circle.radius := element (v).diameter / 2.0 + element (v).restring_inner;
+				cairo.set_line_width (context.cr, type_view_coordinate (element (v).restring_inner));
+				put_line ("inner " & to_string (distance => circle.radius * 2.0));
+			end if;
 
-			cairo.stroke (context.cr);
-
-			-- Draw the drill hole. It is a filled circle with background color
-			-- and diameter as given by the drill:
-			set_color_background (context.cr);
-
-			circle.radius := element (v).diameter / 2.0;
-
-			pac_draw_package.draw_circle (
-				area		=> in_area,
-				context		=> context,
-				circle		=> circle,
-				filled		=> YES,
-				height		=> self.frame_height);
-
-			cairo.stroke (context.cr);
-			
 		end if;
 
+		-- Draw a large filled circle to show the restring:
+		pac_draw_package.draw_circle (
+			area		=> in_area,
+			context		=> context,
+			circle		=> circle,
+			filled		=> YES,
+			height		=> self.frame_height);
+
+		cairo.stroke (context.cr);
+
+		-- Draw a small filled circle to show the drill:
+		
+		-- Draw the drill hole. It is a filled circle with background color
+		-- and diameter as given by the drill:
+		set_color_background (context.cr);
+
+		circle.radius := element (v).diameter / 2.0;
+		put_line ("drill " & to_string (distance => circle.radius * 2.0));
+
+		pac_draw_package.draw_circle (
+			area		=> in_area,
+			context		=> context,
+			circle		=> circle,
+			filled		=> YES,
+			height		=> self.frame_height);
+
+		cairo.stroke (context.cr);
+		
 		-- CS draw layer numbers
 		
 -- 		type type_via is new type_drill with record
@@ -214,8 +231,6 @@ procedure draw_conductors (
 -- 			layer_start		: type_signal_layer;
 -- 			layer_end		: type_signal_layer;
 -- 		end record;
-
-
 		
 	end query_via;
 	
