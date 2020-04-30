@@ -51,6 +51,8 @@ use et_pcb_coordinates.geometry;
 with et_pcb;					use et_pcb;
 use et_pcb.pac_vias;
 
+with et_pcb_stack;				use et_pcb_stack;
+
 with et_display.board;			use et_display.board;
 
 with et_canvas_primitive_draw_ops;
@@ -71,16 +73,18 @@ procedure draw_conductors (
 	net_name : type_net_name.bounded_string;
 	net_class : type_net_class_name.bounded_string;
 
+	-- The conductor layers are drawn in the order bottom-to-top so that
+	-- the upper layers always obscure the layers underneath.
+	
+	-- The layer being drawn:
+	current_layer : type_signal_layer;
 	
 	procedure query_line (c : in pac_copper_lines.cursor) is begin
 
-		-- Draw the line if the conductor layer is enabled:
-		if conductor_enabled (element (c).layer) then
+		-- Draw the line if it is in the current layer:
+		if element (c).layer = current_layer then
 			
 			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
-
-			-- set color according to layer
-			set_color_conductor (context.cr, element (c).layer);
 			
 			pac_draw_package.draw_line (
 				area		=> in_area,
@@ -94,14 +98,11 @@ procedure draw_conductors (
 
 	procedure query_arc (c : in pac_copper_arcs.cursor) is begin
 
-		-- Draw the arc if the conductor layer is enabled:
-		if conductor_enabled (element (c).layer) then
+		-- Draw the arc if it is in theh current layer:
+		if element (c).layer = current_layer then
 
 			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 
-			-- set color according to layer
-			set_color_conductor (context.cr, element (c).layer);
-			
 			pac_draw_package.draw_arc (
 				area		=> in_area,
 				context		=> context,
@@ -115,12 +116,9 @@ procedure draw_conductors (
 	procedure query_circle (c : in et_pcb.pac_copper_circles.cursor) is 
 		use et_packages.pac_shapes;
 	begin
-		-- Draw the circle if the conductor layer is enabled:
-		if conductor_enabled (element (c).layer) then
+		-- Draw the circle if it is in the current layer:
+		if element (c).layer = current_layer then
 			
-			-- set color according to layer
-			set_color_conductor (context.cr, element (c).layer);
-
 			case element (c).filled is
 				when NO =>
 					-- We draw a normal non-filled circle:
@@ -221,30 +219,45 @@ procedure draw_conductors (
 		iterate (element (n).route.lines, query_line'access);
 		iterate (element (n).route.arcs, query_arc'access);
 		-- CS ? iterate (element (n).route.circles, query_circle'access);
-		iterate (element (n).route.vias, query_via'access);
 		--iterate (element (n).route.polygons_2, query_polygon'access);
 		--iterate (element (n).route.cutouts, query_cutout'access);
+
+		iterate (element (n).route.vias, query_via'access);
 	end query_net;
 	
 	procedure query_items (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
 	begin
-		-- freetracks:
-		is_signal := false;
-		iterate (module.board.copper.lines, query_line'access);
-		iterate (module.board.copper.arcs, query_arc'access);
-		iterate (module.board.copper.circles, query_circle'access);
+		-- Iterate all conductor layers starting at the bottom layer and ending
+		-- with the top layer:
+		for ly in reverse type_signal_layer'first .. type_signal_layer'last loop
 
-		-- tracks:
-		iterate (module.nets, query_net'access);
+			-- Draw the layer only if it is enabled. Otherwise skip the layer:
+			if conductor_enabled (ly) then
+				
+				-- Set the layer being drawn:
+				current_layer := ly;
 
-		
-		-- CS iterate (module.board.silk_screen.top.polygons, query_polygon'access);
-		-- CS iterate (module.board.silk_screen.top.cutouts, query_polygon'cutout);
-		-- CS iterate (module.board.silk_screen.top.placeholders, query_placeholder'access);
-		-- CS iterate (module.board.silk_screen.top.texts, query_text'access);
+				-- set color according to layer
+				set_color_conductor (context.cr, current_layer);
 
+				
+				-- freetracks:
+				is_signal := false;
+				iterate (module.board.copper.lines, query_line'access);
+				iterate (module.board.copper.arcs, query_arc'access);
+				iterate (module.board.copper.circles, query_circle'access);
+				-- CS iterate (module.board.copper.top.polygons, query_polygon'access);
+				-- CS iterate (module.board.copper.top.cutouts, query_polygon'cutout);
+				-- CS iterate (module.board.copper.top.placeholders, query_placeholder'access);
+				-- CS iterate (module.board.copper.top.texts, query_text'access);
+
+				-- tracks:
+				iterate (module.nets, query_net'access);
+				
+			end if;
+		end loop;
 	end query_items;
 	
 begin -- draw_conductors

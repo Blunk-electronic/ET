@@ -269,9 +269,9 @@ package et_pcb is
 	end record;
 	
 	
-	-- Type for NON ELECTRIC !! copper objects:
-	-- NON ELECTRIC copper objects of a pcb may also include text placeholders:
-	type type_copper is record 
+	-- Type for NON ELECTRIC !! conductor objects:
+	-- NON ELECTRIC conductor objects of a pcb may also include text placeholders:
+	type type_copper is record  -- CS rename to type_conductor
 		lines 			: pac_copper_lines.list;
 		arcs			: pac_copper_arcs.list;
 		circles			: pac_copper_circles.list;
@@ -284,7 +284,7 @@ package et_pcb is
 		placeholders	: type_text_placeholders_copper.list;
 	end record;
 
--- Types for ELECTRIC !! copper objects:
+-- Types for ELECTRIC !! conductor objects:
 
 -- VIAS
 	keyword_layer_start	: constant string := "layer_start";
@@ -548,7 +548,7 @@ package et_pcb is
 		keepout			: et_packages.type_keepout_both_sides;
 		route_restrict	: type_route_restrict;
 		via_restrict	: type_via_restrict;
-		copper			: type_copper; -- non-electric copper stuff, incl. floating polygons ! rename to conductors
+		copper			: type_copper; -- non-electric copper stuff, incl. floating polygons ! CS: rename to conductors
 		contours		: type_pcb_contours;
 	end record;
 
