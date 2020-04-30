@@ -122,6 +122,10 @@ package et_pcb_stack is
 		layers	: package_layers.vector;
 		bottom	: type_conductor;
 	end record;
+
+	-- Returns the index of the greatest conductor layer:
+	function greatest_layer (stack : in type_stack) return type_signal_layer;
+		
 	
 end et_pcb_stack;
 

@@ -75,6 +75,14 @@ procedure draw_conductors (
 
 	-- The conductor layers are drawn in the order bottom-to-top so that
 	-- the upper layers always obscure the layers underneath.
+
+	-- The top conductor layer 1 is always there:
+	top_layer		: constant type_signal_layer := type_signal_layer'first;
+
+	-- The greates conductor layer towards bottom is definded by the layer stack:
+	bottom_layer	: constant type_signal_layer := 
+		greatest_conductor_layer (et_canvas_schematic.current_active_module);
+
 	
 	-- The layer being drawn:
 	current_layer : type_signal_layer;
@@ -231,13 +239,14 @@ procedure draw_conductors (
 	begin
 		-- Iterate all conductor layers starting at the bottom layer and ending
 		-- with the top layer:
-		for ly in reverse type_signal_layer'first .. type_signal_layer'last loop
+		for ly in reverse top_layer .. bottom_layer loop
 
 			-- Draw the layer only if it is enabled. Otherwise skip the layer:
 			if conductor_enabled (ly) then
 				
 				-- Set the layer being drawn:
 				current_layer := ly;
+				--put_line (to_string (current_layer));
 
 				-- set color according to layer
 				set_color_conductor (context.cr, current_layer);

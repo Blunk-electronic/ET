@@ -879,9 +879,11 @@ package body et_project is
 			procedure query_layers (cursor : in package_layers.cursor) is
 				layer : type_layer := element (cursor);
 			begin
+				-- write: "conductor   1 0.035"
 				write (keyword => keyword_conductor,
 					   parameters => 2 * space & to_string (to_index (cursor)) & to_string (layer.conductor.thickness));
-				
+
+				-- write "dielectric  1 0.200"
 				write (keyword => keyword_dielectric, 
 					   parameters => space & to_string (to_index (cursor)) & to_string (layer.dielectric.thickness));
 
@@ -9197,6 +9199,12 @@ package body et_project is
 		return cursor;
 	end alternative_submodule;
 	
+	function greatest_conductor_layer (
+		module	: in type_modules.cursor) -- the module like motor_driver
+		return et_pcb_stack.type_signal_layer is
+	begin
+		return et_pcb_stack.greatest_layer (type_modules.element (module).board.stack);
+	end greatest_conductor_layer;
 
 end et_project;
 	
