@@ -225,7 +225,12 @@ package body pac_draw is
 				);
 
 			case filled is
-				when YES => fill_preserve (context.cr);
+				when YES => 
+					fill_preserve (context.cr);
+
+					-- A filled circle has always line width of zero:
+					cairo.set_line_width (context.cr, type_view_coordinate (zero));
+					
 				when NO => null;
 			end case;
 			

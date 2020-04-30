@@ -104,6 +104,8 @@ package pac_draw is
 	-- has y-axis going downwards.
 	-- The circle will be drawn if its bounding box intersects the given area.
 	-- If area is no_rectangle then the circle would be drawn in any case.
+	-- If the circle is filled, the line width will be set to zero
+	-- and left with this setting.
 	procedure draw_circle (
 		area	: in type_rectangle;
 		context	: in type_draw_context;

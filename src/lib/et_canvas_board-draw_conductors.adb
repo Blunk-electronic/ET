@@ -172,7 +172,7 @@ procedure draw_conductors (
 		
 	begin -- query_via
 		circle.center := element (v).position;
-
+		
 		if vias_enabled then
 			set_color_vias (context.cr);
 
@@ -183,14 +183,12 @@ procedure draw_conductors (
 
 				-- Draw a filled circle with the restring of outer layers:
 				circle.radius := element (v).diameter / 2.0 + element (v).restring_outer;
-				cairo.set_line_width (context.cr, type_view_coordinate (element (v).restring_outer));
-				put_line ("outer " & to_string (distance => circle.radius * 2.0));
+				--put_line ("outer " & to_string (distance => circle.radius * 2.0));
 				
 			else
 				-- Draw a filled circle with the restring of inner layers:
 				circle.radius := element (v).diameter / 2.0 + element (v).restring_inner;
-				cairo.set_line_width (context.cr, type_view_coordinate (element (v).restring_inner));
-				put_line ("inner " & to_string (distance => circle.radius * 2.0));
+				--put_line ("inner " & to_string (distance => circle.radius * 2.0));
 			end if;
 
 		end if;
@@ -212,7 +210,7 @@ procedure draw_conductors (
 		set_color_background (context.cr);
 
 		circle.radius := element (v).diameter / 2.0;
-		put_line ("drill " & to_string (distance => circle.radius * 2.0));
+		--put_line ("drill " & to_string (distance => circle.radius * 2.0));
 
 		pac_draw_package.draw_circle (
 			area		=> in_area,
