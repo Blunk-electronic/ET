@@ -178,7 +178,6 @@ package body et_canvas_schematic is
 		set_color_background (context.cr);
 		paint (context.cr);
 
-		-- draw the grid
 		draw_grid (self, context, area);
 		
 		-- move area_shifted
@@ -197,8 +196,10 @@ package body et_canvas_schematic is
 			convert_y (self.frame_bounding_box.y));
 
 		draw_frame (self, area_shifted, context);
-		draw_cursor (self, area_shifted, context, cursor_main);
 
+		-- CS: rework the order of drawing layers so that top layers
+		-- always obscure layers underneath.
+		
 		-- Draw nets if layer is enabled:
 		if nets_enabled then
 			draw_nets (self, area_shifted, context);
@@ -211,6 +212,9 @@ package body et_canvas_schematic is
 		
 		draw_submodules (self, area_shifted, context);
 
+		-- The cursor is drawn last so that is in the foreground:
+		draw_cursor (self, area_shifted, context, cursor_main);
+		
 		restore (context.cr);
 		
 	end draw_internal;

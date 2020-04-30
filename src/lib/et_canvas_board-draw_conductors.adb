@@ -172,6 +172,10 @@ procedure draw_conductors (
 		
 	begin -- query_via
 		circle.center := element (v).position;
+
+		-- CS: This needs improvement. Draw non-filled circles with a defined
+		-- ring width. This would remove the black-hole or white-hole effect
+		-- in the center of the via.
 		
 		if vias_enabled then
 			set_color_vias (context.cr);
@@ -207,6 +211,7 @@ procedure draw_conductors (
 		
 		-- Draw the drill hole. It is a filled circle with background color
 		-- and diameter as given by the drill:
+		-- CS: causes a black/white-hole which obscures the grid. see comments above.
 		set_color_background (context.cr);
 
 		circle.radius := element (v).diameter / 2.0;

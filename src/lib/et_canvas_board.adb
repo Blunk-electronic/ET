@@ -252,8 +252,9 @@ package body et_canvas_board is
 			convert_x (self.frame_bounding_box.x + x (self.board_origin)),
 			convert_y (self.frame_bounding_box.y - y (self.board_origin)));
 
-		draw_cursor (self, area_shifted, context, cursor_main);
-
+		-- CS: rework the order of drawing layers so that top layers
+		-- always obscure layers underneath.
+		
 		-- outline
 		if outline_enabled then		
 			draw_outline (self, area_shifted, context);
@@ -312,6 +313,9 @@ package body et_canvas_board is
 		-- CS draw_packages
 		-- CS draw_submodules
 
+		-- The cursor is drawn last so that is in the foreground:
+		draw_cursor (self, area_shifted, context, cursor_main);
+		
 		restore (context.cr);
 	end draw_internal;
 
