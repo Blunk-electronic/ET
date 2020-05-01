@@ -219,8 +219,6 @@ package pac_canvas is
 
 		scale_to_fit_requested	: gdouble := 0.0; -- gdouble is a real floating-point type (see glib.ads)
 		scale_to_fit_area		: type_rectangle;
-
-		grid : geometry.type_grid;
 	end record;
 
 	-- The pointer to the canvas/view:
@@ -234,13 +232,13 @@ package pac_canvas is
 		self	: not null access type_view;
 		point	: in type_point;
 		axis	: in et_general.type_axis_2d)
-		return string;
+		return string is abstract;
 	
 	-- Returns the given point x/y rounded to the current grid.
 	function to_string (
 		self	: not null access type_view;
 		point	: in type_point) 
-		return string;
+		return string is abstract;
 	
 	procedure viewport_changed (self : not null access type_view'class);
 
@@ -458,13 +456,13 @@ package pac_canvas is
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;  -- relative/absolute
 		cursor		: in out type_cursor;
-		position	: in type_point);
+		position	: in type_point) is null;
 
 	-- Moves the given cursor in the given direction by the current grid.
 	procedure move_cursor (
 		self		: not null access type_view;
 		direction	: in type_cursor_direction; -- right, left, up, down
-		cursor		: in out type_cursor);
+		cursor		: in out type_cursor) is null;
 
 	
 	-- Shifts the current area of the view so that the given cursor comes into view.

@@ -57,6 +57,32 @@ package body et_canvas_board is
 		window.set_title (title & to_string (module));
 	end set_title_bar;
 
+	function to_string (
+		self	: not null access type_view;
+		point	: in type_point;
+		axis	: in et_general.type_axis_2d)
+		return string 
+	is
+		use et_general;
+		use et_project.type_modules;
+		use et_canvas_schematic;
+	begin
+		case axis is
+			when X => return to_string (round (x (point), element (current_active_module).board.grid.x));
+			when Y => return to_string (round (y (point), element (current_active_module).board.grid.y));
+		end case;
+	end;
+
+	function to_string (
+		self	: not null access type_view;
+		point	: in type_point)
+		return string is
+		use et_project.type_modules;
+		use et_canvas_schematic;		
+	begin
+		return round_to_string (point, element (current_active_module).board.grid);
+	end;
+	
 	function model_to_drawing (
 		self		: not null access type_view;
 		model_point : in type_point)	
@@ -117,6 +143,8 @@ package body et_canvas_board is
 	begin
 		return to_string (key (current_active_module)); -- motor_driver (without extension)
 	end active_module;
+
+
 	
 	function bounding_box (self : not null access type_view)
 		return type_rectangle is
@@ -321,17 +349,7 @@ package body et_canvas_board is
 		restore (context.cr);
 	end draw_internal;
 
-	procedure set_grid (view : in type_view_ptr) is  -- CS remove
-		use et_project;
-		use et_canvas_schematic;
-		type type_local_view_ptr is access all type_view;
-		self : type_local_view_ptr := type_local_view_ptr (view);
-	begin
-		self.grid := type_modules.element (current_active_module).board.grid;
-	end set_grid;
-	
 	procedure redraw (view : in type_view_ptr) is begin
-		set_grid (view);
 		queue_draw (view);
 	end;
 	
@@ -358,6 +376,52 @@ package body et_canvas_board is
 			);
 	end;
 
+
+	procedure move_cursor (
+		self		: not null access type_view;
+		coordinates	: in type_coordinates;
+		cursor		: in out type_cursor;
+		position	: in type_point) is
+		use et_general;
+		use et_project.type_modules;
+		use et_canvas_schematic;		
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				cursor.position := type_point (round (position, element (current_active_module).board.grid));
+				
+			when RELATIVE =>
+				cursor.position := type_point (round (cursor.position + position, element (current_active_module).board.grid));
+		end case;
+
+		update_position_display_cursor;
+		self.shift_area (cursor);		
+	end move_cursor;
+
+	procedure move_cursor (
+		self		: not null access type_view;
+		direction	: in type_cursor_direction;
+		cursor		: in out type_cursor) is
+		use et_project.type_modules;
+		use et_canvas_schematic;		
+	begin
+		case direction is
+			when RIGHT =>
+				cursor.position := type_point (move (cursor.position, 0.0, element (current_active_module).board.grid.x));
+
+			when LEFT =>
+				cursor.position := type_point (move (cursor.position, 180.0, element (current_active_module).board.grid.x));
+
+			when UP =>
+				cursor.position := type_point (move (cursor.position, 90.0, element (current_active_module).board.grid.y));
+
+			when DOWN =>
+				cursor.position := type_point (move (cursor.position, -90.0, element (current_active_module).board.grid.y));
+		end case;
+		
+		update_position_display_cursor;
+		self.shift_area (cursor);
+	end move_cursor;
 
 	
 	procedure draw_cursor (

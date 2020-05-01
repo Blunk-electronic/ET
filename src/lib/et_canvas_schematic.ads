@@ -74,8 +74,7 @@ package et_canvas_schematic is
 		-- CS project name								
 		module		: in et_general.type_module_name.bounded_string;
 		sheet		: in type_sheet);
-
-
+	
 	
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
@@ -126,7 +125,19 @@ package et_canvas_schematic is
 
 	-- Returns the name of the currently active module:
 	function active_module return et_general.type_module_name.bounded_string;
-		
+
+	overriding function to_string (
+		self	: not null access type_view;
+		point	: in type_point;
+		axis	: in et_general.type_axis_2d)
+		return string;
+
+	overriding function to_string (
+		self	: not null access type_view;
+		point	: in type_point) 
+		return string;
+
+	
 	-- Returns the bounding box of all items of the current sheet.
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;
@@ -167,8 +178,6 @@ package et_canvas_schematic is
 		context : type_draw_context;
 		area    : type_rectangle);
 
-	-- Copies the drawing grid as specified in the module to drawing.grid.
-	procedure set_grid (view : in type_view_ptr);
 
 	-- Sets the active module to be displayed in the canvas:
 	procedure set_module (
@@ -183,11 +192,21 @@ package et_canvas_schematic is
 	procedure redraw (view : in type_view_ptr);
 
 
+	overriding procedure move_cursor (
+		self		: not null access type_view;
+		coordinates	: in type_coordinates;  -- relative/absolute
+		cursor		: in out type_cursor;
+		position	: in type_point);
+
+	overriding procedure move_cursor (
+		self		: not null access type_view;
+		direction	: in type_cursor_direction; -- right, left, up, down
+		cursor		: in out type_cursor);
 
 	cursor_line_width : constant type_distance_positive := 0.8;
 	cursor_half_size : constant type_distance_positive := 50.0;
 	type type_cursor_line is new et_schematic.pac_shapes.type_line with null record;
-
+	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;
 		in_area		: in type_rectangle := no_rectangle;

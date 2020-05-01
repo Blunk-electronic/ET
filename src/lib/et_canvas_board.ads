@@ -72,6 +72,7 @@ package et_canvas_board is
 		-- CS project name								
 		module		: in et_general.type_module_name.bounded_string);
 
+
 	
 	-- Instantiate the general canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
@@ -108,6 +109,19 @@ package et_canvas_board is
 		drawing	: type_drawing;
 	end record;
 
+	overriding function to_string (
+		self	: not null access type_view;
+		point	: in type_point;
+		axis	: in et_general.type_axis_2d)
+		return string;
+
+	overriding function to_string (
+		self	: not null access type_view;
+		point	: in type_point) 
+		return string;
+
+	
+	
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;
 
@@ -147,11 +161,21 @@ package et_canvas_board is
 		context : type_draw_context;
 		area    : type_rectangle);
 
-	-- Sets the board drawing grid:
-	procedure set_grid (view : in type_view_ptr);
 
 	-- Redraws the board:
 	procedure redraw (view : in type_view_ptr);
+
+
+	overriding procedure move_cursor (
+		self		: not null access type_view;
+		coordinates	: in type_coordinates;  -- relative/absolute
+		cursor		: in out type_cursor;
+		position	: in type_point);
+
+	overriding procedure move_cursor (
+		self		: not null access type_view;
+		direction	: in type_cursor_direction; -- right, left, up, down
+		cursor		: in out type_cursor);
 
 
 	
