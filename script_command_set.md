@@ -53,6 +53,21 @@ project delete module led_driver
 ```
 
 
+## EXIT
+The exit or quit command does not require a verb.
+```
+schematic led_driver exit
+```
+```
+schematic led_driver quit
+```
+```
+board led_driver exit
+```
+```
+board led_driver quit
+```
+
 
 ## DRAWING GRID
 The drawing grid is to be set for each module. It's default is 1mm in both x and y direction:

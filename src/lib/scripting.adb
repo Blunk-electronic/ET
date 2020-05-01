@@ -69,6 +69,7 @@ with et_display;		use et_display;
 with et_display.schematic;
 with et_display.board;
 with glib;
+with gtk.main;
 
 package body scripting is
 
@@ -274,7 +275,13 @@ package body scripting is
 			raise;
 	end;
 
+	procedure terminate_main is begin
+		log_indentation_reset;
+		log (text => "exiting ...", console => true);
+		gtk.main.main_quit;
+	end;
 
+	
 	procedure execute_nested_script (
 		file			: in string;
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -596,9 +603,17 @@ package body scripting is
 		domain := to_domain (f (1)); -- DOM_SCHEMATIC
 		module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
 
+		-- read the verb from field 3
 		verb := to_verb (f (3));
-		noun := to_noun (f (4));
-	
+
+		-- There are some very short commands which do not require a verb.
+		-- For such commands we do not read the noun.
+		case verb is
+			when VERB_EXIT | VERB_QUIT => null; -- no noun
+			when others => noun := to_noun (f (4)); -- read noun from field 4
+		end case;
+
+		-- parse the command:	
 		case verb is
 			when VERB_ADD =>
 				case noun is
@@ -1201,6 +1216,8 @@ package body scripting is
 							
 					when others => invalid_noun (to_string (noun));
 				end case;
+
+			when VERB_EXIT | VERB_QUIT => terminate_main;
 				
 			when VERB_INVOKE =>
 				case noun is
@@ -3205,9 +3222,18 @@ package body scripting is
 
 		domain := to_domain (f (1)); -- DOM_BOARD
 		module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
-		verb := to_verb (f (3));
-		noun := to_noun (f (4));
 
+		-- read the verb from field 3
+		verb := to_verb (f (3));
+
+		-- There are some very short commands which do not require a verb.
+		-- For such commands we do not read the noun.
+		case verb is
+			when VERB_EXIT | VERB_QUIT => null; -- no noun
+			when others => noun := to_noun (f (4)); -- read noun from field 4
+		end case;
+
+		-- parse the command:
 		case verb is
 			when VERB_ADD =>
 				case noun is
@@ -3940,6 +3966,8 @@ package body scripting is
 							
 					when others => invalid_noun (to_string (noun));
 				end case;
+
+			when VERB_EXIT | VERB_QUIT => terminate_main;
 				
 			when VERB_FLIP =>
 				case noun is
