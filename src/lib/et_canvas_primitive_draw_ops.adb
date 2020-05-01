@@ -115,6 +115,9 @@ package body pac_draw is
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;
 	-- 			end if;
+
+			-- The ends of the line are round:
+			set_line_cap (context.cr, cairo_line_cap_round);
 			
 			-- start point
 			move_to (
@@ -161,6 +164,10 @@ package body pac_draw is
 			
 			new_sub_path (context.cr); -- required to suppress an initial line
 
+			-- The ends of the arc are round:
+			set_line_cap (context.cr, cairo_line_cap_round);
+
+			
 			if arc.direction = CW then
 				
 				cairo.arc (
@@ -274,6 +281,10 @@ package body pac_draw is
 
 			-- CS use rectangle instead if filling required.
 
+			-- The ends of the lines are round:
+			set_line_cap (context.cr, cairo_line_cap_round);
+
+			
 			-- LINE 1:
 			
 			-- start point
