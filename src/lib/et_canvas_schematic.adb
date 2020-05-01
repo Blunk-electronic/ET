@@ -315,8 +315,10 @@ package body et_canvas_schematic is
 			x	=> x (cursor.position),
 			y	=> y (cursor.position) - cursor_half_size));
 
-		-- draw the cursor
-		cairo.set_line_width (context.cr, type_view_coordinate (cursor_line_width));
+
+		-- The line width is inversely proportional to the scale:
+		cairo.set_line_width (context.cr, type_view_coordinate (cursor_line_width) / self.scale);
+		
 		set_color_cursor (context.cr);
 
 		pac_draw_misc.draw_line (

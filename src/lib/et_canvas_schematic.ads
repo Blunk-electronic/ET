@@ -184,7 +184,8 @@ package et_canvas_schematic is
 
 
 
-	cursor_line_width : constant type_distance_positive := et_schematic.net_line_width;
+	--cursor_line_width : constant type_distance_positive := et_schematic.net_line_width;
+	cursor_line_width : constant type_distance_positive := 0.8;
 	cursor_half_size : constant type_distance_positive := 5.0;
 	type type_cursor_line is new et_schematic.pac_shapes.type_line with null record;
 
