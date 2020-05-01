@@ -761,20 +761,26 @@ package body pac_canvas is
 		point	: in type_point; -- model point
 		step	: in type_scale) 
 	is
-		scale : type_scale := canvas.get_scale; -- Get the current scale.
+		scale : gdouble := canvas.get_scale * step;
 	begin
-		canvas.set_scale (scale + step, point);
-		-- CS limit to max scale
+		-- Ensure scale is within allowed range. If outside range,
+		-- then the canvas scale will be left unchanged:
+		if scale in type_scale then
+			canvas.set_scale (scale, point);
+		end if;
 	end zoom_in;
 
 	procedure zoom_out (
 		point	: in type_point; -- model point
 		step	: in type_scale) 
 	is
-		scale : type_scale := canvas.get_scale; -- Get the current scale.
+		scale : gdouble := canvas.get_scale / step;
 	begin
-		canvas.set_scale (scale - step, point);
-		-- CS limit to min scale
+		-- Ensure scale is within allowed range. If outside range,
+		-- then the canvas scale will be left unchanged:
+		if scale in type_scale then
+			canvas.set_scale (scale, point);
+		end if;
 	end zoom_out;
 
 	
@@ -817,14 +823,14 @@ package body pac_canvas is
 			if dy > 0.0 then
 				--put_line ("zoom out");
 				--put_line ("zoom out at " & to_string (point));
-				--set_scale (self, scale - scale_delta_on_zoom, point);
-				zoom_out (point, scale_delta_on_zoom);
+				--set_scale (self, scale - scale_factor_on_zoom, point);
+				zoom_out (point, scale_factor_on_zoom);
 				event_handled;
 			else
 				--put_line ("zoom in");
 				--put_line ("zoom in at  " & to_string (point));
-				--set_scale (self, scale + scale_delta_on_zoom, point);
-				zoom_in (point, scale_delta_on_zoom);
+				--set_scale (self, scale + scale_factor_on_zoom, point);
+				zoom_in (point, scale_factor_on_zoom);
 				event_handled;
 			end if;
 					
@@ -858,13 +864,13 @@ package body pac_canvas is
 -- 					put_line ("zoom in");
 					zoom_in (
 						point	=> drawing_to_model (self, cursor_main.position),
-						step	=> scale_delta_on_zoom);
+						step	=> scale_factor_on_zoom);
 					
 				when GDK_KP_Subtract | GDK_minus =>
 -- 					put_line ("zoom out");
 					zoom_out (
 						point	=> drawing_to_model (self, cursor_main.position),
-						step	=> scale_delta_on_zoom);
+						step	=> scale_factor_on_zoom);
 					
 				when others => null;
 			end case;

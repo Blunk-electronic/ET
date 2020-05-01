@@ -189,11 +189,11 @@ package pac_canvas is
 -- VIEW
 
 	-- scale
-	scale_min : constant gdouble := 0.1;
+	scale_min : constant gdouble := 0.2;
 	scale_max : constant gdouble := 1000.0;
 	subtype type_scale is gdouble range scale_min .. scale_max;
 	scale_default : constant type_scale := 1.0;
-	scale_delta_on_zoom : constant type_scale := 0.2;
+	scale_factor_on_zoom : constant type_scale := 1.05;
 	
 	type type_view is abstract new gtk.widget.gtk_widget_record with record
 
