@@ -1146,7 +1146,8 @@ package body pac_canvas is
 		
 		dot_size : type_view_coordinate;
 		line_width : type_view_coordinate;
-		
+
+		density_x, density_y : type_view_coordinate;
 	begin
 		cairo.set_source_rgb (context.cr, color.red, color.green, color.blue);
 
@@ -1155,33 +1156,39 @@ package body pac_canvas is
 		
 		line_width := 1.0 / canvas.scale;
 		-- CS limit to max and min ?
-		
-		cairo.set_line_width (context.cr, line_width);
 
-		-- We draw the grid in x-axis from left to right:
-		while x < type_view_coordinate (area.x + area.width) loop
+		density_x := 1.0 / (type_view_coordinate (grid.x) * canvas.scale);
+		density_y := 1.0 / (type_view_coordinate (grid.y) * canvas.scale);
 
-			-- We draw the grid in y-axis upwards:
-			y := start_y;
+		if density_x < 0.07 or density_y < 0.07 then
 			
-			while y > type_view_coordinate (area.y) loop
+			cairo.set_line_width (context.cr, line_width);
 
-				-- draw a very small cross (so that it seems like a dot):
-				cairo.move_to (context.cr, x - dot_size, y);
-				cairo.line_to (context.cr, x + dot_size, y);
+			-- We draw the grid in x-axis from left to right:
+			while x < type_view_coordinate (area.x + area.width) loop
 
-				cairo.move_to (context.cr, x, y - dot_size);
-				cairo.line_to (context.cr, x, y + dot_size);
+				-- We draw the grid in y-axis upwards:
+				y := start_y;
+				
+				while y > type_view_coordinate (area.y) loop
 
-				-- advance to next upper row on y-axis
-				y := y - type_view_coordinate (grid.y);
+					-- draw a very small cross (so that it seems like a dot):
+					cairo.move_to (context.cr, x - dot_size, y);
+					cairo.line_to (context.cr, x + dot_size, y);
+
+					cairo.move_to (context.cr, x, y - dot_size);
+					cairo.line_to (context.cr, x, y + dot_size);
+
+					-- advance to next upper row on y-axis
+					y := y - type_view_coordinate (grid.y);
+				end loop;
+
+				-- advance to next column on the right on x-axis
+				x := x + type_view_coordinate (grid.x);
 			end loop;
 
-			-- advance to next column on the right on x-axis
-			x := x + type_view_coordinate (grid.x);
-		end loop;
-
-		cairo.stroke (context.cr);
+			cairo.stroke (context.cr);
+		end if;
 	end draw_grid;
 
 	procedure move_cursor (
