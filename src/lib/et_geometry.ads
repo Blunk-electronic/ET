@@ -342,6 +342,7 @@ package et_geometry is
 			return string;
 
 		-- Returns point rounded according to given grid.		
+		-- Use this function for operations like "snap to grid" etc...
 		function round (
 			point	: in type_point;
 			grid	: in type_grid)

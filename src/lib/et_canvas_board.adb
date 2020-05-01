@@ -402,21 +402,30 @@ package body et_canvas_board is
 		self		: not null access type_view;
 		direction	: in type_cursor_direction;
 		cursor		: in out type_cursor) is
-		use et_project.type_modules;
+
+		-- Get the currently active grid:
 		use et_canvas_schematic;		
+		use et_project.type_modules;
+		grid : constant type_grid := element (current_active_module).board.grid;
+
+		-- Find the grid point nearest available to the current cursor position:
+		position_snapped : constant type_point := type_point (round (
+							point	=> cursor.position,
+							grid	=> grid));
+
 	begin
 		case direction is
 			when RIGHT =>
-				cursor.position := type_point (move (cursor.position, 0.0, element (current_active_module).board.grid.x));
+				cursor.position := type_point (move (position_snapped, 0.0, grid.x));
 
 			when LEFT =>
-				cursor.position := type_point (move (cursor.position, 180.0, element (current_active_module).board.grid.x));
+				cursor.position := type_point (move (position_snapped, 180.0, grid.x));
 
 			when UP =>
-				cursor.position := type_point (move (cursor.position, 90.0, element (current_active_module).board.grid.y));
+				cursor.position := type_point (move (position_snapped, 90.0, grid.y));
 
 			when DOWN =>
-				cursor.position := type_point (move (cursor.position, -90.0, element (current_active_module).board.grid.y));
+				cursor.position := type_point (move (position_snapped, -90.0, grid.y));
 		end case;
 		
 		update_position_display_cursor;
