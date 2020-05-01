@@ -368,24 +368,28 @@ package body et_canvas_board is
 	is
 		lh : type_cursor_line; -- the horizontal line
 		lv : type_cursor_line; -- the vertical line
+
+		size : type_distance_positive;
 	begin
+		size := cursor_half_size / type_distance_positive (self.scale);
+		
 		-- set start and end point of horizontal line
 		lh.start_point := type_point (set (
-			x	=> x (cursor.position) - cursor_half_size,
+			x	=> x (cursor.position) - size,
 			y	=> y (cursor.position)));
 
 		lh.end_point := type_point (set (
-			x	=> x (cursor.position) + cursor_half_size,
+			x	=> x (cursor.position) + size,
 			y	=> y (cursor.position)));
 
 		-- set start and end point of vertical line
 		lv.start_point := type_point (set (
 			x	=> x (cursor.position),
-			y	=> y (cursor.position) + cursor_half_size));
+			y	=> y (cursor.position) + size));
 
 		lv.end_point := type_point (set (
 			x	=> x (cursor.position),
-			y	=> y (cursor.position) - cursor_half_size));
+			y	=> y (cursor.position) - size));
 
 
 		-- The line width is inversely proportional to the scale:

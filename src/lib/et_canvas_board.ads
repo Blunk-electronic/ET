@@ -155,9 +155,8 @@ package et_canvas_board is
 
 
 	
-	--cursor_line_width : constant type_distance_positive := et_packages.line_width_min;
 	cursor_line_width : constant type_distance_positive := 0.8;
-	cursor_half_size : constant type_distance_positive := 5.0;
+	cursor_half_size : constant type_distance_positive := 50.0;
 	type type_cursor_line is new et_packages.pac_shapes.type_line with null record;
 	
 	overriding procedure draw_cursor (
