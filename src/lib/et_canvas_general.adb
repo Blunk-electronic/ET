@@ -1149,19 +1149,26 @@ package body pac_canvas is
 
 		density_x, density_y : type_view_coordinate;
 	begin
-		cairo.set_source_rgb (context.cr, color.red, color.green, color.blue);
-
-		dot_size := 5.0 / canvas.scale;
-		-- CS limit to max and min ?
-		
-		line_width := 1.0 / canvas.scale;
-		-- CS limit to max and min ?
-
+		-- Calcuate the grid density in x and y.
 		density_x := 1.0 / (type_view_coordinate (grid.x) * canvas.scale);
 		density_y := 1.0 / (type_view_coordinate (grid.y) * canvas.scale);
 
-		if density_x < threshold_grid_density or density_y < threshold_grid_density then
+		-- If density in x AND in y is below the threshold_grid_density
+		-- then draw the grid.
+		if density_x < threshold_grid_density and density_y < threshold_grid_density then
+
+			-- set the grid color
+			cairo.set_source_rgb (context.cr, color.red, color.green, color.blue);
+
+			dot_size := 2.0 / canvas.scale;
+			-- CS dot_size_multiplier as constant in spec ?
+			-- CS limit to max and min ?
 			
+			line_width := 1.0 / canvas.scale;
+			-- CS limit to max and min ?
+			-- CS line_widht_multiplier as constant in spec ?
+			
+			-- set the line with of the crosses
 			cairo.set_line_width (context.cr, line_width);
 
 			-- We draw the grid in x-axis from left to right:

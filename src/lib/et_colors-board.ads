@@ -48,7 +48,7 @@ package et_colors.board is
 	background 		: type_color := black;
 	frame			: type_color := white;
 	outline			: type_color := white;
-	grid 			: type_color := white;	
+	grid 			: type_color := gray;	
 	origin			: type_color := gray;	
 	placeholders	: type_color := white;
 	via				: type_color := green;

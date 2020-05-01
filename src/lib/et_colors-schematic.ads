@@ -45,7 +45,7 @@ package et_colors.schematic is
 	cursor			: type_color := white;
 	background 		: type_color := black;
 	frame			: type_color := white;
-	grid 			: type_color := white;	
+	grid 			: type_color := gray;	
 	nets 			: type_color := green;
 	origin			: type_color := gray;	
 	placeholders	: type_color := white;

@@ -411,11 +411,13 @@ package pac_canvas is
 		grid		: in type_distance_grid)
 		return type_view_coordinate;
 
-	-- This procedure draws a grid on the given context for the given
-	-- area of the drawing.
-
-	threshold_grid_density : constant type_view_coordinate := 0.06;
+	-- The grid density threshold above which the grid will no longer be drawn.
+	-- The grid density equals 1/(grid_size * scale).
+	threshold_grid_density : constant type_view_coordinate := 0.05;
 	
+	-- This procedure draws a grid on the given context for the given
+	-- area of the drawing. If the grid density in x AND y is below 
+	-- threshold_grid_density then the grid will be drawn.
 	procedure draw_grid (
 		context	: in type_draw_context;
 		area	: in type_rectangle;  -- the area of the drawing to be displayed
