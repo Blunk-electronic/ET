@@ -190,7 +190,7 @@ package pac_canvas is
 
 	-- scale
 	scale_min : constant gdouble := 0.1;
-	scale_max : constant gdouble := 100.0;
+	scale_max : constant gdouble := 1000.0;
 	subtype type_scale is gdouble range scale_min .. scale_max;
 	scale_default : constant type_scale := 1.0;
 	scale_delta_on_zoom : constant type_scale := 0.2;
@@ -202,7 +202,10 @@ package pac_canvas is
 		-- drawing sheet. topleft is not a constant and is changed on by procedure
 		-- set_scale or by procedure scale_to_fit.
 		topleft  	: type_point := origin;
-		
+
+		-- The drawing scale:
+		-- - increases on zoom in
+		-- - decreases on zoom out
 		scale     	: type_scale := scale_default;
 		
 		layout		: pango.layout.pango_layout; -- CS for displaying text. not used yet

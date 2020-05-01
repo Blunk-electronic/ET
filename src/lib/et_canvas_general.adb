@@ -1138,31 +1138,25 @@ package body pac_canvas is
 		start_y	: in type_view_coordinate;
 		color	: in et_colors.type_color) is
 
-		use gtkada.style;
-
 		x : type_view_coordinate := start_x;
 		y : type_view_coordinate := start_y;
 
 		-- CS Currently very small crosses are drawn.
 		-- Find a way to draw dots !
 		
-		dot_size : constant type_view_coordinate := 0.005; --type_distance'small; -- the size of a dot
-		dot_line_width : constant type_view_coordinate := 0.005; --type_distance'small; -- the width of the lines that form the dot
+		dot_size : type_view_coordinate;
+		line_width : type_view_coordinate;
 		
-		-- prepare draing style so that white grid dots will be drawn.
-		--style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
-
-		c : constant gdk.rgba.gdk_rgba := (color.red, color.green, color.blue, 1.0);
-		
-		style : drawing_style := gtk_new (stroke => c);
 	begin
-		if style.get_fill /= null_pattern then -- CS remove ?
-			set_source (context.cr, style.get_fill);
-			paint (context.cr);
-		end if;
+		cairo.set_source_rgb (context.cr, color.red, color.green, color.blue);
+
+		dot_size := 5.0 / canvas.scale;
+		-- CS limit to max and min ?
 		
-		new_path (context.cr);
-		cairo.set_line_width (context.cr, dot_line_width);
+		line_width := 1.0 / canvas.scale;
+		-- CS limit to max and min ?
+		
+		cairo.set_line_width (context.cr, line_width);
 
 		-- We draw the grid in x-axis from left to right:
 		while x < type_view_coordinate (area.x + area.width) loop
@@ -1187,8 +1181,7 @@ package body pac_canvas is
 			x := x + type_view_coordinate (grid.x);
 		end loop;
 
-		style.finish_path (context.cr);
-		
+		cairo.stroke (context.cr);
 	end draw_grid;
 
 	procedure move_cursor (
