@@ -1160,7 +1160,7 @@ package body pac_canvas is
 		density_x := 1.0 / (type_view_coordinate (grid.x) * canvas.scale);
 		density_y := 1.0 / (type_view_coordinate (grid.y) * canvas.scale);
 
-		if density_x < 0.07 or density_y < 0.07 then
+		if density_x < threshold_grid_density or density_y < threshold_grid_density then
 			
 			cairo.set_line_width (context.cr, line_width);
 

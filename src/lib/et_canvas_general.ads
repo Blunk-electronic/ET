@@ -413,6 +413,9 @@ package pac_canvas is
 
 	-- This procedure draws a grid on the given context for the given
 	-- area of the drawing.
+
+	threshold_grid_density : constant type_view_coordinate := 0.06;
+	
 	procedure draw_grid (
 		context	: in type_draw_context;
 		area	: in type_rectangle;  -- the area of the drawing to be displayed
