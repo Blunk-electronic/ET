@@ -61,6 +61,7 @@ package et_display.board is
 	keyword_via		: constant string := "via";
 		
 	type type_layers is record
+		grid			: type_layer_status := OFF;
 		outline			: type_layer_status := ON;
 		plated_millings	: type_layer_status := ON;
 		
@@ -86,6 +87,7 @@ package et_display.board is
 
 	layers : type_layers;
 
+	function grid_enabled return boolean;
 	function outline_enabled return boolean;
 	function plated_millings_enabled return boolean;
 	

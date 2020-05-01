@@ -65,6 +65,9 @@ schematic led_driver set grid 2 2 # x/y 2/2
 ```
 board led_driver set grid 0.5 0.5 # x/y 0.5/0.5
 ```
+```
+schematic led_driver display grid [on/off]
+```
 
 
 

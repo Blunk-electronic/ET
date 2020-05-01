@@ -39,6 +39,7 @@
 package et_display.schematic is
 
 	type type_layers is record
+		grid			: type_layer_status := OFF;
 		nets			: type_layer_status := ON;
 		ports			: type_layer_status := OFF; -- the circles around the start point of ports
 		-- ?? net_labels		: type_layer_status := ON;
@@ -51,6 +52,9 @@ package et_display.schematic is
 	-- This global variable is read whenever things are displayed in a schematic:
 	layers : type_layers;
 
+	-- Returns true if grid layer is enabled:
+	function grid_enabled return boolean;
+	
 	-- Returns true if device names layer is enabled:
 	function device_names_enabled return boolean;
 

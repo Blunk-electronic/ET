@@ -220,7 +220,9 @@ package body et_canvas_board is
 		set_color_background (context.cr);
 		paint (context.cr);
 
-		draw_grid (self, context, area);
+		if grid_enabled then
+			draw_grid (self, context, area);
+		end if;
 		
 		-- move area_shifted according to frame position:
 		move_by (area_shifted, area_shifted_new_position);

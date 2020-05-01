@@ -42,6 +42,14 @@ with ada.strings.unbounded;
 
 package body et_display.board is
 
+	function grid_enabled return boolean is begin
+		if layers.grid = ON then
+			return true;
+		else
+			return false;
+		end if;
+	end grid_enabled;
+	
 	function outline_enabled return boolean is begin
 		if layers.outline = ON then 
 			return true;

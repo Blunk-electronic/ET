@@ -42,6 +42,14 @@
 
 package body et_display.schematic is
 
+	function grid_enabled return boolean is begin
+		if layers.grid = ON then
+			return true;
+		else
+			return false;
+		end if;
+	end grid_enabled;
+	
 	function device_names_enabled return boolean is begin
 		if layers.device_names = ON then
 			return true;
