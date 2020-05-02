@@ -98,7 +98,7 @@ package body pac_canvas is
 		-- The box for mouse position:
 		gtk_new_vbox (box_mouse_position);
 		pack_start (box_positions, box_mouse_position, expand => false);
-		gtk_new (label_mouse_position, "mouse pointer");
+		gtk_new (label_mouse_position, "mouse");
 		pack_start (box_mouse_position, label_mouse_position, expand => false);
 
 		-- X
@@ -123,7 +123,7 @@ package body pac_canvas is
 		-- The box for cursor position:
 		gtk_new_vbox (box_cursor_position);
 		pack_start (box_positions, box_cursor_position, expand => false);
-		gtk_new (label_cursor_position, "cursor pointer");
+		gtk_new (label_cursor_position, "cursor");
 		pack_start (box_cursor_position, label_cursor_position, expand => false);
 
 		-- X
@@ -145,6 +145,34 @@ package body pac_canvas is
 		pack_start (box_cursor_position_y, cursor_position_y, expand => false);
 
 		update_position_display_cursor;		
+
+
+		
+		-- The box for distances:
+		gtk_new_vbox (distances.box);
+		pack_start (box_positions, distances.box, expand => false);
+		gtk_new (distances.label, "distances");
+		pack_start (distances.box, distances.label, expand => false);
+
+		-- X
+		gtk_new_hbox (distances.box_x);
+		set_spacing (distances.box_x, 10);
+		pack_start (distances.box, distances.box_x, expand => false);
+		gtk_new (distances.label_x, "X");
+		pack_start (distances.box_x, distances.label_x, expand => false);
+		gtk_new_with_entry (distances.display_x);
+		pack_start (distances.box_x, distances.display_x, expand => false);
+
+		-- Y
+		gtk_new_hbox (distances.box_y);
+		set_spacing (distances.box_y, 10);
+		pack_start (distances.box, distances.box_y, expand => false);
+		gtk_new (distances.label_y, "Y");
+		pack_start (distances.box_y, distances.label_y, expand => false);
+		gtk_new_with_entry (distances.display_y);
+		pack_start (distances.box_y, distances.display_y, expand => false);
+
+		
 	end build_position_display;
 
 	procedure update_position_display_cursor is begin
@@ -644,6 +672,9 @@ package body pac_canvas is
 		model_point : type_point;
 
 		drawing_point : type_point;
+
+		-- Get the distance from cursor to mouse position:
+		distance : type_point := type_point (distance_relative (cursor_main.position, drawing_point));
 	begin
 -- 		new_line;
 -- 		put_line ("mouse movement ! new positions are:");
@@ -663,6 +694,10 @@ package body pac_canvas is
 		-- update mouse position display:
 		gtk_entry (mouse_position_x.get_child).set_text (to_string (self, drawing_point, X));
 		gtk_entry (mouse_position_y.get_child).set_text (to_string (self, drawing_point, Y));
+
+		-- update distance display:
+		gtk_entry (distances.display_x.get_child).set_text (to_string (self, distance, X));
+		gtk_entry (distances.display_y.get_child).set_text (to_string (self, distance, Y));
 		
 		return true; -- indicates that event has been handled
 	end on_mouse_movement;
