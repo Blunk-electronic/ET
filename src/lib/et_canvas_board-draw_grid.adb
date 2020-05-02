@@ -46,8 +46,10 @@ procedure draw_grid (
 	context : type_draw_context;
 	area    : type_rectangle)  -- the area of the drawing to be displayed
 is
-	-- The grid must be aligned with the frame.
-	-- NOTE: Frame and grid are drawn directly in cairo, means with y-axis going downwards. 
+	-- IMPORTANT !
+	-- THE GRID MUST BE ALIGNED WITH THE BOARD ORIGIN.
+	
+	-- NOTE: The grid is drawn directly in cairo, means with y-axis going downwards. 
 	-- See procedure draw_frame.
 	start_x, start_y : type_view_coordinate;
 
@@ -55,19 +57,30 @@ is
 	use et_canvas_schematic;
 	used_grid : constant geometry.type_grid := element (current_active_module).board.grid;
 begin
-	-- The start point on the x-axis is aligned with the left frame border:
+	-- The start point on the x-axis is aligned with the left frame border
+	-- and shifted right by the board origin x position.
 	start_x := type_view_coordinate (self.frame_bounding_box.x) 
-			   - lower_grid_coordinate (area.width, used_grid.x);
-	-- CS: Currently the start point is at -area.width. Means very far on the left outside the given area.
-	-- On drawing the grid this consumes useless computing power.
+			   - lower_grid_coordinate (area.width, used_grid.x)
+			   + type_view_coordinate (x (self.board_origin));
 
-	-- The start point on the y-axis is aligned with the lower frame border (bounding box.y + frame height).
+	-- CS: Currently the start point is very far on the left outside the given area.
+	-- On drawing the grid this circumstance may waste computing time.
+
+
+	
+	-- The start point on the y-axis is aligned with the lower frame border 
+	-- (bounding box.y + frame height)
+	-- and shifted up by the board origin y position.
 	start_y := type_view_coordinate (self.frame_bounding_box.y) 
 			   + type_view_coordinate (self.frame_height)
-			   + lower_grid_coordinate (area.height, used_grid.y);
-	-- CS: Currently the start point is at -area.height. Means very far below the given area.
-	-- On drawing the grid this consumes useless computing power.
+			   + lower_grid_coordinate (area.height, used_grid.y)
+			   - type_view_coordinate (y (self.board_origin));
 
+	-- CS: Currently the start point is very far below the given area.
+	-- On drawing the grid this circumstance may waste computing time.
+
+
+	
 	pac_canvas.draw_grid (context, area, used_grid, start_x, start_y,
 						  grid -- color
 						 );

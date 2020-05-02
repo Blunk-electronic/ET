@@ -47,7 +47,7 @@ procedure draw_grid (
 	area    : type_rectangle) -- the area of the drawing to be displayed
 is
 	-- The grid must be aligned with the frame.
-	-- NOTE: Frame and grid are drawn directly in cairo, means with y-axis going downwards. 
+	-- NOTE: The grid is drawn directly in cairo, means with y-axis going downwards. 
 	-- See procedure draw_frame.
 	start_x, start_y : type_view_coordinate;
 

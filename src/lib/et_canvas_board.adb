@@ -275,8 +275,9 @@ package body et_canvas_board is
 		-- Prepare the current transformation matrix (CTM) so that
 		-- all following drawing is relative to the upper left frame corner.
 		
-		-- The drawing must further-on shifted to the right and up by the board position
+		-- The drawing must further-on be shifted to the right and up by the board position
 		-- so that the board origin is not at the lower left corner of the frame.
+		-- The board origin is now somewhere inside the frame.
 		translate (
 			context.cr,
 			convert_x (self.frame_bounding_box.x + x (self.board_origin)),
