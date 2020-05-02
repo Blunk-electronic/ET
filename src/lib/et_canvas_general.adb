@@ -821,6 +821,10 @@ package body pac_canvas is
 		view  : access gtk_widget_record'class;
 		event : gdk_event_key) return boolean is
 
+		-- If this function returns false, navigating with the TAB key
+		-- through the main window is enabled.
+		event_handled : boolean := false;
+		
 		use gdk.types;
 		use gdk.types.keysyms;
 		
@@ -861,27 +865,33 @@ package body pac_canvas is
 				when GDK_Right =>
 					canvas.move_cursor (RIGHT, cursor_main);
 					self.queue_draw; -- without frame and grid initialization
+					event_handled := true;
 
 				when GDK_Left =>
 					canvas.move_cursor (LEFT, cursor_main);
 					self.queue_draw; -- without frame and grid initialization
-
+					event_handled := true;
+					
 				when GDK_Up =>
 					canvas.move_cursor (UP, cursor_main);
 					self.queue_draw; -- without frame and grid initialization
-
+					event_handled := true;
+					
 				when GDK_Down =>
 					canvas.move_cursor (DOWN, cursor_main);
 					self.queue_draw; -- without frame and grid initialization
-
+					event_handled := true;
 					
-				when others => null;
--- 					put_line ("other key pressed");
+				when others =>
+					-- put_line ("other key pressed");
+
+					-- CS: test the TAB key explicitely in order to return false ?
+					event_handled := false;
 			end case;
 
 		end if;
-		
-		return true; -- indicates that event has been handled
+
+		return event_handled;
 	end on_key_pressed_event;
 	
 	function on_button_event (

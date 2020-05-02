@@ -89,7 +89,6 @@ package body gui_board is
 		window.on_configure_event (window_resized'access);
 
 		-- For reaction to keys pressed on the keyboard:
-		-- This is required in order to propagate the key-pressed events to sub-windows.
 		window.on_key_press_event (on_key_event'access);
 		
 

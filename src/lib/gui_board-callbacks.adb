@@ -272,7 +272,8 @@ package body gui_board.callbacks is
 		self	: access gtk_widget_record'class;
 		event	: in gdk_event_key) 
 		return boolean is
-		
+
+		-- This is required in order to propagate the key-pressed events to sub-windows.
 		result : boolean; -- to be returned. Indicates that the event has been handled.
 
 		-- Make a pointer to the main window:
