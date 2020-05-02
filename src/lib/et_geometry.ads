@@ -248,7 +248,7 @@ package et_geometry is
 		--			d.y := point_two.y - point_one.y;
 
 		
-		function distance (point_one, point_two : in type_point) return type_distance; -- CS renamte to distance_total
+		function distance_total (point_one, point_two : in type_point) return type_distance;
 		-- Computes the total distance between point_one and point_two.
 
 		function add (left, right : in type_rotation) return type_rotation;

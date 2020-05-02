@@ -505,9 +505,7 @@ package body et_geometry is
 			return d;
 		end distance_relative;
 		
-		function distance (point_one, point_two : in type_point) return type_distance is
-		-- Computes the total distance between point_one and point_two.	
-
+		function distance_total (point_one, point_two : in type_point) return type_distance is
 			package functions is new ada.numerics.generic_elementary_functions (float);
 			
 			distance : type_distance; -- to be returned
@@ -529,7 +527,7 @@ package body et_geometry is
 			end if;
 				
 			return distance;
-		end distance;
+		end distance_total;
 				
 		function add (left, right : in type_rotation) return type_rotation is
 		-- Adds two angles.
@@ -1190,7 +1188,7 @@ package body et_geometry is
 			result.center := arc.center;
 			
 			-- calculate the radius of the arc
-			result.radius := distance (arc_tmp.center, arc_tmp.start_point);
+			result.radius := distance_total (arc_tmp.center, arc_tmp.start_point);
 
 			-- calculate the angles where the arc begins and ends:
 			result.angle_start := to_degrees (arctan (
@@ -1219,7 +1217,7 @@ package body et_geometry is
 			arc_tmp : type_arc_tmp := (arc with null record);
 
 			-- Calculate the radius of the arc:
-			radius : type_distance_positive := distance (arc.center, arc.start_point);
+			radius : type_distance_positive := distance_total (arc.center, arc.start_point);
 
 			-- Calculate the quadrant where start and end point are in:
 			q_start : type_quadrant := quadrant (arc_tmp.start_point);
@@ -1423,7 +1421,7 @@ package body et_geometry is
 			move_to (arc, origin);
 
 			-- calculate the radius of the arc
-			radius := float (distance (arc.center, arc.start_point));
+			radius := float (distance_total (arc.center, arc.start_point));
 
 			-- calculate the angle where the arc begins:
 			angle_start := arctan (

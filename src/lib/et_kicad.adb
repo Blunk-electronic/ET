@@ -591,7 +591,7 @@ package body et_kicad is
 			-- check start point of segment
 			-- if closer to orign than point_1 keep start point
 			point_2	:= type_point (element (segment).coordinates_start);
-			if distance (point_2, origin) < distance (point_1, origin) then
+			if distance_total (point_2, origin) < distance_total (point_1, origin) then
 				log (text => " start", level => log_threshold + 2);
 				point_1 := point_2;
 			end if;
@@ -599,7 +599,7 @@ package body et_kicad is
 			-- check start point of segment
 			-- if closer to orign than point_1 keep end point
 			point_2	:= type_point (element (segment).coordinates_end);
-			if distance (point_2, origin) < distance (point_1, origin) then
+			if distance_total (point_2, origin) < distance_total (point_1, origin) then
 				log (text => " end", level => log_threshold + 2);
 				point_1 := point_2;
 			end if;
@@ -11971,7 +11971,7 @@ package body et_kicad is
 		len : type_distance;
 		use et_string_processing;
 	begin
-		len := distance (segment.coordinates_start, segment.coordinates_end);
+		len := distance_total (segment.coordinates_start, segment.coordinates_end);
 		--log (text => "segment length " & et_coordinates.to_string (len) & "mm", level => 3);
 		return len;
 	end length;
