@@ -405,6 +405,7 @@ package body et_canvas_board is
 		cursor		: in out type_cursor) is
 
 		-- Get the currently active grid:
+		use et_general;
 		use et_canvas_schematic;		
 		use et_project.type_modules;
 		grid : constant type_grid := element (current_active_module).board.grid;
@@ -413,6 +414,14 @@ package body et_canvas_board is
 		position_snapped : constant type_point := type_point (round (
 							point	=> cursor.position,
 							grid	=> grid));
+
+		position_pointer_x : gint;
+		position_pointer_y : gint;
+		view_point : type_view_point;
+		model_point : type_point;
+		drawing_point : type_point;
+		distance_xy : type_point;
+		distance_pol : type_distance_polar;
 
 	begin
 		case direction is
@@ -430,6 +439,27 @@ package body et_canvas_board is
 		end case;
 		
 		update_position_display_cursor;
+
+		self.get_pointer (position_pointer_x, position_pointer_y);
+		view_point.x := type_view_coordinate (position_pointer_x);
+		view_point.y := type_view_coordinate (position_pointer_y);
+		model_point := self.view_to_model (view_point);
+		drawing_point := model_to_drawing (self, model_point);
+
+		-- Get the distance (in x and y) from cursor to mouse position:
+		distance_xy := type_point (distance_relative (cursor.position, drawing_point));
+
+		-- Get the distance (in x and y) from cursor to mouse position:
+		distance_pol := distance_polar (cursor.position, drawing_point);
+
+		
+		-- update distance display:
+		gtk_entry (distances.display_x.get_child).set_text (to_string (self, distance_xy, X));
+		gtk_entry (distances.display_y.get_child).set_text (to_string (self, distance_xy, Y));
+		gtk_entry (distances.display_abs.get_child).set_text (to_string (distance_pol.absolute));
+		gtk_entry (distances.display_angle.get_child).set_text (to_string (distance_pol.angle));
+
+		
 		self.shift_area (cursor);
 	end move_cursor;
 
