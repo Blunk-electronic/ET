@@ -552,9 +552,22 @@ package body et_geometry is
 
 		function distance_polar (point_one, point_two : in type_point) return type_distance_polar is
 			result : type_distance_polar;
+
+			package functions is new ada.numerics.generic_elementary_functions (float);
+			use functions;
+			delta_x, delta_y : float := 0.0;
 		begin
-			result.absolute := zero;
-			result.angle := zero_rotation;
+			result.absolute := distance_total (point_one, point_two);
+
+			delta_x := float (x (point_two) - x (point_one));
+			delta_y := float (y (point_two) - y (point_one));
+
+			result.angle := type_rotation (arctan (
+						x => delta_x,
+						y => delta_y,
+						cycle => float (units_per_cycle))
+						);
+			
 			return result;
 		end distance_polar;
 		
