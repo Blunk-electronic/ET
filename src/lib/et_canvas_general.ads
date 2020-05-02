@@ -238,7 +238,10 @@ package pac_canvas is
 
 	canvas	: type_view_ptr;
 
+	procedure update_distances_display (
+		self	: not null access type_view'class);
 
+	
 	-- Returns the distance on the given axis rounded to the current grid.
 	function to_string (
 		self	: not null access type_view;
@@ -576,6 +579,8 @@ private
 	access_view_class_init : constant ada_class_init := view_class_init'access;
 	-------
 
+	-- Updates the mouse position display.
+	-- Updates the distances display.	
 	function on_mouse_movement (
 		view  : access gtk_widget_record'class;
 		event : gdk_event_motion) return boolean;

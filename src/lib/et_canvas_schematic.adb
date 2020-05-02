@@ -322,7 +322,7 @@ package body et_canvas_schematic is
 				cursor.position := type_point (round (cursor.position + position, element (current_active_module).grid));
 		end case;
 
-		update_position_display_cursor;
+		update_distances_display (self);
 		self.shift_area (cursor);		
 	end move_cursor;
 
@@ -355,7 +355,7 @@ package body et_canvas_schematic is
 				cursor.position := type_point (move (position_snapped, -90.0, grid.y));
 		end case;
 		
-		update_position_display_cursor;
+		update_distances_display (self);
 		self.shift_area (cursor);
 	end move_cursor;
 

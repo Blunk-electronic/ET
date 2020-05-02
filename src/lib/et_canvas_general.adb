@@ -197,7 +197,60 @@ package body pac_canvas is
 		gtk_entry (cursor_position_x.get_child).set_text (trim (to_string (x (cursor_main.position)), left));
 		gtk_entry (cursor_position_y.get_child).set_text (trim (to_string (y (cursor_main.position)), left));
 	end;
-	
+
+	procedure update_distances_display (
+		self	: not null access type_view'class)
+	is 
+		use et_general;
+
+		-- The x/y position of the mouse pointer:
+		position_pointer_x : gint;
+		position_pointer_y : gint;
+
+		-- The point in the view (in pixels):
+		view_point : type_view_point;
+
+		-- The point in the model (in millimeters):
+		model_point : type_point;
+
+		-- The point in the drawing (in millimeters):
+		drawing_point : type_point;
+
+		-- The distance in x,y from cursor to mouse pointer:
+		distance_xy : type_point;
+
+		-- The distance in polar coordinates from cursor to mouse pointer:
+		distance_pol : type_distance_polar;
+	begin
+		-- Get the mouse position:
+		self.get_pointer (position_pointer_x, position_pointer_y);
+
+		-- Convert mouse position to view_point:
+		view_point.x := type_view_coordinate (position_pointer_x);
+		view_point.y := type_view_coordinate (position_pointer_y);
+
+		-- Convert the view_point to a model_point:
+		model_point := self.view_to_model (view_point);
+
+		-- Convert the model_point to the point in the drawing:
+		drawing_point := model_to_drawing (self, model_point);
+
+		-- Get the distance (in x and y) from cursor to mouse position:
+		distance_xy := type_point (distance_relative (cursor_main.position, drawing_point));
+
+		-- Get the distance (in x and y) from cursor to mouse position:
+		distance_pol := distance_polar (cursor_main.position, drawing_point);
+
+		
+		-- update distance display:
+		gtk_entry (distances.display_x.get_child).set_text (to_string (self, distance_xy, X));
+		gtk_entry (distances.display_y.get_child).set_text (to_string (self, distance_xy, Y));
+		gtk_entry (distances.display_abs.get_child).set_text (to_string (distance_pol.absolute));
+		gtk_entry (distances.display_angle.get_child).set_text (to_string (distance_pol.angle));
+
+		update_position_display_cursor;
+	end update_distances_display;
+
 	procedure build_console is begin
 		-- box for console on the right top
 		gtk_new_vbox (box_console);
@@ -671,8 +724,6 @@ package body pac_canvas is
 
 
 
-	-- For demonstrating the difference between view coordinates (pixels) and model coordinates
-	-- this function outputs them at the console.
 	function on_mouse_movement (
 		view  : access gtk_widget_record'class;
 		event : gdk_event_motion) return boolean 
@@ -686,50 +737,34 @@ package body pac_canvas is
 		-- the view. This command sets self so that it points to the view:
 		self : constant type_view_ptr := type_view_ptr (view);
 
-		-- The point in the model (or on the sheet) expressed in millimeters:
+		-- The point in the model expressed in millimeters:
 		model_point : type_point;
 
+		-- The point in the drawing:
 		drawing_point : type_point;
 
-		distance_xy : type_point;
-		distance_pol : type_distance_polar;
-
 	begin
--- 		new_line;
--- 		put_line ("mouse movement ! new positions are:");
+		-- new_line;
+		-- put_line ("mouse movement ! new positions are:");
 
-		-- Fetch the position of the mouse pointer and output it on the console:
-		view_point := (x => event.x, y => event.y);
--- 		put_line (" " & to_string (view_point));
+		-- Get the position of the mouse pointer:
+		view_point := (x => event.x, y => event.y); -- pixels
+		-- put_line (" " & to_string (view_point));
 
-		-- Convert the view point (pixels) to the position (millimeters) in the model
-		-- and output in on the console:
+		-- Convert the view point (pixels) to the position (millimeters) in the model:
 		model_point := self.view_to_model (view_point);
--- 		put_line (" model " & to_string (model_point));
+		-- put_line (" model " & to_string (model_point));
 
+		-- Convert model_point to drawing_point:
 		drawing_point := model_to_drawing (self, model_point);
--- 		put_line (" drawing " & to_string (self, drawing_point));
+		-- put_line (" drawing " & to_string (self, drawing_point));
 
 		-- update mouse position display:
 		gtk_entry (mouse_position_x.get_child).set_text (to_string (self, drawing_point, X));
 		gtk_entry (mouse_position_y.get_child).set_text (to_string (self, drawing_point, Y));
 
+		update_distances_display (self);
 
-
-		
-		-- Get the distance (in x and y) from cursor to mouse position:
-		distance_xy := type_point (distance_relative (cursor_main.position, drawing_point));
-
-		-- Get the distance (in x and y) from cursor to mouse position:
-		distance_pol := distance_polar (cursor_main.position, drawing_point);
-
-		
-		-- update distance display:
-		gtk_entry (distances.display_x.get_child).set_text (to_string (self, distance_xy, X));
-		gtk_entry (distances.display_y.get_child).set_text (to_string (self, distance_xy, Y));
-		gtk_entry (distances.display_abs.get_child).set_text (to_string (distance_pol.absolute));
-		gtk_entry (distances.display_angle.get_child).set_text (to_string (distance_pol.angle));
-		
 		return true; -- indicates that event has been handled
 	end on_mouse_movement;
 
