@@ -172,6 +172,24 @@ package body pac_canvas is
 		gtk_new_with_entry (distances.display_y);
 		pack_start (distances.box_y, distances.display_y, expand => false);
 
+		-- ABSOLUTE
+		gtk_new_hbox (distances.box_abs);
+		set_spacing (distances.box_abs, 10);
+		pack_start (distances.box, distances.box_abs, expand => false);
+		gtk_new (distances.label_abs, "ABS");
+		pack_start (distances.box_abs, distances.label_abs, expand => false);
+		gtk_new_with_entry (distances.display_abs);
+		pack_start (distances.box_abs, distances.display_abs, expand => false);
+
+		-- ANGLE
+		gtk_new_hbox (distances.box_angle);
+		set_spacing (distances.box_angle, 10);
+		pack_start (distances.box, distances.box_angle, expand => false);
+		gtk_new (distances.label_angle, "DEG");
+		pack_start (distances.box_angle, distances.label_angle, expand => false);
+		gtk_new_with_entry (distances.display_angle);
+		pack_start (distances.box_angle, distances.display_angle, expand => false);
+
 		
 	end build_position_display;
 
@@ -673,8 +691,9 @@ package body pac_canvas is
 
 		drawing_point : type_point;
 
-		-- Get the distance from cursor to mouse position:
-		distance : type_point := type_point (distance_relative (cursor_main.position, drawing_point));
+		distance_xy : type_point;
+		distance_pol : type_distance_polar;
+
 	begin
 -- 		new_line;
 -- 		put_line ("mouse movement ! new positions are:");
@@ -695,9 +714,21 @@ package body pac_canvas is
 		gtk_entry (mouse_position_x.get_child).set_text (to_string (self, drawing_point, X));
 		gtk_entry (mouse_position_y.get_child).set_text (to_string (self, drawing_point, Y));
 
+
+
+		
+		-- Get the distance (in x and y) from cursor to mouse position:
+		distance_xy := type_point (distance_relative (cursor_main.position, drawing_point));
+
+		-- Get the distance (in x and y) from cursor to mouse position:
+		distance_pol := distance_polar (cursor_main.position, drawing_point);
+
+		
 		-- update distance display:
-		gtk_entry (distances.display_x.get_child).set_text (to_string (self, distance, X));
-		gtk_entry (distances.display_y.get_child).set_text (to_string (self, distance, Y));
+		gtk_entry (distances.display_x.get_child).set_text (to_string (self, distance_xy, X));
+		gtk_entry (distances.display_y.get_child).set_text (to_string (self, distance_xy, Y));
+		gtk_entry (distances.display_abs.get_child).set_text (to_string (distance_pol.absolute));
+		gtk_entry (distances.display_angle.get_child).set_text (to_string (distance_pol.angle));
 		
 		return true; -- indicates that event has been handled
 	end on_mouse_movement;

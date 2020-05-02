@@ -242,7 +242,7 @@ package et_geometry is
 		function "-" (point_one, point_two : in type_point) return type_point'class;
 		
 		function distance_relative (point_one, point_two : in type_point) return type_point'class;
-		-- Returns the relative distance of point_two from point_one.	
+		-- Returns the relative distance of point_two to point_one.	
 		-- Subtracts point_one.x from point_two.y and point_one.y from point_two.y
 		-- returns	d.x := point_two.x - point_one.x
 		--			d.y := point_two.y - point_one.y;
@@ -255,6 +255,18 @@ package et_geometry is
 		-- Adds two angles.
 		-- If result greater 360 degree then 360 degree is subtracted from result.
 		-- If result less than 360 degree then 360 degree is added to the result.
+
+		type type_distance_polar is record -- CS private ?
+			absolute: type_distance_positive;
+			angle	: type_rotation;
+		end record;
+
+		function distance_polar (point_one, point_two : in type_point) return type_distance_polar;
+		-- Returns the distance of point_two to point_one.	
+		-- Subtracts point_one.x from point_two.y and point_one.y from point_two.y
+		-- returns	total := sqrt ((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
+		--			angle := arctan ((point_two.y - point_one.y) / (point_two.x - point_one.x)
+
 		
 		type type_position is new type_point with private;
 

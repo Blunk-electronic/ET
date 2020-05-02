@@ -550,6 +550,13 @@ package body et_geometry is
 			return result;
 		end;
 
+		function distance_polar (point_one, point_two : in type_point) return type_distance_polar is
+			result : type_distance_polar;
+		begin
+			result.absolute := zero;
+			result.angle := zero_rotation;
+			return result;
+		end distance_polar;
 		
 -- 		function create (
 -- 			point		: in type_point'class;
