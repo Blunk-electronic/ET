@@ -222,6 +222,12 @@ package body et_canvas_board is
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
+
+	procedure draw_packages (
+		self    : not null access type_view;
+		in_area	: in type_rectangle := no_rectangle;
+		context : in type_draw_context;
+		face	: in type_face) is separate;
 	
 	procedure draw_internal (
 		self    : not null access type_view;
@@ -283,30 +289,47 @@ package body et_canvas_board is
 			convert_x (self.frame_bounding_box.x + x (self.board_origin)),
 			convert_y (self.frame_bounding_box.y - y (self.board_origin)));
 
-		-- CS: rework the order of drawing layers so that top layers
-		-- always obscure layers underneath.
+		-- The order of drawing layers is so that top layers
+		-- always obscure layers underneath:
 		
-		-- outline
-		if outline_enabled then		
-			draw_outline (self, area_shifted, context);
-		end if;
-
+	-- BOTTOM
 		-- silkscreen
-		if silkscreen_enabled (TOP) then
-			draw_silk_screen (self, area_shifted, context, TOP);
-		end if;
-
 		if silkscreen_enabled (BOTTOM) then
 			draw_silk_screen (self, area_shifted, context, BOTTOM);
 		end if;
 
-		-- assy doc
-		if assy_doc_enabled (TOP) then
-			draw_assy_doc (self, area_shifted, context, TOP);
+		-- stop mask
+		if stop_mask_enabled (BOTTOM) then
+			draw_stop (self, area_shifted, context, BOTTOM);
 		end if;
 
+		-- stencil / solder paste / solder cream
+		if stencil_enabled (BOTTOM) then
+			draw_stencil (self, area_shifted, context, BOTTOM);
+		end if;
+
+		draw_packages (self, area_shifted, context, BOTTOM);
+		
+		-- keepout
+		if keepout_enabled (BOTTOM) then
+			draw_keepout (self, area_shifted, context, BOTTOM);
+		end if;
+		
+		-- assembly documentation
 		if assy_doc_enabled (BOTTOM) then
 			draw_assy_doc (self, area_shifted, context, BOTTOM);
+		end if;
+	
+	-- CONDUCTOR LAYERS
+		draw_route_restrict (self, area_shifted, context);
+		draw_via_restrict (self, area_shifted, context);
+		draw_conductors (self, area_shifted, context);
+		-- CS draw unrouted
+		
+	-- TOP		
+		-- silkscreen
+		if silkscreen_enabled (TOP) then
+			draw_silk_screen (self, area_shifted, context, TOP);
 		end if;
 
 		-- stop mask
@@ -314,36 +337,32 @@ package body et_canvas_board is
 			draw_stop (self, area_shifted, context, TOP);
 		end if;
 
-		if stop_mask_enabled (BOTTOM) then
-			draw_stop (self, area_shifted, context, BOTTOM);
-		end if;
-
 		-- stencil / solder paste / solder cream
 		if stencil_enabled (TOP) then
 			draw_stencil (self, area_shifted, context, TOP);
 		end if;
 
-		if stencil_enabled (BOTTOM) then
-			draw_stencil (self, area_shifted, context, BOTTOM);
-		end if;
-
+		draw_packages (self, area_shifted, context, TOP);
+		
 		-- keepout
 		if keepout_enabled (TOP) then
 			draw_keepout (self, area_shifted, context, TOP);
 		end if;
-
-		if keepout_enabled (BOTTOM) then
-			draw_keepout (self, area_shifted, context, BOTTOM);
+		
+		-- assembly documentation
+		if assy_doc_enabled (TOP) then
+			draw_assy_doc (self, area_shifted, context, TOP);
 		end if;
 
-		draw_route_restrict (self, area_shifted, context);
-		draw_via_restrict (self, area_shifted, context);
-		draw_conductors (self, area_shifted, context);
-
-		-- CS draw unrouted
-		-- CS draw_packages
+		
 		-- CS draw_submodules
 
+	-- OUTLINE
+		if outline_enabled then		
+			draw_outline (self, area_shifted, context);
+		end if;
+
+		
 		-- The cursor is drawn last so that is in the foreground:
 		draw_cursor (self, area_shifted, context, cursor_main);
 		
