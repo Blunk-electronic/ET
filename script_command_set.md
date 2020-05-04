@@ -370,7 +370,7 @@ board led_driver move board absolute 20 50
 board led_driver move board relative -5 10
 ```
 
-
+Moving a device:
 ```
 board led_driver move device R1 absolute 140 45.2
 ```
@@ -378,6 +378,7 @@ board led_driver move device R1 absolute 140 45.2
 board led_driver move device R1 relative 4.5 0
 ```
 
+Rotating a device:
 ```
 board led_driver rotate device R1 absolute 70
 ```
@@ -385,6 +386,10 @@ board led_driver rotate device R1 absolute 70
 board led_driver rotate device R1 relative -4
 ```
 
+By default a package (as drawn in the library) is drawn as if it were placed on
+the top side of the board.
+Flipping a device to top or bottom means to mirror its drawing (as drawn in the library)
+along the Y-axis:
 ```
 board led_driver flip device R1 top
 ```
