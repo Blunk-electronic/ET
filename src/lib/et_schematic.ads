@@ -181,9 +181,10 @@ package et_schematic is
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for name, value and purpose.
-				-- There is also a flag that indicates whether the package has been flipped
-				-- by the operator.
-				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
+				-- The assembly side of a packages is by default TOP.
+				-- The flag "flipped" indicates whether the package has been flipped
+				-- in the layout drawing by the operator.
+				position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
 				flipped				: et_pcb.type_flipped := et_pcb.flipped_default;
 				text_placeholders	: et_packages.type_text_placeholders;
 
@@ -415,6 +416,7 @@ package et_schematic is
 	
 
 	-- The devices of a module are collected in a map.
+	-- CS: This must be a hashed map:
  	package type_devices is new indefinite_ordered_maps (
 		key_type		=> et_devices.type_name, -- something like "IC43"
 		"<"				=> et_devices."<",

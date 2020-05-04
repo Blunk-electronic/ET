@@ -1021,11 +1021,12 @@ package et_packages is
 	end record;
 
 	-- packages
+	-- CS: this should be a hashed map:
 	package type_packages is new indefinite_ordered_maps (
 		key_type		=> type_package_model_file.bounded_string, -- ../lbr/smd/SO15.pac
 		"<"				=> type_package_model_file."<",
 		element_type	=> type_package);
-
+	
 	library_file_extension : constant string := "pac";
 
 	-- HERE RIG WIDE PACKAGES ARE KEPT:

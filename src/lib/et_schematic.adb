@@ -328,12 +328,17 @@ package body et_schematic is
 		device_cursor_lib	: et_devices.type_devices.cursor;
 		device_variant		: et_devices.type_variant_name.bounded_string; -- N, D
 	begin
+		-- CS: The device is located twice here. Consumes too much time.
+		-- The issue may dissolve once devices are stored in a hashed map:
+		
 		-- load package variant of given device
 		device_variant := type_devices.element (device).variant;
 		
 		-- load the name of the generic device model
 		device_model := type_devices.element (device).model;
 
+
+		
 		-- locate the generic device model in the device library
 		device_cursor_lib := et_devices.locate_device (device_model);
 		

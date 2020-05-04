@@ -49,7 +49,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_packages;				--use et_packages;
 use et_pcb_coordinates.geometry;
 
--- with et_pcb;					use et_pcb;
+with et_pcb;					--use et_pcb;
 -- use et_pcb.pac_vias;
 
 -- with et_pcb_stack;				use et_pcb_stack;
@@ -65,6 +65,15 @@ procedure draw_packages (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context;
 	face	: in type_face) is
+
+	procedure draw_package (
+		model			: in et_packages.type_package_model_file.bounded_string;
+		position		: in et_pcb_coordinates.type_package_position; -- incl. angle and face
+		flip			: in et_pcb.type_flipped;
+		placeholders	: in et_packages.type_text_placeholders) is
+	begin
+		null;
+	end draw_package;
 	
 	procedure query_devices (
 		module_name	: in type_module_name.bounded_string;
@@ -73,18 +82,15 @@ procedure draw_packages (
 
 		procedure query_device (d : in et_schematic.type_devices.cursor) is
 			use et_symbols;
-			
-			model : et_packages.type_package_model_file.bounded_string;
-			-- libraries/packages/smd/SOT23.pac
-			
+			use et_pcb;
 		begin
 			if element (d).appearance = PCB then
-				model := package_model (d);
-
--- 				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
--- 				flipped				: et_pcb.type_flipped := et_pcb.flipped_default;
--- 				text_placeholders	: et_packages.type_text_placeholders;
-
+				
+				draw_package (
+					model			=> package_model (d), -- libraries/packages/smd/SOT23.pac
+					position		=> element (d).position, -- x/y/rotation
+					flip			=> element (d).flipped,
+					placeholders	=> element (d).text_placeholders);
 				
 			end if;
 		end query_device;
