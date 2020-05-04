@@ -136,11 +136,11 @@ package pac_canvas is
 	distances : type_distances;
 	
 	
-	-- Builds the boxes and combo boxes that display mouse and cursor position.
+	-- Builds the boxes and combo boxes that display mouse and cursor position,
+	-- distance between cursor and mouse pointer.
 	-- Places them in box_left.
-	procedure build_position_display;
+	procedure build_coordinates_display;
 
-	procedure update_position_display_cursor;
 	
 	box_console	: gtk_box;
 	console		: gtk_combo_box_text;
@@ -238,7 +238,9 @@ package pac_canvas is
 
 	canvas	: type_view_ptr;
 
-	procedure update_distances_display (
+	-- Updates the coordinates of the cursor and the distances
+	-- displayed left of the canvas:
+	procedure update_coordinates_display (
 		self	: not null access type_view'class);
 
 	

@@ -94,7 +94,7 @@ package body gui_board is
 
 		build_background_boxes;
 		
-		build_position_display;
+		build_coordinates_display;
 
 		-- Connect to the on_activate signal (on hitting enter key) of the entry (which is a child of console):
 		gtk_entry (cursor_position_x.get_child).on_activate (gui_board.callbacks.set_cursor_position_x'access);

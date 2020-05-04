@@ -88,22 +88,27 @@ package body pac_canvas is
 		add (box_back, box_right);
 	end build_background_boxes;
 	
-	procedure build_position_display is begin
+	procedure build_coordinates_display is 
+		spacing : gint;
+	begin
+		spacing := 10;
+		
 		-- The main box around all kinds of position readouts:
 		gtk_new_vbox (box_positions);
-		set_spacing (box_positions, 10);
+		set_spacing (box_positions, spacing);
 		set_border_width (box_positions, 10);
 		pack_start (box_left, box_positions, expand => false);
 
-		-- The box for mouse position:
+		-- The box for mouse pointer:
 		gtk_new_vbox (box_mouse_position);
 		pack_start (box_positions, box_mouse_position, expand => false);
-		gtk_new (label_mouse_position, "mouse");
+		gtk_new (label_mouse_position, "pointer");
 		pack_start (box_mouse_position, label_mouse_position, expand => false);
 
 		-- X
+		spacing := 30;
 		gtk_new_hbox (box_mouse_position_x);
-		set_spacing (box_mouse_position_x, 10);
+		set_spacing (box_mouse_position_x, spacing);
 		pack_start (box_mouse_position, box_mouse_position_x, expand => false);
 		gtk_new (label_mouse_position_x, "X");
 		pack_start (box_mouse_position_x, label_mouse_position_x, expand => false);
@@ -112,7 +117,7 @@ package body pac_canvas is
 
 		-- Y
 		gtk_new_hbox (box_mouse_position_y);
-		set_spacing (box_mouse_position_y, 10);
+		set_spacing (box_mouse_position_y, spacing);
 		pack_start (box_mouse_position, box_mouse_position_y, expand => false);
 		gtk_new (label_mouse_position_y, "Y");
 		pack_start (box_mouse_position_y, label_mouse_position_y, expand => false);
@@ -128,7 +133,7 @@ package body pac_canvas is
 
 		-- X
 		gtk_new_hbox (box_cursor_position_x);
-		set_spacing (box_cursor_position_x, 10);
+		set_spacing (box_cursor_position_x, spacing);
 		pack_start (box_cursor_position, box_cursor_position_x, expand => false);
 		gtk_new (label_cursor_position_x, "X");
 		pack_start (box_cursor_position_x, label_cursor_position_x, expand => false);
@@ -137,68 +142,62 @@ package body pac_canvas is
 
 		-- Y
 		gtk_new_hbox (box_cursor_position_y);
-		set_spacing (box_cursor_position_y, 10);
+		set_spacing (box_cursor_position_y, spacing);
 		pack_start (box_cursor_position, box_cursor_position_y, expand => false);
 		gtk_new (label_cursor_position_y, "Y");
 		pack_start (box_cursor_position_y, label_cursor_position_y, expand => false);
 		gtk_new_with_entry (cursor_position_y);
 		pack_start (box_cursor_position_y, cursor_position_y, expand => false);
 
-		update_position_display_cursor;		
-
 
 		
 		-- The box for distances:
 		gtk_new_vbox (distances.box);
 		pack_start (box_positions, distances.box, expand => false);
-		gtk_new (distances.label, "distances");
+		gtk_new (distances.label, "cursor to pointer");
 		pack_start (distances.box, distances.label, expand => false);
 
-		-- X
+		-- dX
+		spacing := 20;
 		gtk_new_hbox (distances.box_x);
-		set_spacing (distances.box_x, 10);
+		set_spacing (distances.box_x, spacing);
 		pack_start (distances.box, distances.box_x, expand => false);
-		gtk_new (distances.label_x, "X");
-		pack_start (distances.box_x, distances.label_x, expand => false);
+		gtk_new (distances.label_x, "dX");
+		pack_start (distances.box_x, distances.label_x, expand => true);
 		gtk_new_with_entry (distances.display_x);
-		pack_start (distances.box_x, distances.display_x, expand => false);
+		pack_start (distances.box_x, distances.display_x, expand => true);
 
-		-- Y
+		-- dY
 		gtk_new_hbox (distances.box_y);
-		set_spacing (distances.box_y, 10);
+		set_spacing (distances.box_y, spacing);
 		pack_start (distances.box, distances.box_y, expand => false);
-		gtk_new (distances.label_y, "Y");
-		pack_start (distances.box_y, distances.label_y, expand => false);
+		gtk_new (distances.label_y, "dY");
+		pack_start (distances.box_y, distances.label_y, expand => true);
 		gtk_new_with_entry (distances.display_y);
-		pack_start (distances.box_y, distances.display_y, expand => false);
+		pack_start (distances.box_y, distances.display_y, expand => true);
 
 		-- ABSOLUTE
+		spacing := 10;
 		gtk_new_hbox (distances.box_abs);
-		set_spacing (distances.box_abs, 10);
+		set_spacing (distances.box_abs, spacing);
 		pack_start (distances.box, distances.box_abs, expand => false);
 		gtk_new (distances.label_abs, "ABS");
-		pack_start (distances.box_abs, distances.label_abs, expand => false);
+		pack_start (distances.box_abs, distances.label_abs, expand => true);
 		gtk_new_with_entry (distances.display_abs);
-		pack_start (distances.box_abs, distances.display_abs, expand => false);
+		pack_start (distances.box_abs, distances.display_abs, expand => true);
 
 		-- ANGLE
 		gtk_new_hbox (distances.box_angle);
-		set_spacing (distances.box_angle, 10);
+		set_spacing (distances.box_angle, spacing);
 		pack_start (distances.box, distances.box_angle, expand => false);
 		gtk_new (distances.label_angle, "DEG");
-		pack_start (distances.box_angle, distances.label_angle, expand => false);
+		pack_start (distances.box_angle, distances.label_angle, expand => true);
 		gtk_new_with_entry (distances.display_angle);
 		pack_start (distances.box_angle, distances.display_angle, expand => false);
-
 		
-	end build_position_display;
+	end build_coordinates_display;
 
-	procedure update_position_display_cursor is begin
-		gtk_entry (cursor_position_x.get_child).set_text (trim (to_string (x (cursor_main.position)), left));
-		gtk_entry (cursor_position_y.get_child).set_text (trim (to_string (y (cursor_main.position)), left));
-	end;
-
-	procedure update_distances_display (
+	procedure update_coordinates_display (
 		self	: not null access type_view'class)
 	is 
 		use et_general;
@@ -248,8 +247,11 @@ package body pac_canvas is
 		gtk_entry (distances.display_abs.get_child).set_text (to_string (distance_pol.absolute));
 		gtk_entry (distances.display_angle.get_child).set_text (to_string (distance_pol.angle));
 
-		update_position_display_cursor;
-	end update_distances_display;
+		-- update cursor position
+		gtk_entry (cursor_position_x.get_child).set_text (trim (to_string (x (cursor_main.position)), left));
+		gtk_entry (cursor_position_y.get_child).set_text (trim (to_string (y (cursor_main.position)), left));
+
+	end update_coordinates_display;
 
 	procedure build_console is begin
 		-- box for console on the right top
@@ -759,11 +761,11 @@ package body pac_canvas is
 		drawing_point := model_to_drawing (self, model_point);
 		-- put_line (" drawing " & to_string (self, drawing_point));
 
-		-- update mouse position display:
+		-- update mouse position display (left of the canvas):
 		gtk_entry (mouse_position_x.get_child).set_text (to_string (self, drawing_point, X));
 		gtk_entry (mouse_position_y.get_child).set_text (to_string (self, drawing_point, Y));
 
-		update_distances_display (self);
+		update_coordinates_display (self);
 
 		return true; -- indicates that event has been handled
 	end on_mouse_movement;

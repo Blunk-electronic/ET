@@ -395,7 +395,7 @@ package body et_canvas_board is
 				cursor.position := type_point (round (cursor.position + position, element (current_active_module).board.grid));
 		end case;
 
-		update_distances_display (self);
+		update_coordinates_display (self);
 		self.shift_area (cursor);		
 	end move_cursor;
 
@@ -430,7 +430,7 @@ package body et_canvas_board is
 				cursor.position := type_point (move (position_snapped, -90.0, grid.y));
 		end case;
 		
-		update_distances_display (self);
+		update_coordinates_display (self);
 		self.shift_area (cursor);
 	end move_cursor;
 
