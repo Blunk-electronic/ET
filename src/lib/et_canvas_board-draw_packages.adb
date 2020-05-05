@@ -71,8 +71,32 @@ procedure draw_packages (
 		position		: in et_pcb_coordinates.type_package_position; -- incl. angle and face
 		flip			: in et_pcb.type_flipped;
 		placeholders	: in et_packages.type_text_placeholders) is
+
+		use et_packages;
+		use type_packages;
+		
+		cursor : et_packages.type_packages.cursor := locate_package_model (model);
+		
+		use type_silk_lines;
+		use type_silk_arcs;
+		use type_silk_circles;
+
+		procedure query_line_top (c : in type_silk_lines.cursor) is
+			l : type_silk_line := element (c);
+			use et_pcb;
+		begin
+			if flip = NO then
+				set_color_silkscreen (context.cr, TOP);
+
+				pac_draw_package.draw_line (in_area, context, element (c), self.frame_height);
+			else
+				set_color_silkscreen (context.cr, BOTTOM);
+			end if;
+		end query_line_top;
+		
 	begin
-		null;
+		-- silk screen:
+		element (cursor).silk_screen.top.lines.iterate (query_line_top'access);
 	end draw_package;
 	
 	procedure query_devices (

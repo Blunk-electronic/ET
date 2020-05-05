@@ -1030,7 +1030,7 @@ package et_packages is
 	library_file_extension : constant string := "pac";
 
 	-- HERE RIG WIDE PACKAGES ARE KEPT:
-	packages : type_packages.map;
+	packages : type_packages.map; -- CS rename to pac_packages
 
 	function locate_package_model (model_name : in type_package_model_file.bounded_string) -- ../lbr/smd/SO15.pac
 	-- Returns a cursor to the given package model.
