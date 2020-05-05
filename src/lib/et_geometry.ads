@@ -413,7 +413,7 @@ package et_geometry is
 
 		procedure move_by (
 		-- Moves a line by the given offset. 
-			line	: in out type_line'class;
+			line	: in out type_line;
 			offset	: in type_point);
 
 		-- Mirrors a line along the given axis.
@@ -486,7 +486,7 @@ package et_geometry is
 			-- CS locked : type_locked;		
 		end record;
 
-		-- Rotates an arc around the origin.
+		-- Rotates an arc about the origin.
 		procedure rotate (
 			arc			: in out type_arc;
 			rotation	: in type_rotation);
@@ -533,6 +533,11 @@ package et_geometry is
 			arc			: in out type_arc'class;
 			position	: in type_point);
 
+		procedure mirror (
+		-- Mirrors an arc along the given axis.
+			arc			: in out type_arc;
+			axis		: in type_axis_2d);
+
 		
 	-- CIRCLE
 		type type_circle is abstract tagged record -- CS rename to type_circle_base
@@ -541,7 +546,17 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
-		-- Rotates a circle around the origin.
+		procedure move_by (
+		-- Moves a circle by the given offset. 
+			circle	: in out type_circle;
+			offset	: in type_point);
+		
+		procedure mirror (
+		-- Mirrors the center of a circle along the given axis.
+			circle		: in out type_circle;
+			axis		: in type_axis_2d);
+		
+		-- Rotates the center of a circle about the origin.
 		procedure rotate (
 			circle		: in out type_circle;
 			rotation	: in type_rotation);

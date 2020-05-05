@@ -893,7 +893,7 @@ package body et_geometry is
 		end union;
 
 		procedure move_by (
-			line	: in out type_line'class;
+			line	: in out type_line;
 			offset	: in type_point)
 		is begin
 			move (point	=> line.start_point,	offset => offset);
@@ -1502,7 +1502,29 @@ package body et_geometry is
 			move (point => arc.end_point,   offset => offset);
 		end move_to;
 
-		-- Rotates a circle around the origin.
+		procedure mirror (
+			arc			: in out type_arc;
+			axis		: in type_axis_2d)
+		is begin
+			mirror (arc.center, axis);
+			mirror (arc.start_point, axis);
+			mirror (arc.end_point, axis);
+		end mirror;
+
+		procedure move_by (
+			circle	: in out type_circle;
+			offset	: in type_point)
+		is begin
+			move (point	=> circle.center,	offset => offset);
+		end move_by;
+		
+		procedure mirror (
+			circle		: in out type_circle;
+			axis		: in type_axis_2d) is
+		begin
+			mirror (circle.center, axis);
+		end mirror;
+		
 		procedure rotate (
 			circle		: in out type_circle;
 			rotation	: in type_rotation) is

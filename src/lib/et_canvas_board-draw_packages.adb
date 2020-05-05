@@ -75,7 +75,15 @@ procedure draw_packages (
 		use et_packages;
 		use et_packages.pac_shapes;
 		use type_packages;
-		
+
+		function flipped return boolean is 
+			use et_pcb;
+		begin
+			if flip = NO then return false;
+			else return true;
+			end if;
+		end flipped;
+			
 		cursor : et_packages.type_packages.cursor := locate_package_model (model);
 		
 		use type_silk_lines;
@@ -86,24 +94,46 @@ procedure draw_packages (
 			line : type_silk_line := element (c);
 			use et_pcb;
 		begin
-			move_by (line, type_point (position));
 			
-			if flip = NO then
+			if flipped then
 				set_color_silkscreen (context.cr, TOP);
 			else
 				mirror (line, Y);
 				set_color_silkscreen (context.cr, BOTTOM);
 			end if;
 
+			-- CS rotate
+			move_by (line, type_point (position));
+
 			set_line_width (context.cr, type_view_coordinate (line.width));
 			pac_draw_package.draw_line (in_area, context, line, self.frame_height);
 			stroke (context.cr);
 		end query_line_top;
+
+		procedure query_line_bottom (c : in type_silk_lines.cursor) is
+			line : type_silk_line := element (c);
+			use et_pcb;
+		begin
+			
+			if flipped then
+				set_color_silkscreen (context.cr, BOTTOM);
+			else
+				mirror (line, Y);
+				set_color_silkscreen (context.cr, TOP);
+			end if;
+
+			-- CS rotate
+			move_by (line, type_point (position));
+			
+			set_line_width (context.cr, type_view_coordinate (line.width));
+			pac_draw_package.draw_line (in_area, context, line, self.frame_height);
+			stroke (context.cr);
+		end query_line_bottom;
 		
 	begin
 		-- silk screen:
-		null;
 		element (cursor).silk_screen.top.lines.iterate (query_line_top'access);
+		element (cursor).silk_screen.bottom.lines.iterate (query_line_bottom'access);		
 	end draw_package;
 	
 	procedure query_devices (
