@@ -892,7 +892,22 @@ package body et_geometry is
 			end if;
 		end union;
 
-		-- Rotates a line around the origin.
+		procedure move_by (
+			line	: in out type_line'class;
+			offset	: in type_point)
+		is begin
+			move (point	=> line.start_point,	offset => offset);
+			move (point	=> line.end_point,		offset => offset);
+		end move_by;
+
+		procedure mirror (
+			line		: in out type_line;
+			axis		: in type_axis_2d)
+		is begin
+			mirror (line.start_point, axis);
+			mirror (line.end_point, axis);
+		end mirror;
+		
 		procedure rotate (
 			line		: in out type_line;
 			rotation	: in type_rotation) 

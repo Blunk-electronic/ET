@@ -54,7 +54,7 @@ package et_colors.board is
 	via				: type_color := green;
 	
 	silkscreen_top		: type_color := white;
-	silkscreen_bottom	: type_color := white;	
+	silkscreen_bottom	: type_color := orange;	
 
 	assy_doc_top		: type_color := yellow;
 	assy_doc_bottom		: type_color := yellow;	

@@ -73,6 +73,7 @@ procedure draw_packages (
 		placeholders	: in et_packages.type_text_placeholders) is
 
 		use et_packages;
+		use et_packages.pac_shapes;
 		use type_packages;
 		
 		cursor : et_packages.type_packages.cursor := locate_package_model (model);
@@ -82,20 +83,26 @@ procedure draw_packages (
 		use type_silk_circles;
 
 		procedure query_line_top (c : in type_silk_lines.cursor) is
-			l : type_silk_line := element (c);
+			line : type_silk_line := element (c);
 			use et_pcb;
 		begin
+			move_by (line, type_point (position));
+			
 			if flip = NO then
 				set_color_silkscreen (context.cr, TOP);
-
-				pac_draw_package.draw_line (in_area, context, element (c), self.frame_height);
 			else
+				mirror (line, Y);
 				set_color_silkscreen (context.cr, BOTTOM);
 			end if;
+
+			set_line_width (context.cr, type_view_coordinate (line.width));
+			pac_draw_package.draw_line (in_area, context, line, self.frame_height);
+			stroke (context.cr);
 		end query_line_top;
 		
 	begin
 		-- silk screen:
+		null;
 		element (cursor).silk_screen.top.lines.iterate (query_line_top'access);
 	end draw_package;
 	
