@@ -433,6 +433,26 @@ package body board_ops is
 				device		: in out et_schematic.type_device) is
 				
 				face_before : constant type_face := get_face (device.position);
+
+				-- Mirrors the position of a placeholder along the y-axis:
+				procedure mirror_placeholder (p : in out et_packages.type_text_placeholder) is begin
+					mirror (point => p.position, axis => Y);
+				end mirror_placeholder;
+
+				procedure mirror_placeholders (phs : in out et_packages.pac_text_placeholders.list) is 
+					use et_packages.pac_text_placeholders;
+					cursor : et_packages.pac_text_placeholders.cursor := phs.first;
+				begin
+					while cursor /= et_packages.pac_text_placeholders.no_element loop
+							et_packages.pac_text_placeholders.update_element (
+								container	=> phs,
+								position	=> cursor,
+								process		=> mirror_placeholder'access);
+						next (cursor);
+					end loop;
+				end mirror_placeholders;
+				
+				scratch : et_packages.pac_text_placeholders.list;
 			begin
 				if face_before /= face then
 					set_face (position => device.position, face => face); -- preserve x/y and rotation
@@ -443,6 +463,26 @@ package body board_ops is
 					else
 						device.flipped := NO;
 					end if;
+
+					-- SILKSCREEN
+					-- swap placeholders top/bottom
+					scratch := device.text_placeholders.silk_screen.bottom;
+					device.text_placeholders.silk_screen.bottom := device.text_placeholders.silk_screen.top;
+					device.text_placeholders.silk_screen.top := scratch;
+
+					-- mirror
+					mirror_placeholders (device.text_placeholders.silk_screen.top);
+					mirror_placeholders (device.text_placeholders.silk_screen.bottom);
+					
+					-- ASSEMBLY DOCUMENTATION
+					-- swap placeholders top/bottom
+					scratch := device.text_placeholders.assy_doc.bottom;
+					device.text_placeholders.assy_doc.bottom := device.text_placeholders.assy_doc.top;
+					device.text_placeholders.assy_doc.top := scratch;
+
+					-- mirror
+					mirror_placeholders (device.text_placeholders.assy_doc.top);
+					mirror_placeholders (device.text_placeholders.assy_doc.bottom);
 					
 				else
 					log (WARNING, "package already on " & to_string (face) & " !");

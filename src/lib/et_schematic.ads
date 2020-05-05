@@ -173,7 +173,7 @@ package et_schematic is
 		
 		case appearance is
 			-- If a device appears in both schematic and layout it has got:
-			when et_symbols.PCB => 
+			when et_symbols.PCB =>
 				value		: et_devices.type_value.bounded_string; -- 470R
 				partcode	: material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 				purpose		: et_devices.type_purpose.bounded_string; -- brightness_control

@@ -1363,12 +1363,12 @@ package body et_project is
 						
 						section_mark (section_package, HEADER);
 
+						-- Flip status:
+						write (keyword => keyword_flipped, parameters => et_pcb.to_string (element (device_cursor).flipped));
+						
 						-- This is the position of the package in the layout, 
 						write (keyword => keyword_position, parameters => -- position x 34.5 y 60.1 face top/bottom
 							   position (element (device_cursor).position));
-
-						-- Flip status:
-						write (keyword => keyword_flipped, parameters => et_pcb.to_string (element (device_cursor).flipped));
 					
 						query_element (device_cursor, query_placeholders'access);
 						section_mark (section_package, FOOTER);

@@ -217,7 +217,7 @@ package et_packages is
 	
 	-- TEXT
 	type type_text is new pac_text.type_text with record
-		position	: type_position;
+		position	: type_position; -- x/y
 		line_width	: pac_text.type_text_line_width; -- CS default := line_width_default; 
 		-- CS locked : type_locked;		
 	end record;
@@ -260,7 +260,7 @@ package et_packages is
 		bottom	: pac_text_placeholders.list;
 	end record;
 
-	type type_text_placeholders is record -- CS no need any more
+	type type_text_placeholders is record
 		silk_screen	: type_text_placeholders_silk_screen;
 		assy_doc	: type_text_placeholders_assembly_documentation;
 	end record;
