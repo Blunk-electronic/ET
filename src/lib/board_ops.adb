@@ -35,41 +35,20 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.unbounded;
-with ada.text_io;				use ada.text_io;
-
 with ada.exceptions;
-with ada.directories;
--- with gnat.directory_operations;
 
-with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.ordered_maps;
--- with ada.containers.indefinite_ordered_sets;
-
-with et_general;				use et_general;
-with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
-with et_packages;				use et_packages;
-with et_pcb;					use et_pcb;
 with et_pcb_stack;				use et_pcb_stack;
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;
 
-with et_project;				use et_project;
-with schematic_ops;				use schematic_ops;
+with et_project;
+with schematic_ops;
 with assembly_variants;
 with pick_and_place;
 with submodules;
 with numbering;
 with et_symbols;
 with et_packages;
-with et_devices;				use et_devices;
+with et_devices;
 
 package body board_ops is
 
