@@ -421,8 +421,8 @@ package et_geometry is
 			line		: in out type_line;
 			axis		: in type_axis_2d);
 		
-		-- Rotates a line about the origin.
-		procedure rotate (
+		-- Rotates a line about the origin by the given rotation.
+		procedure rotate_by (
 			line		: in out type_line;
 			rotation	: in type_rotation);
 
@@ -533,8 +533,8 @@ package et_geometry is
 			arc			: in out type_arc;
 			axis		: in type_axis_2d);
 
-		-- Rotates an arc about the origin.
-		procedure rotate (
+		-- Rotates an arc about the origin by the given rotation.
+		procedure rotate_by (
 			arc			: in out type_arc;
 			rotation	: in type_rotation);
 
@@ -556,8 +556,8 @@ package et_geometry is
 			circle		: in out type_circle;
 			axis		: in type_axis_2d);
 		
-		-- Rotates the center of a circle about the origin.
-		procedure rotate (
+		-- Rotates the center of a circle about the origin by the given rotation.
+		procedure rotate_by (
 			circle		: in out type_circle;
 			rotation	: in type_rotation);
 		

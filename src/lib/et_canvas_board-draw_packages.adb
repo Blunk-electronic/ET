@@ -85,6 +85,7 @@ procedure draw_packages (
 		end flipped;
 			
 		cursor : et_packages.type_packages.cursor := locate_package_model (model);
+
 		
 		use type_silk_lines;
 		use type_silk_arcs;
@@ -93,21 +94,29 @@ procedure draw_packages (
 		procedure query_line_top (c : in type_silk_lines.cursor) is
 			line : type_silk_line := element (c);
 			use et_pcb;
-		begin
+
+			procedure draw (f : in type_face) is begin
+				rotate_by (line, rot (position));
+				move_by (line, type_point (position));
+
+				set_color_silkscreen (context.cr, f);
+				set_line_width (context.cr, type_view_coordinate (line.width));
+				pac_draw_package.draw_line (in_area, context, line, self.frame_height);
+				stroke (context.cr);
+			end draw;
 			
+		begin			
 			if flipped then
-				set_color_silkscreen (context.cr, TOP);
+				if silkscreen_enabled (BOTTOM) then
+					mirror (line, Y);
+					draw (BOTTOM);
+				end if;
 			else
-				mirror (line, Y);
-				set_color_silkscreen (context.cr, BOTTOM);
+				if silkscreen_enabled (TOP) then
+					draw (TOP);
+				end if;
 			end if;
 
-			-- CS rotate
-			move_by (line, type_point (position));
-
-			set_line_width (context.cr, type_view_coordinate (line.width));
-			pac_draw_package.draw_line (in_area, context, line, self.frame_height);
-			stroke (context.cr);
 		end query_line_top;
 
 		procedure query_line_bottom (c : in type_silk_lines.cursor) is
@@ -116,13 +125,13 @@ procedure draw_packages (
 		begin
 			
 			if flipped then
-				set_color_silkscreen (context.cr, BOTTOM);
-			else
 				mirror (line, Y);
 				set_color_silkscreen (context.cr, TOP);
+			else
+				set_color_silkscreen (context.cr, BOTTOM);
 			end if;
 
-			-- CS rotate
+			rotate_by (line, rot (position));
 			move_by (line, type_point (position));
 			
 			set_line_width (context.cr, type_view_coordinate (line.width));

@@ -204,7 +204,7 @@ procedure draw_units (
 			type type_line is new pac_shapes.type_line with null record;
 			line : type_line := (pac_shapes.type_line (element (c)) with null record);
 		begin
-			rotate (line, unit_rotation);
+			rotate_by (line, unit_rotation);
 			--put_line ("width " & to_string (element (c).width));
 			
 			-- set line width
@@ -235,7 +235,7 @@ procedure draw_units (
 
 			arc_2 : type_arc_angles;
 		begin
-			rotate (arc_1, unit_rotation);
+			rotate_by (arc_1, unit_rotation);
 
 			-- Convert the arc to an arc that uses angles instead of start and end point:
 			arc_2 := to_arc_angles (arc_1);

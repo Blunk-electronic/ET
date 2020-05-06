@@ -908,13 +908,13 @@ package body et_geometry is
 			mirror (line.end_point, axis);
 		end mirror;
 		
-		procedure rotate (
+		procedure rotate_by (
 			line		: in out type_line;
 			rotation	: in type_rotation) 
 		is begin
 			rotate_by (line.start_point, rotation);
 			rotate_by (line.end_point, rotation);
-		end rotate;
+		end rotate_by;
 
 		
 		function boundaries (line : in type_line) return type_boundaries is begin
@@ -1500,7 +1500,7 @@ package body et_geometry is
 			mirror (arc.end_point, axis);
 		end mirror;
 
-		procedure rotate (
+		procedure rotate_by (
 			arc			: in out type_arc;
 			rotation	: in type_rotation) is
 		begin
@@ -1523,7 +1523,7 @@ package body et_geometry is
 			mirror (circle.center, axis);
 		end mirror;
 		
-		procedure rotate (
+		procedure rotate_by (
 			circle		: in out type_circle;
 			rotation	: in type_rotation) is
 		begin
