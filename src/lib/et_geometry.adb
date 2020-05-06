@@ -1191,16 +1191,6 @@ package body et_geometry is
 			end if;
 		end;
 
-		-- Rotates an arc around the origin.
-		procedure rotate (
-			arc			: in out type_arc;
-			rotation	: in type_rotation) is
-		begin
-			rotate_by (arc.center, rotation);
-			rotate_by (arc.start_point, rotation);
-			rotate_by (arc.end_point, rotation);
-		end;
-		
 		function to_arc_angles (arc : in type_arc) return type_arc_angles is
 		-- Returns the start and end angles of an arc.
 		-- The angles may be negative. For example instead of 270 degree
@@ -1487,8 +1477,7 @@ package body et_geometry is
 		end move_by;
 
 		procedure move_to (
-		-- Moves an arc to the given position.
-			arc			: in out type_arc'class;
+			arc			: in out type_arc;
 			position	: in type_point) is
 
 			-- compute the offset:
@@ -1511,6 +1500,15 @@ package body et_geometry is
 			mirror (arc.end_point, axis);
 		end mirror;
 
+		procedure rotate (
+			arc			: in out type_arc;
+			rotation	: in type_rotation) is
+		begin
+			rotate_by (arc.center, rotation);
+			rotate_by (arc.start_point, rotation);
+			rotate_by (arc.end_point, rotation);
+		end;
+		
 		procedure move_by (
 			circle	: in out type_circle;
 			offset	: in type_point)

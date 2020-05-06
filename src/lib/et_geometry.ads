@@ -486,11 +486,6 @@ package et_geometry is
 			-- CS locked : type_locked;		
 		end record;
 
-		-- Rotates an arc about the origin.
-		procedure rotate (
-			arc			: in out type_arc;
-			rotation	: in type_rotation);
-		
 		-- Sometimes (for example with cairo) an arc must be
 		-- expressed in terms of start and end angle:
 		type type_arc_angles is record
@@ -530,13 +525,18 @@ package et_geometry is
 
 		procedure move_to (
 		-- Moves an arc to the given position. 
-			arc			: in out type_arc'class;
+			arc			: in out type_arc;
 			position	: in type_point);
 
 		procedure mirror (
 		-- Mirrors an arc along the given axis.
 			arc			: in out type_arc;
 			axis		: in type_axis_2d);
+
+		-- Rotates an arc about the origin.
+		procedure rotate (
+			arc			: in out type_arc;
+			rotation	: in type_rotation);
 
 		
 	-- CIRCLE
