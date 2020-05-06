@@ -91,6 +91,8 @@ procedure draw_packages (
 
 			procedure draw_line (f : in type_face) is begin
 				if f = face then
+					if flipped then mirror (line, Y); end if;
+					
 					rotate_by (line, rot (position));
 					move_by (line, type_point (position));
 
@@ -106,7 +108,6 @@ procedure draw_packages (
 				
 				if flipped then
 					if silkscreen_enabled (BOTTOM) then
-						mirror (line, Y);
 						draw_line (BOTTOM);
 					end if;
 				else
@@ -121,7 +122,6 @@ procedure draw_packages (
 				
 				if flipped then
 					if silkscreen_enabled (TOP) then
-						mirror (line, Y);
 						draw_line (TOP);
 					end if;
 				else
@@ -137,6 +137,8 @@ procedure draw_packages (
 
 			procedure draw_arc (f : in type_face) is begin
 				if f = face then
+					if flipped then mirror (arc, Y); end if;
+					
 					rotate_by (arc, rot (position));
 					move_by (arc, type_point (position));
 
@@ -152,7 +154,6 @@ procedure draw_packages (
 				
 				if flipped then
 					if silkscreen_enabled (BOTTOM) then
-						mirror (arc, Y);
 						draw_arc (BOTTOM);
 					end if;
 				else
@@ -167,7 +168,6 @@ procedure draw_packages (
 				
 				if flipped then
 					if silkscreen_enabled (TOP) then
-						mirror (arc, Y);
 						draw_arc (TOP);
 					end if;
 				else
@@ -182,6 +182,8 @@ procedure draw_packages (
 
 			procedure draw_circle (circle : in out type_fillable_circle; f : in type_face) is begin
 				if f = face then
+					if flipped then mirror (circle, Y); end if;
+					
 					rotate_by (circle, rot (position));
 					move_by (circle, type_point (position));
 
@@ -210,7 +212,6 @@ procedure draw_packages (
 			begin
 				if flipped then
 					if silkscreen_enabled (BOTTOM) then
-						mirror (circle, Y);
 						draw_circle (circle, BOTTOM);
 					end if;
 				else
@@ -225,7 +226,6 @@ procedure draw_packages (
 			begin
 				if flipped then
 					if silkscreen_enabled (TOP) then
-						mirror (circle, Y);
 						draw_circle (circle, TOP);
 					end if;
 				else
