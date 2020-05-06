@@ -79,6 +79,8 @@ procedure draw_packages (
 			end if;
 		end flipped;
 
+		destination : type_face;
+		
 		-- locate the package model in the package library:
 		package_cursor : constant et_packages.type_packages.cursor := locate_package_model (model);
 	
@@ -151,30 +153,32 @@ procedure draw_packages (
 			
 			procedure query_arc_top (c : in type_silk_arcs.cursor) is begin
 				arc := element (c);
-				
-				if flipped then
-					if silkscreen_enabled (BOTTOM) then
-						draw_arc (BOTTOM);
-					end if;
+
+				if flipped then 
+					destination := BOTTOM;
 				else
-					if silkscreen_enabled (TOP) then
-						draw_arc (TOP);
-					end if;
+					destination := TOP;
 				end if;
+
+				if silkscreen_enabled (destination) then
+					draw_arc (destination);
+				end if;
+				
 			end query_arc_top;
 
 			procedure query_arc_bottom (c : in type_silk_arcs.cursor) is begin
 				arc := element (c);
-				
-				if flipped then
-					if silkscreen_enabled (TOP) then
-						draw_arc (TOP);
-					end if;
+
+				if flipped then 
+					destination := TOP;
 				else
-					if silkscreen_enabled (BOTTOM) then
-						draw_arc (BOTTOM);
-					end if;
+					destination := BOTTOM;
 				end if;
+
+				if silkscreen_enabled (destination) then
+					draw_arc (destination);
+				end if;
+
 			end query_arc_bottom;
 
 			-- CIRCLES
@@ -210,29 +214,31 @@ procedure draw_packages (
 			procedure query_circle_top (c : in type_silk_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				if flipped then
-					if silkscreen_enabled (BOTTOM) then
-						draw_circle (circle, BOTTOM);
-					end if;
+				if flipped then 
+					destination := BOTTOM;
 				else
-					if silkscreen_enabled (TOP) then
-						draw_circle (circle, TOP);
-					end if;
+					destination := TOP;
 				end if;
+
+				if silkscreen_enabled (destination) then
+					draw_circle (circle, destination);
+				end if;
+
 			end query_circle_top;
 
 			procedure query_circle_bottom (c : in type_silk_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				if flipped then
-					if silkscreen_enabled (TOP) then
-						draw_circle (circle, TOP);
-					end if;
+				if flipped then 
+					destination := TOP;
 				else
-					if silkscreen_enabled (BOTTOM) then
-						draw_circle (circle, BOTTOM);
-					end if;
+					destination := BOTTOM;
 				end if;
+
+				if silkscreen_enabled (destination) then
+					draw_circle (circle, destination);
+				end if;
+
 			end query_circle_bottom;
 			
 		begin
