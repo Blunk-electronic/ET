@@ -80,6 +80,23 @@ procedure draw_packages (
 		end flipped;
 
 		destination : type_face;
+		type type_destination_inversed is (INVERSE, NOT_INVERSE);
+
+		procedure set_destination (i : in type_destination_inversed := NOT_INVERSE) is begin
+			case flip is
+				when YES =>
+					case i is
+						when INVERSE 		=> destination := TOP;
+						when NOT_INVERSE	=> destination := BOTTOM;
+					end case;
+					
+				when NO =>
+					case i is
+						when INVERSE 		=> destination := BOTTOM;
+						when NOT_INVERSE	=> destination := TOP;
+					end case;
+			end case;
+		end set_destination;
 		
 		-- locate the package model in the package library:
 		package_cursor : constant et_packages.type_packages.cursor := locate_package_model (model);
@@ -107,29 +124,19 @@ procedure draw_packages (
 			
 			procedure query_line_top (c : in type_silk_lines.cursor) is begin
 				line := element (c);
-				
-				if flipped then
-					if silkscreen_enabled (BOTTOM) then
-						draw_line (BOTTOM);
-					end if;
-				else
-					if silkscreen_enabled (TOP) then
-						draw_line (TOP);
-					end if;
+				set_destination;
+
+				if silkscreen_enabled (destination) then
+					draw_line (destination);
 				end if;
 			end query_line_top;
 
 			procedure query_line_bottom (c : in type_silk_lines.cursor) is begin
 				line := element (c);
-				
-				if flipped then
-					if silkscreen_enabled (TOP) then
-						draw_line (TOP);
-					end if;
-				else
-					if silkscreen_enabled (BOTTOM) then
-						draw_line (BOTTOM);
-					end if;
+				set_destination (INVERSE);
+
+				if silkscreen_enabled (destination) then
+					draw_line (destination);
 				end if;
 			end query_line_bottom;
 
@@ -153,32 +160,20 @@ procedure draw_packages (
 			
 			procedure query_arc_top (c : in type_silk_arcs.cursor) is begin
 				arc := element (c);
-
-				if flipped then 
-					destination := BOTTOM;
-				else
-					destination := TOP;
-				end if;
+				set_destination;
 
 				if silkscreen_enabled (destination) then
 					draw_arc (destination);
-				end if;
-				
+				end if;				
 			end query_arc_top;
 
 			procedure query_arc_bottom (c : in type_silk_arcs.cursor) is begin
 				arc := element (c);
-
-				if flipped then 
-					destination := TOP;
-				else
-					destination := BOTTOM;
-				end if;
+				set_destination (INVERSE);
 
 				if silkscreen_enabled (destination) then
 					draw_arc (destination);
 				end if;
-
 			end query_arc_bottom;
 
 			-- CIRCLES
@@ -214,34 +209,24 @@ procedure draw_packages (
 			procedure query_circle_top (c : in type_silk_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				if flipped then 
-					destination := BOTTOM;
-				else
-					destination := TOP;
-				end if;
+				set_destination;
 
 				if silkscreen_enabled (destination) then
 					draw_circle (circle, destination);
 				end if;
-
 			end query_circle_top;
 
 			procedure query_circle_bottom (c : in type_silk_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				if flipped then 
-					destination := TOP;
-				else
-					destination := BOTTOM;
-				end if;
-
+				set_destination (INVERSE);
+				
 				if silkscreen_enabled (destination) then
 					draw_circle (circle, destination);
 				end if;
-
 			end query_circle_bottom;
 			
-		begin
+		begin -- draw_silkscreen
 			-- lines
 			element (package_cursor).silk_screen.top.lines.iterate (query_line_top'access);
 			element (package_cursor).silk_screen.bottom.lines.iterate (query_line_bottom'access);
