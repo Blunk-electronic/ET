@@ -85,15 +85,13 @@ procedure draw_packages (
 		end flipped;
 			
 		cursor : et_packages.type_packages.cursor := locate_package_model (model);
+	
 
-		
-		use type_silk_lines;
-		use type_silk_arcs;
-		use type_silk_circles;
-
-		procedure query_line_top (c : in type_silk_lines.cursor) is
-			line : type_silk_line := element (c);
+		procedure draw_silkscreen is 
 			use et_pcb;
+			
+			use type_silk_lines;
+			line : type_silk_line;
 
 			procedure draw (f : in type_face) is begin
 				rotate_by (line, rot (position));
@@ -105,44 +103,49 @@ procedure draw_packages (
 				stroke (context.cr);
 			end draw;
 			
-		begin			
-			if flipped then
-				if silkscreen_enabled (BOTTOM) then
-					mirror (line, Y);
-					draw (BOTTOM);
-				end if;
-			else
-				if silkscreen_enabled (TOP) then
-					draw (TOP);
-				end if;
-			end if;
+			use type_silk_arcs;
+			use type_silk_circles;
 
-		end query_line_top;
 
-		procedure query_line_bottom (c : in type_silk_lines.cursor) is
-			line : type_silk_line := element (c);
-			use et_pcb;
+			
+			procedure query_line_top (c : in type_silk_lines.cursor) is begin
+				line := element (c);
+				
+				if flipped then
+					if silkscreen_enabled (BOTTOM) then
+						mirror (line, Y);
+						draw (BOTTOM);
+					end if;
+				else
+					if silkscreen_enabled (TOP) then
+						draw (TOP);
+					end if;
+				end if;
+			end query_line_top;
+
+			procedure query_line_bottom (c : in type_silk_lines.cursor) is begin
+				line := element (c);
+				
+				if flipped then
+					if silkscreen_enabled (TOP) then
+						mirror (line, Y);
+						draw (TOP);
+					end if;
+				else
+					if silkscreen_enabled (BOTTOM) then
+						draw (BOTTOM);
+					end if;
+				end if;
+			end query_line_bottom;
+
+			
 		begin
-			
-			if flipped then
-				mirror (line, Y);
-				set_color_silkscreen (context.cr, TOP);
-			else
-				set_color_silkscreen (context.cr, BOTTOM);
-			end if;
-
-			rotate_by (line, rot (position));
-			move_by (line, type_point (position));
-			
-			set_line_width (context.cr, type_view_coordinate (line.width));
-			pac_draw_package.draw_line (in_area, context, line, self.frame_height);
-			stroke (context.cr);
-		end query_line_bottom;
+			element (cursor).silk_screen.top.lines.iterate (query_line_top'access);
+			element (cursor).silk_screen.bottom.lines.iterate (query_line_bottom'access);
+		end draw_silkscreen;
 		
 	begin
-		-- silk screen:
-		element (cursor).silk_screen.top.lines.iterate (query_line_top'access);
-		element (cursor).silk_screen.bottom.lines.iterate (query_line_bottom'access);		
+		draw_silkscreen;
 	end draw_package;
 	
 	procedure query_devices (
