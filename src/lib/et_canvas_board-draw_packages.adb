@@ -90,13 +90,15 @@ procedure draw_packages (
 			line : type_silk_line;
 
 			procedure draw_line (f : in type_face) is begin
-				rotate_by (line, rot (position));
-				move_by (line, type_point (position));
+				if f = face then
+					rotate_by (line, rot (position));
+					move_by (line, type_point (position));
 
-				set_color_silkscreen (context.cr, f);
-				set_line_width (context.cr, type_view_coordinate (line.width));
-				pac_draw_package.draw_line (in_area, context, line, self.frame_height);
-				stroke (context.cr);
+					set_color_silkscreen (context.cr, f);
+					set_line_width (context.cr, type_view_coordinate (line.width));
+					pac_draw_package.draw_line (in_area, context, line, self.frame_height);
+					stroke (context.cr);
+				end if;
 			end draw_line;
 			
 			procedure query_line_top (c : in type_silk_lines.cursor) is begin
@@ -134,13 +136,15 @@ procedure draw_packages (
 			arc : type_silk_arc;
 
 			procedure draw_arc (f : in type_face) is begin
-				rotate_by (arc, rot (position));
-				move_by (arc, type_point (position));
+				if f = face then
+					rotate_by (arc, rot (position));
+					move_by (arc, type_point (position));
 
-				set_color_silkscreen (context.cr, f);
-				set_line_width (context.cr, type_view_coordinate (arc.width));
-				pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
-				stroke (context.cr);
+					set_color_silkscreen (context.cr, f);
+					set_line_width (context.cr, type_view_coordinate (arc.width));
+					pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
+					stroke (context.cr);
+				end if;
 			end draw_arc;
 			
 			procedure query_arc_top (c : in type_silk_arcs.cursor) is begin
@@ -177,26 +181,28 @@ procedure draw_packages (
 			use type_silk_circles;
 
 			procedure draw_circle (circle : in out type_fillable_circle; f : in type_face) is begin
-				rotate_by (circle, rot (position));
-				move_by (circle, type_point (position));
+				if f = face then
+					rotate_by (circle, rot (position));
+					move_by (circle, type_point (position));
 
-				set_color_silkscreen (context.cr, f);
+					set_color_silkscreen (context.cr, f);
 
-				case circle.filled is
-					when NO =>
-						set_line_width (context.cr, type_view_coordinate (circle.border_width));
-						pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+					case circle.filled is
+						when NO =>
+							set_line_width (context.cr, type_view_coordinate (circle.border_width));
+							pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
 
-					when YES =>
-						case circle.fill_style is
-							when SOLID =>
-								pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+						when YES =>
+							case circle.fill_style is
+								when SOLID =>
+									pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
 
-							when HATCHED => null; -- CS
-						end case;
-				end case;
-				
-				stroke (context.cr);
+								when HATCHED => null; -- CS
+							end case;
+					end case;
+					
+					stroke (context.cr);
+				end if;
 			end draw_circle;
 			
 			procedure query_circle_top (c : in type_silk_circles.cursor) is 
