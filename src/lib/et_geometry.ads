@@ -289,6 +289,9 @@ package et_geometry is
 		function direction_of_rotation (rotation : in type_rotation) return type_direction_of_rotation;
 		-- Returns CW if rotation is negative. Returns CCW if rotation is positive or zero.
 
+		-- Changes CCW to CW and vice versa.
+		function reverse_direction (direction : in type_direction_of_rotation)
+			return type_direction_of_rotation;
 		
 		origin_zero_rotation : constant type_position;
 		

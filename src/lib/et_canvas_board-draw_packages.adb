@@ -46,13 +46,10 @@ use et_schematic.type_nets;
 
 with et_project;				use et_project;
 with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_packages;				--use et_packages;
+with et_packages;				use et_packages;
 use et_pcb_coordinates.geometry;
 
 with et_pcb;					--use et_pcb;
--- use et_pcb.pac_vias;
-
--- with et_pcb_stack;				use et_pcb_stack;
 
 with et_display.board;			use et_display.board;
 
@@ -68,32 +65,31 @@ procedure draw_packages (
 
 	procedure draw_package (
 		model			: in et_packages.type_package_model_file.bounded_string;
-		position		: in et_pcb_coordinates.type_package_position; -- incl. angle and face
+		position		: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flip			: in et_pcb.type_flipped;
 		placeholders	: in et_packages.type_text_placeholders) is
 
-		use et_packages;
+		use et_pcb;
 		use et_packages.pac_shapes;
 		use type_packages;
 
-		function flipped return boolean is 
-			use et_pcb;
-		begin
+		function flipped return boolean is begin
 			if flip = NO then return false;
 			else return true;
 			end if;
 		end flipped;
-			
-		cursor : et_packages.type_packages.cursor := locate_package_model (model);
+
+		-- locate the package model in the package library:
+		package_cursor : constant et_packages.type_packages.cursor := locate_package_model (model);
 	
 
 		procedure draw_silkscreen is 
-			use et_pcb;
-			
+
+			-- LINES
 			use type_silk_lines;
 			line : type_silk_line;
 
-			procedure draw (f : in type_face) is begin
+			procedure draw_line (f : in type_face) is begin
 				rotate_by (line, rot (position));
 				move_by (line, type_point (position));
 
@@ -101,12 +97,7 @@ procedure draw_packages (
 				set_line_width (context.cr, type_view_coordinate (line.width));
 				pac_draw_package.draw_line (in_area, context, line, self.frame_height);
 				stroke (context.cr);
-			end draw;
-			
-			use type_silk_arcs;
-			use type_silk_circles;
-
-
+			end draw_line;
 			
 			procedure query_line_top (c : in type_silk_lines.cursor) is begin
 				line := element (c);
@@ -114,11 +105,11 @@ procedure draw_packages (
 				if flipped then
 					if silkscreen_enabled (BOTTOM) then
 						mirror (line, Y);
-						draw (BOTTOM);
+						draw_line (BOTTOM);
 					end if;
 				else
 					if silkscreen_enabled (TOP) then
-						draw (TOP);
+						draw_line (TOP);
 					end if;
 				end if;
 			end query_line_top;
@@ -129,19 +120,134 @@ procedure draw_packages (
 				if flipped then
 					if silkscreen_enabled (TOP) then
 						mirror (line, Y);
-						draw (TOP);
+						draw_line (TOP);
 					end if;
 				else
 					if silkscreen_enabled (BOTTOM) then
-						draw (BOTTOM);
+						draw_line (BOTTOM);
 					end if;
 				end if;
 			end query_line_bottom;
 
+			-- ARCS
+			use type_silk_arcs;
+			arc : type_silk_arc;
+
+			procedure draw_arc (f : in type_face) is begin
+				rotate_by (arc, rot (position));
+				move_by (arc, type_point (position));
+
+				set_color_silkscreen (context.cr, f);
+				set_line_width (context.cr, type_view_coordinate (arc.width));
+				pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
+				stroke (context.cr);
+			end draw_arc;
+			
+			procedure query_arc_top (c : in type_silk_arcs.cursor) is begin
+				arc := element (c);
+				
+				if flipped then
+					if silkscreen_enabled (BOTTOM) then
+						mirror (arc, Y);
+						draw_arc (BOTTOM);
+					end if;
+				else
+					if silkscreen_enabled (TOP) then
+						draw_arc (TOP);
+					end if;
+				end if;
+			end query_arc_top;
+
+			procedure query_arc_bottom (c : in type_silk_arcs.cursor) is begin
+				arc := element (c);
+				
+				if flipped then
+					if silkscreen_enabled (TOP) then
+						mirror (arc, Y);
+						draw_arc (TOP);
+					end if;
+				else
+					if silkscreen_enabled (BOTTOM) then
+						draw_arc (BOTTOM);
+					end if;
+				end if;
+			end query_arc_bottom;
+
+			-- CIRCLES
+			use type_silk_circles;
+
+			procedure draw_circle (circle : in out type_fillable_circle; f : in type_face) is begin
+				rotate_by (circle, rot (position));
+				move_by (circle, type_point (position));
+
+				set_color_silkscreen (context.cr, f);
+
+				case circle.filled is
+					when NO =>
+						set_line_width (context.cr, type_view_coordinate (circle.border_width));
+						pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+
+					when YES =>
+						case circle.fill_style is
+							when SOLID =>
+								pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+
+							when HATCHED => null; -- CS
+						end case;
+				end case;
+				
+				stroke (context.cr);
+			end draw_circle;
+			
+			procedure query_circle_top (c : in type_silk_circles.cursor) is 
+				circle : type_fillable_circle := element (c);
+			begin
+				if flipped then
+					if silkscreen_enabled (BOTTOM) then
+						mirror (circle, Y);
+						draw_circle (circle, BOTTOM);
+					end if;
+				else
+					if silkscreen_enabled (TOP) then
+						draw_circle (circle, TOP);
+					end if;
+				end if;
+			end query_circle_top;
+
+			procedure query_circle_bottom (c : in type_silk_circles.cursor) is 
+				circle : type_fillable_circle := element (c);
+			begin
+				if flipped then
+					if silkscreen_enabled (TOP) then
+						mirror (circle, Y);
+						draw_circle (circle, TOP);
+					end if;
+				else
+					if silkscreen_enabled (BOTTOM) then
+						draw_circle (circle, BOTTOM);
+					end if;
+				end if;
+			end query_circle_bottom;
 			
 		begin
-			element (cursor).silk_screen.top.lines.iterate (query_line_top'access);
-			element (cursor).silk_screen.bottom.lines.iterate (query_line_bottom'access);
+			-- lines
+			element (package_cursor).silk_screen.top.lines.iterate (query_line_top'access);
+			element (package_cursor).silk_screen.bottom.lines.iterate (query_line_bottom'access);
+
+			-- arcs
+			element (package_cursor).silk_screen.top.arcs.iterate (query_arc_top'access);
+			element (package_cursor).silk_screen.bottom.arcs.iterate (query_arc_bottom'access);
+
+			-- circles
+			element (package_cursor).silk_screen.top.circles.iterate (query_circle_top'access);
+			element (package_cursor).silk_screen.bottom.circles.iterate (query_circle_bottom'access);
+
+			-- CS
+			-- placeholders
+-- 			polygons	: pac_silk_polygons.list;
+-- 			cutouts 	: pac_silk_cutouts.list;
+-- 			texts		: type_texts_with_content.list;
+			
 		end draw_silkscreen;
 		
 	begin

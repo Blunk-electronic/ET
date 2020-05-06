@@ -607,7 +607,15 @@ package body et_geometry is
 			end if;
 		end direction_of_rotation;
 
-
+		function reverse_direction (direction : in type_direction_of_rotation)
+			return type_direction_of_rotation is
+		begin
+			case direction is 
+				when CW => return CCW;
+				when CCW => return CW;
+			end case;
+		end reverse_direction;
+		
 		function to_radians (degrees : in type_rotation) return float is
 		-- Converts degrees to radians.
 			use ada.numerics;
@@ -1498,6 +1506,7 @@ package body et_geometry is
 			mirror (arc.center, axis);
 			mirror (arc.start_point, axis);
 			mirror (arc.end_point, axis);
+			arc.direction := reverse_direction (arc.direction);
 		end mirror;
 
 		procedure rotate_by (
