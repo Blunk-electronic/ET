@@ -82,7 +82,7 @@ procedure draw_packages (
 		destination : type_face;
 		type type_destination_inversed is (INVERSE, NOT_INVERSE);
 
-		procedure set_destination (i : in type_destination_inversed := NOT_INVERSE) is begin
+		procedure set_face (i : in type_destination_inversed := NOT_INVERSE) is begin
 			case flip is
 				when YES =>
 					case i is
@@ -96,7 +96,7 @@ procedure draw_packages (
 						when NOT_INVERSE	=> destination := TOP;
 					end case;
 			end case;
-		end set_destination;
+		end set_face;
 		
 		-- locate the package model in the package library:
 		package_cursor : constant et_packages.type_packages.cursor := locate_package_model (model);
@@ -109,35 +109,33 @@ procedure draw_packages (
 			line : type_silk_line;
 
 			procedure draw_line (f : in type_face) is begin
-				if f = face then
-					if flipped then mirror (line, Y); end if;
-					
-					rotate_by (line, rot (position));
-					move_by (line, type_point (position));
+				if silkscreen_enabled (f) then
+				
+					if f = face then
+						if flipped then mirror (line, Y); end if;
+						
+						rotate_by (line, rot (position));
+						move_by (line, type_point (position));
 
-					set_color_silkscreen (context.cr, f);
-					set_line_width (context.cr, type_view_coordinate (line.width));
-					pac_draw_package.draw_line (in_area, context, line, self.frame_height);
-					stroke (context.cr);
+						set_color_silkscreen (context.cr, f);
+						set_line_width (context.cr, type_view_coordinate (line.width));
+						pac_draw_package.draw_line (in_area, context, line, self.frame_height);
+						stroke (context.cr);
+					end if;
+
 				end if;
 			end draw_line;
 			
 			procedure query_line_top (c : in type_silk_lines.cursor) is begin
 				line := element (c);
-				set_destination;
-
-				if silkscreen_enabled (destination) then
-					draw_line (destination);
-				end if;
+				set_face;
+				draw_line (destination);
 			end query_line_top;
 
 			procedure query_line_bottom (c : in type_silk_lines.cursor) is begin
 				line := element (c);
-				set_destination (INVERSE);
-
-				if silkscreen_enabled (destination) then
-					draw_line (destination);
-				end if;
+				set_face (INVERSE);
+				draw_line (destination);
 			end query_line_bottom;
 
 			-- ARCS
@@ -145,85 +143,84 @@ procedure draw_packages (
 			arc : type_silk_arc;
 
 			procedure draw_arc (f : in type_face) is begin
-				if f = face then
-					if flipped then mirror (arc, Y); end if;
+				if silkscreen_enabled (f) then
 					
-					rotate_by (arc, rot (position));
-					move_by (arc, type_point (position));
+					if f = face then
+						if flipped then mirror (arc, Y); end if;
+						
+						rotate_by (arc, rot (position));
+						move_by (arc, type_point (position));
 
-					set_color_silkscreen (context.cr, f);
-					set_line_width (context.cr, type_view_coordinate (arc.width));
-					pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
-					stroke (context.cr);
+						set_color_silkscreen (context.cr, f);
+						set_line_width (context.cr, type_view_coordinate (arc.width));
+						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
+						stroke (context.cr);
+					end if;
+					
 				end if;
 			end draw_arc;
 			
 			procedure query_arc_top (c : in type_silk_arcs.cursor) is begin
 				arc := element (c);
-				set_destination;
-
-				if silkscreen_enabled (destination) then
-					draw_arc (destination);
-				end if;				
+				set_face;
+				draw_arc (destination);
 			end query_arc_top;
 
 			procedure query_arc_bottom (c : in type_silk_arcs.cursor) is begin
 				arc := element (c);
-				set_destination (INVERSE);
-
-				if silkscreen_enabled (destination) then
-					draw_arc (destination);
-				end if;
+				set_face (INVERSE);
+				draw_arc (destination);
 			end query_arc_bottom;
 
 			-- CIRCLES
 			use type_silk_circles;
 
-			procedure draw_circle (circle : in out type_fillable_circle; f : in type_face) is begin
-				if f = face then
-					if flipped then mirror (circle, Y); end if;
+			procedure draw_circle (
+				circle	: in out type_fillable_circle;
+				f 		: in type_face) 
+			is begin
+				if silkscreen_enabled (f) then
 					
-					rotate_by (circle, rot (position));
-					move_by (circle, type_point (position));
+					if f = face then
+						if flipped then mirror (circle, Y); end if;
+						
+						rotate_by (circle, rot (position));
+						move_by (circle, type_point (position));
 
-					set_color_silkscreen (context.cr, f);
+						set_color_silkscreen (context.cr, f);
 
-					case circle.filled is
-						when NO =>
-							set_line_width (context.cr, type_view_coordinate (circle.border_width));
-							pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+						case circle.filled is
+							when NO =>
+								set_line_width (context.cr, type_view_coordinate (circle.border_width));
+								pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
 
-						when YES =>
-							case circle.fill_style is
-								when SOLID =>
-									pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+							when YES =>
+								case circle.fill_style is
+									when SOLID =>
+										pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
 
-								when HATCHED => null; -- CS
-							end case;
-					end case;
-					
-					stroke (context.cr);
+									when HATCHED => null; -- CS
+								end case;
+						end case;
+						
+						stroke (context.cr);
+					end if;
+
 				end if;
 			end draw_circle;
 			
 			procedure query_circle_top (c : in type_silk_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				set_destination;
-
-				if silkscreen_enabled (destination) then
-					draw_circle (circle, destination);
-				end if;
+				set_face;
+				draw_circle (circle, destination);
 			end query_circle_top;
 
 			procedure query_circle_bottom (c : in type_silk_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				set_destination (INVERSE);
-				
-				if silkscreen_enabled (destination) then
-					draw_circle (circle, destination);
-				end if;
+				set_face (INVERSE);
+				draw_circle (circle, destination);
 			end query_circle_bottom;
 			
 		begin -- draw_silkscreen
