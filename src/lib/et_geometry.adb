@@ -1618,6 +1618,149 @@ package body et_geometry is
 			return b;
 		end boundaries;
 
+		function is_closed (
+			polygon	: in type_polygon_base)
+			return boolean is
+
+			use pac_polygon_lines;
+			use pac_polygon_arcs;
+			use pac_polygon_circles;
+			
+		begin
+			return true; -- CS
+		end is_closed;
+		
+		procedure move_by (
+		-- Moves a polygon by the given offset. 
+			polygon	: in out type_polygon_base;
+			offset	: in type_point) is
+
+			use pac_polygon_lines;
+			use pac_polygon_arcs;
+			use pac_polygon_circles;
+
+			cl : pac_polygon_lines.cursor := polygon.segments.lines.first;
+			ca : pac_polygon_arcs.cursor := polygon.segments.arcs.first;
+			cc : pac_polygon_circles.cursor := polygon.segments.circles.first;
+
+			procedure move_line (l : in out type_polygon_line) is begin
+				move_by (l, offset);
+			end move_line;
+
+			procedure move_arc (a : in out type_polygon_arc) is begin
+				move_by (a, offset);
+			end move_arc;
+
+			procedure move_circle (c : in out type_polygon_circle) is begin
+				move_by (c, offset);
+			end move_circle;
+			
+		begin -- move_by
+
+			update_element (
+				container	=> polygon.segments.lines,
+				position	=> cl,
+				process		=> move_line'access);
+
+			update_element (
+				container	=> polygon.segments.arcs,
+				position	=> ca,
+				process		=> move_arc'access);
+
+			update_element (
+				container	=> polygon.segments.circles,
+				position	=> cc,
+				process		=> move_circle'access);
+
+		end move_by;
+
+		procedure mirror (
+		-- Mirrors a polygon along the given axis.
+			polygon	: in out type_polygon_base;
+			axis	: in type_axis_2d) is
+			
+			use pac_polygon_lines;
+			use pac_polygon_arcs;
+			use pac_polygon_circles;
+
+			cl : pac_polygon_lines.cursor := polygon.segments.lines.first;
+			ca : pac_polygon_arcs.cursor := polygon.segments.arcs.first;
+			cc : pac_polygon_circles.cursor := polygon.segments.circles.first;
+
+			procedure mirror_line (l : in out type_polygon_line) is begin
+				mirror (l, axis);
+			end mirror_line;
+
+			procedure mirror_arc (a : in out type_polygon_arc) is begin
+				mirror (a, axis);
+			end mirror_arc;
+
+			procedure mirror_circle (c : in out type_polygon_circle) is begin
+				mirror (c, axis);
+			end mirror_circle;
+			
+		begin -- mirror
+
+			update_element (
+				container	=> polygon.segments.lines,
+				position	=> cl,
+				process		=> mirror_line'access);
+
+			update_element (
+				container	=> polygon.segments.arcs,
+				position	=> ca,
+				process		=> mirror_arc'access);
+
+			update_element (
+				container	=> polygon.segments.circles,
+				position	=> cc,
+				process		=> mirror_circle'access);
+
+		end mirror;
+
+		procedure rotate_by (
+		-- Rotates a polygon about the origin by the given rotation.
+			polygon		: in out type_polygon_base;
+			rotation	: in type_rotation) is
+
+			use pac_polygon_lines;
+			use pac_polygon_arcs;
+			use pac_polygon_circles;
+
+			cl : pac_polygon_lines.cursor := polygon.segments.lines.first;
+			ca : pac_polygon_arcs.cursor := polygon.segments.arcs.first;
+			cc : pac_polygon_circles.cursor := polygon.segments.circles.first;
+
+			procedure rotate_line (l : in out type_polygon_line) is begin
+				rotate_by (l, rotation);
+			end rotate_line;
+
+			procedure rotate_arc (a : in out type_polygon_arc) is begin
+				rotate_by (a, rotation);
+			end rotate_arc;
+
+			procedure rotate_circle (c : in out type_polygon_circle) is begin
+				rotate_by (c, rotation);
+			end rotate_circle;
+			
+		begin -- mirror
+
+			update_element (
+				container	=> polygon.segments.lines,
+				position	=> cl,
+				process		=> rotate_line'access);
+
+			update_element (
+				container	=> polygon.segments.arcs,
+				position	=> ca,
+				process		=> rotate_arc'access);
+
+			update_element (
+				container	=> polygon.segments.circles,
+				position	=> cc,
+				process		=> rotate_circle'access);
+
+		end rotate_by;
 		
 		
 -- 		function to_corner_easing (easing : in string) return type_corner_easing is begin

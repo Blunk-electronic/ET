@@ -614,7 +614,26 @@ package et_geometry is
 		function boundaries (polygon : in type_polygon_base) return type_boundaries;
 		-- Returns the boundaries of the given polygon.
 
-		-- CS move_by, mirror, rotate
+		-- Returns true if the given polygon is closed.
+		function is_closed (
+			polygon	: in type_polygon_base)
+			return boolean;
+		
+		procedure move_by (
+		-- Moves a polygon by the given offset. 
+			polygon	: in out type_polygon_base;
+			offset	: in type_point);
+
+		procedure mirror (
+		-- Mirrors a polygon along the given axis.
+			polygon	: in out type_polygon_base;
+			axis	: in type_axis_2d);
+
+		procedure rotate_by (
+		-- Rotates a polygon about the origin by the given rotation.
+			polygon		: in out type_polygon_base;
+			rotation	: in type_rotation);
+
 		
 		type type_polygon is new type_polygon_base with record
 			filled	: type_filled;
