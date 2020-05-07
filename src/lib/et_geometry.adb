@@ -1591,6 +1591,34 @@ package body et_geometry is
 				& " radius" & to_string (circle.radius);
 		end to_string;
 
+		function boundaries (polygon : in type_polygon_base) return type_boundaries is
+			b : type_boundaries; -- to be returned
+
+			use pac_polygon_lines;
+			use pac_polygon_arcs;
+			use pac_polygon_circles;
+			
+			procedure query_line (c : in pac_polygon_lines.cursor) is begin
+				union (b, boundaries (element (c)));
+			end query_line;
+
+			procedure query_arc (c : in pac_polygon_arcs.cursor) is begin
+				union (b, boundaries (element (c)));
+			end query_arc;
+
+			procedure query_circle (c : in pac_polygon_circles.cursor) is begin
+				union (b, boundaries (element (c)));
+			end query_circle;
+			
+		begin
+			iterate (polygon.segments.lines, query_line'access);
+			iterate (polygon.segments.arcs, query_arc'access);
+			iterate (polygon.segments.circles, query_circle'access);
+
+			return b;
+		end boundaries;
+
+		
 		
 -- 		function to_corner_easing (easing : in string) return type_corner_easing is begin
 -- 			return type_corner_easing'value (easing);

@@ -252,23 +252,41 @@ package body pac_draw is
 		-- CS fill style
 		height	: in pac_shapes.geometry.type_distance) is
 
-		-- compute the boundaries (greatest/smallest x/y) of the given circle:
--- 		boundaries : type_boundaries := pac_shapes.boundaries (circle);
+		-- compute the boundaries (greatest/smallest x/y) of the given polygon:
+		boundaries : type_boundaries := pac_shapes.boundaries (polygon);
 
-		-- compute the bounding box of the given arc
--- 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
+		-- compute the bounding box of the given polygon
+		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
+
+		use pac_polygon_lines;
+		procedure query_line (c : in pac_polygon_lines.cursor) is begin
+			null;
+		end query_line;
+
+		use pac_polygon_arcs;
+		procedure query_arc (c : in pac_polygon_arcs.cursor) is begin
+			null;
+		end query_arc;
+
+		-- CS circles ??
+		
 	begin
-		null;
-		-- We draw the segment if:
+		-- We draw the polygon if:
 		--  - no area given or
-		--  - if the bounding box of the segment intersects the given area
--- 		if (area = no_rectangle
--- 			or else intersects (area, bounding_box)) 
--- 		then
+		--  - if the bounding box of the polygon intersects the given area
+		if (area = no_rectangle
+			or else intersects (area, bounding_box)) 
+		then
 	-- CS test size 
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;
 	-- 			end if;
+
+			null;
+
+			iterate (polygon.segments.lines, query_line'access);
+			iterate (polygon.segments.arcs, query_arc'access);
+			-- CS circles ??
 			
 -- 			new_sub_path (context.cr); -- required to suppress an initial line
 
@@ -293,7 +311,7 @@ package body pac_draw is
 -- 				when NO => null;
 -- 			end case;
 -- 			
--- 		end if;
+		end if;
 	end draw_polygon;
 
 	

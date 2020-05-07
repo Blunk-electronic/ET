@@ -610,6 +610,11 @@ package et_geometry is
 		type type_polygon_base is abstract tagged record
 			segments	: type_polygon_segments;
 		end record;
+
+		function boundaries (polygon : in type_polygon_base) return type_boundaries;
+		-- Returns the boundaries of the given polygon.
+
+		-- CS move_by, mirror, rotate
 		
 		type type_polygon is new type_polygon_base with record
 			filled	: type_filled;

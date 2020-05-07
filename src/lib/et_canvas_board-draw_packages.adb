@@ -233,9 +233,6 @@ procedure draw_packages (
 				polygon	: in out et_packages.type_polygon;
 				f		: in type_face)
 			is begin
-				null;
-				null; --: pac_silk_polygons.list;
-
 				if silkscreen_enabled (f) then
 					
 					if f = face then
@@ -248,13 +245,11 @@ procedure draw_packages (
 
 						case polygon.fill_style is
 							when SOLID =>
-								null;
--- 								set_line_width (context.cr, type_view_coordinate (circle.border_width));
--- 								pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+								pac_draw_package.draw_polygon (in_area, context, polygon, YES, self.frame_height);
 
 							when HATCHED =>
-								null;
--- 									pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+								null; -- CS
+
 						end case;
 						
 						stroke (context.cr);
