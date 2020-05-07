@@ -138,6 +138,7 @@ procedure draw_packages (
 				draw_line (destination);
 			end query_line_bottom;
 
+			
 			-- ARCS
 			use type_silk_arcs;
 			arc : type_silk_arc;
@@ -172,6 +173,7 @@ procedure draw_packages (
 				draw_arc (destination);
 			end query_arc_bottom;
 
+			
 			-- CIRCLES
 			use type_silk_circles;
 
@@ -222,6 +224,60 @@ procedure draw_packages (
 				set_face (INVERSE);
 				draw_circle (circle, destination);
 			end query_circle_bottom;
+
+			
+			-- POLYGONS
+			use pac_silk_polygons;
+
+			procedure draw_polygon (
+				polygon	: in out et_packages.type_polygon;
+				f		: in type_face)
+			is begin
+				null;
+				null; --: pac_silk_polygons.list;
+
+				if silkscreen_enabled (f) then
+					
+					if f = face then
+-- CS						if flipped then mirror (circle, Y); end if;
+						
+-- 						rotate_by (circle, rot (position));
+-- 						move_by (circle, type_point (position));
+
+						set_color_silkscreen (context.cr, f);
+
+						case polygon.fill_style is
+							when SOLID =>
+								null;
+-- 								set_line_width (context.cr, type_view_coordinate (circle.border_width));
+-- 								pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+
+							when HATCHED =>
+								null;
+-- 									pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+						end case;
+						
+						stroke (context.cr);
+					end if;
+
+				end if;
+				
+			end draw_polygon;
+			
+			procedure query_polygon_top (c : in pac_silk_polygons.cursor) is
+				polygon : et_packages.type_polygon := element (c);
+			begin
+				set_face;
+				draw_polygon (polygon, destination);
+			end query_polygon_top;
+
+			procedure query_polygon_bottom (c : in pac_silk_polygons.cursor) is
+				polygon : et_packages.type_polygon := element (c);
+			begin
+				set_face (INVERSE);
+				draw_polygon (polygon, destination);
+			end query_polygon_bottom;
+
 			
 		begin -- draw_silkscreen
 			-- lines
@@ -236,9 +292,16 @@ procedure draw_packages (
 			element (package_cursor).silk_screen.top.circles.iterate (query_circle_top'access);
 			element (package_cursor).silk_screen.bottom.circles.iterate (query_circle_bottom'access);
 
+			-- polygons
+			element (package_cursor).silk_screen.top.polygons.iterate (query_polygon_top'access);
+			element (package_cursor).silk_screen.bottom.polygons.iterate (query_polygon_bottom'access);
+
+
+			
 			-- CS
 			-- placeholders
--- 			polygons	: pac_silk_polygons.list;
+
+			
 -- 			cutouts 	: pac_silk_cutouts.list;
 -- 			texts		: type_texts_with_content.list;
 			
@@ -271,7 +334,16 @@ procedure draw_packages (
 		
 	begin -- draw_package
 		draw_silkscreen;
-
+		-- CS draw_assembly_documentation;
+		-- CS draw_terminals
+		-- CS draw_conductors non-terminal related
+		-- CS draw_keepout
+		-- CS draw_stop_mask non-terminal related
+		-- CS draw_stencil non-terminal related
+		-- CS draw_route_restrict
+		-- CS draw_via_restrict
+		-- CS draw_pcb_contour
+		
 		-- The origin is drawn last so that it obscures other elements of the package:
 		draw_origin;
 	end draw_package;

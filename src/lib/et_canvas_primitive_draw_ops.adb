@@ -244,6 +244,59 @@ package body pac_draw is
 		end if;
 	end draw_circle;
 
+	procedure draw_polygon (
+		area	: in type_rectangle;
+		context	: in type_draw_context;
+		polygon	: in type_polygon_base'class;
+		filled	: in type_filled;
+		-- CS fill style
+		height	: in pac_shapes.geometry.type_distance) is
+
+		-- compute the boundaries (greatest/smallest x/y) of the given circle:
+-- 		boundaries : type_boundaries := pac_shapes.boundaries (circle);
+
+		-- compute the bounding box of the given arc
+-- 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
+	begin
+		null;
+		-- We draw the segment if:
+		--  - no area given or
+		--  - if the bounding box of the segment intersects the given area
+-- 		if (area = no_rectangle
+-- 			or else intersects (area, bounding_box)) 
+-- 		then
+	-- CS test size 
+	-- 			if not size_above_threshold (self, context.view) then
+	-- 				return;
+	-- 			end if;
+			
+-- 			new_sub_path (context.cr); -- required to suppress an initial line
+
+-- 			cairo.arc (
+-- 				context.cr,
+-- 				xc		=> convert_x (circle.center.x),
+-- 				yc		=> shift_y (circle.center.y, height),
+-- 				radius	=> type_view_coordinate (circle.radius),
+-- 
+-- 				-- it must be a full circle starting at 0 degree and ending at 360 degree:
+-- 				angle1	=> 0.0,
+-- 				angle2	=> type_view_coordinate (2 * pi)				
+-- 				);
+-- 
+-- 			case filled is
+-- 				when YES => 
+-- 					fill_preserve (context.cr);
+-- 
+-- 					-- A filled circle has always line width of zero:
+-- 					cairo.set_line_width (context.cr, type_view_coordinate (zero));
+-- 					
+-- 				when NO => null;
+-- 			end case;
+-- 			
+-- 		end if;
+	end draw_polygon;
+
+	
 	procedure draw_rectangle (
 		area			: in type_rectangle;
 		context			: in type_draw_context;

@@ -591,16 +591,16 @@ package et_packages is
 		width	: type_general_line_width;
 	end record;
 
-	package type_silk_lines is new doubly_linked_lists (type_silk_line);
+	package type_silk_lines is new doubly_linked_lists (type_silk_line);  -- CS rename to pac_silk_lines
 
 
 	type type_silk_arc is new type_arc with record
 		width	: type_general_line_width;
 	end record;
 
-	package type_silk_arcs is new doubly_linked_lists (type_silk_arc);
+	package type_silk_arcs is new doubly_linked_lists (type_silk_arc); -- CS rename to pac_silk_arcs
 	
-	package type_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
+	package type_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle); -- CS rename to pac_silk_circles
 
 	package pac_silk_polygons is new indefinite_doubly_linked_lists (type_polygon);
 	package pac_silk_cutouts is new doubly_linked_lists (type_cutout_zone);	
@@ -986,24 +986,24 @@ package et_packages is
 	
 	-- This is the base type of a package:
 	type type_package_base (appearance : type_package_appearance) is abstract tagged record
-		description				: type_package_description.bounded_string;
-		copper					: type_copper_both_sides; -- non-electric objects
-		keepout 				: type_keepout_both_sides;
-		stop_mask				: type_stop_mask_both_sides;
-		stencil					: type_stencil_both_sides;
+		description			: type_package_description.bounded_string;
+		copper				: type_copper_both_sides; -- non-electric objects -- CS rename to conductors
+		keepout 			: type_keepout_both_sides;
+		stop_mask			: type_stop_mask_both_sides;
+		stencil				: type_stencil_both_sides;
 
-		route_restrict 			: type_route_restrict;
-		via_restrict 			: type_via_restrict;
+		route_restrict 		: type_route_restrict;
+		via_restrict 		: type_via_restrict;
+		
 		-- CS holes
-
 		-- PCB contour or so called "non-plated millings"
-		pcb_contour				: type_pcb_contour; 
+		pcb_contour			: type_pcb_contour; 
 
 		-- Plated millings. NOTE: NOT FOR SLITTED HOLES ! See type_terminal instead.
 		-- CS: currently no need for such things
 		--pcb_contour_plated 		: type_plated_millings;
 		
-		technology				: type_assembly_technology := SMT; -- set by majority of terminals
+		technology			: type_assembly_technology := SMT; -- set by majority of terminals
 		
 		-- Only REAL packages have 3d contours:
 		case appearance is

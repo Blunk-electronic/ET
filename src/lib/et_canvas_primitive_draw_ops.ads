@@ -114,6 +114,14 @@ package pac_draw is
 		height	: in pac_shapes.geometry.type_distance);
 		-- CS fill style ?
 
+	procedure draw_polygon (
+		area	: in type_rectangle;
+		context	: in type_draw_context;
+		polygon	: in type_polygon_base'class;
+		filled	: in type_filled;
+		-- CS fill style
+		height	: in pac_shapes.geometry.type_distance);
+	
 	-- This procedure draws the a rectangle on the given context.
 	-- The rectangle is shifted in y to a plane of given height. This plane
 	-- has y-axis going downwards.
