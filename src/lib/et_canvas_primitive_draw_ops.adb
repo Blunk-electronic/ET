@@ -258,9 +258,29 @@ package body pac_draw is
 		-- compute the bounding box of the given polygon
 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
 
+		
 		use pac_polygon_lines;
 		procedure query_line (c : in pac_polygon_lines.cursor) is begin
 			null;
+
+			-- The ends of the line are round:
+			set_line_cap (context.cr, cairo_line_cap_round);
+			
+			-- start point
+			move_to (
+				context.cr,
+				convert_x (element (c).start_point.x),
+				shift_y (element (c).start_point.y, height)
+				);
+
+			-- end point
+			move_to (
+				context.cr,
+				convert_x (element (c).end_point.x),
+				shift_y (element (c).end_point.y, height)
+				);
+
+			
 		end query_line;
 
 		use pac_polygon_arcs;
@@ -281,8 +301,6 @@ package body pac_draw is
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;
 	-- 			end if;
-
-			null;
 
 			iterate (polygon.segments.lines, query_line'access);
 			iterate (polygon.segments.arcs, query_arc'access);
