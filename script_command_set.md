@@ -235,6 +235,15 @@ board led_driver display stencil top [on/off]
 board led_driver display stencil bottom [on/off]
 ```
 
+Origins of devices:
+The origin is a small cross usually in the center of a package.
+For the assembly machines this is the placement position.
+```
+board led_driver display origins top [on/off]
+```
+```
+board led_driver display origins bottom [on/off]
+```
 
 
 Conductor or signal layers (usually copper):

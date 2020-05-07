@@ -2180,11 +2180,12 @@ package body scripting is
 			case fc is
 				when TOP =>
 					case layer is
-						when NOUN_SILKSCREEN 	=> layers.silkscreen.top	:= ls;
-						when NOUN_ASSY			=> layers.assy_doc.top		:= ls;
-						when NOUN_KEEPOUT		=> layers.keepout.top		:= ls;
-						when NOUN_STENCIL		=> layers.stencil.top		:= ls;
-						when NOUN_STOP			=> layers.stop_mask.top		:= ls;
+						when NOUN_SILKSCREEN 	=> layers.silkscreen.top		:= ls;
+						when NOUN_ASSY			=> layers.assy_doc.top			:= ls;
+						when NOUN_KEEPOUT		=> layers.keepout.top			:= ls;
+						when NOUN_STENCIL		=> layers.stencil.top			:= ls;
+						when NOUN_STOP			=> layers.stop_mask.top			:= ls;
+						when NOUN_ORIGINS		=> layers.device_origins.top	:= ls;
 						
 						when others => 
 							log (importance => ERROR, text => "invalid layer !", console => true);
@@ -2192,11 +2193,12 @@ package body scripting is
 
 				when BOTTOM =>
 					case layer is
-						when NOUN_SILKSCREEN 	=> layers.silkscreen.bottom	:= ls;
-						when NOUN_ASSY			=> layers.assy_doc.bottom	:= ls;
-						when NOUN_KEEPOUT		=> layers.keepout.bottom	:= ls;
-						when NOUN_STENCIL		=> layers.stencil.bottom	:= ls;
-						when NOUN_STOP			=> layers.stop_mask.bottom	:= ls;
+						when NOUN_SILKSCREEN 	=> layers.silkscreen.bottom		:= ls;
+						when NOUN_ASSY			=> layers.assy_doc.bottom		:= ls;
+						when NOUN_KEEPOUT		=> layers.keepout.bottom		:= ls;
+						when NOUN_STENCIL		=> layers.stencil.bottom		:= ls;
+						when NOUN_STOP			=> layers.stop_mask.bottom		:= ls;
+						when NOUN_ORIGINS		=> layers.device_origins.bottom	:= ls;
 						
 						when others => 
 							log (importance => ERROR, text => "invalid layer !", console => true);
@@ -3450,7 +3452,7 @@ package body scripting is
 						end case;
 						
 					when NOUN_SILKSCREEN -- like "board led_driver display silkscreen top [on/off]"
-						| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOP | NOUN_STENCIL =>
+						| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOP | NOUN_STENCIL | NOUN_ORIGINS =>
 						case fields is
 							when 5 => display_non_conductor_layer (noun, f (5)); -- if status is omitted
 							when 6 => display_non_conductor_layer (noun, f (5), f (6));

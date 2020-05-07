@@ -43,6 +43,7 @@ package et_display.schematic is
 		nets			: type_layer_status := ON;
 		ports			: type_layer_status := OFF; -- the circles around the start point of ports
 		-- ?? net_labels		: type_layer_status := ON;
+		-- ?? device_origins -- when exporting images disable automatically ?
 		device_names	: type_layer_status := ON; -- for things like IC12, submodule names, instances and position
 		device_values	: type_layer_status := ON; -- things like 220R or 7400
 		device_purposes	: type_layer_status := ON; -- things like "brightness control"

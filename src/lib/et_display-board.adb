@@ -116,6 +116,16 @@ package body et_display.board is
 		return false;
 	end stencil_enabled;
 
+	function device_origins_enabled (face : in type_face) return boolean is begin
+		case face is
+			when TOP =>
+				if layers.device_origins.top = ON then return true; end if;
+			when BOTTOM =>
+				if layers.device_origins.bottom = ON then return true; end if;
+		end case;
+		return false;
+	end device_origins_enabled;
+	
 	function vias_enabled return boolean is begin
 		if layers.vias = ON then
 			return true;

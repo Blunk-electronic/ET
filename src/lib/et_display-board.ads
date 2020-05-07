@@ -65,12 +65,13 @@ package et_display.board is
 		outline			: type_layer_status := ON;
 		plated_millings	: type_layer_status := ON;
 		
-		silkscreen	: type_paired := (top => ON, bottom => OFF);
-		assy_doc	: type_paired := (top => ON, bottom => OFF);
-		keepout		: type_paired := (others => OFF);
-		stop_mask	: type_paired := (others => OFF);
-		stencil		: type_paired := (others => OFF);
-
+		silkscreen		: type_paired := (top => ON, bottom => OFF);
+		assy_doc		: type_paired := (top => ON, bottom => OFF);
+		keepout			: type_paired := (others => OFF);
+		stop_mask		: type_paired := (others => OFF);
+		stencil			: type_paired := (others => OFF);
+		device_origins	: type_paired := (others => ON);
+		
 		-- By default conductor layers 1..4 are displayed:
 		conductors		: type_conductors := (
 							1 => ON,
@@ -96,6 +97,7 @@ package et_display.board is
 	function keepout_enabled (face : in type_face) return boolean;
 	function stop_mask_enabled (face : in type_face) return boolean;
 	function stencil_enabled (face : in type_face) return boolean;
+	function device_origins_enabled (face : in type_face) return boolean;
 
 	-- Returns true if any conductor layer is enabled:
 	function conductors_enabled return boolean;

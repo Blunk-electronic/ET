@@ -236,6 +236,7 @@ package scripting is
 		NOUN_LEVEL,
 		NOUN_NAME,
 		NOUN_NET,
+		NOUN_ORIGINS, -- the center of a package
 		NOUN_OUTLINE,
 		NOUN_PARTCODE,
 		NOUN_PNP, -- pick & place

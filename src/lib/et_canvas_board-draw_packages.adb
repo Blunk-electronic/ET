@@ -255,21 +255,24 @@ procedure draw_packages (
 				start_point		=> type_point (set (x => x (position), y => y (position) - origin_half_size)),
 				end_point		=> type_point (set (x => x (position), y => y (position) + origin_half_size)));
 
-		begin
+		begin -- draw_origin
 			if face = get_face (position) then
+				if device_origins_enabled (get_face (position)) then
 
-				set_color_origin (context.cr);
-				set_line_width (context.cr, type_view_coordinate (origin_line_width));
-				pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
-				pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
-				stroke (context.cr);
+					set_color_origin (context.cr);
+					set_line_width (context.cr, type_view_coordinate (origin_line_width));
+					pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
+					pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
+					stroke (context.cr);
 
+				end if;
 			end if;
 		end draw_origin;
 		
 	begin -- draw_package
 		draw_silkscreen;
 
+		-- The origin is drawn last so that it obscures other elements of the package:
 		draw_origin;
 	end draw_package;
 	
