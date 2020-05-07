@@ -1011,8 +1011,8 @@ package et_packages is
 	end record;
 
 
-	origin_half_size : constant type_distance_positive := 2.0;
-	origin_line_width : constant type_distance_positive := 0.1;
+	origin_half_size : constant type_distance_positive := 1.0;
+	origin_line_width : constant type_distance_positive := 0.05;
 
 	
 	-- A package in the library extends the base package type:

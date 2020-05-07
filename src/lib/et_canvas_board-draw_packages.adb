@@ -256,11 +256,15 @@ procedure draw_packages (
 				end_point		=> type_point (set (x => x (position), y => y (position) + origin_half_size)));
 
 		begin
-			set_color_origin (context.cr);
-			set_line_width (context.cr, type_view_coordinate (origin_line_width));
-			pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
-			pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
-			stroke (context.cr);
+			if face = get_face (position) then
+
+				set_color_origin (context.cr);
+				set_line_width (context.cr, type_view_coordinate (origin_line_width));
+				pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
+				pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
+				stroke (context.cr);
+
+			end if;
 		end draw_origin;
 		
 	begin -- draw_package
