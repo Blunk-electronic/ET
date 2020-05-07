@@ -472,7 +472,7 @@ package et_symbols is
 	-- The unit name is something like "I/O Bank 3", "PWR" or "Switch 1" "Switch 2"
 
 	origin_half_size : constant type_distance_positive := 2.0;
-	origin_line_width : constant type_line_width := 0.1;
+	origin_line_width : constant type_distance_positive := 0.1;
 	
 	type type_symbol_base is tagged record		
 		texts : type_texts.list; -- the collection of texts
