@@ -1010,7 +1010,10 @@ package et_packages is
 		end case;
 	end record;
 
-	
+
+	origin_half_size : constant type_distance_positive := 2.0;
+	origin_line_width : constant type_distance_positive := 0.1;
+
 	
 	-- A package in the library extends the base package type:
 	type type_package is new type_package_base with record

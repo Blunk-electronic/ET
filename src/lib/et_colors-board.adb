@@ -62,6 +62,14 @@ package body et_colors.board is
 			frame.blue);
 	end set_color_frame;
 
+	procedure set_color_origin (context : in cairo_context) is begin		
+		set_source_rgb (
+			context, 
+			origin.red,
+			origin.green,
+			origin.blue);
+	end set_color_origin;
+	
 	procedure set_color_outline (context : in cairo_context) is begin		
 		set_source_rgb (
 			context, 

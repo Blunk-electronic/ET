@@ -243,9 +243,30 @@ procedure draw_packages (
 -- 			texts		: type_texts_with_content.list;
 			
 		end draw_silkscreen;
+
+		procedure draw_origin is
+			type type_line is new et_packages.pac_shapes.type_line with null record;
+			
+			line_horizontal : constant type_line := ( -- from left to right
+				start_point		=> type_point (set (x => x (position) - origin_half_size, y => y (position))),
+				end_point		=> type_point (set (x => x (position) + origin_half_size, y => y (position))));
+
+			line_vertical : constant type_line := ( -- from bottom to top
+				start_point		=> type_point (set (x => x (position), y => y (position) - origin_half_size)),
+				end_point		=> type_point (set (x => x (position), y => y (position) + origin_half_size)));
+
+		begin
+			set_color_origin (context.cr);
+			set_line_width (context.cr, type_view_coordinate (origin_line_width));
+			pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
+			pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
+			stroke (context.cr);
+		end draw_origin;
 		
-	begin
+	begin -- draw_package
 		draw_silkscreen;
+
+		draw_origin;
 	end draw_package;
 	
 	procedure query_devices (
