@@ -931,7 +931,12 @@ package et_packages is
 				pad_shape		: type_pad_outline;
 				face			: type_face;
 				stop_mask 		: type_stop_mask_status;
+				-- CS ?? stop_mask_shape : type_stop_mask_outline;
+				-- If no elements in outline, apply pad_shape.
+				
 				solder_paste	: type_solder_paste_status;
+				-- CS ?? stencil_shape : type_stencil_outline;
+				-- If no elements in outline, apply pad_shape.
 				
 		end case;
 	end record;
