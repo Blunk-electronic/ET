@@ -286,8 +286,6 @@ package body pac_draw is
 			return c;
 		end get_line;
 
-
-		
 	begin -- draw_polygon
 		
 		-- We draw the polygon if:
@@ -299,28 +297,21 @@ package body pac_draw is
 	-- CS test size 
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;
-			-- 			end if;
--- 			new_sub_path (context.cr); -- required to suppress an initial line
-
-
+	-- 			end if;
 			
 			for s in type_polygon_segment_id'first .. polygon.segments_total loop
 				
 				cl := get_line (s);
 				if cl /= pac_polygon_lines.no_element then
-
--- 					put_line (to_string (element (cl)));
 					
-					-- The ends of the line are round:
-					set_line_cap (context.cr, cairo_line_cap_round);
 
 					-- start point
-					move_to (
+					line_to (
 						context.cr,
 						convert_x (element (cl).start_point.x),
 						shift_y (element (cl).start_point.y, height)
 						);
-
+						
 					-- end point
 					line_to (
 						context.cr,
@@ -334,13 +325,14 @@ package body pac_draw is
 
 			case filled is
 				when YES => 
-					fill_preserve (context.cr);
-
-					-- A filled circle has always line width of zero:
-					cairo.set_line_width (context.cr, type_view_coordinate (0.1));
+					fill (context.cr);
 					
 				when NO => null;
-					cairo.set_line_width (context.cr, type_view_coordinate (0.1));
+
+					-- The ends of the line are round:
+					set_line_cap (context.cr, cairo_line_cap_round);
+
+					-- The line width has been set by the calling unit.
 			end case;
 
 		end if;
