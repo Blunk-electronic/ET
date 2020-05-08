@@ -632,7 +632,7 @@ package et_geometry is
 		function is_closed (
 			polygon	: in type_polygon_base)
 			return boolean;
-		
+
 		procedure move_by (
 		-- Moves a polygon by the given offset. 
 			polygon	: in out type_polygon_base;

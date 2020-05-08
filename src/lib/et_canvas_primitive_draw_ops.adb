@@ -257,40 +257,39 @@ package body pac_draw is
 
 		-- compute the bounding box of the given polygon
 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
-
 		
 		use pac_polygon_lines;
-		procedure query_line (c : in pac_polygon_lines.cursor) is begin
-			null;
-
-			-- The ends of the line are round:
-			set_line_cap (context.cr, cairo_line_cap_round);
-			
-			-- start point
-			move_to (
-				context.cr,
-				convert_x (element (c).start_point.x),
-				shift_y (element (c).start_point.y, height)
-				);
-
-			-- end point
-			move_to (
-				context.cr,
-				convert_x (element (c).end_point.x),
-				shift_y (element (c).end_point.y, height)
-				);
-
-			
-		end query_line;
-
 		use pac_polygon_arcs;
-		procedure query_arc (c : in pac_polygon_arcs.cursor) is begin
-			null;
-		end query_arc;
+		use pac_polygon_circles;
 
-		-- CS circles ??
+		cl : pac_polygon_lines.cursor;
 		
-	begin
+		function get_line (segment : in type_polygon_segment_id) return pac_polygon_lines.cursor is 
+			c : pac_polygon_lines.cursor := polygon.segments.lines.first;
+			found : boolean := false;
+
+			procedure query_line (l : in type_polygon_line) is begin
+				if l.id = segment then
+					found := true;
+				end if;
+			end query_line;
+			
+		begin -- get_segment_line
+			while c /= pac_polygon_lines.no_element loop
+				query_element (c, query_line'access);
+
+				if found = true then exit; end if;
+				
+				next (c);
+			end loop;
+
+			return c;
+		end get_line;
+
+
+		
+	begin -- draw_polygon
+		
 		-- We draw the polygon if:
 		--  - no area given or
 		--  - if the bounding box of the polygon intersects the given area
@@ -300,11 +299,32 @@ package body pac_draw is
 	-- CS test size 
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;
-	-- 			end if;
+			-- 			end if;
+			for s in type_polygon_segment_id'first .. polygon.segments_total loop
 
-			iterate (polygon.segments.lines, query_line'access);
-			iterate (polygon.segments.arcs, query_arc'access);
-			-- CS circles ??
+				cl := get_line (s);
+				if cl /= pac_polygon_lines.no_element then
+
+					-- The ends of the line are round:
+					set_line_cap (context.cr, cairo_line_cap_round);
+					
+					-- start point
+					move_to (
+						context.cr,
+						convert_x (element (cl).start_point.x),
+						shift_y (element (cl).start_point.y, height)
+						);
+
+					-- end point
+					move_to (
+						context.cr,
+						convert_x (element (cl).end_point.x),
+						shift_y (element (cl).end_point.y, height)
+						);
+					
+				end if;
+				
+			end loop;
 			
 -- 			new_sub_path (context.cr); -- required to suppress an initial line
 
