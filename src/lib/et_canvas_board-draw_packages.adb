@@ -236,10 +236,10 @@ procedure draw_packages (
 				if silkscreen_enabled (f) then
 					
 					if f = face then
--- CS						if flipped then mirror (circle, Y); end if;
+						if flipped then mirror (polygon, Y); end if;
 						
--- 						rotate_by (circle, rot (position));
--- 						move_by (circle, type_point (position));
+						rotate_by (polygon, rot (position));
+						move_by (polygon, type_point (position));
 
 						set_color_silkscreen (context.cr, f);
 
