@@ -300,14 +300,20 @@ package body pac_draw is
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;
 			-- 			end if;
-			for s in type_polygon_segment_id'first .. polygon.segments_total loop
+-- 			new_sub_path (context.cr); -- required to suppress an initial line
 
+
+			
+			for s in type_polygon_segment_id'first .. polygon.segments_total loop
+				
 				cl := get_line (s);
 				if cl /= pac_polygon_lines.no_element then
 
+-- 					put_line (to_string (element (cl)));
+					
 					-- The ends of the line are round:
 					set_line_cap (context.cr, cairo_line_cap_round);
-					
+
 					-- start point
 					move_to (
 						context.cr,
@@ -316,7 +322,7 @@ package body pac_draw is
 						);
 
 					-- end point
-					move_to (
+					line_to (
 						context.cr,
 						convert_x (element (cl).end_point.x),
 						shift_y (element (cl).end_point.y, height)
@@ -325,30 +331,18 @@ package body pac_draw is
 				end if;
 				
 			end loop;
-			
--- 			new_sub_path (context.cr); -- required to suppress an initial line
 
--- 			cairo.arc (
--- 				context.cr,
--- 				xc		=> convert_x (circle.center.x),
--- 				yc		=> shift_y (circle.center.y, height),
--- 				radius	=> type_view_coordinate (circle.radius),
--- 
--- 				-- it must be a full circle starting at 0 degree and ending at 360 degree:
--- 				angle1	=> 0.0,
--- 				angle2	=> type_view_coordinate (2 * pi)				
--- 				);
--- 
--- 			case filled is
--- 				when YES => 
--- 					fill_preserve (context.cr);
--- 
--- 					-- A filled circle has always line width of zero:
--- 					cairo.set_line_width (context.cr, type_view_coordinate (zero));
--- 					
--- 				when NO => null;
--- 			end case;
--- 			
+			case filled is
+				when YES => 
+					fill_preserve (context.cr);
+
+					-- A filled circle has always line width of zero:
+					cairo.set_line_width (context.cr, type_view_coordinate (0.1));
+					
+				when NO => null;
+					cairo.set_line_width (context.cr, type_view_coordinate (0.1));
+			end case;
+
 		end if;
 	end draw_polygon;
 

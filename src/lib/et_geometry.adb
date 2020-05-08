@@ -1656,26 +1656,32 @@ package body et_geometry is
 			end move_circle;
 			
 		begin -- move_by
-			if cl /= pac_polygon_lines.no_element then
+			while cl /= pac_polygon_lines.no_element loop
 				update_element (
 					container	=> polygon.segments.lines,
 					position	=> cl,
 					process		=> move_line'access);
-			end if;
 
-			if ca /= pac_polygon_arcs.no_element then
+				next (cl);
+			end loop;
+
+			while ca /= pac_polygon_arcs.no_element loop
 				update_element (
 					container	=> polygon.segments.arcs,
 					position	=> ca,
 					process		=> move_arc'access);
-			end if;
 
-			if cc /= pac_polygon_circles.no_element then
+				next (ca);
+			end loop;
+
+			while cc /= pac_polygon_circles.no_element loop
 				update_element (
 					container	=> polygon.segments.circles,
 					position	=> cc,
 					process		=> move_circle'access);
-			end if;
+
+				next (cc);
+			end loop;
 		end move_by;
 
 		procedure mirror (
@@ -1704,26 +1710,32 @@ package body et_geometry is
 			end mirror_circle;
 			
 		begin -- mirror
-			if cl /= pac_polygon_lines.no_element then
+			while cl /= pac_polygon_lines.no_element loop
 				update_element (
 					container	=> polygon.segments.lines,
 					position	=> cl,
 					process		=> mirror_line'access);
-			end if;
 
-			if ca /= pac_polygon_arcs.no_element then
+				next (cl);
+			end loop;
+
+			while ca /= pac_polygon_arcs.no_element loop
 				update_element (
 					container	=> polygon.segments.arcs,
 					position	=> ca,
 					process		=> mirror_arc'access);
-			end if;
 
-			if cc /= pac_polygon_circles.no_element then
+				next (ca);
+			end loop;
+
+			while cc /= pac_polygon_circles.no_element loop
 				update_element (
 					container	=> polygon.segments.circles,
 					position	=> cc,
 					process		=> mirror_circle'access);
-			end if;
+
+				next (cc);
+			end loop;
 		end mirror;
 
 		procedure rotate_by (
@@ -1752,26 +1764,32 @@ package body et_geometry is
 			end rotate_circle;
 			
 		begin -- mirror
-			if cl /= pac_polygon_lines.no_element then
+			while cl /= pac_polygon_lines.no_element loop
 				update_element (
 					container	=> polygon.segments.lines,
 					position	=> cl,
 					process		=> rotate_line'access);
-			end if;
 
-			if ca /= pac_polygon_arcs.no_element then
+				next (cl);
+			end loop;
+
+			while ca /= pac_polygon_arcs.no_element loop
 				update_element (
 					container	=> polygon.segments.arcs,
 					position	=> ca,
 					process		=> rotate_arc'access);
-			end if;
 
-			if cc /= pac_polygon_circles.no_element then
+				next (ca);
+			end loop;
+
+			while cc /= pac_polygon_circles.no_element loop
 				update_element (
 					container	=> polygon.segments.circles,
 					position	=> cc,
 					process		=> rotate_circle'access);
-			end if;
+
+				next (cc);
+			end loop;
 		end rotate_by;
 		
 		

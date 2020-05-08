@@ -248,8 +248,9 @@ procedure draw_packages (
 								pac_draw_package.draw_polygon (in_area, context, polygon, YES, self.frame_height);
 
 							when HATCHED =>
-								null; -- CS
-
+								cairo.set_line_width (context.cr, type_view_coordinate (polygon.hatching.border_width));
+								pac_draw_package.draw_polygon (in_area, context, polygon, NO, self.frame_height);
+								-- CS hatching ?
 						end case;
 						
 						stroke (context.cr);
