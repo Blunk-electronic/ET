@@ -262,7 +262,6 @@ package body pac_draw is
 		use pac_polygon_arcs;
 		use pac_polygon_circles;
 
-		cl : pac_polygon_lines.cursor;
 		
 		function get_line (segment : in type_polygon_segment_id) return pac_polygon_lines.cursor is 
 			c : pac_polygon_lines.cursor := polygon.segments.lines.first;
@@ -274,7 +273,7 @@ package body pac_draw is
 				end if;
 			end query_line;
 			
-		begin -- get_segment_line
+		begin -- get_line
 			while c /= pac_polygon_lines.no_element loop
 				query_element (c, query_line'access);
 
@@ -283,9 +282,60 @@ package body pac_draw is
 				next (c);
 			end loop;
 
-			return c;
+			return c; -- should be no_element if not found. points to the segment if found.
 		end get_line;
 
+		
+		function get_arc (segment : in type_polygon_segment_id) return pac_polygon_arcs.cursor is 
+			c : pac_polygon_arcs.cursor := polygon.segments.arcs.first;
+			found : boolean := false;
+
+			procedure query_arc (l : in type_polygon_arc) is begin
+				if l.id = segment then
+					found := true;
+				end if;
+			end query_arc;
+			
+		begin -- get_arc
+			while c /= pac_polygon_arcs.no_element loop
+				query_element (c, query_arc'access);
+
+				if found = true then exit; end if;
+				
+				next (c);
+			end loop;
+
+			return c; -- should be no_element if not found. points to the segment if found.
+		end get_arc;
+
+		
+		function get_circle (segment : in type_polygon_segment_id) return pac_polygon_circles.cursor is 
+			c : pac_polygon_circles.cursor := polygon.segments.circles.first;
+			found : boolean := false;
+
+			procedure query_circle (l : in type_polygon_circle) is begin
+				if l.id = segment then
+					found := true;
+				end if;
+			end query_circle;
+			
+		begin -- get_circle
+			while c /= pac_polygon_circles.no_element loop
+				query_element (c, query_circle'access);
+
+				if found = true then exit; end if;
+				
+				next (c);
+			end loop;
+
+			return c; -- should be no_element if not found. points to the segment if found.
+		end get_circle;
+
+		
+		cl : pac_polygon_lines.cursor;
+		ca : pac_polygon_arcs.cursor;
+		cc : pac_polygon_circles.cursor;
+		
 	begin -- draw_polygon
 		
 		-- We draw the polygon if:
@@ -304,7 +354,6 @@ package body pac_draw is
 				cl := get_line (s);
 				if cl /= pac_polygon_lines.no_element then
 					
-
 					-- start point
 					line_to (
 						context.cr,
