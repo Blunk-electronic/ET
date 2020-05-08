@@ -534,7 +534,14 @@ package body pcb_rw is
 		-- make a polygon line:
 		l : type_polygon_line := (et_packages.pac_shapes.type_line (line) with others => <>);
 	begin
-		-- collect the polygon line 
+		-- For each segment of the polygon we add 1 to the total number of polygon segments:
+		increment_segment_count;
+		
+		-- Collect the polygon line. 
+
+		-- Use the current total of segments as id for the current segment:
+		l.id := segment_count;
+		
 		append (polygon.segments.lines, l);
 
 		board_reset_line;
@@ -550,7 +557,14 @@ package body pcb_rw is
 		-- make a polygon arc:
 		a : type_polygon_arc := (et_packages.pac_shapes.type_arc (arc) with others => <>);
 	begin
-		-- collect the polygon line 
+		-- For each segment of the polygon we add 1 to the total number of polygon segments:
+		increment_segment_count;
+
+		-- collect the polygon arc 
+
+		-- Use the current total of segments as id for the current segment:
+		a.id := segment_count;
+
 		append (polygon.segments.arcs, a);
 
 		board_reset_arc;
@@ -566,7 +580,14 @@ package body pcb_rw is
 		-- make a polygon circle:
 		c : type_polygon_circle := (et_packages.pac_shapes.type_circle (circle) with others => <>);
 	begin
-		-- collect the polygon line 
+		-- For each segment of the polygon we add 1 to the total number of polygon segments:
+		increment_segment_count;
+
+		-- collect the polygon circle 
+
+		-- Use the current total of segments as id for the current segment:
+		c.id := segment_count;
+		
 		append (polygon.segments.circles, c);
 
 		board_reset_circle;
@@ -744,7 +765,19 @@ package body pcb_rw is
 		end if;
 	end;
 
+	
+	procedure increment_segment_count is 
+		use et_packages.pac_shapes;
+	begin
+		polygon.segments_total := polygon.segments_total + 1;
+	end increment_segment_count;
 
+	function segment_count return et_packages.pac_shapes.type_polygon_segment_count is begin
+		return polygon.segments_total;
+	end segment_count;
+
+	
+	
 	procedure board_reset_signal_layer is 
 		use et_pcb_stack;
 	begin

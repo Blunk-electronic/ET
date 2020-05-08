@@ -591,13 +591,26 @@ package et_geometry is
 		
 
 	-- POLYGON
-		type type_polygon_line is new type_line with null record;
+
+		type type_polygon_segment_count is new natural; -- CS range ?
+		subtype type_polygon_segment_id is type_polygon_segment_count range 1 .. type_polygon_segment_count'last;
+		
+		type type_polygon_line is new type_line with record
+			id : type_polygon_segment_id := type_polygon_segment_id'first;
+		end record;
+		
 		package pac_polygon_lines is new doubly_linked_lists (type_polygon_line);
 
-		type type_polygon_arc is new type_arc with null record;
+		type type_polygon_arc is new type_arc with record
+			id : type_polygon_segment_id := type_polygon_segment_id'first;
+		end record;
+		
 		package pac_polygon_arcs is new doubly_linked_lists (type_polygon_arc);
 
-		type type_polygon_circle is new type_circle with null record;
+		type type_polygon_circle is new type_circle with record
+			id : type_polygon_segment_id := type_polygon_segment_id'first;
+		end record;
+		
 		package pac_polygon_circles is new doubly_linked_lists (type_polygon_circle);
 
 		type type_polygon_segments is record
@@ -608,7 +621,8 @@ package et_geometry is
 
 		
 		type type_polygon_base is abstract tagged record
-			segments	: type_polygon_segments;
+			segments		: type_polygon_segments;
+			segments_total	: type_polygon_segment_count := type_polygon_segment_count'first;
 		end record;
 
 		function boundaries (polygon : in type_polygon_base) return type_boundaries;

@@ -214,6 +214,14 @@ package pcb_rw is
 	
 	type type_polygon is new et_packages.pac_shapes.type_polygon_base with null record;
 	polygon : type_polygon;
+
+	-- Increments polygon.segments_total by 1:
+	procedure increment_segment_count;
+
+	-- Returns the total number of segments of polygon:
+	function segment_count return et_packages.pac_shapes.type_polygon_segment_count;
+
+
 	
 	polygon_isolation : et_packages.type_track_clearance := et_packages.type_track_clearance'first;
 	polygon_width_min : et_packages.type_track_width := et_packages.type_track_width'first;

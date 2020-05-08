@@ -601,18 +601,18 @@ package body et_kicad_pcb is
 
 	begin -- to_pad_milling_contour
 		-- set supportive cornert points
-		p11 := type_point (set (x => xn, y => yp));
-		p12 := type_point (set (x => xn, y => yn));
+		p11 := type_point (set (x => xn, y => yp)); -- top left
+		p12 := type_point (set (x => xn, y => yn)); -- bottom left
 
-		p21 := type_point (set (x => xp, y => yp));
-		p22 := type_point (set (x => xp, y => yn));
+		p21 := type_point (set (x => xp, y => yp)); -- top right
+		p22 := type_point (set (x => xp, y => yn)); -- bottom right
 
 		-- rotate supportive points
 		rotate_by (p11, angle);
-		rotate_by (p11, angle);
+		rotate_by (p12, angle);
 
 		rotate_by (p21, angle);
-		rotate_by (p21, angle);
+		rotate_by (p22, angle);
 
 		-- move supportive points by given offset
 		move (p11, offset);
@@ -622,26 +622,38 @@ package body et_kicad_pcb is
 		move (p22, offset);
 
 		-- set left line
-		line_1.start_point := p11;
-		line_1.end_point := p12;
-
-		-- set right line
-		line_2.start_point := p21;
-		line_2.end_point := p22;
-
-		-- set upper line
-		line_3.start_point := p11;
-		line_3.end_point := p21;		
+		line_1.start_point	:= p11;
+		line_1.end_point	:= p12;
 
 		-- set lower line
-		line_4.start_point := p12;
-		line_4.end_point := p22;
+		line_4.start_point	:= p12;
+		line_4.end_point	:= p22;
 
-		-- build milling contour
-		lines.append (line_1);
-		lines.append (line_2);
-		lines.append (line_3);
-		lines.append (line_4);
+		-- set right line
+		line_2.start_point	:= p22;
+		line_2.end_point	:= p21;
+
+		-- set upper line
+		line_3.start_point	:= p21;
+		line_3.end_point	:= p11;
+
+		
+		-- Assemble milling contour:
+
+		-- The lines must be given an id because
+		-- they will end up in a polygon later.
+		-- The lines are appended in counterclockwise direction.
+		line_1.id := 1;
+		lines.append (line_1); -- left
+
+		line_4.id := 2;
+		lines.append (line_4); -- lower
+
+		line_2.id := 3;
+		lines.append (line_2); -- right
+
+		line_3.id := 4;
+		lines.append (line_3); -- upper
 		
 		return lines;
 	end to_pad_milling_contour;
@@ -2168,36 +2180,38 @@ package body et_kicad_pcb is
 								));
 
 						when OVAL => -- a milled hole
-							terminals.insert (
-								key 		=> terminal_name,
-								position	=> terminal_cursor,
-								inserted	=> terminal_inserted,
-								new_item 	=> (
-									technology 			=> THT,
-									tht_hole			=> MILLED,
-									position			=> terminal_position,
+							declare
+								lines : pac_polygon_lines.list := to_pad_milling_contour (
+													center	=> terminal_position,
+													size_x	=> terminal_milling_size_x,
+													size_y	=> terminal_milling_size_y,
+													offset	=> terminal_pad_drill_offset);
 
-									-- The shape is the same on top and on bottom side.									
-									pad_shape_tht		=> (top => shape, bottom => shape),
+								use pac_polygon_lines;
+								total : type_polygon_segment_id := type_polygon_segment_id (length (lines));
+							begin
+								terminals.insert (
+									key 		=> terminal_name,
+									position	=> terminal_cursor,
+									inserted	=> terminal_inserted,
+									new_item 	=> (
+										technology 			=> THT,
+										tht_hole			=> MILLED,
+										position			=> terminal_position,
 
-									width_inner_layers	=> terminal_copper_width_inner_layers,
+										-- The shape is the same on top and on bottom side.									
+										pad_shape_tht		=> (top => shape, bottom => shape),
 
-									-- The plated millings of the hole is a list of lines.
-									millings => 
-										(
-										segments => 
-											(
-											lines	=> to_pad_milling_contour (
-												center	=> terminal_position,
-												size_x	=> terminal_milling_size_x,
-												size_y	=> terminal_milling_size_y,
-												offset	=> terminal_pad_drill_offset),
+										width_inner_layers	=> terminal_copper_width_inner_layers,
 
+										-- The plated millings of the hole is a list of lines.
+										millings => (
+											segments => (lines, others	=> <>),
 											-- KiCad does not allow arcs or circles for plated millings.
-											others	=> <>
-											)
-										)
-								));
+											-- So we have only lines and nothing else.
+											segments_total => total)
+									));
+							end;
 					end case;
 				end insert_tht;
 				
@@ -6652,39 +6666,42 @@ package body et_kicad_pcb is
 								));
 
 						when OVAL => -- a milled hole
-							terminals.insert (
-								key 		=> terminal_name,
-								position	=> terminal_cursor,
-								inserted	=> terminal_inserted,
-								new_item 	=> (
-									technology 			=> THT,
-									tht_hole			=> MILLED,
-									position			=> terminal_position,
-									
-									-- The shape is the same on top and on bottom side.									
-									pad_shape_tht		=> (top => shape, bottom => shape),
-									
-									width_inner_layers	=> terminal_copper_width_inner_layers,
+							declare
+								lines : pac_polygon_lines.list := to_pad_milling_contour (
+													center	=> terminal_position,
+													size_x	=> terminal_milling_size_x,
+													size_y	=> terminal_milling_size_y,
+													offset	=> terminal_pad_drill_offset);
 
-									-- The plated millings of the hole is a list of lines.
-									millings => 
-										(
-										segments =>
-											(
-											lines 	=> to_pad_milling_contour (
-												center => terminal_position,
-												size_x => terminal_milling_size_x,
-												size_y => terminal_milling_size_y,
-												offset => terminal_pad_drill_offset),
+								use pac_polygon_lines;
+								total : type_polygon_segment_id := type_polygon_segment_id (length (lines));
+							begin
 
-											-- KiCad does not allow arcs or circles for plated millings.
-											others	=> <>
-											)
-										),
+								terminals.insert (
+									key 		=> terminal_name,
+									position	=> terminal_cursor,
+									inserted	=> terminal_inserted,
+									new_item 	=> (
+										technology 			=> THT,
+										tht_hole			=> MILLED,
+										position			=> terminal_position,
 										
-									-- the pad is connected with a certain net
-									net_name			=> terminal_net_name
-								));
+										-- The shape is the same on top and on bottom side.									
+										pad_shape_tht		=> (top => shape, bottom => shape),
+										
+										width_inner_layers	=> terminal_copper_width_inner_layers,
+
+										-- The plated millings of the hole is a list of lines.
+										millings => (
+											segments => (lines, others	=> <>),
+											-- KiCad does not allow arcs or circles for plated millings.
+											-- So we have only lines and nothing else.
+											segments_total => total),
+											
+										-- the pad is connected with a certain net
+										net_name			=> terminal_net_name
+									));
+							end;
 					end case;
 				end insert_tht;
 				
@@ -7301,11 +7318,17 @@ package body et_kicad_pcb is
 		lines : pac_polygon_lines.list; -- to be returned
 		line : type_polygon_line;
 
+		-- The segments must be given an id so that their order can be restored
+		-- later when a path is required:
+		id : type_polygon_segment_id := type_polygon_segment_id'first;
 	begin
 		while corner /= corners.last loop -- type_polygon_points.no_element loop
 			line.start_point := element (corner);
 			line.end_point := element (next (corner));
+
+			line.id := id; -- assign id
 			append (lines, line);
+			id := id + 1; -- prepare id for next segment
 			
 			next (corner);
 		end loop;
@@ -7317,11 +7340,12 @@ package body et_kicad_pcb is
 
 		-- The last line ends at the first point.
 		line.end_point := element (corners.first);
-		
+
+		line.id := id;
 		append (lines, line);
 		
 		return lines;
-	end;
+	end corners_to_lines;
 
 	procedure floating_copper_polygon_properties (
 	-- Logs the properties of the given floating copper polygon.
