@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -595,6 +595,21 @@ package body pcb_rw is
 
 	procedure board_reset_circle is begin board_circle := (others => <>); end;
 
+
+	procedure check_outline (polygon : in type_polygon) is
+		use et_string_processing;
+		use et_packages.pac_shapes;
+		status : constant type_polygon_status := is_closed (polygon);
+	begin
+		if status.closed then
+			null;
+		else
+			log (WARNING, "Polygon not properly closed at:");
+
+-- 			iterate (status.gaps, query_point
+			-- CS: list points
+		end if;
+	end check_outline;
 	
 	procedure read_board_line (line : et_string_processing.type_fields_of_line) is
 	-- Reads start and end point of the board_line. If the statement is invalid then an error issued.
@@ -3117,8 +3132,8 @@ package body pcb_rw is
 						
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_FILL_ZONE => null;
-							when SEC_CUTOUT_ZONE => null;
+							when SEC_FILL_ZONE => check_outline (polygon);
+							when SEC_CUTOUT_ZONE => check_outline (polygon);
 							when others => invalid_section;
 						end case;
 
@@ -3255,6 +3270,7 @@ package body pcb_rw is
 					when SEC_PAD_CONTOURS_SMT =>
 						case stack.parent is
 							when SEC_TERMINAL => 
+								check_outline (polygon);
 								smt_pad_shape := (pac_shapes.type_polygon_base (polygon) with null record);
 								board_reset_polygon;
 								
@@ -3263,7 +3279,7 @@ package body pcb_rw is
 
 					when SEC_PAD_CONTOURS_THT =>
 						case stack.parent is
-							when SEC_TERMINAL => null;
+							when SEC_TERMINAL => check_outline (polygon);
 							when others => invalid_section;
 						end case;
 
