@@ -195,6 +195,10 @@ package et_geometry is
 
 		function quadrant (point : in type_point) return type_quadrant;
 		-- Returns the quadrant the point is located in.
+		-- ONE  : point is right of the y-axis or on top of it AND above the x-axis or on top of it
+		-- TWO  : point is left of the y-axis AND above the x-axis or on top of it
+		-- THREE: point is left of the y-axis AND below the x-axis
+		-- FOUR : point is right of the y-axis or on top of it AND below the x-axis
 		
 		function invert (point : in type_point'class) return type_point'class;
 		-- Inverts the given point by multiplying x by -1 and y by -1.

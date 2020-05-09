@@ -148,6 +148,7 @@ package body pac_draw is
 		-- compute the bounding box of the given arc
 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
 
+		-- Convert the given arc so that it is expressed by start and end arc:
 		arc_temp : type_arc_angles := to_arc_angles (arc);
 	begin
 		-- We draw the segment if:
@@ -175,19 +176,19 @@ package body pac_draw is
 					xc		=> convert_x (arc_temp.center.x),
 					yc		=> shift_y (arc_temp.center.y, height),
 					radius	=> type_view_coordinate (arc_temp.radius),
-					angle1	=> type_view_coordinate (to_radians (arc_temp.angle_start)),
-					angle2	=> type_view_coordinate (to_radians (arc_temp.angle_end))
+					angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
+					angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
 					);
 
-			else
+			else -- CCW
 				
 				cairo.arc_negative (
 					context.cr,
 					xc		=> convert_x (arc_temp.center.x),
 					yc		=> shift_y (arc_temp.center.y, height),
 					radius	=> type_view_coordinate (arc_temp.radius),
-					angle1	=> type_view_coordinate (to_radians (arc_temp.angle_start)),
-					angle2	=> type_view_coordinate (to_radians (arc_temp.angle_end))
+					angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
+					angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
 					);
 			end if;
 
@@ -335,6 +336,9 @@ package body pac_draw is
 		cl : pac_polygon_lines.cursor;
 		ca : pac_polygon_arcs.cursor;
 		cc : pac_polygon_circles.cursor;
+
+		-- For cairo, en arc must be expressed by start and end arc:
+		arc_temp : type_arc_angles;
 		
 	begin -- draw_polygon
 		
@@ -367,7 +371,45 @@ package body pac_draw is
 						convert_x (element (cl).end_point.x),
 						shift_y (element (cl).end_point.y, height)
 						);
-					
+
+				else
+					ca := get_arc (s);
+					if ca /= pac_polygon_arcs.no_element then
+						
+						-- put_line (type_polygon_segment_id'image (s));
+
+						arc_temp := to_arc_angles (element (ca));
+						
+						if element (ca).direction = CW then
+							--put_line ("CW");
+							
+							cairo.arc (
+								context.cr,
+								xc		=> convert_x (arc_temp.center.x),
+								yc		=> shift_y (arc_temp.center.y, height),
+								radius	=> type_view_coordinate (arc_temp.radius),
+								angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
+								angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
+								);
+
+						else -- CCW
+							--put_line ("CCW start" & to_string (element (ca).start_point) & " angle" 
+							--		  & to_string (arc_temp.angle_start));
+
+							--put_line ("CCW end  " & to_string (element (ca).end_point) & " angle" 
+							--		  & to_string (arc_temp.angle_end));
+							
+							cairo.arc_negative (
+								context.cr,
+								xc		=> convert_x (arc_temp.center.x),
+								yc		=> shift_y (arc_temp.center.y, height),
+								radius	=> type_view_coordinate (arc_temp.radius),
+								angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
+								angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
+								);
+						end if;
+
+					end if;
 				end if;
 				
 			end loop;
