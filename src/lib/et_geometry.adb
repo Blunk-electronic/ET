@@ -1252,9 +1252,9 @@ package body et_geometry is
 			-- Calculate the radius of the arc:
 			radius : type_distance_positive := distance_total (arc.center, arc.start_point);
 
-			-- Calculate the quadrant where start and end point are in:
-			q_start : type_quadrant := quadrant (arc_tmp.start_point);
-			q_end   : type_quadrant := quadrant (arc_tmp.end_point);
+			-- The quadrant where start and end point are in:
+			q_start : type_quadrant;
+			q_end   : type_quadrant;
 
 			procedure set_sx is begin result.smallest_x := - radius; end;
 			procedure set_gx is begin result.greatest_x :=   radius; end;
@@ -1265,6 +1265,10 @@ package body et_geometry is
 			-- move arc_tmp so that its center is at 0/0
 			move_to (arc_tmp, origin);
 
+			-- Calculate the quadrant where start and end point are in:
+			q_start := quadrant (arc_tmp.start_point);
+			q_end   := quadrant (arc_tmp.end_point);
+			
 			-- calculate the boundaries of start and end point
 			result := boundaries (arc_tmp.start_point, arc_tmp.end_point);
 
