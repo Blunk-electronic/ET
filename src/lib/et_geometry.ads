@@ -632,10 +632,23 @@ package et_geometry is
 		function boundaries (polygon : in type_polygon_base) return type_boundaries;
 		-- Returns the boundaries of the given polygon.
 
-		-- Returns true if the given polygon is closed.
+		-- A polygon must have a properly closed outline.
+		-- The outline check requires a list of points (where the gaps are):
+		package pac_polygon_gaps is new doubly_linked_lists (type_point);
+
+		-- The result of an outline check is a parameterized type:
+		type type_polygon_status (closed : boolean) is record
+			case closed is
+				when TRUE	=> null;
+				when FALSE	=> gaps : pac_polygon_gaps.list;
+			end case;
+		end record;
+					
+		-- Returns true if the given polygon is properly closed.
+		-- If there are gaps, a list of points is returned where the gaps are.
 		function is_closed (
 			polygon	: in type_polygon_base)
-			return boolean;
+			return type_polygon_status;
 
 		procedure move_by (
 		-- Moves a polygon by the given offset. 

@@ -1624,14 +1624,15 @@ package body et_geometry is
 
 		function is_closed (
 			polygon	: in type_polygon_base)
-			return boolean is
+			return type_polygon_status is
 
 			use pac_polygon_lines;
 			use pac_polygon_arcs;
 			use pac_polygon_circles;
-			
+
+			closed : boolean := true;
 		begin
-			return true; -- CS
+			return (closed => true); -- CS
 		end is_closed;
 		
 		procedure move_by (
