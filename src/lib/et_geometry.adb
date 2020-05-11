@@ -1628,9 +1628,16 @@ package body et_geometry is
 			use ada.strings.unbounded;
 			result : unbounded_string;
 			
-			procedure query_gap (g : in pac_polygon_gaps.cursor) is begin
-				result := result & to_string (element (g));
-				-- CS separate points by comma (or line break)
+			procedure query_gap (g : in pac_polygon_gaps.cursor) is 
+				scratch : unbounded_string;
+			begin
+				if next (g) /= pac_polygon_gaps.no_element then
+					scratch := to_unbounded_string (to_string (element (g)) & comma);
+				else
+					scratch := to_unbounded_string (to_string (element (g)));
+				end if;
+
+				result := result & scratch;
 			end query_gap;
 		
 		begin
@@ -1720,15 +1727,43 @@ package body et_geometry is
 			cl : pac_polygon_lines.cursor;
 			ca : pac_polygon_arcs.cursor;
 			cc : pac_polygon_circles.cursor;
-			
+
+			-- Goes false once a gap has been detected:
 			closed : boolean := true;
 
-			started : boolean := false;
-			start_point : type_point;
-			last_end_point : type_point;
+			-- The point where the polyon outline starts:
+			start_point		: type_point;
 
+			-- The end point of a segment. Once the last segment has been processed,
+			-- this point must match the start point:
+			last_end_point	: type_point;
+
+			-- Goes true once a start point has been set:
+			started : boolean := false;
+
+			-- Here we collect the points where a gap begins:
 			use pac_polygon_gaps;
 			gaps : pac_polygon_gaps.list;
+
+			-- Sets the start point of the outline if the start point
+			-- has not been set already.
+			-- Clears the closed-flag if the given point does NOT
+			-- match the last_end_point and appends the last_end_point to
+			-- the list of gaps.
+			procedure set_start_point (p : in type_point) is begin
+				if not started then
+					start_point := p;
+					last_end_point := start_point;
+					started := true;
+				end if;
+
+				if p /= last_end_point then
+					closed := false;
+					append (gaps, last_end_point);
+				end if;
+
+			end set_start_point;
+	
 		begin
 			-- Iterate segments of given polygon. For each iteration s indicates the
 			-- segment to be checked. It can be among lines (most likely), among arcs (less likely)
@@ -1741,36 +1776,15 @@ package body et_geometry is
 				cl := get_line (s);
 				if cl /= pac_polygon_lines.no_element then
 
-					if not started then
-						start_point := element (cl).start_point;
-						last_end_point := start_point;
-						started := true;
-					end if;
-					
-					if element (cl).start_point /= last_end_point then
-						closed := false;
-						append (gaps, last_end_point);
-					end if;
-					
+					set_start_point (element (cl).start_point);
 					last_end_point := element (cl).end_point;
-						
 
 				-- If segment not found among lines, search among arcs:
 				else 
 					ca := get_arc (s);
 					if ca /= pac_polygon_arcs.no_element then
 						
-						if not started then
-							start_point := element (ca).start_point;
-							last_end_point := start_point;
-							started := true;
-						end if;
-
-						if element (ca).start_point /= last_end_point then
-							closed := false;
-							append (gaps, last_end_point);
-						end if;
-						
+						set_start_point (element (ca).start_point);
 						last_end_point := element (ca).end_point;
 						
 					-- If segment not found among arcs, search among circles:
@@ -1778,22 +1792,12 @@ package body et_geometry is
 						cc := get_circle (s);
 						if cc /= pac_polygon_circles.no_element then
 
-							if not started then
-								start_point := element (cc).center;
-								last_end_point := start_point;
-								started := true;
-							end if;
-
-							if element (cc).center /= last_end_point then
-								closed := false;
-								append (gaps, last_end_point);
-							end if;
-
+							set_start_point (element (cc).center);
 							last_end_point := element (cc).center;
 							
 						else
 							-- If segment is not among circles, we have a problem:
-							raise constraint_error; -- CS should never happen. log message !
+							raise constraint_error; -- CS should never happen.
 						end if;
 						
 					end if;

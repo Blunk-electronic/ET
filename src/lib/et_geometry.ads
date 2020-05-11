@@ -636,6 +636,7 @@ package et_geometry is
 		-- The outline check requires a list of points (where the gaps are):
 		package pac_polygon_gaps is new doubly_linked_lists (type_point); 
 
+		-- Returns the points where gaps of a polygon outline begin:
 		function to_string (gaps : in pac_polygon_gaps.list) return string;
 		
 
@@ -649,6 +650,11 @@ package et_geometry is
 					
 		-- Returns true if the given polygon is properly closed.
 		-- If there are gaps, a list of points is returned where the gaps are.
+		-- The test iterates the segments of the polygon and tests whether
+		-- the end point of a segment matches the start point of the next segment.
+		-- Special threatment for circle segments: Since a circle does not have 
+		-- start and end point, only the center point of the circle must be in 
+		-- the chain of segments.
 		function is_closed (
 			polygon	: in type_polygon_base)
 			return type_polygon_status;
