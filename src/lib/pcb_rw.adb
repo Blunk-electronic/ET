@@ -2726,6 +2726,8 @@ package body pcb_rw is
 						end case;
 						
 					when SEC_ARC =>
+						--check_arc (pac_shapes.type_arc (board_arc), log_threshold + 1)
+						
 						case stack.parent is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
