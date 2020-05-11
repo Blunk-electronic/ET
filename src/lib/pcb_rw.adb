@@ -662,20 +662,20 @@ package body pcb_rw is
 		end if;
 	end;
 
-	procedure check_arc (
-		arc				: in et_packages.pac_shapes.type_arc;
+	procedure board_check_arc (
+-- 		arc				: in et_packages.pac_shapes.type_arc;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages.pac_shapes;
 	begin
 		log (text => "checking arc ...", level => log_threshold);
 
-		if radius_start (arc) /= radius_end (arc) then
+		if radius_start (board_arc) /= radius_end (board_arc) then
 			log (ERROR, "Start and end point of arc have differing distance from center !",
 				 console => true);
 			raise constraint_error;
 		end if;
-	end check_arc;
+	end board_check_arc;
 	
 	procedure read_board_arc (line : et_string_processing.type_fields_of_line) is
 	-- Reads start and end point of the board_arc. If the statement is invalid then an error issued.
@@ -2740,7 +2740,7 @@ package body pcb_rw is
 						end case;
 						
 					when SEC_ARC =>
-						check_arc (pac_shapes.type_arc (board_arc), log_threshold + 1);
+						board_check_arc (log_threshold + 1);
 						
 						case stack.parent is
 							when SEC_TOP => 

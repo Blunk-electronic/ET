@@ -5102,11 +5102,12 @@ package body et_project is
 					when SEC_ARC =>
 						case stack.parent is
 							when SEC_CONTOURS => 
-								check_arc (et_packages.pac_shapes.type_arc (board_arc), log_threshold + 1);
+								board_check_arc (log_threshold + 1);
 								add_polygon_arc (board_arc);
 
 							when SEC_ROUTE =>
-								check_arc (et_packages.pac_shapes.type_arc (board_arc), log_threshold + 1);
+								board_check_arc (log_threshold + 1);
+								-- CS: call board_check_arc in other sections below
 								
 								-- insert arc in route.arcs
 								et_pcb.pac_copper_arcs.append (
