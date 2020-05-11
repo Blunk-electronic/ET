@@ -493,6 +493,13 @@ package et_geometry is
 			-- CS locked : type_locked;		
 		end record;
 
+		-- Returns the distance between the start point and the center of the arc.
+		function radius_start (arc : in type_arc) return type_distance_positive;
+
+		-- Returns the distance between the end point and the center of the arc.
+		function radius_end (arc : in type_arc) return type_distance_positive;
+
+		
 		-- Sometimes (for example with cairo) an arc must be
 		-- expressed in terms of start and end angle:
 		type type_arc_angles is record

@@ -191,6 +191,11 @@ package pcb_rw is
 
 	function read_board_line (line : et_string_processing.type_fields_of_line) return boolean;
 	-- Reads start and end point of the board_line. If the statement is invalid then it returns a false.
+
+	-- Checks whether start and end point of given arc have same distance from center.
+	procedure check_arc (
+		arc				: in et_packages.pac_shapes.type_arc;
+		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure read_board_arc (line : et_string_processing.type_fields_of_line);
 	-- Reads start and end point of the board_arc. If the statement is invalid then an error issued.

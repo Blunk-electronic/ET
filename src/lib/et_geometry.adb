@@ -1200,6 +1200,15 @@ package body et_geometry is
 			end if;
 		end;
 
+		function radius_start (arc : in type_arc) return type_distance_positive is begin
+			return distance_total (arc.center, arc.start_point);
+		end radius_start;
+
+		function radius_end (arc : in type_arc) return type_distance_positive is begin
+			return distance_total (arc.center, arc.end_point);
+		end radius_end;
+
+		
 		function to_arc_angles (arc : in type_arc) return type_arc_angles is
 		-- Returns the start and end angles of an arc.
 		-- The angles may be negative. For example instead of 270 degree
