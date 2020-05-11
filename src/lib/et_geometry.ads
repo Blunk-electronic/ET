@@ -635,8 +635,8 @@ package et_geometry is
 		-- A polygon must have a properly closed outline.
 		-- The outline check requires a list of points (where the gaps are):
 		package pac_polygon_gaps is new doubly_linked_lists (type_point); 
-		-- CS should be more general like pac_points for general use
-		-- CS function that returns points as string
+
+		function to_string (gaps : in pac_polygon_gaps.list) return string;
 		
 
 		-- The result of an outline check is a parameterized type:

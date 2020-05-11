@@ -355,7 +355,7 @@ package body pac_draw is
 
 			-- Iterate segments of given polygon. For each iteration s indicates the
 			-- segment to be drawn. It can be among lines (most likely), among arcs (less likely)
-			-- and among cirlces (least likely). The functions get_line, get_arc and get_circle
+			-- and among circles (least likely). The functions get_line, get_arc and get_circle
 			-- return a cursor to the segment if it is among lines, arcs or circles.
 			-- Otherwise get_line, get_arc or get_circle return no_element.
 			for s in type_polygon_segment_id'first .. polygon.segments_total loop

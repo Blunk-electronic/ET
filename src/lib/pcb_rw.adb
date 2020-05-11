@@ -596,19 +596,23 @@ package body pcb_rw is
 	procedure board_reset_circle is begin board_circle := (others => <>); end;
 
 
-	procedure check_outline (polygon : in type_polygon) is
+	procedure check_outline (
+		polygon			: in type_polygon;
+		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages.pac_shapes;
 		status : constant type_polygon_status := is_closed (polygon);
 	begin
+		log (text => "checking polygon outline ...", level => log_threshold);
+		log_indentation_up;
+		
 		if status.closed then
 			null;
 		else
-			log (WARNING, "Polygon not properly closed at:");
-
--- 			iterate (status.gaps, query_point
-			-- CS: list points
+			log (WARNING, "Polygon not properly closed at:" & to_string (status.gaps));
 		end if;
+
+		log_indentation_down;
 	end check_outline;
 	
 	procedure read_board_line (line : et_string_processing.type_fields_of_line) is
@@ -3132,8 +3136,8 @@ package body pcb_rw is
 						
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_FILL_ZONE => check_outline (polygon);
-							when SEC_CUTOUT_ZONE => check_outline (polygon);
+							when SEC_FILL_ZONE => check_outline (polygon, log_threshold + 1);
+							when SEC_CUTOUT_ZONE => check_outline (polygon, log_threshold + 1);
 							when others => invalid_section;
 						end case;
 
@@ -3270,7 +3274,7 @@ package body pcb_rw is
 					when SEC_PAD_CONTOURS_SMT =>
 						case stack.parent is
 							when SEC_TERMINAL => 
-								check_outline (polygon);
+								check_outline (polygon, log_threshold + 1);
 								smt_pad_shape := (pac_shapes.type_polygon_base (polygon) with null record);
 								board_reset_polygon;
 								
@@ -3279,7 +3283,7 @@ package body pcb_rw is
 
 					when SEC_PAD_CONTOURS_THT =>
 						case stack.parent is
-							when SEC_TERMINAL => check_outline (polygon);
+							when SEC_TERMINAL => check_outline (polygon, log_threshold + 1);
 							when others => invalid_section;
 						end case;
 
