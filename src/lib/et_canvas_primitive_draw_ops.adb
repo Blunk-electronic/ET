@@ -353,6 +353,19 @@ package body pac_draw is
 	-- 				return;
 	-- 			end if;
 
+-- 			case filled is
+-- 				when YES => 
+-- 					fill (context.cr);
+-- 					
+-- 				when NO => null;
+-- 
+-- 					-- The ends of the line are round:
+-- 					set_line_cap (context.cr, cairo_line_cap_round);
+-- 
+-- 					-- The line width has been set by the calling unit.
+-- 			end case;
+
+			
 			-- Iterate segments of given polygon. For each iteration s indicates the
 			-- segment to be drawn. It can be among lines (most likely), among arcs (less likely)
 			-- and among circles (least likely). The functions get_line, get_arc and get_circle
@@ -423,6 +436,13 @@ package body pac_draw is
 						cc := get_circle (s);
 						if cc /= pac_polygon_circles.no_element then
 
+							if filled = YES then
+								fill_preserve (context.cr);
+							end if;
+							
+							-- CS: The intersection between circle and other segments
+							-- is still visible as a very thin line.
+							
 							cairo.arc (
 								context.cr,
 								xc		=> convert_x (element (cc).center.x),

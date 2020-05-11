@@ -610,6 +610,7 @@ package body pcb_rw is
 			null;
 		else
 			log (WARNING, "Polygon not properly closed at:" & to_string (status.gaps));
+			-- CS: write implications and dangers !
 		end if;
 
 		log_indentation_down;

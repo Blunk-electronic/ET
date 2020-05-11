@@ -652,9 +652,12 @@ package et_geometry is
 		-- If there are gaps, a list of points is returned where the gaps are.
 		-- The test iterates the segments of the polygon and tests whether
 		-- the end point of a segment matches the start point of the next segment.
-		-- Special threatment for circle segments: Since a circle does not have 
+		-- CS: Special threatment for circle segments: Since a circle does not have 
 		-- start and end point, only the center point of the circle must be in 
-		-- the chain of segments.
+		-- the chain of segments. 
+		-- CS: Improvement required: It is sufficient if the circle
+		-- touches one of the other segments (lines and arcs) to regard it as connected
+		-- with the polygon.
 		function is_closed (
 			polygon	: in type_polygon_base)
 			return type_polygon_status;
