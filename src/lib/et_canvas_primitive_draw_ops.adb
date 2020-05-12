@@ -341,7 +341,7 @@ package body pac_draw is
 		arc_temp : type_arc_angles;
 		
 	begin -- draw_polygon
-		
+
 		-- We draw the polygon if:
 		--  - no area given or
 		--  - if the bounding box of the polygon intersects the given area
@@ -353,19 +353,6 @@ package body pac_draw is
 	-- 				return;
 	-- 			end if;
 
--- 			case filled is
--- 				when YES => 
--- 					fill (context.cr);
--- 					
--- 				when NO => null;
--- 
--- 					-- The ends of the line are round:
--- 					set_line_cap (context.cr, cairo_line_cap_round);
--- 
--- 					-- The line width has been set by the calling unit.
--- 			end case;
-
-			
 			-- Iterate segments of given polygon. For each iteration s indicates the
 			-- segment to be drawn. It can be among lines (most likely), among arcs (less likely)
 			-- and among circles (least likely). The functions get_line, get_arc and get_circle

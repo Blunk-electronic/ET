@@ -274,6 +274,47 @@ procedure draw_packages (
 				draw_polygon (polygon, destination);
 			end query_polygon_bottom;
 
+
+			-- CUTOUTS
+			use pac_silk_cutouts;
+
+			procedure draw_cutout (
+				cutout	: in out et_packages.type_cutout_zone;
+				f		: in type_face)
+			is begin
+				if silkscreen_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (cutout, Y); end if;
+						
+						rotate_by (cutout, rot (position));
+						move_by (cutout, type_point (position));
+
+						set_color_background (context.cr);
+
+						pac_draw_package.draw_polygon (in_area, context, cutout, YES, self.frame_height);
+						
+						stroke (context.cr);
+					end if;
+
+				end if;
+				
+			end draw_cutout;
+			
+			procedure query_cutout_top (c : in pac_silk_cutouts.cursor) is
+				cutout : et_packages.type_cutout_zone := element (c);
+			begin
+				set_face;
+				draw_cutout (cutout, destination);
+			end query_cutout_top;
+
+			procedure query_cutout_bottom (c : in pac_silk_cutouts.cursor) is
+				cutout : et_packages.type_cutout_zone := element (c);
+			begin
+				set_face (INVERSE);
+				draw_cutout (cutout, destination);
+			end query_cutout_bottom;
+
 			
 		begin -- draw_silkscreen
 			-- lines
@@ -292,14 +333,13 @@ procedure draw_packages (
 			element (package_cursor).silk_screen.top.polygons.iterate (query_polygon_top'access);
 			element (package_cursor).silk_screen.bottom.polygons.iterate (query_polygon_bottom'access);
 
-
+			-- cutouts
+			element (package_cursor).silk_screen.top.cutouts.iterate (query_cutout_top'access);
+			element (package_cursor).silk_screen.bottom.cutouts.iterate (query_cutout_bottom'access);
 			
 			-- CS
 			-- placeholders
-
-			
--- 			cutouts 	: pac_silk_cutouts.list;
--- 			texts		: type_texts_with_content.list;
+			-- texts		: type_texts_with_content.list;
 			
 		end draw_silkscreen;
 
