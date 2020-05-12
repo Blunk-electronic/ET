@@ -75,12 +75,10 @@ begin
 			   + type_view_coordinate (self.frame_height)
 			   + lower_grid_coordinate (area.height, used_grid.y)
 			   - type_view_coordinate (y (self.board_origin));
-
+	
 	-- CS: Currently the start point is very far below the given area.
 	-- On drawing the grid this circumstance may waste computing time.
 
-
-	
 	pac_canvas.draw_grid (context, area, used_grid, start_x, start_y,
 						  grid -- color
 						 );

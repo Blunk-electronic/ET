@@ -254,13 +254,13 @@ package body et_canvas_board is
 		set_color_background (context.cr);
 		paint (context.cr);
 
-		if grid_enabled then
-			draw_grid (self, context, area);
-		end if;
+		-- Backup context for drawing the grid at the end of this procedure.
+		save (context.cr);
 		
 		-- move area_shifted according to frame position:
 		move_by (area_shifted, area_shifted_new_position);
 
+		
 		-- draw the frame:
 		save (context.cr);
 		-- Prepare the current transformation matrix (CTM) so that
@@ -362,11 +362,21 @@ package body et_canvas_board is
 			draw_outline (self, area_shifted, context);
 		end if;
 
+
 		
-		-- The cursor is drawn last so that is in the foreground:
+		-- Grid and cursor is drawn here so that they are in the foreground:
+		
+	-- CURSOR
 		draw_cursor (self, area_shifted, context, cursor_main);
-		
 		restore (context.cr);
+
+	-- GRID
+		-- Restore context to draw the grid:
+		restore (context.cr);
+		if grid_enabled then
+			draw_grid (self, context, area);
+		end if;
+		
 	end draw_internal;
 
 	procedure redraw (view : in type_view_ptr) is begin
