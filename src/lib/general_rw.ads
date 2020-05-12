@@ -114,7 +114,9 @@ package general_rw is
 		parameters	: in string;
 		wrap		: in boolean := false);
 
-
+	-- Outputs a message telling that start and end point of are have differing 
+	-- distance to center.
+	procedure invalid_arc;
 
 	
 	generic

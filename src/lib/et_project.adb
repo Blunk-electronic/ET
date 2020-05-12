@@ -5107,7 +5107,6 @@ package body et_project is
 
 							when SEC_ROUTE =>
 								board_check_arc (log_threshold + 1);
-								-- CS: call board_check_arc in other sections below
 								
 								-- insert arc in route.arcs
 								et_pcb.pac_copper_arcs.append (
@@ -5121,6 +5120,8 @@ package body et_project is
 								board_reset_signal_layer;
 								
 							when SEC_TOP =>
+								board_check_arc (log_threshold + 1);
+								
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
 										insert_arc (
@@ -5151,6 +5152,8 @@ package body et_project is
 								end case;
 
 							when SEC_BOTTOM =>
+								board_check_arc (log_threshold + 1);
+								
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
 										insert_arc (
@@ -5181,15 +5184,19 @@ package body et_project is
 								end case;
 
 							when SEC_ROUTE_RESTRICT =>
+								board_check_arc (log_threshold + 1);
 								insert_arc_route_restrict;
 
 							when SEC_VIA_RESTRICT =>
+								board_check_arc (log_threshold + 1);
 								insert_arc_via_restrict;
 
 							when SEC_COPPER =>
+								board_check_arc (log_threshold + 1);
 								insert_arc_track;
 
 							when SEC_PCB_CONTOURS_NON_PLATED =>
+								board_check_arc (log_threshold + 1);
 								insert_arc_contour;
 								
 							when others => invalid_section;

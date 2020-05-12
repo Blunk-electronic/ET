@@ -499,6 +499,8 @@ package et_geometry is
 		-- Returns the distance between the end point and the center of the arc.
 		function radius_end (arc : in type_arc) return type_distance_positive;
 
+		-- Returns true if start and end point of given arc have same distance to center.
+		function is_valid (arc : in type_arc) return boolean;
 		
 		-- Sometimes (for example with cairo) an arc must be
 		-- expressed in terms of start and end angle:

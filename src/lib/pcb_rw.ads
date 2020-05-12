@@ -194,7 +194,6 @@ package pcb_rw is
 
 	-- Checks whether start and end point of given arc have same distance from center.
 	procedure board_check_arc (
--- 		arc				: in et_packages.pac_shapes.type_arc;
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure read_board_arc (line : et_string_processing.type_fields_of_line);

@@ -153,7 +153,13 @@ package body general_rw is
 	end write;	
 
 
-
+	procedure invalid_arc is 
+		use et_string_processing;
+	begin
+		log (ERROR, "Start and end point of arc have differing distance to center !",
+			 console => true);
+		raise constraint_error;
+	end invalid_arc;
 	
 -- GENERICS
 	

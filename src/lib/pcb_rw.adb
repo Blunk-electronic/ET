@@ -663,17 +663,14 @@ package body pcb_rw is
 	end;
 
 	procedure board_check_arc (
--- 		arc				: in et_packages.pac_shapes.type_arc;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages.pac_shapes;
 	begin
 		log (text => "checking arc ...", level => log_threshold);
 
-		if radius_start (board_arc) /= radius_end (board_arc) then
-			log (ERROR, "Start and end point of arc have differing distance from center !",
-				 console => true);
-			raise constraint_error;
+		if not is_valid (board_arc) then
+			invalid_arc;
 		end if;
 	end board_check_arc;
 	

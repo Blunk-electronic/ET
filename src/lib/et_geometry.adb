@@ -1208,6 +1208,13 @@ package body et_geometry is
 			return distance_total (arc.center, arc.end_point);
 		end radius_end;
 
+		function is_valid (arc : in type_arc) return boolean is begin
+			if radius_start (arc) = radius_end (arc) then
+				return true;
+			else
+				return false;
+			end if;
+		end is_valid;
 		
 		function to_arc_angles (arc : in type_arc) return type_arc_angles is
 		-- Returns the start and end angles of an arc.
