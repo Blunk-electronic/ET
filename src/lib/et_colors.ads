@@ -59,6 +59,9 @@ package et_colors is
 	orange		: constant type_color := (1.0, 0.5, 0.0);	
 	mangenta	: constant type_color := (1.0, 0.0, 1.0);
 	turquise	: constant type_color := (0.0, 1.0, 1.0);
+
+	type type_opacity is new color_range; -- 0.0 -> max. opacity, 1.0 -> no transparency
+	default_opacity : constant type_opacity := 0.5;
 	
 end et_colors;
 

@@ -54,15 +54,15 @@ package body et_colors.board is
 			background.blue);
 	end set_color_background;
 
-	procedure set_color_background_transparent (context : in cairo_context) is begin		
-		set_source_rgba (
-			context, 
-			background.red,
-			background.green,
-			background.blue,
-			0.1 -- alpha
-			);
-	end set_color_background_transparent;
+-- 	procedure set_color_background_transparent (context : in cairo_context) is begin		
+-- 		set_source_rgba (
+-- 			context, 
+-- 			background.red,
+-- 			background.green,
+-- 			background.blue,
+-- 			0.1 -- alpha
+-- 			);
+-- 	end set_color_background_transparent;
 	
 	procedure set_color_frame (context : in cairo_context) is begin		
 		set_source_rgb (
@@ -80,46 +80,58 @@ package body et_colors.board is
 			origin.blue);
 	end set_color_origin;
 	
-	procedure set_color_outline (context : in cairo_context) is begin		
-		set_source_rgb (
+	procedure set_color_outline (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity)
+	is begin		
+		set_source_rgba (
 			context, 
 			outline.red,
 			outline.green,
-			outline.blue);
+			outline.blue,
+			color_range (opacity));
 	end set_color_outline;
 
-	procedure set_color_vias (context : in cairo_context) is begin		
-		set_source_rgb (
+	procedure set_color_vias (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity)
+	is begin		
+		set_source_rgba (
 			context, 
 			via.red,
 			via.green,
-			via.blue);
+			via.blue,
+			color_range (opacity));
 	end set_color_vias;
 	
 	procedure set_color_silkscreen (
 		context : in cairo_context;
-		face	: in type_face) 
+		face	: in type_face;
+		opacity : in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>
-				set_source_rgb (
+				set_source_rgba (
 					context, 
 					silkscreen_top.red,
 					silkscreen_top.green,
-					silkscreen_top.blue);
+					silkscreen_top.blue,
+					color_range (opacity));
 
 			when BOTTOM =>
-				set_source_rgb (
+				set_source_rgba (
 					context, 
 					silkscreen_bottom.red,
 					silkscreen_bottom.green,
-					silkscreen_bottom.blue);
+					silkscreen_bottom.blue,
+					color_range (opacity));
 		end case;
 	end set_color_silkscreen;
 
 	procedure set_color_assy_doc (
 		context : in cairo_context;
-		face	: in type_face) 
+		face	: in type_face;
+		opacity : in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>
@@ -128,7 +140,7 @@ package body et_colors.board is
 					assy_doc_top.red,
 					assy_doc_top.green,
 					assy_doc_top.blue,
-					0.5);
+					color_range (opacity));
 
 			when BOTTOM =>
 				set_source_rgba (
@@ -136,99 +148,117 @@ package body et_colors.board is
 					assy_doc_bottom.red,
 					assy_doc_bottom.green,
 					assy_doc_bottom.blue,
-					0.5);
+					color_range (opacity));
 		end case;
 	end set_color_assy_doc;
 
 	procedure set_color_stop_mask (
 		context : in cairo_context;
-		face	: in type_face) 
+		face	: in type_face;
+		opacity : in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>
-				set_source_rgb (
+				set_source_rgba (
 					context, 
 					stop_mask_top.red,
 					stop_mask_top.green,
-					stop_mask_top.blue);
+					stop_mask_top.blue,
+					color_range (opacity));
 
 			when BOTTOM =>
-				set_source_rgb (
+				set_source_rgba (
 					context, 
 					stop_mask_bottom.red,
 					stop_mask_bottom.green,
-					stop_mask_bottom.blue);
+					stop_mask_bottom.blue,
+					color_range (opacity));
 		end case;
 	end set_color_stop_mask;
 
 	procedure set_color_stencil (
 		context : in cairo_context;
-		face	: in type_face) 
+		face	: in type_face;
+		opacity : in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>
-				set_source_rgb (
+				set_source_rgba (
 					context, 
 					stencil_top.red,
 					stencil_top.green,
-					stencil_top.blue);
+					stencil_top.blue,
+					color_range (opacity));
 
 			when BOTTOM =>
-				set_source_rgb (
+				set_source_rgba (
 					context, 
 					stencil_bottom.red,
 					stencil_bottom.green,
-					stencil_bottom.blue);
+					stencil_bottom.blue,
+					color_range (opacity));
 		end case;
 	end set_color_stencil;
 
 	procedure set_color_keepout (
 		context : in cairo_context;
-		face	: in type_face) 
+		face	: in type_face;
+		opacity : in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>
-				set_source_rgb (
+				set_source_rgba (
 					context, 
 					keepout_top.red,
 					keepout_top.green,
-					keepout_top.blue);
+					keepout_top.blue,
+					color_range (opacity));
 
 			when BOTTOM =>
-				set_source_rgb (
+				set_source_rgba (
 					context, 
 					keepout_bottom.red,
 					keepout_bottom.green,
-					keepout_bottom.blue);
+					keepout_bottom.blue,
+					color_range (opacity));
 		end case;
 	end set_color_keepout;
 
-	procedure set_color_route_restrict (context : in cairo_context) is begin		
-		set_source_rgb (
+	procedure set_color_route_restrict (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity)
+	is begin		
+		set_source_rgba (
 			context, 
 			route_restrict.red,
 			route_restrict.green,
-			route_restrict.blue);
+			route_restrict.blue,
+			color_range (opacity));
 	end set_color_route_restrict;
 
-	procedure set_color_via_restrict (context : in cairo_context) is begin		
-		set_source_rgb (
+	procedure set_color_via_restrict (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity)
+	is begin		
+		set_source_rgba (
 			context, 
 			via_restrict.red,
 			via_restrict.green,
-			via_restrict.blue);
+			via_restrict.blue,
+			color_range (opacity));
 	end set_color_via_restrict;
 
 	procedure set_color_conductor (
 		context : in cairo_context;
-		layer	: in type_signal_layer)
+		layer	: in type_signal_layer;
+		opacity : in type_opacity := default_opacity)
 	is begin
 		set_source_rgba (
 			context, 
 			conductors (layer).red,
 			conductors (layer).green,
 			conductors (layer).blue,
-			0.5);
+			color_range (opacity));
 	end set_color_conductor;
 
 		

@@ -152,9 +152,9 @@ procedure draw_assy_doc (
 	procedure query_cutout (c : in pac_doc_cutouts.cursor) is 
 		use et_packages.pac_shapes;
 	begin
-		
+		save (context.cr);
 -- 		set_color_background_transparent (context.cr);
--- 		set_operator (context.cr, cairo_operator_clear);
+		set_operator (context.cr, cairo_operator_clear);
 -- 		paint_with_alpha (context.cr, 0.5);
 -- 		set_color_background (context.cr);
 -- 		set_operator (context.cr, cairo_operator_add);
@@ -166,8 +166,9 @@ procedure draw_assy_doc (
 			filled	=> YES,
 			height	=> self.frame_height);
 
--- 		cairo.stroke (context.cr);
+		cairo.stroke (context.cr);
 
+		restore (context.cr);
 	end query_cutout;
 	
 	
@@ -187,10 +188,10 @@ procedure draw_assy_doc (
 				--save (context.cr);				
 				iterate (module.board.assy_doc.top.polygons, query_polygon'access);
 
-				push_group (context.cr);
-				set_operator (context.cr, cairo_operator_clear);
+-- 				push_group (context.cr);
+-- 				set_operator (context.cr, cairo_operator_clear);
 				iterate (module.board.assy_doc.top.cutouts, query_cutout'access);
-				pop_group_to_source (context.cr);
+-- 				pop_group_to_source (context.cr);
 
 				-- CS iterate (module.board.assy_doc.top.placeholders, query_placeholder'access);
 				-- CS iterate (module.board.assy_doc.top.texts, query_text'access);
@@ -202,10 +203,10 @@ procedure draw_assy_doc (
 
 				iterate (module.board.assy_doc.bottom.polygons, query_polygon'access);
 
-				push_group (context.cr);				
-				set_operator (context.cr, cairo_operator_clear);
+-- 				push_group (context.cr);				
+-- 				set_operator (context.cr, cairo_operator_clear);
 				iterate (module.board.assy_doc.bottom.cutouts, query_cutout'access);
-				pop_group_to_source (context.cr);
+-- 				pop_group_to_source (context.cr);
 				
 				-- CS see above
 		end case;

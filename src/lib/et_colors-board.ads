@@ -87,41 +87,55 @@ package et_colors.board is
 
 	procedure set_color_cursor (context : in cairo_context);
 	procedure set_color_background (context : in cairo_context);
-	procedure set_color_background_transparent (context : in cairo_context);	
+-- 	procedure set_color_background_transparent (context : in cairo_context);	
 	procedure set_color_frame (context : in cairo_context);	
 	procedure set_color_origin (context : in cairo_context);
-	procedure set_color_outline (context : in cairo_context);
-	procedure set_color_vias (context : in cairo_context);	
+	
+	procedure set_color_outline (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity);
+	
+	procedure set_color_vias (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity);
 
 	procedure set_color_silkscreen (
 		context : in cairo_context;
-		face	: in type_face);
+		face	: in type_face;
+		opacity : in type_opacity := default_opacity);
 
 	procedure set_color_assy_doc (
 		context : in cairo_context;
-		face	: in type_face);
+		face	: in type_face;
+		opacity : in type_opacity := default_opacity);
 
 	procedure set_color_stop_mask (
 		context : in cairo_context;
-		face	: in type_face);
+		face	: in type_face;
+		opacity : in type_opacity := default_opacity);
 
 	procedure set_color_stencil (
 		context : in cairo_context;
-		face	: in type_face);
+		face	: in type_face;
+		opacity : in type_opacity := default_opacity);
 
 	procedure set_color_keepout (
 		context : in cairo_context;
-		face	: in type_face);
+		face	: in type_face;
+		opacity : in type_opacity := default_opacity);
 
 	procedure set_color_route_restrict (
-		context : in cairo_context);
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity);
 
 	procedure set_color_via_restrict (
-		context : in cairo_context);
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity);
 
 	procedure set_color_conductor (
 		context : in cairo_context;
-		layer	: in type_signal_layer);
+		layer	: in type_signal_layer;
+		opacity : in type_opacity := default_opacity);
 
 
 	
