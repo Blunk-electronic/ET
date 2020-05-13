@@ -791,7 +791,8 @@ package et_packages is
 	type type_via_restrict_polygon is new pac_shapes.type_polygon with record
 		layers 	: type_signal_layers.set;
 	end record;
-
+	-- A polygon in via restrict is always filled.
+	
 	package type_via_restrict_polygons is new doubly_linked_lists (type_via_restrict_polygon);
 
 
