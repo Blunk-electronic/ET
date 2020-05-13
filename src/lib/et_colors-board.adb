@@ -54,6 +54,16 @@ package body et_colors.board is
 			background.blue);
 	end set_color_background;
 
+	procedure set_color_background_transparent (context : in cairo_context) is begin		
+		set_source_rgba (
+			context, 
+			background.red,
+			background.green,
+			background.blue,
+			0.1 -- alpha
+			);
+	end set_color_background_transparent;
+	
 	procedure set_color_frame (context : in cairo_context) is begin		
 		set_source_rgb (
 			context, 
@@ -113,18 +123,20 @@ package body et_colors.board is
 	is begin
 		case face is
 			when TOP =>
-				set_source_rgb (
+				set_source_rgba (
 					context, 
 					assy_doc_top.red,
 					assy_doc_top.green,
-					assy_doc_top.blue);
+					assy_doc_top.blue,
+					0.5);
 
 			when BOTTOM =>
-				set_source_rgb (
+				set_source_rgba (
 					context, 
 					assy_doc_bottom.red,
 					assy_doc_bottom.green,
-					assy_doc_bottom.blue);
+					assy_doc_bottom.blue,
+					0.5);
 		end case;
 	end set_color_assy_doc;
 
@@ -211,11 +223,12 @@ package body et_colors.board is
 		context : in cairo_context;
 		layer	: in type_signal_layer)
 	is begin
-		set_source_rgb (
+		set_source_rgba (
 			context, 
 			conductors (layer).red,
 			conductors (layer).green,
-			conductors (layer).blue);
+			conductors (layer).blue,
+			0.5);
 	end set_color_conductor;
 
 		
