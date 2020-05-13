@@ -61,6 +61,8 @@ procedure draw_stop (
 	use type_stop_lines;
 	use type_stop_arcs;
 	use type_stop_circles;
+	use type_stop_polygons;
+	use pac_stop_cutouts;
 	
 	procedure query_line (c : in type_stop_lines.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -118,6 +120,50 @@ procedure draw_stop (
 
 		cairo.stroke (context.cr);
 	end query_circle;
+
+	procedure query_polygon (c : in type_stop_polygons.cursor) is 
+		use et_packages.pac_shapes;
+	begin
+		case element (c).fill_style is
+			when SOLID =>
+				pac_draw_package.draw_polygon (
+					area	=> in_area,
+					context	=> context,
+					polygon	=> element (c),
+					filled	=> YES,
+					height	=> self.frame_height);
+
+			when HATCHED =>
+				set_line_width (context.cr, type_view_coordinate (element (c).hatching.border_width));
+
+				pac_draw_package.draw_polygon (
+					area	=> in_area,
+					context	=> context,
+					polygon	=> element (c),
+					filled	=> NO,
+					height	=> self.frame_height);
+
+				-- CS hatching ?
+		end case;
+
+		cairo.stroke (context.cr);
+	end query_polygon;
+
+	procedure query_cutout (c : in pac_stop_cutouts.cursor) is 
+		use et_packages.pac_shapes;
+	begin
+		set_color_background (context.cr);
+		
+		pac_draw_package.draw_polygon (
+			area	=> in_area,
+			context	=> context,
+			polygon	=> element (c),
+			filled	=> YES,
+			height	=> self.frame_height);
+
+		cairo.stroke (context.cr);
+	end query_cutout;
+
 	
 	procedure query_items (
 		module_name	: in type_module_name.bounded_string;
@@ -131,14 +177,17 @@ procedure draw_stop (
 				iterate (module.board.stop_mask.top.lines, query_line'access);
 				iterate (module.board.stop_mask.top.arcs, query_arc'access);
 				iterate (module.board.stop_mask.top.circles, query_circle'access);
-				-- CS iterate (module.board.stop_mask.top.polygons, query_polygon'access);
-				-- CS iterate (module.board.stop_mask.top.cutouts, query_polygon'cutout);
+				iterate (module.board.stop_mask.top.polygons, query_polygon'access);
+				iterate (module.board.stop_mask.top.cutouts, query_cutout'access);
 				-- CS iterate (module.board.stop_mask.top.texts, query_text'access);
 
 			when BOTTOM =>
 				iterate (module.board.stop_mask.bottom.lines, query_line'access);
 				iterate (module.board.stop_mask.bottom.arcs, query_arc'access);
 				iterate (module.board.stop_mask.bottom.circles, query_circle'access);
+				iterate (module.board.stop_mask.bottom.polygons, query_polygon'access);
+				iterate (module.board.stop_mask.bottom.cutouts, query_cutout'access);
+
 				-- CS see above
 		end case;
 
