@@ -61,6 +61,8 @@ procedure draw_assy_doc (
 	use type_doc_lines;
 	use type_doc_arcs;
 	use type_doc_circles;
+	use pac_doc_polygons;
+	use pac_doc_cutouts;
 	
 	procedure query_line (c : in type_doc_lines.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -118,6 +120,50 @@ procedure draw_assy_doc (
 
 		cairo.stroke (context.cr);
 	end query_circle;
+
+	procedure query_polygon (c : in pac_doc_polygons.cursor) is 
+		use et_packages.pac_shapes;
+	begin
+		case element (c).fill_style is
+			when SOLID =>
+				pac_draw_package.draw_polygon (
+					area	=> in_area,
+					context	=> context,
+					polygon	=> element (c),
+					filled	=> YES,
+					height	=> self.frame_height);
+
+			when HATCHED =>
+				set_line_width (context.cr, type_view_coordinate (element (c).hatching.border_width));
+
+				pac_draw_package.draw_polygon (
+					area	=> in_area,
+					context	=> context,
+					polygon	=> element (c),
+					filled	=> NO,
+					height	=> self.frame_height);
+
+				-- CS hatching ?
+		end case;
+
+		cairo.stroke (context.cr);
+	end query_polygon;
+
+	procedure query_cutout (c : in pac_doc_cutouts.cursor) is 
+		use et_packages.pac_shapes;
+	begin
+		set_color_background (context.cr);
+		
+		pac_draw_package.draw_polygon (
+			area	=> in_area,
+			context	=> context,
+			polygon	=> element (c),
+			filled	=> YES,
+			height	=> self.frame_height);
+
+		cairo.stroke (context.cr);
+	end query_cutout;
+	
 	
 	procedure query_items (
 		module_name	: in type_module_name.bounded_string;
@@ -131,8 +177,8 @@ procedure draw_assy_doc (
 				iterate (module.board.assy_doc.top.lines, query_line'access);
 				iterate (module.board.assy_doc.top.arcs, query_arc'access);
 				iterate (module.board.assy_doc.top.circles, query_circle'access);
-				-- CS iterate (module.board.assy_doc.top.polygons, query_polygon'access);
-				-- CS iterate (module.board.assy_doc.top.cutouts, query_polygon'cutout);
+				iterate (module.board.assy_doc.top.polygons, query_polygon'access);
+				iterate (module.board.assy_doc.top.cutouts, query_cutout'access);
 				-- CS iterate (module.board.assy_doc.top.placeholders, query_placeholder'access);
 				-- CS iterate (module.board.assy_doc.top.texts, query_text'access);
 
@@ -140,6 +186,8 @@ procedure draw_assy_doc (
 				iterate (module.board.assy_doc.bottom.lines, query_line'access);
 				iterate (module.board.assy_doc.bottom.arcs, query_arc'access);
 				iterate (module.board.assy_doc.bottom.circles, query_circle'access);
+				iterate (module.board.assy_doc.bottom.polygons, query_polygon'access);
+				iterate (module.board.assy_doc.bottom.cutouts, query_cutout'access);				
 				-- CS see above
 		end case;
 
