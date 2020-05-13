@@ -61,6 +61,8 @@ procedure draw_route_restrict (
 	use type_route_restrict_lines;
 	use type_route_restrict_arcs;
 	use type_route_restrict_circles;
+	use type_route_restrict_polygons;
+	use pac_route_restrict_cutouts;
 	
 	procedure query_line (c : in type_route_restrict_lines.cursor) is begin
 
@@ -120,6 +122,39 @@ procedure draw_route_restrict (
 
 		end if;
 	end query_circle;
+
+	procedure query_polygon (c : in type_route_restrict_polygons.cursor) is begin
+
+		-- Draw the polygon if restrict layer is enabled:
+		if route_restrict_layer_enabled (element (c).layers) then
+			
+			pac_draw_package.draw_polygon (
+				area	=> in_area,
+				context	=> context,
+				polygon	=> element (c),
+				filled	=> YES,
+				height	=> self.frame_height);
+
+		end if;
+	end query_polygon;
+
+	procedure query_cutout (c : in pac_route_restrict_cutouts.cursor) is begin
+
+		-- Draw the zone if restrict layer is enabled:
+		if route_restrict_layer_enabled (element (c).layers) then
+
+			set_color_background (context.cr);
+			
+			pac_draw_package.draw_polygon (
+				area	=> in_area,
+				context	=> context,
+				polygon	=> element (c),
+				filled	=> YES,
+				height	=> self.frame_height);
+
+		end if;
+	end query_cutout;
+
 	
 	procedure query_items (
 		module_name	: in type_module_name.bounded_string;
@@ -132,8 +167,8 @@ procedure draw_route_restrict (
 		iterate (module.board.route_restrict.lines, query_line'access);
 		iterate (module.board.route_restrict.arcs, query_arc'access);
 		iterate (module.board.route_restrict.circles, query_circle'access);
-		-- CS iterate (module.board.route_restrict.polygons, query_polygon'access);
-		-- CS iterate (module.board.route_restrict.cutouts, query_polygon'cutout);
+		iterate (module.board.route_restrict.polygons, query_polygon'access);
+		iterate (module.board.route_restrict.cutouts, query_cutout'access);
 
 		cairo.stroke (context.cr);
 	end query_items;

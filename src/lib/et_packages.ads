@@ -738,6 +738,7 @@ package et_packages is
 	type type_route_restrict_polygon is new pac_shapes.type_polygon with record
 		layers 	: type_signal_layers.set;
 	end record;
+	-- A polygon in route restrict is always filled.
 
 	package type_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
 

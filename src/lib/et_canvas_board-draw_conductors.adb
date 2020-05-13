@@ -67,7 +67,10 @@ procedure draw_conductors (
 	use pac_copper_lines;
 	use pac_copper_arcs;
 	use et_pcb.pac_copper_circles;
-
+	use et_pcb.pac_copper_cutouts;
+	use pac_copper_polygons_floating_solid;
+	use pac_copper_polygons_floating_hatched;
+	
 	-- For diplaying net names and classes we need this stuff:
 	is_signal : boolean := false;
 	net_name : type_net_name.bounded_string;
@@ -158,6 +161,62 @@ procedure draw_conductors (
 		end if;
 	end query_circle;
 
+	procedure query_polygon (c : in et_pcb.pac_copper_polygons_floating_solid.cursor) is
+	begin
+		-- Draw the polygon if it is in the current layer:
+		if element (c).layer = current_layer then
+			
+			pac_draw_package.draw_polygon (
+				area	=> in_area,
+				context	=> context,
+				polygon	=> element (c),
+				filled	=> YES,
+				height	=> self.frame_height);
+
+			cairo.stroke (context.cr);
+			
+		end if;
+
+	end query_polygon;
+
+	procedure query_polygon (c : in et_pcb.pac_copper_polygons_floating_hatched.cursor) is 
+	begin
+		null; -- CS
+		
+-- 		-- Draw the polygon if it is in the current layer:
+-- 		if element (c).layer = current_layer then
+-- 			
+-- 			pac_draw_package.draw_polygon (
+-- 				area	=> in_area,
+-- 				context	=> context,
+-- 				polygon	=> element (c),
+-- 				filled	=> YES,
+-- 				height	=> self.frame_height);
+-- 
+-- 			cairo.stroke (context.cr);
+-- 			
+-- 		end if;
+	end query_polygon;
+
+	procedure query_cutout (c : in et_pcb.pac_copper_cutouts.cursor) is
+	begin
+		-- Draw the zone if it is in the current layer:
+		if element (c).layer = current_layer then
+
+			set_color_background (context.cr);
+			
+			pac_draw_package.draw_polygon (
+				area	=> in_area,
+				context	=> context,
+				polygon	=> element (c),
+				filled	=> YES,
+				height	=> self.frame_height);
+
+			cairo.stroke (context.cr);
+			
+		end if;
+	end query_cutout;
+	
 	procedure query_via (v : in pac_vias.cursor) is 
 		type type_circle is new et_packages.pac_shapes.type_circle with null record;
 		circle : type_circle;
@@ -173,10 +232,6 @@ procedure draw_conductors (
 	begin -- query_via
 		circle.center := element (v).position;
 
-		-- CS: This needs improvement. Draw non-filled circles with a defined
-		-- ring width. This would remove the black-hole or white-hole effect
-		-- in the center of the via.
-		
 		if vias_enabled then
 			set_color_vias (context.cr);
 
@@ -211,7 +266,6 @@ procedure draw_conductors (
 		
 		-- Draw the drill hole. It is a filled circle with background color
 		-- and diameter as given by the drill:
-		-- CS: causes a black/white-hole which obscures the grid. see comments above.
 		set_color_background (context.cr);
 
 		circle.radius := element (v).diameter / 2.0;
@@ -275,8 +329,9 @@ procedure draw_conductors (
 				iterate (module.board.copper.lines, query_line'access);
 				iterate (module.board.copper.arcs, query_arc'access);
 				iterate (module.board.copper.circles, query_circle'access);
-				-- CS iterate (module.board.copper.top.polygons, query_polygon'access);
-				-- CS iterate (module.board.copper.top.cutouts, query_polygon'cutout);
+				iterate (module.board.copper.polygons.solid, query_polygon'access);
+				iterate (module.board.copper.polygons.hatched, query_polygon'access);
+				iterate (module.board.copper.cutouts, query_cutout'access);
 				-- CS iterate (module.board.copper.top.placeholders, query_placeholder'access);
 				-- CS iterate (module.board.copper.top.texts, query_text'access);
 

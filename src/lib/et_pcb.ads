@@ -549,7 +549,7 @@ package et_pcb is
 		route_restrict	: type_route_restrict;
 		via_restrict	: type_via_restrict;
 		copper			: type_copper; -- non-electric copper stuff, incl. floating polygons ! CS: rename to conductors
-		contours		: type_pcb_contours;
+		contours		: type_pcb_contours; -- pcb outline
 	end record;
 
 	
