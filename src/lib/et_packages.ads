@@ -690,6 +690,8 @@ package et_packages is
 	package type_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
 
 	package type_keepout_polygons is new doubly_linked_lists (pac_shapes.type_polygon);
+	-- Polygons in keepout are always filled.
+	
 	package pac_keepout_cutouts is new doubly_linked_lists (type_cutout_zone);	
 	
 	type type_keepout is record

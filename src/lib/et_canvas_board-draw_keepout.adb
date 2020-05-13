@@ -61,6 +61,8 @@ procedure draw_keepout (
 	use type_keepout_lines;
 	use type_keepout_arcs;
 	use type_keepout_circles;
+	use type_keepout_polygons;
+	use pac_keepout_cutouts;
 	
 	procedure query_line (c : in type_keepout_lines.cursor) is begin
 		
@@ -107,6 +109,34 @@ procedure draw_keepout (
 		end case;
 
 	end query_circle;
+
+	procedure query_polygon (c : in type_keepout_polygons.cursor) is 
+		use et_packages.pac_shapes;
+	begin
+		pac_draw_package.draw_polygon (
+			area	=> in_area,
+			context	=> context,
+			polygon	=> element (c),
+			filled	=> YES,
+			height	=> self.frame_height);
+
+		cairo.stroke (context.cr);
+	end query_polygon;
+
+	procedure query_cutout (c : in pac_keepout_cutouts.cursor) is 
+		use et_packages.pac_shapes;
+	begin
+		set_color_background (context.cr);
+		
+		pac_draw_package.draw_polygon (
+			area	=> in_area,
+			context	=> context,
+			polygon	=> element (c),
+			filled	=> YES,
+			height	=> self.frame_height);
+
+		cairo.stroke (context.cr);
+	end query_cutout;
 	
 	procedure query_items (
 		module_name	: in type_module_name.bounded_string;
@@ -122,14 +152,15 @@ procedure draw_keepout (
 				iterate (module.board.keepout.top.lines, query_line'access);
 				iterate (module.board.keepout.top.arcs, query_arc'access);
 				iterate (module.board.keepout.top.circles, query_circle'access);
-				-- CS iterate (module.board.keepout.top.polygons, query_polygon'access);
-				-- CS iterate (module.board.keepout.top.cutouts, query_polygon'cutout);
+				iterate (module.board.keepout.top.polygons, query_polygon'access);
+				iterate (module.board.keepout.top.cutouts, query_cutout'access);
 
 			when BOTTOM =>
 				iterate (module.board.keepout.bottom.lines, query_line'access);
 				iterate (module.board.keepout.bottom.arcs, query_arc'access);
 				iterate (module.board.keepout.bottom.circles, query_circle'access);
-				-- CS see above
+				iterate (module.board.keepout.bottom.polygons, query_polygon'access);
+				iterate (module.board.keepout.bottom.cutouts, query_cutout'access);
 		end case;
 
 		cairo.stroke (context.cr);
