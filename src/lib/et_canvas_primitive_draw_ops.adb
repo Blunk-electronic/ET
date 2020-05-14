@@ -353,6 +353,12 @@ package body pac_draw is
 	-- 				return;
 	-- 			end if;
 
+			-- All segments of the polygon must have the same color.
+			-- If they overlap each other the operator cairo_operator_source
+			-- prevents a change in brightness where segments overlap:
+			save (context.cr);
+			set_operator (context.cr, cairo_operator_source);
+			
 			-- Iterate segments of given polygon. For each iteration s indicates the
 			-- segment to be drawn. It can be among lines (most likely), among arcs (less likely)
 			-- and among circles (least likely). The functions get_line, get_arc and get_circle
@@ -424,7 +430,7 @@ package body pac_draw is
 						if cc /= pac_polygon_circles.no_element then
 
 							if filled = YES then
-								fill_preserve (context.cr);
+								fill (context.cr);
 							end if;
 							
 							-- CS: The intersection between circle and other segments
@@ -463,6 +469,8 @@ package body pac_draw is
 					-- The line width has been set by the calling unit.
 			end case;
 
+			restore (context.cr);
+			
 		end if;
 	end draw_polygon;
 
