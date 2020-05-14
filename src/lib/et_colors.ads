@@ -62,6 +62,7 @@ package et_colors is
 
 	type type_opacity is new color_range; -- 0.0 -> max. opacity, 1.0 -> no transparency
 	default_opacity : constant type_opacity := 0.5;
+	no_opacity : constant type_opacity := 1.0;
 	
 end et_colors;
 
