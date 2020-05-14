@@ -52,6 +52,7 @@ use et_pcb_coordinates.geometry;
 with et_pcb;					--use et_pcb;
 
 with et_display.board;			use et_display.board;
+with et_colors;					use et_colors;
 
 with et_canvas_primitive_draw_ops;
 
@@ -101,7 +102,7 @@ procedure draw_packages (
 		-- locate the package model in the package library:
 		package_cursor : constant et_packages.type_packages.cursor := locate_package_model (model);
 	
-
+		-- SILKSCREEN
 		procedure draw_silkscreen is 
 
 			-- LINES
@@ -314,7 +315,6 @@ procedure draw_packages (
 				set_face (INVERSE);
 				draw_cutout (cutout, destination);
 			end query_cutout_bottom;
-
 			
 		begin -- draw_silkscreen
 			-- lines
@@ -343,6 +343,248 @@ procedure draw_packages (
 			
 		end draw_silkscreen;
 
+		-- ASSY DOC
+		procedure draw_assembly_documentation is 
+
+			-- LINES
+			use type_doc_lines;
+			line : type_doc_line;
+
+			procedure draw_line (f : in type_face) is begin
+				if assy_doc_enabled (f) then
+				
+					if f = face then
+						if flipped then mirror (line, Y); end if;
+						
+						rotate_by (line, rot (position));
+						move_by (line, type_point (position));
+
+						set_color_assy_doc (context.cr, f);
+						set_line_width (context.cr, type_view_coordinate (line.width));
+						pac_draw_package.draw_line (in_area, context, line, self.frame_height);
+						stroke (context.cr);
+					end if;
+
+				end if;
+			end draw_line;
+			
+			procedure query_line_top (c : in type_doc_lines.cursor) is begin
+				line := element (c);
+				set_face;
+				draw_line (destination);
+			end query_line_top;
+
+			procedure query_line_bottom (c : in type_doc_lines.cursor) is begin
+				line := element (c);
+				set_face (INVERSE);
+				draw_line (destination);
+			end query_line_bottom;
+
+			
+			-- ARCS
+			use type_doc_arcs;
+			arc : type_doc_arc;
+
+			procedure draw_arc (f : in type_face) is begin
+				if assy_doc_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (arc, Y); end if;
+						
+						rotate_by (arc, rot (position));
+						move_by (arc, type_point (position));
+
+						set_color_assy_doc (context.cr, f);
+						set_line_width (context.cr, type_view_coordinate (arc.width));
+						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
+						stroke (context.cr);
+					end if;
+					
+				end if;
+			end draw_arc;
+			
+			procedure query_arc_top (c : in type_doc_arcs.cursor) is begin
+				arc := element (c);
+				set_face;
+				draw_arc (destination);
+			end query_arc_top;
+
+			procedure query_arc_bottom (c : in type_doc_arcs.cursor) is begin
+				arc := element (c);
+				set_face (INVERSE);
+				draw_arc (destination);
+			end query_arc_bottom;
+
+			
+			-- CIRCLES
+			use type_doc_circles;
+
+			procedure draw_circle (
+				circle	: in out type_fillable_circle;
+				f 		: in type_face) 
+			is begin
+				if assy_doc_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (circle, Y); end if;
+						
+						rotate_by (circle, rot (position));
+						move_by (circle, type_point (position));
+
+						set_color_assy_doc (context.cr, f);
+
+						case circle.filled is
+							when NO =>
+								set_line_width (context.cr, type_view_coordinate (circle.border_width));
+								pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+
+							when YES =>
+								case circle.fill_style is
+									when SOLID =>
+										pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+
+									when HATCHED => null; -- CS
+								end case;
+						end case;
+						
+						stroke (context.cr);
+					end if;
+
+				end if;
+			end draw_circle;
+			
+			procedure query_circle_top (c : in type_doc_circles.cursor) is 
+				circle : type_fillable_circle := element (c);
+			begin
+				set_face;
+				draw_circle (circle, destination);
+			end query_circle_top;
+
+			procedure query_circle_bottom (c : in type_doc_circles.cursor) is 
+				circle : type_fillable_circle := element (c);
+			begin
+				set_face (INVERSE);
+				draw_circle (circle, destination);
+			end query_circle_bottom;
+
+			
+			-- POLYGONS
+			use pac_doc_polygons;
+
+			procedure draw_polygon (
+				polygon	: in out et_packages.type_polygon;
+				f		: in type_face)
+			is begin
+				if assy_doc_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (polygon, Y); end if;
+						
+						rotate_by (polygon, rot (position));
+						move_by (polygon, type_point (position));
+
+						set_color_assy_doc (context.cr, f);
+
+						case polygon.fill_style is
+							when SOLID =>
+								pac_draw_package.draw_polygon (in_area, context, polygon, YES, self.frame_height);
+
+							when HATCHED =>
+								cairo.set_line_width (context.cr, type_view_coordinate (polygon.hatching.border_width));
+								pac_draw_package.draw_polygon (in_area, context, polygon, NO, self.frame_height);
+								-- CS hatching ?
+						end case;
+						
+						stroke (context.cr);
+					end if;
+
+				end if;
+				
+			end draw_polygon;
+			
+			procedure query_polygon_top (c : in pac_doc_polygons.cursor) is
+				polygon : et_packages.type_polygon := element (c);
+			begin
+				set_face;
+				draw_polygon (polygon, destination);
+			end query_polygon_top;
+
+			procedure query_polygon_bottom (c : in pac_doc_polygons.cursor) is
+				polygon : et_packages.type_polygon := element (c);
+			begin
+				set_face (INVERSE);
+				draw_polygon (polygon, destination);
+			end query_polygon_bottom;
+
+
+			-- CUTOUTS
+			use pac_doc_cutouts;
+
+			procedure draw_cutout (
+				cutout	: in out et_packages.type_cutout_zone;
+				f		: in type_face)
+			is begin
+				if assy_doc_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (cutout, Y); end if;
+						
+						rotate_by (cutout, rot (position));
+						move_by (cutout, type_point (position));
+
+						set_color_background (context.cr);
+
+						pac_draw_package.draw_polygon (in_area, context, cutout, YES, self.frame_height);
+						
+						stroke (context.cr);
+					end if;
+
+				end if;
+				
+			end draw_cutout;
+			
+			procedure query_cutout_top (c : in pac_doc_cutouts.cursor) is
+				cutout : et_packages.type_cutout_zone := element (c);
+			begin
+				set_face;
+				draw_cutout (cutout, destination);
+			end query_cutout_top;
+
+			procedure query_cutout_bottom (c : in pac_doc_cutouts.cursor) is
+				cutout : et_packages.type_cutout_zone := element (c);
+			begin
+				set_face (INVERSE);
+				draw_cutout (cutout, destination);
+			end query_cutout_bottom;
+			
+		begin -- draw_assembly_documentation
+			-- lines
+			element (package_cursor).assembly_documentation.top.lines.iterate (query_line_top'access);
+			element (package_cursor).assembly_documentation.bottom.lines.iterate (query_line_bottom'access);
+
+			-- arcs
+			element (package_cursor).assembly_documentation.top.arcs.iterate (query_arc_top'access);
+			element (package_cursor).assembly_documentation.bottom.arcs.iterate (query_arc_bottom'access);
+
+			-- circles
+			element (package_cursor).assembly_documentation.top.circles.iterate (query_circle_top'access);
+			element (package_cursor).assembly_documentation.bottom.circles.iterate (query_circle_bottom'access);
+
+			-- polygons
+			element (package_cursor).assembly_documentation.top.polygons.iterate (query_polygon_top'access);
+			element (package_cursor).assembly_documentation.bottom.polygons.iterate (query_polygon_bottom'access);
+
+			-- cutouts
+			element (package_cursor).assembly_documentation.top.cutouts.iterate (query_cutout_top'access);
+			element (package_cursor).assembly_documentation.bottom.cutouts.iterate (query_cutout_bottom'access);
+			
+			-- CS
+			-- placeholders
+			-- texts		: type_texts_with_content.list;
+			
+		end draw_assembly_documentation;
+
+		
 		procedure draw_origin is
 			type type_line is new et_packages.pac_shapes.type_line with null record;
 			
@@ -370,7 +612,7 @@ procedure draw_packages (
 		
 	begin -- draw_package
 		draw_silkscreen;
-		-- CS draw_assembly_documentation;
+-- 		draw_assembly_documentation;
 		-- CS draw_terminals
 		-- CS draw_conductors non-terminal related
 		-- CS draw_keepout
