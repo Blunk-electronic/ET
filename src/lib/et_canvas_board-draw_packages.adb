@@ -558,6 +558,16 @@ procedure draw_packages (
 			end query_cutout_bottom;
 			
 		begin -- draw_assembly_documentation
+-- 			save (context.cr);
+-- 			set_operator (context.cr, cairo_operator_over);
+-- 			set_operator (context.cr, cairo_operator_atop);
+			-- 			set_operator (context.cr, cairo_operator_source);
+			-- 			set_operator (context.cr, cairo_operator_dest_over);
+-- 			set_operator (context.cr, cairo_operator_xor);
+-- 			set_operator (context.cr, cairo_operator_add);
+			-- 			set_operator (context.cr, cairo_operator_dest);
+-- 			set_operator (context.cr, cairo_operator_out);
+			
 			-- lines
 			element (package_cursor).assembly_documentation.top.lines.iterate (query_line_top'access);
 			element (package_cursor).assembly_documentation.bottom.lines.iterate (query_line_bottom'access);
@@ -581,7 +591,8 @@ procedure draw_packages (
 			-- CS
 			-- placeholders
 			-- texts		: type_texts_with_content.list;
-			
+
+-- 			restore (context.cr);
 		end draw_assembly_documentation;
 
 		
@@ -612,7 +623,7 @@ procedure draw_packages (
 		
 	begin -- draw_package
 		draw_silkscreen;
--- 		draw_assembly_documentation;
+		draw_assembly_documentation;
 		-- CS draw_terminals
 		-- CS draw_conductors non-terminal related
 		-- CS draw_keepout
