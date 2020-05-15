@@ -118,6 +118,9 @@ procedure draw_route_restrict (
 						filled		=> YES,
 						height		=> self.frame_height);
 
+					-- restore line width (draw_circle has set it to zero)
+					set_line_width (context.cr, type_view_coordinate (route_restrict_line_width));
+					
 			end case;
 
 		end if;

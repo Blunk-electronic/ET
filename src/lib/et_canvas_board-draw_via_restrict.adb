@@ -101,13 +101,29 @@ procedure draw_via_restrict (
 		-- Draw the circle if restrict layer is enabled:
 		if via_restrict_layer_enabled (element (c).layers) then
 
-			-- We draw a solid filled circle:
-			pac_draw_package.draw_circle (
-				area		=> in_area,
-				context		=> context,
-				circle		=> element (c),
-				filled		=> YES,
-				height		=> self.frame_height);
+			case element (c).filled is
+				when NO =>
+					-- We draw a normal non-filled circle:
+					pac_draw_package.draw_circle (
+						area		=> in_area,
+						context		=> context,
+						circle		=> element (c),
+						filled		=> NO,
+						height		=> self.frame_height);
+					
+				when YES =>
+					-- We draw a solid filled circle:
+					pac_draw_package.draw_circle (
+						area		=> in_area,
+						context		=> context,
+						circle		=> element (c),
+						filled		=> YES,
+						height		=> self.frame_height);
+
+					-- restore line width (draw_circle has set it to zero)
+					set_line_width (context.cr, type_view_coordinate (route_restrict_line_width));
+					
+			end case;
 
 		end if;
 	end query_circle;

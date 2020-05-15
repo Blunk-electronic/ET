@@ -617,7 +617,6 @@ procedure draw_packages (
 						move_by (line, type_point (position));
 
 						set_color_keepout (context.cr, f);
-						set_line_width (context.cr, type_view_coordinate (keepout_line_width));
 						pac_draw_package.draw_line (in_area, context, line, self.frame_height);
 						stroke (context.cr);
 					end if;
@@ -652,7 +651,6 @@ procedure draw_packages (
 						move_by (arc, type_point (position));
 
 						set_color_keepout (context.cr, f);
-						set_line_width (context.cr, type_view_coordinate (keepout_line_width));
 						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
 						stroke (context.cr);
 					end if;
@@ -693,6 +691,9 @@ procedure draw_packages (
 						pac_draw_package.draw_circle (in_area, context, circle, YES, self.frame_height);
 						
 						stroke (context.cr);
+
+						-- restore line width (draw_circle has set it to zero):
+						set_line_width (context.cr, type_view_coordinate (keepout_line_width));
 					end if;
 
 				end if;
@@ -794,7 +795,8 @@ procedure draw_packages (
 			end query_cutout_bottom;
 			
 		begin -- draw_keepout
-		
+			set_line_width (context.cr, type_view_coordinate (keepout_line_width));
+			
 			-- lines
 			element (package_cursor).keepout.top.lines.iterate (query_line_top'access);
 			element (package_cursor).keepout.bottom.lines.iterate (query_line_bottom'access);
@@ -1109,7 +1111,7 @@ procedure draw_packages (
 						move_by (arc, type_point (position));
 
 						set_color_stencil (context.cr, f);
-						set_line_width (context.cr, type_view_coordinate (line.width));
+						set_line_width (context.cr, type_view_coordinate (arc.width));
 						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
 						stroke (context.cr);
 					end if;
@@ -1294,6 +1296,162 @@ procedure draw_packages (
 
 		end draw_stencil;
 
+		-- ROUTE RESTRICT
+		procedure draw_route_restrict is 
+
+			-- LINES
+			use type_route_restrict_lines;
+			
+			procedure query_line (c : in type_route_restrict_lines.cursor) is
+				line : type_route_restrict_line := element (c);
+			begin
+				if flipped then 
+					mirror (line, Y);
+
+					-- cS mirror layers
+				end if;
+
+				if route_restrict_layer_enabled (line.layers) then
+					
+					rotate_by (line, rot (position));
+					move_by (line, type_point (position));
+
+					pac_draw_package.draw_line (in_area, context, line, self.frame_height);
+					stroke (context.cr);
+				end if;
+			end query_line;
+
+			
+			-- ARCS
+			use type_route_restrict_arcs;
+			
+			procedure query_arc (c : in type_route_restrict_arcs.cursor) is 
+				arc : type_route_restrict_arc := element (c);
+			begin
+				if flipped then 
+					mirror (arc, Y); 
+
+					-- CS mirror layers
+				end if;
+
+				if route_restrict_layer_enabled (arc.layers) then
+					
+					rotate_by (arc, rot (position));
+					move_by (arc, type_point (position));
+
+					pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
+					stroke (context.cr);
+				end if;
+			end query_arc;
+
+			
+			-- CIRCLES
+			use type_route_restrict_circles;
+			
+			procedure query_circle (c : in type_route_restrict_circles.cursor) is 
+				circle : type_route_restrict_circle := element (c);
+			begin
+				if flipped then 
+					mirror (circle, Y);
+
+					-- CS mirror layers
+				end if;
+
+				if route_restrict_layer_enabled (circle.layers) then
+				
+					rotate_by (circle, rot (position));
+					move_by (circle, type_point (position));
+
+					pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+					stroke (context.cr);
+					
+					case circle.filled is
+						when YES =>
+							-- restore line width (draw_circle has set it to zero)
+							set_line_width (context.cr, type_view_coordinate (route_restrict_line_width));
+
+						when NO =>
+							null;
+					end case;
+					
+				end if;
+
+			end query_circle;
+
+			
+			-- POLYGONS
+			use type_route_restrict_polygons;
+			
+			procedure query_polygon (c : in type_route_restrict_polygons.cursor) is
+				polygon : et_packages.type_route_restrict_polygon := element (c);
+			begin
+				if flipped then 
+					mirror (polygon, Y);
+
+					-- CS mirror layers
+				end if;
+
+				if route_restrict_layer_enabled (polygon.layers) then
+					
+					rotate_by (polygon, rot (position));
+					move_by (polygon, type_point (position));
+
+					pac_draw_package.draw_polygon (in_area, context, polygon, YES, self.frame_height);
+
+					stroke (context.cr);
+				end if;
+
+			end query_polygon;
+
+
+			-- CUTOUTS
+			use pac_route_restrict_cutouts;
+		
+			procedure query_cutout (c : in pac_route_restrict_cutouts.cursor) is
+				cutout : et_packages.type_route_restrict_cutout := element (c);
+			begin
+				if flipped then 
+					mirror (cutout, Y); 
+
+					-- CS mirror layers
+				end if;
+
+				if route_restrict_layer_enabled (cutout.layers) then
+					
+					rotate_by (cutout, rot (position));
+					move_by (cutout, type_point (position));
+
+					set_color_background (context.cr);
+
+					pac_draw_package.draw_polygon (in_area, context, cutout, YES, self.frame_height);
+							
+					stroke (context.cr);
+				end if;
+
+			end query_cutout;
+			
+		begin -- draw_route_restrict
+			set_color_route_restrict (context.cr);
+			set_line_width (context.cr, type_view_coordinate (route_restrict_line_width));
+			
+			-- lines
+			element (package_cursor).route_restrict.lines.iterate (query_line'access);
+
+			-- arcs
+			element (package_cursor).route_restrict.arcs.iterate (query_arc'access);
+
+			-- circles
+			element (package_cursor).route_restrict.circles.iterate (query_circle'access);
+
+			-- polygons
+			element (package_cursor).route_restrict.polygons.iterate (query_polygon'access);
+
+			-- cutouts
+			element (package_cursor).route_restrict.cutouts.iterate (query_cutout'access);
+
+		end draw_route_restrict;
+
+		
 		-- PCB CONTOUR / OUTLINE
 		procedure draw_pcb_contour is 
 
@@ -1311,8 +1469,6 @@ procedure draw_packages (
 					rotate_by (line, rot (position));
 					move_by (line, type_point (position));
 
-					set_color_outline (context.cr);
-					set_line_width (context.cr, type_view_coordinate (pcb_contour_line_width));
 					pac_draw_package.draw_line (in_area, context, line, self.frame_height);
 					stroke (context.cr);
 
@@ -1335,8 +1491,6 @@ procedure draw_packages (
 					rotate_by (arc, rot (position));
 					move_by (arc, type_point (position));
 
-					set_color_outline (context.cr);
-					set_line_width (context.cr, type_view_coordinate (pcb_contour_line_width));
 					pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
 					stroke (context.cr);
 					
@@ -1358,9 +1512,6 @@ procedure draw_packages (
 					rotate_by (circle, rot (position));
 					move_by (circle, type_point (position));
 
-					set_color_outline (context.cr);
-
-					set_line_width (context.cr, type_view_coordinate (pcb_contour_line_width));
 					pac_draw_package.draw_circle (in_area, context, circle, NO, self.frame_height);
 
 					stroke (context.cr);
@@ -1370,7 +1521,9 @@ procedure draw_packages (
 			end query_circle;
 			
 		begin -- draw_pcb_contour
-		
+			set_color_outline (context.cr);
+			set_line_width (context.cr, type_view_coordinate (pcb_contour_line_width));
+			
 			-- lines
 			element (package_cursor).pcb_contour.lines.iterate (query_line'access);
 
@@ -1416,7 +1569,7 @@ procedure draw_packages (
 		draw_keepout; 
 		draw_stop_mask; -- non-terminal related
 		draw_stencil; -- non-terminal related
-		-- CS draw_route_restrict
+		draw_route_restrict;
 		-- CS draw_via_restrict
 		draw_pcb_contour;
 		
