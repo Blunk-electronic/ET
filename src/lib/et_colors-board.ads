@@ -59,11 +59,11 @@ package et_colors.board is
 	assy_doc_top		: type_color := yellow;
 	assy_doc_bottom		: type_color := yellow;	
 
-	stop_mask_top		: type_color := yellow;
-	stop_mask_bottom	: type_color := yellow;	
+	stop_mask_top		: type_color := green;
+	stop_mask_bottom	: type_color := green;	
 
-	stencil_top			: type_color := yellow;
-	stencil_bottom		: type_color := yellow;	
+	stencil_top			: type_color := gray;
+	stencil_bottom		: type_color := gray;	
 
 	keepout_top			: type_color := orange;
 	keepout_bottom		: type_color := orange;	

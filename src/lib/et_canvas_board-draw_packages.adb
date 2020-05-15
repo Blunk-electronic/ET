@@ -812,6 +812,244 @@ procedure draw_packages (
 
 		end draw_keepout;
 
+		-- STOP MASK
+		procedure draw_stop_mask is 
+
+			-- LINES
+			use type_stop_lines;
+			line : type_stop_line;
+
+			procedure draw_line (f : in type_face) is begin
+				if stop_mask_enabled (f) then
+				
+					if f = face then
+						if flipped then mirror (line, Y); end if;
+						
+						rotate_by (line, rot (position));
+						move_by (line, type_point (position));
+
+						set_color_stop_mask (context.cr, f);
+						set_line_width (context.cr, type_view_coordinate (line.width));
+						pac_draw_package.draw_line (in_area, context, line, self.frame_height);
+						stroke (context.cr);
+					end if;
+
+				end if;
+			end draw_line;
+			
+			procedure query_line_top (c : in type_stop_lines.cursor) is begin
+				line := element (c);
+				set_face;
+				draw_line (destination);
+			end query_line_top;
+
+			procedure query_line_bottom (c : in type_stop_lines.cursor) is begin
+				line := element (c);
+				set_face (INVERSE);
+				draw_line (destination);
+			end query_line_bottom;
+
+			
+			-- ARCS
+			use type_stop_arcs;
+			arc : type_stop_arc;
+
+			procedure draw_arc (f : in type_face) is begin
+				if stop_mask_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (arc, Y); end if;
+						
+						rotate_by (arc, rot (position));
+						move_by (arc, type_point (position));
+
+						set_color_stop_mask (context.cr, f);
+						set_line_width (context.cr, type_view_coordinate (line.width));
+						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
+						stroke (context.cr);
+					end if;
+					
+				end if;
+			end draw_arc;
+			
+			procedure query_arc_top (c : in type_stop_arcs.cursor) is begin
+				arc := element (c);
+				set_face;
+				draw_arc (destination);
+			end query_arc_top;
+
+			procedure query_arc_bottom (c : in type_stop_arcs.cursor) is begin
+				arc := element (c);
+				set_face (INVERSE);
+				draw_arc (destination);
+			end query_arc_bottom;
+
+			
+			-- CIRCLES
+			use type_stop_circles;
+
+			procedure draw_circle (
+				circle	: in out type_fillable_circle;
+				f 		: in type_face) 
+			is begin
+				if stop_mask_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (circle, Y); end if;
+						
+						rotate_by (circle, rot (position));
+						move_by (circle, type_point (position));
+
+						set_color_stop_mask (context.cr, f);
+
+						case circle.filled is
+							when NO =>
+								set_line_width (context.cr, type_view_coordinate (circle.border_width));
+								pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+
+							when YES =>
+								case circle.fill_style is
+									when SOLID =>
+										pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+
+									when HATCHED => null; -- CS
+								end case;
+						end case;
+						
+						stroke (context.cr);
+					end if;
+
+				end if;
+			end draw_circle;
+			
+			procedure query_circle_top (c : in type_stop_circles.cursor) is 
+				circle : type_fillable_circle := element (c);
+			begin
+				set_face;
+				draw_circle (circle, destination);
+			end query_circle_top;
+
+			procedure query_circle_bottom (c : in type_stop_circles.cursor) is 
+				circle : type_fillable_circle := element (c);
+			begin
+				set_face (INVERSE);
+				draw_circle (circle, destination);
+			end query_circle_bottom;
+
+			
+			-- POLYGONS
+			use type_stop_polygons;
+
+			procedure draw_polygon (
+				polygon	: in out et_packages.type_polygon;
+				f		: in type_face)
+			is begin
+				if stop_mask_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (polygon, Y); end if;
+						
+						rotate_by (polygon, rot (position));
+						move_by (polygon, type_point (position));
+
+						set_color_stop_mask (context.cr, f);
+
+						case polygon.fill_style is
+							when SOLID =>
+								pac_draw_package.draw_polygon (in_area, context, polygon, YES, self.frame_height);
+
+							when HATCHED =>
+								cairo.set_line_width (context.cr, type_view_coordinate (polygon.hatching.border_width));
+								pac_draw_package.draw_polygon (in_area, context, polygon, NO, self.frame_height);
+								-- CS hatching ?
+						end case;
+						
+						stroke (context.cr);
+					end if;
+
+				end if;
+			end draw_polygon;
+			
+			procedure query_polygon_top (c : in type_stop_polygons.cursor) is
+				polygon : et_packages.type_polygon := element (c);
+			begin
+				set_face;
+				draw_polygon (polygon, destination);
+			end query_polygon_top;
+
+			procedure query_polygon_bottom (c : in type_stop_polygons.cursor) is
+				polygon : et_packages.type_polygon := element (c);
+			begin
+				set_face (INVERSE);
+				draw_polygon (polygon, destination);
+			end query_polygon_bottom;
+
+
+			-- CUTOUTS
+			use pac_stop_cutouts;
+
+			procedure draw_cutout (
+				cutout	: in out type_cutout_zone;
+				f		: in type_face)
+			is begin
+				if stop_mask_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (cutout, Y); end if;
+						
+						rotate_by (cutout, rot (position));
+						move_by (cutout, type_point (position));
+
+						set_color_background (context.cr);
+
+						pac_draw_package.draw_polygon (in_area, context, cutout, YES, self.frame_height);
+						
+						stroke (context.cr);
+					end if;
+
+				end if;
+				
+			end draw_cutout;
+			
+			procedure query_cutout_top (c : in pac_stop_cutouts.cursor) is
+				cutout : et_packages.type_cutout_zone := element (c);
+			begin
+				set_face;
+				draw_cutout (cutout, destination);
+			end query_cutout_top;
+
+			procedure query_cutout_bottom (c : in pac_stop_cutouts.cursor) is
+				cutout : et_packages.type_cutout_zone := element (c);
+			begin
+				set_face (INVERSE);
+				draw_cutout (cutout, destination);
+			end query_cutout_bottom;
+			
+		begin -- draw_stop_mask
+		
+			-- lines
+			element (package_cursor).stop_mask.top.lines.iterate (query_line_top'access);
+			element (package_cursor).stop_mask.bottom.lines.iterate (query_line_bottom'access);
+
+			-- arcs
+			element (package_cursor).stop_mask.top.arcs.iterate (query_arc_top'access);
+			element (package_cursor).stop_mask.bottom.arcs.iterate (query_arc_bottom'access);
+
+			-- circles
+			element (package_cursor).stop_mask.top.circles.iterate (query_circle_top'access);
+			element (package_cursor).stop_mask.bottom.circles.iterate (query_circle_bottom'access);
+
+			-- polygons
+			element (package_cursor).stop_mask.top.polygons.iterate (query_polygon_top'access);
+			element (package_cursor).stop_mask.bottom.polygons.iterate (query_polygon_bottom'access);
+
+			-- cutouts
+			element (package_cursor).stop_mask.top.cutouts.iterate (query_cutout_top'access);
+			element (package_cursor).stop_mask.bottom.cutouts.iterate (query_cutout_bottom'access);
+
+			-- CS texts		: type_texts_with_content.list; -- for texts in copper to be exposed
+		end draw_stop_mask;
+
 		
 		procedure draw_origin is
 			type type_line is new et_packages.pac_shapes.type_line with null record;
@@ -842,10 +1080,10 @@ procedure draw_packages (
 		draw_silkscreen;
 		draw_assembly_documentation;
 		-- CS draw_terminals
-		-- CS draw_conductors non-terminal related
-		draw_keepout;
-		-- CS draw_stop_mask non-terminal related
-		-- CS draw_stencil non-terminal related
+		-- CS draw_conductors; -- non-terminal related
+		draw_keepout; 
+		draw_stop_mask; -- non-terminal related
+		-- CS draw_stencil; -- non-terminal related
 		-- CS draw_route_restrict
 		-- CS draw_via_restrict
 		-- CS draw_pcb_contour

@@ -994,8 +994,8 @@ package et_packages is
 		description			: type_package_description.bounded_string;
 		copper				: type_copper_both_sides; -- non-electric objects -- CS rename to conductors
 		keepout 			: type_keepout_both_sides;
-		stop_mask			: type_stop_mask_both_sides;
-		stencil				: type_stencil_both_sides;
+		stop_mask			: type_stop_mask_both_sides; -- not terminal related
+		stencil				: type_stencil_both_sides; -- not terminal related
 
 		route_restrict 		: type_route_restrict;
 		via_restrict 		: type_via_restrict;
