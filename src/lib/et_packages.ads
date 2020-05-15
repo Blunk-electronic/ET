@@ -817,7 +817,7 @@ package et_packages is
 	
 -- PCB CONTOURS
 
-	-- The outline of a pcb is a collction of lines, arcs and circles.
+	-- The outline of a pcb is a collection of lines, arcs and circles.
 	-- Unlike plated millings of terminals (see below) one can not assume a single
 	-- circumfence. There may be circles, rectangles and other objects that are not
 	-- nessecarily connected with each other. DON'T try to model the pcb outline with a polygon !
@@ -833,6 +833,7 @@ package et_packages is
 	
 	type type_pcb_contour_circle is new type_circle with null record;
 	package type_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
+	-- Circles in outline are never filled.
 	
 	type type_pcb_contour is record
 		lines 	: type_pcb_contour_lines.list;

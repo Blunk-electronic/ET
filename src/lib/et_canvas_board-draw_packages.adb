@@ -41,7 +41,7 @@ with pango.layout;				use pango.layout;
 
 with et_general;				use et_general;
 with et_symbols;
-with et_schematic;				--use et_schematic;
+with et_schematic;
 use et_schematic.type_nets;
 
 with et_project;				use et_project;
@@ -49,7 +49,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_packages;				use et_packages;
 use et_pcb_coordinates.geometry;
 
-with et_pcb;					--use et_pcb;
+with et_pcb;
 
 with et_display.board;			use et_display.board;
 with et_colors;					use et_colors;
@@ -70,11 +70,12 @@ procedure draw_packages (
 		flip			: in et_pcb.type_flipped;
 		placeholders	: in et_packages.type_text_placeholders) is
 
-		use et_pcb;
 		use et_packages.pac_shapes;
 		use type_packages;
 
-		function flipped return boolean is begin
+		function flipped return boolean is 
+			use et_pcb;
+		begin
 			if flip = NO then return false;
 			else return true;
 			end if;
@@ -83,7 +84,9 @@ procedure draw_packages (
 		destination : type_face;
 		type type_destination_inversed is (INVERSE, NOT_INVERSE);
 
-		procedure set_face (i : in type_destination_inversed := NOT_INVERSE) is begin
+		procedure set_face (i : in type_destination_inversed := NOT_INVERSE) is 
+			use et_pcb;
+		begin
 			case flip is
 				when YES =>
 					case i is
@@ -1291,6 +1294,94 @@ procedure draw_packages (
 
 		end draw_stencil;
 
+		-- PCB CONTOUR / OUTLINE
+		procedure draw_pcb_contour is 
+
+			-- LINES
+			use et_packages.type_pcb_contour_lines;
+			line : et_packages.type_pcb_contour_line;
+
+			procedure query_line (c : in et_packages.type_pcb_contour_lines.cursor) is
+				line : type_pcb_contour_line := element (c);
+			begin
+				if outline_enabled then
+				
+					if flipped then mirror (line, Y); end if;
+					
+					rotate_by (line, rot (position));
+					move_by (line, type_point (position));
+
+					set_color_outline (context.cr);
+					set_line_width (context.cr, type_view_coordinate (pcb_contour_line_width));
+					pac_draw_package.draw_line (in_area, context, line, self.frame_height);
+					stroke (context.cr);
+
+				end if;		
+				
+			end query_line;
+
+			
+			-- ARCS
+			use type_pcb_contour_arcs;
+			arc : type_pcb_contour_arc;
+			
+			procedure query_arc (c : in type_pcb_contour_arcs.cursor) is
+				arc : type_pcb_contour_arc := element (c);
+			begin
+				if outline_enabled then
+					
+					if flipped then mirror (arc, Y); end if;
+					
+					rotate_by (arc, rot (position));
+					move_by (arc, type_point (position));
+
+					set_color_outline (context.cr);
+					set_line_width (context.cr, type_view_coordinate (pcb_contour_line_width));
+					pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
+					stroke (context.cr);
+					
+				end if;
+
+			end query_arc;
+
+			
+			-- CIRCLES
+			use type_pcb_contour_circles;
+			
+			procedure query_circle (c : in type_pcb_contour_circles.cursor) is 
+				circle : type_pcb_contour_circle := element (c);
+			begin
+				if outline_enabled then
+					
+					if flipped then mirror (circle, Y); end if;
+						
+					rotate_by (circle, rot (position));
+					move_by (circle, type_point (position));
+
+					set_color_outline (context.cr);
+
+					set_line_width (context.cr, type_view_coordinate (pcb_contour_line_width));
+					pac_draw_package.draw_circle (in_area, context, circle, NO, self.frame_height);
+
+					stroke (context.cr);
+
+				end if;
+
+			end query_circle;
+			
+		begin -- draw_pcb_contour
+		
+			-- lines
+			element (package_cursor).pcb_contour.lines.iterate (query_line'access);
+
+			-- arcs
+			element (package_cursor).pcb_contour.arcs.iterate (query_arc'access);
+
+			-- circles
+			element (package_cursor).pcb_contour.circles.iterate (query_circle'access);
+
+		end draw_pcb_contour;
+
 		
 		procedure draw_origin is
 			type type_line is new et_packages.pac_shapes.type_line with null record;
@@ -1327,7 +1418,7 @@ procedure draw_packages (
 		draw_stencil; -- non-terminal related
 		-- CS draw_route_restrict
 		-- CS draw_via_restrict
-		-- CS draw_pcb_contour
+		draw_pcb_contour;
 		
 		-- The origin is drawn last so that it obscures other elements of the package:
 		draw_origin;
