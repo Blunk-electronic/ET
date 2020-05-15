@@ -54,7 +54,7 @@ package et_colors.board is
 	via				: type_color := green;
 	
 	silkscreen_top		: type_color := white;
-	silkscreen_bottom	: type_color := orange;	
+	silkscreen_bottom	: type_color := white;	
 
 	assy_doc_top		: type_color := yellow;
 	assy_doc_bottom		: type_color := yellow;	
@@ -65,8 +65,8 @@ package et_colors.board is
 	stencil_top			: type_color := yellow;
 	stencil_bottom		: type_color := yellow;	
 
-	keepout_top			: type_color := yellow;
-	keepout_bottom		: type_color := yellow;	
+	keepout_top			: type_color := orange;
+	keepout_bottom		: type_color := orange;	
 
 	route_restrict		: type_color := red;
 	via_restrict		: type_color := red;

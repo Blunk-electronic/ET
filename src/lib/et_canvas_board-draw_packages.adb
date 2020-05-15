@@ -41,7 +41,7 @@ with pango.layout;				use pango.layout;
 
 with et_general;				use et_general;
 with et_symbols;
-with et_schematic;				use et_schematic;
+with et_schematic;				--use et_schematic;
 use et_schematic.type_nets;
 
 with et_project;				use et_project;
@@ -280,7 +280,7 @@ procedure draw_packages (
 			use pac_silk_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out et_packages.type_cutout_zone;
+				cutout	: in out type_cutout_zone;
 				f		: in type_face)
 			is begin
 				if silkscreen_enabled (f) then
@@ -303,14 +303,14 @@ procedure draw_packages (
 			end draw_cutout;
 			
 			procedure query_cutout_top (c : in pac_silk_cutouts.cursor) is
-				cutout : et_packages.type_cutout_zone := element (c);
+				cutout : type_cutout_zone := element (c);
 			begin
 				set_face;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_silk_cutouts.cursor) is
-				cutout : et_packages.type_cutout_zone := element (c);
+				cutout : type_cutout_zone := element (c);
 			begin
 				set_face (INVERSE);
 				draw_cutout (cutout, destination);
@@ -544,14 +544,14 @@ procedure draw_packages (
 			end draw_cutout;
 			
 			procedure query_cutout_top (c : in pac_doc_cutouts.cursor) is
-				cutout : et_packages.type_cutout_zone := element (c);
+				cutout : type_cutout_zone := element (c);
 			begin
 				set_face;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_doc_cutouts.cursor) is
-				cutout : et_packages.type_cutout_zone := element (c);
+				cutout : type_cutout_zone := element (c);
 			begin
 				set_face (INVERSE);
 				draw_cutout (cutout, destination);
@@ -595,6 +595,223 @@ procedure draw_packages (
 -- 			restore (context.cr);
 		end draw_assembly_documentation;
 
+		-- KEEPOUT
+		procedure draw_keepout is 
+
+			-- LINES
+			use type_keepout_lines;
+			line : type_keepout_line;
+
+			procedure draw_line (f : in type_face) is begin
+				if keepout_enabled (f) then
+				
+					if f = face then
+						if flipped then mirror (line, Y); end if;
+						
+						rotate_by (line, rot (position));
+						move_by (line, type_point (position));
+
+						set_color_keepout (context.cr, f);
+						set_line_width (context.cr, type_view_coordinate (keepout_line_width));
+						pac_draw_package.draw_line (in_area, context, line, self.frame_height);
+						stroke (context.cr);
+					end if;
+
+				end if;
+			end draw_line;
+			
+			procedure query_line_top (c : in type_keepout_lines.cursor) is begin
+				line := element (c);
+				set_face;
+				draw_line (destination);
+			end query_line_top;
+
+			procedure query_line_bottom (c : in type_keepout_lines.cursor) is begin
+				line := element (c);
+				set_face (INVERSE);
+				draw_line (destination);
+			end query_line_bottom;
+
+			
+			-- ARCS
+			use type_keepout_arcs;
+			arc : type_keepout_arc;
+
+			procedure draw_arc (f : in type_face) is begin
+				if keepout_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (arc, Y); end if;
+						
+						rotate_by (arc, rot (position));
+						move_by (arc, type_point (position));
+
+						set_color_keepout (context.cr, f);
+						set_line_width (context.cr, type_view_coordinate (keepout_line_width));
+						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
+						stroke (context.cr);
+					end if;
+					
+				end if;
+			end draw_arc;
+			
+			procedure query_arc_top (c : in type_keepout_arcs.cursor) is begin
+				arc := element (c);
+				set_face;
+				draw_arc (destination);
+			end query_arc_top;
+
+			procedure query_arc_bottom (c : in type_keepout_arcs.cursor) is begin
+				arc := element (c);
+				set_face (INVERSE);
+				draw_arc (destination);
+			end query_arc_bottom;
+
+			
+			-- CIRCLES
+			use type_keepout_circles;
+
+			procedure draw_circle (
+				circle	: in out type_fillable_circle_solid;
+				f 		: in type_face) 
+			is begin
+				if keepout_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (circle, Y); end if;
+						
+						rotate_by (circle, rot (position));
+						move_by (circle, type_point (position));
+
+						set_color_keepout (context.cr, f);
+
+						pac_draw_package.draw_circle (in_area, context, circle, YES, self.frame_height);
+						
+						stroke (context.cr);
+					end if;
+
+				end if;
+			end draw_circle;
+			
+			procedure query_circle_top (c : in type_keepout_circles.cursor) is 
+				circle : type_fillable_circle_solid := element (c);
+			begin
+				set_face;
+				draw_circle (circle, destination);
+			end query_circle_top;
+
+			procedure query_circle_bottom (c : in type_keepout_circles.cursor) is 
+				circle : type_fillable_circle_solid := element (c);
+			begin
+				set_face (INVERSE);
+				draw_circle (circle, destination);
+			end query_circle_bottom;
+
+			
+			-- POLYGONS
+			use type_keepout_polygons;
+
+			procedure draw_polygon (
+				polygon	: in out pac_shapes.type_polygon;
+				f		: in type_face)
+			is begin
+				if keepout_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (polygon, Y); end if;
+						
+						rotate_by (polygon, rot (position));
+						move_by (polygon, type_point (position));
+
+						set_color_keepout (context.cr, f);
+
+						pac_draw_package.draw_polygon (in_area, context, polygon, YES, self.frame_height);
+						
+						stroke (context.cr);
+					end if;
+
+				end if;
+			end draw_polygon;
+			
+			procedure query_polygon_top (c : in type_keepout_polygons.cursor) is
+				polygon : pac_shapes.type_polygon := element (c);
+			begin
+				set_face;
+				draw_polygon (polygon, destination);
+			end query_polygon_top;
+
+			procedure query_polygon_bottom (c : in type_keepout_polygons.cursor) is
+				polygon : pac_shapes.type_polygon := element (c);
+			begin
+				set_face (INVERSE);
+				draw_polygon (polygon, destination);
+			end query_polygon_bottom;
+
+
+			-- CUTOUTS
+			use pac_keepout_cutouts;
+
+			procedure draw_cutout (
+				cutout	: in out type_cutout_zone;
+				f		: in type_face)
+			is begin
+				if keepout_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (cutout, Y); end if;
+						
+						rotate_by (cutout, rot (position));
+						move_by (cutout, type_point (position));
+
+						set_color_background (context.cr);
+
+						pac_draw_package.draw_polygon (in_area, context, cutout, YES, self.frame_height);
+						
+						stroke (context.cr);
+					end if;
+
+				end if;
+				
+			end draw_cutout;
+			
+			procedure query_cutout_top (c : in pac_keepout_cutouts.cursor) is
+				cutout : et_packages.type_cutout_zone := element (c);
+			begin
+				set_face;
+				draw_cutout (cutout, destination);
+			end query_cutout_top;
+
+			procedure query_cutout_bottom (c : in pac_keepout_cutouts.cursor) is
+				cutout : et_packages.type_cutout_zone := element (c);
+			begin
+				set_face (INVERSE);
+				draw_cutout (cutout, destination);
+			end query_cutout_bottom;
+			
+		begin -- draw_keepout
+		
+			-- lines
+			element (package_cursor).keepout.top.lines.iterate (query_line_top'access);
+			element (package_cursor).keepout.bottom.lines.iterate (query_line_bottom'access);
+
+			-- arcs
+			element (package_cursor).keepout.top.arcs.iterate (query_arc_top'access);
+			element (package_cursor).keepout.bottom.arcs.iterate (query_arc_bottom'access);
+
+			-- circles
+			element (package_cursor).keepout.top.circles.iterate (query_circle_top'access);
+			element (package_cursor).keepout.bottom.circles.iterate (query_circle_bottom'access);
+
+			-- polygons
+			element (package_cursor).keepout.top.polygons.iterate (query_polygon_top'access);
+			element (package_cursor).keepout.bottom.polygons.iterate (query_polygon_bottom'access);
+
+			-- cutouts
+			element (package_cursor).keepout.top.cutouts.iterate (query_cutout_top'access);
+			element (package_cursor).keepout.bottom.cutouts.iterate (query_cutout_bottom'access);
+
+		end draw_keepout;
+
 		
 		procedure draw_origin is
 			type type_line is new et_packages.pac_shapes.type_line with null record;
@@ -626,7 +843,7 @@ procedure draw_packages (
 		draw_assembly_documentation;
 		-- CS draw_terminals
 		-- CS draw_conductors non-terminal related
-		-- CS draw_keepout
+		draw_keepout;
 		-- CS draw_stop_mask non-terminal related
 		-- CS draw_stencil non-terminal related
 		-- CS draw_route_restrict
@@ -636,6 +853,8 @@ procedure draw_packages (
 		-- The origin is drawn last so that it obscures other elements of the package:
 		draw_origin;
 	end draw_package;
+
+	use et_schematic;
 	
 	procedure query_devices (
 		module_name	: in type_module_name.bounded_string;
