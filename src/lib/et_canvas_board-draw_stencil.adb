@@ -73,7 +73,6 @@ procedure draw_stencil (
 			line		=> element (c),
 			height		=> self.frame_height);
 
-		cairo.stroke (context.cr);
 	end query_line;
 
 	procedure query_arc (c : in type_stencil_arcs.cursor) is begin
@@ -85,7 +84,6 @@ procedure draw_stencil (
 			arc			=> element (c),
 			height		=> self.frame_height);
 
-		cairo.stroke (context.cr);		
 	end query_arc;
 
 	procedure query_circle (c : in type_stencil_circles.cursor) is 
@@ -114,7 +112,6 @@ procedure draw_stencil (
 
 		end case;
 
-		cairo.stroke (context.cr);
 	end query_circle;
 
 	procedure query_polygon (c : in type_stencil_polygons.cursor) is 
@@ -142,7 +139,6 @@ procedure draw_stencil (
 				-- CS hatching ?
 		end case;
 
-		cairo.stroke (context.cr);
 	end query_polygon;
 
 	procedure query_cutout (c : in pac_stencil_cutouts.cursor) is 
@@ -157,7 +153,6 @@ procedure draw_stencil (
 			filled	=> YES,
 			height	=> self.frame_height);
 
-		cairo.stroke (context.cr);
 	end query_cutout;
 
 	procedure query_items (
