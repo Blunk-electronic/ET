@@ -99,7 +99,6 @@ procedure draw_outline (
 		iterate (module.board.contours.arcs, query_arc'access);
 		iterate (module.board.contours.circles, query_circle'access);
 
-		cairo.stroke (context.cr);
 	end query_segments;
 	
 begin -- draw_outline
