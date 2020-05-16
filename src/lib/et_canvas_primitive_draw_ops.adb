@@ -118,6 +118,7 @@ package body pac_draw is
 
 			-- The ends of the line are round:
 			set_line_cap (context.cr, cairo_line_cap_round);
+-- 			set_line_join (context.cr, cairo_line_join_miter);
 			
 			-- start point
 			move_to (
@@ -133,6 +134,7 @@ package body pac_draw is
 				shift_y (line.end_point.y, height)
 				);
 
+			stroke (context.cr);
 		end if;
 	end draw_line;
 
@@ -157,7 +159,6 @@ package body pac_draw is
 		if (area = no_rectangle
 			or else intersects (area, bounding_box)) 
 		then
-
 	-- CS test size 
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;
@@ -167,7 +168,6 @@ package body pac_draw is
 
 			-- The ends of the arc are round:
 			set_line_cap (context.cr, cairo_line_cap_round);
-
 			
 			if arc.direction = CW then
 				
@@ -192,6 +192,7 @@ package body pac_draw is
 					);
 			end if;
 
+			stroke (context.cr);
 		end if;
 	end draw_arc;
 
@@ -207,13 +208,18 @@ package body pac_draw is
 
 		-- compute the bounding box of the given arc
 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
+
+		-- backup previous line width
+		line_width_before : constant type_view_coordinate := get_line_width (context.cr);
 	begin
+
 		-- We draw the segment if:
 		--  - no area given or
 		--  - if the bounding box of the segment intersects the given area
 		if (area = no_rectangle
 			or else intersects (area, bounding_box)) 
 		then
+			null;
 	-- CS test size 
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;
@@ -234,14 +240,19 @@ package body pac_draw is
 
 			case filled is
 				when YES => 
-					fill_preserve (context.cr);
+					fill (context.cr);
 
 					-- A filled circle has always line width of zero:
 					cairo.set_line_width (context.cr, type_view_coordinate (zero));
+					stroke (context.cr);
+
+					-- Restore line width as it was before this procedure:
+					cairo.set_line_width (context.cr, line_width_before);
 					
-				when NO => null;
+				when NO =>
+					stroke (context.cr);
 			end case;
-			
+
 		end if;
 	end draw_circle;
 
@@ -258,6 +269,10 @@ package body pac_draw is
 
 		-- compute the bounding box of the given polygon
 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
+
+		-- backup previous line width
+		line_width_before : constant type_view_coordinate := get_line_width (context.cr);
+
 		
 		use pac_polygon_lines;
 		use pac_polygon_arcs;
@@ -443,6 +458,10 @@ package body pac_draw is
 								angle1	=> 0.0,
 								angle2	=> type_view_coordinate (2 * pi)				
 								);
+
+					-- Restore line width as it was before this procedure:
+-- CS					cairo.set_line_width (context.cr, line_width_before);
+
 							
 						else
 							-- If segment is not among circles, we have a problem:
@@ -451,7 +470,9 @@ package body pac_draw is
 						
 					end if;
 				end if;
-				
+
+				-- stroke each segment of the polygon
+-- 				stroke (context.cr);
 			end loop;
 
 			case filled is
@@ -465,6 +486,8 @@ package body pac_draw is
 
 					-- The line width has been set by the calling unit.
 			end case;
+
+ 			stroke (context.cr);
 			
 		end if;
 	end draw_polygon;

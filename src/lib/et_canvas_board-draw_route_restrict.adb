@@ -117,9 +117,6 @@ procedure draw_route_restrict (
 						circle		=> element (c),
 						filled		=> YES,
 						height		=> self.frame_height);
-
-					-- restore line width (draw_circle has set it to zero)
-					set_line_width (context.cr, type_view_coordinate (route_restrict_line_width));
 					
 			end case;
 
@@ -173,7 +170,6 @@ procedure draw_route_restrict (
 		iterate (module.board.route_restrict.polygons, query_polygon'access);
 		iterate (module.board.route_restrict.cutouts, query_cutout'access);
 
-		cairo.stroke (context.cr);
 	end query_items;
 	
 begin -- route_restrict

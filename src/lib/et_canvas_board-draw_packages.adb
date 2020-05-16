@@ -124,7 +124,6 @@ procedure draw_packages (
 						set_color_silkscreen (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
 						pac_draw_package.draw_line (in_area, context, line, self.frame_height);
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -159,7 +158,6 @@ procedure draw_packages (
 						set_color_silkscreen (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
 						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
-						stroke (context.cr);
 					end if;
 					
 				end if;
@@ -208,8 +206,7 @@ procedure draw_packages (
 									when HATCHED => null; -- CS
 								end case;
 						end case;
-						
-						stroke (context.cr);
+
 					end if;
 
 				end if;
@@ -257,7 +254,6 @@ procedure draw_packages (
 								-- CS hatching ?
 						end case;
 						
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -297,8 +293,6 @@ procedure draw_packages (
 						set_color_background (context.cr);
 
 						pac_draw_package.draw_polygon (in_area, context, cutout, YES, self.frame_height);
-						
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -366,7 +360,6 @@ procedure draw_packages (
 						set_color_assy_doc (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
 						pac_draw_package.draw_line (in_area, context, line, self.frame_height);
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -401,7 +394,6 @@ procedure draw_packages (
 						set_color_assy_doc (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
 						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
-						stroke (context.cr);
 					end if;
 					
 				end if;
@@ -450,8 +442,7 @@ procedure draw_packages (
 									when HATCHED => null; -- CS
 								end case;
 						end case;
-						
-						stroke (context.cr);
+
 					end if;
 
 				end if;
@@ -499,7 +490,6 @@ procedure draw_packages (
 								-- CS hatching ?
 						end case;
 						
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -540,7 +530,6 @@ procedure draw_packages (
 
 						pac_draw_package.draw_polygon (in_area, context, cutout, YES, self.frame_height);
 						
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -562,16 +551,6 @@ procedure draw_packages (
 			end query_cutout_bottom;
 			
 		begin -- draw_assembly_documentation
--- 			save (context.cr);
--- 			set_operator (context.cr, cairo_operator_over);
--- 			set_operator (context.cr, cairo_operator_atop);
-			-- 			set_operator (context.cr, cairo_operator_source);
-			-- 			set_operator (context.cr, cairo_operator_dest_over);
--- 			set_operator (context.cr, cairo_operator_xor);
--- 			set_operator (context.cr, cairo_operator_add);
-			-- 			set_operator (context.cr, cairo_operator_dest);
--- 			set_operator (context.cr, cairo_operator_out);
-			
 			-- lines
 			element (package_cursor).assembly_documentation.top.lines.iterate (query_line_top'access);
 			element (package_cursor).assembly_documentation.bottom.lines.iterate (query_line_bottom'access);
@@ -591,12 +570,12 @@ procedure draw_packages (
 			-- cutouts
 			element (package_cursor).assembly_documentation.top.cutouts.iterate (query_cutout_top'access);
 			element (package_cursor).assembly_documentation.bottom.cutouts.iterate (query_cutout_bottom'access);
+
 			
 			-- CS
 			-- placeholders
 			-- texts		: type_texts_with_content.list;
 
--- 			restore (context.cr);
 		end draw_assembly_documentation;
 
 		
@@ -618,7 +597,6 @@ procedure draw_packages (
 
 						set_color_keepout (context.cr, f);
 						pac_draw_package.draw_line (in_area, context, line, self.frame_height);
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -652,7 +630,6 @@ procedure draw_packages (
 
 						set_color_keepout (context.cr, f);
 						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
-						stroke (context.cr);
 					end if;
 					
 				end if;
@@ -689,11 +666,6 @@ procedure draw_packages (
 						set_color_keepout (context.cr, f);
 
 						pac_draw_package.draw_circle (in_area, context, circle, YES, self.frame_height);
-						
-						stroke (context.cr);
-
-						-- restore line width (draw_circle has set it to zero):
-						set_line_width (context.cr, type_view_coordinate (keepout_line_width));
 					end if;
 
 				end if;
@@ -733,7 +705,6 @@ procedure draw_packages (
 
 						pac_draw_package.draw_polygon (in_area, context, polygon, YES, self.frame_height);
 						
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -773,7 +744,6 @@ procedure draw_packages (
 
 						pac_draw_package.draw_polygon (in_area, context, cutout, YES, self.frame_height);
 						
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -816,7 +786,7 @@ procedure draw_packages (
 			-- cutouts
 			element (package_cursor).keepout.top.cutouts.iterate (query_cutout_top'access);
 			element (package_cursor).keepout.bottom.cutouts.iterate (query_cutout_bottom'access);
-
+			
 		end draw_keepout;
 
 		
@@ -839,7 +809,6 @@ procedure draw_packages (
 						set_color_stop_mask (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
 						pac_draw_package.draw_line (in_area, context, line, self.frame_height);
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -874,7 +843,6 @@ procedure draw_packages (
 						set_color_stop_mask (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
 						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
-						stroke (context.cr);
 					end if;
 					
 				end if;
@@ -924,7 +892,6 @@ procedure draw_packages (
 								end case;
 						end case;
 						
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -972,7 +939,6 @@ procedure draw_packages (
 								-- CS hatching ?
 						end case;
 						
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -1012,7 +978,6 @@ procedure draw_packages (
 
 						pac_draw_package.draw_polygon (in_area, context, cutout, YES, self.frame_height);
 						
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -1078,7 +1043,6 @@ procedure draw_packages (
 						set_color_stencil (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
 						pac_draw_package.draw_line (in_area, context, line, self.frame_height);
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -1113,7 +1077,6 @@ procedure draw_packages (
 						set_color_stencil (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
 						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
-						stroke (context.cr);
 					end if;
 					
 				end if;
@@ -1162,8 +1125,7 @@ procedure draw_packages (
 									when HATCHED => null; -- CS
 								end case;
 						end case;
-						
-						stroke (context.cr);
+
 					end if;
 
 				end if;
@@ -1211,7 +1173,6 @@ procedure draw_packages (
 								-- CS hatching ?
 						end case;
 						
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -1251,7 +1212,6 @@ procedure draw_packages (
 
 						pac_draw_package.draw_polygon (in_area, context, cutout, YES, self.frame_height);
 						
-						stroke (context.cr);
 					end if;
 
 				end if;
@@ -1317,7 +1277,6 @@ procedure draw_packages (
 					move_by (line, type_point (position));
 
 					pac_draw_package.draw_line (in_area, context, line, self.frame_height);
-					stroke (context.cr);
 				end if;
 			end query_line;
 
@@ -1340,7 +1299,6 @@ procedure draw_packages (
 					move_by (arc, type_point (position));
 
 					pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
-					stroke (context.cr);
 				end if;
 			end query_arc;
 
@@ -1363,17 +1321,6 @@ procedure draw_packages (
 					move_by (circle, type_point (position));
 
 					pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
-					stroke (context.cr);
-					
-					case circle.filled is
-						when YES =>
-							-- restore line width (draw_circle has set it to zero)
-							set_line_width (context.cr, type_view_coordinate (route_restrict_line_width));
-
-						when NO =>
-							null;
-					end case;
-					
 				end if;
 
 			end query_circle;
@@ -1397,8 +1344,6 @@ procedure draw_packages (
 					move_by (polygon, type_point (position));
 
 					pac_draw_package.draw_polygon (in_area, context, polygon, YES, self.frame_height);
-
-					stroke (context.cr);
 				end if;
 
 			end query_polygon;
@@ -1424,8 +1369,6 @@ procedure draw_packages (
 					set_color_background (context.cr);
 
 					pac_draw_package.draw_polygon (in_area, context, cutout, YES, self.frame_height);
-							
-					stroke (context.cr);
 				end if;
 
 			end query_cutout;
@@ -1470,7 +1413,6 @@ procedure draw_packages (
 					move_by (line, type_point (position));
 
 					pac_draw_package.draw_line (in_area, context, line, self.frame_height);
-					stroke (context.cr);
 
 				end if;		
 				
@@ -1492,8 +1434,6 @@ procedure draw_packages (
 					move_by (arc, type_point (position));
 
 					pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
-					stroke (context.cr);
-					
 				end if;
 
 			end query_arc;
@@ -1513,9 +1453,6 @@ procedure draw_packages (
 					move_by (circle, type_point (position));
 
 					pac_draw_package.draw_circle (in_area, context, circle, NO, self.frame_height);
-
-					stroke (context.cr);
-
 				end if;
 
 			end query_circle;
@@ -1555,7 +1492,6 @@ procedure draw_packages (
 					set_line_width (context.cr, type_view_coordinate (origin_line_width));
 					pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
 					pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
-					stroke (context.cr);
 
 				end if;
 			end if;
