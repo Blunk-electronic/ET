@@ -688,7 +688,7 @@ package et_packages is
 	package type_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
 	
 	package type_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
-	-- Circles in keepout are always filled.
+	-- Circles in keepout are always filled. CS really ?
 
 	package type_keepout_polygons is new doubly_linked_lists (pac_shapes.type_polygon);
 	-- Polygons in keepout are always filled.

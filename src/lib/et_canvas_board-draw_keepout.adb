@@ -120,7 +120,6 @@ procedure draw_keepout (
 			filled	=> YES,
 			height	=> self.frame_height);
 
-		cairo.stroke (context.cr);
 	end query_polygon;
 
 	procedure query_cutout (c : in pac_keepout_cutouts.cursor) is 
@@ -135,7 +134,6 @@ procedure draw_keepout (
 			filled	=> YES,
 			height	=> self.frame_height);
 
-		cairo.stroke (context.cr);
 	end query_cutout;
 	
 	procedure query_items (
@@ -163,7 +161,6 @@ procedure draw_keepout (
 				iterate (module.board.keepout.bottom.cutouts, query_cutout'access);
 		end case;
 
-		cairo.stroke (context.cr);
 	end query_items;
 	
 begin -- draw_keepout
