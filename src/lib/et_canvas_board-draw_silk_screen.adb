@@ -73,7 +73,6 @@ procedure draw_silk_screen (
 			line		=> element (c),
 			height		=> self.frame_height);
 
-		cairo.stroke (context.cr);
 	end query_line;
 
 	procedure query_arc (c : in type_silk_arcs.cursor) is begin
@@ -85,7 +84,6 @@ procedure draw_silk_screen (
 			arc			=> element (c),
 			height		=> self.frame_height);
 
-		cairo.stroke (context.cr);		
 	end query_arc;
 
 	procedure query_circle (c : in type_silk_circles.cursor) is 
@@ -118,7 +116,6 @@ procedure draw_silk_screen (
 				end case;
 		end case;
 
-		cairo.stroke (context.cr);
 	end query_circle;
 
 	procedure query_polygon (c : in pac_silk_polygons.cursor) is 
@@ -146,7 +143,6 @@ procedure draw_silk_screen (
 				-- CS hatching ?
 		end case;
 
-		cairo.stroke (context.cr);
 	end query_polygon;
 
 	procedure query_cutout (c : in pac_silk_cutouts.cursor) is 
@@ -161,7 +157,6 @@ procedure draw_silk_screen (
 			filled	=> YES,
 			height	=> self.frame_height);
 
-		cairo.stroke (context.cr);
 	end query_cutout;
 	
 	procedure query_items (
