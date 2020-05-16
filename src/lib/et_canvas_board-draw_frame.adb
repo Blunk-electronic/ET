@@ -288,7 +288,6 @@ begin -- draw_frame
 
 		-- title block lines
 		pac_lines.iterate (self.get_frame.title_block_pcb.lines, query_line'access);
-		cairo.stroke (context.cr);
 		
 		-- draw the sector delimiters
 		draw_sector_delimiters;
