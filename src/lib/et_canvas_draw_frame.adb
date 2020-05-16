@@ -144,7 +144,6 @@ package body pac_draw_frame is
 		
 		draw_line;
 
-		cairo.stroke (context.cr);
 	end draw_border;
 
 	procedure draw_sector_delimiters is
@@ -256,9 +255,6 @@ package body pac_draw_frame is
 			draw_line;
 		end loop;
 
-		cairo.stroke (context.cr);
-
-	
 		-- COLUMN INDEX
 		y := type_distance_positive (border_width / 2);
 
