@@ -103,7 +103,6 @@ procedure draw_conductors (
 				line		=> element (c),
 				height		=> self.frame_height);
 
-			cairo.stroke (context.cr);
 		end if;
 	end query_line;
 
@@ -120,7 +119,6 @@ procedure draw_conductors (
 				arc			=> element (c),
 				height		=> self.frame_height);
 
-			cairo.stroke (context.cr);
 		end if;
 	end query_arc;
 
@@ -157,7 +155,6 @@ procedure draw_conductors (
 					end case;
 			end case;
 
-			cairo.stroke (context.cr);
 		end if;
 	end query_circle;
 
@@ -173,8 +170,6 @@ procedure draw_conductors (
 				filled	=> YES,
 				height	=> self.frame_height);
 
-			cairo.stroke (context.cr);
-			
 		end if;
 
 	end query_polygon;
@@ -192,8 +187,6 @@ procedure draw_conductors (
 -- 				polygon	=> element (c),
 -- 				filled	=> YES,
 -- 				height	=> self.frame_height);
--- 
--- 			cairo.stroke (context.cr);
 -- 			
 -- 		end if;
 	end query_polygon;
@@ -212,8 +205,6 @@ procedure draw_conductors (
 				filled	=> YES,
 				height	=> self.frame_height);
 
-			cairo.stroke (context.cr);
-			
 		end if;
 	end query_cutout;
 	
@@ -260,8 +251,6 @@ procedure draw_conductors (
 			filled		=> YES,
 			height		=> self.frame_height);
 
-		cairo.stroke (context.cr);
-
 		-- Draw a small filled circle to show the drill:
 		
 		-- Draw the drill hole. It is a filled circle with background color
@@ -278,8 +267,6 @@ procedure draw_conductors (
 			filled		=> YES,
 			height		=> self.frame_height);
 
-		cairo.stroke (context.cr);
-		
 		-- CS draw layer numbers
 		
 -- 		type type_via is new type_drill with record
