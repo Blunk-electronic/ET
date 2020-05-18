@@ -6547,7 +6547,7 @@ package body et_project is
 
 											-- Issue warning if signal layer is invalid:
 											if not signal_layer_valid (signal_layer, check_layers) then
-												signal_layer_invalid (signal_layer, check_layers);
+												signal_layer_invalid (line, signal_layer, check_layers);
 											end if;
 
 										elsif kw = pcb_rw.keyword_width then -- width 0.5
@@ -6622,7 +6622,7 @@ package body et_project is
 
 											-- Issue warning if signal layer is invalid:
 											if not signal_layer_valid (signal_layer, check_layers) then
-												signal_layer_invalid (signal_layer, check_layers);
+												signal_layer_invalid (line, signal_layer, check_layers);
 											end if;
 
 										else
@@ -6670,7 +6670,7 @@ package body et_project is
 
 											-- Issue warning if signal layer is invalid:
 											if not signal_layer_valid (signal_layer, check_layers) then
-												signal_layer_invalid (signal_layer, check_layers);
+												signal_layer_invalid (line, signal_layer, check_layers);
 											end if;
 											
 										elsif kw = pcb_rw.keyword_width then -- width 0.5
@@ -6750,7 +6750,7 @@ package body et_project is
 
 											-- Issue warning if signal layer is invalid:
 											if not signal_layer_valid (signal_layer, check_layers) then
-												signal_layer_invalid (signal_layer, check_layers);
+												signal_layer_invalid (line, signal_layer, check_layers);
 											end if;
 											
 										else
@@ -6912,7 +6912,7 @@ package body et_project is
 
 											-- Issue warning if signal layer is invalid:
 											if not signal_layer_valid (signal_layer, check_layers) then
-												signal_layer_invalid (signal_layer, check_layers);
+												signal_layer_invalid (line, signal_layer, check_layers);
 											end if;
 
 										else
@@ -6966,7 +6966,7 @@ package body et_project is
 
 										-- Issue warning if signal layer is invalid:
 										if not signal_layer_valid (signal_layer, check_layers) then
-											signal_layer_invalid (signal_layer, check_layers);
+											signal_layer_invalid (line, signal_layer, check_layers);
 										end if;
 
 									else
@@ -7052,7 +7052,7 @@ package body et_project is
 
 										-- Issue warning if signal layer is invalid:
 										if not signal_layer_valid (signal_layer, check_layers) then
-											signal_layer_invalid (signal_layer, check_layers);
+											signal_layer_invalid (line, signal_layer, check_layers);
 										end if;
 
 									else
@@ -7112,7 +7112,7 @@ package body et_project is
 
 										-- Issue warning if signal layer is invalid:
 										if not signal_layer_valid (signal_layer, check_layers) then
-											signal_layer_invalid (signal_layer, check_layers);
+											signal_layer_invalid (line, signal_layer, check_layers);
 										end if;
 										
 									elsif kw = keyword_min_width then -- min_width 0.3
@@ -7261,7 +7261,7 @@ package body et_project is
 
 										-- Issue warning if signal layer is invalid:
 										if not signal_layer_valid (signal_layer, check_layers) then
-											signal_layer_invalid (signal_layer, check_layers);
+											signal_layer_invalid (line, signal_layer, check_layers);
 										end if;
 										
 									elsif kw = et_pcb.keyword_priority then -- priority 2

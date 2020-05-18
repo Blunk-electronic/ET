@@ -483,15 +483,16 @@ package body pcb_rw is
 	end to_grid;
 
 	procedure signal_layer_invalid (
+		line			: in et_string_processing.type_fields_of_line;
 		signal_layer	: in et_pcb_stack.type_signal_layer;
 		check_layers	: in et_pcb_stack.type_layer_check) is
 		use et_string_processing;
 		use et_pcb_stack;
 	begin
-		log (WARNING, "Signal layer " & to_string (signal_layer) &
+		log (WARNING, affected_line (line) & "Signal layer " & to_string (signal_layer) &
 			 " is deeper than the deepest signal layer " &
 			 to_string (check_layers.deepest_layer) & " !" &
-			 " Objects in this layer will be ignored !", console => true);
+			 " Objects in this layer will be ignored !");
 		
 	end signal_layer_invalid;
 	
@@ -518,8 +519,8 @@ package body pcb_rw is
 			layer := to_signal_layer (f (line, place));
 
 			-- Issue warning if signal layer is invalid:
-			if not signal_layer_valid (signal_layer, check_layers) then
-				signal_layer_invalid (signal_layer, check_layers);
+			if not signal_layer_valid (layer, check_layers) then
+				signal_layer_invalid (line, layer, check_layers);
 			end if;
 
 			-- insert the layer number in the container "layers"
@@ -531,7 +532,7 @@ package body pcb_rw is
 
 			-- warn if layer already in container
 			if not inserted then
-				log (WARNING, affected_line (line) & "signal layer" & to_string (layer) 
+				log (WARNING, affected_line (line) & "signal layer " & to_string (layer) 
 					& " specified multiple times !");
 			end if;
 			
@@ -4078,10 +4079,18 @@ package body pcb_rw is
 		end process_line;
 		
 		previous_input : ada.text_io.file_type renames current_input;
+
+		use et_pcb_stack;
 		
 	begin -- read_package
 		log_indentation_up;
 		log (text => "reading package " & to_string (file_name) & " ...", level => log_threshold);
+
+		if check_layers.check = YES then
+			log (text => " with signal layer check. Deepest allowed layer is " &
+				 to_string (check_layers.deepest_layer), level => log_threshold);
+		end if;
+		
 		log_indentation_up;
 		
 		-- test if container et_pcb.packages already contains the package

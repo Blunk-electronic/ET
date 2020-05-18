@@ -153,6 +153,7 @@ package pcb_rw is
 	-- Issues a warning that the given signal layer is deeper than the deepest
 	-- signal layer of the pcb stack.
 	procedure signal_layer_invalid (
+		line			: in et_string_processing.type_fields_of_line;
 		signal_layer	: in et_pcb_stack.type_signal_layer;
 		check_layers	: in et_pcb_stack.type_layer_check);
 	
