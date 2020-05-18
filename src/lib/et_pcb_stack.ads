@@ -125,7 +125,16 @@ package et_pcb_stack is
 
 	-- Returns the index of the greatest conductor layer:
 	function greatest_layer (stack : in type_stack) return type_signal_layer;
-		
+
+	-- If conductor layers must be checked against the deepest layer of the pcb, use
+	-- this type:
+	type type_do_layer_check is (YES, NO);
+	type type_layer_check (check : type_do_layer_check) is record
+		case check is
+			when NO => null;
+			when YES => deepest_layer : type_signal_layer := type_signal_layer'first;
+		end case;
+	end record;
 	
 end et_pcb_stack;
 

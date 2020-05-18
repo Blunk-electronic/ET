@@ -38,6 +38,7 @@
 with et_string_processing;
 with et_devices;				use et_devices;
 with et_symbols;
+with et_pcb_stack;
 
 package device_rw is
 
@@ -89,7 +90,11 @@ package device_rw is
 
 	procedure read_device (
 	-- Opens the device and stores it in container et_libraries.devices.
+	-- If check_layers.check is YES, then a check will be done that tests
+	-- whether all conductor layers are are in 
+	-- range type_signal_layer'first .. deepest conductor layer.
 		file_name 		: in type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
+		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in et_string_processing.type_log_level);
 
 	

@@ -396,7 +396,11 @@ package pcb_rw is
 	
 	procedure read_package (
 	-- Opens the package file and stores the package in container et_packages.packages.
+	-- If check_layers.check is YES, then a check will be done that tests
+	-- whether all conductor layers are are in 
+	-- range type_signal_layer'first .. deepest conductor layer.
 		file_name 		: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in et_string_processing.type_log_level);
 
 	

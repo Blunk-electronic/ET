@@ -260,6 +260,7 @@ package body device_rw is
 	procedure read_device (
 	-- Opens the device and stores it in container devices.
 		file_name 		: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
+		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_symbols;
@@ -373,8 +374,9 @@ package body device_rw is
 				raise constraint_error;
 			end if;
 
-			-- read package model (like libraries/packages/__#__#lbr#bel_ic_pretty#S_SO14.pac)
-			pcb_rw.read_package (variant.package_model, log_threshold + 1);
+			-- Read package model (like libraries/packages/__#__#lbr#bel_ic_pretty#S_SO14.pac)
+			-- and do a conductor layer check if required.
+			pcb_rw.read_package (variant.package_model, check_layers, log_threshold + 1);
 
 			-- clean up for next variant
 			variant := (others => <>);

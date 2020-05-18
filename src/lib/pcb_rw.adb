@@ -1969,8 +1969,8 @@ package body pcb_rw is
 
 	
 	procedure read_package (
-	-- Opens the package file and stores the package in container et_packages.packages.
 		file_name 		: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages;

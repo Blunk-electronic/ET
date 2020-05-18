@@ -2142,7 +2142,7 @@ package body et_project is
 			
 		file_handle : ada.text_io.file_type;
 		use type_modules;
-		module_cursor : type_modules.cursor;
+		module_cursor : type_modules.cursor; -- points to the module being read
 		module_inserted : boolean;
 
 		-- The line read from the the module file:
@@ -3097,6 +3097,7 @@ package body et_project is
 					use et_symbols;
 					use et_devices;
 					use et_packages;
+					use et_pcb_stack;
 					
 					device_cursor : et_schematic.type_devices.cursor;
 					inserted : boolean;
@@ -3216,8 +3217,12 @@ package body et_project is
 						raise constraint_error;
 					end if;
 
-					-- read the device model (like ../libraries/transistor/pnp.dev)
-					read_device (device.model, log_threshold + 2);
+					-- Read the device model (like ../libraries/transistor/pnp.dev) and
+					-- check the conductor layers:
+					read_device (
+						file_name		=> device.model,
+						check_layers	=> (check => YES, deepest_layer => deepest_conductor_layer (module_cursor)),
+						log_threshold	=> log_threshold + 2);
 
 					if device.appearance = PCB then
 						conventions.validate_partcode (
