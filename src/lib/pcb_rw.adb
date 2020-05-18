@@ -482,10 +482,23 @@ package body pcb_rw is
 		return grid;
 	end to_grid;
 
+	procedure signal_layer_invalid (
+		signal_layer	: in et_pcb_stack.type_signal_layer;
+		check_layers	: in et_pcb_stack.type_layer_check) is
+		use et_string_processing;
+		use et_pcb_stack;
+	begin
+		log (WARNING, "Signal layer " & to_string (signal_layer) &
+			 " is deeper than the deepest signal layer " &
+			 to_string (check_layers.deepest_layer) & " !" &
+			 " Objects in this layer will be ignored !", console => true);
+		
+	end signal_layer_invalid;
+	
+	
 	function to_layers (
-	-- Converts a line like "layers 1 4 17" to a set of signal layers.
-	-- Issues warning if a layer number occurs more than once.
-		line : in et_string_processing.type_fields_of_line) -- layers 1 3 17
+		line			: in et_string_processing.type_fields_of_line; -- layers 1 3 17
+		check_layers	: in et_pcb_stack.type_layer_check)
 		return et_pcb_stack.type_signal_layers.set is
 
 		use et_pcb;
@@ -503,6 +516,11 @@ package body pcb_rw is
 
 			-- get the layer number from current place
 			layer := to_signal_layer (f (line, place));
+
+			-- Issue warning if signal layer is invalid:
+			if not signal_layer_valid (signal_layer, check_layers) then
+				signal_layer_invalid (signal_layer, check_layers);
+			end if;
 
 			-- insert the layer number in the container "layers"
 			insert (
@@ -2010,7 +2028,7 @@ package body pcb_rw is
 		pac_technology			: type_assembly_technology := assembly_technology_default;
 		
 		signal_layers			: et_pcb_stack.type_signal_layers.set;
-
+	
 		pac_text				: et_packages.type_text_with_content;
 		pac_text_placeholder	: et_packages.type_text_placeholder;
 
@@ -3492,7 +3510,7 @@ package body pcb_rw is
 											
 											-- there must be at least two fields:
 											expect_field_count (line => line, count_expected => 2, warn => false);
-											signal_layers := to_layers (line);
+											signal_layers := to_layers (line, check_layers);
 											
 										else
 											invalid_keyword (kw);
@@ -3552,7 +3570,7 @@ package body pcb_rw is
 											-- there must be at least two fields:
 											expect_field_count (line => line, count_expected => 2, warn => false);
 
-											signal_layers := to_layers (line);
+											signal_layers := to_layers (line, check_layers);
 
 										else
 											invalid_keyword (kw);
@@ -3691,7 +3709,7 @@ package body pcb_rw is
 											-- there must be at least two fields:
 											expect_field_count (line => line, count_expected => 2, warn => false);
 
-											signal_layers := to_layers (line);
+											signal_layers := to_layers (line, check_layers);
 											
 										else
 											invalid_keyword (kw);
@@ -3770,7 +3788,7 @@ package body pcb_rw is
 
 										-- there must be at least two fields:
 										expect_field_count (line => line, count_expected => 2, warn => false);
-										signal_layers := to_layers (line);
+										signal_layers := to_layers (line, check_layers);
 
 									else
 										invalid_keyword (kw);
@@ -3886,7 +3904,7 @@ package body pcb_rw is
 
 										-- there must be at least two fields:
 										expect_field_count (line => line, count_expected => 2, warn => false);
-										signal_layers := to_layers (line);
+										signal_layers := to_layers (line, check_layers);
 
 									else
 										invalid_keyword (kw);

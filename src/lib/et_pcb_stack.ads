@@ -135,6 +135,15 @@ package et_pcb_stack is
 			when YES => deepest_layer : type_signal_layer := type_signal_layer'first;
 		end case;
 	end record;
+
+	-- If layer check required, this function returns true if the given layer id
+	-- is less or equal the deepest layer used (given by argument check_layers).
+	-- Returns false otherwise. 
+	-- If no layer check requested, returns true.		
+	function signal_layer_valid (
+		signal_layer 	: in et_pcb_stack.type_signal_layer;
+		check_layers	: in et_pcb_stack.type_layer_check)
+		return boolean;
 	
 end et_pcb_stack;
 

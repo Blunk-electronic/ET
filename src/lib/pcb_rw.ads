@@ -150,10 +150,19 @@ package pcb_rw is
 		from : in positive)
 		return et_pcb_coordinates.geometry.type_grid;
 
+	-- Issues a warning that the given signal layer is deeper than the deepest
+	-- signal layer of the pcb stack.
+	procedure signal_layer_invalid (
+		signal_layer	: in et_pcb_stack.type_signal_layer;
+		check_layers	: in et_pcb_stack.type_layer_check);
+	
 	function to_layers (
 	-- Converts a line like "layers 1 4 17" to a set of signal layers.
 	-- Issues warning if a layer number occurs more than once.
-		line : in et_string_processing.type_fields_of_line) -- layers 1 3 17
+	-- If layer check requested, issues warning if a layer id is greater than the 
+	-- deepest layer used (given in argument check_layer).
+		line 			: in et_string_processing.type_fields_of_line; -- layers 1 3 17
+		check_layers	: in et_pcb_stack.type_layer_check)
 		return et_pcb_stack.type_signal_layers.set;	
 	
 

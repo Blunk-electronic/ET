@@ -2621,6 +2621,12 @@ package body et_project is
 		dielectric_found : boolean := false;
 		board_layer : et_pcb_stack.type_layer;
 		board_layers : et_pcb_stack.package_layers.vector;
+
+		-- Whever a signal layer id is to be read, it must be checked against the
+		-- deepest signal layer used. The variable check_layers controls this check.
+		-- As preparation we enable the check by setting the "check" to YES.
+		-- When section BOARD_LAYER_STACK closes, we also assign the deepest layer used.
+		check_layers : et_pcb_stack.type_layer_check (check => et_pcb_stack.YES);
 		
 -- 		board_track_circle : et_pcb.type_copper_circle;
 		board_text_copper : et_pcb.type_text;
@@ -4801,6 +4807,11 @@ package body et_project is
 									container	=> modules,
 									position	=> module_cursor,
 									process		=> add_board_layer'access);
+
+								-- Now that the board layer stack is complete,
+								-- we assign the deepest layer to check_layers.
+								check_layers.deepest_layer := 
+									et_pcb_stack.greatest_layer (element (module_cursor).board.stack);
 								
 							when others => invalid_section;
 						end case;
@@ -6534,6 +6545,11 @@ package body et_project is
 											expect_field_count (line, 2);
 											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
+											-- Issue warning if signal layer is invalid:
+											if not signal_layer_valid (signal_layer, check_layers) then
+												signal_layer_invalid (signal_layer, check_layers);
+											end if;
+
 										elsif kw = pcb_rw.keyword_width then -- width 0.5
 											expect_field_count (line, 2);
 											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
@@ -6582,7 +6598,7 @@ package body et_project is
 											-- there must be at least two fields:
 											expect_field_count (line => line, count_expected => 2, warn => false);
 
-											signal_layers := to_layers (line);
+											signal_layers := to_layers (line, check_layers);
 										else
 											invalid_keyword (kw);
 										end if;
@@ -6603,6 +6619,12 @@ package body et_project is
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
 											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+
+											-- Issue warning if signal layer is invalid:
+											if not signal_layer_valid (signal_layer, check_layers) then
+												signal_layer_invalid (signal_layer, check_layers);
+											end if;
+
 										else
 											invalid_keyword (kw);
 										end if;
@@ -6646,6 +6668,11 @@ package body et_project is
 											expect_field_count (line, 2);
 											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
+											-- Issue warning if signal layer is invalid:
+											if not signal_layer_valid (signal_layer, check_layers) then
+												signal_layer_invalid (signal_layer, check_layers);
+											end if;
+											
 										elsif kw = pcb_rw.keyword_width then -- width 0.5
 											expect_field_count (line, 2);
 											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
@@ -6696,7 +6723,7 @@ package body et_project is
 											-- there must be at least two fields:
 											expect_field_count (line => line, count_expected => 2, warn => false);
 
-											signal_layers := to_layers (line);
+											signal_layers := to_layers (line, check_layers);
 
 										else
 											invalid_keyword (kw);
@@ -6720,6 +6747,12 @@ package body et_project is
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
 											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+
+											-- Issue warning if signal layer is invalid:
+											if not signal_layer_valid (signal_layer, check_layers) then
+												signal_layer_invalid (signal_layer, check_layers);
+											end if;
+											
 										else
 											invalid_keyword (kw);
 										end if;
@@ -6830,7 +6863,7 @@ package body et_project is
 											-- there must be at least two fields:
 											expect_field_count (line => line, count_expected => 2, warn => false);
 
-											signal_layers := to_layers (line);
+											signal_layers := to_layers (line, check_layers);
 											
 										else
 											invalid_keyword (kw);
@@ -6876,6 +6909,12 @@ package body et_project is
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
 											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+
+											-- Issue warning if signal layer is invalid:
+											if not signal_layer_valid (signal_layer, check_layers) then
+												signal_layer_invalid (signal_layer, check_layers);
+											end if;
+
 										else
 											invalid_keyword (kw);
 										end if;
@@ -6924,6 +6963,11 @@ package body et_project is
 									elsif kw = keyword_layer then -- layer 2
 										expect_field_count (line, 2);
 										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+
+										-- Issue warning if signal layer is invalid:
+										if not signal_layer_valid (signal_layer, check_layers) then
+											signal_layer_invalid (signal_layer, check_layers);
+										end if;
 
 									else
 										invalid_keyword (kw);
@@ -6978,7 +7022,7 @@ package body et_project is
 
 										-- there must be at least two fields:
 										expect_field_count (line => line, count_expected => 2, warn => false);
-										signal_layers := to_layers (line);
+										signal_layers := to_layers (line, check_layers);
 
 									else
 										invalid_keyword (kw);
@@ -7005,6 +7049,11 @@ package body et_project is
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
 										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+
+										-- Issue warning if signal layer is invalid:
+										if not signal_layer_valid (signal_layer, check_layers) then
+											signal_layer_invalid (signal_layer, check_layers);
+										end if;
 
 									else
 										invalid_keyword (kw);
@@ -7061,6 +7110,11 @@ package body et_project is
 										expect_field_count (line, 2);
 										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
+										-- Issue warning if signal layer is invalid:
+										if not signal_layer_valid (signal_layer, check_layers) then
+											signal_layer_invalid (signal_layer, check_layers);
+										end if;
+										
 									elsif kw = keyword_min_width then -- min_width 0.3
 										expect_field_count (line, 2);
 										polygon_width_min := to_distance (f (line, 2));
@@ -7157,7 +7211,7 @@ package body et_project is
 
 										-- there must be at least two fields:
 										expect_field_count (line => line, count_expected => 2, warn => false);
-										signal_layers := to_layers (line);
+										signal_layers := to_layers (line, check_layers);
 
 									else
 										invalid_keyword (kw);
@@ -7205,6 +7259,11 @@ package body et_project is
 										expect_field_count (line, 2);
 										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
+										-- Issue warning if signal layer is invalid:
+										if not signal_layer_valid (signal_layer, check_layers) then
+											signal_layer_invalid (signal_layer, check_layers);
+										end if;
+										
 									elsif kw = et_pcb.keyword_priority then -- priority 2
 										expect_field_count (line, 2);
 										polygon_priority := et_pcb.to_polygon_priority (f (line, 2));

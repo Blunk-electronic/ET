@@ -220,7 +220,26 @@ package body et_pcb_stack is
 		return stack.layers.last_index + 1;
 	end greatest_layer;
 
-	
+	function signal_layer_valid (
+		signal_layer 	: in et_pcb_stack.type_signal_layer;
+		check_layers	: in et_pcb_stack.type_layer_check)
+		return boolean is 
+		use et_pcb_stack;
+		result : boolean := false;
+	begin
+		if check_layers.check = YES then
+			if signal_layer <= check_layers.deepest_layer then
+				result := true;
+			else
+				result := false;
+			end if;
+		else 
+			result := true; -- no layer check requested
+		end if;
+
+		return result;
+	end signal_layer_valid;	
+		
 end et_pcb_stack;
 
 -- Soli Deo Gloria
