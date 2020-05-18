@@ -4832,7 +4832,7 @@ package body et_project is
 								-- Now that the board layer stack is complete,
 								-- we assign the deepest layer to check_layers.
 								check_layers.deepest_layer := 
-									et_pcb_stack.greatest_layer (element (module_cursor).board.stack);
+									et_pcb_stack.deepest_layer (element (module_cursor).board.stack);
 								
 							when others => invalid_section;
 						end case;
@@ -9283,7 +9283,7 @@ package body et_project is
 		module	: in type_modules.cursor) -- the module like motor_driver
 		return et_pcb_stack.type_signal_layer is
 	begin
-		return et_pcb_stack.greatest_layer (type_modules.element (module).board.stack);
+		return et_pcb_stack.deepest_layer (type_modules.element (module).board.stack);
 	end deepest_conductor_layer;
 
 end et_project;
