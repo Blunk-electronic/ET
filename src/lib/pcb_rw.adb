@@ -513,6 +513,11 @@ package body pcb_rw is
 		layer 		: type_signal_layer;
 		place 		: positive := 2; -- we start reading the layer numbers with field 2
 	begin
+		-- CS test whether field 2 is something like [1,3,5-9]. If yes then
+		-- call function et_pcb_stack.to_layers to get a set of layers.
+		-- Then iterate layers and validate each of them.
+		-- Then insert them in container "layers".
+		
 		while place <= positive (field_count (line)) loop
 
 			-- get the layer number from current place

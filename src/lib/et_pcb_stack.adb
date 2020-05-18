@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -108,7 +108,6 @@ package body et_pcb_stack is
 	end;
 
 	function to_layers (layers : in string) return type_signal_layers.set is
-	-- converts a string like '[1,3,5-9]' to a set of signal layers.
 		use type_signal_layers;
 		layer_set : type_signal_layers.set; -- to be returned
 		char : character;

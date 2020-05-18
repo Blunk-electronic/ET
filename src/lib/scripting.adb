@@ -2429,6 +2429,14 @@ package body scripting is
 					case fields is
 						when 10 =>
 							-- board led_driver draw route_restrict [1,3,5-9] line 10 10 60 10
+							-- CS board led_driver draw route_restrict 3 line 10 10 60 10
+							
+							-- CS test whether field 5 is a single layer id. If yes then
+							-- call function et_pcb_stack.to_signal_layer to get the id-type.
+							-- Then validate signal layer.
+							-- Then add the single signal layer to a set.
+							-- Do so with all objects in route and via restrict.
+							
 							board_ops.draw_route_restrict_line (
 								module_name 	=> module,
 								line			=> (
