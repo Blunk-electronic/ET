@@ -665,7 +665,12 @@ procedure draw_packages (
 
 						set_color_keepout (context.cr, f);
 
-						pac_draw_package.draw_circle (in_area, context, circle, YES, self.frame_height);
+						if circle.filled = NO then
+							set_line_width (context.cr, type_view_coordinate (keepout_line_width));
+						end if;
+						
+						pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+						
 					end if;
 
 				end if;

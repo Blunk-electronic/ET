@@ -750,7 +750,7 @@ package body pcb_rw is
 
 	
 	procedure read_board_circle (line : et_string_processing.type_fields_of_line) is
-	-- Reads start and end point of the board_circle. If the statement is invalid then an error issued.
+	-- Reads center and radius of the board_circle. If the statement is invalid then an error issued.
 		kw : string := f (line, 1);
 		use et_packages.pac_shapes;
 	begin
@@ -771,7 +771,7 @@ package body pcb_rw is
 	end;
 
 	function read_board_circle (line : et_string_processing.type_fields_of_line) return boolean is
-	-- Reads start and end point of the board_circle. If the statement is invalid then it returns a false.
+	-- Reads center and radius of the board_circle. If the statement is invalid then it returns false.
 		kw : string := f (line, 1);
 		use et_packages.pac_shapes;
 	begin
@@ -3606,7 +3606,20 @@ package body pcb_rw is
 											end;
 										end if;
 										
-									when SEC_KEEPOUT => read_board_circle (line);
+									when SEC_KEEPOUT => 
+										if not read_board_circle (line) then
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_filled then -- filled yes/no
+													expect_field_count (line, 2);													
+													board_filled := to_filled (f (line, 2));
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+										end if;
 										
 									when SEC_COPPER => -- NON-ELECTRIC !!
 										if not read_board_circle (line) then

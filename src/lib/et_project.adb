@@ -6785,7 +6785,20 @@ package body et_project is
 
 										end if;
 										
-									when SEC_KEEPOUT => read_board_circle (line);
+									when SEC_KEEPOUT =>
+										if not read_board_circle (line) then
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_filled then -- filled yes/no
+													expect_field_count (line, 2);													
+													board_filled := to_filled (f (line, 2));
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+										end if;
 										
 									when others => invalid_section;
 

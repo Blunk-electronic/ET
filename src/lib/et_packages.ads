@@ -495,6 +495,7 @@ package et_packages is
 
 	-- This circle type is used by keepout, route restrict, via restrict.
 	-- The fill style is always solid, hence no discrimintant for fiil style.
+	-- When drawing, for the width of the border a fixed value will be applied.
 	type type_fillable_circle_solid is new type_circle with record
 		filled : type_filled;
 	end record;
@@ -688,7 +689,6 @@ package et_packages is
 	package type_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
 	
 	package type_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
-	-- Circles in keepout are always filled. CS really ?
 
 	package type_keepout_polygons is new doubly_linked_lists (pac_shapes.type_polygon);
 	-- Polygons in keepout are always filled.
