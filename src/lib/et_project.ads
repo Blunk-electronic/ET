@@ -565,8 +565,8 @@ package et_project is
 -- 		device	: in et_libraries.type_name; -- IC40
 -- 		return et_libraries.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 
-	-- Returns the index of the greatest conductor layer of the given module:
-	function greatest_conductor_layer (
+	-- Returns the index of the deepest conductor layer of the given module:
+	function deepest_conductor_layer (
 		module	: in type_modules.cursor) -- the module like motor_driver
 		return et_pcb_stack.type_signal_layer;
 	

@@ -82,9 +82,9 @@ procedure draw_conductors (
 	-- The top conductor layer 1 is always there:
 	top_layer		: constant type_signal_layer := type_signal_layer'first;
 
-	-- The greates conductor layer towards bottom is definded by the layer stack:
+	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := 
-		greatest_conductor_layer (et_canvas_schematic.current_active_module);
+		deepest_conductor_layer (et_canvas_schematic.current_active_module);
 
 	
 	-- The layer being drawn:

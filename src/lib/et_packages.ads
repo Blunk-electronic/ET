@@ -677,7 +677,7 @@ package et_packages is
 	
 -- KEEPOUT
 
-	-- GUI relevant only: The line width of contours:
+	-- GUI relevant only: The line width of keepout:
 	keepout_line_width : constant type_general_line_width := line_width_min;
 
 	type type_keepout_line is new type_line with null record;

@@ -9224,12 +9224,12 @@ package body et_project is
 		return cursor;
 	end alternative_submodule;
 	
-	function greatest_conductor_layer (
+	function deepest_conductor_layer (
 		module	: in type_modules.cursor) -- the module like motor_driver
 		return et_pcb_stack.type_signal_layer is
 	begin
 		return et_pcb_stack.greatest_layer (type_modules.element (module).board.stack);
-	end greatest_conductor_layer;
+	end deepest_conductor_layer;
 
 end et_project;
 	
