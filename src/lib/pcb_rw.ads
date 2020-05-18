@@ -185,6 +185,7 @@ package pcb_rw is
 	board_circle : type_board_circle;
 	procedure board_reset_circle;
 
+
 	
 	procedure read_board_line (line : et_string_processing.type_fields_of_line);
 	-- Reads start and end point of the board_line. If the statement is invalid then an error issued.
@@ -217,8 +218,15 @@ package pcb_rw is
 
 	
 	type type_polygon is new et_packages.pac_shapes.type_polygon_base with null record;
-	polygon : type_polygon;
 
+	procedure check_outline (
+		polygon			: in type_polygon;
+		log_threshold	: in et_string_processing.type_log_level);
+	-- Ensures that the polygon outline is properly closed. Issues a warning
+	-- if it detects gaps.
+
+	polygon : type_polygon;
+	
 	-- Increments polygon.segments_total by 1:
 	procedure increment_segment_count;
 

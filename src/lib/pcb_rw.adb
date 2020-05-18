@@ -595,26 +595,6 @@ package body pcb_rw is
 
 	procedure board_reset_circle is begin board_circle := (others => <>); end;
 
-
-	procedure check_outline (
-		polygon			: in type_polygon;
-		log_threshold	: in et_string_processing.type_log_level) is
-		use et_string_processing;
-		use et_packages.pac_shapes;
-		status : constant type_polygon_status := is_closed (polygon);
-	begin
-		log (text => "checking polygon outline ...", level => log_threshold);
-		log_indentation_up;
-		
-		if status.closed then
-			null;
-		else
-			log (WARNING, "Polygon not properly closed at:" & to_string (status.gaps));
-			-- CS: write implications and dangers !
-		end if;
-
-		log_indentation_down;
-	end check_outline;
 	
 	procedure read_board_line (line : et_string_processing.type_fields_of_line) is
 	-- Reads start and end point of the board_line. If the statement is invalid then an error issued.
@@ -796,6 +776,26 @@ package body pcb_rw is
 		end if;
 	end;
 
+
+	procedure check_outline (
+		polygon			: in type_polygon;
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_string_processing;
+		use et_packages.pac_shapes;
+		status : constant type_polygon_status := is_closed (polygon);
+	begin
+		log (text => "checking polygon outline ...", level => log_threshold);
+		log_indentation_up;
+		
+		if status.closed then
+			null;
+		else
+			log (WARNING, "Polygon not properly closed at:" & to_string (status.gaps));
+			-- CS: write implications and dangers !
+		end if;
+
+		log_indentation_down;
+	end check_outline;
 	
 	procedure increment_segment_count is 
 		use et_packages.pac_shapes;

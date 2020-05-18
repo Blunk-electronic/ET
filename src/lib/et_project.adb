@@ -3702,7 +3702,7 @@ package body et_project is
 										
 								end case;
 								
-							when BOTTOM => null;
+							when BOTTOM =>
 								case layer is
 									when SILK_SCREEN =>
 										append_silk_polygon_bottom;
@@ -4762,8 +4762,9 @@ package body et_project is
 
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_CUTOUT_ZONE => null;
-							when SEC_FILL_ZONE => null;
+							when SEC_FILL_ZONE => check_outline (polygon, log_threshold + 1);
+							when SEC_CUTOUT_ZONE => check_outline (polygon, log_threshold + 1);
+							
 							when others => invalid_section;
 						end case;
 					
