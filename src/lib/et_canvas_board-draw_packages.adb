@@ -50,6 +50,7 @@ with et_packages;				use et_packages;
 use et_pcb_coordinates.geometry;
 
 with et_pcb;
+with et_pcb_stack;				use et_pcb_stack;
 
 with et_display.board;			use et_display.board;
 with et_colors;					use et_colors;
@@ -64,6 +65,11 @@ procedure draw_packages (
 	context : in type_draw_context;
 	face	: in type_face) is
 
+	-- The deepest conductor layer towards bottom is defined by the layer stack:
+	bottom_layer : constant type_signal_layer := 
+		deepest_conductor_layer (et_canvas_schematic.current_active_module);
+
+	
 	procedure draw_package (
 		model			: in et_packages.type_package_model_file.bounded_string;
 		position		: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
@@ -81,6 +87,9 @@ procedure draw_packages (
 			end if;
 		end flipped;
 
+		-- Destination is the face on which an object is to be drawn.
+		-- (We can not assume that all objects of a package are on the same side
+		-- of the board.)
 		destination : type_face;
 		type type_destination_inversed is (INVERSE, NOT_INVERSE);
 
@@ -1268,8 +1277,7 @@ procedure draw_packages (
 			begin
 				if flipped then 
 					mirror (line, Y);
-
-					-- cS mirror layers
+					mirror (line.layers, bottom_layer);
 				end if;
 
 				if route_restrict_layer_enabled (line.layers) then
@@ -1290,8 +1298,7 @@ procedure draw_packages (
 			begin
 				if flipped then 
 					mirror (arc, Y); 
-
-					-- CS mirror layers
+					mirror (arc.layers, bottom_layer);
 				end if;
 
 				if route_restrict_layer_enabled (arc.layers) then
@@ -1312,8 +1319,7 @@ procedure draw_packages (
 			begin
 				if flipped then 
 					mirror (circle, Y);
-
-					-- CS mirror layers
+					mirror (circle.layers, bottom_layer);
 				end if;
 
 				if route_restrict_layer_enabled (circle.layers) then
@@ -1335,8 +1341,7 @@ procedure draw_packages (
 			begin
 				if flipped then 
 					mirror (polygon, Y);
-
-					-- CS mirror layers
+					mirror (polygon.layers, bottom_layer);
 				end if;
 
 				if route_restrict_layer_enabled (polygon.layers) then
@@ -1358,8 +1363,7 @@ procedure draw_packages (
 			begin
 				if flipped then 
 					mirror (cutout, Y); 
-
-					-- CS mirror layers
+					mirror (cutout.layers, bottom_layer);
 				end if;
 
 				if route_restrict_layer_enabled (cutout.layers) then
@@ -1394,6 +1398,139 @@ procedure draw_packages (
 			element (package_cursor).route_restrict.cutouts.iterate (query_cutout'access);
 
 		end draw_route_restrict;
+
+		-- VIA RESTRICT
+		procedure draw_via_restrict is 
+
+			-- LINES
+			use type_via_restrict_lines;
+			
+			procedure query_line (c : in type_via_restrict_lines.cursor) is
+				line : type_via_restrict_line := element (c);
+			begin
+				if flipped then 
+					mirror (line, Y);
+					mirror (line.layers, bottom_layer);
+				end if;
+
+				if via_restrict_layer_enabled (line.layers) then
+					
+					rotate_by (line, rot (position));
+					move_by (line, type_point (position));
+
+					pac_draw_package.draw_line (in_area, context, line, self.frame_height);
+				end if;
+			end query_line;
+
+			
+			-- ARCS
+			use type_via_restrict_arcs;
+			
+			procedure query_arc (c : in type_via_restrict_arcs.cursor) is 
+				arc : type_via_restrict_arc := element (c);
+			begin
+				if flipped then 
+					mirror (arc, Y); 
+					mirror (arc.layers, bottom_layer);
+				end if;
+
+				if via_restrict_layer_enabled (arc.layers) then
+					
+					rotate_by (arc, rot (position));
+					move_by (arc, type_point (position));
+
+					pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
+				end if;
+			end query_arc;
+
+			
+			-- CIRCLES
+			use type_via_restrict_circles;
+			
+			procedure query_circle (c : in type_via_restrict_circles.cursor) is 
+				circle : type_via_restrict_circle := element (c);
+			begin
+				if flipped then 
+					mirror (circle, Y);
+					mirror (circle.layers, bottom_layer);
+				end if;
+
+				if via_restrict_layer_enabled (circle.layers) then
+				
+					rotate_by (circle, rot (position));
+					move_by (circle, type_point (position));
+
+					pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+				end if;
+
+			end query_circle;
+
+			
+			-- POLYGONS
+			use type_via_restrict_polygons;
+			
+			procedure query_polygon (c : in type_via_restrict_polygons.cursor) is
+				polygon : et_packages.type_via_restrict_polygon := element (c);
+			begin
+				if flipped then 
+					mirror (polygon, Y);
+					mirror (polygon.layers, bottom_layer);
+				end if;
+
+				if via_restrict_layer_enabled (polygon.layers) then
+					
+					rotate_by (polygon, rot (position));
+					move_by (polygon, type_point (position));
+
+					pac_draw_package.draw_polygon (in_area, context, polygon, YES, self.frame_height);
+				end if;
+
+			end query_polygon;
+
+
+			-- CUTOUTS
+			use pac_via_restrict_cutouts;
+		
+			procedure query_cutout (c : in pac_via_restrict_cutouts.cursor) is
+				cutout : et_packages.type_via_restrict_cutout := element (c);
+			begin
+				if flipped then 
+					mirror (cutout, Y); 
+					mirror (cutout.layers, bottom_layer);
+				end if;
+
+				if via_restrict_layer_enabled (cutout.layers) then
+					
+					rotate_by (cutout, rot (position));
+					move_by (cutout, type_point (position));
+
+					set_color_background (context.cr);
+
+					pac_draw_package.draw_polygon (in_area, context, cutout, YES, self.frame_height);
+				end if;
+
+			end query_cutout;
+			
+		begin -- draw_via_restrict
+			set_color_via_restrict (context.cr);
+			set_line_width (context.cr, type_view_coordinate (via_restrict_line_width));
+			
+			-- lines
+			element (package_cursor).via_restrict.lines.iterate (query_line'access);
+
+			-- arcs
+			element (package_cursor).via_restrict.arcs.iterate (query_arc'access);
+
+			-- circles
+			element (package_cursor).via_restrict.circles.iterate (query_circle'access);
+
+			-- polygons
+			element (package_cursor).via_restrict.polygons.iterate (query_polygon'access);
+
+			-- cutouts
+			element (package_cursor).via_restrict.cutouts.iterate (query_cutout'access);
+
+		end draw_via_restrict;
 
 		
 		-- PCB CONTOUR / OUTLINE
@@ -1507,7 +1644,7 @@ procedure draw_packages (
 		draw_stop_mask; -- non-terminal related
 		draw_stencil; -- non-terminal related
 		draw_route_restrict;
-		-- CS draw_via_restrict
+		draw_via_restrict;
 		draw_pcb_contour;
 		
 		-- The origin is drawn last so that it obscures other elements of the package:

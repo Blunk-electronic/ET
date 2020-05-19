@@ -238,7 +238,16 @@ package body et_pcb_stack is
 
 		return result;
 	end signal_layer_valid;	
-		
+
+	procedure mirror (
+		signal_layers	: in out type_signal_layers.set;
+		deepest_layer	: in type_signal_layer) is
+
+	begin
+		-- CS
+		null;
+	end mirror;
+	
 end et_pcb_stack;
 
 -- Soli Deo Gloria

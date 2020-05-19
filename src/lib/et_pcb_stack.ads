@@ -144,6 +144,14 @@ package et_pcb_stack is
 		signal_layer 	: in et_pcb_stack.type_signal_layer;
 		check_layers	: in et_pcb_stack.type_layer_check)
 		return boolean;
+
+	-- Mirrors the given layers based on the deepest layer used. The deepest layer is the bottom layer.
+	-- Example: signal_layers is a set: 1, 2, 4. The bottom layer id is 4 (an 4-layer board).
+	-- The result is: 4, 3, 1. 
+	procedure mirror (
+		signal_layers	: in out type_signal_layers.set;
+		deepest_layer	: in type_signal_layer);
+
 	
 end et_pcb_stack;
 
