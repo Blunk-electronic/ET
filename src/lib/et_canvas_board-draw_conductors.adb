@@ -170,6 +170,13 @@ procedure draw_conductors (
 				filled	=> YES,
 				height	=> self.frame_height);
 
+-- CS
+-- 			easing : type_easing;
+-- 		width_min		: type_track_width; -- the minimum width
+-- 		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
+-- 		layer 			: type_signal_layer;
+-- 		priority_level	: type_polygon_priority := type_polygon_priority'first;
+			
 		end if;
 
 	end query_polygon;
@@ -188,6 +195,14 @@ procedure draw_conductors (
 -- 				filled	=> YES,
 -- 				height	=> self.frame_height);
 -- 			
+
+-- 		easing : type_easing;
+-- 		hatching : type_hatching;
+-- 		width_min		: type_track_width; -- the minimum width
+-- 		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
+-- 		layer 			: type_signal_layer;
+-- 		priority_level	: type_polygon_priority := type_polygon_priority'first;
+		
 -- 		end if;
 	end query_polygon;
 

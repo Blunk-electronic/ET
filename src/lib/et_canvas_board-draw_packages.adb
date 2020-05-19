@@ -1266,6 +1266,7 @@ procedure draw_packages (
 
 		end draw_stencil;
 
+		
 		-- ROUTE RESTRICT
 		procedure draw_route_restrict is 
 
@@ -1399,6 +1400,7 @@ procedure draw_packages (
 
 		end draw_route_restrict;
 
+		
 		-- VIA RESTRICT
 		procedure draw_via_restrict is 
 
@@ -1610,6 +1612,307 @@ procedure draw_packages (
 
 		end draw_pcb_contour;
 
+
+		-- CONDUCTORS (NON-TERMINAL RELATED, NON-ELECTRICAL !)
+		procedure draw_conductors is 
+
+			-- Translates face (TOP/BOTTOM) to conductor layer 1/bottom_layer:
+			function face_to_layer (f : in type_face) return type_signal_layer is begin
+				case f is
+					when TOP => return type_signal_layer'first;
+					when BOTTOM => return bottom_layer;
+				end case;
+			end face_to_layer;
+
+			
+			-- LINES
+			use type_copper_lines;
+			line : type_copper_line;
+
+			procedure draw_line (f : in type_face) is
+				ly : constant type_signal_layer := face_to_layer (f);
+			begin
+				if conductor_enabled (ly) then
+				
+					if f = face then
+						if flipped then mirror (line, Y); end if;
+						
+						rotate_by (line, rot (position));
+						move_by (line, type_point (position));
+
+						set_color_conductor (context.cr, ly);
+						set_line_width (context.cr, type_view_coordinate (line.width));
+						pac_draw_package.draw_line (in_area, context, line, self.frame_height);
+					end if;
+
+				end if;
+			end draw_line;
+			
+			procedure query_line_top (c : in type_copper_lines.cursor) is begin
+				line := element (c);
+				set_face;
+				draw_line (destination);
+			end query_line_top;
+
+			procedure query_line_bottom (c : in type_copper_lines.cursor) is begin
+				line := element (c);
+				set_face (INVERSE);
+				draw_line (destination);
+			end query_line_bottom;
+
+			
+			-- ARCS
+			use type_copper_arcs;
+			arc : type_copper_arc;
+
+			procedure draw_arc (f : in type_face) is
+				ly : constant type_signal_layer := face_to_layer (f);
+			begin
+				if conductor_enabled (ly) then
+					
+					if f = face then
+						if flipped then mirror (arc, Y); end if;
+						
+						rotate_by (arc, rot (position));
+						move_by (arc, type_point (position));
+
+						set_color_conductor (context.cr, ly);
+						set_line_width (context.cr, type_view_coordinate (arc.width));
+						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
+					end if;
+					
+				end if;
+			end draw_arc;
+			
+			procedure query_arc_top (c : in type_copper_arcs.cursor) is begin
+				arc := element (c);
+				set_face;
+				draw_arc (destination);
+			end query_arc_top;
+
+			procedure query_arc_bottom (c : in type_copper_arcs.cursor) is begin
+				arc := element (c);
+				set_face (INVERSE);
+				draw_arc (destination);
+			end query_arc_bottom;
+
+			
+			-- CIRCLES
+			use pac_copper_circles;
+
+			procedure draw_circle (
+				circle	: in out type_copper_circle;
+				f 		: in type_face) is
+				ly : constant type_signal_layer := face_to_layer (f);
+			begin
+				if conductor_enabled (ly) then
+					
+					if f = face then
+						if flipped then mirror (circle, Y); end if;
+						
+						rotate_by (circle, rot (position));
+						move_by (circle, type_point (position));
+
+						set_color_conductor (context.cr, ly);
+
+						case circle.filled is
+							when NO =>
+								set_line_width (context.cr, type_view_coordinate (circle.border_width));
+								pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+
+							when YES =>
+								case circle.fill_style is
+									when SOLID =>
+										pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
+
+									when HATCHED => null; -- CS
+								end case;
+						end case;
+
+					end if;
+
+				end if;
+			end draw_circle;
+			
+			procedure query_circle_top (c : in pac_copper_circles.cursor) is 
+				circle : type_copper_circle := element (c);
+			begin
+				set_face;
+				draw_circle (circle, destination);
+			end query_circle_top;
+
+			procedure query_circle_bottom (c : in pac_copper_circles.cursor) is 
+				circle : type_copper_circle := element (c);
+			begin
+				set_face (INVERSE);
+				draw_circle (circle, destination);
+			end query_circle_bottom;
+
+			
+			-- POLYGONS
+
+			-- solid
+			use pac_copper_polygons_solid;
+
+			procedure draw_polygon_solid (
+				polygon	: in out et_packages.type_copper_polygon_solid;
+				f		: in type_face) is
+				ly : constant type_signal_layer := face_to_layer (f);
+			begin
+				if conductor_enabled (ly) then
+					
+					if f = face then
+						if flipped then mirror (polygon, Y); end if;
+						
+						rotate_by (polygon, rot (position));
+						move_by (polygon, type_point (position));
+
+						set_color_conductor (context.cr, ly);
+
+						pac_draw_package.draw_polygon (in_area, context, polygon, YES, self.frame_height);
+-- CS
+-- 		easing : type_easing;
+-- 		width_min : type_track_width; -- the minimum width
+-- 		isolation : type_track_clearance := type_track_clearance'first; 
+						
+					end if;
+
+				end if;
+				
+			end draw_polygon_solid;
+			
+			procedure query_polygon_top_solid (c : in pac_copper_polygons_solid.cursor) is
+				polygon : et_packages.type_copper_polygon_solid := element (c);
+			begin
+				set_face;
+				draw_polygon_solid (polygon, destination);
+			end query_polygon_top_solid;
+
+			procedure query_polygon_bottom_solid (c : in pac_copper_polygons_solid.cursor) is
+				polygon : et_packages.type_copper_polygon_solid := element (c);
+			begin
+				set_face (INVERSE);
+				draw_polygon_solid (polygon, destination);
+			end query_polygon_bottom_solid;
+
+
+			-- hatched
+			use pac_copper_polygons_hatched;
+
+			procedure draw_polygon_hatched (
+				polygon	: in out et_packages.type_copper_polygon_hatched;
+				f		: in type_face) is
+				ly : constant type_signal_layer := face_to_layer (f);
+			begin
+				if conductor_enabled (ly) then
+					
+					if f = face then
+						if flipped then mirror (polygon, Y); end if;
+						
+						rotate_by (polygon, rot (position));
+						move_by (polygon, type_point (position));
+
+						set_color_conductor (context.cr, ly);
+
+-- 						pac_draw_package.draw_polygon (in_area, context, polygon, YES, self.frame_height);
+-- CS
+-- 		easing : type_easing;
+-- 		hatching : type_hatching_copper;
+-- 		width_min : type_track_width; -- the minimum width
+-- 		isolation : type_track_clearance := type_track_clearance'first; 
+						
+					end if;
+
+				end if;
+				
+			end draw_polygon_hatched;
+			
+			procedure query_polygon_top_hatched (c : in pac_copper_polygons_hatched.cursor) is
+				polygon : et_packages.type_copper_polygon_hatched := element (c);
+			begin
+				set_face;
+				draw_polygon_hatched (polygon, destination);
+			end query_polygon_top_hatched;
+
+			procedure query_polygon_bottom_hatched (c : in pac_copper_polygons_hatched.cursor) is
+				polygon : et_packages.type_copper_polygon_hatched := element (c);
+			begin
+				set_face (INVERSE);
+				draw_polygon_hatched (polygon, destination);
+			end query_polygon_bottom_hatched;
+
+
+			
+			-- CUTOUTS
+			use pac_copper_cutouts;
+
+			procedure draw_cutout (
+				cutout	: in out et_packages.type_cutout_zone;
+				f		: in type_face) is
+				ly : constant type_signal_layer := face_to_layer (f);
+			begin
+				if conductor_enabled (ly) then
+					
+					if f = face then
+						if flipped then mirror (cutout, Y); end if;
+						
+						rotate_by (cutout, rot (position));
+						move_by (cutout, type_point (position));
+
+						set_color_background (context.cr);
+
+						pac_draw_package.draw_polygon (in_area, context, cutout, YES, self.frame_height);
+						
+					end if;
+
+				end if;
+			end draw_cutout;
+			
+			procedure query_cutout_top (c : in pac_copper_cutouts.cursor) is
+				cutout : type_cutout_zone := element (c);
+			begin
+				set_face;
+				draw_cutout (cutout, destination);
+			end query_cutout_top;
+
+			procedure query_cutout_bottom (c : in pac_copper_cutouts.cursor) is
+				cutout : type_cutout_zone := element (c);
+			begin
+				set_face (INVERSE);
+				draw_cutout (cutout, destination);
+			end query_cutout_bottom;
+			
+		begin -- draw_conductors
+			-- lines
+			element (package_cursor).copper.top.lines.iterate (query_line_top'access);
+			element (package_cursor).copper.bottom.lines.iterate (query_line_bottom'access);
+
+			-- arcs
+			element (package_cursor).copper.top.arcs.iterate (query_arc_top'access);
+			element (package_cursor).copper.bottom.arcs.iterate (query_arc_bottom'access);
+
+			-- circles
+			element (package_cursor).copper.top.circles.iterate (query_circle_top'access);
+			element (package_cursor).copper.bottom.circles.iterate (query_circle_bottom'access);
+
+			-- polygons solid
+			element (package_cursor).copper.top.polygons.solid.iterate (query_polygon_top_solid'access);
+			element (package_cursor).copper.bottom.polygons.solid.iterate (query_polygon_bottom_solid'access);
+
+			-- polygons hatched
+			element (package_cursor).copper.top.polygons.hatched.iterate (query_polygon_top_hatched'access);
+			element (package_cursor).copper.bottom.polygons.hatched.iterate (query_polygon_bottom_hatched'access);
+
+			-- cutouts
+			element (package_cursor).copper.top.cutouts.iterate (query_cutout_top'access);
+			element (package_cursor).copper.bottom.cutouts.iterate (query_cutout_bottom'access);
+
+			-- CS
+			-- placeholders
+			-- texts		: type_texts_with_content.list;
+
+		end draw_conductors;
+
 		
 		procedure draw_origin is
 			type type_line is new et_packages.pac_shapes.type_line with null record;
@@ -1639,7 +1942,7 @@ procedure draw_packages (
 		draw_silkscreen;
 		draw_assembly_documentation;
 		-- CS draw_terminals
-		-- CS draw_conductors; -- non-terminal related
+		draw_conductors; -- NON-TERMINAL RELATED, NON-ELECTRICAL
 		draw_keepout; 
 		draw_stop_mask; -- non-terminal related
 		draw_stencil; -- non-terminal related
