@@ -1841,7 +1841,6 @@ procedure draw_packages (
 				draw_polygon_hatched (polygon, destination);
 			end query_polygon_bottom_hatched;
 
-
 			
 			-- CUTOUTS
 			use pac_copper_cutouts;
@@ -1913,6 +1912,20 @@ procedure draw_packages (
 
 		end draw_conductors;
 
+
+		-- TERMINALS
+		procedure draw_terminals is
+			use type_terminals;
+
+			procedure query_terminal (terminal : in type_terminals.cursor) is
+			begin
+				-- name key (terminal) -- H5, 5, 3
+				null;
+			end query_terminal;
+			
+		begin -- draw_terminals
+			element (package_cursor).terminals.iterate (query_terminal'access);
+		end draw_terminals;
 		
 		procedure draw_origin is
 			type type_line is new et_packages.pac_shapes.type_line with null record;
@@ -1941,7 +1954,7 @@ procedure draw_packages (
 	begin -- draw_package
 		draw_silkscreen;
 		draw_assembly_documentation;
-		-- CS draw_terminals
+		draw_terminals; -- pins, pads, plated millings
 		draw_conductors; -- NON-TERMINAL RELATED, NON-ELECTRICAL
 		draw_keepout; 
 		draw_stop_mask; -- non-terminal related
