@@ -63,7 +63,8 @@ procedure draw_packages (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context;
-	face	: in type_face) is
+	face	: in type_face) -- the side of the board to be drawn
+is
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer : constant type_signal_layer := 
@@ -93,6 +94,9 @@ procedure draw_packages (
 		destination : type_face;
 		type type_destination_inversed is (INVERSE, NOT_INVERSE);
 
+		-- If the package is flipped, then objects of the former top side
+		-- change to the bottom side and vice versa. 
+		-- By default set_face sets the destination side to BOTTOM if the package is flipped.
 		procedure set_face (i : in type_destination_inversed := NOT_INVERSE) is 
 			use et_pcb;
 		begin

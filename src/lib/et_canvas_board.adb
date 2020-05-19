@@ -308,6 +308,7 @@ package body et_canvas_board is
 			draw_stencil (self, area_shifted, context, BOTTOM);
 		end if;
 
+		-- draw packages on the bottom side of the board
 		draw_packages (self, area_shifted, context, BOTTOM);
 		
 		-- keepout
@@ -342,6 +343,7 @@ package body et_canvas_board is
 			draw_stencil (self, area_shifted, context, TOP);
 		end if;
 
+		-- draw packages on the top side of the board
 		draw_packages (self, area_shifted, context, TOP);
 		
 		-- keepout
