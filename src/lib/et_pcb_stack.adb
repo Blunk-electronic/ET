@@ -243,9 +243,19 @@ package body et_pcb_stack is
 		signal_layers	: in out type_signal_layers.set;
 		deepest_layer	: in type_signal_layer) is
 
-	begin
-		-- CS
-		null;
+		use type_signal_layers;
+		mir : type_signal_layers.set;
+
+		procedure query_layer (l : in type_signal_layers.cursor) is begin
+			mir.insert (1 + deepest_layer - element (l));
+		end query_layer;
+		
+	begin -- mirror
+		-- query layers one by one and insert the mirrored layer in mir:
+		signal_layers.iterate (query_layer'access);
+
+		-- overwrite given layers by mirrored layer set:
+		signal_layers := mir;
 	end mirror;
 	
 end et_pcb_stack;
