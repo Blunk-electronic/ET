@@ -65,6 +65,9 @@ package et_pcb_coordinates is
 	face_default : constant type_face := TOP;
 	function to_string (face : in type_face) return string;
 	function to_face (face : in string) return type_face;
+
+	-- Changes top to bottom and vice versa:
+	procedure flip (face : in out type_face);
 	
 	-- The total distance between two objects:
 	type type_distance_total is delta 0.001 range -100_000_000.00 .. 100_000_000.00; -- unit is metric millimeter

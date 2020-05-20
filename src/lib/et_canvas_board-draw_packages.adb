@@ -113,6 +113,11 @@ is
 						when NOT_INVERSE	=> destination := TOP;
 					end case;
 			end case;
+
+-- 			if get_face (position) = BOTTOM then
+-- 				et_pcb_coordinates.flip (destination);
+-- 			end if;
+			
 		end set_destination;
 		
 		-- locate the package model in the package library:
@@ -1616,18 +1621,20 @@ is
 
 		end draw_pcb_contour;
 
+		------------------------------------------------------------------
 
+		-- Translates face (TOP/BOTTOM) to conductor layer 1/bottom_layer.
+		-- Used by procedure draw_conductors and procedure draw_terminals:
+		function face_to_layer (f : in type_face) return type_signal_layer is begin
+			case f is
+				when TOP => return type_signal_layer'first;
+				when BOTTOM => return bottom_layer;
+			end case;
+		end face_to_layer;
+
+		
 		-- CONDUCTORS (NON-TERMINAL RELATED, NON-ELECTRICAL !)
 		procedure draw_conductors is 
-
-			-- Translates face (TOP/BOTTOM) to conductor layer 1/bottom_layer:
-			function face_to_layer (f : in type_face) return type_signal_layer is begin
-				case f is
-					when TOP => return type_signal_layer'first;
-					when BOTTOM => return bottom_layer;
-				end case;
-			end face_to_layer;
-
 			
 			-- LINES
 			use type_copper_lines;
@@ -1921,6 +1928,28 @@ is
 		procedure draw_terminals is
 			use type_terminals;
 
+			procedure draw_pad_smt (
+				outline	: in out type_pad_outline;
+				f		: in type_face) is
+				ly : constant type_signal_layer := face_to_layer (f);
+			begin
+				if conductor_enabled (ly) then
+					
+					if f = face then
+						if flipped then mirror (outline, Y); end if;
+						
+						rotate_by (outline, rot (position));
+						move_by (outline, type_point (position));
+
+						set_color_conductor (context.cr, ly);
+
+						pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
+						
+					end if;
+
+				end if;
+			end draw_pad_smt;
+			
 			procedure query_terminal (c : in type_terminals.cursor) is
 				t : type_terminal := element (c);
 			begin
@@ -1942,7 +1971,16 @@ is
 				case t.technology is
 					when THT => null;
 
-					when SMT => null;
+					when SMT =>
+						case t.face is
+							when TOP =>
+								set_destination;
+								draw_pad_smt (t.pad_shape, destination);
+								
+							when BOTTOM =>
+								set_destination (INVERSE);
+								draw_pad_smt (t.pad_shape, destination);
+						end case;
 				end case;
 						
 			end query_terminal;
@@ -2006,7 +2044,7 @@ is
 				
 				draw_package (
 					model			=> package_model (d), -- libraries/packages/smd/SOT23.pac
-					position		=> element (d).position, -- x/y/rotation
+					position		=> element (d).position, -- x/y/rotation/face
 					flip			=> element (d).flipped,
 					placeholders	=> element (d).text_placeholders);
 				

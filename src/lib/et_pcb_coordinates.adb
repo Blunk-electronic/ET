@@ -69,7 +69,14 @@ package body et_pcb_coordinates is
 	function to_face (face : in string) return type_face is begin
 		return type_face'value (face);
 	end to_face;
-		
+
+	procedure flip (face : in out type_face) is begin
+		case face is 
+			when TOP => face := BOTTOM;
+			when BOTTOM => face := TOP;
+		end case;
+	end flip;
+	
 	procedure set_face (
 		face	: in type_face;
 		position: in out type_package_position) is
