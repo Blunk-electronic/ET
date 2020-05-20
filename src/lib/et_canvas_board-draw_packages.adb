@@ -96,8 +96,8 @@ is
 
 		-- If the package is flipped, then objects of the former top side
 		-- change to the bottom side and vice versa. 
-		-- By default set_face sets the destination side to BOTTOM if the package is flipped.
-		procedure set_face (i : in type_destination_inversed := NOT_INVERSE) is 
+		-- By default set_destination sets the destination side to BOTTOM if the package is flipped.
+		procedure set_destination (i : in type_destination_inversed := NOT_INVERSE) is 
 			use et_pcb;
 		begin
 			case flip is
@@ -113,7 +113,7 @@ is
 						when NOT_INVERSE	=> destination := TOP;
 					end case;
 			end case;
-		end set_face;
+		end set_destination;
 		
 		-- locate the package model in the package library:
 		package_cursor : constant et_packages.type_packages.cursor := locate_package_model (model);
@@ -144,13 +144,13 @@ is
 			
 			procedure query_line_top (c : in type_silk_lines.cursor) is begin
 				line := element (c);
-				set_face;
+				set_destination;
 				draw_line (destination);
 			end query_line_top;
 
 			procedure query_line_bottom (c : in type_silk_lines.cursor) is begin
 				line := element (c);
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_line (destination);
 			end query_line_bottom;
 
@@ -178,13 +178,13 @@ is
 			
 			procedure query_arc_top (c : in type_silk_arcs.cursor) is begin
 				arc := element (c);
-				set_face;
+				set_destination;
 				draw_arc (destination);
 			end query_arc_top;
 
 			procedure query_arc_bottom (c : in type_silk_arcs.cursor) is begin
 				arc := element (c);
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_arc (destination);
 			end query_arc_bottom;
 
@@ -228,14 +228,14 @@ is
 			procedure query_circle_top (c : in type_silk_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_circle (circle, destination);
 			end query_circle_top;
 
 			procedure query_circle_bottom (c : in type_silk_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_circle (circle, destination);
 			end query_circle_bottom;
 
@@ -276,14 +276,14 @@ is
 			procedure query_polygon_top (c : in pac_silk_polygons.cursor) is
 				polygon : et_packages.type_polygon := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_silk_polygons.cursor) is
 				polygon : et_packages.type_polygon := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_polygon (polygon, destination);
 			end query_polygon_bottom;
 
@@ -315,14 +315,14 @@ is
 			procedure query_cutout_top (c : in pac_silk_cutouts.cursor) is
 				cutout : type_cutout_zone := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_silk_cutouts.cursor) is
 				cutout : type_cutout_zone := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
 			end query_cutout_bottom;
 			
@@ -380,13 +380,13 @@ is
 			
 			procedure query_line_top (c : in type_doc_lines.cursor) is begin
 				line := element (c);
-				set_face;
+				set_destination;
 				draw_line (destination);
 			end query_line_top;
 
 			procedure query_line_bottom (c : in type_doc_lines.cursor) is begin
 				line := element (c);
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_line (destination);
 			end query_line_bottom;
 
@@ -414,13 +414,13 @@ is
 			
 			procedure query_arc_top (c : in type_doc_arcs.cursor) is begin
 				arc := element (c);
-				set_face;
+				set_destination;
 				draw_arc (destination);
 			end query_arc_top;
 
 			procedure query_arc_bottom (c : in type_doc_arcs.cursor) is begin
 				arc := element (c);
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_arc (destination);
 			end query_arc_bottom;
 
@@ -464,14 +464,14 @@ is
 			procedure query_circle_top (c : in type_doc_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_circle (circle, destination);
 			end query_circle_top;
 
 			procedure query_circle_bottom (c : in type_doc_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_circle (circle, destination);
 			end query_circle_bottom;
 
@@ -512,14 +512,14 @@ is
 			procedure query_polygon_top (c : in pac_doc_polygons.cursor) is
 				polygon : et_packages.type_polygon := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_doc_polygons.cursor) is
 				polygon : et_packages.type_polygon := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_polygon (polygon, destination);
 			end query_polygon_bottom;
 
@@ -552,14 +552,14 @@ is
 			procedure query_cutout_top (c : in pac_doc_cutouts.cursor) is
 				cutout : type_cutout_zone := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_doc_cutouts.cursor) is
 				cutout : type_cutout_zone := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
 			end query_cutout_bottom;
 			
@@ -617,13 +617,13 @@ is
 			
 			procedure query_line_top (c : in type_keepout_lines.cursor) is begin
 				line := element (c);
-				set_face;
+				set_destination;
 				draw_line (destination);
 			end query_line_top;
 
 			procedure query_line_bottom (c : in type_keepout_lines.cursor) is begin
 				line := element (c);
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_line (destination);
 			end query_line_bottom;
 
@@ -650,13 +650,13 @@ is
 			
 			procedure query_arc_top (c : in type_keepout_arcs.cursor) is begin
 				arc := element (c);
-				set_face;
+				set_destination;
 				draw_arc (destination);
 			end query_arc_top;
 
 			procedure query_arc_bottom (c : in type_keepout_arcs.cursor) is begin
 				arc := element (c);
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_arc (destination);
 			end query_arc_bottom;
 
@@ -688,14 +688,14 @@ is
 			procedure query_circle_top (c : in type_keepout_circles.cursor) is 
 				circle : type_fillable_circle_solid := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_circle (circle, destination);
 			end query_circle_top;
 
 			procedure query_circle_bottom (c : in type_keepout_circles.cursor) is 
 				circle : type_fillable_circle_solid := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_circle (circle, destination);
 			end query_circle_bottom;
 
@@ -727,14 +727,14 @@ is
 			procedure query_polygon_top (c : in type_keepout_polygons.cursor) is
 				polygon : pac_shapes.type_polygon := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in type_keepout_polygons.cursor) is
 				polygon : pac_shapes.type_polygon := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_polygon (polygon, destination);
 			end query_polygon_bottom;
 
@@ -767,14 +767,14 @@ is
 			procedure query_cutout_top (c : in pac_keepout_cutouts.cursor) is
 				cutout : et_packages.type_cutout_zone := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_keepout_cutouts.cursor) is
 				cutout : et_packages.type_cutout_zone := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
 			end query_cutout_bottom;
 			
@@ -830,13 +830,13 @@ is
 			
 			procedure query_line_top (c : in type_stop_lines.cursor) is begin
 				line := element (c);
-				set_face;
+				set_destination;
 				draw_line (destination);
 			end query_line_top;
 
 			procedure query_line_bottom (c : in type_stop_lines.cursor) is begin
 				line := element (c);
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_line (destination);
 			end query_line_bottom;
 
@@ -864,13 +864,13 @@ is
 			
 			procedure query_arc_top (c : in type_stop_arcs.cursor) is begin
 				arc := element (c);
-				set_face;
+				set_destination;
 				draw_arc (destination);
 			end query_arc_top;
 
 			procedure query_arc_bottom (c : in type_stop_arcs.cursor) is begin
 				arc := element (c);
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_arc (destination);
 			end query_arc_bottom;
 
@@ -914,14 +914,14 @@ is
 			procedure query_circle_top (c : in type_stop_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_circle (circle, destination);
 			end query_circle_top;
 
 			procedure query_circle_bottom (c : in type_stop_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_circle (circle, destination);
 			end query_circle_bottom;
 
@@ -961,14 +961,14 @@ is
 			procedure query_polygon_top (c : in type_stop_polygons.cursor) is
 				polygon : et_packages.type_polygon := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in type_stop_polygons.cursor) is
 				polygon : et_packages.type_polygon := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_polygon (polygon, destination);
 			end query_polygon_bottom;
 
@@ -1001,14 +1001,14 @@ is
 			procedure query_cutout_top (c : in pac_stop_cutouts.cursor) is
 				cutout : et_packages.type_cutout_zone := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_stop_cutouts.cursor) is
 				cutout : et_packages.type_cutout_zone := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
 			end query_cutout_bottom;
 			
@@ -1064,13 +1064,13 @@ is
 			
 			procedure query_line_top (c : in type_stencil_lines.cursor) is begin
 				line := element (c);
-				set_face;
+				set_destination;
 				draw_line (destination);
 			end query_line_top;
 
 			procedure query_line_bottom (c : in type_stencil_lines.cursor) is begin
 				line := element (c);
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_line (destination);
 			end query_line_bottom;
 
@@ -1098,13 +1098,13 @@ is
 			
 			procedure query_arc_top (c : in type_stencil_arcs.cursor) is begin
 				arc := element (c);
-				set_face;
+				set_destination;
 				draw_arc (destination);
 			end query_arc_top;
 
 			procedure query_arc_bottom (c : in type_stencil_arcs.cursor) is begin
 				arc := element (c);
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_arc (destination);
 			end query_arc_bottom;
 
@@ -1148,14 +1148,14 @@ is
 			procedure query_circle_top (c : in type_stencil_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_circle (circle, destination);
 			end query_circle_top;
 
 			procedure query_circle_bottom (c : in type_stencil_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_circle (circle, destination);
 			end query_circle_bottom;
 
@@ -1195,14 +1195,14 @@ is
 			procedure query_polygon_top (c : in type_stencil_polygons.cursor) is
 				polygon : et_packages.type_polygon := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in type_stencil_polygons.cursor) is
 				polygon : et_packages.type_polygon := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_polygon (polygon, destination);
 			end query_polygon_bottom;
 
@@ -1235,14 +1235,14 @@ is
 			procedure query_cutout_top (c : in pac_stencil_cutouts.cursor) is
 				cutout : et_packages.type_cutout_zone := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_stencil_cutouts.cursor) is
 				cutout : et_packages.type_cutout_zone := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
 			end query_cutout_bottom;
 			
@@ -1654,13 +1654,13 @@ is
 			
 			procedure query_line_top (c : in type_copper_lines.cursor) is begin
 				line := element (c);
-				set_face;
+				set_destination;
 				draw_line (destination);
 			end query_line_top;
 
 			procedure query_line_bottom (c : in type_copper_lines.cursor) is begin
 				line := element (c);
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_line (destination);
 			end query_line_bottom;
 
@@ -1690,13 +1690,13 @@ is
 			
 			procedure query_arc_top (c : in type_copper_arcs.cursor) is begin
 				arc := element (c);
-				set_face;
+				set_destination;
 				draw_arc (destination);
 			end query_arc_top;
 
 			procedure query_arc_bottom (c : in type_copper_arcs.cursor) is begin
 				arc := element (c);
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_arc (destination);
 			end query_arc_bottom;
 
@@ -1741,14 +1741,14 @@ is
 			procedure query_circle_top (c : in pac_copper_circles.cursor) is 
 				circle : type_copper_circle := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_circle (circle, destination);
 			end query_circle_top;
 
 			procedure query_circle_bottom (c : in pac_copper_circles.cursor) is 
 				circle : type_copper_circle := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_circle (circle, destination);
 			end query_circle_bottom;
 
@@ -1788,14 +1788,14 @@ is
 			procedure query_polygon_top_solid (c : in pac_copper_polygons_solid.cursor) is
 				polygon : et_packages.type_copper_polygon_solid := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_polygon_solid (polygon, destination);
 			end query_polygon_top_solid;
 
 			procedure query_polygon_bottom_solid (c : in pac_copper_polygons_solid.cursor) is
 				polygon : et_packages.type_copper_polygon_solid := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_polygon_solid (polygon, destination);
 			end query_polygon_bottom_solid;
 
@@ -1834,14 +1834,14 @@ is
 			procedure query_polygon_top_hatched (c : in pac_copper_polygons_hatched.cursor) is
 				polygon : et_packages.type_copper_polygon_hatched := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_polygon_hatched (polygon, destination);
 			end query_polygon_top_hatched;
 
 			procedure query_polygon_bottom_hatched (c : in pac_copper_polygons_hatched.cursor) is
 				polygon : et_packages.type_copper_polygon_hatched := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_polygon_hatched (polygon, destination);
 			end query_polygon_bottom_hatched;
 
@@ -1874,14 +1874,14 @@ is
 			procedure query_cutout_top (c : in pac_copper_cutouts.cursor) is
 				cutout : type_cutout_zone := element (c);
 			begin
-				set_face;
+				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_copper_cutouts.cursor) is
 				cutout : type_cutout_zone := element (c);
 			begin
-				set_face (INVERSE);
+				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
 			end query_cutout_bottom;
 			
