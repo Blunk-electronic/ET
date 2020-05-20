@@ -59,6 +59,8 @@ with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
 with et_text;
 
+with cairo;
+
 package et_packages is
 	use geometry;
 	
@@ -959,8 +961,20 @@ package et_packages is
 
 	function to_string (terminal : in type_terminal_name.bounded_string) return string;
 	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string;
+
+
+	
+	-- GUI relevant only:
+	terminal_name_font : constant et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+
+	terminal_name_size : constant pac_text.type_text_size := 1.0;
 	
 
+	
+	
 	procedure terminal_properties (
 	-- Logs the properties of the given terminal.
 		terminal		: in type_terminal;

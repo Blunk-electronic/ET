@@ -1921,10 +1921,30 @@ is
 		procedure draw_terminals is
 			use type_terminals;
 
-			procedure query_terminal (terminal : in type_terminals.cursor) is
+			procedure query_terminal (c : in type_terminals.cursor) is
+				t : type_terminal := element (c);
 			begin
-				-- name key (terminal) -- H5, 5, 3
+-- 				-- name key (c) -- H5, 5, 3
+-- 				pac_draw_package.draw_text (
+-- 					area		=> in_area,
+-- 					context		=> context,
+-- 					content		=> to_content (to_string (key (c))),
+-- 					size		=> terminal_name_size,
+-- 					font		=> terminal_name_font,
+-- 					position	=> 
+-- 					origin		=> false, -- no origin required
+-- 					rotation	=> zero_rotation,
+-- 					alignment	=> (others => <>),
+-- 					height		=> self.frame_height);
+-- 				
 				null;
+
+				case t.technology is
+					when THT => null;
+
+					when SMT => null;
+				end case;
+						
 			end query_terminal;
 			
 		begin -- draw_terminals
