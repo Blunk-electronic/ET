@@ -1949,7 +1949,7 @@ is
 			procedure draw_pad_smt (
 				name	: in string;
 				outline	: in out type_pad_outline;
-				pad_pos	: in out type_point; -- the center of the pad
+				pad_pos	: in out type_position; -- the center of the pad incl. its rotation
 				f		: in type_face) is
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
@@ -1961,14 +1961,17 @@ is
 							mirror (outline, Y); 
 						end if;
 
-						-- terminal name
+						-- The terminal name will be at the pad position
+						-- which is usually the center of the pad.
+						-- Rotate the position of the name by the rotation of the package:
 						rotate_by (pad_pos, rot (position));
 						move (point => pad_pos, offset => type_point (position));
 						set_color_terminal_name (context.cr);
-						draw_name (name, pad_pos);
+						draw_name (name, type_point (pad_pos));
 
-						-- pad outline
-						rotate_by (outline, rot (position));
+						-- The pad outline must be rotated by the rotation of the package
+						-- plus the rotation of the pad itself:
+						rotate_by (outline, rot (position) + rot (pad_pos));
 						move_by (outline, type_point (position));
 						set_color_conductor (context.cr, ly);
 						pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
@@ -1992,7 +1995,7 @@ is
 							when BOTTOM	=> set_destination (INVERSE);
 						end case;
 						
-						draw_pad_smt (to_string (key (c)), t.pad_shape, type_point (t.position), destination);
+						draw_pad_smt (to_string (key (c)), t.pad_shape, t.position, destination);
 				end case;
 						
 			end query_terminal;
