@@ -55,6 +55,8 @@ with et_pcb_stack;				use et_pcb_stack;
 with et_display.board;			use et_display.board;
 with et_colors;					use et_colors;
 
+with et_text;
+
 with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
@@ -74,6 +76,8 @@ is
 	procedure draw_package (
 		model			: in et_packages.type_package_model_file.bounded_string;
 		position		: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
+		-- CS rename to package_position
+		
 		flip			: in et_pcb.type_flipped;
 		placeholders	: in et_packages.type_text_placeholders) is
 
@@ -113,10 +117,6 @@ is
 						when NOT_INVERSE	=> destination := TOP;
 					end case;
 			end case;
-
--- 			if get_face (position) = BOTTOM then
--- 				et_pcb_coordinates.flip (destination);
--- 			end if;
 			
 		end set_destination;
 		
@@ -1928,23 +1928,59 @@ is
 		procedure draw_terminals is
 			use type_terminals;
 
+
+			procedure draw_name (
+				name	: in string; -- H5, 5, 3
+				pos		: in type_point) is
+				use et_text;
+			begin
+-- 				if flipped then mirror (outline, Y); end if;
+-- 				
+-- 				rotate_by (outline, rot (position));
+-- 				move_by (outline, type_point (position));
+
+
+				pac_draw_package.draw_text (
+					area		=> in_area,
+					context		=> context,
+					content		=> to_content (name),
+					size		=> terminal_name_size,
+					font		=> terminal_name_font,
+					position	=> pos,
+					origin		=> false, -- no origin required
+					rotation	=> zero_rotation,
+					alignment	=> (others => <>),
+					height		=> self.frame_height);
+			end draw_name;
+			
 			procedure draw_pad_smt (
+				name	: in string;
 				outline	: in out type_pad_outline;
+				pad_pos	: in out type_point; -- the center of the pad
 				f		: in type_face) is
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
 				if conductor_enabled (ly) then
 					
 					if f = face then
-						if flipped then mirror (outline, Y); end if;
-						
+						if flipped then 
+							mirror (pad_pos, Y);
+							mirror (outline, Y); 
+						end if;
+
+						-- terminal name
+						rotate_by (pad_pos, rot (position));
+						move (point => pad_pos, offset => type_point (position));
+						set_color_terminal_name (context.cr);
+						draw_name (name, pad_pos);
+
+						-- pad outline
 						rotate_by (outline, rot (position));
 						move_by (outline, type_point (position));
-
 						set_color_conductor (context.cr, ly);
-
 						pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
-						
+
+						-- CS draw stop mask and solder paste 
 					end if;
 
 				end if;
@@ -1953,34 +1989,17 @@ is
 			procedure query_terminal (c : in type_terminals.cursor) is
 				t : type_terminal := element (c);
 			begin
--- 				-- name key (c) -- H5, 5, 3
--- 				pac_draw_package.draw_text (
--- 					area		=> in_area,
--- 					context		=> context,
--- 					content		=> to_content (to_string (key (c))),
--- 					size		=> terminal_name_size,
--- 					font		=> terminal_name_font,
--- 					position	=> 
--- 					origin		=> false, -- no origin required
--- 					rotation	=> zero_rotation,
--- 					alignment	=> (others => <>),
--- 					height		=> self.frame_height);
--- 				
-				null;
 
 				case t.technology is
 					when THT => null;
 
 					when SMT =>
 						case t.face is
-							when TOP =>
-								set_destination;
-								draw_pad_smt (t.pad_shape, destination);
-								
-							when BOTTOM =>
-								set_destination (INVERSE);
-								draw_pad_smt (t.pad_shape, destination);
+							when TOP	=> set_destination;								
+							when BOTTOM	=> set_destination (INVERSE);
 						end case;
+						
+						draw_pad_smt (to_string (key (c)), t.pad_shape, type_point (t.position), destination);
 				end case;
 						
 			end query_terminal;

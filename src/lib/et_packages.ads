@@ -120,7 +120,7 @@ package et_packages is
 -- 	function to_directory (directory_name : in string) return type_directory_name.bounded_string;
 -- 	-- Converts a string to a type_directory_name.
 
-	text_size_min : constant type_distance_positive := 1.0;
+	text_size_min : constant type_distance_positive := 0.5;
 	text_size_max : constant type_distance_positive := 100.0;
 	text_size_default : constant type_distance_positive := 1.5;
 	
@@ -970,7 +970,7 @@ package et_packages is
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
-	terminal_name_size : constant pac_text.type_text_size := 1.0;
+	terminal_name_size : constant pac_text.type_text_size := 0.5;
 	
 
 	

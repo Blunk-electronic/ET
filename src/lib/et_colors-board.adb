@@ -261,6 +261,17 @@ package body et_colors.board is
 			color_range (opacity));
 	end set_color_conductor;
 
+	procedure set_color_terminal_name (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity)
+	is begin
+		set_source_rgba (
+			context, 
+			terminal_names.red,
+			terminal_names.green,
+			terminal_names.blue,
+			color_range (opacity));
+	end set_color_terminal_name;
 		
 
 	

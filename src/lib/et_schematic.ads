@@ -184,6 +184,8 @@ package et_schematic is
 				-- The assembly side of a packages is by default TOP.
 				-- The flag "flipped" indicates whether the package has been flipped
 				-- in the layout drawing by the operator.
+				-- As a result of a flip operation, position.face changes from top to bottom
+				-- or vice versa.
 				-- Flipping a device to top or bottom means to mirror it along its Y-axis.
 				position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
 				flipped				: et_pcb.type_flipped := et_pcb.flipped_default;
