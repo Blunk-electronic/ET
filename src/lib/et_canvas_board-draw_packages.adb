@@ -1928,18 +1928,11 @@ is
 		procedure draw_terminals is
 			use type_terminals;
 
-
 			procedure draw_name (
 				name	: in string; -- H5, 5, 3
 				pos		: in type_point) is
 				use et_text;
 			begin
--- 				if flipped then mirror (outline, Y); end if;
--- 				
--- 				rotate_by (outline, rot (position));
--- 				move_by (outline, type_point (position));
-
-
 				pac_draw_package.draw_text (
 					area		=> in_area,
 					context		=> context,
