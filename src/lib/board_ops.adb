@@ -100,7 +100,7 @@ package body board_ops is
 					module.board.origin := point;
 
 				when RELATIVE =>
-					move (module.board.origin, point);
+					move_by (module.board.origin, point);
 			end case;
 		end set_origin;
 		
@@ -275,7 +275,7 @@ package body board_ops is
 						set (point => device.position, position => point); -- preserve angle and face
 
 					when RELATIVE =>
-						move (point => device.position, offset => point); -- preserve angle and face
+						move_by (point => device.position, offset => point); -- preserve angle and face
 						
 				end case;
 			end;
@@ -561,7 +561,7 @@ package body board_ops is
 						set (submodule.position_in_board, point);
 
 					when RELATIVE =>
-						move (submodule.position_in_board, point);
+						move_by (submodule.position_in_board, point);
 				end case;
 
 				exception
@@ -664,7 +664,7 @@ package body board_ops is
 						-- Get the device position in the generic submodule.
 						-- Then move it according
 						-- to the position of the submodule instance in the parent module:
-						move (device_position, type_point (position_in_board));
+						move_by (device_position, type_point (position_in_board));
 
 						log (text => "generic" & to_string (position_generic) &
 							" -> " & "in instance" & to_string (device_position),
@@ -928,7 +928,7 @@ package body board_ops is
 
 					-- The new position_in_board is a vector sum of the position_in_board of the parent module
 					-- and the position_in_board of the current submodule:
-					move (position_in_board, type_point (get_position (parent_name, module_instance)));
+					move_by (position_in_board, type_point (get_position (parent_name, module_instance)));
 
 					-- CS position_in_board must be rotated according to rotation specified where
 					-- the submodule has been instanciated. 
@@ -1165,7 +1165,7 @@ package body board_ops is
 		rotate_by (point => terminal_position_base, rotation => rot (package_position));
 
 		-- move
-		move (point => terminal_position_base, offset => package_position);
+		move_by (point => terminal_position_base, offset => package_position);
 
 		-- compose the return depending on the terminal technology:
 		case terminal_technology is

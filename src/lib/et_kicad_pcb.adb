@@ -378,7 +378,7 @@ package body et_kicad_pcb is
 	begin
 		circle.center := type_point (position);
 		circle.radius := diameter / 2.0;
-		move (circle.center, offset);
+		move_by (circle.center, offset);
 		append (shape.segments.circles, circle);
 		
 		return shape;
@@ -436,11 +436,11 @@ package body et_kicad_pcb is
 		rotate_by (p21, angle);
 
 		-- move supportive points by given offset
-		move (p11, offset);
-		move (p12, offset);
+		move_by (p11, offset);
+		move_by (p12, offset);
 		
-		move (p21, offset);
-		move (p22, offset);
+		move_by (p21, offset);
+		move_by (p22, offset);
 
 		-- set left line
 		line_1.start_point := p11;
@@ -530,14 +530,14 @@ package body et_kicad_pcb is
 		rotate_by (p42, angle);		
 
 		-- move supportive points by given offset
-		move (p11, offset);
-		move (p12, offset);
+		move_by (p11, offset);
+		move_by (p12, offset);
 		
-		move (p21, offset);
-		move (p22, offset);
+		move_by (p21, offset);
+		move_by (p22, offset);
 		
-		move (p41, offset);
-		move (p42, offset);		
+		move_by (p41, offset);
+		move_by (p42, offset);		
 		
 		-- set left line
 		line_1.start_point := p11;
@@ -615,11 +615,11 @@ package body et_kicad_pcb is
 		rotate_by (p22, angle);
 
 		-- move supportive points by given offset
-		move (p11, offset);
-		move (p12, offset);
+		move_by (p11, offset);
+		move_by (p12, offset);
 		
-		move (p21, offset);
-		move (p22, offset);
+		move_by (p21, offset);
+		move_by (p22, offset);
 
 		-- set left line
 		line_1.start_point	:= p11;

@@ -10009,7 +10009,7 @@ package body et_kicad is
 					end case;
 
 					-- offset port coordinates by the coordinates of the unit found in the schematic
-					move (point => port_coordinates, offset => unit_position);
+					move_by (point => port_coordinates, offset => unit_position);
 
 					-- path remains unchanged because the port is still where the unit is
 					set_path (

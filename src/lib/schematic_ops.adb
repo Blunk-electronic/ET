@@ -556,7 +556,7 @@ package body schematic_ops is
 			name	: in type_port_name.bounded_string;
 			port	: in out type_port) is
 		begin
-			move (port.position, offset);
+			move_by (port.position, offset);
 		end;
 
 		procedure query_port (cursor : in et_symbols.type_ports.cursor) is begin
@@ -630,7 +630,7 @@ package body schematic_ops is
 						-- CS mirror ?
 						
 						-- Calculate the absolute port position in the schematic:
-						et_coordinates.move (
+						move_by (
 							point 	=> port_position,
 							offset	=> unit_position);
 						
@@ -707,7 +707,7 @@ package body schematic_ops is
 					port_xy := element (cursor).position;
 
 					-- Calculate the absolute port position:
-					et_coordinates.move (
+					move_by (
 						point	=> port_xy,
 						offset	=> submod_position);
 
@@ -805,7 +805,7 @@ package body schematic_ops is
 					point		=> port_xy,
 					rotation	=> rot (nc_position));
 				
-				et_coordinates.move (
+				move_by (
 					point	=> port_xy,
 					offset	=> nc_position);
 
@@ -1360,7 +1360,7 @@ package body schematic_ops is
 									unit.name.position := point;
 
 								when RELATIVE =>
-									move (
+									move_by (
 										point	=> unit.name.position,
 										offset	=> point);
 							end case;
@@ -1371,7 +1371,7 @@ package body schematic_ops is
 									unit.value.position := point;
 
 								when RELATIVE =>
-									move (
+									move_by (
 										point	=> unit.value.position,
 										offset	=> point);
 							end case;
@@ -1382,7 +1382,7 @@ package body schematic_ops is
 									unit.purpose.position := point;
 
 								when RELATIVE =>
-									move (
+									move_by (
 										point	=> unit.purpose.position,
 										offset	=> point);
 							end case;
@@ -2445,7 +2445,7 @@ package body schematic_ops is
 							unit.position := to_position (point, sheet);
 
 						when RELATIVE =>
-							move (
+							move_by (
 								point	=> unit.position,
 								offset	=> point
 								);
@@ -5562,7 +5562,7 @@ package body schematic_ops is
 						-- The new relative position is the netchanger position BEFORE 
 						-- the move operation shifted by the given point (x/y).
 						-- The sheet number does not change.
-						move (
+						move_by (
 							point		=> location,
 							offset		=> point);
 				end case;
@@ -6798,7 +6798,7 @@ package body schematic_ops is
 										segment.start_point := point; -- given position is absolute
 
 									when RELATIVE =>
-										move (
+										move_by (
 											point	=> segment.start_point,
 											offset	=> point -- the given position is relative
 											);
@@ -6810,7 +6810,7 @@ package body schematic_ops is
 										segment.end_point := point; -- given position is absolute
 
 									when RELATIVE =>
-										move (
+										move_by (
 											point	=> segment.end_point,
 											offset	=> point -- the given position is relative
 											);
@@ -6823,12 +6823,12 @@ package body schematic_ops is
 										log (WARNING, "absolute dragging at center not possible !");
 
 									when RELATIVE =>
-										move (
+										move_by (
 											point	=> segment.start_point,
 											offset	=> point -- the given position is relative
 											);
 
-										move (
+										move_by (
 											point	=> segment.end_point,
 											offset	=> point -- the given position is relative
 											);
@@ -7881,7 +7881,7 @@ package body schematic_ops is
 					begin
 						-- label_position is relative to segment_position
 						label.position := label_position;
-						move (label.position, segment_position);
+						move_by (label.position, segment_position);
 						-- now label.position is absolute
 						
 						-- CS: label size, style and line width assume default. could be provided by further
@@ -8483,7 +8483,7 @@ package body schematic_ops is
 			position	=> position); -- the relative port position
 
 		-- 2. move port_position by x/y of submodule_position:
-		move (
+		move_by (
 			point		=> port_position,
 			offset		=> submodule_position);
 
@@ -8756,7 +8756,7 @@ package body schematic_ops is
 							mirror (submod_pos_tmp, Y);
 
 							-- Subtract from given point the absolute submodule position:
-							move (
+							move_by (
 								point	=> point_tmp,
 								offset	=> submod_pos_tmp);
 
@@ -8764,7 +8764,7 @@ package body schematic_ops is
 							port.position := point_tmp;
 
 						when RELATIVE =>
-							move (
+							move_by (
 								point	=> port.position,
 								offset	=> point);
 							
@@ -8781,7 +8781,7 @@ package body schematic_ops is
 									point	=> port.position, -- relative x/y to submodule position
 									sheet	=> sheet (submodule_position));
 
-						move (
+						move_by (
 							point	=> port_position,
 							offset	=> submodule_position);
 						-- now port_position contains the absolute port position
@@ -9147,7 +9147,7 @@ package body schematic_ops is
 								point	=> port.position, -- relative x/y to submodule position
 								sheet	=> sheet (submodule_position)); -- same sheet as submodule box
 
-					move (
+					move_by (
 						point	=> port_position_before,
 						offset	=> submodule_position);
 					-- Now port_position_before contains the absolute port position of 
@@ -9171,7 +9171,7 @@ package body schematic_ops is
 							mirror (submod_pos_tmp, Y);
 
 							-- Subtract from given point the absolute submodule position:
-							move (
+							move_by (
 								point	=> point_tmp,
 								offset	=> submod_pos_tmp);
 
@@ -9179,7 +9179,7 @@ package body schematic_ops is
 							port.position := point_tmp;
 
 						when RELATIVE =>
-							move (
+							move_by (
 								point	=> port.position,
 								offset	=> point);
 							
@@ -9196,7 +9196,7 @@ package body schematic_ops is
 									point	=> port.position, -- relative x/y to submodule position
 									sheet	=> sheet (submodule_position)); -- same sheet as submodule box
 
-						move (
+						move_by (
 							point	=> port_position_after,
 							offset	=> submodule_position);
 						-- Now port_position_after contains the absolute port position of 
@@ -9651,7 +9651,7 @@ package body schematic_ops is
 					-- The result is stored in drag.before.
 					drag.before := submodule.position;
 
-					move (
+					move_by (
 						point	=> drag.before,
 						offset	=> port.position);
 			
@@ -9679,13 +9679,13 @@ package body schematic_ops is
 
 							drag.after := submodule.position;
 
-							move (
+							move_by (
 								point	=> drag.after,
 								offset	=> point);
 
 					end case;
 
-					move (
+					move_by (
 						point	=> drag.after,
 						offset	=> port.position);
 
@@ -9718,7 +9718,7 @@ package body schematic_ops is
 						set (submodule.position, point);
 
 					when RELATIVE =>
-						move (
+						move_by (
 							point	=> submodule.position,
 							offset	=> point
 							);

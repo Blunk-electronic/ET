@@ -401,14 +401,14 @@ package body et_geometry is
 			point.y := zero;
 		end;
 
-		procedure move (
+		procedure move_by (
 		-- Moves a point by the given offset.
 			point	: in out type_point'class;
 			offset	: in type_point) is
 		begin
 			point.x := point.x + offset.x;
 			point.y := point.y + offset.y;
-		end move;
+		end move_by;
 
 		procedure move_to (
 		-- Moves a point to the given position.
@@ -905,8 +905,8 @@ package body et_geometry is
 			line	: in out type_line;
 			offset	: in type_point)
 		is begin
-			move (point	=> line.start_point,	offset => offset);
-			move (point	=> line.end_point,		offset => offset);
+			move_by (point	=> line.start_point,	offset => offset);
+			move_by (point	=> line.end_point,		offset => offset);
 		end move_by;
 
 		procedure mirror (
@@ -1500,9 +1500,9 @@ package body et_geometry is
 			arc		: in out type_arc'class;
 			offset	: in type_point) is
 		begin
-			move (point => arc.center,      offset => offset);
-			move (point => arc.start_point, offset => offset);
-			move (point => arc.end_point,   offset => offset);
+			move_by (point => arc.center,      offset => offset);
+			move_by (point => arc.start_point, offset => offset);
+			move_by (point => arc.end_point,   offset => offset);
 		end move_by;
 
 		procedure move_to (
@@ -1516,8 +1516,8 @@ package body et_geometry is
 			move_to (arc.center, position);
 
 			-- move start and end point of the arc by the computed offset
-			move (point => arc.start_point, offset => offset);
-			move (point => arc.end_point,   offset => offset);
+			move_by (point => arc.start_point, offset => offset);
+			move_by (point => arc.end_point,   offset => offset);
 		end move_to;
 
 		procedure mirror (
@@ -1543,7 +1543,7 @@ package body et_geometry is
 			circle	: in out type_circle;
 			offset	: in type_point)
 		is begin
-			move (point	=> circle.center,	offset => offset);
+			move_by (point	=> circle.center,	offset => offset);
 		end move_by;
 		
 		procedure mirror (

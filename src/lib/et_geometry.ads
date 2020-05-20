@@ -212,7 +212,7 @@ package et_geometry is
 		procedure reset (point : in out type_point'class);
 		-- Moves the given point to the origin (0/0).
 
-		procedure move ( -- CS rename to move_by
+		procedure move_by (
 		-- Moves a point by the given offset.
 			point	: in out type_point'class;
 			offset	: in type_point);

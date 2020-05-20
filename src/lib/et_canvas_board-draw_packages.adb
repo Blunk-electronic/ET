@@ -1965,7 +1965,7 @@ is
 						-- which is usually the center of the pad.
 						-- Rotate the position of the name by the rotation of the package:
 						rotate_by (pad_pos, rot (position));
-						move (point => pad_pos, offset => type_point (position));
+						move_by (point => pad_pos, offset => type_point (position));
 						set_color_terminal_name (context.cr);
 						draw_name (name, type_point (pad_pos));
 
