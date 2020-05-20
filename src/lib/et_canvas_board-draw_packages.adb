@@ -1971,7 +1971,7 @@ is
 
 						-- The pad outline must be rotated by the rotation of the package
 						-- plus the rotation of the pad itself:
-						rotate_by (outline, rot (position) + rot (pad_pos));
+						rotate_by (outline, add (rot (position), rot (pad_pos)));
 						move_by (outline, type_point (position));
 						set_color_conductor (context.cr, ly);
 						pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);

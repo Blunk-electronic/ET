@@ -256,6 +256,7 @@ package et_geometry is
 		-- Computes the total distance between point_one and point_two.
 
 		function add (left, right : in type_rotation) return type_rotation;
+		-- CS ? function "+" (left, right : in type_rotation) return type_rotation renames add;
 		-- Adds two angles.
 		-- If result greater 360 degree then 360 degree is subtracted from result.
 		-- If result less than 360 degree then 360 degree is added to the result.

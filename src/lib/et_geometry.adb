@@ -651,7 +651,7 @@ package body et_geometry is
 			position	: in out type_position'class;
 			offset		: in type_rotation) is
 		begin
-			position.rotation := position.rotation + offset;
+			position.rotation := add (position.rotation, offset);
 		end;
 		
 		procedure rotate_by (
