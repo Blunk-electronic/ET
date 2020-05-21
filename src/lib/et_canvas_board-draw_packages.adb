@@ -75,9 +75,7 @@ is
 	
 	procedure draw_package (
 		model			: in et_packages.type_package_model_file.bounded_string;
-		position		: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
-		-- CS rename to package_position
-		
+		package_position: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flip			: in et_pcb.type_flipped;
 		placeholders	: in et_packages.type_text_placeholders) is
 
@@ -136,8 +134,8 @@ is
 					if f = face then
 						if flipped then mirror (line, Y); end if;
 						
-						rotate_by (line, rot (position));
-						move_by (line, type_point (position));
+						rotate_by (line, rot (package_position));
+						move_by (line, type_point (package_position));
 
 						set_color_silkscreen (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
@@ -170,8 +168,8 @@ is
 					if f = face then
 						if flipped then mirror (arc, Y); end if;
 						
-						rotate_by (arc, rot (position));
-						move_by (arc, type_point (position));
+						rotate_by (arc, rot (package_position));
+						move_by (arc, type_point (package_position));
 
 						set_color_silkscreen (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
@@ -206,8 +204,8 @@ is
 					if f = face then
 						if flipped then mirror (circle, Y); end if;
 						
-						rotate_by (circle, rot (position));
-						move_by (circle, type_point (position));
+						rotate_by (circle, rot (package_position));
+						move_by (circle, type_point (package_position));
 
 						set_color_silkscreen (context.cr, f);
 
@@ -257,8 +255,8 @@ is
 					if f = face then
 						if flipped then mirror (polygon, Y); end if;
 						
-						rotate_by (polygon, rot (position));
-						move_by (polygon, type_point (position));
+						rotate_by (polygon, rot (package_position));
+						move_by (polygon, type_point (package_position));
 
 						set_color_silkscreen (context.cr, f);
 
@@ -305,8 +303,8 @@ is
 					if f = face then
 						if flipped then mirror (cutout, Y); end if;
 						
-						rotate_by (cutout, rot (position));
-						move_by (cutout, type_point (position));
+						rotate_by (cutout, rot (package_position));
+						move_by (cutout, type_point (package_position));
 
 						set_color_background (context.cr);
 
@@ -372,8 +370,8 @@ is
 					if f = face then
 						if flipped then mirror (line, Y); end if;
 						
-						rotate_by (line, rot (position));
-						move_by (line, type_point (position));
+						rotate_by (line, rot (package_position));
+						move_by (line, type_point (package_position));
 
 						set_color_assy_doc (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
@@ -406,8 +404,8 @@ is
 					if f = face then
 						if flipped then mirror (arc, Y); end if;
 						
-						rotate_by (arc, rot (position));
-						move_by (arc, type_point (position));
+						rotate_by (arc, rot (package_position));
+						move_by (arc, type_point (package_position));
 
 						set_color_assy_doc (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
@@ -442,8 +440,8 @@ is
 					if f = face then
 						if flipped then mirror (circle, Y); end if;
 						
-						rotate_by (circle, rot (position));
-						move_by (circle, type_point (position));
+						rotate_by (circle, rot (package_position));
+						move_by (circle, type_point (package_position));
 
 						set_color_assy_doc (context.cr, f);
 
@@ -493,8 +491,8 @@ is
 					if f = face then
 						if flipped then mirror (polygon, Y); end if;
 						
-						rotate_by (polygon, rot (position));
-						move_by (polygon, type_point (position));
+						rotate_by (polygon, rot (package_position));
+						move_by (polygon, type_point (package_position));
 
 						set_color_assy_doc (context.cr, f);
 
@@ -541,8 +539,8 @@ is
 					if f = face then
 						if flipped then mirror (cutout, Y); end if;
 						
-						rotate_by (cutout, rot (position));
-						move_by (cutout, type_point (position));
+						rotate_by (cutout, rot (package_position));
+						move_by (cutout, type_point (package_position));
 
 						set_color_background (context.cr);
 
@@ -610,8 +608,8 @@ is
 					if f = face then
 						if flipped then mirror (line, Y); end if;
 						
-						rotate_by (line, rot (position));
-						move_by (line, type_point (position));
+						rotate_by (line, rot (package_position));
+						move_by (line, type_point (package_position));
 
 						set_color_keepout (context.cr, f);
 						pac_draw_package.draw_line (in_area, context, line, self.frame_height);
@@ -643,8 +641,8 @@ is
 					if f = face then
 						if flipped then mirror (arc, Y); end if;
 						
-						rotate_by (arc, rot (position));
-						move_by (arc, type_point (position));
+						rotate_by (arc, rot (package_position));
+						move_by (arc, type_point (package_position));
 
 						set_color_keepout (context.cr, f);
 						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
@@ -678,8 +676,8 @@ is
 					if f = face then
 						if flipped then mirror (circle, Y); end if;
 						
-						rotate_by (circle, rot (position));
-						move_by (circle, type_point (position));
+						rotate_by (circle, rot (package_position));
+						move_by (circle, type_point (package_position));
 
 						set_color_keepout (context.cr, f);
 
@@ -717,8 +715,8 @@ is
 					if f = face then
 						if flipped then mirror (polygon, Y); end if;
 						
-						rotate_by (polygon, rot (position));
-						move_by (polygon, type_point (position));
+						rotate_by (polygon, rot (package_position));
+						move_by (polygon, type_point (package_position));
 
 						set_color_keepout (context.cr, f);
 
@@ -756,8 +754,8 @@ is
 					if f = face then
 						if flipped then mirror (cutout, Y); end if;
 						
-						rotate_by (cutout, rot (position));
-						move_by (cutout, type_point (position));
+						rotate_by (cutout, rot (package_position));
+						move_by (cutout, type_point (package_position));
 
 						set_color_background (context.cr);
 
@@ -822,8 +820,8 @@ is
 					if f = face then
 						if flipped then mirror (line, Y); end if;
 						
-						rotate_by (line, rot (position));
-						move_by (line, type_point (position));
+						rotate_by (line, rot (package_position));
+						move_by (line, type_point (package_position));
 
 						set_color_stop_mask (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
@@ -856,8 +854,8 @@ is
 					if f = face then
 						if flipped then mirror (arc, Y); end if;
 						
-						rotate_by (arc, rot (position));
-						move_by (arc, type_point (position));
+						rotate_by (arc, rot (package_position));
+						move_by (arc, type_point (package_position));
 
 						set_color_stop_mask (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
@@ -892,8 +890,8 @@ is
 					if f = face then
 						if flipped then mirror (circle, Y); end if;
 						
-						rotate_by (circle, rot (position));
-						move_by (circle, type_point (position));
+						rotate_by (circle, rot (package_position));
+						move_by (circle, type_point (package_position));
 
 						set_color_stop_mask (context.cr, f);
 
@@ -943,8 +941,8 @@ is
 					if f = face then
 						if flipped then mirror (polygon, Y); end if;
 						
-						rotate_by (polygon, rot (position));
-						move_by (polygon, type_point (position));
+						rotate_by (polygon, rot (package_position));
+						move_by (polygon, type_point (package_position));
 
 						set_color_stop_mask (context.cr, f);
 
@@ -990,8 +988,8 @@ is
 					if f = face then
 						if flipped then mirror (cutout, Y); end if;
 						
-						rotate_by (cutout, rot (position));
-						move_by (cutout, type_point (position));
+						rotate_by (cutout, rot (package_position));
+						move_by (cutout, type_point (package_position));
 
 						set_color_background (context.cr);
 
@@ -1056,8 +1054,8 @@ is
 					if f = face then
 						if flipped then mirror (line, Y); end if;
 						
-						rotate_by (line, rot (position));
-						move_by (line, type_point (position));
+						rotate_by (line, rot (package_position));
+						move_by (line, type_point (package_position));
 
 						set_color_stencil (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
@@ -1090,8 +1088,8 @@ is
 					if f = face then
 						if flipped then mirror (arc, Y); end if;
 						
-						rotate_by (arc, rot (position));
-						move_by (arc, type_point (position));
+						rotate_by (arc, rot (package_position));
+						move_by (arc, type_point (package_position));
 
 						set_color_stencil (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
@@ -1126,8 +1124,8 @@ is
 					if f = face then
 						if flipped then mirror (circle, Y); end if;
 						
-						rotate_by (circle, rot (position));
-						move_by (circle, type_point (position));
+						rotate_by (circle, rot (package_position));
+						move_by (circle, type_point (package_position));
 
 						set_color_stencil (context.cr, f);
 
@@ -1177,8 +1175,8 @@ is
 					if f = face then
 						if flipped then mirror (polygon, Y); end if;
 						
-						rotate_by (polygon, rot (position));
-						move_by (polygon, type_point (position));
+						rotate_by (polygon, rot (package_position));
+						move_by (polygon, type_point (package_position));
 
 						set_color_stencil (context.cr, f);
 
@@ -1224,8 +1222,8 @@ is
 					if f = face then
 						if flipped then mirror (cutout, Y); end if;
 						
-						rotate_by (cutout, rot (position));
-						move_by (cutout, type_point (position));
+						rotate_by (cutout, rot (package_position));
+						move_by (cutout, type_point (package_position));
 
 						set_color_background (context.cr);
 
@@ -1292,8 +1290,8 @@ is
 
 				if route_restrict_layer_enabled (line.layers) then
 					
-					rotate_by (line, rot (position));
-					move_by (line, type_point (position));
+					rotate_by (line, rot (package_position));
+					move_by (line, type_point (package_position));
 
 					pac_draw_package.draw_line (in_area, context, line, self.frame_height);
 				end if;
@@ -1313,8 +1311,8 @@ is
 
 				if route_restrict_layer_enabled (arc.layers) then
 					
-					rotate_by (arc, rot (position));
-					move_by (arc, type_point (position));
+					rotate_by (arc, rot (package_position));
+					move_by (arc, type_point (package_position));
 
 					pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
 				end if;
@@ -1334,8 +1332,8 @@ is
 
 				if route_restrict_layer_enabled (circle.layers) then
 				
-					rotate_by (circle, rot (position));
-					move_by (circle, type_point (position));
+					rotate_by (circle, rot (package_position));
+					move_by (circle, type_point (package_position));
 
 					pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
 				end if;
@@ -1356,8 +1354,8 @@ is
 
 				if route_restrict_layer_enabled (polygon.layers) then
 					
-					rotate_by (polygon, rot (position));
-					move_by (polygon, type_point (position));
+					rotate_by (polygon, rot (package_position));
+					move_by (polygon, type_point (package_position));
 
 					pac_draw_package.draw_polygon (in_area, context, polygon, YES, self.frame_height);
 				end if;
@@ -1378,8 +1376,8 @@ is
 
 				if route_restrict_layer_enabled (cutout.layers) then
 					
-					rotate_by (cutout, rot (position));
-					move_by (cutout, type_point (position));
+					rotate_by (cutout, rot (package_position));
+					move_by (cutout, type_point (package_position));
 
 					set_color_background (context.cr);
 
@@ -1426,8 +1424,8 @@ is
 
 				if via_restrict_layer_enabled (line.layers) then
 					
-					rotate_by (line, rot (position));
-					move_by (line, type_point (position));
+					rotate_by (line, rot (package_position));
+					move_by (line, type_point (package_position));
 
 					pac_draw_package.draw_line (in_area, context, line, self.frame_height);
 				end if;
@@ -1447,8 +1445,8 @@ is
 
 				if via_restrict_layer_enabled (arc.layers) then
 					
-					rotate_by (arc, rot (position));
-					move_by (arc, type_point (position));
+					rotate_by (arc, rot (package_position));
+					move_by (arc, type_point (package_position));
 
 					pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
 				end if;
@@ -1468,8 +1466,8 @@ is
 
 				if via_restrict_layer_enabled (circle.layers) then
 				
-					rotate_by (circle, rot (position));
-					move_by (circle, type_point (position));
+					rotate_by (circle, rot (package_position));
+					move_by (circle, type_point (package_position));
 
 					pac_draw_package.draw_circle (in_area, context, circle, circle.filled, self.frame_height);
 				end if;
@@ -1490,8 +1488,8 @@ is
 
 				if via_restrict_layer_enabled (polygon.layers) then
 					
-					rotate_by (polygon, rot (position));
-					move_by (polygon, type_point (position));
+					rotate_by (polygon, rot (package_position));
+					move_by (polygon, type_point (package_position));
 
 					pac_draw_package.draw_polygon (in_area, context, polygon, YES, self.frame_height);
 				end if;
@@ -1512,8 +1510,8 @@ is
 
 				if via_restrict_layer_enabled (cutout.layers) then
 					
-					rotate_by (cutout, rot (position));
-					move_by (cutout, type_point (position));
+					rotate_by (cutout, rot (package_position));
+					move_by (cutout, type_point (package_position));
 
 					set_color_background (context.cr);
 
@@ -1558,8 +1556,8 @@ is
 				
 					if flipped then mirror (line, Y); end if;
 					
-					rotate_by (line, rot (position));
-					move_by (line, type_point (position));
+					rotate_by (line, rot (package_position));
+					move_by (line, type_point (package_position));
 
 					pac_draw_package.draw_line (in_area, context, line, self.frame_height);
 
@@ -1579,8 +1577,8 @@ is
 					
 					if flipped then mirror (arc, Y); end if;
 					
-					rotate_by (arc, rot (position));
-					move_by (arc, type_point (position));
+					rotate_by (arc, rot (package_position));
+					move_by (arc, type_point (package_position));
 
 					pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
 				end if;
@@ -1598,8 +1596,8 @@ is
 					
 					if flipped then mirror (circle, Y); end if;
 						
-					rotate_by (circle, rot (position));
-					move_by (circle, type_point (position));
+					rotate_by (circle, rot (package_position));
+					move_by (circle, type_point (package_position));
 
 					pac_draw_package.draw_circle (in_area, context, circle, NO, self.frame_height);
 				end if;
@@ -1648,8 +1646,8 @@ is
 					if f = face then
 						if flipped then mirror (line, Y); end if;
 						
-						rotate_by (line, rot (position));
-						move_by (line, type_point (position));
+						rotate_by (line, rot (package_position));
+						move_by (line, type_point (package_position));
 
 						set_color_conductor (context.cr, ly);
 						set_line_width (context.cr, type_view_coordinate (line.width));
@@ -1684,8 +1682,8 @@ is
 					if f = face then
 						if flipped then mirror (arc, Y); end if;
 						
-						rotate_by (arc, rot (position));
-						move_by (arc, type_point (position));
+						rotate_by (arc, rot (package_position));
+						move_by (arc, type_point (package_position));
 
 						set_color_conductor (context.cr, ly);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
@@ -1721,8 +1719,8 @@ is
 					if f = face then
 						if flipped then mirror (circle, Y); end if;
 						
-						rotate_by (circle, rot (position));
-						move_by (circle, type_point (position));
+						rotate_by (circle, rot (package_position));
+						move_by (circle, type_point (package_position));
 
 						set_color_conductor (context.cr, ly);
 
@@ -1775,8 +1773,8 @@ is
 					if f = face then
 						if flipped then mirror (polygon, Y); end if;
 						
-						rotate_by (polygon, rot (position));
-						move_by (polygon, type_point (position));
+						rotate_by (polygon, rot (package_position));
+						move_by (polygon, type_point (package_position));
 
 						set_color_conductor (context.cr, ly);
 
@@ -1820,8 +1818,8 @@ is
 					if f = face then
 						if flipped then mirror (polygon, Y); end if;
 						
-						rotate_by (polygon, rot (position));
-						move_by (polygon, type_point (position));
+						rotate_by (polygon, rot (package_position));
+						move_by (polygon, type_point (package_position));
 
 						set_color_conductor (context.cr, ly);
 
@@ -1866,8 +1864,8 @@ is
 					if f = face then
 						if flipped then mirror (cutout, Y); end if;
 						
-						rotate_by (cutout, rot (position));
-						move_by (cutout, type_point (position));
+						rotate_by (cutout, rot (package_position));
+						move_by (cutout, type_point (package_position));
 
 						set_color_background (context.cr);
 
@@ -1964,14 +1962,14 @@ is
 						-- The terminal name will be at the pad position
 						-- which is usually the center of the pad.
 						-- Rotate the position of the name by the rotation of the package:
-						rotate_by (pad_pos, rot (position));
-						move_by (point => pad_pos, offset => type_point (position));
+						rotate_by (pad_pos, rot (package_position));
+						move_by (point => pad_pos, offset => type_point (package_position));
 						set_color_terminal_name (context.cr);
 						draw_name (name, type_point (pad_pos));
 
 						-- The pad outline must be rotated by the rotation of the package
 						-- plus the rotation of the pad itself:
-						rotate_by (outline, add (rot (position), rot (pad_pos)));
+						rotate_by (outline, add (rot (package_position), rot (pad_pos)));
 						move_by (outline, type_point (pad_pos));
 						set_color_conductor (context.cr, ly);
 						pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
@@ -2000,14 +1998,14 @@ is
 						-- The terminal name will be at the pad position
 						-- which is usually the center of the pad.
 						-- Rotate the position of the name by the rotation of the package:
-						rotate_by (pad_pos, rot (position));
-						move_by (point => pad_pos, offset => type_point (position));
+						rotate_by (pad_pos, rot (package_position));
+						move_by (point => pad_pos, offset => type_point (package_position));
 						set_color_terminal_name (context.cr);
 						draw_name (name, type_point (pad_pos));
 
 						-- The pad outline must be rotated by the rotation of the package
 						-- plus the rotation of the pad itself:
-						rotate_by (outline, add (rot (position), rot (pad_pos)));
+						rotate_by (outline, add (rot (package_position), rot (pad_pos)));
 						move_by (outline, type_point (pad_pos));
 						set_color_tht_pad (context.cr);
 						pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
@@ -2052,16 +2050,16 @@ is
 			type type_line is new et_packages.pac_shapes.type_line with null record;
 			
 			line_horizontal : constant type_line := ( -- from left to right
-				start_point		=> type_point (set (x => x (position) - origin_half_size, y => y (position))),
-				end_point		=> type_point (set (x => x (position) + origin_half_size, y => y (position))));
+				start_point		=> type_point (set (x => x (package_position) - origin_half_size, y => y (package_position))),
+				end_point		=> type_point (set (x => x (package_position) + origin_half_size, y => y (package_position))));
 
 			line_vertical : constant type_line := ( -- from bottom to top
-				start_point		=> type_point (set (x => x (position), y => y (position) - origin_half_size)),
-				end_point		=> type_point (set (x => x (position), y => y (position) + origin_half_size)));
+				start_point		=> type_point (set (x => x (package_position), y => y (package_position) - origin_half_size)),
+				end_point		=> type_point (set (x => x (package_position), y => y (package_position) + origin_half_size)));
 
 		begin -- draw_origin
-			if face = get_face (position) then
-				if device_origins_enabled (get_face (position)) then
+			if face = get_face (package_position) then
+				if device_origins_enabled (get_face (package_position)) then
 
 					set_color_origin (context.cr);
 					set_line_width (context.cr, type_view_coordinate (origin_line_width));
@@ -2102,10 +2100,10 @@ is
 			if element (d).appearance = PCB then
 				
 				draw_package (
-					model			=> package_model (d), -- libraries/packages/smd/SOT23.pac
-					position		=> element (d).position, -- x/y/rotation/face
-					flip			=> element (d).flipped,
-					placeholders	=> element (d).text_placeholders);
+					model				=> package_model (d), -- libraries/packages/smd/SOT23.pac
+					package_position	=> element (d).position, -- x/y/rotation/face
+					flip				=> element (d).flipped,
+					placeholders		=> element (d).text_placeholders);
 				
 			end if;
 		end query_device;
