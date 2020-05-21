@@ -1925,6 +1925,24 @@ is
 		-- TERMINALS
 		procedure draw_terminals is
 			use type_terminals;
+
+			procedure move (
+				pad_pos	: in out type_position;
+				outline	: in out type_polygon_base) is
+			begin 
+				if flipped then 
+					mirror (pad_pos, Y);
+					mirror (outline, Y); 
+				end if;
+
+				rotate_by (pad_pos, rot (package_position));
+				move_by (point => pad_pos, offset => type_point (package_position));
+
+				-- The pad outline must be rotated by the rotation of the package
+				-- plus the rotation of the pad itself:
+				rotate_by (outline, add (rot (package_position), rot (pad_pos)));
+				move_by (outline, type_point (pad_pos));
+			end move;
 			
 			procedure draw_pad_smt (
 				name		: in string;
@@ -1940,18 +1958,9 @@ is
 				if conductor_enabled (ly) then
 					
 					if f = face then
-						if flipped then 
-							mirror (pad_pos, Y);
-							mirror (outline, Y); 
-						end if;
 
-						rotate_by (pad_pos, rot (package_position));
-						move_by (point => pad_pos, offset => type_point (package_position));
-
-						-- The pad outline must be rotated by the rotation of the package
-						-- plus the rotation of the pad itself:
-						rotate_by (outline, add (rot (package_position), rot (pad_pos)));
-						move_by (outline, type_point (pad_pos));
+						move (pad_pos, type_polygon_base (outline));
+						
 						set_color_conductor (context.cr, ly);
 						pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
 
@@ -1975,18 +1984,9 @@ is
 				if conductor_enabled (ly) then
 					
 					if f = face then
-						if flipped then 
-							mirror (pad_pos, Y);
-							mirror (outline, Y); 
-						end if;
 
-						rotate_by (pad_pos, rot (package_position));
-						move_by (point => pad_pos, offset => type_point (package_position));
-
-						-- The pad outline must be rotated by the rotation of the package
-						-- plus the rotation of the pad itself:
-						rotate_by (outline, add (rot (package_position), rot (pad_pos)));
-						move_by (outline, type_point (pad_pos));
+						move (pad_pos, type_polygon_base (outline));
+						
 						set_color_tht_pad (context.cr);
 						pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
 
@@ -2005,19 +2005,8 @@ is
 				
 			begin
 				if conductors_enabled then
-
-					if flipped then 
-						mirror (pad_pos, Y);
-						mirror (outline, Y); 
-					end if;
-
-					rotate_by (pad_pos, rot (package_position));
-					move_by (point => pad_pos, offset => type_point (package_position));
-
-					-- The pad outline must be rotated by the rotation of the package
-					-- plus the rotation of the pad itself:
-					rotate_by (outline, add (rot (package_position), rot (pad_pos)));
-					move_by (outline, type_point (pad_pos));
+					
+					move (pad_pos, type_polygon_base (outline));
 
 					set_color_background (context.cr);
 					pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
@@ -2099,6 +2088,7 @@ is
 
 				-- Draw the terminal name as final step on top of all previous stuff:
 				draw_pad_name (to_string (key (c)), t.position);
+				
 			end query_terminal;
 			
 		begin -- draw_terminals
