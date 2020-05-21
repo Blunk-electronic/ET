@@ -2015,6 +2015,33 @@ is
 
 				end if;
 			end draw_pad_tht_outer_layer;
+
+			procedure draw_pad_tht_hole_milled (
+				outline	: in out type_plated_millings;
+				pad_pos	: in out type_position) is -- the center of the pad incl. its rotation
+			begin
+				if conductors_enabled then
+
+					if flipped then 
+						mirror (pad_pos, Y);
+						mirror (outline, Y); 
+					end if;
+
+-- 					rotate_by (pad_pos, rot (package_position));
+-- 					move_by (point => pad_pos, offset => type_point (package_position));
+
+
+					-- The pad outline must be rotated by the rotation of the package
+					-- plus the rotation of the pad itself:
+					rotate_by (outline, add (rot (package_position), rot (pad_pos)));
+					move_by (outline, type_point (pad_pos));
+
+					set_color_background (context.cr);
+					pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
+
+				end if;
+			end draw_pad_tht_hole_milled;
+
 			
 			procedure query_terminal (c : in type_terminals.cursor) is
 				t : type_terminal := element (c);
@@ -2025,10 +2052,15 @@ is
 						set_destination;
 						draw_pad_tht_outer_layer (to_string (key (c)), t.pad_shape_tht.top, t.position, destination);
 
--- 						draw_pad_tht_inner_layer (to_string (key (c)), t.width_inner_layers, t.position, destination);
-						
 						set_destination (INVERSE);
 						draw_pad_tht_outer_layer (to_string (key (c)), t.pad_shape_tht.bottom, t.position, destination);
+
+						case t.tht_hole is
+							when DRILLED => null;
+							when MILLED => draw_pad_tht_hole_milled (t.millings, t.position);
+						end case;
+-- 						draw_pad_tht_inner_layer (to_string (key (c)), t.width_inner_layers, t.position, destination);
+						
 
 						
 					when SMT =>
