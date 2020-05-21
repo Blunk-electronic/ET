@@ -2030,6 +2030,41 @@ is
 				end if;
 			end draw_pad_tht_hole_milled;
 
+			procedure draw_pad_tht_hole_drilled (
+				drill_size	: in type_drill_size;
+				pad_pos_in	: in type_position) is -- the center of the pad incl. its rotation
+
+				pad_pos : type_position := pad_pos_in;
+
+				type type_circle is new et_packages.pac_shapes.type_circle with null record;
+				circle : type_circle;
+
+			begin
+				-- We draw the hole only if a conductor layer is enabled.
+				-- If no conductor layers are enabled, no hole will be shown.
+				if conductors_enabled then
+					
+					if flipped then 
+						mirror (pad_pos, Y);
+					end if;
+					
+					-- Rotate the position of the drill by the rotation of the package:
+					rotate_by (pad_pos, rot (package_position));
+
+					-- Move the drill by the position of the package:
+					move_by (pad_pos, type_point (package_position));
+
+					-- build a black filled circle
+					circle.center := type_point (pad_pos);
+					circle.radius := drill_size * 0.5;
+					
+					set_color_background (context.cr);
+					pac_draw_package.draw_circle (in_area, context, circle, YES, self.frame_height);
+
+				end if;
+			end draw_pad_tht_hole_drilled;
+
+			
 			procedure draw_pad_name (
 				name		: in string;  -- H5, 5, 3
 				pad_pos_in	: in type_position) is -- the center of the pad incl. its rotation
@@ -2090,7 +2125,7 @@ is
 						-- The pad can have a circular hole or a hole of arbitrary shape:
 						case t.tht_hole is
 							when DRILLED => -- circlular hole
-								null;
+								draw_pad_tht_hole_drilled (t.drill_size, t.position);
 								
 							when MILLED => -- arbitrary shape or so called plated millings
 								draw_pad_tht_hole_milled (t.millings, t.position);
