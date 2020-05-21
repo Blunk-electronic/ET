@@ -273,6 +273,17 @@ package body et_colors.board is
 			color_range (opacity));
 	end set_color_terminal_name;
 		
+	procedure set_color_tht_pad (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity)
+	is begin
+		set_source_rgba (
+			context, 
+			tht_pads.red,
+			tht_pads.green,
+			tht_pads.blue,
+			color_range (opacity));
+	end set_color_tht_pad;
 
 	
 	

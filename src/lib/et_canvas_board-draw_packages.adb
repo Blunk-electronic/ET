@@ -1972,7 +1972,7 @@ is
 						-- The pad outline must be rotated by the rotation of the package
 						-- plus the rotation of the pad itself:
 						rotate_by (outline, add (rot (position), rot (pad_pos)));
-						move_by (outline, type_point (position));
+						move_by (outline, type_point (pad_pos));
 						set_color_conductor (context.cr, ly);
 						pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
 
@@ -1981,14 +1981,58 @@ is
 
 				end if;
 			end draw_pad_smt;
+
+			procedure draw_pad_tht_outer_layer (
+				name	: in string;
+				outline	: in out type_pad_outline;
+				pad_pos	: in out type_position; -- the center of the pad incl. its rotation
+				f		: in type_face) is
+				ly : constant type_signal_layer := face_to_layer (f);
+			begin
+				if conductor_enabled (ly) then
+					
+					if f = face then
+						if flipped then 
+							mirror (pad_pos, Y);
+							mirror (outline, Y); 
+						end if;
+
+						-- The terminal name will be at the pad position
+						-- which is usually the center of the pad.
+						-- Rotate the position of the name by the rotation of the package:
+						rotate_by (pad_pos, rot (position));
+						move_by (point => pad_pos, offset => type_point (position));
+						set_color_terminal_name (context.cr);
+						draw_name (name, type_point (pad_pos));
+
+						-- The pad outline must be rotated by the rotation of the package
+						-- plus the rotation of the pad itself:
+						rotate_by (outline, add (rot (position), rot (pad_pos)));
+						move_by (outline, type_point (pad_pos));
+						set_color_tht_pad (context.cr);
+						pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
+
+						-- CS draw stop mask
+					end if;
+
+				end if;
+			end draw_pad_tht_outer_layer;
 			
 			procedure query_terminal (c : in type_terminals.cursor) is
 				t : type_terminal := element (c);
 			begin
 
 				case t.technology is
-					when THT => null;
+					when THT =>
+						set_destination;
+						draw_pad_tht_outer_layer (to_string (key (c)), t.pad_shape_tht.top, t.position, destination);
 
+-- 						draw_pad_tht_inner_layer (to_string (key (c)), t.width_inner_layers, t.position, destination);
+						
+						set_destination (INVERSE);
+						draw_pad_tht_outer_layer (to_string (key (c)), t.pad_shape_tht.bottom, t.position, destination);
+
+						
 					when SMT =>
 						case t.face is
 							when TOP	=> set_destination;								

@@ -53,6 +53,7 @@ package et_colors.board is
 	placeholders	: type_color := white;
 	via				: type_color := green;
 	terminal_names	: type_color := white;
+	tht_pads		: type_color := green;
 	
 	silkscreen_top		: type_color := white;
 	silkscreen_bottom	: type_color := white;	
@@ -139,6 +140,10 @@ package et_colors.board is
 		opacity : in type_opacity := default_opacity);
 
 	procedure set_color_terminal_name (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity);
+
+	procedure set_color_tht_pad (
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
 
