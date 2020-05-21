@@ -1925,30 +1925,16 @@ is
 		-- TERMINALS
 		procedure draw_terminals is
 			use type_terminals;
-
-			procedure draw_name (
-				name	: in string; -- H5, 5, 3
-				pos		: in type_point) is
-				use et_text;
-			begin
-				pac_draw_package.draw_text (
-					area		=> in_area,
-					context		=> context,
-					content		=> to_content (name),
-					size		=> terminal_name_size,
-					font		=> terminal_name_font,
-					position	=> pos,
-					origin		=> false, -- no origin required
-					rotation	=> zero_rotation,
-					alignment	=> (others => <>),
-					height		=> self.frame_height);
-			end draw_name;
 			
 			procedure draw_pad_smt (
-				name	: in string;
-				outline	: in out type_pad_outline;
-				pad_pos	: in out type_position; -- the center of the pad incl. its rotation
-				f		: in type_face) is
+				name		: in string;
+				outline_in	: in type_pad_outline;
+				pad_pos_in	: in type_position; -- the center of the pad incl. its rotation
+				f			: in type_face) is
+
+				outline : type_pad_outline := outline_in;
+				pad_pos : type_position := pad_pos_in;
+
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
 				if conductor_enabled (ly) then
@@ -1959,13 +1945,8 @@ is
 							mirror (outline, Y); 
 						end if;
 
-						-- The terminal name will be at the pad position
-						-- which is usually the center of the pad.
-						-- Rotate the position of the name by the rotation of the package:
 						rotate_by (pad_pos, rot (package_position));
 						move_by (point => pad_pos, offset => type_point (package_position));
-						set_color_terminal_name (context.cr);
-						draw_name (name, type_point (pad_pos));
 
 						-- The pad outline must be rotated by the rotation of the package
 						-- plus the rotation of the pad itself:
@@ -1981,10 +1962,14 @@ is
 			end draw_pad_smt;
 
 			procedure draw_pad_tht_outer_layer (
-				name	: in string;
-				outline	: in out type_pad_outline;
-				pad_pos	: in out type_position; -- the center of the pad incl. its rotation
-				f		: in type_face) is
+				name		: in string;
+				outline_in	: in type_pad_outline;
+				pad_pos_in	: in type_position; -- the center of the pad incl. its rotation
+				f			: in type_face) is
+
+				outline : type_pad_outline := outline_in;
+				pad_pos : type_position := pad_pos_in;
+				
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
 				if conductor_enabled (ly) then
@@ -1995,13 +1980,8 @@ is
 							mirror (outline, Y); 
 						end if;
 
-						-- The terminal name will be at the pad position
-						-- which is usually the center of the pad.
-						-- Rotate the position of the name by the rotation of the package:
 						rotate_by (pad_pos, rot (package_position));
 						move_by (point => pad_pos, offset => type_point (package_position));
-						set_color_terminal_name (context.cr);
-						draw_name (name, type_point (pad_pos));
 
 						-- The pad outline must be rotated by the rotation of the package
 						-- plus the rotation of the pad itself:
@@ -2017,8 +1997,12 @@ is
 			end draw_pad_tht_outer_layer;
 
 			procedure draw_pad_tht_hole_milled (
-				outline	: in out type_plated_millings;
-				pad_pos	: in out type_position) is -- the center of the pad incl. its rotation
+				outline_in	: in type_plated_millings;
+				pad_pos_in	: in type_position) is -- the center of the pad incl. its rotation
+
+				outline : type_plated_millings := outline_in;
+				pad_pos : type_position := pad_pos_in;
+				
 			begin
 				if conductors_enabled then
 
@@ -2027,9 +2011,8 @@ is
 						mirror (outline, Y); 
 					end if;
 
--- 					rotate_by (pad_pos, rot (package_position));
--- 					move_by (point => pad_pos, offset => type_point (package_position));
-
+					rotate_by (pad_pos, rot (package_position));
+					move_by (point => pad_pos, offset => type_point (package_position));
 
 					-- The pad outline must be rotated by the rotation of the package
 					-- plus the rotation of the pad itself:
@@ -2042,9 +2025,50 @@ is
 				end if;
 			end draw_pad_tht_hole_milled;
 
+			procedure draw_pad_name (
+				name		: in string;  -- H5, 5, 3
+				pad_pos_in	: in type_position) is -- the center of the pad incl. its rotation
+
+				pad_pos : type_position := pad_pos_in;
+				use et_text;
+			begin
+				-- We draw the terminal name only if a conductor layer is enabled.
+				-- If no conductor layers are enabled, not terminal names will be shown.
+				if conductors_enabled then
+					
+					if flipped then 
+						mirror (pad_pos, Y);
+					end if;
+
+					-- The terminal name will be at the pad position
+					-- which is usually the center of the pad.
+					-- The terminal name will not be rotated.
+					
+					-- Rotate the position of the name by the rotation of the package:
+					rotate_by (pad_pos, rot (package_position));
+
+					-- Move the position of the name by the position of the package:
+					move_by (point => pad_pos, offset => type_point (package_position));
+					set_color_terminal_name (context.cr);
+
+					pac_draw_package.draw_text (
+						area		=> in_area,
+						context		=> context,
+						content		=> to_content (name),
+						size		=> terminal_name_size,
+						font		=> terminal_name_font,
+						position	=> type_point (pad_pos),
+						origin		=> false, -- no origin required
+						rotation	=> zero_rotation,
+						alignment	=> (others => <>),
+						height		=> self.frame_height);
+					
+				end if;
+			end draw_pad_name;
+
 			
 			procedure query_terminal (c : in type_terminals.cursor) is
-				t : type_terminal := element (c);
+				t : constant type_terminal := element (c);
 			begin
 
 				case t.technology is
@@ -2059,9 +2083,10 @@ is
 							when DRILLED => null;
 							when MILLED => draw_pad_tht_hole_milled (t.millings, t.position);
 						end case;
+
+
 -- 						draw_pad_tht_inner_layer (to_string (key (c)), t.width_inner_layers, t.position, destination);
 						
-
 						
 					when SMT =>
 						case t.face is
@@ -2071,7 +2096,9 @@ is
 						
 						draw_pad_smt (to_string (key (c)), t.pad_shape, t.position, destination);
 				end case;
-						
+
+				-- Draw the terminal name as final step on top of all previous stuff:
+				draw_pad_name (to_string (key (c)), t.position);
 			end query_terminal;
 			
 		begin -- draw_terminals
