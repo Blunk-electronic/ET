@@ -1926,22 +1926,39 @@ is
 		procedure draw_terminals is
 			use type_terminals;
 
+			-- Calculates the final position of a outline.
 			procedure move (
-				pad_pos	: in out type_position;
-				outline	: in out type_polygon_base) is
-			begin 
+				position	: in out type_position;
+				outline		: in out type_polygon_base) is
+			begin
+				-- If the package is flipped, then the given position and the 
+				-- given outline (of a pad or a milled hole)
+				-- must be mirrored along the Y axis.
 				if flipped then 
-					mirror (pad_pos, Y);
+					mirror (position, Y);
 					mirror (outline, Y); 
 				end if;
 
-				rotate_by (pad_pos, rot (package_position));
-				move_by (point => pad_pos, offset => type_point (package_position));
+				-- Rotate the given position by the position of the package:
+				rotate_by (position, rot (package_position));
 
-				-- The pad outline must be rotated by the rotation of the package
-				-- plus the rotation of the pad itself:
-				rotate_by (outline, add (rot (package_position), rot (pad_pos)));
-				move_by (outline, type_point (pad_pos));
+				-- Move the given position by the position of the package.
+				move_by (position, type_point (package_position));
+				-- Position will later be the offset by which the outline will be moved
+				-- to its final place.
+				
+				if flipped then
+					-- The outline must be rotated by the rotation of the package
+					-- minus the rotation of the given position itself:
+					rotate_by (outline, add (rot (package_position), - rot (position)));
+				else				
+					-- The outline must be rotated by the rotation of the package
+					-- plus the rotation of the given position itself:
+					rotate_by (outline, add (rot (package_position), rot (position)));
+				end if;
+
+				-- Move the outline to its final position:
+				move_by (outline, type_point (position));
 			end move;
 			
 			procedure draw_pad_smt (
@@ -1966,7 +1983,6 @@ is
 
 						-- CS draw stop mask and solder paste 
 					end if;
-
 				end if;
 			end draw_pad_smt;
 
@@ -1992,7 +2008,6 @@ is
 
 						-- CS draw stop mask
 					end if;
-
 				end if;
 			end draw_pad_tht_outer_layer;
 
@@ -2002,8 +2017,9 @@ is
 
 				outline : type_plated_millings := outline_in;
 				pad_pos : type_position := pad_pos_in;
-				
 			begin
+				-- We draw the hole only if a conductor layer is enabled.
+				-- If no conductor layers are enabled, no hole will be shown.
 				if conductors_enabled then
 					
 					move (pad_pos, type_polygon_base (outline));
@@ -2037,7 +2053,7 @@ is
 					rotate_by (pad_pos, rot (package_position));
 
 					-- Move the position of the name by the position of the package:
-					move_by (point => pad_pos, offset => type_point (package_position));
+					move_by (pad_pos, type_point (package_position));
 					set_color_terminal_name (context.cr);
 
 					pac_draw_package.draw_text (
@@ -2059,18 +2075,25 @@ is
 			procedure query_terminal (c : in type_terminals.cursor) is
 				t : constant type_terminal := element (c);
 			begin
-
+				-- The terminal can be a through-hole type (THT) or a pad for surface mounting (SMT):
 				case t.technology is
+					
 					when THT =>
+						-- draw pad outline of top layer:
 						set_destination;
 						draw_pad_tht_outer_layer (to_string (key (c)), t.pad_shape_tht.top, t.position, destination);
 
+						-- draw pad outline of bottom layer:
 						set_destination (INVERSE);
 						draw_pad_tht_outer_layer (to_string (key (c)), t.pad_shape_tht.bottom, t.position, destination);
 
+						-- The pad can have a circular hole or a hole of arbitrary shape:
 						case t.tht_hole is
-							when DRILLED => null;
-							when MILLED => draw_pad_tht_hole_milled (t.millings, t.position);
+							when DRILLED => -- circlular hole
+								null;
+								
+							when MILLED => -- arbitrary shape or so called plated millings
+								draw_pad_tht_hole_milled (t.millings, t.position);
 						end case;
 
 
