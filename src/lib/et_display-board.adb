@@ -164,6 +164,19 @@ package body et_display.board is
 		return false;
 	end conductors_enabled;
 
+	function inner_conductors_enabled (
+		deepest_layer : in type_signal_layer) -- the deepest conductor layer of the board
+		return boolean is 
+	begin
+		for r in type_conductors'first + 1 .. deepest_layer - 1 loop
+			if layers.conductors (r) = ON then
+				return true;
+			end if;
+		end loop;
+
+		return false;
+	end inner_conductors_enabled;
+
 	function conductor_enabled (layer : in type_signal_layer) return boolean is begin
 		if layers.conductors (layer) = ON then
 			return true;

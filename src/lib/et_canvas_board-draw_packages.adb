@@ -1960,8 +1960,30 @@ is
 				-- Move the outline to its final position:
 				move_by (outline, type_point (position));
 			end move;
+
+			procedure draw_name (
+				name	: in string;  -- H5, 5, 3
+				pos		: in type_position) is -- the center of the pad
+				use et_text;
+			begin
+				set_color_terminal_name (context.cr);
+
+				pac_draw_package.draw_text (
+					area		=> in_area,
+					context		=> context,
+					content		=> to_content (name),
+					size		=> terminal_name_size,
+					font		=> terminal_name_font,
+					position	=> type_point (pos),
+					origin		=> false, -- no origin required
+					rotation	=> zero_rotation,
+					alignment	=> (others => <>),
+					height		=> self.frame_height);
+
+			end draw_name;
 			
 			procedure draw_pad_smt (
+				name		: in string;  -- H5, 5, 3
 				outline_in	: in type_pad_outline;
 				pad_pos_in	: in type_position; -- the center of the pad incl. its rotation
 				f			: in type_face) is
@@ -1981,6 +2003,9 @@ is
 						pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
 
 						-- CS draw stop mask and solder paste 
+
+						-- draw the terminal name
+						draw_name (name, pad_pos);
 					end if;
 				end if;
 			end draw_pad_smt;
@@ -2010,6 +2035,7 @@ is
 			end draw_pad_tht_outer_layer;
 
 			procedure draw_pad_tht_hole_milled (
+				name		: in string;  -- H5, 5, 3
 				outline_in	: in type_plated_millings;
 				pad_pos_in	: in type_position) is -- the center of the pad incl. its rotation
 
@@ -2025,18 +2051,21 @@ is
 					set_color_background (context.cr);
 					pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
 
+					-- draw the terminal name
+					draw_name (name, pad_pos);
 				end if;
 			end draw_pad_tht_hole_milled;
 
 			procedure draw_pad_tht_hole_drilled (
+				name		: in string;  -- H5, 5, 3
 				drill_size	: in type_drill_size;
+				restring	: in type_track_width;
 				pad_pos_in	: in type_position) is -- the center of the pad incl. its rotation
 
 				pad_pos : type_position := pad_pos_in;
 
 				type type_circle is new et_packages.pac_shapes.type_circle with null record;
 				circle : type_circle;
-
 			begin
 				-- We draw the hole only if a conductor layer is enabled.
 				-- If no conductor layers are enabled, no hole will be shown.
@@ -2052,56 +2081,28 @@ is
 					-- Move the drill by the position of the package:
 					move_by (pad_pos, type_point (package_position));
 
-					-- build a black filled circle
+
 					circle.center := type_point (pad_pos);
+
+					-- If any inner layer is enabled, build a circle to show the restring 
+					-- of inner layers:
+					if inner_conductors_enabled (bottom_layer) then
+						circle.radius := drill_size * 0.5 + restring;
+					
+						set_color_tht_pad (context.cr);
+						pac_draw_package.draw_circle (in_area, context, circle, YES, self.frame_height);
+					end if;
+					
+					-- Build a black filled circle to show the drill:
 					circle.radius := drill_size * 0.5;
 					
 					set_color_background (context.cr);
 					pac_draw_package.draw_circle (in_area, context, circle, YES, self.frame_height);
 
+					-- draw the terminal name
+					draw_name (name, pad_pos);
 				end if;
 			end draw_pad_tht_hole_drilled;
-			
-			procedure draw_pad_name (
-				name		: in string;  -- H5, 5, 3
-				pad_pos_in	: in type_position) is -- the center of the pad incl. its rotation
-
-				pad_pos : type_position := pad_pos_in;
-				use et_text;
-			begin
-				-- We draw the terminal name only if a conductor layer is enabled.
-				-- If no conductor layers are enabled, not terminal names will be shown.
-				if conductors_enabled then
-					
-					if flipped then 
-						mirror (pad_pos, Y);
-					end if;
-
-					-- The terminal name will be at the pad position
-					-- which is usually the center of the pad.
-					-- The terminal name will not be rotated.
-					
-					-- Rotate the position of the name by the rotation of the package:
-					rotate_by (pad_pos, rot (package_position));
-
-					-- Move the position of the name by the position of the package:
-					move_by (pad_pos, type_point (package_position));
-					set_color_terminal_name (context.cr);
-
-					pac_draw_package.draw_text (
-						area		=> in_area,
-						context		=> context,
-						content		=> to_content (name),
-						size		=> terminal_name_size,
-						font		=> terminal_name_font,
-						position	=> type_point (pad_pos),
-						origin		=> false, -- no origin required
-						rotation	=> zero_rotation,
-						alignment	=> (others => <>),
-						height		=> self.frame_height);
-					
-				end if;
-			end draw_pad_name;
 			
 			procedure query_terminal (c : in type_terminals.cursor) is
 				t : constant type_terminal := element (c);
@@ -2121,14 +2122,11 @@ is
 						-- The pad can have a circular hole or a hole of arbitrary shape:
 						case t.tht_hole is
 							when DRILLED => -- circlular hole
-								draw_pad_tht_hole_drilled (t.drill_size, t.position);
+								draw_pad_tht_hole_drilled (to_string (key (c)), t.drill_size, t.width_inner_layers, t.position);
 								
 							when MILLED => -- arbitrary shape or so called plated millings
-								draw_pad_tht_hole_milled (t.millings, t.position);
+								draw_pad_tht_hole_milled (to_string (key (c)), t.millings, t.position);
 						end case;
-
--- 						draw_pad_tht_inner_layer (t.width_inner_layers, t.position);
-						
 						
 					when SMT =>
 						case t.face is
@@ -2136,11 +2134,8 @@ is
 							when BOTTOM	=> set_destination (INVERSE);
 						end case;
 						
-						draw_pad_smt (t.pad_shape, t.position, destination);
+						draw_pad_smt (to_string (key (c)), t.pad_shape, t.position, destination);
 				end case;
-
-				-- Draw the terminal name as final step on top of all previous stuff:
-				draw_pad_name (to_string (key (c)), t.position);
 				
 			end query_terminal;
 			
