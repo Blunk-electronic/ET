@@ -1996,6 +1996,15 @@ package body et_geometry is
 				next (cc);
 			end loop;
 		end rotate_by;
+
+		procedure frame_polygon (
+			polygon	: in out type_polygon_base;
+			width	: in type_distance_positive;
+			frame	: in type_polygon_frame) is
+		begin
+			null;
+
+		end frame_polygon;
 		
 		
 -- 		function to_corner_easing (easing : in string) return type_corner_easing is begin

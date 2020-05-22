@@ -686,7 +686,14 @@ package et_geometry is
 			polygon		: in out type_polygon_base;
 			rotation	: in type_rotation);
 
+
+		type type_polygon_frame is (INSIDE, OUTSIDE);
 		
+		procedure frame_polygon (
+			polygon	: in out type_polygon_base;
+			width	: in type_distance_positive;
+			frame	: in type_polygon_frame);
+	
 		type type_polygon is new type_polygon_base with record
 			filled	: type_filled;
 		end record;

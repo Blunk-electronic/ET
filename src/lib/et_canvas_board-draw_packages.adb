@@ -2035,21 +2035,38 @@ is
 			end draw_pad_tht_outer_layer;
 
 			procedure draw_pad_tht_hole_milled (
-				name		: in string;  -- H5, 5, 3
-				outline_in	: in type_plated_millings;
-				pad_pos_in	: in type_position) is -- the center of the pad incl. its rotation
+				name			: in string;  -- H5, 5, 3
+				outline_in		: in type_plated_millings;
+				restring_width	: in type_track_width;
+				pad_pos_in		: in type_position) is -- the center of the pad incl. its rotation
 
-				outline : type_plated_millings := outline_in;
+				hole_outline : type_plated_millings := outline_in;
 				pad_pos : type_position := pad_pos_in;
-			begin
+
+				pad_outline : type_pad_outline;
+				
+			begin -- draw_pad_tht_hole_milled
+				
 				-- We draw the hole only if a conductor layer is enabled.
 				-- If no conductor layers are enabled, no hole will be shown.
 				if conductors_enabled then
 					
-					move (pad_pos, type_polygon_base (outline));
+					move (pad_pos, type_polygon_base (hole_outline));
 
+					-- Draw the conductor frame around the hole if any inner signal layer is enabled:
+					if inner_conductors_enabled (bottom_layer) then
+						-- Compute a polygon that extends the hole_outline by the restring_width:
+						pad_outline := (type_polygon_base (hole_outline) with null record);
+						frame_polygon (pad_outline, restring_width, OUTSIDE);
+
+						-- Draw the frame
+						set_color_tht_pad (context.cr);
+						pac_draw_package.draw_polygon (in_area, context, pad_outline, YES, self.frame_height);
+					end if;
+					
+					-- Draw the hole outline:
 					set_color_background (context.cr);
-					pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
+					pac_draw_package.draw_polygon (in_area, context, hole_outline, YES, self.frame_height);
 
 					-- draw the terminal name
 					draw_name (name, pad_pos);
@@ -2125,7 +2142,7 @@ is
 								draw_pad_tht_hole_drilled (to_string (key (c)), t.drill_size, t.width_inner_layers, t.position);
 								
 							when MILLED => -- arbitrary shape or so called plated millings
-								draw_pad_tht_hole_milled (to_string (key (c)), t.millings, t.position);
+								draw_pad_tht_hole_milled (to_string (key (c)), t.millings, t.width_inner_layers, t.position);
 						end case;
 						
 					when SMT =>
