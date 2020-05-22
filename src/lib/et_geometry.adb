@@ -2002,8 +2002,11 @@ package body et_geometry is
 			width	: in type_distance_positive;
 			frame	: in type_polygon_frame) is
 		begin
-			null;
+-- CS
+-- 			for s in type_polygon_segment_id'first .. polygon.segments_total loop
+				null;
 
+-- 			end loop;
 		end frame_polygon;
 		
 		
