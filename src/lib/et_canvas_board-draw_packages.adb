@@ -328,6 +328,46 @@ is
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
 			end query_cutout_bottom;
+
+
+			-- PLACEHOLDERS
+			use pac_text_placeholders;
+
+			procedure draw_placeholder (
+				ph	: in out type_text_placeholder;
+				f	: in type_face) 
+			is begin
+				if silkscreen_enabled (f) then
+					
+					if f = face then
+						if flipped then mirror (ph.position, Y); end if;
+						
+						rotate_by (ph.position, add (rot (package_position), rot (ph.position)));
+						move_by (ph.position, type_point (package_position));
+
+						set_color_silkscreen (context.cr, f);
+						-- set_line_width (context.cr, type_view_coordinate (line.width)); -- CS
+
+						-- CS
+					end if;
+
+				end if;
+			end draw_placeholder;
+				
+			procedure query_placeholder_top (c : in pac_text_placeholders.cursor) is
+				ph : type_text_placeholder := element (c);
+			begin
+				set_destination;
+				draw_placeholder (ph, destination);
+			end query_placeholder_top;
+
+			procedure query_placeholder_bottom (c : in pac_text_placeholders.cursor) is
+				ph : type_text_placeholder := element (c);
+			begin
+				set_destination (INVERSE);
+				draw_placeholder (ph, destination);
+			end query_placeholder_bottom;
+
 			
 		begin -- draw_silkscreen
 			-- lines
@@ -352,6 +392,10 @@ is
 			
 			-- CS
 			-- placeholders
+			element (package_cursor).silk_screen.top.placeholders.iterate (query_placeholder_top'access);
+			element (package_cursor).silk_screen.bottom.placeholders.iterate (query_placeholder_bottom'access);
+
+
 			-- texts		: type_texts_with_content.list;
 			
 		end draw_silkscreen;
