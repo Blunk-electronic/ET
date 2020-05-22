@@ -1962,7 +1962,6 @@ is
 			end move;
 			
 			procedure draw_pad_smt (
-				name		: in string;
 				outline_in	: in type_pad_outline;
 				pad_pos_in	: in type_position; -- the center of the pad incl. its rotation
 				f			: in type_face) is
@@ -1987,7 +1986,6 @@ is
 			end draw_pad_smt;
 
 			procedure draw_pad_tht_outer_layer (
-				name		: in string;
 				outline_in	: in type_pad_outline;
 				pad_pos_in	: in type_position; -- the center of the pad incl. its rotation
 				f			: in type_face) is
@@ -2063,7 +2061,6 @@ is
 
 				end if;
 			end draw_pad_tht_hole_drilled;
-
 			
 			procedure draw_pad_name (
 				name		: in string;  -- H5, 5, 3
@@ -2105,7 +2102,6 @@ is
 					
 				end if;
 			end draw_pad_name;
-
 			
 			procedure query_terminal (c : in type_terminals.cursor) is
 				t : constant type_terminal := element (c);
@@ -2116,11 +2112,11 @@ is
 					when THT =>
 						-- draw pad outline of top layer:
 						set_destination;
-						draw_pad_tht_outer_layer (to_string (key (c)), t.pad_shape_tht.top, t.position, destination);
+						draw_pad_tht_outer_layer (t.pad_shape_tht.top, t.position, destination);
 
 						-- draw pad outline of bottom layer:
 						set_destination (INVERSE);
-						draw_pad_tht_outer_layer (to_string (key (c)), t.pad_shape_tht.bottom, t.position, destination);
+						draw_pad_tht_outer_layer (t.pad_shape_tht.bottom, t.position, destination);
 
 						-- The pad can have a circular hole or a hole of arbitrary shape:
 						case t.tht_hole is
@@ -2131,8 +2127,7 @@ is
 								draw_pad_tht_hole_milled (t.millings, t.position);
 						end case;
 
-
--- 						draw_pad_tht_inner_layer (to_string (key (c)), t.width_inner_layers, t.position, destination);
+-- 						draw_pad_tht_inner_layer (t.width_inner_layers, t.position);
 						
 						
 					when SMT =>
@@ -2141,7 +2136,7 @@ is
 							when BOTTOM	=> set_destination (INVERSE);
 						end case;
 						
-						draw_pad_smt (to_string (key (c)), t.pad_shape, t.position, destination);
+						draw_pad_smt (t.pad_shape, t.position, destination);
 				end case;
 
 				-- Draw the terminal name as final step on top of all previous stuff:
