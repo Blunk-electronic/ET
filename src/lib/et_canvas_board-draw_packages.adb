@@ -367,6 +367,7 @@ is
 							);
 								
 						vector_text.iterate (query_line'access);
+						
 					end if;
 
 				end if;

@@ -184,6 +184,14 @@ package pac_draw is
 		rotation	: in type_rotation;
 		alignment	: in type_text_alignment;
 		height		: in pac_shapes.geometry.type_distance); -- the height of the drawing frame
+
+-- 	-- Draw a vectorized text:
+-- 	procedure draw_vector_text (
+-- 		area	: in type_rectangle;
+-- 		context	: in type_draw_context;
+-- 		text	: in pac_vector_text_lines.list;
+-- 		height	: in pac_shapes.geometry.type_distance);
+
 	
 end pac_draw;
 
