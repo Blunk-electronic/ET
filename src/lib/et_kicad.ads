@@ -47,6 +47,7 @@ with ada.containers.vectors;
 
 with et_general;
 with et_project;
+with et_geometry;
 with et_schematic;
 with et_packages;
 with et_pcb;
@@ -181,10 +182,14 @@ package et_kicad is
 	text_line_width_min : constant et_coordinates.geometry.type_distance_positive := 0.1;
 	text_line_width_max : constant et_coordinates.geometry.type_distance_positive := 5.0;
 	text_line_width_default : constant et_coordinates.geometry.type_distance_positive := 0.3; 
+
+	-- Instantiation of the shapes package:
+	-- Required for instantiation of text package only. See below.
+	package pac_shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry);
 	
 	-- Instantiation of the text package:
 	package pac_text is new et_text.text (
-		geometry			=> et_coordinates.geometry,
+		pac_shapes			=> pac_shapes,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
 		size_default		=> text_size_default,

@@ -36,6 +36,9 @@
 --
 
 with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.containers; 			use ada.containers;
+with ada.containers.doubly_linked_lists;
+
 with cairo;
 with et_geometry;
 with et_string_processing;
@@ -107,13 +110,13 @@ package et_text is
 
 	
 	generic
-		with package geometry is new et_geometry.geometry_operations_2d (<>);
+		with package pac_shapes is new et_geometry.shapes_2d (<>);
 		
-		size_min, size_max, size_default : geometry.type_distance;
-		line_width_min, line_width_max, line_width_default : geometry.type_distance;
+		size_min, size_max, size_default : pac_shapes.geometry.type_distance;
+		line_width_min, line_width_max, line_width_default : pac_shapes.geometry.type_distance;
 		
 	package text is
-		use geometry;
+		use pac_shapes.geometry;
 
 		subtype type_text_size is type_distance range size_min .. size_max; -- in millimeters
 		subtype type_text_line_width is type_distance range line_width_min .. line_width_max;
@@ -170,8 +173,35 @@ package et_text is
 
 		-- Converts a string like "0.0" or "90.0" to HORIZONTAL or VERTICAL.
 		function to_rotation_doc (rotation : in string) return type_rotation_documentation;		
+
+
 		
-	-- 	private
+	-- VECTORIZED TEXT
+
+		type type_line_with_to_size_ratio is range 1 .. 50; -- in percent
+		line_width_to_size_ratio_default : constant type_line_with_to_size_ratio := 15;
+
+		type type_vector_text_line is new pac_shapes.type_line with null record;
+
+		package pac_vector_text_lines is new doubly_linked_lists (type_vector_text_line);
+
+		vector_text_alignment_default : constant type_text_alignment := (LEFT, CENTER);
+
+		type type_vector_text_mirrored is (NO, YES);
+		vector_text_mirror_default : constant type_vector_text_mirrored := NO;
+		
+		function to_vectors (
+			content		: in type_text_content.bounded_string;
+			size		: in type_text_size;
+			rotation	: in type_rotation;
+			position	: in type_point;
+			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
+			ratio		: in type_line_with_to_size_ratio := line_width_to_size_ratio_default;
+			alignment	: in type_text_alignment := vector_text_alignment_default)
+			return pac_vector_text_lines.list;
+
+		
+
 
 	end text;
 

@@ -77,13 +77,11 @@ package et_schematic is
 	use et_general.type_net_name;
 	use et_coordinates.geometry;
 
-	package pac_shapes is new et_geometry.shapes_2d (
-		geometry => et_coordinates.geometry);
-	
+	package pac_shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry);
 	use pac_shapes;
 
 	package pac_text is new et_text.text (
-		geometry			=> et_coordinates.geometry,
+		pac_shapes			=> pac_shapes,
 		size_min			=> et_symbols.text_size_min,
 		size_max			=> et_symbols.text_size_max,
 		size_default		=> et_symbols.text_size_default,

@@ -335,20 +335,38 @@ is
 
 			procedure draw_placeholder (
 				ph	: in out type_text_placeholder;
-				f	: in type_face) 
-			is begin
+				f	: in type_face) is
+
+				use pac_text.pac_vector_text_lines;
+				vector_text : pac_text.pac_vector_text_lines.list;
+
+				procedure query_line (c : in pac_text.pac_vector_text_lines.cursor) is 
+				begin
+					null;
+					pac_draw_package.draw_line (in_area, context, element (c), self.frame_height);
+				end query_line;
+			
+			begin
 				if silkscreen_enabled (f) then
 					
 					if f = face then
 						if flipped then mirror (ph.position, Y); end if;
 						
-						rotate_by (ph.position, add (rot (package_position), rot (ph.position)));
-						move_by (ph.position, type_point (package_position));
+						rotate_by (ph.position, add (rot (package_position), rot (ph.position))); -- CS ?
+						move_by (ph.position, type_point (package_position)); -- CS ?
 
 						set_color_silkscreen (context.cr, f);
-						-- set_line_width (context.cr, type_view_coordinate (line.width)); -- CS
+						set_line_width (context.cr, type_view_coordinate (0.15)); -- CS
 
-						-- CS
+						vector_text := pac_text.to_vectors (
+							content		=> et_text.to_content ("T"),
+							size		=> ph.size,
+							rotation	=> rot (ph.position),
+							position	=> type_point (ph.position)
+-- 							mirror		=> NO
+							);
+								
+						vector_text.iterate (query_line'access);
 					end if;
 
 				end if;

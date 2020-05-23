@@ -127,10 +127,16 @@ package et_packages is
 	line_width_min : constant type_distance_positive := 0.15;
 	line_width_max : constant type_distance_positive := 10.0;
 	line_width_default : constant type_distance_positive := 0.15;
+
+	
+	-- Instantiation of the shapes package:
+	package pac_shapes is new et_geometry.shapes_2d (geometry => et_pcb_coordinates.geometry);
+	use pac_shapes;
+
 	
 	-- Instantiation of the text package:
 	package pac_text is new et_text.text (
-		geometry			=> et_pcb_coordinates.geometry,
+		pac_shapes			=> pac_shapes,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
 		size_default		=> text_size_default,
@@ -280,11 +286,6 @@ package et_packages is
 	
 
 
-	-- Instantiation of the generic shapes package et_geometry.shapes_2d:
-	package pac_shapes is new et_geometry.shapes_2d (
-		geometry => et_pcb_coordinates.geometry);
-
-	use pac_shapes;
 	
 
 	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE		

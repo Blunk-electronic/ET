@@ -157,9 +157,9 @@ package body et_text is
 			-- Returns the given text size as string.
 			begin
 				if preamble then
-					return "size " & geometry.to_string (size);
+					return "size " & pac_shapes.geometry.to_string (size);
 				else
-					return geometry.to_string (size);
+					return pac_shapes.geometry.to_string (size);
 				end if;
 			end to_string;
 
@@ -283,6 +283,36 @@ package body et_text is
 				return snap (r);
 			end if;
 		end;
+
+
+
+		
+	-- VECTORIZED TEXT
+		
+
+		function to_vectors (
+			content		: in type_text_content.bounded_string;
+			size		: in type_text_size;
+			rotation	: in type_rotation;
+			position	: in type_point;
+			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
+			ratio		: in type_line_with_to_size_ratio := line_width_to_size_ratio_default;
+			alignment	: in type_text_alignment := vector_text_alignment_default)
+			return pac_vector_text_lines.list is
+
+			use pac_vector_text_lines;
+			result : pac_vector_text_lines.list; -- to be returned
+
+			l : type_vector_text_line;
+		begin
+			l.end_point := type_point (origin);
+			l.start_point := type_point (set (1.0, 1.0));
+
+			append (result, l);
+			
+			return result;
+		end to_vectors;
+
 		
 	end text;
 
