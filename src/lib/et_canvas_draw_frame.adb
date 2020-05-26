@@ -164,7 +164,7 @@ package body pac_draw_frame is
 				area		=> in_area,
 				context		=> context,
 				content		=> content,
-				size		=> pac_text.pac_shapes.geometry.type_distance_positive (font_indexes_size),
+				size		=> pac_shapes.geometry.type_distance_positive (font_indexes_size),
 				font		=> font_indexes,
 				position	=> pos,
 				origin		=> false,
@@ -334,7 +334,7 @@ package body pac_draw_frame is
 				x => type_distance_positive (pos.x + title_block.position.x),
 				y => type_distance_positive (pos.y + title_block.position.y)));
 
-		use pac_text.pac_shapes;
+		use pac_shapes;
 	begin
 		draw_ops.draw_text (
 			area		=> in_area,

@@ -69,7 +69,9 @@ generic
 	with package pac_shapes is new et_geometry.shapes_2d (<>);
 
 	-- The instantiated text package:
-	with package pac_text is new et_text.text (<>);
+	with package pac_text is new et_text.text (
+		pac_shapes		=> pac_shapes,
+		others			=> <>);
 	
 package pac_draw is
 	use pac_canvas;
