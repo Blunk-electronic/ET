@@ -871,12 +871,46 @@ package body pac_draw is
 
 			-- compute the bounding box of the given line
 			bounding_box : type_rectangle := make_bounding_box (height, b);
+
 		begin
-			draw_line (area, context, element (c), height);
+
+			-- We draw the segment if:
+			--  - no area given or
+			--  - if the bounding box of the segment intersects the given area
+			if (area = no_rectangle
+				or else intersects (area, bounding_box)) 
+			then
+				-- CS test size 
+				-- 			if not size_above_threshold (self, context.view) then
+				-- 				return;
+				-- 			end if;
+				
+				-- start point
+				move_to (
+					context.cr,
+					convert_x (element (c).start_point.x),
+					shift_y (element (c).start_point.y, height)
+					);
+
+				-- end point
+				line_to (
+					context.cr,
+					convert_x (element (c).end_point.x),
+					shift_y (element (c).end_point.y, height)
+					);
+
+			end if;
+			
 		end query_line;
 		
 	begin
+		-- The ends of the line are round:
+		set_line_cap (context.cr, cairo_line_cap_round);
+		
+		-- set_line_join (context.cr, cairo_line_join_miter); -- CS
 		text.iterate (query_line'access);
+
+		stroke (context.cr);
 	end draw_vector_text;
 
 	

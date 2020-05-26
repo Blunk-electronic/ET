@@ -309,6 +309,12 @@ package body et_text is
 			l.start_point := type_point (set (1.0, 1.0));
 
 			append (result, l);
+
+			l.end_point := type_point (set (2.0, 2.0));
+			l.start_point := type_point (set (3.0, 3.0));
+
+			append (result, l);
+
 			
 			return result;
 		end to_vectors;
