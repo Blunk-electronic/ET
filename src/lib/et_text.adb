@@ -304,6 +304,11 @@ package body et_text is
 			result : pac_vector_text_lines.list; -- to be returned
 
 			l : type_vector_text_line;
+
+			-- 			A : constant 
+			type type_segment_id is range 1 .. 20;
+			type type_letter is array (type_segment_id range <>) of type_vector_text_line;
+			
 		begin
 			l.end_point := type_point (origin);
 			l.start_point := type_point (set (1.0, 1.0));
