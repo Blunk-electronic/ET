@@ -90,7 +90,6 @@ package et_canvas_schematic is
 	package pac_draw_misc is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas	=> pac_canvas,
 		pac_shapes	=> et_schematic.pac_shapes,
-		--pac_text	=> et_symbols.pac_text);
 		pac_text	=> et_schematic.pac_text);
 	
 	

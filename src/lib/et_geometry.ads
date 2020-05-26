@@ -687,13 +687,19 @@ package et_geometry is
 			rotation	: in type_rotation);
 
 
+		-- In order to draw an inner or outer frame of a polygon
+		-- we have this type:
 		type type_polygon_frame is (INSIDE, OUTSIDE);
-		
+
+		-- The procedure shrinks or expands the given polygon
+		-- so that the resulting polygon is an inner or outer frame:
 		procedure frame_polygon (
 			polygon	: in out type_polygon_base;
 			width	: in type_distance_positive;
 			frame	: in type_polygon_frame);
-	
+
+
+		
 		type type_polygon is new type_polygon_base with record
 			filled	: type_filled;
 		end record;

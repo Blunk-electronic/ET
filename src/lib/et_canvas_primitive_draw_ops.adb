@@ -856,40 +856,28 @@ package body pac_draw is
 	end draw_text;
 
 	
--- 	procedure draw_vector_text (
--- 		area	: in type_rectangle;
--- 		context	: in type_draw_context;
--- 		text	: in pac_vector_text_lines.list;
--- 		height	: in pac_shapes.geometry.type_distance)
--- 	is
--- 		
--- 		type type_line is new pac_shapes.type_line with null record;
--- 		
--- 		use pac_vector_text_lines;
--- 		
--- 		procedure query_line (c : in pac_vector_text_lines.cursor) is 
--- 
--- 			-- compute the boundaries (greatest/smallest x/y) of the given line:
--- 			boundaries : type_boundaries := pac_shapes.boundaries (element (c));
--- 
--- 			-- compute the bounding box of the given line
--- -- 			bounding_box : type_rectangle := make_bounding_box (height, boundaries);
--- 
--- 			
--- -- 			l : type_line;
--- -- 				:= (
--- -- 					start_point => element (c).start_point,
--- -- 					end_point	=> element (c).end_point);
--- 		begin
--- 			null;
--- -- 			l.start_point := element (c).start_point;
--- 			
--- -- 			draw_line (area, context, line, height);
--- 		end query_line;
--- 		
--- 	begin
--- 		text.iterate (query_line'access);
--- 	end draw_vector_text;
+	procedure draw_vector_text (
+		area	: in type_rectangle;
+		context	: in type_draw_context;
+		text	: in pac_vector_text_lines.list;
+		height	: in pac_shapes.geometry.type_distance)
+	is
+		use pac_vector_text_lines;
+		
+		procedure query_line (c : in pac_vector_text_lines.cursor) is 
+
+			-- compute the boundaries (greatest/smallest x/y) of the given line:
+			b : type_boundaries := boundaries (element (c));
+
+			-- compute the bounding box of the given line
+			bounding_box : type_rectangle := make_bounding_box (height, b);
+		begin
+			draw_line (area, context, element (c), height);
+		end query_line;
+		
+	begin
+		text.iterate (query_line'access);
+	end draw_vector_text;
 
 	
 end pac_draw;

@@ -339,12 +339,6 @@ is
 
 				use pac_text.pac_vector_text_lines;
 				vector_text : pac_text.pac_vector_text_lines.list;
-
-				procedure query_line (c : in pac_text.pac_vector_text_lines.cursor) is 
-				begin
-					null;
-					pac_draw_package.draw_line (in_area, context, element (c), self.frame_height);
-				end query_line;
 			
 			begin
 				if silkscreen_enabled (f) then
@@ -363,10 +357,10 @@ is
 							size		=> ph.size,
 							rotation	=> rot (ph.position),
 							position	=> type_point (ph.position)
--- 							mirror		=> NO
+-- 							mirror		=> NO -- CS
 							);
 								
-						vector_text.iterate (query_line'access);
+						pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
 						
 					end if;
 

@@ -70,7 +70,8 @@ generic
 
 	-- The instantiated text package:
 	with package pac_text is new et_text.text (
-		pac_shapes		=> pac_shapes,
+		-- The used text package must have been instantiated with the same shapes package:
+		pac_shapes		=> pac_shapes, 
 		others			=> <>);
 	
 package pac_draw is
@@ -187,12 +188,12 @@ package pac_draw is
 		alignment	: in type_text_alignment;
 		height		: in pac_shapes.geometry.type_distance); -- the height of the drawing frame
 
--- 	-- Draw a vectorized text:
--- 	procedure draw_vector_text (
--- 		area	: in type_rectangle;
--- 		context	: in type_draw_context;
--- 		text	: in pac_vector_text_lines.list;
--- 		height	: in pac_shapes.geometry.type_distance);
+	-- Draw a vectorized text:
+	procedure draw_vector_text (
+		area	: in type_rectangle;
+		context	: in type_draw_context;
+		text	: in pac_vector_text_lines.list;
+		height	: in pac_shapes.geometry.type_distance);
 
 	
 end pac_draw;

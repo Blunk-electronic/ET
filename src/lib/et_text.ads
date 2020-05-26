@@ -189,7 +189,7 @@ package et_text is
 
 		type type_vector_text_mirrored is (NO, YES);
 		vector_text_mirror_default : constant type_vector_text_mirrored := NO;
-		
+
 		function to_vectors (
 			content		: in type_text_content.bounded_string;
 			size		: in type_text_size;
