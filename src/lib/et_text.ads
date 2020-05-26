@@ -38,6 +38,7 @@
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_ordered_maps;
 
 with cairo;
 with et_geometry;
@@ -178,11 +179,24 @@ package et_text is
 		
 	-- VECTORIZED TEXT
 
+
+		
 		type type_line_with_to_size_ratio is range 1 .. 50; -- in percent
 		line_width_to_size_ratio_default : constant type_line_with_to_size_ratio := 15;
 
 		type type_vector_text_line is new pac_shapes.type_line with null record;
 
+
+		type type_segment is record start_x, start_y, end_x, end_y : type_distance_positive; end record;
+		type type_segment_id is range 1 .. 20;
+		type type_character is array (type_segment_id range <>) of type_segment;
+				
+		letter_capital_A : constant type_character (1 .. 3) := (
+					1	=> (2.0, 2.0, 5.0, 9.0),
+					2	=> (9.0, 2.0, 5.0, 9.0),
+					3	=> (4.0, 4.0, 7.0, 4.0));
+
+		
 		package pac_vector_text_lines is new doubly_linked_lists (type_vector_text_line);
 
 		vector_text_alignment_default : constant type_text_alignment := (LEFT, CENTER);
@@ -190,6 +204,8 @@ package et_text is
 		type type_vector_text_mirrored is (NO, YES);
 		vector_text_mirror_default : constant type_vector_text_mirrored := NO;
 
+
+		
 		function vectorize (
 			content		: in type_text_content.bounded_string;
 			size		: in type_text_size;

@@ -288,7 +288,6 @@ package body et_text is
 
 		
 	-- VECTORIZED TEXT
-		
 
 		function vectorize (
 			content		: in type_text_content.bounded_string;
@@ -305,9 +304,6 @@ package body et_text is
 
 			l : type_vector_text_line;
 
-			-- 			A : constant 
-			type type_segment_id is range 1 .. 20;
-			type type_letter is array (type_segment_id range <>) of type_vector_text_line;
 			
 		begin
 			l.end_point := type_point (origin);
