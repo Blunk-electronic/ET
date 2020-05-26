@@ -290,7 +290,7 @@ package body et_text is
 	-- VECTORIZED TEXT
 		
 
-		function to_vectors (
+		function vectorize (
 			content		: in type_text_content.bounded_string;
 			size		: in type_text_size;
 			rotation	: in type_rotation;
@@ -317,7 +317,7 @@ package body et_text is
 
 			
 			return result;
-		end to_vectors;
+		end vectorize;
 
 		
 	end text;

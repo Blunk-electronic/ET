@@ -352,7 +352,7 @@ is
 						set_color_silkscreen (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (0.15)); -- CS
 
-						vector_text := pac_text.to_vectors (
+						vector_text := pac_text.vectorize (
 							content		=> et_text.to_content ("T"),
 							size		=> ph.size,
 							rotation	=> rot (ph.position),
