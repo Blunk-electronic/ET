@@ -191,10 +191,10 @@ package et_text is
 		type type_segment_id is range 1 .. 20;
 		type type_character is array (type_segment_id range <>) of type_segment;
 				
-		letter_capital_A : constant type_character (1 .. 3) := (
-					1	=> (2.0, 2.0, 5.0, 9.0),
-					2	=> (9.0, 2.0, 5.0, 9.0),
-					3	=> (4.0, 4.0, 7.0, 4.0));
+		capital_a : constant type_character (1 .. 3) := (
+			1	=> (2.0, 2.0, 5.0, 9.0),
+			2	=> (9.0, 2.0, 5.0, 9.0),
+			3	=> (4.0, 4.0, 7.0, 4.0));
 
 		
 		package pac_vector_text_lines is new doubly_linked_lists (type_vector_text_line);

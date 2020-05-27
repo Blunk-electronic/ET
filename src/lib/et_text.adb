@@ -304,7 +304,19 @@ package body et_text is
 
 			return result;
 		end to_lines;
-		
+
+		function "<" (left, right : in type_vector_text_line) return boolean is 
+			result : boolean := false;
+		begin
+			if left.start_point < right.start_point then
+				return true;
+			else
+				return false;
+			end if;
+			
+			return result;
+		end "<";
+			
 		function vectorize (
 			content		: in type_text_content.bounded_string;
 			size		: in type_text_size;
@@ -316,24 +328,38 @@ package body et_text is
 			return pac_vector_text_lines.list is
 
 			use pac_vector_text_lines;
-			result : pac_vector_text_lines.list; -- to be returned
 
-			l : type_vector_text_line;
+			-- We return a list of lines. In the course of this function
+			-- this list gets filled with the lines of vectorized characters:
+			result : pac_vector_text_lines.list;
 
+			-- This is the text we will be displaying. It will be read
+			-- character by character. Each character will be mapped 
+			-- to a vectorized character (which is a list of lines):
+			text : constant string := type_text_content.to_string (content);
+
+			package sorting is new generic_sorting;
+			use sorting;
+
+			-- This procedure merges the given vectorized character
+			-- with the result. The result is a collection of lines.
+			procedure add (char : in type_character) is 
+				lines : pac_vector_text_lines.list := to_lines (char);
+			begin
+				merge (target => result, source => lines);
+			end add;
 			
 		begin
--- 			l.end_point := type_point (origin);
--- 			l.start_point := type_point (set (1.0, 1.0));
--- 
--- 			append (result, l);
--- 
--- 			l.end_point := type_point (set (2.0, 2.0));
--- 			l.start_point := type_point (set (3.0, 3.0));
--- 
--- 			append (result, l);
-
-			result := to_lines (letter_capital_A);
-			
+			-- Read the text to be displayed character by character and
+			-- map from character to the corresponding vectorized character:
+			for c in text'first .. text'last loop
+				case text (c) is
+					when 'A' => add (capital_a);
+					
+					when others => null;
+				end case;
+			end loop;
+						
 			return result;
 		end vectorize;
 
