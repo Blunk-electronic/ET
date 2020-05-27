@@ -41,6 +41,7 @@ with pango.layout;				use pango.layout;
 
 with et_general;				use et_general;
 with et_symbols;
+with et_devices;
 with et_schematic;
 use et_schematic.type_nets;
 
@@ -74,6 +75,9 @@ is
 
 	
 	procedure draw_package (
+		device_name		: in et_devices.type_name; -- IC13, C4
+		device_value	: in et_devices.type_value.bounded_string; -- SN7400
+		device_purpose	: in et_devices.type_purpose.bounded_string; -- brightness control
 		model			: in et_packages.type_package_model_file.bounded_string;
 		package_position: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flip			: in et_pcb.type_flipped;
@@ -120,7 +124,25 @@ is
 		
 		-- locate the package model in the package library:
 		package_cursor : constant et_packages.type_packages.cursor := locate_package_model (model);
-	
+
+		-- Maps from meaning of given placeholder to text content:
+		function to_placeholder_content (ph : in type_text_placeholder)
+			return et_text.type_text_content.bounded_string is
+			use et_devices;
+			use et_text;
+			result : type_text_content.bounded_string;
+		begin
+			case ph.meaning is
+				when NAME => result := to_content (to_string (device_name));
+				when VALUE => result := to_content (to_string (device_value));
+				when PURPOSE => result := to_content (to_string (device_purpose));
+			end case;
+			
+			return result;
+		end to_placeholder_content;
+			
+			
+		
 		-- SILKSCREEN
 		procedure draw_silkscreen is 
 
@@ -339,7 +361,7 @@ is
 
 				use pac_text.pac_vector_text_lines;
 				vector_text : pac_text.pac_vector_text_lines.list;
-			
+
 			begin
 				if silkscreen_enabled (f) then
 					
@@ -350,10 +372,10 @@ is
 						move_by (ph.position, type_point (package_position)); -- CS ?
 
 						set_color_silkscreen (context.cr, f);
-						set_line_width (context.cr, type_view_coordinate (0.15)); -- CS
+						set_line_width (context.cr, type_view_coordinate (ph.line_width));
 
 						vector_text := pac_text.vectorize (
-							content		=> et_text.to_content ("T"),
+							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
 							rotation	=> rot (ph.position),
 							position	=> type_point (ph.position)
@@ -2271,6 +2293,9 @@ is
 			if element (d).appearance = PCB then
 				
 				draw_package (
+					device_name			=> key (d), -- R1, IC12
+					device_value		=> element (d).value, -- 7400, 100R
+					device_purpose		=> element (d).purpose, -- brightness control
 					model				=> package_model (d), -- libraries/packages/smd/SOT23.pac
 					package_position	=> element (d).position, -- x/y/rotation/face
 					flip				=> element (d).flipped,

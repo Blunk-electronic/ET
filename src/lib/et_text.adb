@@ -289,13 +289,29 @@ package body et_text is
 		
 	-- VECTORIZED TEXT
 
+		function to_lines (char : in type_character) return pac_vector_text_lines.list is
+			use pac_vector_text_lines;
+			result : pac_vector_text_lines.list;
+		begin
+			for l in char'first .. char'last loop
+				
+				append (result, (
+					start_point => type_point (set (char (l).start_x, char (l).start_y)),
+					end_point   => type_point (set (char (l).end_x, char (l).end_y))
+					));
+
+			end loop;
+
+			return result;
+		end to_lines;
+		
 		function vectorize (
 			content		: in type_text_content.bounded_string;
 			size		: in type_text_size;
 			rotation	: in type_rotation;
 			position	: in type_point;
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
-			ratio		: in type_line_with_to_size_ratio := line_width_to_size_ratio_default;
+-- 			ratio		: in type_line_with_to_size_ratio := line_width_to_size_ratio_default;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
 			return pac_vector_text_lines.list is
 
@@ -306,16 +322,17 @@ package body et_text is
 
 			
 		begin
-			l.end_point := type_point (origin);
-			l.start_point := type_point (set (1.0, 1.0));
+-- 			l.end_point := type_point (origin);
+-- 			l.start_point := type_point (set (1.0, 1.0));
+-- 
+-- 			append (result, l);
+-- 
+-- 			l.end_point := type_point (set (2.0, 2.0));
+-- 			l.start_point := type_point (set (3.0, 3.0));
+-- 
+-- 			append (result, l);
 
-			append (result, l);
-
-			l.end_point := type_point (set (2.0, 2.0));
-			l.start_point := type_point (set (3.0, 3.0));
-
-			append (result, l);
-
+			result := to_lines (letter_capital_A);
 			
 			return result;
 		end vectorize;

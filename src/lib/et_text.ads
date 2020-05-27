@@ -181,8 +181,8 @@ package et_text is
 
 
 		
-		type type_line_with_to_size_ratio is range 1 .. 50; -- in percent
-		line_width_to_size_ratio_default : constant type_line_with_to_size_ratio := 15;
+-- 		type type_line_with_to_size_ratio is range 1 .. 50; -- in percent
+-- 		line_width_to_size_ratio_default : constant type_line_with_to_size_ratio := 15;
 
 		type type_vector_text_line is new pac_shapes.type_line with null record;
 
@@ -199,6 +199,9 @@ package et_text is
 		
 		package pac_vector_text_lines is new doubly_linked_lists (type_vector_text_line);
 
+		-- Converts a character to a list of lines:
+		function to_lines (char : in type_character) return pac_vector_text_lines.list;
+
 		vector_text_alignment_default : constant type_text_alignment := (LEFT, CENTER);
 
 		type type_vector_text_mirrored is (NO, YES);
@@ -212,7 +215,7 @@ package et_text is
 			rotation	: in type_rotation;
 			position	: in type_point;
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
-			ratio		: in type_line_with_to_size_ratio := line_width_to_size_ratio_default;
+-- 			ratio		: in type_line_with_to_size_ratio := line_width_to_size_ratio_default;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
 			return pac_vector_text_lines.list;
 

@@ -622,7 +622,7 @@ package et_packages is
 
 	-- Silk screen objects of a package (in the library) include placeholders:
 	type type_silk_screen is new type_silk_screen_base with record
-		placeholders: pac_text_placeholders.list;
+		placeholders : pac_text_placeholders.list;
 	end record;
 
 	-- Because silk screen is about two sides of the board this composite is required:
@@ -1044,7 +1044,7 @@ package et_packages is
 	-- A package in the library extends the base package type:
 	type type_package is new type_package_base with record
 		-- CS default for face ?
-		silk_screen				: type_silk_screen_both_sides; -- incl. placeholder for reference and purpose
+		silk_screen				: type_silk_screen_both_sides; -- incl. placeholder for name and purpose
 		assembly_documentation	: type_assembly_documentation_both_sides; -- incl. placeholder for value
 		terminals				: type_terminals.map;
 	end record;
