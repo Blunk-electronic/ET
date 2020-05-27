@@ -186,8 +186,10 @@ package et_text is
 
 		type type_vector_text_line is new pac_shapes.type_line with null record;
 
+		subtype type_character_width is type_distance_positive range zero .. 10.0;
+		character_width : constant type_character_width := type_character_width'last;
 
-		type type_segment is record start_x, start_y, end_x, end_y : type_distance_positive; end record;
+		type type_segment is record start_x, start_y, end_x, end_y : type_character_width; end record;
 		type type_segment_id is range 1 .. 20;
 		type type_character is array (type_segment_id range <>) of type_segment;
 				
@@ -196,6 +198,14 @@ package et_text is
 			2	=> (9.0, 2.0, 5.0, 9.0),
 			3	=> (4.0, 4.0, 7.0, 4.0));
 
+		capital_c : constant type_character (1 .. 3) := (
+			1	=> (2.0, 2.0, 5.0, 9.0),
+			2	=> (9.0, 2.0, 5.0, 9.0),
+			3	=> (4.0, 4.0, 7.0, 4.0));
+
+
+		
+		character_spacing : constant type_distance_positive := 1.0;
 		
 		package pac_vector_text_lines is new doubly_linked_lists (type_vector_text_line);
 

@@ -305,18 +305,21 @@ package body et_text is
 			return result;
 		end to_lines;
 
+		-- This function sorts lines by the distance of their start points
+		-- to the origin.
+		-- CS: The sorting could be improved but seems sufficient for now.
 		function "<" (left, right : in type_vector_text_line) return boolean is 
-			result : boolean := false;
+			--result : boolean := false;
 		begin
 			if left.start_point < right.start_point then
 				return true;
 			else
 				return false;
 			end if;
-			
-			return result;
 		end "<";
+
 			
+		
 		function vectorize (
 			content		: in type_text_content.bounded_string;
 			size		: in type_text_size;
@@ -341,11 +344,42 @@ package body et_text is
 			package sorting is new generic_sorting;
 			use sorting;
 
+			place : positive := 1;
+
+			spacing : constant type_distance_positive := character_spacing; -- CS * x * size
+			width : constant type_distance_positive := character_width; -- CS * x * size
+			
+			procedure move_character (lines : in out pac_vector_text_lines.list) is
+				scratch : pac_vector_text_lines.list;
+
+				procedure query_line (c : in pac_vector_text_lines.cursor) is
+					l : type_vector_text_line := element (c);
+				begin
+					pac_shapes.move_by (
+						line	=> pac_shapes.type_line (l),
+						offset	=> type_point (set (
+									x => (place - 1) * width + spacing,
+									y => zero)));
+
+					append (scratch, l);
+				end query_line;
+				
+			begin
+				iterate (lines, query_line'access);
+				lines := scratch;
+			end move_character;
+			
 			-- This procedure merges the given vectorized character
 			-- with the result. The result is a collection of lines.
 			procedure add (char : in type_character) is 
 				lines : pac_vector_text_lines.list := to_lines (char);
 			begin
+				move_character (lines);
+
+				-- CS mirror lines ?
+				-- CS rotate lines ?
+				
+				
 				merge (target => result, source => lines);
 			end add;
 			
@@ -353,8 +387,11 @@ package body et_text is
 			-- Read the text to be displayed character by character and
 			-- map from character to the corresponding vectorized character:
 			for c in text'first .. text'last loop
+				place := c;
+				
 				case text (c) is
-					when 'A' => add (capital_a);
+					when 'C' => add (capital_a);
+					when 'I' => add (capital_a);
 					
 					when others => null;
 				end case;
