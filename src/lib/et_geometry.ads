@@ -397,7 +397,7 @@ package et_geometry is
 	generic
 		with package pac_geometry is new generic_pac_geometry (<>);
 		
-	package shapes_2d is
+	package generic_pac_shapes is
 		use pac_geometry;
 
 		-- Unites the point with the boundaries. boundaries is updated.
@@ -705,7 +705,7 @@ package et_geometry is
 		end record;
 
 		
-	end shapes_2d;
+	end generic_pac_shapes;
 	
 	
 end et_geometry;

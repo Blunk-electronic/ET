@@ -66,7 +66,7 @@ generic
 	with package pac_canvas is new et_canvas_general.pac_canvas (<>);
 
 	-- The instantiated shapes package:
-	with package pac_shapes is new et_geometry.shapes_2d (<>);
+	with package pac_shapes is new et_geometry.generic_pac_shapes (<>);
 
 	-- The instantiated text package:
 	with package pac_text is new et_text.text (

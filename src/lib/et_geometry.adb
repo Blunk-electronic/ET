@@ -838,7 +838,7 @@ package body et_geometry is
 
 
 	
-	package body shapes_2d is
+	package body generic_pac_shapes is
 
 -- 		function to_string (fill_style : in type_fill_style) return string is begin
 -- 			return to_lower (type_fill_style'image (fill_style));
@@ -2026,7 +2026,7 @@ package body et_geometry is
 -- 			null;
 -- 		end;
 		
-	end shapes_2d;
+	end generic_pac_shapes;
 
 	
 end et_geometry;

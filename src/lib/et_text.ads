@@ -111,7 +111,7 @@ package et_text is
 
 	
 	generic
-		with package pac_shapes is new et_geometry.shapes_2d (<>);
+		with package pac_shapes is new et_geometry.generic_pac_shapes (<>);
 		
 		size_min, size_max, size_default : pac_shapes.pac_geometry.type_distance;
 		line_width_min, line_width_max, line_width_default : pac_shapes.pac_geometry.type_distance;
