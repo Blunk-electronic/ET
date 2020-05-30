@@ -395,10 +395,10 @@ package et_geometry is
 
 
 	generic
-		with package geometry is new generic_pac_geometry (<>);
+		with package pac_geometry is new generic_pac_geometry (<>);
 		
 	package shapes_2d is
-		use geometry;
+		use pac_geometry;
 
 		-- Unites the point with the boundaries. boundaries is updated.
 		procedure union (

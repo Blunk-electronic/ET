@@ -77,7 +77,7 @@ generic
 package pac_draw is
 	use pac_canvas;
 	use pac_shapes;
-	use pac_shapes.geometry;
+	use pac_shapes.pac_geometry;
 
 	-- This procedure draws the given line on the given context.
 	-- The line is shifted in y to a plane of given height. This plane
@@ -88,7 +88,7 @@ package pac_draw is
 		area			: in type_rectangle;	
 		context			: in type_draw_context;
 		line			: in type_line'class;
-		height			: in pac_shapes.geometry.type_distance);
+		height			: in pac_shapes.pac_geometry.type_distance);
 		
 
 	-- This procedure draws the given arc on the given context.
@@ -100,7 +100,7 @@ package pac_draw is
 		area	: in type_rectangle;
 		context	: in type_draw_context;
 		arc		: in type_arc'class;
-		height	: in pac_shapes.geometry.type_distance);
+		height	: in pac_shapes.pac_geometry.type_distance);
 
 	-- This procedure draws the given circle on the given context.
 	-- The circle is shifted in y to a plane of given height. This plane
@@ -114,7 +114,7 @@ package pac_draw is
 		context	: in type_draw_context;
 		circle	: in type_circle'class;
 		filled	: in type_filled;
-		height	: in pac_shapes.geometry.type_distance);
+		height	: in pac_shapes.pac_geometry.type_distance);
 		-- CS fill style ?
 
 	procedure draw_polygon (
@@ -123,7 +123,7 @@ package pac_draw is
 		polygon	: in type_polygon_base'class;
 		filled	: in type_filled;
 		-- CS fill style
-		height	: in pac_shapes.geometry.type_distance);
+		height	: in pac_shapes.pac_geometry.type_distance);
 	
 	-- This procedure draws the a rectangle on the given context.
 	-- The rectangle is shifted in y to a plane of given height. This plane
@@ -134,9 +134,9 @@ package pac_draw is
 		area			: in type_rectangle;
 		context			: in type_draw_context;
 		position		: in type_point'class;	-- position of the rectangle (lower left corner)
-		width			: in pac_shapes.geometry.type_distance;		-- widht of the rectangle
-		height			: in pac_shapes.geometry.type_distance;		-- height of the rectangle
-		frame_height	: in pac_shapes.geometry.type_distance;
+		width			: in pac_shapes.pac_geometry.type_distance;		-- widht of the rectangle
+		height			: in pac_shapes.pac_geometry.type_distance;		-- height of the rectangle
+		frame_height	: in pac_shapes.pac_geometry.type_distance;
 		extend_boundaries	: in boolean := false;
 		boundaries_to_add	: in type_boundaries := boundaries_default);
 		-- CS fill style ?
@@ -161,7 +161,7 @@ package pac_draw is
 		font		: in et_text.type_font;
 		x,y			: in gdouble; -- the anchor point in the view
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
-		rotation	: in pac_shapes.geometry.type_rotation;
+		rotation	: in pac_shapes.pac_geometry.type_rotation;
 		alignment	: in type_text_alignment);
 
 	-- Computes for the given text content, size and font the extents.
@@ -186,14 +186,14 @@ package pac_draw is
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
 		rotation	: in type_rotation;
 		alignment	: in type_text_alignment;
-		height		: in pac_shapes.geometry.type_distance); -- the height of the drawing frame
+		height		: in pac_shapes.pac_geometry.type_distance); -- the height of the drawing frame
 
 	-- Draw a vectorized text:
 	procedure draw_vector_text (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
 		text	: in pac_vector_text_lines.list;
-		height	: in pac_shapes.geometry.type_distance);
+		height	: in pac_shapes.pac_geometry.type_distance);
 
 	
 end pac_draw;

@@ -839,7 +839,6 @@ package body et_geometry is
 
 	
 	package body shapes_2d is
-		use geometry;
 
 -- 		function to_string (fill_style : in type_fill_style) return string is begin
 -- 			return to_lower (type_fill_style'image (fill_style));

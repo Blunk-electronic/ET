@@ -113,11 +113,11 @@ package et_text is
 	generic
 		with package pac_shapes is new et_geometry.shapes_2d (<>);
 		
-		size_min, size_max, size_default : pac_shapes.geometry.type_distance;
-		line_width_min, line_width_max, line_width_default : pac_shapes.geometry.type_distance;
+		size_min, size_max, size_default : pac_shapes.pac_geometry.type_distance;
+		line_width_min, line_width_max, line_width_default : pac_shapes.pac_geometry.type_distance;
 		
 	package text is
-		use pac_shapes.geometry;
+		use pac_shapes.pac_geometry;
 
 		subtype type_text_size is type_distance range size_min .. size_max; -- in millimeters
 		subtype type_text_line_width is type_distance range line_width_min .. line_width_max;

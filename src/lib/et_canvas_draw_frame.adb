@@ -158,23 +158,23 @@ package body pac_draw_frame is
 		use et_text;
 		procedure draw_index (
 			content	: in type_text_content.bounded_string;
-			pos		: in geometry.type_point) is
+			pos		: in pac_geometry.type_point) is
 		begin
 			draw_ops.draw_text (
 				area		=> in_area,
 				context		=> context,
 				content		=> content,
-				size		=> pac_shapes.geometry.type_distance_positive (font_indexes_size),
+				size		=> pac_shapes.pac_geometry.type_distance_positive (font_indexes_size),
 				font		=> font_indexes,
 				position	=> pos,
 				origin		=> false,
-				rotation	=> geometry.zero_rotation,
+				rotation	=> pac_geometry.zero_rotation,
 				alignment	=> (CENTER, CENTER),
 				height		=> type_distance_positive (frame_size.y));
 		end draw_index;
 		
 		x, y  	: type_distance_positive;
-		xo, yo	: geometry.type_distance;
+		xo, yo	: pac_geometry.type_distance;
 		
 	begin -- draw_sector_delimiters
 		-- COLUMN DELIMITERS:
@@ -330,7 +330,7 @@ package body pac_draw_frame is
 		-- The given position is given in frame coordinates and must be 
 		-- converted to schematic coordinates and shifted by the position
 		-- of the title block.
-		ps : constant pac_shapes.geometry.type_point := type_point (set (
+		ps : constant pac_shapes.pac_geometry.type_point := type_point (set (
 				x => type_distance_positive (pos.x + title_block.position.x),
 				y => type_distance_positive (pos.y + title_block.position.y)));
 
@@ -340,7 +340,7 @@ package body pac_draw_frame is
 			area		=> in_area,
 			context		=> context,
 			content		=> content,
-			size		=> geometry.type_distance_positive (size),
+			size		=> pac_geometry.type_distance_positive (size),
 			font		=> font,
 			position	=> ps,
 			origin		=> true,

@@ -157,9 +157,9 @@ package body et_text is
 			-- Returns the given text size as string.
 			begin
 				if preamble then
-					return "size " & pac_shapes.geometry.to_string (size);
+					return "size " & pac_shapes.pac_geometry.to_string (size);
 				else
-					return pac_shapes.geometry.to_string (size);
+					return pac_shapes.pac_geometry.to_string (size);
 				end if;
 			end to_string;
 

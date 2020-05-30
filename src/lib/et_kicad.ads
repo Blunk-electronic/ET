@@ -185,7 +185,7 @@ package et_kicad is
 
 	-- Instantiation of the shapes package:
 	-- Required for instantiation of text package only. See below.
-	package pac_shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry);
+	package pac_shapes is new et_geometry.shapes_2d (et_coordinates.geometry);
 	
 	-- Instantiation of the text package:
 	package pac_text is new et_text.text (
