@@ -41,7 +41,6 @@ with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.text_io;				use ada.text_io;
--- with ada.tags;
 
 with ada.exceptions;
 
@@ -50,26 +49,19 @@ with ada.containers.ordered_maps;
 
 with et_general;				use et_general;
 
-with et_coordinates;			use et_coordinates;
-use et_coordinates.geometry;
-
-with et_string_processing;
 with general_rw;				use general_rw;
 with et_geometry;				use et_geometry;
 with et_text;					--use et_text;
-with et_symbols;				use et_symbols;
 
 package body symbol_rw is
 
 	function to_grid (
 		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
 		from : in positive)
-		return et_coordinates.geometry.type_grid is
+		return type_grid is
 		use et_string_processing;
-		use et_coordinates.geometry;
 		
-		grid : et_coordinates.geometry.type_grid; -- to be returned
-
+		grid : type_grid; -- to be returned
 		place : positive := from; -- the field being read from given line
 
 	begin
@@ -93,7 +85,7 @@ package body symbol_rw is
 		return grid;
 	end to_grid;
 
-	function position (pos : in et_coordinates.geometry.type_point) return string is
+	function position (pos : in type_point) return string is
 	-- Returns something like "x 12.34 y 45.0".
 
 		function text return string is begin return 
@@ -108,13 +100,11 @@ package body symbol_rw is
 	function to_position (
 		line : in et_string_processing.type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
 		from : in positive)
-		return et_coordinates.geometry.type_point is
+		return type_point is
 
 		use et_string_processing;
-		use geometry;
 		
-		point : et_coordinates.geometry.type_point; -- to be returned
-
+		point : type_point; -- to be returned
 		place : positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing x or y
@@ -217,16 +207,16 @@ package body symbol_rw is
 			write (keyword => keyword_start , parameters => position (element (cursor).start_point));
 			write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
 			write (keyword => et_geometry.keyword_direction, parameters => to_string (element (cursor).direction));
-			write (keyword => keyword_radius, parameters => geometry.to_string (element (cursor).radius));			
-			write (keyword => keyword_width , parameters => geometry.to_string (element (cursor).width));
+			write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+			write (keyword => keyword_width , parameters => to_string (element (cursor).width));
 			section_mark (section_arc, FOOTER);
 		end write_arc;
 
 		procedure write_circle (cursor : in type_circles.cursor) is begin
 			section_mark (section_circle, HEADER);
 			write (keyword => keyword_center, parameters => position (element (cursor).center));
-			write (keyword => keyword_radius, parameters => geometry.to_string (element (cursor).radius));
-			write (keyword => keyword_width , parameters => geometry.to_string (element (cursor).width));
+			write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+			write (keyword => keyword_width , parameters => to_string (element (cursor).width));
 			write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
 			section_mark (section_circle, FOOTER);
 		end write_circle;
@@ -303,12 +293,12 @@ package body symbol_rw is
 				when others => null; -- PASSIVE, INPUT_ANALOG, NOT_CONNECTED
 			end case;
 			
-			write (keyword => keyword_length, parameters => geometry.to_string (element (cursor).length));
+			write (keyword => keyword_length, parameters => to_string (element (cursor).length));
 			write (keyword => keyword_rotation, parameters => to_string (element (cursor).rotation));
 			write (keyword => keyword_port_name_visible, parameters => to_string (element (cursor).port_name_visible));
-			write (keyword => keyword_port_name_size, parameters => geometry.to_string (element (cursor).port_name_size));
+			write (keyword => keyword_port_name_size, parameters => to_string (element (cursor).port_name_size));
 			write (keyword => keyword_terminal_name_visible, parameters => to_string (element (cursor).terminal_name_visible));
-			write (keyword => keyword_terminal_name_size, parameters => geometry.to_string (element (cursor).terminal_name_size));
+			write (keyword => keyword_terminal_name_size, parameters => to_string (element (cursor).terminal_name_size));
 			section_mark (section_port, FOOTER);			
 		end write_port;
 		
@@ -397,7 +387,6 @@ package body symbol_rw is
 	-- Opens the symbol file and stores the symbol in container et_symbols.symbols.
 		file_name 		: in type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in et_string_processing.type_log_level) is
-		use et_coordinates.geometry;
 		use et_string_processing;
 		use et_text;
 		
@@ -432,7 +421,7 @@ package body symbol_rw is
 		symbol_cursor		: type_symbols.cursor;
 		symbol_inserted		: boolean;
 		
-		symbol_text_position		: et_coordinates.geometry.type_point;
+		symbol_text_position		: type_point;
 		symbol_text_content			: et_text.type_text_content.bounded_string;
 		symbol_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
 		
@@ -647,7 +636,7 @@ package body symbol_rw is
 								-- clean up for next symbol text
 								symbol_text_base := (others => <>);
 								symbol_text_content := to_content ("");
-								symbol_text_position := geometry.origin;
+								symbol_text_position := origin;
 								
 							when others => invalid_section;
 						end case;
@@ -690,7 +679,7 @@ package body symbol_rw is
 
 								-- clean up for next symbol text placeholder
 								symbol_text_base := (others => <>);
-								symbol_text_position := geometry.origin;
+								symbol_text_position := origin;
 								symbol_placeholder_meaning := placeholder_meaning_default;
 							
 							when others => invalid_section;

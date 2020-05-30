@@ -36,33 +36,20 @@
 --
 --   ToDo: 
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings;				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.bounded;       use ada.strings.bounded;
-
-with et_general;				use et_general;
-with et_coordinates;
-with et_pcb;
-with et_pcb_coordinates;
 with et_string_processing;		use et_string_processing;
 
 package body submodules is
 
-	function to_submodule_size (size : in type_submodule_size) return string is 
-		use et_coordinates.geometry;
-	begin
+	function to_submodule_size (size : in type_submodule_size) return string is begin
 		return " size (x/y)" &
-			geometry.to_string (size.x) &
+			to_string (size.x) &
 			axis_separator &
-			geometry.to_string (size.y);
+			to_string (size.y);
 	end;
 
 	function at_edge (
-		point	: in et_coordinates.geometry.type_point; -- P
-		size	: in submodules.type_submodule_size) -- sx, sy
+		point	: in type_point; -- P
+		size	: in type_submodule_size) -- sx, sy
 		return boolean is
 		-- O--------O
 		-- |        |
@@ -71,7 +58,6 @@ package body submodules is
 		-- |        |
 		-- O---sx---O
 
-		use geometry;
 		result : boolean := false;
 	begin
 		-- If P is at the left or right edge:
@@ -187,7 +173,6 @@ package body submodules is
 		netchanger_cursor	: in type_netchangers.cursor)
 		return type_netchanger_ports is
 		use type_netchangers;
-		use et_coordinates.geometry;
 		ports : type_netchanger_ports;
 	begin
 		-- rotate the ports according to rotation in schematic

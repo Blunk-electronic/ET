@@ -72,11 +72,11 @@ package et_coordinates is
 	for type_rotation'small use 0.1;
 	
 	-- instantiation of the geometry package:
-	package geometry is new et_geometry.generic_pac_geometry (
+	package pac_geometry_sch is new et_geometry.generic_pac_geometry (
 		type_distance	=> type_distance,
 		type_rotation	=> type_rotation);
 	
-	use geometry;
+	use pac_geometry_sch;
 	
 	subtype type_catch_zone is type_distance range 0.0 .. 10.0;
 	catch_zone : type_catch_zone := 2.0; -- CS: should be a system setting in the future
@@ -115,8 +115,8 @@ package et_coordinates is
 	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
 	
 
-	type type_position is new geometry.type_position with private;
-	type type_position_relative is new geometry.type_position with private;
+	type type_position is new pac_geometry_sch.type_position with private;
+	type type_position_relative is new pac_geometry_sch.type_position with private;
 
 	function "<" (left, right : in type_position) return boolean;
 	
@@ -150,11 +150,11 @@ package et_coordinates is
 	
 	private 
 
-		type type_position is new geometry.type_position with record
+		type type_position is new pac_geometry_sch.type_position with record
 			sheet : type_sheet := type_sheet'first;
 		end record;
 
-		type type_position_relative is new geometry.type_position with record
+		type type_position_relative is new pac_geometry_sch.type_position with record
 			sheet : type_sheet_relative := 0;
 		end record;
 

@@ -35,7 +35,6 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
@@ -46,29 +45,19 @@ with ada.strings.maps.constants;
 -- with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.fixed; 		use ada.strings.fixed;
 
-
-with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
-
-
-with ada.directories;
 with ada.exceptions;
 
 with et_general;
-with et_coordinates;
-with et_schematic;
+
 with et_project;
-with et_string_processing;		use et_string_processing;
 with et_export;
 with et_import;
 with et_csv;
-with material;
-with et_packages;
-with et_symbols;
-with et_devices;			use et_devices;
 
 package body conventions is
 
+	use et_string_processing;
+	
 -- 	function to_string (net_comparator_on_off : in type_net_comparator_on_off) return string is
 -- 	-- Returns the given net comparator status as string.
 -- 	begin
@@ -1945,12 +1934,12 @@ package body conventions is
 
 	procedure check_schematic_text_size (
 		category 	: in type_text_schematic;
-		size		: in et_coordinates.geometry.type_distance_positive) is
+		size		: in et_coordinates.pac_geometry_sch.type_distance_positive) is
 	-- Checks the given text size by its category. Does nothing if no text sizes
 	-- specified in configuration file in section TEXT_SIZES_SCHEMATIC.
 		use et_string_processing;
 		use et_coordinates;
-		use et_coordinates.geometry;
+		use et_coordinates.pac_geometry_sch;
 		use type_text_sizes_schematic;
 		cursor : type_text_sizes_schematic.cursor; -- points to a text size 
 	
@@ -2399,7 +2388,7 @@ package body conventions is
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Creates a default conventions file.
 		use et_general;
-		use et_coordinates.geometry;
+		use et_coordinates.pac_geometry_sch;
 		
 		function comment return string is begin return comment_mark & latin_1.space; end comment;
 
@@ -2638,7 +2627,7 @@ package body conventions is
 			use et_devices;
 			use et_symbols;
 			use et_coordinates;
-			use et_coordinates.geometry;
+			use et_coordinates.pac_geometry_sch;
 			
 			procedure test_multiple_occurences is begin
 				if not inserted then

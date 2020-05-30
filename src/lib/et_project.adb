@@ -847,7 +847,7 @@ package body et_project is
 		end query_net_classes;
 
 		procedure query_drawing_grid is 
-			use et_coordinates.geometry;
+			use et_coordinates.pac_geometry_sch;
 			use et_pcb_coordinates.geometry;
 		begin
 			log_indentation_up;
@@ -928,7 +928,7 @@ package body et_project is
 				net			: in et_schematic.type_net) is
 				use et_schematic;
 				use type_strands;
-				use et_coordinates.geometry;
+				use et_coordinates.pac_geometry_sch;
 				strand_cursor : type_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in type_strand) is
@@ -962,7 +962,7 @@ package body et_project is
 									when TAG =>
 										-- The tag label ran be rotated arbitrary:
 										write (keyword => keyword_rotation, parameters =>
-											et_coordinates.geometry.to_string (element (label_cursor).rotation_tag));
+											to_string (element (label_cursor).rotation_tag));
 								end case;
 								
 								write (keyword => et_text.keyword_size, parameters => to_string (element (label_cursor).size));
@@ -1269,7 +1269,7 @@ package body et_project is
 				use et_schematic.type_units;
 				unit_cursor : type_units.cursor := device.units.first;
 
-				use et_coordinates.geometry;
+				use et_coordinates.pac_geometry_sch;
 				
 				procedure write_placeholder (ph : in type_text_placeholder) is begin
 					section_mark (section_placeholder, HEADER);
@@ -1500,7 +1500,7 @@ package body et_project is
 				section_mark (section_netchanger, HEADER);
 				write (keyword => keyword_name,	parameters => to_string (key (cursor))); -- 1, 2, 201, ...
 				write (keyword => keyword_position_in_schematic, parameters => position (element (cursor).position_sch)); -- position_in_schematic sheet 1 x 147.32 y 96.97
-				write (keyword => keyword_rotation_in_schematic, parameters => geometry.to_string (geometry.rot (element (cursor).position_sch))); -- rotation_in_schematic 90.0
+				write (keyword => keyword_rotation_in_schematic, parameters => pac_geometry_sch.to_string (pac_geometry_sch.rot (element (cursor).position_sch))); -- rotation_in_schematic 90.0
 				write (keyword => keyword_position_in_board, parameters => position (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
 				write (keyword => et_pcb_stack.keyword_layer, parameters => et_pcb_stack.to_string (element (cursor).layer)); -- layer 2
 				section_mark (section_netchanger, FOOTER);
@@ -1592,7 +1592,7 @@ package body et_project is
 			end;
 
 			procedure write (submodule_cursor : in type_submodules.cursor) is 
-				use et_coordinates.geometry;
+				use et_coordinates.pac_geometry_sch;
 			begin
 				section_mark (section_submodule, HEADER);
 				write (keyword => keyword_name, parameters => et_general.to_string (key (submodule_cursor))); -- name stepper_driver_1
@@ -1623,7 +1623,7 @@ package body et_project is
 
 		procedure query_texts is		
 			use et_coordinates;
-			use et_coordinates.geometry;
+			use et_coordinates.pac_geometry_sch;
 			use et_schematic;
 			use pac_texts;
 			use et_schematic.pac_text;
@@ -2305,7 +2305,7 @@ package body et_project is
 			return et_coordinates.type_position is
 			
 			use et_coordinates;
-			use geometry;
+			use pac_geometry_sch;
 			
 			point : et_coordinates.type_position; -- to be returned
 			place : positive := from; -- the field being read from given line
@@ -2342,7 +2342,7 @@ package body et_project is
 			line : in type_fields_of_line; -- "size x 30 y 40"
 			from : in positive)
 			return submodules.type_submodule_size is
-			use et_coordinates.geometry;
+			use et_coordinates.pac_geometry_sch;
 			
 			size : submodules.type_submodule_size; -- to be returned
 			place : positive := from; -- the field being read from given line
@@ -2413,7 +2413,7 @@ package body et_project is
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 
 		-- drawing grid
-		grid_schematic : et_coordinates.geometry.type_grid; -- CS rename to schematic_grid
+		grid_schematic : et_coordinates.pac_geometry_sch.type_grid; -- CS rename to schematic_grid
 		grid_board : et_pcb_coordinates.geometry.type_grid; -- CS rename to board_grid
 
 		procedure read_drawing_grid_schematic is 
@@ -2465,7 +2465,7 @@ package body et_project is
 		
 		net_labels				: et_schematic.type_net_labels.list;
 		net_label 				: et_schematic.type_net_label_base;
-		net_label_rotation		: et_coordinates.type_rotation := geometry.zero_rotation;
+		net_label_rotation		: et_coordinates.type_rotation := pac_geometry_sch.zero_rotation;
 		net_label_appearance	: et_schematic.type_net_label_appearance := et_schematic.type_net_label_appearance'first;
 
 		-- The net label direction is relevant if appearance is TAG:
@@ -2600,7 +2600,7 @@ package body et_project is
 
 		-- temporarily placeholders of unit reference (IC12), value (7400) and purpose (clock buffer)
 		unit_placeholder			: et_symbols.type_text_basic;
-		unit_placeholder_position	: et_coordinates.geometry.type_point;
+		unit_placeholder_position	: et_coordinates.pac_geometry_sch.type_point;
 		unit_placeholder_meaning	: et_symbols.type_placeholder_meaning := et_symbols.placeholder_meaning_default;
 		unit_placeholder_reference	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
 		unit_placeholder_value		: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
@@ -2666,7 +2666,7 @@ package body et_project is
 		end set_junction;
 
 		procedure read_schematic_text is
-			use et_coordinates.geometry;
+			use et_coordinates.pac_geometry_sch;
 			kw : constant string := f (line, 1);
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag
@@ -2826,7 +2826,7 @@ package body et_project is
 					procedure set (
 						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
-						use et_coordinates.geometry;
+						use et_coordinates.pac_geometry_sch;
 						use et_pcb_coordinates.geometry;
 					begin
 						module.grid := grid_schematic;
@@ -3113,7 +3113,7 @@ package body et_project is
 					-- clean up for next placeholder
 					unit_placeholder := (others => <>);
 					unit_placeholder_meaning := placeholder_meaning_default;
-					unit_placeholder_position := geometry.origin;
+					unit_placeholder_position := pac_geometry_sch.origin;
 					
 				end build_unit_placeholder;
 
@@ -4890,7 +4890,7 @@ package body et_project is
 
 								declare
 									use et_coordinates;
-									use geometry;
+									use pac_geometry_sch;
 									position_found_in_module_file : type_point := type_point (strand.position);
 								begin
 									-- Calculate the lowest x/y position and set sheet number of the strand
@@ -5038,7 +5038,7 @@ package body et_project is
 
 								-- clean up for next label
 								net_label := (others => <>);
-								net_label_rotation := et_coordinates.geometry.zero_rotation;
+								net_label_rotation := et_coordinates.pac_geometry_sch.zero_rotation;
 								net_label_appearance := et_schematic.type_net_label_appearance'first;
 								net_label_direction := et_schematic.type_net_label_direction'first;
 
@@ -6520,11 +6520,11 @@ package body et_project is
 										
 									elsif kw = keyword_rotation then -- rotation 0.0
 										expect_field_count (line, 2);
-										net_label_rotation := geometry.to_rotation (f (line, 2));
+										net_label_rotation := pac_geometry_sch.to_rotation (f (line, 2));
 
 									elsif kw = et_text.keyword_size then -- size 1.3
 										expect_field_count (line, 2);
-										net_label.size := geometry.to_distance (f (line, 2));
+										net_label.size := pac_geometry_sch.to_distance (f (line, 2));
 
 -- 									elsif kw = keyword_style then -- style normal
 -- 										expect_field_count (line, 2);
@@ -6532,7 +6532,7 @@ package body et_project is
 
 									elsif kw = et_text.keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
-										net_label.width := et_coordinates.geometry.to_distance (f (line, 2));
+										net_label.width := pac_geometry_sch.to_distance (f (line, 2));
 
 									elsif kw = keyword_appearance then -- appearance tag/simple
 										expect_field_count (line, 2);
@@ -7648,7 +7648,7 @@ package body et_project is
 
 									when SEC_UNIT =>
 										declare
-											use et_coordinates.geometry;
+											use et_coordinates.pac_geometry_sch;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -7802,7 +7802,7 @@ package body et_project is
 									elsif kw = keyword_rotation then -- rotation 180.0
 										expect_field_count (line, 2);
 										--device_unit_rotation := geometry.to_rotation (f (line, 2));
-										set (device_unit_position, geometry.to_rotation (f (line, 2)));
+										set (device_unit_position, pac_geometry_sch.to_rotation (f (line, 2)));
 
 									elsif kw = keyword_mirrored then -- mirrored no/x_axis/y_axis
 										expect_field_count (line, 2);
@@ -7848,7 +7848,7 @@ package body et_project is
 
 									elsif kw = keyword_rotation_in_schematic then -- rotation_in_schematic 180.0
 										expect_field_count (line, 2);
-										set (netchanger.position_sch, geometry.to_rotation (f (line, 2)));
+										set (netchanger.position_sch, pac_geometry_sch.to_rotation (f (line, 2)));
 
 									elsif kw = keyword_position_in_board then -- position_in_board x 55.000 y 7.555
 										expect_field_count (line, 5);

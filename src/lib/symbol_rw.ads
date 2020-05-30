@@ -41,6 +41,8 @@ with et_symbols;			use et_symbols;
 
 package symbol_rw is
 
+	use et_coordinates.pac_geometry_sch;
+	
 -- 	keyword_style		: constant string := "style";
 	keyword_width 		: constant string := "width";
 	
@@ -52,16 +54,16 @@ package symbol_rw is
 	function to_grid (
 		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
 		from : in positive)
-		return et_coordinates.geometry.type_grid;
+		return type_grid;
 
 
-	function position (pos : in et_coordinates.geometry.type_point) return string;
+	function position (pos : in type_point) return string;
 	-- Returns something like "x 12.34 y 45.0".
 
 	function to_position (
 		line : in et_string_processing.type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
 		from : in positive)
-		return et_coordinates.geometry.type_point;
+		return type_point;
 	
 	procedure write_text_properties (t : in type_text_basic'class);
 

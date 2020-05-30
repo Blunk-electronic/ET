@@ -75,9 +75,9 @@ with et_meta;
 
 package et_schematic is
 	use et_general.type_net_name;
-	use et_coordinates.geometry;
+	use et_coordinates.pac_geometry_sch;
 
-	package pac_shapes is new et_geometry.generic_pac_shapes (et_coordinates.geometry);
+	package pac_shapes is new et_geometry.generic_pac_shapes (et_coordinates.pac_geometry_sch);
 	use pac_shapes;
 
 	package pac_text is new et_text.text (
@@ -102,7 +102,7 @@ package et_schematic is
 	
 	-- A text/note in the schematic:
 	type type_text is new pac_text.type_text with record
-		position	: et_coordinates.geometry.type_point;
+		position	: et_coordinates.pac_geometry_sch.type_point;
 		rotation	: et_text.type_rotation_documentation;
 		sheet		: et_coordinates.type_sheet;
 		content		: et_text.type_text_content.bounded_string;
@@ -249,7 +249,7 @@ package et_schematic is
 	keyword_direction : constant string := "direction";
 	
 	type type_net_label_base is tagged record
-		position	: et_coordinates.geometry.type_point;
+		position	: et_coordinates.pac_geometry_sch.type_point;
         size		: et_symbols.pac_text.type_text_size := et_symbols.text_size_default;
 		width		: et_symbols.type_text_line_width := et_symbols.type_text_line_width'first;
 	end record;
@@ -260,7 +260,7 @@ package et_schematic is
 				direction		: type_net_label_direction;
 
 				-- The tag label can be rotated arbitrary about the position:
-				rotation_tag	: et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation;
+				rotation_tag	: et_coordinates.type_rotation := et_coordinates.pac_geometry_sch.zero_rotation;
 
 			when SIMPLE =>
 				-- The simple label can be read from the front or from the right:
@@ -390,7 +390,7 @@ package et_schematic is
 	-- - If point is above of a vertical segment then then it is a stub that points up.
 	function stub_direction (
 		segment	: in type_net_segments.cursor;
-		point	: in et_coordinates.geometry.type_point)
+		point	: in et_coordinates.pac_geometry_sch.type_point)
 		return type_stub;
 		
 

@@ -60,8 +60,6 @@ with et_symbols;
 with et_devices;				use et_devices;
 
 package body et_schematic is
-	use et_coordinates.geometry;
-
 
 
 
@@ -165,7 +163,6 @@ package body et_schematic is
 		use type_net_segments;
 		use et_string_processing;
 		use et_coordinates;
-		use geometry;
 
 		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
 
@@ -217,7 +214,7 @@ package body et_schematic is
 	
 	function stub_direction (
 		segment	: in type_net_segments.cursor;
-		point	: in et_coordinates.geometry.type_point)
+		point	: in et_coordinates.pac_geometry_sch.type_point)
 		return type_stub is
 
 		use et_coordinates;

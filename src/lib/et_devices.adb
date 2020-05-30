@@ -35,27 +35,9 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
---with ada.strings.maps;
 with ada.strings.maps.constants;
 with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.strings.unbounded; 	use ada.strings.unbounded;
-with ada.numerics.real_arrays;  use ada.numerics.real_arrays;
-with ada.directories;			use ada.directories;
-with ada.exceptions; 			use ada.exceptions;
-
-with et_string_processing;
-with et_coordinates;
-with et_import;
-with et_text;
-
-with et_symbols;				use et_symbols;
-with et_packages;				use et_packages;
 
 package body et_devices is
 

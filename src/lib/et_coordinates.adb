@@ -101,7 +101,6 @@ package body et_coordinates is
 
 	function "<" (left, right : in type_position) return boolean is
 		result : boolean := false;
-		use et_coordinates.geometry;
 	begin
 		if left.sheet < right.sheet then
 			result := true;
@@ -144,7 +143,6 @@ package body et_coordinates is
 		position	: in out type_position'class;
 		offset		: in type_position_relative) is
 		use et_string_processing;
-		use geometry;
 	begin
 -- 		position.x := position.x + offset.x;
 		set (X, x (position) + x (offset), position);
@@ -161,8 +159,6 @@ package body et_coordinates is
 		sheet		: in type_sheet;
 		rotation	: in type_rotation := zero_rotation)
 		return type_position is
-
-		use geometry;
 		p : type_position;
 	begin
 		set (p, point);
@@ -177,7 +173,6 @@ package body et_coordinates is
 		rotation	: in type_rotation := zero_rotation)
 		return type_position_relative is
 		p : type_position_relative;
-		use geometry;
 	begin
 		set (p, point);
 		p.sheet := sheet;
@@ -187,7 +182,6 @@ package body et_coordinates is
 	
 	function to_string (position : in type_position) return string is
 		use et_string_processing;
-		use geometry;
 
 		coordinates_preamble_sheet : constant string := " pos "
 			& "(sheet"

@@ -60,10 +60,11 @@ with et_pcb_coordinates;
 with et_symbols;
 
 package submodules is
-
+	use pac_geometry_sch;
+	
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
 
-	subtype type_submodule_edge_length is et_coordinates.geometry.type_distance_positive range 20.0 .. 1000.0;
+	subtype type_submodule_edge_length is pac_geometry_sch.type_distance_positive range 20.0 .. 1000.0;
 
 	keyword_size	: constant string := "size";
 	keyword_file	: constant string := "file";
@@ -79,8 +80,8 @@ package submodules is
 	-- Issues a warning if the point sits at the lower edge of the box
 	-- because the attached net may overlap with the text (instance, file,
 	-- position in board, ...) below the box.
-		point	: in et_coordinates.geometry.type_point;
-		size	: in submodules.type_submodule_size)
+		point	: in type_point;
+		size	: in type_submodule_size)
 		return boolean;
 	
 	type type_submodule_view_mode is (
@@ -117,10 +118,10 @@ package submodules is
 	
 	
 	-- GUI relevant only: The port of a submodule is just a small rectangle:
-	port_symbol_width	: constant et_coordinates.geometry.type_distance_positive := 4.0;
-	port_symbol_height	: constant et_coordinates.geometry.type_distance_positive := 2.0;
+	port_symbol_width	: constant type_distance_positive := 4.0;
+	port_symbol_height	: constant type_distance_positive := 2.0;
 	type type_port_symbol is record
-		width, height : et_coordinates.geometry.type_distance_positive;
+		width, height : type_distance_positive;
 	end record;
 
 	port_symbol : constant type_port_symbol := (port_symbol_width, port_symbol_height);
@@ -137,7 +138,7 @@ package submodules is
 	port_name_font_size : constant et_symbols.pac_text.type_text_size := 2.0;
 
 	-- The spacing between port rectangle and port name
-	port_name_spacing : constant et_coordinates.geometry.type_distance_positive := 0.5;
+	port_name_spacing : constant type_distance_positive := 0.5;
 
 
 	-- GUI relevant only: The font of the port direction:
@@ -163,7 +164,7 @@ package submodules is
 	
 	type type_submodule_port is record
 		-- the position somewhere at the edge of the box
-		position	: et_coordinates.geometry.type_point;
+		position	: type_point;
 
 		-- The direction of inheriting net names when a netlist is exported:
 		-- Slave means: The net inside the submodule enforces its name onto the
@@ -233,7 +234,7 @@ package submodules is
 	
 	-- GUI relevant only: The space between lower box edge, instance name, 
 	-- file name, board position, view mode:
-	text_spacing : constant et_coordinates.geometry.type_distance_positive := 1.0;
+	text_spacing : constant type_distance_positive := 1.0;
 
 
 	
@@ -250,21 +251,21 @@ package submodules is
 	function to_string (id : in type_netchanger_id) return string;		
 
 	function opposide_port (port : in type_netchanger_port_name) return type_netchanger_port_name;
-	
+
 	type type_netchanger_port is record
-		position	: et_coordinates.geometry.type_point;
+		position	: type_point;
 		length		: et_symbols.type_port_length; 
-		rotation	: et_coordinates.type_rotation;
+		rotation	: type_rotation;
 	end record;
 
-	position_master_port_default : constant et_coordinates.geometry.type_point := et_coordinates.geometry.type_point (geometry.set (x =>  10.0, y => 0.0));
-	position_slave_port_default  : constant et_coordinates.geometry.type_point := et_coordinates.geometry.type_point (geometry.set (x => -10.0, y => 0.0));	
+	position_master_port_default : constant type_point := type_point (set (x =>  10.0, y => 0.0));
+	position_slave_port_default  : constant type_point := type_point (set (x => -10.0, y => 0.0));	
 	
 	type type_netchanger_symbol is record
 		master_port	: type_netchanger_port := (
 						position	=> position_master_port_default,
 						length		=> 5.0,
-						rotation	=> geometry.zero_rotation);
+						rotation	=> zero_rotation);
 
 		slave_port	: type_netchanger_port := (
 						position	=> position_slave_port_default,
@@ -273,11 +274,11 @@ package submodules is
 
 		-- the arc that connects the ports
 		arc	: et_symbols.type_arc := (
-						center		=> et_coordinates.geometry.type_point (geometry.set (x => 0.0, y => 0.0)),
+						center		=> type_point (set (x => 0.0, y => 0.0)),
 						radius		=> 5.0,
-						start_point	=> et_coordinates.geometry.type_point (geometry.set (x => -5.0, y => 0.0)),
-						end_point	=> et_coordinates.geometry.type_point (geometry.set (x =>  5.0, y => 0.0)),
-						direction	=> et_coordinates.geometry.CW,
+						start_point	=> type_point (set (x => -5.0, y => 0.0)),
+						end_point	=> type_point (set (x =>  5.0, y => 0.0)),
+						direction	=> CW,
 						width		=> et_symbols.port_line_width);
 	end record;
 
@@ -295,8 +296,8 @@ package submodules is
 		element_type	=> type_netchanger);
 
 	type type_netchanger_ports is record
-		master	: et_coordinates.geometry.type_point := position_master_port_default;
-		slave	: et_coordinates.geometry.type_point := position_slave_port_default;
+		master	: type_point := position_master_port_default;
+		slave	: type_point := position_slave_port_default;
 	end record;
 	
 	function netchanger_ports (

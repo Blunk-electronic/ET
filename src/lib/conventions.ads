@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -382,7 +382,7 @@ package conventions is
 
 	procedure check_schematic_text_size (
 		category 	: in type_text_schematic;
-		size		: in et_coordinates.geometry.type_distance_positive);
+		size		: in et_coordinates.pac_geometry_sch.type_distance_positive);
 	-- Checks the given text size by its category.
 
 
