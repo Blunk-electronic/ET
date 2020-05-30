@@ -71,7 +71,7 @@ package body et_geometry is
 
 
 	
-	package body geometry_operations_2d is
+	package body generic_pac_geometry is
 		
 		function to_string (grid : in type_grid) return string is begin
 			return point_preamble & to_string (grid.x) & axis_separator & to_string (grid.y);
@@ -834,7 +834,7 @@ package body et_geometry is
 				& to_string (rot (point));
 		end;
 		
-	end geometry_operations_2d;
+	end generic_pac_geometry;
 
 
 	

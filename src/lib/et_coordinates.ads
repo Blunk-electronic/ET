@@ -71,8 +71,8 @@ package et_coordinates is
 	type type_rotation is delta 0.1 range -360.0 .. 360.0;
 	for type_rotation'small use 0.1;
 	
-	-- instantiation of the 2d geometry package:
-	package geometry is new et_geometry.geometry_operations_2d (
+	-- instantiation of the geometry package:
+	package geometry is new et_geometry.generic_pac_geometry (
 		type_distance	=> type_distance,
 		type_rotation	=> type_rotation);
 	

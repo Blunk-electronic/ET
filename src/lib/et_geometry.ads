@@ -69,7 +69,7 @@ package et_geometry is
 		type type_distance is delta <>;
 		type type_rotation is delta <>;
 		
-	package geometry_operations_2d is
+	package generic_pac_geometry is
 		
 		zero : constant type_distance := 0.0;
 
@@ -389,13 +389,13 @@ package et_geometry is
 
 		boundaries_default : constant type_boundaries := (others => <>);
 		
-	end geometry_operations_2d;
+	end generic_pac_geometry;
 
 
 
 
 	generic
-		with package geometry is new geometry_operations_2d (<>);
+		with package geometry is new generic_pac_geometry (<>);
 		
 	package shapes_2d is
 		use geometry;

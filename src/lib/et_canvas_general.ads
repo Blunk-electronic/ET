@@ -89,7 +89,7 @@ generic
 	canvas_name : string; -- schematic, board, package, device, symbol, ...
 
 	-- The system of measurement:
-	with package geometry is new et_geometry.geometry_operations_2d (<>);
+	with package geometry is new et_geometry.generic_pac_geometry (<>);
 	
 package pac_canvas is
 	use geometry;
