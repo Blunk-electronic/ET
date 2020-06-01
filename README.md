@@ -10,7 +10,7 @@
 - The tool must be highly scripting capable.
 - We want to do agile hardware develpment which requires the features mentioned above.
 - The tool must be open sourced.
-- In the long run, a nice GUI will come with ET.
+- Currently the GUI is under construction.
 - Your feedback and collaboration is highly welcome !
 
 ## Outstanding Features
@@ -24,12 +24,12 @@
 - interfacing with system modelling tools
 
 ### Examples of design and component models
-- A module file (containing schematic and layout stuff) looks like this <https://github.com/Blunk-electronic/ET/blob/master/examples/dummy/dummy.mod>
+- A module file (containing schematic and layout stuff) looks like this <https://github.com/Blunk-electronic/ET_training/blob/master/submoduletest/submoduletest.mod>
 - There is a strict separation between symbol, package/footprint and device:
-- Device model <https://github.com/Blunk-electronic/ET/blob/master/examples/device.dev>
-- Symbol model <https://github.com/Blunk-electronic/ET/blob/master/examples/symbol.sym>
-- Package model <https://github.com/Blunk-electronic/ET/blob/master/examples/package.pac>
-- A so called rig-configuration that describes module instances and board-to-board connections <https://github.com/Blunk-electronic/ET/blob/master/examples/dummy/dummy.conf>
+- Device model <https://github.com/Blunk-electronic/ET_component_library/blob/master/devices/active/logic/7400_ext.dev>
+- Symbol model <https://github.com/Blunk-electronic/ET_component_library/blob/master/symbols/logic/NAND.sym>
+- Package model <https://github.com/Blunk-electronic/ET_component_library/blob/master/packages/S_SO14.pac>
+- A so called rig-configuration that describes module instances and board-to-board connections <https://github.com/Blunk-electronic/ET_training/blob/master/submoduletest/submoduletest.conf>
 
 ### Example of an ERC configuration file
 - See this example <https://github.com/Blunk-electronic/ET/blob/master/examples/conf.txt>
@@ -294,10 +294,12 @@ As the script processor is evolving more an more commands are moving up from sec
 ### Installation
 - Currently there is no proper install script.
 - Install the following packages: 
-    - the GNAT Ada compiler (version 7 or later). It should come along with major linux distros.
+    - the GNAT Ada compiler (version 9 or later). It should come along with major linux distros.
     - make
     - gprbuild
-    - gtkada
+    - gtkada 
+
+- Find a installation howto for gtkada and gprbuild here <https://github.com/Blunk-electronic/ada_training>
 
 - Change into src/et and follow the instructions in readme.txt.
 
@@ -321,8 +323,7 @@ $ sh install.sh
 ### Roadmap, things to do and issues
 - zero-Ohms resistors
 - accessories of components (screws, washers, clamps, ...)
-- import EAGLE projects and libraries
-- graphical user interface (GTKada based)
+- import EAGLE and KiCad V6 projects and libraries
 - web browser support so that ET can be operated on every operating system
 
 ### Collaboration
