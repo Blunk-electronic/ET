@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -34,24 +34,16 @@
 --
 --   history of changes:
 --
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 
 with ada.strings;				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.unbounded;
 
 with ada.exceptions;
 
 with ada.numerics.generic_elementary_functions;
 with et_string_processing;
-with et_general;
-with et_coordinates;			use et_coordinates;
 
 package body kicad_coordinates is
-	use geometry;
 	
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is begin
 		return type_schematic_file_name.to_string (schematic);
@@ -242,7 +234,6 @@ package body kicad_coordinates is
 			& axis_separator
 			& "y) ";
 		
-		use geometry;
 		use et_string_processing;
 	begin
 		case scope is

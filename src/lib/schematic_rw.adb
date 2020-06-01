@@ -35,18 +35,7 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	--use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-
-with ada.exceptions;
-
-with et_coordinates;			use et_coordinates;
-use et_coordinates.geometry;
-
--- with et_string_processing;
 with et_geometry;				use et_geometry;
 
 package body schematic_rw is

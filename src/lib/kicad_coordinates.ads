@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -47,6 +47,7 @@ with ada.containers.doubly_linked_lists;
 
 with et_string_processing;
 with et_coordinates;			use et_coordinates;
+use et_coordinates.pac_geometry_sch;
 
 package kicad_coordinates is
 	
@@ -86,7 +87,7 @@ package kicad_coordinates is
 	-- If top_module = false, the name of the top module is omitted.
 
 	
-	type type_position is new et_coordinates.geometry.type_point with private;
+	type type_position is new type_point with private;
 	
 
 	function path (position : in type_position) return type_path_to_submodule.list;
@@ -123,7 +124,7 @@ package kicad_coordinates is
 	
 	private 
 	
-		type type_position is new et_coordinates.geometry.type_point with record
+		type type_position is new type_point with record
 			path            : type_path_to_submodule.list; 
 			sheet_number	: type_sheet := type_sheet'first;
 		end record;

@@ -53,7 +53,7 @@ with material;
 with et_general;				--use et_general;
 
 with et_coordinates;			use et_coordinates;
-use et_coordinates.geometry;
+use et_coordinates.pac_geometry_sch;
 
 with et_string_processing;
 with general_rw;				use general_rw;
@@ -64,7 +64,6 @@ with conventions;
 with et_geometry;				use et_geometry;
 with et_text;
 with et_symbols;
-with et_devices;				use et_devices;
 with et_packages;				use et_packages;
 
 package body device_rw is
@@ -264,7 +263,6 @@ package body device_rw is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_symbols;
-		use geometry;
 		use et_text;
 		file_handle : ada.text_io.file_type;
 
@@ -396,9 +394,9 @@ package body device_rw is
 		symbol_circle		: type_circle;
 		symbol_text_base	: type_text_basic;
 		
-		symbol_text_position: et_coordinates.geometry.type_point;
-		symbol_text_content	: et_text.type_text_content.bounded_string;
-		symbol_placeholder_meaning : et_symbols.type_placeholder_meaning := placeholder_meaning_default;
+		symbol_text_position		: type_point;
+		symbol_text_content			: et_text.type_text_content.bounded_string;
+		symbol_placeholder_meaning	: et_symbols.type_placeholder_meaning := placeholder_meaning_default;
 		
 		port					: type_port_base;
 		port_name				: type_port_name.bounded_string;

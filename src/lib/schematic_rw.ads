@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -35,8 +35,8 @@
 --   history of changes:
 --
 
-with et_coordinates;
-
+with et_coordinates;			use et_coordinates;
+use et_coordinates.pac_geometry_sch;
 
 package schematic_rw is
 
@@ -45,7 +45,6 @@ package schematic_rw is
 	keyword_position_in_board		: constant string := "position_in_board";
 	keyword_position_in_schematic	: constant string := "position_in_schematic";	
 	keyword_view_mode				: constant string := "view_mode";
-
 
 	function position (pos : in et_coordinates.type_position) return string;
 	-- Returns something like "sheet 3 x 12.34 y 45.0".

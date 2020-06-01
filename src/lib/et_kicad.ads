@@ -56,6 +56,8 @@ with kicad_coordinates;			use kicad_coordinates;
 with et_kicad_pcb;
 with et_import;
 with et_coordinates;
+use et_coordinates.pac_geometry_sch;
+
 with et_pcb_coordinates;
 with et_string_processing;
 with et_text;
