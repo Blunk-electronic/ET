@@ -35,15 +35,7 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with cairo;						use cairo;
-with pango.layout;				use pango.layout;
-
-with et_text;					use et_text;
-with et_general;				use et_general;
 with et_project;				use et_project;
-with et_coordinates;			use et_coordinates;
-use et_coordinates.geometry;
 
 with et_schematic;				use et_schematic;
 use et_schematic.pac_texts;

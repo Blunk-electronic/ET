@@ -36,13 +36,7 @@
 --
 
 with ada.text_io;					use ada.text_io;
-
-with et_general;
 with et_display.schematic;
-with et_project;
-with et_frames;
-with et_coordinates;				use et_coordinates;
-use et_coordinates.geometry;
 
 with et_colors.schematic;			use et_colors.schematic;
 

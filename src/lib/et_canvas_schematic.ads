@@ -54,13 +54,17 @@ with cairo;					use cairo;
 with cairo.pattern;			use cairo.pattern;
 with gtkada.style;
 
-with et_general;
-with et_geometry;			use et_geometry;
-with et_coordinates;		use et_coordinates;
-with et_project;
+with et_general;				use et_general;
+with et_geometry;				use et_geometry;
+
+with et_coordinates;			use et_coordinates;
+use et_coordinates.pac_geometry_sch;
+
+with et_project;				use et_project;
 with et_symbols;
 with et_schematic;
 with et_frames;
+with et_text;					use et_text;
 
 with et_canvas_general;
 with et_canvas_primitive_draw_ops;	
@@ -79,7 +83,7 @@ package et_canvas_schematic is
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
 		canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
-		geometry		=> et_coordinates.geometry);
+		geometry		=> et_coordinates.pac_geometry_sch);
 
 	use pac_canvas;
 	
@@ -93,8 +97,6 @@ package et_canvas_schematic is
 		pac_text	=> et_schematic.pac_text);
 	
 	
-
-	use et_coordinates.geometry; -- CS
 
 	-- The currently active project is stored here:
 	current_active_project : et_project.type_project_name.bounded_string; -- blood_sample_analyzer

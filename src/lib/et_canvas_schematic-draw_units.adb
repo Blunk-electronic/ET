@@ -43,8 +43,6 @@ with pango.layout;				use pango.layout;
 
 with et_general;				use et_general;
 with et_project;				use et_project;
-with et_coordinates;			use et_coordinates;
-use et_coordinates.geometry;
 
 with et_schematic;
 
@@ -121,7 +119,7 @@ procedure draw_units (
 	
 	procedure draw_symbol (
 		symbol		: in et_symbols.type_symbol;
-		position	: in et_coordinates.geometry.type_point) -- x/y on the schematic sheet
+		position	: in type_point) -- x/y on the schematic sheet
 	is
 
 	-- CS Could be useful to use the primitive draw operations of et_canvas_draw:
@@ -138,7 +136,7 @@ procedure draw_units (
 		use type_texts;
 
 		-- First we take a copy the boundaries of the symbol.
-		boundaries : geometry.type_boundaries := symbol.boundaries;
+		boundaries : type_boundaries := symbol.boundaries;
 
 		-- This is the bounding box required for drawing the symbol.
 		-- The sole purpose of the bounding box is to draw the symbol
@@ -822,7 +820,7 @@ procedure draw_units (
 		device_model : et_devices.type_device_model_file.bounded_string :=
 			element (device_cursor).model;	-- ../libraries/devices/transistor/pnp.dev
 
-		unit_position : et_coordinates.geometry.type_point; -- only x and y relevant
+		unit_position : type_point; -- only x and y relevant
 		
 		procedure locate_symbol (unit_cursor : in et_devices.type_unit_cursors) is
 			use et_devices;

@@ -36,20 +36,13 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with cairo;						use cairo;
-with pango.layout;				use pango.layout;
-
-with et_text;					use et_text;
-with et_general;				use et_general;
-with et_project;				use et_project;
-with et_coordinates;			use et_coordinates;
-use et_coordinates.geometry;
 
 with et_pcb_coordinates;
-
 with et_schematic;
-with submodules;				use submodules;
+with et_project;				use et_project;
 use et_project.type_modules;
+
+with submodules;				use submodules;
 
 with et_display.schematic;
 
@@ -158,7 +151,7 @@ procedure draw_submodules (
 				font		=> position_board_font,
 				position	=> position,
 				origin		=> false,
-				rotation	=> et_coordinates.geometry.zero_rotation,
+				rotation	=> zero_rotation,
 				alignment	=> (LEFT, TOP),
 				height		=> self.frame_height);
 
