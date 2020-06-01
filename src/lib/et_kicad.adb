@@ -46,36 +46,13 @@
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
-with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 with ada.environment_variables;
 
-with et_coordinates;
-with et_schematic;
-with et_geometry;
-
-with et_general;				use et_general;
-with et_string_processing;		use et_string_processing;
-with et_project;
-with et_pcb;
-with et_pcb_coordinates;
-with kicad_coordinates;			use kicad_coordinates;
-with et_kicad_general;			use et_kicad_general;
-with et_kicad_pcb;
-with et_import;
-with et_export;
-with et_csv;
 with conventions;
-with et_text;
-
-with et_packages;
-with et_symbols;				use et_symbols;
-with et_devices;				use et_devices;
-with et_frames;
 
 package body et_kicad is
 
@@ -204,10 +181,7 @@ package body et_kicad is
 		log_threshold	: in et_string_processing.type_log_level) is
 
 		use et_string_processing;
-		use et_coordinates;
-		use et_coordinates.geometry;
 		use et_symbols;
-		use et_devices;
 	begin
 		log_indentation_up;
 		
@@ -518,14 +492,12 @@ package body et_kicad is
 		no_connection_flag	: in type_no_connection_flag;
 		scope				: in kicad_coordinates.type_scope) return string is
 	-- Returns the position of the given no-connection-flag as string.
-		use et_coordinates;
 	begin	
 		return (to_string (position => no_connection_flag.coordinates, scope => scope));
 	end to_string;
 
 	function to_string (port : in type_port_with_reference) return string is
 	-- Returns the properties of the given port as string.
-		use et_coordinates;
 	begin
 		return "reference " & to_string (port.reference) 
 			& " port " & et_symbols.to_string (port.name)
@@ -563,15 +535,13 @@ package body et_kicad is
 	-- Returns the lowest x/y position of the given strand.
 		strand			: in type_strand;
 		log_threshold	: in et_string_processing.type_log_level
-		) return et_coordinates.geometry.type_point is
+		) return type_point is
 		
-		point_1, point_2 : et_coordinates.geometry.type_point;
+		point_1, point_2 : type_point;
 		segment : type_net_segments.cursor;
 	
 		use type_net_segments;
 		use et_string_processing;
-		use et_coordinates;
-		use geometry;
 
 		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
 	begin
@@ -796,12 +766,10 @@ package body et_kicad is
 		end if;
 	end validate_prefix;
 			
-	function to_point (x_in, y_in : in string) return et_coordinates.geometry.type_point is
-		point : et_coordinates.geometry.type_point;
+	function to_point (x_in, y_in : in string) return type_point is
+		point : type_point;
 		x, y : et_coordinates.type_distance_xy;
 
-		use et_coordinates;
-		use geometry;
 	begin
 		x := mil_to_distance (x_in);
 		y := mil_to_distance (y_in);
@@ -1497,10 +1465,8 @@ package body et_kicad is
 				end_point	: positive := positive (et_string_processing.field_count (line)) - 2;
 
 				-- temporarily we store coordinates of a point here
-				point		: et_coordinates.geometry.type_point;
+				point		: type_point;
 
-				use et_coordinates;
-				use geometry;
 			begin -- to_polyline
 
 				-- read total number of points
@@ -1554,8 +1520,6 @@ package body et_kicad is
 				-- #8 : line width
 				-- #9 : fill style N/F/f no fill/foreground/background
 
-				use et_coordinates;
-				use geometry;
 			begin -- to_rectangle
 				--set_x (rectangle.corner_A, mil_to_distance (mil => f (line,2)));
 				set (X, mil_to_distance (mil => f (line,2)), rectangle.corner_A);
@@ -1604,8 +1568,6 @@ package body et_kicad is
 				--  #7 : line width (23)
 				--  #8 : fill style N/F/f no fill/foreground/background
 
-				use et_coordinates;
-				use geometry;
 			begin -- to_circle
 				--set_x (circle.center, mil_to_distance (mil => f (line,2)));
 				set (X, mil_to_distance (mil => f (line,2)), circle.center);
@@ -1651,8 +1613,6 @@ package body et_kicad is
 				-- #11..12 : start point (x/y)
 				-- #13..14 : end point (x/y)
 
-				use et_coordinates;
-				use geometry;
 			begin -- to_arc
 				--set_x (arc.center, mil_to_distance (mil => f (line,2)));
 				set (X, mil_to_distance (mil => f (line,2)), arc.center);
@@ -1762,8 +1722,6 @@ package body et_kicad is
 					return et_text.type_text_content.to_bounded_string (t);
 				end to_content;
 
-				use et_coordinates;
-				use geometry;
 			begin -- to_text
 				text.rotation := snap (- to_degrees (f (line,2)));
 				
@@ -1894,7 +1852,6 @@ package body et_kicad is
 
 				function to_rotation (orientation : in string) return et_coordinates.type_rotation is
 				-- Translates orientation up/down/left/right (U/D/L/R) to angle.
-					use et_coordinates;
 					orient : constant character := orientation (orientation'first);
 					rot : et_coordinates.type_rotation := 0.0;
 				begin
@@ -1909,9 +1866,6 @@ package body et_kicad is
 					end case;
 					return rot;
 				end to_rotation;
-				
-				use et_coordinates;
-				use geometry;
 				
 			begin -- to_port
 				log_indentation_up;
@@ -1985,8 +1939,6 @@ package body et_kicad is
 			-- the meaning as given in parameter "meaning".
 			-- Checks basic properties of text fields (allowed charactes, text size, aligment, ...)
 			-- NOTE: The contextual validation takes place in procedure check_text_fields.
-				use et_coordinates;
-				use geometry;
 				use et_text;
 				use et_text.type_text_content;
 
@@ -2986,8 +2938,6 @@ package body et_kicad is
 
 			end build_package_variant;
 
-			use et_coordinates;
-			
 		begin -- read_library
 			log_indentation_up;
 			
@@ -3070,7 +3020,7 @@ package body et_kicad is
 									log (WARNING, "expect 0 in field #4 !");
 								end if;
 								
-								tmp_port_name_offset := geometry.mil_to_distance (mil => f (line,5)); -- relevant for supply pins only
+								tmp_port_name_offset := mil_to_distance (mil => f (line,5)); -- relevant for supply pins only
 								tmp_terminal_name_visible := to_pin_visibile (f (line,6));
 								tmp_port_name_visible := to_port_visibile (f (line,7));
 								
@@ -3731,13 +3681,11 @@ package body et_kicad is
 			return boolean is
 		-- Returns true if given port sits on given segment.
 
-			use et_coordinates;
-
 			-- CS this is a workaround in order to provide a line for function on_line:
 			type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
 			line : type_line_scratch := (
-				start_point	=> geometry.type_point (segment.coordinates_start), 
-				end_point	=> geometry.type_point (segment.coordinates_end));
+				start_point	=> type_point (segment.coordinates_start), 
+				end_point	=> type_point (segment.coordinates_end));
 			
 		begin -- on_segment
 			return on_line (port.coordinates, line);
@@ -3921,7 +3869,6 @@ package body et_kicad is
 				end loop;
 			end query_segments;
 
-			use et_coordinates.geometry;
 		begin -- collect_hierarchic_strands
 
 			-- If a hierarchic net is available, query all hierarchic strands of the module.
@@ -4125,7 +4072,6 @@ package body et_kicad is
 			label_tag		: type_tag_labels.cursor	:= segment.label_list_tag.first;
 			use type_simple_labels;
 			use type_tag_labels;
-			use et_coordinates.geometry;
 		begin
 			if log_level >= log_threshold + 3 then
 				
@@ -4160,7 +4106,6 @@ package body et_kicad is
 			strand : in type_strand) is
 			segment : type_net_segments.cursor := strand.segments.first;
 			use type_net_segments;
-			use et_coordinates;
 			
 			-- for the segment we provide a consequtive number which has no further meaning
 			segment_number : count_type := 1;			
@@ -4192,7 +4137,6 @@ package body et_kicad is
 			
 			strand : type_strands.cursor := net.strands.first;
 			use type_strands;
-			use et_coordinates;
 			
 			-- for the strand we provide a consequtive number which has no further meaning
 			strand_number : count_type := 1;			
@@ -5446,9 +5390,6 @@ package body et_kicad is
 			log_threshold		: in type_log_level)
 			return type_hierarchic_sheet_file_names_extended is
 
-			use et_coordinates;
-			use geometry;
-
 			hierarchic_sheet_file_names : type_hierarchic_sheet_file_names_extended; -- list to be returned
 			name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to hierarchic_sheet_file_names
 
@@ -5716,8 +5657,6 @@ package body et_kicad is
 			
 			-- Strands without label are named by using the notation "N$". 
 
-				use et_coordinates;
-			
 				ls  	: type_net_label_simple;
 				lt  	: type_net_label_tag;				
 				anon_strand_a, anon_strand_b : type_anonymous_strand;
@@ -5732,13 +5671,12 @@ package body et_kicad is
 				function label_sits_on_segment (
 					label	: in type_net_label;
 					segment	: in type_net_segment) return boolean is
-					use geometry;
 
 					-- CS this is a workaround in order to provide a line for function line:
 					type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
 					line : type_line_scratch := (
-						start_point	=> geometry.type_point (segment.coordinates_start), 
-						end_point	=> geometry.type_point (segment.coordinates_end));
+						start_point	=> type_point (segment.coordinates_start), 
+						end_point	=> type_point (segment.coordinates_end));
 					
 				begin
 					return on_line (type_point (label.coordinates), line);
@@ -9133,16 +9071,14 @@ package body et_kicad is
 
 		sits_on_segment : boolean := false;
 
-		use et_coordinates;
-		use geometry;
 		use et_schematic.pac_shapes;
 		d : type_distance_point_line;
 
 		-- CS this is a workaround in order to provide a line for function distance_point_line:
 		type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
 		line : type_line_scratch := (
-			start_point	=> geometry.type_point (segment.coordinates_start), 
-			end_point	=> geometry.type_point (segment.coordinates_end));
+			start_point	=> type_point (segment.coordinates_start), 
+			end_point	=> type_point (segment.coordinates_end));
 		
 	begin
 		-- calculate the shortes distance of point from line.
@@ -9413,7 +9349,6 @@ package body et_kicad is
 		
 		sits_on_segment : boolean := false;
 
-		use et_coordinates.geometry;
 		use et_schematic.pac_shapes;
 		distance : type_distance_point_line;
 
@@ -9521,13 +9456,11 @@ package body et_kicad is
 			end if;
 		end test_junction;
 
-		use et_coordinates;
-
 		-- CS this is a workaround in order to provide a line for function distance_point_line:
 		type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
 		line : type_line_scratch := (
-			start_point	=> geometry.type_point (segment.coordinates_start), 
-			end_point	=> geometry.type_point (segment.coordinates_end));
+			start_point	=> type_point (segment.coordinates_start), 
+			end_point	=> type_point (segment.coordinates_end));
 		
 	begin -- port_connected_with_segment
 		-- First make sure the port is to be connected at all. Ports intended to be open
@@ -9583,8 +9516,6 @@ package body et_kicad is
 	
 		portlists : type_portlists.map := type_portlists.empty_map;
 
-		use et_coordinates;
-		
 		strand		: type_strands.cursor := first_strand;
 		segment		: type_net_segments.cursor;
 		component	: type_portlists.cursor;
@@ -9713,7 +9644,6 @@ package body et_kicad is
 			label_tag		: type_tag_labels.cursor	:= segment.label_list_tag.first;
 			use type_simple_labels;
 			use type_tag_labels;
-			use et_coordinates.geometry;
 		begin
 			if log_level >= log_threshold + 2 then
 				log_indentation_up;
@@ -9940,7 +9870,6 @@ package body et_kicad is
 					use type_modules;
 					
 					port_coordinates : kicad_coordinates.type_position;
-					use et_coordinates.geometry;
 
 					function left_open return type_port_open is
 					-- Returns true if a no-connect-flag sits at the port_coordinates.
@@ -10477,7 +10406,6 @@ package body et_kicad is
 					return false;
 				end connected_by_other_unit;
 
-				use et_coordinates;
 			begin -- query_ports
 				-- Test the port if it is NOT intentionally left open AND
 				-- if it is not connected to any net segment.
@@ -10818,7 +10746,6 @@ package body et_kicad is
 		module_cursor : type_modules.cursor;
 		use type_modules;
 		use et_string_processing;
-		use et_coordinates;
 	begin
 		if find (modules, module_name) = type_modules.no_element then
 			log (ERROR, "module " & to_string (module_name)
@@ -11131,8 +11058,6 @@ package body et_kicad is
 					procedure query_segments_sec (
 						strand : in type_strand) is
 						segment_cursor_sec : type_net_segments.cursor := strand.segments.first;
-						use et_coordinates;
-						use geometry;
 						use et_schematic.pac_shapes;
 						distance : type_distance_point_line;
 					begin -- query_segments_sec
@@ -11154,8 +11079,8 @@ package body et_kicad is
 								declare
 									type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
 									line : type_line_scratch := (
-										start_point	=> geometry.type_point (element (segment_cursor_sec).coordinates_start), 
-										end_point	=> geometry.type_point (element (segment_cursor_sec).coordinates_end));
+										start_point	=> type_point (element (segment_cursor_sec).coordinates_start), 
+										end_point	=> type_point (element (segment_cursor_sec).coordinates_end));
 								begin
 									-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
 									-- exit prematurely and return the coordinates of the expected junction.
@@ -11230,7 +11155,6 @@ package body et_kicad is
 						module 		: in type_module) is
 						use type_junctions;
 						junction_cursor : type_junctions.cursor := module.junctions.first;
-						use et_coordinates;
 					begin -- query_junctions
 						junction_found := false;
 						while junction_cursor /= type_junctions.no_element loop
@@ -11251,8 +11175,6 @@ package body et_kicad is
 					return junction_found;
 				end junction_here;
 
-				use et_coordinates;
-				
 			begin -- query_segments_prim
 				log_indentation_up;
 				log (text => "quering segments ...", level => log_threshold + 2);
@@ -11357,8 +11279,6 @@ package body et_kicad is
 						strand : in type_strand) is
 						use type_net_segments;
 						segment_cursor : type_net_segments.cursor := strand.segments.first;
-						use et_coordinates;
-						use geometry;
 					begin
 						while segment_cursor /= type_net_segments.no_element loop
 
@@ -11369,8 +11289,8 @@ package body et_kicad is
 								declare
 									type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
 									line : type_line_scratch := (
-										start_point	=> geometry.type_point (element (segment_cursor).coordinates_start), 
-										end_point	=> geometry.type_point (element (segment_cursor).coordinates_end));
+										start_point	=> type_point (element (segment_cursor).coordinates_start), 
+										end_point	=> type_point (element (segment_cursor).coordinates_end));
 								begin
 									if on_line (type_point (element (junction_cursor).coordinates), line) then
 										segment_found := true;
@@ -11475,8 +11395,6 @@ package body et_kicad is
 						strand : in type_strand) is
 						use type_net_segments;
 						segment_cursor : type_net_segments.cursor := strand.segments.first;
-						use et_coordinates;
-						use geometry;
 					begin
 						while segment_cursor /= type_net_segments.no_element loop
 
@@ -11487,8 +11405,8 @@ package body et_kicad is
 								declare
 									type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
 									line : type_line_scratch := (
-										start_point	=> geometry.type_point (element (segment_cursor).coordinates_start), 
-										end_point	=> geometry.type_point (element (segment_cursor).coordinates_end));
+										start_point	=> type_point (element (segment_cursor).coordinates_start), 
+										end_point	=> type_point (element (segment_cursor).coordinates_end));
 								begin
 									-- count segments
 									if on_line (type_point (element (junction_cursor).coordinates), line) then
@@ -11541,7 +11459,6 @@ package body et_kicad is
 						ports 		: in type_ports.list) is
 						port_cursor : type_ports.cursor := ports.first;
 						use type_ports;
-						use et_coordinates;
 					begin
 						while port_cursor /= type_ports.no_element loop
 
@@ -11647,8 +11564,6 @@ package body et_kicad is
 						module_name : in type_submodule_name.bounded_string;
 						module 		: in type_module) is
 						use type_no_connection_flags;
-						use et_coordinates;
-						use geometry;
 						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
 					begin -- query_no_connect_flags
 						log (text => "quering no_connection_flags ...", level => log_threshold + 4);
@@ -11672,8 +11587,8 @@ package body et_kicad is
 								declare
 									type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
 									line : type_line_scratch := (
-										start_point	=> geometry.type_point (element (segment_cursor).coordinates_start), 
-										end_point	=> geometry.type_point (element (segment_cursor).coordinates_end));
+										start_point	=> type_point (element (segment_cursor).coordinates_start), 
+										end_point	=> type_point (element (segment_cursor).coordinates_end));
 								begin
 									if on_line (type_point (element (no_connection_flag_cursor).coordinates), line) then
 										log (WARNING, "no-connection-flag misplaced on a net at " 
@@ -11795,7 +11710,6 @@ package body et_kicad is
 					ports 		: in type_ports.list) is
 					port_cursor : type_ports.cursor := ports.first;
 					use type_ports;
-					use et_coordinates;
 				begin -- query_ports
 					-- query ports of component and test if the no_connection_flag is attached to any of them
 					while port_cursor /= type_ports.no_element loop
@@ -11877,7 +11791,6 @@ package body et_kicad is
 	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 		position_of_last_separator : natural := 0;
 		use et_schematic;
-		use et_coordinates;
 		name : type_net_name.bounded_string;
 	begin
 		-- Detect position of last hierarchy separator.
@@ -11901,7 +11814,6 @@ package body et_kicad is
 	-- Writes the properties of the given net label in the logfile.
 		use et_string_processing;
 		use et_schematic;
-		use et_coordinates.geometry;
 		log_threshold : type_log_level := 2;
 	begin
 		log_indentation_up;
@@ -11949,10 +11861,9 @@ package body et_kicad is
 
 	function to_string (label : in type_net_label) return string is
 	-- Returns the coordinates of the given label as string.
-		use et_coordinates;
 	begin
 		--return (to_string (position => label.coordinates, scope => scope));
-		return geometry.to_string (point => label.coordinates);
+		return to_string (point => label.coordinates);
 	end to_string;
 
 	function to_string (
@@ -11967,7 +11878,6 @@ package body et_kicad is
 	function length (segment : in type_net_segment_base) 
 		return et_coordinates.type_distance is
 	-- Returns the length of the given net segment.
-		use et_coordinates;
 		len : type_distance;
 		use et_string_processing;
 	begin
@@ -12054,7 +11964,6 @@ package body et_kicad is
 				-- CS: procedure (input parameter port-direction) that loops through the ports 
 				-- and outputs them as requested by the input parameter.
 
-				use et_coordinates;
 			begin -- query_ports
 
 				while port_cursor /= type_ports_with_reference.no_element loop
@@ -12260,7 +12169,6 @@ package body et_kicad is
 
 		use et_string_processing;
 		use type_modules;
-		use et_coordinates;
 
 		module_cursor : type_modules.cursor; -- points to the module being searched in
 
@@ -12381,7 +12289,6 @@ package body et_kicad is
 	
 		use et_string_processing;
 		use type_modules;
-		use et_coordinates;
 
 		function make_netlist return type_netlist.map is
 		-- Generates the netlist of the current module (indicated by module_cursor).
@@ -12674,7 +12581,6 @@ package body et_kicad is
 
 		use type_modules;
 		use et_string_processing;
-		use et_coordinates;
 		terminals : et_devices.type_terminal_count; -- to be returned
 
 		procedure locate_component_in_schematic (
@@ -12826,7 +12732,6 @@ package body et_kicad is
 
 		use type_modules;
 		use et_string_processing;
-		use et_coordinates;
 		terminal : et_devices.type_terminal; -- to be returned
 
 		procedure locate_component_in_schematic (
@@ -12991,7 +12896,6 @@ package body et_kicad is
 
 		use et_string_processing;
 		use type_modules;
-		use et_coordinates;
 
 		module_cursor : type_modules.cursor; -- points to the module being searched in
 
@@ -13177,7 +13081,6 @@ package body et_kicad is
 	-- Returns a list of component ports that are connected with the given net.
 
 		use et_string_processing;
-		use et_coordinates;
 		use type_modules;
 
 		module_cursor : type_modules.cursor;
@@ -13288,7 +13191,6 @@ package body et_kicad is
 	-- Returns a list of real component ports that are connected with the given net.
 
 		use et_string_processing;
-		use et_coordinates;
 		use type_modules;
 
 		module_cursor : type_modules.cursor;
@@ -13381,7 +13283,6 @@ package body et_kicad is
 -- 		log_threshold 	: in et_string_processing.type_log_level) is
 -- 		
 -- 		use et_string_processing;
--- 		use et_coordinates;
 -- 		use et_libraries;
 -- 		use et_kicad.type_modules;
 -- 		use conventions;
@@ -13442,7 +13343,6 @@ package body et_kicad is
 -- 
 -- 		occurences : natural := 0; -- to be returned
 -- 
--- 		use et_coordinates;
 -- 		use et_kicad.type_modules;
 -- 		use et_libraries;
 -- 		use conventions;
@@ -13510,7 +13410,6 @@ package body et_kicad is
 -- 		arrow : constant string (1..4) := " -> ";
 -- 
 -- 		use et_string_processing;		
--- 		use et_coordinates;
 -- 		
 -- 		procedure count_components (
 -- 			name	: in type_submodule_name.bounded_string;
@@ -13800,9 +13699,7 @@ package body et_kicad is
 		log_threshold	: in et_string_processing.type_log_level := 0) is
 	-- Writes the properties of the given note
 		use et_string_processing;
-		use et_coordinates;
 		use et_text;
-		use geometry;
 	begin
 		log (text => "text note" & to_string (
 			position => note.position, scope => kicad_coordinates.XY), level => log_threshold);

@@ -45,7 +45,7 @@ with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.vectors;
 
-with et_general;
+with et_general;				use et_general;
 with et_project;
 with et_geometry;
 with et_schematic;
@@ -55,14 +55,14 @@ with et_kicad_general;			use et_kicad_general;
 with kicad_coordinates;			use kicad_coordinates;
 with et_kicad_pcb;
 with et_import;
-with et_coordinates;
+with et_coordinates;			use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
 with et_pcb_coordinates;
-with et_string_processing;
+with et_string_processing;		use et_string_processing;
 with et_text;
-with et_symbols;
-with et_devices;			use et_devices;
+with et_symbols;				use et_symbols;
+with et_devices;				use et_devices;
 with et_frames;
 
 package et_kicad is
@@ -176,19 +176,19 @@ package et_kicad is
 	function to_meaning (meaning : in string) return type_placeholder_meaning;
 
 
-	text_size_min : constant et_coordinates.geometry.type_distance_positive := 0.01;
-	text_size_max : constant et_coordinates.geometry.type_distance_positive := 100.0;
-	text_size_default : constant et_coordinates.geometry.type_distance_positive := 1.3;
+	text_size_min : constant type_distance_positive := 0.01;
+	text_size_max : constant type_distance_positive := 100.0;
+	text_size_default : constant type_distance_positive := 1.3;
 	
-	subtype type_text_line_width is et_coordinates.geometry.type_distance_positive range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
-	text_line_width_min : constant et_coordinates.geometry.type_distance_positive := 0.1;
-	text_line_width_max : constant et_coordinates.geometry.type_distance_positive := 5.0;
-	text_line_width_default : constant et_coordinates.geometry.type_distance_positive := 0.3; 
+	subtype type_text_line_width is type_distance_positive range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
+	text_line_width_min : constant type_distance_positive := 0.1;
+	text_line_width_max : constant type_distance_positive := 5.0;
+	text_line_width_default : constant type_distance_positive := 0.3; 
 
 	-- Instantiation of the shapes package:
 	-- Required for instantiation of text package only. See below.
-	package pac_shapes is new et_geometry.generic_pac_shapes (et_coordinates.geometry);
-	
+	package pac_shapes is new et_geometry.generic_pac_shapes (et_coordinates.pac_geometry_sch);
+
 	-- Instantiation of the text package:
 	package pac_text is new et_text.text (
 		pac_shapes			=> pac_shapes,
@@ -211,7 +211,7 @@ package et_kicad is
 	end record;
 
 	type type_text_placeholder (meaning : type_placeholder_meaning) is new type_text_basic with record
-		position	: et_coordinates.geometry.type_point;		
+		position	: type_point;		
 	end record;	
 	
 	-- A text/note in the schematic:
@@ -226,7 +226,7 @@ package et_kicad is
 	-- A kicad unit:
 	type type_unit_schematic is record
 		appearance	: et_schematic.type_appearance_schematic;
-		rotation	: et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation;
+		rotation	: et_coordinates.type_rotation := zero_rotation;
 		mirror		: et_schematic.type_mirror := et_schematic.NO;
 		position	: kicad_coordinates.type_position;		
 
@@ -266,7 +266,7 @@ package et_kicad is
 	-- The unit is an element in the given list of units.
 		name	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
-		return type_position;
+		return kicad_coordinates.type_position;
 	
 	function mirror_style_of_unit (
 	-- Returns the mirror style of the given unit.
@@ -381,8 +381,8 @@ package et_kicad is
 	-- is "invented" that connects start and end point.
 	-- Finally the polylines are collected in a simple list.
 	package type_symbol_points is new doubly_linked_lists (
-		element_type	=> et_coordinates.geometry.type_point,
-		"="				=> et_coordinates.geometry."=");
+		element_type	=> type_point,
+		"="				=> "=");
 
 	type type_symbol_polyline is record
 		width	: et_symbols.type_line_width;
@@ -394,8 +394,8 @@ package et_kicad is
 	-- rectangles of a symbol:
 	-- It is sufficient to specifiy the diagonal of the rectangle.
 	type type_symbol_rectangle is record
-		corner_A	: et_coordinates.geometry.type_point;
-		corner_B	: et_coordinates.geometry.type_point;
+		corner_A	: type_point;
+		corner_B	: type_point;
 		width		: et_symbols.type_line_width;
 		fill		: type_fill;
 	end record;
@@ -444,7 +444,7 @@ package et_kicad is
 	-- a component unit in the library
 	type type_unit_library (appearance : et_symbols.type_appearance) is record
 		symbol		: type_symbol := (appearance => appearance, others => <>);
-		coordinates	: et_coordinates.geometry.type_point;
+		coordinates	: type_point;
 		-- Units that harbor component wide pins have this flag set.
 		-- Usually units with power supply pins exclusively.
 		-- When building portlists this flag is important.
@@ -653,7 +653,7 @@ package et_kicad is
 
 	-- No-connection-flags indicate that a component port is intentionally left unconnected.
 	type type_no_connection_flag is record
-		coordinates : type_position;
+		coordinates : kicad_coordinates.type_position;
 		-- CS: processed flag
 	end record;
 
@@ -671,7 +671,7 @@ package et_kicad is
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
 		name			: et_symbols.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
-		coordinates 	: type_position;
+		coordinates 	: kicad_coordinates.type_position;
 		direction		: type_port_direction; -- example: "passive"
 		style			: type_port_style;
 		appearance		: et_schematic.type_appearance_schematic;
@@ -741,7 +741,7 @@ package et_kicad is
 	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 
 	type type_net_label (label_appearance : et_schematic.type_net_label_appearance) is record
-		coordinates	: et_coordinates.geometry.type_point;
+		coordinates	: type_point;
 		rotation	: et_coordinates.type_rotation;
         text		: et_general.type_net_name.bounded_string;
         size		: et_symbols.pac_text.type_text_size;
@@ -770,7 +770,7 @@ package et_kicad is
 
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is record -- CS rename to type_junction
-		coordinates : type_position;
+		coordinates : kicad_coordinates.type_position;
 	end record;
 
 	function to_string (
@@ -784,7 +784,7 @@ package et_kicad is
 
 	type type_net_segment_base is tagged record
 		coordinates_start 	: kicad_coordinates.type_position;
-		coordinates_end   	: kicad_coordinates.type_position; -- CS et_coordinates.geometry.type_point ?
+		coordinates_end   	: kicad_coordinates.type_position; -- CS type_point ?
 	end record;
 
 	function length (segment : in type_net_segment_base) 
@@ -832,7 +832,7 @@ package et_kicad is
 	-- Returns the lowest x/y position of the given strand.
 		strand 			: in type_strand;
 		log_threshold	: in et_string_processing.type_log_level
-		) return et_coordinates.geometry.type_point;
+		) return type_point;
 
 	procedure add_strand (
 	-- Adds a strand into the module (indicated by module_cursor).
@@ -1235,7 +1235,7 @@ package et_kicad is
 	type type_hierarchic_sheet_port is record
 		direction	: type_port_direction;
 		text_size	: et_symbols.pac_text.type_text_size;
-		coordinates	: et_coordinates.geometry.type_point;
+		coordinates	: type_point;
         orientation	: et_coordinates.type_rotation;
         processed   : boolean; -- used when linking hierarchic nets
 	end record;
@@ -1255,7 +1255,7 @@ package et_kicad is
 	type type_hierarchic_sheet is record
         text_size_of_name   : et_symbols.pac_text.type_text_size;
         text_size_of_file   : et_symbols.pac_text.type_text_size;
-		coordinates		    : type_position;
+		coordinates		    : kicad_coordinates.type_position;
         size_x, size_y      : et_coordinates.type_distance; -- size x/y of the box
 		timestamp           : type_timestamp;
 		ports				: type_hierarchic_sheet_ports.map;
@@ -1390,7 +1390,7 @@ package et_kicad is
 	--type type_frame is new et_frames.type_frame with record		
 	type type_frame is record
 		paper		: et_frames.type_paper_size := et_frames.paper_size_default;
-		coordinates : type_position; -- the position of the frame -- CS rename to position
+		coordinates : kicad_coordinates.type_position; -- the position of the frame -- CS rename to position
 	end record;
 
 	procedure add_frame (
