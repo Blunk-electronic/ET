@@ -35,40 +35,6 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	--use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.unbounded;
-with ada.text_io;				use ada.text_io;
-
-with ada.exceptions;
-with ada.directories;
--- with gnat.directory_operations;
-
-with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.ordered_maps;
--- with ada.containers.indefinite_ordered_sets;
-
-with et_general;				use et_general;
-with et_coordinates;
-with et_string_processing;		use et_string_processing;
-with et_schematic;				use et_schematic;
-with et_pcb;
-with et_packages;
-with et_pcb_coordinates;
-with et_project;				use et_project;
-with submodules;
-with numbering;
-with conventions;
-with material;
-with netlists;
-with device_rw;
-with et_symbols;			--use et_symbols;
-with et_devices;			use et_devices;
-
 package body schematic_ops is
 
 	use type_modules;
@@ -159,7 +125,7 @@ package body schematic_ops is
 	procedure set_grid (
 	-- Sets the grid of the module.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		grid			: in geometry.type_grid;
+		grid			: in type_grid;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;

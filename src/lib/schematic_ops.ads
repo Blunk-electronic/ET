@@ -50,6 +50,8 @@ with ada.containers.ordered_sets;
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
 with et_coordinates;			use et_coordinates;
+use et_coordinates.pac_geometry_sch;
+
 with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
 with et_project;				use et_project;
@@ -63,7 +65,6 @@ with et_symbols;
 with et_devices;				use et_devices;
 
 package schematic_ops is
-	use geometry;
 	
 	procedure device_not_found (name : in type_name);
 	procedure netchanger_not_found (index : in submodules.type_netchanger_id);
@@ -74,7 +75,7 @@ package schematic_ops is
 	procedure set_grid (
 	-- Sets the grid of the module.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		grid			: in geometry.type_grid;
+		grid			: in type_grid;
 		log_threshold	: in type_log_level);		
 	
 	procedure delete_device (

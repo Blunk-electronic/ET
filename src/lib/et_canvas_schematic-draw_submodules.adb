@@ -151,7 +151,7 @@ procedure draw_submodules (
 				font		=> position_board_font,
 				position	=> position,
 				origin		=> false,
-				rotation	=> zero_rotation,
+				rotation	=> et_pcb_coordinates.geometry.zero_rotation,
 				alignment	=> (LEFT, TOP),
 				height		=> self.frame_height);
 
