@@ -65,7 +65,7 @@ package et_kicad_pcb is
 
 	use et_packages.pac_shapes;
 	use et_packages.pac_text;
-	use et_pcb_coordinates.geometry;
+	use et_pcb_coordinates.pac_geometry_brd;
 	
 	-- V4:
 	pcb_new_version_4_0_7		: constant string (1..5)	:= "4.0.7";
@@ -218,7 +218,7 @@ package et_kicad_pcb is
 
 	type type_circle is new et_packages.pac_shapes.type_circle with record -- center and radius incl.
 		width 	: type_text_line_width;
-		point 	: et_pcb_coordinates.geometry.type_point;
+		point 	: type_point;
 		layer	: type_layer_abbrevation;
 	end record;
 

@@ -131,14 +131,14 @@ procedure draw_submodules (
 					x => zero,
 					y => - (3.0 * text_spacing + instance_font_size + file_font_size)));
 
-			use et_pcb_coordinates.geometry;
+			use et_pcb_coordinates.pac_geometry_brd;
 			pos_x : constant string := to_string (x (element (cursor).position_in_board));
 			pos_y : constant string := to_string (y (element (cursor).position_in_board));
 			rotation : constant string := to_string (rot (element (cursor).position_in_board));
 			
 			text : constant string := "board (x/y/rot.):" &
-					pos_x & et_pcb_coordinates.geometry.axis_separator &
-					pos_y & et_pcb_coordinates.geometry.axis_separator &
+					pos_x & et_pcb_coordinates.pac_geometry_brd.axis_separator &
+					pos_y & et_pcb_coordinates.pac_geometry_brd.axis_separator &
 					rotation;
 		begin
 			move_by (position, offset);

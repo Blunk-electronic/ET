@@ -84,7 +84,7 @@ package et_pcb_stack is
 	function to_layers (layers : in string) return type_signal_layers.set;
 	-- converts a string like [1,3,5-9] to a set of signal layers.
 	
-	use geometry;
+	use pac_geometry_brd;
 -- 	subtype type_prepreg_thickness is type_distance_positive range 0.05 .. 0.5; -- CS reasonable ?
 -- 	subtype type_core_thickness is type_distance_positive range 0.1 .. 5.0;  -- CS reasonable ?
 

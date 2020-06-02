@@ -36,11 +36,6 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with et_general;
-with et_project;
-with et_frames;
-with et_pcb_coordinates;		use et_pcb_coordinates;
-use et_pcb_coordinates.geometry;
 
 with et_canvas_schematic;
 with et_display.board;
@@ -557,7 +552,7 @@ package body et_canvas_board is
 
 	function board_origin (
 		self : not null access type_view)
-		return geometry.type_point is
+		return type_point is
 
 		use et_canvas_schematic;
 		use et_project.type_modules;

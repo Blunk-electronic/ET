@@ -759,8 +759,8 @@ package body et_project is
 			close (module_file_handle);
 		end write_footer;
 		
-		function rotation (pos : in et_pcb_coordinates.geometry.type_position'class) return string is -- CS make generic ?
-			use et_pcb_coordinates.geometry;
+		function rotation (pos : in et_pcb_coordinates.pac_geometry_brd.type_position'class) return string is -- CS make generic ?
+			use et_pcb_coordinates.pac_geometry_brd;
 		begin
 			return to_string (rot (pos));
 		end rotation;
@@ -818,7 +818,7 @@ package body et_project is
 		procedure query_net_classes is
 			use et_pcb;
 			use et_pcb.type_net_classes;
-			use et_pcb_coordinates.geometry;
+			use et_pcb_coordinates.pac_geometry_brd;
 
 			procedure write (class_cursor : in type_net_classes.cursor) is begin
 				log (text => "net class " & to_string (key (class_cursor)), level => log_threshold + 1);
@@ -848,7 +848,7 @@ package body et_project is
 
 		procedure query_drawing_grid is 
 			use et_coordinates.pac_geometry_sch;
-			use et_pcb_coordinates.geometry;
+			use et_pcb_coordinates.pac_geometry_brd;
 		begin
 			log_indentation_up;
 			
@@ -872,7 +872,7 @@ package body et_project is
 		end query_drawing_grid;
 
 		procedure query_layer_stack is
-			use et_pcb_coordinates.geometry;
+			use et_pcb_coordinates.pac_geometry_brd;
 			use et_pcb_stack;
 			use package_layers;
 
@@ -1092,7 +1092,7 @@ package body et_project is
 				use et_packages.pac_shapes;
 				use et_pcb;
 				use et_pcb_stack;
-				use et_pcb_coordinates.geometry;
+				use et_pcb_coordinates.pac_geometry_brd;
 				
 				use pac_copper_lines;
 				line_cursor : pac_copper_lines.cursor := net.route.lines.first;
@@ -1659,7 +1659,7 @@ package body et_project is
 			use et_packages;
 			use et_pcb;
 			use et_pcb_stack;
-			use et_pcb_coordinates.geometry;
+			use et_pcb_coordinates.pac_geometry_brd;
 
 			use type_texts_with_content;
 			use et_pcb.pac_text_placeholders;
@@ -2375,7 +2375,7 @@ package body et_project is
 			from : in positive)
 			return et_pcb_coordinates.type_package_position is
 			use et_pcb_coordinates;
-			use et_pcb_coordinates.geometry;
+			use et_pcb_coordinates.pac_geometry_brd;
 			
 			point : type_package_position; -- to be returned
 			place : positive := from; -- the field being read from given line
@@ -2414,7 +2414,7 @@ package body et_project is
 
 		-- drawing grid
 		grid_schematic : et_coordinates.pac_geometry_sch.type_grid; -- CS rename to schematic_grid
-		grid_board : et_pcb_coordinates.geometry.type_grid; -- CS rename to board_grid
+		grid_board : et_pcb_coordinates.pac_geometry_brd.type_grid; -- CS rename to board_grid
 
 		procedure read_drawing_grid_schematic is 
 			kw : constant string := f (line, 1);
@@ -2493,7 +2493,7 @@ package body et_project is
 		-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
 		frame_template_schematic	: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
 		frame_template_board		: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
-		frame_board_origin : et_pcb_coordinates.geometry.type_point := et_pcb.origin_default; -- x 40 y 60
+		frame_board_origin : et_pcb_coordinates.pac_geometry_brd.type_point := et_pcb.origin_default; -- x 40 y 60
 
 		procedure read_frame_template_schematic is
 		-- Reads the name of the schematic frame template.
@@ -2713,7 +2713,7 @@ package body et_project is
 			kw : constant string := f (line, 1);
 			use et_pcb_stack;
 			use package_layers;
-			use et_pcb_coordinates.geometry;
+			use et_pcb_coordinates.pac_geometry_brd;
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag
 			if kw = keyword_conductor then -- conductor 1 0.035
@@ -2827,7 +2827,7 @@ package body et_project is
 						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 						use et_coordinates.pac_geometry_sch;
-						use et_pcb_coordinates.geometry;
+						use et_pcb_coordinates.pac_geometry_brd;
 					begin
 						module.grid := grid_schematic;
 						log (text => "schematic" & to_string (module.grid), level => log_threshold + 2);
@@ -2994,7 +2994,7 @@ package body et_project is
 					use et_packages;
 					use et_pcb_coordinates;
 				begin
-					device_text_placeholder.position := et_pcb_coordinates.geometry.type_position (device_text_placeholder_position);
+					device_text_placeholder.position := et_pcb_coordinates.pac_geometry_brd.type_position (device_text_placeholder_position);
 					
 					case device_text_placeholder_layer is
 						when SILK_SCREEN => 
@@ -6253,32 +6253,32 @@ package body et_project is
 										
 									elsif kw = keyword_clearance then
 										expect_field_count (line, 2);
-										net_class.clearance := et_pcb_coordinates.geometry.to_distance (f (line,2));
+										net_class.clearance := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
 										validate_track_clearance (net_class.clearance);
 										
 									elsif kw = keyword_track_width_min then
 										expect_field_count (line, 2);
-										net_class.track_width_min := et_pcb_coordinates.geometry.to_distance (f (line,2));
+										net_class.track_width_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
 										validate_track_width (net_class.track_width_min);
 										
 									elsif kw = keyword_via_drill_min then
 										expect_field_count (line, 2);
-										net_class.via_drill_min := et_pcb_coordinates.geometry.to_distance (f (line,2));
+										net_class.via_drill_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
 										validate_drill_size (net_class.via_drill_min);
 										
 									elsif kw = keyword_via_restring_min then
 										expect_field_count (line, 2);
-										net_class.via_restring_min := et_pcb_coordinates.geometry.to_distance (f (line,2));
+										net_class.via_restring_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
 										validate_restring_width (net_class.via_restring_min);
 										
 									elsif kw = keyword_micro_via_drill_min then
 										expect_field_count (line, 2);
-										net_class.micro_via_drill_min := et_pcb_coordinates.geometry.to_distance (f (line,2));
+										net_class.micro_via_drill_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
 										validate_drill_size (net_class.micro_via_drill_min);
 										
 									elsif kw = keyword_micro_via_restring_min then
 										expect_field_count (line, 2);
-										net_class.micro_via_restring_min := et_pcb_coordinates.geometry.to_distance (f (line,2));
+										net_class.micro_via_restring_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
 										validate_restring_width (net_class.micro_via_restring_min);
 									else
 										invalid_keyword (kw);
@@ -6569,7 +6569,7 @@ package body et_project is
 
 										elsif kw = pcb_rw.keyword_width then -- width 0.5
 											expect_field_count (line, 2);
-											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+											board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 											
 										else
 											invalid_keyword (kw);
@@ -6589,7 +6589,7 @@ package body et_project is
 												-- CS: In the following: set a corresponding parameter-found-flag
 												if kw = pcb_rw.keyword_width then -- width 0.5
 													expect_field_count (line, 2);
-													board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+													board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 													
 												else
 													invalid_keyword (kw);
@@ -6631,7 +6631,7 @@ package body et_project is
 										-- CS: In the following: set a corresponding parameter-found-flag
 										if kw = pcb_rw.keyword_width then -- width 0.5
 											expect_field_count (line, 2);
-											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+											board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
@@ -6684,7 +6684,7 @@ package body et_project is
 											
 										elsif kw = pcb_rw.keyword_width then -- width 0.5
 											expect_field_count (line, 2);
-											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+											board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 											
 										else
 											invalid_keyword (kw);
@@ -6705,7 +6705,7 @@ package body et_project is
 												-- CS: In the following: set a corresponding parameter-found-flag
 												if kw = pcb_rw.keyword_width then -- width 0.5
 													expect_field_count (line, 2);
-													board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+													board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 													
 												else
 													invalid_keyword (kw);
@@ -6751,7 +6751,7 @@ package body et_project is
 										-- CS: In the following: set a corresponding parameter-found-flag
 										if kw = pcb_rw.keyword_width then -- width 0.5
 											expect_field_count (line, 2);
-											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+											board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
@@ -6804,7 +6804,7 @@ package body et_project is
 												-- CS: In the following: set a corresponding parameter-found-flag
 												if kw = pcb_rw.keyword_width then -- circumfence line width 0.5
 													expect_field_count (line, 2);
-													board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+													board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 
 												elsif kw = keyword_filled then -- filled yes/no
 													expect_field_count (line, 2);													
@@ -6816,11 +6816,11 @@ package body et_project is
 
 												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 													expect_field_count (line, 2);													
-													board_hatching.line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+													board_hatching.line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 
 												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 													expect_field_count (line, 2);													
-													board_hatching.spacing := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+													board_hatching.spacing := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 													
 												else
 													invalid_keyword (kw);
@@ -6855,7 +6855,7 @@ package body et_project is
 										use et_pcb_stack;
 										use et_packages;
 										use et_packages.pac_shapes;
-										use et_pcb_coordinates.geometry;
+										use et_pcb_coordinates.pac_geometry_brd;
 										kw : string := f (line, 1);
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
@@ -6883,7 +6883,7 @@ package body et_project is
 										use et_packages;
 										use et_packages.pac_shapes;
 										use et_pcb_stack;
-										use et_pcb_coordinates.geometry;
+										use et_pcb_coordinates.pac_geometry_brd;
 										kw : string := f (line, 1);
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
@@ -6925,7 +6925,7 @@ package body et_project is
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								if not read_board_circle (line) then
 									declare
-										use et_pcb_coordinates.geometry;
+										use et_pcb_coordinates.pac_geometry_brd;
 										use et_packages.pac_shapes;
 										kw : string := f (line, 1);
 									begin
@@ -6948,7 +6948,7 @@ package body et_project is
 							when SEC_ROUTE =>
 								declare
 									use et_packages;
-									use et_pcb_coordinates.geometry;
+									use et_pcb_coordinates.pac_geometry_brd;
 									use et_pcb_stack;
 									kw : string := f (line, 1);
 								begin
@@ -6978,7 +6978,7 @@ package body et_project is
 										declare
 											use et_packages;
 											use et_packages.pac_shapes;
-											use et_pcb_coordinates.geometry;
+											use et_pcb_coordinates.pac_geometry_brd;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -7011,7 +7011,7 @@ package body et_project is
 									use et_pcb_stack;
 									use et_packages;
 									use et_packages.pac_shapes;
-									use et_pcb_coordinates.geometry;
+									use et_pcb_coordinates.pac_geometry_brd;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -7031,7 +7031,7 @@ package body et_project is
 									use et_packages;
 									use et_packages.pac_shapes;									
 									use et_pcb_stack;
-									use et_pcb_coordinates.geometry;
+									use et_pcb_coordinates.pac_geometry_brd;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -7061,7 +7061,7 @@ package body et_project is
 							when SEC_ROUTE => -- connected with a net
 								declare
 									use et_packages;
-									use et_pcb_coordinates.geometry;
+									use et_pcb_coordinates.pac_geometry_brd;
 									use et_pcb;
 									use et_pcb_stack;
 									kw : string := f (line, 1);
@@ -7136,7 +7136,7 @@ package body et_project is
 										declare
 											use et_packages;
 											use et_packages.pac_shapes;
-											use et_pcb_coordinates.geometry;
+											use et_pcb_coordinates.pac_geometry_brd;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -7188,7 +7188,7 @@ package body et_project is
 									use et_pcb_stack;
 									use et_packages;
 									use et_packages.pac_shapes;
-									use et_pcb_coordinates.geometry;
+									use et_pcb_coordinates.pac_geometry_brd;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -7212,7 +7212,7 @@ package body et_project is
 									use et_packages;
 									use et_packages.pac_shapes;									
 									use et_pcb_stack;
-									use et_pcb_coordinates.geometry;
+									use et_pcb_coordinates.pac_geometry_brd;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -7269,7 +7269,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_ROUTE =>
 								declare
-									use et_pcb_coordinates.geometry;
+									use et_pcb_coordinates.pac_geometry_brd;
 									use et_pcb;
 									use et_packages;
 									use et_pcb_stack;
@@ -7430,7 +7430,7 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
 										declare
-											use et_pcb_coordinates.geometry;
+											use et_pcb_coordinates.pac_geometry_brd;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -7468,7 +7468,7 @@ package body et_project is
 
 							when SEC_COPPER =>
 								declare
-									use et_pcb_coordinates.geometry;
+									use et_pcb_coordinates.pac_geometry_brd;
 									use et_pcb_stack;
 									kw : string := f (line, 1);
 								begin
@@ -7608,7 +7608,7 @@ package body et_project is
 										declare
 											use et_packages;
 											use et_pcb_stack;
-											use et_pcb_coordinates.geometry;
+											use et_pcb_coordinates.pac_geometry_brd;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -7694,7 +7694,7 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
 										declare
-											use et_pcb_coordinates.geometry;
+											use et_pcb_coordinates.pac_geometry_brd;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -7732,7 +7732,7 @@ package body et_project is
 
 							when SEC_COPPER =>
 								declare
-									use et_pcb_coordinates.geometry;
+									use et_pcb_coordinates.pac_geometry_brd;
 									use et_pcb_stack;
 									kw : string := f (line, 1);
 								begin

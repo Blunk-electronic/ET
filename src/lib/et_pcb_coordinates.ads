@@ -81,17 +81,18 @@ package et_pcb_coordinates is
 	for type_rotation'small use 0.01;
 	
 	-- instantiation of the geometry package:	
-	package geometry is new et_geometry.generic_pac_geometry (
+	package pac_geometry_brd is new et_geometry.generic_pac_geometry (
 		type_distance	=> type_distance_total,
 		type_rotation 	=> type_rotation);
-	
+
+	use pac_geometry_brd;
 	
 	-- PCB thickness (limited to reasonable range. CS adjust if required)
-	pcb_thickness_min : constant geometry.type_distance_positive := 0.1;
-	pcb_thickness_max : constant geometry.type_distance_positive := 20.0;	
+	pcb_thickness_min : constant type_distance_positive := 0.1;
+	pcb_thickness_max : constant type_distance_positive := 20.0;	
 	subtype type_pcb_thickness is type_distance_total range pcb_thickness_min .. pcb_thickness_max;
 	
-	type type_package_position is new geometry.type_position with private;
+	type type_package_position is new pac_geometry_brd.type_position with private;
 
 	package_position_default : constant type_package_position;
 	placeholder_position_default : constant type_package_position;	
@@ -105,23 +106,23 @@ package et_pcb_coordinates is
 	
 	function to_terminal_position (
 	-- Composes from a given point and angle the terminal position.
-		point		: in geometry.type_point;
+		point		: in type_point;
 		rotation	: in type_rotation)
-		return geometry.type_position'class;
+		return type_position'class;
 
 
 	
 	private
 		
-		type type_package_position is new geometry.type_position with record
+		type type_package_position is new pac_geometry_brd.type_position with record
 			face : type_face := TOP;
 		end record;
 
 		package_position_default : constant type_package_position := (
-			geometry.origin_zero_rotation with face => TOP);
+			pac_geometry_brd.origin_zero_rotation with face => TOP);
 
 		placeholder_position_default : constant type_package_position := (
-			geometry.origin_zero_rotation with face => TOP);
+			pac_geometry_brd.origin_zero_rotation with face => TOP);
 
 		
 end et_pcb_coordinates;

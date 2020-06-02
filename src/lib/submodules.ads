@@ -191,7 +191,7 @@ package submodules is
 		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
 		position		    : et_coordinates.type_position; -- the lower left corner
 		size				: type_submodule_size; -- CS default ?
-		position_in_board	: et_pcb_coordinates.geometry.type_position := et_pcb_coordinates.geometry.origin_zero_rotation;
+		position_in_board	: et_pcb_coordinates.pac_geometry_brd.type_position := et_pcb_coordinates.pac_geometry_brd.origin_zero_rotation;
 		view_mode			: type_submodule_view_mode := ORIGIN;
 		ports				: type_submodule_ports.map;
 	end record;
@@ -286,7 +286,7 @@ package submodules is
 		position_sch	: et_coordinates.type_position; -- x,y,sheet,rotation
 		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
-		position_brd	: et_pcb_coordinates.geometry.type_point; -- x,y
+		position_brd	: et_pcb_coordinates.pac_geometry_brd.type_point; -- x,y
 		-- in board there is no rotation because the netchanger is just a point in x/y.
 		layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 	end record;

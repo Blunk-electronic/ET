@@ -42,10 +42,7 @@ with pango.layout;				use pango.layout;
 with et_general;				use et_general;
 with et_schematic;				use et_schematic;
 with et_project;				use et_project;
-with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_packages;				use et_packages;
-use et_pcb_coordinates.geometry;
-
 with et_pcb;					use et_pcb;
 with et_display.board;			use et_display.board;
 

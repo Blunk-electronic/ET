@@ -57,7 +57,6 @@ with et_string_processing;		use et_string_processing;
 with et_text;
 
 package body et_packages is
-	use pac_shapes;
 
 	function to_string (packge : in type_component_package_name.bounded_string) return string is
 	-- Returns the given package name as string.

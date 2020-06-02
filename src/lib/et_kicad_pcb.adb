@@ -374,7 +374,7 @@ package body et_kicad_pcb is
 		use et_packages.pac_shapes;
 		use pac_polygon_lines;
 		use et_pcb_coordinates;
-		use geometry;
+		use pac_geometry_brd;
 
 		shape : et_packages.type_pad_outline; -- to be returned
 
@@ -458,7 +458,7 @@ package body et_kicad_pcb is
 		use pac_polygon_lines;
 		use pac_polygon_arcs;		
 		use et_pcb_coordinates;
-		use geometry;
+		use pac_geometry_brd;
 
 		shape : type_pad_outline; -- to be returned
 
@@ -554,7 +554,7 @@ package body et_kicad_pcb is
 
 		use et_packages.pac_shapes;
 		use et_pcb_coordinates;
-		use geometry;
+		use pac_geometry_brd;
 
 		lines : pac_polygon_lines.list; -- to be returned
 
@@ -1094,7 +1094,7 @@ package body et_kicad_pcb is
 			use type_argument;
 			use et_text.type_text_content;
 			use et_pcb_coordinates;
-			use geometry;
+			use pac_geometry_brd;
 		
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
@@ -3744,7 +3744,7 @@ package body et_kicad_pcb is
 			use type_argument;
 			use et_text.type_text_content;
 			use et_pcb_coordinates;
-			use geometry;
+			use pac_geometry_brd;
 			
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
@@ -6957,7 +6957,7 @@ package body et_kicad_pcb is
 					new_item	=> segment);
 
 				log (text => "segment " & to_string (pac_shapes.type_line (segment)) & -- start and end point
-					 " width" & geometry.to_string (segment.width) &
+					 " width" & pac_geometry_brd.to_string (segment.width) &
 					 " layer" & to_string (segment.layer) &
 					 " net_id" & to_string (segment.net_id) &
 					 " status " & type_segment_status.to_string (segment.status),
@@ -6981,7 +6981,7 @@ package body et_kicad_pcb is
 					new_item	=> via);
 
 				log (text => "via" & to_string (type_drill (via)) & -- position and drill diameter
-					" diameter_total" & geometry.to_string (via.diameter_total) &
+					" diameter_total" & pac_geometry_brd.to_string (via.diameter_total) &
 					" layer_start" & to_string (via.layer_start) &
 					" layer_end" & to_string (via.layer_end) &
 					" net_id" & to_string (via.net_id) &
@@ -7022,15 +7022,15 @@ package body et_kicad_pcb is
 					 -- So there is no need to output this stuff here.
 					 --" hatch_width" & to_string (polygon.hatch_width) & -- CS use constant for "hatch width" ?
 					 --" hatch_style" & to_string (polygon.hatch_style) & -- CS use constant for "hatch stlye" ?
-					 " min_thickness/" & text_polygon_width_min & geometry.to_string (polygon.min_thickness) &
-					 " " & keyword_isolation & geometry.to_string (polygon.isolation_gap) &
+					 " min_thickness/" & text_polygon_width_min & pac_geometry_brd.to_string (polygon.min_thickness) &
+					 " " & keyword_isolation & pac_geometry_brd.to_string (polygon.isolation_gap) &
 					 " filled " & boolean'image (polygon.filled) & -- CS use constant
 					 " fill_mode_segment " & boolean'image (polygon.fill_mode_segment) &
 					 " smoothing/easing" & to_string (polygon.easing.style) &
-					 " " & keyword_easing_radius & geometry.to_string (polygon.easing.radius) &
+					 " " & keyword_easing_radius & pac_geometry_brd.to_string (polygon.easing.radius) &
 					 " arc_segments" & natural'image (polygon.arc_segments) & -- CS use constant
-					 " " & text_polygon_thermal_gap & geometry.to_string (polygon.thermal_gap) &
-					 " " & text_polygon_thermal_width & geometry.to_string (polygon.thermal_width) &
+					 " " & text_polygon_thermal_gap & pac_geometry_brd.to_string (polygon.thermal_gap) &
+					 " " & text_polygon_thermal_width & pac_geometry_brd.to_string (polygon.thermal_width) &
 					 " " & text_polygon_pad_connection & to_string (polygon.pad_connection) &
 					 " " & text_polygon_pad_technology & to_string (polygon.pad_technology),
 					 level => log_threshold + 3);

@@ -90,7 +90,7 @@ package body et_kicad_to_native is
 
 		-- Here the height of the layout sheet is kept. It is required for move ops of 
 		-- layout objects from the kicad frame to the native frame.
-		layout_sheet_height : et_pcb_coordinates.geometry.type_distance_positive;
+		layout_sheet_height : et_pcb_coordinates.pac_geometry_brd.type_distance_positive;
 
 		function board_available return boolean is
 		-- Returns true if the current kicad module has a layout file.
@@ -217,7 +217,7 @@ package body et_kicad_to_native is
 		-- Sets the layout_sheet_height depending on the paper size of the layout sheet.
 			-- The paper size of a board/layout drawing:
 			use et_pcb_coordinates;
-			use geometry;
+			use pac_geometry_brd;
 			use et_frames;
 			board_paper_size : type_paper_size;
 		begin -- prepare_layout_y_movements
@@ -231,12 +231,12 @@ package body et_kicad_to_native is
 			layout_sheet_height := type_distance_positive (et_frames.paper_dimension (axis => Y, paper_size => board_paper_size));
 		end prepare_layout_y_movements;
 
-		procedure move (point : in out et_pcb_coordinates.geometry.type_point'class) is
+		procedure move (point : in out et_pcb_coordinates.pac_geometry_brd.type_point'class) is
 		-- Transposes the given point in layout from the kicad frame to the ET native frame.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 			use et_pcb_coordinates;
-			use geometry;
+			use pac_geometry_brd;
 			new_y : et_pcb_coordinates.type_distance;
 		begin
 			new_y := layout_sheet_height - y (point);
@@ -417,7 +417,7 @@ package body et_kicad_to_native is
 				-- moves the position of the package in layout
 					use et_symbols;
 					use et_pcb_coordinates;
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					if component.appearance = PCB then
 						log_indentation_up;
@@ -676,7 +676,7 @@ package body et_kicad_to_native is
 					end move_arc;
 
 					procedure move_via (via : in out et_pcb.type_via) is
-						use et_pcb_coordinates.geometry;
+						use et_pcb_coordinates.pac_geometry_brd;
 					begin
 						log (text => board_track & "via", level => log_threshold + 4);
 						log_indentation_up;
@@ -838,7 +838,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out type_fillable_circle) is 
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => board_silk_screen & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -858,7 +858,7 @@ package body et_kicad_to_native is
 				end;
 
 				procedure move_text (text : in out type_text_with_content) is
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => board_silk_screen & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1034,7 +1034,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out type_fillable_circle) is 
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => doc & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1055,7 +1055,7 @@ package body et_kicad_to_native is
 
 				procedure move_text (text : in out type_text_with_content) is
 					use et_pcb_coordinates;
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => doc & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1232,7 +1232,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out type_fillable_circle) is
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => stencil & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1396,7 +1396,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out type_fillable_circle) is
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => stop & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1417,7 +1417,7 @@ package body et_kicad_to_native is
 
 				procedure move_text (text : in out type_text_with_content) is
 					use et_pcb_coordinates;
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => stop & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1595,7 +1595,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out type_fillable_circle) is
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => keepout & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1610,7 +1610,7 @@ package body et_kicad_to_native is
 				end move_circle;
 
 				procedure move_circle (circle : in out type_fillable_circle_solid) is
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => keepout & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1767,7 +1767,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out et_pcb.type_pcb_contour_circle) is
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => contour & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1876,7 +1876,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out et_pcb.type_copper_circle) is
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => board_copper & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1902,7 +1902,7 @@ package body et_kicad_to_native is
 				
 				procedure move_text (text : in out et_pcb.type_text) is
 					use et_pcb_coordinates;
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => board_copper & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1918,7 +1918,7 @@ package body et_kicad_to_native is
 
 				procedure move_placeholder (text : in out et_pcb.type_text_placeholder_copper) is
 					use et_pcb_coordinates;
-					use et_pcb_coordinates.geometry;
+					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => board_copper & "text placeholder", level => log_threshold + log_threshold_add);
 					log_indentation_up;

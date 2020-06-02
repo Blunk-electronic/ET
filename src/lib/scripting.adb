@@ -2078,7 +2078,7 @@ package body scripting is
 		use et_packages.pac_shapes;
 		use et_pcb;
 		use et_pcb_coordinates;
-		use et_pcb_coordinates.geometry;
+		use et_pcb_coordinates.pac_geometry_brd;
 		use et_pcb_stack;
 		use et_canvas_board.pac_canvas;
 		use et_display.board;

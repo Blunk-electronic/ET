@@ -187,13 +187,13 @@ package body schematic_ops is
 		device_cursor	: in et_schematic.type_devices.cursor;
 		log_threshold	: in type_log_level) is
 		use et_pcb_coordinates;
-		use et_pcb_coordinates.geometry;
+		use et_pcb_coordinates.pac_geometry_brd;
 		use et_schematic.type_devices;
 		use et_symbols;
 	begin
 		if element (device_cursor).appearance = PCB then
 			log (text => "location in board:" & 
-				to_string (et_pcb_coordinates.geometry.type_point (element (device_cursor).position)) &
+				to_string (pac_geometry_brd.type_point (element (device_cursor).position)) &
 				" face" & 
 				to_string (get_face (element (device_cursor).position)),
 				level => log_threshold);
@@ -9842,7 +9842,7 @@ package body schematic_ops is
 
 				-- Overwrite position in schematic by zero so that the new instance sits at 
 				-- the lower left corner of the layout drawing:
-				submodule.position_in_board := et_pcb_coordinates.geometry.origin_zero_rotation;
+				submodule.position_in_board := et_pcb_coordinates.pac_geometry_brd.origin_zero_rotation;
 
 				insert (
 					container	=> module.submods,

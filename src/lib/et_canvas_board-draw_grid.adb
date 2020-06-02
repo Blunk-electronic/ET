@@ -55,7 +55,7 @@ is
 
 	use et_project.type_modules;
 	use et_canvas_schematic;
-	used_grid : constant geometry.type_grid := element (current_active_module).board.grid;
+	used_grid : constant type_grid := element (current_active_module).board.grid;
 begin
 	-- The start point on the x-axis is aligned with the left frame border
 	-- and shifted right by the board origin x position.

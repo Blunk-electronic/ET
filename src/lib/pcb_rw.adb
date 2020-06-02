@@ -51,7 +51,6 @@ with ada.containers.ordered_maps;
 with et_general;				use et_general;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
-use et_pcb_coordinates.geometry;
 
 with et_string_processing;
 with et_packages;
@@ -353,11 +352,11 @@ package body pcb_rw is
 	-- Returns a type_point_2d in the the layout.
 		line : in et_string_processing.type_fields_of_line; -- "start x 44.5 y 53.5"
 		from : in positive)
-		return et_pcb_coordinates.geometry.type_point is
+		return type_point is
 		
 		use et_string_processing;
 
-		point : et_pcb_coordinates.geometry.type_point; -- to be returned
+		point : type_point; -- to be returned
 		place : positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
@@ -392,11 +391,11 @@ package body pcb_rw is
 	-- Returns a type_position in the layout.
 		line : in et_string_processing.type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
 		from : in positive)
-		return et_pcb_coordinates.geometry.type_position is
+		return type_position is
 
 		use et_string_processing;
 		
-		point : et_pcb_coordinates.geometry.type_position; -- to be returned
+		point : type_position; -- to be returned
 		place : positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
@@ -425,24 +424,24 @@ package body pcb_rw is
 		return point;
 	end to_position;
 
-	function position (point : et_pcb_coordinates.geometry.type_point'class) return string is
+	function position (point : in type_point'class) return string is
 		use ada.tags;
 
 		xy : constant string := space & keyword_x & to_string (x (point)) 
 				& space & keyword_y & to_string (y (point));
 	begin
-		if point'tag = et_pcb_coordinates.geometry.type_point'tag then
+		if point'tag = type_point'tag then
 			return xy;
 			-- x 162.560 y 98.240
 			
-		elsif point'tag = et_pcb_coordinates.geometry.type_position'tag then
+		elsif point'tag = type_position'tag then
 			return xy 
-				& space & keyword_rotation & to_string (rot (et_pcb_coordinates.geometry.type_position (point)));
+				& space & keyword_rotation & to_string (rot (type_position (point)));
 				-- x 162.560 y 98.240 rotation 180.00
 			
 		elsif point'tag = type_package_position'tag then
 			return xy
-				& space & keyword_rotation & to_string (rot (et_pcb_coordinates.geometry.type_position (point)))
+				& space & keyword_rotation & to_string (rot (type_position (point)))
 				& space & keyword_face & to_string (get_face (type_package_position (point)));
 				-- x 162.560 y 98.240 rotation 180.00 face top
 		else
@@ -454,10 +453,10 @@ package body pcb_rw is
 	function to_grid (
 		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
 		from : in positive)
-		return et_pcb_coordinates.geometry.type_grid is
+		return type_grid is
 		use et_string_processing;
 		
-		grid : et_pcb_coordinates.geometry.type_grid; -- to be returned
+		grid : type_grid; -- to be returned
 
 		place : positive := from; -- the field being read from given line
 
@@ -768,7 +767,7 @@ package body pcb_rw is
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);
 			
-			board_circle.radius := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+			board_circle.radius := to_distance (f (line, 2));
 		else
 			invalid_keyword (kw);
 		end if;
@@ -791,7 +790,7 @@ package body pcb_rw is
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);
 			
-			board_circle.radius := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+			board_circle.radius := to_distance (f (line, 2));
 
 			return true;
 			
@@ -1438,7 +1437,6 @@ package body pcb_rw is
 	procedure write_circle (cursor : in et_packages.type_pcb_contour_circles.cursor) is 
 		use et_packages;
 		use type_pcb_contour_circles;
-		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write_circle (element (cursor));
@@ -2039,7 +2037,7 @@ package body pcb_rw is
 		pac_text_placeholder	: et_packages.type_text_placeholder;
 
 
-		terminal_position		: et_pcb_coordinates.geometry.type_position := origin_zero_rotation;
+		terminal_position		: type_position := origin_zero_rotation;
 
 		tht_width_inner_layers	: et_packages.type_track_width := et_packages.type_track_width'first;
 		tht_hole				: et_packages.type_terminal_tht_hole := et_packages.terminal_tht_hole_default;

@@ -51,8 +51,6 @@ with et_packages;
 with et_devices;
 
 package body board_ops is
-
-	use et_pcb_coordinates.geometry;
 	
 	procedure no_net_segment_found (
 		layer		: in et_pcb_stack.type_signal_layer;
@@ -85,7 +83,7 @@ package body board_ops is
 	-- corner of the drawing frame):
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in geometry.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -253,7 +251,7 @@ package body board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in geometry.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -268,7 +266,6 @@ package body board_ops is
 			procedure set_position (
 				device_name	: in type_name;
 				device		: in out et_schematic.type_device) is
-				use geometry;
 			begin
 				case coordinates is
 					when ABSOLUTE =>
@@ -539,7 +536,7 @@ package body board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in type_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in geometry.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -554,7 +551,6 @@ package body board_ops is
 			procedure move (
 				instance	: in et_general.type_module_instance_name.bounded_string;
 				submodule	: in out submodules.type_submodule) is
-				use geometry;
 			begin
 				case coordinates is
 					when ABSOLUTE =>
@@ -645,7 +641,7 @@ package body board_ops is
 
 				procedure log_position_in_board is begin
 					if position_in_board /= origin_zero_rotation then
-						log (text => "and applying submodule" & geometry.to_string (position_in_board),
+						log (text => "and applying submodule" & to_string (position_in_board),
 							level => log_threshold + 1);
 					end if;
 				end;
@@ -1103,7 +1099,7 @@ package body board_ops is
 		package_position : et_pcb_coordinates.type_package_position; -- incl. angle and face
 
 		-- Since the return is a controlled type we handle its components separately:
-		terminal_position_base : geometry.type_position; -- x/y/rotation
+		terminal_position_base : type_position; -- x/y/rotation
 		terminal_position_face : type_face; -- top/bottom
 
 		model : type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
@@ -1183,7 +1179,7 @@ package body board_ops is
 	procedure set_grid (
 	-- Sets the grid of the module.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		grid			: in geometry.type_grid;
+		grid			: in type_grid;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1428,7 +1424,7 @@ package body board_ops is
 		device			: in type_name;
 		terminal		: in type_terminal_name.bounded_string;
 		direction		: in type_rotation;
-		length			: in geometry.type_distance_positive;
+		length			: in type_distance_positive;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1566,7 +1562,7 @@ package body board_ops is
 		width			: in type_track_width;
 		device			: in type_name;
 		terminal		: in type_terminal_name.bounded_string;
-		end_point		: in geometry.type_point;
+		end_point		: in type_point;
 		log_threshold	: in type_log_level) is
 		
 		use et_project.type_modules;
@@ -1777,8 +1773,8 @@ package body board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -2069,8 +2065,8 @@ package body board_ops is
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -2274,8 +2270,8 @@ package body board_ops is
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -2472,8 +2468,8 @@ package body board_ops is
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -2702,8 +2698,8 @@ package body board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -2952,8 +2948,8 @@ package body board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -3200,8 +3196,8 @@ package body board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -3449,8 +3445,8 @@ package body board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -3698,8 +3694,8 @@ package body board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;

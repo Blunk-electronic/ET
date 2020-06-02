@@ -57,6 +57,8 @@ with et_packages;				use et_packages;
 with et_pcb;					use et_pcb;
 with et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
+use et_pcb_coordinates.pac_geometry_brd;
+
 -- with submodules;
 with assembly_variants;
 with pick_and_place;
@@ -69,7 +71,7 @@ package board_ops is
 	-- corner of the drawing frame):
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in geometry.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 	
 	procedure add_layer (
@@ -102,7 +104,7 @@ package board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in geometry.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure rotate_device (
@@ -129,7 +131,7 @@ package board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in type_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in geometry.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 	
 	procedure make_pick_and_place (
@@ -140,7 +142,7 @@ package board_ops is
 	
 	-- For laying out traces we need a type that provides for a terminal information about
 	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
-	type type_terminal_position (technology	: et_packages.type_assembly_technology) is new geometry.type_position with record
+	type type_terminal_position (technology	: et_packages.type_assembly_technology) is new pac_geometry_brd.type_position with record
 		case technology is
 			when SMT => face : type_face;
 			when THT => null;
@@ -164,7 +166,7 @@ package board_ops is
 	procedure set_grid (
 	-- Sets the grid of the module.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		grid			: in geometry.type_grid;
+		grid			: in type_grid;
 		log_threshold	: in type_log_level);		
 
 -- TRACKS AND FREETRACKS
@@ -203,7 +205,7 @@ package board_ops is
 		device			: in type_name;
 		terminal		: in type_terminal_name.bounded_string;
 		direction		: in type_rotation;
-		length			: in geometry.type_distance_positive;
+		length			: in type_distance_positive;
 		log_threshold	: in type_log_level);
 
 	procedure draw_track_line (
@@ -234,7 +236,7 @@ package board_ops is
 		width			: in type_track_width;
 		device			: in type_name;
 		terminal		: in type_terminal_name.bounded_string;
-		end_point		: in geometry.type_point;
+		end_point		: in type_point;
 		log_threshold	: in type_log_level);
 
 	procedure draw_track_line (
@@ -267,8 +269,8 @@ package board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
 -- ROUTE RESTRICT
@@ -296,8 +298,8 @@ package board_ops is
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
 -- VIA RESTRICT
@@ -325,8 +327,8 @@ package board_ops is
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
 	
@@ -355,8 +357,8 @@ package board_ops is
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
 -- SILK SCREEN
@@ -388,8 +390,8 @@ package board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
 
@@ -421,8 +423,8 @@ package board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
 -- KEEPOUT
@@ -453,8 +455,8 @@ package board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
 -- STOP MASK
@@ -485,8 +487,8 @@ package board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
 -- STENCIL
@@ -518,8 +520,8 @@ package board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in geometry.type_point; -- x/y
-		accuracy		: in geometry.type_accuracy;
+		point			: in type_point; -- x/y
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
 

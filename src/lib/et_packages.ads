@@ -62,7 +62,7 @@ with et_text;
 with cairo;
 
 package et_packages is
-	use geometry;
+	use pac_geometry_brd;
 	
 	
 
@@ -130,7 +130,7 @@ package et_packages is
 
 	
 	-- Instantiation of the shapes package:
-	package pac_shapes is new et_geometry.generic_pac_shapes (et_pcb_coordinates.geometry);
+	package pac_shapes is new et_geometry.generic_pac_shapes (et_pcb_coordinates.pac_geometry_brd);
 	use pac_shapes;
 
 	

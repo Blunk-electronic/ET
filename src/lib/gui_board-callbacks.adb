@@ -109,7 +109,7 @@ package body gui_board.callbacks is
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
 		use gtk.gentry;
-		use et_pcb_coordinates.geometry;
+		use et_pcb_coordinates.pac_geometry_brd;
 		cp : type_point := cursor_main.position;
 	begin
 		set (point => cp, axis => X, value => to_distance (get_text (self)));
@@ -121,7 +121,7 @@ package body gui_board.callbacks is
 	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
 		use gtk.gentry;
-		use et_pcb_coordinates.geometry;
+		use et_pcb_coordinates.pac_geometry_brd;
 		cp : type_point := cursor_main.position;
 	begin
 		set (point => cp, axis => Y, value => to_distance (get_text (self)));

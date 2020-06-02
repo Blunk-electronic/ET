@@ -93,11 +93,10 @@ package body et_pcb_coordinates is
 	
 	function to_terminal_position (
 	-- Composes from a given point and angle the terminal position.
-		point		: in geometry.type_point;
+		point		: in type_point;
 		rotation	: in type_rotation)
-		return geometry.type_position'class is
-		pos : geometry.type_position;
-		use geometry;
+		return type_position'class is
+		pos : type_position;
 	begin
 		--pos := (point with rotation);
 		set (pos, point);

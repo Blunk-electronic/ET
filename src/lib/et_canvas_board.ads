@@ -77,7 +77,7 @@ package et_canvas_board is
 	-- Instantiate the general canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
 		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
-		geometry		=> et_pcb_coordinates.geometry);
+		geometry		=> et_pcb_coordinates.pac_geometry_brd);
 
 	
 	-- In order to draw objects of packages and board we instantiate this package:
@@ -90,7 +90,7 @@ package et_canvas_board is
 
 	
 
-	use et_pcb_coordinates.geometry;
+	use et_pcb_coordinates.pac_geometry_brd;
 
 
 	
@@ -210,7 +210,7 @@ package et_canvas_board is
 	-- corner of the drawing frame:
 	function board_origin (
 		self : not null access type_view)
-		return geometry.type_point;
+		return type_point;
 
 		
 end et_canvas_board;
