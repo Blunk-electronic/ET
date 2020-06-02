@@ -44,9 +44,8 @@ with et_canvas_schematic;		use et_canvas_schematic;
 use et_canvas_schematic.pac_canvas;
 with et_canvas_board;
 
-with et_general;
 with et_geometry;				use et_geometry;
-with et_string_processing;		use et_string_processing;
+
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
@@ -79,7 +78,6 @@ package body gui_schematic.callbacks is
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
 		use gtk.gentry;
-		use et_coordinates.geometry;
 		cp : type_point := cursor_main.position;
 	begin
 		set (point => cp, axis => X, value => to_distance (get_text (self)));
@@ -91,7 +89,6 @@ package body gui_schematic.callbacks is
 	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
 		use gtk.gentry;
-		use et_coordinates.geometry;
 		cp : type_point := cursor_main.position;
 	begin
 		set (point => cp, axis => Y, value => to_distance (get_text (self)));

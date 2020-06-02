@@ -35,10 +35,19 @@
 --   history of changes:
 --
 
+with ada.strings;					use ada.strings;
+with ada.strings.unbounded;			use ada.strings.unbounded;
+with ada.directories;
+with ada.exceptions;
+
+with conventions;
+with et_pcb_coordinates;
+with et_packages;
+with device_rw;
+
 package body schematic_ops is
 
 	use type_modules;
-	use geometry;
 	
 	procedure device_not_found (name : in type_name) is begin
 		log (ERROR, "device " & to_string (name) & " not found !", console => true);
@@ -946,7 +955,6 @@ package body schematic_ops is
 		catch_zone	: in et_coordinates.type_catch_zone := zero
 		)
 		return boolean is
-		use et_coordinates.geometry;
 		use et_schematic.pac_shapes;
 		dist : type_distance_point_line;
 		use type_net_segments;
@@ -1435,7 +1443,7 @@ package body schematic_ops is
 			name	: in type_port_name.bounded_string;
 			port	: in out type_port) is
 		begin
-			geometry.rotate_by (port.position, angle);
+			rotate_by (port.position, angle);
 		end;
 
 		procedure query_port (cursor : in et_symbols.type_ports.cursor) is begin
@@ -1628,8 +1636,6 @@ package body schematic_ops is
 					name	: in type_unit_name.bounded_string; -- A
 					unit	: in out type_unit) is
 
-					use et_coordinates.geometry;
-
 					preamble : constant string := " placeholder now at";
 					
 					procedure rotate_placeholders_absolute (rot : in type_rotation) is 
@@ -1640,11 +1646,9 @@ package body schematic_ops is
 						default_positions : et_symbols.type_default_text_positions := 
 												default_text_positions (device_cursor, name);
 						
-						use geometry;
-
 						-- Rotates the position by the given rotation rot:
 						function add_rot (p : in type_point) return type_rotation is begin
-							return geometry.rotation (p) + rot;
+							return pac_geometry_sch.rotation (p) + rot;
 						end;
 
 						use pac_text;
@@ -4914,7 +4918,7 @@ package body schematic_ops is
 
 						procedure delete_port is begin
 							log (text => "sheet" & to_sheet (sheet) & " net " &
-								to_string (key (net_cursor)) & latin_1.space &
+								to_string (key (net_cursor)) & space &
 								to_string (segment_cursor),
 								level => log_threshold + 1);
 							delete (segment.ports_netchangers, port_cursor);
@@ -7205,7 +7209,7 @@ package body schematic_ops is
 			names : ada.strings.unbounded.unbounded_string;
 		begin
 			while net_cursor /= type_net_names.no_element loop
-				names := names & to_string (element (net_cursor)) & latin_1.space;
+				names := names & to_string (element (net_cursor)) & space;
 				next (net_cursor);
 			end loop;
 			return to_string (names);
@@ -7938,10 +7942,10 @@ package body schematic_ops is
 	begin -- place_net_label
 		log (text => "module " & to_string (module_name) &
 			" labeling segment at"  &
-			et_coordinates.to_string (position => segment_position) &
+			to_string (position => segment_position) &
 			" with " & to_string (appearance) & " label at" &
 			to_string (point => label_position) &
-			" rotation" & et_coordinates.geometry.to_string (rotation),
+			" rotation" & to_string (rotation),
 			level => log_threshold);
 		-- CS rework. log message does not need rotation in case of tag label.
 		

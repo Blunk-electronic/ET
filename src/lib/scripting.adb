@@ -36,7 +36,6 @@
 --
 
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	--use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
@@ -327,7 +326,7 @@ package body scripting is
 					number			=> ada.text_io.line,
 					comment_mark 	=> comment_mark,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> latin_1.space); -- fields are separated by space
+					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if field_count (line) > 0 then
@@ -389,7 +388,7 @@ package body scripting is
 		use et_project;
 		use schematic_ops;
 		use et_coordinates;
-		use geometry;
+		use pac_geometry_sch;
 		use et_devices;
 		use et_canvas_schematic.pac_canvas;
 		use et_display.schematic;
@@ -1542,7 +1541,7 @@ package body scripting is
 																x => to_distance (f (8)),
 																y => to_distance (f (9)))),
 
-									rotation			=> et_coordinates.geometry.to_rotation (f (10)), -- 0 / 90
+									rotation			=> to_rotation (f (10)), -- 0 / 90
 									appearance 			=> et_schematic.SIMPLE,
 
 									-- A simple label does not indicate the direction
@@ -4531,7 +4530,7 @@ package body scripting is
 
 		exception when event: others => 
 		
-			log (ERROR, "script " & to_string (file_name) & latin_1.space &
+			log (ERROR, "script " & to_string (file_name) & space &
 				affected_line (cmd) & "command '" &
 				to_string (cmd) & "' invalid !", console => true);
 
@@ -4599,7 +4598,7 @@ package body scripting is
 					number			=> ada.text_io.line (current_input),
 					comment_mark 	=> comment_mark,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> latin_1.space); -- fields are separated by space
+					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if field_count (line) > 0 then

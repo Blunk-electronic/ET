@@ -38,31 +38,25 @@
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
-with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.directories;			use ada.directories;
 with gnat.directory_operations;
 with ada.exceptions; 			use ada.exceptions;
 with gnat.source_info;
 
-with et_coordinates;
 with et_schematic;
 
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 with et_project;
 with et_packages;
-with et_pcb;
-with et_pcb_coordinates;
 with et_kicad_general;
 with et_kicad;
 with kicad_coordinates;
 with et_kicad_pcb;
 with et_import;
-with et_export;
-with et_csv;
+
 with material;
 with netlists;
 with et_text;
@@ -159,11 +153,11 @@ package body et_kicad_to_native is
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 			use et_coordinates;
-			use geometry;
-			sheet_number 		: et_coordinates.type_sheet;
+			use pac_geometry_sch;
+			sheet_number 		: type_sheet;
 			sheet_paper_size	: et_frames.type_paper_size;
 			sheet_height		: type_distance_positive;
-			new_y				: et_coordinates.type_distance_xy;
+			new_y				: type_distance_xy;
 		begin -- move
 			-- get the sheet number where the given point resides
 			sheet_number		:= kicad_coordinates.sheet (point); 
@@ -181,11 +175,11 @@ package body et_kicad_to_native is
 
 			-- assign the new y position to the given point
 			--set_y (point, new_y);
-			geometry.set (Y, new_y, point);
+			set (Y, new_y, point);
 		end move;
 
 		procedure move (
-			point_actual	: in out et_coordinates.geometry.type_point;	-- the point it is about
+			point_actual	: in out et_coordinates.pac_geometry_sch.type_point;	-- the point it is about
 			point_help		: in kicad_coordinates.type_position	-- supportive point that provides the sheet number
 			) is
 		-- Transposes the schematic point_actual from the kicad frame to the ET native frame.
@@ -193,11 +187,11 @@ package body et_kicad_to_native is
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 			use et_coordinates;
-			use geometry;
-			sheet_number 		: et_coordinates.type_sheet;
+			use pac_geometry_sch;
+			sheet_number 		: type_sheet;
 			sheet_paper_size	: et_frames.type_paper_size;
 			sheet_height		: type_distance_positive;
-			new_y				: et_coordinates.type_distance_xy;
+			new_y				: type_distance_xy;
 		begin -- move
 			-- get the sheet number where the given point resides
 			sheet_number		:= kicad_coordinates.sheet (point_help); 
@@ -216,7 +210,7 @@ package body et_kicad_to_native is
 
 			-- assign the new y position to the given point
 			--set_y (point_actual, new_y);
-			geometry.set (Y, new_y, point_actual);
+			set (Y, new_y, point_actual);
 		end move;
 
 		procedure prepare_layout_y_movements is
@@ -496,7 +490,7 @@ package body et_kicad_to_native is
 				strand_cursor : et_kicad.type_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out et_kicad.type_strand) is
-					use et_coordinates.geometry;
+					use et_coordinates.pac_geometry_sch;
 					use et_kicad.type_net_segments;
 					segment_cursor : et_kicad.type_net_segments.cursor := strand.segments.first;
 
@@ -2175,7 +2169,7 @@ package body et_kicad_to_native is
 	
 	function to_native_coordinates (
 		point 		: in kicad_coordinates.type_position;
-		rotation	: in et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation)
+		rotation	: in et_coordinates.type_rotation := et_coordinates.pac_geometry_sch.zero_rotation)
 	-- Converts kicad schematic coordinates to native schematic coordinates.
 		return et_coordinates.type_position is
 		point_out : et_coordinates.type_position;
@@ -2229,7 +2223,7 @@ package body et_kicad_to_native is
 			begin
 				-- copy the coordinates x/y, sheet and rotation from kicad text to native text
 				--text_native.position := to_native_coordinates (text_kicad.position);
-				text_native.position := et_coordinates.geometry.type_point (text_kicad.position);
+				text_native.position := et_coordinates.pac_geometry_sch.type_point (text_kicad.position);
 				text_native.sheet := kicad_coordinates.sheet (text_kicad.position);
 				text_native.rotation := et_schematic.pac_text.snap (text_kicad.rotation);
 				
@@ -2545,7 +2539,7 @@ package body et_kicad_to_native is
 						if rk = 180.0 then
 							return HORIZONTAL;
 						
-						elsif rk = geometry.zero_rotation then
+						elsif rk = pac_geometry_sch.zero_rotation then
 							return HORIZONTAL;
 
 						elsif rk = 270.0 then
@@ -2620,7 +2614,7 @@ package body et_kicad_to_native is
 					return et_schematic.type_junctions is
 					junctions : et_schematic.type_junctions; -- to be returned
 
-					use et_coordinates.geometry;
+					use et_coordinates.pac_geometry_sch;
 					use kicad_coordinates;
 					use et_kicad.type_junctions;
 					junction_cursor : et_kicad.type_junctions.cursor := segment.junctions.first;
@@ -2665,7 +2659,7 @@ package body et_kicad_to_native is
 					ports_of_segment : et_schematic.type_ports_device.set; -- to be returned
 
 					use et_coordinates;
-					use geometry;
+					use pac_geometry_sch;
 					use pac_shapes;
 
 					distance : pac_shapes.type_distance_point_line;
@@ -2704,8 +2698,8 @@ package body et_kicad_to_native is
 							declare
 								type type_line_scratch is new pac_shapes.type_line with null record;
 								line : type_line_scratch := (
-									start_point	=> geometry.type_point (segment.coordinates_start), 
-									end_point	=> geometry.type_point (segment.coordinates_end));
+									start_point	=> type_point (segment.coordinates_start), 
+									end_point	=> type_point (segment.coordinates_end));
 							begin
 								distance := et_schematic.pac_shapes.distance_point_line (
 									point 		=> type_point (element (port_cursor_kicad).coordinates),
@@ -2772,8 +2766,8 @@ package body et_kicad_to_native is
 							level => log_threshold + 4);
 						
 						-- get coordinates from current kicad net segment:
-						net_segment_native.start_point := et_coordinates.geometry.type_point (element (kicad_segment_cursor).coordinates_start);
-						net_segment_native.end_point   := et_coordinates.geometry.type_point (element (kicad_segment_cursor).coordinates_end);
+						net_segment_native.start_point := et_coordinates.pac_geometry_sch.type_point (element (kicad_segment_cursor).coordinates_start);
+						net_segment_native.end_point   := et_coordinates.pac_geometry_sch.type_point (element (kicad_segment_cursor).coordinates_end);
 
 						-- get labels from current kicad net segment
 						net_segment_native.labels := tag_and_simple_labels (element (kicad_segment_cursor));
@@ -3268,7 +3262,7 @@ package body et_kicad_to_native is
 							-- This is the native line that will be appended to native_shapes.lines:
 							line : type_line := (width => rectangle.width, others => <>);
 							width, height : et_coordinates.type_distance;
-							corner_C, corner_D : geometry.type_point;
+							corner_C, corner_D : pac_geometry_sch.type_point;
 							
 							procedure append_line is begin
 								et_symbols.type_lines.append (
@@ -3276,7 +3270,7 @@ package body et_kicad_to_native is
 									new_item	=> line);
 							end;
 
-							use geometry;
+							use pac_geometry_sch;
 							
 						begin -- copy_rectangle
 							-- compute width and height of the rectangle:
