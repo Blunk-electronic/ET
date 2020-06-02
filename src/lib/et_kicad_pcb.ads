@@ -58,7 +58,7 @@ with et_pcb_coordinates;
 with et_kicad_general;			use et_kicad_general;
 with et_text;
 with et_packages;
-with et_devices;
+with et_devices;				use et_devices;
 with et_frames;
 
 package et_kicad_pcb is
