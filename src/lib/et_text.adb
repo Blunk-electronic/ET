@@ -143,7 +143,7 @@ package body et_text is
 
 	
 	
-	package body text is
+	package body generic_pac_text is
 
 		use et_string_processing;
 	
@@ -401,7 +401,7 @@ package body et_text is
 		end vectorize;
 
 		
-	end text;
+	end generic_pac_text;
 
 end et_text;
 

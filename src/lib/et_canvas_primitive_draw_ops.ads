@@ -69,7 +69,7 @@ generic
 	with package pac_shapes is new et_geometry.generic_pac_shapes (<>);
 
 	-- The instantiated text package:
-	with package pac_text is new et_text.text (
+	with package pac_text is new et_text.generic_pac_text (
 		-- The used text package must have been instantiated with the same shapes package:
 		pac_shapes		=> pac_shapes, 
 		others			=> <>);

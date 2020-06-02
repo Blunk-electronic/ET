@@ -81,7 +81,7 @@ package et_symbols is
 	text_line_width_default : constant type_distance_positive := 0.3; 
 	
 	-- Instantiation of the text package:
-	package pac_text is new et_text.text (
+	package pac_text is new et_text.generic_pac_text (
 		pac_shapes			=> pac_shapes,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
