@@ -146,8 +146,13 @@ package body et_text is
 	package body generic_pac_text is
 
 		use et_string_processing;
-	
+
+		-- With this line uncommented the linker does not output any errors:
 		function to_text_size (size : in pac_geometry.type_distance) return type_text_size is
+
+		-- With this line uncommented the linker outputs errors like "undefined reference ..."
+		-- function to_text_size (size : in type_distance) return type_text_size is
+			
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
 			use et_string_processing;
 			

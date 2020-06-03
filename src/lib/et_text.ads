@@ -123,8 +123,13 @@ package et_text is
 
 		subtype type_text_size is type_distance range size_min .. size_max; -- in millimeters
 		subtype type_text_line_width is type_distance range line_width_min .. line_width_max;
-		
+
+		-- With this line uncommented the linker does not output any errors:
 		function to_text_size (size : in pac_geometry.type_distance) return type_text_size;
+
+		-- With this line uncommented the linker outputs errors like "undefined reference ..."
+		-- function to_text_size (size : in type_distance) return type_text_size;
+		
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
 		
 		procedure validate_text_size (size : in type_distance);
