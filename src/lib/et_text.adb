@@ -147,7 +147,7 @@ package body et_text is
 
 		use et_string_processing;
 	
-		function to_text_size (size : in type_distance) return type_text_size is
+		function to_text_size (size : in pac_geometry.type_distance) return type_text_size is
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
 			use et_string_processing;
 			
@@ -157,9 +157,9 @@ package body et_text is
 			-- Returns the given text size as string.
 			begin
 				if preamble then
-					return "size " & pac_shapes.pac_geometry.to_string (size);
+					return "size " & pac_geometry.to_string (size);
 				else
-					return pac_shapes.pac_geometry.to_string (size);
+					return pac_geometry.to_string (size);
 				end if;
 			end to_string;
 
@@ -254,9 +254,9 @@ package body et_text is
 			log (WARNING, "rotation of documentational text invalid. Must be 0 or 90 degrees !");
 		end;
 
-		function snap (rotation : in type_rotation) return type_rotation_documentation is
-			offset : constant type_rotation := 45.0 - type_rotation'small;
-			r1 : type_rotation;
+		function snap (rotation : in pac_geometry.type_rotation) return type_rotation_documentation is
+			offset : constant pac_geometry.type_rotation := 45.0 - pac_geometry.type_rotation'small;
+			r1 : pac_geometry.type_rotation;
 			r2 : float;
 			r3 : integer;
 		begin
@@ -268,6 +268,7 @@ package body et_text is
 			else return VERTICAL;
 			end if;
 		end;
+	
 		
 		function to_rotation_doc (rotation : in string) return type_rotation_documentation is
 			r : constant type_rotation := to_rotation (rotation);

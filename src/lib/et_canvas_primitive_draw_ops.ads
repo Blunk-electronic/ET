@@ -184,7 +184,7 @@ package pac_draw is
 		font		: in et_text.type_font;
 		position	: in type_point; -- the anchor point in the drawing, the origin
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
-		rotation	: in type_rotation;
+		rotation	: in pac_geometry.type_rotation;
 		alignment	: in type_text_alignment;
 		height		: in pac_shapes.pac_geometry.type_distance); -- the height of the drawing frame
 

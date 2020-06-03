@@ -117,12 +117,14 @@ package et_text is
 		line_width_min, line_width_max, line_width_default : pac_shapes.pac_geometry.type_distance;
 		
 	package generic_pac_text is
-		use pac_shapes.pac_geometry;
+		--use pac_shapes.pac_geometry;
+		use pac_shapes;
+		use pac_geometry;
 
 		subtype type_text_size is type_distance range size_min .. size_max; -- in millimeters
 		subtype type_text_line_width is type_distance range line_width_min .. line_width_max;
 		
-		function to_text_size (size : in type_distance) return type_text_size;
+		function to_text_size (size : in pac_geometry.type_distance) return type_text_size;
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
 		
 		procedure validate_text_size (size : in type_distance);
@@ -170,8 +172,8 @@ package et_text is
 		-- - If rotation is 135 degree, then the return is VERTICAL.		
 		-- - If rotation is 170 degree, then the return is HORIZONTAL.		
 		-- - If rotation is 270 degree, then the return is VERTICAL.		
-		function snap (rotation : in type_rotation) return type_rotation_documentation;
-
+		function snap (rotation : in pac_geometry.type_rotation) return type_rotation_documentation;
+		
 		-- Converts a string like "0.0" or "90.0" to HORIZONTAL or VERTICAL.
 		function to_rotation_doc (rotation : in string) return type_rotation_documentation;		
 

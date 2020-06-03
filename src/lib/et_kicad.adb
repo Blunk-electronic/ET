@@ -2454,7 +2454,7 @@ package body et_kicad is
 					-- We convert the kicad text placeholder to a native text placeholder (omitting the content).
 
 					-- The kicad placeholders are now converted to ET native placeholders:
-					
+
 					unit.symbol.name := (
 							meaning		=> NAME,
 							position	=> field_reference.position,
@@ -7224,7 +7224,7 @@ package body et_kicad is
 				end if;
 
 				-- set text size and check for excessive size
-				note.size := et_kicad.pac_text.to_text_size (mil_to_distance (f (element (line_cursor), 6)));
+				note.size := pac_text.to_text_size (mil_to_distance (f (element (line_cursor), 6)));
 				
 				--note.style := to_text_style (style_in => f (element (line_cursor), 7), text => true);
 
