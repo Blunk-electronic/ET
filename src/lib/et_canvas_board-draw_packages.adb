@@ -139,7 +139,38 @@ is
 			return result;
 		end to_placeholder_content;
 			
+		procedure draw_text_origin (p : in type_point; f : in type_face) is
+			type type_line is new et_packages.pac_shapes.type_line with null record;
 			
+			line_horizontal : constant type_line := ( -- from left to right
+				start_point		=> type_point (set (x => x (p) - origin_half_size, y => y (p))),
+				end_point		=> type_point (set (x => x (p) + origin_half_size, y => y (p))));
+
+			line_vertical : constant type_line := ( -- from bottom to top
+				start_point		=> type_point (set (x => x (p), y => y (p) - origin_half_size)),
+				end_point		=> type_point (set (x => x (p), y => y (p) + origin_half_size)));
+
+		begin -- draw_text_origin
+			if device_origins_enabled (f) then
+
+				set_color_origin (context.cr);
+				set_line_width (context.cr, type_view_coordinate (origin_line_width));
+				pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
+				pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
+
+			end if;
+		end draw_text_origin;
+
+		-- Maps from flip status to mirror status of a vector text:
+		function to_mirror (f : in et_pcb.type_flipped) return pac_text.type_vector_text_mirrored is
+			use et_pcb;
+			use pac_text;
+		begin
+			case f is
+				when YES => return YES;
+				when NO => return NO;
+			end case;
+		end to_mirror;
 		
 		-- SILKSCREEN
 		procedure draw_silkscreen is 
@@ -152,9 +183,10 @@ is
 				if silkscreen_enabled (f) then
 				
 					if f = face then
+						rotate_by (line, rot (package_position));
+						
 						if flipped then mirror (line, Y); end if;
 						
-						rotate_by (line, rot (package_position));
 						move_by (line, type_point (package_position));
 
 						set_color_silkscreen (context.cr, f);
@@ -186,9 +218,10 @@ is
 				if silkscreen_enabled (f) then
 					
 					if f = face then
+						rotate_by (arc, rot (package_position));
+						
 						if flipped then mirror (arc, Y); end if;
 						
-						rotate_by (arc, rot (package_position));
 						move_by (arc, type_point (package_position));
 
 						set_color_silkscreen (context.cr, f);
@@ -222,9 +255,10 @@ is
 				if silkscreen_enabled (f) then
 					
 					if f = face then
+						rotate_by (circle, rot (package_position));
+						
 						if flipped then mirror (circle, Y); end if;
 						
-						rotate_by (circle, rot (package_position));
 						move_by (circle, type_point (package_position));
 
 						set_color_silkscreen (context.cr, f);
@@ -273,9 +307,10 @@ is
 				if silkscreen_enabled (f) then
 					
 					if f = face then
+						rotate_by (polygon, rot (package_position));
+						
 						if flipped then mirror (polygon, Y); end if;
 						
-						rotate_by (polygon, rot (package_position));
 						move_by (polygon, type_point (package_position));
 
 						set_color_silkscreen (context.cr, f);
@@ -321,9 +356,10 @@ is
 				if silkscreen_enabled (f) then
 					
 					if f = face then
+						rotate_by (cutout, rot (package_position));
+						
 						if flipped then mirror (cutout, Y); end if;
 						
-						rotate_by (cutout, rot (package_position));
 						move_by (cutout, type_point (package_position));
 
 						set_color_background (context.cr);
@@ -364,22 +400,34 @@ is
 				if silkscreen_enabled (f) then
 					
 					if f = face then
-						if flipped then mirror (ph.position, Y); end if;
+
+						-- Rotate the position of the placeholder by the rotation of the package.
+						-- NOTE: This does not affect the rotation of the placeholder text.
+						rotate_by (ph.position, rot (package_position));
 						
-						rotate_by (ph.position, add (rot (package_position), rot (ph.position))); -- CS ?
-						move_by (ph.position, type_point (package_position)); -- CS ?
+						if flipped then mirror (ph.position, Y); end if;
+
+						-- Move the placeholder by the package position to 
+						-- its final position:
+						move_by (ph.position, type_point (package_position));
 
 						set_color_silkscreen (context.cr, f);
+
+						draw_text_origin (type_point (ph.position), f);
+
+						-- Set the line width of the vector text:
 						set_line_width (context.cr, type_view_coordinate (ph.line_width));
 
+						-- Vectorize the content of the placeholder:
 						vector_text := pac_text.vectorize (
 							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
-							rotation	=> rot (ph.position),
-							position	=> type_point (ph.position)
--- 							mirror		=> NO -- CS
+							rotation	=> add (rot (ph.position), rot (package_position)),
+							position	=> type_point (ph.position),
+							mirror		=> to_mirror (flip) -- mirror vector text if package is flipped
 							);
-								
+
+						-- Draw the content of the placeholder:
 						pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
 						
 					end if;
@@ -2237,7 +2285,7 @@ is
 			element (package_cursor).terminals.iterate (query_terminal'access);
 		end draw_terminals;
 		
-		procedure draw_origin is
+		procedure draw_package_origin is
 			type type_line is new et_packages.pac_shapes.type_line with null record;
 			
 			line_horizontal : constant type_line := ( -- from left to right
@@ -2248,7 +2296,7 @@ is
 				start_point		=> type_point (set (x => x (package_position), y => y (package_position) - origin_half_size)),
 				end_point		=> type_point (set (x => x (package_position), y => y (package_position) + origin_half_size)));
 
-		begin -- draw_origin
+		begin -- draw_package_origin
 			if face = get_face (package_position) then
 				if device_origins_enabled (get_face (package_position)) then
 
@@ -2259,7 +2307,7 @@ is
 
 				end if;
 			end if;
-		end draw_origin;
+		end draw_package_origin;
 		
 	begin -- draw_package
 		draw_silkscreen;
@@ -2274,7 +2322,7 @@ is
 		draw_pcb_contour;
 		
 		-- The origin is drawn last so that it obscures other elements of the package:
-		draw_origin;
+		draw_package_origin;
 	end draw_package;
 
 	use et_schematic;

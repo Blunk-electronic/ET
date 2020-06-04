@@ -39,6 +39,7 @@ with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
+with et_general;
 with et_string_processing;
 
 package body et_text is
@@ -329,13 +330,14 @@ package body et_text is
 		function vectorize (
 			content		: in type_text_content.bounded_string;
 			size		: in type_text_size;
-			rotation	: in type_rotation;
-			position	: in type_point;
+			rotation	: in type_rotation; 
+			position	: in type_point; -- the anchor point of the text (where the origin is)
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
 -- 			ratio		: in type_line_with_to_size_ratio := line_width_to_size_ratio_default;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
 			return pac_vector_text_lines.list is
 
+			use et_general;
 			use pac_vector_text_lines;
 
 			-- We return a list of lines. In the course of this function
@@ -350,6 +352,7 @@ package body et_text is
 			package sorting is new generic_sorting;
 			use sorting;
 
+			-- This indicates the position of the character being processed:
 			place : positive := 1;
 
 			spacing : constant type_distance_positive := character_spacing; -- CS * x * size
@@ -361,6 +364,15 @@ package body et_text is
 				procedure query_line (c : in pac_vector_text_lines.cursor) is
 					l : type_vector_text_line := element (c);
 				begin
+-- 					-- Move the line by the given position. 
+-- 					-- The given position is the anchor point of the text.
+-- 					pac_shapes.move_by (
+-- 						line	=> pac_shapes.type_line (l),
+-- 						offset	=> position);
+
+					-- Move the line to the right according to the
+					-- position of the character inside the text. 
+					-- CS: depends on alignment ?
 					pac_shapes.move_by (
 						line	=> pac_shapes.type_line (l),
 						offset	=> type_point (set (
@@ -381,13 +393,42 @@ package body et_text is
 				lines : pac_vector_text_lines.list := to_lines (char);
 			begin
 				move_character (lines);
-
-				-- CS mirror lines ?
-				-- CS rotate lines ?
-				
-				
 				merge (target => result, source => lines);
 			end add;
+
+			procedure move is
+				scratch : pac_vector_text_lines.list;
+
+				procedure query_line (c : in pac_vector_text_lines.cursor) is 
+					l : type_vector_text_line := element (c);
+				begin
+					-- Rotate the text (about the origin) if required:
+					if rotation /= zero_rotation then
+						pac_shapes.rotate_by (
+							line		=> pac_shapes.type_line (l),
+							rotation	=> rotation);
+					end if;
+
+					-- Mirror the text if required:
+					if mirror = YES then
+						pac_shapes.mirror (
+							line	=> pac_shapes.type_line (l),
+							axis	=> Y);
+					end if;
+					
+					-- Move the text by the given position. 
+					-- The given position is the anchor point of the text.
+					pac_shapes.move_by (
+						line	=> pac_shapes.type_line (l),
+						offset	=> position);
+
+					append (scratch, l);
+				end query_line;
+			
+			begin -- move
+				iterate (result, query_line'access);
+				result := scratch;
+			end move;
 			
 		begin
 			-- Read the text to be displayed character by character and
@@ -402,7 +443,9 @@ package body et_text is
 					when others => null;
 				end case;
 			end loop;
-						
+
+			move;
+			
 			return result;
 		end vectorize;
 
