@@ -437,6 +437,7 @@ package body et_text is
 				place := c;
 				
 				case text (c) is
+					when '7' => add (capital_a);
 					when 'C' => add (capital_a);
 					when 'I' => add (capital_a);
 					

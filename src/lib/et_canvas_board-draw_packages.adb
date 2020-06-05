@@ -448,7 +448,6 @@ is
 				set_destination (INVERSE);
 				draw_placeholder (ph, destination);
 			end query_placeholder_bottom;
-
 			
 		begin -- draw_silkscreen
 			-- lines
@@ -471,12 +470,11 @@ is
 			element (package_cursor).silk_screen.top.cutouts.iterate (query_cutout_top'access);
 			element (package_cursor).silk_screen.bottom.cutouts.iterate (query_cutout_bottom'access);
 			
-			-- CS
 			-- placeholders
 			element (package_cursor).silk_screen.top.placeholders.iterate (query_placeholder_top'access);
 			element (package_cursor).silk_screen.bottom.placeholders.iterate (query_placeholder_bottom'access);
 
-
+			-- CS
 			-- texts		: type_texts_with_content.list;
 			
 		end draw_silkscreen;
@@ -695,6 +693,69 @@ is
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
 			end query_cutout_bottom;
+
+			-- PLACEHOLDERS
+			use pac_text_placeholders;
+
+			procedure draw_placeholder (
+				ph	: in out type_text_placeholder;
+				f	: in type_face) is
+
+				use pac_text.pac_vector_text_lines;
+				vector_text : pac_text.pac_vector_text_lines.list;
+
+			begin
+				if assy_doc_enabled (f) then
+					
+					if f = face then
+
+						-- Rotate the position of the placeholder by the rotation of the package.
+						-- NOTE: This does not affect the rotation of the placeholder text.
+						rotate_by (ph.position, rot (package_position));
+						
+						if flipped then mirror (ph.position, Y); end if;
+
+						-- Move the placeholder by the package position to 
+						-- its final position:
+						move_by (ph.position, type_point (package_position));
+
+						set_color_assy_doc (context.cr, f);
+
+						draw_text_origin (type_point (ph.position), f);
+
+						-- Set the line width of the vector text:
+						set_line_width (context.cr, type_view_coordinate (ph.line_width));
+
+						-- Vectorize the content of the placeholder:
+						vector_text := pac_text.vectorize (
+							content		=> to_placeholder_content (ph), -- map from meaning to content
+							size		=> ph.size,
+							rotation	=> add (rot (ph.position), rot (package_position)),
+							position	=> type_point (ph.position),
+							mirror		=> to_mirror (flip) -- mirror vector text if package is flipped
+							);
+
+						-- Draw the content of the placeholder:
+						pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
+						
+					end if;
+
+				end if;
+			end draw_placeholder;
+				
+			procedure query_placeholder_top (c : in pac_text_placeholders.cursor) is
+				ph : type_text_placeholder := element (c);
+			begin
+				set_destination;
+				draw_placeholder (ph, destination);
+			end query_placeholder_top;
+
+			procedure query_placeholder_bottom (c : in pac_text_placeholders.cursor) is
+				ph : type_text_placeholder := element (c);
+			begin
+				set_destination (INVERSE);
+				draw_placeholder (ph, destination);
+			end query_placeholder_bottom;
 			
 		begin -- draw_assembly_documentation
 			-- lines
@@ -717,9 +778,11 @@ is
 			element (package_cursor).assembly_documentation.top.cutouts.iterate (query_cutout_top'access);
 			element (package_cursor).assembly_documentation.bottom.cutouts.iterate (query_cutout_bottom'access);
 
+			-- placeholders
+			element (package_cursor).assembly_documentation.top.placeholders.iterate (query_placeholder_top'access);
+			element (package_cursor).assembly_documentation.bottom.placeholders.iterate (query_placeholder_bottom'access);
 			
 			-- CS
-			-- placeholders
 			-- texts		: type_texts_with_content.list;
 
 		end draw_assembly_documentation;
@@ -2107,7 +2170,6 @@ is
 			element (package_cursor).copper.bottom.cutouts.iterate (query_cutout_bottom'access);
 
 			-- CS
-			-- placeholders
 			-- texts		: type_texts_with_content.list;
 
 		end draw_conductors;
@@ -2412,7 +2474,7 @@ is
 					package_position	=> element (d).position, -- x/y/rotation/face
 					flip				=> element (d).flipped,
 					placeholders		=> element (d).text_placeholders);
-				
+
 			end if;
 		end query_device;
 		
