@@ -333,7 +333,7 @@ package body et_text is
 			rotation	: in type_rotation; 
 			position	: in type_point; -- the anchor point of the text (where the origin is)
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
--- 			ratio		: in type_line_with_to_size_ratio := line_width_to_size_ratio_default;
+			line_width	: in type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
 			return pac_vector_text_lines.list is
 
@@ -352,11 +352,23 @@ package body et_text is
 			package sorting is new generic_sorting;
 			use sorting;
 
+			offset_due_to_line_width : constant type_point := type_point (
+				set (x => line_width * 0.5, y => line_width * 0.5));
+			
 			-- This indicates the position of the character being processed:
 			place : positive := 1;
 
-			spacing : constant type_distance_positive := character_spacing; -- CS * x * size
-			width : constant type_distance_positive := character_width; -- CS * x * size
+			spacing : constant type_distance_positive := size * (0.25 + type_character_width'last);
+
+			procedure scale_line (l : in out type_vector_text_line) is 
+				Sx : constant type_distance := x (l.start_point);
+				Sy : constant type_distance := y (l.start_point);
+				Ex : constant type_distance := x (l.end_point);
+				Ey : constant type_distance := y (l.end_point);
+			begin
+				l.start_point := type_point (set (Sx * size, Sy * size));
+				l.end_point   := type_point (set (Ex * size, Ey * size));
+			end scale_line;
 			
 			procedure move_character (lines : in out pac_vector_text_lines.list) is
 				scratch : pac_vector_text_lines.list;
@@ -364,19 +376,19 @@ package body et_text is
 				procedure query_line (c : in pac_vector_text_lines.cursor) is
 					l : type_vector_text_line := element (c);
 				begin
--- 					-- Move the line by the given position. 
--- 					-- The given position is the anchor point of the text.
--- 					pac_shapes.move_by (
--- 						line	=> pac_shapes.type_line (l),
--- 						offset	=> position);
-
+					scale_line (l);
+					
+					pac_shapes.move_by (
+						line	=> pac_shapes.type_line (l),
+						offset	=> offset_due_to_line_width);
+										   
 					-- Move the line to the right according to the
 					-- position of the character inside the text. 
 					-- CS: depends on alignment ?
 					pac_shapes.move_by (
 						line	=> pac_shapes.type_line (l),
 						offset	=> type_point (set (
-									x => (place - 1) * width + spacing,
+									x => (place - 1) * spacing,
 									y => zero)));
 
 					append (scratch, l);
@@ -396,9 +408,9 @@ package body et_text is
 				merge (target => result, source => lines);
 			end add;
 
-			procedure move is
+			procedure finalize is
 				scratch : pac_vector_text_lines.list;
-
+				
 				procedure query_line (c : in pac_vector_text_lines.cursor) is 
 					l : type_vector_text_line := element (c);
 				begin
@@ -425,10 +437,10 @@ package body et_text is
 					append (scratch, l);
 				end query_line;
 			
-			begin -- move
+			begin -- finalize
 				iterate (result, query_line'access);
 				result := scratch;
-			end move;
+			end finalize;
 			
 		begin
 			-- Read the text to be displayed character by character and
@@ -445,7 +457,7 @@ package body et_text is
 				end case;
 			end loop;
 
-			move;
+			finalize;
 			
 			return result;
 		end vectorize;

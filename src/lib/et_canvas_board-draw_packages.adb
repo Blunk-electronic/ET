@@ -424,7 +424,8 @@ is
 							size		=> ph.size,
 							rotation	=> add (rot (ph.position), rot (package_position)),
 							position	=> type_point (ph.position),
-							mirror		=> to_mirror (flip) -- mirror vector text if package is flipped
+							mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
+							line_width	=> ph.line_width
 							);
 
 						-- Draw the content of the placeholder:
@@ -732,7 +733,8 @@ is
 							size		=> ph.size,
 							rotation	=> add (rot (ph.position), rot (package_position)),
 							position	=> type_point (ph.position),
-							mirror		=> to_mirror (flip) -- mirror vector text if package is flipped
+							mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
+							line_width	=> ph.line_width
 							);
 
 						-- Draw the content of the placeholder:

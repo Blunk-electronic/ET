@@ -204,33 +204,51 @@ package et_text is
 
 		type type_vector_text_line is new pac_shapes.type_line with null record;
 
-		subtype type_character_width is type_distance_positive range zero .. 10.0;
-		character_width : constant type_character_width := type_character_width'last;
+		subtype type_character_height is type_distance_positive range zero .. 1.0;
+		subtype type_character_width  is type_distance_positive range zero .. 0.7;		
+		character_width : constant type_character_height := 0.7;
 
-		type type_segment is record start_x, start_y, end_x, end_y : type_character_width; end record;
+		-- A single segment of a character is defined as:
+		type type_segment is record 
+			start_x	: type_character_width;
+			start_y : type_character_height;
+			end_x	: type_character_width;
+			end_y	: type_character_height;
+		end record;
 
 		type type_character is array (type_segment_id range <>) of type_segment;
 				
-		capital_a : constant type_character (1 .. 3) := (
-			1	=> (2.0, 2.0, 5.0, 9.0),
-			2	=> (9.0, 2.0, 5.0, 9.0),
-			3	=> (4.0, 4.0, 7.0, 4.0));
+-- 		capital_a : constant type_character (1 .. 5) := (
+-- 			1	=> (0.0, 0.1, 0.0, 0.6),
+-- 			2	=> (0.0, 0.6, 0.3, 0.9),
+-- 			3	=> (0.3, 0.9, 0.6, 0.6),
+-- 			4	=> (0.6, 0.6, 0.6, 0.1),
+-- 			5	=> (0.0, 0.45, 0.6, 0.45)
+-- 			);
 
-		capital_c : constant type_character (1 .. 3) := (
-			1	=> (2.0, 2.0, 5.0, 9.0),
-			2	=> (9.0, 2.0, 5.0, 9.0),
-			3	=> (4.0, 4.0, 7.0, 4.0));
+		capital_a : constant type_character (1 .. 5) := (
+			1	=> (0.0, 0.0, 0.0, 0.7),
+			2	=> (0.0, 0.7, 0.35, 1.0),
+			3	=> (0.35, 1.0, 0.7, 0.7),
+			4	=> (0.7, 0.7, 0.7, 0.0),
+			5	=> (0.0, 0.5, 0.7, 0.5)
+			);
+
+		
+-- 		capital_c : constant type_character (1 .. 3) := (
+-- 			1	=> (2.0, 2.0, 5.0, 9.0),
+-- 			2	=> (9.0, 2.0, 5.0, 9.0),
+-- 			3	=> (4.0, 4.0, 7.0, 4.0));
 
 
 		
-		character_spacing : constant type_distance_positive := 1.0;
 		
 		package pac_vector_text_lines is new doubly_linked_lists (type_vector_text_line);
 
 		-- Converts a character to a list of lines:
 		function to_lines (char : in type_character) return pac_vector_text_lines.list;
 
-
+	
 
 		
 		function vectorize (
@@ -239,7 +257,7 @@ package et_text is
 			rotation	: in type_rotation;
 			position	: in type_point;
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
--- 			ratio		: in type_line_with_to_size_ratio := line_width_to_size_ratio_default;
+			line_width	: in type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
 			return pac_vector_text_lines.list;
 
