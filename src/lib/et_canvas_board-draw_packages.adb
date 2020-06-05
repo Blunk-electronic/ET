@@ -162,9 +162,9 @@ is
 		end draw_text_origin;
 
 		-- Maps from flip status to mirror status of a vector text:
-		function to_mirror (f : in et_pcb.type_flipped) return pac_text.type_vector_text_mirrored is
+		function to_mirror (f : in et_pcb.type_flipped) return et_text.type_vector_text_mirrored is
 			use et_pcb;
-			use pac_text;
+			use et_text;
 		begin
 			case f is
 				when YES => return YES;

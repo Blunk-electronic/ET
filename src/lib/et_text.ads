@@ -51,7 +51,8 @@ package et_text is
 	keyword_horizontal	: constant string := "horizontal";
 	keyword_vertical	: constant string := "vertical";		
 
-	
+	-- The alignment refers to the anchor point of the text.
+	-- The anchor point is usually where the origin of the text is.
 	type type_text_alignment_horizontal is (LEFT, CENTER, RIGHT);
 	function to_string (alignment : in type_text_alignment_horizontal) return string;
 	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal;
@@ -108,7 +109,19 @@ package et_text is
 
 	type type_rotation_documentation is (HORIZONTAL, VERTICAL);
 
+	
+-- VECTORIZED TEXT
 
+	-- In vector text a single character consists of straight lines.
+	-- CS: It seems sufficient to have at most 20 lines per character.
+	type type_segment_id is range 1 .. 20; 
+
+	vector_text_alignment_default : constant type_text_alignment := (LEFT, CENTER);
+
+	type type_vector_text_mirrored is (NO, YES);
+	vector_text_mirror_default : constant type_vector_text_mirrored := NO;
+
+	
 	
 	generic
 		with package pac_shapes is new et_geometry.generic_pac_shapes (<>);
@@ -185,8 +198,6 @@ package et_text is
 
 		
 	-- VECTORIZED TEXT
-
-
 		
 -- 		type type_line_with_to_size_ratio is range 1 .. 50; -- in percent
 -- 		line_width_to_size_ratio_default : constant type_line_with_to_size_ratio := 15;
@@ -197,7 +208,7 @@ package et_text is
 		character_width : constant type_character_width := type_character_width'last;
 
 		type type_segment is record start_x, start_y, end_x, end_y : type_character_width; end record;
-		type type_segment_id is range 1 .. 20;
+
 		type type_character is array (type_segment_id range <>) of type_segment;
 				
 		capital_a : constant type_character (1 .. 3) := (
@@ -219,10 +230,6 @@ package et_text is
 		-- Converts a character to a list of lines:
 		function to_lines (char : in type_character) return pac_vector_text_lines.list;
 
-		vector_text_alignment_default : constant type_text_alignment := (LEFT, CENTER);
-
-		type type_vector_text_mirrored is (NO, YES);
-		vector_text_mirror_default : constant type_vector_text_mirrored := NO;
 
 
 		
