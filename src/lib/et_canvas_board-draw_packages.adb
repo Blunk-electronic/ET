@@ -153,11 +153,17 @@ is
 		begin -- draw_text_origin
 			if device_origins_enabled (f) then
 
+				-- The caller of this procedure has a setting for the color.
+				-- So we backup this context setting.
+				save (context.cr);
+				
 				set_color_origin (context.cr);
 				set_line_width (context.cr, type_view_coordinate (pac_text.origin_line_width));
 				pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
 				pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
 
+				-- Restore context setting of caller. See comment above.
+				restore (context.cr);
 			end if;
 		end draw_text_origin;
 
@@ -1327,6 +1333,38 @@ is
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
 			end query_cutout_bottom;
+
+
+			-- TEXTS
+			use type_texts_with_content;
+			
+			procedure draw_text (
+				t	: in out type_text_with_content;
+				f	: in type_face) is
+			begin
+				if stop_mask_enabled (f) then
+	
+					if f = face then
+						set_color_stop_mask (context.cr, f);
+						draw_text_with_content (t, f);
+					end if;
+
+				end if;
+			end draw_text;
+
+			procedure query_text_top (c : in type_texts_with_content.cursor) is
+				t : type_text_with_content := element (c);
+			begin
+				set_destination;
+				draw_text (t, destination);
+			end query_text_top;
+
+			procedure query_text_bottom (c : in type_texts_with_content.cursor) is
+				t : type_text_with_content := element (c);
+			begin
+				set_destination (INVERSE);
+				draw_text (t, destination);
+			end query_text_bottom;
 			
 		begin -- draw_stop_mask
 		
@@ -1350,7 +1388,10 @@ is
 			element (package_cursor).stop_mask.top.cutouts.iterate (query_cutout_top'access);
 			element (package_cursor).stop_mask.bottom.cutouts.iterate (query_cutout_bottom'access);
 
-			-- CS texts		: type_texts_with_content.list; -- for texts in copper to be exposed
+			-- texts
+			element (package_cursor).stop_mask.top.texts.iterate (query_text_top'access);
+			element (package_cursor).stop_mask.bottom.texts.iterate (query_text_bottom'access);
+			
 		end draw_stop_mask;
 
 		
@@ -2253,6 +2294,40 @@ is
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
 			end query_cutout_bottom;
+
+
+			-- TEXTS
+			use type_texts_with_content;
+			
+			procedure draw_text (
+				t	: in out type_text_with_content;
+				f	: in type_face) is
+				ly : constant type_signal_layer := face_to_layer (f);
+			begin
+				if conductor_enabled (ly) then
+	
+					if f = face then
+						set_color_conductor (context.cr, ly);
+						draw_text_with_content (t, f);
+					end if;
+
+				end if;
+			end draw_text;
+
+			procedure query_text_top (c : in type_texts_with_content.cursor) is
+				t : type_text_with_content := element (c);
+			begin
+				set_destination;
+				draw_text (t, destination);
+			end query_text_top;
+
+			procedure query_text_bottom (c : in type_texts_with_content.cursor) is
+				t : type_text_with_content := element (c);
+			begin
+				set_destination (INVERSE);
+				draw_text (t, destination);
+			end query_text_bottom;
+			
 			
 		begin -- draw_conductors
 			-- lines
@@ -2279,9 +2354,10 @@ is
 			element (package_cursor).copper.top.cutouts.iterate (query_cutout_top'access);
 			element (package_cursor).copper.bottom.cutouts.iterate (query_cutout_bottom'access);
 
-			-- CS
-			-- texts		: type_texts_with_content.list;
-
+			-- texts
+			element (package_cursor).copper.top.texts.iterate (query_text_top'access);
+			element (package_cursor).copper.bottom.texts.iterate (query_text_bottom'access);
+			
 		end draw_conductors;
 
 
