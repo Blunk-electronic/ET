@@ -171,6 +171,46 @@ is
 				when NO => return NO;
 			end case;
 		end to_mirror;
+
+		procedure draw_text_with_content (
+			t : in out type_text_with_content;
+			f : in type_face) is
+
+			use pac_text.pac_vector_text_lines;
+			vector_text : pac_text.pac_vector_text_lines.list;
+	
+		begin
+
+			-- Rotate the position of the text by the rotation of the package.
+			-- NOTE: This does not affect the rotation of the text itself.
+			rotate_by (t.position, rot (package_position));
+			
+			if flipped then mirror (t.position, Y); end if;
+
+			-- Move the text by the package position to 
+			-- its final position:
+			move_by (t.position, type_point (package_position));
+
+			draw_text_origin (type_point (t.position), f);
+
+			-- Set the line width of the vector text:
+			set_line_width (context.cr, type_view_coordinate (t.line_width));
+
+			-- Vectorize the content of the text:
+			vector_text := pac_text.vectorize (
+				content		=> t.content,
+				size		=> t.size,
+				rotation	=> add (rot (t.position), rot (package_position)),
+				position	=> type_point (t.position),
+				mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
+				line_width	=> t.line_width,
+				alignment	=> t.alignment -- right, bottom
+				);
+
+			-- Draw the content of the placeholder:
+			pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
+			
+		end draw_text_with_content;
 		
 		-- SILKSCREEN
 		procedure draw_silkscreen is 
@@ -458,46 +498,12 @@ is
 			procedure draw_text (
 				t	: in out type_text_with_content;
 				f	: in type_face) is
-
-				use pac_text.pac_vector_text_lines;
-				vector_text : pac_text.pac_vector_text_lines.list;
-
 			begin
 				if silkscreen_enabled (f) then
-					
+	
 					if f = face then
-
-						-- Rotate the position of the text by the rotation of the package.
-						-- NOTE: This does not affect the rotation of the text itself.
-						rotate_by (t.position, rot (package_position));
-						
-						if flipped then mirror (t.position, Y); end if;
-
-						-- Move the text by the package position to 
-						-- its final position:
-						move_by (t.position, type_point (package_position));
-
 						set_color_silkscreen (context.cr, f);
-
-						draw_text_origin (type_point (t.position), f);
-
-						-- Set the line width of the vector text:
-						set_line_width (context.cr, type_view_coordinate (t.line_width));
-
-						-- Vectorize the content of the text:
-						vector_text := pac_text.vectorize (
-							content		=> t.content,
-							size		=> t.size,
-							rotation	=> add (rot (t.position), rot (package_position)),
-							position	=> type_point (t.position),
-							mirror		=> to_mirror (flip), -- mirror vector text if package is flipped
-							line_width	=> t.line_width,
-							alignment	=> t.alignment -- right, bottom
-							);
-
-						-- Draw the content of the placeholder:
-						pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
-						
+						draw_text_with_content (t, f);
 					end if;
 
 				end if;
@@ -827,6 +833,38 @@ is
 				set_destination (INVERSE);
 				draw_placeholder (ph, destination);
 			end query_placeholder_bottom;
+
+
+			-- TEXTS
+			use type_texts_with_content;
+			
+			procedure draw_text (
+				t	: in out type_text_with_content;
+				f	: in type_face) is
+			begin
+				if assy_doc_enabled (f) then
+	
+					if f = face then
+						set_color_assy_doc (context.cr, f);
+						draw_text_with_content (t, f);
+					end if;
+
+				end if;
+			end draw_text;
+
+			procedure query_text_top (c : in type_texts_with_content.cursor) is
+				t : type_text_with_content := element (c);
+			begin
+				set_destination;
+				draw_text (t, destination);
+			end query_text_top;
+
+			procedure query_text_bottom (c : in type_texts_with_content.cursor) is
+				t : type_text_with_content := element (c);
+			begin
+				set_destination (INVERSE);
+				draw_text (t, destination);
+			end query_text_bottom;
 			
 		begin -- draw_assembly_documentation
 			-- lines
@@ -853,8 +891,9 @@ is
 			element (package_cursor).assembly_documentation.top.placeholders.iterate (query_placeholder_top'access);
 			element (package_cursor).assembly_documentation.bottom.placeholders.iterate (query_placeholder_bottom'access);
 			
-			-- CS
-			-- texts		: type_texts_with_content.list;
+			-- texts
+			element (package_cursor).assembly_documentation.top.texts.iterate (query_text_top'access);
+			element (package_cursor).assembly_documentation.bottom.texts.iterate (query_text_bottom'access);
 
 		end draw_assembly_documentation;
 
