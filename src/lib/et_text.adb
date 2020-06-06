@@ -35,6 +35,7 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
@@ -359,14 +360,24 @@ package body et_text is
 			-- This indicates the position of the character being processed:
 			place : positive := 1;
 
-			-- The spacing between characters must be adjusted according to the given text size:
+			-- The space between the lower left corners of two adjacent characters:
+			-- It must be adjusted according to the given text size:
 			spacing : constant type_distance_positive := size * (0.25 + type_character_width'last);
-
+			
 			-- The scaling is done so that text height and width are
 			-- independed of the line width.
 			-- CS: Currently the scaling factor M applies to X and Y axis
 			-- in the same way. Scaling in X might be slightly different:
 			M : constant type_text_size := size - line_width;
+
+			-- For alignment we need the total length of the text:
+			text_length : constant type_distance_positive := line_width +
+					(text'length - 1) * (spacing * M);
+
+			text_length_half : constant type_distance_positive := text_length * 0.5;
+
+			text_height : constant type_distance_positive := size;
+			text_height_half : constant type_distance_positive := size * 0.5;
 			
 			procedure scale_line (l : in out type_vector_text_line) is 
 				Sx : constant type_distance := x (l.start_point);
@@ -425,10 +436,51 @@ package body et_text is
 
 			procedure finalize is
 				scratch : pac_vector_text_lines.list;
-				
+
 				procedure query_line (c : in pac_vector_text_lines.cursor) is 
 					l : type_vector_text_line := element (c);
-				begin
+
+					procedure align_vertical is begin
+						case alignment.vertical is
+							when BOTTOM => 
+								null; -- text is already computed for bottom alignment. nothing to do
+							
+							when CENTER =>
+								pac_shapes.move_by (
+									line	=> pac_shapes.type_line (l),
+									offset	=> type_point (set (zero, - text_height_half)));
+
+							when TOP =>
+								pac_shapes.move_by (
+									line	=> pac_shapes.type_line (l),
+									offset	=> type_point (set (zero, - text_height)));
+
+						end case;
+					end align_vertical;
+			
+				begin -- query_line
+					
+					-- Align the text with the origin:
+					case alignment.horizontal is
+						when LEFT => 
+							-- text is already computed for left alignment. so no need to align horizontal.
+							align_vertical;
+
+						when CENTER =>
+							pac_shapes.move_by (
+								line	=> pac_shapes.type_line (l),
+								offset	=> type_point (set (- text_length_half, zero)));
+
+							align_vertical;
+							
+						when RIGHT =>
+							pac_shapes.move_by (
+								line	=> pac_shapes.type_line (l),
+								offset	=> type_point (set (- text_length, zero)));
+							
+							align_vertical;
+					end case;
+					
 					-- Rotate the text (about the origin) if required:
 					if rotation /= zero_rotation then
 						pac_shapes.rotate_by (
@@ -453,6 +505,8 @@ package body et_text is
 				end query_line;
 			
 			begin -- finalize
+				--put_line ("length " & to_string (text_length));
+				
 				iterate (result, query_line'access);
 				result := scratch;
 			end finalize;
@@ -472,6 +526,7 @@ package body et_text is
 				end case;
 			end loop;
 
+			-- Align, mirror and move the text to the final position:
 			finalize;
 			
 			return result;

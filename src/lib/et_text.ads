@@ -116,7 +116,7 @@ package et_text is
 	-- CS: It seems sufficient to have at most 20 lines per character.
 	type type_segment_id is range 1 .. 20; 
 
-	vector_text_alignment_default : constant type_text_alignment := (LEFT, CENTER);
+	vector_text_alignment_default : constant type_text_alignment := (LEFT, BOTTOM);
 
 	type type_vector_text_mirrored is (NO, YES);
 	vector_text_mirror_default : constant type_vector_text_mirrored := NO;
