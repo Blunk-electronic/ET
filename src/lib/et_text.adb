@@ -362,15 +362,17 @@ package body et_text is
 			-- The spacing between characters must be adjusted according to the given text size:
 			spacing : constant type_distance_positive := size * (0.25 + type_character_width'last);
 
+			-- The scaling is done so that text height and width are
+			-- independed of the line width.
+			-- CS: Currently the scaling factor M applies to X and Y axis
+			-- in the same way. Scaling in X might be slightly different:
+			M : constant type_text_size := size - line_width;
+			
 			procedure scale_line (l : in out type_vector_text_line) is 
 				Sx : constant type_distance := x (l.start_point);
 				Sy : constant type_distance := y (l.start_point);
 				Ex : constant type_distance := x (l.end_point);
 				Ey : constant type_distance := y (l.end_point);
-
-				-- The scaling in Y axis is done so that the text height and width is
-				-- independed of the line width:
-				M : constant type_text_size := size - line_width;
 			begin
 				l.start_point := type_point (set (Sx * M, Sy * M));
 				l.end_point   := type_point (set (Ex * M, Ey * M));

@@ -143,18 +143,18 @@ is
 			type type_line is new et_packages.pac_shapes.type_line with null record;
 			
 			line_horizontal : constant type_line := ( -- from left to right
-				start_point		=> type_point (set (x => x (p) - origin_half_size, y => y (p))),
-				end_point		=> type_point (set (x => x (p) + origin_half_size, y => y (p))));
+				start_point		=> type_point (set (x => x (p) - pac_text.origin_half_size, y => y (p))),
+				end_point		=> type_point (set (x => x (p) + pac_text.origin_half_size, y => y (p))));
 
 			line_vertical : constant type_line := ( -- from bottom to top
-				start_point		=> type_point (set (x => x (p), y => y (p) - origin_half_size)),
-				end_point		=> type_point (set (x => x (p), y => y (p) + origin_half_size)));
+				start_point		=> type_point (set (x => x (p), y => y (p) - pac_text.origin_half_size)),
+				end_point		=> type_point (set (x => x (p), y => y (p) + pac_text.origin_half_size)));
 
 		begin -- draw_text_origin
 			if device_origins_enabled (f) then
 
 				set_color_origin (context.cr);
-				set_line_width (context.cr, type_view_coordinate (origin_line_width));
+				set_line_width (context.cr, type_view_coordinate (pac_text.origin_line_width));
 				pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
 				pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
 

@@ -1038,7 +1038,7 @@ package et_packages is
 
 
 	origin_half_size : constant type_distance_positive := 1.0;
-	origin_line_width : constant type_distance_positive := 0.05;
+	origin_line_width : constant type_distance_positive := 0.01;
 
 	
 	-- A package in the library extends the base package type:

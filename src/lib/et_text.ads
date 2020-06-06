@@ -159,8 +159,8 @@ package et_text is
 		function text_properties (text : in type_text) return string;
 		-- Returns the properties of the given text in a long single string.	
 
-		origin_half_size : constant type_distance_positive := 1.5;
-		origin_line_width : constant type_distance_positive := 0.1;
+		origin_half_size : constant type_distance_positive := 0.5;
+		origin_line_width : constant type_distance_positive := 0.01;
 		
 		-- Converts HORIZONTAL/VERTICAL to 0.0/90.0 degrees:
 		function to_rotation (rotation : in type_rotation_documentation) 
