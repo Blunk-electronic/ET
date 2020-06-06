@@ -2365,7 +2365,7 @@ is
 		procedure draw_terminals is
 			use type_terminals;
 
-			-- Calculates the final position of a outline.
+			-- Calculates the final position of the pad outline.
 			procedure move (
 				position	: in out type_position;
 				outline		: in out type_polygon_base) is
@@ -2589,7 +2589,7 @@ is
 							when TOP	=> set_destination;								
 							when BOTTOM	=> set_destination (INVERSE);
 						end case;
-						
+
 						draw_pad_smt (to_string (key (c)), t.pad_shape, t.position, destination);
 				end case;
 				
