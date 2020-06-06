@@ -518,8 +518,10 @@ package body et_text is
 				place := c;
 				
 				case text (c) is
-					when '7' => add (capital_a);
-					when 'C' => add (capital_a);
+					when 'A' => add (capital_a);
+					when 'B' => add (capital_b);
+					when 'C' => add (capital_c);
+					
 					when 'I' => add (capital_a);
 					when 'L' => add (capital_a);
 					when 'k' => add (capital_a);
