@@ -352,12 +352,14 @@ package body et_text is
 			package sorting is new generic_sorting;
 			use sorting;
 
+			-- Since there is a line width, the text position must be changed slightly:
 			offset_due_to_line_width : constant type_point := type_point (
 				set (x => line_width * 0.5, y => line_width * 0.5));
 			
 			-- This indicates the position of the character being processed:
 			place : positive := 1;
 
+			-- The spacing between characters must be adjusted according to the given text size:
 			spacing : constant type_distance_positive := size * (0.25 + type_character_width'last);
 
 			procedure scale_line (l : in out type_vector_text_line) is 
@@ -365,19 +367,29 @@ package body et_text is
 				Sy : constant type_distance := y (l.start_point);
 				Ex : constant type_distance := x (l.end_point);
 				Ey : constant type_distance := y (l.end_point);
+
+				-- The scaling in Y axis is done so that the text height and width is
+				-- independed of the line width:
+				M : constant type_text_size := size - line_width;
 			begin
-				l.start_point := type_point (set (Sx * size, Sy * size));
-				l.end_point   := type_point (set (Ex * size, Ey * size));
+				l.start_point := type_point (set (Sx * M, Sy * M));
+				l.end_point   := type_point (set (Ex * M, Ey * M));
 			end scale_line;
 			
 			procedure move_character (lines : in out pac_vector_text_lines.list) is
+				
+				-- Here we collect the lines of the moved character.
+				-- scratch will overwrite the given lines at the end of this procedure:
 				scratch : pac_vector_text_lines.list;
 
 				procedure query_line (c : in pac_vector_text_lines.cursor) is
 					l : type_vector_text_line := element (c);
 				begin
+					-- According to the given text size, the line is now 
+					-- to be scaled:
 					scale_line (l);
-					
+
+					-- Move the line by offset_due_to_line_width (see above):
 					pac_shapes.move_by (
 						line	=> pac_shapes.type_line (l),
 						offset	=> offset_due_to_line_width);
@@ -391,12 +403,13 @@ package body et_text is
 									x => (place - 1) * spacing,
 									y => zero)));
 
+					-- Collect the line in scratch:
 					append (scratch, l);
 				end query_line;
 				
 			begin
-				iterate (lines, query_line'access);
-				lines := scratch;
+				iterate (lines, query_line'access); -- query the lines of the character
+				lines := scratch; -- replace old lines by new lines
 			end move_character;
 			
 			-- This procedure merges the given vectorized character
