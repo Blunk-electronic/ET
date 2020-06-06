@@ -371,6 +371,7 @@ package body et_text is
 			M : constant type_text_size := size - line_width;
 
 			-- For alignment we need the total length of the text:
+			-- CS: rework formula. 
 			text_length : constant type_distance_positive := line_width +
 					(text'length - 1) * (spacing * M);
 
@@ -521,6 +522,7 @@ package body et_text is
 					when '7' => add (capital_a);
 					when 'C' => add (capital_a);
 					when 'I' => add (capital_a);
+					when 'k' => add (capital_a);
 					
 					when others => null;
 				end case;
