@@ -2365,39 +2365,45 @@ is
 		procedure draw_terminals is
 			use type_terminals;
 
-			-- Calculates the final position of the pad outline.
+			-- Calculates the final position of the terminal and the 
+			-- rotated the pad outline.
 			procedure move (
-				position	: in out type_position;
+				term_pos	: in out type_position; -- terminal position
 				outline		: in out type_polygon_base) is
 			begin
-				-- Rotate the given position by the position of the package:
-				rotate_by (position, rot (package_position));
+				-- Rotate the given terminal position by the position of the package:
+				rotate_by (term_pos, rot (package_position));
 
-				-- Move the given position by the position of the package.
-				move_by (position, type_point (package_position));
-				-- Position will later be the offset by which the outline will be moved
+				-- If the package is flipped, then the terminal position
+				-- must be mirrored along the Y axis.
+				if flipped then mirror (term_pos, Y); end if;
+				
+				-- Move the given terminal position by the position of the package.
+				move_by (term_pos, type_point (package_position));
+				-- The terminal position is now ready for drawing the terminal
+				-- name and the pad outline.
+
+				-- The terminal position will later be the offset by which the outline will be moved
 				-- to its final place.
+
 				
 				if flipped then
 					-- The outline must be rotated by the rotation of the package
 					-- minus the rotation of the given position itself:
-					rotate_by (outline, add (rot (package_position), - rot (position)));
+					rotate_by (outline, add (rot (package_position), - rot (term_pos)));
+
+					-- If the package is flipped, then the
+					-- given outline (of a pad or a milled hole)
+					-- must be mirrored along the Y axis.
+					mirror (outline, Y); 
 				else				
 					-- The outline must be rotated by the rotation of the package
 					-- plus the rotation of the given position itself:
-					rotate_by (outline, add (rot (package_position), rot (position)));
-				end if;
-
-				-- If the package is flipped, then the given position and the 
-				-- given outline (of a pad or a milled hole)
-				-- must be mirrored along the Y axis.
-				if flipped then 
-					mirror (position, Y);
-					mirror (outline, Y); 
+					rotate_by (outline, add (rot (package_position), rot (term_pos)));
 				end if;
 				
 				-- Move the outline to its final position:
-				move_by (outline, type_point (position));
+				move_by (outline, type_point (term_pos));
 			end move;
 
 			procedure draw_name (
@@ -2436,6 +2442,8 @@ is
 					
 					if f = face then
 
+						-- Calculate the final position of the terminal and the
+						-- rotatated the pad outline.
 						move (pad_pos, type_polygon_base (outline));
 						
 						set_color_conductor (context.cr, ly);
