@@ -44,6 +44,7 @@ with et_schematic;		--		use et_schematic;
 with et_project;				use et_project;
 with et_packages;				use et_packages;
 with et_pcb;					use et_pcb;
+with et_text;
 
 with et_canvas_primitive_draw_ops;
 
@@ -147,6 +148,7 @@ procedure draw_assy_doc (
 	procedure query_cutout (c : in pac_doc_cutouts.cursor) is 
 		use et_packages.pac_shapes;
 	begin
+		save (context.cr);
 		set_color_background (context.cr);
 		
 		pac_draw_package.draw_polygon (
@@ -156,6 +158,7 @@ procedure draw_assy_doc (
 			filled	=> YES,
 			height	=> self.frame_height);
 
+		restore (context.cr);
 	end query_cutout;
 
 
@@ -172,7 +175,7 @@ procedure draw_assy_doc (
 
 	begin -- draw_text_origin
 		-- CS if text_origins_enabled (f) then
-
+		
 			set_line_width (context.cr, type_view_coordinate (pac_text.origin_line_width));
 			pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
 			pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
@@ -186,8 +189,28 @@ procedure draw_assy_doc (
 	end query_placeholder;
 
 	procedure query_text (c : in type_texts_with_content.cursor) is 
+		use pac_text.pac_vector_text_lines;
+		vector_text : pac_text.pac_vector_text_lines.list;
 	begin
 		draw_text_origin (element (c).position);
+
+		-- Set the line width of the vector text:
+		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
+
+		-- Vectorize the text:
+		vector_text := pac_text.vectorize (
+			content		=> element (c).content,
+			size		=> element (c).size,
+			rotation	=> rot (element (c).position),
+			position	=> type_point (element (c).position),
+			mirror		=> et_text.NO,
+			line_width	=> element (c).line_width,
+			alignment	=> element (c).alignment -- right, bottom
+			);
+
+		-- Draw the text:
+		pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
+		
 	end query_text;
 
 	
