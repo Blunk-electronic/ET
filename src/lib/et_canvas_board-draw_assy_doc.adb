@@ -161,38 +161,37 @@ procedure draw_assy_doc (
 		restore (context.cr);
 	end query_cutout;
 
-
-	procedure draw_text_origin (p : in type_position) is
-		type type_line is new et_packages.pac_shapes.type_line with null record;
-		
-		line_horizontal : constant type_line := ( -- from left to right
-			start_point		=> type_point (set (x => x (p) - pac_text.origin_half_size, y => y (p))),
-			end_point		=> type_point (set (x => x (p) + pac_text.origin_half_size, y => y (p))));
-
-		line_vertical : constant type_line := ( -- from bottom to top
-			start_point		=> type_point (set (x => x (p), y => y (p) - pac_text.origin_half_size)),
-			end_point		=> type_point (set (x => x (p), y => y (p) + pac_text.origin_half_size)));
-
-	begin -- draw_text_origin
-		-- CS if text_origins_enabled (f) then
-		
-			set_line_width (context.cr, type_view_coordinate (pac_text.origin_line_width));
-			pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
-			pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
-
-		--end if;
-	end draw_text_origin;
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
+		use pac_text.pac_vector_text_lines;
+		vector_text : pac_text.pac_vector_text_lines.list;
 	begin
-		draw_text_origin (element (c).position);
+		draw_text_origin (self, element (c).position, in_area, context);
+
+		-- Set the line width of the vector text:
+		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
+
+		-- Vectorize the text:
+		vector_text := pac_text.vectorize (
+			content		=> et_text.to_content ("ABC"), -- map from et_pcb.type_text_meaning to content
+			size		=> element (c).size,
+			rotation	=> rot (element (c).position),
+			position	=> type_point (element (c).position),
+			mirror		=> et_text.NO,
+			line_width	=> element (c).line_width,
+			alignment	=> element (c).alignment -- right, bottom
+			);
+
+		-- Draw the text:
+		pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
+
 	end query_placeholder;
 
 	procedure query_text (c : in type_texts_with_content.cursor) is 
 		use pac_text.pac_vector_text_lines;
 		vector_text : pac_text.pac_vector_text_lines.list;
 	begin
-		draw_text_origin (element (c).position);
+		draw_text_origin (self, element (c).position, in_area, context);
 
 		-- Set the line width of the vector text:
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));

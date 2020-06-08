@@ -157,6 +157,36 @@ package body et_canvas_board is
 		init (self);
 	end;
 
+	-- Draw the origin (a small +) of a text or a text placeholder.
+	-- NOTE: This text or text placeholder is not related to the package of a device.
+	-- It is a general text like "L2", "TOP", "BOTTOM", "REV 123", "ABC-Systems", ...
+	procedure draw_text_origin (
+		self    : not null access type_view;
+		p		: in type_position; -- the position of the origin
+		in_area	: in type_rectangle;
+		context	: in type_draw_context) is
+		
+		use et_packages;
+		type type_line is new et_packages.pac_shapes.type_line with null record;
+		
+		line_horizontal : constant type_line := ( -- from left to right
+			start_point		=> type_point (set (x => x (p) - pac_text.origin_half_size, y => y (p))),
+			end_point		=> type_point (set (x => x (p) + pac_text.origin_half_size, y => y (p))));
+
+		line_vertical : constant type_line := ( -- from bottom to top
+			start_point		=> type_point (set (x => x (p), y => y (p) - pac_text.origin_half_size)),
+			end_point		=> type_point (set (x => x (p), y => y (p) + pac_text.origin_half_size)));
+
+	begin -- draw_text_origin
+		-- CS if text_origins_enabled then
+		
+			set_line_width (context.cr, type_view_coordinate (pac_text.origin_line_width));
+			pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
+			pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
+
+		--end if;
+	end draw_text_origin;
+
 
 	procedure draw_grid (
 		self    : not null access type_view;
