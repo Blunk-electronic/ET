@@ -71,6 +71,7 @@ package et_display.board is
 		stop_mask		: type_paired := (others => OFF);
 		stencil			: type_paired := (others => OFF);
 		device_origins	: type_paired := (others => ON);
+		-- CS text_origins (for texts and placeholders) ?
 		
 		-- By default conductor layers 1..4 are displayed:
 		conductors		: type_conductors := (

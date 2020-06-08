@@ -40,7 +40,7 @@ with cairo;						use cairo;
 with pango.layout;				use pango.layout;
 
 with et_general;				use et_general;
-with et_schematic;				use et_schematic;
+with et_schematic;		--		use et_schematic;
 with et_project;				use et_project;
 with et_packages;				use et_packages;
 with et_pcb;					use et_pcb;
@@ -60,6 +60,8 @@ procedure draw_assy_doc (
 	use type_doc_circles;
 	use pac_doc_polygons;
 	use pac_doc_cutouts;
+	use et_pcb.pac_text_placeholders;
+	use type_texts_with_content;
 	
 	procedure query_line (c : in type_doc_lines.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -155,11 +157,43 @@ procedure draw_assy_doc (
 			height	=> self.frame_height);
 
 	end query_cutout;
+
+
+	procedure draw_text_origin (p : in type_position) is
+		type type_line is new et_packages.pac_shapes.type_line with null record;
+		
+		line_horizontal : constant type_line := ( -- from left to right
+			start_point		=> type_point (set (x => x (p) - pac_text.origin_half_size, y => y (p))),
+			end_point		=> type_point (set (x => x (p) + pac_text.origin_half_size, y => y (p))));
+
+		line_vertical : constant type_line := ( -- from bottom to top
+			start_point		=> type_point (set (x => x (p), y => y (p) - pac_text.origin_half_size)),
+			end_point		=> type_point (set (x => x (p), y => y (p) + pac_text.origin_half_size)));
+
+	begin -- draw_text_origin
+		-- CS if text_origins_enabled (f) then
+
+			set_line_width (context.cr, type_view_coordinate (pac_text.origin_line_width));
+			pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
+			pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
+
+		--end if;
+	end draw_text_origin;
 	
+	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
+	begin
+		draw_text_origin (element (c).position);
+	end query_placeholder;
+
+	procedure query_text (c : in type_texts_with_content.cursor) is 
+	begin
+		draw_text_origin (element (c).position);
+	end query_text;
+
 	
 	procedure query_items (
 		module_name	: in type_module_name.bounded_string;
-		module		: in type_module) is
+		module		: in et_schematic.type_module) is
 	begin
 		-- All assy_doc segments will be drawn with the same color:
 		set_color_assy_doc (context.cr, face);
@@ -171,9 +205,8 @@ procedure draw_assy_doc (
 				iterate (module.board.assy_doc.top.circles, query_circle'access);
 				iterate (module.board.assy_doc.top.polygons, query_polygon'access);
 				iterate (module.board.assy_doc.top.cutouts, query_cutout'access);
-
-				-- CS iterate (module.board.assy_doc.top.placeholders, query_placeholder'access);
-				-- CS iterate (module.board.assy_doc.top.texts, query_text'access);
+				iterate (module.board.assy_doc.top.placeholders, query_placeholder'access);
+				iterate (module.board.assy_doc.top.texts, query_text'access);
 
 			when BOTTOM =>
 				iterate (module.board.assy_doc.bottom.lines, query_line'access);
@@ -181,9 +214,9 @@ procedure draw_assy_doc (
 				iterate (module.board.assy_doc.bottom.circles, query_circle'access);
 				iterate (module.board.assy_doc.bottom.polygons, query_polygon'access);
 				iterate (module.board.assy_doc.bottom.cutouts, query_cutout'access);
+				iterate (module.board.assy_doc.bottom.placeholders, query_placeholder'access);
+				iterate (module.board.assy_doc.bottom.texts, query_text'access);
 
-				
-				-- CS see above
 		end case;
 
 	end query_items;
