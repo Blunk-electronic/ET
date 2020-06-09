@@ -36,15 +36,11 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with cairo;						use cairo;
-with pango.layout;				use pango.layout;
-
 with et_general;				use et_general;
-with et_schematic;				use et_schematic;
-with et_project;				use et_project;
+with et_schematic;
+with et_project;
 with et_packages;				use et_packages;
 with et_pcb;					use et_pcb;
-
 with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
@@ -135,7 +131,7 @@ procedure draw_keepout (
 	
 	procedure query_items (
 		module_name	: in type_module_name.bounded_string;
-		module		: in type_module) is
+		module		: in et_schematic.type_module) is
 	begin
 		-- All keepout segments will be drawn with the same color:
 		set_color_keepout (context.cr, face);
@@ -163,7 +159,7 @@ procedure draw_keepout (
 begin -- draw_keepout
 -- 	put_line ("draw board keepout ...");
 	
-	type_modules.query_element (
+	et_project.type_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 	
