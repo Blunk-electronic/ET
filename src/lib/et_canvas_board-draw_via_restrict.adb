@@ -36,12 +36,9 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with cairo;						use cairo;
-with pango.layout;				use pango.layout;
-
 with et_general;				use et_general;
-with et_schematic;				use et_schematic;
-with et_project;				use et_project;
+with et_schematic;
+with et_project;
 with et_packages;				use et_packages;
 with et_pcb;					use et_pcb;
 with et_display.board;			use et_display.board;
@@ -159,7 +156,7 @@ procedure draw_via_restrict (
 
 	procedure query_items (
 		module_name	: in type_module_name.bounded_string;
-		module		: in type_module) is
+		module		: in et_schematic.type_module) is
 	begin
 		cairo.set_line_width (context.cr, type_view_coordinate (via_restrict_line_width));
 
@@ -177,7 +174,7 @@ procedure draw_via_restrict (
 begin -- draw_via_restrict
 -- 	put_line ("draw via restrict ...");
 	
-	type_modules.query_element (
+	et_project.type_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 	
