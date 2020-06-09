@@ -40,6 +40,9 @@ with ada.text_io;				use ada.text_io;
 with et_canvas_schematic;
 with et_display.board;
 with et_colors.board;			use et_colors.board;
+with et_pcb;
+with et_text;
+with et_meta;
 
 package body et_canvas_board is
 
@@ -187,7 +190,51 @@ package body et_canvas_board is
 		--end if;
 	end draw_text_origin;
 
+	-- Maps from face to mirror status of a vectorized text.
+	-- Use it for drawing non-device related text placeholders.
+	function face_to_mirror (f : in type_face) return et_text.type_vector_text_mirrored is 
+		use et_text;
+	begin
+		case f is
+			when TOP	=> return NO;
+			when BOTTOM	=> return YES;
+		end case;
+	end face_to_mirror;
+	
+	-- Maps from the meaning of a text to its actutal content.
+	function to_placeholder_content (
+		meaning : in et_pcb.type_text_meaning)
+		return et_text.type_text_content.bounded_string is
 
+		use et_general;
+		use et_text;
+		use et_meta;
+		use et_project.type_modules;
+		use et_canvas_schematic;
+	
+		meta : constant type_board := element (current_active_module).meta.board;
+
+		use type_variant_name;
+		variant : constant type_variant_name.bounded_string := element (current_active_module).active_variant;
+
+		result : type_text_content.bounded_string;
+
+		use et_pcb;
+	begin
+		case meaning is
+			when COMPANY			=> result := to_content (to_string (meta.company));
+			when CUSTOMER			=> result := to_content (to_string (meta.customer));
+			when PARTCODE			=> result := to_content (to_string (meta.partcode));
+			when DRAWING_NUMBER		=> result := to_content (to_string (meta.drawing_number));
+			when ASSEMBLY_VARIANT	=> result := to_content (to_string (variant));
+			when PROJECT			=> null; -- CS
+			when MODULE				=> result := to_content (to_string (key (current_active_module)));
+			when REVISION			=> result := to_content (to_string (meta.revision));
+		end case;
+		
+		return result;
+	end to_placeholder_content;
+	
 	procedure draw_grid (
 		self    : not null access type_view;
 		context : type_draw_context;

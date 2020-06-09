@@ -36,16 +36,11 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with cairo;						use cairo;
-with pango.layout;				use pango.layout;
-
 with et_general;				use et_general;
-with et_schematic;		--		use et_schematic;
-with et_project;				use et_project;
+with et_schematic;
+with et_project;
 with et_packages;				use et_packages;
 with et_pcb;					use et_pcb;
-with et_text;
-
 with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
@@ -173,11 +168,11 @@ procedure draw_assy_doc (
 
 		-- Vectorize the text:
 		vector_text := pac_text.vectorize (
-			content		=> et_text.to_content ("ABC"), -- map from et_pcb.type_text_meaning to content
+			content		=> to_placeholder_content (element (c).meaning),
 			size		=> element (c).size,
 			rotation	=> rot (element (c).position),
 			position	=> type_point (element (c).position),
-			mirror		=> et_text.NO,
+			mirror		=> face_to_mirror (face),
 			line_width	=> element (c).line_width,
 			alignment	=> element (c).alignment -- right, bottom
 			);
@@ -202,7 +197,7 @@ procedure draw_assy_doc (
 			size		=> element (c).size,
 			rotation	=> rot (element (c).position),
 			position	=> type_point (element (c).position),
-			mirror		=> et_text.NO,
+			mirror		=> face_to_mirror (face),
 			line_width	=> element (c).line_width,
 			alignment	=> element (c).alignment -- right, bottom
 			);
@@ -246,7 +241,7 @@ procedure draw_assy_doc (
 begin -- draw_assy_doc
 -- 	put_line ("draw board assembly documentation ...");
 	
-	type_modules.query_element (
+	et_project.type_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 	
