@@ -36,14 +36,10 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with cairo;						use cairo;
-with pango.layout;				use pango.layout;
-
 with et_general;				use et_general;
-with et_schematic;				use et_schematic;
-with et_project;				use et_project;
+with et_schematic;
+with et_project;
 with et_pcb;					use et_pcb;
-
 with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
@@ -85,7 +81,7 @@ procedure draw_outline (
 	
 	procedure query_segments (
 		module_name	: in type_module_name.bounded_string;
-		module		: in type_module) is
+		module		: in et_schematic.type_module) is
 	begin
 		-- All outline segments will be drawn with the same line width and color:
 		cairo.set_line_width (context.cr, type_view_coordinate (et_packages.pcb_contour_line_width));
@@ -100,7 +96,7 @@ procedure draw_outline (
 begin -- draw_outline
 -- 	put_line ("draw board outline ...");
 	
-	type_modules.query_element (
+	et_project.type_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_segments'access);
 	
