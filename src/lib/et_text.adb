@@ -526,6 +526,7 @@ package body et_text is
 					when 'L' => add (capital_a);
 					when 'k' => add (capital_a);
 					when 'N' => add (capital_c);
+					when 'T' => add (capital_c);
 					
 					when others => null;
 				end case;

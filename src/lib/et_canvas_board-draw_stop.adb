@@ -147,8 +147,9 @@ procedure draw_stop (
 	procedure query_cutout (c : in pac_stop_cutouts.cursor) is 
 		use et_packages.pac_shapes;
 	begin
+		save (context.cr);		
 		set_color_background (context.cr);
-		
+
 		pac_draw_package.draw_polygon (
 			area	=> in_area,
 			context	=> context,
@@ -156,7 +157,9 @@ procedure draw_stop (
 			filled	=> YES,
 			height	=> self.frame_height);
 
-		cairo.stroke (context.cr);
+		cairo.stroke (context.cr); -- CS ?
+
+		restore (context.cr);
 	end query_cutout;
 
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 

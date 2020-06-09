@@ -41,6 +41,7 @@ with et_canvas_schematic;
 with et_display.board;
 with et_colors.board;			use et_colors.board;
 with et_pcb;
+with et_pcb_stack;
 with et_text;
 with et_meta;
 
@@ -191,7 +192,7 @@ package body et_canvas_board is
 	end draw_text_origin;
 
 	-- Maps from face to mirror status of a vectorized text.
-	-- Use it for drawing non-device related text placeholders.
+	-- Use it for drawing non-device related texts and placeholders.
 	function face_to_mirror (f : in type_face) return et_text.type_vector_text_mirrored is 
 		use et_text;
 	begin
@@ -200,6 +201,21 @@ package body et_canvas_board is
 			when BOTTOM	=> return YES;
 		end case;
 	end face_to_mirror;
+
+	-- Maps from signal layer to mirror status of a vectorized text.
+	-- Use it for drawing non-device related texts and placeholders.
+	function signal_layer_to_mirror (
+		current_layer, bottom_layer : in et_pcb_stack.type_signal_layer)
+		return et_text.type_vector_text_mirrored is
+		use et_text;
+		use et_pcb_stack;
+	begin
+		if current_layer = bottom_layer then
+			return YES;
+		else
+			return NO;
+		end if;
+	end signal_layer_to_mirror;
 	
 	-- Maps from the meaning of a text to its actutal content.
 	function to_placeholder_content (

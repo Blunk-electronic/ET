@@ -70,7 +70,6 @@ is
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer : constant type_signal_layer := 
 		deepest_conductor_layer (et_canvas_schematic.current_active_module);
-
 	
 	procedure draw_package (
 		device_name		: in et_devices.type_name; -- IC13, C4

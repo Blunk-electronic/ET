@@ -36,14 +36,11 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with cairo;						use cairo;
-with pango.layout;				use pango.layout;
-
 with et_general;				use et_general;
 with et_schematic;				use et_schematic;
 use et_schematic.type_nets;
 
-with et_project;				use et_project;
+with et_project;
 with et_packages;				use et_packages;
 
 with et_pcb;					use et_pcb;
@@ -68,6 +65,8 @@ procedure draw_conductors (
 	use et_pcb.pac_copper_cutouts;
 	use pac_copper_polygons_floating_solid;
 	use pac_copper_polygons_floating_hatched;
+	use et_pcb.type_text_placeholders_copper;
+	use et_pcb.pac_texts;
 	
 	-- For diplaying net names and classes we need this stuff:
 	is_signal : boolean := false;
@@ -82,8 +81,7 @@ procedure draw_conductors (
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := 
-		deepest_conductor_layer (et_canvas_schematic.current_active_module);
-
+		et_project.deepest_conductor_layer (et_canvas_schematic.current_active_module);
 	
 	-- The layer being drawn:
 	current_layer : type_signal_layer;
@@ -209,6 +207,7 @@ procedure draw_conductors (
 		-- Draw the zone if it is in the current layer:
 		if element (c).layer = current_layer then
 
+			save (context.cr);
 			set_color_background (context.cr);
 			
 			pac_draw_package.draw_polygon (
@@ -218,8 +217,74 @@ procedure draw_conductors (
 				filled	=> YES,
 				height	=> self.frame_height);
 
+			restore (context.cr);
 		end if;
 	end query_cutout;
+
+	procedure query_placeholder (c : in et_pcb.type_text_placeholders_copper.cursor) is 
+		use et_packages.pac_text.pac_vector_text_lines;
+		vector_text : et_packages.pac_text.pac_vector_text_lines.list;
+	begin
+		-- Draw the placeholder if it is in theh current layer:
+		if element (c).layer = current_layer then
+
+			draw_text_origin (self, element (c).position, in_area, context);
+
+			-- Set the line width of the vector text:
+			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
+
+			-- Vectorize the text:
+			vector_text := et_packages.pac_text.vectorize (
+				content		=> to_placeholder_content (element (c).meaning),
+				size		=> element (c).size,
+				rotation	=> rot (element (c).position),
+				position	=> type_point (element (c).position),
+
+				-- Mirror the text only if it is in the bottom layer:
+				mirror		=> signal_layer_to_mirror (element (c).layer, bottom_layer),
+				
+				line_width	=> element (c).line_width,
+				alignment	=> element (c).alignment -- right, bottom
+				);
+
+			-- Draw the text:
+			pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
+
+		end if;
+	end query_placeholder;
+
+	procedure query_text (c : in et_pcb.pac_texts.cursor) is 
+		use et_packages.pac_text.pac_vector_text_lines;
+		vector_text : et_packages.pac_text.pac_vector_text_lines.list;
+	begin
+		-- Draw the text if it is in theh current layer:
+		if element (c).layer = current_layer then
+
+			draw_text_origin (self, element (c).position, in_area, context);
+
+			-- Set the line width of the vector text:
+			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
+
+			-- Vectorize the text:
+			vector_text := et_packages.pac_text.vectorize (
+				content		=> element (c).content,
+				size		=> element (c).size,
+				rotation	=> rot (element (c).position),
+				position	=> type_point (element (c).position),
+
+				-- Mirror the text only if it is in the bottom layer:
+				mirror		=> signal_layer_to_mirror (element (c).layer, bottom_layer),
+				
+				line_width	=> element (c).line_width,
+				alignment	=> element (c).alignment -- right, bottom
+				);
+
+			-- Draw the text:
+			pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
+
+		end if;
+	end query_text;
+	
 	
 	procedure query_via (v : in pac_vias.cursor) is 
 		type type_circle is new et_packages.pac_shapes.type_circle with null record;
@@ -332,8 +397,10 @@ procedure draw_conductors (
 				iterate (module.board.copper.polygons.solid, query_polygon'access);
 				iterate (module.board.copper.polygons.hatched, query_polygon'access);
 				iterate (module.board.copper.cutouts, query_cutout'access);
-				-- CS iterate (module.board.copper.top.placeholders, query_placeholder'access);
-				-- CS iterate (module.board.copper.top.texts, query_text'access);
+
+				-- texts
+				iterate (module.board.copper.placeholders, query_placeholder'access);
+				iterate (module.board.copper.texts, query_text'access);
 
 				-- tracks:
 				iterate (module.nets, query_net'access);
@@ -345,7 +412,7 @@ procedure draw_conductors (
 begin -- draw_conductors
 -- 	put_line ("draw conductor layers ...");
 	
-	type_modules.query_element (
+	et_project.type_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 	
