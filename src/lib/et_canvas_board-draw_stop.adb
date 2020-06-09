@@ -68,7 +68,6 @@ procedure draw_stop (
 			line		=> element (c),
 			height		=> self.frame_height);
 
-		cairo.stroke (context.cr);
 	end query_line;
 
 	procedure query_arc (c : in type_stop_arcs.cursor) is begin
@@ -80,7 +79,6 @@ procedure draw_stop (
 			arc			=> element (c),
 			height		=> self.frame_height);
 
-		cairo.stroke (context.cr);		
 	end query_arc;
 
 	procedure query_circle (c : in type_stop_circles.cursor) is 
@@ -113,7 +111,6 @@ procedure draw_stop (
 				end case;
 		end case;
 
-		cairo.stroke (context.cr);
 	end query_circle;
 
 	procedure query_polygon (c : in type_stop_polygons.cursor) is 
@@ -141,7 +138,6 @@ procedure draw_stop (
 				-- CS hatching ?
 		end case;
 
-		cairo.stroke (context.cr);
 	end query_polygon;
 
 	procedure query_cutout (c : in pac_stop_cutouts.cursor) is 
@@ -156,8 +152,6 @@ procedure draw_stop (
 			polygon	=> element (c),
 			filled	=> YES,
 			height	=> self.frame_height);
-
-		cairo.stroke (context.cr); -- CS ?
 
 		restore (context.cr);
 	end query_cutout;
