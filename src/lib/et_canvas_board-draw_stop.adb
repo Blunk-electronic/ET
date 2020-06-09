@@ -36,15 +36,11 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with cairo;						use cairo;
-with pango.layout;				use pango.layout;
-
 with et_general;				use et_general;
-with et_schematic;				use et_schematic;
-with et_project;				use et_project;
+with et_schematic;
+with et_project;
 with et_packages;				use et_packages;
 with et_pcb;					use et_pcb;
-
 with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
@@ -60,6 +56,8 @@ procedure draw_stop (
 	use type_stop_circles;
 	use type_stop_polygons;
 	use pac_stop_cutouts;
+	use et_pcb.pac_text_placeholders;
+	use type_texts_with_content;
 	
 	procedure query_line (c : in type_stop_lines.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -161,10 +159,61 @@ procedure draw_stop (
 		cairo.stroke (context.cr);
 	end query_cutout;
 
+	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
+		use pac_text.pac_vector_text_lines;
+		vector_text : pac_text.pac_vector_text_lines.list;
+	begin
+		draw_text_origin (self, element (c).position, in_area, context);
+
+		-- Set the line width of the vector text:
+		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
+
+		-- Vectorize the text:
+		vector_text := pac_text.vectorize (
+			content		=> to_placeholder_content (element (c).meaning),
+			size		=> element (c).size,
+			rotation	=> rot (element (c).position),
+			position	=> type_point (element (c).position),
+			mirror		=> face_to_mirror (face),
+			line_width	=> element (c).line_width,
+			alignment	=> element (c).alignment -- right, bottom
+			);
+
+		-- Draw the text:
+		pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
+
+	end query_placeholder;
+
+	procedure query_text (c : in type_texts_with_content.cursor) is 
+		use pac_text.pac_vector_text_lines;
+		vector_text : pac_text.pac_vector_text_lines.list;
+	begin
+		draw_text_origin (self, element (c).position, in_area, context);
+
+		-- Set the line width of the vector text:
+		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
+
+		-- Vectorize the text:
+		vector_text := pac_text.vectorize (
+			content		=> element (c).content,
+			size		=> element (c).size,
+			rotation	=> rot (element (c).position),
+			position	=> type_point (element (c).position),
+			mirror		=> face_to_mirror (face),
+			line_width	=> element (c).line_width,
+			alignment	=> element (c).alignment -- right, bottom
+			);
+
+		-- Draw the text:
+		pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
+		
+	end query_text;
+
+
 	
 	procedure query_items (
 		module_name	: in type_module_name.bounded_string;
-		module		: in type_module) is
+		module		: in et_schematic.type_module) is
 	begin
 		-- All stop mask segments will be drawn with the same color:
 		set_color_stop_mask (context.cr, face);
@@ -176,7 +225,8 @@ procedure draw_stop (
 				iterate (module.board.stop_mask.top.circles, query_circle'access);
 				iterate (module.board.stop_mask.top.polygons, query_polygon'access);
 				iterate (module.board.stop_mask.top.cutouts, query_cutout'access);
-				-- CS iterate (module.board.stop_mask.top.texts, query_text'access);
+				iterate (module.board.stop_mask.top.placeholders, query_placeholder'access);
+				iterate (module.board.stop_mask.top.texts, query_text'access);
 
 			when BOTTOM =>
 				iterate (module.board.stop_mask.bottom.lines, query_line'access);
@@ -184,8 +234,9 @@ procedure draw_stop (
 				iterate (module.board.stop_mask.bottom.circles, query_circle'access);
 				iterate (module.board.stop_mask.bottom.polygons, query_polygon'access);
 				iterate (module.board.stop_mask.bottom.cutouts, query_cutout'access);
+				iterate (module.board.stop_mask.bottom.placeholders, query_placeholder'access);
+				iterate (module.board.stop_mask.bottom.texts, query_text'access);
 
-				-- CS see above
 		end case;
 
 	end query_items;
@@ -193,7 +244,7 @@ procedure draw_stop (
 begin -- draw_stop
 -- 	put_line ("draw solder stop mask ...");
 	
-	type_modules.query_element (
+	et_project.type_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 	
