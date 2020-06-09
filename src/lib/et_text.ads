@@ -204,7 +204,7 @@ package et_text is
 
 		type type_vector_text_line is new pac_shapes.type_line with null record;
 
-		subtype type_character_height is type_distance_positive range zero .. 1.0;
+		subtype type_character_height is type_distance range -0.3 .. 1.0;
 		subtype type_character_width  is type_distance_positive range zero .. 0.7;		
 		character_width : constant type_character_height := 0.7;
 
@@ -231,6 +231,9 @@ package et_text is
 		y2 : constant type_character_height := 0.3 + 0.05;
 		y1 : constant type_character_height := 0.2 - 0.05;
 		y0 : constant type_character_height := 0.0;
+		
+		y7 : constant type_character_height := -0.1; -- used for lower case letters only
+		y8 : constant type_character_height := -0.2; -- used for lower case letters only
 		
 		-- UPPER CASE LETTERS:
 		capital_a : constant type_character (1 .. 5) := (
@@ -443,12 +446,14 @@ package et_text is
 
 		
 		-- LOWER CASE LETTERS:
-		small_a : constant type_character (1 .. 5) := (
-			1	=> (0.0, 0.0, 0.0, 0.7),
-			2	=> (0.0, 0.7, 0.35, 1.0),
-			3	=> (0.35, 1.0, 0.7, 0.7),
-			4	=> (0.7, 0.7, 0.7, 0.0),
-			5	=> (0.0, 0.5, 0.7, 0.5)
+		small_a : constant type_character (1 .. 7) := (
+			1	=> (x4, y2, x1, y2),
+			2	=> (x1, y2, x0, y1),
+			3	=> (x0, y1, x1, y0),
+			4	=> (x1, y0, x4, y0),
+			5	=> (x4, y0, x4, y3),
+			6	=> (x4, y3, x3, y4),
+			7	=> (x3, y4, x1, y4)
 			);
 
 		small_b : constant type_character (1 ..10) := (
