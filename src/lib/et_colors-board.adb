@@ -36,6 +36,7 @@
 --
 --   ToDo: 
 
+with glib;					use glib;
 with cairo.png;
 with cairo.pattern;
 
@@ -163,12 +164,7 @@ package body et_colors.board is
 		use cairo.png;
 		use cairo.pattern;
 		
-		--s : cairo_surface := create_from_png ("muster.png");
-
-		--p : cairo_pattern := Pattern_Create_Rgba (1.0, 1.0, 1.0, 0.5);
-		--p : cairo_pattern := Pattern_Create_linear (1.0, 1.0, 1.0, 1.0);
--- 		p : cairo_pattern := Pattern_Create_linear (0.0, 0.0, 100.0, 100.0);
-		
+		p : cairo_pattern := Pattern_Create_linear (0.0, 0.0, 1.0, 1.0);
 	begin
 		
 		case face is
@@ -189,13 +185,16 @@ package body et_colors.board is
 					color_range (opacity));
 		end case;
 
-		--p := pattern_create_for_surface (s);
--- 		Pattern_Add_Color_Stop_Rgba (p, 0.1, 0.0, 0.0, 0.0, 0.5);
--- 		Pattern_Add_Color_Stop_Rgba (p, 0.5, 1.0, 1.0, 1.0, 0.5);  
--- 		Pattern_Add_Color_Stop_Rgba (p, 0.8, 0.0, 0.0, 0.0, 0.5);  
+
+-- https://zetcode.com/gfx/cairo/gradients/
 		
+-- 		pattern_add_color_stop_rgba (p, 0.50, 0.0, 0.0, 0.0, 0.5);
+-- 		pattern_add_color_stop_rgba (p, 0.51, 1.0, 1.0, 1.0, 0.5);  
+-- 		pattern_add_color_stop_rgba (p, 0.55, 1.0, 1.0, 1.0, 0.5);  
+-- 		pattern_add_color_stop_rgba (p, 0.56, 0.0, 0.0, 0.0, 0.5);
+-- 		
 -- 		set_source (context, p);
-		--set_extend (get_source (context), CAIRO_EXTEND_REPEAT);
+-- 		set_extend (get_source (context), CAIRO_EXTEND_REPEAT);
 		--set_extend (get_source (context), CAIRO_EXTEND_NONE);
 		--set_extend (get_source (context), CAIRO_EXTEND_REFLECT);
 		--set_extend (get_source (context), CAIRO_EXTEND_PAD);
