@@ -36,6 +36,9 @@
 --
 --   ToDo: 
 
+with cairo.png;
+with cairo.pattern;
+
 package body et_colors.board is
 
 	procedure set_color_cursor (context : in cairo_context) is begin		
@@ -156,7 +159,18 @@ package body et_colors.board is
 		context : in cairo_context;
 		face	: in type_face;
 		opacity : in type_opacity := default_opacity)
-	is begin
+	is 
+		use cairo.png;
+		use cairo.pattern;
+		
+		--s : cairo_surface := create_from_png ("muster.png");
+
+		--p : cairo_pattern := Pattern_Create_Rgba (1.0, 1.0, 1.0, 0.5);
+		--p : cairo_pattern := Pattern_Create_linear (1.0, 1.0, 1.0, 1.0);
+-- 		p : cairo_pattern := Pattern_Create_linear (0.0, 0.0, 100.0, 100.0);
+		
+	begin
+		
 		case face is
 			when TOP =>
 				set_source_rgba (
@@ -174,6 +188,18 @@ package body et_colors.board is
 					stop_mask_bottom.blue,
 					color_range (opacity));
 		end case;
+
+		--p := pattern_create_for_surface (s);
+-- 		Pattern_Add_Color_Stop_Rgba (p, 0.1, 0.0, 0.0, 0.0, 0.5);
+-- 		Pattern_Add_Color_Stop_Rgba (p, 0.5, 1.0, 1.0, 1.0, 0.5);  
+-- 		Pattern_Add_Color_Stop_Rgba (p, 0.8, 0.0, 0.0, 0.0, 0.5);  
+		
+-- 		set_source (context, p);
+		--set_extend (get_source (context), CAIRO_EXTEND_REPEAT);
+		--set_extend (get_source (context), CAIRO_EXTEND_NONE);
+		--set_extend (get_source (context), CAIRO_EXTEND_REFLECT);
+		--set_extend (get_source (context), CAIRO_EXTEND_PAD);
+		
 	end set_color_stop_mask;
 
 	procedure set_color_stencil (
