@@ -38,22 +38,19 @@
 
 with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
-with cairo;						use cairo;
--- with cairo.pattern;				use cairo.pattern;
--- with gtkada.style;
 
 package et_colors.board is
 
-	cursor			: type_color := white;
-	background 		: type_color := black;
-	frame			: type_color := white;
-	outline			: type_color := white;
-	grid 			: type_color := gray;	
-	origin			: type_color := gray;	
-	placeholders	: type_color := white;
-	via				: type_color := green;
-	terminal_names	: type_color := white;
-	tht_pads		: type_color := green;
+	cursor				: type_color := white;
+	background 			: type_color := black;
+	frame				: type_color := white;
+	outline				: type_color := white;
+	grid 				: type_color := gray;	
+	origin				: type_color := gray;	
+	placeholders		: type_color := white;
+	via					: type_color := green;
+	terminal_names		: type_color := white;
+	tht_pads			: type_color := green;
 	
 	silkscreen_top		: type_color := white;
 	silkscreen_bottom	: type_color := white;	
@@ -114,6 +111,7 @@ package et_colors.board is
 	procedure set_color_stop_mask (
 		context : in cairo_context;
 		face	: in type_face;
+		scale	: in type_scale;
 		opacity : in type_opacity := default_opacity);
 
 	procedure set_color_stencil (

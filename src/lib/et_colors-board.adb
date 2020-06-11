@@ -36,10 +36,6 @@
 --
 --   ToDo: 
 
-with glib;					use glib;
-with cairo.png;
-with cairo.pattern;
-
 package body et_colors.board is
 
 	procedure set_color_cursor (context : in cairo_context) is begin		
@@ -159,46 +155,48 @@ package body et_colors.board is
 	procedure set_color_stop_mask (
 		context : in cairo_context;
 		face	: in type_face;
-		opacity : in type_opacity := default_opacity)
-	is 
-		use cairo.png;
-		use cairo.pattern;
-		
-		p : cairo_pattern := Pattern_Create_linear (0.0, 0.0, 1.0, 1.0);
+		scale	: in type_scale;
+		opacity : in type_opacity := default_opacity) is 
 	begin
 		
+-- 		case face is
+-- 			when TOP =>
+-- 				set_source_rgba (
+-- 					context, 
+-- 					stop_mask_top.red,
+-- 					stop_mask_top.green,
+-- 					stop_mask_top.blue,
+-- 					color_range (opacity));
+-- 
+-- 			when BOTTOM =>
+-- 				set_source_rgba (
+-- 					context, 
+-- 					stop_mask_bottom.red,
+-- 					stop_mask_bottom.green,
+-- 					stop_mask_bottom.blue,
+-- 					color_range (opacity));
+-- 		end case;
+
 		case face is
 			when TOP =>
-				set_source_rgba (
-					context, 
-					stop_mask_top.red,
-					stop_mask_top.green,
-					stop_mask_top.blue,
-					color_range (opacity));
+				create_fill_pattern (
+					context		=> context,
+					color		=> stop_mask_top,
+					opacity		=> opacity,
+					background	=> background,
+					style		=> STRIPED_45,
+					scale		=> scale);
 
 			when BOTTOM =>
-				set_source_rgba (
-					context, 
-					stop_mask_bottom.red,
-					stop_mask_bottom.green,
-					stop_mask_bottom.blue,
-					color_range (opacity));
+				create_fill_pattern (
+					context		=> context,
+					color		=> stop_mask_bottom,
+					opacity		=> opacity,
+					background	=> background,
+					style		=> STRIPED_45,
+					scale		=> scale);
 		end case;
-
-
--- https://zetcode.com/gfx/cairo/gradients/
-		
--- 		pattern_add_color_stop_rgba (p, 0.50, 0.0, 0.0, 0.0, 0.5);
--- 		pattern_add_color_stop_rgba (p, 0.51, 1.0, 1.0, 1.0, 0.5);  
--- 		pattern_add_color_stop_rgba (p, 0.55, 1.0, 1.0, 1.0, 0.5);  
--- 		pattern_add_color_stop_rgba (p, 0.56, 0.0, 0.0, 0.0, 0.5);
--- 		
--- 		set_source (context, p);
--- 		set_extend (get_source (context), CAIRO_EXTEND_REPEAT);
-		--set_extend (get_source (context), CAIRO_EXTEND_NONE);
-		--set_extend (get_source (context), CAIRO_EXTEND_REFLECT);
-		--set_extend (get_source (context), CAIRO_EXTEND_PAD);
-		
+	
 	end set_color_stop_mask;
 
 	procedure set_color_stencil (

@@ -213,7 +213,7 @@ procedure draw_stop (
 		module		: in et_schematic.type_module) is
 	begin
 		-- All stop mask segments will be drawn with the same color:
-		set_color_stop_mask (context.cr, face);
+		set_color_stop_mask (context.cr, face, self.scale);
 
 		case face is
 			when TOP =>

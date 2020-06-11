@@ -36,10 +36,41 @@
 --
 --   ToDo: 
 
+with cairo.pattern;
+
 package body et_colors is
 
 	procedure dummy is begin null; end;
 	
+	procedure create_fill_pattern (
+		context		: in cairo_context;
+		color		: in type_color;
+		opacity		: in type_opacity;
+		background	: in type_color;
+		style		: in type_fill_style;
+		scale		: in type_scale)
+	is
+		use cairo.pattern;
+
+		p : cairo_pattern := pattern_create_linear (0.0, 0.0, 1.0, 1.0);
+	begin
+		null;
+
+-- https://zetcode.com/gfx/cairo/gradients/
+		
+		pattern_add_color_stop_rgba (p, 0.50, background.red, background.green, background.blue, 0.5);
+		pattern_add_color_stop_rgba (p, 0.51, color.red, color.green, color.blue, 0.5);  
+		pattern_add_color_stop_rgba (p, 0.55, color.red, color.green, color.blue, 0.5);  
+		pattern_add_color_stop_rgba (p, 0.56, background.red, background.green, background.blue, 0.5);
+
+		set_source (context, p);
+		set_extend (get_source (context), CAIRO_EXTEND_REPEAT);
+		--set_extend (get_source (context), CAIRO_EXTEND_NONE);
+		--set_extend (get_source (context), CAIRO_EXTEND_REFLECT);
+		--set_extend (get_source (context), CAIRO_EXTEND_PAD);
+
+		
+	end create_fill_pattern;
 
 	
 end et_colors;

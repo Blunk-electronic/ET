@@ -37,8 +37,7 @@
 --   ToDo: 
 
 with cairo;						use cairo;
--- with cairo.pattern;				use cairo.pattern;
--- with gtkada.style;
+with et_geometry;				use et_geometry;
 
 package et_colors is
 
@@ -63,6 +62,28 @@ package et_colors is
 	type type_opacity is new color_range; -- 0.0 -> max. opacity, 1.0 -> no transparency
 	default_opacity : constant type_opacity := 0.5;
 	no_opacity : constant type_opacity := 1.0;
+
+	type type_fill_style is (
+		SOLID, 
+		STRIPED_0,
+		STRIPED_45,
+		STRIPED_90,
+		STRIPED_135,
+		DOTTED_SPARSE,
+		DOTTED_MEDIUM,
+		DOTTED_DENSE,
+		HATCHED_0,
+		HATCHED_45
+		);
+	
+	procedure create_fill_pattern (
+		context		: in cairo_context;
+		color		: in type_color;
+		opacity		: in type_opacity;
+		background	: in type_color;
+		style		: in type_fill_style;
+		scale		: in type_scale);
+
 	
 end et_colors;
 
