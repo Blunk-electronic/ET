@@ -45,27 +45,25 @@
 --  it must be instantiated with the package that provides the respective
 --  measurement system.
 
--- with ada.text_io;
+with gtk.widget;  				use gtk.widget;
+with gtk.window; 				use gtk.window;
+with gtk.box;					use gtk.box;
+with gtk.frame;					use gtk.frame;
+with gtk.scrolled_window;		use gtk.scrolled_window;
+with gtk.handlers;				use gtk.handlers;
+with gtk.enums;					use gtk.enums;
+with gtk.adjustment;			use gtk.adjustment;
+with gtk.combo_box_text;		use gtk.combo_box_text;
+with gtk.gentry;				use gtk.gentry;
+with gtk.label;					use gtk.label;
 
-with gtk.widget;  			use gtk.widget;
-with gtk.window; 			use gtk.window;
-with gtk.box;				use gtk.box;
-with gtk.frame;				use gtk.frame;
-with gtk.scrolled_window;	use gtk.scrolled_window;
-with gtk.handlers;			use gtk.handlers;
-with gtk.enums;				use gtk.enums;
-with gtk.adjustment;		use gtk.adjustment;
-with gtk.combo_box_text;	use gtk.combo_box_text;
-with gtk.gentry;			use gtk.gentry;
-with gtk.label;				use gtk.label;
-
-with gdk;
+with gdk;						use gdk;
 with gdk.types;
-with gdk.event;				use gdk.event;
+with gdk.event;					use gdk.event;
 
-with glib;					use glib;
-with glib.object;			use glib.object;
-with glib.values;			use glib.values;
+with glib;						use glib;
+with glib.object;				use glib.object;
+with glib.values;				use glib.values;
 with glib.properties.creation;	use glib.properties.creation;
 
 with gtkada.style;
@@ -84,6 +82,15 @@ with et_colors;
 
 package et_canvas_general is
 
+	-- scale
+	scale_min : constant gdouble := 0.2;
+	scale_max : constant gdouble := 1000.0;
+	subtype type_scale is gdouble range scale_min .. scale_max;
+	scale_default : constant type_scale := 1.0;
+	scale_factor_on_zoom : constant type_scale := 1.05;
+
+
+	
 generic
 
 	canvas_name : string; -- schematic, board, package, device, symbol, ...
@@ -199,13 +206,6 @@ package pac_canvas is
 
 	
 -- VIEW
-
-	-- scale
-	scale_min : constant gdouble := 0.2;
-	scale_max : constant gdouble := 1000.0;
-	subtype type_scale is gdouble range scale_min .. scale_max;
-	scale_default : constant type_scale := 1.0;
-	scale_factor_on_zoom : constant type_scale := 1.05;
 	
 	type type_view is abstract new gtk.widget.gtk_widget_record with record
 

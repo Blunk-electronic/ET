@@ -45,32 +45,25 @@ with ada.strings.fixed;			use ada.strings.fixed;
 
 with interfaces.c.strings;		use interfaces.c.strings;
 
-with gtk.bin;				use gtk.bin;
-with gtk.scrollable;		use gtk.scrollable;
-with gtk.style_context;		use gtk.style_context;
+with gtk.bin;					use gtk.bin;
+with gtk.scrollable;			use gtk.scrollable;
+with gtk.style_context;			use gtk.style_context;
 with gtk.accel_group;
 
-with glib.properties.creation;	use glib.properties.creation;
-with gtkada.types;			use gtkada.types;
-with gtkada.handlers;		use gtkada.handlers;
-with gtkada.bindings;		use gtkada.bindings;
-with gdk;					use gdk;
-with gdk.window;			use gdk.window;
-with gdk.window_attr;		use gdk.window_attr;
-with gdk.event;				use gdk.event;
-with gdk.types;				--use gdk.types;
+with gtkada.types;				use gtkada.types;
+with gtkada.handlers;			use gtkada.handlers;
+with gtkada.bindings;			use gtkada.bindings;
+
+with gdk.window;				use gdk.window;
+with gdk.window_attr;			use gdk.window_attr;
 with gdk.types.keysyms;
 
-with et_general;
 with et_project;
-with et_frames;
 
 package body et_canvas_general is
 
 package body pac_canvas is
-	use geometry;
-
-
+	
 	procedure build_background_boxes is begin
 		-- background box
 		gtk_new_hbox (box_back);
