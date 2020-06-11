@@ -38,6 +38,8 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.numerics;
 
+with glib;
+
 with et_general;				use et_general;
 
 package et_geometry is
@@ -63,6 +65,14 @@ package et_geometry is
 	function to_string (filled : in type_filled) return string;
 	function to_filled (filled : in string) return type_filled;
 	filled_default : constant type_filled := NO;
+
+
+	-- scale (relevant for GUI only):
+	scale_min : constant glib.gdouble := 0.2;
+	scale_max : constant glib.gdouble := 1000.0;
+	subtype type_scale is glib.gdouble range scale_min .. scale_max;
+	scale_default : constant type_scale := 1.0;
+	scale_factor_on_zoom : constant type_scale := 1.05;
 
 	
 	generic
