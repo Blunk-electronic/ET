@@ -36,7 +36,10 @@
 --
 --   ToDo: 
 
+with ada.text_io;				use ada.text_io;
+with glib;
 with cairo.pattern;
+with cairo.matrix;
 
 package body et_colors is
 
@@ -46,29 +49,28 @@ package body et_colors is
 		context		: in cairo_context;
 		color		: in type_color;
 		opacity		: in type_opacity;
-		background	: in type_color;
+-- 		background	: in type_color;
 		style		: in type_fill_style;
 		scale		: in type_scale)
 	is
+		use glib;
 		use cairo.pattern;
-
-		p : cairo_pattern := pattern_create_linear (0.0, 0.0, 1.0, 1.0);
-	begin
-		null;
-
--- https://zetcode.com/gfx/cairo/gradients/
+		use cairo.matrix;
 		
-		pattern_add_color_stop_rgba (p, 0.50, background.red, background.green, background.blue, 0.5);
+		s : constant gdouble := 20.0 / scale;
+		p : cairo_pattern := pattern_create_linear (0.0, 0.0, s, s);
+
+		b : gdouble := 0.5;
+		c : type_color := (color.red * b, color.green * b, color.blue * b);
+	begin
+		--pattern_add_color_stop_rgba (p, 0.50, background.red, background.green, background.blue, 0.5);
+		pattern_add_color_stop_rgba (p, 0.50, c.red, c.green, c.blue, 0.5);
 		pattern_add_color_stop_rgba (p, 0.51, color.red, color.green, color.blue, 0.5);  
 		pattern_add_color_stop_rgba (p, 0.55, color.red, color.green, color.blue, 0.5);  
-		pattern_add_color_stop_rgba (p, 0.56, background.red, background.green, background.blue, 0.5);
-
+		pattern_add_color_stop_rgba (p, 0.56, c.red, c.green, c.blue, 0.5);
+		
 		set_source (context, p);
 		set_extend (get_source (context), CAIRO_EXTEND_REPEAT);
-		--set_extend (get_source (context), CAIRO_EXTEND_NONE);
-		--set_extend (get_source (context), CAIRO_EXTEND_REFLECT);
-		--set_extend (get_source (context), CAIRO_EXTEND_PAD);
-
 		
 	end create_fill_pattern;
 

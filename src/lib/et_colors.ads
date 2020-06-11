@@ -47,6 +47,7 @@ package et_colors is
 		red, green, blue : color_range := 0.0;
 	end record;
 
+
 	white		: constant type_color := (1.0, 1.0, 1.0);
 	black		: constant type_color := (0.0, 0.0, 0.0);
 	red			: constant type_color := (1.0, 0.0, 0.0);
@@ -80,7 +81,7 @@ package et_colors is
 		context		: in cairo_context;
 		color		: in type_color;
 		opacity		: in type_opacity;
-		background	: in type_color;
+-- 		background	: in type_color;
 		style		: in type_fill_style;
 		scale		: in type_scale);
 

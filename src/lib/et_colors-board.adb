@@ -183,7 +183,7 @@ package body et_colors.board is
 					context		=> context,
 					color		=> stop_mask_top,
 					opacity		=> opacity,
-					background	=> background,
+-- 					background	=> background,
 					style		=> STRIPED_45,
 					scale		=> scale);
 
@@ -192,7 +192,7 @@ package body et_colors.board is
 					context		=> context,
 					color		=> stop_mask_bottom,
 					opacity		=> opacity,
-					background	=> background,
+-- 					background	=> background,
 					style		=> STRIPED_45,
 					scale		=> scale);
 		end case;
