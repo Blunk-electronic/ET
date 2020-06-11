@@ -734,13 +734,12 @@ package et_text is
 		digit_8 : constant type_character (1 .. 15) := (
 			 1	=> (x1, y0, x3, y0),
 			 2	=> (x3, y0, x4, y1),
-			 3	=> (x4, y1, x4, y3),
-			 4	=> (x4, y3, x3, y4),
-			 5	=> (x3, y4, x1, y4),
-			 6	=> (x1, y4, x0, y3),
-			 7	=> (x0, y3, x0, y1),
+			 3	=> (x4, y1, x4, y2),
+			 4	=> (x4, y2, x3, y3),
+			 5	=> (x3, y3, x1, y3),
+			 6	=> (x1, y3, x0, y2),
+			 7	=> (x0, y2, x0, y1),
 			 8	=> (x0, y1, x1, y0),
-			 
 			 9	=> (x1, y3, x0, y4),
 			 10 => (x0, y4, x0, y5),
 			 11	=> (x0, y5, x1, y6),
@@ -751,9 +750,9 @@ package et_text is
 			);
 
 		digit_9 : constant type_character (1 ..10) := (
-			 1	=> (x1, y0, x3, y0),
-			 2	=> (x3, y0, x4, y1),
-			 3	=> (x4, y1, x4, y3),
+			 1	=> (x3, y6, x1, y6),
+			 2	=> (x1, y6, x0, y5),
+			 3	=> (x0, y5, x0, y4),
 			 4	=> (x4, y3, x3, y4),
 			 5	=> (x3, y4, x1, y4),
 			 6	=> (x1, y4, x0, y3),
