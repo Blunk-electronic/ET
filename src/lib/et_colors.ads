@@ -64,6 +64,13 @@ package et_colors is
 	default_opacity : constant type_opacity := 0.5;
 	no_opacity : constant type_opacity := 1.0;
 
+	type type_brightness is range 1 .. 10; -- 1 -> dark, 10 -> bright
+
+	function dim (
+		color		: in type_color;
+		brightness	: in type_brightness)
+		return type_color;
+	
 	type type_fill_style is (
 		SOLID, 
 		STRIPED_0,
@@ -76,6 +83,8 @@ package et_colors is
 		HATCHED_0,
 		HATCHED_45
 		);
+
+	
 	
 	procedure create_fill_pattern (
 		context		: in cairo_context;

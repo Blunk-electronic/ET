@@ -44,6 +44,15 @@ with cairo.matrix;
 package body et_colors is
 
 	procedure dummy is begin null; end;
+
+	function dim (
+		color		: in type_color;
+		brightness	: in type_brightness)
+		return type_color is
+	begin
+		return color;
+	end dim;
+
 	
 	procedure create_fill_pattern (
 		context		: in cairo_context;
