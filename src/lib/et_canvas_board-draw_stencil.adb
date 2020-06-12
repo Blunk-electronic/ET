@@ -154,7 +154,7 @@ procedure draw_stencil (
 		module		: in et_schematic.type_module) is
 	begin
 		-- All stencil segments will be drawn with the same color:
-		set_color_stencil (context.cr, face);
+		set_color_stencil (context.cr, face, self.scale);
 
 		case face is
 			when TOP =>

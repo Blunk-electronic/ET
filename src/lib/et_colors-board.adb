@@ -158,35 +158,13 @@ package body et_colors.board is
 		scale	: in type_scale;
 		opacity : in type_opacity := default_opacity) is 
 	begin
-		
--- 		case face is
--- 			when TOP =>
--- 				set_source_rgba (
--- 					context, 
--- 					stop_mask_top.red,
--- 					stop_mask_top.green,
--- 					stop_mask_top.blue,
--- 					color_range (opacity));
--- 
--- 			when BOTTOM =>
--- 				set_source_rgba (
--- 					context, 
--- 					stop_mask_bottom.red,
--- 					stop_mask_bottom.green,
--- 					stop_mask_bottom.blue,
--- 					color_range (opacity));
--- 		end case;
-
 		case face is
 			when TOP =>
 				create_fill_pattern (
 					context		=> context,
 					color		=> stop_mask_top,
 					opacity		=> opacity,
--- 					background	=> background,
--- 					style		=> STRIPED_45,
-					-- 					style		=> STRIPED_90,
-					style		=> STRIPED_135,
+					style		=> stop_mask_fill,
 					scale		=> scale);
 
 			when BOTTOM =>
@@ -194,8 +172,7 @@ package body et_colors.board is
 					context		=> context,
 					color		=> stop_mask_bottom,
 					opacity		=> opacity,
--- 					background	=> background,
-					style		=> STRIPED_45,
+					style		=> stop_mask_fill,
 					scale		=> scale);
 		end case;
 	
@@ -204,24 +181,26 @@ package body et_colors.board is
 	procedure set_color_stencil (
 		context : in cairo_context;
 		face	: in type_face;
+		scale	: in type_scale;
 		opacity : in type_opacity := default_opacity)
 	is begin
 		case face is
 			when TOP =>
-				set_source_rgba (
-					context, 
-					stencil_top.red,
-					stencil_top.green,
-					stencil_top.blue,
-					color_range (opacity));
+				create_fill_pattern (
+					context		=> context,
+					color		=> stencil_top,
+					opacity		=> opacity,
+					style		=> stencil_fill,
+					scale		=> scale);
 
 			when BOTTOM =>
-				set_source_rgba (
-					context, 
-					stencil_bottom.red,
-					stencil_bottom.green,
-					stencil_bottom.blue,
-					color_range (opacity));
+				create_fill_pattern (
+					context		=> context,
+					color		=> stencil_bottom,
+					opacity		=> opacity,
+					style		=> stencil_fill,
+					scale		=> scale);
+				
 		end case;
 	end set_color_stencil;
 

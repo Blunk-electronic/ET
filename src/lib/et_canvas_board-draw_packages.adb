@@ -1411,7 +1411,7 @@ is
 						
 						move_by (line, type_point (package_position));
 
-						set_color_stencil (context.cr, f);
+						set_color_stencil (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (line.width));
 						pac_draw_package.draw_line (in_area, context, line, self.frame_height);
 					end if;
@@ -1446,7 +1446,7 @@ is
 						
 						move_by (arc, type_point (package_position));
 
-						set_color_stencil (context.cr, f);
+						set_color_stencil (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
 						pac_draw_package.draw_arc (in_area, context, arc, self.frame_height);
 					end if;
@@ -1483,7 +1483,7 @@ is
 						
 						move_by (circle, type_point (package_position));
 
-						set_color_stencil (context.cr, f);
+						set_color_stencil (context.cr, f, self.scale);
 
 						case circle.filled is
 							when NO =>
@@ -1535,7 +1535,7 @@ is
 						
 						move_by (polygon, type_point (package_position));
 
-						set_color_stencil (context.cr, f);
+						set_color_stencil (context.cr, f, self.scale);
 
 						case polygon.fill_style is
 							when SOLID =>

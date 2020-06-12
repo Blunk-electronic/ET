@@ -41,6 +41,9 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 
 package et_colors.board is
 
+	-- CS: These values may be overwitten by used specific colors and fill
+	-- styles in the future:
+	
 	cursor				: type_color := white;
 	background 			: type_color := black;
 	frame				: type_color := white;
@@ -60,16 +63,19 @@ package et_colors.board is
 
 	stop_mask_top		: type_color := green;
 	stop_mask_bottom	: type_color := green;	
+	stop_mask_fill		: type_fill_style := STRIPED_45;
 
 	stencil_top			: type_color := gray;
 	stencil_bottom		: type_color := gray;	
-
+	stencil_fill		: type_fill_style := STRIPED_135;
+	
 	keepout_top			: type_color := orange;
 	keepout_bottom		: type_color := orange;	
 
 	route_restrict		: type_color := red;
 	via_restrict		: type_color := red;
 
+	-- The colors of signal layers:
 	type type_conductors is array (type_signal_layer'first .. type_signal_layer'last) 
 		of type_color;
 
@@ -117,6 +123,7 @@ package et_colors.board is
 	procedure set_color_stencil (
 		context : in cairo_context;
 		face	: in type_face;
+		scale	: in type_scale;
 		opacity : in type_opacity := default_opacity);
 
 	procedure set_color_keepout (
