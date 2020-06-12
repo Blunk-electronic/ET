@@ -184,7 +184,9 @@ package body et_colors.board is
 					color		=> stop_mask_top,
 					opacity		=> opacity,
 -- 					background	=> background,
-					style		=> STRIPED_45,
+-- 					style		=> STRIPED_45,
+					-- 					style		=> STRIPED_90,
+					style		=> STRIPED_135,
 					scale		=> scale);
 
 			when BOTTOM =>

@@ -41,8 +41,6 @@ with et_geometry;				use et_geometry;
 
 package et_colors is
 
-	procedure dummy;
-	
 	type type_color is record
 		red, green, blue : color_range := 0.0;
 	end record;
@@ -64,9 +62,11 @@ package et_colors is
 	default_opacity : constant type_opacity := 0.5;
 	no_opacity : constant type_opacity := 1.0;
 
-	type type_brightness is range 1 .. 10; -- 1 -> dark, 10 -> bright
+	type type_brightness is new color_range; -- 0.0 -> dark, 1.0 -> bright
 
-	function dim (
+	-- Changes the brightness of a given color to the value
+	-- given by brightness:
+	function dim_to (
 		color		: in type_color;
 		brightness	: in type_brightness)
 		return type_color;
@@ -76,23 +76,28 @@ package et_colors is
 		STRIPED_0,
 		STRIPED_45,
 		STRIPED_90,
-		STRIPED_135,
-		DOTTED_SPARSE,
-		DOTTED_MEDIUM,
-		DOTTED_DENSE,
-		HATCHED_0,
-		HATCHED_45
+		STRIPED_135
+-- CS DOTTED_SPARSE,
+-- CS DOTTED_MEDIUM,
+-- CS DOTTED_DENSE,
+-- CS HATCHED_0,
+-- CS HATCHED_45
 		);
 
+	fill_pattern_gap_brightness_default : constant type_brightness := 0.5;
 	
-	
+	-- Creates a fill pattern in the given context:
 	procedure create_fill_pattern (
-		context		: in cairo_context;
-		color		: in type_color;
-		opacity		: in type_opacity;
--- 		background	: in type_color;
-		style		: in type_fill_style;
-		scale		: in type_scale);
+		context			: in cairo_context;
+		color			: in type_color;		-- the color of the pattern
+		opacity			: in type_opacity;		-- the opacity of the pattern
+		-- background	: in type_color; ?
+
+		-- the brightness of the gaps betweeen lines and dots:
+		gap_brightness	: in type_brightness := fill_pattern_gap_brightness_default;
+		
+		style			: in type_fill_style;	-- the style (solid, striped, dotted)
+		scale			: in type_scale);		-- the scale of the canvas
 
 	
 end et_colors;

@@ -43,43 +43,121 @@ with cairo.matrix;
 
 package body et_colors is
 
-	procedure dummy is begin null; end;
-
-	function dim (
+	function dim_to (
 		color		: in type_color;
 		brightness	: in type_brightness)
 		return type_color is
+
+		use type color_range;
+		
+		b : constant color_range := color_range (brightness);
+		result : type_color;
 	begin
-		return color;
-	end dim;
+		result.red		:= color.red * b;
+		result.green	:= color.green * b;
+		result.blue		:= color.blue * b;
+		
+		return result;
+	end dim_to;
 
 	
 	procedure create_fill_pattern (
-		context		: in cairo_context;
-		color		: in type_color;
-		opacity		: in type_opacity;
--- 		background	: in type_color;
-		style		: in type_fill_style;
-		scale		: in type_scale)
+		context			: in cairo_context;
+		color			: in type_color;
+		opacity			: in type_opacity;
+		gap_brightness	: in type_brightness := fill_pattern_gap_brightness_default;
+		style			: in type_fill_style;
+		scale			: in type_scale)
 	is
 		use glib;
 		use cairo.pattern;
 		use cairo.matrix;
-		
-		s : constant gdouble := 20.0 / scale;
-		p : cairo_pattern := pattern_create_linear (0.0, 0.0, s, s);
 
-		b : gdouble := 0.5;
-		c : type_color := (color.red * b, color.green * b, color.blue * b);
-	begin
-		--pattern_add_color_stop_rgba (p, 0.50, background.red, background.green, background.blue, 0.5);
-		pattern_add_color_stop_rgba (p, 0.50, c.red, c.green, c.blue, 0.5);
-		pattern_add_color_stop_rgba (p, 0.51, color.red, color.green, color.blue, 0.5);  
-		pattern_add_color_stop_rgba (p, 0.55, color.red, color.green, color.blue, 0.5);  
-		pattern_add_color_stop_rgba (p, 0.56, c.red, c.green, c.blue, 0.5);
+		zero : constant gdouble := 0.0;
 		
-		set_source (context, p);
-		set_extend (get_source (context), CAIRO_EXTEND_REPEAT);
+		-- The pattern appearance must be independed of the scale of the canvas.
+		-- So we need a compensation mechanism that keeps the pattern size constant. 
+		-- This is the length of the gradient:
+		gl : gdouble;
+
+		-- The modifier to compensate the scale is different for straight
+		-- and angular patterns. The modifier will be used to compute the 
+		-- length of the gradient:
+		m_0_90		: constant gdouble := 25.0;
+		m_45_135	: constant gdouble := m_0_90 - 5.0;
+
+		-- The pattern to create:
+		p : cairo_pattern;
+
+		-- The brightness of the color that is to fill the gaps between lines or dots:
+		gap_color : type_color;
+
+		procedure add_gap (offset : in gdouble) is begin
+			pattern_add_color_stop_rgba (p, offset, gap_color.red, gap_color.green, gap_color.blue, 0.5);
+		end add_gap;
+
+		procedure add_foreground (offset : in gdouble) is begin
+			pattern_add_color_stop_rgba (p, offset, color.red, color.green, color.blue, 0.5);
+		end add_foreground;
+
+		procedure make_gradient_0 is begin
+			gl := m_0_90 / scale;
+
+			-- gradient from left to right (in the view, in pixels)
+			p := pattern_create_linear (zero, zero, zero, gl);
+		end make_gradient_0;
+		
+		procedure make_gradient_45 is begin
+			gl := m_45_135 / scale;
+			
+			-- gradient from top left to bottom right (in the view, in pixels)
+			p := pattern_create_linear (zero, zero, gl, gl);
+		end make_gradient_45;
+
+		procedure make_gradient_90 is begin
+			gl := m_0_90 / scale;
+
+			-- gradient from top to bottom (in the view, in pixels)
+			p := pattern_create_linear (zero, zero, gl, zero);
+		end make_gradient_90;
+
+		procedure make_gradient_135 is begin
+			gl := m_45_135 / scale;
+			
+			-- gradient from top left to bottom right (in the view, in pixels)
+			p := pattern_create_linear (gl, zero, zero, gl);
+		end make_gradient_135;
+		
+	begin -- create_fill_pattern
+		case style is
+			when SOLID =>
+				-- No pattern to generate for solid filling:
+				set_source_rgba (context, color.red, color.green, color.blue, color_range (opacity));
+
+			when STRIPED_0		=> make_gradient_0;
+			when STRIPED_45		=> make_gradient_45;
+			when STRIPED_90		=> make_gradient_90;
+			when STRIPED_135	=> make_gradient_135;
+				
+			when others => null;
+		end case;
+
+		case style is
+			when STRIPED_0 | STRIPED_45 | STRIPED_90 | STRIPED_135 =>
+
+				-- Set the brightness of the color that is to fill the gaps between lines or dots:
+				gap_color := dim_to (color, gap_brightness);
+				
+				add_gap (0.50);
+				add_foreground (0.51);
+				add_foreground (0.55);
+				add_gap (0.56);
+				
+				set_source (context, p);
+				set_extend (get_source (context), CAIRO_EXTEND_REPEAT);
+
+			when others => null;
+		end case;
 		
 	end create_fill_pattern;
 
