@@ -582,8 +582,11 @@ package body et_text is
 					when '7' => add (digit_7);
 					when '8' => add (digit_8);
 					when '9' => add (digit_9);
+
+					when '-' => add (special_dash);
+					when '_' => add (special_underline);
 					
-					when others => null;
+					when others => raise constraint_error; -- CS should never happen
 				end case;
 			end loop;
 
