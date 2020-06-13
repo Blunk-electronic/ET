@@ -58,6 +58,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
 with et_drills;					use et_drills;
+with et_terminals;				use et_terminals;
 with et_text;
 
 with cairo;
@@ -121,31 +122,32 @@ package et_packages is
 -- 	function to_directory (directory_name : in string) return type_directory_name.bounded_string;
 -- 	-- Converts a string to a type_directory_name.
 
-	text_size_min : constant type_distance_positive := 0.5;
-	text_size_max : constant type_distance_positive := 100.0;
-	text_size_default : constant type_distance_positive := 1.5;
-	
-	line_width_min : constant type_distance_positive := 0.15;
-	line_width_max : constant type_distance_positive := 10.0;
-	line_width_default : constant type_distance_positive := 0.15;
+-- 	text_size_min : constant type_distance_positive := 0.5;
+-- 	text_size_max : constant type_distance_positive := 100.0;
+-- 	text_size_default : constant type_distance_positive := 1.5;
+-- 	
+-- 	line_width_min : constant type_distance_positive := 0.15;
+-- 	line_width_max : constant type_distance_positive := 10.0;
+-- 	line_width_default : constant type_distance_positive := 0.15;
 
 	
 	-- Instantiation of the shapes package:
-	package pac_shapes is new et_geometry.generic_pac_shapes (et_pcb_coordinates.pac_geometry_brd);
-	use pac_shapes;
+-- 	package pac_shapes is new et_geometry.generic_pac_shapes (et_pcb_coordinates.pac_geometry_brd);
+	use et_terminals.pac_shapes;
 
 	
 	-- Instantiation of the text package:
-	package pac_text is new et_text.generic_pac_text (
-		pac_shapes			=> pac_shapes,
-		size_min			=> text_size_min,
-		size_max			=> text_size_max,
-		size_default		=> text_size_default,
-		line_width_min		=> line_width_min,
-		line_width_max		=> line_width_max,
-		line_width_default	=> line_width_default
-		);
-
+-- 	package pac_text is new et_text.generic_pac_text (
+-- 		pac_shapes			=> pac_shapes,
+-- 		size_min			=> text_size_min,
+-- 		size_max			=> text_size_max,
+-- 		size_default		=> text_size_default,
+-- 		line_width_min		=> line_width_min,
+-- 		line_width_max		=> line_width_max,
+-- 		line_width_default	=> line_width_default
+-- 		);
+-- 	use et_terminals.pac_text;
+	
 	subtype type_general_line_width is type_distance_positive range line_width_min .. line_width_max;
 	
 
@@ -155,36 +157,36 @@ package et_packages is
 
 	
 
-	-- COPPER STRUCTURES GENERAL
-	copper_structure_size_min : constant et_pcb_coordinates.type_distance := 0.05;
-	copper_clearance_min : constant et_pcb_coordinates.type_distance := copper_structure_size_min;
+-- 	-- COPPER STRUCTURES GENERAL
+-- 	copper_structure_size_min : constant et_pcb_coordinates.type_distance := 0.05;
+-- 	copper_clearance_min : constant et_pcb_coordinates.type_distance := copper_structure_size_min;
+-- 	
+-- 
+-- 	-- SIGNALS
+-- 	subtype type_track_clearance is type_distance_positive range copper_clearance_min .. et_pcb_coordinates.type_distance'last;
+-- 
+-- 	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance);
+-- 	-- Checks whether the given track clearance is in range of type_track_clearance.
+-- 
+-- 	track_width_max : constant type_distance_positive := 100.0;
+-- 	subtype type_track_width is type_distance_positive range copper_structure_size_min .. track_width_max;
+-- 
+-- 	procedure validate_track_width (track_width : in type_distance_positive);
+-- 	-- Checks whether the given track width is in range of type_track_width.
+
 	
-
-	-- SIGNALS
-	subtype type_track_clearance is type_distance_positive range copper_clearance_min .. et_pcb_coordinates.type_distance'last;
-
-	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance);
-	-- Checks whether the given track clearance is in range of type_track_clearance.
-
-	track_width_max : constant type_distance_positive := 100.0;
-	subtype type_track_width is type_distance_positive range copper_structure_size_min .. track_width_max;
-
-	procedure validate_track_width (track_width : in type_distance_positive);
-	-- Checks whether the given track width is in range of type_track_width.
-
 	
-	
-	pad_size_min : constant type_track_width := 0.05;
-	pad_size_max : constant type_track_width := 10.0;
-	subtype type_pad_size is type_distance_positive range pad_size_min .. pad_size_max;
-
-	procedure validate_pad_size (size : in et_pcb_coordinates.type_distance);
-	-- Checks whether given pad size is in range of type_pad_size
-
-
-	pad_drill_offset_min : constant type_distance_positive := zero;
-	pad_drill_offset_max : constant type_distance_positive := pad_size_max * 0.5;
-	subtype type_pad_drill_offset is type_distance_positive range pad_drill_offset_min .. pad_drill_offset_max;
+-- 	pad_size_min : constant type_track_width := 0.05;
+-- 	pad_size_max : constant type_track_width := 10.0;
+-- 	subtype type_pad_size is type_distance_positive range pad_size_min .. pad_size_max;
+-- 
+-- 	procedure validate_pad_size (size : in et_pcb_coordinates.type_distance);
+-- 	-- Checks whether given pad size is in range of type_pad_size
+-- 
+-- 
+-- 	pad_drill_offset_min : constant type_distance_positive := zero;
+-- 	pad_drill_offset_max : constant type_distance_positive := pad_size_max * 0.5;
+-- 	subtype type_pad_drill_offset is type_distance_positive range pad_drill_offset_min .. pad_drill_offset_max;
 	
 	
 	
@@ -194,14 +196,14 @@ package et_packages is
 
 
 	-- RESTRING
-	keyword_restring_outer_layers : constant string := "restring_outer_layers";
-	keyword_restring_inner_layers : constant string := "restring_inner_layers";		
-
-	restring_width_max : constant type_distance_positive := 5.0;
-	subtype type_restring_width is type_distance_positive range copper_structure_size_min .. restring_width_max;
-
-	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance);
-	-- Checks whether the given restring width is in range of type_restring_width.
+-- 	keyword_restring_outer_layers : constant string := "restring_outer_layers";
+-- 	keyword_restring_inner_layers : constant string := "restring_inner_layers";		
+-- 
+-- 	restring_width_max : constant type_distance_positive := 5.0;
+-- 	subtype type_restring_width is type_distance_positive range copper_structure_size_min .. restring_width_max;
+-- 
+-- 	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance);
+-- 	-- Checks whether the given restring width is in range of type_restring_width.
 
 
 	
@@ -828,14 +830,14 @@ package et_packages is
 	end record;
 
 	
--- PLATED MILLINGS OF TERMINALS	
-	-- Plated millings as used by terminals. These structures have closed circumfence.
-	type type_plated_millings is new pac_shapes.type_polygon_base with null record;
-
-	procedure log_plated_millings (
-		millings 		: in type_plated_millings;
-		log_threshold	: in et_string_processing.type_log_level);
-
+-- -- PLATED MILLINGS OF TERMINALS	
+-- 	-- Plated millings as used by terminals. These structures have closed circumfence.
+-- 	type type_plated_millings is new pac_shapes.type_polygon_base with null record;
+-- 
+-- 	procedure log_plated_millings (
+-- 		millings 		: in type_plated_millings;
+-- 		log_threshold	: in et_string_processing.type_log_level);
+-- 
 	type type_package_appearance is (
 		REAL,	-- packages with x,y,z dimension
 		VIRTUAL -- for things that do not have a package (netchangers, testpoints, edge connectors, ...)
@@ -844,157 +846,157 @@ package et_packages is
 	package_appearance_default : constant type_package_appearance := REAL;
 	function to_string (appearance : in type_package_appearance) return string;
 	function to_appearance (appearance : in string) return type_package_appearance;
-	
-	type type_assembly_technology is (
-		THT,	-- Through Hole Technology
-		SMT		-- Surface Mount Technology
-		);
-
-	assembly_technology_default : constant type_assembly_technology := SMT;
-	function to_string (technology : in type_assembly_technology) return string;
-	function to_assembly_technology (technology : in string) return type_assembly_technology;
-	
-	type type_solder_paste_status is (NONE, APPLIED);
-	solder_paste_status_default : constant type_solder_paste_status := APPLIED;
-	function to_string (solder_paste : in type_solder_paste_status) return string;
-	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status;
-	
-	type type_stop_mask_status is (CLOSED, OPEN);  -- net-ties or netchangers have their pads covered
-	stop_mask_status_default : constant type_stop_mask_status := OPEN;
-	function to_string (stop_mask : in type_stop_mask_status) return string;
-	function to_stop_mask_status (stop_mask : in string) return type_stop_mask_status;
-	
-	-- A THT terminal may have a drilled or a milled hole (milled hole is also called "plated millings")
-	type type_terminal_tht_hole is (DRILLED, MILLED);
-	terminal_tht_hole_default : constant type_terminal_tht_hole := DRILLED;
-	function to_string (tht_hole : in type_terminal_tht_hole) return string;
-	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole;
+-- 	
+-- 	type type_assembly_technology is (
+-- 		THT,	-- Through Hole Technology
+-- 		SMT		-- Surface Mount Technology
+-- 		);
+-- 
+-- 	assembly_technology_default : constant type_assembly_technology := SMT;
+-- 	function to_string (technology : in type_assembly_technology) return string;
+-- 	function to_assembly_technology (technology : in string) return type_assembly_technology;
+-- 	
+-- 	type type_solder_paste_status is (NONE, APPLIED);
+-- 	solder_paste_status_default : constant type_solder_paste_status := APPLIED;
+-- 	function to_string (solder_paste : in type_solder_paste_status) return string;
+-- 	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status;
+-- 	
+-- 	type type_stop_mask_status is (CLOSED, OPEN);  -- net-ties or netchangers have their pads covered
+-- 	stop_mask_status_default : constant type_stop_mask_status := OPEN;
+-- 	function to_string (stop_mask : in type_stop_mask_status) return string;
+-- 	function to_stop_mask_status (stop_mask : in string) return type_stop_mask_status;
+-- 	
+-- 	-- A THT terminal may have a drilled or a milled hole (milled hole is also called "plated millings")
+-- 	type type_terminal_tht_hole is (DRILLED, MILLED);
+-- 	terminal_tht_hole_default : constant type_terminal_tht_hole := DRILLED;
+-- 	function to_string (tht_hole : in type_terminal_tht_hole) return string;
+-- 	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole;
 
 	
 	-- A pad outline is a polygon:
-	type type_pad_outline is new pac_shapes.type_polygon_base with null record;
+-- 	type type_pad_outline is new pac_shapes.type_polygon_base with null record;
+-- 	
+-- 	type type_pad_outline_tht is record
+-- 		top		: type_pad_outline; -- The shape on the top side
+-- 		bottom	: type_pad_outline; -- is not nessecarily the same as on the bottom side.
+-- 	end record;
+-- 
+-- 	
+-- 	type type_stop_mask_shape is (
+-- 		AS_PAD,
+-- 		EXPAND_PAD,
+-- 		USER_SPECIFIC);
+-- 
+-- 	stop_mask_shape_default : constant type_stop_mask_shape := EXPAND_PAD;
+-- 	type type_stop_mask_outline is new pac_shapes.type_polygon_base with null record;
+-- 	
+-- 	type type_pad_stop_mask (shape : type_stop_mask_shape) is record
+-- 		case shape is
+-- 			when USER_SPECIFIC => contour : type_stop_mask_outline;
+-- 			when others => null;
+-- 		end case;
+-- 	end record;
+-- 
+-- 	type type_stop_mask_outline_tht is record
+-- 		top		: type_pad_stop_mask (stop_mask_shape_default); -- The shape on the top side
+-- 		bottom	: type_pad_stop_mask (stop_mask_shape_default); -- is not nessecarily the same as on the bottom side.
+-- 	end record;
+-- 
+-- 
+-- -- 	type type_stop_mask_shape
 	
-	type type_pad_outline_tht is record
-		top		: type_pad_outline; -- The shape on the top side
-		bottom	: type_pad_outline; -- is not nessecarily the same as on the bottom side.
-	end record;
-
+-- 	
+-- 	keyword_stop_mask			: constant string := "stop_mask";
+-- 	keyword_solder_paste		: constant string := "solder_paste";
+-- 
+-- 	keyword_pad_shape			: constant string := "pad_shape";	
+-- 	keyword_width_inner_layers	: constant string := "width_inner_layers";
+-- 	keyword_assembly_technology	: constant string := "technology";
+-- 	keyword_tht_hole			: constant string := "hole";	
+-- 	keyword_drill_size			: constant string := "drill_size";
 	
-	type type_stop_mask_shape is (
-		AS_PAD,
-		EXPAND_PAD,
-		USER_SPECIFIC);
-
-	stop_mask_shape_default : constant type_stop_mask_shape := EXPAND_PAD;
-	type type_stop_mask_outline is new pac_shapes.type_polygon_base with null record;
-	
-	type type_pad_stop_mask (shape : type_stop_mask_shape) is record
-		case shape is
-			when USER_SPECIFIC => contour : type_stop_mask_outline;
-			when others => null;
-		end case;
-	end record;
-
-	type type_stop_mask_outline_tht is record
-		top		: type_pad_stop_mask (stop_mask_shape_default); -- The shape on the top side
-		bottom	: type_pad_stop_mask (stop_mask_shape_default); -- is not nessecarily the same as on the bottom side.
-	end record;
-
-
--- 	type type_stop_mask_shape
-	
-	
-	keyword_stop_mask			: constant string := "stop_mask";
-	keyword_solder_paste		: constant string := "solder_paste";
-
-	keyword_pad_shape			: constant string := "pad_shape";	
-	keyword_width_inner_layers	: constant string := "width_inner_layers";
-	keyword_assembly_technology	: constant string := "technology";
-	keyword_tht_hole			: constant string := "hole";	
-	keyword_drill_size			: constant string := "drill_size";
-	
-	type type_terminal (
-		technology	: type_assembly_technology; -- smt/tht
-		tht_hole	: type_terminal_tht_hole) -- drilled/milled, without meaning if technology is SMT
-		is tagged record
-
-			position : type_position; -- position (x/y) and rotation
-			-- For SMT pads this is the geometic center of the pad.
-			-- The rotation has no meaning for THT pads with round shape.
-			-- The rotation is useful for exotic pad contours. The operator would be drawing the 
-			-- contour with zero rotation first (which is easier). Then by applying an angle,
-			-- the countour would be rotated to its final position.
-			
-		case technology is
-			when THT =>
-				-- The shape of the pad on top and bottom side.
-				pad_shape_tht : type_pad_outline_tht; 
-
-				-- This is the width of the copper surrounding the hole in inner layers.
-				-- Since the hole can be of any shape we do not speak about restring.
-				-- The shape of the copper area around the hole is the same as the shape of the 
-				-- hole. No further extra contours possible.
-				width_inner_layers : type_track_width;
-				
-				case tht_hole is
-					when DRILLED =>
-						drill_size : type_drill_size;
-						
-					when MILLED =>
-						millings : type_plated_millings;
-				end case;
-				
-			when SMT =>
-				pad_shape		: type_pad_outline;
-				face			: type_face;
-				stop_mask 		: type_stop_mask_status;
-				-- CS ?? stop_mask_shape : type_stop_mask_outline;
-				-- If no elements in outline, apply pad_shape.
-				
-				solder_paste	: type_solder_paste_status;
-				-- CS ?? stencil_shape : type_stencil_outline;
-				-- If no elements in outline, apply pad_shape.
-				
-		end case;
-	end record;
+-- 	type type_terminal (
+-- 		technology	: type_assembly_technology; -- smt/tht
+-- 		tht_hole	: type_terminal_tht_hole) -- drilled/milled, without meaning if technology is SMT
+-- 		is tagged record
+-- 
+-- 			position : type_position; -- position (x/y) and rotation
+-- 			-- For SMT pads this is the geometic center of the pad.
+-- 			-- The rotation has no meaning for THT pads with round shape.
+-- 			-- The rotation is useful for exotic pad contours. The operator would be drawing the 
+-- 			-- contour with zero rotation first (which is easier). Then by applying an angle,
+-- 			-- the countour would be rotated to its final position.
+-- 			
+-- 		case technology is
+-- 			when THT =>
+-- 				-- The shape of the pad on top and bottom side.
+-- 				pad_shape_tht : type_pad_outline_tht; 
+-- 
+-- 				-- This is the width of the copper surrounding the hole in inner layers.
+-- 				-- Since the hole can be of any shape we do not speak about restring.
+-- 				-- The shape of the copper area around the hole is the same as the shape of the 
+-- 				-- hole. No further extra contours possible.
+-- 				width_inner_layers : type_track_width;
+-- 				
+-- 				case tht_hole is
+-- 					when DRILLED =>
+-- 						drill_size : type_drill_size;
+-- 						
+-- 					when MILLED =>
+-- 						millings : type_plated_millings;
+-- 				end case;
+-- 				
+-- 			when SMT =>
+-- 				pad_shape		: type_pad_outline;
+-- 				face			: type_face;
+-- 				stop_mask 		: type_stop_mask_status;
+-- 				-- CS ?? stop_mask_shape : type_stop_mask_outline;
+-- 				-- If no elements in outline, apply pad_shape.
+-- 				
+-- 				solder_paste	: type_solder_paste_status;
+-- 				-- CS ?? stencil_shape : type_stencil_outline;
+-- 				-- If no elements in outline, apply pad_shape.
+-- 				
+-- 		end case;
+-- 	end record;
 
 
-	-- A terminal is the physical point where electrical energy comes in or out of the device.
-	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
-	-- we further-on speak about "terminals".
-	-- The name of a terminal may have 10 characters which seems sufficient for now.
-	-- CS: character set, length check, charcter check
- 	terminal_name_length_max : constant natural := 10;
-	package type_terminal_name is new generic_bounded_length (terminal_name_length_max);
-	use type_terminal_name;
-
-	function to_string (terminal : in type_terminal_name.bounded_string) return string;
-	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string;
-
-
-	
-	-- GUI relevant only:
-	terminal_name_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
-
-	terminal_name_size : constant pac_text.type_text_size := 0.5;
+-- 	-- A terminal is the physical point where electrical energy comes in or out of the device.
+-- 	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
+-- 	-- we further-on speak about "terminals".
+-- 	-- The name of a terminal may have 10 characters which seems sufficient for now.
+-- 	-- CS: character set, length check, charcter check
+--  	terminal_name_length_max : constant natural := 10;
+-- 	package type_terminal_name is new generic_bounded_length (terminal_name_length_max);
+-- 	use type_terminal_name;
+-- 
+-- 	function to_string (terminal : in type_terminal_name.bounded_string) return string;
+-- 	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string;
+-- 
+-- 
+-- 	
+-- 	-- GUI relevant only:
+-- 	terminal_name_font : constant et_text.type_font := (
+-- 		family	=> et_text.to_family ("monospace"),
+-- 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+-- 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+-- 
+-- 	terminal_name_size : constant pac_text.type_text_size := 0.5;
 	
 
 	
 	
-	procedure terminal_properties (
-	-- Logs the properties of the given terminal.
-		terminal		: in type_terminal;
-		name			: in type_terminal_name.bounded_string;
-		log_threshold 	: in et_string_processing.type_log_level);
+-- 	procedure terminal_properties (
+-- 	-- Logs the properties of the given terminal.
+-- 		terminal		: in type_terminal;
+-- 		name			: in type_terminal_name.bounded_string;
+-- 		log_threshold 	: in et_string_processing.type_log_level);
 	
-	package type_terminals is new indefinite_ordered_maps (
-		key_type		=> type_terminal_name.bounded_string, -- H7, 14
-		element_type	=> type_terminal,
-		"<"				=> type_terminal_name."<");
-
+-- 	package type_terminals is new indefinite_ordered_maps (
+-- 		key_type		=> type_terminal_name.bounded_string, -- H7, 14
+-- 		element_type	=> type_terminal,
+-- 		"<"				=> type_terminal_name."<");
+-- 
 
 	package_description_length_max : constant positive := 200;
 	package type_package_description is new generic_bounded_length (package_description_length_max);

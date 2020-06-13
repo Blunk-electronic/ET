@@ -49,6 +49,7 @@ with et_general;				use et_general;
 with et_project;
 with et_geometry;
 with et_schematic;
+with et_terminals;
 with et_packages;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;
@@ -1450,7 +1451,7 @@ package et_kicad is
 	-- Returns the name of the net connected with the given component and terminal.
 		module			: in type_submodule_name.bounded_string;	-- nucleo_core
 		reference		: in et_devices.type_name;	-- IC45
-		terminal		: in et_packages.type_terminal_name.bounded_string; -- E14
+		terminal		: in et_terminals.type_terminal_name.bounded_string; -- E14
 		log_threshold	: in et_string_processing.type_log_level)		
 		return et_general.type_net_name.bounded_string;
 

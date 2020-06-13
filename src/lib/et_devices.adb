@@ -40,7 +40,9 @@ with ada.strings.maps.constants;
 with ada.strings.fixed; 		use ada.strings.fixed;
 
 package body et_devices is
-
+	
+	use et_terminals;
+	
 	function to_string (purpose : in type_purpose.bounded_string) return string is begin
 		return type_purpose.to_string (purpose);
 	end to_string;

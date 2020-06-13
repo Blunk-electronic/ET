@@ -109,32 +109,23 @@ package body pcb_rw is
 		text_end;
 	end write_text;
 	
-	procedure write_width (width : in et_packages.type_track_width) is begin
+	procedure write_width (width : in type_track_width) is begin
 		write (keyword => keyword_width, parameters => to_string (width));
 	end;
 
-	procedure write_line (line : in et_packages.pac_shapes.type_line'class) is
-	-- writes start and end point of a line
-		use et_packages.pac_shapes;
-	begin
+	procedure write_line (line : in pac_shapes.type_line'class) is begin
 		write (keyword => keyword_start, parameters => position (line.start_point));
 		write (keyword => keyword_end  , parameters => position (line.end_point));
 	end write_line;
 
-	procedure write_arc (arc : in et_packages.pac_shapes.type_arc'class) is 
-	-- writes center, start and end point of an arc
-		use et_packages.pac_shapes;
-	begin
+	procedure write_arc (arc : in pac_shapes.type_arc'class) is begin
 		write (keyword => keyword_center, parameters => position (arc.center));
 		write (keyword => keyword_start, parameters => position (arc.start_point));
 		write (keyword => keyword_end, parameters => position (arc.end_point));
 		write (keyword => et_geometry.keyword_direction, parameters => to_string (arc.direction));		
 	end write_arc;
 
-	procedure write_circle (circle : in et_packages.pac_shapes.type_circle'class) is 
-	-- writes center and radius of a circle
-		use et_packages.pac_shapes;
-	begin
+	procedure write_circle (circle : in pac_shapes.type_circle'class) is begin
 		write (keyword => keyword_center, parameters => position (circle.center));
 		write (keyword => keyword_radius, parameters => to_string (circle.radius));
 	end write_circle;
@@ -171,15 +162,11 @@ package body pcb_rw is
 		write (keyword => keyword_thermal_gap   , parameters => to_string (thermal.gap));	
 	end;
 
-	procedure write_width_min (width : in et_packages.type_track_width) is 
-		use et_packages;
-	begin
+	procedure write_width_min (width : in type_track_width) is begin
 		write (keyword => keyword_min_width, parameters => to_string (width));
 	end;
 
-	procedure write_isolation (iso : in et_packages.type_track_clearance) is 
-		use et_packages;
-	begin
+	procedure write_isolation (iso : in type_track_clearance) is begin
 		write (keyword => keyword_isolation, parameters => to_string (iso));
 	end;
 
@@ -223,10 +210,7 @@ package body pcb_rw is
 		write (keyword => keyword_layers, parameters => to_string (layers));
 	end;
 	
-	procedure write_circle_fillable (circle : in et_packages.type_fillable_circle) is 
-		use et_packages;
-		use et_packages.pac_shapes;
-	begin
+	procedure write_circle_fillable (circle : in type_fillable_circle) is begin
 		circle_begin;
 		write_circle (circle);
 		write (keyword => keyword_filled, parameters => space & to_string (circle.filled));
@@ -249,11 +233,7 @@ package body pcb_rw is
 	end write_circle_fillable;
 
 	-- CS unify the follwing two procedures write_circle_copper:
-	procedure write_circle_copper (circle : in et_packages.type_copper_circle) is 
-	-- Writes the properties of a circle in copper as used in a package.
-		use et_packages;
-		use et_packages.pac_shapes;
-	begin
+	procedure write_circle_copper (circle : in type_copper_circle) is begin
 		circle_begin;
 		write_circle (circle);
 		write (keyword => keyword_filled, parameters => space & to_string (circle.filled));
@@ -275,11 +255,7 @@ package body pcb_rw is
 		circle_end;
 	end write_circle_copper;
 
-	procedure write_circle_copper (circle : in et_pcb.type_copper_circle) is 
-	-- Writes the properties of a circle in copper as used in a freetrack.		
-		use et_packages;
-		use et_packages.pac_shapes;
-	begin
+	procedure write_circle_copper (circle : in et_pcb.type_copper_circle) is begin
 		circle_begin;
 		write_circle (circle);
 		write_signal_layer (circle.layer);
@@ -306,9 +282,7 @@ package body pcb_rw is
 	end write_circle_copper;
 
 	
-	procedure write_polygon_segments (polygon : in et_packages.pac_shapes.type_polygon_base) is
-	-- writes the segments of a polygon (lines, arcs and circles)
-		use et_packages;
+	procedure write_polygon_segments (polygon : in pac_shapes.type_polygon_base) is
 		use pac_shapes.pac_polygon_lines;
 		use pac_shapes.pac_polygon_arcs;
 		use pac_shapes.pac_polygon_circles;		
@@ -543,11 +517,11 @@ package body pcb_rw is
 -- BASIC GEOMETRIC OBJECTS USED IN PACKAGES AND BOARDS
 
 	procedure add_polygon_line (line : in out type_board_line) is
-		use et_packages.pac_shapes;
-		use et_packages.pac_shapes.pac_polygon_lines;
+		use pac_shapes;
+		use pac_shapes.pac_polygon_lines;
 
 		-- make a polygon line:
-		l : type_polygon_line := (et_packages.pac_shapes.type_line (line) with others => <>);
+		l : type_polygon_line := (pac_shapes.type_line (line) with others => <>);
 	begin
 		-- For each segment of the polygon we add 1 to the total number of polygon segments:
 		increment_segment_count;
@@ -566,11 +540,11 @@ package body pcb_rw is
 
 	
 	procedure add_polygon_arc (arc : in out type_board_arc) is
-		use et_packages.pac_shapes;
-		use et_packages.pac_shapes.pac_polygon_arcs;
+		use pac_shapes;
+		use pac_shapes.pac_polygon_arcs;
 
 		-- make a polygon arc:
-		a : type_polygon_arc := (et_packages.pac_shapes.type_arc (arc) with others => <>);
+		a : type_polygon_arc := (pac_shapes.type_arc (arc) with others => <>);
 	begin
 		-- For each segment of the polygon we add 1 to the total number of polygon segments:
 		increment_segment_count;
@@ -589,11 +563,11 @@ package body pcb_rw is
 
 
 	procedure add_polygon_circle (circle : in out type_board_circle) is
-		use et_packages.pac_shapes;
-		use et_packages.pac_shapes.pac_polygon_circles;
+		use pac_shapes;
+		use pac_shapes.pac_polygon_circles;
 
 		-- make a polygon circle:
-		c : type_polygon_circle := (et_packages.pac_shapes.type_circle (circle) with others => <>);
+		c : type_polygon_circle := (pac_shapes.type_circle (circle) with others => <>);
 	begin
 		-- For each segment of the polygon we add 1 to the total number of polygon segments:
 		increment_segment_count;
@@ -614,7 +588,6 @@ package body pcb_rw is
 	procedure read_board_line (line : et_string_processing.type_fields_of_line) is
 	-- Reads start and end point of the board_line. If the statement is invalid then an error issued.
 		kw : string := f (line, 1);
-		use et_packages.pac_shapes;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_start then -- start x 22.3 y 23.3
@@ -637,7 +610,6 @@ package body pcb_rw is
 	function read_board_line (line : et_string_processing.type_fields_of_line) return boolean is
 	-- Reads start and end point of the board_line. If the statement is invalid then it returns a false.
 		kw : string := f (line, 1);
-		use et_packages.pac_shapes;
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -660,7 +632,6 @@ package body pcb_rw is
 	procedure board_check_arc (
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
-		use et_packages.pac_shapes;
 	begin
 		log (text => "checking arc ...", level => log_threshold);
 
@@ -672,7 +643,6 @@ package body pcb_rw is
 	procedure read_board_arc (line : et_string_processing.type_fields_of_line) is
 	-- Reads start and end point of the board_arc. If the statement is invalid then an error issued.
 		kw : string := f (line, 1);
-		use et_packages.pac_shapes;
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -705,7 +675,6 @@ package body pcb_rw is
 	function read_board_arc (line : et_string_processing.type_fields_of_line) return boolean is
 	-- Reads start and end point of the board_arc. If the statement is invalid then it returns a false.
 		kw : string := f (line, 1);
-		use et_packages.pac_shapes;
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -747,7 +716,6 @@ package body pcb_rw is
 	procedure read_board_circle (line : et_string_processing.type_fields_of_line) is
 	-- Reads center and radius of the board_circle. If the statement is invalid then an error issued.
 		kw : string := f (line, 1);
-		use et_packages.pac_shapes;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_center then -- center x 150 y 45
@@ -768,7 +736,6 @@ package body pcb_rw is
 	function read_board_circle (line : et_string_processing.type_fields_of_line) return boolean is
 	-- Reads center and radius of the board_circle. If the statement is invalid then it returns false.
 		kw : string := f (line, 1);
-		use et_packages.pac_shapes;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_center then -- center x 150 y 45
@@ -796,7 +763,7 @@ package body pcb_rw is
 		polygon			: in type_polygon;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
-		use et_packages.pac_shapes;
+		use pac_shapes;
 		status : constant type_polygon_status := is_closed (polygon);
 	begin
 		log (text => "checking polygon outline ...", level => log_threshold);
@@ -813,12 +780,12 @@ package body pcb_rw is
 	end check_outline;
 	
 	procedure increment_segment_count is 
-		use et_packages.pac_shapes;
+		use pac_shapes;
 	begin
 		polygon.segments_total := polygon.segments_total + 1;
 	end increment_segment_count;
 
-	function segment_count return et_packages.pac_shapes.type_polygon_segment_count is begin
+	function segment_count return pac_shapes.type_polygon_segment_count is begin
 		return polygon.segments_total;
 	end segment_count;
 
@@ -844,8 +811,7 @@ package body pcb_rw is
 
 	-- package and board relevant:	
 	procedure board_reset_circle_fillable is 
-		use et_packages;
-		use et_packages.pac_shapes;
+		use pac_shapes;
 	begin 
 		board_circle		:= (others => <>);
 		board_filled		:= type_filled'first;
@@ -859,15 +825,12 @@ package body pcb_rw is
 	-- Composes a fillable circle from the given parameters. 
 	-- Filled and fill_style are discriminants. Depending on them some parameters
 	-- matter or not. See spec for type_fillable_circle.
-		circle				: in et_packages.pac_shapes.type_circle;
+		circle				: in pac_shapes.type_circle;
 		filled				: in type_filled;
 		fill_style			: in et_packages.type_fill_style;
 		circumfence_width	: in et_packages.type_general_line_width;
 		hatching			: in et_packages.type_hatching)
-		return et_packages.type_fillable_circle is
-
-		use et_packages;
-		use et_packages.pac_shapes;
+		return type_fillable_circle is
 
 	begin -- to_fillable_circle
 		case filled is
@@ -894,9 +857,7 @@ package body pcb_rw is
 		end case;
 	end to_fillable_circle;
 	
-	function board_make_fillable_circle return et_packages.type_fillable_circle is 
-		use et_packages;
-	begin
+	function board_make_fillable_circle return type_fillable_circle is begin
 		return to_fillable_circle (
 			circle 				=> pac_shapes.type_circle (board_circle),
 			filled				=> board_filled,
@@ -905,16 +866,11 @@ package body pcb_rw is
 			hatching			=> board_hatching);
 	end;
 
-	function board_make_fillable_circle_solid return et_packages.type_fillable_circle_solid is 
-		use et_packages;
-	begin
-		return (et_packages.pac_shapes.type_circle (board_circle) with board_filled);
+	function board_make_fillable_circle_solid return type_fillable_circle_solid is begin
+		return (pac_shapes.type_circle (board_circle) with board_filled);
 	end;
 
-	function board_make_copper_circle return et_packages.type_copper_circle is
-		use et_packages;
-		use et_packages.pac_shapes;
-	begin
+	function board_make_copper_circle return type_copper_circle is begin
 		case board_filled is
 			when NO =>
 				return (pac_shapes.type_circle (board_circle) with 
@@ -942,8 +898,6 @@ package body pcb_rw is
 	-- This procdure resets polygon properties to their defaults.
 	-- This procdure is used by both package and board parsing procedures read_package and read_module_file.
 	-- Some properties have no meaning in packages as remarked below.
-		use et_packages;
-		use et_packages.pac_shapes;
 		use et_pcb_stack;
 	begin
 		polygon				:= (others => <>);
@@ -955,7 +909,7 @@ package body pcb_rw is
 		
 		polygon_pad_connection	:= et_pcb.type_polygon_pad_connection'first; -- board relevant only
 		polygon_priority		:= et_pcb.type_polygon_priority'first;  -- board relevant only
-		polygon_isolation		:= et_packages.type_track_clearance'first;
+		polygon_isolation		:= type_track_clearance'first;
 		polygon_width_min		:= type_track_width'first;
 
 		signal_layer			:= type_signal_layer'first;  -- board relevant only
@@ -971,8 +925,7 @@ package body pcb_rw is
 	procedure contours_end   is begin section_mark (section_contours, FOOTER); end;
 
 -- SILK SCREEN
-	procedure write_line (cursor : in et_packages.type_silk_lines.cursor) is 
-		use et_packages;
+	procedure write_line (cursor : in type_silk_lines.cursor) is 
 		use type_silk_lines;
 	begin
 		line_begin;
@@ -981,8 +934,7 @@ package body pcb_rw is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_packages.type_silk_arcs.cursor) is 
-		use et_packages;
+	procedure write_arc (cursor : in type_silk_arcs.cursor) is 
 		use type_silk_arcs;
 	begin
 		arc_begin;
@@ -991,15 +943,13 @@ package body pcb_rw is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_packages.type_silk_circles.cursor) is 
-		use et_packages;
+	procedure write_circle (cursor : in type_silk_circles.cursor) is 
 		use type_silk_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_packages.pac_silk_polygons.cursor) is 
-		use et_packages;
+	procedure write_polygon (cursor : in pac_silk_polygons.cursor) is 
 		use pac_silk_polygons;
 	begin
 		fill_zone_begin;
@@ -1022,8 +972,7 @@ package body pcb_rw is
 
 	end write_polygon;
 
-	procedure write_cutout (cursor : in et_packages.pac_silk_cutouts.cursor) is 
-		use et_packages;
+	procedure write_cutout (cursor : in pac_silk_cutouts.cursor) is 
 		use pac_silk_cutouts;
 	begin
 		cutout_zone_begin;
@@ -1037,8 +986,7 @@ package body pcb_rw is
 	end;
 
 -- ASSEMBLY DOCUMENTATION
-	procedure write_line (cursor : in et_packages.type_doc_lines.cursor) is 
-		use et_packages;
+	procedure write_line (cursor : in type_doc_lines.cursor) is 
 		use type_doc_lines;
 	begin
 		line_begin;
@@ -1047,8 +995,7 @@ package body pcb_rw is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_packages.type_doc_arcs.cursor) is 
-		use et_packages;
+	procedure write_arc (cursor : in type_doc_arcs.cursor) is 
 		use type_doc_arcs;
 	begin
 		arc_begin;
@@ -1057,15 +1004,13 @@ package body pcb_rw is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_packages.type_doc_circles.cursor) is
-		use et_packages;
+	procedure write_circle (cursor : in type_doc_circles.cursor) is
 		use type_doc_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_packages.pac_doc_polygons.cursor) is 
-		use et_packages;
+	procedure write_polygon (cursor : in pac_doc_polygons.cursor) is 
 		use pac_doc_polygons;
 	begin
 		fill_zone_begin;
@@ -1087,8 +1032,7 @@ package body pcb_rw is
 		fill_zone_end;
 	end write_polygon;
 
-	procedure write_cutout (cursor : in et_packages.pac_doc_cutouts.cursor) is 
-		use et_packages;
+	procedure write_cutout (cursor : in pac_doc_cutouts.cursor) is 
 		use pac_doc_cutouts;
 	begin
 		cutout_zone_begin;
@@ -1102,25 +1046,23 @@ package body pcb_rw is
 	end;
 	
 -- KEEPOUT
-	procedure write_line (cursor : in et_packages.type_keepout_lines.cursor) is
-		use et_packages.type_keepout_lines;
+	procedure write_line (cursor : in type_keepout_lines.cursor) is
+		use type_keepout_lines;
 	begin
 		line_begin;
 		write_line (element (cursor));
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_packages.type_keepout_arcs.cursor) is 
-		use et_packages.type_keepout_arcs;
+	procedure write_arc (cursor : in type_keepout_arcs.cursor) is 
+		use type_keepout_arcs;
 	begin
 		arc_begin;
 		write_arc (element (cursor));
 		arc_end;
 	end write_arc;
 	
-	procedure write_circle (cursor : in et_packages.type_keepout_circles.cursor) is 
-		use et_packages;
-		use et_packages.pac_shapes;
+	procedure write_circle (cursor : in type_keepout_circles.cursor) is 
 		use type_keepout_circles;
 	begin
 		circle_begin;
@@ -1129,8 +1071,7 @@ package body pcb_rw is
 		circle_end;
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_packages.type_keepout_polygons.cursor) is 
-		use et_packages;
+	procedure write_polygon (cursor : in type_keepout_polygons.cursor) is 
 		use type_keepout_polygons;
 	begin
 		fill_zone_begin;
@@ -1143,8 +1084,7 @@ package body pcb_rw is
 		fill_zone_end;
 	end write_polygon;
 
-	procedure write_cutout (cursor : in et_packages.pac_keepout_cutouts.cursor) is 
-		use et_packages;
+	procedure write_cutout (cursor : in pac_keepout_cutouts.cursor) is 
 		use pac_keepout_cutouts;
 	begin
 		cutout_zone_begin;
@@ -1157,8 +1097,7 @@ package body pcb_rw is
 	end;
 
 -- STOP MASK
-	procedure write_line (cursor : in et_packages.type_stop_lines.cursor) is 
-		use et_packages;
+	procedure write_line (cursor : in type_stop_lines.cursor) is 
 		use type_stop_lines;
 	begin
 		line_begin;
@@ -1167,8 +1106,7 @@ package body pcb_rw is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_packages.type_stop_arcs.cursor) is 
-		use et_packages;
+	procedure write_arc (cursor : in type_stop_arcs.cursor) is 
 		use type_stop_arcs;
 	begin
 		arc_begin;
@@ -1177,15 +1115,13 @@ package body pcb_rw is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_packages.type_stop_circles.cursor) is 
-		use et_packages;
+	procedure write_circle (cursor : in type_stop_circles.cursor) is 
 		use type_stop_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_packages.type_stop_polygons.cursor) is 
-		use et_packages;
+	procedure write_polygon (cursor : in type_stop_polygons.cursor) is 
 		use type_stop_polygons;
 	begin
 		fill_zone_begin;
@@ -1203,8 +1139,7 @@ package body pcb_rw is
 		fill_zone_end;
 	end write_polygon;
 
-	procedure write_cutout (cursor : in et_packages.pac_stop_cutouts.cursor) is 
-		use et_packages;
+	procedure write_cutout (cursor : in pac_stop_cutouts.cursor) is 
 		use pac_stop_cutouts;
 	begin
 		cutout_zone_begin;
@@ -1218,8 +1153,7 @@ package body pcb_rw is
 	end;
 
 -- STENCIL (OR SOLDER PASTE MASK)
-	procedure write_line (cursor : in et_packages.type_stencil_lines.cursor) is 
-		use et_packages;
+	procedure write_line (cursor : in type_stencil_lines.cursor) is 
 		use type_stencil_lines;
 	begin
 		line_begin;
@@ -1228,8 +1162,7 @@ package body pcb_rw is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_packages.type_stencil_arcs.cursor) is 
-		use et_packages;
+	procedure write_arc (cursor : in type_stencil_arcs.cursor) is 
 		use type_stencil_arcs;
 	begin
 		arc_begin;
@@ -1238,15 +1171,13 @@ package body pcb_rw is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_packages.type_stencil_circles.cursor) is 
-		use et_packages;
+	procedure write_circle (cursor : in type_stencil_circles.cursor) is 
 		use type_stencil_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_packages.type_stencil_polygons.cursor) is 
-		use et_packages;
+	procedure write_polygon (cursor : in type_stencil_polygons.cursor) is 
 		use type_stencil_polygons;
 	begin
 		fill_zone_begin;
@@ -1264,8 +1195,7 @@ package body pcb_rw is
 		fill_zone_end;
 	end write_polygon;
 
-	procedure write_cutout (cursor : in et_packages.pac_stencil_cutouts.cursor) is 
-		use et_packages;
+	procedure write_cutout (cursor : in pac_stencil_cutouts.cursor) is 
 		use pac_stencil_cutouts;
 	begin
 		cutout_zone_begin;
@@ -1279,8 +1209,7 @@ package body pcb_rw is
 	end;
 
 -- ROUTE RESTRICT
-	procedure write_line (cursor : in et_packages.type_route_restrict_lines.cursor) is 
-		use et_packages;
+	procedure write_line (cursor : in type_route_restrict_lines.cursor) is 
 		use et_pcb_stack;
 		use type_route_restrict_lines;
 	begin
@@ -1290,8 +1219,7 @@ package body pcb_rw is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_packages.type_route_restrict_arcs.cursor) is 
-		use et_packages;
+	procedure write_arc (cursor : in type_route_restrict_arcs.cursor) is 
 		use et_pcb_stack;
 		use type_route_restrict_arcs;
 	begin
@@ -1301,8 +1229,7 @@ package body pcb_rw is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_packages.type_route_restrict_circles.cursor) is 
-		use et_packages;
+	procedure write_circle (cursor : in type_route_restrict_circles.cursor) is 
 		use type_route_restrict_circles;
 	begin
 		circle_begin;
@@ -1312,8 +1239,7 @@ package body pcb_rw is
 		circle_end;
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_packages.type_route_restrict_polygons.cursor) is 
-		use et_packages;
+	procedure write_polygon (cursor : in type_route_restrict_polygons.cursor) is 
 		use type_route_restrict_polygons;
 	begin
 		fill_zone_begin;
@@ -1327,8 +1253,7 @@ package body pcb_rw is
 		fill_zone_end;
 	end write_polygon;
 
-	procedure write_cutout (cursor : in et_packages.pac_route_restrict_cutouts.cursor) is 
-		use et_packages;
+	procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor) is 
 		use pac_route_restrict_cutouts;
 	begin
 		cutout_zone_begin;
@@ -1342,8 +1267,7 @@ package body pcb_rw is
 	end;
 
 -- VIA RESTRICT
-	procedure write_line (cursor : in et_packages.type_via_restrict_lines.cursor) is 
-		use et_packages;
+	procedure write_line (cursor : in type_via_restrict_lines.cursor) is 
 		use et_pcb_stack;
 		use type_via_restrict_lines;
 	begin
@@ -1353,8 +1277,7 @@ package body pcb_rw is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_packages.type_via_restrict_arcs.cursor) is 
-		use et_packages;
+	procedure write_arc (cursor : in type_via_restrict_arcs.cursor) is 
 		use et_pcb_stack;
 		use type_via_restrict_arcs;
 	begin
@@ -1364,9 +1287,7 @@ package body pcb_rw is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_packages.type_via_restrict_circles.cursor) is 
-		use et_packages;
-		use et_packages.pac_shapes;		
+	procedure write_circle (cursor : in type_via_restrict_circles.cursor) is 
 		use et_pcb_stack;		
 		use type_via_restrict_circles;
 	begin
@@ -1377,8 +1298,7 @@ package body pcb_rw is
 		circle_end;
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_packages.type_via_restrict_polygons.cursor) is 
-		use et_packages;
+	procedure write_polygon (cursor : in type_via_restrict_polygons.cursor) is 
 		use et_pcb_stack;
 		use type_via_restrict_polygons;
 	begin
@@ -1393,8 +1313,7 @@ package body pcb_rw is
 		fill_zone_end;
 	end write_polygon;
 
-	procedure write_cutout (cursor : in et_packages.pac_via_restrict_cutouts.cursor) is 
-		use et_packages;
+	procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor) is 
 		use pac_via_restrict_cutouts;
 	begin
 		cutout_zone_begin;
@@ -1408,8 +1327,7 @@ package body pcb_rw is
 	end;
 
 -- BOARD CONTOUR
-	procedure write_line (cursor : in et_packages.type_pcb_contour_lines.cursor) is 
-		use et_packages;
+	procedure write_line (cursor : in type_pcb_contour_lines.cursor) is 
 		use type_pcb_contour_lines;
 	begin
 		line_begin;
@@ -1417,8 +1335,7 @@ package body pcb_rw is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_packages.type_pcb_contour_arcs.cursor) is 
-		use et_packages;
+	procedure write_arc (cursor : in type_pcb_contour_arcs.cursor) is 
 		use type_pcb_contour_arcs;
 	begin
 		arc_begin;
@@ -1426,8 +1343,7 @@ package body pcb_rw is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_packages.type_pcb_contour_circles.cursor) is 
-		use et_packages;
+	procedure write_circle (cursor : in type_pcb_contour_circles.cursor) is 
 		use type_pcb_contour_circles;
 	begin
 		circle_begin;
@@ -1437,7 +1353,7 @@ package body pcb_rw is
 	
 	procedure write_line (cursor : in et_pcb.type_pcb_contour_lines.cursor) is 
 		use et_pcb;
-		use type_pcb_contour_lines;
+		use et_pcb.type_pcb_contour_lines;
 	begin
 		line_begin;
 		write_line (element (cursor));
@@ -1447,7 +1363,7 @@ package body pcb_rw is
 	
 	procedure write_arc (cursor : in et_pcb.type_pcb_contour_arcs.cursor) is 
 		use et_pcb;
-		use type_pcb_contour_arcs;
+		use et_pcb.type_pcb_contour_arcs;
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -1457,7 +1373,7 @@ package body pcb_rw is
 
 	procedure write_circle (cursor : in et_pcb.type_pcb_contour_circles.cursor) is 
 		use et_pcb;
-		use type_pcb_contour_circles;
+		use et_pcb.type_pcb_contour_circles;
 	begin
 		circle_begin;
 		write_circle (element (cursor));
@@ -1988,7 +1904,6 @@ package body pcb_rw is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages;
-		use et_packages.pac_shapes;
 		use et_pcb;
 		
 		file_handle : ada.text_io.file_type;
@@ -2031,19 +1946,19 @@ package body pcb_rw is
 
 		terminal_position		: type_position := origin_zero_rotation;
 
-		tht_width_inner_layers	: et_packages.type_track_width := et_packages.type_track_width'first;
-		tht_hole				: et_packages.type_terminal_tht_hole := et_packages.terminal_tht_hole_default;
+		tht_width_inner_layers	: type_track_width := type_track_width'first;
+		tht_hole				: type_terminal_tht_hole := terminal_tht_hole_default;
 		tht_drill_size			: type_drill_size := type_drill_size'first;
-		tht_millings			: et_packages.type_plated_millings;
+		tht_millings			: type_plated_millings;
 
-		terminal_name			: et_packages.type_terminal_name.bounded_string;
-		terminal_technology		: et_packages.type_assembly_technology := et_packages.assembly_technology_default;
-		tht_pad_shape			: et_packages.type_pad_outline_tht;		
-		smt_pad_shape			: et_packages.type_pad_outline;
+		terminal_name			: type_terminal_name.bounded_string;
+		terminal_technology		: type_assembly_technology := assembly_technology_default;
+		tht_pad_shape			: type_pad_outline_tht;		
+		smt_pad_shape			: type_pad_outline;
 
 		smt_pad_face			: et_pcb_coordinates.type_face := et_pcb_coordinates.face_default;
-		smt_stop_mask			: et_packages.type_stop_mask_status := et_packages.stop_mask_status_default;
-		smt_solder_paste		: et_packages.type_solder_paste_status := et_packages.solder_paste_status_default;
+		smt_stop_mask			: type_stop_mask_status := stop_mask_status_default;
+		smt_solder_paste		: type_solder_paste_status := solder_paste_status_default;
 
 		procedure build_terminal is 
 		-- Assembles the elements of a terminal and appends the final terminal to the
@@ -2108,14 +2023,14 @@ package body pcb_rw is
 			end if;
 
 			-- clean up for next terminal
-			terminal_position := origin_zero_rotation;
- 			smt_pad_shape := (others => <>);
-			smt_stop_mask := et_packages.stop_mask_status_default;
-			smt_solder_paste := solder_paste_status_default;
-			tht_pad_shape := (others => <>);
-			tht_hole := terminal_tht_hole_default;
-			tht_width_inner_layers := et_packages.type_track_width'first;
-			tht_drill_size := type_drill_size'first;
+			terminal_position	:= origin_zero_rotation;
+ 			smt_pad_shape		:= (others => <>);
+			smt_stop_mask		:= stop_mask_status_default;
+			smt_solder_paste	:= solder_paste_status_default;
+			tht_pad_shape		:= (others => <>);
+			tht_hole			:= terminal_tht_hole_default;
+			tht_width_inner_layers	:= type_track_width'first;
+			tht_drill_size			:= type_drill_size'first;
 			
 		end build_terminal;
 		

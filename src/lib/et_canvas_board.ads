@@ -56,6 +56,7 @@ with gtkada.style;
 with et_general;
 with et_geometry;			use et_geometry;
 with et_pcb_coordinates;	use et_pcb_coordinates;
+with et_terminals;
 with et_packages;
 with et_project;			--use et_project;
 with et_frames;				--use et_frames;
@@ -83,8 +84,8 @@ package et_canvas_board is
 	-- In order to draw objects of packages and board we instantiate this package:
 	package pac_draw_package is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas	=> pac_canvas,
-		pac_shapes	=> et_packages.pac_shapes,
-		pac_text	=> et_packages.pac_text);
+		pac_shapes	=> et_terminals.pac_shapes,
+		pac_text	=> et_terminals.pac_text);
 	
 	use pac_canvas;	
 
@@ -181,7 +182,7 @@ package et_canvas_board is
 	
 	cursor_line_width : constant type_distance_positive := 0.8;
 	cursor_half_size : constant type_distance_positive := 50.0;
-	type type_cursor_line is new et_packages.pac_shapes.type_line with null record;
+	type type_cursor_line is new et_terminals.pac_shapes.type_line with null record;
 	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;

@@ -52,11 +52,13 @@ with ada.containers.ordered_sets;
 with et_string_processing;
 with et_schematic;
 with et_general;
+with et_terminals;
 with et_packages;
 with et_pcb;
 with et_pcb_coordinates;
 with et_kicad_general;			use et_kicad_general;
 with et_text;
+with et_terminals;				use et_terminals;
 with et_drills;					use et_drills;
 with et_packages;
 with et_devices;				use et_devices;
@@ -64,8 +66,8 @@ with et_frames;
 
 package et_kicad_pcb is
 
-	use et_packages.pac_shapes;
-	use et_packages.pac_text;
+	use et_terminals.pac_shapes;
+	use et_terminals.pac_text;
 	use et_pcb_coordinates.pac_geometry_brd;
 	
 	-- V4:
@@ -206,18 +208,18 @@ package et_kicad_pcb is
 	-- They are derived from the abstract anchestor types in et_pcb.ads.
 	-- Their additional components (width, layer, angle, ...) are later 
 	-- copied to the final lines, arcs and circles as specified in et_pcb.ads:
-	type type_line is new et_packages.pac_shapes.type_line with record
+	type type_line is new et_terminals.pac_shapes.type_line with record
 		width	: type_text_line_width;
 		layer	: type_layer_abbrevation;
 	end record;
 
-	type type_arc is new et_packages.pac_shapes.type_arc with record
+	type type_arc is new et_terminals.pac_shapes.type_arc with record
 		width 	: type_text_line_width;
 		angle 	: et_pcb_coordinates.type_rotation;
 		layer	: type_layer_abbrevation;
 	end record;
 
-	type type_circle is new et_packages.pac_shapes.type_circle with record -- center and radius incl.
+	type type_circle is new et_terminals.pac_shapes.type_circle with record -- center and radius incl.
 		width 	: type_text_line_width;
 		point 	: type_point;
 		layer	: type_layer_abbrevation;
@@ -397,12 +399,12 @@ package et_kicad_pcb is
 	type type_visible_elements is new string (1..8);
 
 	type type_board_setup is record
-		last_trace_width	: et_packages.type_track_width;
-		trace_clearance		: et_packages.type_track_clearance;
-		zone_clearance		: et_packages.type_track_clearance;
+		last_trace_width	: et_terminals.type_track_width;
+		trace_clearance		: et_terminals.type_track_clearance;
+		zone_clearance		: et_terminals.type_track_clearance;
 		zone_45_only		: type_zone_45_only;
-		trace_min			: et_packages.type_track_width;
-		segment_width		: et_packages.type_track_width;
+		trace_min			: et_terminals.type_track_width;
+		segment_width		: et_terminals.type_track_width;
 		edge_width			: type_edge_cut_line_width;
 		via_size			: type_via_diameter;	-- regular vias
 		via_drill			: type_drill_size;		-- regular vias
@@ -414,14 +416,14 @@ package et_kicad_pcb is
 		micro_via_min_size	: type_via_diameter;	-- micro vias
 		micro_via_min_drill	: type_drill_size;		-- micro vias
 		pcb_text_width		: type_text_line_width;	-- all kinds of texts (no matter what layer)
-		pcb_text_size_x		: et_packages.pac_text.type_text_size;
-		pcb_text_size_y		: et_packages.pac_text.type_text_size;		
+		pcb_text_size_x		: et_terminals.pac_text.type_text_size;
+		pcb_text_size_y		: et_terminals.pac_text.type_text_size;		
 		module_edge_width	: et_packages.type_general_line_width;
-		module_text_size_x	: et_packages.pac_text.type_text_size;
-		module_text_size_y	: et_packages.pac_text.type_text_size;
+		module_text_size_x	: et_terminals.pac_text.type_text_size;
+		module_text_size_y	: et_terminals.pac_text.type_text_size;
 		module_text_width	: type_text_line_width; -- line width
-		pad_size_x			: et_packages.type_pad_size;
-		pad_size_y			: et_packages.type_pad_size;
+		pad_size_x			: et_terminals.type_pad_size;
+		pad_size_y			: et_terminals.type_pad_size;
 		pad_drill			: type_drill_size;
 		stop_mask_expansion	: et_packages.type_stop_mask_expansion;
 		aux_axis_origin_x	: type_aux_axis_origin;
@@ -568,7 +570,7 @@ package et_kicad_pcb is
 	type type_package_library is new type_package with record
 		silk_screen				: et_packages.type_silk_screen_both_sides; -- incl. placeholder for reference and purpose
 		assembly_documentation	: et_packages.type_assembly_documentation_both_sides; -- incl. placeholder for value
-		terminals				: et_packages.type_terminals.map;
+		terminals				: et_terminals.type_terminals.map;
 	end record;
 	
 	-- Lots of packages (in a library) can be collected in a map:
@@ -636,15 +638,15 @@ package et_kicad_pcb is
 	
 	-- In the pcb drawing, a terminal has a net attached. For this reason a
 	-- list of terminals is declared here:
-	type type_terminal is new et_packages.type_terminal with record
+	type type_terminal is new et_terminals.type_terminal with record
 		net_name : et_general.type_net_name.bounded_string;
 	end record;
 
 	-- the list of terminals of a package:
 	package type_terminals is new indefinite_ordered_maps (
-		key_type		=> et_packages.type_terminal_name.bounded_string,
+		key_type		=> et_terminals.type_terminal_name.bounded_string,
 		element_type	=> type_terminal,
-		"<"				=> et_packages.type_terminal_name."<");
+		"<"				=> et_terminals.type_terminal_name."<");
 
 
 
@@ -754,7 +756,7 @@ package et_kicad_pcb is
 		timestamp			: type_timestamp;
 		gui_hatch_style		: type_polygon_hatch := EDGE;
 		gui_hatch_width		: et_pcb_coordinates.type_distance;	-- see spec for type_polygon_hatch. always 0.508. CS use subtype
-		min_thickness		: et_packages.type_track_width;	-- minimum line width
+		min_thickness		: et_terminals.type_track_width;	-- minimum line width
 		filled				: boolean; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
 		arc_segments		: natural := 0; -- CS subtype ? -- only 16 or 32 allowed
@@ -763,7 +765,7 @@ package et_kicad_pcb is
 		pad_technology		: type_polygon_pad_technology := type_polygon_pad_technology'last;
 		pad_connection		: type_polygon_pad_connection := type_polygon_pad_connection'first;
 		priority_level		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
-		isolation_gap		: et_packages.type_track_clearance := et_packages.type_track_clearance'first; -- the space between foreign pads and the polygon
+		isolation_gap		: et_terminals.type_track_clearance := et_terminals.type_track_clearance'first; -- the space between foreign pads and the polygon
 		corners				: type_polygon_points.list;
 		fill_style			: et_packages.type_fill_style := et_packages.SOLID; -- a polygon is always filled
 		hatching			: et_packages.type_hatching;

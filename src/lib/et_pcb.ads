@@ -57,6 +57,7 @@ with et_string_processing;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;
+with et_terminals;				use et_terminals;
 with et_drills;					use et_drills;
 with et_packages;				use et_packages;
 with et_pcb_stack;				use et_pcb_stack;
@@ -64,7 +65,7 @@ with et_frames;
 
 package et_pcb is
 	use et_pcb_coordinates.pac_geometry_brd;
-	use et_packages.pac_shapes;
+	use et_terminals.pac_shapes;
 	
 	-- VIAS
 	type type_micro_vias_allowed is (NO, YES);

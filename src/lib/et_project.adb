@@ -1089,7 +1089,8 @@ package body et_project is
 				net_name	: in type_net_name.bounded_string;
 				net			: in et_schematic.type_net) is
 				use et_packages;
-				use et_packages.pac_shapes;
+				use et_terminals;
+				use et_terminals.pac_shapes;
 				use et_pcb;
 				use et_pcb_stack;
 				use et_pcb_coordinates.pac_geometry_brd;
@@ -1657,6 +1658,7 @@ package body et_project is
 
 		procedure query_board is
 			use et_packages;
+			use et_terminals;
 			use et_pcb;
 			use et_pcb_stack;
 			use et_pcb_coordinates.pac_geometry_brd;
@@ -3285,6 +3287,7 @@ package body et_project is
 				-- is now assigned to the board where it belongs to.
 
 					use et_packages;
+					use et_terminals;
 					
 					procedure do_it (
 						module_name	: in type_module_name.bounded_string;
@@ -3371,6 +3374,7 @@ package body et_project is
 				-- Depending on the layer and the side of the board (face) the board_arc
 				-- is now assigned to the board where it belongs to.
 
+					use et_terminals;
 					use et_packages;
 					
 					procedure do_it (
@@ -3544,8 +3548,9 @@ package body et_project is
 						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 						use et_pcb_coordinates;
+						use et_terminals;
+						use et_terminals.pac_shapes;
 						use et_packages;
-						use et_packages.pac_shapes;
 						
 						procedure append_silk_polygon_top is begin
 							case board_fill_style is 
@@ -3777,8 +3782,9 @@ package body et_project is
 						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 						use et_pcb_coordinates;
+						use et_terminals;
+						use et_terminals.pac_shapes;
 						use et_packages;
-						use et_packages.pac_shapes;
 						
 						procedure append_silk_cutout_top is begin
 							pac_silk_cutouts.append (
@@ -3904,6 +3910,7 @@ package body et_project is
 				end insert_cutout;
 
 				procedure insert_cutout_via_restrict is
+					use et_terminals;
 					use et_packages;
 					use et_pcb_stack;
 					use type_signal_layers;
@@ -3932,6 +3939,7 @@ package body et_project is
 				end insert_cutout_via_restrict;
 
 				procedure insert_cutout_route_restrict is
+					use et_terminals;
 					use et_packages;
 					use et_pcb_stack;
 					use type_signal_layers;
@@ -3961,8 +3969,9 @@ package body et_project is
 
 				procedure insert_cutout_copper is
 				-- This is about cutout zones to trim floating polygons in signal layers. No connection to any net.
+					use et_terminals;
+					use et_terminals.pac_shapes;
 					use et_packages;
-					use et_packages.pac_shapes;
 					use et_pcb;
 					
 					procedure do_it (
@@ -4146,6 +4155,7 @@ package body et_project is
 				end insert_placeholder;
 
 				procedure insert_line_route_restrict is
+					use et_terminals;
 					use et_packages;
 					use et_pcb_stack;
 					use type_signal_layers;
@@ -4172,6 +4182,7 @@ package body et_project is
 				end insert_line_route_restrict;
 				
 				procedure insert_arc_route_restrict is
+					use et_terminals;
 					use et_packages;
 					use et_pcb_stack;					
 					use type_signal_layers;
@@ -4224,6 +4235,7 @@ package body et_project is
 				end insert_circle_route_restrict;
 
 				procedure insert_polygon_route_restrict is
+					use et_terminals;
 					use et_packages;
 					use et_pcb_stack;
 					use type_signal_layers;
@@ -4252,6 +4264,7 @@ package body et_project is
 				end insert_polygon_route_restrict;
 
 				procedure insert_line_via_restrict is
+					use et_terminals;
 					use et_packages;
 					use et_pcb_stack;
 					use type_signal_layers;
@@ -4279,6 +4292,7 @@ package body et_project is
 				end insert_line_via_restrict;
 
 				procedure insert_arc_via_restrict is
+					use et_terminals;
 					use et_packages;
 					use et_pcb_stack;
 					use type_signal_layers;
@@ -4332,6 +4346,7 @@ package body et_project is
 				end insert_circle_via_restrict;
 
 				procedure insert_polygon_via_restrict is
+					use et_terminals;
 					use et_packages;
 					use et_pcb_stack;
 					use type_signal_layers;
@@ -4362,7 +4377,7 @@ package body et_project is
 				procedure insert_polygon_copper is
 				-- This is about floating polygons in signal layers. No connection to any net.
 					use et_packages;
-					use et_packages.pac_shapes;
+					use et_terminals.pac_shapes;
 					use et_pcb;
 					
 					procedure do_it (
@@ -4416,7 +4431,7 @@ package body et_project is
 					begin
 						pac_copper_lines.append (
 							container	=> module.board.copper.lines,
-							new_item	=> (et_packages.pac_shapes.type_line (board_line) with
+							new_item	=> (et_terminals.pac_shapes.type_line (board_line) with
 											width	=> board_line_width,
 											layer	=> signal_layer));
 					end;
@@ -4442,7 +4457,7 @@ package body et_project is
 					begin
 						pac_copper_arcs.append (
 							container	=> module.board.copper.arcs,
-							new_item	=> (et_packages.pac_shapes.type_arc (board_arc) with
+							new_item	=> (et_terminals.pac_shapes.type_arc (board_arc) with
 											width	=> board_line_width,
 											layer	=> signal_layer));
 					end;
@@ -4537,7 +4552,7 @@ package body et_project is
 					begin
 						type_pcb_contour_lines.append (
 							container	=> module.board.contours.lines,
-							new_item	=> (et_packages.pac_shapes.type_line (board_line) with board_lock_status));
+							new_item	=> (et_terminals.pac_shapes.type_line (board_line) with board_lock_status));
 					end do_it;
 										
 				begin -- insert_line_contour
@@ -4560,7 +4575,7 @@ package body et_project is
 					begin
 						type_pcb_contour_arcs.append (
 							container	=> module.board.contours.arcs,
-							new_item	=> (et_packages.pac_shapes.type_arc (board_arc) with board_lock_status));
+							new_item	=> (et_terminals.pac_shapes.type_arc (board_arc) with board_lock_status));
 					end do_it;
 										
 				begin -- insert_arc_contour
@@ -4583,7 +4598,7 @@ package body et_project is
 					begin
 						type_pcb_contour_circles.append (
 							container	=> module.board.contours.circles,
-							new_item	=> (et_packages.pac_shapes.type_circle (board_circle) with board_lock_status));
+							new_item	=> (et_terminals.pac_shapes.type_circle (board_circle) with board_lock_status));
 					end do_it;
 										
 				begin -- insert_circle_contour
@@ -4666,7 +4681,7 @@ package body et_project is
 				end insert_assembly_variant;
 
 				procedure build_route_polygon is
-					use et_packages.pac_shapes;
+					use et_terminals.pac_shapes;
 
 					procedure solid_polygon is
 						use et_pcb.pac_signal_polygons_solid;
@@ -4778,7 +4793,7 @@ package body et_project is
 				end build_route_polygon;
 
 				procedure build_route_cutout is
-					use et_packages;
+					use et_terminals;
 				begin
 					et_pcb.pac_copper_cutouts.append (
 						container	=> route.cutouts,
@@ -5054,7 +5069,7 @@ package body et_project is
 								-- insert line in route.lines
 								et_pcb.pac_copper_lines.append (
 									container	=> route.lines,
-									new_item	=> (et_packages.pac_shapes.type_line (board_line) with
+									new_item	=> (et_terminals.pac_shapes.type_line (board_line) with
 											width	=> board_line_width,
 											layer	=> signal_layer));
 									
@@ -5149,7 +5164,7 @@ package body et_project is
 								-- insert arc in route.arcs
 								et_pcb.pac_copper_arcs.append (
 									container	=> route.arcs,
-									new_item	=> (et_packages.pac_shapes.type_arc (board_arc) with
+									new_item	=> (et_terminals.pac_shapes.type_arc (board_arc) with
 											width	=> board_line_width,
 											layer	=> signal_layer));
 									
@@ -6238,6 +6253,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_NET_CLASSES =>
 								declare
+									use et_terminals;
 									use et_drills;
 									use et_packages;									
 									use et_pcb;
@@ -6674,7 +6690,7 @@ package body et_project is
 								if not read_board_arc (line) then
 									declare
 										kw : string := f (line, 1);
-										use et_packages.pac_shapes;
+										use et_terminals.pac_shapes;
 										use et_pcb_stack;
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
@@ -6746,7 +6762,7 @@ package body et_project is
 								if not read_board_arc (line) then
 									declare
 										kw : string := f (line, 1);
-										use et_packages.pac_shapes;
+										use et_terminals.pac_shapes;
 										use et_pcb_stack;
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
@@ -6769,7 +6785,7 @@ package body et_project is
 								if not read_board_arc (line) then
 									declare
 										kw : string := f (line, 1);
-										use et_packages.pac_shapes;
+										use et_terminals.pac_shapes;
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
 										if kw = keyword_locked then -- locked no
@@ -6799,7 +6815,7 @@ package body et_project is
 										
 											declare
 												use et_packages;
-												use et_packages.pac_shapes;
+												use et_terminals.pac_shapes;
 												kw : string := f (line, 1);
 											begin
 												-- CS: In the following: set a corresponding parameter-found-flag
@@ -6855,7 +6871,7 @@ package body et_project is
 									declare
 										use et_pcb_stack;
 										use et_packages;
-										use et_packages.pac_shapes;
+										use et_terminals.pac_shapes;
 										use et_pcb_coordinates.pac_geometry_brd;
 										kw : string := f (line, 1);
 									begin
@@ -6882,7 +6898,7 @@ package body et_project is
 								if not read_board_circle (line) then
 									declare
 										use et_packages;
-										use et_packages.pac_shapes;
+										use et_terminals.pac_shapes;
 										use et_pcb_stack;
 										use et_pcb_coordinates.pac_geometry_brd;
 										kw : string := f (line, 1);
@@ -6927,7 +6943,7 @@ package body et_project is
 								if not read_board_circle (line) then
 									declare
 										use et_pcb_coordinates.pac_geometry_brd;
-										use et_packages.pac_shapes;
+										use et_terminals.pac_shapes;
 										kw : string := f (line, 1);
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
@@ -6978,7 +6994,7 @@ package body et_project is
 										SEC_STENCIL | SEC_STOP_MASK =>
 										declare
 											use et_packages;
-											use et_packages.pac_shapes;
+											use et_terminals.pac_shapes;
 											use et_pcb_coordinates.pac_geometry_brd;
 											kw : string := f (line, 1);
 										begin
@@ -7011,7 +7027,7 @@ package body et_project is
 								declare
 									use et_pcb_stack;
 									use et_packages;
-									use et_packages.pac_shapes;
+									use et_terminals.pac_shapes;
 									use et_pcb_coordinates.pac_geometry_brd;
 									kw : string := f (line, 1);
 								begin
@@ -7030,7 +7046,7 @@ package body et_project is
 							when SEC_COPPER => -- non electrical
 								declare
 									use et_packages;
-									use et_packages.pac_shapes;									
+									use et_terminals.pac_shapes;									
 									use et_pcb_stack;
 									use et_pcb_coordinates.pac_geometry_brd;
 									kw : string := f (line, 1);
@@ -7136,7 +7152,7 @@ package body et_project is
 										SEC_STENCIL | SEC_STOP_MASK =>
 										declare
 											use et_packages;
-											use et_packages.pac_shapes;
+											use et_terminals.pac_shapes;
 											use et_pcb_coordinates.pac_geometry_brd;
 											kw : string := f (line, 1);
 										begin
@@ -7168,7 +7184,7 @@ package body et_project is
 
 									when SEC_KEEPOUT =>
 										declare
-											use et_packages.pac_shapes;
+											use et_terminals.pac_shapes;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -7188,7 +7204,7 @@ package body et_project is
 								declare
 									use et_pcb_stack;
 									use et_packages;
-									use et_packages.pac_shapes;
+									use et_terminals.pac_shapes;
 									use et_pcb_coordinates.pac_geometry_brd;
 									kw : string := f (line, 1);
 								begin
@@ -7211,7 +7227,7 @@ package body et_project is
 							when SEC_COPPER => -- non electrical
 								declare
 									use et_packages;
-									use et_packages.pac_shapes;									
+									use et_terminals.pac_shapes;									
 									use et_pcb_stack;
 									use et_pcb_coordinates.pac_geometry_brd;
 									kw : string := f (line, 1);
@@ -7272,6 +7288,7 @@ package body et_project is
 								declare
 									use et_pcb_coordinates.pac_geometry_brd;
 									use et_pcb;
+									use et_terminals;
 									use et_packages;
 									use et_pcb_stack;
 									kw : string := f (line, 1);

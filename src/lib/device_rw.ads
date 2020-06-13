@@ -36,6 +36,7 @@
 --
 
 with et_string_processing;
+with et_terminals;
 with et_devices;				use et_devices;
 with et_symbols;
 with et_pcb_stack;

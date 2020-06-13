@@ -68,6 +68,8 @@ with et_packages;				use et_packages;
 
 package body device_rw is
 
+	use et_terminals;
+	
 	procedure create_device (
 	-- Creates a device and stores it in container et_devices.devices.
 		device_name		: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev

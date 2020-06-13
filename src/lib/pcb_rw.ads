@@ -43,8 +43,9 @@ with ada.containers;            use ada.containers;
 with et_string_processing;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
+with et_terminals;				use et_terminals;
 with et_drills;					use et_drills;
-with et_packages;
+with et_packages;				use et_packages;
 with et_pcb;
 with et_pcb_coordinates;
 with et_pcb_stack;
@@ -100,15 +101,15 @@ package pcb_rw is
 	
 	keyword_locked : constant string := "locked"; -- layout related
 	
-	procedure write_width (width : in et_packages.type_track_width);	
+	procedure write_width (width : in type_track_width);	
 
-	procedure write_line (line : in et_packages.pac_shapes.type_line'class);
+	procedure write_line (line : in pac_shapes.type_line'class);
 	-- writes start and end point of a line
 
-	procedure write_arc (arc : in et_packages.pac_shapes.type_arc'class);
+	procedure write_arc (arc : in pac_shapes.type_arc'class);
 	-- writes center, start and end point of an arc
 
-	procedure write_circle (circle : in et_packages.pac_shapes.type_circle'class);
+	procedure write_circle (circle : in pac_shapes.type_circle'class);
 	-- writes center and radius of a circle
 
 	
@@ -116,8 +117,8 @@ package pcb_rw is
 	procedure write_hatching (hatching : in et_packages.type_hatching_copper);
 	procedure write_easing (easing: in et_packages.type_easing);
 	procedure write_thermal (thermal : in et_pcb.type_thermal);
-	procedure write_width_min (width : in et_packages.type_track_width);
-	procedure write_isolation (iso : in et_packages.type_track_clearance);
+	procedure write_width_min (width : in type_track_width);
+	procedure write_isolation (iso : in type_track_clearance);
 	procedure write_priority (prio : in et_pcb.type_polygon_priority);
 	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer);
 	procedure write_fill_stlye (fill_style : in et_packages.type_fill_style);
@@ -125,12 +126,14 @@ package pcb_rw is
 	procedure write_pad_connection (connection : in et_pcb.type_polygon_pad_connection);
 	procedure write_pad_technology (techno : in et_pcb.type_polygon_pad_technology);	
 	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set);
-	procedure write_circle_fillable (circle : in et_packages.type_fillable_circle);
-	procedure write_circle_copper (circle : in et_packages.type_copper_circle);
+	procedure write_circle_fillable (circle : in type_fillable_circle);
+	procedure write_circle_copper (circle : in type_copper_circle);
+
+	-- Writes the properties of a circle in copper as used in a freetrack:
 	procedure write_circle_copper (circle : in et_pcb.type_copper_circle);	
 	
 	
-	procedure write_polygon_segments (polygon : in et_packages.pac_shapes.type_polygon_base);
+	procedure write_polygon_segments (polygon : in pac_shapes.type_polygon_base);
 	-- writes the segments of a polygon (lines, arcs and circles)
 
 	
@@ -174,7 +177,7 @@ package pcb_rw is
 
 -- BASIC GEOMETRIC OBJECTS USED IN PACKAGES AND BOARDS
 	
-	type type_board_line is new et_packages.pac_shapes.type_line with null record;
+	type type_board_line is new pac_shapes.type_line with null record;
 
 	procedure add_polygon_line (line : in out type_board_line);
 
@@ -183,7 +186,7 @@ package pcb_rw is
 	procedure board_reset_line;
 
 	
-	type type_board_arc is new et_packages.pac_shapes.type_arc with null record;
+	type type_board_arc is new pac_shapes.type_arc with null record;
 
 	procedure add_polygon_arc (arc : in out type_board_arc);
 
@@ -192,7 +195,7 @@ package pcb_rw is
 	procedure board_reset_arc;
 
 	
-	type type_board_circle is new et_packages.pac_shapes.type_circle with null record;
+	type type_board_circle is new pac_shapes.type_circle with null record;
 
 	procedure add_polygon_circle (circle : in out type_board_circle);
 	
@@ -231,7 +234,7 @@ package pcb_rw is
 	board_easing : et_packages.type_easing;
 
 	
-	type type_polygon is new et_packages.pac_shapes.type_polygon_base with null record;
+	type type_polygon is new pac_shapes.type_polygon_base with null record;
 
 	procedure check_outline (
 		polygon			: in type_polygon;
@@ -245,12 +248,12 @@ package pcb_rw is
 	procedure increment_segment_count;
 
 	-- Returns the total number of segments of polygon:
-	function segment_count return et_packages.pac_shapes.type_polygon_segment_count;
+	function segment_count return pac_shapes.type_polygon_segment_count;
 
 
 	
-	polygon_isolation : et_packages.type_track_clearance := et_packages.type_track_clearance'first;
-	polygon_width_min : et_packages.type_track_width := et_packages.type_track_width'first;
+	polygon_isolation : type_track_clearance := type_track_clearance'first;
+	polygon_width_min : type_track_width := type_track_width'first;
 
 	-- board relevant only:
 	polygon_pad_connection	: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
@@ -275,19 +278,19 @@ package pcb_rw is
 	-- Composes a fillable circle from the given parameters. 
 	-- Filled and fill_style are discriminants. Depending on them some parameters
 	-- matter or not. See spec for type_fillable_circle.
-		circle				: in et_packages.pac_shapes.type_circle;
+		circle				: in pac_shapes.type_circle;
 		filled				: in type_filled;
 		fill_style			: in et_packages.type_fill_style;
 		circumfence_width	: in et_packages.type_general_line_width;
 		hatching			: in et_packages.type_hatching)
-		return et_packages.type_fillable_circle;
+		return type_fillable_circle;
 
 	
-	function board_make_fillable_circle return et_packages.type_fillable_circle;
+	function board_make_fillable_circle return type_fillable_circle;
 
-	function board_make_fillable_circle_solid return et_packages.type_fillable_circle_solid;
+	function board_make_fillable_circle_solid return type_fillable_circle_solid;
 
-	function board_make_copper_circle return et_packages.type_copper_circle;
+	function board_make_copper_circle return type_copper_circle;
 			
 
 	
@@ -309,59 +312,59 @@ package pcb_rw is
 
 
 -- SILK SCREEN
-	procedure write_line (cursor : in et_packages.type_silk_lines.cursor);
-	procedure write_arc (cursor : in et_packages.type_silk_arcs.cursor);
-	procedure write_circle (cursor : in et_packages.type_silk_circles.cursor);	
-	procedure write_polygon (cursor : in et_packages.pac_silk_polygons.cursor);
-	procedure write_cutout (cursor : in et_packages.pac_silk_cutouts.cursor);
+	procedure write_line (cursor : in type_silk_lines.cursor);
+	procedure write_arc (cursor : in type_silk_arcs.cursor);
+	procedure write_circle (cursor : in type_silk_circles.cursor);	
+	procedure write_polygon (cursor : in pac_silk_polygons.cursor);
+	procedure write_cutout (cursor : in pac_silk_cutouts.cursor);
 
 -- ASSEMBLY DOCUMENTATION
-	procedure write_line (cursor : in et_packages.type_doc_lines.cursor);
-	procedure write_arc (cursor : in et_packages.type_doc_arcs.cursor);
-	procedure write_circle (cursor : in et_packages.type_doc_circles.cursor);	
-	procedure write_polygon (cursor : in et_packages.pac_doc_polygons.cursor);
-	procedure write_cutout (cursor : in et_packages.pac_doc_cutouts.cursor);
+	procedure write_line (cursor : in type_doc_lines.cursor);
+	procedure write_arc (cursor : in type_doc_arcs.cursor);
+	procedure write_circle (cursor : in type_doc_circles.cursor);	
+	procedure write_polygon (cursor : in pac_doc_polygons.cursor);
+	procedure write_cutout (cursor : in pac_doc_cutouts.cursor);
 	
 -- KEEPOUT
-	procedure write_line (cursor : in et_packages.type_keepout_lines.cursor);
-	procedure write_arc (cursor : in et_packages.type_keepout_arcs.cursor);
-	procedure write_circle (cursor : in et_packages.type_keepout_circles.cursor);
-	procedure write_polygon (cursor : in et_packages.type_keepout_polygons.cursor);
-	procedure write_cutout (cursor : in et_packages.pac_keepout_cutouts.cursor);
+	procedure write_line (cursor : in type_keepout_lines.cursor);
+	procedure write_arc (cursor : in type_keepout_arcs.cursor);
+	procedure write_circle (cursor : in type_keepout_circles.cursor);
+	procedure write_polygon (cursor : in type_keepout_polygons.cursor);
+	procedure write_cutout (cursor : in pac_keepout_cutouts.cursor);
 
 -- STOP MASK
-	procedure write_line (cursor : in et_packages.type_stop_lines.cursor);
-	procedure write_arc (cursor : in et_packages.type_stop_arcs.cursor);
-	procedure write_circle (cursor : in et_packages.type_stop_circles.cursor);
-	procedure write_polygon (cursor : in et_packages.type_stop_polygons.cursor);
-	procedure write_cutout (cursor : in et_packages.pac_stop_cutouts.cursor);
+	procedure write_line (cursor : in type_stop_lines.cursor);
+	procedure write_arc (cursor : in type_stop_arcs.cursor);
+	procedure write_circle (cursor : in type_stop_circles.cursor);
+	procedure write_polygon (cursor : in type_stop_polygons.cursor);
+	procedure write_cutout (cursor : in pac_stop_cutouts.cursor);
 
 -- STENCIL (OR SOLDER PASTE MASK)
-	procedure write_line (cursor : in et_packages.type_stencil_lines.cursor);
-	procedure write_arc (cursor : in et_packages.type_stencil_arcs.cursor);
-	procedure write_circle (cursor : in et_packages.type_stencil_circles.cursor);	
-	procedure write_polygon (cursor : in et_packages.type_stencil_polygons.cursor);
-	procedure write_cutout (cursor : in et_packages.pac_stencil_cutouts.cursor);
+	procedure write_line (cursor : in type_stencil_lines.cursor);
+	procedure write_arc (cursor : in type_stencil_arcs.cursor);
+	procedure write_circle (cursor : in type_stencil_circles.cursor);	
+	procedure write_polygon (cursor : in type_stencil_polygons.cursor);
+	procedure write_cutout (cursor : in pac_stencil_cutouts.cursor);
 	
 -- ROUTE RESTRICT
-	procedure write_line (cursor : in et_packages.type_route_restrict_lines.cursor);
-	procedure write_arc (cursor : in et_packages.type_route_restrict_arcs.cursor);
-	procedure write_circle (cursor : in et_packages.type_route_restrict_circles.cursor);	
-	procedure write_polygon (cursor : in et_packages.type_route_restrict_polygons.cursor);
-	procedure write_cutout (cursor : in et_packages.pac_route_restrict_cutouts.cursor);
+	procedure write_line (cursor : in type_route_restrict_lines.cursor);
+	procedure write_arc (cursor : in type_route_restrict_arcs.cursor);
+	procedure write_circle (cursor : in type_route_restrict_circles.cursor);	
+	procedure write_polygon (cursor : in type_route_restrict_polygons.cursor);
+	procedure write_cutout (cursor : in pac_route_restrict_cutouts.cursor);
 
 -- VIA RESTRICT
-	procedure write_line (cursor : in et_packages.type_via_restrict_lines.cursor);
-	procedure write_arc (cursor : in et_packages.type_via_restrict_arcs.cursor);
-	procedure write_circle (cursor : in et_packages.type_via_restrict_circles.cursor);	
-	procedure write_polygon (cursor : in et_packages.type_via_restrict_polygons.cursor);
-	procedure write_cutout (cursor : in et_packages.pac_via_restrict_cutouts.cursor);
+	procedure write_line (cursor : in type_via_restrict_lines.cursor);
+	procedure write_arc (cursor : in type_via_restrict_arcs.cursor);
+	procedure write_circle (cursor : in type_via_restrict_circles.cursor);	
+	procedure write_polygon (cursor : in type_via_restrict_polygons.cursor);
+	procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor);
 	
 
 -- BOARD CONTOUR
-	procedure write_line (cursor : in et_packages.type_pcb_contour_lines.cursor);
-	procedure write_arc (cursor : in et_packages.type_pcb_contour_arcs.cursor);
-	procedure write_circle (cursor : in et_packages.type_pcb_contour_circles.cursor);	
+	procedure write_line (cursor : in type_pcb_contour_lines.cursor);
+	procedure write_arc (cursor : in type_pcb_contour_arcs.cursor);
+	procedure write_circle (cursor : in type_pcb_contour_circles.cursor);	
 	procedure write_line (cursor : in et_pcb.type_pcb_contour_lines.cursor);	
 	procedure write_arc (cursor : in et_pcb.type_pcb_contour_arcs.cursor);
 	procedure write_circle (cursor : in et_pcb.type_pcb_contour_circles.cursor);

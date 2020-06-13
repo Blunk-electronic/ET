@@ -782,6 +782,7 @@ package body netlists is
 
 		procedure write_nets is 
 			use type_netlist;
+			use et_terminals;
 
 			procedure query_device (port_cursor : in type_device_ports_extended.cursor) is
 			-- Writes the device port in the netlist file.
@@ -792,7 +793,7 @@ package body netlists is
 					to_string (element (port_cursor).device) & latin_1.space &
 					to_string (element (port_cursor).port) & latin_1.space &
 					to_string (element (port_cursor).direction) & latin_1.space &
-					et_packages.to_string (element (port_cursor).terminal) & latin_1.space);
+					to_string (element (port_cursor).terminal) & latin_1.space);
 					-- CS .characteristics
 			end;
 

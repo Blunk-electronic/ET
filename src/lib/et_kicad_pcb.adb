@@ -261,9 +261,7 @@ package body et_kicad_pcb is
 		end if;
 	end right_net_equals_left;
 	
-	function to_assembly_technology (tech : in string) return et_packages.type_assembly_technology is
-		use et_packages;
-	begin
+	function to_assembly_technology (tech : in string) return type_assembly_technology is begin
 		if tech = "smd" then return SMT;
 		elsif tech = "thru_hole" then return THT;
 		else
@@ -272,8 +270,7 @@ package body et_kicad_pcb is
 		end if;
 	end to_assembly_technology;
 			
-	function to_pad_shape_tht (shape : in string) return type_pad_shape_tht is
-	begin
+	function to_pad_shape_tht (shape : in string) return type_pad_shape_tht is begin
 		if shape = "rect" then return RECTANGULAR;
 		elsif shape = "circle" then return CIRCULAR;
 		elsif shape = "oval" then return OVAL;
@@ -283,8 +280,7 @@ package body et_kicad_pcb is
 		end if;
 	end to_pad_shape_tht;
 
-	function to_pad_shape_smt (shape : in string) return type_pad_shape_smt is
-	begin
+	function to_pad_shape_smt (shape : in string) return type_pad_shape_smt is begin
 		if shape = "rect" then return RECTANGULAR;
 		elsif shape = "oval" then return OVAL;
 		elsif shape = "circle" then return CIRCULAR;
@@ -343,15 +339,15 @@ package body et_kicad_pcb is
 	
 	function to_pad_shape_circle (
 		position	: in type_position;
-		diameter	: in et_packages.type_pad_size;
+		diameter	: in type_pad_size;
 		offset		: in type_point)	-- the offset of the pad from the center
-		return et_packages.type_pad_outline is
+		return type_pad_outline is
 
-		use et_packages.pac_shapes;
+		use et_terminals.pac_shapes;
 		use pac_polygon_circles;
 
 		circle : type_polygon_circle;
-		shape : et_packages.type_pad_outline; -- to be returned
+		shape : type_pad_outline; -- to be returned
 	begin
 		circle.center := type_point (position);
 		circle.radius := diameter / 2.0;
@@ -365,18 +361,18 @@ package body et_kicad_pcb is
 	-- Converts the given position and dimensions of a rectangular pad
 	-- to a list with four lines (top, bottom, right, left).
 	-- CS: rework as in to_pad_shape_oval
-		center		: in type_position; 		-- the pad center position (incl. angle)
-		size_x		: in et_packages.type_pad_size;	-- the size in x of the pad
-		size_y		: in et_packages.type_pad_size;	-- the size in y of the pad
-		offset		: in type_point)			-- the offset of the pad from the center
-		return et_packages.type_pad_outline is
+		center		: in type_position; -- the pad center position (incl. angle)
+		size_x		: in type_pad_size;	-- the size in x of the pad
+		size_y		: in type_pad_size;	-- the size in y of the pad
+		offset		: in type_point)	-- the offset of the pad from the center
+		return type_pad_outline is
 
-		use et_packages.pac_shapes;
+		use et_terminals.pac_shapes;
 		use pac_polygon_lines;
 		use et_pcb_coordinates;
 		use pac_geometry_brd;
 
-		shape : et_packages.type_pad_outline; -- to be returned
+		shape : type_pad_outline; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		--angle : constant type_angle := get_angle (center);
@@ -447,14 +443,13 @@ package body et_kicad_pcb is
 	function to_pad_shape_oval (
 	-- Converts the given position and dimensions of an oval pad
 	-- to a list with two vertical lines and two arcs (rotation assumed zero).
-		center		: in type_position; 		-- the pad center position (incl. angle)
-		size_x		: in et_packages.type_pad_size;	-- the size in x of the pad
-		size_y		: in et_packages.type_pad_size;	-- the size in y of the pad
-		offset		: in type_point)			-- the offset of the pad from the center
-		return et_packages.type_pad_outline is
+		center	: in type_position;	-- the pad center position (incl. angle)
+		size_x	: in type_pad_size;	-- the size in x of the pad
+		size_y	: in type_pad_size;	-- the size in y of the pad
+		offset	: in type_point)			-- the offset of the pad from the center
+		return type_pad_outline is
 
-		use et_packages;
-		use et_packages.pac_shapes;
+		use et_terminals.pac_shapes;
 		use pac_polygon_lines;
 		use pac_polygon_arcs;		
 		use et_pcb_coordinates;
@@ -546,13 +541,13 @@ package body et_kicad_pcb is
 	function to_pad_milling_contour (
 	-- Converts the given position and dimensions of a rectangular slotted hole
 	-- to a list with four lines (top, bottom, right, left).
-		center		: in type_position; 		-- the terminal position (incl. angle, (z axis ignored))
-		size_x		: in et_packages.type_pad_size;	-- the size in x of the hole
-		size_y		: in et_packages.type_pad_size;	-- the size in y of the hole
-		offset		: in type_point)			-- the offset of the pad from the center
-		return et_packages.pac_shapes.pac_polygon_lines.list is
+		center	: in type_position; -- the terminal position (incl. angle, (z axis ignored))
+		size_x	: in type_pad_size;	-- the size in x of the hole
+		size_y	: in type_pad_size;	-- the size in y of the hole
+		offset	: in type_point)	-- the offset of the pad from the center
+		return pac_shapes.pac_polygon_lines.list is
 
-		use et_packages.pac_shapes;
+		use et_terminals.pac_shapes;
 		use et_pcb_coordinates;
 		use pac_geometry_brd;
 
@@ -787,7 +782,7 @@ package body et_kicad_pcb is
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
 		-- compose the final terminal.
-		terminal_name 			: et_packages.type_terminal_name.bounded_string;
+		terminal_name 			: type_terminal_name.bounded_string;
 		terminal_technology		: type_assembly_technology;
 		terminal_pad_shape_tht 	: type_pad_shape_tht;
 		terminal_pad_shape_smt 	: type_pad_shape_smt;
@@ -827,7 +822,7 @@ package body et_kicad_pcb is
 		terminal_stop_mask : type_stop_mask_status;
 
 		-- Here we collect all kinds of terminals after they have been built.
-		terminals : et_packages.type_terminals.map;
+		terminals : type_terminals.map;
 
 
 
@@ -2128,11 +2123,12 @@ package body et_kicad_pcb is
 			-- This is library related stuff.
 
 				-- this cursor points to the terminal inserted last
-				terminal_cursor : et_packages.type_terminals.cursor;
+				terminal_cursor : type_terminals.cursor;
+				
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
 
-				shape : et_packages.type_pad_outline;
+				shape : type_pad_outline;
 
 				procedure insert_tht is begin 
 				-- NOTE: The pad shape (stored in shape) now must be assigned to
