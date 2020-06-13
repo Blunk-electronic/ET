@@ -1274,7 +1274,7 @@ package body et_kicad is
 			tmp_port_name_visible		: type_port_name_visible;
 			tmp_terminal_name_visible	: type_terminal_name_visible;
 			tmp_port_name_offset		: et_coordinates.type_distance; -- CS: rename to port_name_offset
-			tmp_terminal_name			: type_terminal_name.bounded_string;
+			tmp_terminal_name			: et_terminals.type_terminal_name.bounded_string;
 			
 			tmp_units_total		: type_units_total; -- see spec for range -- CS rename to units_total	
 			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec	-- CS rename to unit_id
@@ -1874,7 +1874,7 @@ package body et_kicad is
 				port.name := type_port_name.to_bounded_string (f (line,2)); -- GND, GPIO2
 				
 				-- compose terminal name. must be stored temporarily. will be inserted in default package variant
-				tmp_terminal_name := type_terminal_name.to_bounded_string (f (line,3)); -- H5, 14
+				tmp_terminal_name := et_terminals.type_terminal_name.to_bounded_string (f (line,3)); -- H5, 14
 
 				-- compose position
 				--set_x (port.position, mil_to_distance (mil => f (line,4)));
@@ -12883,7 +12883,7 @@ package body et_kicad is
 	-- Returns the name of the net connected with the given component and terminal.
 		module			: in type_submodule_name.bounded_string; -- nucleo_core
 		reference		: in type_name;	-- IC45
-		terminal		: in et_packages.type_terminal_name.bounded_string; -- E14
+		terminal		: in et_terminals.type_terminal_name.bounded_string; -- E14
 		log_threshold	: in et_string_processing.type_log_level)		
 		return type_net_name.bounded_string is
 
@@ -12948,7 +12948,7 @@ package body et_kicad is
 							
 							log (text => "port name " & et_symbols.to_string (port.name), level => log_threshold + 4);
 						else
-							log (ERROR, "terminal " & et_packages.to_string (terminal) & " not found !",
+							log (ERROR, "terminal " & et_terminals.to_string (terminal) & " not found !",
 								 console => true);
 							raise constraint_error;
 						end if;
@@ -13046,7 +13046,7 @@ package body et_kicad is
 
 	begin -- connected_net
 		log (text => "locating in module " & to_string (module) & " net connected with " 
-			& to_string (reference) & " terminal " & et_packages.to_string (terminal) & " ...", level => log_threshold);
+			& to_string (reference) & " terminal " & et_terminals.to_string (terminal) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		module_cursor := find (modules, module); -- set the cursor to the module

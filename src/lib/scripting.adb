@@ -51,6 +51,7 @@ with et_coordinates;
 with et_pcb_coordinates;
 with et_schematic;
 with schematic_ops;
+with et_terminals;
 with et_packages;
 with et_pcb;
 with et_pcb_stack;
@@ -2075,7 +2076,7 @@ package body scripting is
 		return type_exit_code is
 
 		use et_packages;
-		use et_packages.pac_shapes;
+		use et_terminals.pac_shapes;
 		use et_pcb;
 		use et_pcb_coordinates;
 		use et_pcb_coordinates.pac_geometry_brd;
@@ -2649,7 +2650,7 @@ package body scripting is
 		end draw_via_restrict;
 
 		procedure draw_stop_mask is
-			use et_packages.pac_shapes;
+			use et_terminals.pac_shapes;
 			shape : type_shape := to_shape (f (6));
 		begin
 			case shape is
@@ -2811,7 +2812,7 @@ package body scripting is
 		end draw_stop_mask;
 
 		procedure draw_stencil is
-			use et_packages.pac_shapes;
+			use et_terminals.pac_shapes;
 			shape : type_shape := to_shape (f (6));
 		begin
 			case shape is
@@ -2976,6 +2977,7 @@ package body scripting is
 		subtype type_track_shape is type_shape range LINE..ARC;
 		
 		procedure route_net is 
+			use et_terminals;
 			shape : type_track_shape := to_shape (f (7));
 		begin
 			case shape is
@@ -3593,7 +3595,7 @@ package body scripting is
 
 					when NOUN_SILKSCREEN =>
 						declare
-							use et_packages.pac_shapes;
+							use et_terminals.pac_shapes;
 							shape : type_shape := to_shape (f (6));
 						begin
 							case shape is
@@ -3768,7 +3770,7 @@ package body scripting is
 
 					when NOUN_ASSY =>
 						declare
-							use et_packages.pac_shapes;
+							use et_terminals.pac_shapes;
 							shape : type_shape := to_shape (f (6));
 						begin
 							case shape is

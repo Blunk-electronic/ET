@@ -822,7 +822,7 @@ package body et_kicad_pcb is
 		terminal_stop_mask : type_stop_mask_status;
 
 		-- Here we collect all kinds of terminals after they have been built.
-		terminals : type_terminals.map;
+		terminals : et_terminals.type_terminals.map;
 
 
 
@@ -2123,7 +2123,7 @@ package body et_kicad_pcb is
 			-- This is library related stuff.
 
 				-- this cursor points to the terminal inserted last
-				terminal_cursor : type_terminals.cursor;
+				terminal_cursor : et_terminals.type_terminals.cursor;
 				
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
@@ -2322,7 +2322,7 @@ package body et_kicad_pcb is
 
 				if terminal_inserted then
 					et_packages.terminal_properties (
-						terminal		=> et_packages.type_terminals.element (terminal_cursor),
+						terminal		=> type_terminals.element (terminal_cursor),
 						name			=> et_packages.type_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);
 				else
