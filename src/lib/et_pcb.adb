@@ -252,7 +252,7 @@ package body et_pcb is
 		via : type_via;
 	begin
 		via := element (cursor);
-		log (text => "via" & et_packages.to_string (type_drill (via)) &
+		log (text => "via" & to_string (type_drill (via)) &
 			 " restring_outer" & to_string (via.restring_outer) & -- outer layers
 			 " restring_inner" & to_string (via.restring_inner) & -- inner layers
 			 " layer_start" & to_string (via.layer_start) &

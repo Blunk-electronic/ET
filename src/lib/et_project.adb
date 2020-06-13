@@ -6238,7 +6238,8 @@ package body et_project is
 						case stack.parent is
 							when SEC_NET_CLASSES =>
 								declare
-									use et_packages;
+									use et_drills;
+									use et_packages;									
 									use et_pcb;
 									kw : string := f (line, 1);
 								begin

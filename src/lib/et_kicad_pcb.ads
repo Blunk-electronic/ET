@@ -57,6 +57,7 @@ with et_pcb;
 with et_pcb_coordinates;
 with et_kicad_general;			use et_kicad_general;
 with et_text;
+with et_drills;					use et_drills;
 with et_packages;
 with et_devices;				use et_devices;
 with et_frames;
@@ -184,7 +185,7 @@ package et_kicad_pcb is
 
 	-- "Slotted drills" or "plated millings" for terminals are limited by drill sizes because
 	-- the PCB manufacturer starts the milling with a drill.
-	subtype type_pad_milling_size is et_pcb_coordinates.type_distance range et_packages.drill_size_min .. et_packages.drill_size_max;
+	subtype type_pad_milling_size is et_pcb_coordinates.type_distance range drill_size_min .. drill_size_max;
 	
 	type type_fp_text_meaning is (REFERENCE, VALUE, USER);
 	
@@ -404,14 +405,14 @@ package et_kicad_pcb is
 		segment_width		: et_packages.type_track_width;
 		edge_width			: type_edge_cut_line_width;
 		via_size			: type_via_diameter;	-- regular vias
-		via_drill			: et_packages.type_drill_size;		-- regular vias
+		via_drill			: type_drill_size;		-- regular vias
 		via_min_size		: type_via_diameter;	-- regular vias
-		via_min_drill		: et_packages.type_drill_size;		-- regular vias
+		via_min_drill		: type_drill_size;		-- regular vias
 		micro_via_size		: type_via_diameter;	-- micro vias
-		micro_via_drill		: et_packages.type_drill_size;		-- micro vias
+		micro_via_drill		: type_drill_size;		-- micro vias
 		micro_vias_allowed	: et_pcb.type_micro_vias_allowed;
 		micro_via_min_size	: type_via_diameter;	-- micro vias
-		micro_via_min_drill	: et_packages.type_drill_size;		-- micro vias
+		micro_via_min_drill	: type_drill_size;		-- micro vias
 		pcb_text_width		: type_text_line_width;	-- all kinds of texts (no matter what layer)
 		pcb_text_size_x		: et_packages.pac_text.type_text_size;
 		pcb_text_size_y		: et_packages.pac_text.type_text_size;		
@@ -421,7 +422,7 @@ package et_kicad_pcb is
 		module_text_width	: type_text_line_width; -- line width
 		pad_size_x			: et_packages.type_pad_size;
 		pad_size_y			: et_packages.type_pad_size;
-		pad_drill			: et_packages.type_drill_size;
+		pad_drill			: type_drill_size;
 		stop_mask_expansion	: et_packages.type_stop_mask_expansion;
 		aux_axis_origin_x	: type_aux_axis_origin;
 		aux_axis_origin_y	: type_aux_axis_origin;
@@ -706,7 +707,7 @@ package et_kicad_pcb is
 	via_status_length_max : constant positive := 8;
 	package type_via_status is new generic_bounded_length (via_status_length_max);
 	
-	type type_via is new et_packages.type_drill with record
+	type type_via is new type_drill with record
 		net_id			: type_net_id;
 		diameter_total	: et_pcb_coordinates.type_distance; -- drill + 2 * restring
 		layer_start		: type_signal_layer_id;

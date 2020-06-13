@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             PACKAGES                                     --
+--                             TERMINALS                                    --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -53,11 +53,10 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;
-with et_string_processing;		use et_string_processing;
+with et_string_processing;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
-with et_drills;					use et_drills;
 with et_text;
 
 with cairo;
@@ -153,7 +152,26 @@ package et_packages is
 	procedure validate_general_line_width (width : in et_pcb_coordinates.type_distance);
 	-- Checks whether given line width is in range of type_general_line_width
 
+
 	
+	-- We fit the via diameter (incl. microvias) in a reasonable range via a subtype:
+	drill_size_min : constant type_distance_positive := 0.05;
+	drill_size_max : constant type_distance_positive := 10.0;
+	subtype type_drill_size is type_distance_positive range drill_size_min .. drill_size_max;
+
+	procedure validate_drill_size (drill : in et_pcb_coordinates.type_distance);
+	-- Checks whether given drill size is in range of type_drill_size
+
+	-- DRILLS
+	type type_drill is tagged record
+		position	: type_point;
+		diameter	: type_drill_size;
+		-- CS locked : type_locked;
+	end record;
+
+	function to_string (drill : in type_drill) return string;
+	-- returns the properties of the given drill as string.
+
 
 	-- COPPER STRUCTURES GENERAL
 	copper_structure_size_min : constant et_pcb_coordinates.type_distance := 0.05;

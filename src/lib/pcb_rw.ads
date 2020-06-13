@@ -41,7 +41,9 @@
 with ada.containers;            use ada.containers;
 
 with et_string_processing;
+with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
+with et_drills;					use et_drills;
 with et_packages;
 with et_pcb;
 with et_pcb_coordinates;

@@ -7595,7 +7595,7 @@ package body et_kicad_pcb is
 							restring := (element (via_cursor).diameter_total - element (via_cursor).diameter) / 2;
 						
 							-- copy position, drill diameter (by a conversion to the base type)
-							via := (et_packages.type_drill (element (via_cursor)) with 
+							via := (type_drill (element (via_cursor)) with 
 
 									-- Translate the kicad layer id to the ET signal layer:
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.

@@ -54,6 +54,7 @@ with et_schematic;
 with submodules;
 with netlists;
 with assembly_variants;
+with et_drills;
 with et_packages;
 with et_pcb;
 with et_pcb_stack;

@@ -46,6 +46,7 @@ with et_schematic;
 use et_schematic.type_nets;
 
 with et_project;				use et_project;
+with et_drills;					use et_drills;
 with et_packages;				use et_packages;
 
 with et_pcb;

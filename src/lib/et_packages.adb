@@ -34,27 +34,11 @@
 --
 --   history of changes:
 --
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
 
 with ada.strings;				use ada.strings;
-with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
-
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
 
 with ada.exceptions;
-
-with et_string_processing;		use et_string_processing;
-with et_text;
 
 package body et_packages is
 
@@ -141,19 +125,6 @@ package body et_packages is
 		end if;
 	end validate_general_line_width;
 
-
-	procedure validate_drill_size (drill : in et_pcb_coordinates.type_distance) is
-	-- Checks whether given drill size is in range of type_drill_size
-	begin
-		if drill not in type_drill_size then
-			log (ERROR, "drill size invalid ! Allowed range is" 
-				 & to_string (type_drill_size'first) & " .."
-				 & to_string (type_drill_size'last),
-				 console => true);
-			raise constraint_error;
-		end if;
-	end validate_drill_size;
-
 	procedure validate_pad_size (size : in et_pcb_coordinates.type_distance) is
 	-- Checks whether given pad size is in range of type_pad_size
 	begin
@@ -165,12 +136,6 @@ package body et_packages is
 			raise constraint_error;
 		end if;
 	end validate_pad_size;
-
-	function to_string (drill : in type_drill) return string is
-	-- returns the properties of the given drill as string.
-	begin
-		return (to_string (drill.position) & " drill_diameter" & to_string (drill.diameter));
-	end to_string;
 	
 	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance) is
 	-- Checks whether the given track clearance is in range of type_track_clearance.
