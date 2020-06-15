@@ -36,11 +36,7 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with et_general;				use et_general;
 with et_schematic;
-with et_project;
-with et_packages;				use et_packages;
-with et_pcb;					use et_pcb;
 with et_display.board;			use et_display.board;
 
 with et_canvas_primitive_draw_ops;
@@ -51,7 +47,10 @@ procedure draw_route_restrict (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
-	
+
+	use et_general;
+	use et_terminals.pac_shapes;	
+	use et_packages;
 	use type_route_restrict_lines;
 	use type_route_restrict_arcs;
 	use type_route_restrict_circles;
@@ -86,9 +85,7 @@ procedure draw_route_restrict (
 		end if;
 	end query_arc;
 
-	procedure query_circle (c : in type_route_restrict_circles.cursor) is 
-		use et_packages.pac_shapes;
-	begin
+	procedure query_circle (c : in type_route_restrict_circles.cursor) is begin
 
 		-- Draw the circle if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then

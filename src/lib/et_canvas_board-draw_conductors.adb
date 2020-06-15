@@ -58,7 +58,10 @@ procedure draw_conductors (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
-	
+
+	use et_general;
+	use et_terminals.pac_shapes;	
+	use et_packages;
 	use pac_copper_lines;
 	use pac_copper_arcs;
 	use et_pcb.pac_copper_circles;
@@ -118,9 +121,7 @@ procedure draw_conductors (
 		end if;
 	end query_arc;
 
-	procedure query_circle (c : in et_pcb.pac_copper_circles.cursor) is 
-		use et_packages.pac_shapes;
-	begin
+	procedure query_circle (c : in et_pcb.pac_copper_circles.cursor) is begin
 		-- Draw the circle if it is in the current layer:
 		if element (c).layer = current_layer then
 			
@@ -222,8 +223,8 @@ procedure draw_conductors (
 	end query_cutout;
 
 	procedure query_placeholder (c : in et_pcb.type_text_placeholders_copper.cursor) is 
-		use et_packages.pac_text.pac_vector_text_lines;
-		vector_text : et_packages.pac_text.pac_vector_text_lines.list;
+		use et_terminals.pac_text.pac_vector_text_lines;
+		vector_text : et_terminals.pac_text.pac_vector_text_lines.list;
 	begin
 		-- Draw the placeholder if it is in theh current layer:
 		if element (c).layer = current_layer then
@@ -234,7 +235,7 @@ procedure draw_conductors (
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 			-- Vectorize the text:
-			vector_text := et_packages.pac_text.vectorize (
+			vector_text := et_terminals.pac_text.vectorize (
 				content		=> to_placeholder_content (element (c).meaning),
 				size		=> element (c).size,
 				rotation	=> rot (element (c).position),
@@ -254,8 +255,8 @@ procedure draw_conductors (
 	end query_placeholder;
 
 	procedure query_text (c : in et_pcb.pac_texts.cursor) is 
-		use et_packages.pac_text.pac_vector_text_lines;
-		vector_text : et_packages.pac_text.pac_vector_text_lines.list;
+		use et_terminals.pac_text.pac_vector_text_lines;
+		vector_text : et_terminals.pac_text.pac_vector_text_lines.list;
 	begin
 		-- Draw the text if it is in theh current layer:
 		if element (c).layer = current_layer then
@@ -266,7 +267,7 @@ procedure draw_conductors (
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 			-- Vectorize the text:
-			vector_text := et_packages.pac_text.vectorize (
+			vector_text := et_terminals.pac_text.vectorize (
 				content		=> element (c).content,
 				size		=> element (c).size,
 				rotation	=> rot (element (c).position),
@@ -287,7 +288,7 @@ procedure draw_conductors (
 	
 	
 	procedure query_via (v : in pac_vias.cursor) is 
-		type type_circle is new et_packages.pac_shapes.type_circle with null record;
+		type type_circle is new et_terminals.pac_shapes.type_circle with null record;
 		circle : type_circle;
 
 		function greatest_restring return type_restring_width is begin

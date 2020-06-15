@@ -2122,6 +2122,8 @@ package body et_kicad_pcb is
 			-- Insert a terminal in the list "terminals".
 			-- This is library related stuff.
 
+				use et_terminals;
+				
 				-- this cursor points to the terminal inserted last
 				terminal_cursor : et_terminals.type_terminals.cursor;
 				
@@ -2321,12 +2323,12 @@ package body et_kicad_pcb is
 				end case;
 
 				if terminal_inserted then
-					et_packages.terminal_properties (
-						terminal		=> type_terminals.element (terminal_cursor),
-						name			=> et_packages.type_terminals.key (terminal_cursor),
+					et_terminals.terminal_properties (
+						terminal		=> et_terminals.type_terminals.element (terminal_cursor),
+						name			=> et_terminals.type_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);
 				else
-					log (ERROR, "duplicated terminal " & et_packages.to_string (terminal_name) & " !", console => true);
+					log (ERROR, "duplicated terminal " & to_string (terminal_name) & " !", console => true);
 					raise constraint_error;
 				end if;
 
@@ -2500,8 +2502,8 @@ package body et_kicad_pcb is
 		-- If the package is REAL, counts the tht and smd terminals. 
 		-- Warns operator if the package technology
 		-- is not set according to the majority of terminals respectively.
-			use et_packages.type_terminals;
-			cursor : et_packages.type_terminals.cursor := terminals.first;
+			use et_terminals.type_terminals;
+			cursor : et_terminals.type_terminals.cursor := terminals.first;
 			tht_count, smt_count : natural := 0; -- the number of THT or SMT terminals
 
 			function number (count : in natural) return string is begin
@@ -2517,7 +2519,7 @@ package body et_kicad_pcb is
 			if package_appearance = REAL then
 				log (text => "assembly technology " & to_string (package_technology), level => log_threshold + 1);
 			
-				while cursor /= et_packages.type_terminals.no_element loop
+				while cursor /= et_terminals.type_terminals.no_element loop
 					case element (cursor).technology is
 						when THT => tht_count := tht_count + 1;
 						when SMT => smt_count := smt_count + 1;
@@ -3306,7 +3308,7 @@ package body et_kicad_pcb is
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
 		-- compose the final terminal.
-		terminal_name 			: et_packages.type_terminal_name.bounded_string;
+		terminal_name 			: et_terminals.type_terminal_name.bounded_string;
 		terminal_technology		: type_assembly_technology;
 		terminal_pad_shape_tht 	: type_pad_shape_tht;
 		terminal_pad_shape_smt 	: type_pad_shape_smt;
@@ -5823,7 +5825,7 @@ package body et_kicad_pcb is
 			-- Warns operator if a terminal is not connected to a net.
 				if length (terminal_net_name) = 0 then
 					log (WARNING, to_string (package_reference) & latin_1.space
-						 & et_packages.to_string (terminal_name) & " not connected with a net !");
+						 & et_terminals.to_string (terminal_name) & " not connected with a net !");
 				end if;
 			end warn_on_missing_net;
 			
@@ -6609,7 +6611,7 @@ package body et_kicad_pcb is
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
 
-				shape : et_packages.type_pad_outline;
+				shape : et_terminals.type_pad_outline;
 
 				procedure insert_tht is 
 					use et_packages;
@@ -6826,8 +6828,8 @@ package body et_kicad_pcb is
 				-- Log terminal properties and reset net name if terminal could be inserted.
 				-- Otherwise abort due to a duplicated usage:
 				if terminal_inserted then
-					et_packages.terminal_properties (
-						terminal		=> et_packages.type_terminal (et_kicad_pcb.type_terminals.element (terminal_cursor)),
+					et_terminals.terminal_properties (
+						terminal		=> et_terminals.type_terminal (et_kicad_pcb.type_terminals.element (terminal_cursor)),
 						name			=> et_kicad_pcb.type_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);
 
@@ -6847,7 +6849,7 @@ package body et_kicad_pcb is
 					init_terminal_net_name; -- in case the next terminal has no net connected
 
 				else -- terminal could not be inserted
-					log (ERROR, "duplicated terminal " & et_packages.to_string (terminal_name) & " !", console => true);
+					log (ERROR, "duplicated terminal " & et_terminals.to_string (terminal_name) & " !", console => true);
 					raise constraint_error;
 				end if;
 					
@@ -7280,14 +7282,14 @@ package body et_kicad_pcb is
 	end to_board;
 
 	function corners_to_lines (corners : type_polygon_points.list)
-		return et_packages.pac_shapes.pac_polygon_lines.list is
+		return et_terminals.pac_shapes.pac_polygon_lines.list is
 	-- The polygon in kicad is a list of points. This list is here converted
 	-- to a list of lines. This implies that the kicad polygon must have at least
 	-- two corners, and the number of corners must be even. Otherwise an exception arises here.
 		use type_polygon_points;
 		corner : type_polygon_points.cursor := corners.first;
 		
-		use et_packages.pac_shapes.pac_polygon_lines;
+		use et_terminals.pac_shapes.pac_polygon_lines;
 		lines : pac_polygon_lines.list; -- to be returned
 		line : type_polygon_line;
 
@@ -7392,7 +7394,7 @@ package body et_kicad_pcb is
 			-- The information required is sotred in the terminals of a package.
 			-- Example: (pad 1 smd rect (at -2.925 -3.81) (size 2 0.6) (layers F.Cu F.Paste F.Mask) (net 1 /IN))
 				reference	: in type_name;	-- IC45
-				terminal	: in et_packages.type_terminal_name.bounded_string) -- G7
+				terminal	: in et_terminals.type_terminal_name.bounded_string) -- G7
 				return type_net_name.bounded_string is
 				net : type_net_name.bounded_string; -- to be returned
 
@@ -7421,7 +7423,7 @@ package body et_kicad_pcb is
 						net := element (terminal_cursor).net_name;
 					else
 						log (ERROR, "component reference " & to_string (reference) &
-							" terminal " & et_packages.to_string (terminal) &
+							" terminal " & et_terminals.to_string (terminal) &
 							 " not found in board !",
 							console => true);
 						raise constraint_error;
@@ -7538,7 +7540,7 @@ package body et_kicad_pcb is
 					use type_vias;
 					via_cursor : type_vias.cursor := board.vias.first;
 					via : et_pcb.type_via; -- an ET via
-					restring : et_packages.type_restring_width;
+					restring : et_terminals.type_restring_width;
 
 					use type_polygons;
 					polygon_cursor : type_polygons.cursor := board.polygons.first;
@@ -7843,7 +7845,7 @@ package body et_kicad_pcb is
 						package_cursor	: type_packages_board.cursor := board.packages.first;
 						package_name	: type_name;
 						terminal_found	: boolean := false;
-						terminal_name	: et_packages.type_terminal_name.bounded_string;
+						terminal_name	: et_terminals.type_terminal_name.bounded_string;
 
 						procedure query_terminals (
 							package_name	: in type_name;
@@ -8245,17 +8247,17 @@ package body et_kicad_pcb is
 		use type_libraries;
 		library_cursor : type_libraries.cursor;
 
-		procedure validate_terminals (package_terminals : in et_packages.type_terminals.map) is
+		procedure validate_terminals (package_terminals : in et_terminals.type_terminals.map) is
 		-- Test if the terminals of the terminal_port_map are also in the given package.
 		-- Raises constraint_error if a terminal could not be found in the package.
-			use et_packages.type_terminals; -- the terminals of the package
+			use et_terminals.type_terminals; -- the terminals of the package
 			use et_devices.type_terminal_port_map;
 		
 			-- This cursor points to the terminal in the terminal_port_map
 			terminal_cursor : et_devices.type_terminal_port_map.cursor; 
 
 			-- For temporarily storage of a terminal name:
-			terminal_name_in_map : et_packages.type_terminal_name.bounded_string;
+			terminal_name_in_map : et_terminals.type_terminal_name.bounded_string;
 		begin -- validate_terminals
 			-- Loop in terminal_port_map. Test each terminal whether it occurs
 			-- in the package_terminals.
@@ -8263,10 +8265,10 @@ package body et_kicad_pcb is
 			while terminal_cursor /= et_devices.type_terminal_port_map.no_element loop
 				terminal_name_in_map := key (terminal_cursor);
 
-				if package_terminals.find (terminal_name_in_map) = et_packages.type_terminals.no_element then
+				if package_terminals.find (terminal_name_in_map) = et_terminals.type_terminals.no_element then
 					log (ERROR, "package " & et_packages.to_string (packge => package_name)
 						 & " does not have a terminal '" 
-						 & et_packages.to_string (terminal_name_in_map) & "' !", console => true);
+						 & et_terminals.to_string (terminal_name_in_map) & "' !", console => true);
 					raise constraint_error;
 				end if;
 				
@@ -8282,7 +8284,7 @@ package body et_kicad_pcb is
 			package_cursor : type_packages_library.cursor;
 
 			use type_packages_library;
-			use et_packages.type_terminals;
+			use et_terminals.type_terminals;
 			use et_devices.type_terminal_port_map;
 			terminals : et_devices.type_terminal_count;
 		begin
@@ -8367,7 +8369,7 @@ package body et_kicad_pcb is
 		procedure locate_package (
 			library_name	: in type_package_library_name.bounded_string;
 			packages		: in type_packages_library.map) is
-			use et_packages.type_terminals;
+			use et_terminals.type_terminals;
 			use type_packages_library;
 			package_cursor : type_packages_library.cursor;
 		begin

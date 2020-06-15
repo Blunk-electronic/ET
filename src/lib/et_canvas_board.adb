@@ -170,8 +170,8 @@ package body et_canvas_board is
 		in_area	: in type_rectangle;
 		context	: in type_draw_context) is
 		
-		use et_packages;
-		type type_line is new et_packages.pac_shapes.type_line with null record;
+		use et_terminals;
+		type type_line is new et_terminals.pac_shapes.type_line with null record;
 		
 		line_horizontal : constant type_line := ( -- from left to right
 			start_point		=> type_point (set (x => x (p) - pac_text.origin_half_size, y => y (p))),

@@ -42,6 +42,7 @@ with ada.exceptions;
 
 with conventions;
 with et_pcb_coordinates;
+with et_terminals;
 with et_packages;
 with device_rw;
 
@@ -12395,7 +12396,7 @@ package body schematic_ops is
 
 		properties : type_port_properties_access; -- to be returned
 		
-		terminal_name : et_packages.type_terminal_name.bounded_string;
+		terminal_name : et_terminals.type_terminal_name.bounded_string;
 
 		use et_symbols;
 		port_direction : type_port_direction := PASSIVE;

@@ -56,8 +56,8 @@ with gtkada.style;
 with et_general;
 with et_geometry;			use et_geometry;
 with et_pcb_coordinates;	use et_pcb_coordinates;
-with et_terminals;
-with et_packages;
+with et_terminals;			use et_terminals;
+with et_packages;			--use et_packages;
 with et_project;			--use et_project;
 with et_frames;				--use et_frames;
 

@@ -36,11 +36,7 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with et_general;				use et_general;
 with et_schematic;
-with et_project;
-with et_packages;				use et_packages;
-with et_pcb;					use et_pcb;
 
 with et_canvas_primitive_draw_ops;
 
@@ -51,7 +47,10 @@ procedure draw_stencil (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context;
 	face	: in type_face) is
-	
+
+	use et_general;
+	use et_terminals.pac_shapes;	
+	use et_packages;
 	use type_stencil_lines;
 	use type_stencil_arcs;
 	use type_stencil_circles;
@@ -80,9 +79,7 @@ procedure draw_stencil (
 
 	end query_arc;
 
-	procedure query_circle (c : in type_stencil_circles.cursor) is 
-		use et_packages.pac_shapes;
-	begin
+	procedure query_circle (c : in type_stencil_circles.cursor) is begin
 		case element (c).filled is
 			when NO =>
 				-- We draw a normal non-filled circle:
@@ -108,9 +105,7 @@ procedure draw_stencil (
 
 	end query_circle;
 
-	procedure query_polygon (c : in type_stencil_polygons.cursor) is 
-		use et_packages.pac_shapes;
-	begin
+	procedure query_polygon (c : in type_stencil_polygons.cursor) is begin
 		case element (c).fill_style is
 			when SOLID =>
 				pac_draw_package.draw_polygon (
@@ -135,9 +130,7 @@ procedure draw_stencil (
 
 	end query_polygon;
 
-	procedure query_cutout (c : in pac_stencil_cutouts.cursor) is 
-		use et_packages.pac_shapes;
-	begin
+	procedure query_cutout (c : in pac_stencil_cutouts.cursor) is begin
 		set_color_background (context.cr);
 		
 		pac_draw_package.draw_polygon (

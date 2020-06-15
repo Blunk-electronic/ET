@@ -36,8 +36,6 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with cairo;						use cairo;
-with pango.layout;				use pango.layout;
 
 with et_general;				use et_general;
 with et_symbols;
@@ -81,7 +79,7 @@ is
 		flip			: in et_pcb.type_flipped;
 		placeholders	: in et_packages.type_text_placeholders) is
 
-		use et_packages.pac_shapes;
+		use et_terminals.pac_shapes;
 		use type_packages;
 
 		function flipped return boolean is 
@@ -140,7 +138,7 @@ is
 		end to_placeholder_content;
 			
 		procedure draw_text_origin (p : in type_point; f : in type_face) is
-			type type_line is new et_packages.pac_shapes.type_line with null record;
+			type type_line is new et_terminals.pac_shapes.type_line with null record;
 			
 			line_horizontal : constant type_line := ( -- from left to right
 				start_point		=> type_point (set (x => x (p) - pac_text.origin_half_size, y => y (p))),
@@ -2528,7 +2526,7 @@ is
 
 				pad_pos : type_position := pad_pos_in;
 
-				type type_circle is new et_packages.pac_shapes.type_circle with null record;
+				type type_circle is new et_terminals.pac_shapes.type_circle with null record;
 				circle : type_circle;
 			begin
 				-- We draw the hole only if a conductor layer is enabled.
@@ -2608,7 +2606,7 @@ is
 		end draw_terminals;
 		
 		procedure draw_package_origin is
-			type type_line is new et_packages.pac_shapes.type_line with null record;
+			type type_line is new et_terminals.pac_shapes.type_line with null record;
 			
 			line_horizontal : constant type_line := ( -- from left to right
 				start_point		=> type_point (set (x => x (package_position) - origin_half_size, y => y (package_position))),

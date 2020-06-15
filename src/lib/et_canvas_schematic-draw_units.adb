@@ -37,12 +37,9 @@
 
 with ada.text_io;				use ada.text_io;
 with ada.numerics;				use ada.numerics;
-with ada.containers;
-with cairo;						use cairo;
-with pango.layout;				use pango.layout;
 
 with et_general;				use et_general;
-with et_project;				use et_project;
+with et_project;
 
 with et_schematic;
 
@@ -52,7 +49,7 @@ use et_schematic.type_units;
 
 with et_devices;
 with et_symbols;
-with et_packages;
+with et_terminals;
 with et_text;
 with schematic_ops;
 with et_display.schematic;		use et_display.schematic;
@@ -370,7 +367,7 @@ procedure draw_units (
 				alignment : type_text_alignment := (horizontal => CENTER, vertical => BOTTOM);
 				rotation_total : constant type_rotation := add (element (c).rotation, unit_rotation);
 
-				use et_packages;
+				use et_terminals;
 				use et_devices;
 				properties : type_port_properties_access;
 								
