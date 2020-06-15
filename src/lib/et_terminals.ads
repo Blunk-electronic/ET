@@ -177,29 +177,37 @@ package et_terminals is
 		bottom	: type_pad_outline; -- is not nessecarily the same as on the bottom side.
 	end record;
 
+
+-- SOLDER STOP MASK
 	
 	type type_stop_mask_shape is (
-		AS_PAD,
-		EXPAND_PAD,
-		USER_SPECIFIC);
+		AS_PAD,			-- mask assumes same shape as underlying conductor pad
+		EXPAND_PAD,		-- mask is sligtly greater thatn underlying conductor pad (definded by DRU)
+		USER_SPECIFIC);	-- mask has user specific contours
 
 	stop_mask_shape_default : constant type_stop_mask_shape := EXPAND_PAD;
-	type type_stop_mask_outline is new pac_shapes.type_polygon_base with null record;
-	
-	type type_pad_stop_mask (shape : type_stop_mask_shape) is record
+
+	type type_stop_mask_contours is new pac_shapes.type_polygon_base with null record;
+
+	-- Contours of stop mask are required only if the shape is user specific.
+	-- Otherwise the shape is to be derived from the underlying conductor pad and
+	-- the DRU settings:
+	type type_stop_mask (shape : type_stop_mask_shape) is record
 		case shape is
-			when USER_SPECIFIC => contour : type_stop_mask_outline;
+			when USER_SPECIFIC => contour : type_stop_mask_contours;
 			when others => null;
 		end case;
 	end record;
 
-	type type_stop_mask_outline_tht is record
-		top		: type_pad_stop_mask (stop_mask_shape_default); -- The shape on the top side
-		bottom	: type_pad_stop_mask (stop_mask_shape_default); -- is not nessecarily the same as on the bottom side.
+	-- A THT pad has stop mask on top and bottom side:
+	type type_stop_mask_tht is record
+		top		: type_stop_mask (stop_mask_shape_default); -- The shape on the top side
+		bottom	: type_stop_mask (stop_mask_shape_default); -- is not nessecarily the same as on the bottom side.
 	end record;
 
-
--- 	type type_stop_mask_shape
+	-- A SMT pad has stop mask on one side only:
+	subtype type_stop_mask_smt is type_stop_mask;
+	
 	
 	
 	keyword_stop_mask			: constant string := "stop_mask";
