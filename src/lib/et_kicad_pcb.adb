@@ -2150,6 +2150,13 @@ package body et_kicad_pcb is
 									-- The shape is the same on top and on bottom side.									
 									pad_shape_tht		=> (top => shape, bottom => shape),
 
+									-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+									-- It should be investigated whether kicad supports other stop mask
+									-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+									-- It should also be checked whether kicad supports different contours
+									-- of top and bottom side of the pad.
+									stop_mask_shape_tht	=> (others => <>),
+
 									width_inner_layers 	=> terminal_copper_width_inner_layers,
 									drill_size			=> terminal_drill_size
 								));
@@ -2176,6 +2183,13 @@ package body et_kicad_pcb is
 
 										-- The shape is the same on top and on bottom side.									
 										pad_shape_tht		=> (top => shape, bottom => shape),
+
+										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+										-- It should be investigated whether kicad supports other stop mask
+										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+										-- It should also be checked whether kicad supports different contours
+										-- of top and bottom side of the pad.
+										stop_mask_shape_tht	=> (others => <>),
 
 										width_inner_layers	=> terminal_copper_width_inner_layers,
 
@@ -2215,6 +2229,13 @@ package body et_kicad_pcb is
 										-- The shape is the same on top and on bottom side.									
 										pad_shape_tht		=> (top => shape, bottom => shape),
 
+										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+										-- It should be investigated whether kicad supports other stop mask
+										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+										-- It should also be checked whether kicad supports different contours
+										-- of top and bottom side of the pad.
+										stop_mask_shape_tht	=> (others => <>),
+
 										width_inner_layers	=> terminal_copper_width_inner_layers,
 										drill_size			=> terminal_drill_size
 										));
@@ -2251,7 +2272,7 @@ package body et_kicad_pcb is
 							when CIRCULAR =>
 
 								-- Caclulate the pad shape. It is a circle. 
-								-- Therefor the size in x serves as diameter.
+								-- Therefore the size in x serves as diameter.
 								shape := to_pad_shape_circle (
 											terminal_position, pad_size_x, 
 											terminal_pad_drill_offset);
@@ -2265,6 +2286,12 @@ package body et_kicad_pcb is
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
 										pad_shape		=> shape,
+
+										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+										-- It should be investigated whether kicad supports other stop mask
+										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+										stop_mask_shape_smt => (others => <>),
+
 										face 			=> terminal_face,
 										stop_mask		=> terminal_stop_mask,
 										solder_paste	=> terminal_solder_paste
@@ -2288,6 +2315,12 @@ package body et_kicad_pcb is
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
 										pad_shape		=> shape,
+
+										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+										-- It should be investigated whether kicad supports other stop mask
+										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+										stop_mask_shape_smt => (others => <>),
+
 										face 			=> terminal_face,
 										stop_mask		=> terminal_stop_mask,
 										solder_paste	=> terminal_solder_paste
@@ -2312,6 +2345,12 @@ package body et_kicad_pcb is
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
 										pad_shape		=> shape,
+
+										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+										-- It should be investigated whether kicad supports other stop mask
+										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+										stop_mask_shape_smt => (others => <>),
+
 										face 			=> terminal_face,
 										stop_mask		=> terminal_stop_mask,
 										solder_paste	=> terminal_solder_paste
@@ -6633,6 +6672,13 @@ package body et_kicad_pcb is
 									-- The shape is the same on top and on bottom side.									
 									pad_shape_tht		=> (top => shape, bottom => shape),
 
+									-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+									-- It should be investigated whether kicad supports other stop mask
+									-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+									-- It should also be checked whether kicad supports different contours
+									-- of top and bottom side of the pad.
+									stop_mask_shape_tht	=> (others => <>),
+									
 									width_inner_layers 	=> terminal_copper_width_inner_layers,
 									drill_size			=> terminal_drill_size,
 									
@@ -6663,6 +6709,13 @@ package body et_kicad_pcb is
 										
 										-- The shape is the same on top and on bottom side.									
 										pad_shape_tht		=> (top => shape, bottom => shape),
+
+										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+										-- It should be investigated whether kicad supports other stop mask
+										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+										-- It should also be checked whether kicad supports different contours
+										-- of top and bottom side of the pad.
+										stop_mask_shape_tht	=> (others => <>),
 										
 										width_inner_layers	=> terminal_copper_width_inner_layers,
 
@@ -6706,6 +6759,13 @@ package body et_kicad_pcb is
 										-- The shape is the same on top and on bottom side.									
 										pad_shape_tht		=> (top => shape, bottom => shape),
 
+										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+										-- It should be investigated whether kicad supports other stop mask
+										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+										-- It should also be checked whether kicad supports different contours
+										-- of top and bottom side of the pad.
+										stop_mask_shape_tht	=> (others => <>),
+										
 										width_inner_layers	=> terminal_copper_width_inner_layers,
 										drill_size			=> terminal_drill_size,
 
@@ -6759,6 +6819,12 @@ package body et_kicad_pcb is
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
 										pad_shape		=> shape,
+
+										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+										-- It should be investigated whether kicad supports other stop mask
+										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+										stop_mask_shape_smt => (others => <>),
+
 										face 			=> terminal_face,
 										stop_mask		=> terminal_stop_mask,
 										solder_paste	=> terminal_solder_paste,
@@ -6785,6 +6851,12 @@ package body et_kicad_pcb is
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
 										pad_shape		=> shape,
+
+										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+										-- It should be investigated whether kicad supports other stop mask
+										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+										stop_mask_shape_smt => (others => <>),
+
 										face 			=> terminal_face,
 										stop_mask		=> terminal_stop_mask,
 										solder_paste	=> terminal_solder_paste,
@@ -6812,6 +6884,12 @@ package body et_kicad_pcb is
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
 										pad_shape		=> shape,
+
+										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+										-- It should be investigated whether kicad supports other stop mask
+										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+										stop_mask_shape_smt => (others => <>),
+
 										face 			=> terminal_face,
 										stop_mask		=> terminal_stop_mask,
 										solder_paste	=> terminal_solder_paste,

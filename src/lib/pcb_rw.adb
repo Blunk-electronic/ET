@@ -1946,6 +1946,11 @@ package body pcb_rw is
 
 		terminal_position		: type_position := origin_zero_rotation;
 
+		tht_stop_mask_shape_top			: type_stop_mask_shape := stop_mask_shape_default;
+		tht_stop_mask_shape_bottom		: type_stop_mask_shape := stop_mask_shape_default;		
+		tht_stop_mask_contours_top		: type_stop_mask_contours;
+		tht_stop_mask_contours_bottom	: type_stop_mask_contours;		
+
 		tht_width_inner_layers	: type_track_width := type_track_width'first;
 		tht_hole				: type_terminal_tht_hole := terminal_tht_hole_default;
 		tht_drill_size			: type_drill_size := type_drill_size'first;
@@ -1957,14 +1962,50 @@ package body pcb_rw is
 		smt_pad_shape			: type_pad_outline;
 
 		smt_pad_face			: et_pcb_coordinates.type_face := et_pcb_coordinates.face_default;
+
 		smt_stop_mask			: type_stop_mask_status := stop_mask_status_default;
+		smt_stop_mask_shape		: type_stop_mask_shape := stop_mask_shape_default;
+		smt_stop_mask_contours	: type_stop_mask_contours;		
+
 		smt_solder_paste		: type_solder_paste_status := solder_paste_status_default;
+		
 
 		procedure build_terminal is 
 		-- Assembles the elements of a terminal and appends the final terminal to the
 		-- list of terminals of the package.
 			cursor : type_terminals.cursor;
 			inserted : boolean;
+
+			function make_stop_mask_smt return type_stop_mask_smt is 
+				r : type_stop_mask_smt (EXPAND_PAD);
+			begin
+				case smt_stop_mask_shape is
+					when AS_PAD => null; -- CS copy outline from smt_pad_shape
+					when EXPAND_PAD => null; -- CS expand smt_pad_shape according to DRU
+					when USER_SPECIFIC => null; -- CS apply smt_stop_mask_contours
+				end case;
+				
+				return r;
+			end make_stop_mask_smt;
+
+			function make_stop_mask_tht return type_stop_mask_tht is 
+				r : type_stop_mask_tht := (others => <>);
+			begin
+				case tht_stop_mask_shape_top is
+					when AS_PAD => null; -- CS copy outline from tht_pad_shape.top
+					when EXPAND_PAD => null; -- CS expand tht_pad_shape.top according to DRU
+					when USER_SPECIFIC => null; -- CS apply tht_stop_mask_contours_top
+				end case;
+
+				case tht_stop_mask_shape_bottom is
+					when AS_PAD => null; -- CS copy outline from tht_pad_shape.bottom
+					when EXPAND_PAD => null; -- CS expand tht_pad_shape.bottom according to DRU
+					when USER_SPECIFIC => null; -- CS apply tht_stop_mask_contours_bottom
+				end case;
+
+				return r;
+			end make_stop_mask_tht;
+			
 		begin
 			case terminal_technology is
 				when THT => 
@@ -1982,6 +2023,7 @@ package body pcb_rw is
 									drill_size			=> tht_drill_size,
 									position			=> terminal_position,
 									pad_shape_tht		=> tht_pad_shape,
+									stop_mask_shape_tht	=> make_stop_mask_tht,
 									width_inner_layers	=> tht_width_inner_layers));
 
 						when MILLED =>
@@ -1996,9 +2038,16 @@ package body pcb_rw is
 									millings			=> tht_millings,
 									position			=> terminal_position,
 									pad_shape_tht		=> tht_pad_shape,
+									stop_mask_shape_tht	=> make_stop_mask_tht,
 									width_inner_layers	=> tht_width_inner_layers));
 					end case;
 
+					-- clean up for next terminal
+					tht_stop_mask_shape_top			:= stop_mask_shape_default;
+					tht_stop_mask_shape_bottom		:= stop_mask_shape_default;
+					tht_stop_mask_contours_top		:= (others => <>);		
+					tht_stop_mask_contours_bottom	:= (others => <>);
+					
 				when SMT =>
 					type_terminals.insert (
 						container	=> packge.terminals,
@@ -2006,13 +2055,18 @@ package body pcb_rw is
 						position	=> cursor,
 						inserted	=> inserted,
 						new_item	=> (
-							technology		=> SMT,
-							tht_hole		=> terminal_tht_hole_default, -- not relevant here, see spec
-							face			=> smt_pad_face,
-							position		=> terminal_position,
-							pad_shape		=> smt_pad_shape,
-							stop_mask		=> smt_stop_mask,
-							solder_paste	=> smt_solder_paste));
+							technology			=> SMT,
+							tht_hole			=> terminal_tht_hole_default, -- not relevant here, see spec
+							face				=> smt_pad_face,
+							position			=> terminal_position,
+							pad_shape			=> smt_pad_shape,
+							stop_mask			=> smt_stop_mask,
+							stop_mask_shape_smt	=> make_stop_mask_smt,
+							solder_paste		=> smt_solder_paste));
+
+					-- clean up for next terminal
+					smt_stop_mask_shape		:= stop_mask_shape_default;
+					smt_stop_mask_contours	:= (others => <>);		
 
 			end case;
 
@@ -2024,13 +2078,13 @@ package body pcb_rw is
 
 			-- clean up for next terminal
 			terminal_position	:= origin_zero_rotation;
- 			smt_pad_shape		:= (others => <>);
-			smt_stop_mask		:= stop_mask_status_default;
-			smt_solder_paste	:= solder_paste_status_default;
-			tht_pad_shape		:= (others => <>);
-			tht_hole			:= terminal_tht_hole_default;
-			tht_width_inner_layers	:= type_track_width'first;
-			tht_drill_size			:= type_drill_size'first;
+ 			smt_pad_shape		:= (others => <>); -- cS move to case SMT
+			smt_stop_mask		:= stop_mask_status_default;  -- cS move to case SMT
+			smt_solder_paste	:= solder_paste_status_default;  -- cS move to case SMT
+			tht_pad_shape		:= (others => <>);  -- cS move to case THT
+			tht_hole			:= terminal_tht_hole_default;  -- cS move to case tht
+			tht_width_inner_layers	:= type_track_width'first;  -- cS move to case tht
+			tht_drill_size			:= type_drill_size'first;  -- cS move to case tht
 			
 		end build_terminal;
 		

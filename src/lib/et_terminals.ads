@@ -192,7 +192,7 @@ package et_terminals is
 	-- Contours of stop mask are required only if the shape is user specific.
 	-- Otherwise the shape is to be derived from the underlying conductor pad and
 	-- the DRU settings:
-	type type_stop_mask (shape : type_stop_mask_shape) is record
+	type type_stop_mask (shape : type_stop_mask_shape := stop_mask_shape_default) is record
 		case shape is
 			when USER_SPECIFIC => contour : type_stop_mask_contours;
 			when others => null;
@@ -246,7 +246,8 @@ package et_terminals is
 		case technology is
 			when THT =>
 				-- The shape of the pad on top and bottom side.
-				pad_shape_tht : type_pad_outline_tht; 
+				pad_shape_tht		: type_pad_outline_tht; 
+				stop_mask_shape_tht	: type_stop_mask_tht := (others => <>);
 
 				-- This is the width of the copper surrounding the hole in inner layers.
 				-- Since the hole can be of any shape we do not speak about restring.
@@ -266,8 +267,7 @@ package et_terminals is
 				pad_shape		: type_pad_outline;
 				face			: type_face;
 				stop_mask 		: type_stop_mask_status;
-				-- CS ?? stop_mask_shape : type_stop_mask_outline;
-				-- If no elements in outline, apply pad_shape.
+				stop_mask_shape_smt : type_stop_mask_smt (shape => stop_mask_shape_default);
 				
 				solder_paste	: type_solder_paste_status;
 				-- CS ?? stencil_shape : type_stencil_outline;
