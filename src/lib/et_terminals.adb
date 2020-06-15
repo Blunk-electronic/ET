@@ -133,6 +133,14 @@ package body et_terminals is
 	function to_stop_mask_status (stop_mask : in string) return type_stop_mask_status is begin
 		return type_stop_mask_status'value (stop_mask);
 	end;
+
+	function to_string (shape : in type_stop_mask_shape) return string is begin
+		return to_lower (type_stop_mask_shape'image (shape));
+	end;
+
+	function to_shape (shape : in string) return type_stop_mask_shape is begin
+		return type_stop_mask_shape'value (shape);
+	end;
 	
 	function to_string (tht_hole : in type_terminal_tht_hole) return string is begin
 		return to_lower (type_terminal_tht_hole'image (tht_hole));

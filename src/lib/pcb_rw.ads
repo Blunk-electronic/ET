@@ -75,6 +75,9 @@ package pcb_rw is
 
 	section_pad_contours_smt	: constant string	:= "[PAD_CONTOURS_SMT";
 	section_pad_contours_tht	: constant string	:= "[PAD_CONTOURS_THT";	
+
+	section_stop_mask_contours	: constant string	:= "[STOP_MASK_CONTOURS";
+	
 	section_pad_millings		: constant string	:= "[MILLINGS";
 
 	section_terminals			: constant string	:= "[TERMINALS";
@@ -391,7 +394,8 @@ package pcb_rw is
 		SEC_TERMINALS,
 		SEC_TERMINAL,
 		SEC_PAD_CONTOURS_SMT,
-		SEC_PAD_CONTOURS_THT,		
+		SEC_PAD_CONTOURS_THT,
+		SEC_STOP_MASK_CONTOURS,
 		SEC_MILLINGS,
 		SEC_TEXT,
 		SEC_PLACEHOLDER,

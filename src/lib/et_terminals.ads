@@ -187,6 +187,9 @@ package et_terminals is
 
 	stop_mask_shape_default : constant type_stop_mask_shape := EXPAND_PAD;
 
+	function to_string (shape : in type_stop_mask_shape) return string;
+	function to_shape (shape : in string) return type_stop_mask_shape;
+	
 	type type_stop_mask_contours is new pac_shapes.type_polygon_base with null record;
 
 	-- Contours of stop mask are required only if the shape is user specific.
@@ -213,6 +216,10 @@ package et_terminals is
 	keyword_stop_mask			: constant string := "stop_mask";
 	keyword_solder_paste		: constant string := "solder_paste";
 
+	keyword_stop_mask_shape			: constant string := "stop_mask_shape";
+	keyword_stop_mask_shape_top		: constant string := "stop_mask_shape_top";
+	keyword_stop_mask_shape_bottom	: constant string := "stop_mask_shape_bottom";	
+	
 	keyword_pad_shape			: constant string := "pad_shape";	
 	keyword_width_inner_layers	: constant string := "width_inner_layers";
 	keyword_assembly_technology	: constant string := "technology";

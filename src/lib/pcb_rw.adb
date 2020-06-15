@@ -1801,6 +1801,23 @@ package body pcb_rw is
 						
 						section_mark (section_pad_contours_tht, FOOTER);
 
+						-- stop mask
+						write (keyword => keyword_stop_mask_shape_top, 
+							   parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.top.shape));
+
+						write (keyword => keyword_stop_mask_shape_bottom, 
+							   parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.bottom.shape));
+
+						case element (terminal_cursor).stop_mask_shape_tht.top.shape is
+							when AS_PAD => null;
+							when EXPAND_PAD => null;
+							when USER_SPECIFIC => null;
+								section_mark (section_stop_mask_contours, HEADER);
+
+								section_mark (section_stop_mask_contours, FOOTER);
+						end case;
+						
+						
 						-- copper width in inner layers
 						write (keyword => keyword_width_inner_layers, 
 							   parameters => to_string (element (terminal_cursor).width_inner_layers));
@@ -2531,6 +2548,13 @@ package body pcb_rw is
 							when others => invalid_section;
 						end case;
 
+					when SEC_STOP_MASK_CONTOURS =>
+
+						case stack.parent is
+							when SEC_TERMINAL => null; -- CS
+							when others => invalid_section;
+						end case;
+							
 					when SEC_TOP =>
 						case stack.parent is
 							when SEC_COPPER | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
@@ -3362,6 +3386,7 @@ package body pcb_rw is
 			elsif set (section_pcb_contours, SEC_PCB_CONTOURS_NON_PLATED) then null;
 			elsif set (section_pad_contours_smt, SEC_PAD_CONTOURS_SMT) then null;
 			elsif set (section_pad_contours_tht, SEC_PAD_CONTOURS_THT) then null;
+			elsif set (section_stop_mask_contours, SEC_STOP_MASK_CONTOURS) then null;
 			elsif set (section_pad_millings, SEC_MILLINGS) then null;			
 			elsif set (section_text, SEC_TEXT) then null;
 			elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
@@ -3424,6 +3449,12 @@ package body pcb_rw is
 							when others => invalid_section;
 						end case;
 
+					when SEC_STOP_MASK_CONTOURS =>
+						case stack.parent is
+							when SEC_TERMINAL => null; -- CS
+							when others => invalid_section;
+						end case;
+						
 					when SEC_TOP | SEC_BOTTOM =>
 						case stack.parent is
 							when SEC_COPPER | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
