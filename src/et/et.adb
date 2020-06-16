@@ -593,15 +593,20 @@ procedure et is
 				
 			-- package
 			elsif length (package_name_create) > 0 then
+				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for package editing
+				
 				pcb_rw.create_package (package_name_create, package_appearance, log_threshold => 0);
 
 				-- optionally the package can be saved under a different name
 				save_package_as;  -- if package_name_save_as is empty nothing happens
 
 			elsif length (package_name_import) > 0 then
+				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for package editing
 				null; -- CS
 
 			elsif length (package_name_open) > 0 then
+				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for package editing
+				
 				pcb_rw.read_package (package_name_open, log_threshold => 0);
 
 				-- optionally the package can be saved under a different name
@@ -610,12 +615,16 @@ procedure et is
 				
 			-- symbol
 			elsif length (symbol_name_create) > 0 then
+				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for symbol editing
+				
 				symbol_rw.create_symbol (symbol_name_create, symbol_appearance, log_threshold => 0);
 
 				-- optionally the symbol can be saved under a different name
 				save_symbol_as; -- if symbol_name_save_as is empty nothing happens
 
 			elsif length (symbol_name_open) > 0 then
+				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for symbol editing
+				
 				symbol_rw.read_symbol (symbol_name_open, log_threshold => 0);
 
 				-- optionally the symbol can be saved under a different name				
@@ -624,12 +633,16 @@ procedure et is
 
 			-- device
 			elsif length (device_name_create) > 0 then
+				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for device editing
+				
 				device_rw.create_device (device_name_create, device_appearance, log_threshold => 0);
 
 				-- optionally the device can be saved under a different name
 				save_device_as; -- if device_name_save_as is empty nothing happens
 
 			elsif length (device_name_open) > 0 then
+				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for device editing
+				
 				device_rw.read_device (device_name_open, log_threshold => 0);
 
 				-- optionally the device can be saved under a different name				
@@ -638,9 +651,13 @@ procedure et is
 
 			-- frame
 			elsif length (frame_name_create) > 0 then
+				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for frame editing
+				
 				frame_rw.create_frame (frame_name_create, frame_domain, log_threshold => 0); -- incl. save to file
 
 			elsif length (frame_name_open) > 0 then
+				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for frame editing
+				
 				declare
 					use et_frames;
 					use frame_rw;

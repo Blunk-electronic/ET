@@ -2078,37 +2078,54 @@ package body pcb_rw is
 			cursor : type_terminals.cursor;
 			inserted : boolean;
 
-			function make_stop_mask_smt return type_stop_mask_smt is 
-				r : type_stop_mask_smt (EXPAND_PAD);
-			begin
+			-- Builds the stop mask of the terminal if it is a SMT type:
+			function make_stop_mask_smt return type_stop_mask_smt is begin
 				case smt_stop_mask_shape is
-					when AS_PAD => null; -- CS copy outline from smt_pad_shape
-					when EXPAND_PAD => null; -- CS expand smt_pad_shape according to DRU
-					when USER_SPECIFIC => null; -- CS apply smt_stop_mask_contours
+					when AS_PAD =>
+						return (
+							shape		=> AS_PAD);
+						
+					when EXPAND_PAD =>
+						return (
+							shape		=> EXPAND_PAD);
+					
+					when USER_SPECIFIC =>
+						return (
+							shape		=> USER_SPECIFIC,
+							contours	=> smt_stop_mask_contours);
 				end case;
-				
-				return r;
 			end make_stop_mask_smt;
 
-			function make_stop_mask_tht return type_stop_mask_tht is 
-				r : type_stop_mask_tht := (others => <>);
-			begin
-				case tht_stop_mask_shape_top is
-					when AS_PAD => null; -- CS copy outline from tht_pad_shape.top
-					when EXPAND_PAD => null; -- CS expand tht_pad_shape.top according to DRU
-					when USER_SPECIFIC => null; -- CS apply tht_stop_mask_contours_top
-				end case;
+			-- Builds the stop mask of the terminal if it is a THT type:
+			function make_stop_mask_tht return type_stop_mask_tht is begin
+				return r : type_stop_mask_tht do
+					case tht_stop_mask_shape_top is
+						when AS_PAD => 
+							r.top := (shape => AS_PAD);
+						
+						when EXPAND_PAD =>
+							r.top := (shape	=> EXPAND_PAD);
+							
+						when USER_SPECIFIC =>
+							r.top := (shape => USER_SPECIFIC, contours => tht_stop_mask_contours_top);
+					end case;
 
-				case tht_stop_mask_shape_bottom is
-					when AS_PAD => null; -- CS copy outline from tht_pad_shape.bottom
-					when EXPAND_PAD => null; -- CS expand tht_pad_shape.bottom according to DRU
-					when USER_SPECIFIC => null; -- CS apply tht_stop_mask_contours_bottom
-				end case;
+					case tht_stop_mask_shape_bottom is
+						when AS_PAD => 
+							r.bottom := (shape => AS_PAD);
+							
+						when EXPAND_PAD =>
+							r.bottom := (shape => EXPAND_PAD);
+							
+						when USER_SPECIFIC =>
+							r.bottom := (shape => USER_SPECIFIC, contours => tht_stop_mask_contours_bottom);
 
-				return r;
+					end case;
+
+				end return;
 			end make_stop_mask_tht;
 			
-		begin
+		begin -- build_terminal
 			case terminal_technology is
 				when THT => 
 					case tht_hole is
@@ -2900,6 +2917,8 @@ package body pcb_rw is
 										board_reset_arc;
 
 									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
+
+									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_arc (board_arc);
 										
 									when others => invalid_section;
 								end case;
@@ -2961,7 +2980,9 @@ package body pcb_rw is
 										board_reset_arc;
 
 									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
-										
+
+									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_arc (board_arc);
+									
 									when others => invalid_section;
 								end case;
 
@@ -2996,6 +3017,8 @@ package body pcb_rw is
 
 							when SEC_PAD_CONTOURS_SMT => add_polygon_arc (board_arc);
 
+							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_arc (board_arc);
+							
 							when SEC_MILLINGS => add_polygon_arc (board_arc);
 
 							when SEC_CONTOURS => add_polygon_arc (board_arc);
@@ -3049,7 +3072,9 @@ package body pcb_rw is
 										board_reset_circle_fillable; -- clean up for next circle
 
 									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
-										
+
+									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_circle (board_circle);
+									
 									when others => invalid_section;
 								end case;
 
@@ -3097,7 +3122,9 @@ package body pcb_rw is
 										board_reset_circle_fillable; -- clean up for next circle
 
 									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
-										
+
+									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_circle (board_circle);
+									
 									when others => invalid_section;
 								end case;
 
@@ -3130,6 +3157,8 @@ package body pcb_rw is
 
 							when SEC_PAD_CONTOURS_SMT => add_polygon_circle (board_circle);
 
+							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_circle (board_circle);
+							
 							when SEC_MILLINGS => add_polygon_circle (board_circle);
 
 							when SEC_CONTOURS => add_polygon_circle (board_circle);
@@ -3667,6 +3696,8 @@ package body pcb_rw is
 									when SEC_KEEPOUT => read_board_arc (line);
 										
 									when SEC_PAD_CONTOURS_THT => read_board_arc (line);
+
+									when SEC_STOP_MASK_CONTOURS_THT => read_board_arc (line);
 										
 									when others => invalid_section;
 								end case;
@@ -3695,6 +3726,8 @@ package body pcb_rw is
 								
 							when SEC_PAD_CONTOURS_SMT => read_board_arc (line);
 
+							when SEC_STOP_MASK_CONTOURS_SMT => read_board_arc (line);
+							
 							when SEC_MILLINGS => read_board_arc (line);
 
 							when SEC_CONTOURS => read_board_arc (line);
@@ -3790,7 +3823,9 @@ package body pcb_rw is
 										end if;
 										
 									when SEC_PAD_CONTOURS_THT => read_board_circle (line);
-										
+
+									when SEC_STOP_MASK_CONTOURS_THT => read_board_circle (line);
+									
 									when others => invalid_section;
 								end case;
 
@@ -3834,6 +3869,8 @@ package body pcb_rw is
 								
 							when SEC_PAD_CONTOURS_SMT => read_board_circle (line);
 
+							when SEC_STOP_MASK_CONTOURS_SMT => read_board_circle (line);
+							
 							when SEC_MILLINGS => read_board_circle (line);
 
 							when SEC_CONTOURS => read_board_circle (line);
