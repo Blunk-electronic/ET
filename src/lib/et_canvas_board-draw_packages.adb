@@ -2364,7 +2364,7 @@ is
 			use type_terminals;
 
 			-- Calculates the final position of the terminal and the 
-			-- rotated the pad outline.
+			-- rotated or mirrored outline.
 			procedure move (
 				term_pos	: in out type_position; -- terminal position
 				outline		: in out type_polygon_base) is
@@ -2424,37 +2424,80 @@ is
 					height		=> self.frame_height);
 
 			end draw_name;
-			
-			procedure draw_pad_smt (
-				name		: in string;  -- H5, 5, 3
-				outline_in	: in type_pad_outline;
-				pad_pos_in	: in type_position; -- the center of the pad incl. its rotation
-				f			: in type_face) is
 
-				outline : type_pad_outline := outline_in;
+			-- This procedure draws the SMT pad, the stop mask, the stencil and 
+			-- the terminal name. The terminal name will be drawn only when
+			-- the signal layer is enabled.
+			procedure draw_pad_smt (
+				name			: in string;  -- H5, 5, 3
+				pad_outline_in	: in type_pad_outline; -- the outline of the solder pad (copper)
+				stop_mask_in	: in type_stop_mask_smt; -- the stop mask of the pad
+				pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
+				f				: in type_face) is
+
+				pad_outline : type_pad_outline := pad_outline_in;
 				pad_pos : type_position := pad_pos_in;
 
+				stop_mask_contours : type_stop_mask_contours;
+				
 				ly : constant type_signal_layer := face_to_layer (f);
+
+				use pac_draw_package;
 			begin
-				if conductor_enabled (ly) then
+				-- We draw only if either the signal layer, the stop mask or the stencil
+				-- is enabled. Otherwise nothing will happen here:
+				if conductor_enabled (ly) or stop_mask_enabled (f) or stencil_enabled (f) then
 					
 					if f = face then
 
 						-- Calculate the final position of the terminal and the
-						-- rotatated the pad outline.
-						move (pad_pos, type_polygon_base (outline));
+						-- rotated or mirrored pad outline.
+						move (pad_pos, type_polygon_base (pad_outline));
 						
-						set_color_conductor (context.cr, ly);
-						pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
+						-- draw the solder pad (copper):
+						if conductor_enabled (ly) then
 
-						-- CS draw stop mask and solder paste 
+							set_color_conductor (context.cr, ly);
+							draw_polygon (in_area, context, pad_outline, YES, self.frame_height);
 
-						-- draw the terminal name
-						draw_name (name, pad_pos);
+							-- draw the terminal name
+							draw_name (name, pad_pos);
+						end if;
+						
+						-- draw the stop mask
+						if stop_mask_enabled (f) then
+							
+							case stop_mask_in.shape is
+								when AS_PAD =>
+									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+								when EXPAND_PAD =>
+									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+									frame_polygon (stop_mask_contours, 0.0, OUTSIDE); -- CS DRU
+									
+								when USER_SPECIFIC =>
+									pad_pos := pad_pos_in;
+									stop_mask_contours := stop_mask_in.contours;
+									move (pad_pos, type_polygon_base (stop_mask_contours));
+							end case;
+
+							set_color_stop_mask (context.cr, f, self.scale);
+							draw_polygon (in_area, context, stop_mask_contours, YES, self.frame_height);
+						end if;
+						
+						-- draw stencil (or solder paste mask)
+						if stencil_enabled (f) then
+							set_color_stencil (context.cr, f, self.scale);
+							-- CS
+							--draw_polygon (in_area, context, stop_mask_contours, YES, self.frame_height);
+						end if;
+
 					end if;
 				end if;
 			end draw_pad_smt;
 
+			-- This procedure draws the outer "restring" of the THT pad, the stop mask, the stencil and 
+			-- the terminal name. The terminal name will be drawn only when
+			-- the signal layer is enabled.
 			procedure draw_pad_tht_outer_layer (
 				outline_in	: in type_pad_outline;
 				pad_pos_in	: in type_position; -- the center of the pad incl. its rotation
@@ -2596,7 +2639,7 @@ is
 							when BOTTOM	=> set_destination (INVERSE);
 						end case;
 
-						draw_pad_smt (to_string (key (c)), t.pad_shape, t.position, destination);
+						draw_pad_smt (to_string (key (c)), t.pad_shape, t.stop_mask_shape_smt, t.position, destination);
 				end case;
 				
 			end query_terminal;
