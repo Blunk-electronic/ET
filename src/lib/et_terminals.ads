@@ -197,15 +197,15 @@ package et_terminals is
 	-- the DRU settings:
 	type type_stop_mask (shape : type_stop_mask_shape := stop_mask_shape_default) is record
 		case shape is
-			when USER_SPECIFIC => contour : type_stop_mask_contours;
+			when USER_SPECIFIC => contours : type_stop_mask_contours;
 			when others => null;
 		end case;
 	end record;
 
 	-- A THT pad has stop mask on top and bottom side:
 	type type_stop_mask_tht is record
-		top		: type_stop_mask (stop_mask_shape_default); -- The shape on the top side
-		bottom	: type_stop_mask (stop_mask_shape_default); -- is not nessecarily the same as on the bottom side.
+		top		: type_stop_mask; -- The shape on the top side
+		bottom	: type_stop_mask; -- is not nessecarily the same as on the bottom side.
 	end record;
 
 	-- A SMT pad has stop mask on one side only:
@@ -254,29 +254,29 @@ package et_terminals is
 			when THT =>
 				-- The shape of the pad on top and bottom side.
 				pad_shape_tht		: type_pad_outline_tht; 
-				stop_mask_shape_tht	: type_stop_mask_tht := (others => <>);
+				stop_mask_shape_tht	: type_stop_mask_tht; -- := (others => <>);
 
 				-- This is the width of the copper surrounding the hole in inner layers.
 				-- Since the hole can be of any shape we do not speak about restring.
 				-- The shape of the copper area around the hole is the same as the shape of the 
 				-- hole. No further extra contours possible.
-				width_inner_layers : type_track_width;
+				width_inner_layers	: type_track_width;
 				
 				case tht_hole is
 					when DRILLED =>
-						drill_size : type_drill_size;
+						drill_size	: type_drill_size;
 						
 					when MILLED =>
-						millings : type_plated_millings;
+						millings	: type_plated_millings;
 				end case;
 				
 			when SMT =>
-				pad_shape		: type_pad_outline;
-				face			: type_face;
-				stop_mask 		: type_stop_mask_status;
-				stop_mask_shape_smt : type_stop_mask_smt (shape => stop_mask_shape_default);
+				pad_shape			: type_pad_outline;
+				face				: type_face;
+				stop_mask 			: type_stop_mask_status;
+				stop_mask_shape_smt : type_stop_mask_smt;
 				
-				solder_paste	: type_solder_paste_status;
+				solder_paste		: type_solder_paste_status;
 				-- CS ?? stencil_shape : type_stencil_outline;
 				-- If no elements in outline, apply pad_shape.
 				

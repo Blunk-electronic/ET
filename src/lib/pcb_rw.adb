@@ -1770,6 +1770,102 @@ package body pcb_rw is
 			use type_terminals;
 			terminal_cursor : type_terminals.cursor := packge.terminals.first;
 
+			procedure write_stop_mask_tht is 
+				
+				function user_specific_contours return boolean is begin
+					if element (terminal_cursor).stop_mask_shape_tht.top.shape = USER_SPECIFIC 
+					or element (terminal_cursor).stop_mask_shape_tht.bottom.shape = USER_SPECIFIC then
+						return true;
+					else
+						return false;
+					end if;
+				end user_specific_contours;
+				
+			begin -- write_stop_mask_tht
+				write (keyword => keyword_stop_mask_shape_top, 
+						parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.top.shape));
+
+				write (keyword => keyword_stop_mask_shape_bottom, 
+						parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.bottom.shape));
+
+				-- If user specified contours in either top or bottom required, write the header
+				-- for stop mask contours:
+				if user_specific_contours then
+					section_mark (section_stop_mask_contours_tht, HEADER);
+				end if;
+
+				-- If user specified contours in top, write them:
+				case element (terminal_cursor).stop_mask_shape_tht.top.shape is
+					when AS_PAD | EXPAND_PAD => null;
+					when USER_SPECIFIC =>
+						section_mark (section_top, HEADER);
+						
+						write_polygon_segments (pac_shapes.type_polygon_base (
+							element (terminal_cursor).stop_mask_shape_tht.top.contours));
+
+						section_mark (section_top, FOOTER);
+				end case;
+
+				-- If user specified contours in bottom, write them:
+				case element (terminal_cursor).stop_mask_shape_tht.bottom.shape is
+					when AS_PAD | EXPAND_PAD => null;
+					when USER_SPECIFIC =>
+						section_mark (section_bottom, HEADER);
+						
+						write_polygon_segments (pac_shapes.type_polygon_base (
+							element (terminal_cursor).stop_mask_shape_tht.bottom.contours));
+
+						section_mark (section_bottom, FOOTER);
+				end case;
+				
+				-- If user specified contours in either top or bottom required, write the footer
+				-- for stop mask contours:
+				if user_specific_contours then
+					section_mark (section_stop_mask_contours_tht, FOOTER);
+				end if;
+				
+			end write_stop_mask_tht;
+
+			procedure write_stop_mask_smt is 
+				
+				function user_specific_contours return boolean is begin
+					if element (terminal_cursor).stop_mask_shape_smt.shape = USER_SPECIFIC then
+						return true;
+					else
+						return false;
+					end if;
+				end user_specific_contours;
+				
+			begin -- write_stop_mask_smt
+				write (keyword => keyword_stop_mask, parameters => to_string (element (terminal_cursor).stop_mask)); -- stop_mask open
+				
+				write (keyword => keyword_stop_mask_shape, 
+						parameters => to_string (element (terminal_cursor).stop_mask_shape_smt.shape));
+
+				-- If user specified contours required, write the header
+				-- for stop mask contours:
+				if user_specific_contours then
+					section_mark (section_stop_mask_contours_smt, HEADER);
+				end if;
+
+				-- If user specified contours, write them:
+				case element (terminal_cursor).stop_mask_shape_smt.shape is
+					when AS_PAD | EXPAND_PAD => null;
+					when USER_SPECIFIC =>
+		
+						write_polygon_segments (pac_shapes.type_polygon_base (
+							element (terminal_cursor).stop_mask_shape_smt.contours));
+
+				end case;
+
+				-- If user specified contours required, write the footer
+				-- for stop mask contours:
+				if user_specific_contours then
+					section_mark (section_stop_mask_contours_smt, FOOTER);
+				end if;
+				
+			end write_stop_mask_smt;
+			
 			procedure write_plated_millings (millings : in type_plated_millings) is begin
 				section_mark (section_pad_millings, HEADER);
 				write_polygon_segments (pac_shapes.type_polygon_base (millings));
@@ -1802,21 +1898,7 @@ package body pcb_rw is
 						section_mark (section_pad_contours_tht, FOOTER);
 
 						-- stop mask
-						write (keyword => keyword_stop_mask_shape_top, 
-							   parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.top.shape));
-
-						write (keyword => keyword_stop_mask_shape_bottom, 
-							   parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.bottom.shape));
-
-						case element (terminal_cursor).stop_mask_shape_tht.top.shape is
-							when AS_PAD => null;
-							when EXPAND_PAD => null;
-							when USER_SPECIFIC => null;
-								section_mark (section_stop_mask_contours, HEADER);
-
-								section_mark (section_stop_mask_contours, FOOTER);
-						end case;
-						
+						write_stop_mask_tht;
 						
 						-- copper width in inner layers
 						write (keyword => keyword_width_inner_layers, 
@@ -1840,10 +1922,13 @@ package body pcb_rw is
 						section_mark (section_pad_contours_smt, FOOTER);
 						
 						write (keyword => et_pcb_coordinates.keyword_face, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).face));
-						write (keyword => keyword_stop_mask, parameters => to_string (element (terminal_cursor).stop_mask));
+
+						-- stop mask
+						write_stop_mask_smt;
+
+						-- solder paste
 						write (keyword => keyword_solder_paste, parameters => to_string (element (terminal_cursor).solder_paste));	
 				end case;
-
 
 				section_mark (section_terminal, FOOTER);
 				next (terminal_cursor);
@@ -2547,13 +2632,6 @@ package body pcb_rw is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
-
-					when SEC_STOP_MASK_CONTOURS =>
-
-						case stack.parent is
-							when SEC_TERMINAL => null; -- CS
-							when others => invalid_section;
-						end case;
 							
 					when SEC_TOP =>
 						case stack.parent is
@@ -2564,6 +2642,11 @@ package body pcb_rw is
 								tht_pad_shape.top := (pac_shapes.type_polygon_base (polygon) with null record);
 								board_reset_polygon;
 
+							when SEC_STOP_MASK_CONTOURS_THT =>
+								check_outline (polygon, log_threshold + 1);
+								tht_stop_mask_contours_top := (pac_shapes.type_polygon_base (polygon) with null record);
+								board_reset_polygon;
+								
 							when others => invalid_section;
 						end case;
 						
@@ -2574,6 +2657,11 @@ package body pcb_rw is
 
 							when SEC_PAD_CONTOURS_THT =>
 								tht_pad_shape.bottom := (pac_shapes.type_polygon_base (polygon) with null record);
+								board_reset_polygon;
+
+							when SEC_STOP_MASK_CONTOURS_THT =>
+								check_outline (polygon, log_threshold + 1);
+								tht_stop_mask_contours_bottom := (pac_shapes.type_polygon_base (polygon) with null record);
 								board_reset_polygon;
 								
 							when others => invalid_section;
@@ -2638,7 +2726,9 @@ package body pcb_rw is
 										board_reset_line;
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_line (board_line);
-										
+
+									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_line (board_line);
+									
 									when others => invalid_section;
 								end case;
 
@@ -2700,6 +2790,8 @@ package body pcb_rw is
 
 									when SEC_PAD_CONTOURS_THT => add_polygon_line (board_line);
 
+									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_line (board_line);
+									
 									when others => invalid_section;
 								end case;
 								
@@ -2736,6 +2828,8 @@ package body pcb_rw is
 								
 							when SEC_PAD_CONTOURS_SMT => add_polygon_line (board_line);
 
+							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_line (board_line);
+							
 							when SEC_MILLINGS => add_polygon_line (board_line);
 
 							when SEC_CONTOURS => add_polygon_line (board_line);
@@ -3304,10 +3398,26 @@ package body pcb_rw is
 
 					when SEC_PAD_CONTOURS_THT =>
 						case stack.parent is
-							when SEC_TERMINAL => check_outline (polygon, log_threshold + 1);
+							when SEC_TERMINAL => check_outline (polygon, log_threshold + 1); -- CS ?
 							when others => invalid_section;
 						end case;
 
+					when SEC_STOP_MASK_CONTOURS_SMT =>
+						case stack.parent is
+							when SEC_TERMINAL =>
+								check_outline (polygon, log_threshold + 1);
+								smt_stop_mask_contours := (pac_shapes.type_polygon_base (polygon) with null record);
+								board_reset_polygon;
+								
+							when others => invalid_section;
+						end case;
+
+					when SEC_STOP_MASK_CONTOURS_THT =>
+						case stack.parent is
+							when SEC_TERMINAL => null;
+							when others => invalid_section;
+						end case;
+						
 					when SEC_MILLINGS =>
 						case stack.parent is
 							when SEC_TERMINAL => 
@@ -3386,7 +3496,8 @@ package body pcb_rw is
 			elsif set (section_pcb_contours, SEC_PCB_CONTOURS_NON_PLATED) then null;
 			elsif set (section_pad_contours_smt, SEC_PAD_CONTOURS_SMT) then null;
 			elsif set (section_pad_contours_tht, SEC_PAD_CONTOURS_THT) then null;
-			elsif set (section_stop_mask_contours, SEC_STOP_MASK_CONTOURS) then null;
+			elsif set (section_stop_mask_contours_smt, SEC_STOP_MASK_CONTOURS_SMT) then null;
+			elsif set (section_stop_mask_contours_tht, SEC_STOP_MASK_CONTOURS_THT) then null;
 			elsif set (section_pad_millings, SEC_MILLINGS) then null;			
 			elsif set (section_text, SEC_TEXT) then null;
 			elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
@@ -3449,9 +3560,9 @@ package body pcb_rw is
 							when others => invalid_section;
 						end case;
 
-					when SEC_STOP_MASK_CONTOURS =>
+					when SEC_STOP_MASK_CONTOURS_THT | SEC_STOP_MASK_CONTOURS_SMT =>
 						case stack.parent is
-							when SEC_TERMINAL => null; -- CS
+							when SEC_TERMINAL => null;
 							when others => invalid_section;
 						end case;
 						
@@ -3461,6 +3572,8 @@ package body pcb_rw is
 								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 								SEC_PAD_CONTOURS_THT => null;
 
+							when SEC_STOP_MASK_CONTOURS_THT => null;
+								
 							when others => invalid_section;
 						end case;
 						
@@ -3490,6 +3603,8 @@ package body pcb_rw is
 										
 									when SEC_PAD_CONTOURS_THT => read_board_line (line);
 
+									when SEC_STOP_MASK_CONTOURS_THT => read_board_line (line);
+									
 									when others => invalid_section;
 								end case;
 
@@ -3516,6 +3631,8 @@ package body pcb_rw is
 								
 							when SEC_PAD_CONTOURS_SMT => read_board_line (line);
 
+							when SEC_STOP_MASK_CONTOURS_SMT => read_board_line (line);
+							
 							when SEC_MILLINGS => read_board_line (line);
 
 							when SEC_CONTOURS => read_board_line (line);
@@ -4009,7 +4126,7 @@ package body pcb_rw is
 					when SEC_TERMINAL =>
 						case stack.parent is
 							when SEC_TERMINALS =>
-								declare
+								declare -- CS move to separate procdure
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -4044,6 +4161,18 @@ package body pcb_rw is
 									elsif kw = keyword_stop_mask then -- stop_mask open/closed
 										expect_field_count (line, 2);
 										smt_stop_mask := to_stop_mask_status (f (line,2));
+
+									elsif kw = keyword_stop_mask_shape then -- keyword_stop_mask_shape user_specific
+										expect_field_count (line, 2);
+										smt_stop_mask_shape := to_shape (f (line,2));
+										
+									elsif kw = keyword_stop_mask_shape_top then -- stop_mask_shape_top user_specific
+										expect_field_count (line, 2);
+										tht_stop_mask_shape_top := to_shape (f (line,2));
+
+									elsif kw = keyword_stop_mask_shape_bottom then -- keyword_stop_mask_shape_bottom user_specific
+										expect_field_count (line, 2);
+										tht_stop_mask_shape_bottom := to_shape (f (line,2));
 
 									elsif kw = keyword_solder_paste then -- solder_paste applied/none
 										expect_field_count (line, 2);
