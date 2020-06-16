@@ -2469,12 +2469,15 @@ is
 							
 							case stop_mask_in.shape is
 								when AS_PAD =>
+									-- copy solder pad contours
 									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
 								when EXPAND_PAD =>
+									-- copy solder pad contours and expand according to DRU
 									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
 									frame_polygon (stop_mask_contours, 0.0, OUTSIDE); -- CS DRU
 									
 								when USER_SPECIFIC =>
+									-- compute position of user specific stop mask contours:
 									pad_pos := pad_pos_in;
 									stop_mask_contours := stop_mask_in.contours;
 									move (pad_pos, type_polygon_base (stop_mask_contours));
@@ -2495,29 +2498,65 @@ is
 				end if;
 			end draw_pad_smt;
 
-			-- This procedure draws the outer "restring" of the THT pad, the stop mask, the stencil and 
-			-- the terminal name. The terminal name will be drawn only when
-			-- the signal layer is enabled.
+			-- This procedure draws the outer "restring" of the THT pad and the stop mask
+			-- in an outer signal layer (specified by caller).
+			-- The terminal name will be drawn only when the signal layer is enabled.
 			procedure draw_pad_tht_outer_layer (
-				outline_in	: in type_pad_outline;
-				pad_pos_in	: in type_position; -- the center of the pad incl. its rotation
-				f			: in type_face) is
+				pad_outline_in	: in type_pad_outline; -- the outline of the solder pad (copper)
+				stop_mask_in	: in et_terminals.type_stop_mask; -- the stop mask in the outer layer
+				pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
+				f				: in type_face) is
 
-				outline : type_pad_outline := outline_in;
+				pad_outline : type_pad_outline := pad_outline_in;
 				pad_pos : type_position := pad_pos_in;
+
+				stop_mask_contours : type_stop_mask_contours;
 				
 				ly : constant type_signal_layer := face_to_layer (f);
+
+				use pac_draw_package;
 			begin
-				if conductor_enabled (ly) then
+				-- We draw only if either the signal layer or the stop mask
+				-- is enabled. Otherwise nothing will happen here:
+				if conductor_enabled (ly) or stop_mask_enabled (f) then
 					
 					if f = face then
 
-						move (pad_pos, type_polygon_base (outline));
-						
-						set_color_tht_pad (context.cr);
-						pac_draw_package.draw_polygon (in_area, context, outline, YES, self.frame_height);
+						-- Calculate the final position of the terminal and the
+						-- rotated or mirrored pad outline.
+						move (pad_pos, type_polygon_base (pad_outline));
 
-						-- CS draw stop mask
+						-- draw the solder pad (copper):
+						if conductor_enabled (ly) then
+
+							set_color_tht_pad (context.cr);
+							draw_polygon (in_area, context, pad_outline, YES, self.frame_height);
+
+						end if;
+						
+						-- draw the stop mask
+						if stop_mask_enabled (f) then
+							
+							case stop_mask_in.shape is
+								when AS_PAD =>
+									-- copy solder pad contours to stop mask:
+									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+								when EXPAND_PAD =>
+									-- copy solder pad contours and expand according to DRU
+									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+									frame_polygon (stop_mask_contours, 0.0, OUTSIDE); -- CS DRU
+									
+								when USER_SPECIFIC =>
+									-- compute position of user specific stop mask contours:
+									pad_pos := pad_pos_in;
+									stop_mask_contours := stop_mask_in.contours;
+									move (pad_pos, type_polygon_base (stop_mask_contours));
+							end case;
+
+							set_color_stop_mask (context.cr, f, self.scale);
+							draw_polygon (in_area, context, stop_mask_contours, YES, self.frame_height);
+						end if;
+
 					end if;
 				end if;
 			end draw_pad_tht_outer_layer;
@@ -2618,11 +2657,11 @@ is
 					when THT =>
 						-- draw pad outline of top layer:
 						set_destination;
-						draw_pad_tht_outer_layer (t.pad_shape_tht.top, t.position, destination);
+						draw_pad_tht_outer_layer (t.pad_shape_tht.top, t.stop_mask_shape_tht.top, t.position, destination);
 
 						-- draw pad outline of bottom layer:
 						set_destination (INVERSE);
-						draw_pad_tht_outer_layer (t.pad_shape_tht.bottom, t.position, destination);
+						draw_pad_tht_outer_layer (t.pad_shape_tht.bottom, t.stop_mask_shape_tht.bottom, t.position, destination);
 
 						-- The pad can have a circular hole or a hole of arbitrary shape:
 						case t.tht_hole is
