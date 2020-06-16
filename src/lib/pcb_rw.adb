@@ -2639,6 +2639,7 @@ package body pcb_rw is
 								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION => null;
 
 							when SEC_PAD_CONTOURS_THT => 
+								check_outline (polygon, log_threshold + 1);
 								tht_pad_shape.top := (pac_shapes.type_polygon_base (polygon) with null record);
 								board_reset_polygon;
 
@@ -2656,6 +2657,7 @@ package body pcb_rw is
 								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION => null;
 
 							when SEC_PAD_CONTOURS_THT =>
+								check_outline (polygon, log_threshold + 1);
 								tht_pad_shape.bottom := (pac_shapes.type_polygon_base (polygon) with null record);
 								board_reset_polygon;
 
@@ -3398,7 +3400,7 @@ package body pcb_rw is
 
 					when SEC_PAD_CONTOURS_THT =>
 						case stack.parent is
-							when SEC_TERMINAL => check_outline (polygon, log_threshold + 1); -- CS ?
+							when SEC_TERMINAL => null;
 							when others => invalid_section;
 						end case;
 
