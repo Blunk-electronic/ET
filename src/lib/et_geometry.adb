@@ -1996,17 +1996,17 @@ package body et_geometry is
 			end loop;
 		end rotate_by;
 
-		procedure frame_polygon (
+		procedure offset_polygon (
 			polygon	: in out type_polygon_base;
 			width	: in type_distance_positive;
-			frame	: in type_polygon_frame) is
+			frame	: in type_polygon_offset) is
 		begin
 -- CS
 -- 			for s in type_polygon_segment_id'first .. polygon.segments_total loop
 				null;
 
 -- 			end loop;
-		end frame_polygon;
+		end offset_polygon;
 		
 		
 -- 		function to_corner_easing (easing : in string) return type_corner_easing is begin

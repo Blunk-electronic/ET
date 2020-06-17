@@ -697,16 +697,19 @@ package et_geometry is
 			rotation	: in type_rotation);
 
 
-		-- In order to draw an inner or outer frame of a polygon
-		-- we have this type:
-		type type_polygon_frame is (INSIDE, OUTSIDE); -- CS rename to inward and outward
+		-- POLYGON OFFSETTING:
+		-- See:
+		-- <https://gis.stackexchange.com/questions/61786/how-to-scale-reduce-my-polygon-without-changing-the-central-lat-long>
+		-- <https://stackoverflow.com/questions/54033808/how-to-offset-polygon-edges>
+		
+		-- In order to do a polygon offset we have this type:
+		type type_polygon_offset is (INWARD, OUTWARD);
 
-		-- The procedure shrinks or expands the given polygon
-		-- so that the resulting polygon is an inner or outer frame:
-		procedure frame_polygon ( -- CS rename to polygon_offset or so
+		-- The procedure shrinks or expands the given polygon.
+		procedure offset_polygon (
 			polygon	: in out type_polygon_base;
 			width	: in type_distance_positive;
-			frame	: in type_polygon_frame);
+			frame	: in type_polygon_offset);
 
 
 		

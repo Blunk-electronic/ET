@@ -2486,7 +2486,7 @@ is
 								when EXPAND_PAD =>
 									-- copy solder pad contours and expand according to DRU
 									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
-									frame_polygon (stop_mask_contours, 0.0, OUTSIDE); -- CS DRU
+									offset_polygon (stop_mask_contours, 0.0, OUTWARD); -- CS DRU
 									
 								when USER_SPECIFIC =>
 									-- compute position of user specific stop mask contours:
@@ -2556,7 +2556,7 @@ is
 								when EXPAND_PAD =>
 									-- copy solder pad contours and expand according to DRU
 									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
-									frame_polygon (stop_mask_contours, 0.0, OUTSIDE); -- CS DRU
+									offset_polygon (stop_mask_contours, 0.0, OUTWARD); -- CS DRU
 									
 								when USER_SPECIFIC =>
 									-- compute position of user specific stop mask contours:
@@ -2592,13 +2592,13 @@ is
 					
 					move (pad_pos, type_polygon_base (hole_outline));
 
-					-- Draw the conductor frame around the hole if any inner signal layer is enabled:
+					-- Draw the conductor frame ("restring") around the hole if any inner signal layer is enabled:
 					if inner_conductors_enabled (bottom_layer) then
 						-- Compute a polygon that extends the hole_outline by the restring_width:
 						pad_outline := (type_polygon_base (hole_outline) with null record);
-						frame_polygon (pad_outline, restring_width, OUTSIDE);
+						offset_polygon (pad_outline, restring_width, OUTWARD);
 
-						-- Draw the frame
+						-- Draw the conductor frame:
 						set_color_tht_pad (context.cr);
 						pac_draw_package.draw_polygon (in_area, context, pad_outline, YES, self.frame_height);
 					end if;
