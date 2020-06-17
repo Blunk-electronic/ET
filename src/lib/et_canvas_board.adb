@@ -339,7 +339,7 @@ package body et_canvas_board is
 	begin
 -- 		put_line ("draw internal ...");
 		
-		set_color_background (context.cr);
+		set_color_background (context.cr, et_colors.no_opacity);
 		paint (context.cr);
 
 		-- Backup context for drawing the grid at the end of this procedure.

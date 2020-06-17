@@ -46,23 +46,17 @@ package body et_colors.board is
 			cursor.blue);
 	end set_color_cursor;
 	
-	procedure set_color_background (context : in cairo_context) is begin		
-		set_source_rgb (
+	procedure set_color_background (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity)
+	is begin
+		set_source_rgba (
 			context, 
 			background.red,
 			background.green,
-			background.blue);
+			background.blue,
+			color_range (opacity));
 	end set_color_background;
-
--- 	procedure set_color_background_transparent (context : in cairo_context) is begin		
--- 		set_source_rgba (
--- 			context, 
--- 			background.red,
--- 			background.green,
--- 			background.blue,
--- 			0.5 -- alpha
--- 			);
--- 	end set_color_background_transparent;
 	
 	procedure set_color_frame (context : in cairo_context) is begin		
 		set_source_rgb (

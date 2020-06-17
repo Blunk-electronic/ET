@@ -91,8 +91,11 @@ package et_colors.board is
 
 
 	procedure set_color_cursor (context : in cairo_context);
-	procedure set_color_background (context : in cairo_context);
--- 	procedure set_color_background_transparent (context : in cairo_context);	
+	
+	procedure set_color_background (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity);
+
 	procedure set_color_frame (context : in cairo_context);	
 	procedure set_color_origin (context : in cairo_context);
 	
