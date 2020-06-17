@@ -1918,7 +1918,7 @@ package body pcb_rw is
 					when SMT =>
 						-- pad contour
 						section_mark (section_pad_contours_smt, HEADER);
-						write_polygon_segments (pac_shapes.type_polygon_base (element (terminal_cursor).pad_shape));
+						write_polygon_segments (pac_shapes.type_polygon_base (element (terminal_cursor).pad_shape_smt));
 						section_mark (section_pad_contours_smt, FOOTER);
 						
 						write (keyword => et_pcb_coordinates.keyword_face, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).face));
@@ -2178,7 +2178,7 @@ package body pcb_rw is
 							tht_hole			=> terminal_tht_hole_default, -- not relevant here, see spec
 							face				=> smt_pad_face,
 							position			=> terminal_position,
-							pad_shape			=> smt_pad_shape,
+							pad_shape_smt		=> smt_pad_shape,
 							stop_mask			=> smt_stop_mask,
 							stop_mask_shape_smt	=> make_stop_mask_smt,
 							solder_paste		=> smt_solder_paste));

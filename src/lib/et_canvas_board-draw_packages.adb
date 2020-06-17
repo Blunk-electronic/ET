@@ -2693,7 +2693,7 @@ is
 							when BOTTOM	=> set_destination (INVERSE);
 						end case;
 
-						draw_pad_smt (to_string (key (c)), t.pad_shape, t.stop_mask_shape_smt, t.position, destination);
+						draw_pad_smt (to_string (key (c)), t.pad_shape_smt, t.stop_mask_shape_smt, t.position, destination);
 				end case;
 				
 			end query_terminal;

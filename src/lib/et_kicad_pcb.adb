@@ -2285,7 +2285,7 @@ package body et_kicad_pcb is
 										technology 		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
-										pad_shape		=> shape,
+										pad_shape_smt	=> shape,
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 										-- It should be investigated whether kicad supports other stop mask
@@ -2314,7 +2314,7 @@ package body et_kicad_pcb is
 										technology 		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
-										pad_shape		=> shape,
+										pad_shape_smt	=> shape,
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 										-- It should be investigated whether kicad supports other stop mask
@@ -2344,7 +2344,7 @@ package body et_kicad_pcb is
 										technology 		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
-										pad_shape		=> shape,
+										pad_shape_smt	=> shape,
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 										-- It should be investigated whether kicad supports other stop mask
@@ -6818,7 +6818,7 @@ package body et_kicad_pcb is
 										technology 		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
-										pad_shape		=> shape,
+										pad_shape_smt	=> shape,
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 										-- It should be investigated whether kicad supports other stop mask
@@ -6850,7 +6850,7 @@ package body et_kicad_pcb is
 										technology 		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
-										pad_shape		=> shape,
+										pad_shape_smt	=> shape,
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 										-- It should be investigated whether kicad supports other stop mask
@@ -6883,7 +6883,7 @@ package body et_kicad_pcb is
 										technology 		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
 										position		=> terminal_position,
-										pad_shape		=> shape,
+										pad_shape_smt	=> shape,
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 										-- It should be investigated whether kicad supports other stop mask

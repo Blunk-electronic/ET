@@ -271,7 +271,7 @@ package et_terminals is
 				end case;
 				
 			when SMT =>
-				pad_shape			: type_pad_outline;
+				pad_shape_smt		: type_pad_outline;
 				face				: type_face;
 				stop_mask 			: type_stop_mask_status;
 				stop_mask_shape_smt : type_stop_mask_smt;
