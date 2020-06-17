@@ -1837,7 +1837,7 @@ package body pcb_rw is
 				end user_specific_contours;
 				
 			begin -- write_stop_mask_smt
-				write (keyword => keyword_stop_mask, parameters => to_string (element (terminal_cursor).stop_mask)); -- stop_mask open
+				write (keyword => keyword_stop_mask, parameters => to_string (element (terminal_cursor).stop_mask_status)); -- stop_mask open
 				
 				write (keyword => keyword_stop_mask_shape, 
 						parameters => to_string (element (terminal_cursor).stop_mask_shape_smt.shape));
@@ -1926,8 +1926,8 @@ package body pcb_rw is
 						-- stop mask
 						write_stop_mask_smt;
 
-						-- solder paste
-						write (keyword => keyword_solder_paste, parameters => to_string (element (terminal_cursor).solder_paste));	
+						-- solder paste 
+						write (keyword => keyword_solder_paste, parameters => to_string (element (terminal_cursor).solder_paste_status));	
 				end case;
 
 				section_mark (section_terminal, FOOTER);
@@ -2065,11 +2065,11 @@ package body pcb_rw is
 
 		smt_pad_face			: et_pcb_coordinates.type_face := et_pcb_coordinates.face_default;
 
-		smt_stop_mask			: type_stop_mask_status := stop_mask_status_default;
+		smt_stop_mask_status	: type_stop_mask_status := stop_mask_status_default;
 		smt_stop_mask_shape		: type_stop_mask_shape := stop_mask_shape_default;
 		smt_stop_mask_contours	: type_stop_mask_contours;		
 
-		smt_solder_paste		: type_solder_paste_status := solder_paste_status_default;
+		smt_solder_paste_status	: type_solder_paste_status := solder_paste_status_default;
 		
 
 		procedure build_terminal is 
@@ -2179,9 +2179,9 @@ package body pcb_rw is
 							face				=> smt_pad_face,
 							position			=> terminal_position,
 							pad_shape_smt		=> smt_pad_shape,
-							stop_mask			=> smt_stop_mask,
+							stop_mask_status	=> smt_stop_mask_status,
 							stop_mask_shape_smt	=> make_stop_mask_smt,
-							solder_paste		=> smt_solder_paste));
+							solder_paste_status	=> smt_solder_paste_status));
 
 					-- clean up for next terminal
 					smt_stop_mask_shape		:= stop_mask_shape_default;
@@ -2198,8 +2198,8 @@ package body pcb_rw is
 			-- clean up for next terminal
 			terminal_position	:= origin_zero_rotation;
  			smt_pad_shape		:= (others => <>); -- cS move to case SMT
-			smt_stop_mask		:= stop_mask_status_default;  -- cS move to case SMT
-			smt_solder_paste	:= solder_paste_status_default;  -- cS move to case SMT
+			smt_stop_mask_status		:= stop_mask_status_default;  -- cS move to case SMT
+			smt_solder_paste_status	:= solder_paste_status_default;  -- cS move to case SMT
 			tht_pad_shape		:= (others => <>);  -- cS move to case THT
 			tht_hole			:= terminal_tht_hole_default;  -- cS move to case tht
 			tht_width_inner_layers	:= type_track_width'first;  -- cS move to case tht
@@ -4200,7 +4200,7 @@ package body pcb_rw is
 
 									elsif kw = keyword_stop_mask then -- stop_mask open/closed
 										expect_field_count (line, 2);
-										smt_stop_mask := to_stop_mask_status (f (line,2));
+										smt_stop_mask_status := to_stop_mask_status (f (line,2));
 
 									elsif kw = keyword_stop_mask_shape then -- keyword_stop_mask_shape user_specific
 										expect_field_count (line, 2);
@@ -4216,7 +4216,7 @@ package body pcb_rw is
 
 									elsif kw = keyword_solder_paste then -- solder_paste applied/none
 										expect_field_count (line, 2);
-										smt_solder_paste := to_solder_paste_status (f (line,2));
+										smt_solder_paste_status := to_solder_paste_status (f (line,2));
 										
 									else
 										invalid_keyword (kw);

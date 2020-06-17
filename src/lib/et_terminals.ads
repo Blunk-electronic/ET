@@ -254,7 +254,7 @@ package et_terminals is
 			when THT =>
 				-- The shape of the pad on top and bottom side.
 				pad_shape_tht		: type_pad_outline_tht; 
-				stop_mask_shape_tht	: type_stop_mask_tht; -- := (others => <>);
+				stop_mask_shape_tht	: type_stop_mask_tht;
 
 				-- This is the width of the copper surrounding the hole in inner layers.
 				-- Since the hole can be of any shape we do not speak about restring.
@@ -273,10 +273,10 @@ package et_terminals is
 			when SMT =>
 				pad_shape_smt		: type_pad_outline;
 				face				: type_face;
-				stop_mask 			: type_stop_mask_status;
+				stop_mask_status	: type_stop_mask_status := stop_mask_status_default;
 				stop_mask_shape_smt : type_stop_mask_smt;
 				
-				solder_paste		: type_solder_paste_status;
+				solder_paste_status	: type_solder_paste_status := solder_paste_status_default;
 				-- CS ?? stencil_shape : type_stencil_outline;
 				-- If no elements in outline, apply pad_shape.
 				

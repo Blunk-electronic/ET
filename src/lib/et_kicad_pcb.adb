@@ -2292,9 +2292,9 @@ package body et_kicad_pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 			=> terminal_face,
-										stop_mask		=> terminal_stop_mask,
-										solder_paste	=> terminal_solder_paste
+										face 				=> terminal_face,
+										stop_mask_status	=> terminal_stop_mask,
+										solder_paste_status	=> terminal_solder_paste
 										));
 							
 							when RECTANGULAR =>
@@ -2321,9 +2321,9 @@ package body et_kicad_pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 			=> terminal_face,
-										stop_mask		=> terminal_stop_mask,
-										solder_paste	=> terminal_solder_paste
+										face 				=> terminal_face,
+										stop_mask_status	=> terminal_stop_mask,
+										solder_paste_status	=> terminal_solder_paste
 										));
 
 								
@@ -2351,9 +2351,9 @@ package body et_kicad_pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 			=> terminal_face,
-										stop_mask		=> terminal_stop_mask,
-										solder_paste	=> terminal_solder_paste
+										face 				=> terminal_face,
+										stop_mask_status	=> terminal_stop_mask,
+										solder_paste_status	=> terminal_solder_paste
 										));
 								
 						end case;
@@ -6825,9 +6825,9 @@ package body et_kicad_pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 			=> terminal_face,
-										stop_mask		=> terminal_stop_mask,
-										solder_paste	=> terminal_solder_paste,
+										face 				=> terminal_face,
+										stop_mask_status	=> terminal_stop_mask,
+										solder_paste_status	=> terminal_solder_paste,
 
 										-- the pad is connected with a certain net
 										net_name		=> terminal_net_name
@@ -6857,9 +6857,9 @@ package body et_kicad_pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 			=> terminal_face,
-										stop_mask		=> terminal_stop_mask,
-										solder_paste	=> terminal_solder_paste,
+										face 				=> terminal_face,
+										stop_mask_status	=> terminal_stop_mask,
+										solder_paste_status	=> terminal_solder_paste,
 
 										-- the pad is connected with a certain net
 										net_name		=> terminal_net_name
@@ -6890,9 +6890,9 @@ package body et_kicad_pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 			=> terminal_face,
-										stop_mask		=> terminal_stop_mask,
-										solder_paste	=> terminal_solder_paste,
+										face 				=> terminal_face,
+										stop_mask_status	=> terminal_stop_mask,
+										solder_paste_status	=> terminal_solder_paste,
 
 										-- the pad is connected with a certain net
 										net_name		=> terminal_net_name
