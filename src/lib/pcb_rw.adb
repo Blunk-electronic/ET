@@ -3451,7 +3451,8 @@ package body pcb_rw is
 						
 					when SEC_MILLINGS =>
 						case stack.parent is
-							when SEC_TERMINAL => 
+							when SEC_TERMINAL =>
+								check_outline (polygon, log_threshold + 1);
 								tht_millings := (pac_shapes.type_polygon_base (polygon) with null record);
 								board_reset_polygon;
 								

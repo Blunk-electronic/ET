@@ -484,15 +484,21 @@ is
 			procedure query_placeholder_top (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder := element (c);
 			begin
-				set_destination;
-				draw_placeholder (ph, destination);
+				-- Draw the placeholder only if it has content:
+				if not et_text.is_empty (to_placeholder_content (ph)) then
+					set_destination;
+					draw_placeholder (ph, destination);
+				end if;
 			end query_placeholder_top;
 
 			procedure query_placeholder_bottom (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder := element (c);
 			begin
-				set_destination (INVERSE);
-				draw_placeholder (ph, destination);
+				-- Draw the placeholder only if it has content:
+				if not et_text.is_empty (to_placeholder_content (ph)) then
+					set_destination (INVERSE);
+					draw_placeholder (ph, destination);
+				end if;
 			end query_placeholder_bottom;
 
 			
@@ -516,15 +522,21 @@ is
 			procedure query_text_top (c : in type_texts_with_content.cursor) is
 				t : type_text_with_content := element (c);
 			begin
-				set_destination;
-				draw_text (t, destination);
+				-- Draw the text only if it has content:
+				if not et_text.is_empty (t.content) then
+					set_destination;
+					draw_text (t, destination);
+				end if;
 			end query_text_top;
 
 			procedure query_text_bottom (c : in type_texts_with_content.cursor) is
 				t : type_text_with_content := element (c);
 			begin
-				set_destination (INVERSE);
-				draw_text (t, destination);
+				-- Draw the text only if it has content:
+				if not et_text.is_empty (t.content) then
+					set_destination (INVERSE);
+					draw_text (t, destination);
+				end if;
 			end query_text_bottom;
 			
 		begin -- draw_silkscreen

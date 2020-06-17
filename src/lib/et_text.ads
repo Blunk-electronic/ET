@@ -96,6 +96,8 @@ package et_text is
 
 	function to_string (text_content : in type_text_content.bounded_string) return string;
 	function to_content (content : in string) return type_text_content.bounded_string;
+
+	function is_empty (content : in type_text_content.bounded_string) return boolean;
 	
 	procedure check_text_content_length (content : in string);
 	-- Tests if the content is not longer than allowed.
@@ -779,7 +781,9 @@ package et_text is
 
 	
 
-		
+		-- Renders the given text content to a list of lines.
+		-- IMPORTANT: Argument "content" MUST contain something ! If empty
+		-- constraint error will arise !
 		function vectorize (
 			content		: in type_text_content.bounded_string;
 			size		: in type_text_size;

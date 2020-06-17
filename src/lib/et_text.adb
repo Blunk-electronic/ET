@@ -129,6 +129,14 @@ package body et_text is
 		return type_text_content.to_bounded_string (content);
 	end to_content;
 
+	function is_empty (content : in type_text_content.bounded_string) return boolean is begin
+		if type_text_content.length (content) > 0 then -- contains something -> not empty
+			return false;
+		else
+			return true; -- contains nothing -> is empty
+		end if;
+	end is_empty;
+	
 	
 	procedure check_text_content_length (content : in string) is
 	-- Tests if the content is longer than allowed.
@@ -329,7 +337,7 @@ package body et_text is
 			
 		
 		function vectorize (
-			content		: in type_text_content.bounded_string;
+			content		: in type_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size		: in type_text_size;
 			rotation	: in type_rotation; 
 			position	: in type_point; -- the anchor point of the text (where the origin is)
@@ -585,6 +593,7 @@ package body et_text is
 
 					when '-' => add (special_dash);
 					when '_' => add (special_underline);
+					when ' ' => null;
 					
 					when others => raise constraint_error; -- CS should never happen
 				end case;
