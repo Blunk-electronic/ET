@@ -2573,6 +2573,8 @@ is
 				end if;
 			end draw_pad_tht_outer_layer;
 
+			-- This procedure draws the milled hole (any shape) of a THT pad and the "restring"
+			-- of the inner signal layers:
 			procedure draw_pad_tht_hole_milled (
 				name			: in string;  -- H5, 5, 3
 				outline_in		: in type_plated_millings;
@@ -2582,8 +2584,7 @@ is
 				hole_outline : type_plated_millings := outline_in;
 				pad_pos : type_position := pad_pos_in;
 
-				pad_outline : type_pad_outline;
-				
+				pad_outline : type_pad_outline;				
 			begin -- draw_pad_tht_hole_milled
 				
 				-- We draw the hole only if a conductor layer is enabled.
@@ -2612,6 +2613,8 @@ is
 				end if;
 			end draw_pad_tht_hole_milled;
 
+			-- This procedure draws the circular hole of a THT pad and the restring
+			-- of the inner signal layers:
 			procedure draw_pad_tht_hole_drilled (
 				name		: in string;  -- H5, 5, 3
 				drill_size	: in type_drill_size;

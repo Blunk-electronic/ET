@@ -2055,7 +2055,7 @@ package body pcb_rw is
 
 		tht_width_inner_layers	: type_track_width := type_track_width'first;
 		tht_hole				: type_terminal_tht_hole := terminal_tht_hole_default;
-		tht_drill_size			: type_drill_size := type_drill_size'first;
+		tht_drill_size			: type_drill_size_tht := type_drill_size_tht'first;
 		tht_millings			: type_plated_millings;
 
 		terminal_name			: type_terminal_name.bounded_string;
@@ -2203,7 +2203,7 @@ package body pcb_rw is
 			tht_pad_shape		:= (others => <>);  -- cS move to case THT
 			tht_hole			:= terminal_tht_hole_default;  -- cS move to case tht
 			tht_width_inner_layers	:= type_track_width'first;  -- cS move to case tht
-			tht_drill_size			:= type_drill_size'first;  -- cS move to case tht
+			tht_drill_size			:= type_drill_size_tht'first;  -- cS move to case tht
 			
 		end build_terminal;
 		

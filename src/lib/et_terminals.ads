@@ -264,7 +264,7 @@ package et_terminals is
 				
 				case tht_hole is
 					when DRILLED =>
-						drill_size	: type_drill_size;
+						drill_size	: type_drill_size_tht;
 						
 					when MILLED =>
 						millings	: type_plated_millings;

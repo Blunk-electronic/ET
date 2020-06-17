@@ -46,7 +46,7 @@ package et_drills is
 	drill_size_min : constant type_distance_positive := 0.05;
 	drill_size_max : constant type_distance_positive := 10.0;
 	subtype type_drill_size is type_distance_positive range drill_size_min .. drill_size_max;
-
+	
 	procedure validate_drill_size (drill : in et_pcb_coordinates.type_distance);
 	-- Checks whether given drill size is in range of type_drill_size
 
@@ -60,6 +60,8 @@ package et_drills is
 	function to_string (drill : in type_drill) return string;
 	-- returns the properties of the given drill as string.
 
+
+	subtype type_drill_size_tht is type_drill_size range 0.8 .. 5.0;
 	
 end et_drills;
 
