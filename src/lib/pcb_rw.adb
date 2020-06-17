@@ -2162,6 +2162,11 @@ package body pcb_rw is
 					end case;
 
 					-- clean up for next terminal
+					tht_pad_shape			:= (others => <>);
+					tht_hole				:= terminal_tht_hole_default;
+					tht_width_inner_layers	:= type_track_width'first;
+					tht_drill_size			:= type_drill_size_tht'first;
+
 					tht_stop_mask_shape_top			:= stop_mask_shape_default;
 					tht_stop_mask_shape_bottom		:= stop_mask_shape_default;
 					tht_stop_mask_contours_top		:= (others => <>);		
@@ -2185,7 +2190,10 @@ package body pcb_rw is
 
 					-- clean up for next terminal
 					smt_stop_mask_shape		:= stop_mask_shape_default;
-					smt_stop_mask_contours	:= (others => <>);		
+					smt_stop_mask_contours	:= (others => <>);
+		 			smt_pad_shape			:= (others => <>);
+					smt_stop_mask_status	:= stop_mask_status_default;
+					smt_solder_paste_status	:= solder_paste_status_default;
 
 			end case;
 
@@ -2197,13 +2205,6 @@ package body pcb_rw is
 
 			-- clean up for next terminal
 			terminal_position	:= origin_zero_rotation;
- 			smt_pad_shape		:= (others => <>); -- cS move to case SMT
-			smt_stop_mask_status		:= stop_mask_status_default;  -- cS move to case SMT
-			smt_solder_paste_status	:= solder_paste_status_default;  -- cS move to case SMT
-			tht_pad_shape		:= (others => <>);  -- cS move to case THT
-			tht_hole			:= terminal_tht_hole_default;  -- cS move to case tht
-			tht_width_inner_layers	:= type_track_width'first;  -- cS move to case tht
-			tht_drill_size			:= type_drill_size_tht'first;  -- cS move to case tht
 			
 		end build_terminal;
 		
