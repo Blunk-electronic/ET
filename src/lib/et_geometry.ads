@@ -701,23 +701,29 @@ package et_geometry is
 		-- See:
 		-- <https://gis.stackexchange.com/questions/61786/how-to-scale-reduce-my-polygon-without-changing-the-central-lat-long>
 		-- <https://stackoverflow.com/questions/54033808/how-to-offset-polygon-edges>
-		
-		-- In order to do a polygon offset we have this type:
-		type type_polygon_offset is (INWARD, OUTWARD);
 
-		type type_polygon_scale is delta 0.1 range 0.1 .. 10.0;
+		type type_polygon_scale is delta 0.1 range 0.1 .. 10.0; -- less than 1.0 -> downscaling, greater 1.0 -> upscaling
 		for type_polygon_scale'small use 0.1;
 
 		polygon_scale_default : constant type_polygon_scale := 1.0;
+
+		type type_offset_style is (
+			BY_DISTANCE,
+			BY_SCALE);
+
+		type type_offset (style : type_offset_style) is record
+			case style is
+				when BY_DISTANCE	=> distance	: type_distance;
+				when BY_SCALE		=> scale 	: type_polygon_scale;
+			end case;
+		end record;
 		
 		-- The procedure shrinks or expands the given polygon.
 		procedure offset_polygon (
 			polygon		: in out type_polygon_base;
-			distance	: in type_distance := zero;
-			scale		: in type_polygon_scale := polygon_scale_default;
-			direction	: in type_polygon_offset);
+			offset		: in type_offset);
 
-
+		
 		
 		type type_polygon is new type_polygon_base with record
 			filled	: type_filled;

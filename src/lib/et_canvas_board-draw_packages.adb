@@ -2489,10 +2489,10 @@ is
 								when EXPAND_PAD =>
 									-- copy solder pad contours and expand according to DRU
 									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+									
 									offset_polygon (
 										polygon		=> stop_mask_contours,
-										distance	=> 0.0, -- CS fetch from DRU
-										direction	=> OUTWARD);
+										offset		=> (style => BY_DISTANCE, distance => 0.0)); -- CS fetch from DRU
 									
 								when USER_SPECIFIC =>
 									-- compute position of user specific stop mask contours:
@@ -2519,8 +2519,7 @@ is
 
 									offset_polygon (
 										polygon		=> stencil_contours,
-										scale		=> stencil_in.shrink_factor,
-										direction	=> INWARD);
+										offset		=> (style => BY_SCALE, scale => stencil_in.shrink_factor));
 									
 								when USER_SPECIFIC =>
 									-- compute position of user specific stencil contours:
@@ -2580,14 +2579,14 @@ is
 								when AS_PAD =>
 									-- copy solder pad contours to stop mask:
 									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+									
 								when EXPAND_PAD =>
 									-- copy solder pad contours and expand according to DRU
 									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
 									
 									offset_polygon (
 										polygon		=> stop_mask_contours,
-										distance	=> 0.0,  -- CS fetch from DRU
-										direction	=> OUTWARD);
+										offset		=> (style => BY_DISTANCE, distance => 0.0));  -- CS fetch from DRU
 									
 								when USER_SPECIFIC =>
 									-- compute position of user specific stop mask contours:
@@ -2631,8 +2630,7 @@ is
 						
 						offset_polygon (
 							polygon		=> pad_outline, 
-							distance	=> restring_width,
-							direction	=> OUTWARD);
+							offset		=> (style => BY_DISTANCE, distance => restring_width));
 
 						-- Draw the conductor frame:
 						set_color_tht_pad (context.cr);
