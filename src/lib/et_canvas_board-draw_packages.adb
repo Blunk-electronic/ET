@@ -2444,13 +2444,15 @@ is
 				name			: in string;  -- H5, 5, 3
 				pad_outline_in	: in type_pad_outline; -- the outline of the solder pad (copper)
 				stop_mask_in	: in type_stop_mask_smt; -- the stop mask of the pad
+				stencil_in		: in et_terminals.type_stencil; -- the solder cream mask of the pad
 				pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
 				f				: in type_face) is
 
 				pad_outline : type_pad_outline := pad_outline_in;
 				pad_pos : type_position := pad_pos_in;
 
-				stop_mask_contours : type_stop_mask_contours;
+				stop_mask_contours	: type_stop_mask_contours;
+				stencil_contours	: type_stencil_contours;
 				
 				ly : constant type_signal_layer := face_to_layer (f);
 
@@ -2501,9 +2503,25 @@ is
 						
 						-- draw stencil (or solder paste mask)
 						if stencil_enabled (f) then
+
+							case stencil_in.shape is
+								when AS_PAD =>
+									-- copy solder pad contours
+									stencil_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+								when SHRINK_PAD =>
+									-- copy solder pad contours and shrink according to ? CS
+									stencil_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+									offset_polygon (stencil_contours, 0.0, OUTWARD); -- CS
+									
+								when USER_SPECIFIC =>
+									-- compute position of user specific stencil contours:
+									pad_pos := pad_pos_in;
+									stencil_contours := stencil_in.contours;
+									move (pad_pos, type_polygon_base (stencil_contours));
+							end case;
+
 							set_color_stencil (context.cr, f, self.scale);
-							-- CS
-							--draw_polygon (in_area, context, stop_mask_contours, YES, self.frame_height);
+							draw_polygon (in_area, context, stencil_contours, YES, self.frame_height);
 						end if;
 
 					end if;
@@ -2693,7 +2711,8 @@ is
 							when BOTTOM	=> set_destination (INVERSE);
 						end case;
 
-						draw_pad_smt (to_string (key (c)), t.pad_shape_smt, t.stop_mask_shape_smt, t.position, destination);
+						draw_pad_smt (to_string (key (c)), t.pad_shape_smt, 
+							t.stop_mask_shape_smt, t.stencil_shape, t.position, destination);
 				end case;
 				
 			end query_terminal;

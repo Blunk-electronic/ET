@@ -263,7 +263,7 @@ package body et_terminals is
 -- 				iterate (terminal.pad_shape.polygons, polygon'access);
 				
 				log (text => "face" & to_string (terminal.face), level => log_threshold_1);
-				log (text => "stop mask status" & to_string (terminal.stop_mask_status), level => log_threshold_1);
+				log (text => "stop mask status" & to_string (terminal.stop_mask_status_smt), level => log_threshold_1);
 				log (text => "solder paste status" & to_string (terminal.solder_paste_status), level => log_threshold_1);
 		end case;
 

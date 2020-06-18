@@ -819,7 +819,7 @@ package body et_kicad_pcb is
 
 		-- This is the flag for the stop mask status of an SMT terminal.
 		-- Read when finally building a terminal.
-		terminal_stop_mask : type_stop_mask_status;
+		terminal_stop_mask_status : type_stop_mask_status;
 
 		-- Here we collect all kinds of terminals after they have been built.
 		terminals : et_terminals.type_terminals.map;
@@ -893,7 +893,7 @@ package body et_kicad_pcb is
 						invalid;
 					end if;
 
-					terminal_stop_mask := terminal_top_stop_mask;
+					terminal_stop_mask_status := terminal_top_stop_mask;
 					-- CS warning if stop mask closed ?
 					
 					-- A TOP terminal must have the BOTTOM stop mask OPEN.
@@ -912,7 +912,7 @@ package body et_kicad_pcb is
 						invalid;
 					end if;
 
-					terminal_stop_mask := terminal_bot_stop_mask;
+					terminal_stop_mask_status := terminal_bot_stop_mask;
 					-- CS warning if stop mask closed ?					
 
 					-- A BOTTOM terminal must have the TOP stop mask OPEN.
@@ -2150,6 +2150,10 @@ package body et_kicad_pcb is
 									-- The shape is the same on top and on bottom side.									
 									pad_shape_tht		=> (top => shape, bottom => shape),
 
+									-- CS: We assume there is no option in kicad to cover
+									-- a THT pad with stop laquer.
+									stop_mask_status_tht	=> stop_mask_status_default,
+									
 									-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 									-- It should be investigated whether kicad supports other stop mask
 									-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
@@ -2181,6 +2185,10 @@ package body et_kicad_pcb is
 										tht_hole			=> MILLED,
 										position			=> terminal_position,
 
+										-- CS: We assume there is no option in kicad to cover
+										-- a THT pad with stop laquer.
+										stop_mask_status_tht	=> stop_mask_status_default,
+										
 										-- The shape is the same on top and on bottom side.									
 										pad_shape_tht		=> (top => shape, bottom => shape),
 
@@ -2226,6 +2234,10 @@ package body et_kicad_pcb is
 										tht_hole			=> DRILLED,
 										position			=> terminal_position,
 
+										-- CS: We assume there is no option in kicad to cover
+										-- a THT pad with stop laquer.
+										stop_mask_status_tht	=> stop_mask_status_default,
+										
 										-- The shape is the same on top and on bottom side.									
 										pad_shape_tht		=> (top => shape, bottom => shape),
 
@@ -2292,9 +2304,9 @@ package body et_kicad_pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 				=> terminal_face,
-										stop_mask_status	=> terminal_stop_mask,
-										solder_paste_status	=> terminal_solder_paste,
+										face 					=> terminal_face,
+										stop_mask_status_smt	=> terminal_stop_mask_status,
+										solder_paste_status		=> terminal_solder_paste,
 
 										-- CS: For the stencil shape we assume it is just the same as the pad shape.
 										-- It should be investigated whether kicad supports other stencil shapes
@@ -2326,9 +2338,9 @@ package body et_kicad_pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 				=> terminal_face,
-										stop_mask_status	=> terminal_stop_mask,
-										solder_paste_status	=> terminal_solder_paste,
+										face 					=> terminal_face,
+										stop_mask_status_smt	=> terminal_stop_mask_status,
+										solder_paste_status		=> terminal_solder_paste,
 
 										-- CS: For the stencil shape we assume it is just the same as the pad shape.
 										-- It should be investigated whether kicad supports other stencil shapes
@@ -2361,9 +2373,9 @@ package body et_kicad_pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 				=> terminal_face,
-										stop_mask_status	=> terminal_stop_mask,
-										solder_paste_status	=> terminal_solder_paste,
+										face 					=> terminal_face,
+										stop_mask_status_smt	=> terminal_stop_mask_status,
+										solder_paste_status		=> terminal_solder_paste,
 
 										-- CS: For the stencil shape we assume it is just the same as the pad shape.
 										-- It should be investigated whether kicad supports other stencil shapes
@@ -3403,7 +3415,7 @@ package body et_kicad_pcb is
 
 		-- This is the flag for the stop mask status of an SMT terminal.
 		-- Read when finally building a terminal.
-		terminal_stop_mask : type_stop_mask_status;
+		terminal_stop_mask_status : type_stop_mask_status;
 
 		-- Here we collect all kinds of terminals after they have been built.
 		-- NOTE: This is the type_terminals as specified in et_kicad_pcb ! (includes net names)
@@ -3453,7 +3465,7 @@ package body et_kicad_pcb is
 						invalid;
 					end if;
 
-					terminal_stop_mask := terminal_top_stop_mask;
+					terminal_stop_mask_status := terminal_top_stop_mask;
 					-- CS warning if stop mask closed ?
 					
 					-- A TOP terminal must have the BOTTOM stop mask OPEN.
@@ -3472,7 +3484,7 @@ package body et_kicad_pcb is
 						invalid;
 					end if;
 
-					terminal_stop_mask := terminal_bot_stop_mask;
+					terminal_stop_mask_status := terminal_bot_stop_mask;
 					-- CS warning if stop mask closed ?					
 
 					-- A BOTTOM terminal must have the TOP stop mask OPEN.
@@ -6684,6 +6696,10 @@ package body et_kicad_pcb is
 									tht_hole			=> DRILLED,
 									position			=> terminal_position,
 
+									-- CS: We assume there is no option in kicad to cover
+									-- a THT pad with stop laquer.
+									stop_mask_status_tht	=> stop_mask_status_default,
+									
 									-- The shape is the same on top and on bottom side.									
 									pad_shape_tht		=> (top => shape, bottom => shape),
 
@@ -6721,6 +6737,10 @@ package body et_kicad_pcb is
 										technology 			=> THT,
 										tht_hole			=> MILLED,
 										position			=> terminal_position,
+
+										-- CS: We assume there is no option in kicad to cover
+										-- a THT pad with stop laquer.
+										stop_mask_status_tht	=> stop_mask_status_default,
 										
 										-- The shape is the same on top and on bottom side.									
 										pad_shape_tht		=> (top => shape, bottom => shape),
@@ -6771,6 +6791,10 @@ package body et_kicad_pcb is
 										tht_hole			=> DRILLED,
 										position			=> terminal_position,
 
+										-- CS: We assume there is no option in kicad to cover
+										-- a THT pad with stop laquer.
+										stop_mask_status_tht	=> stop_mask_status_default,
+										
 										-- The shape is the same on top and on bottom side.									
 										pad_shape_tht		=> (top => shape, bottom => shape),
 
@@ -6840,9 +6864,9 @@ package body et_kicad_pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 				=> terminal_face,
-										stop_mask_status	=> terminal_stop_mask,
-										solder_paste_status	=> terminal_solder_paste,
+										face 					=> terminal_face,
+										stop_mask_status_smt	=> terminal_stop_mask_status,
+										solder_paste_status		=> terminal_solder_paste,
 
 										-- CS: For the stencil shape we assume it is just the same as the pad shape.
 										-- It should be investigated whether kicad supports other stencil shapes
@@ -6877,9 +6901,9 @@ package body et_kicad_pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 				=> terminal_face,
-										stop_mask_status	=> terminal_stop_mask,
-										solder_paste_status	=> terminal_solder_paste,
+										face 					=> terminal_face,
+										stop_mask_status_smt	=> terminal_stop_mask_status,
+										solder_paste_status		=> terminal_solder_paste,
 
 										-- CS: For the stencil shape we assume it is just the same as the pad shape.
 										-- It should be investigated whether kicad supports other stencil shapes
@@ -6914,9 +6938,9 @@ package body et_kicad_pcb is
 										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
 										stop_mask_shape_smt => (others => <>),
 
-										face 				=> terminal_face,
-										stop_mask_status	=> terminal_stop_mask,
-										solder_paste_status	=> terminal_solder_paste,
+										face 					=> terminal_face,
+										stop_mask_status_smt	=> terminal_stop_mask_status,
+										solder_paste_status		=> terminal_solder_paste,
 
 										-- CS: For the stencil shape we assume it is just the same as the pad shape.
 										-- It should be investigated whether kicad supports other stencil shapes

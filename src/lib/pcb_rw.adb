@@ -1782,7 +1782,8 @@ package body pcb_rw is
 				end user_specific_contours;
 				
 			begin -- write_stop_mask_tht
--- 				write (keyword => keyword_stop_mask_status
+				write (keyword => keyword_stop_mask_status, 
+					   parameters => to_string (element (terminal_cursor).stop_mask_status_tht)); -- stop_mask_status open
 					   
 				write (keyword => keyword_stop_mask_shape_top, 
 						parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.top.shape));
@@ -1839,7 +1840,8 @@ package body pcb_rw is
 				end user_specific_contours;
 				
 			begin -- write_stop_mask_smt
-				write (keyword => keyword_stop_mask, parameters => to_string (element (terminal_cursor).stop_mask_status)); -- stop_mask open
+				write (keyword => keyword_stop_mask_status, 
+					   parameters => to_string (element (terminal_cursor).stop_mask_status_smt)); -- stop_mask_status open
 				
 				write (keyword => keyword_stop_mask_shape, 
 						parameters => to_string (element (terminal_cursor).stop_mask_shape_smt.shape));
@@ -1875,8 +1877,11 @@ package body pcb_rw is
 			end write_plated_millings;
 
 			procedure write_stencil is begin
-				write (keyword => keyword_solder_paste_status, parameters => to_string (element (terminal_cursor).solder_paste_status));
-				write (keyword => keyword_solder_paste_shape, parameters => to_string (element (terminal_cursor).stencil_shape.shape));
+				write (keyword => keyword_solder_paste_status,
+					   parameters => to_string (element (terminal_cursor).solder_paste_status)); -- solder_paste_status applied
+				
+				write (keyword => keyword_solder_paste_shape,
+					   parameters => to_string (element (terminal_cursor).stencil_shape.shape)); -- solder_paste_shape as_pad/shrink_pad/user_specific
 			end write_stencil;
 			
 		begin -- write_terminals
@@ -2055,6 +2060,7 @@ package body pcb_rw is
 
 		terminal_position		: type_position := origin_zero_rotation;
 
+		tht_stop_mask_status			: type_stop_mask_status := stop_mask_status_default;
 		tht_stop_mask_shape_top			: type_stop_mask_shape := stop_mask_shape_default;
 		tht_stop_mask_shape_bottom		: type_stop_mask_shape := stop_mask_shape_default;		
 		tht_stop_mask_contours_top		: type_stop_mask_contours;
@@ -2165,8 +2171,9 @@ package body pcb_rw is
 									drill_size			=> tht_drill_size,
 									position			=> terminal_position,
 									pad_shape_tht		=> tht_pad_shape,
-									stop_mask_shape_tht	=> make_stop_mask_tht,
-									width_inner_layers	=> tht_width_inner_layers));
+									stop_mask_status_tht	=> tht_stop_mask_status,
+									stop_mask_shape_tht		=> make_stop_mask_tht,
+									width_inner_layers		=> tht_width_inner_layers));
 
 						when MILLED =>
 							type_terminals.insert (
@@ -2180,8 +2187,9 @@ package body pcb_rw is
 									millings			=> tht_millings,
 									position			=> terminal_position,
 									pad_shape_tht		=> tht_pad_shape,
-									stop_mask_shape_tht	=> make_stop_mask_tht,
-									width_inner_layers	=> tht_width_inner_layers));
+									stop_mask_status_tht	=> tht_stop_mask_status,
+									stop_mask_shape_tht		=> make_stop_mask_tht,
+									width_inner_layers		=> tht_width_inner_layers));
 					end case;
 
 					-- clean up for next terminal
@@ -2190,6 +2198,7 @@ package body pcb_rw is
 					tht_width_inner_layers	:= type_track_width'first;
 					tht_drill_size			:= type_drill_size_tht'first;
 
+					tht_stop_mask_status			:= stop_mask_status_default;
 					tht_stop_mask_shape_top			:= stop_mask_shape_default;
 					tht_stop_mask_shape_bottom		:= stop_mask_shape_default;
 					tht_stop_mask_contours_top		:= (others => <>);		
@@ -2202,15 +2211,15 @@ package body pcb_rw is
 						position	=> cursor,
 						inserted	=> inserted,
 						new_item	=> (
-							technology			=> SMT,
-							tht_hole			=> terminal_tht_hole_default, -- not relevant here, see spec
-							face				=> smt_pad_face,
-							position			=> terminal_position,
-							pad_shape_smt		=> smt_pad_shape,
-							stop_mask_status	=> smt_stop_mask_status,
-							stop_mask_shape_smt	=> make_stop_mask_smt,
-							solder_paste_status	=> smt_solder_paste_status,
-							stencil_shape		=> make_stencil
+							technology				=> SMT,
+							tht_hole				=> terminal_tht_hole_default, -- not relevant here, see spec
+							face					=> smt_pad_face,
+							position				=> terminal_position,
+							pad_shape_smt			=> smt_pad_shape,
+							stop_mask_status_smt	=> smt_stop_mask_status,
+							stop_mask_shape_smt		=> make_stop_mask_smt,
+							solder_paste_status		=> smt_solder_paste_status,
+							stencil_shape			=> make_stencil
 							));
 
 					-- clean up for next terminal
@@ -4225,7 +4234,7 @@ package body pcb_rw is
 										expect_field_count (line, 2);
 										smt_pad_face := et_pcb_coordinates.to_face (f (line,2));
 
-									elsif kw = keyword_stop_mask then -- stop_mask open/closed
+									elsif kw = keyword_stop_mask_status then -- stop_mask_status open/closed
 										expect_field_count (line, 2);
 										smt_stop_mask_status := to_stop_mask_status (f (line,2));
 

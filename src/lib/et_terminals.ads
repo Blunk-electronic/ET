@@ -214,7 +214,7 @@ package et_terminals is
 	-- A SMT pad has stop mask on one side only:
 	subtype type_stop_mask_smt is type_stop_mask;
 
-	keyword_stop_mask				: constant string := "stop_mask"; -- CS rename to keyword_stop_mask_status
+	keyword_stop_mask_status		: constant string := "stop_mask_status";
 	keyword_stop_mask_shape			: constant string := "stop_mask_shape";
 	keyword_stop_mask_shape_top		: constant string := "stop_mask_shape_top";
 	keyword_stop_mask_shape_bottom	: constant string := "stop_mask_shape_bottom";	
@@ -278,10 +278,12 @@ package et_terminals is
 		case technology is
 			when THT =>
 				-- The shape of the pad on top and bottom side.
-				pad_shape_tht		: type_pad_outline_tht; 
-				stop_mask_shape_tht	: type_stop_mask_tht;
-				-- CS stop_mask_status_tht	: type_stop_mask_status := stop_mask_status_default;
-				-- CS The stop mask status applies to both top and bottom of the pad.
+				pad_shape_tht			: type_pad_outline_tht; 
+
+				stop_mask_status_tht	: type_stop_mask_status := stop_mask_status_default;
+				-- CS: The stop mask status applies to both top and bottom of the pad.
+
+				stop_mask_shape_tht		: type_stop_mask_tht;
 				
 				-- This is the width of the copper surrounding the hole in inner layers.
 				-- Since the hole can be of any shape we do not speak about restring.
@@ -298,13 +300,13 @@ package et_terminals is
 				end case;
 				
 			when SMT =>
-				pad_shape_smt		: type_pad_outline;
-				face				: type_face;
-				stop_mask_status	: type_stop_mask_status := stop_mask_status_default; -- CS rename to stop_mask_status_smt
-				stop_mask_shape_smt : type_stop_mask_smt;
+				pad_shape_smt			: type_pad_outline;
+				face					: type_face;
+				stop_mask_status_smt	: type_stop_mask_status := stop_mask_status_default;
+				stop_mask_shape_smt 	: type_stop_mask_smt;
 				
-				solder_paste_status	: type_solder_paste_status := solder_paste_status_default;
-				stencil_shape		: type_stencil;
+				solder_paste_status		: type_solder_paste_status := solder_paste_status_default;
+				stencil_shape			: type_stencil;
 
 		end case;
 	end record;
