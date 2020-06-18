@@ -1996,6 +1996,14 @@ package body et_geometry is
 			end loop;
 		end rotate_by;
 
+		function to_string (scale : in type_polygon_scale) return string is begin
+			return type_polygon_scale'image (scale);
+		end to_string;
+	
+		function to_scale (scale : in string) return type_polygon_scale is begin
+			return type_polygon_scale'value (scale);
+		end to_scale;
+		
 		procedure offset_polygon (
 			polygon		: in out type_polygon_base;
 			offset		: in type_offset) is
@@ -2077,6 +2085,24 @@ package body et_geometry is
 			cl : pac_polygon_lines.cursor;
 			ca : pac_polygon_arcs.cursor;
 			cc : pac_polygon_circles.cursor;
+
+			function scale_point (point	: in type_point) return type_point is
+				x_new : type_distance := x (point) * offset.scale;
+				y_new : type_distance := y (point) * offset.scale;
+			begin
+				return type_point (set (x_new, y_new));
+			end scale_point;
+			
+			procedure move_line (l : in out type_polygon_line) is begin
+				case offset.style is
+					when BY_DISTANCE => null; -- CS
+					
+					when BY_SCALE => null;
+						l.start_point	:= scale_point (l.start_point);
+						l.end_point		:= scale_point (l.end_point);
+
+				end case;
+			end move_line;
 			
 		begin -- offset_polygon
 			
@@ -2090,9 +2116,8 @@ package body et_geometry is
 				-- Search the segment among the lines:
 				cl := get_line (s);
 				if cl /= pac_polygon_lines.no_element then
-					
-					null;
-					
+
+					update_element (polygon.segments.lines, cl, move_line'access);
 
 				-- If segment not found among lines, search among arcs:
 				else 

@@ -2509,21 +2509,27 @@ is
 						if stencil_enabled (f) then
 
 							case stencil_in.shape is
+								
 								when AS_PAD =>
 									-- copy solder pad contours
 									stencil_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
 									
 								when SHRINK_PAD =>
-									-- copy solder pad contours and shrink according to shrink_factor
-									stencil_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+									pad_pos := pad_pos_in;  -- get initial pad position
 
+									-- copy solder pad contours and shrink according to shrink_factor
+									stencil_contours := (pac_shapes.type_polygon_base (pad_outline_in) with null record);
+									
 									offset_polygon (
 										polygon		=> stencil_contours,
 										offset		=> (style => BY_SCALE, scale => stencil_in.shrink_factor));
+
+									-- compute final position of shrinked stencil opening
+									move (pad_pos, type_polygon_base (stencil_contours));
 									
 								when USER_SPECIFIC =>
 									-- compute position of user specific stencil contours:
-									pad_pos := pad_pos_in;
+									pad_pos := pad_pos_in; -- get initial pad position
 									stencil_contours := stencil_in.contours;
 									move (pad_pos, type_polygon_base (stencil_contours));
 							end case;

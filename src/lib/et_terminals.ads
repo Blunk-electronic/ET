@@ -226,9 +226,9 @@ package et_terminals is
 		SHRINK_PAD,		-- opening sligtly smaller than conductor pad. defined by shrink_factor
 		USER_SPECIFIC);	-- opening has a user defined outline
 
-	subtype type_stencil_shrink is type_polygon_scale range 0.20 .. 1.0;
+	subtype type_stencil_shrink is type_polygon_scale range 0.2 .. 1.0;
 
-	stencil_shrink_default : constant type_stencil_shrink := 0.75; -- CS adjust to a useful value
+	stencil_shrink_default : constant type_stencil_shrink := 0.7; -- CS adjust to a useful value
 	
 	stencil_shape_default : constant type_stencil_shape := AS_PAD;
 
@@ -245,8 +245,9 @@ package et_terminals is
 		end case;
 	end record;
 	
-	keyword_solder_paste_status		: constant string := "solder_paste_status";
-	keyword_solder_paste_shape		: constant string := "solder_paste_shape";
+	keyword_solder_paste_status			: constant string := "solder_paste_status";
+	keyword_solder_paste_shape			: constant string := "solder_paste_shape";
+	keyword_solder_paste_shrink_factor	: constant string := "solder_paste_shrink_factor";
 
 
 	

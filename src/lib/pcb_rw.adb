@@ -1844,7 +1844,7 @@ package body pcb_rw is
 					   parameters => to_string (element (terminal_cursor).stop_mask_status_smt)); -- stop_mask_status open
 				
 				write (keyword => keyword_stop_mask_shape, 
-						parameters => to_string (element (terminal_cursor).stop_mask_shape_smt.shape));
+						parameters => to_string (element (terminal_cursor).stop_mask_shape_smt.shape)); -- stop_mask_shape as_pad/expand_pad/user_specific
 
 				-- If user specified contours required, write the header
 				-- for stop mask contours:
@@ -1882,6 +1882,12 @@ package body pcb_rw is
 				
 				write (keyword => keyword_solder_paste_shape,
 					   parameters => to_string (element (terminal_cursor).stencil_shape.shape)); -- solder_paste_shape as_pad/shrink_pad/user_specific
+
+				if element (terminal_cursor).stencil_shape.shape = SHRINK_PAD then
+					write (keyword => keyword_solder_paste_shrink_factor,
+						parameters => pac_shapes.to_string (element (terminal_cursor).stencil_shape.shrink_factor)); -- solder_paste_shrink_factor 0.4
+				end if;
+
 			end write_stencil;
 			
 		begin -- write_terminals
@@ -4259,6 +4265,10 @@ package body pcb_rw is
 									elsif kw = keyword_solder_paste_shape then -- solder_paste_shape as_pad/shrink_pad/user_specific
 										expect_field_count (line, 2);
 										smt_stencil_shape := to_shape (f (line,2));
+
+									elsif kw = keyword_solder_paste_shrink_factor then -- solder_paste_shrink_factor 0.5
+										expect_field_count (line, 2);
+										smt_stencil_shrink := pac_shapes.to_scale (f (line,2));
 										
 									else
 										invalid_keyword (kw);

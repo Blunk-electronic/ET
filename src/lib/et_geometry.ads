@@ -707,6 +707,9 @@ package et_geometry is
 
 		polygon_scale_default : constant type_polygon_scale := 1.0;
 
+		function to_string (scale : in type_polygon_scale) return string;
+		function to_scale (scale : in string) return type_polygon_scale;
+		
 		type type_offset_style is (
 			BY_DISTANCE,
 			BY_SCALE);
