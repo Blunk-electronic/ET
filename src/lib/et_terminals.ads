@@ -151,13 +151,16 @@ package et_terminals is
 		millings 		: in type_plated_millings;
 		log_threshold	: in et_string_processing.type_log_level);
 
-	
+	-- The solder paste status is for compatibility with other CAE systems
+	-- to account for virtual devices like net-ties or netchangers.
 	type type_solder_paste_status is (NONE, APPLIED);
 	solder_paste_status_default : constant type_solder_paste_status := APPLIED;
 	function to_string (solder_paste : in type_solder_paste_status) return string;
 	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status;
-	
-	type type_stop_mask_status is (CLOSED, OPEN);  -- net-ties or netchangers have their pads covered
+
+	-- The stop mask status is for compatibility with other CAE systems
+	-- to account for virtual devices like net-ties or netchangers.
+	type type_stop_mask_status is (CLOSED, OPEN);
 	stop_mask_status_default : constant type_stop_mask_status := OPEN;
 	function to_string (stop_mask : in type_stop_mask_status) return string;
 	function to_stop_mask_status (stop_mask : in string) return type_stop_mask_status;
@@ -237,7 +240,7 @@ package et_terminals is
 		end case;
 	end record;
 	
-	keyword_solder_paste			: constant string := "solder_paste"; -- CS rename to keyword_solder_paste_status
+	keyword_solder_paste_status		: constant string := "solder_paste_status";
 	keyword_solder_paste_shape		: constant string := "solder_paste_shape";
 
 
@@ -277,7 +280,9 @@ package et_terminals is
 				-- The shape of the pad on top and bottom side.
 				pad_shape_tht		: type_pad_outline_tht; 
 				stop_mask_shape_tht	: type_stop_mask_tht;
-
+				-- CS stop_mask_status_tht	: type_stop_mask_status := stop_mask_status_default;
+				-- CS The stop mask status applies to both top and bottom of the pad.
+				
 				-- This is the width of the copper surrounding the hole in inner layers.
 				-- Since the hole can be of any shape we do not speak about restring.
 				-- The shape of the copper area around the hole is the same as the shape of the 
@@ -295,7 +300,7 @@ package et_terminals is
 			when SMT =>
 				pad_shape_smt		: type_pad_outline;
 				face				: type_face;
-				stop_mask_status	: type_stop_mask_status := stop_mask_status_default;
+				stop_mask_status	: type_stop_mask_status := stop_mask_status_default; -- CS rename to stop_mask_status_smt
 				stop_mask_shape_smt : type_stop_mask_smt;
 				
 				solder_paste_status	: type_solder_paste_status := solder_paste_status_default;

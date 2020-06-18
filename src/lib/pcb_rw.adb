@@ -1782,6 +1782,8 @@ package body pcb_rw is
 				end user_specific_contours;
 				
 			begin -- write_stop_mask_tht
+-- 				write (keyword => keyword_stop_mask_status
+					   
 				write (keyword => keyword_stop_mask_shape_top, 
 						parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.top.shape));
 
@@ -1871,6 +1873,11 @@ package body pcb_rw is
 				write_polygon_segments (pac_shapes.type_polygon_base (millings));
 				section_mark (section_pad_millings, FOOTER);
 			end write_plated_millings;
+
+			procedure write_stencil is begin
+				write (keyword => keyword_solder_paste_status, parameters => to_string (element (terminal_cursor).solder_paste_status));
+				write (keyword => keyword_solder_paste_shape, parameters => to_string (element (terminal_cursor).stencil_shape.shape));
+			end write_stencil;
 			
 		begin -- write_terminals
 			section_mark (section_terminals, HEADER);
@@ -1926,8 +1933,8 @@ package body pcb_rw is
 						-- stop mask
 						write_stop_mask_smt;
 
-						-- solder paste 
-						write (keyword => keyword_solder_paste, parameters => to_string (element (terminal_cursor).solder_paste_status));	
+						-- solder paste / stencil
+						write_stencil;
 				end case;
 
 				section_mark (section_terminal, FOOTER);
@@ -4234,9 +4241,13 @@ package body pcb_rw is
 										expect_field_count (line, 2);
 										tht_stop_mask_shape_bottom := to_shape (f (line,2));
 
-									elsif kw = keyword_solder_paste then -- solder_paste applied/none
+									elsif kw = keyword_solder_paste_status then -- solder_paste_status applied/none
 										expect_field_count (line, 2);
 										smt_solder_paste_status := to_solder_paste_status (f (line,2));
+
+									elsif kw = keyword_solder_paste_shape then -- solder_paste_shape as_pad/shrink_pad/user_specific
+										expect_field_count (line, 2);
+										smt_stencil_shape := to_shape (f (line,2));
 										
 									else
 										invalid_keyword (kw);
