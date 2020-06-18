@@ -643,7 +643,7 @@ package et_geometry is
 		end record;
 
 		
-		type type_polygon_base is abstract tagged record
+		type type_polygon_base is abstract tagged record -- CS should be private. accessor functions required
 			segments		: type_polygon_segments;
 			segments_total	: type_polygon_segment_count := type_polygon_segment_count'first;
 		end record;

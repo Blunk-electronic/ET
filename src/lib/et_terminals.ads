@@ -210,15 +210,37 @@ package et_terminals is
 
 	-- A SMT pad has stop mask on one side only:
 	subtype type_stop_mask_smt is type_stop_mask;
-	
-	
-	
-	keyword_stop_mask			: constant string := "stop_mask";
-	keyword_solder_paste		: constant string := "solder_paste";
 
+	keyword_stop_mask				: constant string := "stop_mask"; -- CS rename to keyword_stop_mask_status
 	keyword_stop_mask_shape			: constant string := "stop_mask_shape";
 	keyword_stop_mask_shape_top		: constant string := "stop_mask_shape_top";
 	keyword_stop_mask_shape_bottom	: constant string := "stop_mask_shape_bottom";	
+
+	
+-- SOLDER CREAM / STENCIL
+	type type_stencil_shape is (
+		AS_PAD,
+		SHRINK_PAD,
+		USER_SPECIFIC);
+
+	stencil_shape_default : constant type_stencil_shape := AS_PAD;
+
+	function to_string (shape : in type_stencil_shape) return string;
+	function to_shape (shape : in string) return type_stencil_shape;
+
+	type type_stencil_contours is new pac_shapes.type_polygon_base with null record;
+
+	type type_stencil (shape : type_stencil_shape := stencil_shape_default) is record
+		case shape is
+			when USER_SPECIFIC => contours : type_stencil_contours;
+			when others => null;
+		end case;
+	end record;
+	
+	keyword_solder_paste			: constant string := "solder_paste"; -- CS rename to keyword_solder_paste_status
+	keyword_solder_paste_shape		: constant string := "solder_paste_shape";
+
+
 	
 	keyword_pad_shape			: constant string := "pad_shape";	
 	keyword_width_inner_layers	: constant string := "width_inner_layers";
@@ -277,9 +299,8 @@ package et_terminals is
 				stop_mask_shape_smt : type_stop_mask_smt;
 				
 				solder_paste_status	: type_solder_paste_status := solder_paste_status_default;
-				-- CS ?? stencil_shape : type_stencil_outline;
-				-- If no elements in outline, apply pad_shape.
-				
+-- 				stencil_shape		: type_stencil;
+
 		end case;
 	end record;
 
