@@ -2069,8 +2069,10 @@ package body pcb_rw is
 		smt_stop_mask_shape		: type_stop_mask_shape := stop_mask_shape_default;
 		smt_stop_mask_contours	: type_stop_mask_contours;		
 
+		-- NOTE: Solder paste is applied to SMT pads only.
 		smt_solder_paste_status	: type_solder_paste_status := solder_paste_status_default;
-		
+		smt_stencil_shape		: type_stencil_shape := stencil_shape_default;
+		smt_stencil_contours	: type_stencil_contours;
 
 		procedure build_terminal is 
 		-- Assembles the elements of a terminal and appends the final terminal to the
@@ -2124,6 +2126,20 @@ package body pcb_rw is
 
 				end return;
 			end make_stop_mask_tht;
+
+			-- Builds the stencil of the SMT pad (there is no stencil for THT pads):
+			function make_stencil return et_terminals.type_stencil is begin
+				return r : et_terminals.type_stencil do
+					case smt_stencil_shape is
+						when AS_PAD =>
+							r := (shape => AS_PAD);
+						when SHRINK_PAD =>
+							r := (shape => SHRINK_PAD);
+						when USER_SPECIFIC =>
+							r := (shape => USER_SPECIFIC, contours => smt_stencil_contours);
+					end case;
+				end return;
+			end make_stencil;
 			
 		begin -- build_terminal
 			case terminal_technology is
@@ -2186,7 +2202,9 @@ package body pcb_rw is
 							pad_shape_smt		=> smt_pad_shape,
 							stop_mask_status	=> smt_stop_mask_status,
 							stop_mask_shape_smt	=> make_stop_mask_smt,
-							solder_paste_status	=> smt_solder_paste_status));
+							solder_paste_status	=> smt_solder_paste_status,
+							stencil_shape		=> make_stencil
+							));
 
 					-- clean up for next terminal
 					smt_stop_mask_shape		:= stop_mask_shape_default;
@@ -2194,7 +2212,8 @@ package body pcb_rw is
 		 			smt_pad_shape			:= (others => <>);
 					smt_stop_mask_status	:= stop_mask_status_default;
 					smt_solder_paste_status	:= solder_paste_status_default;
-
+					smt_stencil_shape		:= stencil_shape_default;
+					smt_stencil_contours	:= (others => <>);
 			end case;
 
 			if not inserted then

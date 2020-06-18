@@ -2294,7 +2294,12 @@ package body et_kicad_pcb is
 
 										face 				=> terminal_face,
 										stop_mask_status	=> terminal_stop_mask,
-										solder_paste_status	=> terminal_solder_paste
+										solder_paste_status	=> terminal_solder_paste,
+
+										-- CS: For the stencil shape we assume it is just the same as the pad shape.
+										-- It should be investigated whether kicad supports other stencil shapes
+										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
+										stencil_shape		=> (others => <>)
 										));
 							
 							when RECTANGULAR =>
@@ -2323,7 +2328,12 @@ package body et_kicad_pcb is
 
 										face 				=> terminal_face,
 										stop_mask_status	=> terminal_stop_mask,
-										solder_paste_status	=> terminal_solder_paste
+										solder_paste_status	=> terminal_solder_paste,
+
+										-- CS: For the stencil shape we assume it is just the same as the pad shape.
+										-- It should be investigated whether kicad supports other stencil shapes
+										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
+										stencil_shape		=> (others => <>)
 										));
 
 								
@@ -2353,7 +2363,12 @@ package body et_kicad_pcb is
 
 										face 				=> terminal_face,
 										stop_mask_status	=> terminal_stop_mask,
-										solder_paste_status	=> terminal_solder_paste
+										solder_paste_status	=> terminal_solder_paste,
+
+										-- CS: For the stencil shape we assume it is just the same as the pad shape.
+										-- It should be investigated whether kicad supports other stencil shapes
+										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
+										stencil_shape		=> (others => <>)
 										));
 								
 						end case;
@@ -6829,6 +6844,11 @@ package body et_kicad_pcb is
 										stop_mask_status	=> terminal_stop_mask,
 										solder_paste_status	=> terminal_solder_paste,
 
+										-- CS: For the stencil shape we assume it is just the same as the pad shape.
+										-- It should be investigated whether kicad supports other stencil shapes
+										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
+										stencil_shape		=> (others => <>),
+										
 										-- the pad is connected with a certain net
 										net_name		=> terminal_net_name
 										));
@@ -6861,10 +6881,14 @@ package body et_kicad_pcb is
 										stop_mask_status	=> terminal_stop_mask,
 										solder_paste_status	=> terminal_solder_paste,
 
+										-- CS: For the stencil shape we assume it is just the same as the pad shape.
+										-- It should be investigated whether kicad supports other stencil shapes
+										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
+										stencil_shape		=> (others => <>),
+
 										-- the pad is connected with a certain net
 										net_name		=> terminal_net_name
 										));
-
 								
 							when OVAL =>
 
@@ -6894,6 +6918,11 @@ package body et_kicad_pcb is
 										stop_mask_status	=> terminal_stop_mask,
 										solder_paste_status	=> terminal_solder_paste,
 
+										-- CS: For the stencil shape we assume it is just the same as the pad shape.
+										-- It should be investigated whether kicad supports other stencil shapes
+										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
+										stencil_shape		=> (others => <>),
+										
 										-- the pad is connected with a certain net
 										net_name		=> terminal_net_name
 										));

@@ -299,7 +299,7 @@ package et_terminals is
 				stop_mask_shape_smt : type_stop_mask_smt;
 				
 				solder_paste_status	: type_solder_paste_status := solder_paste_status_default;
--- 				stencil_shape		: type_stencil;
+				stencil_shape		: type_stencil;
 
 		end case;
 	end record;
