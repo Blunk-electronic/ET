@@ -705,11 +705,17 @@ package et_geometry is
 		-- In order to do a polygon offset we have this type:
 		type type_polygon_offset is (INWARD, OUTWARD);
 
+		type type_polygon_scale is delta 0.1 range 0.1 .. 10.0;
+		for type_polygon_scale'small use 0.1;
+
+		polygon_scale_default : constant type_polygon_scale := 1.0;
+		
 		-- The procedure shrinks or expands the given polygon.
 		procedure offset_polygon (
-			polygon	: in out type_polygon_base;
-			width	: in type_distance_positive;
-			frame	: in type_polygon_offset);
+			polygon		: in out type_polygon_base;
+			distance	: in type_distance := zero;
+			scale		: in type_polygon_scale := polygon_scale_default;
+			direction	: in type_polygon_offset);
 
 
 		

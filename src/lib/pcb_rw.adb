@@ -2086,6 +2086,7 @@ package body pcb_rw is
 		smt_solder_paste_status	: type_solder_paste_status := solder_paste_status_default;
 		smt_stencil_shape		: type_stencil_shape := stencil_shape_default;
 		smt_stencil_contours	: type_stencil_contours;
+		smt_stencil_shrink		: type_stencil_shrink := stencil_shrink_default;
 
 		procedure build_terminal is 
 		-- Assembles the elements of a terminal and appends the final terminal to the
@@ -2147,7 +2148,7 @@ package body pcb_rw is
 						when AS_PAD =>
 							r := (shape => AS_PAD);
 						when SHRINK_PAD =>
-							r := (shape => SHRINK_PAD);
+							r := (shape => SHRINK_PAD, shrink_factor => smt_stencil_shrink);
 						when USER_SPECIFIC =>
 							r := (shape => USER_SPECIFIC, contours => smt_stencil_contours);
 					end case;
@@ -2230,6 +2231,7 @@ package body pcb_rw is
 					smt_solder_paste_status	:= solder_paste_status_default;
 					smt_stencil_shape		:= stencil_shape_default;
 					smt_stencil_contours	:= (others => <>);
+					smt_stencil_shrink		:= stencil_shrink_default;
 			end case;
 
 			if not inserted then

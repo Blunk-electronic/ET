@@ -184,7 +184,7 @@ package et_terminals is
 -- SOLDER STOP MASK
 	
 	type type_stop_mask_shape is (
-		AS_PAD,			-- mask assumes same shape as underlying conductor pad
+		AS_PAD,			-- mask assumes same shape as conductor pad underneath
 		EXPAND_PAD,		-- mask is sligtly greater thatn underlying conductor pad (definded by DRU)
 		USER_SPECIFIC);	-- mask has user specific contours
 
@@ -222,10 +222,14 @@ package et_terminals is
 	
 -- SOLDER CREAM / STENCIL
 	type type_stencil_shape is (
-		AS_PAD,
-		SHRINK_PAD,
-		USER_SPECIFIC);
+		AS_PAD,			-- opening in stencil has the same size as the conductor pad underneath
+		SHRINK_PAD,		-- opening sligtly smaller than conductor pad. defined by shrink_factor
+		USER_SPECIFIC);	-- opening has a user defined outline
 
+	subtype type_stencil_shrink is type_polygon_scale range 0.20 .. 1.0;
+
+	stencil_shrink_default : constant type_stencil_shrink := 0.75; -- CS adjust to a useful value
+	
 	stencil_shape_default : constant type_stencil_shape := AS_PAD;
 
 	function to_string (shape : in type_stencil_shape) return string;
@@ -235,8 +239,9 @@ package et_terminals is
 
 	type type_stencil (shape : type_stencil_shape := stencil_shape_default) is record
 		case shape is
-			when USER_SPECIFIC => contours : type_stencil_contours;
-			when others => null;
+			when USER_SPECIFIC 	=> contours : type_stencil_contours;
+			when SHRINK_PAD		=> shrink_factor : type_stencil_shrink := stencil_shrink_default;
+			when others			=> null;
 		end case;
 	end record;
 	

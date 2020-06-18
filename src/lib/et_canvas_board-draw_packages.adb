@@ -2485,10 +2485,14 @@ is
 								when AS_PAD =>
 									-- copy solder pad contours
 									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+									
 								when EXPAND_PAD =>
 									-- copy solder pad contours and expand according to DRU
 									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
-									offset_polygon (stop_mask_contours, 0.0, OUTWARD); -- CS DRU
+									offset_polygon (
+										polygon		=> stop_mask_contours,
+										distance	=> 0.0, -- CS fetch from DRU
+										direction	=> OUTWARD);
 									
 								when USER_SPECIFIC =>
 									-- compute position of user specific stop mask contours:
@@ -2508,10 +2512,15 @@ is
 								when AS_PAD =>
 									-- copy solder pad contours
 									stencil_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+									
 								when SHRINK_PAD =>
-									-- copy solder pad contours and shrink according to ? CS
+									-- copy solder pad contours and shrink according to shrink_factor
 									stencil_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
-									offset_polygon (stencil_contours, 0.0, OUTWARD); -- CS
+
+									offset_polygon (
+										polygon		=> stencil_contours,
+										scale		=> stencil_in.shrink_factor,
+										direction	=> INWARD);
 									
 								when USER_SPECIFIC =>
 									-- compute position of user specific stencil contours:
@@ -2574,7 +2583,11 @@ is
 								when EXPAND_PAD =>
 									-- copy solder pad contours and expand according to DRU
 									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
-									offset_polygon (stop_mask_contours, 0.0, OUTWARD); -- CS DRU
+									
+									offset_polygon (
+										polygon		=> stop_mask_contours,
+										distance	=> 0.0,  -- CS fetch from DRU
+										direction	=> OUTWARD);
 									
 								when USER_SPECIFIC =>
 									-- compute position of user specific stop mask contours:
@@ -2615,7 +2628,11 @@ is
 					if inner_conductors_enabled (bottom_layer) then
 						-- Compute a polygon that extends the hole_outline by the restring_width:
 						pad_outline := (type_polygon_base (hole_outline) with null record);
-						offset_polygon (pad_outline, restring_width, OUTWARD);
+						
+						offset_polygon (
+							polygon		=> pad_outline, 
+							distance	=> restring_width,
+							direction	=> OUTWARD);
 
 						-- Draw the conductor frame:
 						set_color_tht_pad (context.cr);

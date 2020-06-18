@@ -1997,9 +1997,10 @@ package body et_geometry is
 		end rotate_by;
 
 		procedure offset_polygon (
-			polygon	: in out type_polygon_base;
-			width	: in type_distance_positive;
-			frame	: in type_polygon_offset) is
+			polygon		: in out type_polygon_base;
+			distance	: in type_distance := zero;
+			scale		: in type_polygon_scale := polygon_scale_default;
+			direction	: in type_polygon_offset) is
 		begin
 -- CS
 -- 			for s in type_polygon_segment_id'first .. polygon.segments_total loop
