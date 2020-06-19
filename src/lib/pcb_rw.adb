@@ -1846,8 +1846,7 @@ package body pcb_rw is
 				write (keyword => keyword_stop_mask_shape, 
 						parameters => to_string (element (terminal_cursor).stop_mask_shape_smt.shape)); -- stop_mask_shape as_pad/expand_pad/user_specific
 
-				-- If user specified contours required, write the header
-				-- for stop mask contours:
+				-- If user specified contours required, write the header for stop mask contours:
 				if user_specific_contours then
 					section_mark (section_stop_mask_contours_smt, HEADER);
 				end if;
@@ -1862,8 +1861,7 @@ package body pcb_rw is
 
 				end case;
 
-				-- If user specified contours required, write the footer
-				-- for stop mask contours:
+				-- If user specified contours required, write the footer for stop mask contours:
 				if user_specific_contours then
 					section_mark (section_stop_mask_contours_smt, FOOTER);
 				end if;
@@ -1876,18 +1874,50 @@ package body pcb_rw is
 				section_mark (section_pad_millings, FOOTER);
 			end write_plated_millings;
 
-			procedure write_stencil is begin
+			procedure write_stencil is
+				
+				function user_specific_contours return boolean is begin
+					if element (terminal_cursor).stencil_shape.shape = USER_SPECIFIC then
+						return true;
+					else
+						return false;
+					end if;
+				end user_specific_contours;
+
+			begin
 				write (keyword => keyword_solder_paste_status,
-					   parameters => to_string (element (terminal_cursor).solder_paste_status)); -- solder_paste_status applied
+					   parameters => to_string (element (terminal_cursor).solder_paste_status)); 
+					-- solder_paste_status applied
 				
 				write (keyword => keyword_solder_paste_shape,
-					   parameters => to_string (element (terminal_cursor).stencil_shape.shape)); -- solder_paste_shape as_pad/shrink_pad/user_specific
+					   parameters => to_string (element (terminal_cursor).stencil_shape.shape)); 
+					-- solder_paste_shape as_pad/shrink_pad/user_specific
 
-				if element (terminal_cursor).stencil_shape.shape = SHRINK_PAD then
-					write (keyword => keyword_solder_paste_shrink_factor,
-						parameters => pac_shapes.to_string (element (terminal_cursor).stencil_shape.shrink_factor)); -- solder_paste_shrink_factor 0.4
+				-- If user specified contours required, write the header for stencil contours:
+				if user_specific_contours then
+					section_mark (section_stencil_contours, HEADER);
 				end if;
+				
+				case element (terminal_cursor).stencil_shape.shape is
+					when AS_PAD => null;
+					
+					when SHRINK_PAD	=>
+						write (
+							keyword		=> keyword_solder_paste_shrink_factor,
+							parameters	=> pac_shapes.to_string (element (terminal_cursor).stencil_shape.shrink_factor));
+							-- solder_paste_shrink_factor 0.4
 
+					when USER_SPECIFIC =>
+
+						write_polygon_segments (pac_shapes.type_polygon_base (
+							element (terminal_cursor).stencil_shape.contours));
+				end case;
+
+				-- If user specified contours required, write the footer for stencil contours:
+				if user_specific_contours then
+					section_mark (section_stencil_contours, FOOTER);
+				end if;
+				
 			end write_stencil;
 			
 		begin -- write_terminals
@@ -2891,6 +2921,8 @@ package body pcb_rw is
 								
 							when SEC_PAD_CONTOURS_SMT => add_polygon_line (board_line);
 
+							when SEC_STENCIL_CONTOURS => add_polygon_line (board_line);
+							
 							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_line (board_line);
 							
 							when SEC_MILLINGS => add_polygon_line (board_line);
@@ -3061,6 +3093,8 @@ package body pcb_rw is
 
 							when SEC_PAD_CONTOURS_SMT => add_polygon_arc (board_arc);
 
+							when SEC_STENCIL_CONTOURS => add_polygon_arc (board_arc);
+							
 							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_arc (board_arc);
 							
 							when SEC_MILLINGS => add_polygon_arc (board_arc);
@@ -3201,6 +3235,8 @@ package body pcb_rw is
 
 							when SEC_PAD_CONTOURS_SMT => add_polygon_circle (board_circle);
 
+							when SEC_STENCIL_CONTOURS => add_polygon_circle (board_circle);
+							
 							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_circle (board_circle);
 							
 							when SEC_MILLINGS => add_polygon_circle (board_circle);
@@ -3471,6 +3507,16 @@ package body pcb_rw is
 							when others => invalid_section;
 						end case;
 
+					when SEC_STENCIL_CONTOURS =>
+						case stack.parent is
+							when SEC_TERMINAL => 
+								check_outline (polygon, log_threshold + 1);
+								smt_stencil_contours := (pac_shapes.type_polygon_base (polygon) with null record);
+								board_reset_polygon;
+								
+							when others => invalid_section;
+						end case;
+						
 					when SEC_PAD_CONTOURS_THT =>
 						case stack.parent is
 							when SEC_TERMINAL => null;
@@ -3572,6 +3618,7 @@ package body pcb_rw is
 			elsif set (section_pcb_contours, SEC_PCB_CONTOURS_NON_PLATED) then null;
 			elsif set (section_pad_contours_smt, SEC_PAD_CONTOURS_SMT) then null;
 			elsif set (section_pad_contours_tht, SEC_PAD_CONTOURS_THT) then null;
+			elsif set (section_stencil_contours, SEC_STENCIL_CONTOURS) then null;
 			elsif set (section_stop_mask_contours_smt, SEC_STOP_MASK_CONTOURS_SMT) then null;
 			elsif set (section_stop_mask_contours_tht, SEC_STOP_MASK_CONTOURS_THT) then null;
 			elsif set (section_pad_millings, SEC_MILLINGS) then null;			
@@ -3706,7 +3753,9 @@ package body pcb_rw is
 								end if;
 								
 							when SEC_PAD_CONTOURS_SMT => read_board_line (line);
-
+							
+							when SEC_STENCIL_CONTOURS => read_board_line (line);
+							
 							when SEC_STOP_MASK_CONTOURS_SMT => read_board_line (line);
 							
 							when SEC_MILLINGS => read_board_line (line);
@@ -3771,6 +3820,8 @@ package body pcb_rw is
 								
 							when SEC_PAD_CONTOURS_SMT => read_board_arc (line);
 
+							when SEC_STENCIL_CONTOURS => read_board_arc (line);
+							
 							when SEC_STOP_MASK_CONTOURS_SMT => read_board_arc (line);
 							
 							when SEC_MILLINGS => read_board_arc (line);
@@ -3914,6 +3965,8 @@ package body pcb_rw is
 								
 							when SEC_PAD_CONTOURS_SMT => read_board_circle (line);
 
+							when SEC_STENCIL_CONTOURS => read_board_circle (line);
+							
 							when SEC_STOP_MASK_CONTOURS_SMT => read_board_circle (line);
 							
 							when SEC_MILLINGS => read_board_circle (line);
@@ -4278,7 +4331,7 @@ package body pcb_rw is
 							when others => invalid_section;
 						end case;
 
-					when SEC_PAD_CONTOURS_SMT | SEC_PAD_CONTOURS_THT | SEC_MILLINGS =>
+					when SEC_PAD_CONTOURS_SMT | SEC_STENCIL_CONTOURS | SEC_PAD_CONTOURS_THT | SEC_MILLINGS =>
 						case stack.parent is
 							when SEC_TERMINAL => null;
 							when others => invalid_section;
