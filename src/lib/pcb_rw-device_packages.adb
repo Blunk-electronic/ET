@@ -792,6 +792,138 @@ package body pcb_rw.device_packages is
 		smt_stencil_contours	: type_stencil_contours;
 		smt_stencil_shrink		: type_stencil_shrink := stencil_shrink_default;
 
+		procedure read_text is
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+				expect_field_count (line, 7);
+
+				-- extract position of note starting at field 2
+				pac_text.position := to_position (line, 2);
+
+			elsif kw = et_text.keyword_size then -- size 1.000
+				expect_field_count (line, 2);
+				pac_text.size := to_distance (f (line, 2));
+
+			elsif kw = et_text.keyword_line_width then -- line_width 0.1
+				expect_field_count (line, 2);
+				pac_text.line_width := to_distance (f (line, 2));
+
+			elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+				expect_field_count (line, 5);
+
+				-- extract alignment starting at field 2
+				pac_text.alignment := et_text.to_alignment (line, 2);
+				
+			elsif kw = keyword_content then -- content "blabla"
+				expect_field_count (line, 2); -- actual content in quotes !
+				pac_text.content := et_text.to_content (f (line, 2));
+				
+			else
+				invalid_keyword (kw);
+			end if;
+		end read_text;
+		
+		procedure read_placeholder is
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+				expect_field_count (line, 7);
+
+				-- extract position of note starting at field 2
+				pac_text_placeholder.position := to_position (line, 2);
+
+			elsif kw = et_text.keyword_size then -- size 1.000
+				expect_field_count (line, 2);
+				pac_text_placeholder.size := to_distance (f (line, 2));
+
+			elsif kw = et_text.keyword_line_width then -- line_width 0.1
+				expect_field_count (line, 2);
+				pac_text_placeholder.line_width := to_distance (f (line, 2));
+
+			elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+				expect_field_count (line, 5);
+
+				-- extract alignment starting at field 2
+				pac_text_placeholder.alignment := et_text.to_alignment (line, 2);
+				
+			elsif kw = keyword_meaning then -- meaning reference, value, purpose
+				expect_field_count (line, 2);
+				pac_text_placeholder.meaning := to_text_meaning (f (line, 2));
+				
+			else
+				invalid_keyword (kw);
+			end if;
+		end read_placeholder;
+		
+		procedure read_terminal is
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_name then -- name 1,2,H7
+				expect_field_count (line, 2);
+				terminal_name := to_terminal_name (f (line,2));
+
+			elsif kw = keyword_assembly_technology then -- technology tht
+				expect_field_count (line, 2);
+				terminal_technology := to_assembly_technology (f (line,2));
+
+			elsif kw = keyword_position then -- position x 12.7 y 3.0 rotation 0.0
+				expect_field_count (line, 7);
+				terminal_position := to_position (line,2);
+
+			elsif kw = keyword_width_inner_layers then -- width_inner_layers 0.2
+				expect_field_count (line, 2);
+				tht_width_inner_layers := to_distance (f (line,2));
+
+			elsif kw = keyword_tht_hole then -- hole drilled/milled
+				expect_field_count (line, 2);
+				tht_hole := to_tht_hole (f (line,2));
+
+			elsif kw = keyword_drill_size then -- drill_size 0.8
+				expect_field_count (line, 2);
+				tht_drill_size := to_distance (f (line,2));
+				
+			elsif kw = et_pcb_coordinates.keyword_face then -- face top/bottom
+				expect_field_count (line, 2);
+				smt_pad_face := et_pcb_coordinates.to_face (f (line,2));
+
+			elsif kw = keyword_stop_mask_status then -- stop_mask_status open/closed
+				expect_field_count (line, 2);
+				smt_stop_mask_status := to_stop_mask_status (f (line,2));
+
+			elsif kw = keyword_stop_mask_shape then -- keyword_stop_mask_shape user_specific
+				expect_field_count (line, 2);
+				smt_stop_mask_shape := to_shape (f (line,2));
+				
+			elsif kw = keyword_stop_mask_shape_top then -- stop_mask_shape_top user_specific
+				expect_field_count (line, 2);
+				tht_stop_mask_shape_top := to_shape (f (line,2));
+
+			elsif kw = keyword_stop_mask_shape_bottom then -- keyword_stop_mask_shape_bottom user_specific
+				expect_field_count (line, 2);
+				tht_stop_mask_shape_bottom := to_shape (f (line,2));
+
+			elsif kw = keyword_solder_paste_status then -- solder_paste_status applied/none
+				expect_field_count (line, 2);
+				smt_solder_paste_status := to_solder_paste_status (f (line,2));
+
+			elsif kw = keyword_solder_paste_shape then -- solder_paste_shape as_pad/shrink_pad/user_specific
+				expect_field_count (line, 2);
+				smt_stencil_shape := to_shape (f (line,2));
+
+			elsif kw = keyword_solder_paste_shrink_factor then -- solder_paste_shrink_factor 0.5
+				expect_field_count (line, 2);
+				smt_stencil_shrink := pac_shapes.to_scale (f (line,2));
+				
+			else
+				invalid_keyword (kw);
+			end if;
+
+		end read_terminal;
+		
 		procedure build_terminal is 
 		-- Assembles the elements of a terminal and appends the final terminal to the
 		-- list of terminals of the package.
@@ -2844,38 +2976,8 @@ package body pcb_rw.device_packages is
 							when SEC_TOP | SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
 									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
-												expect_field_count (line, 7);
 
-												-- extract position of note starting at field 2
-												pac_text.position := to_position (line, 2);
-
-											elsif kw = et_text.keyword_size then -- size 1.000
-												expect_field_count (line, 2);
-												pac_text.size := to_distance (f (line, 2));
-
-											elsif kw = et_text.keyword_line_width then -- line_width 0.1
-												expect_field_count (line, 2);
-												pac_text.line_width := to_distance (f (line, 2));
-
-											elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
-												expect_field_count (line, 5);
-
-												-- extract alignment starting at field 2
-												pac_text.alignment := et_text.to_alignment (line, 2);
-												
-											elsif kw = keyword_content then -- content "blabla"
-												expect_field_count (line, 2); -- actual content in quotes !
-												pac_text.content := et_text.to_content (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
+										read_text;
 										
 									when others => invalid_section;
 								end case;
@@ -2889,38 +2991,8 @@ package body pcb_rw.device_packages is
 							when SEC_TOP | SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
-												expect_field_count (line, 7);
 
-												-- extract position of note starting at field 2
-												pac_text_placeholder.position := to_position (line, 2);
-
-											elsif kw = et_text.keyword_size then -- size 1.000
-												expect_field_count (line, 2);
-												pac_text_placeholder.size := to_distance (f (line, 2));
-
-											elsif kw = et_text.keyword_line_width then -- line_width 0.1
-												expect_field_count (line, 2);
-												pac_text_placeholder.line_width := to_distance (f (line, 2));
-
-											elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
-												expect_field_count (line, 5);
-
-												-- extract alignment starting at field 2
-												pac_text_placeholder.alignment := et_text.to_alignment (line, 2);
-												
-											elsif kw = keyword_meaning then -- meaning reference, value, purpose
-												expect_field_count (line, 2);
-												pac_text_placeholder.meaning := to_text_meaning (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
+										read_placeholder;
 
 									when others => invalid_section;
 								end case;
@@ -2930,71 +3002,7 @@ package body pcb_rw.device_packages is
 
 					when SEC_TERMINAL =>
 						case stack.parent is
-							when SEC_TERMINALS =>
-								declare -- CS move to separate procdure
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_name then -- name 1,2,H7
-										expect_field_count (line, 2);
-										terminal_name := to_terminal_name (f (line,2));
-
-									elsif kw = keyword_assembly_technology then -- technology tht
-										expect_field_count (line, 2);
-										terminal_technology := to_assembly_technology (f (line,2));
-
-									elsif kw = keyword_position then -- position x 12.7 y 3.0 rotation 0.0
-										expect_field_count (line, 7);
-										terminal_position := to_position (line,2);
-
-									elsif kw = keyword_width_inner_layers then -- width_inner_layers 0.2
-										expect_field_count (line, 2);
-										tht_width_inner_layers := to_distance (f (line,2));
-
-									elsif kw = keyword_tht_hole then -- hole drilled/milled
-										expect_field_count (line, 2);
-										tht_hole := to_tht_hole (f (line,2));
-
-									elsif kw = keyword_drill_size then -- drill_size 0.8
-										expect_field_count (line, 2);
-										tht_drill_size := to_distance (f (line,2));
-										
-									elsif kw = et_pcb_coordinates.keyword_face then -- face top/bottom
-										expect_field_count (line, 2);
-										smt_pad_face := et_pcb_coordinates.to_face (f (line,2));
-
-									elsif kw = keyword_stop_mask_status then -- stop_mask_status open/closed
-										expect_field_count (line, 2);
-										smt_stop_mask_status := to_stop_mask_status (f (line,2));
-
-									elsif kw = keyword_stop_mask_shape then -- keyword_stop_mask_shape user_specific
-										expect_field_count (line, 2);
-										smt_stop_mask_shape := to_shape (f (line,2));
-										
-									elsif kw = keyword_stop_mask_shape_top then -- stop_mask_shape_top user_specific
-										expect_field_count (line, 2);
-										tht_stop_mask_shape_top := to_shape (f (line,2));
-
-									elsif kw = keyword_stop_mask_shape_bottom then -- keyword_stop_mask_shape_bottom user_specific
-										expect_field_count (line, 2);
-										tht_stop_mask_shape_bottom := to_shape (f (line,2));
-
-									elsif kw = keyword_solder_paste_status then -- solder_paste_status applied/none
-										expect_field_count (line, 2);
-										smt_solder_paste_status := to_solder_paste_status (f (line,2));
-
-									elsif kw = keyword_solder_paste_shape then -- solder_paste_shape as_pad/shrink_pad/user_specific
-										expect_field_count (line, 2);
-										smt_stencil_shape := to_shape (f (line,2));
-
-									elsif kw = keyword_solder_paste_shrink_factor then -- solder_paste_shrink_factor 0.5
-										expect_field_count (line, 2);
-										smt_stencil_shrink := pac_shapes.to_scale (f (line,2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+							when SEC_TERMINALS => read_terminal;
 
 							when others => invalid_section;
 						end case;
