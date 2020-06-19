@@ -2487,12 +2487,17 @@ is
 									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
 									
 								when EXPAND_PAD =>
+									pad_pos := pad_pos_in;  -- get initial pad position
+									
 									-- copy solder pad contours and expand according to DRU
-									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline_in) with null record);
 									
 									offset_polygon (
 										polygon		=> stop_mask_contours,
 										offset		=> (style => BY_DISTANCE, distance => 0.0)); -- CS fetch from DRU
+
+									-- compute final position of expanded stop mask opening
+									move (pad_pos, type_polygon_base (stop_mask_contours));
 									
 								when USER_SPECIFIC =>
 									-- compute position of user specific stop mask contours:
@@ -2587,12 +2592,17 @@ is
 									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
 									
 								when EXPAND_PAD =>
+									pad_pos := pad_pos_in;  -- get initial pad position
+									
 									-- copy solder pad contours and expand according to DRU
-									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline_in) with null record);
 									
 									offset_polygon (
 										polygon		=> stop_mask_contours,
 										offset		=> (style => BY_DISTANCE, distance => 0.0));  -- CS fetch from DRU
+
+									-- compute final position of expanded stop mask opening
+									move (pad_pos, type_polygon_base (stop_mask_contours));
 									
 								when USER_SPECIFIC =>
 									-- compute position of user specific stop mask contours:
@@ -2621,9 +2631,9 @@ is
 				pad_pos : type_position := pad_pos_in;
 
 				pad_outline : type_pad_outline;				
-			begin -- draw_pad_tht_hole_milled
+			begin
 				
-				-- We draw the hole only if a conductor layer is enabled.
+				-- We draw the hole only if any conductor layer is enabled.
 				-- If no conductor layers are enabled, no hole will be shown.
 				if conductors_enabled then
 					
@@ -2631,13 +2641,18 @@ is
 
 					-- Draw the conductor frame ("restring") around the hole if any inner signal layer is enabled:
 					if inner_conductors_enabled (bottom_layer) then
-						-- Compute a polygon that extends the hole_outline by the restring_width:
-						pad_outline := (type_polygon_base (hole_outline) with null record);
+						pad_pos := pad_pos_in;  -- get initial pad position
+						
+						-- Compute a polygon that extends the given hole outline by the restring_width:
+						pad_outline := (type_polygon_base (outline_in) with null record);
 						
 						offset_polygon (
 							polygon		=> pad_outline, 
 							offset		=> (style => BY_DISTANCE, distance => restring_width));
 
+						-- move the conductor frame to its final position:
+						move (pad_pos, type_polygon_base (pad_outline));
+						
 						-- Draw the conductor frame:
 						set_color_tht_pad (context.cr);
 						pac_draw_package.draw_polygon (in_area, context, pad_outline, YES, self.frame_height);
