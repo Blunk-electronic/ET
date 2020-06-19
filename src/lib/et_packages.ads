@@ -840,7 +840,8 @@ package et_packages is
 -- 
 	type type_package_appearance is (
 		REAL,	-- packages with x,y,z dimension
-		VIRTUAL -- for things that do not have a package (netchangers, testpoints, edge connectors, ...)
+		VIRTUAL -- for things that do not have a real package 
+				-- (like testpoints, edge connectors, mounting holes, fiducials, ...)
 		);	
 
 	package_appearance_default : constant type_package_appearance := REAL;

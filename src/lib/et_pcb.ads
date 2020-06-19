@@ -538,6 +538,15 @@ package et_pcb is
 	origin_default : constant type_point := type_point (set (20.0, 50.0));
 
 
+	-- Device packages which do not appear in the schematic 
+	-- (like fiducials, mounting holes, heatsinks, ...)
+	-- CS: this should be a hashed map:
+	package pac_non_electrical_packages is new indefinite_ordered_maps (
+		key_type		=> type_package_model_file.bounded_string, -- ../lbr/non-electric/fiducial.pac
+		"<"				=> type_package_model_file."<",
+		element_type	=> type_package);
+
+
 	-- This is general board stuff:
 	type type_board is tagged record
 		origin			: type_point := origin_default;
@@ -553,6 +562,7 @@ package et_pcb is
 		via_restrict	: type_via_restrict;
 		copper			: type_copper; -- non-electric copper stuff, incl. floating polygons ! CS: rename to conductors
 		contours		: type_pcb_contours; -- pcb outline
+		non_electric	: pac_non_electrical_packages.map; -- fiducials, mounting holes, ...
 	end record;
 
 	
