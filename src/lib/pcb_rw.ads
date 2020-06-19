@@ -36,7 +36,6 @@
 --
 
 --   do do:
---	  - separate package related stuff in separate package
 
 with ada.containers;            use ada.containers;
 
@@ -47,7 +46,6 @@ with et_terminals;				use et_terminals;
 with et_drills;					use et_drills;
 with et_packages;				use et_packages;
 with et_pcb;
-with et_pcb_coordinates;
 with et_pcb_stack;
 
 package pcb_rw is
@@ -72,20 +70,6 @@ package pcb_rw is
 	section_pcb_contours		: constant string	:= "[PCB_CONTOURS_NON_PLATED";
 	--section_pcb_contours_plated	: constant string	:= "[PCB_CONTOURS_PLATED"; 
 	section_pac_3d_contours		: constant string	:= "[PACKAGE_3D_CONTOURS";
-
-	section_pad_contours_smt	: constant string	:= "[PAD_CONTOURS_SMT";
-	section_pad_contours_tht	: constant string	:= "[PAD_CONTOURS_THT";	
-
-	section_stencil_contours	: constant string	:= "[STENCIL_CONTOURS";
-	
-	section_stop_mask_contours_tht	: constant string	:= "[STOP_MASK_CONTOURS_THT";
-	section_stop_mask_contours_smt	: constant string	:= "[STOP_MASK_CONTOURS_SMT";
-	
-	section_pad_millings		: constant string	:= "[MILLINGS";
-
-	section_terminals			: constant string	:= "[TERMINALS";
-	section_terminal			: constant string	:= "[TERMINAL";
-
 	
 	keyword_description				: constant string := "description";	
 	keyword_width 					: constant string := "width";	
@@ -374,60 +358,5 @@ package pcb_rw is
 	procedure write_line (cursor : in et_pcb.type_pcb_contour_lines.cursor);	
 	procedure write_arc (cursor : in et_pcb.type_pcb_contour_arcs.cursor);
 	procedure write_circle (cursor : in et_pcb.type_pcb_contour_circles.cursor);
-
-
-	type type_section is ( -- of a package
-		SEC_CONTOURS, -- of fill and cutout zones
-		SEC_CUTOUT_ZONE,
-		SEC_INIT,
-		SEC_TOP,
-		SEC_BOTTOM,
-		SEC_LINE,
-		SEC_ARC,
-		SEC_CIRCLE,
-		SEC_SILK_SCREEN,
-		SEC_ASSEMBLY_DOCUMENTATION,
-		SEC_KEEPOUT,
-		SEC_COPPER,
-		SEC_STOP_MASK,
-		SEC_STENCIL,
-		SEC_ROUTE_RESTRICT,
-		SEC_VIA_RESTRICT,
-		SEC_PCB_CONTOURS_NON_PLATED,
-		SEC_TERMINALS,
-		SEC_TERMINAL,
-		SEC_PAD_CONTOURS_SMT,
-		SEC_PAD_CONTOURS_THT,
-		SEC_STENCIL_CONTOURS,
-		SEC_STOP_MASK_CONTOURS_SMT,
-		SEC_STOP_MASK_CONTOURS_THT,
-		SEC_MILLINGS,
-		SEC_TEXT,
-		SEC_PLACEHOLDER,
-		SEC_FILL_ZONE,
-		SEC_PACKAGE_3D_CONTOURS
-		);
-
-	procedure create_package (
-	-- Creates a package and stores the package in container et_packages.packages.								 
-		package_name 	: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
-		appearance		: in et_packages.type_package_appearance;
-		log_threshold	: in et_string_processing.type_log_level);
-
-	procedure save_package (
-	-- Saves the given package model in a file specified by file_name.							   
-		file_name 		: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
-		packge			: in et_packages.type_package; -- the actual device model
-		log_threshold	: in et_string_processing.type_log_level);
-	
-	procedure read_package (
-	-- Opens the package file and stores the package in container et_packages.packages.
-	-- If check_layers.check is YES, then a check will be done that tests
-	-- whether all conductor layers are are in 
-	-- range type_signal_layer'first .. deepest conductor layer.
-		file_name 		: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
-		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
-		log_threshold	: in et_string_processing.type_log_level);
-
 	
 end pcb_rw;

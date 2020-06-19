@@ -59,7 +59,7 @@ with et_string_processing;
 with general_rw;				use general_rw;
 with schematic_rw;				use schematic_rw;
 with symbol_rw;					use symbol_rw;
-with pcb_rw;
+with pcb_rw.device_packages;
 with conventions;
 with et_geometry;				use et_geometry;
 with et_text;
@@ -376,7 +376,7 @@ package body device_rw is
 
 			-- Read package model (like libraries/packages/__#__#lbr#bel_ic_pretty#S_SO14.pac)
 			-- and do a conductor layer check if required.
-			pcb_rw.read_package (variant.package_model, check_layers, log_threshold + 1);
+			pcb_rw.device_packages.read_package (variant.package_model, check_layers, log_threshold + 1);
 
 			-- clean up for next variant
 			variant := (others => <>);

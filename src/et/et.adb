@@ -59,6 +59,7 @@ with scripting;
 
 with et_packages;
 with pcb_rw;
+with pcb_rw.device_packages;
 
 with et_symbols;
 with symbol_rw;
@@ -431,7 +432,7 @@ procedure et is
 		-- If package_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only packagein et_packages.packages is saved.
 		if length (package_name_save_as) > 0 then
-			pcb_rw.save_package (
+			pcb_rw.device_packages.save_package (
 				file_name 		=> package_name_save_as,
 				packge			=> et_packages.type_packages.last_element (et_packages.packages),
 				log_threshold	=> 0);
@@ -595,7 +596,7 @@ procedure et is
 			elsif length (package_name_create) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for package editing
 				
-				pcb_rw.create_package (package_name_create, package_appearance, log_threshold => 0);
+				pcb_rw.device_packages.create_package (package_name_create, package_appearance, log_threshold => 0);
 
 				-- optionally the package can be saved under a different name
 				save_package_as;  -- if package_name_save_as is empty nothing happens
@@ -607,7 +608,7 @@ procedure et is
 			elsif length (package_name_open) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for package editing
 				
-				pcb_rw.read_package (package_name_open, log_threshold => 0);
+				pcb_rw.device_packages.read_package (package_name_open, log_threshold => 0);
 
 				-- optionally the package can be saved under a different name
 				save_package_as; -- if package_name_save_as is empty nothing happens

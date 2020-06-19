@@ -37,24 +37,23 @@
 
 --   do do:
 
-with ada.containers;            use ada.containers;
-
-with et_string_processing;
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;				use et_geometry;
-with et_terminals;				use et_terminals;
-with et_drills;					use et_drills;
-with et_packages;				use et_packages;
-with et_pcb;
-with et_pcb_coordinates;
-with et_pcb_stack;
-
 package pcb_rw.device_packages is
 
-	use et_pcb_coordinates.pac_geometry_brd;
+	section_pad_contours_smt	: constant string	:= "[PAD_CONTOURS_SMT";
+	section_pad_contours_tht	: constant string	:= "[PAD_CONTOURS_THT";	
+	
+	section_stencil_contours	: constant string	:= "[STENCIL_CONTOURS";
 
+	section_stop_mask_contours_tht	: constant string	:= "[STOP_MASK_CONTOURS_THT";
+	section_stop_mask_contours_smt	: constant string	:= "[STOP_MASK_CONTOURS_SMT";
+	
+	section_pad_millings		: constant string	:= "[MILLINGS";
 
-	type type_section is ( -- of a package
+	section_terminals			: constant string	:= "[TERMINALS";
+	section_terminal			: constant string	:= "[TERMINAL";
+
+	
+	type type_section is (
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,
 		SEC_INIT,

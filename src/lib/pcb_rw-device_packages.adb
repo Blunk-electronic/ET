@@ -35,21 +35,16 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	--use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.text_io;				use ada.text_io;
-with ada.tags;
+-- with ada.tags;
 
 with ada.exceptions;
 
-with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_general;				use et_general;
-with et_string_processing;
 with general_rw;				use general_rw;
 with et_text;					use et_text;
 

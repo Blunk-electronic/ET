@@ -62,6 +62,7 @@ with material;
 with netlists;
 with et_text;
 with pcb_rw;
+with pcb_rw.device_packages;	--use pcb_rw.device_packages;
 with device_rw;
 with et_symbols;
 with et_devices;				use et_devices;
@@ -3682,7 +3683,7 @@ package body et_kicad_to_native is
 			procedure save_package (package_cursor : in et_packages.type_packages.cursor) is
 				use et_packages.type_package_model_file;
 			begin
-				pcb_rw.save_package (
+				pcb_rw.device_packages.save_package (
 					-- package name like: 
 					-- /home/user/et_projects/imported_from_kicad/blood_sample_analyzer/libraries/packages/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.pac
 					file_name		=> et_packages.to_file_name (
