@@ -2825,6 +2825,33 @@ is
 	begin -- query_devices
 		module.devices.iterate (query_device'access);
 	end query_devices;
+
+	procedure query_non_electrical_packages (
+		module_name	: in type_module_name.bounded_string;
+		module		: in type_module) is
+
+		use et_pcb;
+		use et_pcb.pac_non_electrical_packages;
+		
+		procedure query_package (p : in pac_non_electrical_packages.cursor) is
+			use et_devices;
+		begin
+			null;
+-- 			draw_package (
+-- 				device_name			=> et_devices.to_name ("R1"), -- R1, IC12
+-- 				device_value		=> to_value ("dummy"), -- 7400, 100R
+-- 				device_purpose		=> to_purpose ("dummy"), -- brightness control
+-- 				model				=> package_model (p), -- libraries/packages/smd/SOT23.pac
+-- 				package_position	=> element (p).position, -- x/y/rotation/face
+-- 				flip				=> element (p).flipped,
+-- 				placeholders		=> et_package.type_text_placeholders.empty_list);
+
+		end query_package;
+		
+	begin -- query_devices
+		module.board.non_electric.iterate (query_package'access);
+	end query_non_electrical_packages;
+
 	
 begin -- draw_packages
 -- 	put_line ("draw packages ...");
