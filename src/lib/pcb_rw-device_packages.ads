@@ -1,0 +1,111 @@
+------------------------------------------------------------------------------
+--                                                                          --
+--                              SYSTEM ET                                   --
+--                                                                          --
+--                        PCB_RW.DEVICE_PACKAGES                            --
+--                                                                          --
+--                               S p e c                                    --
+--                                                                          --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--                                                                          --
+--    This program is free software: you can redistribute it and/or modify  --
+--    it under the terms of the GNU General Public License as published by  --
+--    the Free Software Foundation, either version 3 of the License, or     --
+--    (at your option) any later version.                                   --
+--                                                                          --
+--    This program is distributed in the hope that it will be useful,       --
+--    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
+--    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
+--    GNU General Public License for more details.                          --
+--                                                                          --
+--    You should have received a copy of the GNU General Public License     --
+--    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+------------------------------------------------------------------------------
+
+--   For correct displaying set tab with in your edtior to 4.
+
+--   The two letters "CS" indicate a "construction site" where things are not
+--   finished yet or intended for the future.
+
+--   Please send your questions and comments to:
+--
+--   info@blunk-electronic.de
+--   or visit <http://www.blunk-electronic.de> for more contact data
+--
+--   history of changes:
+--
+
+--   do do:
+
+with ada.containers;            use ada.containers;
+
+with et_string_processing;
+with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_geometry;				use et_geometry;
+with et_terminals;				use et_terminals;
+with et_drills;					use et_drills;
+with et_packages;				use et_packages;
+with et_pcb;
+with et_pcb_coordinates;
+with et_pcb_stack;
+
+package pcb_rw.device_packages is
+
+	use et_pcb_coordinates.pac_geometry_brd;
+
+
+	type type_section is ( -- of a package
+		SEC_CONTOURS, -- of fill and cutout zones
+		SEC_CUTOUT_ZONE,
+		SEC_INIT,
+		SEC_TOP,
+		SEC_BOTTOM,
+		SEC_LINE,
+		SEC_ARC,
+		SEC_CIRCLE,
+		SEC_SILK_SCREEN,
+		SEC_ASSEMBLY_DOCUMENTATION,
+		SEC_KEEPOUT,
+		SEC_COPPER,
+		SEC_STOP_MASK,
+		SEC_STENCIL,
+		SEC_ROUTE_RESTRICT,
+		SEC_VIA_RESTRICT,
+		SEC_PCB_CONTOURS_NON_PLATED,
+		SEC_TERMINALS,
+		SEC_TERMINAL,
+		SEC_PAD_CONTOURS_SMT,
+		SEC_PAD_CONTOURS_THT,
+		SEC_STENCIL_CONTOURS,
+		SEC_STOP_MASK_CONTOURS_SMT,
+		SEC_STOP_MASK_CONTOURS_THT,
+		SEC_MILLINGS,
+		SEC_TEXT,
+		SEC_PLACEHOLDER,
+		SEC_FILL_ZONE,
+		SEC_PACKAGE_3D_CONTOURS
+		);
+
+	procedure create_package (
+	-- Creates a package and stores the package in container et_packages.packages.								 
+		package_name 	: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		appearance		: in et_packages.type_package_appearance;
+		log_threshold	: in et_string_processing.type_log_level);
+
+	procedure save_package (
+	-- Saves the given package model in a file specified by file_name.							   
+		file_name 		: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		packge			: in et_packages.type_package; -- the actual device model
+		log_threshold	: in et_string_processing.type_log_level);
+	
+	procedure read_package (
+	-- Opens the package file and stores the package in container et_packages.packages.
+	-- If check_layers.check is YES, then a check will be done that tests
+	-- whether all conductor layers are are in 
+	-- range type_signal_layer'first .. deepest conductor layer.
+		file_name 		: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
+		log_threshold	: in et_string_processing.type_log_level);
+
+	
+end pcb_rw.device_packages;
