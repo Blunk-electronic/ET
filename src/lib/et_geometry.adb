@@ -900,6 +900,29 @@ package body et_geometry is
 			end if;
 		end union;
 
+		function direction (
+			line	: in type_line)
+			return type_rotation is
+
+			dx : constant float := float (x (line.end_point) - x (line.start_point));
+			dy : constant float := float (y (line.end_point) - y (line.start_point));
+
+			package pac_functions is new ada.numerics.generic_elementary_functions (float);
+			use pac_functions;
+		begin
+			return type_rotation (arctan (dy, dx, float (units_per_cycle)));
+		end direction;
+
+		procedure move_by (
+			line		: in out type_line;
+			direction	: in type_rotation;
+			distance	: in type_distance_positive) is
+		begin
+			-- Move start and and point of line into direction by distance.
+			line.start_point	:= type_point (move (line.start_point, direction, distance));
+			line.end_point		:= type_point (move (line.end_point,   direction, distance));
+		end move_by;
+		
 		procedure move_by (
 			line	: in out type_line;
 			offset	: in type_point)

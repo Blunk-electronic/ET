@@ -428,6 +428,19 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+		-- Returns the direction in degrees of a line.
+		-- Example: If a line runs from 0/0 to 1/1 then the result is 45 degree.
+		-- Example: If a line runs from -1/-1 to -4/-4 then the result is 225 degree.
+		function direction (
+			line	: in type_line)
+			return type_rotation;
+
+		-- Moves a line in the given direction by the given distance:
+		procedure move_by (
+			line		: in out type_line;
+			direction	: in type_rotation;
+			distance	: in type_distance_positive);
+							  
 		procedure move_by (
 		-- Moves a line by the given offset. 
 			line	: in out type_line;
