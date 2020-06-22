@@ -1043,7 +1043,7 @@ package et_packages is
 				null; -- CS
 				--package_contour	: type_package_contour;
 			when VIRTUAL =>
-				null; -- netchangers, testpoints, board edge connectors, ...
+				null; -- fiducials, testpoints, board edge connectors, ...
 		end case;
 	end record;
 

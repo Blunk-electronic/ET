@@ -2565,8 +2565,10 @@ package body et_project is
 		-- The temporarily device will exist where "device" points at:
 		device					: access et_schematic.type_device;
 		
-		device_name				: type_name; -- C12
-		device_model			: type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
+		device_name					: type_name; -- C12
+		device_model				: type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
+		
+		
 		device_value			: type_value.bounded_string; -- 470R
 		device_appearance		: et_schematic.type_appearance_schematic;
 		--device_unit				: et_schematic.type_unit;
@@ -2575,6 +2577,13 @@ package body et_project is
 		device_unit_name		: type_unit_name.bounded_string; -- GPIO_BANK_1
 		device_unit_position	: et_coordinates.type_position; -- x,y,sheet,rotation
 
+
+		device_non_electric				: access et_packages.type_package;
+		device_model_non_electric		: et_packages.type_package_model_file.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
+		device_appearance_non_electric	: et_packages.type_package_appearance :=
+			et_packages.package_appearance_default;
+
+		
 		-- assembly variants
 		assembly_variant_name			: et_general.type_variant_name.bounded_string; -- low_cost
 		assembly_variant_description	: assembly_variants.type_description; -- "variant without temp. sensor"
@@ -2757,12 +2766,130 @@ package body et_project is
 		end;
 
 		procedure read_device is
-
+			use et_symbols;
+			use et_devices;
+			kw : constant string := f (line, 1);
 		begin
-			null;
-		end read_device;
-		
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_name then -- name C12
+				expect_field_count (line, 2);
+				device_name := to_name (f (line, 2));
 
+			-- As soon as the appearance becomes clear, a temporarily device is
+			-- created where pointer "device" is pointing at:
+			elsif kw = keyword_appearance then -- sch_pcb, sch
+				expect_field_count (line, 2);
+				device_appearance := to_appearance (f (line, 2));
+
+				case device_appearance is
+					when VIRTUAL =>
+						device := new et_schematic.type_device'(
+							appearance	=> VIRTUAL,
+							others		=> <>);
+
+					when PCB =>
+						device := new et_schematic.type_device'(
+							appearance	=> PCB,
+							others		=> <>);
+				end case;
+						
+			elsif kw = keyword_value then -- value 100n
+				expect_field_count (line, 2);
+
+				-- validate value
+				device_value := to_value (f (line, 2));
+
+			elsif kw = keyword_model then -- model /models/capacitor.dev
+				expect_field_count (line, 2);
+				device_model := to_file_name (f (line, 2));
+				
+			elsif kw = keyword_variant then -- variant S_0805, N, D
+				expect_field_count (line, 2);
+				check_variant_name_length (f (line, 2));
+				device_variant := to_name (f (line, 2));
+
+			elsif kw = material.keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
+				expect_field_count (line, 2);
+
+				-- validate partcode
+				device_partcode := material.to_partcode (f (line, 2));
+
+			elsif kw = keyword_purpose then -- purpose power_out
+				expect_field_count (line, 2);
+
+				-- validate purpose
+				device_purpose := to_purpose (f (line, 2));
+			else
+				invalid_keyword (kw);
+			end if;
+		end read_device;
+
+		procedure read_device_non_electric is
+			use et_packages;
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_name then -- name FD1
+				expect_field_count (line, 2);
+				device_name := to_name (f (line, 2));
+
+			-- As soon as the appearance becomes clear, a temporarily package is
+			-- created where pointer "device_non_electric" is pointing at:
+			elsif kw = keyword_appearance then -- real/virtual
+				expect_field_count (line, 2);
+				device_appearance_non_electric := to_appearance (f (line, 2));
+
+				case device_appearance_non_electric is
+					when VIRTUAL =>
+						device_non_electric := new et_packages.type_package'(
+							appearance	=> VIRTUAL,
+							others		=> <>);
+
+					when REAL =>
+						device_non_electric := new et_packages.type_package'(
+							appearance	=> REAL,
+							others		=> <>);
+				end case;
+
+		
+			elsif kw = keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
+				expect_field_count (line, 9);
+
+				-- extract package position starting at field 2
+				device_position := to_position (line, 2);
+				
+			elsif kw = keyword_flipped then -- flipped no/yes
+				expect_field_count (line, 2);
+
+				device_flipped := et_pcb.to_flipped (f (line, 2));
+				
+			elsif kw = keyword_value then -- value "something"
+				expect_field_count (line, 2);
+
+				-- validate value
+				device_value := to_value (f (line, 2));
+
+			elsif kw = keyword_model then -- model /lib/fiducials/crosshair.pac
+				expect_field_count (line, 2);
+				device_model_non_electric := et_packages.to_file_name (f (line, 2));
+
+			elsif kw = material.keyword_partcode then -- partcode PN_1234
+				expect_field_count (line, 2);
+
+				-- validate partcode
+				device_partcode := material.to_partcode (f (line, 2));
+
+			elsif kw = keyword_purpose then -- purpose power_out
+				expect_field_count (line, 2);
+
+				-- validate purpose
+				device_purpose := to_purpose (f (line, 2));
+			else
+				invalid_keyword (kw);
+			end if;
+
+		end read_device_non_electric;
+			
 		procedure process_line is 
 
 			procedure execute_section is
@@ -3286,6 +3413,102 @@ package body et_project is
 					log_indentation_down;
 				end insert_device;						
 								
+				procedure insert_device_non_electrical (
+					module_name	: in type_module_name.bounded_string;
+					module		: in out et_schematic.type_module) is
+					use et_schematic;
+-- 					use et_symbols;
+					use et_devices;
+					use et_packages;
+					use et_pcb_stack;
+					
+					device_cursor : et_schematic.pac_non_electric_devices.cursor;
+					inserted : boolean;
+
+				begin -- insert_device_non_electrical
+					log (text => "device (non-electric) " & to_string (device_name), level => log_threshold + 1);
+					log_indentation_up;
+
+					if not conventions.prefix_valid (device_name) then 
+						--log (message_warning & "prefix of device " & et_libraries.to_string (device_name) 
+						--	 & " not conformant with conventions !");
+						null; -- CS output something helpful
+					end if;
+					
+
+					if not value_characters_valid (device_value) then
+						log (WARNING, "value of " & to_string (device_name) &
+								" contains invalid characters !");
+						log_indentation_reset;
+						value_invalid (to_string (device_value));
+					end if;
+					
+					log (text => "value " & to_string (device_value), level => log_threshold + 2);
+					device.value := device_value;
+					if not conventions.value_valid (device_value, prefix (device_name)) then
+						log (WARNING, "value of " & to_string (device_name) &
+							" not conformant with conventions !");
+					end if;
+
+					log (text => "partcode " & material.to_string (device_partcode), level => log_threshold + 2);
+					if material.partcode_characters_valid (device_partcode) then
+						device.partcode	:= device_partcode;
+					else
+						log_indentation_reset;
+						material.partcode_invalid (material.to_string (device_partcode));
+					end if;
+
+					log (text => "purpose " & to_string (device_purpose), level => log_threshold + 2);
+					if purpose_characters_valid (device_purpose) then
+						device.purpose	:= device_purpose;
+					else
+						log_indentation_reset;
+						purpose_invalid (to_string (device_purpose));
+					end if;
+
+-- 					et_schematic.pac_non_electric_devices.insert (
+-- 						container	=> module.non_electric_devices,
+-- 						position	=> device_cursor,
+-- 						inserted	=> inserted,
+-- 						key			=> device_name, -- FD1, HS1
+-- 						new_item	=> device_non_electric.all); -- CS
+
+					if not inserted then
+						log (ERROR, "device name " & to_string (device_name) & " already used !",
+								console => true);
+						raise constraint_error;
+					end if;
+
+					-- Read the package model (like ../libraries/fiducials/crosshair.pac):
+
+					-- CS
+					
+					
+-- 						conventions.validate_partcode (
+-- 							partcode		=> device.partcode,
+-- 							device_name		=> device_name,
+-- 
+-- 							-- Derive package name from device.model and device.variant.
+-- 							-- Check if variant specified in device.model.
+-- 							packge			=> get_package_name, 
+-- 							
+-- 							value			=> device.value,
+-- 							log_threshold	=> log_threshold + 2);
+
+
+					-- clean up for next non-electic device:
+					device_non_electric := null;
+
+					device_model	:= to_file_name ("");
+					device_value	:= type_value.to_bounded_string ("");
+					device_purpose	:= type_purpose.to_bounded_string ("");
+					device_partcode := material.type_partcode.to_bounded_string ("");
+
+					-- CS flip, position, placeholders, name
+					log_indentation_down;
+				end insert_device_non_electrical;
+				
+
 				procedure insert_line (
 					layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
 					face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
@@ -5836,6 +6059,9 @@ package body et_project is
 									container	=> modules,
 									position	=> module_cursor,
 									process		=> insert_device'access);
+
+							when SEC_DEVICES_NON_ELECTRIC =>
+								NULL; -- cs
 								
 							when others => invalid_section;
 						end case;
@@ -7538,66 +7764,8 @@ package body et_project is
 
 					when SEC_DEVICE =>
 						case stack.parent is
-							when SEC_DEVICES =>
-								declare
-									use et_symbols;
-									use et_devices;
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_name then -- name C12
-										expect_field_count (line, 2);
-										device_name := to_name (f (line, 2));
-
-									-- As soon as the appearance becomes clear, a temporarily device is
-									-- created where pointer "device" is pointing at:
-									elsif kw = keyword_appearance then -- sch_pcb, sch
-										expect_field_count (line, 2);
-										device_appearance := to_appearance (f (line, 2));
-
-										case device_appearance is
-											when VIRTUAL =>
-												device := new et_schematic.type_device'(
-													appearance	=> VIRTUAL,
-													others		=> <>);
-
-											when PCB =>
-												device := new et_schematic.type_device'(
-													appearance	=> PCB,
-													others		=> <>);
-										end case;
-												
-									elsif kw = keyword_value then -- value 100n
-										expect_field_count (line, 2);
-
-										-- validate value
-										device_value := to_value (f (line, 2));
-
-									elsif kw = keyword_model then -- model /models/capacitor.dev
-										expect_field_count (line, 2);
-										device_model := to_file_name (f (line, 2));
-										
-									elsif kw = keyword_variant then -- variant S_0805, N, D
-										expect_field_count (line, 2);
-										check_variant_name_length (f (line, 2));
-										device_variant := to_name (f (line, 2));
-
-									elsif kw = material.keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
-										expect_field_count (line, 2);
-
-										-- validate partcode
-										device_partcode := material.to_partcode (f (line, 2));
-
-									elsif kw = keyword_purpose then -- purpose power_out
-										expect_field_count (line, 2);
-
-										-- validate purpose
-										device_purpose := to_purpose (f (line, 2));
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-									
+							when SEC_DEVICES => read_device;
+							when SEC_DEVICES_NON_ELECTRIC => read_device_non_electric;
 							when others => invalid_section;
 						end case;
 

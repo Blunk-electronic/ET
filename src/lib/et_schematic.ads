@@ -448,7 +448,7 @@ package et_schematic is
 	-- (like fiducials, mounting holes, heatsinks, ...). They can have
 	-- terminals. But the terminals are not connected with any net.
 	-- They have names like H1 (hole) or HS1 (heatsink) or FD (fiducial).
-	-- We collect them in an indedfinite ordered map:
+	-- We collect them in an indefinite ordered map:
 	type type_non_electric_device is new et_packages.type_package with record
 		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flipped				: et_pcb.type_flipped := et_pcb.flipped_default;
