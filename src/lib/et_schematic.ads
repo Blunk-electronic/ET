@@ -196,7 +196,6 @@ package et_schematic is
 		end case;
 	end record;
 
-	
 
 
 	subtype type_net_label_text_size is et_coordinates.type_distance range 1.0 .. 5.0; -- unit is mm
@@ -442,6 +441,34 @@ package et_schematic is
 		element_type	=> netlists.type_netlist.tree, -- provides info on primary and secondary net dependencies
 		"="				=> netlists.type_netlist."=");
 
+
+
+	
+	-- Devices which do not have a counterpart in the schematic 
+	-- (like fiducials, mounting holes, heatsinks, ...). They can have
+	-- terminals. But the terminals are not connected with any net.
+	-- They have names like H1 (hole) or HS1 (heatsink) or FD (fiducial).
+	-- We collect them in an indedfinite ordered map:
+	type type_non_electric_device is new et_packages.type_package with record
+		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
+		flipped				: et_pcb.type_flipped := et_pcb.flipped_default;
+		text_placeholders	: et_packages.type_text_placeholders;
+		package_model		: et_packages.type_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
+
+		value		: et_devices.type_value.bounded_string; -- CS useful ?
+		partcode	: material.type_partcode.bounded_string; -- PN_21234 -- CS include whilst generating the BOM
+		purpose		: et_devices.type_purpose.bounded_string; -- "stand off"
+-- 		variant		: et_devices.type_variant_name.bounded_string; -- CS useful ?
+	end record;
+
+	-- CS: this should be a hashed map:
+	package pac_non_electric_devices is new indefinite_ordered_maps (
+		key_type		=> et_devices.type_name, -- H1, FD2, ...
+		"<"				=> et_devices."<",
+		element_type	=> type_non_electric_device);
+
+
+	
 	
 -- MODULE
 	type type_module is record
@@ -482,6 +509,9 @@ package et_schematic is
 		-- Provide information on primary nets and their subordinated secondary nets per 
 		-- assembly variant.
 		netlists		: type_netlists.map; -- variant name and netlist
+
+		-- Devices which do not have a counterpart in the schematic:
+		non_electric_devices	: pac_non_electric_devices.map; -- fiducials, mounting holes, ...
 
 		-- CS: images
 	end record;

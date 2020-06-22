@@ -538,13 +538,24 @@ package et_pcb is
 	origin_default : constant type_point := type_point (set (20.0, 50.0));
 
 
-	-- Device packages which do not appear in the schematic 
-	-- (like fiducials, mounting holes, heatsinks, ...)
+-- 	-- Devices which do not have a counterpart in the schematic 
+-- 	-- (like fiducials, mounting holes, heatsinks, ...). They can have
+-- 	-- terminals. But the terminals are not connected with any net.
+-- 	-- They have names like H1 (hole) or HS1 (heatsink) or FD (fiducial).
+-- 	-- We collect them in an indedfinite ordered map:
+-- 
+-- 	type type_non_electrical_device is new type_package with record
+-- 		position			: type_package_position; -- incl. rotation and face
+-- 		flipped				: type_flipped := flipped_default;
+-- 		text_placeholders	: type_text_placeholders;
+-- 		package_model		: type_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
+-- 	end record;
+	
 	-- CS: this should be a hashed map:
-	package pac_non_electrical_packages is new indefinite_ordered_maps (
-		key_type		=> type_package_model_file.bounded_string, -- ../lbr/non-electric/fiducial.pac
-		"<"				=> type_package_model_file."<",
-		element_type	=> type_package);
+-- 	package pac_non_electrical_packages is new indefinite_ordered_maps (
+-- 		key_type		=> et_devices.type
+-- 		"<"				=> type_package_model_file."<",
+-- 		element_type	=> type_package);
 
 
 	-- This is general board stuff:
@@ -562,7 +573,7 @@ package et_pcb is
 		via_restrict	: type_via_restrict;
 		copper			: type_copper; -- non-electric copper stuff, incl. floating polygons ! CS: rename to conductors
 		contours		: type_pcb_contours; -- pcb outline
-		non_electric	: pac_non_electrical_packages.map; -- fiducials, mounting holes, ...
+-- 		non_electric	: pac_non_electrical_packages.map; -- fiducials, mounting holes, ...
 	end record;
 
 	
