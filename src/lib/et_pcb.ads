@@ -553,7 +553,6 @@ package et_pcb is
 		via_restrict	: type_via_restrict;
 		copper			: type_copper; -- non-electric copper stuff, incl. floating polygons ! CS: rename to conductors
 		contours		: type_pcb_contours; -- pcb outline
--- 		non_electric	: pac_non_electrical_packages.map; -- fiducials, mounting holes, ...
 	end record;
 
 	

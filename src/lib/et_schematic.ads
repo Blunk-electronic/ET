@@ -449,23 +449,29 @@ package et_schematic is
 	-- terminals. But the terminals are not connected with any net.
 	-- They have names like H1 (hole) or HS1 (heatsink) or FD (fiducial).
 	-- We collect them in an indefinite ordered map:
-	type type_non_electric_device is new et_packages.type_package with record
+	type type_device_non_electric (appearance : et_packages.type_package_appearance) is record
 		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flipped				: et_pcb.type_flipped := et_pcb.flipped_default;
 		text_placeholders	: et_packages.type_text_placeholders;
 		package_model		: et_packages.type_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
 
-		value		: et_devices.type_value.bounded_string; -- CS useful ?
-		partcode	: material.type_partcode.bounded_string; -- PN_21234 -- CS include whilst generating the BOM
-		purpose		: et_devices.type_purpose.bounded_string; -- "stand off"
--- 		variant		: et_devices.type_variant_name.bounded_string; -- CS useful ?
+		case appearance is
+			when et_packages.REAL =>
+				value		: et_devices.type_value.bounded_string; -- CS useful ?
+				partcode	: material.type_partcode.bounded_string; -- PN_21234 -- CS include whilst generating the BOM
+				purpose		: et_devices.type_purpose.bounded_string; -- "stand off"
+				-- variant		: et_devices.type_variant_name.bounded_string; -- CS useful ?
+
+			when et_packages.VIRTUAL =>
+				null;
+		end case;
 	end record;
 
 	-- CS: this should be a hashed map:
-	package pac_non_electric_devices is new indefinite_ordered_maps (
+	package pac_devices_non_electric is new indefinite_ordered_maps (
 		key_type		=> et_devices.type_name, -- H1, FD2, ...
 		"<"				=> et_devices."<",
-		element_type	=> type_non_electric_device);
+		element_type	=> type_device_non_electric);
 
 
 	
@@ -511,7 +517,7 @@ package et_schematic is
 		netlists		: type_netlists.map; -- variant name and netlist
 
 		-- Devices which do not have a counterpart in the schematic:
-		non_electric_devices	: pac_non_electric_devices.map; -- fiducials, mounting holes, ...
+		devices_non_electric : pac_devices_non_electric.map; -- fiducials, mounting holes, ...
 
 		-- CS: images
 	end record;

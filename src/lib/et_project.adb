@@ -2578,10 +2578,9 @@ package body et_project is
 		device_unit_position	: et_coordinates.type_position; -- x,y,sheet,rotation
 
 
-		device_non_electric				: access et_packages.type_package;
-		device_model_non_electric		: et_packages.type_package_model_file.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
-		device_appearance_non_electric	: et_packages.type_package_appearance :=
-			et_packages.package_appearance_default;
+		device_non_electric				: access et_schematic.type_device_non_electric;
+		device_non_electric_model		: et_packages.type_package_model_file.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
+		device_non_electric_appearance	: et_packages.type_package_appearance := et_packages.package_appearance_default;
 
 		
 		-- assembly variants
@@ -2591,13 +2590,13 @@ package body et_project is
 		assembly_variant_submodules		: assembly_variants.type_submodules.map;
 		
 		-- temporarily collection of units:
-		device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
+		device_units	: et_schematic.type_units.map; -- PWR, A, B, ...
 		
-		device_partcode			: material.type_partcode.bounded_string;
-		device_purpose			: et_devices.type_purpose.bounded_string;
-		device_variant			: et_devices.type_variant_name.bounded_string; -- D, N
-		device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
-		device_flipped			: et_pcb.type_flipped := et_pcb.flipped_default;
+		device_partcode	: material.type_partcode.bounded_string;
+		device_purpose	: et_devices.type_purpose.bounded_string;
+		device_variant	: et_devices.type_variant_name.bounded_string; -- D, N
+		device_position	: et_pcb_coordinates.type_package_position; -- in the layout ! incl. angle and face
+		device_flipped	: et_pcb.type_flipped := et_pcb.flipped_default;
 
 		-- These two variables assist when a particular placeholder is appended to the
 		-- list of placholders in silk screen, assy doc and their top or bottom face:
@@ -2607,7 +2606,7 @@ package body et_project is
 		-- a single temporarily placeholder of a package
 		device_text_placeholder		: et_packages.type_text_placeholder;
 
-		-- the temporarily collection of placeholders of packages
+		-- the temporarily collection of placeholders of packages (in the layout)
 		device_text_placeholders	: et_packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
 
 		-- temporarily placeholders of unit reference (IC12), value (7400) and purpose (clock buffer)
@@ -2837,16 +2836,16 @@ package body et_project is
 			-- created where pointer "device_non_electric" is pointing at:
 			elsif kw = keyword_appearance then -- real/virtual
 				expect_field_count (line, 2);
-				device_appearance_non_electric := to_appearance (f (line, 2));
+				device_non_electric_appearance := to_appearance (f (line, 2));
 
-				case device_appearance_non_electric is
+				case device_non_electric_appearance is
 					when VIRTUAL =>
-						device_non_electric := new et_packages.type_package'(
+						device_non_electric := new et_schematic.type_device_non_electric'(
 							appearance	=> VIRTUAL,
 							others		=> <>);
 
 					when REAL =>
-						device_non_electric := new et_packages.type_package'(
+						device_non_electric := new et_schematic.type_device_non_electric'(
 							appearance	=> REAL,
 							others		=> <>);
 				end case;
@@ -2855,7 +2854,7 @@ package body et_project is
 			elsif kw = keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
 				expect_field_count (line, 9);
 
-				-- extract package position starting at field 2
+				-- extract device position (in the layout) starting at field 2
 				device_position := to_position (line, 2);
 				
 			elsif kw = keyword_flipped then -- flipped no/yes
@@ -2871,7 +2870,7 @@ package body et_project is
 
 			elsif kw = keyword_model then -- model /lib/fiducials/crosshair.pac
 				expect_field_count (line, 2);
-				device_model_non_electric := et_packages.to_file_name (f (line, 2));
+				device_non_electric_model := et_packages.to_file_name (f (line, 2));
 
 			elsif kw = material.keyword_partcode then -- partcode PN_1234
 				expect_field_count (line, 2);
@@ -3402,8 +3401,10 @@ package body et_project is
 					
 					-- reset pointer "device" so that the old device gets destroyed
 					device := null;
+					-- CS free memory ?
 
 					-- clean up temporarily variables for next device
+					-- CS ? device_name		:= (others => <>);
 					device_model	:= to_file_name ("");
 					device_value	:= type_value.to_bounded_string ("");
 					device_purpose	:= type_purpose.to_bounded_string ("");
@@ -3413,19 +3414,22 @@ package body et_project is
 					log_indentation_down;
 				end insert_device;						
 								
-				procedure insert_device_non_electrical (
+				procedure insert_device_non_electric (
 					module_name	: in type_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
+					
+					use et_pcb_coordinates;
+					use et_pcb;
 					use et_schematic;
--- 					use et_symbols;
+					
 					use et_devices;
 					use et_packages;
 					use et_pcb_stack;
 					
-					device_cursor : et_schematic.pac_non_electric_devices.cursor;
+					device_cursor : pac_devices_non_electric.cursor;
 					inserted : boolean;
 
-				begin -- insert_device_non_electrical
+				begin
 					log (text => "device (non-electric) " & to_string (device_name), level => log_threshold + 1);
 					log_indentation_up;
 
@@ -3433,45 +3437,58 @@ package body et_project is
 						--log (message_warning & "prefix of device " & et_libraries.to_string (device_name) 
 						--	 & " not conformant with conventions !");
 						null; -- CS output something helpful
+					end if;					
+
+					device_non_electric.position := device_position;
+					device_non_electric.flipped := device_flipped;
+					device_non_electric.package_model := device_non_electric_model;
+-- 					device_non_electric.text_placeholders := device_text_placeholders;
+
+					put_line (count_type'image (et_packages.pac_text_placeholders.length (
+						device_non_electric.text_placeholders.silk_screen.top)));
+
+					if device_non_electric.appearance = REAL then
+						
+						if not value_characters_valid (device_value) then
+							log (WARNING, "value of " & to_string (device_name) &
+									" contains invalid characters !");
+							log_indentation_reset;
+							value_invalid (to_string (device_value));
+						end if;
+						
+						log (text => "value " & to_string (device_value), level => log_threshold + 2);
+						device_non_electric.value := device_value;
+						if not conventions.value_valid (device_value, prefix (device_name)) then
+							log (WARNING, "value of " & to_string (device_name) &
+								" not conformant with conventions !");
+						end if;
+
+						log (text => "partcode " & material.to_string (device_partcode), level => log_threshold + 2);
+						if material.partcode_characters_valid (device_partcode) then
+							device_non_electric.partcode	:= device_partcode;
+						else
+							log_indentation_reset;
+							material.partcode_invalid (material.to_string (device_partcode));
+						end if;
+
+						log (text => "purpose " & to_string (device_purpose), level => log_threshold + 2);
+						if purpose_characters_valid (device_purpose) then
+							device_non_electric.purpose	:= device_purpose;
+						else
+							log_indentation_reset;
+							purpose_invalid (to_string (device_purpose));
+						end if;
+
+						-- CS: warn operator if provided but ignored due to the fact that device is virtual
+						
 					end if;
 					
-
-					if not value_characters_valid (device_value) then
-						log (WARNING, "value of " & to_string (device_name) &
-								" contains invalid characters !");
-						log_indentation_reset;
-						value_invalid (to_string (device_value));
-					end if;
-					
-					log (text => "value " & to_string (device_value), level => log_threshold + 2);
-					device.value := device_value;
-					if not conventions.value_valid (device_value, prefix (device_name)) then
-						log (WARNING, "value of " & to_string (device_name) &
-							" not conformant with conventions !");
-					end if;
-
-					log (text => "partcode " & material.to_string (device_partcode), level => log_threshold + 2);
-					if material.partcode_characters_valid (device_partcode) then
-						device.partcode	:= device_partcode;
-					else
-						log_indentation_reset;
-						material.partcode_invalid (material.to_string (device_partcode));
-					end if;
-
-					log (text => "purpose " & to_string (device_purpose), level => log_threshold + 2);
-					if purpose_characters_valid (device_purpose) then
-						device.purpose	:= device_purpose;
-					else
-						log_indentation_reset;
-						purpose_invalid (to_string (device_purpose));
-					end if;
-
--- 					et_schematic.pac_non_electric_devices.insert (
--- 						container	=> module.non_electric_devices,
--- 						position	=> device_cursor,
--- 						inserted	=> inserted,
--- 						key			=> device_name, -- FD1, HS1
--- 						new_item	=> device_non_electric.all); -- CS
+					pac_devices_non_electric.insert (
+						container	=> module.devices_non_electric,
+						position	=> device_cursor,
+						inserted	=> inserted,
+						key			=> device_name, -- FD1, HS1
+						new_item	=> device_non_electric.all);
 
 					if not inserted then
 						log (ERROR, "device name " & to_string (device_name) & " already used !",
@@ -3480,6 +3497,11 @@ package body et_project is
 					end if;
 
 					-- Read the package model (like ../libraries/fiducials/crosshair.pac):
+					read_package (
+						file_name		=> device_non_electric_model,
+-- CS						check_layers	=> YES,
+						log_threshold	=> log_threshold + 2);
+
 
 					-- CS
 					
@@ -3498,15 +3520,20 @@ package body et_project is
 
 					-- clean up for next non-electic device:
 					device_non_electric := null;
+					-- CS free memory ?
 
-					device_model	:= to_file_name ("");
-					device_value	:= type_value.to_bounded_string ("");
-					device_purpose	:= type_purpose.to_bounded_string ("");
-					device_partcode := material.type_partcode.to_bounded_string ("");
+					device_name					:= (others => <>);
+					device_position				:= package_position_default;
+					device_flipped				:= flipped_default;
+					device_text_placeholders	:= (others => <>);
+					device_model				:= to_file_name ("");
+					device_value				:= type_value.to_bounded_string ("");
+					device_partcode 			:= material.type_partcode.to_bounded_string ("");
+					device_purpose				:= type_purpose.to_bounded_string ("");
 
 					-- CS flip, position, placeholders, name
 					log_indentation_down;
-				end insert_device_non_electrical;
+				end insert_device_non_electric;
 				
 
 				procedure insert_line (
@@ -5930,7 +5957,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_PLACEHOLDERS =>
 								case stack.parent (degree => 2) is
-									when SEC_PACKAGE =>
+									when SEC_DEVICE | SEC_PACKAGE =>
 
 										-- insert package placeholder in collection of text placeholders
 										insert_package_placeholder;
@@ -6001,6 +6028,19 @@ package body et_project is
 								-- clean up for next collection of placeholders
 								device_text_placeholders := (others => <>);
 
+							when SEC_DEVICE =>
+								case stack.parent (degree => 2) is
+									when SEC_DEVICES_NON_ELECTRIC =>
+										
+										-- Insert placeholder collection in temporarily device:
+										device_non_electric.text_placeholders := device_text_placeholders;
+
+										-- clean up for next collection of placeholders
+										device_text_placeholders := (others => <>);
+
+									when others => invalid_section;
+								end case;
+								
 							when SEC_UNIT => null;
 								
 							when others => invalid_section;
@@ -6060,8 +6100,13 @@ package body et_project is
 									position	=> module_cursor,
 									process		=> insert_device'access);
 
-							when SEC_DEVICES_NON_ELECTRIC =>
-								NULL; -- cs
+							when SEC_DEVICES_NON_ELECTRIC => 
+
+								-- insert device (where pointer "device_non_electric" is pointing at) in the module
+								update_element (
+									container	=> modules,
+									position	=> module_cursor,
+									process		=> insert_device_non_electric'access);
 								
 							when others => invalid_section;
 						end case;
@@ -7798,7 +7843,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_PLACEHOLDERS =>
 								case stack.parent (degree => 2) is
-									when SEC_PACKAGE => -- in layout
+									when SEC_DEVICE | SEC_PACKAGE => -- in layout
 										declare
 											use et_packages;
 											use et_pcb_stack;
@@ -7971,6 +8016,14 @@ package body et_project is
 					when SEC_PLACEHOLDERS =>
 						case stack.parent is
 							when SEC_PACKAGE => null;
+
+							when SEC_DEVICE =>
+								case stack.parent (degree => 2) is
+									when SEC_DEVICES_NON_ELECTRIC => null;
+
+									when others => invalid_section;
+								end case;
+							
 							when SEC_UNIT => null;
 							when others => invalid_section;
 						end case;

@@ -2826,38 +2826,60 @@ is
 		module.devices.iterate (query_device'access);
 	end query_devices;
 
-	procedure query_non_electric_devices (
+	procedure query_devices_non_electric (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
 
-		use et_schematic.pac_non_electric_devices;
+		use et_schematic.pac_devices_non_electric;
 		
-		procedure query_device (p : in pac_non_electric_devices.cursor) is begin
-			draw_package (
-				device_name			=> key (p), -- H1, FD2
-				device_value		=> element (p).value, -- CS useful ?
-				device_purpose		=> element (p).purpose, -- "stand off"
-				model				=> element (p).package_model, -- libraries/packages/smd/SOT23.pac
-				package_position	=> element (p).position, -- x/y/rotation/face
-				flip				=> element (p).flipped,
-				placeholders		=> element (p).text_placeholders);
+		procedure query_device (p : in pac_devices_non_electric.cursor) is 
+			use et_devices;
+		begin
 
+			case element (p).appearance is
+				when REAL =>
+-- put_line ("R");
+					draw_package (
+						device_name			=> key (p), -- H1, FD2
+						package_position	=> element (p).position, -- x/y/rotation/face
+						flip				=> element (p).flipped,
+						placeholders		=> element (p).text_placeholders,
+						model				=> element (p).package_model, -- libraries/packages/smd/SOT23.pac
+						device_value		=> element (p).value, -- CS useful ?
+						device_purpose		=> element (p).purpose); -- "stand off"
+
+				when VIRTUAL =>
+-- put_line ("V");
+					draw_package (
+						device_name			=> key (p), -- H1, FD2
+						package_position	=> element (p).position, -- x/y/rotation/face
+						flip				=> element (p).flipped,
+						placeholders		=> element (p).text_placeholders,
+						model				=> element (p).package_model, -- libraries/packages/smd/SOT23.pac
+						device_value		=> to_value (""),
+						device_purpose		=> to_purpose (""));
+
+			end case;
 		end query_device;
 		
-	begin -- query_non_electric_devices
-		module.non_electric_devices.iterate (query_device'access);
-	end query_non_electric_devices;
+	begin
+		module.devices_non_electric.iterate (query_device'access);
+	end query_devices_non_electric;
 
 	
 begin -- draw_packages
 -- 	put_line ("draw packages ...");
-	
+
+	-- draw electric devices
 	type_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_devices'access);
 
-	
-	-- CS non-electrical packages ? like fiducials
+	-- draw non-electric devices (like fiducials, mounting holes, ...)
+	type_modules.query_element (
+		position	=> et_canvas_schematic.current_active_module,
+		process		=> query_devices_non_electric'access);
+			
 end draw_packages;
 
 
