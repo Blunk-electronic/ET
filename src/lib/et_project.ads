@@ -367,6 +367,7 @@ package et_project is
 
 	section_devices				: constant string := "[DEVICES";
 	section_device				: constant string := "[DEVICE";
+	section_devices_non_electric: constant string := "[DEVICES_NON_ELECTRIC";
 
 	section_assembly_variants	: constant string := "[ASSEMBLY_VARIANTS";
 	section_assembly_variant	: constant string := "[VARIANT";	
@@ -382,6 +383,7 @@ package et_project is
 	
 	
 	type type_section is ( -- CS: sort aphabetically
+		SEC_DEVICES_NON_ELECTRIC,
 		SEC_BOARD_LAYER_STACK,
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,

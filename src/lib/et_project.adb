@@ -2755,6 +2755,12 @@ package body et_project is
 				invalid_keyword (kw);
 			end if;
 		end;
+
+		procedure read_device is
+
+		begin
+			null;
+		end read_device;
 		
 
 		procedure process_line is 
@@ -5884,7 +5890,7 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 						
-					when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
+					when SEC_DEVICES_NON_ELECTRIC | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 						SEC_STOP_MASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
 						SEC_COPPER | SEC_PCB_CONTOURS_NON_PLATED =>
 						case stack.parent is
@@ -5987,6 +5993,7 @@ package body et_project is
 			elsif set (section_board, SEC_BOARD) then null;
 			elsif set (section_devices, SEC_DEVICES) then null;
 			elsif set (section_device, SEC_DEVICE) then null;
+			elsif set (section_devices_non_electric, SEC_DEVICES_NON_ELECTRIC) then null;
 			elsif set (section_units, SEC_UNITS) then null;
 			elsif set (section_unit, SEC_UNIT) then null;
 			elsif set (section_assembly_variants, SEC_ASSEMBLY_VARIANTS) then null;
@@ -7888,7 +7895,7 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 						
-					when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
+					when SEC_DEVICES_NON_ELECTRIC | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 						SEC_STOP_MASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
 						SEC_COPPER | SEC_PCB_CONTOURS_NON_PLATED =>
 						case stack.parent is
