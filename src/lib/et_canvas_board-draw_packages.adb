@@ -77,9 +77,7 @@ is
 		model			: in et_packages.type_package_model_file.bounded_string;
 		package_position: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flip			: in et_pcb.type_flipped;
-		placeholders	: in et_packages.type_text_placeholders) -- specified in the board. may override defaults
-
-		-- CS Test if placeholder positions have been changed in the board and apply them.
+		placeholders	: in et_packages.type_text_placeholders) -- specified in the board. will override default positions
 	is
 
 		use et_terminals.pac_shapes;
@@ -564,8 +562,8 @@ is
 			element (package_cursor).silk_screen.bottom.cutouts.iterate (query_cutout_bottom'access);
 			
 			-- placeholders
-			element (package_cursor).silk_screen.top.placeholders.iterate (query_placeholder_top'access);
-			element (package_cursor).silk_screen.bottom.placeholders.iterate (query_placeholder_bottom'access);
+			placeholders.silk_screen.top.iterate (query_placeholder_top'access);
+			placeholders.silk_screen.bottom.iterate (query_placeholder_bottom'access);
 
 			-- texts
 			element (package_cursor).silk_screen.top.texts.iterate (query_text_top'access);
@@ -842,15 +840,21 @@ is
 			procedure query_placeholder_top (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder := element (c);
 			begin
-				set_destination;
-				draw_placeholder (ph, destination);
+				-- Draw the placeholder only if it has content:
+				if not et_text.is_empty (to_placeholder_content (ph)) then
+					set_destination;
+					draw_placeholder (ph, destination);
+				end if;
 			end query_placeholder_top;
 
 			procedure query_placeholder_bottom (c : in pac_text_placeholders.cursor) is
 				ph : type_text_placeholder := element (c);
 			begin
-				set_destination (INVERSE);
-				draw_placeholder (ph, destination);
+				-- Draw the placeholder only if it has content:
+				if not et_text.is_empty (to_placeholder_content (ph)) then
+					set_destination (INVERSE);
+					draw_placeholder (ph, destination);
+				end if;
 			end query_placeholder_bottom;
 
 
@@ -907,8 +911,8 @@ is
 			element (package_cursor).assembly_documentation.bottom.cutouts.iterate (query_cutout_bottom'access);
 
 			-- placeholders
-			element (package_cursor).assembly_documentation.top.placeholders.iterate (query_placeholder_top'access);
-			element (package_cursor).assembly_documentation.bottom.placeholders.iterate (query_placeholder_bottom'access);
+			placeholders.assy_doc.top.iterate (query_placeholder_top'access);
+			placeholders.assy_doc.bottom.iterate (query_placeholder_bottom'access);
 			
 			-- texts
 			element (package_cursor).assembly_documentation.top.texts.iterate (query_text_top'access);
@@ -2821,7 +2825,7 @@ is
 					package_position	=> element (d).position, -- x/y/rotation/face
 					flip				=> element (d).flipped,
 
-					-- The text placeholders specified in the board may override
+					-- The text placeholders specified in the board override
 					-- the default placeholders of the model:
 					placeholders		=> element (d).text_placeholders);
 
@@ -2846,7 +2850,7 @@ is
 				package_position	=> element (p).position, -- x/y/rotation/face
 				flip				=> element (p).flipped,
 
-				-- The text placeholders specified in the board may override
+				-- The text placeholders specified in the board override
 				-- the default placeholders of the model:
 				placeholders		=> element (p).text_placeholders, 
 				
