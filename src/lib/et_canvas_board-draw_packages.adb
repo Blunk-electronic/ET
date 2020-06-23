@@ -77,7 +77,10 @@ is
 		model			: in et_packages.type_package_model_file.bounded_string;
 		package_position: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flip			: in et_pcb.type_flipped;
-		placeholders	: in et_packages.type_text_placeholders) is
+		placeholders	: in et_packages.type_text_placeholders) -- specified in the board. may override defaults
+
+		-- CS Test if placeholder positions have been changed in the board and apply them.
+	is
 
 		use et_terminals.pac_shapes;
 		use type_packages;
@@ -2817,6 +2820,9 @@ is
 					model				=> package_model (d), -- libraries/packages/smd/SOT23.pac
 					package_position	=> element (d).position, -- x/y/rotation/face
 					flip				=> element (d).flipped,
+
+					-- The text placeholders specified in the board may override
+					-- the default placeholders of the model:
 					placeholders		=> element (d).text_placeholders);
 
 			end if;
@@ -2835,31 +2841,19 @@ is
 		procedure query_device (p : in pac_devices_non_electric.cursor) is 
 			use et_devices;
 		begin
+			draw_package (
+				device_name			=> key (p), -- H1, FD2
+				package_position	=> element (p).position, -- x/y/rotation/face
+				flip				=> element (p).flipped,
 
-			case element (p).appearance is
-				when REAL =>
--- put_line ("R");
-					draw_package (
-						device_name			=> key (p), -- H1, FD2
-						package_position	=> element (p).position, -- x/y/rotation/face
-						flip				=> element (p).flipped,
-						placeholders		=> element (p).text_placeholders,
-						model				=> element (p).package_model, -- libraries/packages/smd/SOT23.pac
-						device_value		=> element (p).value, -- CS useful ?
-						device_purpose		=> element (p).purpose); -- "stand off"
+				-- The text placeholders specified in the board may override
+				-- the default placeholders of the model:
+				placeholders		=> element (p).text_placeholders, 
+				
+				model				=> element (p).package_model, -- libraries/packages/smd/SOT23.pac
+				device_value		=> to_value (""),
+				device_purpose		=> to_purpose (""));
 
-				when VIRTUAL =>
--- put_line ("V");
-					draw_package (
-						device_name			=> key (p), -- H1, FD2
-						package_position	=> element (p).position, -- x/y/rotation/face
-						flip				=> element (p).flipped,
-						placeholders		=> element (p).text_placeholders,
-						model				=> element (p).package_model, -- libraries/packages/smd/SOT23.pac
-						device_value		=> to_value (""),
-						device_purpose		=> to_purpose (""));
-
-			end case;
 		end query_device;
 		
 	begin

@@ -448,28 +448,18 @@ package et_schematic is
 	-- (like fiducials, mounting holes, ...). They can have
 	-- terminals. But the terminals are not connected with any net.
 	-- They have names like H1 (hole) or FD (fiducial).
-	-- This is NOT about accessories of the module.
+	-- This is NOT about accessories of the module !
+	-- These devices do NOT appear in the BOM !
 	-- We collect them in an indefinite ordered map:
-	type type_device_non_electric (appearance : et_packages.type_package_appearance) is record
+	type type_device_non_electric is record
 		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flipped				: et_pcb.type_flipped := et_pcb.flipped_default;
 		text_placeholders	: et_packages.type_text_placeholders;
 		package_model		: et_packages.type_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
-
-		case appearance is
-			when et_packages.REAL =>
-				value		: et_devices.type_value.bounded_string; -- CS useful ?
-				partcode	: material.type_partcode.bounded_string; -- PN_21234 -- CS ? -- CS include whilst generating the BOM
-				purpose		: et_devices.type_purpose.bounded_string; -- "stand off" -- CS ?
-				-- variant		: et_devices.type_variant_name.bounded_string; -- CS useful ?
-
-			when et_packages.VIRTUAL =>
-				null;
-		end case;
 	end record;
 
 	-- CS: this should be a hashed map:
-	package pac_devices_non_electric is new indefinite_ordered_maps (
+	package pac_devices_non_electric is new ordered_maps (
 		key_type		=> et_devices.type_name, -- H1, FD2, ...
 		"<"				=> et_devices."<",
 		element_type	=> type_device_non_electric);

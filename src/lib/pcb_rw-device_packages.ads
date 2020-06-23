@@ -53,6 +53,7 @@ package pcb_rw.device_packages is
 	section_terminal			: constant string	:= "[TERMINAL";
 
 	
+	
 	type type_section is (
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,
@@ -90,7 +91,7 @@ package pcb_rw.device_packages is
 		package_name 	: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		appearance		: in et_packages.type_package_appearance;
 		log_threshold	: in et_string_processing.type_log_level);
-
+	
 	procedure save_package (
 	-- Saves the given package model in a file specified by file_name.							   
 		file_name 		: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac

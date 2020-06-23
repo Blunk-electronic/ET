@@ -85,7 +85,7 @@ package body pcb_rw.device_packages is
 
 		log_indentation_down;
 	end create_package;
-	
+
 
 	procedure save_package (
 	-- Saves the given package model in a file specified by file_name.
