@@ -1818,9 +1818,36 @@ package body et_project is
 			use et_packages.pac_keepout_cutouts;
 			use et_packages.pac_route_restrict_cutouts;
 			use et_packages.pac_via_restrict_cutouts;
+
+			use et_schematic.pac_devices_non_electric;
+			procedure query_devices_non_electric (c : in et_schematic.pac_devices_non_electric.cursor) is
+				use et_packages;
+			begin
+				section_mark (section_device, HEADER);
+
+				write (keyword => keyword_name, parameters => to_string (key (c))); -- name FD1
+				write (keyword => keyword_appearance, parameters => to_string (element (c).appearance)); -- appearance virtual/real
+				write (keyword => keyword_position, parameters => position (element (c).position));
+				write (keyword => keyword_flipped, parameters => to_string (element (c).flipped));
+				write (keyword => keyword_model, parameters => to_string (element (c).package_model));
+
+-- 				case element (c).appearance is
+-- 					when REAL =>
+-- 						write (keyword => keyword_value, parameters => to_string (element (c).value)); -- value abcd
+-- 						
+-- 					when VIRTUAL => null;
+-- 				end case;
+				
+				section_mark (section_device, FOOTER);
+			end query_devices_non_electric;
 			
 		begin -- query_board
 			section_mark (section_board, HEADER);
+
+			-- NON-ELECTRIC DEVICES
+			section_mark (section_devices_non_electric, HEADER);
+			iterate (element (module_cursor).devices_non_electric, query_devices_non_electric'access);
+			section_mark (section_devices_non_electric, FOOTER);
 
 			-- SILK SCREEN
 			section_mark (section_silk_screen, HEADER);

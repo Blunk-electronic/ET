@@ -445,9 +445,10 @@ package et_schematic is
 
 	
 	-- Devices which do not have a counterpart in the schematic 
-	-- (like fiducials, mounting holes, heatsinks, ...). They can have
+	-- (like fiducials, mounting holes, ...). They can have
 	-- terminals. But the terminals are not connected with any net.
-	-- They have names like H1 (hole) or HS1 (heatsink) or FD (fiducial).
+	-- They have names like H1 (hole) or FD (fiducial).
+	-- This is NOT about accessories of the module.
 	-- We collect them in an indefinite ordered map:
 	type type_device_non_electric (appearance : et_packages.type_package_appearance) is record
 		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
@@ -458,8 +459,8 @@ package et_schematic is
 		case appearance is
 			when et_packages.REAL =>
 				value		: et_devices.type_value.bounded_string; -- CS useful ?
-				partcode	: material.type_partcode.bounded_string; -- PN_21234 -- CS include whilst generating the BOM
-				purpose		: et_devices.type_purpose.bounded_string; -- "stand off"
+				partcode	: material.type_partcode.bounded_string; -- PN_21234 -- CS ? -- CS include whilst generating the BOM
+				purpose		: et_devices.type_purpose.bounded_string; -- "stand off" -- CS ?
 				-- variant		: et_devices.type_variant_name.bounded_string; -- CS useful ?
 
 			when et_packages.VIRTUAL =>
