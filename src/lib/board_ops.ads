@@ -98,6 +98,14 @@ package board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_signal_layer;
 		log_threshold	: in type_log_level);
+
+	-- Adds a non-electric device to the board:
+	procedure add_device (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		package_model	: in et_packages.type_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
+		position		: in type_package_position; -- x,y,rotation,face
+		prefix			: in type_prefix.bounded_string; -- FD
+		log_threshold	: in type_log_level);
 	
 	procedure move_device (
 	-- Moves a device in the board layout in x/y direction.

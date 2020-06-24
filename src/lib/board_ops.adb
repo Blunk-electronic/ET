@@ -48,6 +48,7 @@ with submodules;
 with numbering;
 with et_symbols;
 with et_packages;
+with pcb_rw.device_packages;
 with et_devices;
 
 package body board_ops is
@@ -244,7 +245,105 @@ package body board_ops is
 			process		=> delete'access);
 		
 	end delete_layer;
+
+	function get_placeholders (
+		package_cursor : in et_packages.type_packages.cursor)
+		return et_packages.type_text_placeholders is
+		use et_packages;
+		use type_packages;
+	begin
+		return p : type_text_placeholders do
+		
+			-- fetch the placeholders of silk screen top and bottom
+			p.silk_screen.top := element (package_cursor).silk_screen.top.placeholders;
+			p.silk_screen.bottom := element (package_cursor).silk_screen.bottom.placeholders;
+
+			-- fetch the placeholders of assembly documentation top and bottom
+			p.assy_doc.top := element (package_cursor).assembly_documentation.top.placeholders;
+		p.assy_doc.bottom := element (package_cursor).assembly_documentation.bottom.placeholders;
+		
+		end returN;
+	end get_placeholders;
 	
+	procedure add_device ( -- non-electric !
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		package_model	: in et_packages.type_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
+		position		: in type_package_position; -- x,y,rotation,face
+		prefix			: in type_prefix.bounded_string; -- FD
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		package_cursor_lib : et_packages.type_packages.cursor;
+		
+		procedure add (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.pac_devices_non_electric;
+			device_cursor : et_schematic.pac_devices_non_electric.cursor;
+			inserted : boolean;
+
+			-- build the next available device name:
+			next_name : type_name := next_device_name (module_cursor, prefix);
+		begin -- add
+			log (text => "adding device " & to_string (next_name), level => log_threshold + 1);
+			log_indentation_up;
+
+			-- add the device to the collection of non-electic devices:
+			et_schematic.pac_devices_non_electric.insert (
+				container	=> module.devices_non_electric,
+				inserted	=> inserted,
+				position	=> device_cursor,
+				key			=> next_name,
+				new_item	=> (
+					position			=> position,
+					package_model		=> package_model,
+					text_placeholders	=> get_placeholders (package_cursor_lib),
+					flipped				=> NO -- CS
+					)
+				);
+
+			-- check inserted flag
+			if not inserted then
+				raise constraint_error;
+			end if;
+
+			log_indentation_down;
+		end add;
+		
+	begin -- add_device
+		log (text => "module " & to_string (module_name) &
+			" adding non-electric device " & to_string (package_model) &
+			" at" &
+			to_string (position),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- Read the package model (like ../libraries/fiducials/crosshair.pac)
+		-- and store it in the rig wide package library et_packages.packages.
+		-- If it s already in the library, nothing happens:
+		pcb_rw.device_packages.read_package (
+			file_name		=> package_model,
+-- CS						check_layers	=> YES,
+			log_threshold	=> log_threshold + 1);
+
+		-- locate the package in the library
+		package_cursor_lib := locate_package_model (package_model);
+
+		-- add the device to the module
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> add'access);
+		
+		log_indentation_down;
+	end add_device;
+		
 	procedure move_device (
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.

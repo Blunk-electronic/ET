@@ -95,8 +95,28 @@ package et_pcb_coordinates is
 	type type_package_position is new pac_geometry_brd.type_position with private;
 
 	package_position_default : constant type_package_position;
+
+	position_preamble : constant string := 
+			" (x"
+			& axis_separator
+			& "y"
+			& axis_separator
+			& "rotation"
+			& axis_separator
+			& "face)";
+	
+	overriding function to_string (p : in type_package_position) return string;
+	
+	function to_package_position (
+		point 		: in type_point;
+		rotation	: in type_rotation := zero_rotation;
+		face		: in type_face := TOP)
+		return type_package_position;
+
 	placeholder_position_default : constant type_package_position;	
 
+
+	
 	procedure set_face (
 		face	: in type_face;
 		position: in out type_package_position);

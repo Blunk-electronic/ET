@@ -3552,6 +3552,9 @@ package body schematic_ops is
 	function next_device_name (
 	-- Returns for the given device prefix the next available device name in the module.
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
+
+	-- CS: look up non-electric devices
+
 		module_cursor	: in type_modules.cursor;
 		prefix			: in type_prefix.bounded_string) -- C
 		return type_name is -- C2
@@ -3968,6 +3971,8 @@ package body schematic_ops is
 							units		=> type_units.empty_map
 							));
 
+					-- CS check inserted flag ?
+					
 				when PCB =>
 					-- A real device requires a package variant.
 					if et_devices.type_variant_name.length (variant) > 0 then
@@ -3992,6 +3997,8 @@ package body schematic_ops is
 									
 									others		=> <>
 									));
+
+							-- CS check inserted flag ?
 							
 						else -- variant not available
 							log (ERROR, "package variant " & enclose_in_quotes (to_string (variant)) &
@@ -4100,8 +4107,9 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		-- Read the device file and store it in container et_libraries.devices.
-		-- If the device is already in et_libraries.devices, nothing happpens.
+		-- Read the device file and store it in the rig wide device 
+		-- library et_devices.devices.
+		-- If the device is already in the library, nothing happpens.
 		device_rw.read_device (
 			file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
 			log_threshold	=> log_threshold + 1);

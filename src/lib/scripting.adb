@@ -3227,7 +3227,61 @@ package body scripting is
 			
 			canvas.move_cursor (coordinates, cursor_main, position);
 		end position_cursor;
-		
+
+		procedure add_device is -- non-electric device !
+			-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5
+			-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0
+			-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0 top
+
+			model : constant type_package_model_file.bounded_string := to_file_name (f (5));
+			prefix : constant type_prefix.bounded_string := to_prefix (f (6));
+
+			xy : constant type_point := type_point (set (
+					x => to_distance (f (7)),
+					y => to_distance (f (8))));
+
+		begin
+			case fields is
+				when 8 =>
+					board_ops.add_device (
+						module_name		=> module,
+						package_model	=> model,
+						position		=> to_package_position
+							(
+							point	=> xy
+							),
+						prefix			=> prefix,
+						log_threshold	=> log_threshold + 1);
+
+				when 9 =>
+					board_ops.add_device (
+						module_name		=> module,
+						package_model	=> model,
+						position		=> to_package_position
+							(
+							point		=> xy,
+							rotation	=> to_rotation (f (9))
+							),
+						prefix			=> prefix,
+						log_threshold	=> log_threshold + 1);
+
+				when 10 =>
+					board_ops.add_device (
+						module_name		=> module,
+						package_model	=> model,
+						position		=> to_package_position
+							(
+							point		=> xy,
+							rotation	=> to_rotation (f (9)),
+							face		=> to_face (f (10))
+							),
+						prefix			=> prefix,
+						log_threshold	=> log_threshold + 1);
+					
+				when others => raise constraint_error; -- CS should never happen
+			end case;
+		end add_device;
+			
 	begin -- board_cmd
 		log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
 
@@ -3258,6 +3312,18 @@ package body scripting is
 								
 							when others => command_incomplete (cmd);
 
+						end case;
+
+					when NOUN_DEVICE =>
+						case fields is
+							when 8..10 => add_device;
+							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5
+							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0
+							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0 top
+
+							when 11 => too_long;
+							
+							when others => command_incomplete (cmd);
 						end case;
 
 					when others => invalid_noun (to_string (noun));

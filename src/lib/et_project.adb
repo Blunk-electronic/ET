@@ -1863,8 +1863,8 @@ package body et_project is
 				section_mark (section_device, HEADER);
 
 				write (keyword => keyword_name, parameters => to_string (key (c))); -- name FD1
-				write (keyword => keyword_position, parameters => position (element (c).position));
 				write (keyword => keyword_flipped, parameters => to_string (element (c).flipped));
+				write (keyword => keyword_position, parameters => position (element (c).position));
 				write (keyword => keyword_model, parameters => to_string (element (c).package_model));
 
 				query_element (c, query_placeholders'access);
@@ -3399,6 +3399,8 @@ package body et_project is
 						raise constraint_error;
 					end if;
 
+					-- CS check if device exists in module.devices_non_electric
+					
 					-- Read the device model (like ../libraries/transistor/pnp.dev) and
 					-- check the conductor layers:
 					read_device (
@@ -3481,6 +3483,8 @@ package body et_project is
 						raise constraint_error;
 					end if;
 
+					-- CS check if device exists in module.devices
+					
 					-- Read the package model (like ../libraries/fiducials/crosshair.pac):
 					read_package (
 						file_name		=> device_non_electric_model,

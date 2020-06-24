@@ -76,6 +76,31 @@ package body et_pcb_coordinates is
 			when BOTTOM => face := TOP;
 		end case;
 	end flip;
+
+	function to_string (p : in type_package_position) return string is begin
+		return position_preamble
+				& to_string (p.x)
+				& axis_separator
+				& to_string (p.y)
+				& axis_separator
+				& to_string (rot (p))
+				& axis_separator
+				& to_string (p.face);
+
+	end to_string;
+	
+	function to_package_position (
+		point 		: in type_point;
+		rotation	: in type_rotation := zero_rotation;
+		face		: in type_face := TOP)
+		return type_package_position is
+	begin
+		return pos : type_package_position do
+			set (pos, point);
+			set (pos, rotation);
+			pos.face := face;
+		end return;
+	end to_package_position;
 	
 	procedure set_face (
 		face	: in type_face;

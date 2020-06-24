@@ -281,11 +281,18 @@ CS board led_driver display vias all/none
 
 
 
-## DEVICES AND UNITS
-A device is something like a resistor (consisting of a schematic symbol and a package drawing).
+## DEVICES
+There are two kinds of devices: Those which have an abstract representation (via a symbol)
+in the schematic - we call them "electrical devices". The second type of devices are those
+which appear in the layout only. They are used to model things like fiducials or mounting holes.
+We refer to them as "non-electrical devices".
+
+### ELECTRICAL DEVICES AND UNITS
+Most devices are of this type. Unless otherwise noted we just call them "devices" in this section.
+An electrical device is something like a resistor (consisting of a schematic symbol and a package drawing).
 A single resistor contains only one symbol:
 
-### ADDING
+#### ADDING
 ```
 schematic led_driver add device $HOME/git/BEL/ET_component_library/devices/passive/resistors/R.dev 1 110 10 0 S_0805 # sheet 1 x y rotation [variant]
 ```
@@ -303,13 +310,13 @@ This command invokes from IC1 the unit P and places it at sheet 4 at x/y 60/90 w
 schematic led_driver invoke unit IC1 P 4 60 90 0 # device unit sheet x y rotation
 ```
 
-### COPYING
+#### COPYING
 
 ```
 schematic led_driver copy device R1 2 210 100 0
 ```
 
-### RENAMING
+#### RENAMING
 
 ```
 schematic led_driver rename device R1 R9
@@ -318,6 +325,22 @@ schematic led_driver rename device R1 R9
 ```
 schematic led_driver renumber devices 100
 ```
+
+
+### NON-ELECTRICAL DEVICES
+These devices have no representation in the schematic and consist just of a package.
+In constrast to electrical devices (see above) the prefix must be provided.
+For example in order to place a fiducial run:
+
+```
+board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 5 0 top # prefix x y [rotation] [face]
+```
+
+To place a mounting hole run:
+```
+board led_driver add device $HOME/git/BEL/ET_component_library/packages/holes/hole_4.pac H 15 20 # prefix x y
+```
+
 
 
 ### SETTING VALUE, PURPOSE, PARTCODE
