@@ -209,6 +209,7 @@ package scripting is
 		VERB_POSITION,
 		VERB_QUIT,
 		VERB_RIPUP,
+		VERB_RENAME,
 		VERB_ROTATE,
 		VERB_ROUTE,
 		VERB_SET,

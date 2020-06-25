@@ -67,6 +67,7 @@ with et_devices;				use et_devices;
 package schematic_ops is
 	
 	procedure device_not_found (name : in type_name);
+	procedure device_already_exists (name : in type_name);
 	procedure netchanger_not_found (index : in submodules.type_netchanger_id);
 	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string);	
 	procedure net_not_found (name : in et_general.type_net_name.bounded_string);

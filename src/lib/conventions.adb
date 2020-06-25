@@ -3174,7 +3174,7 @@ package body conventions is
 
 	
 	function prefix_valid (prefix : in et_devices.type_prefix.bounded_string) return boolean is
-	-- Tests if the given reference has a valid prefix as specified in the configuration file.
+	-- Tests if the given prefix is valid as specified in the configuration file.
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
 		use et_devices.type_prefix;
@@ -3193,7 +3193,7 @@ package body conventions is
 	end prefix_valid;
 	
 	function prefix_valid (reference : in type_name) return boolean is
-	-- Tests if the given reference has a valid prefix as specified in the configuration file.
+	-- Tests if the given device name has a valid prefix as specified in the configuration file.
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
 		use type_prefix;

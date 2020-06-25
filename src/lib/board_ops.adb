@@ -50,6 +50,7 @@ with et_symbols;
 with et_packages;
 with pcb_rw.device_packages;
 with et_devices;
+with conventions;
 
 package body board_ops is
 	
@@ -360,9 +361,12 @@ package body board_ops is
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use et_schematic.pac_devices_non_electric;
+			
+			device_electric		: et_schematic.type_devices.cursor;
+			device_non_electric	: et_schematic.pac_devices_non_electric.cursor;			
 
-			procedure set_position (
+			procedure set_position ( -- of an electric device
 				device_name	: in type_name;
 				device		: in out et_schematic.type_device) is
 			begin
@@ -375,20 +379,51 @@ package body board_ops is
 						
 				end case;
 			end;
+
+			procedure set_position ( -- of a non-electric device
+				device_name	: in type_name;
+				device		: in out type_device_non_electric) is
+			begin
+				case coordinates is
+					when ABSOLUTE =>
+						set (point => device.position, position => point); -- preserve angle and face
+
+					when RELATIVE =>
+						move_by (point => device.position, offset => point); -- preserve angle and face
+						
+				end case;
+			end;
 			
 		begin -- query_devices
+
+			-- Search the device first among the electric devices.
+			-- Most likely it will be among them. If not,
+			-- search in non-electric devices.
 			if contains (module.devices, device_name) then
 
-				device_cursor := find (module.devices, device_name); -- the device should be there
+				device_electric := find (module.devices, device_name);
 
 				-- set new position
 				update_element (
 					container	=> module.devices,
-					position	=> device_cursor,
+					position	=> device_electric,
 					process		=> set_position'access);
 
 			else
-				device_not_found (device_name);
+				-- search among non-electric devices:
+				if contains (module.devices_non_electric, device_name) then
+
+					device_non_electric := find (module.devices_non_electric, device_name);
+
+					-- set new position
+					update_element (
+						container	=> module.devices_non_electric,
+						position	=> device_non_electric,
+						process		=> set_position'access);
+
+				else
+					device_not_found (device_name);
+				end if;
 			end if;
 		end query_devices;
 		
@@ -431,9 +466,12 @@ package body board_ops is
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use et_schematic.pac_devices_non_electric;
+			
+			device_electric		: et_schematic.type_devices.cursor;
+			device_non_electric	: et_schematic.pac_devices_non_electric.cursor;			
 
-			procedure set_rotation (
+			procedure set_rotation ( -- of an electric device
 				device_name	: in type_name;
 				device		: in out et_schematic.type_device) is
 			begin
@@ -445,21 +483,52 @@ package body board_ops is
 						rotate (position => device.position, offset => rotation); -- preserve x/y and face
 				end case;
 			end;
+
+			procedure set_rotation ( -- of a non-electric device
+				device_name	: in type_name;
+				device		: in out type_device_non_electric) is
+			begin
+				case coordinates is
+					when ABSOLUTE =>
+						set (device.position, rotation); -- preserve x/y and face
+
+					when RELATIVE =>
+						rotate (position => device.position, offset => rotation); -- preserve x/y and face
+				end case;
+			end;
 			
 		begin -- query_devices
+
+			-- Search the device first among the electric devices.
+			-- Most likely it will be among them. If not,
+			-- search in non-electric devices.
 			if contains (module.devices, device_name) then
 
-				device_cursor := find (module.devices, device_name); -- the device should be there
+				device_electric := find (module.devices, device_name);
 
 				-- set new position
 				update_element (
 					container	=> module.devices,
-					position	=> device_cursor,
+					position	=> device_electric,
 					process		=> set_rotation'access);
 
 			else
-				device_not_found (device_name);
+				-- search among non-electric devices:
+				if contains (module.devices_non_electric, device_name) then
+
+					device_non_electric := find (module.devices_non_electric, device_name);
+
+					-- set new position
+					update_element (
+						container	=> module.devices_non_electric,
+						position	=> device_non_electric,
+						process		=> set_rotation'access);
+
+				else
+					device_not_found (device_name);
+				end if;
 			end if;
+
 		end query_devices;
 		
 	begin -- rotate_device
@@ -485,6 +554,111 @@ package body board_ops is
 
 	end rotate_device;
 
+	procedure delete_device (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_name; -- FD1
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			use et_schematic.pac_devices_non_electric;
+		begin
+			-- Search the device among the non-electric devices.
+			if contains (module.devices_non_electric, device_name) then
+
+				delete (module.devices_non_electric, device_name);
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- delete_device
+		log (text => "module " & to_string (module_name) &
+			 " deleting device (non-electric) " & to_string (device_name),
+			 level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+	end delete_device;
+
+	procedure rename_device (
+		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name_before	: in type_name; -- FD1
+		device_name_after	: in type_name; -- FD3
+		log_threshold		: in type_log_level) is
+		
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			use et_schematic.pac_devices_non_electric;
+			device_before, device_after : pac_devices_non_electric.cursor;
+
+			inserted : boolean;
+		begin
+			-- Search the old device among the non-electric devices.
+			if contains (module.devices_non_electric, device_name_before) then
+
+				-- locate the device by the old name
+				device_before := find (module.devices_non_electric, device_name_before); -- FD1
+				
+				-- copy elements and properties of the old device to a new one:
+				pac_devices_non_electric.insert (
+					container	=> module.devices_non_electric,
+					key			=> device_name_after, -- FD3
+					new_item	=> element (device_before), -- all elements and properties of FD1
+					inserted	=> inserted,
+					position	=> device_after);
+
+				if not inserted then
+					device_already_exists (device_name_after);
+				end if;
+
+				-- check conformity of prefix
+				if not conventions.prefix_valid (device_name_after) then
+					null;
+					--device_prefix_invalid (device_after);
+				end if;
+
+				-- delete the old device
+				delete (module.devices_non_electric, device_before);
+				
+			else
+				device_not_found (device_name_before);
+			end if;
+		end query_devices;
+		
+	begin -- rename_device
+		log (text => "module " & to_string (module_name) &
+			 " renaming device (non-electric) " & to_string (device_name_before) & " to " & 
+			to_string (device_name_after),
+			level => log_threshold);
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+	end rename_device;
+	
+	
 	procedure flip_device (
 	-- Flips a device in the board layout from top to bottom or vice versa.
 	-- Leaves x/y and rotation as it is.

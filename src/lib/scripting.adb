@@ -3281,7 +3281,29 @@ package body scripting is
 				when others => raise constraint_error; -- CS should never happen
 			end case;
 		end add_device;
-			
+
+		procedure delete_device is -- non-electric device !
+			-- board led_driver delete device FD1
+		begin
+			board_ops.delete_device (
+				module_name		=> module,
+				device_name		=> to_name (f (5)),
+				log_threshold	=> log_threshold + 1);
+
+		end delete_device;
+
+		procedure rename_device is -- non-electric device !
+			-- board led_driver rename device FD1 FD3
+		begin
+			board_ops.rename_device (
+				module_name			=> module,
+				device_name_before	=> to_name (f (5)),
+				device_name_after	=> to_name (f (6)),
+				log_threshold		=> log_threshold + 1);
+
+		end rename_device;
+
+		
 	begin -- board_cmd
 		log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
 
@@ -3302,6 +3324,18 @@ package body scripting is
 		case verb is
 			when VERB_ADD =>
 				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 8..10 => add_device;
+							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5
+							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0
+							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0 top
+
+							when 11 .. count_type'last => too_long;
+							
+							when others => command_incomplete (cmd);
+						end case;
+
 					when NOUN_LAYER =>
 						case fields is
 							when 6 =>
@@ -3311,19 +3345,6 @@ package body scripting is
 							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 								
 							when others => command_incomplete (cmd);
-
-						end case;
-
-					when NOUN_DEVICE =>
-						case fields is
-							when 8..10 => add_device;
-							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5
-							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0
-							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0 top
-
-							when 11 => too_long;
-							
-							when others => command_incomplete (cmd);
 						end case;
 
 					when others => invalid_noun (to_string (noun));
@@ -3331,6 +3352,15 @@ package body scripting is
 				
 			when VERB_DELETE =>
 				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 5 => delete_device; -- board led_driver delete device FD1
+
+							when 6 .. count_type'last => too_long;
+							
+							when others => command_incomplete (cmd);
+						end case;
+
 					when NOUN_LAYER =>
 						case fields is
 							when 5 =>
@@ -4072,6 +4102,20 @@ package body scripting is
 						case fields is
 							when 7 => position_cursor; -- position cursor absolute/relative 25 30
 							when 8 .. count_type'last => too_long;
+							when others => command_incomplete (cmd);
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_RENAME =>
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 6 => rename_device; -- board led_driver renames device FD1 FD3
+
+							when 7 .. count_type'last => too_long;
+							
 							when others => command_incomplete (cmd);
 						end case;
 

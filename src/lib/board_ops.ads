@@ -124,6 +124,19 @@ package board_ops is
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_pcb_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level);
+
+	procedure delete_device (
+	-- Deletes a non-electric device in the board layout.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_name; -- FD1
+		log_threshold	: in type_log_level);
+
+	procedure rename_device (
+	-- Renames a non-electric device in the board layout.
+		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name_before	: in type_name; -- FD1
+		device_name_after	: in type_name; -- FD3
+		log_threshold		: in type_log_level);
 	
 	procedure flip_device (
 	-- Flips a device in the board layout from top to bottom or vice versa.

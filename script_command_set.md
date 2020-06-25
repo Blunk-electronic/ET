@@ -327,23 +327,7 @@ schematic led_driver renumber devices 100
 ```
 
 
-### NON-ELECTRICAL DEVICES
-These devices have no representation in the schematic and consist just of a package.
-In constrast to electrical devices (see above) the prefix must be provided.
-For example in order to place a fiducial run:
-
-```
-board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 5 0 top # prefix x y [rotation] [face]
-```
-
-To place a mounting hole run:
-```
-board led_driver add device $HOME/git/BEL/ET_component_library/packages/holes/hole_4.pac H 15 20 # prefix x y
-```
-
-
-
-### SETTING VALUE, PURPOSE, PARTCODE
+#### SETTING VALUE, PURPOSE, PARTCODE
 ```
 schematic led_driver set value R1 2k2
 ```
@@ -354,7 +338,7 @@ schematic led_driver set purpose R1 "brightnesss_control"
 schematic led_driver set partcode R1 R_PAC_S_0805_VAL_100R
 ```
 
-### DELETING
+#### DELETING
 The whole device can be deleted by:
 ```
 schematic led_driver delete device R1
@@ -368,8 +352,8 @@ schematic led_driver delete unit R1 1
 schematic led_driver delete device IC1 C
 ```
 
-### MOVING
-#### in the schematic
+#### MOVING
+##### in the schematic
 Moving a unit disconnects it from net old segments and places it at the given position.
 If the units ports end up where a net segment is, they become connected with the net.
 ```
@@ -389,7 +373,7 @@ Relative rotation:
 schematic led_driver rotate unit R1 1 relative 90
 ```
 
-#### in the board
+##### in the board
 Inside the drawing frame the board has a position. This anchor point
 is usually the lower left corner of the board. For circular boards it is the center.
 However, this point is the board origin, where all other position refer to.
@@ -431,7 +415,7 @@ board led_driver flip device R1 bottom
 ```
 
 
-### DRAGGING
+#### DRAGGING
 Dragging a unit drags the connected net segments along.
 If the units ports end up where a net segment is, they become connected with the net.
 Dragging is not possible across sheets.
@@ -444,7 +428,7 @@ schematic led_driver drag unit R1 1 absolute 220 100 # R1 unit x y
 schematic led_driver drag unit R1 1 relative 10 0 # IC1 unit B x y
 ```
 
-### MOVING PLACEHOLDERS FOR NAME, VALUE AND PURPOSE
+#### MOVING PLACEHOLDERS FOR NAME, VALUE AND PURPOSE
 The movement takes place relative to the unit origin.
 ```
 schematic led_driver move name R1 1 absolute 10 15 # R1 unit x y
@@ -470,7 +454,7 @@ schematic led_driver rotate value R1 1 90
 schematic led_driver rotate purpose R1 1 0
 ```
 
-### SETTING VALUE, PURPOSE, PARTCODE
+#### SETTING VALUE, PURPOSE, PARTCODE
 ```
 schematic led_driver set value R1 2k2
 ```
@@ -480,6 +464,53 @@ schematic led_driver set purpose R1 "brightnesss_control"
 ```
 schematic led_driver set partcode R1 R_PAC_S_0805_VAL_100R
 ```
+
+### NON-ELECTRICAL DEVICES
+These devices have no representation in the schematic and consist just of a package.
+In constrast to electrical devices (see above) the prefix must be provided.
+
+#### ADDING
+For example in order to place a fiducial run:
+
+```
+board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 5 0 top # prefix x y [rotation] [face]
+```
+
+To place a mounting hole run:
+```
+board led_driver add device $HOME/git/BEL/ET_component_library/packages/holes/hole_4.pac H 15 20 # prefix x y
+```
+
+#### MOVING
+```
+board led_driver move device FD1 relative 10 0
+```
+
+```
+board led_driver move device FD1 absolute 95 75
+```
+
+#### ROTATING
+```
+board led_driver rotate device FD1 relative 10
+```
+
+```
+board led_driver rotate device FD1 absolute 45
+```
+
+#### RENAMING
+```
+board led_driver rename device FD1 FD3
+```
+
+#### DELETING
+```
+board led_driver delete device FD3
+```
+
+
+
 
 ## ASSEMBLY VARIANTS
 ```
