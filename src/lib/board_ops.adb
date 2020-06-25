@@ -675,33 +675,36 @@ package body board_ops is
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use et_schematic.pac_devices_non_electric;
+			
+			device_electric		: et_schematic.type_devices.cursor;
+			device_non_electric	: et_schematic.pac_devices_non_electric.cursor;			
 
-			procedure flip (
+			scratch : et_packages.pac_text_placeholders.list;
+			
+			-- Mirrors the position of a placeholder along the y-axis:
+			procedure mirror_placeholder (p : in out et_packages.type_text_placeholder) is begin
+				mirror (point => p.position, axis => Y);
+			end mirror_placeholder;
+
+			procedure mirror_placeholders (phs : in out et_packages.pac_text_placeholders.list) is 
+				use et_packages.pac_text_placeholders;
+				cursor : et_packages.pac_text_placeholders.cursor := phs.first;
+			begin
+				while cursor /= et_packages.pac_text_placeholders.no_element loop
+						et_packages.pac_text_placeholders.update_element (
+							container	=> phs,
+							position	=> cursor,
+							process		=> mirror_placeholder'access);
+					next (cursor);
+				end loop;
+			end mirror_placeholders;
+			
+			procedure flip ( -- electric device
 				device_name	: in type_name;
 				device		: in out et_schematic.type_device) is
 				
 				face_before : constant type_face := get_face (device.position);
-
-				-- Mirrors the position of a placeholder along the y-axis:
-				procedure mirror_placeholder (p : in out et_packages.type_text_placeholder) is begin
-					mirror (point => p.position, axis => Y);
-				end mirror_placeholder;
-
-				procedure mirror_placeholders (phs : in out et_packages.pac_text_placeholders.list) is 
-					use et_packages.pac_text_placeholders;
-					cursor : et_packages.pac_text_placeholders.cursor := phs.first;
-				begin
-					while cursor /= et_packages.pac_text_placeholders.no_element loop
-							et_packages.pac_text_placeholders.update_element (
-								container	=> phs,
-								position	=> cursor,
-								process		=> mirror_placeholder'access);
-						next (cursor);
-					end loop;
-				end mirror_placeholders;
-				
-				scratch : et_packages.pac_text_placeholders.list;
 			begin
 				if face_before /= face then
 					set_face (position => device.position, face => face); -- preserve x/y and rotation
@@ -736,21 +739,80 @@ package body board_ops is
 				else
 					log (WARNING, "package already on " & to_string (face) & " !");
 				end if;
-			end;
-			
+			end flip;
+
+			procedure flip ( -- non-electric device
+				device_name	: in type_name;
+				device		: in out et_schematic.type_device_non_electric) is
+				
+				face_before : constant type_face := get_face (device.position);
+			begin
+				if face_before /= face then
+					set_face (position => device.position, face => face); -- preserve x/y and rotation
+
+					-- toggle the flipped flag
+					if device.flipped = NO then
+						device.flipped := YES;
+					else
+						device.flipped := NO;
+					end if;
+
+					-- SILKSCREEN
+					-- swap placeholders top/bottom
+					scratch := device.text_placeholders.silk_screen.bottom;
+					device.text_placeholders.silk_screen.bottom := device.text_placeholders.silk_screen.top;
+					device.text_placeholders.silk_screen.top := scratch;
+
+					-- mirror
+					mirror_placeholders (device.text_placeholders.silk_screen.top);
+					mirror_placeholders (device.text_placeholders.silk_screen.bottom);
+					
+					-- ASSEMBLY DOCUMENTATION
+					-- swap placeholders top/bottom
+					scratch := device.text_placeholders.assy_doc.bottom;
+					device.text_placeholders.assy_doc.bottom := device.text_placeholders.assy_doc.top;
+					device.text_placeholders.assy_doc.top := scratch;
+
+					-- mirror
+					mirror_placeholders (device.text_placeholders.assy_doc.top);
+					mirror_placeholders (device.text_placeholders.assy_doc.bottom);
+					
+				else
+					log (WARNING, "package already on " & to_string (face) & " !");
+				end if;
+			end flip;
+				
 		begin -- query_devices
+
+			-- Search the device first among the electric devices.
+			-- Most likely it will be among them. If not,
+			-- search in non-electric devices.
 			if contains (module.devices, device_name) then
 
-				device_cursor := find (module.devices, device_name); -- the device should be there
+				device_electric := find (module.devices, device_name);
 
 				-- set new position
 				update_element (
 					container	=> module.devices,
-					position	=> device_cursor,
+					position	=> device_electric,
 					process		=> flip'access);
 
 			else
-				device_not_found (device_name);
+				-- search among non-electric devices:
+				if contains (module.devices_non_electric, device_name) then
+
+					device_non_electric := find (module.devices_non_electric, device_name);
+
+					-- set new position
+					update_element (
+						container	=> module.devices_non_electric,
+						position	=> device_non_electric,
+						process		=> flip'access);
+
+				else
+					device_not_found (device_name);
+				end if;
+
 			end if;
 		end query_devices;
 		
