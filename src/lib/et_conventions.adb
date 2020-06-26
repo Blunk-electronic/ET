@@ -50,13 +50,19 @@ with ada.exceptions;
 with et_general;
 
 with et_project;
-with et_export;
-with et_import;
-with et_csv;
+-- with et_export;
+-- with et_import;
+-- with et_csv;
 
 package body et_conventions is
 
 	use et_string_processing;
+
+	function to_net_label_text_size (text : in string) return type_net_label_text_size is
+	-- Converts a string to type_net_label_text_size.
+	begin
+		return type_net_label_text_size'value (text);
+	end to_net_label_text_size;
 	
 -- 	function to_string (net_comparator_on_off : in type_net_comparator_on_off) return string is
 -- 	-- Returns the given net comparator status as string.
@@ -2552,7 +2558,7 @@ package body et_conventions is
 		put_line (comment & "sizes for various kinds of texts in schematic"); 
 		put_line (comment & "category" & latin_1.space & "mm");
 		new_line;		
-		put_line (to_string (NET_LABEL)	& to_string (et_schematic.net_label_text_size_default));
+		put_line (to_string (NET_LABEL)	& to_string (net_label_text_size_default));
 		put_line (to_string (PORT_NAME) & to_string (et_symbols.text_size_default));
 		put_line (to_string (TERMINAL_NAME) & to_string (et_symbols.text_size_default));
 		put_line (to_string (COMPONENT_ATTRIBUTE) & to_string (et_symbols.text_size_default));
@@ -2803,7 +2809,7 @@ package body et_conventions is
 						-- the corresponding text size subtypes for that category:
 						case text is
 							when NET_LABEL =>
-								size := et_schematic.to_net_label_text_size (et_string_processing.field (element (line_cursor), 2));
+								size := to_net_label_text_size (et_string_processing.field (element (line_cursor), 2));
 
 							when PORT_NAME =>
 								size := to_distance (et_string_processing.field (element (line_cursor), 2));

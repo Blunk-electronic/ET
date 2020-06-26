@@ -62,14 +62,6 @@ with et_devices;				use et_devices;
 package body et_schematic is
 
 
-
-	
-	function to_net_label_text_size (text : in string) return type_net_label_text_size is
-	-- Converts a string to type_net_label_text_size.
-	begin
-		return type_net_label_text_size'value (text);
-	end to_net_label_text_size;
-
 	function "<" (left, right : in type_port_device) return boolean is
 		use et_symbols.type_port_name;
 	begin

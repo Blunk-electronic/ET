@@ -47,8 +47,7 @@ with ada.text_io;				use ada.text_io;
 with ada.directories;			use ada.directories;
 
 with et_coordinates;
-with et_schematic;
-with et_import;
+-- with et_import;
 with material;
 with et_string_processing;
 with et_symbols;
@@ -185,6 +184,13 @@ package et_conventions is
 -- 	procedure validate_module_interconnections (log_threshold: in et_string_processing.type_log_level);
 -- 	-- Tests if module interconnections at net level make sense.
 -- 	-- NOTE: call AFTER modules have been imported !
+
+	subtype type_net_label_text_size is et_coordinates.type_distance range 1.0 .. 5.0; -- unit is mm
+	net_label_text_size_default : constant type_net_label_text_size := 1.3;
+	
+	function to_net_label_text_size (text : in string) return type_net_label_text_size;
+	-- Converts a string to type_net_label_text_size.
+
 	
 	function to_string (cat : in type_device_category) return string;
 	-- returns the given component category as string

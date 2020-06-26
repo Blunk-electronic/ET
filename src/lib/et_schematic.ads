@@ -200,14 +200,6 @@ package et_schematic is
 
 
 
-	subtype type_net_label_text_size is et_coordinates.type_distance range 1.0 .. 5.0; -- unit is mm
-	net_label_text_size_default : constant type_net_label_text_size := 1.3;
-	
-	function to_net_label_text_size (text : in string) return type_net_label_text_size;
-	-- Converts a string to type_net_label_text_size.
-
-
-
 	
 	-- This is the port of a device as it appears in a net segment:
 	type type_port_device is record
