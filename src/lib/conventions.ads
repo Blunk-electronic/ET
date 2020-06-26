@@ -204,7 +204,7 @@ package conventions is
 	
 	function category (prefix : in et_devices.type_prefix.bounded_string) return
 		type_device_category;
-	-- Returns the category of the given component prefix. If no category could be
+	-- Returns the category of the given device prefix. If no category could be
 	-- found, returns category UNKNOWN.
 	
 	function category (reference : in type_name) return

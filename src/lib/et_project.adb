@@ -3430,6 +3430,7 @@ package body et_project is
 						check_layers	=> (check => YES, deepest_layer => deepest_conductor_layer (module_cursor)),
 						log_threshold	=> log_threshold + 2);
 
+					-- Validate partcode according to category, package and value:
 					if device.appearance = PCB then
 						conventions.validate_partcode (
 							partcode		=> device.partcode,
