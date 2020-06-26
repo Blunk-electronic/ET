@@ -2123,18 +2123,23 @@ package body conventions is
 		use type_value;
 		use material.type_partcode;
 
+		base : constant material.type_partcode.bounded_string :=
+			to_bounded_string (
+				et_devices.to_string (prefix)				-- R
+				& partcode_keyword_separator				-- _
+				& to_partcode_keyword (COMPONENT_PACKAGE)	-- PAC
+				& partcode_keyword_separator				-- _
+				& et_packages.to_string (packge));			-- S_0805
 	begin
-		return to_bounded_string (
-			et_devices.to_string (prefix)	-- R
-			& partcode_keyword_separator	-- _
-			& to_partcode_keyword (COMPONENT_PACKAGE) -- PAC
-			& partcode_keyword_separator			-- _
-			& et_packages.to_string (packge)		-- S_0805
-			& partcode_keyword_separator			-- _
-			& to_partcode_keyword (COMPONENT_VALUE) -- VAL
-			& partcode_keyword_separator			-- _
-			& et_devices.to_string (value)		-- 100R
-			);
+		if is_empty (value) then
+			return base; -- X_PAC_S_USB-MINI
+		else
+			return base & to_bounded_string ( -- R_PAC_S_0805_VAL_100R
+				partcode_keyword_separator				-- _
+				& to_partcode_keyword (COMPONENT_VALUE)	-- VAL
+				& partcode_keyword_separator			-- _
+				& et_devices.to_string (value));		-- 100R
+		end if;
 	end compose_partcode_root;
 
 	procedure validate_other_partcode_keywords (
@@ -2287,6 +2292,8 @@ package body conventions is
 				". Expected " & enclose_in_quotes (to_string (partcode_root)) & " !");
 		end partcode_invalid;
 
+		use material;
+		
 	begin -- validate_partcode
 		if partcode_keywords_specified then
 			
@@ -2303,9 +2310,10 @@ package body conventions is
 
 			-- The root of the partcode must be the very first part of the given partcode.
 			-- In that case other keywords can be checked.
-			-- If the root partcode is somewhere else, issue warning.
-			place := index (partcode, to_string (partcode_root));
-			if place = 1 then
+			-- If the root partcode is somewhere else or too long, issue warning.
+			place := index (partcode, material.to_string (partcode_root));
+			
+			if place = 1 and length (partcode) = length (partcode_root) then
 
 				-- After the root partcode (like R_PAC_S_0805_VAL_100R) other
 				-- keywords may follow:
