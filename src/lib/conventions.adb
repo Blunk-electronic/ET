@@ -2391,9 +2391,18 @@ package body conventions is
 		end if;
 		return type_partcode_keyword.to_string (keyword);
 	end to_partcode_keyword;
+
+	function to_file_name (file : in string) return pac_file_name.bounded_string is begin
+		return pac_file_name.to_bounded_string (file);
+	end to_file_name;
+
+	function to_string (file : in pac_file_name.bounded_string) return string is begin
+		return pac_file_name.to_string (file);
+	end to_string;
+	
 	
 	procedure make_default_conventions (
-		file_name		: in type_conventions_file_name.bounded_string;
+		file_name		: in pac_file_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Creates a default conventions file.
 		use et_general;
@@ -2594,7 +2603,7 @@ package body conventions is
 
 
 	procedure read_conventions (
-		file_name		: in type_conventions_file_name.bounded_string;
+		file_name		: in pac_file_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Reads the given conventions file.
 

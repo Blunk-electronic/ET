@@ -58,6 +58,8 @@ with et_packages;
 package conventions is
 
 	comment_mark : constant string := "#";
+
+	keyword_conventions : constant string := "conventions";
 	
 	-- conventions file section headers
 	section_component_prefixes						: constant string (1..20)	:= "[COMPONENT_PREFIXES]";
@@ -476,17 +478,21 @@ package conventions is
 
 	
 	-- The name of the conventions file may have 100 characters which seems sufficient for now.
- 	conventions_file_name_length_max : constant natural := 100;
-	package type_conventions_file_name is new generic_bounded_length (conventions_file_name_length_max); 
-	use type_conventions_file_name;
+ 	file_name_length_max : constant natural := 100;
+	package pac_file_name is new generic_bounded_length (file_name_length_max); 
+	use pac_file_name;
+
+	function to_file_name (file : in string) return pac_file_name.bounded_string;
+	function to_string (file : in pac_file_name.bounded_string) return string;
+
 	
 	procedure make_default_conventions (
-		file_name		: in type_conventions_file_name.bounded_string;
+		file_name		: in pac_file_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level);
 	-- Creates a default conventions file.
 
 	procedure read_conventions (
-		file_name		: in type_conventions_file_name.bounded_string;
+		file_name		: in pac_file_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level);
 	-- Reads the given conventions file.
 

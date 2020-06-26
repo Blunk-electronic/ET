@@ -376,6 +376,7 @@ package et_project is
 	section_netchanger			: constant string := "[NETCHANGER";
 
 	section_meta				: constant string := "[META";
+	section_rules				: constant string := "[RULES";
 	
 	section_units				: constant string := "[UNITS";
 
@@ -432,6 +433,7 @@ package et_project is
 		SEC_ASSEMBLY_DOCUMENTATION,
 		SEC_KEEPOUT,
 		SEC_ROUTE_RESTRICT,
+		SEC_RULES,
 		SEC_VIA_RESTRICT,
 		SEC_STOP_MASK,
 		SEC_STENCIL,

@@ -76,8 +76,8 @@ with gui;
 
 procedure et is
 
-	conv_file_name_create	: conventions.type_conventions_file_name.bounded_string;
-	conv_file_name_use		: conventions.type_conventions_file_name.bounded_string;
+	conv_file_name_create	: conventions.pac_file_name.bounded_string;
+	conv_file_name_use		: conventions.pac_file_name.bounded_string;
 
 	project_name_create		: et_project.type_project_name.bounded_string; -- the project to be created
 	project_name_import		: et_project.type_project_name.bounded_string; -- the project to be imported
@@ -188,11 +188,11 @@ procedure et is
 
 					elsif full_switch = switch_make_default_conv then -- make conventions file
 						log (text => arg & full_switch & space & parameter);
-						conv_file_name_create := conventions.type_conventions_file_name.to_bounded_string (parameter);
+						conv_file_name_create := conventions.to_file_name (parameter);
 
 					elsif full_switch = switch_conventions then -- use conventions file
 						log (text => arg & full_switch & space & parameter);
-						conv_file_name_use := conventions.type_conventions_file_name.to_bounded_string (parameter);
+						conv_file_name_use := conventions.to_file_name (parameter);
 
 
 					-- project
@@ -504,7 +504,7 @@ procedure et is
 	procedure process_commandline_arguments is
 		use et_project.type_project_name;
 		use pac_script_name;
-		use conventions.type_conventions_file_name;
+		use conventions.pac_file_name;
 		use et_packages.type_package_model_file;
 		use et_symbols.type_symbol_model_file;
 		use et_devices.type_device_model_file;
