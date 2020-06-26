@@ -385,14 +385,6 @@ procedure et is
 			raise constraint_error;
 		end if;		
 
-		-- CS not required for importing foreign projects. Update README.md. :
-		-- read conventions file if specified. otherwise issue warning
-		if conventions.type_conventions_file_name.length (conv_file_name_use) > 0 then
-			conventions.read_conventions (conv_file_name_use, log_threshold => 0);
-		else
-			log (WARNING, "no conventions file specified !");
-		end if;
-		
 		-- The import requires changing of directories. So we backup the current directory.
 		-- After the import, we restore the directory.
 		backup_projects_root_directory;
@@ -508,7 +500,7 @@ procedure et is
 			log_threshold	=> 0);
 		
 	end launch_gui;
-	
+
 	procedure process_commandline_arguments is
 		use et_project.type_project_name;
 		use pac_script_name;
@@ -518,11 +510,14 @@ procedure et is
 		use et_devices.type_device_model_file;
 		use et_frames.pac_template_name;
 		
-		procedure read_configuration_file is begin
+		procedure read_conventions_file is begin
 			if length (conv_file_name_use) > 0 then
 				conventions.read_conventions (
 					file_name		=> conv_file_name_use,
 					log_threshold	=> 0);
+
+			else
+				log (WARNING, "No conventions specified ! Design check limited !");
 			end if;
 		end;
 
@@ -549,12 +544,11 @@ procedure et is
 				
 			-- If operator wants to import a project it will be done here.
 			elsif length (project_name_import) > 0 then
-				read_configuration_file;
 				import_project;
 
 			-- Otherwise a native project will be opened:
 			elsif length (project_name_open) > 0 then
-				read_configuration_file;
+				read_conventions_file;
 				et_project.open_project (project_name_open, log_threshold => 0);
 
 				-- If operator whishes to execute a script on the native project:

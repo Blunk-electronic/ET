@@ -67,7 +67,7 @@ by ET internal hard coded fonts.
 #### Creating a conventions file
 The conventions file is the place where file where prefixes, units of measurement and other things are defined. It is
 not mandatory. This step can be omitted. If so, lots of design checks wil not be performed.
-Change into the root directory of your projects and generate a conventions with this command:
+Change into the root directory of your projects and generate a conventions file with this command:
 
 ```sh
 $ et --make-conventions conventions.txt
