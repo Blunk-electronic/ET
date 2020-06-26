@@ -447,10 +447,14 @@ is
 					if f = face then
 
 						-- Rotate the position of the placeholder by the rotation of the package.
-						-- NOTE: This does not affect the rotation of the placeholder text.
-						rotate_by (ph.position, rot (package_position));
-						
-						if flipped then mirror (ph.position, Y); end if;
+						-- NOTE: This does not affect the rotation of the placeholder text but only
+						-- the rotation about the origin of the package.
+						-- If the package has been flipped, then the rotation is counterclockwise.
+						if flipped then
+							rotate_by (ph.position, - rot (package_position));
+						else
+							rotate_by (ph.position, rot (package_position));
+						end if;
 
 						-- Move the placeholder by the package position to 
 						-- its final position:
@@ -802,10 +806,14 @@ is
 					if f = face then
 
 						-- Rotate the position of the placeholder by the rotation of the package.
-						-- NOTE: This does not affect the rotation of the placeholder text.
-						rotate_by (ph.position, rot (package_position));
-						
-						if flipped then mirror (ph.position, Y); end if;
+						-- NOTE: This does not affect the rotation of the placeholder text but only
+						-- the rotation about the origin of the package.
+						-- If the package has been flipped, then the rotation is counterclockwise.
+						if flipped then
+							rotate_by (ph.position, - rot (package_position));
+						else
+							rotate_by (ph.position, rot (package_position));
+						end if;
 
 						-- Move the placeholder by the package position to 
 						-- its final position:
