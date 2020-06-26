@@ -78,7 +78,7 @@ procedure read_module_file (
 	meta_board		: et_meta.type_board;
 
 	-- RULES
-	conventions_file 		: conventions.pac_file_name.bounded_string;
+	conventions_file 		: et_conventions.pac_file_name.bounded_string;
 	pcb_design_rules_file	: et_design_rules.pac_file_name.bounded_string;
 	
 	active_assembly_variant : et_general.type_variant_name.bounded_string; -- "low_cost"
@@ -219,7 +219,7 @@ procedure read_module_file (
 	end;		
 
 	procedure read_rules is
-		use conventions;
+		use et_conventions;
 		use et_design_rules;
 		kw : constant string := f (line, 1);
 	begin
@@ -1208,7 +1208,7 @@ procedure read_module_file (
 				log (text => "device " & to_string (device_name), level => log_threshold + 1);
 				log_indentation_up;
 
-				if not conventions.prefix_valid (device_name) then 
+				if not et_conventions.prefix_valid (device_name) then 
 					--log (message_warning & "prefix of device " & et_libraries.to_string (device_name) 
 					--	 & " not conformant with conventions !");
 					null; -- CS output something helpful
@@ -1229,7 +1229,7 @@ procedure read_module_file (
 					
 					log (text => "value " & to_string (device_value), level => log_threshold + 2);
 					device.value := device_value;
-					if not conventions.value_valid (device_value, prefix (device_name)) then
+					if not et_conventions.value_valid (device_value, prefix (device_name)) then
 						log (WARNING, "value of " & to_string (device_name) &
 							" not conformant with conventions !");
 					end if;
@@ -1281,7 +1281,7 @@ procedure read_module_file (
 
 				-- Validate partcode according to category, package and value:
 				if device.appearance = PCB then
-					conventions.validate_partcode (
+					et_conventions.validate_partcode (
 						partcode		=> device.partcode,
 						device_name		=> device_name,
 
@@ -1327,7 +1327,7 @@ procedure read_module_file (
 				log (text => "device (non-electric) " & to_string (device_name), level => log_threshold + 1);
 				log_indentation_up;
 
-				if not conventions.prefix_valid (device_name) then 
+				if not et_conventions.prefix_valid (device_name) then 
 					--log (message_warning & "prefix of device " & et_libraries.to_string (device_name) 
 					--	 & " not conformant with conventions !");
 					null; -- CS output something helpful

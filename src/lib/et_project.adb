@@ -61,7 +61,7 @@ with et_packages;
 with et_pcb;
 with et_pcb_stack;
 with et_pcb_coordinates;
-with conventions;
+with et_conventions;
 with submodules;
 with assembly_variants;
 with material;

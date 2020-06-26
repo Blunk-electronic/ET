@@ -54,7 +54,7 @@ with et_export;
 with et_import;
 with et_csv;
 
-package body conventions is
+package body et_conventions is
 
 	use et_string_processing;
 	
@@ -2557,7 +2557,7 @@ package body conventions is
 		put_line (to_string (TERMINAL_NAME) & to_string (et_symbols.text_size_default));
 		put_line (to_string (COMPONENT_ATTRIBUTE) & to_string (et_symbols.text_size_default));
 		put_line (to_string (SHEET_NAME) & to_string (et_project.sheet_name_text_size_default)); -- CS no longer required ?
-		put_line (to_string (conventions.FILE_NAME) & to_string (et_project.file_name_text_size_default));
+		put_line (to_string (FILE_NAME) & to_string (et_project.file_name_text_size_default));
 		
 		new_line;
 		new_line;
@@ -2696,7 +2696,7 @@ package body conventions is
 						
 						-- insert the prefix assignment in container component_prefixes
 						type_component_prefixes.insert (
-							container	=> conventions.component_prefixes,
+							container	=> et_conventions.component_prefixes,
 							position	=> component_prefix_cursor,
 							key 		=> prefix,
 							new_item 	=> cat,
@@ -2709,7 +2709,7 @@ package body conventions is
 					end loop;
 
 					-- Notify operator if no prefixes specified:
-					if type_component_prefixes.is_empty (conventions.component_prefixes) then
+					if type_component_prefixes.is_empty (et_conventions.component_prefixes) then
 						log (WARNING, "no device prefixes specified !" & reduced_check_coverage);
 					end if;
 					
@@ -2734,7 +2734,7 @@ package body conventions is
 						
 						-- insert the abbrevation to unit of measurement assignment in container component_units
 						type_units_of_measurement.insert (
-							container	=> conventions.component_units,
+							container	=> et_conventions.component_units,
 							position	=> unit_cursor,
 
 							-- If entry already in map, this flag goes true. Warning issued later. see below.
@@ -2752,7 +2752,7 @@ package body conventions is
 					end loop;
 
 					-- Notify operator if no units of measurement specified:
-					if type_units_of_measurement.is_empty (conventions.component_units) then
+					if type_units_of_measurement.is_empty (et_conventions.component_units) then
 						log (WARNING, "no units of measurement specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -2782,7 +2782,7 @@ package body conventions is
 					end loop;
 
 					-- Notify operator if no components specified:
-					if type_categories_with_operator_interacton.is_empty (conventions.component_categories_with_operator_interaction) then
+					if type_categories_with_operator_interacton.is_empty (et_conventions.component_categories_with_operator_interaction) then
 						log (WARNING, "no categories specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -2817,14 +2817,14 @@ package body conventions is
 							when SHEET_NAME =>
 								size := et_project.to_sheet_name_text_size (et_string_processing.field (element (line_cursor), 2));
 
-							when conventions.FILE_NAME =>
+							when et_conventions.FILE_NAME =>
 								size := et_project.to_file_name_text_size (et_string_processing.field (element (line_cursor), 2));
 								
 						end case;
 						
 						-- insert the text category and size in container text_sizes_schematic
 						type_text_sizes_schematic.insert (
-							container	=> conventions.text_sizes_schematic,
+							container	=> et_conventions.text_sizes_schematic,
 							key 		=> text,
 							new_item 	=> size);
 						
@@ -2832,7 +2832,7 @@ package body conventions is
 					end loop;
 
 					-- Notify operator if no sizes specified:
-					if type_text_sizes_schematic.is_empty (conventions.text_sizes_schematic) then
+					if type_text_sizes_schematic.is_empty (et_conventions.text_sizes_schematic) then
 						log (WARNING, "no text sizes specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -2855,7 +2855,7 @@ package body conventions is
 						
 						-- insert the text category and size in container text_sizes_schematic
 						type_partcode_keywords.insert (
-							container	=> conventions.partcode_keywords,
+							container	=> et_conventions.partcode_keywords,
 							key 		=> partcode_keyword,
 							new_item 	=> partcode_section);
 						
@@ -2863,7 +2863,7 @@ package body conventions is
 					end loop;
 
 					-- Notify operator if no keywrds specified:
-					if type_partcode_keywords.is_empty (conventions.partcode_keywords) then
+					if type_partcode_keywords.is_empty (et_conventions.partcode_keywords) then
 						log (WARNING, "no part code keywords specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -2894,7 +2894,7 @@ package body conventions is
 
 		if exists (to_string (file_name)) then
 
-			conventions.component_prefixes := type_component_prefixes.empty_map;
+			et_conventions.component_prefixes := type_component_prefixes.empty_map;
 
 			open (file => conventions_file_handle, mode => in_file, name => to_string (file_name));
 			set_input (conventions_file_handle);
@@ -3231,7 +3231,7 @@ package body conventions is
 	end prefix_valid;
 
 	
-end conventions;
+end et_conventions;
 
 -- Soli Deo Gloria
 

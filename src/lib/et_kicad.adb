@@ -52,7 +52,7 @@ with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 with ada.environment_variables;
 
-with conventions;
+with et_conventions;
 
 package body et_kicad is
 
@@ -1753,7 +1753,7 @@ package body et_kicad is
 
 			function to_port (line : in et_string_processing.type_fields_of_line) return type_port_library is
 			-- Converts the given line to a type_port.
-				use conventions;
+				use et_conventions;
 			
 				port : type_port_library; -- the port being built -> to be returned
 
@@ -2036,7 +2036,7 @@ package body et_kicad is
 					raise constraint_error;
 				end missing_field;
 
-				use conventions;
+				use et_conventions;
 				
 			begin -- check_text_fields
 				log_indentation_up;
@@ -2068,7 +2068,7 @@ package body et_kicad is
 						-- Since this is a real component. we do the prefix character check 
 						-- against the default character set for prefixes as specified in et_devices.
 						-- Afterward we validate the prefix. The prefixes for real components are specified
-						-- in the et configuration file (see conventions).						
+						-- in the et configuration file (see et_conventions).						
 						log (text => "prefix", level => log_threshold + 1);
 						if not field_prefix_found then
 							missing_field (field_reference.meaning);
@@ -6694,7 +6694,7 @@ package body et_kicad is
 				port_cursor		: type_hierarchic_sheet_ports.cursor; -- obligatory, but not read
 
 				use type_submodule_name;
-				use conventions;
+				use et_conventions;
 
 				text_size : pac_text.type_text_size; -- temporarily storage of a text size before being checked
 			
@@ -6792,7 +6792,7 @@ package body et_kicad is
 					sheet.text_size_of_name := to_text_size (mil_to_distance (f (element (line_cursor), 3)));
 
 					-- Test text size by category.
-					check_schematic_text_size (category => conventions.SHEET_NAME, size => sheet.text_size_of_name);
+					check_schematic_text_size (category => et_conventions.SHEET_NAME, size => sheet.text_size_of_name);
 				end if;
 
 				next (line_cursor);
@@ -7028,7 +7028,7 @@ package body et_kicad is
 				-- The label header "Text Label 2350 3250 0 60 ~ 0" and the next line like
 				-- "net_name_abc" is read here. It contains the supposed net name.
 
-				use conventions;
+				use et_conventions;
 				
 				label : type_net_label_simple; -- the label being built
 			begin
@@ -7100,7 +7100,7 @@ package body et_kicad is
 				-- The label header "Text GLabel 4700 3200 1 60 UnSpc ~ 0" and the next line like
 				-- "net_name_abc" is read here. It contains the supposed net name.
 
-				use conventions;
+				use et_conventions;
 				
 				label : type_net_label_tag; -- the label being built
 			begin
@@ -7403,7 +7403,7 @@ package body et_kicad is
 				-- Perfoms a CONTEXTUAL VALIDATION of the text fields before they are used to 
 				-- assemble and insert the component into the component list of the module.
 
-					use conventions;
+					use et_conventions;
 				
 					procedure missing_field (m : in type_placeholder_meaning) is begin
 						log (ERROR,
@@ -8284,7 +8284,7 @@ package body et_kicad is
 								-- -- Build a reference type from the given reference string.
 								-- Afterward we validate the prefix of the reference. 
 								-- It is about a REAL component. Its prefix must be one 
-								-- of those defined in the configuration file (see conventions).
+								-- of those defined in the configuration file (see et_conventions).
 								reference := to_component_reference ( -- character check included
 									text_in			=> f (element (line_cursor), 3),
 									leading_hash	=> false);
@@ -11936,7 +11936,7 @@ package body et_kicad is
 				-- CS ? power_in_count	: natural := 0; -- CS: test if power_in name matches net name ?
 
 				-- for counting ports by component category
-				use conventions;
+				use et_conventions;
 				connector_count	: natural := 0;
 				testpoint_count	: natural := 0;
 				jumper_count	: natural := 0;
@@ -13278,14 +13278,14 @@ package body et_kicad is
 
 -- 	procedure multiple_purpose_warning ( -- CS move to et_schematic or et_project
 -- 	-- Outputs a warning message on multiple usage of a purpose of a component category.
--- 		category		: in conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+-- 		category		: in et_conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
 -- 		purpose 		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
 -- 		log_threshold 	: in et_string_processing.type_log_level) is
 -- 		
 -- 		use et_string_processing;
 -- 		use et_libraries;
 -- 		use et_kicad.type_modules;
--- 		use conventions;
+-- 		use et_conventions;
 -- 		
 -- 		procedure locate_component (
 -- 		-- Searches the component list of the module for a connector with the given purpose.
@@ -13300,7 +13300,7 @@ package body et_kicad is
 -- 
 -- 			while component /= et_kicad.type_components_schematic.no_element loop
 -- 				if element (component).appearance = sch_pcb then -- it must be a real component
--- 					if conventions.category (key (component)) = category then -- category must match
+-- 					if et_conventions.category (key (component)) = category then -- category must match
 -- 						if element (component).purpose = purpose then -- purpose must match
 -- 							log (text => "purpose already used by component " &
 -- 								 et_libraries.to_string (key (component)));
@@ -13336,7 +13336,7 @@ package body et_kicad is
 -- 	function multiple_purpose ( -- CS move to et_schematic or et_project
 -- 	-- Returns the number of occurences of components with the given purpose and category.
 -- 	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
--- 		category 		: in conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+-- 		category 		: in et_conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
 -- 		purpose 		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
 -- 		log_threshold 	: in et_string_processing.type_log_level)
 -- 		return natural is
@@ -13345,7 +13345,7 @@ package body et_kicad is
 -- 
 -- 		use et_kicad.type_modules;
 -- 		use et_libraries;
--- 		use conventions;
+-- 		use et_conventions;
 -- 		
 -- 		procedure locate_component (
 -- 		-- Searches the component list of the module for a connector with the given purpose.
@@ -13365,7 +13365,7 @@ package body et_kicad is
 -- 
 -- 			while component /= et_kicad.type_components_schematic.no_element loop
 -- 				if element (component).appearance = sch_pcb then -- it must be a real component
--- 					if conventions.category (key (component)) = category then -- category must match
+-- 					if et_conventions.category (key (component)) = category then -- category must match
 -- 						if element (component).purpose = purpose then -- purpose must match
 -- 							log (et_libraries.to_string (key (component)), level => log_threshold + 1);
 -- 							occurences := occurences + 1;
@@ -13418,7 +13418,7 @@ package body et_kicad is
 -- 			use type_components_schematic;		
 -- 			component : type_components_schematic.cursor := module.components.first;
 -- 			
--- 			use conventions;
+-- 			use et_conventions;
 -- 
 -- 			procedure log_component (mounted : in boolean := true) is
 -- 			-- This is for logging mounted or not mounted components.

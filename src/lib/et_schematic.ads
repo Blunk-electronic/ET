@@ -73,6 +73,7 @@ with et_devices;
 with et_frames;
 with et_meta;
 with et_design_rules;
+-- with et_conventions;
 
 package et_schematic is
 	use et_general.type_net_name;
@@ -466,7 +467,7 @@ package et_schematic is
 		element_type	=> type_device_non_electric);
 
 -- 	type type_rules is record
--- 		conventions2	: conventions.pac_file_name.bounded_string;
+-- 		conventions		: et_conventions.pac_file_name.bounded_string;
 -- 		layout			: et_design_rules.pac_file_name.bounded_string;
 -- 	end record;
 	

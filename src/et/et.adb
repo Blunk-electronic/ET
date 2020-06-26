@@ -51,7 +51,7 @@ with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 with et_import;
 with et_export;
-with conventions;
+with et_conventions;
 with et_kicad;
 with et_kicad_to_native;
 with et_project;
@@ -76,8 +76,8 @@ with gui;
 
 procedure et is
 
-	conv_file_name_create	: conventions.pac_file_name.bounded_string;
-	conv_file_name_use		: conventions.pac_file_name.bounded_string;
+	conv_file_name_create	: et_conventions.pac_file_name.bounded_string;
+	conv_file_name_use		: et_conventions.pac_file_name.bounded_string;
 
 	project_name_create		: et_project.type_project_name.bounded_string; -- the project to be created
 	project_name_import		: et_project.type_project_name.bounded_string; -- the project to be imported
@@ -188,11 +188,11 @@ procedure et is
 
 					elsif full_switch = switch_make_default_conv then -- make conventions file
 						log (text => arg & full_switch & space & parameter);
-						conv_file_name_create := conventions.to_file_name (parameter);
+						conv_file_name_create := et_conventions.to_file_name (parameter);
 
 					elsif full_switch = switch_conventions then -- use conventions file
 						log (text => arg & full_switch & space & parameter);
-						conv_file_name_use := conventions.to_file_name (parameter);
+						conv_file_name_use := et_conventions.to_file_name (parameter);
 
 
 					-- project
@@ -504,7 +504,7 @@ procedure et is
 	procedure process_commandline_arguments is
 		use et_project.type_project_name;
 		use pac_script_name;
-		use conventions.pac_file_name;
+		use et_conventions.pac_file_name;
 		use et_packages.type_package_model_file;
 		use et_symbols.type_symbol_model_file;
 		use et_devices.type_device_model_file;
@@ -512,7 +512,7 @@ procedure et is
 		
 		procedure read_conventions_file is begin
 			if length (conv_file_name_use) > 0 then
-				conventions.read_conventions (
+				et_conventions.read_conventions (
 					file_name		=> conv_file_name_use,
 					log_threshold	=> 0);
 
@@ -533,7 +533,7 @@ procedure et is
 		-- If the operator wishes to create a conventions file it will be done.
 		-- Other command line parameters are ignored:
 		if length (conv_file_name_create) > 0 then
-			conventions.make_default_conventions (conv_file_name_create, log_threshold => 0);
+			et_conventions.make_default_conventions (conv_file_name_create, log_threshold => 0);
 		else
 			-- If operator wants to create a new project it will be created in the current directory:
 			if length (project_name_create) > 0 then

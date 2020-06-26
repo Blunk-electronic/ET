@@ -50,7 +50,7 @@ with et_symbols;
 with et_packages;
 with pcb_rw.device_packages;
 with et_devices;
-with conventions;
+with et_conventions;
 
 package body board_ops is
 	
@@ -629,7 +629,7 @@ package body board_ops is
 				end if;
 
 				-- check conformity of prefix
-				if not conventions.prefix_valid (device_name_after) then
+				if not et_conventions.prefix_valid (device_name_after) then
 					null;
 					--device_prefix_invalid (device_after);
 				end if;

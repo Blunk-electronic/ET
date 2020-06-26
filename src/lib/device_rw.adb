@@ -60,7 +60,7 @@ with general_rw;				use general_rw;
 with schematic_rw;				use schematic_rw;
 with symbol_rw;					use symbol_rw;
 with pcb_rw.device_packages;
-with conventions;
+with et_conventions;
 with et_geometry;				use et_geometry;
 with et_text;
 with et_symbols;
@@ -920,7 +920,7 @@ package body device_rw is
 								check_prefix_characters (prefix);
 								log (text => "prefix " & to_string (prefix), level => log_threshold + 1);
 								
-								if not conventions.prefix_valid (prefix) then
+								if not et_conventions.prefix_valid (prefix) then
 									--log (message_warning & "prefix of device model " &
 									--	 to_string (file_name) & " not conformant with conventions !");
 									null; -- CS output something helpful
@@ -1481,7 +1481,7 @@ package body device_rw is
 					-- check if it meets certain conventions regarding its prefix.
 					-- The prefix gives information about the category of the device:
 					if type_value.length (value) > 0 then
-						if not conventions.value_valid (value, prefix) then
+						if not et_conventions.value_valid (value, prefix) then
 							log (WARNING, "default value of device model " &
 								to_string (file_name) & 
 								" not conformant with conventions !");

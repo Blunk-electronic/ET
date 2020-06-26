@@ -55,7 +55,7 @@ with et_symbols;
 with et_devices;				use et_devices;
 with et_packages;
 
-package conventions is
+package et_conventions is
 
 	comment_mark : constant string := "#";
 
@@ -515,7 +515,7 @@ package conventions is
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
 
-end conventions;
+end et_conventions;
 
 -- Soli Deo Gloria
 

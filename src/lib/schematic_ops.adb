@@ -40,7 +40,7 @@ with ada.strings.unbounded;			use ada.strings.unbounded;
 with ada.directories;
 with ada.exceptions;
 
-with conventions;
+with et_conventions;
 with et_pcb_coordinates;
 with et_terminals;
 with et_packages;
@@ -2687,7 +2687,7 @@ package body schematic_ops is
 				end if;
 
 				-- check conformity of prefix
-				if not conventions.prefix_valid (device_name_after) then
+				if not et_conventions.prefix_valid (device_name_after) then
 					null;
 					--device_prefix_invalid (device_name_after);
 				end if;
@@ -2769,7 +2769,7 @@ package body schematic_ops is
 				if element (device_cursor).appearance = PCB then
 
 					-- Check value regarding the device category:
-					if conventions.value_valid (value, prefix (device_name)) then 
+					if et_conventions.value_valid (value, prefix (device_name)) then 
 					
 						update_element (
 							container	=> module.devices,
@@ -10937,7 +10937,7 @@ package body schematic_ops is
 
 		module_cursor : type_modules.cursor; -- points to the module
 
-		use conventions;
+		use et_conventions;
 		use numbering;
 
 		-- The list of devices sorted by their coordinates.
@@ -11749,7 +11749,7 @@ package body schematic_ops is
 -- 										test_inserted;
 -- 
 -- 										-- check partcode content
--- 										conventions.validate_partcode (
+-- 										et_conventions.validate_partcode (
 -- 											partcode		=> material.type_devices.element (cursor_bom).partcode,
 -- 											device_name		=> device_name,
 -- 											packge			=> to_package_name (ada.directories.base_name (to_string (material.type_devices.element (cursor_bom).packge))),
@@ -12149,7 +12149,7 @@ package body schematic_ops is
 											test_inserted;
 
 											-- check partcode content
-											conventions.validate_partcode (
+											et_conventions.validate_partcode (
 												partcode		=> material.type_devices.element (cursor_bom).partcode,
 												device_name		=> device_name,
 												packge			=> et_packages.to_package_name (ada.directories.base_name 
@@ -13114,7 +13114,7 @@ package body schematic_ops is
 	-- 6.1 CS: unconnected inputs
 	-- 7. CS: devices with empty values
 	-- 8. CS: interactive devices with empty purpose
-	-- 9. CS: check partcode (conventions.validate_partcode)
+	-- 9. CS: check partcode (et_conventions.validate_partcode)
 	-- 10. units sitting on to of each other (same origin position)
 	-- 11. CS: warning (or error ?) if any ports sit on top of each other. This would make the movable_tests obsolete.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
