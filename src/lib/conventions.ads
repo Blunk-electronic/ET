@@ -140,6 +140,7 @@ package conventions is
 		DIODE,
 		DIODE_PHOTO,			-- light sensitive diode
 		DISPLAY,				-- display, LCD, LED, VFD, ...
+		FIDUCIAL,				-- non-electric device
 		FUSE,
 		HEATSINK,				-- a bulk of metal that absorbs and dissipates excessive heat
 		INDUCTOR,
@@ -153,6 +154,7 @@ package conventions is
 		MICROPHONE,
 		NETCHANGER,				-- ties two nets together
 		MOTOR,
+		MOUNTING_HOLE,			-- non-electric device
 		OPTOCOUPLER,
 		QUARTZ,					-- quartz crystal resonators
 		POTENTIOMETER,			-- variable resistor
