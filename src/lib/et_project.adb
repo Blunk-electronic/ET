@@ -1349,35 +1349,49 @@ package body et_project is
 				section_mark (section_placeholders, FOOTER);				
 			end query_placeholders;
 
-			procedure write (device_cursor : in et_schematic.type_devices.cursor) is begin
+			procedure write (d : in et_schematic.type_devices.cursor) is 
+				use material;
+			begin
 				section_mark (section_device, HEADER);
-				write (keyword => keyword_name, parameters => to_string (key (device_cursor)));
-				write (keyword => keyword_appearance, parameters => to_string (element (device_cursor).appearance));
-				write (keyword => keyword_model, parameters => to_string (element (device_cursor).model));
+				write (keyword => keyword_name, parameters => to_string (key (d)));
+				write (keyword => keyword_appearance, parameters => to_string (element (d).appearance));
+				write (keyword => keyword_model, parameters => to_string (element (d).model));
 
-				case element (device_cursor).appearance is
+				case element (d).appearance is
 					when PCB =>
-						write (keyword => keyword_value   , parameters => to_string (element (device_cursor).value));
-						write (keyword => keyword_variant , parameters => to_string (element (device_cursor).variant));
-						write (keyword => material.keyword_partcode, parameters => material.to_string (element (device_cursor).partcode));
-						write (keyword => keyword_purpose , parameters => to_string (element (device_cursor).purpose), wrap => true);
+						-- write the value if a value exists for the device:
+						if not is_empty (element (d).value) then
+							write (keyword => keyword_value, parameters => to_string (element (d).value));
+						end if;
+						
+						write (keyword => keyword_variant , parameters => to_string (element (d).variant));
+
+						-- write the partcode if a partcode exists for the device;
+						if not is_empty (element (d).partcode) then
+							write (keyword => keyword_partcode, parameters => to_string (element (d).partcode));
+						end if;
+
+						-- write the purpose if a purpose exists for the device;
+						if not is_empty (element (d).purpose) then
+							write (keyword => keyword_purpose , parameters => to_string (element (d).purpose), wrap => true);
+						end if;
 						
 						section_mark (section_package, HEADER);
 
 						-- Flip status:
-						write (keyword => keyword_flipped, parameters => et_pcb.to_string (element (device_cursor).flipped));
+						write (keyword => keyword_flipped, parameters => et_pcb.to_string (element (d).flipped));
 						
 						-- This is the position of the package in the layout, 
 						write (keyword => keyword_position, parameters => -- position x 34.5 y 60.1 face top/bottom
-							   position (element (device_cursor).position));
+							   position (element (d).position));
 					
-						query_element (device_cursor, query_placeholders'access);
+						query_element (d, query_placeholders'access);
 						section_mark (section_package, FOOTER);
 						
 					when VIRTUAL => null;
 				end case;
 
-				query_element (device_cursor, query_units'access);
+				query_element (d, query_units'access);
 				
 				section_mark (section_device, FOOTER);
 				new_line;
@@ -1480,14 +1494,22 @@ package body et_project is
 			end write;
 			
 		begin -- query_assembly_variants
-			section_mark (section_assembly_variants, HEADER);			
-			iterate (element (module_cursor).variants, write'access);
+			section_mark (section_assembly_variants, HEADER);
 
-			-- write the active assembly variant
-			write (
-				keyword		=> keyword_active,
-				parameters	=> et_general.to_variant (element (module_cursor).active_variant));
+			-- Write assembly variants if variants exists for the module.
+			-- If no variants exist, then this section will be left empty.
+			if not is_empty (element (module_cursor).variants) then
 
+				-- iterate assembly variants
+				iterate (element (module_cursor).variants, write'access);
+
+				-- write the active assembly variant
+				write (
+					keyword		=> keyword_active,
+					parameters	=> et_general.to_variant (element (module_cursor).active_variant));
+
+			end if;
+			
 			section_mark (section_assembly_variants, FOOTER);
 		end query_assembly_variants;
 		

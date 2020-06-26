@@ -2202,7 +2202,7 @@ package body conventions is
 					keyword_end := type_partcode.index (partcode, (1 => partcode_keyword_separator), from => place) - 1;
 					
 					keyword := to_partcode_keyword (slice (partcode, place, keyword_end));
-					log (text => "keyword " & to_string (keyword), level => log_threshold + 2);
+					log (text => "keyword " & enclose_in_quotes (to_string (keyword)), level => log_threshold + 2);
 					
 					place := keyword_end + 1; -- point to separator right after keyword
 					argument_start := place + 1; -- so the argument is expected after the separator
@@ -2212,7 +2212,7 @@ package body conventions is
 					
 					-- A keyword must occur only once:
 					if type_partcode.count (partcode, to_string (keyword)) > 1 then
-						log (WARNING, "keyword " & to_string (keyword) & " can be used only once !");
+						log (WARNING, "keyword " & enclose_in_quotes (to_string (keyword)) & " can be used only once !");
 					end if;
 				else
 					place := place + 1;	-- next character of keyword
@@ -2254,8 +2254,11 @@ package body conventions is
 		exception
 			when event:
 				others =>
-					log (WARNING, "partcode " & material.to_string (partcode) & " invalid !");
-					log (text => ada.exceptions.exception_message (event));
+				log (WARNING, "Error in optional keywords of partcode " & 
+					 enclose_in_quotes (material.to_string (partcode)) &
+					 " at position" & positive'image (place) & " !");
+				
+				log (text => ada.exceptions.exception_message (event));
 		
 	end validate_other_partcode_keywords;
 
@@ -2289,7 +2292,7 @@ package body conventions is
 	begin -- validate_partcode
 		if partcode_keywords_specified then
 			
-			log (text => "validating partcode ...", level => log_threshold);
+			log (text => "checking partcode against device name, package and value ...", level => log_threshold);
 			log_indentation_up;
 
 			-- Compose the root of the partcode as it should be.

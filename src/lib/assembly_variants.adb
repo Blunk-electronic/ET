@@ -36,31 +36,7 @@
 --
 
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.unbounded;
-with ada.text_io;				use ada.text_io;
-
-with ada.exceptions;
-with ada.directories;
-
-with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.ordered_maps;
-
-with et_general;				use et_general;
-with et_coordinates;
-with et_string_processing;		use et_string_processing;
-with et_schematic;				use et_schematic;
-with et_pcb;
-with et_pcb_coordinates;
-with et_project;				use et_project;
-with submodules;
-with conventions;
-with et_geometry;
-with et_devices;				use et_devices;
 
 package body assembly_variants is
 
@@ -69,7 +45,7 @@ package body assembly_variants is
 	end;
 		
 	function to_mounted (mounted : in type_mounted) return string is begin
-		return latin_1.space & to_lower (type_mounted'image (mounted));
+		return space & to_lower (type_mounted'image (mounted));
 	end;
 
 	function is_mounted (

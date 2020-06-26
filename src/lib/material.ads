@@ -80,6 +80,8 @@ package material is
 
 	procedure partcode_invalid (partcode : in string);
 	-- Issues error message and raises constraint error.
+
+	function is_empty (partcode : in type_partcode.bounded_string) return boolean;
 	
 	function to_partcode (
 	-- Tests the given value for length and invalid characters.							 

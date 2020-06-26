@@ -116,6 +116,14 @@ package body material is
 		raise constraint_error;
 	end;
 
+	function is_empty (partcode : in type_partcode.bounded_string) return boolean is begin
+		if type_partcode.length (partcode) = 0 then
+			return true;
+		else
+			return false;
+		end if;
+	end is_empty;
+	
 	function to_partcode (
 	-- Tests the given value for length and invalid characters.							 
 		partcode 					: in string;
