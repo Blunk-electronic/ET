@@ -239,7 +239,8 @@ package schematic_ops is
 	-- Returns for the given device prefix the next available device name in the module.
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
 		module_cursor	: in type_modules.cursor;
-		prefix			: in type_prefix.bounded_string) -- C
+		prefix			: in type_prefix.bounded_string; -- C
+		category		: in type_device_category := ELECTRICAL)
 		return type_name; -- C2
 	
 	procedure add_device (
@@ -251,6 +252,8 @@ package schematic_ops is
 		place			: in et_coordinates.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level);
 
+	-- CS procedure add_device with explicit device name like R12
+	
 	procedure copy_device (
 	-- Copies the given device. Places the first unit of the device (according to add level)
 	-- at the given destination in the schematic.

@@ -61,7 +61,6 @@ with et_devices;				use et_devices;
 
 package body et_schematic is
 
-
 	function "<" (left, right : in type_port_device) return boolean is
 		use et_symbols.type_port_name;
 	begin
@@ -377,6 +376,28 @@ package body et_schematic is
 		iterate (units, query_unit'access);
 		return list;
 	end unit_positions;
+
+
+	procedure device_name_in_use (
+		name	: in et_devices.type_name;	-- IC1, MH1, ...
+		by_cat	: in type_device_category)	-- electrical/non-electrical
+	is 
+		use et_string_processing;
+	begin
+		case by_cat is
+			when NON_ELECTRICAL =>
+				log (ERROR, "Name " & enclose_in_quotes (to_string (name)) &
+					 " already used by another non-electrical device !",
+					 console => true);
+
+			when ELECTRICAL =>
+				log (ERROR, "Name " & enclose_in_quotes (to_string (name)) &
+					 " already used by another electrical device !",
+					 console => true);
+		end case;
+		
+		raise constraint_error;
+	end device_name_in_use;
 
 	
 -- 	function position (device : in et_libraries.type_device_name) return type_device_position is

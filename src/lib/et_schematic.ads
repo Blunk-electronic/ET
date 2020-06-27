@@ -113,6 +113,7 @@ package et_schematic is
 		
 	package pac_texts is new doubly_linked_lists (type_text);
 
+
 	
 	-- Units can be placed mirrored along the x or y axis or not at all.
 	type type_mirror is (NO, X_AXIS, Y_AXIS);
@@ -444,7 +445,12 @@ package et_schematic is
 	-- They have names like H1 (hole) or FD (fiducial).
 	-- This is NOT about accessories of the module !
 	-- These devices do NOT appear in the BOM !
-	-- We collect them in an indefinite ordered map:
+	-- We collect them in an indefinite ordered map.
+
+	-- To distinguish between electrical and non-electrical devices
+	-- use this type:
+	type type_device_category is (ELECTRICAL, NON_ELECTRICAL);	
+	
 	type type_device_non_electric is record
 		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flipped				: et_pcb.type_flipped := et_pcb.flipped_default;
@@ -458,7 +464,11 @@ package et_schematic is
 		"<"				=> et_devices."<",
 		element_type	=> type_device_non_electric);
 
--- 	type type_rules is record
+	procedure device_name_in_use (
+		name	: in et_devices.type_name;	-- IC1, MH1, ...
+		by_cat	: in type_device_category);	-- electrical/non-electrical
+
+	-- 	type type_rules is record
 -- 		conventions		: et_conventions.pac_file_name.bounded_string;
 -- 		layout			: et_design_rules.pac_file_name.bounded_string;
 -- 	end record;

@@ -106,6 +106,9 @@ package board_ops is
 		position		: in type_package_position; -- x,y,rotation,face
 		prefix			: in type_prefix.bounded_string; -- FD
 		log_threshold	: in type_log_level);
+
+	-- CS procedure add_device with explicit device name like MH1
+	-- CS procedure copy_device
 	
 	procedure move_device (
 	-- Moves a device in the board layout in x/y direction.

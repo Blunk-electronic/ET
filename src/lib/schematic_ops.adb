@@ -3556,12 +3556,15 @@ package body schematic_ops is
 	-- CS: look up non-electric devices
 
 		module_cursor	: in type_modules.cursor;
-		prefix			: in type_prefix.bounded_string) -- C
+		prefix			: in type_prefix.bounded_string; -- R, L, C, IC, FD, H, ...
+		category		: in type_device_category := ELECTRICAL)
 		return type_name is -- C2
 		
 		next_name : type_name; -- to be returned
 
-		procedure search_gap (
+		use type_prefix;
+		
+		procedure search_gap_electric (
 		-- Searches for the lowest available device name. Looks at devices
 		-- whose prefix equals the given prefix. Example: If given prefix is R, it looks
 		-- for the lowest available resistor index.
@@ -3569,7 +3572,6 @@ package body schematic_ops is
 			module		: in type_module) is
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
-			use type_prefix;
 
 			-- We start the search with index 1. Not 0 because this would result in a zero based
 			-- numbering order. Index zero is allowed but not automatically choosen.
@@ -3578,14 +3580,20 @@ package body schematic_ops is
 			gap_found : boolean := false; -- goes true once a gap has been found
 		begin -- search_gap
 			while device_cursor /= et_schematic.type_devices.no_element loop
-				if et_devices.prefix (key (device_cursor)) = prefix then -- category match
+				if et_devices.prefix (key (device_cursor)) = prefix then -- prefix match
 					
 					if index (key (device_cursor)) /= index_expected then -- we have a gap
 
-						-- build the next available device name and exit
+						-- build the next available device name (like IC12)
 						next_name := to_name (prefix, index_expected);
-						gap_found := true;
-						exit;
+
+						-- The proposed next_name must not be occupied by a non-electrical device.
+						-- Look up the list of non-electrical devices. If the name
+						-- is already in use, discard it and try the next name.
+						if not module.devices_non_electric.contains (next_name) then
+							gap_found := true;
+							exit;
+						end if;
 					end if;
 
 					index_expected := index_expected + 1;
@@ -3598,15 +3606,93 @@ package body schematic_ops is
 			-- using the latest index_expected.
 			if not gap_found then
 				next_name := to_name (prefix, index_expected);
+
+				-- The proposed next_name must not be occupied by a non-electrical device.
+				-- Increment index and propose a new next_name until it can not be
+				-- found among the non-electric devices anymore.
+				while module.devices_non_electric.contains (next_name) loop
+					index_expected := index_expected + 1;
+
+					-- propose a new next_name
+					next_name := to_name (prefix, index_expected);
+				end loop;
 			end if;
 			
-		end search_gap;
+		end search_gap_electric;
+
+		procedure search_gap_non_electric (
+		-- Searches for the lowest available non-electrical device name. Looks at devices
+		-- whose prefix equals the given prefix. Example: If given prefix is MH, it looks
+		-- for the lowest available mounting hole index.
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use pac_devices_non_electric;
+			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;
+
+			-- We start the search with index 1. Not 0 because this would result in a zero based
+			-- numbering order. Index zero is allowed but not automatically choosen.
+			index_expected : type_name_index := type_name_index'first + 1;
+
+			gap_found : boolean := false; -- goes true once a gap has been found
+		begin -- search_gap
+			while device_cursor /= pac_devices_non_electric.no_element loop
+				if et_devices.prefix (key (device_cursor)) = prefix then -- prefix match
+					
+					if index (key (device_cursor)) /= index_expected then -- we have a gap
+
+						-- build the next available device name and exit
+						next_name := to_name (prefix, index_expected);
+
+						-- The proposed next_name must not be occupied by an electrical device.
+						-- Look up the list of electrical devices. If the name
+						-- is already in use, discard it and try the next name.
+						if not module.devices.contains (next_name) then
+							gap_found := true;
+							exit;
+						end if;
+					end if;
+
+					index_expected := index_expected + 1;
+				end if;
+				
+				next (device_cursor);
+			end loop;
+
+			-- If no gap has been found, then the device name must be assembled
+			-- using the latest index_expected.
+			if not gap_found then
+				next_name := to_name (prefix, index_expected);
+
+				-- The proposed next_name must not be occupied by an electrical device.
+				-- Increment index and propose a new next_name until it can not be
+				-- found among the electrical devices anymore.
+				while module.devices.contains (next_name) loop
+					index_expected := index_expected + 1;
+
+					-- propose a new next_name
+					next_name := to_name (prefix, index_expected);
+				end loop;
+			end if;
+			
+		end search_gap_non_electric;
 		
 	begin -- next_device_name
-		query_element (
-			position	=> module_cursor,
-			process		=> search_gap'access);
-		
+
+		-- The device category decides where to look first for a free device name.
+		case category is
+			when ELECTRICAL =>
+				
+				query_element (
+					position	=> module_cursor,
+					process		=> search_gap_electric'access);
+
+			when NON_ELECTRICAL =>
+				
+				query_element (
+					position	=> module_cursor,
+					process		=> search_gap_non_electric'access);
+		end case;
+				
 		return next_name;
 	end next_device_name;
 
@@ -10944,7 +11030,7 @@ package body schematic_ops is
 		-- By their order in this list the devices will be renumbered.
 		devices : numbering.type_devices.map;
 
-		function renumber (cat : in type_device_category) return boolean is
+		function renumber (cat : in et_conventions.type_device_category) return boolean is
 		-- Renumbers devices of given category. Returns true if all devices
 		-- have been renamed.
 		-- Marks every renamed unit in the device list so that the second
@@ -11086,24 +11172,25 @@ package body schematic_ops is
 		-- Renumber for each device category. If the first run fails, start another
 		-- iteration. If that fails too, issue error and abort.
 		-- Devices of unknown category are exampted from renumbering.
-		for cat in type_device_category'pos (type_device_category'first) .. 
-			type_device_category'pos (type_device_category'last) loop
+		for cat in et_conventions.type_device_category'pos (et_conventions.type_device_category'first) .. 
+			et_conventions.type_device_category'pos (et_conventions.type_device_category'last) loop
 
-			case type_device_category'val (cat) is
+			case et_conventions.type_device_category'val (cat) is
 				when UNKNOWN => null;
 				
 				when others =>
 
-					log (text => "category" & to_string (type_device_category'val (cat)), level => log_threshold + 1);
+					log (text => "category" & to_string (et_conventions.type_device_category'val (cat)),
+						 level => log_threshold + 1);
 
 					log_indentation_up;
-					if renumber (type_device_category'val (cat)) = false then
+					if renumber (et_conventions.type_device_category'val (cat)) = false then
 						-- first iteration failed. start a second:
 						
 						log (text => "another iteration required", level => log_threshold + 2);
 						log_indentation_up;
 						
-						if renumber (type_device_category'val (cat)) = false then
+						if renumber (et_conventions.type_device_category'val (cat)) = false then
 							-- second iteration failed: abort
 							log (ERROR, "renumbering failed !", console => true);
 							raise constraint_error;

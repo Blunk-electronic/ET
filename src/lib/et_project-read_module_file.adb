@@ -1264,13 +1264,16 @@ procedure read_module_file (
 					key			=> device_name, -- IC23, R5, LED12
 					new_item	=> device.all);
 
+				-- The device name must not be in use by any electrical device:
 				if not inserted then
-					log (ERROR, "device name " & to_string (device_name) & " already used !",
-							console => true);
-					raise constraint_error;
+					device_name_in_use (device_name, ELECTRICAL);
 				end if;
 
-				-- CS check if device exists in module.devices_non_electric
+				-- The device name must not be in use by any non-electrical device:
+				if module.devices_non_electric.contains (device_name) then
+					device_name_in_use (device_name, NON_ELECTRICAL);
+				end if;
+
 				
 				-- Read the device model (like ../libraries/transistor/pnp.dev) and
 				-- check the conductor layers:
@@ -1349,14 +1352,17 @@ procedure read_module_file (
 					key			=> device_name, -- FD1, H1
 					new_item	=> device_non_electric);
 
+				-- The device name must not be in use by any non-electrical device:
 				if not inserted then
-					log (ERROR, "device name " & to_string (device_name) & " already used !",
-							console => true);
-					raise constraint_error;
+					device_name_in_use (device_name, NON_ELECTRICAL);
 				end if;
 
-				-- CS check if device exists in module.devices
-				
+				-- The device name must not be in use by an electrical device:
+				if module.devices.contains (device_name) then
+					device_name_in_use (device_name, ELECTRICAL);
+				end if;
+
+					
 				-- Read the package model (like ../libraries/fiducials/crosshair.pac):
 				read_package (
 					file_name		=> device_non_electric_model,
