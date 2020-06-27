@@ -261,6 +261,7 @@ package et_symbols is
 	-- line width
 	keyword_line_width : constant string := "line_width"; -- NOTE: do not confuse with text line width !
 	subtype type_line_width is type_distance_positive range 0.1 .. 10.0;
+	line_width_default : constant type_line_width := 0.15;
 	
 	-- A port is basically a line. Its start point is the port position.
 	-- At the start point a net will be attached.
@@ -423,14 +424,14 @@ package et_symbols is
 
 	-- lines
 	type type_line is new pac_shapes.type_line with record
-		width		: type_line_width;
+		width		: type_line_width := line_width_default;
 	end record;
 	package type_lines is new doubly_linked_lists (type_line);
 
 	-- Arcs
 	type type_arc is new pac_shapes.type_arc with record
 		radius		: type_distance_positive; -- CS really required ?
-		width		: type_line_width;
+		width		: type_line_width := line_width_default;
 	end record;
 	package type_arcs is new doubly_linked_lists (type_arc);
 
@@ -440,7 +441,7 @@ package et_symbols is
 	
 	-- Circles
 	type type_circle_base is new pac_shapes.type_circle with record
-		width		: type_line_width;
+		width		: type_line_width := line_width_default;
 	end record;
 
 	type type_circle is new type_circle_base with record
