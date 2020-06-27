@@ -48,7 +48,7 @@ with ada.directories;			use ada.directories;
 
 with et_coordinates;
 -- with et_import;
-with material;
+with et_material;
 with et_string_processing;
 with et_symbols;
 with et_devices;				use et_devices;
@@ -474,7 +474,7 @@ package et_conventions is
 	--    to specify a correct partcode.
 	--  - If partcode keywords are specified in the conventions file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
-		partcode		: in material.type_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
+		partcode		: in et_material.type_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
 		device_name		: in type_name;						-- R45
 		packge			: in et_packages.type_component_package_name.bounded_string;	-- S_0805
 		value 			: in et_devices.type_value.bounded_string; 			-- 100R

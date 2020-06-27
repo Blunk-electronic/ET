@@ -2883,7 +2883,7 @@ package body et_schematic_ops is
 	-- Sets the partcode of a device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_name; -- R2
-		partcode			: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode			: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module being modified
@@ -2931,7 +2931,7 @@ package body et_schematic_ops is
 	begin -- set_partcode
 		log (text => "module " & to_string (module_name) &
 			" setting " & to_string (device_name) & " partcode to " &
-			enclose_in_quotes (material.to_string (partcode)),
+			enclose_in_quotes (et_material.to_string (partcode)),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -10391,7 +10391,7 @@ package body et_schematic_ops is
 		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		device			: in type_name; -- R1
 		value			: in type_value.bounded_string; -- 220R
-		partcode		: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
+		partcode		: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
 		purpose			: in type_purpose.bounded_string := type_purpose.to_bounded_string (""); -- set temperature
 		log_threshold	: in type_log_level) is
 
@@ -10467,7 +10467,7 @@ package body et_schematic_ops is
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
 			 " mount device " & to_string (device) &
 			 " value " & to_string (value) &
-			 " partcode " & material.to_string (partcode) &
+			 " partcode " & et_material.to_string (partcode) &
 			 write_purpose,
 			level => log_threshold);
 
@@ -11685,15 +11685,15 @@ package body et_schematic_ops is
 -- 	-- Exports a BOM file from the given top module and assembly variant.
 -- 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 -- 		variant_top		: in type_variant_name.bounded_string; -- low_cost
--- 		bom_file		: in material.type_file_name.bounded_string; -- CAM/motor_driver_bom.csv
+-- 		bom_file		: in et_material.type_file_name.bounded_string; -- CAM/motor_driver_bom.csv
 -- 		log_threshold	: in type_log_level) is
 -- 
 -- 		module_cursor : type_modules.cursor; -- points to the module
 -- 
 -- 		use assembly_variants;
--- 		use material;
+-- 		use et_material;
 -- 
--- 		bill_of_material : material.type_devices.map;
+-- 		bill_of_material : et_material.type_devices.map;
 -- 
 -- 		procedure collect (
 -- 		-- Collects devices of the given module and its variant in container bill_of_material.
@@ -11718,7 +11718,7 @@ package body et_schematic_ops is
 -- 					end if;
 -- 				end;
 -- 
--- 				procedure test_partcode (partcode : in material.type_partcode.bounded_string) is
+-- 				procedure test_partcode (partcode : in et_material.type_partcode.bounded_string) is
 -- 				begin
 -- 					if type_partcode.length (partcode) = 0 then
 -- 						log (WARNING, text => "device " & to_string (device_name) &
@@ -11727,7 +11727,7 @@ package body et_schematic_ops is
 -- 				end;
 -- 				
 -- 				procedure query_properties_default (cursor_schematic : in et_schematic.type_devices.cursor) is 
--- 					cursor_bom : material.type_devices.cursor;
+-- 					cursor_bom : et_material.type_devices.cursor;
 -- 
 -- 					use et_schematic.type_devices;
 -- 					use assembly_variants.type_devices;
@@ -11748,7 +11748,7 @@ package body et_schematic_ops is
 -- 
 -- 							apply_offset (device_name, offset, log_threshold + 2);
 -- 							
--- 							material.type_devices.insert (
+-- 							et_material.type_devices.insert (
 -- 								container	=> bill_of_material,
 -- 								key			=> device_name, -- IC4, R3
 -- 								new_item	=> (
@@ -11766,7 +11766,7 @@ package body et_schematic_ops is
 -- 				end query_properties_default;
 -- 
 -- 				procedure query_properties_variants (cursor_schematic : in et_schematic.type_devices.cursor) is 
--- 					cursor_bom : material.type_devices.cursor;
+-- 					cursor_bom : et_material.type_devices.cursor;
 -- 
 -- 					use et_schematic.type_devices;
 -- 					alt_dev_cursor : assembly_variants.type_devices.cursor;
@@ -11792,7 +11792,7 @@ package body et_schematic_ops is
 -- 								
 -- 								apply_offset (device_name, offset, log_threshold + 2);
 -- 								
--- 								material.type_devices.insert (
+-- 								et_material.type_devices.insert (
 -- 									container	=> bill_of_material,
 -- 									key			=> device_name, -- IC4, R3
 -- 									new_item	=> (
@@ -11822,7 +11822,7 @@ package body et_schematic_ops is
 -- 										
 -- 										-- Insert the device in bill with alternative properties as defined
 -- 										-- in the assembly variant:
--- 										material.type_devices.insert (
+-- 										et_material.type_devices.insert (
 -- 											container	=> bill_of_material,
 -- 											key			=> device_name, -- IC4, R3
 -- 											new_item	=> (
@@ -11837,10 +11837,10 @@ package body et_schematic_ops is
 -- 
 -- 										-- check partcode content
 -- 										et_conventions.validate_partcode (
--- 											partcode		=> material.type_devices.element (cursor_bom).partcode,
+-- 											partcode		=> et_material.type_devices.element (cursor_bom).partcode,
 -- 											device_name		=> device_name,
 -- 											packge			=> to_package_name (ada.directories.base_name (to_string (material.type_devices.element (cursor_bom).packge))),
--- 											value			=> material.type_devices.element (cursor_bom).value,
+-- 											value			=> et_material.type_devices.element (cursor_bom).value,
 -- 											log_threshold	=> log_threshold + 3);
 -- 
 -- 								end case;
@@ -12055,7 +12055,7 @@ package body et_schematic_ops is
 -- 			query_submodules;
 -- 
 -- 			-- write the bom
--- -- 			material.write_bom (
+-- -- 			et_material.write_bom (
 -- -- 				bom				=> bill_of_material,	-- the container that holds the bom
 -- -- 				file_name		=> bom_file, 			-- tmp/my_project_bom.csv
 -- -- 				--format			=> NATIVE,				-- CS should be an argument in the future
@@ -12090,8 +12090,8 @@ package body et_schematic_ops is
 
 		procedure make_for_variant (variant_name : in et_general.type_variant_name.bounded_string) is
 
-			use material;
-			bill_of_material : material.type_devices.map;
+			use et_material;
+			bill_of_material : et_material.type_devices.map;
 
 			procedure collect (
 			-- Collects devices of the given module and its variant in container bill_of_material.
@@ -12116,7 +12116,7 @@ package body et_schematic_ops is
 						end if;
 					end;
 
-					procedure test_partcode (partcode : in material.type_partcode.bounded_string) is
+					procedure test_partcode (partcode : in et_material.type_partcode.bounded_string) is
 					begin
 						if type_partcode.length (partcode) = 0 then
 							log (WARNING, text => "device " & to_string (device_name) &
@@ -12125,7 +12125,7 @@ package body et_schematic_ops is
 					end;
 					
 					procedure query_properties_default (cursor_schematic : in et_schematic.type_devices.cursor) is 
-						cursor_bom : material.type_devices.cursor;
+						cursor_bom : et_material.type_devices.cursor;
 
 						use et_schematic.type_devices;
 						use assembly_variants.type_devices;
@@ -12147,7 +12147,7 @@ package body et_schematic_ops is
 
 								apply_offset (device_name, offset, log_threshold + 2);
 								
-								material.type_devices.insert (
+								et_material.type_devices.insert (
 									container	=> bill_of_material,
 									key			=> device_name, -- IC4, R3
 									new_item	=> (
@@ -12165,7 +12165,7 @@ package body et_schematic_ops is
 					end query_properties_default;
 
 					procedure query_properties_variants (cursor_schematic : in et_schematic.type_devices.cursor) is 
-						cursor_bom : material.type_devices.cursor;
+						cursor_bom : et_material.type_devices.cursor;
 
 						use et_schematic.type_devices;
 						alt_dev_cursor : assembly_variants.type_devices.cursor;
@@ -12192,7 +12192,7 @@ package body et_schematic_ops is
 									
 									apply_offset (device_name, offset, log_threshold + 2);
 									
-									material.type_devices.insert (
+									et_material.type_devices.insert (
 										container	=> bill_of_material,
 										key			=> device_name, -- IC4, R3
 										new_item	=> (
@@ -12222,7 +12222,7 @@ package body et_schematic_ops is
 											
 											-- Insert the device in bill with alternative properties as defined
 											-- in the assembly variant:
-											material.type_devices.insert (
+											et_material.type_devices.insert (
 												container	=> bill_of_material,
 												key			=> device_name, -- IC4, R3
 												new_item	=> (
@@ -12237,11 +12237,11 @@ package body et_schematic_ops is
 
 											-- check partcode content
 											et_conventions.validate_partcode (
-												partcode		=> material.type_devices.element (cursor_bom).partcode,
+												partcode		=> et_material.type_devices.element (cursor_bom).partcode,
 												device_name		=> device_name,
 												packge			=> et_packages.to_package_name (ada.directories.base_name 
-																	(et_packages.to_string (material.type_devices.element (cursor_bom).packge))),
-												value			=> material.type_devices.element (cursor_bom).value,
+																	(et_packages.to_string (et_material.type_devices.element (cursor_bom).packge))),
+												value			=> et_material.type_devices.element (cursor_bom).value,
 												log_threshold	=> log_threshold + 3);
 
 									end case;
@@ -12439,7 +12439,7 @@ package body et_schematic_ops is
 			query_submodules;
 
 			-- write the bom
-			material.write_bom (
+			et_material.write_bom (
 				bom				=> bill_of_material,	-- the container that holds the bom
 				module_name		=> module_name,			-- motor_driver
 				variant_name	=> variant_name,		-- low_cost

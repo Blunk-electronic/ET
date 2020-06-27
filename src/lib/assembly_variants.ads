@@ -47,7 +47,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
 with et_general;
-with material;
+with et_material;
 with et_string_processing;		use et_string_processing;
 with et_devices;				use et_devices;
 
@@ -70,7 +70,7 @@ package assembly_variants is
 		case mounted is
 			when YES =>
 				value		: type_value.bounded_string; -- 470R
-				partcode	: material.type_partcode.bounded_string;
+				partcode	: et_material.type_partcode.bounded_string;
 				purpose		: type_purpose.bounded_string;
 
 			when NO =>

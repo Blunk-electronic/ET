@@ -60,7 +60,7 @@ with et_board_ops;
 with submodules;
 with assembly_variants;
 with pick_and_place;
-with material;
+with et_material;
 with netlists;
 with et_geometry;		use et_geometry; -- due to frequently used keywords
 with et_symbols;
@@ -1435,14 +1435,14 @@ package body scripting is
 					when NOUN_DEVICE => 
 						declare
 							value : type_value.bounded_string; -- 470R
-							partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+							partcode : et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 							purpose : type_purpose.bounded_string; -- brightness_control
 						begin
 							-- validate value
 							value := to_value (f (7));
 
 							-- validate partcode
-							partcode := material.to_partcode (f (8));
+							partcode := et_material.to_partcode (f (8));
 							
 							case fields is
 								when 8 =>
@@ -1854,9 +1854,9 @@ package body scripting is
 						case fields is
 							when 6 =>
 								declare
-									partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+									partcode : et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 								begin
-									partcode := material.to_partcode (f (6));
+									partcode := et_material.to_partcode (f (6));
 
 									-- set the purpose
 									set_partcode

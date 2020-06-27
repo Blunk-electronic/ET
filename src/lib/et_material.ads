@@ -53,7 +53,7 @@ with et_string_processing;		use et_string_processing;
 with et_devices;				use et_devices;
 with et_packages;
 
-package material is
+package et_material is
 
 
 	-- The part code is THE key into the ERP system of the user. It can be a cryptic SAP number
@@ -130,7 +130,7 @@ package material is
 		format			: in type_bom_format;
 		log_threshold	: in type_log_level);
 	
-end material;
+end et_material;
 
 -- Soli Deo Gloria
 

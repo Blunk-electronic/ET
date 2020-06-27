@@ -49,7 +49,7 @@ with ada.exceptions;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
-with material;
+with et_material;
 with et_general;				--use et_general;
 
 with et_coordinates;			use et_coordinates;
@@ -289,7 +289,7 @@ package body device_rw is
 		prefix				: type_prefix.bounded_string; -- T, IC
 		value				: type_value.bounded_string; -- BC548
 		appearance			: type_appearance; -- virtual/pcb
-		partcode			: material.type_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
+		partcode			: et_material.type_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
 		variant				: type_variant;
 		variant_name		: type_variant_name.bounded_string; -- N, D
 		variants			: pac_variants.map;
@@ -948,13 +948,13 @@ package body device_rw is
 								appearance := to_appearance (f (line,2));
 								log (text => "appearance " & to_string (appearance), level => log_threshold + 1);								
 
-							elsif kw = material.keyword_partcode then -- partcode IC_PAC_S_SO14_VAL_
+							elsif kw = et_material.keyword_partcode then -- partcode IC_PAC_S_SO14_VAL_
 								expect_field_count (line, 2);
 
 								-- validate partcode length
-								partcode := material.to_partcode (f (line,2));
+								partcode := et_material.to_partcode (f (line,2));
 								
-								log (text => "partcode " & material.to_string (partcode), level => log_threshold + 1);
+								log (text => "partcode " & et_material.to_string (partcode), level => log_threshold + 1);
 							else
 								invalid_keyword (kw);
 							end if;

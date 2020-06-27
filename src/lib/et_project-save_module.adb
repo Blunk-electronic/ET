@@ -695,7 +695,7 @@ is
 		end query_placeholders;
 
 		procedure write (d : in et_schematic.type_devices.cursor) is 
-			use material;
+			use et_material;
 		begin
 			section_mark (section_device, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (d)));
@@ -791,8 +791,8 @@ is
 								space &
 								keyword_value & space &
 								to_string (element (device_cursor).value) &
-								space & material.keyword_partcode & space &
-								material.to_string (element (device_cursor).partcode) &
+								space & et_material.keyword_partcode & space &
+								et_material.to_string (element (device_cursor).partcode) &
 								purpose);
 
 				end case;

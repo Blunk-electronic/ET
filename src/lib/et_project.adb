@@ -64,7 +64,7 @@ with et_pcb_coordinates;
 with et_conventions;
 with submodules;
 with assembly_variants;
-with material;
+with et_material;
 with netlists;
 with et_text;					use et_text;
 with et_geometry;				use et_geometry;

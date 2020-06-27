@@ -64,7 +64,7 @@ with et_packages;
 with et_devices;				use et_devices;
 
 
-package body material is
+package body et_material is
 
 	function to_string (partcode : in type_partcode.bounded_string) return string is begin
 		return type_partcode.to_string (partcode);
@@ -347,7 +347,7 @@ package body material is
 	end write_bom;
 
 	
-end material;
+end et_material;
 
 -- Soli Deo Gloria
 

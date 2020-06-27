@@ -519,7 +519,7 @@ procedure read_module_file (
 	-- temporarily collection of units:
 	device_units	: et_schematic.type_units.map; -- PWR, A, B, ...
 	
-	device_partcode	: material.type_partcode.bounded_string;
+	device_partcode	: et_material.type_partcode.bounded_string;
 	device_purpose	: et_devices.type_purpose.bounded_string;
 	device_variant	: et_devices.type_variant_name.bounded_string; -- D, N
 	device_position	: et_pcb_coordinates.type_package_position; -- in the layout ! incl. angle and face
@@ -734,11 +734,11 @@ procedure read_module_file (
 			check_variant_name_length (f (line, 2));
 			device_variant := to_name (f (line, 2));
 
-		elsif kw = material.keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
+		elsif kw = et_material.keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
 			expect_field_count (line, 2);
 
 			-- validate partcode
-			device_partcode := material.to_partcode (f (line, 2));
+			device_partcode := et_material.to_partcode (f (line, 2));
 
 		elsif kw = keyword_purpose then -- purpose power_out
 			expect_field_count (line, 2);
@@ -1234,12 +1234,12 @@ procedure read_module_file (
 							" not conformant with conventions !");
 					end if;
 
-					log (text => "partcode " & material.to_string (device_partcode), level => log_threshold + 2);
-					if material.partcode_characters_valid (device_partcode) then
+					log (text => "partcode " & et_material.to_string (device_partcode), level => log_threshold + 2);
+					if et_material.partcode_characters_valid (device_partcode) then
 						device.partcode	:= device_partcode;
 					else
 						log_indentation_reset;
-						material.partcode_invalid (material.to_string (device_partcode));
+						et_material.partcode_invalid (et_material.to_string (device_partcode));
 					end if;
 
 					log (text => "purpose " & to_string (device_purpose), level => log_threshold + 2);
@@ -1305,7 +1305,7 @@ procedure read_module_file (
 				device_model	:= to_file_name ("");
 				device_value	:= type_value.to_bounded_string ("");
 				device_purpose	:= type_purpose.to_bounded_string ("");
-				device_partcode := material.type_partcode.to_bounded_string ("");
+				device_partcode := et_material.type_partcode.to_bounded_string ("");
 				device_variant	:= to_name ("");
 
 				log_indentation_down;
@@ -4252,10 +4252,10 @@ procedure read_module_file (
 										device.value := to_value (f (line, 4));
 
 										-- read partcode
-										if f (line, 5) = material.keyword_partcode then
-											device.partcode := material.to_partcode (f (line, 6));
+										if f (line, 5) = et_material.keyword_partcode then
+											device.partcode := et_material.to_partcode (f (line, 6));
 										else -- keyword partcode not found
-											log (ERROR, "expect keyword " & enclose_in_quotes (material.keyword_partcode) &
+											log (ERROR, "expect keyword " & enclose_in_quotes (et_material.keyword_partcode) &
 													" after value !", console => true);
 											raise constraint_error;
 										end if;

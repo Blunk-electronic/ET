@@ -59,7 +59,7 @@ with et_text;
 with submodules;
 with assembly_variants;
 with numbering;
-with material;
+with et_material;
 with netlists;
 with et_symbols;
 with et_devices;				use et_devices;
@@ -194,7 +194,7 @@ package et_schematic_ops is
 	-- Sets the partcode of a device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_name; -- R2
-		partcode			: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode			: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level);
 	
 	function exists_device_port (
@@ -550,7 +550,7 @@ package et_schematic_ops is
 		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		device			: in type_name; -- R1
 		value			: in type_value.bounded_string; -- 220R
-		partcode		: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
+		partcode		: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
 		purpose			: in type_purpose.bounded_string := type_purpose.to_bounded_string (""); -- set temperature
 		log_threshold	: in type_log_level);
 

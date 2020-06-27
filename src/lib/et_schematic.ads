@@ -64,7 +64,7 @@ with et_pcb;
 with et_pcb_coordinates;
 with submodules;
 with numbering;
-with material;
+with et_material;
 with netlists;
 with et_geometry;
 with et_text;
@@ -176,7 +176,7 @@ package et_schematic is
 			-- If a device appears in both schematic and layout it has got:
 			when et_symbols.PCB =>
 				value		: et_devices.type_value.bounded_string; -- 470R
-				partcode	: material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+				partcode	: et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 				purpose		: et_devices.type_purpose.bounded_string; -- brightness_control
 				variant		: et_devices.type_variant_name.bounded_string; -- D, N
 
