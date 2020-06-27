@@ -65,7 +65,7 @@ with assembly_variants;
 with pick_and_place;
 with et_devices;				use et_devices;
 
-package board_ops is
+package et_board_ops is
 
 	procedure move_board (
 	-- Moves the origin of the board to the given point (relative to the lower left 
@@ -552,7 +552,7 @@ package board_ops is
 
 
 	
-end board_ops;
+end et_board_ops;
 
 -- Soli Deo Gloria
 

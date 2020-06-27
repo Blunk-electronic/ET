@@ -55,7 +55,7 @@ with et_terminals;
 with et_packages;
 with et_pcb;
 with et_pcb_stack;
-with board_ops;
+with et_board_ops;
 
 with submodules;
 with assembly_variants;
@@ -2075,6 +2075,7 @@ package body scripting is
 		log_threshold	: in type_log_level)
 		return type_exit_code is
 
+		use et_board_ops;
 		use et_packages;
 		use et_terminals.pac_shapes;
 		use et_pcb;
@@ -2320,7 +2321,7 @@ package body scripting is
 				when LINE =>
 					case fields is
 						when 10 =>
-							board_ops.draw_keepout_line (
+							draw_keepout_line (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
 								line			=> (
@@ -2342,7 +2343,7 @@ package body scripting is
 				when ARC =>
 					case fields is
 						when 13 =>
-							board_ops.draw_keepout_arc (
+							draw_keepout_arc (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
 								arc				=> (
@@ -2373,7 +2374,7 @@ package body scripting is
 							if is_number (f (7)) then
 								-- Circle is not filled.
 								
-								board_ops.draw_keepout_circle (
+								draw_keepout_circle (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									circle			=> 
@@ -2395,7 +2396,7 @@ package body scripting is
 							if f (7) = keyword_filled then
 								-- Circle is filled.
 								
-								board_ops.draw_keepout_circle (
+								draw_keepout_circle (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									circle			=> 
@@ -2437,7 +2438,7 @@ package body scripting is
 							-- Then add the single signal layer to a set.
 							-- Do so with all objects in route and via restrict.
 							
-							board_ops.draw_route_restrict_line (
+							draw_route_restrict_line (
 								module_name 	=> module,
 								line			=> (
 											layers		=> to_layers (f (5)), -- [1,3,5-9]
@@ -2460,7 +2461,7 @@ package body scripting is
 					case fields is
 						when 13 =>
 							-- board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0 cw
-							board_ops.draw_route_restrict_arc (
+							draw_route_restrict_arc (
 								module_name 	=> module,
 								arc				=> (
 											layers		=> to_layers (f (5)), -- [1,3,5-9]
@@ -2490,7 +2491,7 @@ package body scripting is
 							if is_number (f (7)) then -- 20
 
 								-- Circle is not filled.
-								board_ops.draw_route_restrict_circle (
+								draw_route_restrict_circle (
 									module_name 	=> module,
 									circle			=> 
 												(
@@ -2513,7 +2514,7 @@ package body scripting is
 							if f (7) = keyword_filled then
 
 								-- Circle is filled.
-								board_ops.draw_route_restrict_circle (
+								draw_route_restrict_circle (
 									module_name 	=> module,
 									circle			=> 
 												(
@@ -2547,7 +2548,7 @@ package body scripting is
 					case fields is
 						when 10 =>
 							-- board led_driver draw via_restrict [1,3,5-9] line 10 10 60 10
-							board_ops.draw_via_restrict_line (
+							draw_via_restrict_line (
 								module_name 	=> module,
 								line			=> (
 											layers		=> to_layers (f (5)), -- [1,3,5-9]
@@ -2570,7 +2571,7 @@ package body scripting is
 					case fields is
 						when 13 =>
 							-- board led_driver draw via_restrict [1,3,5-9] arc 50 50 0 50 100 0
-							board_ops.draw_via_restrict_arc (
+							draw_via_restrict_arc (
 								module_name 	=> module,
 								arc				=> (
 											layers		=> to_layers (f (5)), -- [1,3,5-9]
@@ -2600,7 +2601,7 @@ package body scripting is
 							if is_number (f (7)) then -- 20
 
 								-- Circle is not filled.
-								board_ops.draw_via_restrict_circle (
+								draw_via_restrict_circle (
 									module_name 	=> module,
 									circle			=> 
 												(
@@ -2623,7 +2624,7 @@ package body scripting is
 							if f (7) = keyword_filled then
 
 								-- Circle is filled.
-								board_ops.draw_via_restrict_circle (
+								draw_via_restrict_circle (
 									module_name 	=> module,
 									circle			=> 
 												(
@@ -2657,7 +2658,7 @@ package body scripting is
 				when LINE =>
 					case fields is
 						when 11 =>
-							board_ops.draw_stop_line (
+							draw_stop_line (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
 								line			=> (
@@ -2680,7 +2681,7 @@ package body scripting is
 				when ARC =>
 					case fields is
 						when 14 =>
-							board_ops.draw_stop_arc (
+							draw_stop_arc (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
 								arc				=> (
@@ -2714,7 +2715,7 @@ package body scripting is
 
 								-- Circle is not filled and has a circumfence line width
 								-- specified in field 7.
-								board_ops.draw_stop_circle (
+								draw_stop_circle (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									circle			=> 
@@ -2735,7 +2736,7 @@ package body scripting is
 -- CS
 -- 										when CUTOUT =>
 -- 									
--- 											board_ops.draw_stop_circle (
+-- 											draw_stop_circle (
 -- 												module_name 	=> module,
 -- 												face			=> to_face (f (5)),
 -- 												circle			=> 
@@ -2751,7 +2752,7 @@ package body scripting is
 
 									when SOLID =>
 								
-										board_ops.draw_stop_circle (
+										draw_stop_circle (
 											module_name 	=> module,
 											face			=> to_face (f (5)),
 											circle			=> 
@@ -2778,7 +2779,7 @@ package body scripting is
 							else
 								case to_fill_style (f (7)) is
 									when HATCHED =>
-										board_ops.draw_stop_circle (
+										draw_stop_circle (
 											module_name 	=> module,
 											face			=> to_face (f (5)),
 											circle			=> 
@@ -2819,7 +2820,7 @@ package body scripting is
 				when LINE =>
 					case fields is
 						when 11 =>
-							board_ops.draw_stencil_line (
+							draw_stencil_line (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
 								line			=> (
@@ -2842,7 +2843,7 @@ package body scripting is
 				when ARC =>
 					case fields is
 						when 14 =>
-							board_ops.draw_stencil_arc (
+							draw_stencil_arc (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
 								arc				=> (
@@ -2876,7 +2877,7 @@ package body scripting is
 
 								-- Circle is not filled and has a circumfence line width
 								-- specified in field 7.
-								board_ops.draw_stencil_circle (
+								draw_stencil_circle (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									circle			=> 
@@ -2897,7 +2898,7 @@ package body scripting is
 -- CS
 -- 										when CUTOUT =>
 -- 									
--- 											board_ops.draw_stencil_circle (
+-- 											draw_stencil_circle (
 -- 												module_name 	=> module,
 -- 												face			=> to_face (f (5)),
 -- 												circle			=> 
@@ -2913,7 +2914,7 @@ package body scripting is
 
 									when SOLID =>
 								
-										board_ops.draw_stencil_circle (
+										draw_stencil_circle (
 											module_name 	=> module,
 											face			=> to_face (f (5)),
 											circle			=> 
@@ -2940,7 +2941,7 @@ package body scripting is
 							else
 								case to_fill_style (f (7)) is
 									when HATCHED =>
-										board_ops.draw_stencil_circle (
+										draw_stencil_circle (
 											module_name 	=> module,
 											face			=> to_face (f (5)),
 											circle			=> 
@@ -2989,7 +2990,7 @@ package body scripting is
 						-- board motor_driver route net NET_1 2 line 0.25 0 0 160 0
 						case fields is
 							when 12 =>
-								board_ops.draw_track_line (
+								draw_track_line (
 									module_name 	=> module,
 									net_name		=> to_net_name (f (5)),
 									line	=> (
@@ -3024,7 +3025,7 @@ package body scripting is
 								-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
 								case fields is
 									when 13 =>
-										board_ops.draw_track_line (
+										draw_track_line (
 											module_name => module,
 											net_name	=> to_net_name (f (5)),
 											layer		=> to_signal_layer (f (6)),
@@ -3052,7 +3053,7 @@ package body scripting is
 								if f (12) = to_string (X) or f (12) = to_string (Y) then
 									case fields is
 										when 13 =>
-											board_ops.draw_track_line (
+											draw_track_line (
 												module_name => module,
 												net_name	=> to_net_name (f (5)),
 												layer		=> to_signal_layer (f (6)),
@@ -3088,7 +3089,7 @@ package body scripting is
 								
 								case fields is
 									when 13 =>
-										board_ops.draw_track_line (
+										draw_track_line (
 											module_name => module,
 											net_name	=> to_net_name (f (5)),
 											layer		=> to_signal_layer (f (6)),
@@ -3116,7 +3117,7 @@ package body scripting is
 									
 									case fields is
 										when 14 =>
-											board_ops.draw_track_line (
+											draw_track_line (
 												module_name => module,
 												net_name	=> to_net_name (f (5)),
 												layer		=> to_signal_layer (f (6)),
@@ -3150,7 +3151,7 @@ package body scripting is
 					case fields is
 						when 15 =>
 							-- draw a named track
-							board_ops.draw_track_arc (
+							draw_track_arc (
 								module_name 	=> module,
 								net_name		=> to_net_name (f (5)),
 								arc		=> (
@@ -3188,7 +3189,7 @@ package body scripting is
 			layer.conductor.thickness := to_distance (f (5));
 			layer.dielectric.thickness := to_distance (f (6));
 			
-			board_ops.add_layer (
+			add_layer (
 				module_name 	=> module,
 				layer			=> layer,
 				log_threshold	=> log_threshold + 1);
@@ -3243,7 +3244,7 @@ package body scripting is
 		begin
 			case fields is
 				when 8 =>
-					board_ops.add_device (
+					add_device (
 						module_name		=> module,
 						package_model	=> model,
 						position		=> to_package_position
@@ -3254,7 +3255,7 @@ package body scripting is
 						log_threshold	=> log_threshold + 1);
 
 				when 9 =>
-					board_ops.add_device (
+					add_device (
 						module_name		=> module,
 						package_model	=> model,
 						position		=> to_package_position
@@ -3266,7 +3267,7 @@ package body scripting is
 						log_threshold	=> log_threshold + 1);
 
 				when 10 =>
-					board_ops.add_device (
+					add_device (
 						module_name		=> module,
 						package_model	=> model,
 						position		=> to_package_position
@@ -3285,7 +3286,7 @@ package body scripting is
 		procedure delete_device is -- non-electric device !
 			-- board led_driver delete device FD1
 		begin
-			board_ops.delete_device (
+			delete_device (
 				module_name		=> module,
 				device_name		=> to_name (f (5)),
 				log_threshold	=> log_threshold + 1);
@@ -3295,7 +3296,7 @@ package body scripting is
 		procedure rename_device is -- non-electric device !
 			-- board led_driver rename device FD1 FD3
 		begin
-			board_ops.rename_device (
+			rename_device (
 				module_name			=> module,
 				device_name_before	=> to_name (f (5)),
 				device_name_after	=> to_name (f (6)),
@@ -3365,7 +3366,7 @@ package body scripting is
 						case fields is
 							when 5 =>
 								-- board tree_1 delete layer 2
-								board_ops.delete_layer (
+								delete_layer (
 									module_name 	=> module,
 									layer			=> to_signal_layer (f (5)),
 									
@@ -3381,7 +3382,7 @@ package body scripting is
 						case fields is
 							when 7 =>
 								-- delete a segment of board outline
-								board_ops.delete_outline (
+								delete_outline (
 									module_name 	=> module,
 									point			=> type_point (set (
 											x => to_distance (f (5)),
@@ -3400,7 +3401,7 @@ package body scripting is
 						case fields is
 							when 8 =>
 								-- delete a segment of silk screen
-								board_ops.delete_silk_screen (
+								delete_silk_screen (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (
@@ -3423,7 +3424,7 @@ package body scripting is
 						case fields is
 							when 8 =>
 								-- delete a segment of assembly documentation
-								board_ops.delete_assy_doc (
+								delete_assy_doc (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (
@@ -3444,7 +3445,7 @@ package body scripting is
 						case fields is
 							when 8 =>
 								-- delete a segment of keepout
-								board_ops.delete_keepout (
+								delete_keepout (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (
@@ -3465,7 +3466,7 @@ package body scripting is
 						case fields is
 							when 8 =>
 								-- delete a segment of stencil
-								board_ops.delete_stencil (
+								delete_stencil (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (
@@ -3486,7 +3487,7 @@ package body scripting is
 						case fields is
 							when 8 =>
 								-- delete a segment of stop mask
-								board_ops.delete_stop (
+								delete_stop (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									point			=> type_point (set (
@@ -3507,7 +3508,7 @@ package body scripting is
 						case fields is
 							when 7 =>
 								-- delete a segment of route restrict
-								board_ops.delete_route_restrict (
+								delete_route_restrict (
 									module_name 	=> module,
 									point			=> type_point (set (
 											x => to_distance (f (5)),
@@ -3527,7 +3528,7 @@ package body scripting is
 						case fields is
 							when 7 =>
 								-- delete a segment of via restrict
-								board_ops.delete_via_restrict (
+								delete_via_restrict (
 									module_name 	=> module,
 									point			=> type_point (set (
 											x => to_distance (f (5)),
@@ -3613,7 +3614,7 @@ package body scripting is
 								when LINE =>
 									case fields is
 										when 9 =>
-											board_ops.draw_outline_line (
+											draw_outline_line (
 												module_name 	=> module,
 												line			=> (
 													start_point	=> type_point (set (
@@ -3637,7 +3638,7 @@ package body scripting is
 								when ARC =>
 									case fields is
 										when 12 =>
-											board_ops.draw_outline_arc (
+											draw_outline_arc (
 												module_name 	=> module,
 												arc				=> (
 													center		=> type_point (set (
@@ -3666,7 +3667,7 @@ package body scripting is
 								when CIRCLE =>
 									case fields is
 										when 8 =>
-											board_ops.draw_outline_circle (
+											draw_outline_circle (
 												module_name 	=> module,
 												circle			=> (
 													center	=> type_point (set (
@@ -3698,7 +3699,7 @@ package body scripting is
 								when LINE =>
 									case fields is
 										when 11 =>
-											board_ops.draw_silk_screen_line (
+											draw_silk_screen_line (
 												module_name 	=> module,
 												face			=> to_face (f (5)),
 												line			=> (
@@ -3724,7 +3725,7 @@ package body scripting is
 								when ARC =>
 									case fields is
 										when 14 =>
-											board_ops.draw_silk_screen_arc (
+											draw_silk_screen_arc (
 												module_name 	=> module,
 												face			=> to_face (f (5)),
 												arc				=> (
@@ -3761,7 +3762,7 @@ package body scripting is
 
 												-- Circle is not filled and has a circumfence line width
 												-- specified in field 7.
-												board_ops.draw_silk_screen_circle (
+												draw_silk_screen_circle (
 													module_name 	=> module,
 													face			=> to_face (f (5)),
 													circle			=> 
@@ -3782,7 +3783,7 @@ package body scripting is
 -- CS
 -- 														when CUTOUT =>
 -- 													
--- 															board_ops.draw_silk_screen_circle (
+-- 															draw_silk_screen_circle (
 -- 																module_name 	=> module,
 -- 																face			=> to_face (f (5)),
 -- 																circle			=> 
@@ -3799,7 +3800,7 @@ package body scripting is
 
 													when SOLID =>
 												
-														board_ops.draw_silk_screen_circle (
+														draw_silk_screen_circle (
 															module_name 	=> module,
 															face			=> to_face (f (5)),
 															circle			=> 
@@ -3828,7 +3829,7 @@ package body scripting is
 											else
 												case to_fill_style (f (7)) is
 													when HATCHED =>
-														board_ops.draw_silk_screen_circle (
+														draw_silk_screen_circle (
 															module_name 	=> module,
 															face			=> to_face (f (5)),
 															circle			=> 
@@ -3873,7 +3874,7 @@ package body scripting is
 								when LINE =>
 									case fields is
 										when 11 =>
-											board_ops.draw_assy_doc_line (
+											draw_assy_doc_line (
 												module_name 	=> module,
 												face			=> to_face (f (5)),
 												line			=> (
@@ -3899,7 +3900,7 @@ package body scripting is
 								when ARC =>
 									case fields is
 										when 14 =>
-											board_ops.draw_assy_doc_arc (
+											draw_assy_doc_arc (
 												module_name 	=> module,
 												face			=> to_face (f (5)),
 												arc				=> (
@@ -3936,7 +3937,7 @@ package body scripting is
 
 												-- Circle is not filled and has a circumfence line width
 												-- specified in field 7.
-												board_ops.draw_assy_doc_circle (
+												draw_assy_doc_circle (
 													module_name 	=> module,
 													face			=> to_face (f (5)),
 													circle			=> 
@@ -3957,7 +3958,7 @@ package body scripting is
 -- CS
 -- 														when CUTOUT =>
 -- 													
--- 															board_ops.draw_assy_doc_circle (
+-- 															draw_assy_doc_circle (
 -- 																module_name 	=> module,
 -- 																face			=> to_face (f (5)),
 -- 																circle			=> 
@@ -3974,7 +3975,7 @@ package body scripting is
 
 													when SOLID =>
 												
-														board_ops.draw_assy_doc_circle (
+														draw_assy_doc_circle (
 															module_name 	=> module,
 															face			=> to_face (f (5)),
 															circle			=> 
@@ -4003,7 +4004,7 @@ package body scripting is
 											else
 												case to_fill_style (f (7)) is
 													when HATCHED =>
-														board_ops.draw_assy_doc_circle (
+														draw_assy_doc_circle (
 															module_name 	=> module,
 															face			=> to_face (f (5)),
 															circle			=> 
@@ -4081,7 +4082,7 @@ package body scripting is
 					when NOUN_DEVICE =>
 						case fields is
 							when 6 =>
-								board_ops.flip_device (
+								flip_device (
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
 									face			=> to_face  (f (6)),  -- top/bottom
@@ -4133,7 +4134,7 @@ package body scripting is
 									case fields is
 										when 11 =>
 											-- draw a freetrack
-											board_ops.draw_track_line (
+											draw_track_line (
 												module_name 	=> module,
 												net_name		=> to_net_name (""),
 												line	=> (
@@ -4160,7 +4161,7 @@ package body scripting is
 									case fields is
 										when 14 =>
 											-- draw a freetrack
-											board_ops.draw_track_arc (
+											draw_track_arc (
 												module_name 	=> module,
 												arc			=> (
 													layer			=> to_signal_layer (f (5)),
@@ -4203,7 +4204,7 @@ package body scripting is
 						case fields is
 							when 8 =>
 								-- ripup a segment of a freetrack
-								board_ops.ripup_track_segment (
+								ripup_track_segment (
 									module_name 	=> module,
 									net_name		=> to_net_name (""),
 									layer			=> to_signal_layer (f (5)),
@@ -4226,7 +4227,7 @@ package body scripting is
 						case fields is
 							when 9 =>
 								-- ripup a segment of a named track
-								board_ops.ripup_track_segment (
+								ripup_track_segment (
 									module_name 	=> module,
 									net_name		=> to_net_name (f (5)),
 									layer			=> to_signal_layer (f (6)),
@@ -4254,7 +4255,7 @@ package body scripting is
 					when NOUN_DEVICE =>
 						case fields is
 							when 7 =>
-								board_ops.rotate_device (
+								rotate_device (
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
@@ -4277,7 +4278,7 @@ package body scripting is
 					when NOUN_PNP =>
 						case fields is
 							when 4 =>
-								board_ops.make_pick_and_place 
+								make_pick_and_place 
 									(
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1);
@@ -4297,7 +4298,7 @@ package body scripting is
 					when NOUN_BOARD =>
 						case fields is
 							when 7 => -- board led_driver move board absolute 20 50
-								board_ops.move_board (
+								move_board (
 									module_name 	=> module,
 									coordinates		=> to_coordinates (f (5)),  -- relative/absolute
 									point			=> type_point (set (
@@ -4316,7 +4317,7 @@ package body scripting is
 					when NOUN_DEVICE =>
 						case fields is
 							when 8 =>
-								board_ops.move_device (
+								move_device (
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
@@ -4336,7 +4337,7 @@ package body scripting is
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 8 =>
-								board_ops.move_submodule (
+								move_submodule (
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)), -- OSC1
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
@@ -4362,7 +4363,7 @@ package body scripting is
 						case fields is
 							-- board led_driver set grid 0.5 0.5
 							when 6 =>
-								board_ops.set_grid (
+								set_grid (
 									module_name 	=> module,
 									grid			=> (
 											x => to_distance (f (5)),

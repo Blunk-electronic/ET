@@ -52,7 +52,7 @@ with pcb_rw.device_packages;
 with et_devices;
 with et_conventions;
 
-package body board_ops is
+package body et_board_ops is
 	
 	procedure no_net_segment_found (
 		layer		: in et_pcb_stack.type_signal_layer;
@@ -4131,7 +4131,7 @@ package body board_ops is
 	
 
 	
-end board_ops;
+end et_board_ops;
 	
 -- Soli Deo Gloria
 
