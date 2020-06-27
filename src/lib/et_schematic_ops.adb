@@ -46,7 +46,7 @@ with et_terminals;
 with et_packages;
 with device_rw;
 
-package body schematic_ops is
+package body et_schematic_ops is
 
 	use type_modules;
 	
@@ -6950,7 +6950,7 @@ package body schematic_ops is
 					-- to be connected with the segment. The place where ports are
 					-- searched depends on the zone that has been moved.
 					-- (The given segment sits already at the new position.)
-						ports : schematic_ops.type_ports;
+						ports : et_schematic_ops.type_ports;
 
 						procedure append_portlists is 
 						-- Append the portlists obtained from function ports_at_place
@@ -12033,7 +12033,7 @@ package body schematic_ops is
 -- 
 -- 		-- Build the submodule tree of the module according to the current design structure.
 -- 		-- All further operations rely on this tree:
--- 		schematic_ops.build_submodules_tree (
+-- 		et_schematic_ops.build_submodules_tree (
 -- 			module_name 	=> module_name,
 -- 			log_threshold	=> log_threshold + 1);
 -- 		
@@ -12465,7 +12465,7 @@ package body schematic_ops is
 
 		-- Build the submodule tree of the module according to the current design structure.
 		-- All further operations rely on this tree:
-		schematic_ops.build_submodules_tree (
+		et_schematic_ops.build_submodules_tree (
 			module_name 	=> module_name,
 			log_threshold	=> log_threshold + 1);
 
@@ -13706,7 +13706,7 @@ package body schematic_ops is
 
 
 	
-end schematic_ops;
+end et_schematic_ops;
 	
 -- Soli Deo Gloria
 

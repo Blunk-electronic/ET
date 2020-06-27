@@ -51,7 +51,7 @@ with et_devices;
 with et_symbols;
 with et_terminals;
 with et_text;
-with schematic_ops;
+with et_schematic_ops;
 with et_display.schematic;		use et_display.schematic;
 
 separate (et_canvas_schematic)
@@ -401,7 +401,7 @@ procedure draw_units (
 
 				-- Get the properties of the port. Properties is a record that provides
 				-- the terminal name. Other things of properties are not relevant here:
-				properties := schematic_ops.port_properties (
+				properties := et_schematic_ops.port_properties (
 					module_cursor	=> current_active_module,
 					device_name		=> device_name,
 					unit_name		=> unit_name,

@@ -37,22 +37,17 @@
 
 with ada.exceptions;
 
-with et_schematic;				use et_schematic;
-with et_pcb_stack;				use et_pcb_stack;
-
-with et_project;
-with schematic_ops;
-with assembly_variants;
-with pick_and_place;
 with submodules;
 with numbering;
 with et_symbols;
 with et_packages;
 with pcb_rw.device_packages;
-with et_devices;
 with et_conventions;
 
 package body et_board_ops is
+
+	use et_schematic;
+	use et_pcb_stack;
 	
 	procedure no_net_segment_found (
 		layer		: in et_pcb_stack.type_signal_layer;
@@ -1373,7 +1368,7 @@ package body et_board_ops is
 
 		-- Build the submodule tree of the module according to the current design structure.
 		-- All further operations rely on this tree:
-		schematic_ops.build_submodules_tree (
+		et_schematic_ops.build_submodules_tree (
 			module_name 	=> module_name,
 			log_threshold	=> log_threshold + 1);
 

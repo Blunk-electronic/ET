@@ -50,7 +50,7 @@ with et_project;
 with et_coordinates;
 with et_pcb_coordinates;
 with et_schematic;
-with schematic_ops;
+with et_schematic_ops;
 with et_terminals;
 with et_packages;
 with et_pcb;
@@ -387,7 +387,7 @@ package body scripting is
 		return type_exit_code is
 
 		use et_project;
-		use schematic_ops;
+		use et_schematic_ops;
 		use et_coordinates;
 		use pac_geometry_sch;
 		use et_devices;
@@ -453,7 +453,6 @@ package body scripting is
 		
 		-- Locates the unit of the given device.
 		procedure show_unit is -- GUI related
-			use schematic_ops;
 			use et_devices;
 			use et_canvas_schematic;
 			
@@ -481,7 +480,6 @@ package body scripting is
 
 		-- Locates the one and only unit of the given device.
 		procedure show_first_unit is -- GUI related
-			use schematic_ops;
 			use et_devices;
 			use et_canvas_schematic;
 			
@@ -621,7 +619,7 @@ package body scripting is
 						case fields is
 							when 9 =>
 								-- If a virtual device is added, then no variant is required.
-								schematic_ops.add_device (
+								add_device (
 									module_name 	=> module,
 									device_model	=> to_file_name (f (5)),
 									place			=> to_position 
@@ -640,7 +638,7 @@ package body scripting is
 
 							when 10 =>
 								-- A real device requires specification of a package variant.
-								schematic_ops.add_device (
+								add_device (
 									module_name 	=> module,
 									device_model	=> to_file_name (f (5)),
 									place			=> to_position 
@@ -665,7 +663,7 @@ package body scripting is
 					when NOUN_NETCHANGER =>
 						case fields is
 							when 8 =>
-								schematic_ops.add_netchanger (
+								add_netchanger (
 									module_name 	=> module,
 									place			=> to_position 
 										(
@@ -688,7 +686,7 @@ package body scripting is
 					when NOUN_PORT =>
 						case fields is
 							when 9 =>
-								schematic_ops.add_port (
+								add_port (
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
 									port_name		=> et_general.to_net_name (f (6)),
@@ -709,7 +707,7 @@ package body scripting is
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 11 =>
-								schematic_ops.add_submodule (
+								add_submodule (
 									module_name 	=> module, -- parent module (where the submodule is to be inserted)
 									file			=> submodules.to_submodule_path (f (5)),
 									instance		=> et_general.to_instance_name (f (6)), -- submodule instance name
@@ -742,7 +740,7 @@ package body scripting is
 					when NOUN_SUBMODULES_TREE =>
 						case fields is
 							when 4 =>
-								schematic_ops.build_submodules_tree (
+								build_submodules_tree (
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1
 									);
@@ -760,7 +758,7 @@ package body scripting is
 					when NOUN_INTEGRITY =>
 						case fields is
 							when 4 =>
-								schematic_ops.check_integrity (
+								check_integrity (
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1);
 
@@ -777,7 +775,7 @@ package body scripting is
 					when NOUN_DEVICE =>
 						case fields is
 							when 9 =>
-								schematic_ops.copy_device (
+								copy_device (
 									module_name 	=> module,
 									device_name		=> to_name (f (5)),
 									destination		=> to_position 
@@ -801,7 +799,7 @@ package body scripting is
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 9 =>
-								schematic_ops.copy_submodule (
+								copy_submodule (
 									module_name 	=> module, -- parent module (where the submodule is to be copied)
 									instance_origin	=> et_general.to_instance_name (f (5)), -- submodule instance name
 									instance_new	=> et_general.to_instance_name (f (6)), -- submodule instance name
@@ -830,7 +828,7 @@ package body scripting is
 					when NOUN_VARIANT => 
 						case fields is
 							when 5 =>
-								schematic_ops.create_assembly_variant
+								create_assembly_variant
 									(
 									module_name		=> module,
 									variant_name	=> to_variant (f (5)),
@@ -849,7 +847,7 @@ package body scripting is
 					when NOUN_DEVICE =>
 						case fields is
 							when 5 =>
-								schematic_ops.delete_device (
+								delete_device (
 									module_name 	=> module,
 									device_name		=> to_name (f (5)),
 									log_threshold	=> log_threshold + 1);
@@ -862,7 +860,7 @@ package body scripting is
 					when NOUN_LABEL =>
 						case fields is
 							when 7 =>
-								schematic_ops.delete_net_label
+								delete_net_label
 									(
 									module_name		=> module,
 
@@ -886,7 +884,7 @@ package body scripting is
 							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
 							-- by the called procedure:
 							when 5 =>
-								schematic_ops.delete_net
+								delete_net
 									(
 									module_name			=> module,
 									net_name			=> to_net_name (f (5)), -- RESET
@@ -900,7 +898,7 @@ package body scripting is
 							-- Sheet is set by the 7th argument. x and y assume default (0/0)
 							-- and are further-on ignored by the called procedure:
 							when 6 =>
-								schematic_ops.delete_net
+								delete_net
 									(
 									module_name			=> module,
 									net_name			=> to_net_name (f (5)), -- RESET
@@ -913,7 +911,7 @@ package body scripting is
 							-- If the statement has 9 fields, the net scope is STRAND.
 							-- Place is set according to arguments 7..9.
 							when 8 =>
-								schematic_ops.delete_net
+								delete_net
 									(
 									module_name			=> module,
 									net_name			=> to_net_name (f (5)), -- RESET
@@ -935,7 +933,7 @@ package body scripting is
 					when NOUN_NETCHANGER =>
 						case fields is
 							when 5 =>
-								schematic_ops.delete_netchanger
+								delete_netchanger
 									(
 									module_name		=> module,
 									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
@@ -949,7 +947,7 @@ package body scripting is
 					when NOUN_PORT =>
 						case fields is
 							when 6 =>
-								schematic_ops.delete_port
+								delete_port
 									(
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
@@ -965,7 +963,7 @@ package body scripting is
 					when NOUN_SEGMENT =>
 						case fields is
 							when 8 =>
-								schematic_ops.delete_segment
+								delete_segment
 									(
 									module_name		=> module,
 									net_name		=> to_net_name (f (5)), -- RESET
@@ -984,7 +982,7 @@ package body scripting is
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 5 =>
-								schematic_ops.delete_submodule (
+								delete_submodule (
 									module_name 	=> module, -- parent module (where the submodule is to be deleted)
 									instance		=> et_general.to_instance_name (f (5)), -- submodule instance name
 									log_threshold	=> log_threshold + 1
@@ -1001,7 +999,7 @@ package body scripting is
 					when NOUN_UNIT =>
 						case fields is
 							when 6 =>
-								schematic_ops.delete_unit (
+								delete_unit (
 									module_name 	=> module,
 									device_name		=> to_name (f (5)),
 									unit_name		=> to_name (f (6)),
@@ -1015,7 +1013,7 @@ package body scripting is
 					when NOUN_VARIANT => 
 						case fields is
 							when 5 =>
-								schematic_ops.delete_assembly_variant
+								delete_assembly_variant
 									(
 									module_name		=> module,
 									variant_name	=> to_variant (f (5)),
@@ -1034,7 +1032,7 @@ package body scripting is
 					when NOUN_VARIANT => 
 						case fields is
 							when 6 =>
-								schematic_ops.describe_assembly_variant
+								describe_assembly_variant
 									(
 									module_name		=> module,
 									variant_name	=> to_variant (f (5)), -- low_cost
@@ -1071,7 +1069,7 @@ package body scripting is
 					when NOUN_UNIT =>
 						case fields is
 							when 9 =>
-								schematic_ops.drag_unit
+								drag_unit
 									(
 									module_name 	=> module,
 									device_name		=> to_name (f (5)),
@@ -1091,7 +1089,7 @@ package body scripting is
 					when NOUN_NETCHANGER =>
 						case fields is
 							when 8 =>
-								schematic_ops.drag_netchanger (
+								drag_netchanger (
 									module_name 	=> module,
 									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
 									coordinates		=> to_coordinates (f (6)), -- relative/absolute
@@ -1109,7 +1107,7 @@ package body scripting is
 					when NOUN_PORT =>
 						case fields is
 							when 9 =>
-								schematic_ops.drag_port (
+								drag_port (
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
 									port_name		=> et_general.to_net_name (f (6)),
@@ -1128,7 +1126,7 @@ package body scripting is
 					when NOUN_SEGMENT =>
 						case fields is
 							when 11 =>
-								schematic_ops.drag_segment
+								drag_segment
 									(
 									module_name		=> module,
 									net_name		=> to_net_name (f (5)), -- RESET
@@ -1154,7 +1152,7 @@ package body scripting is
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 8 =>
-								schematic_ops.drag_submodule (
+								drag_submodule (
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
@@ -1177,7 +1175,7 @@ package body scripting is
 					when NOUN_NET =>
 						case fields is
 							when 10 =>
-								schematic_ops.draw_net
+								draw_net
 									(
 									module_name		=> module,
 									net_name		=> to_net_name (f (5)), -- RESET
@@ -1224,7 +1222,7 @@ package body scripting is
 					when NOUN_UNIT =>
 						case fields is
 							when 10 =>
-								schematic_ops.invoke_unit (
+								invoke_unit (
 									module_name		=> module,
 									device_name		=> to_name (f (5)),
 									unit_name		=> to_name (f (6)),
@@ -1254,7 +1252,7 @@ package body scripting is
 					when NOUN_NAME =>
 						case fields is
 							when 9 =>
-								schematic_ops.move_unit_placeholder
+								move_unit_placeholder
 									(
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
@@ -1275,7 +1273,7 @@ package body scripting is
 					when NOUN_VALUE =>
 						case fields is
 							when 9 =>
-								schematic_ops.move_unit_placeholder
+								move_unit_placeholder
 									(
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
@@ -1296,7 +1294,7 @@ package body scripting is
 					when NOUN_PORT =>
 						case fields is
 							when 9 =>
-								schematic_ops.move_port (
+								move_port (
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
 									port_name		=> et_general.to_net_name (f (6)),
@@ -1315,7 +1313,7 @@ package body scripting is
 					when NOUN_PURPOSE =>
 						case fields is
 							when 9 =>
-								schematic_ops.move_unit_placeholder
+								move_unit_placeholder
 									(
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
@@ -1336,7 +1334,7 @@ package body scripting is
 					when NOUN_NETCHANGER =>
 						case fields is
 							when 9 =>
-								schematic_ops.move_netchanger
+								move_netchanger
 									(
 									module_name 	=> module,
 									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
@@ -1360,7 +1358,7 @@ package body scripting is
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 9 =>
-								schematic_ops.move_submodule (
+								move_submodule (
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
@@ -1379,7 +1377,7 @@ package body scripting is
 					when NOUN_UNIT =>
 						case fields is
 							when 10 =>
-								schematic_ops.move_unit
+								move_unit
 									(
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
@@ -1406,7 +1404,7 @@ package body scripting is
 					when NOUN_BOM => 
 						case fields is
 							when 4 =>
-								schematic_ops.make_boms -- a BOM for each variant
+								make_boms -- a BOM for each variant
 									(
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1);
@@ -1419,7 +1417,7 @@ package body scripting is
 					when NOUN_NETLISTS => 
 						case fields is
 							when 4 =>
-								schematic_ops.make_netlists 
+								make_netlists 
 									(
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1);
@@ -1449,7 +1447,7 @@ package body scripting is
 							case fields is
 								when 8 =>
 									-- set value and partcode
-									schematic_ops.mount_device
+									mount_device
 										(
 										module_name		=> module,
 										variant_name	=> to_variant (f (5)), -- low_cost
@@ -1462,7 +1460,7 @@ package body scripting is
 									-- optionally the purpose can be set also
 									purpose := to_purpose (f (9)); -- brightness_control
 												
-									schematic_ops.mount_device
+									mount_device
 										(
 										module_name		=> module,
 										variant_name	=> to_variant (f (5)), -- low_cost
@@ -1482,7 +1480,7 @@ package body scripting is
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 7 =>
-								schematic_ops.mount_submodule
+								mount_submodule
 									(
 									module_name		=> module,
 									variant_parent	=> to_variant (f (5)), -- low_cost
@@ -1504,7 +1502,7 @@ package body scripting is
 					when NOUN_JUNCTION =>
 						case fields is
 							when 7 =>
-								schematic_ops.place_junction 
+								place_junction 
 									(
 									module_name 	=> module,
 									place			=> to_position 
@@ -1528,7 +1526,7 @@ package body scripting is
 						case fields is
 							when 10 =>
 								-- SIMPLE LABEL
-								schematic_ops.place_net_label
+								place_net_label
 									(
 									module_name			=> module,
 
@@ -1555,7 +1553,7 @@ package body scripting is
 
 							when 8 =>
 								-- TAG LABEL
-								schematic_ops.place_net_label
+								place_net_label
 									(
 									module_name			=> module,
 
@@ -1597,7 +1595,7 @@ package body scripting is
 					when NOUN_DEVICE => 
 						case fields is
 							when 6 =>
-								schematic_ops.remove_device -- from assembly variant
+								remove_device -- from assembly variant
 									(
 									module_name		=> module,
 									variant_name	=> to_variant (f (5)), -- low_cost
@@ -1612,7 +1610,7 @@ package body scripting is
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 6 =>
-								schematic_ops.remove_submodule
+								remove_submodule
 									(
 									module_name		=> module,
 									variant_parent	=> to_variant (f (5)),
@@ -1632,7 +1630,7 @@ package body scripting is
 					when NOUN_DEVICE =>
 						case fields is
 							when 6 =>
-								schematic_ops.rename_device
+								rename_device
 									(
 									module_name 		=> module,
 									device_name_before	=> to_name (f (5)), -- IC1
@@ -1648,7 +1646,7 @@ package body scripting is
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 6 =>
-								schematic_ops.rename_submodule
+								rename_submodule
 									(
 									module_name		=> module,
 									instance_old	=> et_general.to_instance_name (f (5)), -- OSC1
@@ -1667,7 +1665,7 @@ package body scripting is
 							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
 							-- by the called procedure:
 							when 6 =>
-								schematic_ops.rename_net
+								rename_net
 									(
 									module_name			=> module,
 									net_name_before		=> to_net_name (f (5)), -- RESET
@@ -1682,7 +1680,7 @@ package body scripting is
 							-- Sheet is set by the 7th argument. x and y assume default (0/0)
 							-- and are further-on ignored by the called procedure:
 							when 7 =>
-								schematic_ops.rename_net
+								rename_net
 									(
 									module_name			=> module,
 									net_name_before		=> to_net_name (f (5)), -- RESET
@@ -1696,7 +1694,7 @@ package body scripting is
 							-- If the statement has 9 fields, the net scope is STRAND.
 							-- Place is set according to arguments 7..9.
 							when 9 =>
-								schematic_ops.rename_net
+								rename_net
 									(
 									module_name			=> module,
 									net_name_before		=> to_net_name (f (5)), -- RESET
@@ -1723,7 +1721,7 @@ package body scripting is
 					when NOUN_DEVICES =>
 						case fields is
 							when 5 =>
-								schematic_ops.renumber_devices
+								renumber_devices
 									(
 									module_name 	=> module,
 									step_width		=> to_index (f (5)), -- 100
@@ -1746,7 +1744,7 @@ package body scripting is
 					when NOUN_UNIT =>
 						case fields is
 							when 8 =>
-								schematic_ops.rotate_unit
+								rotate_unit
 									(
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
@@ -1764,7 +1762,7 @@ package body scripting is
 					when NOUN_NAME =>
 						case fields is 
 							when 7 =>
-								schematic_ops.rotate_unit_placeholder
+								rotate_unit_placeholder
 									(
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
@@ -1782,7 +1780,7 @@ package body scripting is
 					when NOUN_VALUE =>
 						case fields is
 							when 7 =>
-								schematic_ops.rotate_unit_placeholder
+								rotate_unit_placeholder
 									(
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
@@ -1800,7 +1798,7 @@ package body scripting is
 					when NOUN_PURPOSE =>
 						case fields is
 							when 7 =>
-								schematic_ops.rotate_unit_placeholder
+								rotate_unit_placeholder
 									(
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
@@ -1818,7 +1816,7 @@ package body scripting is
 					when NOUN_NETCHANGER =>
 						case fields is
 							when 7 =>
-								schematic_ops.rotate_netchanger (
+								rotate_netchanger (
 									module_name 	=> module,
 									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
 									coordinates		=> to_coordinates (f (6)), -- relative/absolute
@@ -1840,7 +1838,7 @@ package body scripting is
 						case fields is
 							-- schematic led_driver set grid 5 5
 							when 6 =>
-								schematic_ops.set_grid (
+								set_grid (
 									module_name 	=> module,
 									grid			=> (
 											x => to_distance (f (5)),
@@ -1861,7 +1859,7 @@ package body scripting is
 									partcode := material.to_partcode (f (6));
 
 									-- set the purpose
-									schematic_ops.set_partcode
+									set_partcode
 										(
 										module_name 	=> module,
 										device_name		=> to_name (f (5)), -- R1
@@ -1885,7 +1883,7 @@ package body scripting is
 									purpose := to_purpose (f (6));
 									
 									-- set the purpose
-									schematic_ops.set_purpose
+									set_purpose
 										(
 										module_name 	=> module,
 										device_name		=> to_name (f (5)), -- R1
@@ -1902,7 +1900,7 @@ package body scripting is
 					when NOUN_SCOPE =>
 						case fields is
 							when 6 =>
-								schematic_ops.set_scope (
+								set_scope (
 									module_name 	=> module,
 									net_name		=> et_general.to_net_name (f (5)),
 									scope			=> netlists.to_net_scope (f (6)),
@@ -1917,7 +1915,7 @@ package body scripting is
 					when NOUN_SUBMODULE_FILE =>
 						case fields is
 							when 6 =>
-								schematic_ops.set_submodule_file (
+								set_submodule_file (
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
 									file			=> submodules.to_submodule_path (f (6)),
@@ -1939,7 +1937,7 @@ package body scripting is
 									value := to_value (f (6));
 
 									-- set the value
-									schematic_ops.set_value
+									set_value
 										(
 										module_name 	=> module,
 										device_name		=> to_name (f (5)), -- R1
@@ -1992,7 +1990,7 @@ package body scripting is
 					when NOUN_DEVICE => 
 						case fields is
 							when 6 =>
-								schematic_ops.unmount_device
+								unmount_device
 									(
 									module_name		=> module,
 									variant_name	=> to_variant (f (5)), -- low_cost

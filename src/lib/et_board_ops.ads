@@ -52,7 +52,7 @@ with et_geometry;				use et_geometry;
 with et_string_processing;		use et_string_processing;
 with et_project;				use et_project;
 with et_schematic;
-with schematic_ops;				use schematic_ops;
+with et_schematic_ops;			use et_schematic_ops;
 with et_terminals;				use et_terminals;
 with et_packages;				use et_packages;
 with et_pcb;					use et_pcb;

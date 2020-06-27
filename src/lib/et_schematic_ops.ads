@@ -64,7 +64,7 @@ with netlists;
 with et_symbols;
 with et_devices;				use et_devices;
 
-package schematic_ops is
+package et_schematic_ops is
 	
 	procedure device_not_found (name : in type_name);
 	procedure device_already_exists (name : in type_name);
@@ -708,7 +708,7 @@ package schematic_ops is
 		log_threshold	: in type_log_level)
 		return type_stub;
 	
-end schematic_ops;
+end et_schematic_ops;
 
 -- Soli Deo Gloria
 
