@@ -511,7 +511,8 @@ procedure open_project (
 	
 begin -- open_project
 	log (text => row_separator_double, level => log_threshold);
-	log (text => "opening project " & to_string (project_name) & " ...", level => log_threshold, console => true);
+	log (text => "opening project " & enclose_in_quotes (to_string (project_name)) & " ...",
+		 level => log_threshold, console => true);
 	log_indentation_up;
 	
 	-- If the given project directory exists, enter it. Otherwise error message and abort.
@@ -522,6 +523,8 @@ begin -- open_project
 
 		--log (text => "current dir " & current_directory, level => log_threshold + 1);
 
+		read_project_configuration (project_name, log_threshold + 1);
+		
 		-- CS: It requires discussion whether loading all modules files at this time is reasonable.
 		-- Even if a module will not be used it is going to be loaded. This causes more log information than required.
 		-- A solution could be to load a module on reading the rig configuration file. The drawback is that the user

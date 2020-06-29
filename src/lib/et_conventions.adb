@@ -2897,7 +2897,6 @@ package body et_conventions is
 		end process_previous_section;
 		
 	begin -- read_conventions
-		log (text => row_separator_double, level => log_threshold);		
 		log (text => "reading conventions file " & to_string (file_name) & " ...", level => log_threshold);
 
 		if exists (to_string (file_name)) then
