@@ -74,6 +74,7 @@ $ et --make-conventions conventions.txt
 ```
 
 This file can now be found in the root directory of your projects. Edit it according to your customs.
+Assign the conventions file to the module by editing the rig configuration file.
 
 
 #### Creating an ET native project
@@ -124,7 +125,7 @@ A log level can also be passed:
 $ et --open-project /home/user/ecad/my_et_project/ --log-level 2
 ```
 
-If a conventions file is available run:
+<!--If a conventions file is available run:
 
 ```sh
 $ et --conventions conventions.txt --open-project /home/user/ecad/my_et_project/ --log-level 2
@@ -134,7 +135,7 @@ The project can also be saved under a different name at a different place:
 
 ```sh
 $ et --conventions conventions.txt --open-project /home/user/ecad/my_et_project/ --save-project-as /home/user/tmp/eval --log-level 2
-```
+```-->
 
 Opening a project includes syntax checking. See the report for details.
 

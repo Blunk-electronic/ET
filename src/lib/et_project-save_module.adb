@@ -153,7 +153,6 @@ is
 		section_mark (section_rules, HEADER);
 
 		-- CS
--- 		write (keyword => keyword_conventions, parameters => to_string (
 -- 		write (keyword => keyword_layout, parameters => to_string (
 																		   
 		section_mark (section_rules, FOOTER);

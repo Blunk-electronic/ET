@@ -77,7 +77,7 @@ with gui;
 procedure et is
 
 	conv_file_name_create	: et_conventions.pac_file_name.bounded_string;
-	conv_file_name_use		: et_conventions.pac_file_name.bounded_string;
+-- 	conv_file_name_use		: et_conventions.pac_file_name.bounded_string;
 
 	project_name_create		: et_project.type_project_name.bounded_string; -- the project to be created
 	project_name_import		: et_project.type_project_name.bounded_string; -- the project to be imported
@@ -127,7 +127,6 @@ procedure et is
 						& space & switch_log_level & equals
 						& space & switch_import_project & equals
 						& space & switch_import_format & equals
-						& space & switch_conventions & equals
 
 						-- project
 						& space & switch_native_project_create & equals
@@ -189,11 +188,6 @@ procedure et is
 					elsif full_switch = switch_make_default_conv then -- make conventions file
 						log (text => arg & full_switch & space & parameter);
 						conv_file_name_create := et_conventions.to_file_name (parameter);
-
-					elsif full_switch = switch_conventions then -- use conventions file
-						log (text => arg & full_switch & space & parameter);
-						conv_file_name_use := et_conventions.to_file_name (parameter);
-
 
 					-- project
 					elsif full_switch = switch_native_project_create then
@@ -509,17 +503,6 @@ procedure et is
 		use et_symbols.type_symbol_model_file;
 		use et_devices.type_device_model_file;
 		use et_frames.pac_template_name;
-		
-		procedure read_conventions_file is begin
-			if length (conv_file_name_use) > 0 then
-				et_conventions.read_conventions (
-					file_name		=> conv_file_name_use,
-					log_threshold	=> 0);
-
-			else
-				log (WARNING, "No conventions specified ! Design check limited !");
-			end if;
-		end;
 
 		exit_code_script : scripting.type_exit_code;
 		
@@ -548,7 +531,7 @@ procedure et is
 
 			-- Otherwise a native project will be opened:
 			elsif length (project_name_open) > 0 then
-				read_conventions_file;
+
 				et_project.open_project (project_name_open, log_threshold => 0);
 
 				-- If operator whishes to execute a script on the native project:

@@ -64,6 +64,7 @@ use et_pcb_coordinates.pac_geometry_brd;
 with assembly_variants;
 with pick_and_place;
 with et_devices;				use et_devices;
+with et_conventions;
 
 package et_board_ops is
 

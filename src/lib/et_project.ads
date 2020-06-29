@@ -50,6 +50,7 @@ with ada.containers.ordered_sets;
 with et_general;				use et_general;
 with et_coordinates;			use et_coordinates;
 with et_string_processing;
+with et_conventions;
 with et_schematic;
 with submodules;
 with netlists;
@@ -165,10 +166,17 @@ package et_project is
 	
 	-- A rig consists of a list of module instances
 	-- and a list of module-to-module connectors (or board-to-board connectors).
-	-- It is modelled in a rig configuration file:
+	-- Conventions apply for the whole rig.
+	
+	-- CS: Discussion required whether to apply conventions to the whole project,
+	-- means to all rigs. This would require a project configuration file.
+	
+	-- A single rig is modelled by this type and stored in a 
+	-- similar structured rig configuration file:
 	type type_rig is record
 		module_instances	: type_module_instances.map;
 		connections			: type_module_connectors.set;
+		conventions			: et_conventions.pac_file_name.bounded_string; -- ../conventions.txt
 		-- CS description, docs, links, images ... ?
 	end record;
 

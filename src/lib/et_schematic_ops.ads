@@ -63,6 +63,7 @@ with et_material;
 with netlists;
 with et_symbols;
 with et_devices;				use et_devices;
+with et_conventions;
 
 package et_schematic_ops is
 	

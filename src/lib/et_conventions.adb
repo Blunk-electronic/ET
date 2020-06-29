@@ -2613,6 +2613,8 @@ package body et_conventions is
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Reads the given conventions file.
 
+		previous_input : ada.text_io.file_type renames current_input;
+		
 		use et_string_processing;
 		line : et_string_processing.type_fields_of_line; -- the line of the file
 
@@ -2972,7 +2974,7 @@ package body et_conventions is
 			-- The last section of the file is complete, once the file end is reached.
 			process_previous_section;
 			
-			set_input (standard_input);
+			set_input (previous_input);
 			close (conventions_file_handle);
 			
 		else
