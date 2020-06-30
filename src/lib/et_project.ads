@@ -110,16 +110,6 @@ package et_project is
 	package type_et_project_path is new generic_bounded_length (project_path_max);
 	function to_string (path : in type_et_project_path.bounded_string) return string;
 	function to_project_path (path : in string) return type_et_project_path.bounded_string;
-
-
-	
--- CS ?
--- 	subtype type_sheet_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm -- CS no longer required ?
--- 	sheet_name_text_size_default : constant type_sheet_name_text_size := 1.3; -- CS no longer required ?
--- 
--- 	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size; -- CS no longer required ?
--- 	-- Converts a string to type_sheet_name_text_size.
-
 	
 	procedure create_project_directory (
 	-- Creates given project directory in the given project_path.
@@ -137,13 +127,6 @@ package et_project is
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level);
-	
--- 	procedure open_project (
--- 		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
--- 		log_threshold 	: in et_string_processing.type_log_level);
--- 	-- Enters the project directory specified by project_name.
--- 	-- Searches for rig configuration files (*.conf), reads them and stores configurations in et_project.rigs.
--- 	-- Searches for module files (*.mod), reads them and stores modules in et_project.modules.
 
 	procedure save_project (
 		destination		: in type_project_name.bounded_string; -- blood_sample_analyzer

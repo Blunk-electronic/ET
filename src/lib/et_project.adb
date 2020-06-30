@@ -78,9 +78,6 @@ with et_project.modules;
 with et_project.rigs;
 	
 package body et_project is
-
-	use et_general.type_net_name;
-
 	
 	function to_string (project_name : in type_project_name.bounded_string) return string is
 	begin
