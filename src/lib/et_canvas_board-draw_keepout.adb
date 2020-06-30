@@ -36,7 +36,6 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with et_schematic;
 
 separate (et_canvas_board)
 

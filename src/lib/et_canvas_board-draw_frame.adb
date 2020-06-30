@@ -40,7 +40,6 @@ with ada.characters.handling;	use ada.characters.handling;
 with et_text;
 with et_canvas_draw_frame;
 with et_meta;
-with et_project;
 
 separate (et_canvas_board)
 

@@ -36,20 +36,12 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with et_general;				use et_general;
-with et_schematic;				use et_schematic;
-use et_schematic.type_nets;
-
-with et_project;
-with et_packages;				use et_packages;
 
 with et_pcb;					use et_pcb;
 use et_pcb.pac_vias;
 
 with et_pcb_stack;				use et_pcb_stack;
-
 with et_display.board;			use et_display.board;
-
 with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
@@ -59,6 +51,9 @@ procedure draw_conductors (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
+	use et_schematic;
+	use et_schematic.type_nets;
+	
 	use et_general;
 	use et_terminals.pac_shapes;	
 	use et_packages;

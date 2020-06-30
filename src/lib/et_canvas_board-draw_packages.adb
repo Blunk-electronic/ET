@@ -40,10 +40,7 @@ with ada.text_io;				use ada.text_io;
 with et_general;				use et_general;
 with et_symbols;
 with et_devices;
-with et_schematic;
-use et_schematic.type_nets;
 
-with et_project;				use et_project;
 with et_drills;					use et_drills;
 with et_packages;				use et_packages;
 

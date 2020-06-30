@@ -58,9 +58,10 @@ with et_geometry;			use et_geometry;
 with et_pcb_coordinates;	use et_pcb_coordinates;
 with et_terminals;			use et_terminals;
 with et_packages;			--use et_packages;
-with et_project;			--use et_project;
 with et_project.modules;	use et_project.modules;
+with et_schematic;
 with et_frames;				--use et_frames;
+
 
 with et_canvas_general;
 with et_canvas_primitive_draw_ops;

@@ -37,8 +37,6 @@
 
 with ada.text_io;				use ada.text_io;
 with et_general;				use et_general;
-with et_schematic;
-with et_project;
 with et_pcb;					use et_pcb;
 with et_canvas_primitive_draw_ops;
 

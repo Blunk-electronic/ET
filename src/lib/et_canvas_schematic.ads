@@ -60,7 +60,6 @@ with et_geometry;				use et_geometry;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
-with et_project;				use et_project;
 with et_project.modules;		use et_project.modules;
 with et_symbols;
 with et_schematic;
@@ -73,6 +72,9 @@ with et_string_processing;			use et_string_processing;
 
 package et_canvas_schematic is
 
+	use et_project.modules.type_modules;
+	
+	
 	title : constant string := et_general.system_name & " SCHEMATIC ";
 
 	procedure set_title_bar (

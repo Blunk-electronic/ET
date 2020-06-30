@@ -40,7 +40,6 @@ with ada.text_io;				use ada.text_io;
 with et_text;
 with et_canvas_draw_frame;
 with et_meta;
-with et_project;
 
 separate (et_canvas_schematic)
 
@@ -50,7 +49,6 @@ procedure draw_frame (
 	context : in type_draw_context) is
 
 	use et_frames;
-	use et_project.modules.type_modules;
 	
 	package pac_draw_frame is new et_canvas_draw_frame.pac_draw_frame (
 		draw_ops		=> et_canvas_schematic.pac_draw_misc,

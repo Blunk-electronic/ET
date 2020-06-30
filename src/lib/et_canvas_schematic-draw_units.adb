@@ -38,19 +38,8 @@
 with ada.text_io;				use ada.text_io;
 with ada.numerics;				use ada.numerics;
 
-with et_general;				use et_general;
-with et_project.modules;
-
-with et_schematic;
-
-use et_project.modules.type_modules;
-use et_schematic.type_devices;
-use et_schematic.type_units;
-
 with et_devices;
-with et_symbols;
 with et_terminals;
-with et_text;
 with et_schematic_ops;
 with et_display.schematic;		use et_display.schematic;
 
@@ -61,6 +50,9 @@ procedure draw_units (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
+	use et_schematic.type_devices;
+	use et_schematic.type_units;
+	
 	-- The name, value and purpose of the current device:
 	device_name	: et_devices.type_name; -- like R1, IC100	
 	device_value : et_devices.type_value.bounded_string; -- like 100R or TL084
