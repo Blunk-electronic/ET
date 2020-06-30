@@ -52,6 +52,75 @@ with general_rw;				use general_rw;
 
 package body et_project.configuration is
 
+	function to_string (section : in type_section_name) return string is
+		len : positive := type_section_name'image (section)'length;
+	begin
+		return to_lower (type_section_name'image (section) (5..len));
+	end to_string;
+
+-- 	procedure write_conventions is
+-- 		use et_conventions;
+-- 	begin
+-- 		write (keyword => keyword_conventions, parameters => to_string (rig.conventions));
+-- 		new_line;
+-- 	end write_conventions;
+
+	-- conventions
+-- 	write_conventions;
+
+
+-- 		procedure read_conventions is
+-- 			use et_conventions;
+-- 			use type_rigs;
+-- 			
+-- 			kw : constant string := f (line, 1);
+-- 			file_name : pac_file_name.bounded_string;
+-- 
+-- 			procedure set_conventions (
+-- 				rig_name	: in type_rig_configuration_file_name.bounded_string;
+-- 				rig			: in out type_rig) is
+-- 			begin
+-- 				rig.conventions := file_name;
+-- 
+-- 				-- read the conventions file
+-- 				put_line ("X");
+-- 				et_conventions.read_conventions (file_name, log_threshold + 1);
+-- 			end set_conventions;
+-- 
+-- 		begin -- read_conventions
+-- 			if kw = keyword_conventions then
+-- 				expect_field_count (line, 2);
+-- 
+-- 				file_name := to_file_name (f (line, 2));
+-- 				
+-- 				-- test whether the conventions file exists
+-- 				if not exists (to_string (file_name)) then
+-- 					log (ERROR, "Conventions file " & enclose_in_quotes (to_string (file_name)) &
+-- 						" does not exist !", console => true);
+-- 					raise constraint_error;
+-- 				end if;
+-- 
+-- 				-- assign to rig
+-- 				update_element (
+-- 					container	=> rigs,
+-- 					position	=> rig_cursor,
+-- 					process		=> set_conventions'access);
+-- 				
+-- 			end if;
+-- 		end read_conventions;
+-- 
+-- 		procedure test_conventions is 
+-- 			use type_rigs;
+-- 			use et_conventions;
+-- 			use pac_file_name;
+-- 		begin
+-- 			if length (element (rig_cursor).conventions) = 0 then
+-- 				log (WARNING, "No conventions file specified ! Design check limited !");
+-- 			end if;
+-- 		end test_conventions;
+
+	
+	
 	procedure read_project_configuration (
 		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level) 
@@ -70,18 +139,7 @@ package body et_project.configuration is
 		file_handle : ada.text_io.file_type;
 		line : et_string_processing.type_fields_of_line;
 
-		section_environment_variables : constant string := "[ENVIRONMENT_VARIABLES";
-		
-		type type_section_name is (
-			SEC_INIT,
-			SEC_ENVIRONMENT_VARIABLES
-			);
 
-		function to_string (section : in type_section_name) return string is
-			len : positive := type_section_name'image (section)'length;
-		begin
-			return to_lower (type_section_name'image (section) (5..len));
-		end to_string;
 
 		
 		-- This is the section stack of the configuration file. 

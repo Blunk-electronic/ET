@@ -56,13 +56,6 @@ procedure save_rig_configuration (
 	use type_path;
 	path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
 
-	procedure write_conventions is
-		use et_conventions;
-	begin
-		write (keyword => keyword_conventions, parameters => to_string (rig.conventions));
-		new_line;
-	end write_conventions;
-	
 	procedure query_instance (instance_cursor : in type_module_instances.cursor) is
 	begin
 		section_mark (section_module, HEADER);			
@@ -105,9 +98,6 @@ begin -- save_rig_configuration
 	
 	set_output (file_handle);
 	write_rig_configuration_header;		
-
-	-- conventions
-	write_conventions;
 
 	-- section module instances
 	section_mark (section_module_instances, HEADER);

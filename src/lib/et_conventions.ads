@@ -58,8 +58,7 @@ package et_conventions is
 
 	comment_mark : constant string := "#";
 
-	keyword_conventions : constant string := "conventions";
-	
+
 	-- conventions file section headers
 	section_component_prefixes						: constant string (1..20)	:= "[COMPONENT_PREFIXES]";
 	section_component_units							: constant string (1..22)	:= "[UNITS_OF_MEASUREMENT]";

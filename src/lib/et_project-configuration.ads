@@ -41,6 +41,18 @@ with et_string_processing;
 
 package et_project.configuration is
 
+	keyword_conventions : constant string := "conventions";
+	
+	section_environment_variables : constant string := "[ENVIRONMENT_VARIABLES";
+	
+	type type_section_name is (
+		SEC_INIT,
+		SEC_ENVIRONMENT_VARIABLES
+		);
+
+	function to_string (section : in type_section_name) return string;
+	
+
 	-- Reads the project configuration file:
 	procedure read_project_configuration (
 		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer

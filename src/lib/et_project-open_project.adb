@@ -106,56 +106,6 @@ procedure open_project (
 			instance_B := instance_A;
 		end clear_connector;
 
-		procedure read_conventions is
-			use et_conventions;
-			use type_rigs;
-			
-			kw : constant string := f (line, 1);
-			file_name : pac_file_name.bounded_string;
-
-			procedure set_conventions (
-				rig_name	: in type_rig_configuration_file_name.bounded_string;
-				rig			: in out type_rig) is
-			begin
-				rig.conventions := file_name;
-
-				-- read the conventions file
-				put_line ("X");
-				et_conventions.read_conventions (file_name, log_threshold + 1);
-			end set_conventions;
-
-		begin -- read_conventions
-			if kw = keyword_conventions then
-				expect_field_count (line, 2);
-
-				file_name := to_file_name (f (line, 2));
-				
-				-- test whether the conventions file exists
-				if not exists (to_string (file_name)) then
-					log (ERROR, "Conventions file " & enclose_in_quotes (to_string (file_name)) &
-						" does not exist !", console => true);
-					raise constraint_error;
-				end if;
-
-				-- assign to rig
-				update_element (
-					container	=> rigs,
-					position	=> rig_cursor,
-					process		=> set_conventions'access);
-				
-			end if;
-		end read_conventions;
-
-		procedure test_conventions is 
-			use type_rigs;
-			use et_conventions;
-			use pac_file_name;
-		begin
-			if length (element (rig_cursor).conventions) = 0 then
-				log (WARNING, "No conventions file specified ! Design check limited !");
-			end if;
-		end test_conventions;
-			
 		procedure process_line is
 
 			procedure execute_section is
@@ -256,7 +206,7 @@ procedure open_project (
 			begin -- execute_section
 				case stack.current is
 
-					when SEC_INIT => test_conventions;
+					when SEC_INIT => null;
 
 					when SEC_MODULE_INSTANCES => null;
 					
@@ -353,7 +303,6 @@ procedure open_project (
 				case stack.current is
 
 					when SEC_INIT => null;
-						read_conventions;
 						
 					when SEC_MODULE_INSTANCES =>
 						case stack.parent is
