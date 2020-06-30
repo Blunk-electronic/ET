@@ -379,12 +379,6 @@ package body et_project is
 
 	
 
-	function to_string (section : in type_section) return string is
-	-- Converts a section like SEC_NET to a string "net".
-		len : positive := type_section'image (section)'length;
-	begin
-		return to_lower (type_section'image (section) (5..len));
-	end to_string;
 
 	-- Enters the project directory specified by project_name.
 	-- Searches for rig configuration files (*.conf), reads them and stores configurations in et_project.rigs.

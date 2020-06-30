@@ -185,25 +185,12 @@ package et_project.modules is
 
 -- KEYWORDS
 
-	keyword_default					: constant string := "default";
-	keyword_generic_name			: constant string := "generic_name";
-	keyword_instance_name			: constant string := "instance_name";
 	keyword_assembly_variant		: constant string := "assembly_variant";
 	keyword_not_mounted				: constant string := "not_mounted";
-
-	keyword_instance_A				: constant string := "instance_A";
-	keyword_instance_B				: constant string := "instance_B";		
-	keyword_purpose_A				: constant string := "purpose_A";
-	keyword_purpose_B				: constant string := "purpose_B";	
-	keyword_net_comparator			: constant string := "net_comparator";
-	keyword_net_comparator_warn_only: constant string := "warn_only";
-
 	keyword_class					: constant string := "class";
-
 	keyword_scope					: constant string := "scope";	
 	keyword_flipped					: constant string := "flipped";
 	keyword_rotation_in_schematic	: constant string := "rotation_in_schematic";
-
 	keyword_junction				: constant string := "junction";
 	keyword_submodule				: constant string := "submodule";
 	keyword_netchanger				: constant string := "netchanger";		
@@ -220,13 +207,7 @@ package et_project.modules is
 
 	
 -- SECTION NAMES
-	
-	section_module_instances	: constant string := "[MODULE_INSTANCES";
-	section_module_connections	: constant string := "[MODULE_CONNECTIONS";
-	section_connector			: constant string := "[CONNECTOR";
-	
-	section_module				: constant string := "[MODULE";
-	
+
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
 	

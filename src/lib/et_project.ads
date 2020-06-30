@@ -225,9 +225,6 @@ package et_project is
 	keyword_default					: constant string := "default";
 	keyword_generic_name			: constant string := "generic_name";
 	keyword_instance_name			: constant string := "instance_name";
-	keyword_assembly_variant		: constant string := "assembly_variant";
-	keyword_not_mounted				: constant string := "not_mounted";
-
 	keyword_instance_A				: constant string := "instance_A";
 	keyword_instance_B				: constant string := "instance_B";		
 	keyword_purpose_A				: constant string := "purpose_A";
@@ -235,140 +232,15 @@ package et_project is
 	keyword_net_comparator			: constant string := "net_comparator";
 	keyword_net_comparator_warn_only: constant string := "warn_only";
 
-	keyword_class					: constant string := "class";
-
-	keyword_scope					: constant string := "scope";	
-	keyword_flipped					: constant string := "flipped";
-	keyword_rotation_in_schematic	: constant string := "rotation_in_schematic";
-
-	keyword_junction				: constant string := "junction";
-	keyword_submodule				: constant string := "submodule";
-	keyword_netchanger				: constant string := "netchanger";		
-	keyword_height					: constant string := "height";	
-	keyword_template				: constant string := "template";
-	keyword_origin					: constant string := "origin";
-	keyword_model					: constant string := "model";				
-	keyword_variant					: constant string := "variant";
-	keyword_mirrored				: constant string := "mirrored";
-
-	keyword_sheet_number			: constant string := "number";
-	keyword_sheet_category			: constant string := "category";
-	keyword_sheet_description		: constant string := "text";
-
 	
 -- SECTION NAMES
 	
 	section_module_instances	: constant string := "[MODULE_INSTANCES";
 	section_module_connections	: constant string := "[MODULE_CONNECTIONS";
 	section_connector			: constant string := "[CONNECTOR";
-	
 	section_module				: constant string := "[MODULE";
+
 	
-	section_net_classes			: constant string := "[NET_CLASSES";
-	section_net_class			: constant string := "[NET_CLASS";
-	
-	section_nets				: constant string := "[NETS";
-	section_net					: constant string := "[NET";
-
-	section_strands				: constant string := "[STRANDS";
-	section_strand				: constant string := "[STRAND";
-
-	section_segments			: constant string := "[SEGMENTS";
-	section_segment				: constant string := "[SEGMENT";
-
-	section_labels				: constant string := "[LABELS";
-	section_label				: constant string := "[LABEL";
-	
-	section_submodules			: constant string := "[SUBMODULES";
-	section_submodule			: constant string := "[SUBMODULE";
-
-	section_drawing_frames		: constant string := "[DRAWING_FRAMES";
-	section_sheet_descriptions	: constant string := "[SHEET_DESCRIPTIONS";
-	section_sheet				: constant string := "[SHEET";
-	
-	section_schematic			: constant string := "[SCHEMATIC";
-
-	section_devices				: constant string := "[DEVICES";
-	section_device				: constant string := "[DEVICE";
-	section_devices_non_electric: constant string := "[DEVICES_NON_ELECTRIC";
-
-	section_assembly_variants	: constant string := "[ASSEMBLY_VARIANTS";
-	section_assembly_variant	: constant string := "[VARIANT";	
-	
-	section_netchangers			: constant string := "[NETCHANGERS";
-	section_netchanger			: constant string := "[NETCHANGER";
-
-	section_meta				: constant string := "[META";
-	section_rules				: constant string := "[RULES";
-	
-	section_units				: constant string := "[UNITS";
-
-	section_port_begin			: constant string := "[PORT";
-	
-	
-	type type_section is ( -- CS: sort aphabetically
-		SEC_DEVICES_NON_ELECTRIC,
-		SEC_BOARD_LAYER_STACK,
-		SEC_CONTOURS, -- of fill and cutout zones
-		SEC_CUTOUT_ZONE,
-		SEC_DRAWING_GRID,
-		SEC_FILL_ZONE,
-		SEC_INIT,
-		SEC_NET_CLASSES,
-		SEC_NET_CLASS,
-		SEC_NETS,
-		SEC_NET,
-		SEC_STRANDS,
-		SEC_STRAND,
-		SEC_SEGMENTS,
-		SEC_SEGMENT,
-		SEC_LABELS,
-		SEC_LABEL,
-		SEC_PORTS,
-		SEC_PORT,
-		SEC_ROUTE,
-		SEC_LINE,
-		SEC_ARC,
-		SEC_VIA,
-		SEC_SUBMODULES,
-		SEC_SUBMODULE,
-		SEC_SHEET_DESCRIPTIONS,
-		SEC_SHEET,
-		SEC_DRAWING_FRAMES,
-		SEC_SCHEMATIC,
-		SEC_BOARD,
-		SEC_DEVICES,
-		SEC_DEVICE,
-		SEC_ASSEMBLY_VARIANTS,
-		SEC_ASSEMBLY_VARIANT,
-		SEC_NETCHANGERS,
-		SEC_NETCHANGER,
-		SEC_META,
-		SEC_TEXTS,
-		SEC_TEXT,
-		SEC_UNITS,
-		SEC_UNIT,
-		SEC_PACKAGE,
-		SEC_PLACEHOLDER,
-		SEC_PLACEHOLDERS,		
-		SEC_SILK_SCREEN,
-		SEC_CIRCLE,
-		SEC_ASSEMBLY_DOCUMENTATION,
-		SEC_KEEPOUT,
-		SEC_ROUTE_RESTRICT,
-		SEC_RULES,
-		SEC_VIA_RESTRICT,
-		SEC_STOP_MASK,
-		SEC_STENCIL,
-		SEC_COPPER,
-		SEC_PCB_CONTOURS_NON_PLATED,
-		-- CS SEC_PCB_CONTOUR_PLATED
-		SEC_TOP,
-		SEC_BOTTOM
-		);
-
-	function to_string (section : in type_section) return string;
-	-- Converts a section like SEC_NET to a string "net".
 	
 	procedure open_project (
 		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
