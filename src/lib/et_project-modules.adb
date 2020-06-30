@@ -74,6 +74,7 @@ with et_symbols;
 with frame_rw;
 with et_meta;
 with et_design_rules;
+with et_project.rigs;
 
 package body et_project.modules is
 
@@ -440,6 +441,8 @@ package body et_project.modules is
 		procedure create_rig_configuration is
 		-- create the rig configuration file
 			file_handle : ada.text_io.file_type;
+
+			use et_project.rigs;
 			rig_conf_file : type_rig_configuration_file_name.bounded_string; -- led_matrix.conf
 		begin
 			log (text => "creating the default rig configuration file ...", level => log_threshold + 1);

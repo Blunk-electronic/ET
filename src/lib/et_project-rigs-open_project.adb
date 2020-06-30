@@ -53,8 +53,6 @@ procedure open_project (
 	-- the working directory must restored.
 	current_working_directory : string := current_directory;
 
--- MODULES
-	
 	-- The search of rig module files requires this stuff:
 	module_file_search : search_type; -- the state of the search
 	module_file_filter : filter_type := (ordinary_file => true, others => false);
@@ -64,9 +62,6 @@ procedure open_project (
 	begin
 		read_module_file (file_name, log_threshold + 1);
 	end;
-	
-
--- RIG CONFIGURATION		
 	
 	-- The search of rig configuration files requires this stuff:
 	conf_file_search : search_type; -- the state of the search

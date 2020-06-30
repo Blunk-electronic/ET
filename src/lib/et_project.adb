@@ -75,6 +75,7 @@ with frame_rw;
 with et_meta;
 with et_design_rules;
 with et_project.modules;
+with et_project.rigs;
 	
 package body et_project is
 
@@ -100,64 +101,6 @@ package body et_project is
 		return type_et_project_path.to_bounded_string (path);
 	end to_project_path;
 
-	function to_string (section : in type_section_name_rig_configuration) return string is
-	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
-		len : positive := type_section_name_rig_configuration'image (section)'length;
-	begin
-		return to_lower (type_section_name_rig_configuration'image (section) (5..len));
-	end to_string;
-
-	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size is
-	-- Converts a string to type_sheet_name_text_size.
-	begin
-		return type_sheet_name_text_size'value (size);
-	end to_sheet_name_text_size;
-
-	function compare_connectors (left, right : in type_connector) return boolean is
-	-- Returns true if left connector comes before right connector.
-	-- Returns false if connectors are equal.
-		use et_devices.type_purpose;
-		use type_module_instance_name;
-		r : boolean := false; -- to be returned
-	begin
-		-- First we compare instance_A
-		if left.instance_A > right.instance_A then
-			r := true;
-		elsif left.instance_A < right.instance_A then
-			r := false;
-		else -- left instance_A equals right instance_A
-
-			-- compare instance_B
-			if left.instance_B > right.instance_B then
-				r := true;
-			elsif left.instance_B < right.instance_B then
-				r := false;
-			else -- left instance_B equals right instance_B
-
-				-- compare purpose_A
-				if left.purpose_A > right.purpose_A then
-					r := true;
-				elsif left.purpose_A < right.purpose_A then
-					r := false;
-				else -- left purpose_A equals right purpose_A
-
-					-- compare purpose_B
-					if left.purpose_B > right.purpose_B then
-						r := true;
-					elsif left.purpose_B < right.purpose_B then
-						r := false;
-					else 
-						-- left purpose_B equals right purpose_B
-						-- means: connectors are equal
-						r := false;
-					end if;
-				end if;
-			end if;
-		end if;
-		
-		return r;
-	end compare_connectors;
-	
 	procedure create_supplementary_directories (
 		path			: in string;
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -238,6 +181,8 @@ package body et_project is
 		procedure create_rig_configuration is
 		-- create the rig configuration file
 			file_handle : ada.text_io.file_type;
+
+			use et_project.rigs;
 			rig_conf_file : type_rig_configuration_file_name.bounded_string; -- led_matrix.conf
 		begin
 			log (text => "creating the default rig configuration file ...", level => log_threshold + 1);
@@ -368,25 +313,9 @@ package body et_project is
 	end create_project_directory_bare;
 
 	
-	-- Saves the rig configuration in the file with the given name rig_conf_file.
-	procedure save_rig_configuration (
-		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
-		rig_conf_name	: in type_rig_configuration_file_name.bounded_string; -- demo, low_cost, fully_equipped
-		rig				: in type_rig; -- the actual rig configuration				
-		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
-		log_threshold 	: in et_string_processing.type_log_level) 
-		is separate;
-
-	
 
 
-	-- Enters the project directory specified by project_name.
-	-- Searches for rig configuration files (*.conf), reads them and stores configurations in et_project.rigs.
-	-- Searches for module files (*.mod), reads them and stores modules in et_project.modules.
-	procedure open_project (
-		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
-		log_threshold 	: in et_string_processing.type_log_level)
-		is separate;
+
 
 	procedure save_libraries (
 	-- Saves the library containers (et_libraries.devices and et_packages.packages) in
@@ -524,8 +453,10 @@ package body et_project is
 			log_indentation_down;			
 		end query_modules;
 
-		procedure query_rig_configuration (rig_cursor : in type_rigs.cursor) is
-			use type_rigs;
+		procedure query_rig_configuration (rig_cursor : in et_project.rigs.type_rigs.cursor) is
+			use et_project.rigs;
+			use et_project.rigs.type_rigs;
+			use type_rig_configuration_file_name;
 			rig_name : type_rig_configuration_file_name.bounded_string := key (rig_cursor);
 		begin
 			log_indentation_up;
@@ -560,7 +491,7 @@ package body et_project is
 		iterate (et_project.modules.modules, query_modules'access);
 
 		-- save rig configuration files
-		type_rigs.iterate (rigs, query_rig_configuration'access);
+		et_project.rigs.type_rigs.iterate (et_project.rigs.rigs, query_rig_configuration'access);
 		
 		log_indentation_down;
 	end save_project;
