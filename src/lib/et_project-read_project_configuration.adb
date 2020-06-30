@@ -215,63 +215,42 @@ begin -- read_project_configuration
 	log (text => "reading project configuration file ...", level => log_threshold, console => true);
 	log_indentation_up;
 	
-	-- If the given project directory exists, enter it. Otherwise error message and abort.
--- 	if exists (to_string (project_name)) then
--- 		log_indentation_up;
+	if exists (file_name) then
+
+		open (
+			file => file_handle,
+			mode => in_file, 
+			name => file_name);
+
+		set_input (file_handle);
+
+		-- Init section stack.
+		stack.init;
+		stack.push (SEC_INIT);
 		
-		-- enter the project directory
--- 		set_directory (to_string (project_name));
+		do_it;
 
-		if exists (file_name) then
-
-			open (
-				file => file_handle,
-				mode => in_file, 
-				name => file_name);
-
-			set_input (file_handle);
-
-			-- Init section stack.
-			stack.init;
-			stack.push (SEC_INIT);
-			
-			do_it;
-
-			-- As a safety measure the top section must be reached:
-			if stack.depth > 1 then 
-				log (WARNING, write_section_stack_not_empty);
-			end if;
-			
-
-			set_input (previous_input);
-			close (file_handle);
-			
-		else
-			log (ERROR, "No project configuration file found !", console => true);
-			raise constraint_error;
+		-- As a safety measure the top section must be reached:
+		if stack.depth > 1 then 
+			log (WARNING, write_section_stack_not_empty);
 		end if;
-
-		log_indentation_down;
 		
--- 	else -- project directory does not exist
--- 		log (ERROR, "Native project " & to_string (project_name) 
--- 				& " does not exist !", console => true);
--- 		raise constraint_error;
--- 	end if;
+
+		set_input (previous_input);
+		close (file_handle);
+		
+	else
+		log (ERROR, "No project configuration file found !", console => true);
+		raise constraint_error;
+	end if;
 
 	log_indentation_down;
 
-	-- Restore working directory.
--- 	set_directory (current_working_directory);
 	
 	exception when event:
 		others => 
 
 			if is_open (file_handle) then close (file_handle); end if;
-		
-			-- Restore working directory.
--- 			set_directory (current_working_directory);
-
 			raise;
 
 end read_project_configuration;
