@@ -35,46 +35,15 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	--use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.text_io;				use ada.text_io;
 
 with ada.tags;
 
 with ada.exceptions;
 with ada.directories;
-with gnat.directory_operations;
 
-with ada.containers;            use ada.containers;
-with ada.containers.ordered_maps;
-
--- with et_general;				use et_general;
--- with et_coordinates;
--- with et_string_processing;
--- with et_export;
--- with et_import;
--- with et_schematic;
--- with et_packages;
--- with et_pcb;
--- with et_pcb_stack;
--- with et_pcb_coordinates;
--- with et_material;
--- with et_text;					use et_text;
--- with et_geometry;				use et_geometry;
 with general_rw;				use general_rw;
-with pcb_rw;					use pcb_rw;
-with pcb_rw.device_packages;	use pcb_rw.device_packages;
-with schematic_rw;				use schematic_rw;
-with symbol_rw;					use symbol_rw;
-with device_rw;					use device_rw;
-with et_symbols;
-with frame_rw;
-with et_meta;
-with et_design_rules;
-with et_project.modules;
 	
 package body et_project.rigs is
 
