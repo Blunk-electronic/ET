@@ -614,11 +614,11 @@ package body et_project is
 		
 	end create_project_directory_bare;
 
-	-- Reads the project configuration file:
-	procedure read_project_configuration (
-		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
-		log_threshold 	: in et_string_processing.type_log_level)
-		is separate;
+-- 	-- Reads the project configuration file:
+-- 	procedure read_project_configuration (
+-- 		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
+-- 		log_threshold 	: in et_string_processing.type_log_level)
+-- 		is separate;
 
 	
 	-- Saves the rig configuration in the file with the given name rig_conf_file.
