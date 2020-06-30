@@ -55,6 +55,7 @@ use et_coordinates.pac_geometry_sch;
 with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
 with et_project;				use et_project;
+with et_project.modules;		use et_project.modules;
 with et_text;
 with submodules;
 with assembly_variants;
@@ -587,13 +588,13 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level);
 
 	function sort_by_coordinates (
-		module_cursor 	: in et_project.type_modules.cursor;
+		module_cursor 	: in type_modules.cursor;
 		log_threshold	: in type_log_level)
 		return numbering.type_devices.map;
 
 	function unit_positions_valid (
 	-- Returns true if no unit sits on top of another.
-		module_cursor 	: in et_project.type_modules.cursor;
+		module_cursor 	: in type_modules.cursor;
 		log_threshold	: in type_log_level)
 		return boolean;
 	

@@ -61,6 +61,7 @@ with et_coordinates;			use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
 with et_project;				use et_project;
+with et_project.modules;		use et_project.modules;
 with et_symbols;
 with et_schematic;
 with et_frames;
@@ -103,7 +104,7 @@ package et_canvas_schematic is
 	
 	-- The current active module is stored here. Whenever objects of the schematic
 	-- or board are to be drawn, this variable must be read.
-	current_active_module : et_project.type_modules.cursor; -- the currently active module
+	current_active_module : et_project.modules.type_modules.cursor; -- the currently active module
 
 	-- The current active sheet:
 	current_active_sheet : et_coordinates.type_sheet := type_sheet'first;
@@ -187,7 +188,7 @@ package et_canvas_schematic is
 	
 	-- Init the drawing:
 	procedure init_drawing (
-		module	: in et_project.type_modules.cursor; -- the module to be drawn in schematic and layout
+		module	: in et_project.modules.type_modules.cursor; -- the module to be drawn in schematic and layout
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be drawn
 
 	-- Redraws the schematic:

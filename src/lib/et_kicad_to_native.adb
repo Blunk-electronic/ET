@@ -49,7 +49,7 @@ with et_schematic;
 
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
-with et_project;
+with et_project.modules;
 with et_terminals;
 with et_packages;
 with et_kicad_general;
@@ -3770,17 +3770,17 @@ package body et_kicad_to_native is
 			-- beginning and procedures copy_general_stuff, copy_components, copy_nets, copy_frames
 			-- and copy_libraries would update the scratch module inside the list.
 			declare 
-				module_list : et_project.type_modules.map; -- set up the list
+				module_list : et_project.modules.type_modules.map; -- set up the list
 			begin
 				-- insert the scratch module in the list
-				et_project.type_modules.insert (
+				et_project.modules.type_modules.insert (
 					container 	=> module_list,
 					key			=> to_module_name (to_string (project_name)), -- blood_sample_analyzer
 					new_item	=> module);
 			
 				-- save module (the first an only one in module_list) in file *.mod
-				et_project.save_module (
-					module_cursor	=> et_project.type_modules.first (module_list), -- the module it is about
+				et_project.modules.save_module (
+					module_cursor	=> et_project.modules.type_modules.first (module_list), -- the module it is about
 					project_name	=> project_name, -- blood_sample_analyzer
 					project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad
 					log_threshold	=> log_threshold);

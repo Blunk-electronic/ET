@@ -63,7 +63,7 @@ package body et_canvas_board is
 		return string 
 	is
 		use et_general;
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		use et_canvas_schematic;
 	begin
 		case axis is
@@ -76,7 +76,7 @@ package body et_canvas_board is
 		self	: not null access type_view;
 		point	: in type_point)
 		return string is
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		use et_canvas_schematic;		
 	begin
 		return round_to_string (point, element (current_active_module).board.grid);
@@ -137,7 +137,7 @@ package body et_canvas_board is
 	function active_module (self : not null access type_view) 
 		return string is
 		use et_general.type_module_name;
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		use et_canvas_schematic;
 	begin
 		return to_string (key (current_active_module)); -- motor_driver (without extension)
@@ -225,7 +225,7 @@ package body et_canvas_board is
 		use et_general;
 		use et_text;
 		use et_meta;
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		use et_canvas_schematic;
 	
 		meta : constant type_board := element (current_active_module).meta.board;
@@ -503,7 +503,7 @@ package body et_canvas_board is
 		cursor		: in out type_cursor;
 		position	: in type_point) is
 		use et_general;
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		use et_canvas_schematic;		
 	begin
 		case coordinates is
@@ -526,7 +526,7 @@ package body et_canvas_board is
 		-- Get the currently active grid:
 		use et_general;
 		use et_canvas_schematic;		
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		grid : constant type_grid := element (current_active_module).board.grid;
 
 		-- Find the grid point nearest available to the current cursor position:
@@ -611,7 +611,7 @@ package body et_canvas_board is
 		return et_frames.type_frame is
 
 		use et_canvas_schematic;
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 	begin
 		return element (current_active_module).board.frame.frame;
 	end get_frame;
@@ -621,7 +621,7 @@ package body et_canvas_board is
 		return type_distance_positive is 
 
 		use et_canvas_schematic;
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 	begin
 		return type_distance_positive (element (current_active_module).board.frame.frame.size.y);
 	end frame_height;
@@ -631,7 +631,7 @@ package body et_canvas_board is
 		return type_distance_positive is 
 
 		use et_canvas_schematic;
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 	begin
 		return type_distance_positive (element (current_active_module).board.frame.frame.size.x);
 	end frame_width;
@@ -648,7 +648,7 @@ package body et_canvas_board is
 		return type_point is
 
 		use et_canvas_schematic;
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 	begin
 		return element (current_active_module).board.origin;
 	end board_origin;

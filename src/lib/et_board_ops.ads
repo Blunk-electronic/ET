@@ -51,6 +51,7 @@ with et_general;				use et_general;
 with et_geometry;				use et_geometry;
 with et_string_processing;		use et_string_processing;
 with et_project;				use et_project;
+with et_project.modules;		use et_project.modules;
 with et_schematic;
 with et_schematic_ops;			use et_schematic_ops;
 with et_terminals;				use et_terminals;
@@ -83,14 +84,14 @@ package et_board_ops is
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
 		log_threshold	: in type_log_level);
 
-	function layer_count (module_cursor	: in et_project.type_modules.cursor) 
+	function layer_count (module_cursor	: in type_modules.cursor) 
 	-- Returns the total number of signal layers used by the given module.
 		return et_pcb_stack.type_signal_layer;
 
 	procedure test_layer (
 	-- Tests whether the given layer is allowed according to current layer stack
 	-- of the given board.
-		module_cursor	: in et_project.type_modules.cursor;
+		module_cursor	: in type_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer);
 	
 	procedure delete_layer (
@@ -177,14 +178,14 @@ package et_board_ops is
 
 	function locate_device (
 	-- Returns a cursor to the requested device in the given module.
-		module_cursor	: in et_project.type_modules.cursor;
+		module_cursor	: in type_modules.cursor;
 		device_name		: in type_name)
 		return et_schematic.type_devices.cursor;
 	
 	function terminal_position (
 	-- Returns the position of a terminal of the given device in the board.
 	-- The device must be real (appearance SCH_PCB).
-		module_cursor	: in et_project.type_modules.cursor;
+		module_cursor	: in type_modules.cursor;
 		device_cursor	: in et_schematic.type_devices.cursor; -- IC45
 		terminal_name	: in type_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position;

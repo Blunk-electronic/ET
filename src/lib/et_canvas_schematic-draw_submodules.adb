@@ -39,8 +39,9 @@ with ada.text_io;				use ada.text_io;
 
 with et_pcb_coordinates;
 with et_schematic;
-with et_project;				use et_project;
-use et_project.type_modules;
+
+with et_project.modules;		use et_project.modules;
+use et_project.modules.type_modules;
 
 with submodules;				use submodules;
 

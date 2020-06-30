@@ -84,7 +84,7 @@ procedure draw_conductors (
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := 
-		et_project.deepest_conductor_layer (et_canvas_schematic.current_active_module);
+		deepest_conductor_layer (et_canvas_schematic.current_active_module);
 	
 	-- The layer being drawn:
 	current_layer : type_signal_layer;
@@ -413,7 +413,7 @@ procedure draw_conductors (
 begin -- draw_conductors
 -- 	put_line ("draw conductor layers ...");
 	
-	et_project.type_modules.query_element (
+	et_project.modules.type_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 	

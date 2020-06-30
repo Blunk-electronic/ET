@@ -55,6 +55,7 @@ with et_conventions;
 with et_kicad;
 with et_kicad_to_native;
 with et_project;
+with et_project.modules;
 with scripting;
 
 with et_packages;
@@ -84,7 +85,7 @@ procedure et is
 	project_name_open 		: et_project.type_project_name.bounded_string; -- the project to be opened
 	project_name_save_as	: et_project.type_project_name.bounded_string; -- the "save as" name of the project
 
-	module_file_name		: et_project.type_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
+	module_file_name		: et_project.modules.type_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 	
 	package_name_create		: et_packages.type_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
@@ -204,7 +205,7 @@ procedure et is
 
 					elsif full_switch = switch_native_project_module then
 						log (text => arg & full_switch & space & parameter);
-						module_file_name := et_project.to_module_file_name (parameter);
+						module_file_name := et_project.modules.to_module_file_name (parameter);
 						
 					elsif full_switch = switch_native_project_sheet then
 						log (text => arg & full_switch & space & parameter);
@@ -453,8 +454,8 @@ procedure et is
 
 	procedure launch_gui is 
 		use gui;
-		use et_project;
-		use et_project.type_modules;
+		use et_project.modules;
+		use et_project.modules.type_modules;
 		use type_module_file_name;
 		use type_module_name;
 

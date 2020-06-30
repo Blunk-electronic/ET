@@ -59,7 +59,7 @@ package body et_canvas_schematic is
 		return string 
 	is
 		use et_general;
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 	begin
 		case axis is
 			when X => return to_string (round (x (point), element (current_active_module).grid.x));
@@ -71,7 +71,7 @@ package body et_canvas_schematic is
 		self	: not null access type_view;
 		point	: in type_point)
 		return string is
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 	begin
 		return round_to_string (point, element (current_active_module).grid);
 	end;
@@ -119,7 +119,7 @@ package body et_canvas_schematic is
 	
 	function active_module return et_general.type_module_name.bounded_string is
 		use et_general.type_module_name;
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 	begin
 		return key (current_active_module); -- motor_driver (without extension)
 	end active_module;
@@ -246,9 +246,9 @@ package body et_canvas_schematic is
 		module	: in et_general.type_module_name.bounded_string)  -- motor_driver
 	is
 		use et_general;
-		use et_project;
-		use type_modules;
-		cursor : et_project.type_modules.cursor := find (modules, module);
+		use et_project.modules;
+		use et_project.modules.type_modules;
+		cursor : et_project.modules.type_modules.cursor := find (et_project.modules.modules, module);
 	begin
 		if cursor /= type_modules.no_element then -- module exists in project
 			current_active_module := cursor;
@@ -263,7 +263,7 @@ package body et_canvas_schematic is
 	end set_module;
 
 	procedure init_drawing (
-		module	: in et_project.type_modules.cursor; -- the module to be drawn
+		module	: in et_project.modules.type_modules.cursor; -- the module to be drawn
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be drawn
 	is begin
 		-- set the active module:
@@ -306,7 +306,7 @@ package body et_canvas_schematic is
 		cursor		: in out type_cursor;
 		position	: in type_point) is
 		use et_general;
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 	begin
 		case coordinates is
 			when ABSOLUTE =>
@@ -326,7 +326,7 @@ package body et_canvas_schematic is
 		cursor		: in out type_cursor) is
 
 		-- Get the currently active grid:
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		grid : constant type_grid := element (current_active_module).grid;
 
 		-- Find the grid point nearest available to the current cursor position:
@@ -410,7 +410,7 @@ package body et_canvas_schematic is
 		self : not null access type_view)
 		return et_frames.type_frame is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 	begin
 		return element (current_active_module).frames.frame;
 	end get_frame;
@@ -419,7 +419,7 @@ package body et_canvas_schematic is
 		self : not null access type_view)
 		return type_distance_positive is 
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 	begin
 		return type_distance_positive (element (current_active_module).frames.frame.size.y);
 	end frame_height;
@@ -428,7 +428,7 @@ package body et_canvas_schematic is
 		self : not null access type_view)
 		return type_distance_positive is 
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 	begin
 		return type_distance_positive (element (current_active_module).frames.frame.size.x);
 	end frame_width;

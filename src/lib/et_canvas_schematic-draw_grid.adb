@@ -51,7 +51,7 @@ is
 	-- See procedure draw_frame.
 	start_x, start_y : type_view_coordinate;
 
-	use et_project.type_modules;
+	use et_project.modules.type_modules;
 	used_grid : constant type_grid := element (current_active_module).grid;
 begin
 	-- The start point on the x-axis is aligned with the left frame border:

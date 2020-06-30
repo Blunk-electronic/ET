@@ -36,6 +36,7 @@
 --
 
 with et_project.configuration;
+with et_project.modules;
 
 separate (et_project)
 
@@ -46,6 +47,7 @@ procedure open_project (
 
 	use et_string_processing;
 	use ada.directories;
+	use et_project.modules;
 
 	-- We need a backup of the current working directory. When this procedure finishes,
 	-- the working directory must restored.

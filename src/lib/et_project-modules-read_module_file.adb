@@ -35,7 +35,7 @@
 --   history of changes:
 --
 
-separate (et_project)
+separate (et_project.modules)
 
 procedure read_module_file (
 -- Reads a module file and stores its content as generic module in container modules.

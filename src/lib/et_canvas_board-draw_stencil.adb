@@ -170,7 +170,7 @@ procedure draw_stencil (
 begin -- draw_stencil
 -- 	put_line ("draw stencil / solder paste mask ...");
 	
-	et_project.type_modules.query_element (
+	et_project.modules.type_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 	

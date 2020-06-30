@@ -37,6 +37,7 @@
 
 with et_general;				use et_general;
 with et_project;				use et_project;
+with et_project.modules;		use et_project.modules;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 

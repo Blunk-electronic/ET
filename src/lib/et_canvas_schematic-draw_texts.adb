@@ -36,10 +36,10 @@
 --
 
 with et_project;				use et_project;
-
+with et_project.modules;		use et_project.modules;
 with et_schematic;				use et_schematic;
 use et_schematic.pac_texts;
-use et_project.type_modules;
+use et_project.modules.type_modules;
 
 separate (et_canvas_schematic)
 

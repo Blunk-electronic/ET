@@ -231,7 +231,7 @@ procedure draw_silk_screen (
 begin -- draw_silk_screen
 -- 	put_line ("draw board silk screen ...");
 	
-	et_project.type_modules.query_element (
+	et_project.modules.type_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 	

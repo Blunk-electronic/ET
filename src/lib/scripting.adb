@@ -46,6 +46,7 @@ with ada.directories;
 with gnat.directory_operations;
 
 with et_project;
+with et_project.modules;
 
 with et_coordinates;
 with et_pcb_coordinates;
@@ -235,7 +236,7 @@ package body scripting is
 	end;
 
 	procedure validate_module_name (module : in type_module_name.bounded_string) is 
-		use et_project;
+		use et_project.modules;
 	begin
 		if not exists (module) then
 			log (ERROR, "module " & to_string (module) &
@@ -4459,6 +4460,7 @@ package body scripting is
 		end;
 		
 		use et_project;
+		use et_project.modules;
 		
 		exit_code : type_exit_code := SUCCESSFUL;
 		domain	: type_domain; -- DOM_SCHEMATIC
@@ -4470,9 +4472,7 @@ package body scripting is
 		procedure project_cmd (
 			verb : in type_verb_project;
 			noun : in type_noun_project) 
-		is
-			use et_project;
-		begin
+		is begin
 			case verb is
 				when VERB_OPEN =>
 					case noun is
@@ -4481,7 +4481,7 @@ package body scripting is
 								when 4 =>
 									-- The script command provides the module name only.
 									-- The extension must be added here:
-									et_project.read_module_file (
+									read_module_file (
 										file_name		=> ada.directories.compose (
 														name		=> f (4),
 														extension	=> module_file_name_extension),
@@ -4503,7 +4503,7 @@ package body scripting is
 							case fields is
 								when 4 =>
 
-									et_project.create_module (
+									create_module (
 										module_name		=> to_module_name (f (4)),
 										log_threshold	=> log_threshold + 1
 										);
@@ -4523,7 +4523,7 @@ package body scripting is
 							case fields is
 								when 4 =>
 
-									et_project.save_module (
+									save_module (
 										module_name		=> to_module_name (f (4)),
 										log_threshold	=> log_threshold + 1
 										);
@@ -4543,7 +4543,7 @@ package body scripting is
 							case fields is
 								when 4 =>
 
-									et_project.delete_module (
+									delete_module (
 										module_name		=> to_module_name (f (4)),
 										log_threshold	=> log_threshold + 1
 										);
@@ -4581,7 +4581,7 @@ package body scripting is
 					-- in the current project directory or because a environment
 					-- variable (like $templates/power_supply.mod) directs to
 					-- its real location.
-					et_project.read_module_file (
+					read_module_file (
 						file_name		=> append_extension (to_string (module)), 
 						log_threshold	=> log_threshold + 1); 
 
@@ -4605,7 +4605,7 @@ package body scripting is
 					-- in the current project directory or because a environment
 					-- variable (like $templates/power_supply.mod) directs to
 					-- its real location.
-					et_project.read_module_file (
+					read_module_file (
 						file_name		=> append_extension (to_string (module)), 
 						log_threshold	=> log_threshold + 1); 
 

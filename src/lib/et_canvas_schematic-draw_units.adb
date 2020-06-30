@@ -39,11 +39,11 @@ with ada.text_io;				use ada.text_io;
 with ada.numerics;				use ada.numerics;
 
 with et_general;				use et_general;
-with et_project;
+with et_project.modules;
 
 with et_schematic;
 
-use et_project.type_modules;
+use et_project.modules.type_modules;
 use et_schematic.type_devices;
 use et_schematic.type_units;
 

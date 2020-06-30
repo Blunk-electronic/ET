@@ -83,7 +83,7 @@ package body et_board_ops is
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure set_origin (
@@ -114,7 +114,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> set_origin'access);
 
@@ -127,7 +127,7 @@ package body et_board_ops is
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use et_geometry;
@@ -150,16 +150,16 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 		
 	end add_layer;
 
-	function layer_count (module_cursor	: in et_project.type_modules.cursor) 
+	function layer_count (module_cursor	: in et_project.modules.type_modules.cursor) 
 	-- Returns the total number of signal layers used by the given module.
 		return et_pcb_stack.type_signal_layer is
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		use et_pcb_stack;
 		use package_layers;
 	begin
@@ -169,7 +169,7 @@ package body et_board_ops is
 	procedure test_layer (
 	-- Tests whether the given layer is allowed according to current layer stack
 	-- of the given board.
-		module_cursor	: in et_project.type_modules.cursor;
+		module_cursor	: in et_project.modules.type_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer) is
 		use et_pcb_stack;
 		layers_used : et_pcb_stack.type_signal_layer := layer_count (module_cursor);
@@ -189,7 +189,7 @@ package body et_board_ops is
 		layer			: in et_pcb_stack.type_signal_layer;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use et_geometry;
@@ -236,7 +236,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -268,7 +268,7 @@ package body et_board_ops is
 		prefix			: in type_prefix.bounded_string; -- FD
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		package_cursor_lib : et_packages.type_packages.cursor;
@@ -333,7 +333,7 @@ package body et_board_ops is
 
 		-- add the device to the module
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 		
@@ -349,7 +349,7 @@ package body et_board_ops is
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
@@ -439,7 +439,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -454,7 +454,7 @@ package body et_board_ops is
 		rotation		: in et_pcb_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
@@ -543,7 +543,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -554,7 +554,7 @@ package body et_board_ops is
 		device_name		: in type_name; -- FD1
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
@@ -581,7 +581,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -593,7 +593,7 @@ package body et_board_ops is
 		device_name_after	: in type_name; -- FD3
 		log_threshold		: in type_log_level) is
 		
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
@@ -647,7 +647,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -663,7 +663,7 @@ package body et_board_ops is
 		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
@@ -820,7 +820,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -869,7 +869,7 @@ package body et_board_ops is
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure query_submodules (
@@ -931,7 +931,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
@@ -944,7 +944,7 @@ package body et_board_ops is
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module
 
 		use assembly_variants;
@@ -1161,7 +1161,7 @@ package body et_board_ops is
 				end query_devices;
 
 			begin -- collect
-				et_project.type_modules.query_element (
+				et_project.modules.type_modules.query_element (
 					position	=> module_cursor,
 					process		=> query_devices'access);
 				
@@ -1390,7 +1390,7 @@ package body et_board_ops is
 
 	function locate_device (
 	-- Returns a cursor to the requested device in the given module.
-		module_cursor	: in et_project.type_modules.cursor;
+		module_cursor	: in et_project.modules.type_modules.cursor;
 		device_name		: in type_name)
 		return et_schematic.type_devices.cursor is
 
@@ -1405,7 +1405,7 @@ package body et_board_ops is
 		end query_devices;
 		
 	begin -- locate_device
-		et_project.type_modules.query_element (
+		et_project.modules.type_modules.query_element (
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -1419,7 +1419,7 @@ package body et_board_ops is
 	function terminal_position (
 	-- Returns the position of a terminal of the given device in the board.
 	-- The device must be real (appearance SCH_PCB).
-		module_cursor	: in et_project.type_modules.cursor;
+		module_cursor	: in et_project.modules.type_modules.cursor;
 		device_cursor	: in et_schematic.type_devices.cursor; -- IC45
 		terminal_name	: in type_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position is
@@ -1512,7 +1512,7 @@ package body et_board_ops is
 		grid			: in type_grid;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure do_it (
@@ -1531,7 +1531,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
 
@@ -1574,7 +1574,7 @@ package body et_board_ops is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is an SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning must be issued.
-		module_cursor	: in et_project.type_modules.cursor;											   
+		module_cursor	: in et_project.modules.type_modules.cursor;											   
 		terminal		: in type_terminal_position;
 		layer			: in et_pcb_stack.type_signal_layer) is
 		use et_pcb_stack;
@@ -1642,8 +1642,8 @@ package body et_board_ops is
 		end do_it;
 
 	begin -- add_named_track
-		et_project.type_modules.update_element (
-			container	=> modules,
+		et_project.modules.type_modules.update_element (
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
 		
@@ -1656,7 +1656,7 @@ package body et_board_ops is
 		line			: in et_pcb.type_copper_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use et_pcb;
@@ -1688,7 +1688,7 @@ package body et_board_ops is
 		if is_freetrack (net_name) then
 			
 			update_element (
-				container	=> modules,
+				container	=> et_project.modules.modules,
 				position	=> module_cursor,
 				process		=> add_freetrack'access);
 
@@ -1731,11 +1731,11 @@ package body et_board_ops is
 				process		=> add'access);
 		end add_named_track;
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		
 	begin -- draw_track_line
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add_named_track'access);
 
@@ -1757,7 +1757,7 @@ package body et_board_ops is
 		length			: in type_distance_positive;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		-- This is going to be the segment we will insert. In the follwing it
@@ -1828,7 +1828,7 @@ package body et_board_ops is
 		notches			: in type_grid_notches;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		-- This is going to be the segment we will insert. In the follwing it
@@ -1895,7 +1895,7 @@ package body et_board_ops is
 		end_point		: in type_point;
 		log_threshold	: in type_log_level) is
 		
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		-- This is going to be the segment we will insert. In the follwing it
@@ -1959,7 +1959,7 @@ package body et_board_ops is
 		notches			: in type_grid_notches;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		-- This is going to be the segment we will insert. In the follwing it
@@ -2018,7 +2018,7 @@ package body et_board_ops is
 		arc				: in et_pcb.type_copper_arc;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use et_pcb;
@@ -2082,13 +2082,13 @@ package body et_board_ops is
 		if is_freetrack (net_name) then
 			
 			update_element (
-				container	=> modules,
+				container	=> et_project.modules.modules,
 				position	=> module_cursor,
 				process		=> add_freetrack'access);
 
 		else
 			update_element (
-				container	=> modules,
+				container	=> et_project.modules.modules,
 				position	=> module_cursor,
 				process		=> add_named_track'access);
 
@@ -2107,7 +2107,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use et_pcb;
@@ -2239,13 +2239,13 @@ package body et_board_ops is
 		if is_freetrack (net_name) then
 			
 			update_element (
-				container	=> modules,
+				container	=> et_project.modules.modules,
 				position	=> module_cursor,
 				process		=> ripup_freetrack'access);
 
 		else
 			update_element (
-				container	=> modules,
+				container	=> et_project.modules.modules,
 				position	=> module_cursor,
 				process		=> ripup_named_track'access);
 
@@ -2258,7 +2258,7 @@ package body et_board_ops is
 	procedure test_layers (
 	-- Tests the given set of signal layers whether each of them is available
 	-- according to the current layer stack of the given module.
-		module_cursor	: in et_project.type_modules.cursor;
+		module_cursor	: in et_project.modules.type_modules.cursor;
 		layers 			: in et_pcb_stack.type_signal_layers.set) is
 
 		use et_pcb_stack;
@@ -2279,7 +2279,7 @@ package body et_board_ops is
 		line			: in type_route_restrict_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use type_route_restrict_lines;
@@ -2306,7 +2306,7 @@ package body et_board_ops is
 		test_layers (module_cursor, line.layers);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 		
@@ -2318,7 +2318,7 @@ package body et_board_ops is
 		arc				: in type_route_restrict_arc;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use type_route_restrict_arcs;
@@ -2345,7 +2345,7 @@ package body et_board_ops is
 		test_layers (module_cursor, arc.layers);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 		
@@ -2357,7 +2357,7 @@ package body et_board_ops is
 		circle			: in type_route_restrict_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use type_route_restrict_circles;
@@ -2384,7 +2384,7 @@ package body et_board_ops is
 		test_layers (module_cursor, circle.layers);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 		
@@ -2399,7 +2399,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure delete (
@@ -2470,7 +2470,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -2484,7 +2484,7 @@ package body et_board_ops is
 		line			: in type_via_restrict_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use type_via_restrict_lines;
@@ -2511,7 +2511,7 @@ package body et_board_ops is
 		test_layers (module_cursor, line.layers);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 		
@@ -2523,7 +2523,7 @@ package body et_board_ops is
 		arc				: in type_via_restrict_arc;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use type_via_restrict_arcs;
@@ -2550,7 +2550,7 @@ package body et_board_ops is
 		test_layers (module_cursor, arc.layers);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 		
@@ -2562,7 +2562,7 @@ package body et_board_ops is
 		circle			: in type_via_restrict_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use type_via_restrict_circles;
@@ -2589,7 +2589,7 @@ package body et_board_ops is
 		test_layers (module_cursor, circle.layers);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 		
@@ -2604,7 +2604,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure delete (
@@ -2675,7 +2675,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -2691,7 +2691,7 @@ package body et_board_ops is
 		line			: in et_pcb.type_pcb_contour_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -2715,7 +2715,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -2727,7 +2727,7 @@ package body et_board_ops is
 		arc				: in et_pcb.type_pcb_contour_arc;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -2751,7 +2751,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -2763,7 +2763,7 @@ package body et_board_ops is
 		circle			: in et_pcb.type_pcb_contour_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -2787,7 +2787,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -2802,7 +2802,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure delete (
@@ -2873,7 +2873,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -2888,7 +2888,7 @@ package body et_board_ops is
 		line			: in type_silk_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -2921,7 +2921,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -2934,7 +2934,7 @@ package body et_board_ops is
 		arc				: in type_silk_arc;		
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -2969,7 +2969,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -2982,7 +2982,7 @@ package body et_board_ops is
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -3016,7 +3016,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3032,7 +3032,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure delete (
@@ -3122,7 +3122,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -3138,7 +3138,7 @@ package body et_board_ops is
 		line			: in type_doc_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -3171,7 +3171,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3184,7 +3184,7 @@ package body et_board_ops is
 		arc				: in type_doc_arc;		
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -3219,7 +3219,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3232,7 +3232,7 @@ package body et_board_ops is
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -3266,7 +3266,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3282,7 +3282,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure delete (
@@ -3372,7 +3372,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -3387,7 +3387,7 @@ package body et_board_ops is
 		line			: in type_keepout_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -3420,7 +3420,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3433,7 +3433,7 @@ package body et_board_ops is
 		arc				: in type_keepout_arc;		
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -3467,7 +3467,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3480,7 +3480,7 @@ package body et_board_ops is
 		circle			: in type_fillable_circle_solid;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -3514,7 +3514,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3530,7 +3530,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure delete (
@@ -3620,7 +3620,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -3635,7 +3635,7 @@ package body et_board_ops is
 		line			: in type_stop_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -3668,7 +3668,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3681,7 +3681,7 @@ package body et_board_ops is
 		arc				: in type_stop_arc;		
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -3716,7 +3716,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3729,7 +3729,7 @@ package body et_board_ops is
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -3763,7 +3763,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3779,7 +3779,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure delete (
@@ -3869,7 +3869,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -3884,7 +3884,7 @@ package body et_board_ops is
 		line			: in type_stencil_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -3917,7 +3917,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3930,7 +3930,7 @@ package body et_board_ops is
 		arc				: in type_stencil_arc;		
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -3965,7 +3965,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3978,7 +3978,7 @@ package body et_board_ops is
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure add (
@@ -4012,7 +4012,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -4028,7 +4028,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.type_modules;
+		use et_project.modules.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure delete (
@@ -4118,7 +4118,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules.modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
