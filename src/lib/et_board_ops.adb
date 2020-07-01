@@ -114,7 +114,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> set_origin'access);
 
@@ -150,7 +150,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 		
@@ -236,7 +236,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -333,7 +333,7 @@ package body et_board_ops is
 
 		-- add the device to the module
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 		
@@ -439,7 +439,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -543,7 +543,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -581,7 +581,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -647,7 +647,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -820,7 +820,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -931,7 +931,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
@@ -1531,7 +1531,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
 
@@ -1643,7 +1643,7 @@ package body et_board_ops is
 
 	begin -- add_named_track
 		et_project.modules.type_modules.update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
 		
@@ -1688,7 +1688,7 @@ package body et_board_ops is
 		if is_freetrack (net_name) then
 			
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> add_freetrack'access);
 
@@ -1735,7 +1735,7 @@ package body et_board_ops is
 		
 	begin -- draw_track_line
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add_named_track'access);
 
@@ -2082,13 +2082,13 @@ package body et_board_ops is
 		if is_freetrack (net_name) then
 			
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> add_freetrack'access);
 
 		else
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> add_named_track'access);
 
@@ -2239,13 +2239,13 @@ package body et_board_ops is
 		if is_freetrack (net_name) then
 			
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> ripup_freetrack'access);
 
 		else
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> ripup_named_track'access);
 
@@ -2306,7 +2306,7 @@ package body et_board_ops is
 		test_layers (module_cursor, line.layers);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 		
@@ -2345,7 +2345,7 @@ package body et_board_ops is
 		test_layers (module_cursor, arc.layers);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 		
@@ -2384,7 +2384,7 @@ package body et_board_ops is
 		test_layers (module_cursor, circle.layers);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 		
@@ -2470,7 +2470,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -2511,7 +2511,7 @@ package body et_board_ops is
 		test_layers (module_cursor, line.layers);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 		
@@ -2550,7 +2550,7 @@ package body et_board_ops is
 		test_layers (module_cursor, arc.layers);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 		
@@ -2589,7 +2589,7 @@ package body et_board_ops is
 		test_layers (module_cursor, circle.layers);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> draw'access);
 		
@@ -2675,7 +2675,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -2715,7 +2715,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -2751,7 +2751,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -2787,7 +2787,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -2873,7 +2873,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -2921,7 +2921,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -2969,7 +2969,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3016,7 +3016,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3122,7 +3122,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -3171,7 +3171,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3219,7 +3219,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3266,7 +3266,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3372,7 +3372,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -3420,7 +3420,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3467,7 +3467,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3514,7 +3514,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3620,7 +3620,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -3668,7 +3668,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3716,7 +3716,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3763,7 +3763,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3869,7 +3869,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -3917,7 +3917,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -3965,7 +3965,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -4012,7 +4012,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -4118,7 +4118,7 @@ package body et_board_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		

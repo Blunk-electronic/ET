@@ -105,7 +105,7 @@ procedure read_module_file (
 			invalid_keyword (kw);
 		end if;
 
-		update_element (modules, module_cursor, set_variant'access);
+		update_element (generic_modules, module_cursor, set_variant'access);
 	end;
 
 	procedure set_meta is
@@ -125,7 +125,7 @@ procedure read_module_file (
 		log (text => "meta data ...", level => log_threshold + 1);
 		
 		update_element (
-			container	=> modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
 	end;
@@ -865,7 +865,7 @@ procedure read_module_file (
 				log_indentation_up;
 				
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> set'access);
 
@@ -1459,7 +1459,7 @@ procedure read_module_file (
 									
 			begin -- insert_line
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -1545,7 +1545,7 @@ procedure read_module_file (
 									
 			begin -- insert_arc
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -1630,7 +1630,7 @@ procedure read_module_file (
 									
 			begin -- insert_circle
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -1864,7 +1864,7 @@ procedure read_module_file (
 									
 			begin -- insert_polygon
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2002,7 +2002,7 @@ procedure read_module_file (
 									
 			begin -- insert_cutout
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2029,7 +2029,7 @@ procedure read_module_file (
 									
 			begin
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2058,7 +2058,7 @@ procedure read_module_file (
 									
 			begin
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2088,7 +2088,7 @@ procedure read_module_file (
 									
 			begin -- insert_cutout_copper
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2168,7 +2168,7 @@ procedure read_module_file (
 									
 			begin -- insert_text
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2247,7 +2247,7 @@ procedure read_module_file (
 									
 			begin -- insert_placeholder
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2273,7 +2273,7 @@ procedure read_module_file (
 									
 			begin -- insert_line_route_restrict
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2300,7 +2300,7 @@ procedure read_module_file (
 									
 			begin -- insert_arc_route_restrict
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2326,7 +2326,7 @@ procedure read_module_file (
 									
 			begin -- insert_circle_route_restrict
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2354,7 +2354,7 @@ procedure read_module_file (
 									
 			begin -- insert_polygon_route_restrict
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2382,7 +2382,7 @@ procedure read_module_file (
 									
 			begin -- insert_line_via_restrict
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2410,7 +2410,7 @@ procedure read_module_file (
 									
 			begin -- insert_arc_via_restrict
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2436,7 +2436,7 @@ procedure read_module_file (
 									
 			begin -- insert_circle_via_restrict
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2465,7 +2465,7 @@ procedure read_module_file (
 									
 			begin -- insert_polygon_via_restrict
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2515,7 +2515,7 @@ procedure read_module_file (
 									
 			begin -- insert_polygon_copper
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2539,7 +2539,7 @@ procedure read_module_file (
 									
 			begin -- insert_line_track
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2565,7 +2565,7 @@ procedure read_module_file (
 									
 			begin -- insert_arc_track
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2589,7 +2589,7 @@ procedure read_module_file (
 									
 			begin -- insert_circle_track
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2614,7 +2614,7 @@ procedure read_module_file (
 									
 			begin -- insert_board_text
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2636,7 +2636,7 @@ procedure read_module_file (
 									
 			begin -- insert_board_text_placeholder
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2658,7 +2658,7 @@ procedure read_module_file (
 									
 			begin -- insert_line_contour
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2681,7 +2681,7 @@ procedure read_module_file (
 									
 			begin -- insert_arc_contour
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2704,7 +2704,7 @@ procedure read_module_file (
 									
 			begin -- insert_circle_contour
 				update_element (
-					container	=> modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
@@ -2922,7 +2922,7 @@ procedure read_module_file (
 
 							-- insert net class
 							update_element (
-								container	=> modules,
+								container	=> generic_modules,
 								position	=> module_cursor,
 								process		=> insert_net_class'access);
 							
@@ -2941,7 +2941,7 @@ procedure read_module_file (
 
 							-- add board layer
 							update_element (
-								container	=> modules,
+								container	=> generic_modules,
 								position	=> module_cursor,
 								process		=> add_board_layer'access);
 
@@ -2965,7 +2965,7 @@ procedure read_module_file (
 
 							-- insert net
 							update_element (
-								container	=> modules,
+								container	=> generic_modules,
 								position	=> module_cursor,
 								process		=> insert_net'access);
 
@@ -3606,7 +3606,7 @@ procedure read_module_file (
 
 							-- insert submodule
 							update_element (
-								container	=> modules,
+								container	=> generic_modules,
 								position	=> module_cursor,
 								process		=> insert_submodule'access);
 
@@ -3669,7 +3669,7 @@ procedure read_module_file (
 
 							-- set schematic frame template
 							update_element (
-								container	=> modules,
+								container	=> generic_modules,
 								position	=> module_cursor,
 								process		=> set_frame_schematic'access);
 
@@ -3689,7 +3689,7 @@ procedure read_module_file (
 							
 							-- set board/layout frame template
 							update_element (
-								container	=> modules,
+								container	=> generic_modules,
 								position	=> module_cursor,
 								process		=> set_frame_board'access);
 
@@ -3723,7 +3723,7 @@ procedure read_module_file (
 
 							-- insert note
 							update_element (
-								container	=> modules,
+								container	=> generic_modules,
 								position	=> module_cursor,
 								process		=> insert_note'access);
 
@@ -3940,7 +3940,7 @@ procedure read_module_file (
 
 							-- insert device (where pointer "device" is pointing at) in the module
 							update_element (
-								container	=> modules,
+								container	=> generic_modules,
 								position	=> module_cursor,
 								process		=> insert_device'access);
 
@@ -3948,7 +3948,7 @@ procedure read_module_file (
 
 							-- insert device (where pointer "device_non_electric" is pointing at) in the module
 							update_element (
-								container	=> modules,
+								container	=> generic_modules,
 								position	=> module_cursor,
 								process		=> insert_device_non_electric'access);
 							
@@ -3967,7 +3967,7 @@ procedure read_module_file (
 
 							-- insert the assembly variant in the module
 							update_element (
-								container	=> modules,
+								container	=> generic_modules,
 								position	=> module_cursor,
 								process		=> insert_assembly_variant'access);
 							
@@ -4004,7 +4004,7 @@ procedure read_module_file (
 
 							-- insert netchanger in module
 							update_element (
-								container	=> modules,
+								container	=> generic_modules,
 								position	=> module_cursor,
 								process		=> insert_netchanger'access);
 							
@@ -6156,7 +6156,7 @@ begin -- read_module_file
 		-- So the module names are things like "motor_driver", "templates/clock_generator" or
 		-- "$TEMPLATES/clock_generator" or "/home/user/templates/clock_generator":
 		type_modules.insert (
-			container	=> modules,
+			container	=> generic_modules,
 			key			=> to_module_name (remove_extension (file_name)),
 			position	=> module_cursor,
 			inserted	=> module_inserted);

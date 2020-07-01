@@ -470,13 +470,13 @@ procedure et is
 		script_name_tmp : pac_script_name.bounded_string;
 	begin
 		if length (module_file_name) = 0 then -- module name not specified via cmd line
-			module_cursor := modules.first; -- select first available generic module
+			module_cursor := generic_modules.first; -- select first available generic module
 		else
 			-- Convert the optionally given module file name to a module name.
 			generic_module_name := to_module_name (remove_extension (
 				simple_name (type_module_file_name.to_string (module_file_name))));
 			
-			module_cursor := find (modules, generic_module_name);
+			module_cursor := find (generic_modules, generic_module_name);
 		end if;
 
 		-- The script name must be passed to gui.single_module as simple name like rename_nets.scr.

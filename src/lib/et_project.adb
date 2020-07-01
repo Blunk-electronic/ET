@@ -432,7 +432,7 @@ package body et_project is
 			log_threshold 	=> log_threshold + 2);
 
 		-- save modules
-		iterate (et_project.modules.modules, query_modules'access);
+		iterate (generic_modules, query_modules'access);
 
 		-- save rig configuration files
 		et_project.rigs.type_rigs.iterate (et_project.rigs.rigs, query_rig_configuration'access);

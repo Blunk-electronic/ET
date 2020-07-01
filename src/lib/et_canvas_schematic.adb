@@ -248,7 +248,7 @@ package body et_canvas_schematic is
 		use et_general;
 		use et_project.modules;
 		use et_project.modules.type_modules;
-		cursor : et_project.modules.type_modules.cursor := find (et_project.modules.modules, module);
+		cursor : et_project.modules.type_modules.cursor := find (generic_modules, module);
 	begin
 		if cursor /= type_modules.no_element then -- module exists in project
 			current_active_module := cursor;

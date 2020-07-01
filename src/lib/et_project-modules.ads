@@ -72,7 +72,7 @@ package et_project.modules is
 		element_type	=> et_schematic.type_module,
 		"="				=> et_schematic."=");
 
-	modules : type_modules.map;
+	generic_modules : type_modules.map;
 
 	function exists (module : in type_module_name.bounded_string) return boolean;
 	-- Returns true if the module with the given name exists in container modules.

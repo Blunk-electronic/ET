@@ -101,15 +101,15 @@ package body et_project.modules is
 	
 	function exists (module : in type_module_name.bounded_string) return boolean is begin
 	-- Returns true if the module with the given name exists in container modules.
-		return type_modules.contains (modules, module);
+		return type_modules.contains (generic_modules, module);
 	end;
 
 	function locate_module (name : in type_module_name.bounded_string) -- motor_driver (without extension *.mod)
-	-- Locates the given module in the global container "modules".
+	-- Locates the given module in the global container "generic_modules".
 		return type_modules.cursor is
 		use type_modules;
 	begin
-		return find (modules, name);
+		return find (generic_modules, name);
 	end;
 
 	function sheet_description (
@@ -671,7 +671,7 @@ package body et_project.modules is
 		-- CS: make sure the module is inside the current project directory.
 		
 		type_modules.insert (
-			container	=> modules,
+			container	=> generic_modules,
 			key			=> module_name,
 			position	=> module_cursor,
 			inserted	=> inserted);
@@ -684,7 +684,7 @@ package body et_project.modules is
 	end create_module;
 
 	procedure save_module (
-	-- Saves a generic module (from container modules) in a file inside the current project directory. 
+	-- Saves a generic module (from container generic_modules) in a file inside the current project directory. 
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
 
@@ -721,7 +721,7 @@ package body et_project.modules is
 	end save_module;
 	
 	procedure delete_module (
-	-- Deletes a generic module in container modules. 
+	-- Deletes a generic module in container generic_modules. 
 	-- Deletes the module file of the generic module.
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -747,7 +747,7 @@ package body et_project.modules is
 			-- inside the project anyway. Module names are like file paths like "templates/motor_driver".
 			
 			type_modules.delete (
-				container	=> modules,
+				container	=> generic_modules,
 				position	=> module_cursor);
 			
 		else

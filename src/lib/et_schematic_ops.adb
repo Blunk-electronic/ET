@@ -157,7 +157,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
 
@@ -351,7 +351,7 @@ package body et_schematic_ops is
 		log_indentation_up;
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module,
 			process		=> query_nets'access);
 
@@ -412,7 +412,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -928,7 +928,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -1131,7 +1131,7 @@ package body et_schematic_ops is
 		log_indentation_up;
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module,
 			process		=> query_nets'access);
 
@@ -1290,7 +1290,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -1426,7 +1426,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 		
@@ -1886,7 +1886,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -1978,7 +1978,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -2144,7 +2144,7 @@ package body et_schematic_ops is
 		log_indentation_up;
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module,
 			process		=> query_nets'access);
 
@@ -2529,7 +2529,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -2640,7 +2640,7 @@ package body et_schematic_ops is
 		log_indentation_up;
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module,
 			process		=> query_nets'access);
 
@@ -2727,7 +2727,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -2804,7 +2804,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -2872,7 +2872,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -2940,7 +2940,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -3538,7 +3538,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_nets'access);
 
@@ -4204,7 +4204,7 @@ package body et_schematic_ops is
 		device_cursor_lib := find (et_devices.devices, device_model);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> add'access);
 
@@ -4457,7 +4457,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -4685,7 +4685,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 		
@@ -4890,7 +4890,7 @@ package body et_schematic_ops is
 		log_indentation_up;
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module,
 			process		=> query_nets'access);
 
@@ -4959,7 +4959,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_netchangers'access);
 		
@@ -5087,7 +5087,7 @@ package body et_schematic_ops is
 		log_indentation_up;
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module,
 			process		=> query_nets'access);
 
@@ -5161,7 +5161,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_netchangers'access);
 		
@@ -5293,7 +5293,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_netchangers'access);
 
@@ -5460,7 +5460,7 @@ package body et_schematic_ops is
 		port_after := ports_after.master;
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module,
 			process		=> query_nets'access);
 
@@ -5471,7 +5471,7 @@ package body et_schematic_ops is
 		port_after := ports_after.slave;		
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module,
 			process		=> query_nets'access);
 
@@ -5688,7 +5688,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_netchangers'access);
 
@@ -5808,7 +5808,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_netchangers'access);
 
@@ -6078,7 +6078,7 @@ package body et_schematic_ops is
 			log (text => "creating new net " & to_string (net_name_after), level => log_threshold + 1);
 
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> create_net'access);
 		end if;
@@ -6092,7 +6092,7 @@ package body et_schematic_ops is
 				log (text => "scope: everywhere -> all strands on all sheets", level => log_threshold);
 
 				update_element (
-					container	=> et_project.modules.modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> rename_everywhere'access);
 
@@ -6100,7 +6100,7 @@ package body et_schematic_ops is
 				log (text => "scope: all strands on sheet" & et_coordinates.to_sheet (sheet (place)), level => log_threshold);
 
 				update_element (
-					container	=> et_project.modules.modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> rename_on_sheet'access);
 
@@ -6108,7 +6108,7 @@ package body et_schematic_ops is
 				log (text => "scope: strand at" & to_string (position => place), level => log_threshold);
 
 				update_element (
-					container	=> et_project.modules.modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> rename_strand'access);
 				
@@ -6266,7 +6266,7 @@ package body et_schematic_ops is
 				log (text => "scope: everywhere -> all strands on all sheets", level => log_threshold);
 
 				update_element (
-					container	=> et_project.modules.modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> delete_everywhere'access);
 
@@ -6274,7 +6274,7 @@ package body et_schematic_ops is
 				log (text => "scope: all strands on sheet" & et_coordinates.to_sheet (sheet (place)), level => log_threshold);
 
 				update_element (
-					container	=> et_project.modules.modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> delete_on_sheet'access);
 
@@ -6282,7 +6282,7 @@ package body et_schematic_ops is
 				log (text => "scope: strand at" & to_string (position => place), level => log_threshold);
 
 				update_element (
-					container	=> et_project.modules.modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> delete_strand'access);
 				
@@ -6422,7 +6422,7 @@ package body et_schematic_ops is
 		log_indentation_up;
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_net'access);
 		
@@ -7164,7 +7164,7 @@ package body et_schematic_ops is
 		log_indentation_up;
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_net'access);
 		
@@ -7804,7 +7804,7 @@ package body et_schematic_ops is
 			log (text => "creating new net " & to_string (net_name), level => log_threshold + 1);
 
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> create_net'access);
 		else
@@ -7813,7 +7813,7 @@ package body et_schematic_ops is
 			log_indentation_up;
 			
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> extend_net'access);
 
@@ -7886,7 +7886,7 @@ package body et_schematic_ops is
 		if net_cursor /= type_nets.no_element then
 
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> query_nets'access);
 
@@ -8064,7 +8064,7 @@ package body et_schematic_ops is
 				net_cursor := locate_net (module_cursor, net_name);
 
 				update_element (
-					container	=> et_project.modules.modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> query_nets'access);
 
@@ -8178,7 +8178,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_nets'access);
 
@@ -8265,7 +8265,7 @@ package body et_schematic_ops is
 		if ada.directories.exists (full_file_name) then
 			
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> add'access);
 
@@ -8410,7 +8410,7 @@ package body et_schematic_ops is
 		log_indentation_up;
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module,
 			process		=> query_nets'access);
 
@@ -8531,7 +8531,7 @@ package body et_schematic_ops is
 
 		-- add the port to the box in the parent module
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
@@ -8679,7 +8679,7 @@ package body et_schematic_ops is
 		log_indentation_up;
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module,
 			process		=> query_nets'access);
 
@@ -8760,7 +8760,7 @@ package body et_schematic_ops is
 
 		-- remove the port from the box in the parent module
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
@@ -8919,7 +8919,7 @@ package body et_schematic_ops is
 
 		-- move the port along the edge of the box:
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
@@ -9094,7 +9094,7 @@ package body et_schematic_ops is
 		log_indentation_up;
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module,
 			process		=> query_nets'access);
 		
@@ -9335,7 +9335,7 @@ package body et_schematic_ops is
 
 		-- move the port along the edge of the box:
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
@@ -9447,7 +9447,7 @@ package body et_schematic_ops is
 		log (text => "deleting submodule ports in nets ...", level => log_threshold);
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_nets'access);
 
@@ -9497,7 +9497,7 @@ package body et_schematic_ops is
 
 		-- load submodule_position and delete submodule
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
@@ -9654,7 +9654,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 		
@@ -9860,7 +9860,7 @@ package body et_schematic_ops is
 		-- move the ports of the submodule,
 		-- create drag_list
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
@@ -9982,7 +9982,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 		
@@ -10092,7 +10092,7 @@ package body et_schematic_ops is
 		else
 			
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> query_submodules'access);
 
@@ -10223,7 +10223,7 @@ package body et_schematic_ops is
 
 			-- THIS IS ABOUT THE GRAPHICAL REPRESENTATION OF THE SUBMODULE:
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> query_submodules'access);
 
@@ -10275,7 +10275,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> create'access);
 		
@@ -10320,7 +10320,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> delete'access);
 		
@@ -10377,7 +10377,7 @@ package body et_schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> describe'access);
 		
@@ -10478,7 +10478,7 @@ package body et_schematic_ops is
 		if exists (module_cursor, device) then
 		
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> mount'access);
 
@@ -10562,7 +10562,7 @@ package body et_schematic_ops is
 		if exists (module_cursor, device) then
 			
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> unmount'access);
 
@@ -10641,7 +10641,7 @@ package body et_schematic_ops is
 		if exists (module_cursor, device) then
 			
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> remove'access);
 
@@ -10729,7 +10729,7 @@ package body et_schematic_ops is
 			if exists (module_cursor, instance, variant_submod) then
 			
 				update_element (
-					container	=> et_project.modules.modules,
+					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> query_variants'access);
 			else
@@ -10818,7 +10818,7 @@ package body et_schematic_ops is
 		if exists (module_cursor, instance) then
 
 			update_element (
-				container	=> et_project.modules.modules,
+				container	=> generic_modules,
 				position	=> module_cursor,
 				process		=> query_variants'access);
 
@@ -10899,7 +10899,7 @@ package body et_schematic_ops is
 		log_indentation_up;
 		
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -11276,7 +11276,7 @@ package body et_schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- the top module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level) is
 
-		module_cursor : type_modules.cursor := et_project.modules.modules.first;
+		module_cursor : type_modules.cursor := generic_modules.first;
 		index_range : numbering.type_index_range;
 
 		use numbering;
@@ -11490,7 +11490,7 @@ package body et_schematic_ops is
 
 		-- Replace the old submodule tree by the new submod_tree. The new submod_tree now
 		-- contains the device name offsets for the instantiated submodules.
-		et_project.modules.type_modules.update_element (et_project.modules.modules, module_cursor, replace_tree'access);
+		et_project.modules.type_modules.update_element (generic_modules, module_cursor, replace_tree'access);
 		
 		log_indentation_down;
 
@@ -11644,7 +11644,7 @@ package body et_schematic_ops is
 		
 		-- assign the submod_tree to the given top module
 		update_element (
-			container	=> et_project.modules.modules,
+			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> assign_tree'access);
 
@@ -13139,7 +13139,7 @@ package body et_schematic_ops is
 			-- NOTE: This is about the internal netlist (module.netlists) and has nothing to do
 			-- with netlist files:
 			et_project.modules.type_modules.update_element (
-				container		=> et_project.modules.modules,
+				container		=> generic_modules,
 				position		=> module_cursor,
 				process			=> update_netlist'access);
 			
