@@ -114,6 +114,9 @@ package et_project.rigs is
 	function to_string (section : in type_section_name_rig_configuration) return string;
 	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
 
+
+	procedure write_rig_configuration_header;
+	procedure write_rig_configuration_footer;
 	
 	procedure save_rig_configuration (
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer

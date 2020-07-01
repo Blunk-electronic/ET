@@ -35,45 +35,16 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	--use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.text_io;				use ada.text_io;
-
-with ada.tags;
-
 with ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
 
-with ada.containers;            use ada.containers;
-with ada.containers.ordered_maps;
-
 with et_general;				use et_general;
-with et_coordinates;
-with et_string_processing;
 with et_export;
-with et_import;
-with et_schematic;
-with et_packages;
-with et_pcb;
-with et_pcb_stack;
-with et_pcb_coordinates;
-with et_material;
-with et_text;					use et_text;
-with et_geometry;				use et_geometry;
 with general_rw;				use general_rw;
-with pcb_rw;					use pcb_rw;
 with pcb_rw.device_packages;	use pcb_rw.device_packages;
-with schematic_rw;				use schematic_rw;
-with symbol_rw;					use symbol_rw;
 with device_rw;					use device_rw;
-with et_symbols;
-with frame_rw;
-with et_meta;
-with et_design_rules;
 with et_project.modules;
 with et_project.rigs;
 	
@@ -136,28 +107,6 @@ package body et_project is
 		create_directory (compose (path, directory_miscellaneous));
 	end create_supplementary_directories;
 
-	procedure write_rig_configuration_header is 
-		use et_general;
-		use et_string_processing;
-	begin
-		-- write a nice header
-		put_line (comment_mark & " " & system_name & " rig configuration file");
-		put_line (comment_mark & " " & date);
-		put_line (comment_mark & " " & row_separator_double);
-		new_line;
-	end;
-
-	procedure write_rig_configuration_footer is
-		use et_string_processing;
-	begin
-		-- write a nice footer
-		new_line;
-		put_line (comment_mark & " " & row_separator_double);
-		put_line (comment_mark & " " & date);
-		put_line (comment_mark & " rig configuration file end");
-		new_line;
-	end;
-	
 	procedure create_project_directory (
 	-- Creates the given project directory in the given project_path.
 	-- Creates a default rig configuration file.
@@ -313,77 +262,77 @@ package body et_project is
 
 
 
-
-	procedure save_libraries (
-	-- Saves the library containers (et_libraries.devices and et_packages.packages) in
-	-- the directory specified by project_path and project_name.
-		project_name	: in et_project.type_project_name.bounded_string;		-- blood_sample_analyzer
-		project_path	: in et_project.type_et_project_path.bounded_string; 	-- /home/user/ecad
-		log_threshold	: in et_string_processing.type_log_level) is
-		use et_project;
-		use type_project_name;
-		use type_et_project_path;
-		use ada.directories;
-		use et_string_processing;
-
-		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
-		use type_path;
-		path : type_path.bounded_string := to_bounded_string (
-				compose (type_et_project_path.to_string (project_path), type_project_name.to_string (project_name)));
-		-- Path now contains something like /home/user/ecad/blood_sample_analyzer
-		
-		use et_devices;
-
-		procedure save_device (device_cursor : in type_devices.cursor) is 
-			use type_devices;
-		begin
-			save_device (
-				-- library name like: 
-				-- /home/user/ecad/blood_sample_analyzer/libraries/devices/bel_connector_and_jumper_FEMALE_01X06.dev
-				file_name		=> to_file_name 
-					(
-					to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor))
-					),
-
-				-- the device model itself:
-				device			=> element (device_cursor),
-				log_threshold	=> log_threshold + 1); 
-		end save_device;
-
-		use et_packages;
-		
-		procedure save_package (package_cursor : in type_packages.cursor) is
-			use type_package_model_file;
-			use type_packages;
-		begin
-			save_package (
-				-- package name like: 
-				-- /home/user/ecad/blood_sample_analyzer/libraries/packages/bel_connector_and_jumper_FEMALE_01X06.pac
-				file_name		=> to_file_name (
-					to_string (path) & gnat.directory_operations.dir_separator &
-					type_package_model_file.to_string (key (package_cursor))),
-
-				-- the package model itself:
-				packge			=> element (package_cursor),
-				log_threshold	=> log_threshold + 1); 
-		end save_package;
-		
-	begin -- save_libraries
-		log (text => "saving libraries ...", level => log_threshold);
-		log_indentation_up;
-
-		log (text => "devices ...", level => log_threshold + 1);
-		log_indentation_up;
-		type_devices.iterate (devices, save_device'access);
-		log_indentation_down;
-		
-		log (text => "packages ...", level => log_threshold + 1);
-		log_indentation_up;
-		type_packages.iterate (packages, save_package'access);
-		log_indentation_down;
-
-		log_indentation_down;			
-	end save_libraries;
+-- DO NOT REMOVE ! MIGHT BE USEFUL IN THE FUTURE !
+-- 	procedure save_libraries (
+-- 	-- Saves the library containers (et_devices.devices and et_packages.packages) in
+-- 	-- the directory specified by project_path and project_name.
+-- 		project_name	: in et_project.type_project_name.bounded_string;		-- blood_sample_analyzer
+-- 		project_path	: in et_project.type_et_project_path.bounded_string; 	-- /home/user/ecad
+-- 		log_threshold	: in et_string_processing.type_log_level) is
+-- 		use et_project;
+-- 		use type_project_name;
+-- 		use type_et_project_path;
+-- 		use ada.directories;
+-- 		use et_string_processing;
+-- 
+-- 		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
+-- 		use type_path;
+-- 		path : type_path.bounded_string := to_bounded_string (
+-- 				compose (type_et_project_path.to_string (project_path), type_project_name.to_string (project_name)));
+-- 		-- Path now contains something like /home/user/ecad/blood_sample_analyzer
+-- 		
+-- 		use et_devices;
+-- 
+-- 		procedure save_device (device_cursor : in type_devices.cursor) is 
+-- 			use type_devices;
+-- 		begin
+-- 			save_device (
+-- 				-- library name like: 
+-- 				-- /home/user/ecad/blood_sample_analyzer/libraries/devices/bel_connector_and_jumper_FEMALE_01X06.dev
+-- 				file_name		=> to_file_name 
+-- 					(
+-- 					to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor))
+-- 					),
+-- 
+-- 				-- the device model itself:
+-- 				device			=> element (device_cursor),
+-- 				log_threshold	=> log_threshold + 1); 
+-- 		end save_device;
+-- 
+-- 		use et_packages;
+-- 		
+-- 		procedure save_package (package_cursor : in type_packages.cursor) is
+-- 			use type_package_model_file;
+-- 			use type_packages;
+-- 		begin
+-- 			save_package (
+-- 				-- package name like: 
+-- 				-- /home/user/ecad/blood_sample_analyzer/libraries/packages/bel_connector_and_jumper_FEMALE_01X06.pac
+-- 				file_name		=> to_file_name (
+-- 					to_string (path) & gnat.directory_operations.dir_separator &
+-- 					type_package_model_file.to_string (key (package_cursor))),
+-- 
+-- 				-- the package model itself:
+-- 				packge			=> element (package_cursor),
+-- 				log_threshold	=> log_threshold + 1); 
+-- 		end save_package;
+-- 		
+-- 	begin -- save_libraries
+-- 		log (text => "saving libraries ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		log (text => "devices ...", level => log_threshold + 1);
+-- 		log_indentation_up;
+-- 		type_devices.iterate (devices, save_device'access);
+-- 		log_indentation_down;
+-- 		
+-- 		log (text => "packages ...", level => log_threshold + 1);
+-- 		log_indentation_up;
+-- 		type_packages.iterate (packages, save_package'access);
+-- 		log_indentation_down;
+-- 
+-- 		log_indentation_down;			
+-- 	end save_libraries;
 
 	procedure save_project (
 		destination		: in type_project_name.bounded_string; -- /home/user/ecad/blood_sample_analyzer
