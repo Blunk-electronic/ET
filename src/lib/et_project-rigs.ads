@@ -102,12 +102,12 @@ package et_project.rigs is
 	end record;
 
 	-- Lots of rigs are stored in a map:
-	package type_rigs is new ordered_maps (
+	package pac_rigs is new ordered_maps (
 		key_type		=> type_rig_configuration_file_name.bounded_string, -- CS dedicated type_rig_name ?
 		element_type	=> type_rig);
 
 	-- The collection of rig configurations:
-	rigs : type_rigs.map;
+	rigs : pac_rigs.map;
 
 	
 	type type_section_name is (
@@ -156,12 +156,12 @@ package et_project.rigs is
 
 	
 	
-	procedure open_project (
+	-- Enters the project directory specified by project_name.
+	-- Searches for rig configuration files (*.conf), reads them and stores configurations in et_project.rigs.rigs.
+	-- Searches for module files (*.mod), reads them and stores modules in et_project.modules.generic_modules.
+	procedure read_rigs (
 		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);
-	-- Enters the project directory specified by project_name.
-	-- Searches for rig configuration files (*.conf), reads them and stores configurations in et_project.rigs.
-	-- Searches for module files (*.mod), reads them and stores modules in et_project.modules.
 	
 end et_project.rigs;
 

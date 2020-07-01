@@ -124,7 +124,6 @@ package body et_project.rigs is
 	end;
 
 	
-	-- Saves the rig configuration in the file with the given name rig_conf_file.
 	procedure save_rig_configuration (
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		rig_conf_name	: in type_rig_configuration_file_name.bounded_string; -- demo, low_cost, fully_equipped
@@ -133,10 +132,7 @@ package body et_project.rigs is
 		log_threshold 	: in et_string_processing.type_log_level) 
 		is separate;
 
-	-- Enters the project directory specified by project_name.
-	-- Searches for rig configuration files (*.conf), reads them and stores configurations in et_project.rigs.
-	-- Searches for module files (*.mod), reads them and stores modules in et_project.modules.
-	procedure open_project (
+	procedure read_rigs (
 		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level)
 		is separate;

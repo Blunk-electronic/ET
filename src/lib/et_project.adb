@@ -335,6 +335,10 @@ package body et_project is
 	procedure save_project (
 		destination		: in type_project_name.bounded_string; -- /home/user/ecad/blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level) is
+
+		use et_project.rigs;
+		use rigs.pac_rigs;		
+
 		use et_string_processing;
 		use ada.directories;
 		use et_project.modules;
@@ -397,9 +401,7 @@ package body et_project is
 			log_indentation_down;			
 		end query_modules;
 
-		procedure query_rig_configuration (rig_cursor : in et_project.rigs.type_rigs.cursor) is
-			use et_project.rigs;
-			use et_project.rigs.type_rigs;
+		procedure query_rig_configuration (rig_cursor : in rigs.pac_rigs.cursor) is
 			use type_rig_configuration_file_name;
 			rig_name : type_rig_configuration_file_name.bounded_string := key (rig_cursor);
 		begin
@@ -435,7 +437,7 @@ package body et_project is
 		iterate (generic_modules, query_modules'access);
 
 		-- save rig configuration files
-		et_project.rigs.type_rigs.iterate (et_project.rigs.rigs, query_rig_configuration'access);
+		pac_rigs.iterate (et_project.rigs.rigs, query_rig_configuration'access);
 		
 		log_indentation_down;
 	end save_project;
