@@ -404,6 +404,12 @@ package et_project.modules is
 	function deepest_conductor_layer (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return et_pcb_stack.type_signal_layer;
+
+	-- Returns true if a design rules file for the layout has been
+	-- assigned to the given module.
+	function layout_rules_assigned (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return boolean;
 	
 end et_project.modules;
 

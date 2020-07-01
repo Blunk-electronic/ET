@@ -467,15 +467,17 @@ package et_schematic is
 		name	: in et_devices.type_name;	-- IC1, MH1, ...
 		by_cat	: in type_device_category);	-- electrical/non-electrical
 
-	-- 	type type_rules is record
-
--- 		layout			: et_design_rules.pac_file_name.bounded_string;
--- 	end record;
+	type type_rules is record
+		layout		: et_design_rules.pac_file_name.bounded_string;
+		-- CS ERC rules ?
+	end record;
 	
 	
 -- MODULE
 	type type_module is record
 		meta			: et_meta.type_meta; -- for both schematic and layout
+
+		rules			: type_rules; -- design rules, erc rules ...
 		
 		description		: et_text.type_text_content.bounded_string; -- a short description of the module
 

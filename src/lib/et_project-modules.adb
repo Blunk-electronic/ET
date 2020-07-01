@@ -70,7 +70,7 @@ with et_project.rigs;
 package body et_project.modules is
 
 	use et_general.type_net_name;
-
+	use pac_generic_modules;
 	
 	function to_string (project_name : in type_project_name.bounded_string) return string is
 	begin
@@ -107,7 +107,6 @@ package body et_project.modules is
 	function locate_module (name : in type_module_name.bounded_string) -- motor_driver (without extension *.mod)
 	-- Locates the given module in the global container "generic_modules".
 		return pac_generic_modules.cursor is
-		use pac_generic_modules;
 	begin
 		return find (generic_modules, name);
 	end;
@@ -122,7 +121,6 @@ package body et_project.modules is
 		cursor : pac_schematic_descriptions.cursor;
 
 		use et_schematic;
-		use pac_generic_modules;
 
 		procedure query_descriptions (
 			module_name	: in type_module_name.bounded_string;
@@ -242,7 +240,6 @@ package body et_project.modules is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name.bounded_string)
 		return et_schematic.type_nets.cursor is
-		use pac_generic_modules;
 		use et_schematic.type_nets;
 	begin
 		return find (element (module_cursor).nets, net_name);
@@ -654,7 +651,6 @@ package body et_project.modules is
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
 
-		use pac_generic_modules;
 		module_cursor : pac_generic_modules.cursor;
 		inserted : boolean;
 		use et_string_processing;
@@ -688,7 +684,6 @@ package body et_project.modules is
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
 
-		use pac_generic_modules;
 		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
 
 		use et_string_processing;
@@ -726,7 +721,6 @@ package body et_project.modules is
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
 
-		use pac_generic_modules;
 		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
 
 		use et_string_processing;
@@ -1160,6 +1154,19 @@ package body et_project.modules is
 		return et_pcb_stack.deepest_layer (pac_generic_modules.element (module).board.stack);
 	end deepest_conductor_layer;
 
+	function layout_rules_assigned (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return boolean is
+
+		use et_design_rules.pac_file_name;
+	begin
+		if length (pac_generic_modules.element (module).rules.layout) > 0 then
+			return true;
+		else
+			return false;
+		end if;
+	end layout_rules_assigned;
+	
 end et_project.modules;
 	
 -- Soli Deo Gloria

@@ -78,7 +78,8 @@ procedure read_module (
 	meta_board		: et_meta.type_board;
 
 	-- RULES
-	pcb_design_rules_file	: et_design_rules.pac_file_name.bounded_string;
+	rules			: et_schematic.type_rules := (others => <>);
+-- 	rules_layout	: et_design_rules.pac_file_name.bounded_string;
 	-- CS ERC rules ?
 	
 	active_assembly_variant : et_general.type_variant_name.bounded_string; -- "low_cost"
@@ -128,7 +129,7 @@ procedure read_module (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
-	end;
+	end set_meta;
 
 	function read_meta_basic return boolean is
 	-- Reads basic meta data. If given line does not contain
@@ -222,12 +223,38 @@ procedure read_module (
 		use et_design_rules;
 		kw : constant string := f (line, 1);
 	begin
-		null; -- CS
+		if kw = keyword_layout then
+			rules.layout := to_file_name (f (line, 2));
+		end if;
 	end read_rules;
-	
+
+	-- Assigns the temporarily rules to the module:
 	procedure set_rules is
-	begin
-		null; -- CS
+		use et_schematic;
+		
+		procedure do_it (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			use et_design_rules;
+		begin
+			module.rules := rules;
+			log (text => keyword_layout & space & to_string (module.rules.layout),
+				 level => log_threshold + 2);
+			
+			-- CS module.rules.erc ?
+		end;
+		
+	begin -- set_rules
+		log (text => "design rules ...", level => log_threshold + 1);
+		log_indentation_up;
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> do_it'access);
+
+		log_indentation_down;
 	end set_rules;
 	
 	function to_position (

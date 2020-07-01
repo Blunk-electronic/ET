@@ -146,14 +146,20 @@ is
 	end query_meta;
 
 	procedure query_rules is
+		use et_design_rules;
+		use et_schematic;
+		rules : constant type_rules := element (module_cursor).rules;
 	begin
 		log_indentation_up;
 		log (text => "rules ...", level => log_threshold + 1);
 		
 		section_mark (section_rules, HEADER);
 
-		-- CS
--- 		write (keyword => keyword_layout, parameters => to_string (
+		-- Write the layout design rules. If none assigned to the
+		-- module, write nothing:
+		if layout_rules_assigned (module_cursor) then
+			write (keyword => keyword_layout, parameters => to_string (rules.layout));
+		end if;
 																		   
 		section_mark (section_rules, FOOTER);
 
