@@ -110,7 +110,7 @@ package et_project.rigs is
 	rigs : type_rigs.map;
 
 	
-	type type_section_name_rig_configuration is (
+	type type_section_name is (
 		SEC_INIT,
 		SEC_MODULE_INSTANCES,
 		SEC_MODULE,
@@ -118,7 +118,7 @@ package et_project.rigs is
 		SEC_CONNECTOR
 		);
 
-	function to_string (section : in type_section_name_rig_configuration) return string;
+	function to_string (section : in type_section_name) return string;
 	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
 
 

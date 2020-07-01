@@ -49,11 +49,11 @@ package body et_project.rigs is
 
 	use et_general.type_net_name;
 
-	function to_string (section : in type_section_name_rig_configuration) return string is
+	function to_string (section : in type_section_name) return string is
 	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
-		len : positive := type_section_name_rig_configuration'image (section)'length;
+		len : positive := type_section_name'image (section)'length;
 	begin
-		return to_lower (type_section_name_rig_configuration'image (section) (5..len));
+		return to_lower (type_section_name'image (section) (5..len));
 	end to_string;
 
 	function compare_connectors (left, right : in type_connector) return boolean is
