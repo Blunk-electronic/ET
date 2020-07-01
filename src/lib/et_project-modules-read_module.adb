@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                       PROJECT.READ_MODULE_FILE                           --
+--                          ET_PROJECT.READ_MODULE                          --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -241,6 +241,8 @@ procedure read_module (
 			module.rules := rules;
 			log (text => keyword_layout & space & to_string (module.rules.layout),
 				 level => log_threshold + 2);
+
+			read_design_rules (rules.layout, log_threshold + 3);
 			
 			-- CS module.rules.erc ?
 		end;

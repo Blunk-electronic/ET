@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               PROJECT                                    --
+--                            PROJECT.RIGS                                  --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --

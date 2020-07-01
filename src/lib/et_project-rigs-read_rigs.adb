@@ -80,7 +80,7 @@ procedure read_rigs (
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 3;
 		package stack is new general_rw.stack_lifo (
-			item	=> type_section_name_rig_configuration,
+			item	=> type_section_name,
 			max 	=> max_section_depth);
 
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
@@ -246,7 +246,7 @@ procedure read_rigs (
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
 				section_keyword	: in string; -- [MODULE_INSTANCES
-				section			: in type_section_name_rig_configuration) -- SEC_MODULE_INSTANCES
+				section			: in type_section_name) -- SEC_MODULE_INSTANCES
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1

@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               PROJECT                                    --
+--                          ET_PROJECT.MODULES                              --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -108,18 +108,6 @@ package et_project.modules is
 		net			: in et_schematic.type_nets.cursor;
 		direction	: in submodules.type_netchanger_port_name) -- master/slave 		
 		return boolean;
-	
-	type type_section_name_rig_configuration is (
-		SEC_INIT,
-		SEC_MODULE_INSTANCES,
-		SEC_MODULE,
-		SEC_MODULE_CONNECTIONS,
-		SEC_CONNECTOR
-		);
-
-	function to_string (section : in type_section_name_rig_configuration) return string;
-	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
-
 	
 	procedure create_project_directory (
 	-- Creates given project directory in the given project_path.

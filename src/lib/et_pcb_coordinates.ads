@@ -87,7 +87,7 @@ package et_pcb_coordinates is
 
 	use pac_geometry_brd;
 	
-	-- PCB thickness (limited to reasonable range. CS adjust if required)
+	-- PCB thickness (limited to reasonable range. CS adjust if required) -- CS move to design rules
 	pcb_thickness_min : constant type_distance_positive := 0.1;
 	pcb_thickness_max : constant type_distance_positive := 20.0;	
 	subtype type_pcb_thickness is type_distance_total range pcb_thickness_min .. pcb_thickness_max;

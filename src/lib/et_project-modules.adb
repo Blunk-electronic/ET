@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               PROJECT                                    --
+--                         ET_PROJECT.MODULES                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -330,13 +330,6 @@ package body et_project.modules is
 		return result;
 	end netchanger_as_port_available;
 	
-	function to_string (section : in type_section_name_rig_configuration) return string is
-	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
-		len : positive := type_section_name_rig_configuration'image (section)'length;
-	begin
-		return to_lower (type_section_name_rig_configuration'image (section) (5..len));
-	end to_string;
-
 	procedure create_supplementary_directories (
 		path			: in string;
 		log_threshold	: in et_string_processing.type_log_level) is

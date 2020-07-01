@@ -39,21 +39,16 @@
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
-with ada.containers.ordered_sets;
 
 with ada.text_io;				use ada.text_io;
 with ada.directories;			use ada.directories;
 
--- with et_coordinates;
--- with et_schematic;
--- with et_import;
--- with material;
--- with et_string_processing;
--- with et_symbols;
--- with et_devices;				use et_devices;
--- with et_packages;
+with et_pcb_coordinates;		use et_pcb_coordinates;
+use et_pcb_coordinates.pac_geometry_brd;
+with et_string_processing;
+with et_terminals;				use et_terminals;
+with et_drills;					use et_drills;
 
 package et_design_rules is
 
@@ -61,9 +56,73 @@ package et_design_rules is
 
  	file_name_length_max : constant natural := 100;
 	package pac_file_name is new generic_bounded_length (file_name_length_max); 
+	use pac_file_name;
 
 	function to_file_name (file : in string) return pac_file_name.bounded_string;
 	function to_string (file : in pac_file_name.bounded_string) return string;
+
+	file_extension : constant string := "dru";
+
+
+	subtype type_clearance_conductors_of_same_net is type_distance_positive range zero .. type_track_clearance'last;
+	
+	subtype type_clearance_conductor_to_edge is type_distance_positive range zero .. 0.5;
+
+	subtype type_clearance_edge_to_edge is type_distance_positive range 0.2 .. 1.0;
+
+	type type_clearances is record
+		between_conductors			: type_track_clearance := 0.15;
+		between_conductors_same_net	: type_clearance_conductors_of_same_net := 0.15;
+		conductor_to_board_edge		: type_clearance_conductor_to_edge := 0.3;
+		edge_to_edge				: type_clearance_edge_to_edge := 0.3;
+	end record;
+
+	type type_restring is record
+		outer	: type_restring_width := 0.15;
+		inner	: type_restring_width := 0.15;
+	end record;
+	
+	type type_sizes is record
+		track		: type_track_width := 0.15;
+		drill		: type_drill_size := 0.3;
+		restring	: type_restring;
+	end record;
+
+	subtype type_stop_mask_expansion is type_distance_positive range 0.01 .. 0.2;
+	
+	type type_stop_mask is record
+		expansion	: type_stop_mask_expansion;
+	end record;
+	
+	type type_design_rules is record
+		clearances	: type_clearances;
+		sizes		: type_sizes;
+		stop_mask	: type_stop_mask;
+	end record;
+
+	package pac_design_rules is new ordered_maps (
+		key_type		=> pac_file_name.bounded_string,
+		element_type	=> type_design_rules);
+
+	-- here we collect all design rules of the project:
+	design_rules : pac_design_rules.map;
+
+	procedure read_design_rules (
+		file_name		: in pac_file_name.bounded_string;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	keyword_between_conductors	: constant string := "between_conductors";
+	
+	section_clearances			: constant string := "[CLEARANCES";
+	
+	type type_section_name is (
+		SEC_INIT,
+		SEC_CLEARANCES
+		);
+
+	function to_string (section : in type_section_name) return string;
+	-- Converts a section like SEC_CLEARANCES to a string "clearances".
+
 	
 end et_design_rules;
 
