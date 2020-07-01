@@ -6136,7 +6136,7 @@ procedure read_module (
 	
 	use ada.directories;
 	
-begin -- read_module_file
+begin -- read_module
 	log (text => "opening file " & enclose_in_quotes (file_name) & " ...", level => log_threshold);
 	--log (text => "full name " & enclose_in_quotes (file_name_expanded), level => log_threshold + 1);
 	log_indentation_up;
