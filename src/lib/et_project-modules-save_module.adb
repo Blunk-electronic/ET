@@ -40,7 +40,7 @@ separate (et_project.modules)
 procedure save_module (
 -- Saves the given generic module in the given file.
 	module_cursor		: in pac_generic_modules.cursor;
-	module_file_name	: in type_module_file_name.bounded_string; -- led_matrix.mod
+	module_file_name	: in pac_module_file_name.bounded_string; -- led_matrix.mod
 	log_threshold		: in et_string_processing.type_log_level) 
 is
 
@@ -64,7 +64,7 @@ is
 		create (
 			file => module_file_handle,
 			mode => out_file, 
-			name => type_module_file_name.to_string (module_file_name));
+			name => pac_module_file_name.to_string (module_file_name));
 
 		set_output (module_file_handle);
 		put_line (comment_mark & " " & system_name & " module");

@@ -56,10 +56,10 @@ package et_project.modules is
 
 	-- The module file name: -- CS move to et_general
 	module_file_name_length_max : constant positive := 100;
-	package type_module_file_name is new generic_bounded_length (module_file_name_length_max);
+	package pac_module_file_name is new generic_bounded_length (module_file_name_length_max);
 
-	function to_module_file_name (name : in string) return type_module_file_name.bounded_string;
-	function to_string (name : in type_module_file_name.bounded_string) return string;
+	function to_module_file_name (name : in string) return pac_module_file_name.bounded_string;
+	function to_string (name : in pac_module_file_name.bounded_string) return string;
 	
 	-- Generic modules and submodules (which contain schematic and layout stuff)
 	-- are collected here.
@@ -141,7 +141,7 @@ package et_project.modules is
 	procedure save_module (
 	-- Saves the given generic module in the given file.
 		module_cursor		: in pac_generic_modules.cursor;
-		module_file_name	: in type_module_file_name.bounded_string; -- led_matrix.mod
+		module_file_name	: in pac_module_file_name.bounded_string; -- led_matrix.mod
 		log_threshold		: in et_string_processing.type_log_level);
 	
 	procedure save_module (

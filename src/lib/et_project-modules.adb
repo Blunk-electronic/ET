@@ -91,12 +91,12 @@ package body et_project.modules is
 		return type_et_project_path.to_bounded_string (path);
 	end to_project_path;
 
-	function to_module_file_name (name : in string) return type_module_file_name.bounded_string is begin
-		return type_module_file_name.to_bounded_string (name);
+	function to_module_file_name (name : in string) return pac_module_file_name.bounded_string is begin
+		return pac_module_file_name.to_bounded_string (name);
 	end;
 
-	function to_string (name : in type_module_file_name.bounded_string) return string is begin
-		return type_module_file_name.to_string (name);
+	function to_string (name : in pac_module_file_name.bounded_string) return string is begin
+		return pac_module_file_name.to_string (name);
 	end;
 	
 	function exists (module : in type_module_name.bounded_string) return boolean is begin
@@ -555,7 +555,7 @@ package body et_project.modules is
 	procedure save_module (
 	-- Saves the given generic module in the given file.
 		module_cursor		: in pac_generic_modules.cursor;
-		module_file_name	: in type_module_file_name.bounded_string; -- led_matrix.mod
+		module_file_name	: in pac_module_file_name.bounded_string; -- led_matrix.mod
 		log_threshold		: in et_string_processing.type_log_level) 
 		is separate;
 	
@@ -572,7 +572,7 @@ package body et_project.modules is
 		use et_string_processing;
 		use et_schematic;
 		
-		function make_module_file_name return type_module_file_name.bounded_string is 
+		function make_module_file_name return pac_module_file_name.bounded_string is 
 		-- Creates the module/submodule file and writes a nice header in it.
 			use ada.directories;
 			use gnat.directory_operations;
@@ -584,7 +584,7 @@ package body et_project.modules is
 			use type_path;
 			path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
 
-			module_file_name : type_module_file_name.bounded_string; -- led_matrix -- to be returned
+			module_file_name : pac_module_file_name.bounded_string; -- led_matrix -- to be returned
 			
 		begin -- write_module_header
 			log (text => "setting module file name ...", level => log_threshold + 1);
@@ -592,7 +592,7 @@ package body et_project.modules is
 			-- If given module_name is empty (means it has not been passed), the module is named after the project.
 			-- Otherwise the module name is as given by module_name.
 			if type_module_name.length (module_name) = 0 then
-				module_file_name := type_module_file_name.to_bounded_string (compose (
+				module_file_name := pac_module_file_name.to_bounded_string (compose (
 					containing_directory	=> to_string (path),
 					name 					=> to_string (project_name),
 					extension 				=> module_file_name_extension));
@@ -609,7 +609,7 @@ package body et_project.modules is
 					);
 			end if;
 			
-			log (text => " module file name is now " & type_module_file_name.to_string (module_file_name), level => log_threshold + 2);
+			log (text => " module file name is now " & pac_module_file_name.to_string (module_file_name), level => log_threshold + 2);
 
 			return module_file_name;
 		end make_module_file_name;

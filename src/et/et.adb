@@ -86,7 +86,7 @@ procedure et is
 	project_name_open 		: et_project.type_project_name.bounded_string; -- the project to be opened
 	project_name_save_as	: et_project.type_project_name.bounded_string; -- the "save as" name of the project
 
-	module_file_name		: et_project.modules.type_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
+	module_file_name		: et_project.modules.pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 	
 	package_name_create		: et_packages.type_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
@@ -457,7 +457,7 @@ procedure et is
 		use gui;
 		use et_project.modules;
 		use et_project.modules.pac_generic_modules;
-		use type_module_file_name;
+		use pac_module_file_name;
 		use type_module_name;
 
 		-- If no module name was given via command line, then the first
@@ -474,7 +474,7 @@ procedure et is
 		else
 			-- Convert the optionally given module file name to a module name.
 			generic_module_name := to_module_name (remove_extension (
-				simple_name (type_module_file_name.to_string (module_file_name))));
+				simple_name (pac_module_file_name.to_string (module_file_name))));
 			
 			module_cursor := find (generic_modules, generic_module_name);
 		end if;
