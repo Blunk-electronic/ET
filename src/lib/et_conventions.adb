@@ -2563,7 +2563,7 @@ package body et_conventions is
 		put_line (to_string (TERMINAL_NAME) & to_string (et_symbols.text_size_default));
 		put_line (to_string (COMPONENT_ATTRIBUTE) & to_string (et_symbols.text_size_default));
 -- 		put_line (to_string (SHEET_NAME) & to_string (et_project.sheet_name_text_size_default)); -- CS no longer required ?
-		put_line (to_string (FILE_NAME) & to_string (et_project.modules.file_name_text_size_default));
+-- 		put_line (to_string (FILE_NAME) & to_string (et_project.modules.file_name_text_size_default));
 		
 		new_line;
 		new_line;
@@ -2826,8 +2826,9 @@ package body et_conventions is
 								null;
 -- 								size := et_project.to_sheet_name_text_size (et_string_processing.field (element (line_cursor), 2));
 
-							when et_conventions.FILE_NAME =>
-								size := et_project.modules.to_file_name_text_size (et_string_processing.field (element (line_cursor), 2));
+							when et_conventions.FILE_NAME => -- CS obsolete
+								null;
+-- 								size := et_project.modules.to_file_name_text_size (et_string_processing.field (element (line_cursor), 2));
 								
 						end case;
 						

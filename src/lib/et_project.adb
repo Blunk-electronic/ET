@@ -40,11 +40,9 @@ with ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
 
-with et_general;				use et_general;
 with et_export;
 with general_rw;				use general_rw;
-with pcb_rw.device_packages;	use pcb_rw.device_packages;
-with device_rw;					use device_rw;
+
 with et_project.modules;
 with et_project.rigs;
 	

@@ -36,8 +36,8 @@
 --
 --   ToDo: 
 
-with et_string_processing;
--- with et_conventions;
+with ada.containers;            	use ada.containers;
+with et_conventions;
 
 package et_project.configuration is
 

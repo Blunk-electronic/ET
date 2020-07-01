@@ -78,8 +78,8 @@ procedure read_module_file (
 	meta_board		: et_meta.type_board;
 
 	-- RULES
-	conventions_file 		: et_conventions.pac_file_name.bounded_string;
 	pcb_design_rules_file	: et_design_rules.pac_file_name.bounded_string;
+	-- CS ERC rules ?
 	
 	active_assembly_variant : et_general.type_variant_name.bounded_string; -- "low_cost"
 	
@@ -219,7 +219,6 @@ procedure read_module_file (
 	end;		
 
 	procedure read_rules is
-		use et_conventions;
 		use et_design_rules;
 		kw : constant string := f (line, 1);
 	begin

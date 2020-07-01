@@ -36,13 +36,10 @@
 --
 
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	--use ada.characters.latin_1;
+with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.text_io;				use ada.text_io;
-
-with ada.tags;
 
 with ada.exceptions;
 with ada.directories;
@@ -51,15 +48,7 @@ with gnat.directory_operations;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
-with et_general;				use et_general;
-with et_coordinates;
-with et_string_processing;
 with et_export;
-with et_import;
-with et_schematic;
-with et_packages;
-with et_pcb;
-with et_pcb_stack;
 with et_pcb_coordinates;
 with et_material;
 with et_text;					use et_text;
@@ -73,6 +62,8 @@ with device_rw;					use device_rw;
 with et_symbols;
 with frame_rw;
 with et_meta;
+
+with et_conventions;
 with et_design_rules;
 with et_project.rigs;
 
@@ -348,18 +339,6 @@ package body et_project.modules is
 	begin
 		return to_lower (type_section_name_rig_configuration'image (section) (5..len));
 	end to_string;
-
-	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size is
-	-- Converts a string to type_sheet_name_text_size.
-	begin
-		return type_sheet_name_text_size'value (size);
-	end to_sheet_name_text_size;
-
-	function to_file_name_text_size (size : in string) return type_file_name_text_size is
-	-- Converts a string to type_file_name_text_size.
-	begin
-		return type_file_name_text_size'value (size);
-	end to_file_name_text_size;
 
 	procedure create_supplementary_directories (
 		path			: in string;

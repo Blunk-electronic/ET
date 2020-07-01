@@ -36,20 +36,10 @@
 --
 --   ToDo: 
 
-with ada.text_io;				use ada.text_io;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
 
-with et_general;				use et_general;
 with et_coordinates;			use et_coordinates;
-with et_string_processing;
-with et_conventions;
 with et_schematic;
 with submodules;
 with netlists;
@@ -63,13 +53,6 @@ with et_devices;				use et_devices;
 with et_frames;
 
 package et_project.modules is
-
-	subtype type_file_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
-	file_name_text_size_default : constant type_file_name_text_size := 1.3;
-
-	function to_file_name_text_size (size : in string) return type_file_name_text_size;
-
-	
 
 	-- The module file name: -- CS move to et_general
 	module_file_name_length_max : constant positive := 100;
@@ -136,14 +119,6 @@ package et_project.modules is
 
 	function to_string (section : in type_section_name_rig_configuration) return string;
 	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
-
-	
--- CS ?
-	subtype type_sheet_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm -- CS no longer required ?
-	sheet_name_text_size_default : constant type_sheet_name_text_size := 1.3; -- CS no longer required ?
-
-	function to_sheet_name_text_size (size : in string) return type_sheet_name_text_size; -- CS no longer required ?
-	-- Converts a string to type_sheet_name_text_size.
 
 	
 	procedure create_project_directory (

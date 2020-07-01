@@ -36,6 +36,13 @@
 --
 --   ToDo: 
 
+with ada.containers;            	use ada.containers;
+with ada.containers.ordered_maps;
+with ada.containers.ordered_sets;
+with et_devices;
+with et_conventions;
+
+
 package et_project.rigs is
 
 	-- The rig configuration is modelled here:

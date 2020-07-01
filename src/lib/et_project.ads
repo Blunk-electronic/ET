@@ -39,15 +39,9 @@
 with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
-with ada.containers;            use ada.containers;
-with ada.containers.ordered_maps;
-with ada.containers.ordered_sets;
 
 with et_general;				use et_general;
 with et_string_processing;
-with et_conventions;
-with et_packages;
-with et_devices;
 
 
 package et_project is
