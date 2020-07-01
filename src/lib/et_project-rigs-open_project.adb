@@ -60,7 +60,7 @@ procedure open_project (
 	procedure read_module_file_pre (module_file_handle : in directory_entry_type) is 
 		file_name : string := simple_name (module_file_handle); -- motor_driver.mod
 	begin
-		read_module_file (file_name, log_threshold + 1);
+		read_module (file_name, log_threshold + 1);
 	end;
 	
 	-- The search of rig configuration files requires this stuff:

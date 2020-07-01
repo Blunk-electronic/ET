@@ -37,7 +37,7 @@
 
 separate (et_project.modules)
 
-procedure read_module_file (
+procedure read_module (
 -- Reads a module file and stores its content as generic module in container modules.
 -- The file name may contain environment variables.
 -- The file must exist, must be visible from the current working directory.
@@ -6023,7 +6023,7 @@ procedure read_module_file (
 
 		procedure query_module (cursor : in type_submodules.cursor) is begin
 			-- Read the template file:
-			read_module_file (to_string (element (cursor).file), log_threshold + 1);
+			read_module (to_string (element (cursor).file), log_threshold + 1);
 		end;
 		
 	begin -- read_submodule_files
@@ -6226,7 +6226,7 @@ begin -- read_module_file
 		set_input (previous_input);
 		raise;
 	
-end read_module_file;
+end read_module;
 
 
 -- Soli Deo Gloria

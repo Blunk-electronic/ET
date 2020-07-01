@@ -8277,7 +8277,7 @@ package body et_schematic_ops is
 
 		-- THIS IS ABOUT THE ACTUAL SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
 		-- Read the submodule file and store its content in container et_project.modules:
-		et_project.modules.read_module_file (to_string (file), log_threshold + 1);		
+		et_project.modules.read_module (to_string (file), log_threshold + 1);		
 
 	end add_submodule;
 
@@ -10217,7 +10217,7 @@ package body et_schematic_ops is
 
 			-- THIS IS ABOUT THE ACTUAL SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
 			-- Read the submodule file and store its content in container et_project.modules:
-			read_module_file (to_string (file), log_threshold + 1);		
+			read_module (to_string (file), log_threshold + 1);		
 			
 			log_indentation_up;
 

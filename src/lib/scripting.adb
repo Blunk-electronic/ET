@@ -4481,10 +4481,10 @@ package body scripting is
 								when 4 =>
 									-- The script command provides the module name only.
 									-- The extension must be added here:
-									read_module_file (
+									read_module (
 										file_name		=> ada.directories.compose (
-														name		=> f (4),
-														extension	=> module_file_name_extension),
+															name		=> f (4),
+															extension	=> module_file_name_extension),
 										log_threshold	=> log_threshold + 1
 										);
 
@@ -4581,7 +4581,7 @@ package body scripting is
 					-- in the current project directory or because a environment
 					-- variable (like $templates/power_supply.mod) directs to
 					-- its real location.
-					read_module_file (
+					read_module (
 						file_name		=> append_extension (to_string (module)), 
 						log_threshold	=> log_threshold + 1); 
 
@@ -4605,7 +4605,7 @@ package body scripting is
 					-- in the current project directory or because a environment
 					-- variable (like $templates/power_supply.mod) directs to
 					-- its real location.
-					read_module_file (
+					read_module (
 						file_name		=> append_extension (to_string (module)), 
 						log_threshold	=> log_threshold + 1); 
 
