@@ -456,7 +456,7 @@ procedure et is
 	procedure launch_gui is 
 		use gui;
 		use et_project.modules;
-		use et_project.modules.type_modules;
+		use et_project.modules.pac_generic_modules;
 		use type_module_file_name;
 		use type_module_name;
 
@@ -465,7 +465,7 @@ procedure et is
 		-- Note: This is about a generic module.
 		generic_module_name : et_general.type_module_name.bounded_string;
 		
-		module_cursor : type_modules.cursor;
+		module_cursor : pac_generic_modules.cursor;
 
 		script_name_tmp : pac_script_name.bounded_string;
 	begin

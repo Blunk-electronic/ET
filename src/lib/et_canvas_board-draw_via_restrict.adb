@@ -171,7 +171,7 @@ procedure draw_via_restrict (
 begin -- draw_via_restrict
 -- 	put_line ("draw via restrict ...");
 	
-	et_project.modules.type_modules.query_element (
+	pac_generic_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 	

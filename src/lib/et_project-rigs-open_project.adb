@@ -318,7 +318,7 @@ procedure open_project (
 							when SEC_MODULE_INSTANCES =>							
 								declare
 									kw : string := f (line, 1);
-									module_cursor : type_modules.cursor;
+									module_cursor : pac_generic_modules.cursor;
 								begin
 									if kw = keyword_generic_name then
 										expect_field_count (line, 2);

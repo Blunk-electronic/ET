@@ -101,19 +101,19 @@ package body et_project.modules is
 	
 	function exists (module : in type_module_name.bounded_string) return boolean is begin
 	-- Returns true if the module with the given name exists in container modules.
-		return type_modules.contains (generic_modules, module);
+		return pac_generic_modules.contains (generic_modules, module);
 	end;
 
 	function locate_module (name : in type_module_name.bounded_string) -- motor_driver (without extension *.mod)
 	-- Locates the given module in the global container "generic_modules".
-		return type_modules.cursor is
-		use type_modules;
+		return pac_generic_modules.cursor is
+		use pac_generic_modules;
 	begin
 		return find (generic_modules, name);
 	end;
 
 	function sheet_description (
-		module	: in type_modules.cursor;
+		module	: in pac_generic_modules.cursor;
 		sheet	: in type_sheet)
 		return et_frames.type_schematic_description is
 		use et_frames;
@@ -122,7 +122,7 @@ package body et_project.modules is
 		cursor : pac_schematic_descriptions.cursor;
 
 		use et_schematic;
-		use type_modules;
+		use pac_generic_modules;
 
 		procedure query_descriptions (
 			module_name	: in type_module_name.bounded_string;
@@ -155,7 +155,7 @@ package body et_project.modules is
 	
 	function port_connected (
 	-- Returns true if given port of netchanger is connected with any net.
-		module	: in type_modules.cursor;
+		module	: in pac_generic_modules.cursor;
 		port	: in netlists.type_port_netchanger)
 		return boolean is
 		result : boolean := false; -- to be returned. goes true on the first (and only) match.
@@ -230,7 +230,7 @@ package body et_project.modules is
 		
 	begin -- port_not_connected
 
-		type_modules.query_element (
+		pac_generic_modules.query_element (
 			position	=> module,
 			process		=> query_nets'access);
 		
@@ -239,10 +239,10 @@ package body et_project.modules is
 
 	function locate_net (
 	-- Returns a cursor to the given net in the given module.
-		module_cursor	: in type_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name.bounded_string)
 		return et_schematic.type_nets.cursor is
-		use type_modules;
+		use pac_generic_modules;
 		use et_schematic.type_nets;
 	begin
 		return find (element (module_cursor).nets, net_name);
@@ -253,7 +253,7 @@ package body et_project.modules is
 	function netchanger_as_port_available (
 	-- Returns true if the given net provides a netchanger that may serve as port
 	-- to a parent module.
-		module		: in type_modules.cursor;
+		module		: in pac_generic_modules.cursor;
 		net			: in et_schematic.type_nets.cursor;
 		direction	: in submodules.type_netchanger_port_name) -- master/slave 
 		return boolean is
@@ -554,13 +554,13 @@ package body et_project.modules is
 
 	procedure save_module (
 	-- Saves the given generic module in the given file.
-		module_cursor		: in type_modules.cursor;
+		module_cursor		: in pac_generic_modules.cursor;
 		module_file_name	: in type_module_file_name.bounded_string; -- led_matrix.mod
 		log_threshold		: in et_string_processing.type_log_level) 
 		is separate;
 	
 	procedure save_module (
-		module_cursor	: in type_modules.cursor;					-- the module
+		module_cursor	: in pac_generic_modules.cursor;					-- the module
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
@@ -654,8 +654,8 @@ package body et_project.modules is
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
 
-		use type_modules;
-		module_cursor : type_modules.cursor;
+		use pac_generic_modules;
+		module_cursor : pac_generic_modules.cursor;
 		inserted : boolean;
 		use et_string_processing;
 	begin
@@ -670,7 +670,7 @@ package body et_project.modules is
 	
 		-- CS: make sure the module is inside the current project directory.
 		
-		type_modules.insert (
+		pac_generic_modules.insert (
 			container	=> generic_modules,
 			key			=> module_name,
 			position	=> module_cursor,
@@ -688,8 +688,8 @@ package body et_project.modules is
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
 
-		use type_modules;
-		module_cursor : type_modules.cursor := locate_module (module_name);
+		use pac_generic_modules;
+		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
 
 		use et_string_processing;
 		use ada.directories;
@@ -702,7 +702,7 @@ package body et_project.modules is
 			level	=> log_threshold);
 
 		-- We save the module only if it exists:
-		if module_cursor /= type_modules.no_element then
+		if module_cursor /= pac_generic_modules.no_element then
 	
 			-- CS: make sure the module is inside the current project directory.
 			-- This test is probably not required since module cursor points to a module 
@@ -726,8 +726,8 @@ package body et_project.modules is
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
 
-		use type_modules;
-		module_cursor : type_modules.cursor := locate_module (module_name);
+		use pac_generic_modules;
+		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
 
 		use et_string_processing;
 		use ada.directories;
@@ -740,13 +740,13 @@ package body et_project.modules is
 			level	=> log_threshold);
 
 		-- We delete the module only if it exists:
-		if module_cursor /= type_modules.no_element then
+		if module_cursor /= pac_generic_modules.no_element then
 	
 			-- CS: make sure the module is inside the current project directory.
 			-- This test is probably not required since module cursor points to a module 
 			-- inside the project anyway. Module names are like file paths like "templates/motor_driver".
 			
-			type_modules.delete (
+			pac_generic_modules.delete (
 				container	=> generic_modules,
 				position	=> module_cursor);
 			
@@ -780,7 +780,7 @@ package body et_project.modules is
 		
 		submodule_file : type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
 		module_name : type_module_name.bounded_string; 
-		module_cursor : type_modules.cursor;
+		module_cursor : pac_generic_modules.cursor;
 
 		procedure query_nets (
 			module_name	: in type_module_name.bounded_string;
@@ -823,7 +823,7 @@ package body et_project.modules is
 		module_name := to_module_name (remove_extension (to_string (submodule_file)));
 		module_cursor := locate_module (module_name);
 
-		type_modules.query_element (
+		pac_generic_modules.query_element (
 			position	=> module_cursor,
 			process		=> query_nets'access);
 		
@@ -840,7 +840,7 @@ package body et_project.modules is
 	function exists (
 	-- Returns true if the given module provides the given device.
 	-- The module being searched in must be in the rig already.						
-		module	: in type_modules.cursor;
+		module	: in pac_generic_modules.cursor;
 		device	: in type_name)
 		return boolean is
 
@@ -857,7 +857,7 @@ package body et_project.modules is
 		end query_devices;
 		
 	begin -- exists
-		type_modules.query_element (
+		pac_generic_modules.query_element (
 			position	=> module,
 			process		=> query_devices'access);
 
@@ -867,7 +867,7 @@ package body et_project.modules is
 	function exists (
 	-- Returns true if the given module provides the given submodule instance.
 	-- The module being searched in must be in the rig already.						
-		module		: in type_modules.cursor; -- the parent module that contains the submodule instance
+		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in et_general.type_module_instance_name.bounded_string) -- OSC1
 		return boolean is
 
@@ -885,7 +885,7 @@ package body et_project.modules is
 
 	begin -- exists
 		-- search in the parent module for the given submodule instance
-		type_modules.query_element (
+		pac_generic_modules.query_element (
 			position	=> module,
 			process		=> query_submodules'access);
 
@@ -897,7 +897,7 @@ package body et_project.modules is
 	-- given assembly variant. The submodule instance is searched for
 	-- in the parent module indicated by cursor "module".
 	-- The module being searched in must be in the rig already.												
-		module		: in type_modules.cursor; -- the parent module that contains the submodule instance
+		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		variant		: in et_general.type_variant_name.bounded_string) -- low_cost				
 		return boolean is
@@ -912,7 +912,7 @@ package body et_project.modules is
 			submod_instance_cursor : submodules.type_submodules.cursor;
 			submod_path : type_submodule_path.bounded_string;
 			submod_name	: type_module_name.bounded_string;
-			submod_cursor : type_modules.cursor;
+			submod_cursor : pac_generic_modules.cursor;
 
 			procedure query_variants (
 			-- Locates the given assembly variant in the submodule.
@@ -942,7 +942,7 @@ package body et_project.modules is
 			submod_cursor := locate_module (submod_name);
 
 			-- locate the given variant in the submodule
-			type_modules.query_element (
+			pac_generic_modules.query_element (
 				position	=> submod_cursor,
 				process		=> query_variants'access);
 
@@ -950,7 +950,7 @@ package body et_project.modules is
 		
 	begin -- exists
 		-- search in the parent module for the given submodule instance
-		type_modules.query_element (
+		pac_generic_modules.query_element (
 			position	=> module,
 			process		=> query_submodules'access);
 
@@ -961,7 +961,7 @@ package body et_project.modules is
 	-- Returns true if the given module provides the given assembly variant.
 	-- If the variant is an empty string then it is about the default variant
 	-- which is always provided. The return is true in that case.
-		module		: in type_modules.cursor;
+		module		: in pac_generic_modules.cursor;
 		variant		: in et_general.type_variant_name.bounded_string) -- low_cost
 		return boolean is
 
@@ -981,7 +981,7 @@ package body et_project.modules is
 			result := true;
 		else
 			
-			type_modules.query_element (
+			pac_generic_modules.query_element (
 				position	=> module,
 				process		=> query_variants'access);
 
@@ -996,7 +996,7 @@ package body et_project.modules is
 	-- - The module being searched in must be in the rig already.
 	-- - The assembly variant must exist in the module.
 	-- - The device must exist in the module.
-		module	: in type_modules.cursor; -- the module like motor_driver
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
 		device	: in type_name)
 		return boolean is
@@ -1045,7 +1045,7 @@ package body et_project.modules is
 -- 			" querying device " & to_string (device),
 -- 			level => log_threshold);
 
-		type_modules.query_element (
+		pac_generic_modules.query_element (
 			position	=> module,
 			process		=> query_variants'access);
 		
@@ -1061,7 +1061,7 @@ package body et_project.modules is
 	-- - The device must exist in the module.
 	-- - The device must have an entry in the given assembly variant,
 	--   otherwise the return is no_element.
-		module	: in type_modules.cursor; -- the module like motor_driver
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
 		device	: in type_name)
 		return assembly_variants.type_devices.cursor is
@@ -1093,7 +1093,7 @@ package body et_project.modules is
 		
 	begin -- alternative_device
 
-		type_modules.query_element (
+		pac_generic_modules.query_element (
 			position	=> module,
 			process		=> query_variants'access);
 		
@@ -1111,7 +1111,7 @@ package body et_project.modules is
 	--   otherwise the return is no_element.
 	-- If the given variant is an emtpy string (means default variant) the return
 	-- is no_element.
-		module	: in type_modules.cursor; -- the module like motor_driver
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
 		return assembly_variants.type_submodules.cursor is
@@ -1145,7 +1145,7 @@ package body et_project.modules is
 		if et_general.is_default (variant) then
 			cursor := assembly_variants.type_submodules.no_element;
 		else
-			type_modules.query_element (
+			pac_generic_modules.query_element (
 				position	=> module,
 				process		=> query_variants'access);
 		end if;
@@ -1154,10 +1154,10 @@ package body et_project.modules is
 	end alternative_submodule;
 	
 	function deepest_conductor_layer (
-		module	: in type_modules.cursor) -- the module like motor_driver
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return et_pcb_stack.type_signal_layer is
 	begin
-		return et_pcb_stack.deepest_layer (type_modules.element (module).board.stack);
+		return et_pcb_stack.deepest_layer (pac_generic_modules.element (module).board.stack);
 	end deepest_conductor_layer;
 
 end et_project.modules;

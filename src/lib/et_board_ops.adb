@@ -46,6 +46,7 @@ with et_conventions;
 
 package body et_board_ops is
 
+	use et_project.modules.pac_generic_modules;
 	use et_schematic;
 	use et_pcb_stack;
 	
@@ -83,8 +84,7 @@ package body et_board_ops is
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure set_origin (
 			module_name	: in type_module_name.bounded_string;
@@ -127,8 +127,7 @@ package body et_board_ops is
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_geometry;
 		
@@ -156,10 +155,10 @@ package body et_board_ops is
 		
 	end add_layer;
 
-	function layer_count (module_cursor	: in et_project.modules.type_modules.cursor) 
+	function layer_count (module_cursor	: in et_project.modules.pac_generic_modules.cursor) 
 	-- Returns the total number of signal layers used by the given module.
 		return et_pcb_stack.type_signal_layer is
-		use et_project.modules.type_modules;
+		
 		use et_pcb_stack;
 		use package_layers;
 	begin
@@ -169,7 +168,7 @@ package body et_board_ops is
 	procedure test_layer (
 	-- Tests whether the given layer is allowed according to current layer stack
 	-- of the given board.
-		module_cursor	: in et_project.modules.type_modules.cursor;
+		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer) is
 		use et_pcb_stack;
 		layers_used : et_pcb_stack.type_signal_layer := layer_count (module_cursor);
@@ -189,8 +188,7 @@ package body et_board_ops is
 		layer			: in et_pcb_stack.type_signal_layer;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_geometry;
 		
@@ -268,8 +266,7 @@ package body et_board_ops is
 		prefix			: in type_prefix.bounded_string; -- FD
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		package_cursor_lib : et_packages.type_packages.cursor;
 		
@@ -349,8 +346,7 @@ package body et_board_ops is
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
@@ -454,8 +450,7 @@ package body et_board_ops is
 		rotation		: in et_pcb_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
@@ -554,8 +549,7 @@ package body et_board_ops is
 		device_name		: in type_name; -- FD1
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
@@ -593,8 +587,7 @@ package body et_board_ops is
 		device_name_after	: in type_name; -- FD3
 		log_threshold		: in type_log_level) is
 		
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
@@ -663,8 +656,7 @@ package body et_board_ops is
 		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
@@ -837,7 +829,7 @@ package body et_board_ops is
 		
 		position : type_position := origin_zero_rotation; -- to be returned
 
-		module_cursor : type_modules.cursor; -- points to the module
+		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
@@ -853,7 +845,7 @@ package body et_board_ops is
 		-- locate the given module
 		module_cursor := locate_module (module_name);
 
-		type_modules.query_element (
+		pac_generic_modules.query_element (
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
@@ -869,8 +861,7 @@ package body et_board_ops is
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
@@ -944,8 +935,7 @@ package body et_board_ops is
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module
+		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use assembly_variants;
 		use assembly_variants.pac_variants;
@@ -963,7 +953,7 @@ package body et_board_ops is
 			-- Adds to the device index the given offset.
 			-- If offset is zero, we are dealing with the top module.
 			-- The submodule position in the parent module is added to the device position.
-				module_cursor		: in type_modules.cursor;
+				module_cursor		: in pac_generic_modules.cursor;
 				variant				: in et_general.type_variant_name.bounded_string;
 				offset				: in type_name_index;
 				position_in_board	: in type_position) -- submod pos. in parent
@@ -1161,7 +1151,7 @@ package body et_board_ops is
 				end query_devices;
 
 			begin -- collect
-				et_project.modules.type_modules.query_element (
+				et_project.modules.pac_generic_modules.query_element (
 					position	=> module_cursor,
 					process		=> query_devices'access);
 				
@@ -1390,7 +1380,7 @@ package body et_board_ops is
 
 	function locate_device (
 	-- Returns a cursor to the requested device in the given module.
-		module_cursor	: in et_project.modules.type_modules.cursor;
+		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		device_name		: in type_name)
 		return et_schematic.type_devices.cursor is
 
@@ -1405,7 +1395,7 @@ package body et_board_ops is
 		end query_devices;
 		
 	begin -- locate_device
-		et_project.modules.type_modules.query_element (
+		et_project.modules.pac_generic_modules.query_element (
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
@@ -1419,7 +1409,7 @@ package body et_board_ops is
 	function terminal_position (
 	-- Returns the position of a terminal of the given device in the board.
 	-- The device must be real (appearance SCH_PCB).
-		module_cursor	: in et_project.modules.type_modules.cursor;
+		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		device_cursor	: in et_schematic.type_devices.cursor; -- IC45
 		terminal_name	: in type_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position is
@@ -1512,8 +1502,7 @@ package body et_board_ops is
 		grid			: in type_grid;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure do_it (
 			module_name	: in type_module_name.bounded_string;
@@ -1574,7 +1563,7 @@ package body et_board_ops is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is an SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning must be issued.
-		module_cursor	: in et_project.modules.type_modules.cursor;											   
+		module_cursor	: in et_project.modules.pac_generic_modules.cursor;											   
 		terminal		: in type_terminal_position;
 		layer			: in et_pcb_stack.type_signal_layer) is
 		use et_pcb_stack;
@@ -1604,7 +1593,7 @@ package body et_board_ops is
 	
 	procedure add_named_track (
 	-- Adds a line track segment to the given net in the given module.
-		module_cursor	: in type_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		line			: in et_pcb.type_copper_line) is
 
@@ -1642,7 +1631,7 @@ package body et_board_ops is
 		end do_it;
 
 	begin -- add_named_track
-		et_project.modules.type_modules.update_element (
+		et_project.modules.pac_generic_modules.update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);
@@ -1656,8 +1645,7 @@ package body et_board_ops is
 		line			: in et_pcb.type_copper_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_pcb;
 		use et_pcb.pac_copper_lines;
@@ -1702,7 +1690,7 @@ package body et_board_ops is
 	procedure draw_track_line (
 	-- Draws a named track line.
 	-- Assumes that module_cursor and net_cursor point to a existing objects.
-		module_cursor	: in type_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
 		line			: in et_pcb.type_copper_line;
 		log_threshold	: in type_log_level) is
@@ -1731,8 +1719,6 @@ package body et_board_ops is
 				process		=> add'access);
 		end add_named_track;
 
-		use et_project.modules.type_modules;
-		
 	begin -- draw_track_line
 		update_element (
 			container	=> generic_modules,
@@ -1757,8 +1743,7 @@ package body et_board_ops is
 		length			: in type_distance_positive;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, direction and length.
@@ -1828,8 +1813,7 @@ package body et_board_ops is
 		notches			: in type_grid_notches;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, direction, axis and grid notches.
@@ -1895,8 +1879,7 @@ package body et_board_ops is
 		end_point		: in type_point;
 		log_threshold	: in type_log_level) is
 		
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position and end point.
@@ -1959,8 +1942,7 @@ package body et_board_ops is
 		notches			: in type_grid_notches;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		-- This is going to be the segment we will insert. In the follwing it
 		-- will be tailored according to given terminal position, axis and grid notches.
@@ -2018,8 +2000,7 @@ package body et_board_ops is
 		arc				: in et_pcb.type_copper_arc;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_pcb;
 		use et_pcb.pac_copper_arcs;
@@ -2107,8 +2088,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_pcb;
 		use pac_copper_lines;
@@ -2258,7 +2238,7 @@ package body et_board_ops is
 	procedure test_layers (
 	-- Tests the given set of signal layers whether each of them is available
 	-- according to the current layer stack of the given module.
-		module_cursor	: in et_project.modules.type_modules.cursor;
+		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		layers 			: in et_pcb_stack.type_signal_layers.set) is
 
 		use et_pcb_stack;
@@ -2279,8 +2259,7 @@ package body et_board_ops is
 		line			: in type_route_restrict_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use type_route_restrict_lines;
 
@@ -2318,8 +2297,7 @@ package body et_board_ops is
 		arc				: in type_route_restrict_arc;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use type_route_restrict_arcs;
 
@@ -2357,8 +2335,7 @@ package body et_board_ops is
 		circle			: in type_route_restrict_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use type_route_restrict_circles;
 
@@ -2399,8 +2376,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
@@ -2484,8 +2460,7 @@ package body et_board_ops is
 		line			: in type_via_restrict_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use type_via_restrict_lines;
 
@@ -2523,8 +2498,7 @@ package body et_board_ops is
 		arc				: in type_via_restrict_arc;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use type_via_restrict_arcs;
 
@@ -2562,8 +2536,7 @@ package body et_board_ops is
 		circle			: in type_via_restrict_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use type_via_restrict_circles;
 
@@ -2604,8 +2577,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
@@ -2691,8 +2663,7 @@ package body et_board_ops is
 		line			: in et_pcb.type_pcb_contour_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -2727,8 +2698,7 @@ package body et_board_ops is
 		arc				: in et_pcb.type_pcb_contour_arc;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -2763,8 +2733,7 @@ package body et_board_ops is
 		circle			: in et_pcb.type_pcb_contour_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -2802,8 +2771,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
@@ -2888,8 +2856,7 @@ package body et_board_ops is
 		line			: in type_silk_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -2934,8 +2901,7 @@ package body et_board_ops is
 		arc				: in type_silk_arc;		
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -2982,8 +2948,7 @@ package body et_board_ops is
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -3032,8 +2997,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
@@ -3138,8 +3102,7 @@ package body et_board_ops is
 		line			: in type_doc_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -3184,8 +3147,7 @@ package body et_board_ops is
 		arc				: in type_doc_arc;		
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -3232,8 +3194,7 @@ package body et_board_ops is
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -3282,8 +3243,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
@@ -3387,8 +3347,7 @@ package body et_board_ops is
 		line			: in type_keepout_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -3433,8 +3392,7 @@ package body et_board_ops is
 		arc				: in type_keepout_arc;		
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -3480,8 +3438,7 @@ package body et_board_ops is
 		circle			: in type_fillable_circle_solid;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -3530,8 +3487,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
@@ -3635,8 +3591,7 @@ package body et_board_ops is
 		line			: in type_stop_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -3681,8 +3636,7 @@ package body et_board_ops is
 		arc				: in type_stop_arc;		
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -3729,8 +3683,7 @@ package body et_board_ops is
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -3779,8 +3732,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
@@ -3884,8 +3836,7 @@ package body et_board_ops is
 		line			: in type_stencil_line;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -3930,8 +3881,7 @@ package body et_board_ops is
 		arc				: in type_stencil_arc;		
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -3978,8 +3928,7 @@ package body et_board_ops is
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -4028,8 +3977,7 @@ package body et_board_ops is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) is
 
-		use et_project.modules.type_modules;
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;

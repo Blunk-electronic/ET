@@ -2874,12 +2874,12 @@ begin -- draw_packages
 -- 	put_line ("draw packages ...");
 
 	-- draw electric devices
-	type_modules.query_element (
+	pac_generic_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_devices'access);
 
 	-- draw non-electric devices (like fiducials, mounting holes, ...)
-	type_modules.query_element (
+	pac_generic_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_devices_non_electric'access);
 			

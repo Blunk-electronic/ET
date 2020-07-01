@@ -52,7 +52,7 @@ package body gui is
 
 	procedure single_module (
 		project			: in type_project_name.bounded_string;	-- blood_sample_analyzer
-		module			: in type_modules.cursor;				-- cursor of generic module
+		module			: in pac_generic_modules.cursor;				-- cursor of generic module
 		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 		script			: in pac_script_name.bounded_string; -- rename_nets.scr
 		log_threshold	: in type_log_level) is
@@ -61,7 +61,7 @@ package body gui is
 		log (text => "starting GUI ...", level => log_threshold);
 		log (text => "project " & enclose_in_quotes (to_string (project)), level => log_threshold);
 		log (text => "runmode " & to_string (MODE_MODULE), level => log_threshold);
-		log (text => "module " & enclose_in_quotes (to_string (type_modules.key (module))), level => log_threshold);
+		log (text => "module " & enclose_in_quotes (to_string (pac_generic_modules.key (module))), level => log_threshold);
 		log (text => "sheet" & to_sheet (sheet), level => log_threshold);
 
 		if pac_script_name.length (script) > 0 then

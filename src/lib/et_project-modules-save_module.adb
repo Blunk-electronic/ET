@@ -39,13 +39,13 @@ separate (et_project.modules)
 
 procedure save_module (
 -- Saves the given generic module in the given file.
-	module_cursor		: in type_modules.cursor;
+	module_cursor		: in pac_generic_modules.cursor;
 	module_file_name	: in type_module_file_name.bounded_string; -- led_matrix.mod
 	log_threshold		: in et_string_processing.type_log_level) 
 is
 
 	use et_string_processing;
-	use type_modules;
+	use pac_generic_modules;
 	use general_rw;
 	
 	module_file_handle : ada.text_io.file_type;

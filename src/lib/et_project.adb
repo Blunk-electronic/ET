@@ -338,13 +338,13 @@ package body et_project is
 		use et_string_processing;
 		use ada.directories;
 		use et_project.modules;
-		use et_project.modules.type_modules;
+		use et_project.modules.pac_generic_modules;
 		
 		-- break down destination into path and project name:
 		path : type_et_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
 		name : type_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
 
-		procedure query_modules (module_cursor : in type_modules.cursor) is
+		procedure query_modules (module_cursor : in pac_generic_modules.cursor) is
 		-- Saves a module or a submodule (indicated by module_cursor).
 			module_name : type_module_name.bounded_string := key (module_cursor); -- motor_driver
 

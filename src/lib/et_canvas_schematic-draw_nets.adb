@@ -276,7 +276,7 @@ begin
 -- 	put_line (to_string (in_area));
 	
 	-- draw the nets
-	type_modules.query_element (
+	pac_generic_modules.query_element (
 		position	=> current_active_module,
 		process		=> query_nets'access);
 	

@@ -37,7 +37,7 @@
 
 with et_general;
 with et_project.modules;
-use et_project.modules.type_modules;
+use et_project.modules.pac_generic_modules;
 
 with et_meta;
 with et_canvas_schematic;

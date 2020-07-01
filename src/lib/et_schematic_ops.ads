@@ -201,7 +201,7 @@ package et_schematic_ops is
 	
 	function exists_device_port (
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
-		module_cursor	: in type_modules.cursor; -- motor_driver
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_name; -- IC45
 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
 		return boolean;
@@ -209,7 +209,7 @@ package et_schematic_ops is
 	function exists_device_unit_port (
 	-- Returns true if given device exists in module indicated by module_cursor.
 	-- The unit and port names are optionally.
-		module_cursor	: in type_modules.cursor; -- motor_driver
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string := to_name (""); -- A
 		port_name		: in et_symbols.type_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE		
@@ -217,14 +217,14 @@ package et_schematic_ops is
 
 	function exists_submodule_port (
 	-- Returns true if given submodule with the given port exists in module indicated by module_cursor.
-		module_cursor	: in type_modules.cursor; -- motor_driver
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance : in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 		port_name		: in et_general.type_net_name.bounded_string) -- RESET
 		return boolean;
 
 	function exists_netchanger (
 	-- Returns true if given netchanger exists in module indicated by module_cursor.
-		module_cursor	: in type_modules.cursor; -- motor_driver
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		index			: in submodules.type_netchanger_id) -- 1, 2, 3, ...
 		return boolean;
 
@@ -240,7 +240,7 @@ package et_schematic_ops is
 	function next_device_name (
 	-- Returns for the given device prefix the next available device name in the module.
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
-		module_cursor	: in type_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		prefix			: in type_prefix.bounded_string; -- C
 		category		: in type_device_category := ELECTRICAL)
 		return type_name; -- C2
@@ -588,13 +588,13 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level);
 
 	function sort_by_coordinates (
-		module_cursor 	: in type_modules.cursor;
+		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 		return numbering.type_devices.map;
 
 	function unit_positions_valid (
 	-- Returns true if no unit sits on top of another.
-		module_cursor 	: in type_modules.cursor;
+		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 		return boolean;
 	
@@ -640,7 +640,7 @@ package et_schematic_ops is
 	-- See et_libraries.type_port for detail.
 	-- The device must exist in the module and must be real. Run intergrity check
 	-- in case exception occurs here.
-		module_cursor	: in type_modules.cursor; -- motor_driver
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
@@ -691,7 +691,7 @@ package et_schematic_ops is
 	-- Returns the position of given unit. If the unit_name is emtpty ("")
 	-- then the position of the first unit is returned.
 	-- This is useful when a device has only one unit.
-		module_cursor	: in type_modules.cursor; -- motor_driver
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string) -- C
 -- 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE

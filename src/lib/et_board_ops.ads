@@ -83,14 +83,14 @@ package et_board_ops is
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
 		log_threshold	: in type_log_level);
 
-	function layer_count (module_cursor	: in type_modules.cursor) 
+	function layer_count (module_cursor	: in pac_generic_modules.cursor) 
 	-- Returns the total number of signal layers used by the given module.
 		return et_pcb_stack.type_signal_layer;
 
 	procedure test_layer (
 	-- Tests whether the given layer is allowed according to current layer stack
 	-- of the given board.
-		module_cursor	: in type_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer);
 	
 	procedure delete_layer (
@@ -177,14 +177,14 @@ package et_board_ops is
 
 	function locate_device (
 	-- Returns a cursor to the requested device in the given module.
-		module_cursor	: in type_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_name)
 		return et_schematic.type_devices.cursor;
 	
 	function terminal_position (
 	-- Returns the position of a terminal of the given device in the board.
 	-- The device must be real (appearance SCH_PCB).
-		module_cursor	: in type_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in et_schematic.type_devices.cursor; -- IC45
 		terminal_name	: in type_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position;
@@ -199,7 +199,7 @@ package et_board_ops is
 
 	procedure add_named_track (
 	-- Adds a line track segment to the given net in the given module.
-		module_cursor	: in type_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		line			: in et_pcb.type_copper_line);
 	
@@ -213,7 +213,7 @@ package et_board_ops is
 	procedure draw_track_line (
 	-- Draws a named track line.
 	-- Assumes that module_cursor and net_cursor point to existing objects.
-		module_cursor	: in type_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
 		line			: in et_pcb.type_copper_line;
 		log_threshold	: in type_log_level);

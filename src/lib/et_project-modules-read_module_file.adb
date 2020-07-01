@@ -56,8 +56,8 @@ procedure read_module_file (
 	file_name_expanded : constant string := expand (file_name);
 		
 	file_handle : ada.text_io.file_type;
-	use type_modules;
-	module_cursor : type_modules.cursor; -- points to the module being read
+	use pac_generic_modules;
+	module_cursor : pac_generic_modules.cursor; -- points to the module being read
 	module_inserted : boolean;
 
 	-- The line read from the the module file:
@@ -6155,7 +6155,7 @@ begin -- read_module_file
 		-- Create an empty module named after the module file (omitting extension *.mod).
 		-- So the module names are things like "motor_driver", "templates/clock_generator" or
 		-- "$TEMPLATES/clock_generator" or "/home/user/templates/clock_generator":
-		type_modules.insert (
+		pac_generic_modules.insert (
 			container	=> generic_modules,
 			key			=> to_module_name (remove_extension (file_name)),
 			position	=> module_cursor,

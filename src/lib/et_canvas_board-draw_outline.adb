@@ -94,7 +94,7 @@ procedure draw_outline (
 begin -- draw_outline
 -- 	put_line ("draw board outline ...");
 	
-	et_project.modules.type_modules.query_element (
+	pac_generic_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_segments'access);
 	

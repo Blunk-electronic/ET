@@ -408,7 +408,7 @@ procedure draw_conductors (
 begin -- draw_conductors
 -- 	put_line ("draw conductor layers ...");
 	
-	et_project.modules.type_modules.query_element (
+	pac_generic_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 	

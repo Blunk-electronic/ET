@@ -53,7 +53,6 @@ is
 	-- See procedure draw_frame.
 	start_x, start_y : type_view_coordinate;
 
-	use et_project.modules.type_modules;
 	use et_canvas_schematic;
 	used_grid : constant type_grid := element (current_active_module).board.grid;
 begin
