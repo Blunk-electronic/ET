@@ -64,6 +64,17 @@ package body et_design_rules is
 	is separate;
 
 	-- CS procedure write_rules
+
+	function get_rules (rules : in pac_file_name.bounded_string) 
+		return type_design_rules is
+
+		use pac_design_rules;
+
+		-- Locate the design rules:
+		c : pac_design_rules.cursor := find (design_rules, rules);
+	begin
+		return element (c);
+	end get_rules;
 	
 end et_design_rules;
 

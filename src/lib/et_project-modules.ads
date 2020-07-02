@@ -51,6 +51,7 @@ with et_pcb;
 with et_pcb_stack;
 with et_devices;				use et_devices;
 with et_frames;
+with et_design_rules;
 
 package et_project.modules is
 
@@ -398,6 +399,12 @@ package et_project.modules is
 	function layout_rules_assigned (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return boolean;
+
+	-- Returns the PCB design rules of the given module:
+	function get_design_rules (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return et_design_rules.type_design_rules;
+		
 	
 end et_project.modules;
 

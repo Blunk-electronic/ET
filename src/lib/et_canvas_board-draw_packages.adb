@@ -2384,6 +2384,13 @@ is
 
 
 		-- TERMINALS
+
+		function get_stop_mask_expansion return type_stop_mask_expansion is  -- from DRU
+			use et_canvas_schematic;
+		begin
+			return get_design_rules (current_active_module).stop_mask.expansion_min;
+		end get_stop_mask_expansion;
+		
 		procedure draw_terminals is
 			use type_terminals;
 
@@ -2506,7 +2513,9 @@ is
 									
 									offset_polygon (
 										polygon		=> stop_mask_contours,
-										offset		=> (style => BY_DISTANCE, distance => 0.0)); -- CS fetch from DRU
+										offset		=> (
+											style		=> BY_DISTANCE,
+											distance	=> get_stop_mask_expansion)); -- from DRU
 
 									-- compute final position of expanded stop mask opening
 									move (pad_pos, type_polygon_base (stop_mask_contours));
@@ -2611,7 +2620,9 @@ is
 									
 									offset_polygon (
 										polygon		=> stop_mask_contours,
-										offset		=> (style => BY_DISTANCE, distance => 0.0));  -- CS fetch from DRU
+										offset		=> (
+											style 		=> BY_DISTANCE,
+											distance	=> get_stop_mask_expansion));  -- from DRU
 
 									-- compute final position of expanded stop mask opening
 									move (pad_pos, type_polygon_base (stop_mask_contours));

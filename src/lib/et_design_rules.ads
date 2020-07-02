@@ -139,7 +139,9 @@ package et_design_rules is
 	function to_string (section : in type_section_name) return string;
 	-- Converts a section like SEC_CLEARANCES to a string "clearances".
 
-	
+	function get_rules (rules : in pac_file_name.bounded_string)
+		return type_design_rules;
+		
 end et_design_rules;
 
 -- Soli Deo Gloria

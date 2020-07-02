@@ -64,7 +64,6 @@ with frame_rw;
 with et_meta;
 
 with et_conventions;
-with et_design_rules;
 with et_project.rigs;
 
 package body et_project.modules is
@@ -1159,6 +1158,16 @@ package body et_project.modules is
 			return false;
 		end if;
 	end layout_rules_assigned;
+
+	function get_design_rules (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return et_design_rules.type_design_rules 
+	is
+		use et_design_rules;
+	begin
+		return get_rules (element (module).rules.layout);
+	end get_design_rules;
+
 	
 end et_project.modules;
 	

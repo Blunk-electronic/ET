@@ -467,8 +467,12 @@ package et_schematic is
 		name	: in et_devices.type_name;	-- IC1, MH1, ...
 		by_cat	: in type_device_category);	-- electrical/non-electrical
 
+	-- For the design rules we simply refer to the file where the rules are
+	-- written like JLP_ML4_standard.dru.
+	-- The content of the file itelsf will later be stored in
+	-- project wide collection of design rules et_design_rules.design_rules.
 	type type_rules is record
-		layout		: et_design_rules.pac_file_name.bounded_string;
+		layout		: et_design_rules.pac_file_name.bounded_string; -- JLP_ML4_standard.dru
 		-- CS ERC rules ?
 	end record;
 	
