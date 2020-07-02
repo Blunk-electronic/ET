@@ -472,7 +472,7 @@ begin -- read_rigs
 
 		--log (text => "current dir " & current_directory, level => log_threshold + 1);
 
-		et_project.configuration.read_project_configuration (project_name, log_threshold + 1);
+		et_project.configuration.read_configuration (project_name, log_threshold + 1);
 		
 		-- CS: It requires discussion whether loading all modules files at this time is reasonable.
 		-- Even if a module will not be used it is going to be loaded. This causes more log information than required.

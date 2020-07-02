@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               PROJECT                                    --
+--                         PROJECT CONFIGURATION                            --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -37,24 +37,28 @@
 --   ToDo: 
 
 with ada.containers;            	use ada.containers;
-with et_conventions;
 
 package et_project.configuration is
 
+	file_extension : constant string := "prj";
+	
 	keyword_conventions : constant string := "conventions";
 	
-	section_environment_variables : constant string := "[ENVIRONMENT_VARIABLES";
+	section_rules					: constant string := "[RULES";
+	section_environment_variables	: constant string := "[ENVIRONMENT_VARIABLES";
 	
 	type type_section_name is (
 		SEC_INIT,
+		SEC_RULES,
 		SEC_ENVIRONMENT_VARIABLES
 		);
 
 	function to_string (section : in type_section_name) return string;
 	
 
-	-- Reads the project configuration file:
-	procedure read_project_configuration (
+	-- Reads the project configuration file.
+	-- The current working directory is assumed to be the project directory:
+	procedure read_configuration (
 		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);
 

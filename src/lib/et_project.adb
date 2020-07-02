@@ -54,7 +54,6 @@ package body et_project is
 	end to_string;
 	
 	function to_project_name (name : in string) return type_project_name.bounded_string is
-	-- Converts the given string to type_project_name.
 	begin
 		return type_project_name.to_bounded_string (name);
 	end to_project_name;
@@ -198,6 +197,8 @@ package body et_project is
 		create_path (to_string (path));
 		
 		create_supplementary_directories (to_string (path), log_threshold + 1);
+
+		-- CS create project configuration file
 		
 		create_rig_configuration;
 
@@ -438,6 +439,8 @@ package body et_project is
 
 		-- save rig configuration files
 		pac_rigs.iterate (et_project.rigs.rigs, query_rig_configuration'access);
+
+		-- CS save project configuration file
 		
 		log_indentation_down;
 	end save_project;
