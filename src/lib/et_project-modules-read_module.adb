@@ -219,11 +219,14 @@ procedure read_module (
 		end if;
 	end;		
 
+	-- The design rules is simply the name of the DRU file
+	-- like JLP_ML4_standard.dru. The content of the DRU file itself
+	-- will later be stored in project wide container et_design_rules.design_rules.
 	procedure read_rules is
 		use et_design_rules;
 		kw : constant string := f (line, 1);
 	begin
-		if kw = keyword_layout then
+		if kw = keyword_layout then -- layout JLP_ML4_standard.dru
 			rules.layout := to_file_name (f (line, 2));
 		end if;
 	end read_rules;
@@ -239,10 +242,13 @@ procedure read_module (
 			use et_design_rules;
 		begin
 			module.rules := rules;
+			
 			log (text => keyword_layout & space & to_string (module.rules.layout),
 				 level => log_threshold + 2);
 
-			read_design_rules (rules.layout, log_threshold + 3);
+			-- Read the DRU file like JLP_ML4_standard.dru and store it
+			-- in project wide container et_design_rules.design_rules.
+			read_rules (rules.layout, log_threshold + 3);
 			
 			-- CS module.rules.erc ?
 		end;

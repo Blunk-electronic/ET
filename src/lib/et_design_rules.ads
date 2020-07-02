@@ -55,7 +55,7 @@ package et_design_rules is
 	keyword_layout : constant string := "layout";
 
  	file_name_length_max : constant natural := 100;
-	package pac_file_name is new generic_bounded_length (file_name_length_max); 
+	package pac_file_name is new generic_bounded_length (file_name_length_max); -- JLP_ML4_standard.dru
 	use pac_file_name;
 
 	function to_file_name (file : in string) return pac_file_name.bounded_string;
@@ -83,15 +83,15 @@ package et_design_rules is
 	end record;
 	
 	type type_sizes is record
-		track		: type_track_width := 0.15;
-		drill		: type_drill_size := 0.3;
+		tracks		: type_track_width := 0.15;
+		drills		: type_drill_size := 0.3;
 		restring	: type_restring;
 	end record;
 
 	subtype type_stop_mask_expansion is type_distance_positive range 0.01 .. 0.2;
 	
 	type type_stop_mask is record
-		expansion	: type_stop_mask_expansion;
+		expansion_min	: type_stop_mask_expansion;
 	end record;
 	
 	type type_design_rules is record
@@ -101,23 +101,39 @@ package et_design_rules is
 	end record;
 
 	package pac_design_rules is new ordered_maps (
-		key_type		=> pac_file_name.bounded_string,
+		key_type		=> pac_file_name.bounded_string, -- JLP_ML4_standard.dru
 		element_type	=> type_design_rules);
 
 	-- here we collect all design rules of the project:
 	design_rules : pac_design_rules.map;
-
-	procedure read_design_rules (
+	
+	procedure read_rules (
 		file_name		: in pac_file_name.bounded_string;
 		log_threshold 	: in et_string_processing.type_log_level);
-
-	keyword_between_conductors	: constant string := "between_conductors";
 	
-	section_clearances			: constant string := "[CLEARANCES";
+	keyword_between_conductors			: constant string := "between_conductors";
+	keyword_between_conductors_same_net	: constant string := "between_conductors_of_same_net";
+	keyword_conductor_to_board_edge		: constant string := "conductor_to_board_edge";
+	keyword_edge_to_edge				: constant string := "edge_to_edge";
+
+	keyword_tracks	: constant string := "tracks";
+	keyword_drills	: constant string := "drills";
+	keyword_inner	: constant string := "inner";
+	keyword_outer	: constant string := "outer";
+
+	keyword_expansion_min	: constant string := "expansion_min";
+	
+	section_clearances		: constant string := "[CLEARANCES";
+	section_sizes			: constant string := "[SIZES";
+	section_restring		: constant string := "[RESTRING";
+	section_stop_mask		: constant string := "[STOP_MASK";
 	
 	type type_section_name is (
 		SEC_INIT,
-		SEC_CLEARANCES
+		SEC_CLEARANCES,
+		SEC_SIZES,
+		SEC_STOP_MASK,
+		SEC_RESTRING
 		);
 
 	function to_string (section : in type_section_name) return string;
