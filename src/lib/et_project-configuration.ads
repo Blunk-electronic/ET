@@ -36,7 +36,7 @@
 --
 --   ToDo: 
 
-with ada.containers;            	use ada.containers;
+with et_conventions;
 
 package et_project.configuration is
 
@@ -54,8 +54,18 @@ package et_project.configuration is
 		);
 
 	function to_string (section : in type_section_name) return string;
-	
 
+	type type_rules is record
+		conventions	: et_conventions.pac_file_name.bounded_string; -- conventions.txt
+	end record;
+	
+	type type_configuration is record
+		rules	: type_rules;
+	end record;
+
+	-- Here we store the configuration of the current project:
+	project_configuration : type_configuration;
+	
 	-- Reads the project configuration file.
 	-- The current working directory is assumed to be the project directory:
 	procedure read_configuration (

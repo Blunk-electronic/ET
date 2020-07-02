@@ -77,7 +77,7 @@ is
 			expect_field_count (line, 2);
 
 			conventions_file_name := to_file_name (f (line, 2));
-
+			
 			-- read the conventions file
 			et_conventions.read_conventions (conventions_file_name, log_threshold + 1);
 		else
@@ -85,14 +85,19 @@ is
 		end if;
 	end read_rules;
 
-	procedure test_rules is 
+	procedure set_rules is 
 		use et_conventions;
 		use pac_file_name;
 	begin
-		if length (conventions_file_name) = 0 then
+		if length (conventions_file_name) > 0 then
+
+			-- assign conventions file name to project configuration:
+			project_configuration.rules.conventions := conventions_file_name;
+
+		else
 			log (WARNING, "No conventions file specified ! Design check limited !");
 		end if;
-	end test_rules;
+	end set_rules;
 
 	procedure do_it is
 	
@@ -107,7 +112,7 @@ is
 
 					when SEC_RULES =>
 						case stack.parent is
-							when SEC_INIT	=> test_rules;
+							when SEC_INIT	=> set_rules;
 							when others		=> invalid_section;
 						end case;
 					

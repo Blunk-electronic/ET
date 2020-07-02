@@ -35,16 +35,17 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.characters;				use ada.characters;
+with ada.characters.handling;		use ada.characters.handling;
+with ada.strings; 					use ada.strings;
+with ada.strings.fixed; 			use ada.strings.fixed;
 
 with ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
 
-with general_rw;				use general_rw;
+with ada.containers;            	use ada.containers;
+with general_rw;					use general_rw;
 
 with et_conventions;
 
