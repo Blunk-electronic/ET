@@ -36,7 +36,6 @@
 
 with ada.directories;			use ada.directories;
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.characters;			use ada.characters;
@@ -45,7 +44,6 @@ with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.text_io;				use ada.text_io;
 with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_vectors;
 
 with ada.calendar;				use ada.calendar;

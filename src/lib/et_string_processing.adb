@@ -36,12 +36,6 @@
 
 with ada.strings;				use ada.strings;
 with ada.strings.unbounded; 	use ada.strings.unbounded;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.text_io;				use ada.text_io;
 
 --with ada.exceptions;
 with gnat.source_info;
