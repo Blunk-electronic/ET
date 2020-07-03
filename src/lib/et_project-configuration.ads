@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         PROJECT CONFIGURATION                            --
+--                         PROJECT.CONFIGURATION                            --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --

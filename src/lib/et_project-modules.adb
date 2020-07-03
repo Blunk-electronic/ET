@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         ET_PROJECT.MODULES                               --
+--                           PROJECT.MODULES                                --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -328,28 +328,6 @@ package body et_project.modules is
 		
 		return result;
 	end netchanger_as_port_available;
-
-	procedure write_rig_configuration_header is 
-		use et_general;
-		use et_string_processing;
-	begin
-		-- write a nice header
-		put_line (comment_mark & " " & system_name & " rig configuration file");
-		put_line (comment_mark & " " & date);
-		put_line (comment_mark & " " & row_separator_double);
-		new_line;
-	end;
-
-	procedure write_rig_configuration_footer is
-		use et_string_processing;
-	begin
-		-- write a nice footer
-		new_line;
-		put_line (comment_mark & " " & row_separator_double);
-		put_line (comment_mark & " " & date);
-		put_line (comment_mark & " rig configuration file end");
-		new_line;
-	end;
 
 	procedure save_module (
 	-- Saves the given generic module in the given file.

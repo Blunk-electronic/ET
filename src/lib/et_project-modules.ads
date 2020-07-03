@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          ET_PROJECT.MODULES                              --
+--                           PROJECT.MODULES                                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --

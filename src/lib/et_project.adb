@@ -116,10 +116,10 @@ package body et_project is
 		use type_project_name;
 		use type_et_project_path;
 
-		use modules;
+-- 		use modules;
 		use modules.pac_generic_modules;
 
-		module_cursor : pac_generic_modules.cursor;
+		module_cursor : modules.pac_generic_modules.cursor;
 		
 		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
 		use type_path;
@@ -150,36 +150,14 @@ package body et_project is
 
 			write_configuration_header;
 			
--- 			-- section module instances
--- 			section_mark (section_module_instances, HEADER);
--- 
--- 			section_mark (section_module, HEADER);			
+			-- section rules
+			section_mark (section_rules, HEADER);
 -- 			write (keyword => keyword_generic_name, parameters => to_string (project_name));
 -- 			write (keyword => keyword_instance_name, parameters => to_string (project_name));
--- 			section_mark (section_module, FOOTER);			
--- 			
--- 			-- CS In the future, write other things here that characterize the instance.
--- 			section_mark (section_module_instances, FOOTER);
--- 
--- 
--- 			-- section connectors
--- 			new_line;
--- 			section_mark (section_module_connections, HEADER);
--- 
--- 			section_mark (section_connector, HEADER);			
--- 			write (keyword => comment_mark & " " & keyword_instance_A, parameters => to_string (project_name));
--- 			write (keyword => comment_mark & " " & keyword_purpose_A, wrap => true, parameters => "power_in");
--- 			new_line;
--- 			write (keyword => comment_mark & " " & keyword_instance_B, parameters => "power_supply");
--- 			write (keyword => comment_mark & " " & keyword_purpose_B, wrap => true, parameters => "power_out");
--- 			new_line;
--- 			write (keyword => comment_mark & " " & keyword_net_comparator, parameters => "on"); -- CS image of enum type
--- 			write (keyword => comment_mark & " " & keyword_net_comparator_warn_only, parameters => "on"); -- CS image of enum type
--- 			section_mark (section_connector, FOOTER);			
--- 			
--- 			-- CS In the future, write other things here that characterize the board to board connection
--- 			section_mark (section_module_connections, FOOTER);
+			section_mark (section_rules, FOOTER);
 
+			-- CS other sections
+			
 			-- close the file
 			write_configuration_footer;
 			set_output (standard_output);
@@ -200,7 +178,7 @@ package body et_project is
 				log_threshold	=> log_threshold + 1);
 
 			-- Save the single and first module:
-			module_cursor := generic_modules.first;
+			module_cursor := modules.generic_modules.first;
 
 			modules.save_module (
 				module_name		=> key (module_cursor),
