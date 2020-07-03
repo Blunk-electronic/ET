@@ -93,19 +93,20 @@ package et_project is
 	function to_string (path : in type_et_project_path.bounded_string) return string;
 	function to_project_path (path : in string) return type_et_project_path.bounded_string;
 	
-	procedure create_project_directory (
 	-- Creates given project directory in the given project_path.
 	-- Creates a default rig configuration file.										   
 	-- Already existing projects in given project_path are overwritten.
+	procedure create_project_directory (
+		module_name		: in type_module_name.bounded_string;		-- motor_driver
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string;	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level);
 
-	procedure create_project_directory_bare (
-	-- Creates a bare project (without a rig configuration file).
+	-- Creates a bare project (without any configuration files).
 	-- Already existing projects in given path are overwritten.
 	-- Sets the global project file name so that subsequent write and read operations
 	-- know the right project file.
+	procedure create_project_directory_bare (
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level);

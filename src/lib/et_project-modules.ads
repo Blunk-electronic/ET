@@ -75,11 +75,11 @@ package et_project.modules is
 
 	generic_modules : pac_generic_modules.map;
 
-	function exists (module : in type_module_name.bounded_string) return boolean;
 	-- Returns true if the module with the given name exists in container modules.
+	function exists (module : in type_module_name.bounded_string) return boolean;
 
-	function locate_module (name : in type_module_name.bounded_string) -- motor_driver (without extension *.mod)
 	-- Locates the given module in the global container "modules".
+	function locate_module (name : in type_module_name.bounded_string) -- motor_driver (without extension *.mod)
 		return pac_generic_modules.cursor;
 
 	-- Returns the description of a sheet of a generic module:
@@ -90,57 +90,40 @@ package et_project.modules is
 								   
 	procedure port_not_at_edge (name : in et_general.type_net_name.bounded_string);
 	
-	function port_connected (
 	-- Returns true if given port of netchanger is connected with any net.
+	function port_connected (
 		module	: in pac_generic_modules.cursor;	
 		port	: in netlists.type_port_netchanger)
 		return boolean;
 
-	function locate_net (
 	-- Returns a cursor to the given net in the given module.
+	function locate_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name.bounded_string)
 		return et_schematic.type_nets.cursor;
 	
-	function netchanger_as_port_available (
 	-- Returns true if the given net provides a netchanger that may serve as port
 	-- to a parent module.
+	function netchanger_as_port_available (
 		module		: in pac_generic_modules.cursor;
 		net			: in et_schematic.type_nets.cursor;
 		direction	: in submodules.type_netchanger_port_name) -- master/slave 		
 		return boolean;
 	
-	procedure create_project_directory (
-	-- Creates given project directory in the given project_path.
-	-- Creates a default rig configuration file.										   
-	-- Already existing projects in given project_path are overwritten.
-		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
-		project_path	: in type_et_project_path.bounded_string;	-- /home/user/et_projects
-		log_threshold	: in et_string_processing.type_log_level);
-
-	procedure create_project_directory_bare (
-	-- Creates a bare project (without a rig configuration file).
-	-- Already existing projects in given path are overwritten.
-	-- Sets the global project file name so that subsequent write and read operations
-	-- know the right project file.
-		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
-		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
-		log_threshold	: in et_string_processing.type_log_level);
-	
-	procedure save_module (
 	-- Saves the given generic module in the given file.
+	procedure save_module (
 		module_cursor		: in pac_generic_modules.cursor;
 		module_file_name	: in pac_module_file_name.bounded_string; -- led_matrix.mod
 		log_threshold		: in et_string_processing.type_log_level);
 	
+	-- Saves the given module in the module file of the given project.
+	-- If module_name not provided, the module will be named after the given project_name.
 	procedure save_module (
 		module_cursor	: in pac_generic_modules.cursor;				-- the module
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level);
-	-- Saves the given module in the module file of the given project.
-	-- If module_name not provided, the module will be named after the given project_name.
 
 	
 	

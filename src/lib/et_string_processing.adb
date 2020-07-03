@@ -45,6 +45,7 @@ with ada.text_io;				use ada.text_io;
 
 --with ada.exceptions;
 with gnat.source_info;
+with gnat.calendar;
 
 package body et_string_processing is
 
@@ -165,8 +166,8 @@ package body et_string_processing is
 
 	
 	function date_now return type_date is
-		now		: time := clock;
-		date	: string (1..19) := image(now, time_zone => utc_time_offset(now));
+		now		: constant time := clock;
+		date	: string (1..19) := image (now, time_zone => utc_time_offset (now));
 	begin
 		date (11) := 'T'; -- inserts a T so that the result is "2017-08-17T14:17:25"
 		return type_date (date);
@@ -182,6 +183,12 @@ package body et_string_processing is
 		end if;
 	end date;
 
+	function date_first return time is
+		r : time := gnat.calendar.no_time; -- 1901-01-01
+		--time_of (year => 1970, month => 01, day => 01, seconds => 1.0); -- return 1970-01-01
+	begin
+		return r;
+	end date_first;
 	
 	function metric_system return string is
 	-- Returns a message about the metric system used.

@@ -45,6 +45,7 @@ with general_rw;				use general_rw;
 
 with et_project.modules;
 with et_project.rigs;
+with et_project.configuration;
 	
 package body et_project is
 	
@@ -105,9 +106,7 @@ package body et_project is
 	end create_supplementary_directories;
 
 	procedure create_project_directory (
-	-- Creates the given project directory in the given project_path.
-	-- Creates a default rig configuration file.
-	-- Already existing projects in given project_path are overwritten.
+		module_name		: in type_module_name.bounded_string;		-- motor_driver
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -117,18 +116,110 @@ package body et_project is
 		use type_project_name;
 		use type_et_project_path;
 
+		use modules;
+		use modules.pac_generic_modules;
+
+		module_cursor : pac_generic_modules.cursor;
+		
 		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
 		use type_path;
 		path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
 
+		procedure create_project_configuration is
+		-- create the project configuration file
+			file_handle : ada.text_io.file_type;
+
+			use et_project.configuration;
+			prj_conf_file : pac_file_name.bounded_string; -- led_matrix.prj
+		begin
+			log (text => "creating project configuration file ...", level => log_threshold + 1);
+
+			-- compose the full file name			
+			prj_conf_file := pac_file_name.to_bounded_string (compose (
+				containing_directory	=> to_string (path),
+				name 					=> to_string (project_name),
+				extension 				=> file_extension));
+
+			-- create the file
+			create (
+				file => file_handle,
+				mode => out_file, 
+				name => pac_file_name.to_string (prj_conf_file));
+
+			set_output (file_handle);
+
+			write_configuration_header;
+			
+-- 			-- section module instances
+-- 			section_mark (section_module_instances, HEADER);
+-- 
+-- 			section_mark (section_module, HEADER);			
+-- 			write (keyword => keyword_generic_name, parameters => to_string (project_name));
+-- 			write (keyword => keyword_instance_name, parameters => to_string (project_name));
+-- 			section_mark (section_module, FOOTER);			
+-- 			
+-- 			-- CS In the future, write other things here that characterize the instance.
+-- 			section_mark (section_module_instances, FOOTER);
+-- 
+-- 
+-- 			-- section connectors
+-- 			new_line;
+-- 			section_mark (section_module_connections, HEADER);
+-- 
+-- 			section_mark (section_connector, HEADER);			
+-- 			write (keyword => comment_mark & " " & keyword_instance_A, parameters => to_string (project_name));
+-- 			write (keyword => comment_mark & " " & keyword_purpose_A, wrap => true, parameters => "power_in");
+-- 			new_line;
+-- 			write (keyword => comment_mark & " " & keyword_instance_B, parameters => "power_supply");
+-- 			write (keyword => comment_mark & " " & keyword_purpose_B, wrap => true, parameters => "power_out");
+-- 			new_line;
+-- 			write (keyword => comment_mark & " " & keyword_net_comparator, parameters => "on"); -- CS image of enum type
+-- 			write (keyword => comment_mark & " " & keyword_net_comparator_warn_only, parameters => "on"); -- CS image of enum type
+-- 			section_mark (section_connector, FOOTER);			
+-- 			
+-- 			-- CS In the future, write other things here that characterize the board to board connection
+-- 			section_mark (section_module_connections, FOOTER);
+
+			-- close the file
+			write_configuration_footer;
+			set_output (standard_output);
+			close (file_handle);
+			
+		end create_project_configuration;
+		
+		procedure create_module_file is
+			-- backup the current working directory
+			previous_directory : constant string := current_directory;
+		begin
+			-- change into project directory
+			set_directory (to_string (path));
+
+			-- There are no modules yet. Create an empty generic module:
+			modules.create_module (
+				module_name		=> module_name,
+				log_threshold	=> log_threshold + 1);
+
+			-- Save the single and first module:
+			module_cursor := generic_modules.first;
+
+			modules.save_module (
+				module_name		=> key (module_cursor),
+				log_threshold	=> log_threshold + 1);
+			
+			-- restore working directory
+			set_directory (previous_directory);
+		end create_module_file;
+
+		-- Creates an example rig configuration file.
 		procedure create_rig_configuration is
-		-- create the rig configuration file
 			file_handle : ada.text_io.file_type;
 
 			use et_project.rigs;
 			rig_conf_file : type_rig_configuration_file_name.bounded_string; -- led_matrix.conf
+
+			example_instance_name : constant string := "MOD1";
 		begin
-			log (text => "creating the default rig configuration file ...", level => log_threshold + 1);
+			log (text => "creating default rig configuration file ...", level => log_threshold + 1);
 
 			-- compose the full file name			
 			rig_conf_file := type_rig_configuration_file_name.to_bounded_string (compose (
@@ -150,9 +241,9 @@ package body et_project is
 			section_mark (section_module_instances, HEADER);
 
 			section_mark (section_module, HEADER);			
-			write (keyword => keyword_generic_name, parameters => to_string (project_name));
-			write (keyword => keyword_instance_name, parameters => to_string (project_name));
-			section_mark (section_module, FOOTER);			
+			write (keyword => keyword_generic_name, parameters => to_string (key (module_cursor)));
+			write (keyword => keyword_instance_name, parameters => example_instance_name);
+			section_mark (section_module, FOOTER);
 			
 			-- CS In the future, write other things here that characterize the instance.
 			section_mark (section_module_instances, FOOTER);
@@ -163,7 +254,7 @@ package body et_project is
 			section_mark (section_module_connections, HEADER);
 
 			section_mark (section_connector, HEADER);			
-			write (keyword => comment_mark & " " & keyword_instance_A, parameters => to_string (project_name));
+			write (keyword => comment_mark & " " & keyword_instance_A, parameters => example_instance_name);
 			write (keyword => comment_mark & " " & keyword_purpose_A, wrap => true, parameters => "power_in");
 			new_line;
 			write (keyword => comment_mark & " " & keyword_instance_B, parameters => "power_supply");
@@ -182,7 +273,7 @@ package body et_project is
 			close (file_handle);
 			
 		end create_rig_configuration;
-
+		
 	begin -- create_project_directory
 		log (text => "creating native project " & enclose_in_quotes (to_string (path)) &
 			 " ...", level => log_threshold);
@@ -198,10 +289,12 @@ package body et_project is
 		
 		create_supplementary_directories (to_string (path), log_threshold + 1);
 
-		-- CS create project configuration file
+		create_project_configuration;
 		
-		create_rig_configuration;
-
+		create_module_file;
+		
+		create_rig_configuration; -- must come after create_module_file !
+		
 		log_indentation_down;
 		
 		exception when event:
@@ -210,10 +303,8 @@ package body et_project is
 				raise;
 		
 	end create_project_directory;
-
+		
 	procedure create_project_directory_bare (
-	-- Creates a bare project (without a rig configuration file).
-	-- Already existing projects in given path are overwritten.
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level) is

@@ -56,12 +56,34 @@ package body et_project.configuration is
 	begin
 		return to_lower (type_section_name'image (section) (5..len));
 	end to_string;
-	
+
 	
 	procedure read_configuration (
 		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level) 
 		is separate;
+
+	procedure write_configuration_header is 
+		use et_general;
+		use et_string_processing;
+	begin
+		-- write a nice header
+		put_line (comment_mark & " " & system_name & " project configuration file");
+		put_line (comment_mark & " " & date);
+		put_line (comment_mark & " " & row_separator_double);
+		new_line;
+	end;
+
+	procedure write_configuration_footer is
+		use et_string_processing;
+	begin
+		-- write a nice footer
+		new_line;
+		put_line (comment_mark & " " & row_separator_double);
+		put_line (comment_mark & " " & date);
+		put_line (comment_mark & " project configuration file end");
+		new_line;
+	end;
 
 		
 	-- CS save_configuration

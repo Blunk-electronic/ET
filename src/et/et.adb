@@ -522,11 +522,15 @@ procedure et is
 		else
 			-- If operator wants to create a new project it will be created in the current directory:
 			if length (project_name_create) > 0 then
+
+				-- create project directory
+				-- CS: provide module name via cdl argument
 				et_project.create_project_directory (
+					module_name		=> to_module_name (to_string (project_name_create)),
 					project_name	=> project_name_create,
 					project_path	=> et_project.to_project_path (""),
 					log_threshold	=> 0);
-				
+
 			-- If operator wants to import a project it will be done here.
 			elsif length (project_name_import) > 0 then
 				import_project;

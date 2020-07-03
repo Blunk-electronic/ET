@@ -40,6 +40,10 @@ with et_conventions;
 
 package et_project.configuration is
 
+	prj_configuration_file_length_max : constant positive := 100;
+	package pac_file_name is new generic_bounded_length (prj_configuration_file_length_max);
+	use pac_file_name;
+	
 	file_extension : constant string := "prj";
 	
 	keyword_conventions : constant string := "conventions";
@@ -71,6 +75,9 @@ package et_project.configuration is
 	procedure read_configuration (
 		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure write_configuration_header;
+	procedure write_configuration_footer;
 
 	
 end et_project.configuration;

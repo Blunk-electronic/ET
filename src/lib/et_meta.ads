@@ -109,9 +109,9 @@ package et_meta is
 		drawn_by		: pac_person.bounded_string;
 		checked_by		: pac_person.bounded_string;
 		approved_by		: pac_person.bounded_string;
-		drawn_date		: time;
-		checked_date	: time;
-		approved_date	: time;		
+		drawn_date		: time := clock;
+		checked_date	: time := et_string_processing.date_first; -- default 1901-01-01
+		approved_date	: time := et_string_processing.date_first; -- default 1901-01-01
 	end record;
 
 	type type_schematic is new type_basic with null record; -- CS extend here if required

@@ -3737,6 +3737,7 @@ package body et_kicad_to_native is
 
 			-- For each kicad design we create a native project:
 			et_project.create_project_directory (
+				module_name		=> to_module_name (to_string (project_name)), -- blood_sample_analyzer
 				project_name	=> project_name, 		-- blood_sample_analyzer
 				project_path	=> project_path, 		-- /home/user/et_projects/imported_from_kicad
 				log_threshold 	=> log_threshold + 2);

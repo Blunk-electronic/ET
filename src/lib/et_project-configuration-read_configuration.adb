@@ -86,8 +86,7 @@ is
 	end read_rules;
 
 	procedure set_rules is 
-		use et_conventions;
-		use pac_file_name;
+		use et_conventions.pac_file_name;
 	begin
 		if length (conventions_file_name) > 0 then
 

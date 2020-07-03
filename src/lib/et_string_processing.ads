@@ -136,6 +136,9 @@ package et_string_processing is
 	
 	function date (preamble : in boolean := true) return string;
 	-- Returns the current date as string in the format YYYY-MM-DDTHH:MM:SS
+
+	function date_first return time; -- returns 1901-01-01
+	-- Use it to indicate uninialized date.
 	
 --	procedure check_updated_vs_commissioned (commissioned , updated : in type_date);
 	-- Checks whether updated is later or equal commissioned.
