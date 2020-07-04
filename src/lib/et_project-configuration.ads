@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         PROJECT.CONFIGURATION                            --
+--                         PROJECT CONFIGURATION                            --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -79,6 +79,7 @@ package et_project.configuration is
 	procedure write_configuration_header;
 	procedure write_configuration_footer;
 
+	-- CS save_configuration
 	
 end et_project.configuration;
 
