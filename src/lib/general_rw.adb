@@ -137,18 +137,28 @@ package body general_rw is
 	procedure write (
 		keyword 	: in string;
 		parameters	: in string;
-		wrap		: in boolean := false) is
+		wrap		: in boolean := false;
+		as_comment	: in boolean := false)
+	is
 		parameters_wrapped : string (1..parameters'length + 2);
-	begin 
+
+		-- If as_comment is true, returns "-- ". If false, returns "" :
+		function comment return string is begin
+			if as_comment then return comment_mark & space;
+			else return "";
+			end if;
+		end comment;
+		
+	begin -- write
 		if wrap then
 			parameters_wrapped := latin_1.quotation & parameters & latin_1.quotation;
 		end if;
 					
 		if wrap then
 			-- If wrapping required, a space is always between keyword and parameters
-			put_line (tab_depth * tab & keyword & space & parameters_wrapped);
+			put_line (tab_depth * tab & comment & keyword & space & parameters_wrapped);
 		else
-			put_line (tab_depth * tab & keyword & space & parameters);
+			put_line (tab_depth * tab & comment & keyword & space & parameters);
 		end if;
 	end write;	
 

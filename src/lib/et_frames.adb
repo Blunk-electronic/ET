@@ -153,6 +153,125 @@ package body et_frames is
 	function to_domain (domain : in string) return type_domain is begin
 		return type_domain'value (domain);
 	end;
+
+	procedure apply_defaults (frame : in out type_frame) is
+
+		-- LINES OF TITLE BLOCK
+		type type_lines is array (positive range <>) of type_line;
+
+		lines_sch : constant type_lines (1 .. 4) := (
+			((  0,  0),(150,  0)),
+			((150,  0),(150, 40)),
+			((150, 40),(  0, 40)),
+			((  0, 40),(  0,  0))
+			);
+		
+		lines_pcb : constant type_lines (1 .. 4) := (
+			((  0,  0),(200,  0)),
+			((200,  0),(200, 40)),
+			((200, 40),(  0, 40)),
+			((  0, 40),(  0,  0))
+			);
+
+		-- Collects the lines of the given array and returns them as a list:
+		function make_lines (lines : in type_lines) return pac_lines.list is
+			use pac_lines;
+			result : pac_lines.list;
+		begin
+			for i in lines'first .. lines'last loop
+				result.append (lines (i));
+			end loop;
+			return result;
+		end make_lines;
+		----------------------------------
+
+		-- TEXTS IN TITLE BLOCK
+		type type_texts is array (positive range <>) of type_text;
+
+		texts_sch : constant type_texts (1 .. 2) := (
+			(position => (0,  0), size => 2, content => et_text.to_content ("A")),
+			(position => (0, 10), size => 2, content => et_text.to_content ("B"))
+			);
+
+		texts_pcb : constant type_texts (1 .. 2) := (
+			(position => (0,  0), size => 2, content => et_text.to_content ("A")),
+			(position => (0, 10), size => 2, content => et_text.to_content ("B"))
+			);
+
+		-- Collects the texts of the given array and returns them as a list:
+		function make_texts (texts : in type_texts) return pac_texts.list is
+			use pac_texts;
+			result : pac_texts.list;
+		begin
+			for i in texts'first .. texts'last loop
+				result.append (texts (i));
+			end loop;
+			return result;
+		end make_texts;
+		
+	begin -- apply_defaults
+		case frame.domain is
+			when SCHEMATIC =>
+				-- type_title_bock (basic stuff):
+				frame.title_block_schematic.position := (100, 8);
+				frame.title_block_schematic.lines := make_lines (lines_sch);
+				frame.title_block_schematic.placeholders.project_name.position := (2,31);
+				frame.title_block_schematic.placeholders.module_file_name.position := (2,26);
+				frame.title_block_schematic.placeholders.active_assembly_variant.position := (2,21);
+				frame.title_block_schematic.texts := make_texts (texts_sch);
+				
+
+				frame.title_block_schematic.additional_placeholders.company.position := (100,1);
+-- 		customer		: type_placeholder;
+-- 		partcode		: type_placeholder;
+-- 		drawing_number	: type_placeholder;
+-- 		revision		: type_placeholder;
+-- 		
+-- 		drawn_by		: type_placeholder;
+-- 		checked_by		: type_placeholder;
+-- 		approved_by		: type_placeholder;
+-- 
+-- 		drawn_date		: type_placeholder;
+-- 		checked_date	: type_placeholder;
+-- 		approved_date	: type_placeholder;
+			
+-- 		sheet_number	: type_placeholder;
+-- 		description		: type_placeholder;
+-- 		category		: type_placeholder; -- development, routing, product
+
+			
+			when PCB =>
+				-- type_title_bock (basic stuff):
+				frame.title_block_pcb.position := (55, 8);
+				frame.title_block_pcb.lines := make_lines (lines_pcb);
+				frame.title_block_pcb.placeholders.project_name.position := (2,31);
+				frame.title_block_pcb.placeholders.module_file_name.position := (2,26);
+				frame.title_block_pcb.placeholders.active_assembly_variant.position := (2,21);
+				frame.title_block_pcb.texts := make_texts (texts_pcb);
+
+				frame.title_block_pcb.additional_placeholders.company.position := (2, 36);
+-- 		customer		: type_placeholder;
+-- 		partcode		: type_placeholder;
+-- 		drawing_number	: type_placeholder;
+-- 		revision		: type_placeholder;
+-- 		
+-- 		drawn_by		: type_placeholder;
+-- 		checked_by		: type_placeholder;
+-- 		approved_by		: type_placeholder;
+-- 
+-- 		drawn_date		: type_placeholder;
+-- 		checked_date	: type_placeholder;
+-- 		approved_date	: type_placeholder;
+				
+-- 		face			: type_placeholder; -- to be filled with the word "TOP" or "BOTTOM"
+-- 		signal_layer	: type_placeholder; -- to be filled with the signal layer id like 1,2,3, 8..16
+
+
+-- 		additional_placeholders	: type_placeholders_pcb;
+-- 		cam_markers				: type_cam_markers;
+			
+		end case;
+	end apply_defaults;
 	
 
 	function to_string (cat : in type_schematic_sheet_category) return string is begin

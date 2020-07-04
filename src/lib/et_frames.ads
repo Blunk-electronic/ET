@@ -330,6 +330,8 @@ package et_frames is
 	end record;
 
 
+	-- Applies defaults to given frame:
+	procedure apply_defaults (frame : in out type_frame);
 
 	
 -- THE FINAL FRAME IN A PCB DRAWING

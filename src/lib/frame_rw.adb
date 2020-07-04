@@ -1279,47 +1279,64 @@ package body frame_rw is
 
 		
 		previous_input : ada.text_io.file_type renames current_input;
-		
+
+		function is_dummy_frame return boolean is
+			use pac_template_name;
+		begin
+			if file_name = template_schematic_default 
+			or file_name = template_pcb_default then
+				return true;
+			else
+				return false;
+			end if;
+		end is_dummy_frame;
+				
 	begin -- read_frame
 		log (text => "reading frame " & to_string (file_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		log (text => "domain " & to_string (domain) & " ...", level => log_threshold);
 
-		open (
-			file => file_handle,
-			mode => in_file, 
-			name => expand (to_string (file_name)));
+		-- If the frame template is a dummy, don't read it:
+		if is_dummy_frame then
+			log (NOTE, "Using built-in default frame ...");
+			apply_defaults (frame);
+		else
+			-- open the frame template file:
+			open (
+				file => file_handle,
+				mode => in_file, 
+				name => expand (to_string (file_name)));
 
-		set_input (file_handle);
-		
-		-- Init section stack.
-		stack.init;
-		stack.push (SEC_INIT);
+			set_input (file_handle);
+			
+			-- Init section stack.
+			stack.init;
+			stack.push (SEC_INIT);
 
-		-- read the file line by line
-		while not end_of_file loop
-			line := et_string_processing.read_line (
-				line 			=> get_line,
-				number			=> ada.text_io.line (current_input),
-				comment_mark 	=> comment_mark,
-				delimiter_wrap	=> true, -- strings are enclosed in quotations
-				ifs 			=> space); -- fields are separated by space
+			-- read the file line by line
+			while not end_of_file loop
+				line := et_string_processing.read_line (
+					line 			=> get_line,
+					number			=> ada.text_io.line (current_input),
+					comment_mark 	=> comment_mark,
+					delimiter_wrap	=> true, -- strings are enclosed in quotations
+					ifs 			=> space); -- fields are separated by space
 
-			-- we are interested in lines that contain something. emtpy lines are skipped:
-			if field_count (line) > 0 then
-				process_line;
+				-- we are interested in lines that contain something. emtpy lines are skipped:
+				if field_count (line) > 0 then
+					process_line;
+				end if;
+			end loop;
+
+			-- As a safety measure the top section must be reached finally.
+			if stack.depth > 1 then 
+				log (WARNING, write_section_stack_not_empty);
 			end if;
-		end loop;
 
-		-- As a safety measure the top section must be reached finally.
-		if stack.depth > 1 then 
-			log (WARNING, write_section_stack_not_empty);
+			set_input (previous_input);
+			close (file_handle);
+
 		end if;
-
-		set_input (previous_input);
-		close (file_handle);
-
-
 		
 		log_indentation_down;
 

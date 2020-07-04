@@ -886,9 +886,10 @@ is
 	end query_netchangers;
 	
 	procedure query_frames is 
+		use et_frames;
+		use et_frames.pac_template_name;
 		
 		procedure write_sheet_descriptions is
-			use et_frames;
 			use pac_schematic_descriptions;
 
 			procedure query_sheet (s : in pac_schematic_descriptions.cursor) is
@@ -920,26 +921,25 @@ is
 		-- schematic frames:
 		section_mark (section_drawing_frames, HEADER);
 		section_mark (section_schematic, HEADER);
-
-		-- write the frame template like "template ../frames/dummy.frs"
+		
+		-- Write the schematic frame template like "template ../frames/dummy.frs":
 		write (
 			keyword 	=> keyword_template, 
 			parameters	=> et_frames.to_string (element (module_cursor).frames.template));
 		
-		-- CS frame count ?
-
 		write_sheet_descriptions;
 		
 		section_mark (section_schematic, FOOTER);			
 
+		
 		-- board frame:
 		section_mark (section_board, HEADER);
 
-		-- write the frame template like "template ../frames/dummy.frb"
+		-- Write the frame template like "template ../frames/dummy.frb":
 		write (
 			keyword		=> keyword_template, 
 			parameters	=> et_frames.to_string (element (module_cursor).board.frame.template));
-
+			
 		-- write the board origin like "origin x 40 y 60"
 		write (
 			keyword		=> keyword_origin,

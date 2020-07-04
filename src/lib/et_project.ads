@@ -45,7 +45,6 @@ with et_string_processing;
 
 
 package et_project is
-	comment_mark : constant string := ("--");
 	
 	-- after importing a foreign project, native ET projects are created here:
 	directory_import		: constant string := "et_import";

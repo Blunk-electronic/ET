@@ -108,11 +108,12 @@ package general_rw is
 	procedure placeholder_begin;
 	procedure placeholder_end;
 
-	
+	-- Writes a line in the current output.
 	procedure write (
 		keyword 	: in string;
 		parameters	: in string;
-		wrap		: in boolean := false);
+		wrap		: in boolean := false;  -- when true, parameters will be enclosed in qotes (like "BEL Systems")
+		as_comment	: in boolean := false); -- when true, the whole line will be put as comment
 
 	-- Outputs a message telling that start and end point of are have differing 
 	-- distance to center.
