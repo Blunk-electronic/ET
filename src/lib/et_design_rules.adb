@@ -44,6 +44,14 @@ with general_rw;					use general_rw;
 
 package body et_design_rules is
 
+	function is_empty (rules : in pac_file_name.bounded_string) return boolean is begin
+		if pac_file_name.length (rules) = 0 then
+			return true;
+		else
+			return false;
+		end if;
+	end is_empty;
+	
 	function to_file_name (file : in string) return pac_file_name.bounded_string is begin
 		return pac_file_name.to_bounded_string (file);
 	end to_file_name;

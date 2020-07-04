@@ -57,12 +57,16 @@ with et_string_processing;
 
 package et_meta is
 
+	not_assigned : constant string := "N/A";
+
 	company_length_max : constant positive := 100;
 	package pac_company is new generic_bounded_length (company_length_max);
 
 	function to_company (company : in string) return pac_company.bounded_string;
 	function to_string (company : in pac_company.bounded_string) return string;
 
+	company_default : constant pac_company.bounded_string := pac_company.to_bounded_string (not_assigned);
+	
 	
 	customer_length_max : constant positive := 100;
 	package pac_customer is new generic_bounded_length (customer_length_max);
@@ -70,6 +74,8 @@ package et_meta is
 	function to_customer (customer : in string) return pac_customer.bounded_string;
 	function to_string (customer : in pac_customer.bounded_string) return string;
 
+	customer_default : constant pac_customer.bounded_string := pac_customer.to_bounded_string (not_assigned);
+	
 		
 	partcode_length_max : constant positive := 100;
 	package pac_partcode is new generic_bounded_length (partcode_length_max);
@@ -77,6 +83,8 @@ package et_meta is
 	function to_partcode (partcode : in string) return pac_partcode.bounded_string;
 	function to_string (partcode : in pac_partcode.bounded_string) return string;
 
+	partcode_default : constant pac_partcode.bounded_string := pac_partcode.to_bounded_string (not_assigned);
+	
 	
 	drawing_number_length_max : constant positive := 100;
 	package pac_drawing_number is new generic_bounded_length (drawing_number_length_max);
@@ -84,6 +92,8 @@ package et_meta is
 	function to_drawing_number (drawing_number : in string) return pac_drawing_number.bounded_string;
 	function to_string (drawing_number : in pac_drawing_number.bounded_string) return string;
 
+	drawing_number_default : constant pac_drawing_number.bounded_string := pac_drawing_number.to_bounded_string (not_assigned);
+	
 	
 	revision_length_max : constant positive := 5;
 	package pac_revision is new generic_bounded_length (revision_length_max);
@@ -91,6 +101,9 @@ package et_meta is
 	function to_revision (revision : in string) return pac_revision.bounded_string;
 	function to_string (revision : in pac_revision.bounded_string) return string;
 
+	revision_default : constant pac_revision.bounded_string := pac_revision.to_bounded_string (not_assigned);
+	
+	
 	function to_string (date : in time) return string;
 	function to_date (date : in string) return time;
 	
@@ -100,15 +113,18 @@ package et_meta is
 	function to_person (person : in string) return pac_person.bounded_string;
 	function to_string (person : in pac_person.bounded_string) return string;
 
+	person_default : constant pac_person.bounded_string := pac_person.to_bounded_string (not_assigned);
+	
+	
 	type type_basic is tagged record
-		company			: pac_company.bounded_string;
-		customer		: pac_customer.bounded_string;
-		partcode		: pac_partcode.bounded_string;
-		drawing_number	: pac_drawing_number.bounded_string;
-		revision		: pac_revision.bounded_string;
-		drawn_by		: pac_person.bounded_string;
-		checked_by		: pac_person.bounded_string;
-		approved_by		: pac_person.bounded_string;
+		company			: pac_company.bounded_string := company_default;
+		customer		: pac_customer.bounded_string := customer_default;
+		partcode		: pac_partcode.bounded_string := partcode_default;
+		drawing_number	: pac_drawing_number.bounded_string := drawing_number_default;
+		revision		: pac_revision.bounded_string := revision_default;
+		drawn_by		: pac_person.bounded_string := person_default;
+		checked_by		: pac_person.bounded_string := person_default;
+		approved_by		: pac_person.bounded_string := person_default;
 		drawn_date		: time := clock;
 		checked_date	: time := et_string_processing.date_first; -- default 1901-01-01
 		approved_date	: time := et_string_processing.date_first; -- default 1901-01-01

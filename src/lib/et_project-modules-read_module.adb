@@ -241,15 +241,21 @@ procedure read_module (
 
 			use et_design_rules;
 		begin
+			-- assign rules
 			module.rules := rules;
-			
-			log (text => keyword_layout & space & to_string (module.rules.layout),
-				 level => log_threshold + 2);
 
-			-- Read the DRU file like JLP_ML4_standard.dru and store it
-			-- in project wide container et_design_rules.design_rules.
-			read_rules (rules.layout, log_threshold + 3);
-			
+			-- log and read layout design rules if specified. otherwise skip:
+			if not is_empty (rules.layout) then
+				log (text => keyword_layout & space & to_string (module.rules.layout),
+					level => log_threshold + 2);
+
+				-- Read the DRU file like JLP_ML4_standard.dru and store it
+				-- in project wide container et_design_rules.design_rules.
+				read_rules (rules.layout, log_threshold + 3);
+			else
+				log (WARNING, "No layout design rules specified ! Defaults will be applied !");
+			end if;
+				
 			-- CS module.rules.erc ?
 		end;
 		

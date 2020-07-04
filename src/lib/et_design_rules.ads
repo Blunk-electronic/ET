@@ -58,6 +58,8 @@ package et_design_rules is
 	package pac_file_name is new generic_bounded_length (file_name_length_max); -- JLP_ML4_standard.dru
 	use pac_file_name;
 
+	function is_empty (rules : in pac_file_name.bounded_string) return boolean;
+	
 	function to_file_name (file : in string) return pac_file_name.bounded_string;
 	function to_string (file : in pac_file_name.bounded_string) return string;
 
