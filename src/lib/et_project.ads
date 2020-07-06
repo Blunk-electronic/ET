@@ -83,6 +83,9 @@ package et_project is
 	
 	project_name_max : constant natural := 100;
 	package pac_project_name is new generic_bounded_length (project_name_max);
+
+	-- here we store the name of the currently open project:
+	project : pac_project_name.bounded_string;
 	
 	function to_string (project_name : in pac_project_name.bounded_string) return string;
 	function to_project_name (name : in string) return pac_project_name.bounded_string;
@@ -110,6 +113,13 @@ package et_project is
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level);
 
+	-- Opens the project with the given name. Assumes the project to exist
+	-- in the current directory.
+	-- Assigns to the global variable "project" the given project_name.
+	procedure open_project (
+		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		log_threshold 	: in et_string_processing.type_log_level);
+	
 	-- Saves the current project under the given destination like /home/user/ecad/blood_sample_analyzer.
 	-- Saves generic modules that are inside the project.
 	-- Saves the project configuration.

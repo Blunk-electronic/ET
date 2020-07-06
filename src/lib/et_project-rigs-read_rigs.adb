@@ -50,7 +50,7 @@ procedure read_rigs (
 	use et_project.modules;
 
 	-- We need a backup of the current working directory. When this procedure finishes,
-	-- the working directory must restored.
+	-- the working directory must be restored.
 	current_working_directory : string := current_directory;
 
 	-- The search of rig module files requires this stuff:

@@ -538,8 +538,7 @@ procedure et is
 			-- Otherwise a native project will be opened:
 			elsif length (project_name_open) > 0 then
 
--- 				et_project.read_project_configuration (project_name_open, log_threshold => 0);
-				et_project.rigs.read_rigs (project_name_open, log_threshold => 0);
+				et_project.open_project (project_name_open, log_threshold => 0);
 
 				-- If operator whishes to execute a script on the native project:
 				if length (script_name) > 0 then
