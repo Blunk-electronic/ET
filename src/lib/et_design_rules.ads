@@ -108,7 +108,8 @@ package et_design_rules is
 
 	-- here we collect all design rules of the project:
 	design_rules : pac_design_rules.map;
-	
+
+	-- Reads the design rules specified in the given file:
 	procedure read_rules (
 		file_name		: in pac_file_name.bounded_string;
 		log_threshold 	: in et_string_processing.type_log_level);

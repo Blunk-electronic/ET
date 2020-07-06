@@ -89,7 +89,7 @@ package body et_project is
 		create_directory (compose (path, directory_libraries));
 		create_library_subdirs (compose (path, directory_libraries));
 		
-		--create_directory (compose (path, directory_dru));
+		create_directory (compose (path, directory_dru));
 		--create_directory (compose (path, directory_cam));
 		--create_directory (compose (path, directory_net_classes));
 		create_directory (compose (path, directory_templates));
@@ -418,35 +418,38 @@ package body et_project is
 		path : type_et_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
 		name : type_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
 
+		-- Files outside the project directory MUST NOT be saved. To test a file for its location
+		-- this function shall be used.
+		function in_project_directory (file_name : in string) return boolean is
+		-- Tests whether the given file name indicates whether the file is inside the project directory.
+		-- CS: This works on Linux only. Implementation should be OS independent !
+
+		-- 1. The expanded file_name may be a relative path to a directory outside the project.
+		--    In this case the expanded path starts with ../ and the return will be false.
+		-- 2. The expanded file_name may be a relative path to a subdirectory inside the project.
+		--    In this case the return would be true.
+		-- 3. The expanded file_name may be an absolute path pointing elsewhere in the filesystem.
+		--    In this case the expanded path starts with / and the return will be false.
+			use gnat.directory_operations;
+			expanded_name : constant string := expand (file_name);
+		begin
+			if 	index (expanded_name, to_set (dir_separator)) = 1 or -- absolute path
+				index (expanded_name, ".." & dir_separator) = 1 then -- relative path -> outside the project
+				return false;
+			else
+				return true;
+			end if;
+		end in_project_directory;
+
+		
 		procedure query_modules (module_cursor : in pac_generic_modules.cursor) is
 		-- Saves a module or a submodule (indicated by module_cursor).
 			module_name : type_module_name.bounded_string := key (module_cursor); -- motor_driver
-
-			function in_project_directory return boolean is
-			-- Tests whether the current module is inside the project directory.
-			-- NOTE: This works on Linux only.
-			-- 1. The expanded module_name may be a relative path to a directory outside the project.
-			--    In this case the expanded path starts with ../ and the return will be false.
-			-- 2. The expanded module_name may be a relative path to a subdirectory inside the project.
-			--    In this case the return would be true.
-			-- 3. The expanded module_name may be an absolute path pointing elsewhere in the filesystem.
-			--    In this case the expanded path starts with / and the return will be false.
-				use gnat.directory_operations;
-				expanded_name : constant string := expand (to_string (module_name));
-			begin
-				if 	index (expanded_name, to_set (dir_separator)) = 1 or -- absolute path
-					index (expanded_name, ".." & dir_separator) = 1 then -- relative outside the project
-					return false;
-				else
-					return true;
-				end if;
-			end;
-			
 		begin -- query_modules
 			log_indentation_up;
 
 			-- Only those modules inside the project will be saved in the new project:
-			if in_project_directory then
+			if in_project_directory (to_string (module_name)) then
 				log (text => "saving module " & to_string (module_name), level => log_threshold + 1);
 				
 				log_indentation_up;
@@ -489,6 +492,14 @@ package body et_project is
 			log_indentation_down;
 			log_indentation_down;
 		end query_rig_configuration;
+
+		procedure copy_design_rules is
+		begin
+			log (text => "copying pcb design rules ...", level => log_threshold + 1);
+			log_indentation_up;
+			--copy_file ("test", "test2");
+			log_indentation_down;
+		end copy_design_rules;
 		
 	begin -- save_project
 		log (text => row_separator_double, level => log_threshold);
@@ -515,6 +526,9 @@ package body et_project is
 			project_path	=> path, -- /home/user/ecad
 			log_threshold 	=> log_threshold + 1);
 
+		copy_design_rules;
+		
+		-- CS copy scripts (use copy operations)
 		
 		log_indentation_down;
 	end save_project;

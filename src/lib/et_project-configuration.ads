@@ -40,8 +40,8 @@ with et_conventions;
 
 package et_project.configuration is
 
-	prj_configuration_file_length_max : constant positive := 100;
-	package pac_file_name is new generic_bounded_length (prj_configuration_file_length_max);
+	file_length_max : constant positive := 100;
+	package pac_file_name is new generic_bounded_length (file_length_max);
 	use pac_file_name;
 	
 	file_extension : constant string := "prj";
@@ -54,7 +54,8 @@ package et_project.configuration is
 	type type_section_name is (
 		SEC_INIT,
 		SEC_RULES,
-		SEC_ENVIRONMENT_VARIABLES
+		SEC_ENVIRONMENT_VARIABLES -- CS not used currently
+		-- CS SEC_LAST_OPENED
 		);
 
 	function to_string (section : in type_section_name) return string;
@@ -66,6 +67,7 @@ package et_project.configuration is
 	type type_configuration is record
 		rules	: type_rules;
 		-- CS evironment_variables 
+		-- CS last_opened
 	end record;
 
 	-- Here we store the configuration of the current project:

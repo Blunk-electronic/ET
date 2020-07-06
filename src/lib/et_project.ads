@@ -61,7 +61,7 @@ package et_project is
 	directory_libraries_schemlets		: constant string := "schemlets";
 	
 	-- supplementary stuff of a project
--- 	directory_dru			: constant string := "design_rules";
+	directory_dru			: constant string := "pcb-design-rules";
 -- 	directory_cam			: constant string := "CAM";
 -- 	directory_net_classes	: constant string := "net_classes";
 	directory_templates		: constant string := "templates";		
@@ -113,7 +113,10 @@ package et_project is
 	-- Saves the current project under the given destination like /home/user/ecad/blood_sample_analyzer.
 	-- Saves generic modules that are inside the project.
 	-- Saves the project configuration.
-	-- Saves the rig configurations.
+	-- Saves the rig configurations. CS: copy them as we do with scripts ?
+	-- Scripts and design rules are regarded as source code and are therefore copied as they are.
+	-- This way comments will be preserved.
+	-- Copies the script and design rule files to the given destination.
 	procedure save_project (
 		destination		: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);
