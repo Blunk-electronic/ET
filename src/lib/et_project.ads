@@ -110,6 +110,10 @@ package et_project is
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level);
 
+	-- Saves the current project under the given destination like /home/user/ecad/blood_sample_analyzer.
+	-- Saves generic modules that are inside the project.
+	-- Saves the project configuration.
+	-- Saves the rig configurations.
 	procedure save_project (
 		destination		: in type_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);

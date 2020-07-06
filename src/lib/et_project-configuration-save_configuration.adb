@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         PROJECT CONFIGURATION                            --
+--                      PROJECT CONFIGURATON SAVE                           --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -35,70 +35,70 @@
 --   history of changes:
 --
 
-with ada.characters;				use ada.characters;
-with ada.characters.handling;		use ada.characters.handling;
-with ada.strings; 					use ada.strings;
-with ada.strings.fixed; 			use ada.strings.fixed;
-
-with ada.exceptions;
-with ada.directories;
-with gnat.directory_operations;
-
-with ada.containers;            	use ada.containers;
-with general_rw;					use general_rw;
-
-with et_conventions;
-
-package body et_project.configuration is
-
-	function to_string (section : in type_section_name) return string is
-		len : positive := type_section_name'image (section)'length;
-	begin
-		return to_lower (type_section_name'image (section) (5..len));
-	end to_string;
-
-	function conventions_specified return boolean is begin
-		if et_conventions.pac_file_name.length (project.rules.conventions) > 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end conventions_specified;
+separate (et_project.configuration)
 	
-	procedure read_configuration (
-		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
-		log_threshold 	: in et_string_processing.type_log_level) 
-		is separate;
+procedure save_configuration (
+	project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
+	log_threshold 	: in et_string_processing.type_log_level) 
+is
+	use et_string_processing;
+	use ada.directories;
 
-	procedure write_configuration_header is 
-		use et_general;
-		use et_string_processing;
+	-- compose the name of the project file to create like blood_sample_analyzer.prj
+	file_name : constant string := 
+		compose (to_string (project_name), to_string (project_name), file_extension);
+
+	-- backup the previous output destination
+	previous_output : ada.text_io.file_type renames current_output;
+	
+	file_handle : ada.text_io.file_type;
+
+	procedure write_rules is 
+		use et_conventions;
 	begin
-		-- write a nice header
-		put_line (comment_mark & " " & system_name & " project configuration file");
-		put_line (comment_mark & " " & date);
-		put_line (comment_mark & " " & row_separator_double);
-		new_line;
-	end;
+		section_mark (section_rules, HEADER);
 
-	procedure write_configuration_footer is
-		use et_string_processing;
-	begin
-		-- write a nice footer
-		new_line;
-		put_line (comment_mark & " " & row_separator_double);
-		put_line (comment_mark & " " & date);
-		put_line (comment_mark & " project configuration file end");
-		new_line;
-	end;
-
-	procedure save_configuration (
-		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
-		log_threshold 	: in et_string_processing.type_log_level) 
-		is separate;
-
+		if conventions_specified then
+			write (keyword => keyword_conventions, parameters => to_string (project.rules.conventions));
+		end if;
 		
-end et_project.configuration;
+		section_mark (section_rules, FOOTER);
+	end write_rules;
+	
+begin -- save_configuration
+	log (text => "saving project configuration file " & enclose_in_quotes (file_name) & " ...",
+		 level => log_threshold, console => true);
+	log_indentation_up;
+	
+	-- create the file
+	create (
+		file => file_handle,
+		mode => out_file, 
+		name => file_name);
+	
+	set_output (file_handle);
+	write_configuration_header;
+
+	write_rules;
+
+	-- CS write_environment_variables
+
+	-- CS write other stuff
+
+	write_configuration_footer;	
+	set_output (previous_output);
+	
+	close (file_handle);
+	
+	log_indentation_down;
+
+	exception when event:
+		others => 
+			log (text => ada.exceptions.exception_message (event), console => true);
+			close (file_handle);
+			raise;
+
+end save_configuration;
 
 -- Soli Deo Gloria
 

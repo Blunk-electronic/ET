@@ -125,13 +125,13 @@ package et_project.rigs is
 	procedure write_rig_configuration_header;
 	procedure write_rig_configuration_footer;
 	
+	-- Saves the rig configuration in the file with the given name rig_conf_file.	
 	procedure save_rig_configuration (
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		rig_conf_name	: in type_rig_configuration_file_name.bounded_string; -- demo, low_cost, fully_equipped
 		rig				: in type_rig; -- the actual rig configuration		
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level);
-	-- Saves the rig configuration in the file with the given name rig_conf_file.	
 
 	
 
@@ -157,8 +157,12 @@ package et_project.rigs is
 	
 	
 	-- Enters the project directory specified by project_name.
-	-- Searches for rig configuration files (*.conf), reads them and stores configurations in et_project.rigs.rigs.
-	-- Searches for module files (*.mod), reads them and stores modules in et_project.modules.generic_modules.
+	-- Reads the project configuration file (*.prj).
+	-- Searches for rig configuration files (*.conf), reads them and stores 
+	-- them in et_project.rigs.rigs.
+	-- Searches for module files (*.mod), reads them and stores then
+	-- in et_project.modules.generic_modules.
+	-- Use this procedure when opening a project.
 	procedure read_rigs (
 		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);

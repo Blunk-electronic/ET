@@ -91,7 +91,7 @@ is
 		if length (conventions_file_name) > 0 then
 
 			-- assign conventions file name to project configuration:
-			project_configuration.rules.conventions := conventions_file_name;
+			project.rules.conventions := conventions_file_name;
 
 		else
 			log (WARNING, "No conventions file specified ! Design check limited !");

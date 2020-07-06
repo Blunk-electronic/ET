@@ -509,7 +509,11 @@ package body et_project is
 		-- save rig configuration files
 		pac_rigs.iterate (et_project.rigs.rigs, query_rig_configuration'access);
 
-		-- CS save project configuration file
+		-- save project configuration
+		configuration.save_configuration (
+			project_name	=> name, -- blood_sample_analyzer
+			log_threshold 	=> log_threshold + 1);
+
 		
 		log_indentation_down;
 	end save_project;

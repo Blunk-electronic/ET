@@ -65,10 +65,14 @@ package et_project.configuration is
 	
 	type type_configuration is record
 		rules	: type_rules;
+		-- CS evironment_variables 
 	end record;
 
 	-- Here we store the configuration of the current project:
-	project_configuration : type_configuration;
+	project : type_configuration;
+
+	-- Returns true if a conventions file has been specified for the project:
+	function conventions_specified return boolean;
 	
 	-- Reads the project configuration file.
 	-- The current working directory is assumed to be the project directory:
@@ -79,7 +83,12 @@ package et_project.configuration is
 	procedure write_configuration_header;
 	procedure write_configuration_footer;
 
-	-- CS save_configuration
+	-- Saves the project configuration in the project configuration file.
+	-- The current working directory is assumed to be the parent directory
+	-- of the current project. Call this procedure when saving a whole project.
+	procedure save_configuration (
+		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
+		log_threshold 	: in et_string_processing.type_log_level);
 	
 end et_project.configuration;
 
