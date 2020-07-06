@@ -39,19 +39,22 @@ separate (et_project.configuration)
 	
 procedure save_configuration (
 	project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
+	project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 	log_threshold 	: in et_string_processing.type_log_level) 
 is
+	-- backup the previous output destination
+	previous_output : ada.text_io.file_type renames current_output;
+
 	use et_string_processing;
 	use ada.directories;
 
-	-- compose the name of the project file to create like blood_sample_analyzer.prj
-	file_name : constant string := 
-		compose (to_string (project_name), to_string (project_name), file_extension);
-
-	-- backup the previous output destination
-	previous_output : ada.text_io.file_type renames current_output;
-	
+	-- For the final full file name like /home/user/et_projects/blood_sample_analyzer.prj:
+	file_name : pac_file_name.bounded_string; 
 	file_handle : ada.text_io.file_type;
+
+	package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
+	use type_path;
+	path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
 
 	procedure write_rules is 
 		use et_conventions;
@@ -66,15 +69,21 @@ is
 	end write_rules;
 	
 begin -- save_configuration
-	log (text => "saving project configuration file " & enclose_in_quotes (file_name) & " ...",
+	log (text => "saving project configuration file ...",
 		 level => log_threshold, console => true);
 	log_indentation_up;
+
+	-- compose the full file name
+	file_name := pac_file_name.to_bounded_string (compose (
+		containing_directory	=> to_string (path), -- /home/user/et_projects/blood_sample_analyzer
+		name 					=> to_string (project_name), -- file base name same as project name
+		extension 				=> file_extension)); -- prj
 	
 	-- create the file
 	create (
 		file => file_handle,
 		mode => out_file, 
-		name => file_name);
+		name => to_string (file_name));
 	
 	set_output (file_handle);
 	write_configuration_header;

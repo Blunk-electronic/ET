@@ -48,8 +48,9 @@ procedure save_rig_configuration (
 	use et_string_processing;
 	use type_module_instances;
 	use type_module_connectors;
-	
-	file_name : type_rig_configuration_file_name.bounded_string; -- the final full file name
+
+	-- For the final full file name like /home/user/et_projects/blood_sample_analyzer.conf
+	file_name : type_rig_configuration_file_name.bounded_string;
 	file_handle : ada.text_io.file_type;
 
 	package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
@@ -86,9 +87,9 @@ begin -- save_rig_configuration
 
 	-- compose the full file name
 	file_name := type_rig_configuration_file_name.to_bounded_string (compose (
-		containing_directory	=> to_string (path),
-		name 					=> to_string (rig_conf_name),
-		extension 				=> rig_configuration_file_extension));
+		containing_directory	=> to_string (path),	-- /home/user/et_projects/blood_sample_analyzer
+		name 					=> to_string (rig_conf_name), -- fully_equipped
+		extension 				=> rig_configuration_file_extension)); -- conf
 
 	-- create the file
 	create (

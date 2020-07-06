@@ -512,6 +512,7 @@ package body et_project is
 		-- save project configuration
 		configuration.save_configuration (
 			project_name	=> name, -- blood_sample_analyzer
+			project_path	=> path, -- /home/user/ecad
 			log_threshold 	=> log_threshold + 1);
 
 		

@@ -115,7 +115,7 @@ package et_project is
 	-- Saves the project configuration.
 	-- Saves the rig configurations.
 	procedure save_project (
-		destination		: in type_project_name.bounded_string; -- blood_sample_analyzer
+		destination		: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 end et_project;
