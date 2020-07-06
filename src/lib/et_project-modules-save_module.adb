@@ -54,7 +54,7 @@ is
 	-- Creates the module/submodule file and writes a nice header in it.
 		use ada.directories;
 		use gnat.directory_operations;
-		use type_project_name;
+		use pac_project_name;
 		use type_et_project_path;
 		use et_general;
 	

@@ -60,7 +60,7 @@ use et_canvas_schematic.pac_canvas;
 package body gui_schematic is
 
 	procedure init_window (
-		project			: in type_project_name.bounded_string;	-- blood_sample_analyzer
+		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 		log_threshold_in: in type_log_level) is

@@ -3645,11 +3645,11 @@ package body et_kicad_to_native is
 		procedure save_libraries (
 		-- Saves the library containers (et_libraries.devices and et_pcb.packages) in
 		-- the directory specified by project_path and project_name.
-			project_name	: in et_project.type_project_name.bounded_string;		-- blood_sample_analyzer
+			project_name	: in et_project.pac_project_name.bounded_string;		-- blood_sample_analyzer
 			project_path	: in et_project.type_et_project_path.bounded_string; 	-- /home/user/et_projects/imported_from_kicad
 			log_threshold	: in et_string_processing.type_log_level) is
 			use et_project;
-			use type_project_name;
+			use pac_project_name;
 			use type_et_project_path;
 			use ada.directories;
 			use et_string_processing;
@@ -3657,7 +3657,7 @@ package body et_kicad_to_native is
 			package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
 			use type_path;
 			path : type_path.bounded_string := to_bounded_string (
-					compose (type_et_project_path.to_string (project_path), type_project_name.to_string (project_name)));
+					compose (type_et_project_path.to_string (project_path), pac_project_name.to_string (project_name)));
 			-- Path now contains something like /home/user/et_projects/imported_from_kicad/blood_sample_analyzer
 			
 			use et_devices.type_devices;
@@ -3711,8 +3711,8 @@ package body et_kicad_to_native is
 			log_indentation_down;			
 		end save_libraries;
 
-		use et_project.type_project_name;
-		project_name : et_project.type_project_name.bounded_string; -- blood_sample_analyzer
+		use et_project.pac_project_name;
+		project_name : et_project.pac_project_name.bounded_string; -- blood_sample_analyzer
 
 	begin -- to_native
 	

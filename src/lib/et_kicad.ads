@@ -857,7 +857,7 @@ package et_kicad is
 	
 	procedure import_design (
 		--first_instance 	: in boolean := false;
-		project			: in et_project.type_project_name.bounded_string;								
+		project			: in et_project.pac_project_name.bounded_string;								
 		log_threshold	: in et_string_processing.type_log_level); 
 	-- Imports the design as specified by project_name.
 	-- Inserts the created submodule in container "modules".

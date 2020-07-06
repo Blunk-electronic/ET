@@ -4206,7 +4206,7 @@ package body et_kicad is
 	
 	
 	procedure import_design (
-		project			: in et_project.type_project_name.bounded_string;
+		project			: in et_project.pac_project_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Imports the design libraries and the actual design as specified by parameter "project".
 	-- Inserts the created (sub)module in the module collection (see type_modules).
@@ -4406,7 +4406,7 @@ package body et_kicad is
 				log (
 					text => "reading project file " 
 					& compose (
-						name		=> et_project.type_project_name.to_string (project), 
+						name		=> et_project.pac_project_name.to_string (project), 
 						extension	=> file_extension_project) & " ...",
 					level => log_threshold + 1
 					);
@@ -4423,7 +4423,7 @@ package body et_kicad is
 					file => project_file_handle,
 					mode => in_file,
 					name => compose (
-								name		=> et_project.type_project_name.to_string (project), 
+								name		=> et_project.pac_project_name.to_string (project), 
 								extension	=> file_extension_project)
 					);
 				set_input (project_file_handle);
@@ -5330,7 +5330,7 @@ package body et_kicad is
 			-- It is just a matter of file extension.
 			return to_schematic_file_name (
 				compose (
-					name		=> et_project.type_project_name.to_string (project), 
+					name		=> et_project.pac_project_name.to_string (project), 
 					extension	=> file_extension_schematic)
 					);
 		end read_project_file;

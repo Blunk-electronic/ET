@@ -80,17 +80,17 @@ package body et_import is
 	end invalid_cad_format;
 	
 	procedure validate_project (
-		name		: in et_project.type_project_name.bounded_string;
+		name		: in et_project.pac_project_name.bounded_string;
 		cad_format	: in type_cad_format := UNKNOWN) is
 	-- Checks if the given project of the given format exists in the current working directory.
 	-- CS: currently this is just a test, whether the directory "name" exists.
 	-- CS: do a more detailled check depending on cad format (look for project files).
 		use et_project;
 	begin
-		if exists (type_project_name.to_string (name)) then
+		if exists (pac_project_name.to_string (name)) then
 			null; -- fine
 		else
-			log (ERROR, "project '" & type_project_name.to_string (name) 
+			log (ERROR, "project '" & pac_project_name.to_string (name) 
 				& "' not found ! Working directory correct ?",
 				console => true);
 			raise constraint_error;

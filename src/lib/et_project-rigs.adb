@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            PROJECT.RIGS                                  --
+--                            PROJECT RIGS                                  --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -125,7 +125,7 @@ package body et_project.rigs is
 
 	
 	procedure save_rig_configuration (
-		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		rig_conf_name	: in type_rig_configuration_file_name.bounded_string; -- demo, low_cost, fully_equipped
 		rig				: in type_rig; -- the actual rig configuration				
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
@@ -133,7 +133,7 @@ package body et_project.rigs is
 		is separate;
 
 	procedure read_rigs (
-		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
+		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level)
 		is separate;
 		

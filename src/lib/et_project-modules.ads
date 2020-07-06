@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           PROJECT.MODULES                                --
+--                           PROJECT MODULES                                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -120,7 +120,7 @@ package et_project.modules is
 	-- If module_name not provided, the module will be named after the given project_name.
 	procedure save_module (
 		module_cursor	: in pac_generic_modules.cursor;				-- the module
-		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level);

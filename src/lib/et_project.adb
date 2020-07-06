@@ -49,14 +49,14 @@ with et_project.configuration;
 	
 package body et_project is
 	
-	function to_string (project_name : in type_project_name.bounded_string) return string is
+	function to_string (project_name : in pac_project_name.bounded_string) return string is
 	begin
-		return type_project_name.to_string (project_name);
+		return pac_project_name.to_string (project_name);
 	end to_string;
 	
-	function to_project_name (name : in string) return type_project_name.bounded_string is
+	function to_project_name (name : in string) return pac_project_name.bounded_string is
 	begin
-		return type_project_name.to_bounded_string (name);
+		return pac_project_name.to_bounded_string (name);
 	end to_project_name;
 
 	function to_string (path : in type_et_project_path.bounded_string) return string is begin
@@ -107,13 +107,13 @@ package body et_project is
 
 	procedure create_project_directory (
 		module_name		: in type_module_name.bounded_string;		-- motor_driver
-		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_general;
 		use ada.directories;
 		use et_string_processing;
-		use type_project_name;
+		use pac_project_name;
 		use type_et_project_path;
 
 -- 		use modules;
@@ -283,13 +283,13 @@ package body et_project is
 	end create_project_directory;
 		
 	procedure create_project_directory_bare (
-		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_general;
 		use ada.directories;
 		use et_string_processing;
-		use type_project_name;
+		use pac_project_name;
 		use type_et_project_path;
 
 		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
@@ -334,11 +334,11 @@ package body et_project is
 -- 	procedure save_libraries (
 -- 	-- Saves the library containers (et_devices.devices and et_packages.packages) in
 -- 	-- the directory specified by project_path and project_name.
--- 		project_name	: in et_project.type_project_name.bounded_string;		-- blood_sample_analyzer
+-- 		project_name	: in et_project.pac_project_name.bounded_string;		-- blood_sample_analyzer
 -- 		project_path	: in et_project.type_et_project_path.bounded_string; 	-- /home/user/ecad
 -- 		log_threshold	: in et_string_processing.type_log_level) is
 -- 		use et_project;
--- 		use type_project_name;
+-- 		use pac_project_name;
 -- 		use type_et_project_path;
 -- 		use ada.directories;
 -- 		use et_string_processing;
@@ -346,7 +346,7 @@ package body et_project is
 -- 		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
 -- 		use type_path;
 -- 		path : type_path.bounded_string := to_bounded_string (
--- 				compose (type_et_project_path.to_string (project_path), type_project_name.to_string (project_name)));
+-- 				compose (type_et_project_path.to_string (project_path), pac_project_name.to_string (project_name)));
 -- 		-- Path now contains something like /home/user/ecad/blood_sample_analyzer
 -- 		
 -- 		use et_devices;
@@ -403,7 +403,7 @@ package body et_project is
 -- 	end save_libraries;
 
 	procedure save_project (
-		destination		: in type_project_name.bounded_string; -- /home/user/ecad/blood_sample_analyzer
+		destination		: in pac_project_name.bounded_string; -- /home/user/ecad/blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level) is
 
 		use et_project.rigs;
@@ -416,7 +416,7 @@ package body et_project is
 		
 		-- break down destination into path and project name:
 		path : type_et_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
-		name : type_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
+		name : pac_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
 
 		-- Files outside the project directory MUST NOT be saved. To test a file for its location
 		-- this function shall be used.

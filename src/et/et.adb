@@ -81,10 +81,10 @@ procedure et is
 	conv_file_name_create	: et_conventions.pac_file_name.bounded_string;
 -- 	conv_file_name_use		: et_conventions.pac_file_name.bounded_string;
 
-	project_name_create		: et_project.type_project_name.bounded_string; -- the project to be created
-	project_name_import		: et_project.type_project_name.bounded_string; -- the project to be imported
-	project_name_open 		: et_project.type_project_name.bounded_string; -- the project to be opened
-	project_name_save_as	: et_project.type_project_name.bounded_string; -- the "save as" name of the project
+	project_name_create		: et_project.pac_project_name.bounded_string; -- the project to be created
+	project_name_import		: et_project.pac_project_name.bounded_string; -- the project to be imported
+	project_name_open 		: et_project.pac_project_name.bounded_string; -- the project to be opened
+	project_name_save_as	: et_project.pac_project_name.bounded_string; -- the "save as" name of the project
 
 	module_file_name		: et_project.modules.pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
@@ -361,7 +361,7 @@ procedure et is
 
 	procedure import_project is
 	-- As a result of the import, a native project is created in the work_directory (ET/...).
-		use et_project.type_project_name;
+		use et_project.pac_project_name;
 		use et_import;
 	begin
 		-- Test if project name specified and if project base directory exists:
@@ -498,7 +498,7 @@ procedure et is
 	end launch_gui;
 
 	procedure process_commandline_arguments is
-		use et_project.type_project_name;
+		use et_project.pac_project_name;
 		use pac_script_name;
 		use et_conventions.pac_file_name;
 		use et_packages.type_package_model_file;

@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            PROJECT.RIGS                                  --
+--                            PROJECT RIGS                                  --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -127,7 +127,7 @@ package et_project.rigs is
 	
 	-- Saves the rig configuration in the file with the given name rig_conf_file.	
 	procedure save_rig_configuration (
-		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		rig_conf_name	: in type_rig_configuration_file_name.bounded_string; -- demo, low_cost, fully_equipped
 		rig				: in type_rig; -- the actual rig configuration		
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
@@ -164,7 +164,7 @@ package et_project.rigs is
 	-- in et_project.modules.generic_modules.
 	-- Use this procedure when opening a project.
 	procedure read_rigs (
-		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
+		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 end et_project.rigs;

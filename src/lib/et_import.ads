@@ -73,7 +73,7 @@ package et_import is
 	-- Returns a message that the given format is not supported.
 	
 	procedure validate_project (
-		name 		: in et_project.type_project_name.bounded_string;
+		name 		: in et_project.pac_project_name.bounded_string;
 		cad_format	: in type_cad_format := UNKNOWN);
 	-- Checks if the given project of the given format exists in the current working directory.
 	

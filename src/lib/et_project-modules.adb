@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           PROJECT.MODULES                                --
+--                           PROJECT MODULES                                --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -71,15 +71,15 @@ package body et_project.modules is
 	use et_general.type_net_name;
 	use pac_generic_modules;
 	
-	function to_string (project_name : in type_project_name.bounded_string) return string is
+	function to_string (project_name : in pac_project_name.bounded_string) return string is
 	begin
-		return type_project_name.to_string (project_name);
+		return pac_project_name.to_string (project_name);
 	end to_string;
 	
-	function to_project_name (name : in string) return type_project_name.bounded_string is
-	-- Converts the given string to type_project_name.
+	function to_project_name (name : in string) return pac_project_name.bounded_string is
+	-- Converts the given string to pac_project_name.
 	begin
-		return type_project_name.to_bounded_string (name);
+		return pac_project_name.to_bounded_string (name);
 	end to_project_name;
 
 	function to_string (path : in type_et_project_path.bounded_string) return string is begin
@@ -338,7 +338,7 @@ package body et_project.modules is
 	
 	procedure save_module (
 		module_cursor	: in pac_generic_modules.cursor;					-- the module
-		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level) is
@@ -353,7 +353,7 @@ package body et_project.modules is
 		-- Creates the module/submodule file and writes a nice header in it.
 			use ada.directories;
 			use gnat.directory_operations;
-			use type_project_name;
+			use pac_project_name;
 			use type_et_project_path;
 			use et_general;
 

@@ -42,7 +42,7 @@ separate (et_project.rigs)
 
 
 procedure read_rigs (
-	project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
+	project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 	log_threshold 	: in et_string_processing.type_log_level) is
 
 	use et_string_processing;

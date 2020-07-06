@@ -82,10 +82,10 @@ package et_project is
 	
 	
 	project_name_max : constant natural := 100;
-	package type_project_name is new generic_bounded_length (project_name_max);
+	package pac_project_name is new generic_bounded_length (project_name_max);
 	
-	function to_string (project_name : in type_project_name.bounded_string) return string;
-	function to_project_name (name : in string) return type_project_name.bounded_string;
+	function to_string (project_name : in pac_project_name.bounded_string) return string;
+	function to_project_name (name : in string) return pac_project_name.bounded_string;
 	
 	project_path_max : constant natural := 200;
 	package type_et_project_path is new generic_bounded_length (project_path_max);
@@ -97,7 +97,7 @@ package et_project is
 	-- Already existing projects in given project_path are overwritten.
 	procedure create_project_directory (
 		module_name		: in type_module_name.bounded_string;		-- motor_driver
-		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string;	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level);
 
@@ -106,7 +106,7 @@ package et_project is
 	-- Sets the global project file name so that subsequent write and read operations
 	-- know the right project file.
 	procedure create_project_directory_bare (
-		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level);
 
@@ -118,7 +118,7 @@ package et_project is
 	-- This way comments will be preserved.
 	-- Copies the script and design rule files to the given destination.
 	procedure save_project (
-		destination		: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		destination		: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 end et_project;

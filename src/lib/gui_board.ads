@@ -46,7 +46,7 @@ package gui_board is
 	-- Creates and displays the board editor window.
 	-- Executes the given script (if "script" is empty, no script will be executed.
 	procedure init_window (
-		project			: in type_project_name.bounded_string;	-- blood_sample_analyzer
+		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		log_threshold_in: in type_log_level);
 	

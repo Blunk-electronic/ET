@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         CANVAS FOR SCHEMATIC                             --
+--                           CANVAS SCHEMATIC                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -102,7 +102,7 @@ package et_canvas_schematic is
 	
 
 	-- The currently active project is stored here:
-	current_active_project : et_project.type_project_name.bounded_string; -- blood_sample_analyzer
+	current_active_project : et_project.pac_project_name.bounded_string; -- blood_sample_analyzer
 	
 	-- The current active module is stored here. Whenever objects of the schematic
 	-- or board are to be drawn, this variable must be read.

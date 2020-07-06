@@ -66,7 +66,7 @@ use et_canvas_board.pac_canvas;
 package body gui_board is
 
 	procedure init_window (
-		project			: in type_project_name.bounded_string;	-- blood_sample_analyzer
+		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		log_threshold_in: in type_log_level) is
 	begin

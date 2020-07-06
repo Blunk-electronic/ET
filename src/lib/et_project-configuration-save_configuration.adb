@@ -38,7 +38,7 @@
 separate (et_project.configuration)
 	
 procedure save_configuration (
-	project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
+	project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 	project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 	log_threshold 	: in et_string_processing.type_log_level) 
 is
