@@ -67,6 +67,31 @@ package body et_project is
 		return type_et_project_path.to_bounded_string (path);
 	end to_project_path;
 
+	procedure validate_project_name (
+		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use et_string_processing;
+		use ada.directories;
+		use gnat.directory_operations;
+		expanded_name : constant string := expand (to_string (project_name));
+	begin
+		-- The project must be a directory inside the current directory.
+		-- The project name must not be something like "ecad/et_projects/blood_sample_analyzer".
+		-- The easiest way to check that is to detect directory separators ("/").
+		if index (expanded_name, to_set (dir_separator)) = 0 then -- no separators
+			if kind (expanded_name) = DIRECTORY then -- is a directory
+				null;
+			else
+				log (ERROR, "The project to be opened must be a directory !", console => true);
+				raise constraint_error;
+			end if;
+		else
+			log (ERROR, "The project to be opened must be a child directory !", console => true);
+			raise constraint_error;
+		end if;
+	end validate_project_name;
+	
 	procedure create_supplementary_directories (
 		path			: in string;
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -326,15 +351,18 @@ package body et_project is
 		
 	end create_project_directory_bare;
 
-	
 	procedure open_project (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level)
-	is 
-	begin
+	is begin
+		validate_project_name (project_name, log_threshold);
+
+		-- set global project name
 		project := project_name;
 
+		-- read the rig configurations
 		rigs.read_rigs (project, log_threshold);
+
 	end open_project;
 
 
@@ -449,7 +477,6 @@ package body et_project is
 				return true;
 			end if;
 		end in_project_directory;
-
 		
 		procedure query_modules (module_cursor : in pac_generic_modules.cursor) is
 		-- Saves a module or a submodule (indicated by module_cursor).

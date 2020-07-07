@@ -94,6 +94,12 @@ package et_project is
 	package type_et_project_path is new generic_bounded_length (project_path_max);
 	function to_string (path : in type_et_project_path.bounded_string) return string;
 	function to_project_path (path : in string) return type_et_project_path.bounded_string;
+
+	-- Tests whether the project name is a child directory of the current working directory.
+	-- Raises constraint error otherwise.
+	procedure validate_project_name (
+		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		log_threshold 	: in et_string_processing.type_log_level);
 	
 	-- Creates given project directory in the given project_path.
 	-- Creates a default rig configuration file.										   
