@@ -85,6 +85,10 @@ of the same name will be deleted without warning !
 $ et --create-project my_new_et_project/
 ```
 
+NOTE: The project to be created must be a child directory of the 
+current working directory. Creating a project across several directory levels like ecad/my_et_project/
+is not possible.
+
 
 #### Opening an ET native project
 To open a native project like 'my_et_project' run this command: 
@@ -113,16 +117,14 @@ further-on a sheet can be specified so that the desired sheet gets opened right 
 $ et --open-project my_et_project/ --module power_supply.mod --sheet 3
 ```
 
-If the project lives somewhere else:
-
-```sh
-$ et --open-project /home/user/ecad/my_et_project/
-```
+NOTE: The project to be opened must be a child directory of the 
+current working directory. Opening a project across several directory levels like ecad/my_et_project/
+is not possible.
 
 A log level can also be passed:
 
 ```sh
-$ et --open-project /home/user/ecad/my_et_project/ --log-level 2
+$ et --open-project my_et_project/ --log-level 2
 ```
 
 <!--If a conventions file is available run:

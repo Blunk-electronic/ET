@@ -104,6 +104,7 @@ package et_project is
 	-- Creates given project directory in the given project_path.
 	-- Creates a default rig configuration file.										   
 	-- Already existing projects in given project_path are overwritten.
+	-- CS: argument project_path no longer required, remove it.
 	procedure create_project_directory (
 		module_name		: in type_module_name.bounded_string;		-- motor_driver
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
@@ -114,6 +115,7 @@ package et_project is
 	-- Already existing projects in given path are overwritten.
 	-- Sets the global project file name so that subsequent write and read operations
 	-- know the right project file.
+	-- CS: argument project_path no longer required, remove it.
 	procedure create_project_directory_bare (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects

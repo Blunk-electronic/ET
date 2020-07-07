@@ -83,11 +83,11 @@ package body et_project is
 			if kind (expanded_name) = DIRECTORY then -- is a directory
 				null;
 			else
-				log (ERROR, "The project to be opened must be a directory !", console => true);
+				log (ERROR, "The project must be a directory !", console => true);
 				raise constraint_error;
 			end if;
 		else
-			log (ERROR, "The project to be opened must be a child directory !", console => true);
+			log (ERROR, "The project must be a child directory !", console => true);
 			raise constraint_error;
 		end if;
 	end validate_project_name;
@@ -280,6 +280,9 @@ package body et_project is
 	begin -- create_project_directory
 		log (text => "creating native project " & enclose_in_quotes (to_string (path)) &
 			 " ...", level => log_threshold);
+
+		-- CS validate_project_name
+		
 		log_indentation_up;
 		
 		-- delete previous project directory
@@ -331,6 +334,8 @@ package body et_project is
 	begin -- create_project_directory_bare
 		log (text => "creating bare native project " & to_string (path) & " ...", level => log_threshold);
 		log_indentation_up;
+
+		-- CS validate_project_name
 		
 		-- delete previous project directory
 		if exists (to_string (path)) then
@@ -533,6 +538,7 @@ package body et_project is
 		begin
 			log (text => "copying pcb design rules ...", level => log_threshold + 1);
 			log_indentation_up;
+			-- CS
 			--copy_file ("test", "test2");
 			log_indentation_down;
 		end copy_design_rules;

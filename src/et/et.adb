@@ -524,13 +524,15 @@ procedure et is
 			if length (project_name_create) > 0 then
 
 				-- create project directory
+				runmode := MODE_HEADLESS;
+				
 				-- CS: provide module name via cdl argument
 				et_project.create_project_directory (
 					module_name		=> to_module_name (to_string (project_name_create)),
 					project_name	=> project_name_create,
 					project_path	=> et_project.to_project_path (""),
 					log_threshold	=> 0);
-
+				
 			-- If operator wants to import a project it will be done here.
 			elsif length (project_name_import) > 0 then
 				import_project;
@@ -569,7 +571,7 @@ procedure et is
 					
 				end if;
 				
-				-- optionally the project can be saved elsewhere
+				-- optionally the project can be saved with a different name
 				if length (project_name_save_as) > 0 then
 					et_project.save_project (project_name_save_as, log_threshold => 0);
 				end if;
