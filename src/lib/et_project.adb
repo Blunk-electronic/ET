@@ -356,18 +356,58 @@ package body et_project is
 		
 	end create_project_directory_bare;
 
+	procedure validate_project (
+		project_name	: in pac_project_name.bounded_string;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use et_string_processing;
+		use ada.directories;
+	begin
+		if exists (to_string (project_name)) then
+			null;
+			-- CS test if it is a directory
+			-- CS test if it contains the project file
+		else
+			log (ERROR, "Native project " & to_string (project_name) 
+					& " does not exist !", console => true);
+			raise constraint_error;
+		end if;
+	end validate_project;
+						
 	procedure open_project (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level)
-	is begin
-		validate_project_name (project_name, log_threshold);
-
+	is
+		use et_string_processing;
+		use ada.directories;
+		
+		-- We need a backup of the current working directory. When this procedure finishes,
+		-- the working directory must be restored.
+		current_working_directory : constant string := current_directory;
+	begin
+		validate_project (project_name, log_threshold);
+	
 		-- set global project name
 		project := project_name;
 
-		-- read the rig configurations
+		-- change in project directory
+		set_directory (to_string (project_name));
+		
+		-- read project configuration file
+		configuration.read_configuration (project_name, log_threshold + 1);
+		
+		-- read the rig configurations (and associated generic module):
 		rigs.read_rigs (project, log_threshold);
-
+		
+		-- Restore working directory.
+		set_directory (current_working_directory);
+		
+		exception when event:
+			others => 
+				-- Restore working directory.
+				set_directory (current_working_directory);
+				raise;
+		
 	end open_project;
 
 

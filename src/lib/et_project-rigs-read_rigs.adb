@@ -49,10 +49,6 @@ procedure read_rigs (
 	use ada.directories;
 	use et_project.modules;
 
-	-- We need a backup of the current working directory. When this procedure finishes,
-	-- the working directory must be restored.
-	current_working_directory : string := current_directory;
-
 	-- The search of rig module files requires this stuff:
 	module_file_search : search_type; -- the state of the search
 	module_file_filter : filter_type := (ordinary_file => true, others => false);
@@ -67,7 +63,10 @@ procedure read_rigs (
 	conf_file_search : search_type; -- the state of the search
 	conf_file_filter : filter_type := (ordinary_file => true, others => false);
 
-	procedure read_conf_file (conf_file_handle : in directory_entry_type) is 
+	procedure read_conf_file (conf_file_handle : in directory_entry_type) is
+		-- backup the previous input source
+		previous_input : ada.text_io.file_type renames current_input;
+
 		file_handle : ada.text_io.file_type;
 		file_name : string := simple_name (conf_file_handle); -- my_rig_configuration.conf
 		rig_cursor : pac_rigs.cursor;
@@ -449,7 +448,7 @@ procedure read_rigs (
 		end if;
 
 		log_indentation_down;
-		set_input (current_input);
+		set_input (previous_input);
 		close (file_handle);
 
 		exception when event: others =>
@@ -463,62 +462,34 @@ begin -- read_rigs
 	log (text => "reading rigs in project " & enclose_in_quotes (to_string (project_name)) & " ...",
 		 level => log_threshold, console => true);
 	log_indentation_up;
-	
-	-- If the given project directory exists, enter it. Otherwise error message and abort.
-	if exists (to_string (project_name)) then
 		
-		-- enter the project directory
-		set_directory (to_string (project_name));
-
-		--log (text => "current dir " & current_directory, level => log_threshold + 1);
-
-		et_project.configuration.read_configuration (project_name, log_threshold + 1);
-		
-		-- CS: It requires discussion whether loading all modules files at this time is reasonable.
-		-- Even if a module will not be used it is going to be loaded. This causes more log information than required.
-		-- A solution could be to load a module on reading the rig configuration file. The drawback is that the user
-		-- would be required to setup a rig configuration even if she wants to design only one board.
-		log (text => "looking for module files ...", level => log_threshold + 1);
-		log_indentation_up;
-		start_search (module_file_search, current_directory, module_file_name_extension_asterisk, module_file_filter);
-		if more_entries (module_file_search) then
-			search (current_directory, module_file_name_extension_asterisk, module_file_filter, read_module_file_pre'access);
-		else
-			log (WARNING, "No modules found !"); -- CS: write implications !
-		end if;
-		end_search (module_file_search);
-		log_indentation_down;
-		
-		log (text => "looking for rig configuration files ...", level => log_threshold + 1);
-		log_indentation_up;
-		start_search (conf_file_search, current_directory, rig_configuration_file_extension_asterisk, conf_file_filter);
-		if more_entries (conf_file_search) then
-			search (current_directory, rig_configuration_file_extension_asterisk, conf_file_filter, read_conf_file'access);
-		else
-			log (WARNING, "No rig configuration files found !"); -- CS: write implications !
-		end if;
-		end_search (conf_file_search);
-		log_indentation_down;
-		
-	else -- project directory does not exist
-		log (ERROR, "Native project " & to_string (project_name) 
-				& " does not exist !", console => true);
-		--log (text => "Example to open the native project by specifying the project directory:", console => true);			log ("Example to open the native project by specifying the project directory:", console => true);
-		--log (system_name_cmd_line & "openetample to open the native project by specifying the project directory:", console => true);
-		raise constraint_error;
+	-- CS: It requires discussion whether loading all modules files at this time is reasonable.
+	-- Even if a module will not be used it is going to be loaded. This causes more log information than required.
+	-- A solution could be to load a module on reading the rig configuration file. The drawback is that the user
+	-- would be required to setup a rig configuration even if she wants to design only one board.
+	log (text => "looking for module files ...", level => log_threshold + 1);
+	log_indentation_up;
+	start_search (module_file_search, current_directory, module_file_name_extension_asterisk, module_file_filter);
+	if more_entries (module_file_search) then
+		search (current_directory, module_file_name_extension_asterisk, module_file_filter, read_module_file_pre'access);
+	else
+		log (WARNING, "No modules found !"); -- CS: write implications !
 	end if;
-
+	end_search (module_file_search);
+	log_indentation_down;
+	
+	log (text => "looking for rig configuration files ...", level => log_threshold + 1);
+	log_indentation_up;
+	start_search (conf_file_search, current_directory, rig_configuration_file_extension_asterisk, conf_file_filter);
+	if more_entries (conf_file_search) then
+		search (current_directory, rig_configuration_file_extension_asterisk, conf_file_filter, read_conf_file'access);
+	else
+		log (WARNING, "No rig configuration files found !"); -- CS: write implications !
+	end if;
+	end_search (conf_file_search);
 	log_indentation_down;
 
-	-- Restore working directory.
-	set_directory (current_working_directory);
-	
-	exception when event:
-		others => 
-			-- Restore working directory.
-			set_directory (current_working_directory);
-
-			raise;
+	log_indentation_down;
 
 end read_rigs;
 	
