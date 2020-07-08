@@ -526,19 +526,20 @@ package body et_project is
 		end in_project_directory;
 		
 		procedure query_modules (module_cursor : in pac_generic_modules.cursor) is
-		-- Saves a module or a submodule (indicated by module_cursor).
+		-- Saves a project internal module or a submodule (indicated by module_cursor).
 			module_name : type_module_name.bounded_string := key (module_cursor); -- motor_driver
-		begin -- query_modules
+		begin
 			log_indentation_up;
 
-			-- Only those modules inside the project will be saved in the new project:
+			-- Only those modules inside the project will be saved in files:
 			if in_project_directory (to_string (module_name)) then
-				log (text => "saving module " & to_string (module_name), level => log_threshold + 1);
+				log (text => "saving module " & enclose_in_quotes (to_string (module_name)),
+					 level => log_threshold + 1);
 				
 				log_indentation_up;
 
 				save_module (
-					module_name		=> module_name,	-- motor_driver
+					module_cursor	=> module_cursor,
 					log_threshold 	=> log_threshold + 2);
 				
 				-- FOR TESTING ONLY

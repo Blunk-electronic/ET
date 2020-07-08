@@ -110,10 +110,9 @@ package et_project.modules is
 		direction	: in submodules.type_netchanger_port_name) -- master/slave 		
 		return boolean;
 	
-	-- Saves the given generic module in the given file.
+	-- Saves the given generic module in the current working directory.
 	procedure save_module (
 		module_cursor		: in pac_generic_modules.cursor;
-		module_file_name	: in pac_module_file_name.bounded_string; -- led_matrix.mod
 		log_threshold		: in et_string_processing.type_log_level);
 	
 	-- Saves the given module in the module file of the given project.

@@ -38,12 +38,9 @@
 separate (et_project.modules)
 
 procedure save_module (
--- Saves the given generic module in the given file.
 	module_cursor		: in pac_generic_modules.cursor;
-	module_file_name	: in pac_module_file_name.bounded_string; -- led_matrix.mod
 	log_threshold		: in et_string_processing.type_log_level) 
 is
-
 	use et_string_processing;
 	use pac_generic_modules;
 	use general_rw;
@@ -57,15 +54,20 @@ is
 		use pac_project_name;
 		use type_et_project_path;
 		use et_general;
-	
-	begin -- write_module_header
 
-		-- create module file and write in it a header
+		-- compose the full file name
+		file_name : constant string := ( -- motor_driver.mod, templates/clock_generator.mod
+			to_string (key (module_cursor)) &
+			latin_1.full_stop &
+			module_file_name_extension);
+													  
+	begin
+		-- create module file and write in it a nice header
 		create (
 			file => module_file_handle,
 			mode => out_file, 
-			name => pac_module_file_name.to_string (module_file_name));
-
+			name => file_name);
+			
 		set_output (module_file_handle);
 		put_line (comment_mark & " " & system_name & " module");
 		put_line (comment_mark & " " & date);

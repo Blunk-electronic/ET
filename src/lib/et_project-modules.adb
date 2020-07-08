@@ -330,9 +330,7 @@ package body et_project.modules is
 	end netchanger_as_port_available;
 
 	procedure save_module (
-	-- Saves the given generic module in the given file.
 		module_cursor		: in pac_generic_modules.cursor;
-		module_file_name	: in pac_module_file_name.bounded_string; -- led_matrix.mod
 		log_threshold		: in et_string_processing.type_log_level) 
 		is separate;
 	
@@ -396,7 +394,8 @@ package body et_project.modules is
 		reset_tab_depth;
 		log_indentation_up;
 
-		save_module (module_cursor, make_module_file_name, log_threshold);
+		--save_module (module_cursor, make_module_file_name, log_threshold);
+		save_module (module_cursor, log_threshold);
 	
 		log_indentation_down;
 
@@ -484,7 +483,7 @@ package body et_project.modules is
 
 			save_module (
 				module_cursor		=> module_cursor,					-- the module
-				module_file_name	=> to_module_file_name (file_name),	-- blood_sample_analyzer
+-- 				module_file_name	=> to_module_file_name (file_name),	-- blood_sample_analyzer
 				log_threshold 		=> log_threshold + 1);
 			
 		else

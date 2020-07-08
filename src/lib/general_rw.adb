@@ -105,8 +105,18 @@ package body general_rw is
 		raise constraint_error;
 	end;
 	
-	procedure tab_depth_up is begin tab_depth := tab_depth + 1; end tab_depth_up;
-	procedure tab_depth_down is begin tab_depth := tab_depth - 1; end tab_depth_down;
+	procedure tab_depth_up is begin
+		if tab_depth < type_tab_depth'last then
+			tab_depth := tab_depth + 1; 
+		end if;
+	end tab_depth_up;
+	
+	procedure tab_depth_down is begin
+		if tab_depth > type_tab_depth'first then
+			tab_depth := tab_depth - 1;
+		end if;
+	end tab_depth_down;
+	
 	procedure reset_tab_depth is begin tab_depth := type_tab_depth'first; end reset_tab_depth;
 
 	procedure section_mark (section : in string; mark : in type_section_mark) is begin
