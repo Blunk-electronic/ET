@@ -123,6 +123,10 @@ package et_project is
 	procedure open_project (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);
+
+	-- Files outside the project directory MUST NOT be saved. To test a file for its location
+	-- this function shall be used.
+	function inside_project_directory (file_name : in string) return boolean;
 	
 	-- Saves the current project under the given destination like blood_sample_analyzer_experimental.
 	-- Saves generic modules that are inside the project.

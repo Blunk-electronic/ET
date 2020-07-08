@@ -206,7 +206,7 @@ package body et_project is
 			module_cursor := modules.generic_modules.first;
 
 			modules.save_module (
-				module_name		=> key (module_cursor),
+				module_cursor	=> module_cursor,
 				log_threshold	=> log_threshold + 1);
 			
 			-- restore working directory
@@ -482,6 +482,27 @@ package body et_project is
 -- 		log_indentation_down;			
 -- 	end save_libraries;
 
+	function inside_project_directory (file_name : in string) return boolean is
+	-- Tests whether the given file name indicates whether the file is inside the project directory.
+	-- CS: This works on Linux only. Implementation should be OS independent !
+
+	-- 1. The expanded file_name may be a relative path to a directory outside the project.
+	--    In this case the expanded path starts with ../ and the return will be false.
+	-- 2. The expanded file_name may be a relative path to a subdirectory inside the project.
+	--    In this case the return would be true.
+	-- 3. The expanded file_name may be an absolute path pointing elsewhere in the filesystem.
+	--    In this case the expanded path starts with / and the return will be false.
+		use gnat.directory_operations;
+		expanded_name : constant string := expand (file_name);
+	begin
+		if 	index (expanded_name, to_set (dir_separator)) = 1 or -- absolute path
+			index (expanded_name, ".." & dir_separator) = 1 then -- relative path -> outside the project
+			return false;
+		else
+			return true;
+		end if;
+	end inside_project_directory;
+	
 	procedure save_project (
 		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
 		log_threshold 	: in et_string_processing.type_log_level) is
@@ -501,29 +522,6 @@ package body et_project is
 		-- break down destination into path and project name:
 		path : type_et_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
 		name : pac_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
-
-		-- Files outside the project directory MUST NOT be saved. To test a file for its location
-		-- this function shall be used.
-		function in_project_directory (file_name : in string) return boolean is
-		-- Tests whether the given file name indicates whether the file is inside the project directory.
-		-- CS: This works on Linux only. Implementation should be OS independent !
-
-		-- 1. The expanded file_name may be a relative path to a directory outside the project.
-		--    In this case the expanded path starts with ../ and the return will be false.
-		-- 2. The expanded file_name may be a relative path to a subdirectory inside the project.
-		--    In this case the return would be true.
-		-- 3. The expanded file_name may be an absolute path pointing elsewhere in the filesystem.
-		--    In this case the expanded path starts with / and the return will be false.
-			use gnat.directory_operations;
-			expanded_name : constant string := expand (file_name);
-		begin
-			if 	index (expanded_name, to_set (dir_separator)) = 1 or -- absolute path
-				index (expanded_name, ".." & dir_separator) = 1 then -- relative path -> outside the project
-				return false;
-			else
-				return true;
-			end if;
-		end in_project_directory;
 		
 		procedure query_modules (module_cursor : in pac_generic_modules.cursor) is
 		-- Saves a project internal module or a submodule (indicated by module_cursor).
@@ -532,7 +530,7 @@ package body et_project is
 			log_indentation_up;
 
 			-- Only those modules inside the project will be saved in files:
-			if in_project_directory (to_string (module_name)) then
+			if inside_project_directory (to_string (module_name)) then
 				log (text => "saving module " & enclose_in_quotes (to_string (module_name)),
 					 level => log_threshold + 1);
 				

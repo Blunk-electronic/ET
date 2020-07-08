@@ -274,13 +274,16 @@ package et_project.modules is
 
 	procedure save_module (
 	-- Saves a generic module (from container generic_modules) in a file inside 
-	-- the current project directory. 
+	-- the current project directory.
+	-- The module must be inside the current project. If it is outside
+	-- the project, a warning will be issued and it will NOT be saved.
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure delete_module (
-	-- Deletes a generic module in container modules.
-	-- Deletes the module file of the generic module.								
+	-- Deletes a generic module (from container generic_modules).
+	-- The module must be inside the current project. If it is outside
+	-- the project, a warning will be issued and it will NOT be deleted.
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level);
 	

@@ -467,28 +467,33 @@ package body et_project.modules is
 		use et_string_processing;
 		use ada.directories;
 
-		file_name : constant string := to_string (module_name) & latin_1.full_stop & module_file_name_extension;
+		file_name : constant string := to_string (module_name) &
+			latin_1.full_stop & module_file_name_extension;
 		-- motor_driver.mod or templates/clock_generator.mod
 	begin
 		log (
 			text	=> "saving module " & enclose_in_quotes (to_string (module_name)) & " ...",
 			level	=> log_threshold);
 
-		-- We save the module only if it exists:
+		-- We save the module if it exists:
 		if module_cursor /= pac_generic_modules.no_element then
 	
-			-- CS: make sure the module is inside the current project directory.
-			-- This test is probably not required since module cursor points to a module 
-			-- inside the project anyway. Module names are like file paths like "templates/motor_driver".
+			-- Make sure the module file is inside the current project directory.
+			-- If the file is outside the project, issue a warning and do not save.
+			if inside_project_directory (to_string (module_name)) then
+			
+				save_module (
+					module_cursor	=> module_cursor,
+					log_threshold 	=> log_threshold + 1);
 
-			save_module (
-				module_cursor		=> module_cursor,					-- the module
--- 				module_file_name	=> to_module_file_name (file_name),	-- blood_sample_analyzer
-				log_threshold 		=> log_threshold + 1);
+			else
+				log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
+					 " is outside the project and will not be saved !");
+			end if;
 			
 		else
-			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
-					" does not exist !", level => log_threshold + 1);
+			log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
+					" does not exist !");
 		end if;
 		
 	end save_module;
@@ -504,7 +509,8 @@ package body et_project.modules is
 		use et_string_processing;
 		use ada.directories;
 
-		file_name : constant string := to_string (module_name) & latin_1.full_stop & module_file_name_extension;
+		file_name : constant string := to_string (module_name) &
+			latin_1.full_stop & module_file_name_extension;
 		-- motor_driver.mod or templates/clock_generator.mod
 	begin
 		log (
@@ -514,24 +520,29 @@ package body et_project.modules is
 		-- We delete the module only if it exists:
 		if module_cursor /= pac_generic_modules.no_element then
 	
-			-- CS: make sure the module is inside the current project directory.
-			-- This test is probably not required since module cursor points to a module 
-			-- inside the project anyway. Module names are like file paths like "templates/motor_driver".
-			
-			pac_generic_modules.delete (
-				container	=> generic_modules,
-				position	=> module_cursor);
-			
-		else
-			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
-					" does not exist !", level => log_threshold + 1);
-		end if;
+			-- Make sure the module file is inside the current project directory.
+			-- If the file is outside the project, issue a warning and do not delete.
+			if inside_project_directory (to_string (module_name)) then
+				
+				pac_generic_modules.delete (
+					container	=> generic_modules,
+					position	=> module_cursor);
 
-		-- Delete the module file in case it exists already:
-		if exists (file_name) then
-			delete_file (file_name);
+				-- Delete the module file in case it exists already:
+				if exists (file_name) then
+					delete_file (file_name);
+				end if;
+				
+			else
+				log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
+					 " is outside the project and will not be deleted !");
+			end if;
+				
+		else
+			log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
+					" does not exist !");
 		end if;
-		
+	
 	end delete_module;
 
 
