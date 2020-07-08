@@ -309,9 +309,18 @@ package body et_frames is
 				frame.title_block_pcb.additional_placeholders.face.position 				:= (120, 36);
 				frame.title_block_pcb.additional_placeholders.signal_layer.position 		:= (120, 31);
 
--- 		additional_placeholders	: type_placeholders_pcb;
--- 		cam_markers				: type_cam_markers;
-			
+				-- cam markers
+				frame.title_block_pcb.cam_markers.face.position 							:= ( 90, 36);
+				frame.title_block_pcb.cam_markers.signal_layer.position 					:= ( 90, 31);
+				frame.title_block_pcb.cam_markers.silk_screen.position 						:= (120, 26);
+				frame.title_block_pcb.cam_markers.assy_doc.position 						:= (150, 26);
+				frame.title_block_pcb.cam_markers.stop_mask.position 						:= (175, 26);
+				frame.title_block_pcb.cam_markers.stencil.position 							:= (190, 26);
+				frame.title_block_pcb.cam_markers.pcb_outline.position 						:= (120, 21);
+				frame.title_block_pcb.cam_markers.plated_millings.position					:= (145, 21);
+				frame.title_block_pcb.cam_markers.keepout.position 							:= (185, 21);
+				frame.title_block_pcb.cam_markers.route_restrict.position 					:= (120, 16);
+				frame.title_block_pcb.cam_markers.via_restrict.position 					:= (165, 16);
 		end case;
 	end apply_defaults;
 	

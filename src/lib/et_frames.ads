@@ -105,7 +105,7 @@ package et_frames is
 	end record;
 
 	subtype type_border_width is type_distance range 4 .. 10;
-	border_width_default : constant type_border_width := 7;
+	border_width_default : constant type_border_width := 5;
 
 	paper_size_A3_x : constant type_distance := 420;
 	paper_size_A3_y : constant type_distance := 297;
