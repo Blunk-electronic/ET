@@ -76,6 +76,7 @@ $ et --make-conventions conventions.txt
 This file can now be found in the root directory of your projects. Edit it according to your customs.
 Assign the conventions file to the module by editing the rig configuration file.
 
+An example file can be seen here <https://github.com/Blunk-electronic/ET_training/blob/master/conventions.txt>
 
 #### Creating an ET native project
 To create a new project like 'my_new_et_project' run this command. CAUTION: An already existing project
