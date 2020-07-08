@@ -44,6 +44,7 @@ procedure read_module (
 	file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 	log_threshold	: in et_string_processing.type_log_level) 
 	is
+
 	previous_input : ada.text_io.file_type renames current_input;
 
 	use et_string_processing;

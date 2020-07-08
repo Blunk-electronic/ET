@@ -451,6 +451,7 @@ procedure read_rigs (
 
 		exception when event: others =>
 			if is_open (file_handle) then close (file_handle); end if;
+			set_input (previous_input);
 			raise;
 		
 	end read_conf_file;

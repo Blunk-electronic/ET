@@ -44,6 +44,9 @@ is
 	use et_string_processing;
 	use pac_generic_modules;
 	use general_rw;
+
+	-- backup the previous output destination
+	previous_output : ada.text_io.file_type renames current_output;
 	
 	module_file_handle : ada.text_io.file_type;
 
@@ -87,7 +90,7 @@ is
 		put_line (comment_mark & " module file end");
 		new_line;
 
-		set_output (standard_output);		
+		set_output (previous_output);
 		close (module_file_handle);
 	end write_footer;
 	
@@ -1475,6 +1478,7 @@ begin -- save_module
 		others => 
 			log (text => ada.exceptions.exception_message (event), console => true);
 			close (module_file_handle);
+			set_output (previous_output);
 			raise;
 	
 end save_module;
