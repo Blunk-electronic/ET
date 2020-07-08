@@ -85,7 +85,7 @@ package et_project is
 	package pac_project_name is new generic_bounded_length (project_name_max);
 
 	-- here we store the name of the currently open project:
-	project : pac_project_name.bounded_string;
+	current_project : pac_project_name.bounded_string;
 	
 	function to_string (project_name : in pac_project_name.bounded_string) return string;
 	function to_project_name (name : in string) return pac_project_name.bounded_string;
@@ -113,30 +113,26 @@ package et_project is
 
 	-- Creates a bare project (without any configuration files).
 	-- Already existing projects in given path are overwritten.
-	-- Sets the global project file name so that subsequent write and read operations
-	-- know the right project file.
-	-- CS: argument project_path no longer required, remove it.
 	procedure create_project_directory_bare (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level);
 
 	-- Opens the project with the given name. Assumes the project to exist
 	-- in the current directory.
-	-- Assigns to the global variable "project" the given project_name.
+	-- Assigns to the global variable "current_project" the given project_name.
 	procedure open_project (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);
 	
-	-- Saves the current project under the given destination like /home/user/ecad/blood_sample_analyzer.
+	-- Saves the current project under the given destination like blood_sample_analyzer_experimental.
 	-- Saves generic modules that are inside the project.
 	-- Saves the project configuration.
-	-- Saves the rig configurations. CS: copy them as we do with scripts ?
+	-- Saves the rigs (*.rig). CS: copy them as we do with scripts ?
 	-- Scripts and design rules are regarded as source code and are therefore copied as they are.
 	-- This way comments will be preserved.
 	-- Copies the script and design rule files to the given destination.
 	procedure save_project (
-		destination		: in pac_project_name.bounded_string;		-- blood_sample_analyzer
+		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 end et_project;

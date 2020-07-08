@@ -460,7 +460,6 @@ package body et_project.modules is
 	end create_module;
 
 	procedure save_module (
-	-- Saves a generic module (from container generic_modules) in a file inside the current project directory. 
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
 

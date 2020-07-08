@@ -218,23 +218,23 @@ package body et_project is
 			file_handle : ada.text_io.file_type;
 
 			use et_project.rigs;
-			rig_conf_file : type_rig_configuration_file_name.bounded_string; -- led_matrix.conf
+			rig_conf_file : pac_file_name.bounded_string; -- led_matrix.conf
 
 			example_instance_name : constant string := "MOD1";
 		begin
 			log (text => "creating default rig configuration file ...", level => log_threshold + 1);
 
 			-- compose the full file name			
-			rig_conf_file := type_rig_configuration_file_name.to_bounded_string (compose (
+			rig_conf_file := pac_file_name.to_bounded_string (compose (
 				containing_directory	=> to_string (path),
 				name 					=> to_string (project_name),
-				extension 				=> rig_configuration_file_extension));
+				extension 				=> file_extension));
 
 			-- create the file
 			create (
 				file => file_handle,
 				mode => out_file, 
-				name => type_rig_configuration_file_name.to_string (rig_conf_file));
+				name => pac_file_name.to_string (rig_conf_file));
 
 			set_output (file_handle);
 
@@ -312,19 +312,16 @@ package body et_project is
 		
 	procedure create_project_directory_bare (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level) is
+		
 		use et_general;
 		use ada.directories;
 		use et_string_processing;
 		use pac_project_name;
-		use type_et_project_path;
 
-		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
-		use type_path;
-		path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
-
-		procedure create_library_subdirs (path : in string) is
+		path : constant string := to_string (project_name);
+		
+		procedure create_library_subdirs is
 		begin
 			create_directory (compose (path, directory_libraries_devices));
 			create_directory (compose (path, directory_libraries_symbols));
@@ -332,20 +329,21 @@ package body et_project is
 		end create_library_subdirs;
 
 	begin -- create_project_directory_bare
-		log (text => "creating bare native project " & to_string (path) & " ...", level => log_threshold);
+		log (text => "creating bare native project " & enclose_in_quotes (path) & " ...",
+			 level => log_threshold);
 		log_indentation_up;
 
 		-- CS validate_project_name
 		
 		-- delete previous project directory
-		if exists (to_string (path)) then
-			delete_tree (to_string (path));
+		if exists (path) then
+			delete_tree (path);
 		end if;
 		
-		-- create project root directory
-		create_path (to_string (path));
+		-- create project directory
+		create_path (path);
 
-		create_supplementary_directories (to_string (path), log_threshold + 1);
+		create_supplementary_directories (path, log_threshold + 1);
 
 		log_indentation_down;
 		
@@ -388,7 +386,7 @@ package body et_project is
 		validate_project (project_name, log_threshold);
 	
 		-- set global project name
-		project := project_name;
+		current_project := project_name;
 
 		-- change in project directory
 		set_directory (to_string (project_name));
@@ -397,7 +395,7 @@ package body et_project is
 		configuration.read_configuration (project_name, log_threshold + 1);
 		
 		-- read the rig configurations (and associated generic module):
-		rigs.read_rigs (project, log_threshold);
+		rigs.read_rigs (current_project, log_threshold);
 		
 		-- Restore working directory.
 		set_directory (current_working_directory);
@@ -485,7 +483,7 @@ package body et_project is
 -- 	end save_libraries;
 
 	procedure save_project (
-		destination		: in pac_project_name.bounded_string; -- /home/user/ecad/blood_sample_analyzer
+		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
 		log_threshold 	: in et_string_processing.type_log_level) is
 
 		use et_project.rigs;
@@ -495,7 +493,11 @@ package body et_project is
 		use ada.directories;
 		use et_project.modules;
 		use et_project.modules.pac_generic_modules;
-		
+
+		-- We need a backup of the current working directory. When this procedure finishes,
+		-- the working directory must be restored.
+		current_working_directory : constant string := current_directory;
+
 		-- break down destination into path and project name:
 		path : type_et_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
 		name : pac_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
@@ -534,14 +536,11 @@ package body et_project is
 				log (text => "saving module " & to_string (module_name), level => log_threshold + 1);
 				
 				log_indentation_up;
-				
-				save_module (
-					module_cursor	=> module_cursor, -- the module it is about
-					project_name	=> name, -- blood_sample_analyzer
-					module_name		=> module_name,	-- motor_driver
-					project_path	=> path, -- /home/user/ecad
-					log_threshold 	=> log_threshold + 2);
 
+				save_module (
+					module_name		=> module_name,	-- motor_driver
+					log_threshold 	=> log_threshold + 2);
+				
 				-- FOR TESTING ONLY
 				-- save libraries (et_libraries.devices and et_pcb.packages)
 	-- 			save_libraries (
@@ -556,18 +555,15 @@ package body et_project is
 		end query_modules;
 
 		procedure query_rig_configuration (rig_cursor : in rigs.pac_rigs.cursor) is
-			use type_rig_configuration_file_name;
-			rig_name : type_rig_configuration_file_name.bounded_string := key (rig_cursor);
+			use pac_file_name;
+			rig_name : pac_file_name.bounded_string := key (rig_cursor);
 		begin
 			log_indentation_up;
 			log (text => "rig configuration " & to_string (rig_name), level => log_threshold + 1);
 			log_indentation_up;
 			
 			save_rig_configuration (
-				project_name	=> name, -- blood_sample_analyzer
-				rig_conf_name	=> rig_name, -- demo, low_cost, fully_equipped
-				rig				=> element (rig_cursor), -- the actual rig configuration
-				project_path	=> path,	-- /home/user/ecad
+				rig_cursor		=> rig_cursor,
 				log_threshold 	=> log_threshold + 1);
 			
 			log_indentation_down;
@@ -585,17 +581,18 @@ package body et_project is
 		
 	begin -- save_project
 		log (text => row_separator_double, level => log_threshold);
-		log (text => "saving project as " & to_string (destination) & " ...", level => log_threshold, console => true);
+		log (text => "saving project as " & to_string (destination) & " ...",
+			 level => log_threshold, console => true);
 		log_indentation_up;
 
-		log (text => "path " & to_string (path));
-		log (text => "name " & to_string (name));
-		
+		-- create project directory in current working directory:
 		create_project_directory_bare (
-			project_name	=> name, -- blood_sample_analyzer
-			project_path	=> path, -- /home/user/ecad
+			project_name	=> name, -- blood_sample_analyzer_experimental
 			log_threshold 	=> log_threshold + 2);
 
+		-- change into project directory:
+		set_directory (to_string (name));
+		
 		-- save modules
 		iterate (generic_modules, query_modules'access);
 
@@ -604,13 +601,13 @@ package body et_project is
 
 		-- save project configuration
 		configuration.save_configuration (
-			project_name	=> name, -- blood_sample_analyzer
-			project_path	=> path, -- /home/user/ecad
 			log_threshold 	=> log_threshold + 1);
 
 		copy_design_rules;
 		
 		-- CS copy scripts (use copy operations)
+
+		set_directory (current_working_directory);
 		
 		log_indentation_down;
 	end save_project;

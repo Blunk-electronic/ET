@@ -38,8 +38,6 @@
 separate (et_project.configuration)
 	
 procedure save_configuration (
-	project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
-	project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 	log_threshold 	: in et_string_processing.type_log_level) 
 is
 	-- backup the previous output destination
@@ -51,10 +49,6 @@ is
 	-- For the final full file name like /home/user/et_projects/blood_sample_analyzer.prj:
 	file_name : pac_file_name.bounded_string; 
 	file_handle : ada.text_io.file_type;
-
-	package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
-	use type_path;
-	path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
 
 	procedure write_rules is 
 		use et_conventions;
@@ -75,9 +69,8 @@ begin -- save_configuration
 
 	-- compose the full file name
 	file_name := pac_file_name.to_bounded_string (compose (
-		containing_directory	=> to_string (path), -- /home/user/et_projects/blood_sample_analyzer
-		name 					=> to_string (project_name), -- file base name same as project name
-		extension 				=> file_extension)); -- prj
+		name 		=> to_string (current_project), -- file base name same as project name
+		extension 	=> file_extension)); -- prj
 	
 	-- create the file
 	create (
@@ -105,6 +98,7 @@ begin -- save_configuration
 		others => 
 			log (text => ada.exceptions.exception_message (event), console => true);
 			close (file_handle);
+			set_output (previous_output);
 			raise;
 
 end save_configuration;

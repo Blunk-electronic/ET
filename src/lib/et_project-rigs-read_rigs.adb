@@ -109,7 +109,7 @@ procedure read_rigs (
 			-- and finally assembled to actual objects:
 
 				procedure create_instance (
-					rig_name	: in type_rig_configuration_file_name.bounded_string;
+					rig_name	: in pac_file_name.bounded_string;
 					rig			: in out type_rig) is
 					instance_created : boolean;
 					instance_cursor : type_module_instances.cursor;
@@ -135,7 +135,7 @@ procedure read_rigs (
 				end create_instance;
 
 				procedure create_connection (
-					rig_name	: in type_rig_configuration_file_name.bounded_string;
+					rig_name	: in pac_file_name.bounded_string;
 					rig			: in out type_rig) is
 					connection_inserted : boolean;
 					connection_cursor : type_module_connectors.cursor;
@@ -480,9 +480,9 @@ begin -- read_rigs
 	
 	log (text => "looking for rig configuration files ...", level => log_threshold + 1);
 	log_indentation_up;
-	start_search (conf_file_search, current_directory, rig_configuration_file_extension_asterisk, conf_file_filter);
+	start_search (conf_file_search, current_directory, file_extension_asterisk, conf_file_filter);
 	if more_entries (conf_file_search) then
-		search (current_directory, rig_configuration_file_extension_asterisk, conf_file_filter, read_conf_file'access);
+		search (current_directory, file_extension_asterisk, conf_file_filter, read_conf_file'access);
 	else
 		log (WARNING, "No rig configuration files found !"); -- CS: write implications !
 	end if;

@@ -46,12 +46,12 @@ with et_conventions;
 package et_project.rigs is
 
 	-- The rig configuration is modelled here:
-	rig_configuration_file_length_max : constant positive := 100;
-	package type_rig_configuration_file_name is new generic_bounded_length (rig_configuration_file_length_max);
-	use type_rig_configuration_file_name;
+	file_length_max : constant positive := 100;
+	package pac_file_name is new generic_bounded_length (file_length_max);
+	use pac_file_name;
 	
-	rig_configuration_file_extension : constant string := "conf";
-	rig_configuration_file_extension_asterisk : constant string := "*." & rig_configuration_file_extension;
+	file_extension : constant string := "rig";
+	file_extension_asterisk : constant string := "*." & file_extension;
 
 	type type_module_instance is record
 		generic_name		: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -89,9 +89,6 @@ package et_project.rigs is
 	-- and a list of module-to-module connectors (or board-to-board connectors).
 	-- Conventions apply for the whole rig.
 	
-	-- CS: Discussion required whether to apply conventions to the whole project,
-	-- means to all rigs. This would require a project configuration file.
-	
 	-- A single rig is modelled by this type and stored in a 
 	-- similar structured rig configuration file:
 	type type_rig is record
@@ -103,7 +100,7 @@ package et_project.rigs is
 
 	-- Lots of rigs are stored in a map:
 	package pac_rigs is new ordered_maps (
-		key_type		=> type_rig_configuration_file_name.bounded_string, -- CS dedicated type_rig_name ?
+		key_type		=> pac_file_name.bounded_string, -- CS dedicated type_rig_name ?
 		element_type	=> type_rig);
 
 	-- The collection of rig configurations:
@@ -125,12 +122,10 @@ package et_project.rigs is
 	procedure write_rig_configuration_header;
 	procedure write_rig_configuration_footer;
 	
-	-- Saves the rig configuration in the file with the given name rig_conf_file.	
-	procedure save_rig_configuration (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		rig_conf_name	: in type_rig_configuration_file_name.bounded_string; -- demo, low_cost, fully_equipped
-		rig				: in type_rig; -- the actual rig configuration		
-		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
+	-- Saves the given rig in the current working directory
+	-- in a *.rig file.
+	procedure save_rig_configuration ( -- CS rename to save_rig
+		rig_cursor		: in pac_rigs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	
@@ -154,11 +149,7 @@ package et_project.rigs is
 	section_connector			: constant string := "[CONNECTOR";
 	section_module				: constant string := "[MODULE";
 
-	
-	
-	-- Enters the project directory specified by project_name.
-	-- Reads the project configuration file (*.prj).
-	-- Searches for rig configuration files (*.conf), reads them and stores 
+	-- Searches for rig configuration files (*.rig), reads them and stores 
 	-- them in et_project.rigs.rigs.
 	-- Searches for module files (*.mod), reads them and stores then
 	-- in et_project.modules.generic_modules.

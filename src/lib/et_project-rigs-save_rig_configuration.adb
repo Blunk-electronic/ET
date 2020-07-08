@@ -38,24 +38,22 @@
 separate (et_project.rigs)
 
 procedure save_rig_configuration (
-	project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-	rig_conf_name	: in type_rig_configuration_file_name.bounded_string; -- demo, low_cost, fully_equipped
-	rig				: in type_rig; -- the actual rig configuration				
-	project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
+	rig_cursor		: in pac_rigs.cursor;
 	log_threshold 	: in et_string_processing.type_log_level) is
 
+	use pac_rigs;
 	use ada.directories;
 	use et_string_processing;
 	use type_module_instances;
 	use type_module_connectors;
 
 	-- For the final full file name like /home/user/et_projects/blood_sample_analyzer.conf
-	file_name : type_rig_configuration_file_name.bounded_string;
-	file_handle : ada.text_io.file_type;
+	file_name : pac_file_name.bounded_string;
 
-	package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
-	use type_path;
-	path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
+	-- backup the previous output
+	previous_output : ada.text_io.file_type renames current_output;
+	
+	file_handle : ada.text_io.file_type;
 
 	procedure query_instance (instance_cursor : in type_module_instances.cursor) is
 	begin
@@ -86,10 +84,9 @@ begin -- save_rig_configuration
 	log_indentation_up;
 
 	-- compose the full file name
-	file_name := type_rig_configuration_file_name.to_bounded_string (compose (
-		containing_directory	=> to_string (path),	-- /home/user/et_projects/blood_sample_analyzer
-		name 					=> to_string (rig_conf_name), -- fully_equipped
-		extension 				=> rig_configuration_file_extension)); -- conf
+	file_name := pac_file_name.to_bounded_string (compose (
+		name 		=> to_string (key (rig_cursor)), -- fully_equipped
+		extension 	=> file_extension)); -- conf
 
 	-- create the file
 	create (
@@ -102,20 +99,20 @@ begin -- save_rig_configuration
 
 	-- section module instances
 	section_mark (section_module_instances, HEADER);
-	iterate (rig.module_instances, query_instance'access);
+	iterate (element (rig_cursor).module_instances, query_instance'access);
 	-- CS In the future, write other things here that characterize the instance.
 	section_mark (section_module_instances, FOOTER);
 
 	-- section connectors
 	new_line;
 	section_mark (section_module_connections, HEADER);
-	iterate (rig.connections, query_connections'access);
+	iterate (element (rig_cursor).connections, query_connections'access);
 	-- CS In the future, write other things here that characterize the board to board connection
 	section_mark (section_module_connections, FOOTER);
 
 	-- close the file
 	write_rig_configuration_footer;
-	set_output (standard_output);
+	set_output (previous_output);
 	close (file_handle);
 	
 	log_indentation_down;
@@ -124,6 +121,7 @@ begin -- save_rig_configuration
 		others => 
 			log (text => ada.exceptions.exception_message (event), console => true);
 			close (file_handle);
+			set_output (previous_output);
 			raise;
 
 end save_rig_configuration;
