@@ -159,18 +159,35 @@ package body et_frames is
 		-- LINES OF TITLE BLOCK
 		type type_lines is array (positive range <>) of type_line;
 
-		lines_sch : constant type_lines (1 .. 4) := (
-			((  0,  0),(150,  0)),
-			((150,  0),(150, 40)),
-			((150, 40),(  0, 40)),
-			((  0, 40),(  0,  0))
+		lines_sch : constant type_lines (1 .. 10) := (
+			-- outer lines
+			((  0,  0),(220,  0)),
+			((220,  0),(220, 40)),
+			((220, 40),(  0, 40)),
+			((  0, 40),(  0,  0)),
+
+			-- inner lines
+			(( 89,  0),( 89, 40)), -- vertical
+			((119, 20),(119,  0)), -- vertical
+			((150, 20),(150,  0)), -- vertical
+			(( 89, 15),(220, 15)), -- horizontal
+			(( 89, 20),(220, 20)), -- horizontal
+			(( 89, 25),(220, 25))  -- horizontal
 			);
 		
-		lines_pcb : constant type_lines (1 .. 4) := (
-			((  0,  0),(200,  0)),
-			((200,  0),(200, 40)),
-			((200, 40),(  0, 40)),
-			((  0, 40),(  0,  0))
+		lines_pcb : constant type_lines (1 .. 9) := (
+			-- outer lines
+			((  0,  0),(220,  0)),
+			((220,  0),(220, 40)),
+			((220, 40),(  0, 40)),
+			((  0, 40),(  0,  0)),
+
+			-- inner lines
+			(( 89,  0),( 89, 40)), -- vertical
+			((119, 20),(119,  0)), -- vertical
+			((150, 20),(150,  0)), -- vertical
+			(( 89, 15),(220, 15)), -- horizontal
+			(( 89, 20),(220, 20)) -- horizontal
 			);
 
 		-- Collects the lines of the given array and returns them as a list:
@@ -188,14 +205,42 @@ package body et_frames is
 		-- TEXTS IN TITLE BLOCK
 		type type_texts is array (positive range <>) of type_text;
 
-		texts_sch : constant type_texts (1 .. 2) := (
-			(position => (0,  0), size => 2, content => et_text.to_content ("A")),
-			(position => (0, 10), size => 2, content => et_text.to_content ("B"))
+		texts_sch : constant type_texts (1 .. 16) := (
+			(position => (  2, 36), size => 3, content => et_text.to_content ("Company:")),
+			(position => (  2, 31), size => 3, content => et_text.to_content ("Project:")),
+			(position => (  2, 26), size => 3, content => et_text.to_content ("Module:")),
+			(position => (  2, 21), size => 3, content => et_text.to_content ("Variant:")),
+			(position => (  2, 16), size => 3, content => et_text.to_content ("Customer:")),
+			(position => (  2, 11), size => 3, content => et_text.to_content ("Partcode:")),
+			(position => (  2,  6), size => 3, content => et_text.to_content ("Drwg. No:")),
+			(position => (  2,  1), size => 3, content => et_text.to_content ("Revision:")),
+
+			(position => (120, 16), size => 3, content => et_text.to_content ("date")),
+			(position => (152, 16), size => 3, content => et_text.to_content ("name")),
+			(position => ( 90, 11), size => 3, content => et_text.to_content ("edited:")),
+			(position => ( 90,  6), size => 3, content => et_text.to_content ("checked:")),
+			(position => ( 90,  1), size => 3, content => et_text.to_content ("approved")),
+
+			(position => ( 90, 35), size => 3, content => et_text.to_content ("SHEET DESCRIPTION:")),
+			(position => (192, 21), size => 3, content => et_text.to_content ("SHEET")),
+			(position => ( 90, 21), size => 3, content => et_text.to_content ("CAT:"))
 			);
 
-		texts_pcb : constant type_texts (1 .. 2) := (
-			(position => (0,  0), size => 2, content => et_text.to_content ("A")),
-			(position => (0, 10), size => 2, content => et_text.to_content ("B"))
+		texts_pcb : constant type_texts (1 .. 13) := (
+			(position => (  2, 36), size => 3, content => et_text.to_content ("Company:")),
+			(position => (  2, 31), size => 3, content => et_text.to_content ("Project:")),
+			(position => (  2, 26), size => 3, content => et_text.to_content ("Module:")),
+			(position => (  2, 21), size => 3, content => et_text.to_content ("Variant:")),
+			(position => (  2, 16), size => 3, content => et_text.to_content ("Customer:")),
+			(position => (  2, 11), size => 3, content => et_text.to_content ("Partcode:")),
+			(position => (  2,  6), size => 3, content => et_text.to_content ("Drwg. No:")),
+			(position => (  2,  1), size => 3, content => et_text.to_content ("Revision:")),
+
+			(position => (120, 16), size => 3, content => et_text.to_content ("date")),
+			(position => (152, 16), size => 3, content => et_text.to_content ("name")),
+			(position => ( 90, 11), size => 3, content => et_text.to_content ("edited:")),
+			(position => ( 90,  6), size => 3, content => et_text.to_content ("checked:")),
+			(position => ( 90,  1), size => 3, content => et_text.to_content ("approved"))
 			);
 
 		-- Collects the texts of the given array and returns them as a list:
@@ -213,59 +258,56 @@ package body et_frames is
 		case frame.domain is
 			when SCHEMATIC =>
 				-- type_title_bock (basic stuff):
-				frame.title_block_schematic.position := (100, 8);
+				frame.title_block_schematic.position										:= ( 55,  6);
 				frame.title_block_schematic.lines := make_lines (lines_sch);
-				frame.title_block_schematic.placeholders.project_name.position := (2,31);
-				frame.title_block_schematic.placeholders.module_file_name.position := (2,26);
-				frame.title_block_schematic.placeholders.active_assembly_variant.position := (2,21);
+				frame.title_block_schematic.placeholders.project_name.position 				:= ( 30, 31);
+				frame.title_block_schematic.placeholders.module_file_name.position 			:= ( 30, 26);
+				frame.title_block_schematic.placeholders.active_assembly_variant.position	:= ( 30, 21);
 				frame.title_block_schematic.texts := make_texts (texts_sch);
-				
 
-				frame.title_block_schematic.additional_placeholders.company.position := (100,1);
--- 		customer		: type_placeholder;
--- 		partcode		: type_placeholder;
--- 		drawing_number	: type_placeholder;
--- 		revision		: type_placeholder;
--- 		
--- 		drawn_by		: type_placeholder;
--- 		checked_by		: type_placeholder;
--- 		approved_by		: type_placeholder;
--- 
--- 		drawn_date		: type_placeholder;
--- 		checked_date	: type_placeholder;
--- 		approved_date	: type_placeholder;
-			
--- 		sheet_number	: type_placeholder;
--- 		description		: type_placeholder;
--- 		category		: type_placeholder; -- development, routing, product
+				frame.title_block_schematic.additional_placeholders.company.position 		:= ( 30, 36);
+				frame.title_block_schematic.additional_placeholders.customer.position 		:= ( 30, 16);
+				frame.title_block_schematic.additional_placeholders.partcode.position 		:= ( 30, 11);
+				frame.title_block_schematic.additional_placeholders.drawing_number.position	:= ( 30,  6);
+				frame.title_block_schematic.additional_placeholders.revision.position 		:= ( 30,  1);
 
+				frame.title_block_schematic.additional_placeholders.drawn_by.position 		:= (152, 11);
+				frame.title_block_schematic.additional_placeholders.checked_by.position 	:= (152,  6);
+				frame.title_block_schematic.additional_placeholders.approved_by.position 	:= (152,  1);
+
+				frame.title_block_schematic.additional_placeholders.drawn_date.position 	:= (120, 11);
+				frame.title_block_schematic.additional_placeholders.checked_date.position 	:= (120,  6);
+				frame.title_block_schematic.additional_placeholders.approved_date.position 	:= (120,  1);
 			
+				frame.title_block_schematic.additional_placeholders.sheet_number.position 	:= (210, 21);
+				frame.title_block_schematic.additional_placeholders.description.position 	:= ( 90, 30);
+				frame.title_block_schematic.additional_placeholders.category.position 		:= (105, 21);
+
 			when PCB =>
 				-- type_title_bock (basic stuff):
-				frame.title_block_pcb.position := (55, 8);
+				frame.title_block_pcb.position												:= ( 55,  6);
 				frame.title_block_pcb.lines := make_lines (lines_pcb);
-				frame.title_block_pcb.placeholders.project_name.position := (2,31);
-				frame.title_block_pcb.placeholders.module_file_name.position := (2,26);
-				frame.title_block_pcb.placeholders.active_assembly_variant.position := (2,21);
+				frame.title_block_pcb.placeholders.project_name.position					:= ( 30, 31);
+				frame.title_block_pcb.placeholders.module_file_name.position				:= ( 30, 26);
+				frame.title_block_pcb.placeholders.active_assembly_variant.position			:= ( 30, 21);
 				frame.title_block_pcb.texts := make_texts (texts_pcb);
 
-				frame.title_block_pcb.additional_placeholders.company.position := (2, 36);
--- 		customer		: type_placeholder;
--- 		partcode		: type_placeholder;
--- 		drawing_number	: type_placeholder;
--- 		revision		: type_placeholder;
--- 		
--- 		drawn_by		: type_placeholder;
--- 		checked_by		: type_placeholder;
--- 		approved_by		: type_placeholder;
--- 
--- 		drawn_date		: type_placeholder;
--- 		checked_date	: type_placeholder;
--- 		approved_date	: type_placeholder;
-				
--- 		face			: type_placeholder; -- to be filled with the word "TOP" or "BOTTOM"
--- 		signal_layer	: type_placeholder; -- to be filled with the signal layer id like 1,2,3, 8..16
+				frame.title_block_pcb.additional_placeholders.company.position 				:= ( 30, 36);
+				frame.title_block_pcb.additional_placeholders.customer.position 			:= ( 30, 16);
+				frame.title_block_pcb.additional_placeholders.partcode.position 			:= ( 30, 11);
+				frame.title_block_pcb.additional_placeholders.drawing_number.position		:= ( 30,  6);
+				frame.title_block_pcb.additional_placeholders.revision.position 			:= ( 30,  1);
 
+				frame.title_block_pcb.additional_placeholders.drawn_by.position 			:= (152, 11);
+				frame.title_block_pcb.additional_placeholders.checked_by.position 			:= (152,  6);
+				frame.title_block_pcb.additional_placeholders.approved_by.position 			:= (152,  1);
+
+				frame.title_block_pcb.additional_placeholders.drawn_date.position 			:= (120, 11);
+				frame.title_block_pcb.additional_placeholders.checked_date.position 		:= (120,  6);
+				frame.title_block_pcb.additional_placeholders.approved_date.position 		:= (120,  1);
+
+				frame.title_block_pcb.additional_placeholders.face.position 				:= (120, 36);
+				frame.title_block_pcb.additional_placeholders.signal_layer.position 		:= (120, 31);
 
 -- 		additional_placeholders	: type_placeholders_pcb;
 -- 		cam_markers				: type_cam_markers;
