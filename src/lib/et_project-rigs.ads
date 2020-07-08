@@ -149,13 +149,13 @@ package et_project.rigs is
 	section_connector			: constant string := "[CONNECTOR";
 	section_module				: constant string := "[MODULE";
 
+	-- Assumes the current working directory is a project.
 	-- Searches for rig configuration files (*.rig), reads them and stores 
 	-- them in et_project.rigs.rigs.
 	-- Searches for module files (*.mod), reads them and stores then
 	-- in et_project.modules.generic_modules.
 	-- Use this procedure when opening a project.
 	procedure read_rigs (
-		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 end et_project.rigs;

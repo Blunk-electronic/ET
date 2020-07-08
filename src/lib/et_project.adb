@@ -383,7 +383,7 @@ package body et_project is
 		-- the working directory must be restored.
 		current_working_directory : constant string := current_directory;
 	begin
-		validate_project (project_name, log_threshold);
+		validate_project (project_name, log_threshold + 1);
 	
 		-- set global project name
 		current_project := project_name;
@@ -395,7 +395,7 @@ package body et_project is
 		configuration.read_configuration (project_name, log_threshold + 1);
 		
 		-- read the rig configurations (and associated generic module):
-		rigs.read_rigs (current_project, log_threshold);
+		rigs.read_rigs (log_threshold + 1);
 		
 		-- Restore working directory.
 		set_directory (current_working_directory);

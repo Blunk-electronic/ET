@@ -40,9 +40,7 @@ with et_project.modules;
 
 separate (et_project.rigs)
 
-
 procedure read_rigs (
-	project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 	log_threshold 	: in et_string_processing.type_log_level) is
 
 	use et_string_processing;
@@ -458,9 +456,7 @@ procedure read_rigs (
 	end read_conf_file;
 	
 begin -- read_rigs
-	log (text => row_separator_double, level => log_threshold);
-	log (text => "reading rigs in project " & enclose_in_quotes (to_string (project_name)) & " ...",
-		 level => log_threshold, console => true);
+	log (text => "reading rigs ...", level => log_threshold);
 	log_indentation_up;
 		
 	-- CS: It requires discussion whether loading all modules files at this time is reasonable.
