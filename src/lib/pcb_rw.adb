@@ -1134,7 +1134,7 @@ package body pcb_rw is
 
 		contours_begin;		
 		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
-		contours_begin;
+		contours_end;
 		
 		fill_zone_end;
 	end write_polygon;
