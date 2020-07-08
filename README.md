@@ -24,15 +24,15 @@
 - interfacing with system modelling tools
 
 ### Examples of design and component models
-- A module file (containing schematic and layout stuff) looks like this <https://github.com/Blunk-electronic/ET_training/blob/master/submoduletest/submoduletest.mod>
+- A module file (containing schematic and layout stuff) looks like this <https://github.com/Blunk-electronic/ET_training/blob/master/single-led/main.mod>
 - There is a strict separation between symbol, package/footprint and device:
 - Device model <https://github.com/Blunk-electronic/ET_component_library/blob/master/devices/active/logic/7400_ext.dev>
 - Symbol model <https://github.com/Blunk-electronic/ET_component_library/blob/master/symbols/logic/NAND.sym>
 - Package model <https://github.com/Blunk-electronic/ET_component_library/blob/master/packages/S_SO14.pac>
-- A so called rig-configuration that describes module instances and board-to-board connections <https://github.com/Blunk-electronic/ET_training/blob/master/submoduletest/submoduletest.conf>
+- A so called rig-configuration that describes module instances and board-to-board connections <https://github.com/Blunk-electronic/ET_training/blob/master/single-led/single-led.rig>
 
-### Example of an ERC configuration file
-- See this example <https://github.com/Blunk-electronic/ET/blob/master/examples/conf.txt>
+<!--### Example of an ERC configuration file
+- See this example <https://github.com/Blunk-electronic/ET/blob/master/examples/conf.txt>-->
 
 ### Supported CAE formats
 - KiCad V4, V5 (import only)
