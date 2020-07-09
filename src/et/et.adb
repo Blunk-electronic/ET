@@ -394,7 +394,10 @@ procedure et is
 				log (text => et_string_processing.row_separator_single);
 				log (text => "converting to " & et_general.system_name & " native project ...", console => true);
 				log_indentation_up;
-				et_kicad_to_native.to_native (log_threshold => 0);
+
+				-- The project will be saved in the current working directory:
+				et_kicad_to_native.to_native (et_project.to_project_name
+					(base_name (to_string (project_name_import))), log_threshold => 0);
 				log_indentation_down;
 				
 			when others => -- CS

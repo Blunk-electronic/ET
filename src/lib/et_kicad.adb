@@ -4413,10 +4413,10 @@ package body et_kicad is
 
 			begin -- read_proj_v4
 				log (
-					text => "reading project file " 
-					& compose (
-						name		=> et_project.pac_project_name.to_string (project), 
-						extension	=> file_extension_project) & " ...",
+					text => "V4 project file is " 
+					& enclose_in_quotes (compose (
+						name		=> base_name (et_project.pac_project_name.to_string (project)), 
+						extension	=> file_extension_project)) & " ...",
 					level => log_threshold + 1
 					);
 				log_indentation_up;
@@ -4432,7 +4432,7 @@ package body et_kicad is
 					file => project_file_handle,
 					mode => in_file,
 					name => compose (
-								name		=> et_project.pac_project_name.to_string (project), 
+								name		=> base_name (et_project.pac_project_name.to_string (project)), 
 								extension	=> file_extension_project)
 					);
 				set_input (project_file_handle);
@@ -4467,7 +4467,7 @@ package body et_kicad is
 
 								-- Get library directory names 
 								if f (line,1) = project_keyword_library_directory then
-									log (text => "library directories " & f (line,2), level => log_threshold + 2);
+									log (text => "library directories are: " & f (line,2), level => log_threshold + 2);
 
 									-- The library directories must be
 									-- inserted in the search list of library directories (search_list_project_lib_dirs).
@@ -4526,6 +4526,7 @@ package body et_kicad is
 
 				close (project_file_handle);
 
+				log (text => "V4 project file reading done", level => log_threshold + 1);
 			end read_proj_v4;
 			
 			procedure read_lib_tables (log_threshold : in et_string_processing.type_log_level) is
@@ -5339,7 +5340,7 @@ package body et_kicad is
 			-- It is just a matter of file extension.
 			return to_schematic_file_name (
 				compose (
-					name		=> et_project.pac_project_name.to_string (project), 
+					name		=> base_name (et_project.pac_project_name.to_string (project)),
 					extension	=> file_extension_schematic)
 					);
 		end read_project_file;
@@ -8870,8 +8871,7 @@ package body et_kicad is
 				--			Creates empty package libraries in et_kicad_pcb.package_libraries.
 				top_level_schematic	:= read_project_file (log_threshold + 1);
 				
-				module_name := to_submodule_name (
-					base_name (kicad_coordinates.to_string (top_level_schematic)));
+				module_name := to_submodule_name (kicad_coordinates.to_string (top_level_schematic));
 
 				-- create the module:
 				type_modules.insert (
@@ -9066,6 +9066,7 @@ package body et_kicad is
 -- 			-- CS: log exception message
 			when event:
 				others =>
+					log (text => ada.exceptions.exception_message (event), console => true);
 					set_directory (current_working_directory);
 				
 -- 					log (ERROR, "in schematic file '" 
@@ -9073,7 +9074,7 @@ package body et_kicad is
 -- 						console => true);
 -- 						et_import.close_report;
 -- 						put_line (standard_output, "Read import report for warnings and error messages !"); -- CS: show path to report file
--- 					raise;
+					raise;
 		
 	end import_design;
 	

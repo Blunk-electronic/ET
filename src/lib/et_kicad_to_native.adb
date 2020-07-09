@@ -2184,12 +2184,9 @@ package body et_kicad_to_native is
 		return point_out;
 	end;
 	
-	procedure to_native (log_threshold : in et_string_processing.type_log_level) is
-	-- Converts the kicad module (incl. component libraries) to a native module.
-	-- Converts the packages (from package_libraries) to native packages.
-	-- NOTE: Packages of the board (incl. their deviations/modifications
-	-- from the package_libraries) are ignored !
-	-- Saves the module in project_path (see below) in a module file (*.mod).
+	procedure to_native (
+		project_name	: in et_project.pac_project_name.bounded_string;
+		log_threshold	: in et_string_processing.type_log_level) is
 
 -- 		-- When the native project is created we need a project path and a project name:
 -- 		project_path : et_project.type_et_project_path.bounded_string :=
@@ -3712,7 +3709,7 @@ package body et_kicad_to_native is
 		end save_libraries;
 
 		use et_project.pac_project_name;
-		project_name : et_project.pac_project_name.bounded_string; -- blood_sample_analyzer
+-- 		project_name : et_project.pac_project_name.bounded_string; -- blood_sample_analyzer
 
 	begin -- to_native
 	
@@ -3730,10 +3727,9 @@ package body et_kicad_to_native is
 
 			-- Copy the kicad module name to the native project name.
 			-- The native project name and the module contained will have the same name.
-			project_name := et_project.to_project_name (kicad_coordinates.to_string (key (module_cursor_kicad)));
+-- 			project_name := et_project.to_project_name (kicad_coordinates.to_string (key (module_cursor_kicad)));
 			
-			log (text => "module " & enclose_in_quotes (to_string (project_name)), level => log_threshold + 1);
-			log_indentation_up;
+-- 			log (text => "module " & enclose_in_quotes (to_string (project_name)), level => log_threshold + 1);
 
 			-- For each kicad design we create a native project.
 			et_project.create_project_directory (
@@ -3742,6 +3738,8 @@ package body et_kicad_to_native is
 			
 			-- Clear scratch module because in the following everything goes there.
 			module := (others => <>);
+			
+			log_indentation_up;
 			
 			copy_general_stuff;
 
@@ -3769,6 +3767,7 @@ package body et_kicad_to_native is
 			-- beginning and procedures copy_general_stuff, copy_components, copy_nets, copy_frames
 			-- and copy_libraries would update the scratch module inside the list.
 			declare 
+				current_working_directory : constant string := current_directory;
 				module_list : et_project.modules.pac_generic_modules.map; -- set up the list
 			begin
 				-- insert the scratch module in the list
@@ -3776,19 +3775,25 @@ package body et_kicad_to_native is
 					container 	=> module_list,
 					key			=> to_module_name (to_string (project_name)), -- blood_sample_analyzer
 					new_item	=> module);
-			
+
+				set_directory (to_string (project_name));
+				
 				-- save module (the first an only one in module_list) in file *.mod
+				log (text => "saving module " & enclose_in_quotes (to_string (project_name)),
+					 level => log_threshold + 3);
+				
 				et_project.modules.save_module (
-					module_cursor	=> et_project.modules.pac_generic_modules.first (module_list), -- the module it is about
+					module_cursor	=> module_list.first,
 					log_threshold	=> log_threshold);
+
+				set_directory (current_working_directory);
 			end;
 		
 			-- save libraries (from et_libraries.devices and et_pcb.packages 
 			-- to native project directory libraries/devices and libraries/packages)
-			save_libraries (
-				project_name	=> project_name, -- blood_sample_analyzer
--- 				project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad
-				log_threshold 	=> log_threshold + 1);
+-- 			save_libraries (
+-- 				project_name	=> project_name, -- blood_sample_analyzer
+-- 				log_threshold 	=> log_threshold + 1);
 
 			
 			log_indentation_down;
