@@ -131,9 +131,8 @@ package body et_project is
 	end create_supplementary_directories;
 
 	procedure create_project_directory (
-		module_name		: in type_module_name.bounded_string;		-- motor_driver
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
+		module_name		: in type_module_name.bounded_string := to_module_name (""); -- motor_driver
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_general;
 		use ada.directories;
@@ -145,10 +144,6 @@ package body et_project is
 		use modules.pac_generic_modules;
 
 		module_cursor : modules.pac_generic_modules.cursor;
-		
-		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
-		use type_path;
-		path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
 
 		procedure create_project_configuration is
 		-- create the project configuration file
@@ -161,7 +156,7 @@ package body et_project is
 
 			-- compose the full file name			
 			prj_conf_file := pac_file_name.to_bounded_string (compose (
-				containing_directory	=> to_string (path),
+				containing_directory	=> to_string (project_name),
 				name 					=> to_string (project_name),
 				extension 				=> file_extension));
 
@@ -193,15 +188,27 @@ package body et_project is
 		procedure create_module_file is
 			-- backup the current working directory
 			previous_directory : constant string := current_directory;
+			use type_module_name;
 		begin
 			-- change into project directory
-			set_directory (to_string (path));
+			set_directory (to_string (project_name));
 
-			-- There are no modules yet. Create an empty generic module:
-			modules.create_module (
-				module_name		=> module_name,
-				log_threshold	=> log_threshold + 1);
+			-- There are no modules yet. Create an empty generic module.
+			-- If no module name given then the module will be named after the project.
+			if length (module_name) > 0 then
 
+				modules.create_module (
+					module_name		=> module_name, -- as given module name
+					log_threshold	=> log_threshold + 1);
+
+			else
+
+				modules.create_module (
+					module_name		=> to_module_name (to_string (project_name)), -- name as project
+					log_threshold	=> log_threshold + 1);
+
+			end if;
+				
 			-- Save the single and first module:
 			module_cursor := modules.generic_modules.first;
 
@@ -226,7 +233,7 @@ package body et_project is
 
 			-- compose the full file name			
 			rig_conf_file := pac_file_name.to_bounded_string (compose (
-				containing_directory	=> to_string (path),
+				containing_directory	=> to_string (project_name),
 				name 					=> to_string (project_name),
 				extension 				=> file_extension));
 
@@ -278,7 +285,7 @@ package body et_project is
 		end create_rig_configuration;
 		
 	begin -- create_project_directory
-		log (text => "creating native project " & enclose_in_quotes (to_string (path)) &
+		log (text => "creating native project " & enclose_in_quotes (to_string (project_name)) &
 			 " ...", level => log_threshold);
 
 		-- CS validate_project_name
@@ -286,14 +293,14 @@ package body et_project is
 		log_indentation_up;
 		
 		-- delete previous project directory
-		if exists (to_string (path)) then
-			delete_tree (to_string (path));
+		if exists (to_string (project_name)) then
+			delete_tree (to_string (project_name));
 		end if;
 		
 		-- create project root directory
-		create_path (to_string (path));
+		create_path (to_string (project_name));
 		
-		create_supplementary_directories (to_string (path), log_threshold + 1);
+		create_supplementary_directories (to_string (project_name), log_threshold + 1);
 
 		create_project_configuration;
 		

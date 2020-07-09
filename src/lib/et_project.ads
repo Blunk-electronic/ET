@@ -101,14 +101,12 @@ package et_project is
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);
 	
-	-- Creates given project directory in the given project_path.
+	-- Creates given project directory.
 	-- Creates a default rig configuration file.										   
 	-- Already existing projects in given project_path are overwritten.
-	-- CS: argument project_path no longer required, remove it.
 	procedure create_project_directory (
-		module_name		: in type_module_name.bounded_string;		-- motor_driver
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		project_path	: in type_et_project_path.bounded_string;	-- /home/user/et_projects
+		module_name		: in type_module_name.bounded_string := to_module_name (""); -- motor_driver
 		log_threshold	: in et_string_processing.type_log_level);
 
 	-- Creates a bare project (without any configuration files).

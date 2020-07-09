@@ -2191,10 +2191,10 @@ package body et_kicad_to_native is
 	-- from the package_libraries) are ignored !
 	-- Saves the module in project_path (see below) in a module file (*.mod).
 
-		-- When the native project is created we need a project path and a project name:
-		project_path : et_project.type_et_project_path.bounded_string :=
-						et_project.type_et_project_path.to_bounded_string (
-							compose (et_general.work_directory, et_project.directory_import));
+-- 		-- When the native project is created we need a project path and a project name:
+-- 		project_path : et_project.type_et_project_path.bounded_string :=
+-- 						et_project.type_et_project_path.to_bounded_string (
+-- 							compose (et_general.work_directory, et_project.directory_import));
 
 		prefix_devices_dir : et_kicad_general.type_device_library_name.bounded_string := -- libraries/devices
 			et_devices.to_file_name (compose (
@@ -3646,7 +3646,7 @@ package body et_kicad_to_native is
 		-- Saves the library containers (et_libraries.devices and et_pcb.packages) in
 		-- the directory specified by project_path and project_name.
 			project_name	: in et_project.pac_project_name.bounded_string;		-- blood_sample_analyzer
-			project_path	: in et_project.type_et_project_path.bounded_string; 	-- /home/user/et_projects/imported_from_kicad
+-- 			project_path	: in et_project.type_et_project_path.bounded_string; 	-- /home/user/et_projects/imported_from_kicad
 			log_threshold	: in et_string_processing.type_log_level) is
 			use et_project;
 			use pac_project_name;
@@ -3654,11 +3654,11 @@ package body et_kicad_to_native is
 			use ada.directories;
 			use et_string_processing;
 
-			package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
-			use type_path;
-			path : type_path.bounded_string := to_bounded_string (
-					compose (type_et_project_path.to_string (project_path), pac_project_name.to_string (project_name)));
-			-- Path now contains something like /home/user/et_projects/imported_from_kicad/blood_sample_analyzer
+-- 			package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
+-- 			use type_path;
+-- 			path : type_path.bounded_string := to_bounded_string (
+-- 					compose (type_et_project_path.to_string (project_path), pac_project_name.to_string (project_name)));
+-- 			-- Path now contains something like /home/user/et_projects/imported_from_kicad/blood_sample_analyzer
 			
 			use et_devices.type_devices;
 
@@ -3670,7 +3670,7 @@ package body et_kicad_to_native is
 					-- /home/user/et_projects/imported_from_kicad/blood_sample_analyzer/libraries/devices/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.dev
 					file_name		=> to_file_name 
 						(
-						to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor))
+						pac_project_name.to_string (project_name) & gnat.directory_operations.dir_separator & to_string (key (device_cursor))
 						),
 
 					-- the device model itself:
@@ -3687,7 +3687,7 @@ package body et_kicad_to_native is
 					-- package name like: 
 					-- /home/user/et_projects/imported_from_kicad/blood_sample_analyzer/libraries/packages/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.pac
 					file_name		=> et_packages.to_file_name (
-						to_string (path) & gnat.directory_operations.dir_separator & to_string (key (package_cursor))),
+						pac_project_name.to_string (project_name) & gnat.directory_operations.dir_separator & to_string (key (package_cursor))),
 
 					-- the package model itself:
 					packge			=> element (package_cursor),
@@ -3732,14 +3732,12 @@ package body et_kicad_to_native is
 			-- The native project name and the module contained will have the same name.
 			project_name := et_project.to_project_name (kicad_coordinates.to_string (key (module_cursor_kicad)));
 			
-			log (text => "module " & to_string (project_name), level => log_threshold + 1);
+			log (text => "module " & enclose_in_quotes (to_string (project_name)), level => log_threshold + 1);
 			log_indentation_up;
 
-			-- For each kicad design we create a native project:
+			-- For each kicad design we create a native project.
 			et_project.create_project_directory (
-				module_name		=> to_module_name (to_string (project_name)), -- blood_sample_analyzer
-				project_name	=> project_name, 		-- blood_sample_analyzer
-				project_path	=> project_path, 		-- /home/user/et_projects/imported_from_kicad
+				project_name	=> project_name, -- blood_sample_analyzer
 				log_threshold 	=> log_threshold + 2);
 			
 			-- Clear scratch module because in the following everything goes there.
@@ -3782,8 +3780,6 @@ package body et_kicad_to_native is
 				-- save module (the first an only one in module_list) in file *.mod
 				et_project.modules.save_module (
 					module_cursor	=> et_project.modules.pac_generic_modules.first (module_list), -- the module it is about
-					project_name	=> project_name, -- blood_sample_analyzer
-					project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad
 					log_threshold	=> log_threshold);
 			end;
 		
@@ -3791,7 +3787,7 @@ package body et_kicad_to_native is
 			-- to native project directory libraries/devices and libraries/packages)
 			save_libraries (
 				project_name	=> project_name, -- blood_sample_analyzer
-				project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad
+-- 				project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad
 				log_threshold 	=> log_threshold + 1);
 
 			

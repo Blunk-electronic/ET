@@ -4217,6 +4217,9 @@ package body et_kicad is
 	-- Imports the design libraries and the actual design as specified by parameter "project".
 	-- Inserts the created (sub)module in the module collection (see type_modules).
 	-- Leaves the global module_cursor pointing where the module was inserted.
+
+		-- backup current working directory
+		current_working_directory : constant string := current_directory;
 		
 		use et_schematic;
 
@@ -9056,10 +9059,15 @@ package body et_kicad is
 				
 		end case;
 
--- 		exception
+		-- change back to initial directory
+		set_directory (current_working_directory);
+		
+		exception
 -- 			-- CS: log exception message
--- 			when event:
--- 				constraint_error =>
+			when event:
+				others =>
+					set_directory (current_working_directory);
+				
 -- 					log (ERROR, "in schematic file '" 
 -- 						& to_string (current_schematic) & "' " 
 -- 						console => true);

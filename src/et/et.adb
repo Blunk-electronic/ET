@@ -359,7 +359,7 @@ procedure et is
 		end if;
 	end;
 
-	procedure import_project is
+	procedure import_project is -- CS move to et_import ?
 	-- As a result of the import, a native project is created in the work_directory (ET/...).
 		use et_project.pac_project_name;
 		use et_import;
@@ -368,7 +368,7 @@ procedure et is
 		if length (project_name_import) > 0 then
 
 			-- If project name was provided with a trailing directory separator it must be removed.
-			project_name_import := et_project.to_project_name (strip_directory_separator (et_project.to_string (project_name_import)));
+-- 			project_name_import := et_project.to_project_name (strip_directory_separator (et_project.to_string (project_name_import)));
 			validate_project (project_name_import, et_import.cad_format);
 		else
 			put_line (message_error & "project name not specified !");
@@ -381,10 +381,6 @@ procedure et is
 			raise constraint_error;
 		end if;		
 
-		-- The import requires changing of directories. So we backup the current directory.
-		-- After the import, we restore the directory.
-		backup_projects_root_directory;
-
 		log (text => "importing project " & et_project.to_string (project_name_import) & " ...", console => true);
 		log (text => "CAD format " & to_string (et_import.cad_format));
 				
@@ -393,7 +389,6 @@ procedure et is
 
 				-- do the import
 				et_kicad.import_design (project => project_name_import, log_threshold => 0);
-				restore_projects_root_directory;
 
 				-- convert to native project (with a default rig configuration file)
 				log (text => et_string_processing.row_separator_single);
@@ -405,7 +400,7 @@ procedure et is
 			when others => -- CS
 				raise constraint_error;
 		end case;
-
+		
 		exception
 			when event:
 				others =>
@@ -530,7 +525,7 @@ procedure et is
 				et_project.create_project_directory (
 					module_name		=> to_module_name (to_string (project_name_create)),
 					project_name	=> project_name_create,
-					project_path	=> et_project.to_project_path (""),
+-- 					project_path	=> et_project.to_project_path (""),
 					log_threshold	=> 0);
 				
 			-- If operator wants to import a project it will be done here.
