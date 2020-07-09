@@ -2597,17 +2597,17 @@ package body et_kicad_pcb is
 					when THT =>
 						if tht_count < smt_count then
 							log (WARNING, "in " & path_and_file_name &
-								" majority of terminals is" & to_string (SMT) &
+								" majority of terminals is " & to_string (SMT) &
 								number (smt_count) &
-								"Package technology should be" & to_string (SMT) & " !");
+								"Package technology should be " & to_string (SMT) & " !");
 						end if;
 
 					when SMT =>
 						if smt_count < tht_count then
 							log (WARNING, "in " & path_and_file_name &
-								" majority of terminals is" & to_string (THT) &
+								" majority of terminals is " & to_string (THT) &
 								number (tht_count) &
-								"Package technology should be" & to_string (THT) & " !");
+								"Package technology should be " & to_string (THT) & " !");
 						end if;
 				end case;
 

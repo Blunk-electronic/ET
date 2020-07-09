@@ -335,13 +335,12 @@ package body et_project.modules is
 		is separate;
 	
 	procedure save_module (
-		module_cursor	: in pac_generic_modules.cursor;					-- the module
+		module_cursor	: in pac_generic_modules.cursor;			-- the module
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level) is
-	-- Saves the given module in the module file of the given project.
-	-- If module_name not provided, the module will be named after the given project_name.
+
 	-- CS: improve log messages !!
 		
 		use et_string_processing;
@@ -394,7 +393,6 @@ package body et_project.modules is
 		reset_tab_depth;
 		log_indentation_up;
 
-		--save_module (module_cursor, make_module_file_name, log_threshold);
 		save_module (module_cursor, log_threshold);
 	
 		log_indentation_down;

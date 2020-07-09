@@ -1629,7 +1629,13 @@ package body et_kicad is
 				arc.start_angle	:= to_degrees (f (line,5)); -- CS multiply by -1 ?
 				arc.end_angle	:= to_degrees (f (line,6)); -- CS multiply by -1 ?
 				
-				arc.width		:= type_line_width'value (f (line,9));
+				-- If line width is too small, use a lower limit instead.
+				if mil_to_distance (f (line,9)) < type_line_width'first then
+					arc.width := type_line_width'first;
+				else
+					arc.width := mil_to_distance (f (line,7));
+				end if;
+
 				arc.fill		:= to_fill (f (line,10));
 				
 				--set_x (arc.start_point, mil_to_distance (mil => f (line,11)));

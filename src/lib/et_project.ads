@@ -129,7 +129,8 @@ package et_project is
 	function inside_project_directory (file_name : in string) return boolean;
 	
 	-- Saves the current project under the given destination like blood_sample_analyzer_experimental.
-	-- Saves generic modules that are inside the project.
+	-- Saves generic modules that are inside the project. Modules outside the project directory are
+	-- untouched.
 	-- Saves the project configuration.
 	-- Saves the rigs (*.rig). CS: copy them as we do with scripts ?
 	-- Scripts and design rules are regarded as source code and are therefore copied as they are.
