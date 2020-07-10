@@ -1008,11 +1008,16 @@ is
 		
 		procedure write (text_cursor : in pac_texts.cursor) is begin
 			section_mark (section_text, HEADER);
-			write (keyword => keyword_position, parameters => position (element (text_cursor).position));
+			write
+				(
+				keyword		=> keyword_position,
+				parameters	=> keyword_sheet & to_sheet (element (text_cursor).sheet) 
+								& space & position (element (text_cursor).position)
+				); -- position sheet 1 x 30 y 180
+			
 			write (keyword => keyword_rotation, 
 					parameters => to_string (to_rotation (element (text_cursor).rotation)));
 			
-			write (keyword => keyword_sheet, parameters => to_sheet (element (text_cursor).sheet));
 			write (keyword => keyword_content, wrap => true,
 					parameters => to_string (element (text_cursor).content));
 			
