@@ -3336,13 +3336,13 @@ package body et_kicad is
 				-- Loop through package variants:
 				while variant_cursor /= pac_variants.no_element loop
 
+					log (text => "probing " 
+						 & enclose_in_quotes (et_devices.to_string (key (variant_cursor)))
+						 & " ...", level => log_threshold + 3);
+
 					-- From the library and package name we can reason the variant name.
 					-- So if both the given library and package name match, the variant name
 					-- is set to be returned.
-					
-					--if element (variant_cursor).packge.library = full_package_library_name and
-					--	element (variant_cursor).packge.name = package_name then 
-
 					if element (variant_cursor).package_model = et_packages.to_file_name (compose (
 							containing_directory	=> et_packages.to_string (full_package_library_name),
 							name					=> et_packages.to_string (package_name))) then
@@ -3351,7 +3351,9 @@ package body et_kicad is
 							& to_string (package_variant => key (variant_cursor)) 
 							& " used", level => log_threshold + 1);
 
+						-- Set the variant name to be returned:
 						variant := key (variant_cursor);
+						
 						exit; -- no further search required
 					end if;
 
@@ -3377,17 +3379,10 @@ package body et_kicad is
 						package_name 		=> package_name,
 						terminal_port_map	=> element (variant_cursor).terminal_port_map) then
 
-						-- The new package variant is composed of the given to_full_library_name,
-						-- the given package name and the same terminal_port_map as the default variant.
-						-- A default package variant is always available.
-
-						log (text => "updating library ...", level => log_threshold + 4);
+						log (text => "Terminal-port-map fits. Updating library ...", level => log_threshold + 4);
 
 						-- build the new package variant
 						new_variant := (
--- 							packge 				=> (library		=> full_package_library_name,
--- 													name 		=> package_name),
-
 							package_model => et_packages.to_file_name (compose (
 								containing_directory	=> et_packages.to_string (full_package_library_name),
 								name					=> et_packages.to_string (package_name))),
@@ -3401,8 +3396,13 @@ package body et_kicad is
 							key			=> to_name (to_string (packge => package_name)),
 							new_item	=> new_variant);
 
+						--log (text => count_type'image (pac_variants.length (component.variants)));
+						
+						-- Set the variant name to be returned:
+						variant := to_name (to_string (packge => package_name));
+						
 					else
-						log (ERROR, "terminal-port map does not fit !", console => true); -- CS: more details
+						log (ERROR, "Terminal-port-map does not fit !", console => true); -- CS: more details
 						raise constraint_error; -- CS
 					end if;
 
@@ -3421,7 +3421,8 @@ package body et_kicad is
 			end query_variants;
 			
 		begin -- locate_component
-			log (text => "locating generic component in library ...", level => log_threshold + 1);
+			log (text => "locating generic component " & enclose_in_quotes (to_string (generic_name)) 
+				 & " in library ...", level => log_threshold + 1);
 			log_indentation_up;
 
 			-- Locate the component in the library by its generic name.
@@ -3460,17 +3461,27 @@ package body et_kicad is
 			package_name	=> package_name,	-- S_SO14
 			log_threshold	=> log_threshold + 1);
 
+		log (text => "full package library name is " 
+			 & enclose_in_quotes (et_packages.to_string (full_package_library_name)),
+			 level => log_threshold + 1);
+		
 		-- locate the given component library
 		library_cursor := tmp_component_libraries.find (component_library);
+
+		log (text => "component library is " 
+			 & enclose_in_quotes (to_string (type_libraries.key (library_cursor))),
+			 level => log_threshold + 1);
 
 		-- locate the given generic component
 		type_libraries.update_element (
 			container	=> tmp_component_libraries,
 			position	=> library_cursor,
 			process		=> locate_component'access);
+
+		log (text => "variant is " & enclose_in_quotes (to_string (variant)), level => log_threshold + 1);
 		
 		log_indentation_down;
-
+		
 		return variant;
 	end to_package_variant;
 
