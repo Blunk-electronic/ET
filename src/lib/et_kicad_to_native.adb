@@ -3568,7 +3568,6 @@ package body et_kicad_to_native is
 					next (package_cursor_kicad);
 				end loop;
 			end query_packages;
-
 										 
 		begin -- copy_libraries
 
@@ -3638,37 +3637,18 @@ package body et_kicad_to_native is
 			
 		end copy_libraries;
 
-
 		procedure save_libraries (
-		-- Saves the library containers (et_libraries.devices and et_pcb.packages) in
-		-- the directory specified by project_path and project_name.
-			project_name	: in et_project.pac_project_name.bounded_string;		-- blood_sample_analyzer
--- 			project_path	: in et_project.type_et_project_path.bounded_string; 	-- /home/user/et_projects/imported_from_kicad
+		-- Saves the library containers in the current working directory.
 			log_threshold	: in et_string_processing.type_log_level) is
-			use et_project;
-			use pac_project_name;
-			use type_et_project_path;
-			use ada.directories;
 			use et_string_processing;
-
--- 			package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
--- 			use type_path;
--- 			path : type_path.bounded_string := to_bounded_string (
--- 					compose (type_et_project_path.to_string (project_path), pac_project_name.to_string (project_name)));
--- 			-- Path now contains something like /home/user/et_projects/imported_from_kicad/blood_sample_analyzer
-			
 			use et_devices.type_devices;
 
 			procedure save_device (device_cursor : in et_devices.type_devices.cursor) is
-				use et_devices;
 			begin
 				device_rw.save_device (
 					-- library name like: 
-					-- /home/user/et_projects/imported_from_kicad/blood_sample_analyzer/libraries/devices/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.dev
-					file_name		=> to_file_name 
-						(
-						pac_project_name.to_string (project_name) & gnat.directory_operations.dir_separator & to_string (key (device_cursor))
-						),
+					-- libraries/devices/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.dev
+					file_name		=> to_file_name (to_string (key (device_cursor))),
 
 					-- the device model itself:
 					device			=> element (device_cursor),
@@ -3682,9 +3662,8 @@ package body et_kicad_to_native is
 			begin
 				pcb_rw.device_packages.save_package (
 					-- package name like: 
-					-- /home/user/et_projects/imported_from_kicad/blood_sample_analyzer/libraries/packages/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.pac
-					file_name		=> et_packages.to_file_name (
-						pac_project_name.to_string (project_name) & gnat.directory_operations.dir_separator & to_string (key (package_cursor))),
+					-- libraries/packages/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.pac
+					file_name		=> et_packages.to_file_name (to_string (key (package_cursor))),
 
 					-- the package model itself:
 					packge			=> element (package_cursor),
@@ -3709,7 +3688,6 @@ package body et_kicad_to_native is
 		end save_libraries;
 
 		use et_project.pac_project_name;
--- 		project_name : et_project.pac_project_name.bounded_string; -- blood_sample_analyzer
 
 	begin -- to_native
 	
@@ -3721,15 +3699,10 @@ package body et_kicad_to_native is
 		log (text => "converting ...", level => log_threshold);
 		log_indentation_up;
 
-		-- Now we copy content from the kicad module to the same named native module.
+		-- Now we copy content from the kicad modules to the same named native modules.
 		-- CS: currently there is only one kicad and only one native module.
+		-- So this loop will be executed only once:
 		while module_cursor_kicad /= et_kicad.type_modules.no_element loop
-
-			-- Copy the kicad module name to the native project name.
-			-- The native project name and the module contained will have the same name.
--- 			project_name := et_project.to_project_name (kicad_coordinates.to_string (key (module_cursor_kicad)));
-			
--- 			log (text => "module " & enclose_in_quotes (to_string (project_name)), level => log_threshold + 1);
 
 			-- For each kicad design we create a native project.
 			et_project.create_project_directory (
@@ -3742,12 +3715,9 @@ package body et_kicad_to_native is
 			log_indentation_up;
 			
 			copy_general_stuff;
-
 			copy_components;
-
-			copy_nets;
-			
-			copy_frames; -- CS: not completed yet
+			copy_nets;			
+			copy_frames; -- CS: not completed yet -- no longer required. remove ?
 
 			-- Copy component libraries.
 			-- NOTE: In Kicad component libraries are always project dependend.
@@ -3774,7 +3744,7 @@ package body et_kicad_to_native is
 				et_project.modules.pac_generic_modules.insert (
 					container 	=> module_list,
 					key			=> to_module_name (to_string (project_name)), -- blood_sample_analyzer
-					new_item	=> module);
+					new_item	=> module); -- the native generic scratch module
 
 				set_directory (to_string (project_name));
 				
@@ -3786,15 +3756,12 @@ package body et_kicad_to_native is
 					module_cursor	=> module_list.first,
 					log_threshold	=> log_threshold);
 
+				-- save libraries in native project in sub-directories:
+				-- libraries/devices and libraries/packages
+				save_libraries (log_threshold + 1);
+				
 				set_directory (current_working_directory);
 			end;
-		
-			-- save libraries (from et_libraries.devices and et_pcb.packages 
-			-- to native project directory libraries/devices and libraries/packages)
--- 			save_libraries (
--- 				project_name	=> project_name, -- blood_sample_analyzer
--- 				log_threshold 	=> log_threshold + 1);
-
 			
 			log_indentation_down;
 			next (module_cursor_kicad);
