@@ -818,22 +818,14 @@ package et_kicad is
 	
 	-- A strand is a collection of net segments which belong to each other. 
 	-- Segments belong to each other because their start/end points meet.
-	-- A strand has coordinates. 
-	-- x/y position are the lowest values within the strand. see function lowest_xy.
 	-- As long as strands are independed of each other they must 
 	-- have a name and their own scope.
 	type type_strand is record
-		position	: kicad_coordinates.type_position; -- lowest x/y
+		position	: kicad_coordinates.type_position; -- x/y/sheet -- CS only sheet matters
 		name		: et_general.type_net_name.bounded_string; -- example "CPU_CLOCK"		
 		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
 		segments	: type_net_segments.list;
 	end record;
-
-	function lowest_xy (
-	-- Returns the lowest x/y position of the given strand.
-		strand 			: in type_strand;
-		log_threshold	: in et_string_processing.type_log_level
-		) return type_point;
 
 	procedure add_strand (
 	-- Adds a strand into the module (indicated by module_cursor).

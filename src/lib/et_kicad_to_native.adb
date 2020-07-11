@@ -2789,12 +2789,19 @@ package body et_kicad_to_native is
 					end loop;
 					log_indentation_down;
 
-					-- get lowest x/y coordinates of current kicad strand:
-					strand_native.position := to_native_coordinates (element (kicad_strand_cursor).position);
-
 					-- copy net segments to native strand
 					strand_native.segments := net_segments_native;
 
+
+					
+					-- copy sheet number from kicad strand to native strand:
+					et_coordinates.set_sheet (strand_native.position, kicad_coordinates.sheet (element (kicad_strand_cursor).position));
+
+					-- calculate lowest x/y of native strand
+					et_schematic.set_strand_position (strand_native);
+
+
+					
 					-- clear collection of net segments (for the next strand)
 					clear (net_segments_native);
 					

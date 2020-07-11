@@ -530,60 +530,6 @@ package body et_kicad is
 		return result;
 	end compare_ports;
 
-	
-	function lowest_xy (
-	-- Returns the lowest x/y position of the given strand.
-		strand			: in type_strand;
-		log_threshold	: in et_string_processing.type_log_level
-		) return type_point is
-		
-		point_1, point_2 : type_point;
-		segment : type_net_segments.cursor;
-	
-		use type_net_segments;
-		use et_string_processing;
-
-		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
-	begin
-		log_indentation_up;
-		log (text => "calculating the point nearest to drawing origin ...", level => log_threshold + 1);
-
-		-- init point_1 as the farest possible point from drawing origin
-		-- set_x (point_1, type_distance_xy'last);
-		set (X, type_distance_xy'last, point_1);
-		-- set_y (point_1, type_distance_xy'last);
-		set (Y, type_distance_xy'last, point_1);
-		
-		-- loop through segments and keep the nearest point to origin
-		segment := strand.segments.first;
-		while segment /= type_net_segments.no_element loop
-
-			-- check start point of segment
-			-- if closer to orign than point_1 keep start point
-			point_2	:= type_point (element (segment).coordinates_start);
-			if distance_total (point_2, origin) < distance_total (point_1, origin) then
-				log (text => " start", level => log_threshold + 2);
-				point_1 := point_2;
-			end if;
-
-			-- check start point of segment
-			-- if closer to orign than point_1 keep end point
-			point_2	:= type_point (element (segment).coordinates_end);
-			if distance_total (point_2, origin) < distance_total (point_1, origin) then
-				log (text => " end", level => log_threshold + 2);
-				point_1 := point_2;
-			end if;
-			
-			next (segment);
-		end loop;
-
-		log_indentation_down;
-		
-		return point_1;
-	end lowest_xy;
-
-
-
 	procedure no_generic_model_found (
 		reference		: in type_name; -- IC303
 		library			: in et_kicad_general.type_device_library_name.bounded_string; -- ../lib/transistors.lib
@@ -3916,14 +3862,6 @@ package body et_kicad is
 									level => log_threshold + 1
 									);
 
-								log_indentation_up;
-								
-								log (text => "strand " & 
-										to_string (lowest_xy (element (h_strand), log_threshold + 3)),
-										level => log_threshold + 2);
-								
-								log_indentation_down;
-
 								-- append the strand to the temparily collection of hierarchic strands
 								et_kicad.type_strands.append (
 									container	=> hierarchic_strands_tmp,
@@ -6038,10 +5976,6 @@ package body et_kicad is
 							set_path (strand.position, path_to_sheet);
 							set_sheet (strand.position, sheet_number);
 
-							-- set x,y coordinates (lowest available on the sheet)
-							--set_xy (strand.position, lowest_xy (strand, log_threshold + 3));
-							set (strand.position, lowest_xy (strand, log_threshold + 3));
-                            
 							-- insert strand in module, then purge strand.segments for next spin
 							log (text => "inserting strand in module ...", level => log_threshold + 2);
 							add_strand (strand);
@@ -6094,10 +6028,6 @@ package body et_kicad is
                             set_path (strand.position, path_to_sheet);
 							set_sheet (strand.position, sheet_number);
 
-							-- set x,y coordinates (lowest available on the sheet)
-							--set_xy (strand.position, lowest_xy (strand, log_threshold + 3));
-							set (strand.position, lowest_xy (strand, log_threshold + 3));
-							
 							-- insert strand in module, then purge strand.segments for next spin
 							log (text => "inserting strand in module ...", level => log_threshold + 2);
 							add_strand (strand);
