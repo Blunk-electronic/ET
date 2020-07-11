@@ -3333,7 +3333,11 @@ package body et_kicad is
 				log (text => "querying package variants ...", level => log_threshold + 2);
 				log_indentation_up;
 
-				-- Loop through package variants:
+				-- Loop through package variants. The first variant is the default variant
+				-- as specified by the component model.
+				-- If no suitable variant in component.variants can be located, then
+				-- a new variant must be built. This will be the case when the user has
+				-- assigned a different package to the component from inside the schematic editor.
 				while variant_cursor /= pac_variants.no_element loop
 
 					log (text => "probing " 
@@ -3363,8 +3367,8 @@ package body et_kicad is
 				-- If no suitable package variant has been found, a new one must be created.
 				if variant_cursor = pac_variants.no_element then
 					
-					-- Package variant not defined in library. Make sure
-					-- the terminal_port_map (there is only one) can be applied 
+					-- Package variant not defined in library. Package assigned inside the schematic editor.
+					-- Make sure the terminal_port_map (there is only one) can be applied 
 					-- on this package variant.
 					log (text => "unknown variant found. validating ...", level => log_threshold + 3);
 					log_indentation_up;
@@ -8826,7 +8830,6 @@ package body et_kicad is
 		module_name : type_submodule_name.bounded_string; -- the name of the module to be created
 		module_inserted : boolean := false; -- goes true if module already created. should never happen
 
-
 		procedure save_libraries is
 			use et_import;
 
@@ -8849,7 +8852,8 @@ package body et_kicad is
 		begin -- save_libraries
 			-- tmp_component_libraries is a tempoarily storage place.
 			-- It must be saved in module.component_libraries.
-			-- tmp_component_libraries is furhter-on requried for other operations (like read_schematic) within the current module.
+			-- tmp_component_libraries is furhter-on requried for other operations (like read_schematic)
+			-- within the current module.
 			-- CS: in the future tmp_component_libraries should be discarded. update_element and query_element
 			-- operations should access the component_libraries of a module directly.
 			type_modules.update_element (modules, module_cursor, save_components'access);
@@ -8936,8 +8940,8 @@ package body et_kicad is
 				-- read component libraries
 				read_components_libraries (log_threshold); -- fills tmp_component_libraries
 
-				-- copy temparily containers in module
-				save_libraries;
+-- 				-- copy temparily library containers in module
+-- 				save_libraries;
 
 				current_schematic.sheet.file := top_level_schematic;
 				check_submodule_name_characters (to_submodule_name (current_schematic.sheet.file));
@@ -9027,6 +9031,12 @@ package body et_kicad is
 
 				end if;
 
+				-- During reading the schematic files, the component libraries in tmp_component_libraries
+				-- may have been extended by package variants. Now they are complete and can be finally
+				-- assigned to the module.
+				-- CS: test in V5
+				save_libraries;
+				
 				-- Update strand names according to power in/out ports connected with them:
 				update_strand_names (log_threshold + 1); -- includes portlist generation
 

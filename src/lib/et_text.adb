@@ -595,7 +595,11 @@ package body et_text is
 					when '_' => add (special_underline);
 					when ' ' => null;
 					
-					when others => raise constraint_error; -- CS should never happen
+					when others => 
+						log (ERROR, "Invalid character in " & enclose_in_quotes (text) 
+							 & " at position" & positive'image (place) & " !");
+
+						raise constraint_error; -- CS should never happen
 				end case;
 			end loop;
 

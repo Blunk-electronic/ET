@@ -2890,7 +2890,7 @@ package body et_kicad_to_native is
 			use et_packages.type_package_model_file;
 			
 			procedure query_components (
-				library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- lbr/logig.lib
+				library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- lbr/logic.lib
 				library			: in et_kicad.type_components_library.map) is
 				
 				use et_symbols;
@@ -3468,6 +3468,8 @@ package body et_kicad_to_native is
 								));
 
 						when PCB =>
+							--log (text => "variant count " & count_type'image (pac_variants.length (element (component_cursor).variants)));
+							
 							et_devices.type_devices.insert (
 								container	=> et_devices.devices,
 								position	=> device_cursor,
@@ -3519,7 +3521,6 @@ package body et_kicad_to_native is
 					next (component_cursor);
 				end loop;
 			end query_components;
-
 
 			procedure query_packages (
 			-- Creates with the library name and package name new native package models.
