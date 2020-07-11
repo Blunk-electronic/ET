@@ -418,24 +418,29 @@ package body et_kicad_pcb is
 		-- set left line
 		line_1.start_point := p11;
 		line_1.end_point := p12;
-
-		-- set right line
-		line_2.start_point := p21;
-		line_2.end_point := p22;
-
-		-- set upper line
-		line_3.start_point := p11;
-		line_3.end_point := p21;		
+		line_1.id := 1;
 
 		-- set lower line
 		line_4.start_point := p12;
 		line_4.end_point := p22;
+		line_4.id := 2;
+		
+		-- set right line
+		line_2.start_point := p22;
+		line_2.end_point := p21;
+		line_2.id := 3;
+
+		-- set upper line
+		line_3.start_point := p21;
+		line_3.end_point := p11;
+		line_3.id := 4;
 		
 		-- build shape
+		shape.segments_total := 4; -- altogther we have 4 segments
 		shape.segments.lines.append (line_1);
+		shape.segments.lines.append (line_4);
 		shape.segments.lines.append (line_2);
 		shape.segments.lines.append (line_3);
-		shape.segments.lines.append (line_4);
 		
 		return shape;
 	end to_pad_shape_rectangle;
@@ -514,26 +519,31 @@ package body et_kicad_pcb is
 		-- set left line
 		line_1.start_point := p11;
 		line_1.end_point := p12;
-
-		-- set right line
-		line_2.start_point := p21;
-		line_2.end_point := p22;
-
-		-- set upper arc
-		arc_1.center := p41;
-		arc_1.start_point := p11;
-		arc_1.end_point := p21;
+		line_1.id := 1;
 
 		-- set lower arc
 		arc_2.center := p42;
 		arc_2.start_point := p12;
 		arc_2.end_point := p22;
-
+		arc_2.id := 2;
+		
+		-- set right line
+		line_2.start_point := p22;
+		line_2.end_point := p21;
+		line_2.id := 3;
+		
+		-- set upper arc
+		arc_1.center := p41;
+		arc_1.start_point := p21;
+		arc_1.end_point := p11;
+		arc_1.id := 4;
+		
 		-- build shape
+		shape.segments_total := 4;  -- altogther we have 4 segments
 		shape.segments.lines.append (line_1);
 		shape.segments.lines.append (line_2);
+		shape.segments.arcs.append (arc_2);
 		shape.segments.arcs.append (arc_1);
-		shape.segments.arcs.append (arc_2);				
 		
 		return shape;
 	end to_pad_shape_oval;
