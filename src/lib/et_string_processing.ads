@@ -189,8 +189,20 @@ package et_string_processing is
 	function strip_quotes (text_in : in string) return string;
 	-- removes heading and trailing quotation from given string
 
-	function enclose_in_quotes (text_in : in string; quote : in character := latin_1.apostrophe) return string;
-	-- Adds heading and trailing quotate to given string. NOTE: apostrophe is ', quotation is "
+	-- Adds heading and trailing quotate to given string. 
+	-- NOTE: apostrophe is ', quotation is "
+	function enclose_in_quotes (
+		text_in	: in string;
+		quote	: in character := latin_1.apostrophe) 
+		return string;
+
+	-- Adds heading and trailing quotate to given character.
+	-- NOTE: apostrophe is ', quotation is "
+	function enclose_in_quotes (
+		charcter_in	: in character;
+		quote		: in character := latin_1.apostrophe) 
+		return string;
+
 
 	function trim_space_in_string (text_in : in string) return string;
 	-- shrinks successive space characters to a single one in given string

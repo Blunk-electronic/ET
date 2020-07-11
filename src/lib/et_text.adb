@@ -36,6 +36,7 @@
 --
 
 with ada.text_io;				use ada.text_io;
+with ada.strings;				use ada.strings;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
@@ -136,7 +137,69 @@ package body et_text is
 			return true; -- contains nothing -> is empty
 		end if;
 	end is_empty;
-	
+
+	function characters_valid (
+		content		: in type_text_content.bounded_string;
+		characters	: in character_set := valid_characters) 
+		return boolean is
+		use et_string_processing;
+		use type_text_content;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source	=> content,
+			set 	=> characters,
+			test 	=> outside);
+
+		if invalid_character_position > 0 then
+			log (WARNING, "Text " & enclose_in_quotes (to_string (content))
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position)
+				 & " !"
+				);
+			return false;
+		else
+			return true;
+		end if;
+	end characters_valid;
+
+	procedure replace_invalid_characters (
+		content		: in out type_text_content.bounded_string;
+		replace_by	: in character := replace_by_default;
+		characters	: in character_set := valid_characters)
+	is
+		use et_string_processing;
+		use type_text_content;
+		invalid_character_position : natural := 0;
+
+		l_max : constant natural := length (content);
+	begin
+		log (WARNING, "Replacing invalid characters in text " 
+			& enclose_in_quotes (to_string (content))
+			& " by " & enclose_in_quotes (replace_by) & " !");
+
+		-- To prevent an infintive loop, we test for invalid characters
+		-- no more often than the length of the given content:
+		for p in 0 .. l_max loop
+			
+			invalid_character_position := index (
+				source	=> content,
+				set 	=> characters,
+				test 	=> outside);
+
+			-- If there is an invalid character, replace it at the detected
+			-- position. Eventually there are no more invalid characters
+			-- and the loop ends prematurely.
+			if invalid_character_position > 0 then
+				replace_element (content, invalid_character_position, replace_by);
+			else
+				exit;
+			end if;
+			
+		end loop;
+	end replace_invalid_characters;
+
+
 	
 	procedure check_text_content_length (content : in string) is
 	-- Tests if the content is longer than allowed.

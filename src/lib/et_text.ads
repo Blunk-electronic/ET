@@ -35,6 +35,7 @@
 --   history of changes:
 --
 
+with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -98,6 +99,25 @@ package et_text is
 	function to_content (content : in string) return type_text_content.bounded_string;
 
 	function is_empty (content : in type_text_content.bounded_string) return boolean;
+	
+	valid_characters : character_set := to_set 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- "); 
+
+	-- Tests if the given text contains only valid characters as specified
+	-- by given character set. Returns false if invalid character found.
+	function characters_valid (
+		content		: in type_text_content.bounded_string;
+		characters	: in character_set := valid_characters) 
+		return boolean;
+
+	replace_by_default : constant character := '_';
+
+	-- Replaces invalid characters in content by character given in replace_by:
+	procedure replace_invalid_characters (
+		content		: in out type_text_content.bounded_string;
+		replace_by	: in character := replace_by_default;
+		characters	: in character_set := valid_characters);
+
 	
 	procedure check_text_content_length (content : in string);
 	-- Tests if the content is not longer than allowed.

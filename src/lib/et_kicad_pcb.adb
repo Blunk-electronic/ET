@@ -2442,6 +2442,10 @@ package body et_kicad_pcb is
 						end case;
 						
 					when USER =>
+						-- If there are invalid characters in user text then they will be replaced
+						-- by the character defined in et_text.replace_by_default.
+						replace_invalid_characters (text.content);
+						
 						case text.layer is
 							when TOP_SILK => 
 								silk_screen.top.texts.append ((et_packages.type_text (text) with content => text.content));

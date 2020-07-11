@@ -412,12 +412,22 @@ package body et_string_processing is
 		end if;
 	end strip_quotes;
 
-	function enclose_in_quotes (text_in : in string; quote : in character := latin_1.apostrophe) return string is
-	-- Adds heading and trailing quotes to given string.
+	function enclose_in_quotes (
+		text_in	: in string;
+		quote	: in character := latin_1.apostrophe) 
+		return string is
 	begin
 		return quote & text_in & quote;
 	end enclose_in_quotes;
 
+	function enclose_in_quotes (
+		charcter_in	: in character;
+		quote		: in character := latin_1.apostrophe) 
+		return string is
+	begin
+		return quote & charcter_in & quote;
+	end enclose_in_quotes;
+	
 	function trim_space_in_string (text_in : in string) return string is
 	-- shrinks successive space characters to a single one in given string		
 		text_scratch : string (1..text_in'length) := text_in;
