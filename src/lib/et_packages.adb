@@ -68,10 +68,7 @@ package body et_packages is
 	procedure check_package_name_characters (
 		packge		: in type_component_package_name.bounded_string;
 		characters	: in character_set := component_package_name_characters)
-		is
-	-- Tests if the given package name contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
+	is
 		use et_string_processing;
 		use type_component_package_name;
 		invalid_character_position : natural := 0;
@@ -82,7 +79,7 @@ package body et_packages is
 			test => outside);
 
 		if invalid_character_position > 0 then
-			log (WARNING, "package name " & to_string (packge) 
+			log (WARNING, "package name " & enclose_in_quotes (to_string (packge))
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position));
 		end if;

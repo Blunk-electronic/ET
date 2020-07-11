@@ -80,6 +80,7 @@ package et_packages is
 	component_package_name_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) 
 		or to_set('.')
+		or to_set('-')
 		or to_set('_'); 
 
 	component_package_name_length_max : constant positive := 100;

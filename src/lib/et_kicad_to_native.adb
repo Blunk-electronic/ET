@@ -2254,21 +2254,21 @@ package body et_kicad_to_native is
 
 			-- The return is a composition of prefix_devices_dir, library containing directory,
 			-- generic component name and device model extension 
-			-- like: libraries/devices/__#__#lbr#bel_logic_7400.dev
+			-- like: libraries/devices/__-__-lbr-bel_logic_7400.dev
 			return et_devices.type_device_model_file.bounded_string is
 
 			use et_kicad_general.type_device_library_name;
 			dir : et_kicad_general.type_device_library_name.bounded_string; -- ../../lbr
-			name : et_devices.type_device_model_file.bounded_string; -- to be returned -- libraries/devices/__#__#lbr#bel_logic_7400.dev
+			name : et_devices.type_device_model_file.bounded_string; -- to be returned -- libraries/devices/__-__-lbr-bel_logic_7400.dev
 
-			-- In the containing directory . and / must be replaced by _ and #:
-			characters : character_mapping := to_mapping ("./","_#");
+			-- In the containing directory . and / must be replaced by _ and -:
+			characters : character_mapping := to_mapping ("./","_-");
 			
 		begin -- concatenate_lib_name_and_generic_name
 			dir := et_devices.to_file_name (containing_directory (
-							et_devices.to_string (library)) & '#'); -- ../../lbr
+							et_devices.to_string (library)) & '-'); -- "..-..-lbr"
 								 
-			translate (dir, characters); -- __#__#lbr
+			translate (dir, characters); -- __-__-lbr
 			--log (text => "dir " & et_libraries.to_string (dir));
 			
 			name := et_devices.to_file_name (base_name (et_devices.to_string (library))); -- bel_logic
@@ -2291,12 +2291,12 @@ package body et_kicad_to_native is
 		function rename_package_model (
 			model_in : in et_kicad_general.type_package_library_name.bounded_string) -- ../../lbr/transistors.pretty/S_0805
 			return et_packages.type_package_model_file.bounded_string is
-			-- The return is something like: libraries/packages/__#__#lbr#transistors.pretty_S_0805.pac .
+			-- The return is something like: libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac .
 
 			use et_kicad_general.type_package_library_name;
 
-			-- In the containing directory . and / must be replaced by _ and #:
-			characters : character_mapping := to_mapping ("./","_#");
+			-- In the containing directory . and / must be replaced by _ and -:
+			characters : character_mapping := to_mapping ("./","_-");
 
 			model_copy : et_kicad_general.type_package_library_name.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
 			model_return : et_packages.type_package_model_file.bounded_string;
@@ -3406,7 +3406,7 @@ package body et_kicad_to_native is
 
 				procedure rename_package_model_in_variants (
 				-- The package associated with a variant must be changed so that it becomes 
-				-- something like libraries/packages/__#__#lbr#transistors.pretty_S_0805.pac
+				-- something like libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac
 					device_name	: in et_devices.type_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
 					device		: in out et_devices.type_device) is
 
@@ -3562,7 +3562,7 @@ package body et_kicad_to_native is
 					-- would not be inserted again:
 					et_packages.type_packages.insert (
 						container	=> et_packages.packages,
-						key			=> package_model, -- libraries/packages/#home#user#lbr#bel_battery_pretty#S_CR3232.pac
+						key			=> package_model, -- libraries/packages/-home-user-lbr-bel_battery_pretty-S_CR3232.pac
 						position	=> package_cursor,
 						inserted	=> inserted,
 						new_item	=> (et_packages.type_package_base (element (package_cursor_kicad))
@@ -3655,7 +3655,7 @@ package body et_kicad_to_native is
 			begin
 				device_rw.save_device (
 					-- library name like: 
-					-- libraries/devices/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.dev
+					-- libraries/devices/__-__-lbr-bel_connector_and_jumper_FEMALE_01X06.dev
 					file_name		=> to_file_name (to_string (key (device_cursor))),
 
 					-- the device model itself:
@@ -3670,7 +3670,7 @@ package body et_kicad_to_native is
 			begin
 				pcb_rw.device_packages.save_package (
 					-- package name like: 
-					-- libraries/packages/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.pac
+					-- libraries/packages/__-__-lbr-bel_connector_and_jumper_FEMALE_01X06.pac
 					file_name		=> et_packages.to_file_name (to_string (key (package_cursor))),
 
 					-- the package model itself:
