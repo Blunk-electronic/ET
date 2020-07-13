@@ -71,7 +71,7 @@ package body et_design_rules is
 		log_threshold 	: in et_string_processing.type_log_level)
 	is separate;
 	
-	function get_rules (rules : in pac_file_name.bounded_string) 
+	function get_rules (rules : in pac_file_name.bounded_string) -- JLP_ML4_standard.dru
 		return type_design_rules is
 
 		use pac_design_rules;
@@ -79,7 +79,13 @@ package body et_design_rules is
 		-- Locate the design rules:
 		c : pac_design_rules.cursor := find (design_rules, rules);
 	begin
-		return element (c);
+		-- If the given rules file does not exist (of if rules is empty)
+		-- return default rules:
+		if c /= no_element then
+			return element (c);
+		else
+			return design_rules_default;
+		end if;
 	end get_rules;
 	
 end et_design_rules;

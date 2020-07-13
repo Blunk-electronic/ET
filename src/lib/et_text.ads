@@ -101,7 +101,7 @@ package et_text is
 	function is_empty (content : in type_text_content.bounded_string) return boolean;
 	
 	valid_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- "); 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_-+ "); 
 
 	-- Tests if the given text contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
@@ -785,6 +785,11 @@ package et_text is
 			 );
 
 		-- SPECIAL CHARACTERS
+		special_plus : constant type_character (1 .. 2) := (
+			 1	=> (x1, y3, x3, y3),
+			 2	=> (x2, y4, x2, y2)
+			 );
+
 		special_dash : constant type_character (1 .. 1) := (
 			 1	=> (x1, y3, x3, y3)
 			 );

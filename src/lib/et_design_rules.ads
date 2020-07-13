@@ -93,7 +93,7 @@ package et_design_rules is
 	subtype type_stop_mask_expansion is type_distance_positive range 0.01 .. 0.2;
 	
 	type type_stop_mask is record
-		expansion_min	: type_stop_mask_expansion;
+		expansion_min	: type_stop_mask_expansion := 0.075;
 	end record;
 	
 	type type_design_rules is record
@@ -102,6 +102,8 @@ package et_design_rules is
 		stop_mask	: type_stop_mask;
 	end record;
 
+	design_rules_default : constant type_design_rules := (others => <>);
+	
 	package pac_design_rules is new ordered_maps (
 		key_type		=> pac_file_name.bounded_string, -- JLP_ML4_standard.dru
 		element_type	=> type_design_rules);
@@ -142,7 +144,11 @@ package et_design_rules is
 	function to_string (section : in type_section_name) return string;
 	-- Converts a section like SEC_CLEARANCES to a string "clearances".
 
-	function get_rules (rules : in pac_file_name.bounded_string)
+
+	-- Returns the design rule data set specified in given rules file.
+	-- If the given rules file does not exist (of if rules is empty)
+	-- returns default rules.
+	function get_rules (rules : in pac_file_name.bounded_string) -- JLP_ML4_standard.dru
 		return type_design_rules;
 		
 end et_design_rules;

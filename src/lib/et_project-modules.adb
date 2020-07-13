@@ -954,14 +954,14 @@ package body et_project.modules is
 		end if;
 	end layout_rules_assigned;
 
-	function get_design_rules (
+	function get_pcb_design_rules (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return et_design_rules.type_design_rules 
+		return et_design_rules.type_design_rules -- JLP_ML4_standard.dru
 	is
 		use et_design_rules;
 	begin
-		return get_rules (element (module).rules.layout);
-	end get_design_rules;
+		return get_rules (element (module).rules.layout); 
+	end get_pcb_design_rules;
 
 	
 end et_project.modules;

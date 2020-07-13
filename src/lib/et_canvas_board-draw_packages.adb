@@ -2388,7 +2388,7 @@ is
 		function get_stop_mask_expansion return type_stop_mask_expansion is  -- from DRU
 			use et_canvas_schematic;
 		begin
-			return get_design_rules (current_active_module).stop_mask.expansion_min;
+			return get_pcb_design_rules (current_active_module).stop_mask.expansion_min;
 		end get_stop_mask_expansion;
 		
 		procedure draw_terminals is

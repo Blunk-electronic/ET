@@ -391,9 +391,9 @@ package et_project.modules is
 		return boolean;
 
 	-- Returns the PCB design rules of the given module:
-	function get_design_rules (
+	function get_pcb_design_rules (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return et_design_rules.type_design_rules;
+		return et_design_rules.type_design_rules; -- JLP_ML4_standard.dru
 		
 	
 end et_project.modules;
