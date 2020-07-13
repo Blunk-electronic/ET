@@ -159,7 +159,7 @@ package body et_terminals is
 	end;
 
 	function to_string (technology : in type_assembly_technology) return string is begin
-		return to_lower (type_assembly_technology'image (technology));
+		return type_assembly_technology'image (technology);
 	end;
 
 	function to_assembly_technology (technology : in string) return type_assembly_technology is begin

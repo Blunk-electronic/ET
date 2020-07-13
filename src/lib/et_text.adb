@@ -172,31 +172,37 @@ package body et_text is
 		use type_text_content;
 		invalid_character_position : natural := 0;
 
-		l_max : constant natural := length (content);
+		l_max : natural;
 	begin
-		log (WARNING, "Replacing invalid characters in text " 
-			& enclose_in_quotes (to_string (content))
-			& " by " & enclose_in_quotes (replace_by) & " !");
+		if characters_valid (content) then
+			null;
+		else
+			log (WARNING, "Replacing invalid characters in text " 
+				& enclose_in_quotes (to_string (content))
+				& " by " & enclose_in_quotes (replace_by) & " !");
 
-		-- To prevent an infintive loop, we test for invalid characters
-		-- no more often than the length of the given content:
-		for p in 0 .. l_max loop
+			-- To prevent an infintive loop, we test for invalid characters
+			-- no more often than the length of the given content:
+			l_max := length (content);
 			
-			invalid_character_position := index (
-				source	=> content,
-				set 	=> characters,
-				test 	=> outside);
+			for p in 0 .. l_max loop
+				
+				invalid_character_position := index (
+					source	=> content,
+					set 	=> characters,
+					test 	=> outside);
 
-			-- If there is an invalid character, replace it at the detected
-			-- position. Eventually there are no more invalid characters
-			-- and the loop ends prematurely.
-			if invalid_character_position > 0 then
-				replace_element (content, invalid_character_position, replace_by);
-			else
-				exit;
-			end if;
-			
-		end loop;
+				-- If there is an invalid character, replace it at the detected
+				-- position. Eventually there are no more invalid characters
+				-- and the loop ends prematurely.
+				if invalid_character_position > 0 then
+					replace_element (content, invalid_character_position, replace_by);
+				else
+					exit;
+				end if;
+				
+			end loop;
+		end if;
 	end replace_invalid_characters;
 
 
