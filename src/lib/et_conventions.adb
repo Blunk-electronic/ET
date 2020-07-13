@@ -2602,7 +2602,7 @@ package body et_conventions is
 			when event:
 				others =>
 					set_output (standard_output);
-					put_line (message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
+					log (ERROR, "Read export report for warnings and error messages !"); -- CS: show path to report file
 					raise;
 		
 	end make_default_conventions;

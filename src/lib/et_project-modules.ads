@@ -112,20 +112,9 @@ package et_project.modules is
 	
 	-- Saves the given generic module. The path and file name is specified
 	-- by the name of the module (key (module_cursor)) like "templates/clock_generator.mod"
-	-- or "/home/user/ecad/et_modules/pwr_supply.mod".
 	procedure save_module (
 		module_cursor		: in pac_generic_modules.cursor;
 		log_threshold		: in et_string_processing.type_log_level);
-	
-	-- Saves the given module in the module file of the given project.
-	-- If module_name not provided, the module will be named after the given project_name.
-	procedure save_module (
-		module_cursor	: in pac_generic_modules.cursor;			-- the module
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
-		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
-		log_threshold 	: in et_string_processing.type_log_level);
-
 	
 	
 

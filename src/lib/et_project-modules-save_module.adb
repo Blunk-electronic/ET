@@ -1423,6 +1423,9 @@ is
 	end query_board;
 
 begin -- save_module
+
+	-- CS check if module is inside project directory ?
+	
 	write_header;
 
 	-- meta data

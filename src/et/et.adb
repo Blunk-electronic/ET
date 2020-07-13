@@ -115,6 +115,8 @@ procedure et is
 	runmode : type_runmode := runmode_default;
 	
 	dummy_name : constant string := "dummy";
+
+	message_error : constant string := "ERROR ! ";
 	
 	procedure get_commandline_arguments is
 		use ada.characters.latin_1;

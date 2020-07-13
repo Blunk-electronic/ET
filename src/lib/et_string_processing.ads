@@ -87,14 +87,6 @@ package et_string_processing is
 	procedure log_indentation_down;
 	procedure log_indentation_reset;
 
--- 	package indentation_level_stack is new 
--- 		et_general.stack_lifo (
--- 			max => natural(type_indentation_level'last),
--- 			item => type_indentation_level);
--- 	
--- 	type type_log_identation_operation is ( RESET, UP, DOWN, PUSH, POP);
--- 	procedure log_indentation_operation (operation : in type_log_identation_operation);
-
 	tabulator : constant character := latin_1.ht;
 	
 	function indent (width : in type_indentation_level) return string;
@@ -109,16 +101,7 @@ package et_string_processing is
 	-- Writes the given text with the current log_indentation in the current output. 
 	-- If the system wide log level is greater or equal the the given log_level the given text is put on the log.
 
-
 	
--- CHARACTERS IN NOTES, TEXT, LABELS, ...
-
--- 	comment_mark : constant string (1..1) := "#";
-	
-	-- Since we want designs readable and portable in as many languages as possible we accept only those characters:
-	general_characters : character_set := 
-		to_set (ranges => (('a','z'),('A','Z'),('0','9'))) -- letters and numbers
-		or to_set ("!?.-: "); -- other characters -- CS: add others if neccessary
 
 
 	
@@ -138,13 +121,10 @@ package et_string_processing is
 	function date_first return time; -- returns 1901-01-01
 	-- Use it to indicate uninialized date.
 	
---	procedure check_updated_vs_commissioned (commissioned , updated : in type_date);
-	-- Checks whether updated is later or equal commissioned.
-
 	row_separator_length 	: constant positive := 100;
 	row_separator_single	: constant string (1..row_separator_length)	:= row_separator_length * "-";	
 	row_separator_double	: constant string (1..row_separator_length)	:= row_separator_length * "=";
-	item_not_specified		: constant string (1..7) := "missing";
+-- 	item_not_specified		: constant string (1..7) := "missing";
 	
 -- WARNING AND ERROR MESSAGES
 	function metric_system return string;
@@ -153,17 +133,11 @@ package et_string_processing is
 	function angles_in_degrees return string;
 	-- Returns a message about the degrees used.
 	
-	message_error : constant string (1..8)	:= "ERROR ! ";
-
 	function message_warning return string;
 	-- Returns a warning string and increments the import/export) warning counter.
 
 	function message_note return string;
 	-- Returns a notification string.
-
-	mounted		: constant string (1..7)  := "mounted";
-	not_mounted	: constant string (1..11) := "not mounted";
-	
 
 	function strip_directory_separator (text : in string) return string;
 	-- Removes a possible trailing directory separtor.

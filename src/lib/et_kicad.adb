@@ -5662,7 +5662,7 @@ package body et_kicad is
 				tag_label_cursor	: type_tag_labels.cursor; -- points to the tag label being processed
 
 				procedure output_net_label_conflict is begin
-					put_line (standard_output, message_error & "Net label conflict !"); -- CS log ?
+					log (ERROR, "Net label conflict !", console => true);
 				end output_net_label_conflict;
 				
 			begin -- associate_net_labels_with_anonymous_strands
