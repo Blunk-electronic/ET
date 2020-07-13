@@ -472,30 +472,35 @@ package body et_kicad_pcb is
 		y1p : constant type_distance := size_y / 2;
 		y1n : constant type_distance := -(y1p);
 
-		y2p : constant type_distance := y1p - x1p;
-		y2n : constant type_distance := -(y2p);
+		x2p : constant type_distance := x1p - y1p;
+		x2n : constant type_distance := -(x2p);
 
 		-- supportive points:
-		p11, p12 : type_point; -- start/end point of left line
-		p21, p22 : type_point; -- start/end point of right line
-		p41, p42 : type_point; -- center of upper/lower arc
-
+		p11, p12 : type_point; -- start/end point of upper line
+		p21, p22 : type_point; -- start/end point of lower line
+		p41, p42 : type_point; -- center of left/right arc
+		
 		-- These are the two lines and the two arcs we need for the oval pad contour:
-		line_1, line_2 : type_polygon_line; -- left line, right line
-		arc_1, arc_2 : type_polygon_arc; -- upper arc, lower arc
+		line_1, line_2 : type_polygon_line;	-- upper/lower line
+		arc_1, arc_2 : type_polygon_arc;	-- left/right arc
 		
 	begin -- to_pad_shape_oval
 
 		-- set supportive points
-		p11 := type_point (set (x => x1n, y => y2p));
-		p12 := type_point (set (x => x1n, y => y2n));
+		-- upper line
+		p11 := type_point (set (x => x2n, y => y1p));
+		p12 := type_point (set (x => x2p, y => y1p));
 
-		p21 := type_point (set (x => x1p, y => y2p));
-		p22 := type_point (set (x => x1p, y => y2n));
+		-- lower line
+		p21 := type_point (set (x => x2n, y => y1n));
+		p22 := type_point (set (x => x2p, y => y1n));
 
-		p41 := type_point (set (x => zero, y => y2p));
-		p42 := type_point (set (x => zero, y => y2n));			
+		-- left arc
+		p41 := type_point (set (x => x2n,  y => zero));
 
+		-- right arc
+		p42 := type_point (set (x => x2p,  y => zero));
+		
 		-- rotate supportive points 
 		rotate_by (p11, angle);
 		rotate_by (p12, angle);
@@ -516,33 +521,33 @@ package body et_kicad_pcb is
 		move_by (p41, offset);
 		move_by (p42, offset);		
 		
-		-- set left line
+		-- set upper line
 		line_1.start_point := p11;
 		line_1.end_point := p12;
 		line_1.id := 1;
 
-		-- set lower arc
-		arc_2.center := p42;
+		-- set right arc
 		arc_2.start_point := p12;
+		arc_2.center := p42;
 		arc_2.end_point := p22;
 		arc_2.id := 2;
 		
-		-- set right line
+		-- set lower line
 		line_2.start_point := p22;
 		line_2.end_point := p21;
 		line_2.id := 3;
 		
-		-- set upper arc
-		arc_1.center := p41;
+		-- set left arc
 		arc_1.start_point := p21;
+		arc_1.center := p41;
 		arc_1.end_point := p11;
 		arc_1.id := 4;
 		
 		-- build shape
 		shape.segments_total := 4;  -- altogther we have 4 segments
 		shape.segments.lines.append (line_1);
-		shape.segments.lines.append (line_2);
 		shape.segments.arcs.append (arc_2);
+		shape.segments.lines.append (line_2);
 		shape.segments.arcs.append (arc_1);
 		
 		return shape;
