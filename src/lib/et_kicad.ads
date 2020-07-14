@@ -62,11 +62,15 @@ use et_coordinates.pac_geometry_sch;
 with et_pcb_coordinates;
 with et_string_processing;		use et_string_processing;
 with et_text;
-with et_symbols;				use et_symbols;
+with et_symbols;				--use et_symbols;
 with et_devices;				use et_devices;
 with et_frames;
 
+with et_kicad_libraries;		use et_kicad_libraries;
+
 package et_kicad is
+
+	use et_kicad_libraries.pac_text;
 	
 	-- CS: a lot of stuff should move from here to et_kicad_general
 
@@ -86,20 +90,6 @@ package et_kicad is
 
 	schematic_handle : ada.text_io.file_type;
 
-	-- SYM-LIB-TABLES AND FP-LIB-TABLES ------------------------------------------------------------------------------
-	-- For V5:
-	file_sym_lib_table			: constant string (1..13) := "sym-lib-table";
-	file_fp_lib_table			: constant string (1..12) := "fp-lib-table";
-	dir_global_lib_tables_linux	: constant string (1..15) := "/.config/kicad/";
-	-- CS: windows ?
-	
-	file_sym_lib_table_global_linux : constant string (1 .. dir_global_lib_tables_linux'length + file_sym_lib_table'length)
-		:= dir_global_lib_tables_linux & file_sym_lib_table;
-
-	file_fp_lib_table_global_linux : constant string (1 .. dir_global_lib_tables_linux'length + file_fp_lib_table'length)
-		:= dir_global_lib_tables_linux & file_fp_lib_table;
-	------------------------------------------------------------------------------------------------------------------
-
 	
 	-- Sheet names may have the same length as schematic files.
 	package type_sheet_name is new generic_bounded_length (schematic_file_name_length);
@@ -109,12 +99,7 @@ package et_kicad is
 	-- Returns the base name of the given schematic file name as submodule name.
 
 
-	-- Bare library names can be stored further-on in a simple list:
-	-- We use a simple list because the order of the library names sometimes matters 
-	-- in V4 and must be kept.
-	package type_library_names is new doubly_linked_lists (
-		element_type	=> type_library_name.bounded_string, -- bel_logic, bel_primitives
-		"="				=> type_library_name."=");
+
 	
 	-- SHEET HEADERS
 	-- The sheet header is a composite of a list of libraries and other things:
@@ -159,70 +144,17 @@ package et_kicad is
 	procedure module_not_found (module : in type_submodule_name.bounded_string);
 	-- Returns a message stating that the given module does not exist.
 
-	-- Units may have alternative representations such as de_Morgan
-	type type_de_morgan_representation is (NO, YES);
 
 
-	-- Placeholders for texts have a meaning:
-	type type_placeholder_meaning is (
-		NAME,			-- for things like R301 or X9
-		VALUE,			-- for component values like "200R"
-		PACKGE,			-- for component packages like SOT23
-		DATASHEET,		-- for url to datasheet
-		MISC);
-	
-	placeholder_meaning_default : constant type_placeholder_meaning := MISC;
-	
-	function to_string (meaning : in type_placeholder_meaning) return string;
-	function to_meaning (meaning : in string) return type_placeholder_meaning;
 
 
-	text_size_min : constant type_distance_positive := 0.01;
-	text_size_max : constant type_distance_positive := 100.0;
-	text_size_default : constant type_distance_positive := 1.3;
-	
-	subtype type_text_line_width is type_distance_positive range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
-	text_line_width_min : constant type_distance_positive := 0.1;
-	text_line_width_max : constant type_distance_positive := 5.0;
-	text_line_width_default : constant type_distance_positive := 0.3; 
-
-	-- Instantiation of the shapes package:
-	-- Required for instantiation of text package only. See below.
-	package pac_shapes is new et_geometry.generic_pac_shapes (et_coordinates.pac_geometry_sch);
-	
-	-- Instantiation of the text package:
-	package pac_text is new et_text.generic_pac_text (
-		pac_shapes			=> pac_shapes,
-		size_min			=> text_size_min,
-		size_max			=> text_size_max,
-		size_default		=> text_size_default,
-		line_width_min		=> text_line_width_min,
-		line_width_max		=> text_line_width_max,
-		line_width_default	=> text_line_width_default
-		);
-
-	use pac_text;
-
-	-- These are basic properties a text has got:
-	type type_text_basic is new pac_text.type_text with record
-		-- CS: currently the style of text is ignored
-		-- style : ???
-		content		: et_text.type_text_content.bounded_string;		
-		rotation	: et_coordinates.type_rotation := 0.0;
-	end record;
-
-	type type_text_placeholder (meaning : type_placeholder_meaning) is new type_text_basic with record
-		position	: type_point;		
-	end record;	
 	
 	-- A text/note in the schematic:
 	type type_text is new type_text_basic with record
 		position	: kicad_coordinates.type_position;
 	end record;
 
-	function content (text : in type_text_placeholder) return string;
-	-- Returns the content of the given text placeholder as string.
-	
+
 	
 	-- A kicad unit:
 	type type_unit_schematic is record
@@ -290,283 +222,6 @@ package et_kicad is
 		unit			: in type_units_schematic.cursor;
 		log_threshold	: in et_string_processing.type_log_level);
 
-	-- POWER FLAGS
-	type type_power_flag is (YES, NO);
-
-	-- COMPONENT PACKAGE FILTER
-	-- If certain packages are to be proposed they are collected in a so called "package filter"
-	package_proposal_length_max : constant positive := 100;
-	package type_package_proposal is new generic_bounded_length (package_proposal_length_max);
-	package type_package_filter is new ordered_sets (
-		element_type	=> type_package_proposal.bounded_string,
-		"="				=> type_package_proposal."=",
-		"<"				=> type_package_proposal."<");
-
-	type type_port_style is (
-		NONE,
-		INVERTED,
-		CLOCK,
-		INVERTED_CLOCK,
-		INPUT_LOW,
-		CLOCK_LOW,
-		OUTPUT_LOW,
-		FALLING_EDGE_CLK, RISING_EDGE_CLK,
-		NON_LOGIC,
-
-		INVISIBLE_INVERTED,
-		INVISIBLE_CLOCK,
-		INVISIBLE_INVERTED_CLOCK,
-		INVISIBLE_INPUT_LOW,
-		INVISIBLE_CLOCK_LOW,
-		INVISIBLE_OUTPUT_LOW,
-		INVISIBLE_FALLING_EDGE_CLK, INVISIBLE_RISING_EDGE_CLK,
-		INVISIBLE_NON_LOGIC);
-
-	function to_string (style : in type_port_style) return string;
-
-	-- The port has an electrical direction:
-	type type_port_direction is (
-		PASSIVE,	-- almost all passive components like resistors, capacitors, .. have such ports
-		INPUT,		-- signal inputs
-		OUTPUT,		-- signal outputs
-		BIDIR,		-- bidirectional ports
-		TRISTATE,	-- tristate ports
-		UNKNOWN,
-		POWER_OUT,	-- a power source like power symbol (VCC, GND, ..)
-		POWER_IN,	-- a power sink like power ports of ICs
-		WEAK1,		-- a port with internal pull-up resistor
-		WEAK0,		-- a port with internal pull-down resistor
-		NOT_CONNECTED	-- advised by manufacturer to be left unconnected
-		);
-
-	function to_string (
-		direction	: in type_port_direction;
-		preamble	: in boolean := true) return string;
-	-- Returns the given port direction as string.
-
-	
-	type type_port_library is new et_symbols.type_port_base with record 	-- CS: set defaults
-		name		: et_symbols.type_port_name.bounded_string; -- like CLOCK or CE
-		direction 	: type_port_direction;
-		style 		: type_port_style := NONE;
-
-		-- the clearance between symbol outline and port name 
-		-- CS: define a reasonable range
-		port_name_offset : et_coordinates.type_distance;
-		-- CS : obsolete ? pin_position_offset ?
-	end record;
-
-	-- Ports of a component are collected in a simple list. A list, because multiple ports
-	-- with the same name (but differing terminal names) may exist. For example lots of GND
-	-- ports at FPGAs.
-	package type_ports_library is new doubly_linked_lists (type_port_library);
-
-	-- fill
-	type type_fill_border is (VISIBLE, INVISIBLE);
-	type type_fill_pattern is (NONE, SOLID); -- CS: hatched ? and its properties ?
-	type type_fill is record
-		border	: type_fill_border := VISIBLE;
-		pattern : type_fill_pattern := SOLID;
-	end record;
-
-	function to_string (fill : in type_fill) return string;
-	
-	-- lines of a symbol:
-	package type_symbol_lines is new doubly_linked_lists (
-		element_type	=> et_symbols.type_line,
-		"="				=> et_symbols."=");
-
-	-- polylines of a symbol:
-	-- A polyline is a list of points. Their interconnections have a width and a fill.
-	-- Filling can be done even if start and end point do not meet. In this case a virtual line
-	-- is "invented" that connects start and end point.
-	-- Finally the polylines are collected in a simple list.
-	package type_symbol_points is new doubly_linked_lists (
-		element_type	=> type_point,
-		"="				=> "=");
-
-	type type_symbol_polyline is record
-		width	: et_symbols.type_line_width;
-		fill	: type_fill;
-		points	: type_symbol_points.list;
-	end record;
-	package type_symbol_polylines is new doubly_linked_lists (type_symbol_polyline);
-
-	-- rectangles of a symbol:
-	-- It is sufficient to specifiy the diagonal of the rectangle.
-	type type_symbol_rectangle is record
-		corner_A	: type_point;
-		corner_B	: type_point;
-		width		: et_symbols.type_line_width;
-		fill		: type_fill;
-	end record;
-	package type_symbol_rectangles is new doubly_linked_lists (type_symbol_rectangle);	
-	
-	-- arcs of a symbol:
-	type type_symbol_arc is new et_symbols.type_arc with record
-		start_angle		: et_coordinates.type_rotation;
-		end_angle		: et_coordinates.type_rotation;
- 		fill			: type_fill;
-	end record;
-	package type_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
-
-	-- circles of a symbol:
-	type type_symbol_circle is new et_symbols.type_circle_base with record
-		fill			: type_fill;
-	end record;
-	package type_symbol_circles is new doubly_linked_lists (type_symbol_circle);
-
-	-- Shapes are wrapped in a composite:
-	type type_symbol_shapes is record
-		lines		: type_symbol_lines.list 		:= type_symbol_lines.empty_list;
-		arcs 		: type_symbol_arcs.list			:= type_symbol_arcs.empty_list;
-		circles		: type_symbol_circles.list		:= type_symbol_circles.empty_list;
-		rectangles	: type_symbol_rectangles.list	:= type_symbol_rectangles.empty_list;
-		polylines	: type_symbol_polylines.list	:= type_symbol_polylines.empty_list;
-	end record;
-	
-	type type_symbol_element is (
-		LINE, POLYLINE, RECTANGLE, ARC, CIRCLE, -- shapes
-		PORT, 
-		TEXT); -- text embedded in a symbol
-	
-	type type_symbol is new et_symbols.type_symbol_base with record
-		appearance	: et_symbols.type_appearance;
-		shapes		: type_symbol_shapes; -- the collection of shapes		
-		ports		: type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
-
-		-- Placeholders for component wide texts. To be filled with content when a symbol is placed in the schematic:
-		-- We use the native type for a text placeholder here. 
-		-- For things like package or datasheet no placeholder is requried. They have no meaning here.
-		name	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
-		value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
-	end record;
-
-	-- a component unit in the library
-	type type_unit_library (appearance : et_symbols.type_appearance) is record
-		symbol		: type_symbol := (appearance => appearance, others => <>);
-		coordinates	: type_point;
-		-- Units that harbor component wide pins have this flag set.
-		-- Usually units with power supply pins exclusively.
-		-- When building portlists this flag is important.
-		global		: boolean := false; -- CS: use a boolean derived type 
-	end record;
-
-	package type_units_library is new indefinite_ordered_maps (
-		key_type		=> et_devices.type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
-		"<"				=> et_devices.type_unit_name."<",
-		element_type	=> type_unit_library);
-
-	-- For some components (not all !) it is helpful to have an URL to the datasheet.
-	-- We limit the URL to reansonable 500 characters. Excessive Google URLs are thus not allowed.
-	component_datasheet_characters : character_set := 
-		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set (":/._-&");
-	component_datasheet_length_max : constant positive := 500;
-	package type_component_datasheet is new generic_bounded_length (component_datasheet_length_max);
-
-	procedure check_datasheet_length (datasheet : in string);
-	-- Tests if the given datasheet is longer than allowed.
-	
-	procedure check_datasheet_characters (
-		datasheet	: in type_component_datasheet.bounded_string;
-		characters	: in character_set := component_datasheet_characters);
-	-- Tests if the given URL contains only valid characters as specified
-	-- by given character set. Raises exception if invalid character found.
-
-
-	
-	-- This is a component as it appears in the library:.
-	type type_component_library (appearance : et_symbols.type_appearance) is record
-		prefix			: et_devices.type_prefix.bounded_string; -- R, C, IC, ...
-		value			: et_devices.type_value.bounded_string; -- 74LS00
-		units			: type_units_library.map := type_units_library.empty_map;
-
-		case appearance is
-
-			-- If a component appears in the schematic only, it is a virtual component 
-			-- and thus does not have any package variants.
-			-- Such components are power symbols or power flags. Later when building netlists
-			-- those components enforce net names (like GND or P3V3). Power flags do not
-			-- enforce net names. In order to distinguish them from regular power symbols the
-			-- power_flag is provided.
-			when et_symbols.VIRTUAL => 
-				power_flag		: type_power_flag := NO;
-
-			-- If a component appears in both schematic and layout it comes 
-			-- with at least one package/footprint variant. We store variants in a map.
-			when et_symbols.PCB => 
-				package_filter	: type_package_filter.set := type_package_filter.empty_set;
-				datasheet		: type_component_datasheet.bounded_string;
-				variants		: et_devices.pac_variants.map;
-				
-		end case;
-
-	end record;
-
-	-- The generic name of a component in the library is something like TRANSISTOR_NPN or RESISTOR
- 	component_generic_name_length_max : constant natural := 100;
-	package type_component_generic_name is new generic_bounded_length (component_generic_name_length_max);
-	use type_component_generic_name;
-	-- Only those characters are allowed for the generic component name.
-	-- See et_import.check_component_name for customization depending on CAD format.
-	component_generic_name_characters : character_set := to_set 
-		(ranges => (('A','Z'),('0','9'))) 
-		or to_set('-') 
-		or to_set('_'); 
-
-	procedure check_generic_name_characters (
-	-- Checks if the the given generic component name meets certain conventions.
-		name		: in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
-		characters	: in character_set);
-
-	function to_string (generic_name : in type_component_generic_name.bounded_string) return string;
-	
-
-	function strip_tilde (generic_name : in type_component_generic_name.bounded_string) return
-		type_component_generic_name.bounded_string;
-	-- Removes a possible heading tilde character from a generic component name.
-	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN	
-	-- The leading tilde marks a component whose value is set to "invisible".	
-	
-	-- Library components are stored in a map.
-	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
-	package type_components_library is new indefinite_ordered_maps (
-		key_type		=> type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
-		"<"				=> type_component_generic_name."<",
-		element_type	=> type_component_library);
-
-	function first_unit (
-	-- Returns the cursor to the first unit of the given component
-		component_cursor : in type_components_library.cursor)
-		return type_units_library.cursor;
-
-	function first_port (
-	-- Returns the cursor to the first port of the given unit
-		unit_cursor : in type_units_library.cursor)
-		return type_ports_library.cursor;
-
-
-	
-	procedure no_generic_model_found (
-		reference		: in et_devices.type_name; -- IC303
-		library			: in type_device_library_name.bounded_string; -- ../lib/xilinx/spartan.lib
-		generic_name	: in type_component_generic_name.bounded_string);
-	
-	
-	function component_appearance (cursor : in type_components_library.cursor)
-	-- Returns the component appearance where cursor points to.
-		return et_symbols.type_appearance;
-
-	function to_package_name (
-		library_name	: in type_device_library_name.bounded_string; -- ../libraries/transistors.lib
-		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
-		package_variant	: in et_devices.type_variant_name.bounded_string) -- N, D
-		return et_packages.type_component_package_name.bounded_string;
-	-- Returns the package name of the given component. 
-
-
-
-
 	
 	-- Alternative references used in instances of sheets:
 	-- example: AR Path="/59F17FDE/5A991D18" Ref="RPH1"  Part="1" 
@@ -580,6 +235,8 @@ package et_kicad is
 	end record;
 
 	package type_alternative_references is new doubly_linked_lists (type_alternative_reference);
+
+
 	
 	-- This is a component as it appears in the schematic.
 	type type_component_schematic (appearance : et_schematic.type_appearance_schematic) is record
@@ -855,8 +512,6 @@ package et_kicad is
 	-- Inserts the created submodule in container "modules".
 	-- Leaves the module_cursor pointing where the module was inserted.
 
--- COMMENT MARKS
-	comment_mark							: constant string := "#";
 
 -- PROJECT FILE RELATED KEYWORDS AND VARIABLES
     project_header_eeschema                 : constant string (1..10) := "[eeschema]";
@@ -865,83 +520,6 @@ package et_kicad is
 	project_keyword_library_directory       : constant string (1..6)  := "LibDir";
     project_keyword_library_name            : constant string (1..7)  := "LibName"; -- with index like "LibName1"
 
-
--- LIBRARIES
-
-	-- Full library names can be stored further-on in a simple list:
-	-- We use a simple list because the order of the library names sometimes matters and must be kept.
-    package type_full_library_names is new doubly_linked_lists ( -- CS remove
-		element_type 	=> type_device_library_name.bounded_string,
-		"="				=> type_device_library_name."=");
-
-	package type_libraries is new ordered_maps (
-		key_type 		=> type_device_library_name.bounded_string, -- ../../lbr/passive/capacitors.lib
-		"<"				=> type_device_library_name."<",
-		element_type 	=> type_components_library.map,
-		"=" 			=> type_components_library."=");
-	-- CS the element could be a record consisting of type_components_library.map, lib_type, options and desrciption
-	-- lib_type, options and description are provided in V5 and should be stored here in the future.
-
-	-- All component models of a project/module are collected here temporarily.
-	-- This collection is cleared when a new project is read. See procedure read_project_file.
-	-- NOTE: tmp_component_libraries is requried for operations (like read_schematic)
-	-- within the current module.
-	-- CS: in the future tmp_component_libraries should be discarded. update_element and query_element
-	-- operations should access the component_libraries of a module directly (see type_module).
-	tmp_component_libraries : type_libraries.map;
-	
-	
-	-- LIBRARY SEARCH LISTS ------------------------------------------------------------------
-	-- Relevant for V4:
-	-- The order of project libraries and their containing directories 
-	-- matters (for search operations).
-	-- For this reason we keep them in simple lists.
-	-- If multiple projects are imported, these lists are always
-	-- cleared when a project file is read. See procedure read_project_file.
-	-- The search lists are stored for each module (see type_module specs).
-	
-	-- search list for component library names
-	search_list_component_libraries : type_library_names.list; -- bel_logic, bel_primitives, ...
-
-	-- Libraries are stored in directories:
-	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
-	package type_library_directory is new generic_bounded_length (library_directory_length_max);
-
-	function to_string (dir : in type_library_directory.bounded_string) return string;
-	
-	-- Search list for library directories.
-	-- This list applies for both component and package search operations.
-	package type_project_lib_dirs is new doubly_linked_lists (
-		element_type	=> type_library_directory.bounded_string,
-		"=" 			=> type_library_directory."=");
-	search_list_project_lib_dirs : type_project_lib_dirs.list;
-
-	-- SYMBOL-LIBRARY-TABLES AND FOOTPRINT-LIBRARY-TABLES--------------------------	
-	-- Relevant for V5:
-	type type_lib_type is (
-		LEGACY,	-- symbol libs
-		KICAD	-- footprints
-		); -- CS: others ?
-
-	type type_lib_table_entry is record
-		lib_name	: type_library_name.bounded_string;
-		lib_type	: type_lib_type;
-		lib_uri		: type_device_library_name.bounded_string;
-		-- CS to be exact: there should be a distinct type_lib_table_entry for components and packages each.
-		-- Currently lib_uri is used for both component and package libraries.
-		
-		-- CS options
-		-- CS description
-	end record;
-
-	package type_lib_table is new doubly_linked_lists (type_lib_table_entry);
-
-	-- After reading the sym-lib-tables (local and global) they are stored here temporarily.
-	sym_lib_tables : type_lib_table.list;
-
-	-- After reading the fp-lib-tables (local and global) they are stored here temporarily.
-	fp_lib_tables : type_lib_table.list;
-	-------------------------------------------------------------------------------
 
 	
 -- COMPONENT TEXT FIELDS
@@ -1120,29 +698,6 @@ package et_kicad is
 
 
 
--- LIBRARY
-	
-	version_header : constant string (1..28) := "EESchema-LIBRARY Version 2.3";
-
-	def			: constant string (1..3) := "DEF";
-	enddef		: constant string (1..6) := "ENDDEF";
-	draw		: constant string (1..4) := "DRAW";
-	enddraw		: constant string (1..7) := "ENDDRAW";
-	fplist		: constant string (1..7) := "$FPLIST";
-	endfplist	: constant string (1..10) := "$ENDFPLIST";
-
-	-- The distance of the pin name from the pin itself (supply pins only)
-	subtype type_supply_pin_name_position_offset is et_coordinates.type_distance
-		range 0.00 .. et_coordinates.type_distance'last;
-
-	-- KiCad supports up to 64 units within a component
-	unit_count_max : constant positive := 64;
-	type type_units_total is new positive range 1..unit_count_max;
-	type type_unit_id is new natural range natural'first..unit_count_max;
-
-	type type_library_component_appearance is (N, P); -- normal or power
-
-	
 	-- In schematic, a power symbol/component has a hash as first character in a line like "L P3V3 #PWR07"
 	schematic_component_power_symbol_prefix: constant character := '#';
 	

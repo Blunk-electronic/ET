@@ -2870,7 +2870,7 @@ package body et_kicad_pcb is
 					-- Store a single line in variable "line" (see et_string_processing.ads)
 					line := et_string_processing.read_line (
 						line 			=> get_line,
-						comment_mark	=> et_kicad.comment_mark,
+						comment_mark	=> comment_mark,
 						number 			=> ada.text_io.line (current_input),
 						ifs 			=> latin_1.space); -- fields are separated by space
 

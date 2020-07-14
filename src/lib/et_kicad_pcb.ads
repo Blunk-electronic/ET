@@ -64,6 +64,8 @@ with et_packages;
 with et_devices;				use et_devices;
 with et_frames;
 
+-- with et_kicad_libraries;		use et_kicad_libraries;
+
 package et_kicad_pcb is
 
 	use et_terminals.pac_shapes;
