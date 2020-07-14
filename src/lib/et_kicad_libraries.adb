@@ -921,6 +921,159 @@ package body et_kicad_libraries is
 			no_package;
 		end if;
 	end validate_component_package_name;
+
+	function full_library_name (
+		library_name	: in type_library_name.bounded_string; -- bel_logic
+		package_name 	: in et_packages.type_component_package_name.bounded_string; -- S_SO14
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_package_library_name.bounded_string is
+	-- Returns the full library name of the library that
+	-- contains the given package library with the given package.
+		
+	-- V4:
+	-- 	- Searches the library directories in the order given in search_list_project_lib_dirs.
+	-- 	- The full library name is the result of a search operation:
+	-- 	- The first directory and the first library that contains the package.
+	-- 	- There can be many library directories to search in.
+
+	-- V5:
+	--	- Looks up the fp-lib-table for the first occurence of the given library name.
+	--	- The entry in the fp-lib-table in turn provides the full library name (incl. path).
+		
+		lib : type_package_library_name.bounded_string; -- to be returned
+
+		use et_import;
+		use type_project_lib_dirs;
+		use et_packages;
+		use type_package_library_name;
+		use ada.directories;
+
+		-- V4:
+		dir_cursor : type_project_lib_dirs.cursor := search_list_project_lib_dirs.first; -- CS access search_list_library_dirs in module instead
+		lib_cursor : et_kicad_pcb.type_libraries.cursor;
+
+		-- V5:
+		use type_lib_table;
+		fp_lib_table_cursor : type_lib_table.cursor := fp_lib_tables.first; -- CS access fp_lib_tables in module.fp_lib_tables instead
+
+		use type_library_name;
+		full_library_name : type_package_library_name.bounded_string;
+		package_found : boolean := false;
+
+		procedure search_package (
+		-- Searches the library (indicated by lib_cursor) for the given package.
+		-- Sets the flag package_found if the library contains the given package.
+			lib_name	: in type_package_library_name.bounded_string;
+			library		: in type_packages_library.map) is
+		begin
+			if type_packages_library.contains (
+				container	=> library,
+				key			=> package_name) then
+
+				package_found := true;
+			end if;
+		end search_package;
+	
+	begin -- full_library_name
+		log (text => "locating library '" & et_kicad_general.to_string (library_name) &
+			"' containing package '" & to_string (package_name) & "' ...", level => log_threshold);
+		log_indentation_up;
+
+		case cad_format is
+			when KICAD_V4 =>
+				
+				-- Loop in search_list_project_lib_dirs. Test if the given library
+				-- exists in the directory indicated by dir_cursor..
+				while dir_cursor /= et_kicad.type_project_lib_dirs.no_element loop
+
+					-- Test if library exists. package_libraries hosts libraries by their full name.
+					-- So the library to test is formed by the current directory name, the given library name
+					-- and the package_library_directory_extension (*.pretty)
+					full_library_name := et_packages.to_file_name (ada.directories.compose (
+						containing_directory	=> to_string (element (dir_cursor)),
+						name					=> et_kicad_general.to_string (library_name),
+						extension				=> package_library_directory_extension (2..package_library_directory_extension'last))); 
+
+					log (text => "searching in " & et_packages.to_string (full_library_name) & " ...", level => log_threshold + 1);
+					
+					lib_cursor := et_kicad_pcb.type_libraries.find (
+						container	=> package_libraries,
+						key			=> full_library_name);
+
+					-- If library exists, lib_cursor will point to it. Then the library can be searched 
+					-- for the given package.
+					if et_kicad_pcb.type_libraries."/=" (lib_cursor, et_kicad_pcb.type_libraries.no_element) then
+
+						-- search the library for the given package
+						et_kicad_pcb.type_libraries.query_element (
+							position	=> lib_cursor,
+							process		=> search_package'access);
+
+						-- The search ends as soon as the given package was found.
+						if package_found then exit; end if;
+
+					end if;
+					
+					next (dir_cursor);
+				end loop;
+
+			when KICAD_V5 =>
+
+				-- Search for the given library_name in the fp-lib-tables.
+				-- The first matching entry in the table provides the full library name (uri).
+				-- Then search in that library for the given package_name. If the package is 
+				-- not in the library, search for next matching entry in fp-lib-table ...
+				while fp_lib_table_cursor /= type_lib_table.no_element loop
+
+					-- On match, open the library (by its uri).
+					if element (fp_lib_table_cursor).lib_name = library_name then
+
+						full_library_name := et_packages.to_file_name (et_devices.to_string (element (fp_lib_table_cursor).lib_uri));
+
+						log (text => "searching in " & et_packages.to_string (full_library_name) & " ...", level => log_threshold + 1);
+						
+						-- locate the library by full name (uri)
+						lib_cursor := et_kicad_pcb.type_libraries.find (
+									container	=> et_kicad_pcb.package_libraries,
+									key			=> full_library_name);
+						
+						-- Search in the library for the given package
+						et_kicad_pcb.type_libraries.query_element (
+							position	=> lib_cursor,
+							process		=> search_package'access);
+
+						-- The search ends as soon as the given package was found.
+						if package_found then exit; end if;
+
+					end if;
+
+					next (fp_lib_table_cursor); -- advance to next entry in fp-lib-table
+				end loop;
+
+				-- If the library could not be located anywhere, abort here:
+				if length (full_library_name) = 0 then
+					log (ERROR, "No library '" & et_kicad_general.to_string (library_name) 
+						 & "' found ! Check local and global fp-lib-tables !", console => true);
+					raise constraint_error;
+				end if;
+
+			when others =>
+				raise constraint_error;
+				
+		end case;
+				
+		if package_found then
+			log (text => " found !", level => log_threshold + 2);
+		else
+			log (ERROR, "package '" & to_string (package_name) &
+				"' not found in any library named '" & et_kicad_general.to_string (library_name) & "' !", console => true);
+			raise constraint_error;
+		end if;
+
+		log_indentation_down;
+		
+		return full_library_name;
+	end full_library_name;
 	
 	procedure read_components_libraries (log_threshold : in type_log_level) is
 	-- Reads component libraries.
@@ -930,7 +1083,7 @@ package body et_kicad_libraries is
 		use type_full_library_names;
 
 		-- This is the library cursor. It points to the library being processed (in the list tmp_component_libraries):
-		lib_cursor		: type_libraries.cursor;
+		lib_cursor		: type_device_libraries.cursor;
 
 		-- This is the component cursor. It points to the component being processed.
 		comp_cursor		: type_components_library.cursor;
@@ -1915,7 +2068,7 @@ package body et_kicad_libraries is
 			end insert_component;
 
 			
-			procedure set_unit_cursor (libraries : in out type_libraries.map) is
+			procedure set_unit_cursor (libraries : in out type_device_libraries.map) is
 			-- Sets the unit_cursor according to the current unit_id.
 			-- If the unit_id is 0, the unit_cursor is not changed.
 		
@@ -1936,7 +2089,7 @@ package body et_kicad_libraries is
 
 			begin -- set_unit_cursor
 				if tmp_unit_id > 0 then -- if tmp_unit_id is zero, nothing is done
-					type_libraries.query_element (lib_cursor, locate_component'access);
+					type_device_libraries.query_element (lib_cursor, locate_component'access);
 				end if;
 
 				exception
@@ -2619,7 +2772,7 @@ package body et_kicad_libraries is
 				log (text => "building default package variant ...", level => log_threshold + 1);
 				log_indentation_up;
 				
-				type_libraries.update_element ( 
+				type_device_libraries.update_element ( 
 					container	=> tmp_component_libraries,
 					position	=> lib_cursor,
 					process		=> locate_component'access);
@@ -2785,7 +2938,7 @@ package body et_kicad_libraries is
 										if f (line,1) = fplist then
 											
 											-- Insert the component into the current library (indicated by lib_cursor):
-											type_libraries.update_element ( 
+											type_device_libraries.update_element ( 
 												container	=> tmp_component_libraries,
 												position	=> lib_cursor,
 												process		=> insert_component'access);
@@ -2801,7 +2954,7 @@ package body et_kicad_libraries is
 										elsif f (line,1) = et_kicad_libraries.draw then
 
 											-- Insert the component into the current library (indicated by lib_cursor):
-											type_libraries.update_element ( 
+											type_device_libraries.update_element ( 
 												container	=> tmp_component_libraries,
 												position	=> lib_cursor,
 												process		=> insert_component'access);
@@ -2905,16 +3058,16 @@ package body et_kicad_libraries is
 
 					-- Set lib_cursor to first library and loop in tmp_component_libraries.
 					lib_cursor := tmp_component_libraries.first;
-					while type_libraries."/=" (lib_cursor, type_libraries.no_element) loop
+					while type_device_libraries."/=" (lib_cursor, type_device_libraries.no_element) loop
 
 						-- log library file name
-						log (text => to_string (type_libraries.key (lib_cursor)), level => log_threshold + 1);
+						log (text => to_string (type_device_libraries.key (lib_cursor)), level => log_threshold + 1);
 						
 						-- open the same-named file and read it
 						open (
 							file => library_handle,
 							mode => in_file,
-							name => to_string (type_libraries.key (lib_cursor)));
+							name => to_string (type_device_libraries.key (lib_cursor)));
 							
 						-- Now we read the library file and add components
 						-- to the library pointed to by lib_cursor:
@@ -2923,7 +3076,7 @@ package body et_kicad_libraries is
 
 						close (library_handle);
 
-						type_libraries.next (lib_cursor);
+						type_device_libraries.next (lib_cursor);
 					end loop;
 					
 				else
@@ -2935,20 +3088,20 @@ package body et_kicad_libraries is
 			when et_import.KICAD_V5 =>
 
 				-- If tmp_component_libraries is empty -> nothing to do
-				if not type_libraries.is_empty (tmp_component_libraries) then
+				if not type_device_libraries.is_empty (tmp_component_libraries) then
 
 					-- Set lib_cursor to first library and loop in tmp_component_libraries.
 					lib_cursor := tmp_component_libraries.first;
-					while type_libraries."/=" (lib_cursor, type_libraries.no_element) loop
+					while type_device_libraries."/=" (lib_cursor, type_device_libraries.no_element) loop
 
 						-- log library file name
-						log (text => to_string (type_libraries.key (lib_cursor)), level => log_threshold + 1);
+						log (text => to_string (type_device_libraries.key (lib_cursor)), level => log_threshold + 1);
 						
 						-- open the same-named file and read it
 						open (
 							file => library_handle,
 							mode => in_file,
-							name => to_string (type_libraries.key (lib_cursor)));
+							name => to_string (type_device_libraries.key (lib_cursor)));
 							
 						-- Now we read the library file and add components
 						-- to the library pointed to by lib_cursor:
@@ -2957,7 +3110,7 @@ package body et_kicad_libraries is
 
 						close (library_handle);
 
-						type_libraries.next (lib_cursor);
+						type_device_libraries.next (lib_cursor);
 					end loop;
 					
 				else
@@ -2984,7 +3137,7 @@ package body et_kicad_libraries is
 		log_threshold		: in et_string_processing.type_log_level)
 		return et_devices.type_variant_name.bounded_string is 					-- D
 
-		library_cursor : type_libraries.cursor; -- points to the component library
+		library_cursor : type_device_libraries.cursor; -- points to the component library
 		
 		use et_string_processing;
 
@@ -3164,11 +3317,11 @@ package body et_kicad_libraries is
 		library_cursor := tmp_component_libraries.find (component_library);
 
 		log (text => "component library is " 
-			 & enclose_in_quotes (to_string (type_libraries.key (library_cursor))),
+			 & enclose_in_quotes (to_string (type_device_libraries.key (library_cursor))),
 			 level => log_threshold + 1);
 
 		-- locate the given generic component
-		type_libraries.update_element (
+		type_device_libraries.update_element (
 			container	=> tmp_component_libraries,
 			position	=> library_cursor,
 			process		=> locate_component'access);
@@ -3227,11 +3380,11 @@ package body et_kicad_libraries is
 		component	: in type_component_generic_name.bounded_string) 
 		return type_components_library.cursor is
 
-		lib_cursor	: type_libraries.cursor;
+		lib_cursor	: type_device_libraries.cursor;
 		use type_components_library;
 		comp_cursor	: type_components_library.cursor := no_element;
 	
-		use type_libraries;
+		use type_device_libraries;
 		use et_string_processing;
 
 		procedure locate (
@@ -3256,7 +3409,7 @@ package body et_kicad_libraries is
 
 		-- If the given library exists, locate the given component therein.
 		-- Otherwise generate a warning.
-		if lib_cursor /= type_libraries.no_element then
+		if lib_cursor /= type_device_libraries.no_element then
 			query_element (
 				position	=> lib_cursor,
 				process		=> locate'access);
@@ -3310,7 +3463,6 @@ package body et_kicad_libraries is
 		
 		log_indentation_down;
 	end write_note_properties;
-
 	
 end et_kicad_libraries;
 

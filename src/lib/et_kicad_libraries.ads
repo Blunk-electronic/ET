@@ -54,7 +54,7 @@ with et_packages;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;
 with kicad_coordinates;			use kicad_coordinates;
--- with et_kicad_pcb;
+
 with et_import;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.pac_geometry_sch;
@@ -507,7 +507,7 @@ package et_kicad_libraries is
 		element_type 	=> type_device_library_name.bounded_string,
 		"="				=> type_device_library_name."=");
 
-	package type_libraries is new ordered_maps (
+	package type_device_libraries is new ordered_maps (
 		key_type 		=> type_device_library_name.bounded_string, -- ../../lbr/passive/capacitors.lib
 		"<"				=> type_device_library_name."<",
 		element_type 	=> type_components_library.map,
@@ -521,7 +521,7 @@ package et_kicad_libraries is
 	-- within the current module.
 	-- CS: in the future tmp_component_libraries should be discarded. update_element and query_element
 	-- operations should access the component_libraries of a module directly (see type_module).
-	tmp_component_libraries : type_libraries.map;
+	tmp_component_libraries : type_device_libraries.map;
 	
 	
 	-- LIBRARY SEARCH LISTS ------------------------------------------------------------------
@@ -786,9 +786,18 @@ package et_kicad_libraries is
 	-- example: TRANSISTOR_NPN becomes ~TRANSISTOR_NPN
 	-- The leading tilde marks a component whose value is set to "invisible".
 
+	-- Returns the first library directory (in search_list_project_lib_dirs) that
+	-- contains the given package library with the given package.
+	function full_library_name (
+		library_name	: in type_library_name.bounded_string; -- bel_logic
+		package_name 	: in et_packages.type_component_package_name.bounded_string; -- S_SO14
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_package_library_name.bounded_string;
+
 	-- Reads component libraries.
 	procedure read_components_libraries (log_threshold : in type_log_level);
 	
+
 	
 end et_kicad_libraries;
 

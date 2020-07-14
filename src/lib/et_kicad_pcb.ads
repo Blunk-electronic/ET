@@ -64,7 +64,8 @@ with et_packages;
 with et_devices;				use et_devices;
 with et_frames;
 
--- with et_kicad_libraries;		use et_kicad_libraries;
+with et_kicad;					use et_kicad;
+with et_kicad_libraries;		use et_kicad_libraries;
 
 package et_kicad_pcb is
 
@@ -99,14 +100,6 @@ package et_kicad_pcb is
 	-- These constants are required for directory entry searches:
 	package_library_pattern	: constant string (1..8)	:= "*" & package_library_directory_extension;
 	package_pattern 		: constant string (1..11)	:= "*." & package_file_extension;
-
-	function full_library_name (
-		library_name	: in type_library_name.bounded_string; -- bel_logic
-		package_name 	: in et_packages.type_component_package_name.bounded_string; -- S_SO14
-		log_threshold	: in et_string_processing.type_log_level)
-		return type_package_library_name.bounded_string;
-	-- Returns the first library directory (in search_list_project_lib_dirs) that
-	-- contains the given package library with the given package.
 
 	
 	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
