@@ -67,6 +67,7 @@ with et_devices;				use et_devices;
 with et_frames;
 
 with et_kicad_libraries;		use et_kicad_libraries;
+with et_kicad_packages;			use et_kicad_packages;
 
 package et_kicad is
 
@@ -1055,8 +1056,8 @@ package et_kicad is
 		sym_lib_tables		: type_lib_table.list; -- symbols
 		fp_lib_tables		: type_lib_table.list; -- footprints/packages		
 		
-		component_libraries	: type_libraries.map; -- V4 and V5
-		footprints			: et_kicad_pcb.type_libraries.map;	-- V5 only. V4 packages are in et_kicad_pcb.package_libraries
+		component_libraries	: et_kicad_libraries.type_device_libraries.map; -- V4 and V5
+		footprints			: et_kicad_packages.type_libraries.map;	-- V5 only. V4 packages are in et_kicad_pcb.package_libraries
 		
 		strands	    		: type_strands.list;				-- the strands of the module (incl. net names and segments)
 		junctions			: type_junctions.list;				-- net junctions (for ERC, statistics, ...)

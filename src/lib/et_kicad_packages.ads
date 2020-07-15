@@ -160,8 +160,10 @@ package et_kicad_packages is
 		RECTANGULAR
 		-- CS others ?
 		);
+
 	
 	function to_string (shape : in type_pad_shape_tht) return string;
+	function to_pad_shape_tht (shape : in string) return type_pad_shape_tht;
 	
 	type type_pad_shape_smt is (
 		CIRCULAR, 
@@ -171,7 +173,35 @@ package et_kicad_packages is
 		);
 	
 	function to_string (shape : in type_pad_shape_smt) return string;	
+	function to_pad_shape_smt (shape : in string) return type_pad_shape_smt;
 
+	-- Converts the given position and dimensions of a circular pad
+	-- to a list containing just one circle.
+	function to_pad_shape_circle (
+		position	: in type_position;
+		diameter	: in type_pad_size;
+		offset		: in type_point)	-- the offset of the pad from the center
+		return type_pad_outline;
+	
+	-- Converts the given position and dimensions of a rectangular pad
+	-- to a list with four lines (top, bottom, right, left).
+	-- CS: rework as in to_pad_shape_oval
+	function to_pad_shape_rectangle (
+		center		: in type_position; -- the pad center position (incl. angle)
+		size_x		: in type_pad_size;	-- the size in x of the pad
+		size_y		: in type_pad_size;	-- the size in y of the pad
+		offset		: in type_point)	-- the offset of the pad from the center
+		return type_pad_outline;
+	
+	-- Converts the given position and dimensions of an oval pad
+	-- to a list with two vertical lines and two arcs (rotation assumed zero).
+	function to_pad_shape_oval (
+		center	: in type_position;	-- the pad center position (incl. angle)
+		size_x	: in type_pad_size;	-- the size in x of the pad
+		size_y	: in type_pad_size;	-- the size in y of the pad
+		offset	: in type_point)			-- the offset of the pad from the center
+		return type_pad_outline;
+	
 	-- slotted holes	
 	tht_hole_shape_oval	: constant string := "oval";
 	pad_drill_offset	: constant string := "offset";
@@ -181,7 +211,16 @@ package et_kicad_packages is
 	-- the PCB manufacturer starts the milling with a drill.
 	subtype type_pad_milling_size is et_pcb_coordinates.type_distance 
 		range et_drills.drill_size_min .. et_drills.drill_size_max;
-
+	
+	function to_pad_milling_contour (
+	-- Converts the given position and dimensions of a rectangular slotted hole
+	-- to a list with four lines (top, bottom, right, left).
+		center	: in type_position; -- the terminal position (incl. angle, (z axis ignored))
+		size_x	: in type_pad_size;	-- the size in x of the hole
+		size_y	: in type_pad_size;	-- the size in y of the hole
+		offset	: in type_point)	-- the offset of the pad from the center
+		return pac_shapes.pac_polygon_lines.list;
+	
 	-- For packages, temporarily this type is required to handle texts in 
 	-- silk screen, assembly doc, ...
 	-- When inserting the text in the final package, it is decomposed again.
@@ -198,7 +237,7 @@ package et_kicad_packages is
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_package_library;
 	
-	procedure read_libraries (
+	procedure read_libraries ( -- CS rename to read_package_libraries
 	-- Reads package libraries.
 	-- Create the libraries in container package_libraries. 
 	-- The libraries in the container are named like ../lbr/tht_packages/plcc.pretty

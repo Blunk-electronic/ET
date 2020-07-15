@@ -503,9 +503,9 @@ package body et_kicad_pcb is
 		package_description	: type_package_description.bounded_string; -- temp. storage of package description
 		package_tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
-		package_line 		: type_line;
-		package_arc			: type_arc;
-		package_circle 		: type_circle;
+		package_line 		: et_kicad_packages.type_line;
+		package_arc			: et_kicad_packages.type_arc;
+		package_circle 		: et_kicad_packages.type_circle;
 
 		package_stop_mask		: et_packages.type_stop_mask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
@@ -576,9 +576,9 @@ package body et_kicad_pcb is
 
 
 		-- OBJECTS DRAWN DIRECTLY IN THE BOARD (NON-PACKAGE STUFF)
-		board_line 		: type_line;
-		board_arc		: type_arc;
-		board_circle	: type_circle;
+		board_line 		: et_kicad_packages.type_line;
+		board_arc		: et_kicad_packages.type_arc;
+		board_circle	: et_kicad_packages.type_circle;
 		board_text		: type_text_board;
 
 		procedure init_stop_and_mask is begin
@@ -1222,8 +1222,8 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => -- break down something like bel_ic:S_SO14 into package and lib name
-									package_library_name := et_kicad.library_name (to_string (arg));
-									package_name := et_kicad.package_name (to_string (arg));
+									package_library_name := et_kicad_libraries.library_name (to_string (arg));
+									package_name := et_kicad_libraries.package_name (to_string (arg));
 									-- CS make sure library and package exist
 								when others => too_many_arguments;
 							end case;
@@ -1419,7 +1419,7 @@ package body et_kicad_pcb is
 											package_text.content := to_bounded_string (to_string (arg));
 											-- CS character check
 
-											package_reference := et_kicad.to_component_reference (to_string (arg));
+											package_reference := et_kicad_libraries.to_component_reference (to_string (arg));
 											
 										when VALUE =>
 											-- The value (like 220R) is both the text content and the value itself.

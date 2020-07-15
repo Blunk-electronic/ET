@@ -64,8 +64,9 @@ with et_packages;
 with et_devices;				use et_devices;
 with et_frames;
 
-with et_kicad;					use et_kicad;
-with et_kicad_libraries;		use et_kicad_libraries;
+-- with et_kicad;					use et_kicad;
+with et_kicad_libraries;		--use et_kicad_libraries;
+with et_kicad_packages;			use et_kicad_packages;
 
 package et_kicad_pcb is
 
