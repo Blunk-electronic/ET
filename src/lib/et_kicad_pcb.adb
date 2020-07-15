@@ -115,25 +115,6 @@ package body et_kicad_pcb is
 		end if;
 	end to_assembly_technology;
 			
-	function to_pad_shape_tht (shape : in string) return type_pad_shape_tht is begin
-		if shape = "rect" then return RECTANGULAR;
-		elsif shape = "circle" then return CIRCULAR;
-		elsif shape = "oval" then return OVAL;
-		else
-			log (ERROR, "invalid or not supported shape for a THT terminal !", console => true);
-			raise constraint_error;
-		end if;
-	end to_pad_shape_tht;
-
-	function to_pad_shape_smt (shape : in string) return type_pad_shape_smt is begin
-		if shape = "rect" then return RECTANGULAR;
-		elsif shape = "oval" then return OVAL;
-		elsif shape = "circle" then return CIRCULAR;
-		else
-			log (ERROR, "invalid or not supported shape for an SMT terminal !", console => true);
-			raise constraint_error;
-		end if;
-	end to_pad_shape_smt;
 
 	function to_signal_layer_id (layer : in string) return type_signal_layer_id is
 	-- Translates a string like F.Cu or In2.Cu or or In15.Cu to a type_signal_layer_id (0..31) -- see spec

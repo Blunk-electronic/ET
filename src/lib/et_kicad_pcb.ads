@@ -88,9 +88,7 @@ package et_kicad_pcb is
 
 
 	
-	layer_top_copper			: constant string (1..4)	:= "F.Cu";
-	layer_bot_copper			: constant string (1..4)	:= "B.Cu";
-	layer_all_copper			: constant string (1..4)	:= "*.Cu";
+
 
 
 	
@@ -106,86 +104,34 @@ package et_kicad_pcb is
 	-- Converts a string like B.CU or F.Fab to a kicad layer id (0..49)
 
 	
-	layer_top_solder_paste		: constant string (1..7)	:= "F.Paste";
 	layer_top_solder_paste_id	: constant type_layer_id	:= 35;
-	layer_bot_solder_paste		: constant string (1..7)	:= "B.Paste";
 	layer_bot_solder_paste_id	: constant type_layer_id 	:= 34;
 	
-	layer_top_stop_mask			: constant string (1..6)	:= "F.Mask";
 	layer_top_stop_mask_id		: constant type_layer_id 	:= 39;
-	layer_bot_stop_mask			: constant string (1..6)	:= "B.Mask";
 	layer_bot_stop_mask_id		: constant type_layer_id 	:= 38;	
-	layer_all_stop_mask			: constant string (1..6)	:= "*.Mask";
 
-	layer_top_silk_screen		: constant string (1..7)	:= "F.SilkS";
 	layer_top_silk_screen_id	: constant type_layer_id 	:= 37;
-	layer_bot_silk_screen		: constant string (1..7)	:= "B.SilkS";
 	layer_bot_silk_screen_id	: constant type_layer_id 	:= 36;
-	
-	layer_top_assy_doc			: constant string (1..5)	:= "F.Fab";
+
 	layer_top_assy_doc_id		: constant type_layer_id 	:= 49;
-	layer_bot_assy_doc			: constant string (1..5)	:= "B.Fab";
 	layer_bot_assy_doc_id		: constant type_layer_id 	:= 48;
 	
-	layer_top_keepout			: constant string (1..7)	:= "F.CrtYd";
 	layer_top_keepout_id		: constant type_layer_id 	:= 47;
-	layer_bot_keepout			: constant string (1..7)	:= "B.CrtYd";
 	layer_bot_keepout_id		: constant type_layer_id 	:= 46;
 	
 	layer_edge_cuts				: constant string (1..9)	:= "Edge.Cuts";
 	layer_edge_cuts_id			: constant type_layer_id 	:= 44;
 	
 	-- CS other layers like adhes, eco, margin, ...
-	
-	keyword_fp_text_reference	: constant string (1..9)	:= "reference";
-	keyword_fp_text_value		: constant string (1..5)	:= "value";
-	keyword_fp_text_user		: constant string (1..4)	:= "user";
-	keyword_fp_text_hide		: constant string (1..4)	:= "hide";
 
 	keyword_fp_text_mirrored	: constant string (1..6)	:= "mirror";
 	
-	placeholder_reference		: constant string (1..5)	:= "REF**";
-
-	attribute_technology_smd		: constant string (1..3)	:= "smd";
-	attribute_technology_virtual	: constant string (1..7)	:= "virtual";
 
 
 	
-	type type_fp_text_meaning is (REFERENCE, VALUE, USER);
+
 	
-	-- For the package import we need a special set of layers. 
-	type type_layer_abbrevation is (
-		EDGE_CUTS,	-- the board outline or contour
-		TOP_COPPER, BOT_COPPER,
-		TOP_SILK, BOT_SILK,
-		TOP_ASSY, BOT_ASSY, -- in kicad this is the fab layer
-		TOP_STOP, BOT_STOP, -- solder stop mask
-		TOP_PASTE, BOT_PASTE, -- stencil, solder paste, cream
-		TOP_KEEP, BOT_KEEP -- in kicad this is the crtyrd layer
-		-- CS TOP_GLUE, BOT_GLUE
-		);
 
-	-- LINES, ARCS, CIRCLES
-	-- Temporarily we need special types for lines, arcs and circles for the import. 
-	-- They are derived from the abstract anchestor types in et_pcb.ads.
-	-- Their additional components (width, layer, angle, ...) are later 
-	-- copied to the final lines, arcs and circles as specified in et_pcb.ads:
-	type type_line is new et_terminals.pac_shapes.type_line with record
-		width	: type_text_line_width;
-		layer	: type_layer_abbrevation;
-	end record;
-
-	type type_arc is new et_terminals.pac_shapes.type_arc with record
-		width 	: type_text_line_width;
-		angle 	: et_pcb_coordinates.type_rotation;
-		layer	: type_layer_abbrevation;
-	end record;
-
-	type type_circle is new et_terminals.pac_shapes.type_circle with record -- center and radius incl.
-		width 	: type_text_line_width;
-		point 	: type_point;
-		layer	: type_layer_abbrevation;
-	end record;
 
 
 
@@ -500,14 +446,14 @@ package et_kicad_pcb is
 
 	
 	
-	-- For packages, temporarily this type is required to handle texts in 
-	-- silk screen, assembly doc, ...
-	-- When inserting the text in the final package, it is decomposed again.
-	type type_text_package is new et_packages.type_text with record
-		content	: et_text.type_text_content.bounded_string;
-		layer	: type_layer_abbrevation;
-		meaning	: type_fp_text_meaning;
-	end record;
+-- 	-- For packages, temporarily this type is required to handle texts in 
+-- 	-- silk screen, assembly doc, ...
+-- 	-- When inserting the text in the final package, it is decomposed again.
+-- 	type type_text_package is new et_packages.type_text with record
+-- 		content	: et_text.type_text_content.bounded_string;
+-- 		layer	: type_layer_abbrevation;
+-- 		meaning	: type_fp_text_meaning;
+-- 	end record;
 
 
 	

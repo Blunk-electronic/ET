@@ -819,6 +819,74 @@ package et_kicad_libraries is
 	package_library_pattern	: constant string := "*" & package_library_directory_extension;
 	package_pattern 		: constant string := "*." & package_file_extension;
 
+	-- For the package import we need a special set of layers. 
+	type type_layer_abbrevation is (
+		EDGE_CUTS,	-- the board outline or contour
+		TOP_COPPER, BOT_COPPER,
+		TOP_SILK, BOT_SILK,
+		TOP_ASSY, BOT_ASSY, -- in kicad this is the fab layer
+		TOP_STOP, BOT_STOP, -- solder stop mask
+		TOP_PASTE, BOT_PASTE, -- stencil, solder paste, cream
+		TOP_KEEP, BOT_KEEP -- in kicad this is the crtyrd layer
+		-- CS TOP_GLUE, BOT_GLUE
+		);
+	
+	layer_top_copper			: constant string := "F.Cu";
+	layer_bot_copper			: constant string := "B.Cu";
+	layer_all_copper			: constant string := "*.Cu";
+	
+	layer_top_silk_screen		: constant string := "F.SilkS";
+	layer_bot_silk_screen		: constant string := "B.SilkS";
+
+	layer_top_assy_doc			: constant string := "F.Fab";
+	layer_bot_assy_doc			: constant string := "B.Fab";
+
+	layer_top_keepout			: constant string := "F.CrtYd";
+	layer_bot_keepout			: constant string := "B.CrtYd";
+
+	layer_top_stop_mask			: constant string := "F.Mask";
+	layer_bot_stop_mask			: constant string := "B.Mask";
+	layer_all_stop_mask			: constant string := "*.Mask";
+	
+	layer_top_solder_paste		: constant string := "F.Paste";
+	layer_bot_solder_paste		: constant string := "B.Paste";
+	
+	keyword_fp_text_reference	: constant string := "reference";
+	keyword_fp_text_value		: constant string := "value";
+	keyword_fp_text_user		: constant string := "user";
+	keyword_fp_text_hide		: constant string := "hide";
+	
+	placeholder_reference		: constant string := "REF**";
+
+	attribute_technology_smd		: constant string := "smd";
+	attribute_technology_virtual	: constant string := "virtual";
+
+	type type_fp_text_meaning is (REFERENCE, VALUE, USER);
+
+
+	-- LINES, ARCS, CIRCLES
+	-- Temporarily we need special types for lines, arcs and circles for the import. 
+	-- They are derived from the abstract anchestor types in et_pcb.ads.
+	-- Their additional components (width, layer, angle, ...) are later 
+	-- copied to the final lines, arcs and circles as specified in et_pcb.ads:
+	type type_line is new et_terminals.pac_shapes.type_line with record
+		width	: type_text_line_width;
+		layer	: type_layer_abbrevation;
+	end record;
+
+	type type_arc is new et_terminals.pac_shapes.type_arc with record
+		width 	: type_text_line_width;
+		angle 	: et_pcb_coordinates.type_rotation;
+		layer	: type_layer_abbrevation;
+	end record;
+
+	type type_circle is new et_terminals.pac_shapes.type_circle with record -- center and radius incl.
+		width 	: type_text_line_width;
+		point 	: type_point;
+		layer	: type_layer_abbrevation;
+	end record;
+
+	
 	
 	-- This is the base type of a package:
 	type type_package is new et_packages.type_package_base with record
@@ -859,6 +927,14 @@ package et_kicad_libraries is
 	subtype type_pad_milling_size is et_pcb_coordinates.type_distance 
 		range et_drills.drill_size_min .. et_drills.drill_size_max;
 
+	-- For packages, temporarily this type is required to handle texts in 
+	-- silk screen, assembly doc, ...
+	-- When inserting the text in the final package, it is decomposed again.
+	type type_text_package is new et_packages.type_text with record
+		content	: et_text.type_text_content.bounded_string;
+		layer	: type_layer_abbrevation;
+		meaning	: type_fp_text_meaning;
+	end record;
 	
 	function to_package_model (
 	-- Builds a package model from the given lines.

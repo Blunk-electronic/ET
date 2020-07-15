@@ -3597,6 +3597,25 @@ package body et_kicad_libraries is
 		return latin_1.space & to_lower (type_pad_shape_smt'image (shape));
 	end to_string;
 
+	function to_pad_shape_tht (shape : in string) return type_pad_shape_tht is begin
+		if shape = "rect" then return RECTANGULAR;
+		elsif shape = "circle" then return CIRCULAR;
+		elsif shape = "oval" then return OVAL;
+		else
+			log (ERROR, "invalid or not supported shape for a THT terminal !", console => true);
+			raise constraint_error;
+		end if;
+	end to_pad_shape_tht;
+
+	function to_pad_shape_smt (shape : in string) return type_pad_shape_smt is begin
+		if shape = "rect" then return RECTANGULAR;
+		elsif shape = "oval" then return OVAL;
+		elsif shape = "circle" then return CIRCULAR;
+		else
+			log (ERROR, "invalid or not supported shape for an SMT terminal !", console => true);
+			raise constraint_error;
+		end if;
+	end to_pad_shape_smt;
 	
 	function to_package_model (
 		file_name		: in string; -- S_0201.kicad_mod
@@ -3604,10 +3623,12 @@ package body et_kicad_libraries is
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_package_library is
 
+		use pac_lines_of_file;
 		use et_drills;
 		use et_terminals;
 		use et_packages;
-		use pac_lines_of_file;
+		use et_pcb_coordinates;
+		use et_pcb_coordinates.pac_geometry_brd;
 
 		-- Extract the actual package name (like S_0201) from the given file name:
 		package_name : type_component_package_name.bounded_string :=
@@ -3759,10 +3780,10 @@ package body et_kicad_libraries is
 		terminal_hole_shape			: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x		: type_pad_milling_size;  -- CS use a composite instead ?
 		terminal_milling_size_y		: type_pad_milling_size; 
-		terminal_pad_drill_offset	: type_point;
+		terminal_pad_drill_offset	: pac_geometry_brd.type_point;
 
 		-- The center of an smt pad or the position of the drill of a tht pad:
-		terminal_position	: type_position; 
+		terminal_position	: pac_geometry_brd.type_position; 
 		
 		pad_size_x : type_pad_size;  -- CS use a composite instead ?
 		pad_size_y : type_pad_size;
@@ -3797,7 +3818,7 @@ package body et_kicad_libraries is
 		text : type_text_package;
 
 		-- Temporarily text placeholders for reference and value are required. 
-		placeholder : type_text_placeholder;
+		placeholder : et_packages.type_text_placeholder;
 
 
 		
@@ -4619,7 +4640,7 @@ package body et_kicad_libraries is
 				when SEC_AT =>
 					case section.parent is
 						when SEC_PAD =>
-							set (terminal_position, zero_rotation); -- angle is optionally provided as last argument. if not provided default to zero.
+							set (terminal_position, pac_geometry_brd.zero_rotation); -- angle is optionally provided as last argument. if not provided default to zero.
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -4633,7 +4654,7 @@ package body et_kicad_libraries is
 
 						when SEC_FP_TEXT =>
 							--text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
-							set (text.position, zero_rotation);
+							set (text.position, pac_geometry_brd.zero_rotation);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
