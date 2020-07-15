@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                           SYSTEM ET KICAD                                --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                            KICAD GENERAL                                 --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -34,39 +34,6 @@
 --
 --   history of changes:
 --
---   ToDo:
---		1. Warning if virtual component pins apply for all units. Usually 
---			virtual components (such as power flags) have only one unit. If the
---			check "common to all units in component" is set, ET generates an
---			extra unit. Why ? ET assumes the affeced pin is a power pin. Power pins
---			in turn are assigned to an extra unit (in EAGLE we speak of "supply symbols").
---		2. Warning if virtual component with one power pin has pin direction differing from power_out
---			Example: Power symbol "P3V3" must have pin direction power_out.	
---		3. Make sure ports of netchangers are named like 1 or 2.
-
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.text_io;				use ada.text_io;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.directories;			use ada.directories;
-with ada.exceptions; 			use ada.exceptions;
-with ada.environment_variables;
-
-with et_coordinates;
-with et_schematic;
-with et_geometry;
-
-with et_general;
-with et_string_processing;		use et_string_processing;
-with et_project;
-with et_pcb;
-with et_pcb_coordinates;
-with et_kicad_pcb;
-with et_export;
-with et_csv;
 
 package body et_kicad_general is
 
@@ -89,6 +56,10 @@ package body et_kicad_general is
 		return type_library_name.to_string (library_name);
 	end to_string;
 
+	function to_string (dir : in type_library_directory.bounded_string) return string is
+	begin
+		return type_library_directory.to_string (dir);
+	end to_string;
 
 	
 end et_kicad_general;

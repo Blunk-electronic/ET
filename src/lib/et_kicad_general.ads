@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                           SYSTEM ET KICAD GENERAL                        --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                            KICAD GENERAL                                 --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -40,10 +40,6 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.ordered_sets;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.vectors;
 
 with et_packages;
 with et_devices;
@@ -54,6 +50,8 @@ package et_kicad_general is
 
 	system_name	: constant string (1..5) := "KiCad";
 
+	comment_mark : constant string := "#";
+	
 	-- If lines of a file are to be collected we use this simple list:
 	package pac_lines_of_file is new doubly_linked_lists (
 		element_type	=> type_fields_of_line,
@@ -89,6 +87,20 @@ package et_kicad_general is
 	function to_string (library_name : in type_library_name.bounded_string) return string;
 	-- Returns the given library name as string.
 
+	
+
+	-- Libraries are stored in directories:
+	library_directory_length_max : constant positive := 300; -- CS: increase if necessary
+	package type_library_directory is new generic_bounded_length (library_directory_length_max);
+
+	function to_string (dir : in type_library_directory.bounded_string) return string;
+
+	-- Search list for library directories.
+	-- This list applies for both component and package search operations.
+	package type_project_lib_dirs is new doubly_linked_lists (
+		element_type	=> type_library_directory.bounded_string,
+		"=" 			=> type_library_directory."=");
+	search_list_project_lib_dirs : type_project_lib_dirs.list;
 
 
 	
