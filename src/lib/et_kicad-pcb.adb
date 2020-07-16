@@ -106,14 +106,14 @@ package body et_kicad.pcb is
 		end if;
 	end right_net_equals_left;
 	
-	function to_assembly_technology (tech : in string) return type_assembly_technology is begin
-		if tech = "smd" then return SMT;
-		elsif tech = "thru_hole" then return THT;
-		else
-			log (ERROR, "invalid assembly technology", console => true);
-			raise constraint_error;
-		end if;
-	end to_assembly_technology;
+-- 	function to_assembly_technology (tech : in string) return type_assembly_technology is begin
+-- 		if tech = "smd" then return SMT;
+-- 		elsif tech = "thru_hole" then return THT;
+-- 		else
+-- 			log (ERROR, "invalid assembly technology", console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 	end to_assembly_technology;
 			
 
 	function to_signal_layer_id (layer : in string) return type_signal_layer_id is
@@ -1466,7 +1466,7 @@ package body et_kicad.pcb is
 									reset (terminal_pad_drill_offset); 
 
 								when 2 =>
-									terminal_technology := to_assembly_technology (to_string (arg));
+									terminal_technology := et_kicad_packages.to_assembly_technology (to_string (arg));
 								when 3 =>
 									case terminal_technology is
 										when SMT => terminal_pad_shape_smt := to_pad_shape_smt (to_string (arg));

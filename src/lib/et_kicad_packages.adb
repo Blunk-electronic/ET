@@ -58,6 +58,15 @@ with et_conventions;
 
 package body et_kicad_packages is
 
+	function to_assembly_technology (tech : in string) return type_assembly_technology is begin
+		if tech = "smd" then return SMT;
+		elsif tech = "thru_hole" then return THT;
+		else
+			log (ERROR, "invalid assembly technology", console => true);
+			raise constraint_error;
+		end if;
+	end to_assembly_technology;
+	
 	function to_string (shape : in type_pad_shape_tht) return string is begin
 		return latin_1.space & to_lower (type_pad_shape_tht'image (shape));
 	end to_string;
@@ -1554,6 +1563,7 @@ package body et_kicad_packages is
 
 								when 2 =>
 									terminal_technology := to_assembly_technology (to_string (arg));
+									
 								when 3 =>
 									case terminal_technology is
 										when SMT => terminal_pad_shape_smt := to_pad_shape_smt (to_string (arg));

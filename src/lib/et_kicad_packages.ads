@@ -153,6 +153,10 @@ package et_kicad_packages is
 		assembly_documentation	: et_packages.type_assembly_documentation_both_sides; -- incl. placeholder for value
 		terminals				: et_terminals.type_terminals.map;
 	end record;
+
+	function to_assembly_technology (
+		tech : in string) 
+		return type_assembly_technology;
 	
 	type type_pad_shape_tht is (
 		CIRCULAR, 
