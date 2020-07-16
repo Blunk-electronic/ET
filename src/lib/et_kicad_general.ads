@@ -48,7 +48,7 @@ with et_string_processing;		use et_string_processing;
 
 package et_kicad_general is
 
-	system_name	: constant string (1..5) := "KiCad";
+	system_name	: constant string := "KiCad";
 
 	comment_mark : constant string := "#";
 	

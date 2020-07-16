@@ -43,10 +43,8 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_maps;
-with ada.containers.vectors;
 
 with et_general;				use et_general;
-with et_project;
 with et_geometry;
 with et_schematic;
 with et_drills;
@@ -62,12 +60,10 @@ use et_coordinates.pac_geometry_sch;
 
 with et_kicad_packages;			use et_kicad_packages;
 
--- with et_pcb_coordinates;
 with et_string_processing;		use et_string_processing;
 with et_text;					use et_text;
 with et_symbols;				use et_symbols;
 with et_devices;				use et_devices;
-with et_frames;
 
 package et_kicad_libraries is
 
@@ -76,9 +72,9 @@ package et_kicad_libraries is
 	
 	-- SYM-LIB-TABLES AND FP-LIB-TABLES ------------------------------------------------------------------------------
 	-- For V5:
-	file_sym_lib_table			: constant string (1..13) := "sym-lib-table";
-	file_fp_lib_table			: constant string (1..12) := "fp-lib-table";
-	dir_global_lib_tables_linux	: constant string (1..15) := "/.config/kicad/";
+	file_sym_lib_table			: constant string := "sym-lib-table";
+	file_fp_lib_table			: constant string := "fp-lib-table";
+	dir_global_lib_tables_linux	: constant string := "/.config/kicad/";
 	-- CS: windows ?
 	
 	file_sym_lib_table_global_linux : constant string (1 .. dir_global_lib_tables_linux'length + file_sym_lib_table'length)
@@ -588,7 +584,7 @@ package et_kicad_libraries is
 -- COMPONENT TEXT FIELDS
 
 	-- In compoenent libraries and schematic, a text field is indicated by letter "F":
-	component_field_identifier : constant string (1..1) := "F";
+	component_field_identifier : constant string := "F";
 
 	-- We limit the number of fields in the component library to this constant.
 	library_component_field_count_max : constant positive := 3;
@@ -608,8 +604,8 @@ package et_kicad_libraries is
 
 	-- These strange strings are used to define the text style of 
 	-- net labels and notes:
-	text_library_style_normal	: constant string (1..6) := "Normal";
-	text_library_style_italic	: constant string (1..6) := "Italic";	
+	text_library_style_normal	: constant string := "Normal";
+	text_library_style_italic	: constant string := "Italic";	
 	
     -- fields
 	type type_field_orientation is (H, V); -- horizontal, vertical
@@ -625,12 +621,12 @@ package et_kicad_libraries is
 		T, -- text
 		X); -- pin
 
-	library_fill_none			: constant string (1..1) := "N";
-	library_fill_foreground		: constant string (1..1) := "F";
-	library_fill_background		: constant string (1..1) := "f";
+	library_fill_none			: constant string := "N";
+	library_fill_foreground		: constant string := "F";
+	library_fill_background		: constant string := "f";
 
-	library_text_bold_off						: constant string (1..1) := "0";
-	library_text_bold_on						: constant string (1..1) := "1";
+	library_text_bold_off		: constant string := "0";
+	library_text_bold_on		: constant string := "1";
 
 	type type_library_pin_orientation is (
 		U, -- up
@@ -678,21 +674,21 @@ package et_kicad_libraries is
 	type type_schematic_field_visible is (V0000, V0001); -- visible, invisible 
 	
 		
-	field_style_default 	: constant string (1..2) := "NN";
-	field_style_bold		: constant string (1..2) := "NB";
-	field_style_italic		: constant string (1..2) := "IN";
-	field_style_italic_bold	: constant string (1..2) := "IB";	
+	field_style_default 	: constant string := "NN";
+	field_style_bold		: constant string := "NB";
+	field_style_italic		: constant string := "IN";
+	field_style_italic_bold	: constant string := "IB";	
 	
 
 
-	version_header : constant string (1..28) := "EESchema-LIBRARY Version 2.3";
+	version_header : constant string := "EESchema-LIBRARY Version 2.3";
 
-	def			: constant string (1..3) := "DEF";
-	enddef		: constant string (1..6) := "ENDDEF";
-	draw		: constant string (1..4) := "DRAW";
-	enddraw		: constant string (1..7) := "ENDDRAW";
-	fplist		: constant string (1..7) := "$FPLIST";
-	endfplist	: constant string (1..10) := "$ENDFPLIST";
+	def			: constant string := "DEF";
+	enddef		: constant string := "ENDDEF";
+	draw		: constant string := "DRAW";
+	enddraw		: constant string := "ENDDRAW";
+	fplist		: constant string := "$FPLIST";
+	endfplist	: constant string := "$ENDFPLIST";
 
 	-- The distance of the pin name from the pin itself (supply pins only)
 	subtype type_supply_pin_name_position_offset is et_coordinates.type_distance
@@ -711,8 +707,8 @@ package et_kicad_libraries is
 	
 	-- power flags and symbols have a special prefix which distinguishes 
 	-- them from real components:
-	power_flag_prefix : constant string (1..4) := "#FLG";
-	power_symbol_prefix : constant string (1..4) := "#PWR";	
+	power_flag_prefix	: constant string := "#FLG";
+	power_symbol_prefix	: constant string := "#PWR";	
 
 	-- These are the characters allowed for a component prefix:
 	component_prefix_characters : character_set := et_devices.prefix_characters

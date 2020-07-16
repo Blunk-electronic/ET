@@ -39,14 +39,10 @@ with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
-with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
-with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_maps;
-with ada.containers.vectors;
 
 with et_general;				use et_general;
-with et_project;
 with et_geometry;				use et_geometry;
 with et_drills;
 with et_terminals;				use et_terminals;
@@ -54,7 +50,6 @@ use et_terminals.pac_shapes;
 use et_terminals.pac_text;
 
 with et_packages;
-with et_pcb;
 with et_kicad_general;			use et_kicad_general;
 with et_import;
 with et_pcb_coordinates;		use et_pcb_coordinates;

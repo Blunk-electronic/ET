@@ -44,7 +44,7 @@
 --			Example: Power symbol "P3V3" must have pin direction power_out.	
 
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
@@ -76,7 +76,7 @@ package body et_kicad_libraries is
 	end content;
 
 	function to_string (style : in type_port_style) return string is begin
-		return latin_1.space & to_lower (type_port_style'image (style));
+		return space & to_lower (type_port_style'image (style));
 	end to_string;
 
 	function to_string (
@@ -86,13 +86,13 @@ package body et_kicad_libraries is
 		if preamble then
 			return " direction " & to_lower (type_port_direction'image (direction));
 		else
-			return latin_1.space & to_lower (type_port_direction'image (direction));
+			return space & to_lower (type_port_direction'image (direction));
 		end if;
 	end to_string;
 	
 	function to_string (fill : in type_fill) return string is begin
-		return latin_1.space & to_lower (type_fill_border'image (fill.border))
-		& latin_1.space & "pattern" & latin_1.space 
+		return space & to_lower (type_fill_border'image (fill.border))
+		& space & "pattern" & space 
 		& to_lower (type_fill_pattern'image (fill.pattern));
 	end to_string;
 	

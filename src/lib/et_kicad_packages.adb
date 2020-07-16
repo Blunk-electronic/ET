@@ -34,25 +34,14 @@
 --
 --   history of changes:
 --
---   ToDo:
---		1. Warning if virtual component pins apply for all units. Usually 
---			virtual components (such as power flags) have only one unit. If the
---			check "common to all units in component" is set, ET generates an
---			extra unit. Why ? ET assumes the affeced pin is a power pin. Power pins
---			in turn are assigned to an extra unit (in EAGLE we speak of "supply symbols").
---		2. Warning if virtual component with one power pin has pin direction differing from power_out
---			Example: Power symbol "P3V3" must have pin direction power_out.	
 
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
-with ada.environment_variables;
-
-with et_pcb_coordinates;
 
 with et_conventions;
 
@@ -68,11 +57,11 @@ package body et_kicad_packages is
 	end to_assembly_technology;
 	
 	function to_string (shape : in type_pad_shape_tht) return string is begin
-		return latin_1.space & to_lower (type_pad_shape_tht'image (shape));
+		return space & to_lower (type_pad_shape_tht'image (shape));
 	end to_string;
 	
 	function to_string (shape : in type_pad_shape_smt) return string is begin
-		return latin_1.space & to_lower (type_pad_shape_smt'image (shape));
+		return space & to_lower (type_pad_shape_smt'image (shape));
 	end to_string;
 
 	function to_pad_shape_tht (shape : in string) return type_pad_shape_tht is begin
@@ -434,11 +423,11 @@ package body et_kicad_packages is
 		opening_bracket : constant character := '(';
 		closing_bracket : constant character := ')';
 
-		term_char_seq : constant string (1..2) := latin_1.space & closing_bracket;
+		term_char_seq : constant string (1..2) := space & closing_bracket;
 		term_char_set : character_set := to_set (term_char_seq);
 
 		-- the section prefix is a workaround due to GNAT reserved keywords.
-		sec_prefix : constant string (1..4) := "sec_";
+		sec_prefix : constant string := "sec_";
 
 		-- These are the keywords used in the package model. They prelude a certain section.
 		-- See <https://www.compuphase.com/electronics/LibraryFileFormats.pdf> for more.
@@ -937,7 +926,7 @@ package body et_kicad_packages is
 				-- if no trailing quotation found -> error
 				if end_of_arg = -1 then
 					log (ERROR, affected_line (element (line_cursor))
-						& latin_1.space & latin_1.quotation & " expected");
+						& space & latin_1.quotation & " expected");
 						raise constraint_error;
 				end if;
 
@@ -968,7 +957,7 @@ package body et_kicad_packages is
 			-- Argument complete. Increment argument counter of section.
 			section.arg_counter := section.arg_counter + 1;
 			
-			log (text => "arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), level => log_threshold + 4);
+			log (text => "arg" & to_string (section.arg_counter) & space & to_string (arg), level => log_threshold + 4);
 
 			-- Validate arguments according to current section and the parent section.
 			-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
@@ -2633,7 +2622,7 @@ package body et_kicad_packages is
 						line 			=> get_line,
 						comment_mark	=> comment_mark,
 						number 			=> ada.text_io.line (current_input),
-						ifs 			=> latin_1.space); -- fields are separated by space
+						ifs 			=> space); -- fields are separated by space
 
 					-- insert line in container "lines"
 					if field_count (line) > 0 then -- we skip empty or commented lines

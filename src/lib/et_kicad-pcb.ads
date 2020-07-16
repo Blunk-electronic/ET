@@ -64,8 +64,7 @@ with et_packages;
 with et_devices;				use et_devices;
 with et_frames;
 
--- with et_kicad_project;			use et_kicad_project;
-with et_kicad.schematic;		
+with et_kicad.schematic;
 with et_kicad_libraries;		--use et_kicad_libraries;
 with et_kicad_packages;			use et_kicad_packages;
 
@@ -104,12 +103,12 @@ package et_kicad.pcb is
 	layer_top_keepout_id		: constant type_layer_id 	:= 47;
 	layer_bot_keepout_id		: constant type_layer_id 	:= 46;
 	
-	layer_edge_cuts				: constant string (1..9)	:= "Edge.Cuts";
+	layer_edge_cuts				: constant string := "Edge.Cuts";
 	layer_edge_cuts_id			: constant type_layer_id 	:= 44;
 	
 	-- CS other layers like adhes, eco, margin, ...
 
-	keyword_fp_text_mirrored	: constant string (1..6)	:= "mirror";
+	keyword_fp_text_mirrored	: constant string := "mirror";
 	
 
 
@@ -524,8 +523,8 @@ package et_kicad.pcb is
 	
 	-- For handling inner signal layers we have a prefix and a suffix
 	-- Together with the layer number something like In5.Cu is evaluated.
-	layer_inner_prefix			: constant string (1..2)	:= "In";
-	layer_inner_suffix			: constant string (1..3)	:= ".Cu";	
+	layer_inner_prefix	: constant string := "In";
+	layer_inner_suffix	: constant string := ".Cu";
 
 	-- The bottom signal layer in kicad is always number 31. Top layer is number 0.
 	signal_layer_id_top		: constant type_layer_id := 0;
