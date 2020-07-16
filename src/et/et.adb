@@ -52,7 +52,7 @@ with et_string_processing;		use et_string_processing;
 with et_import;
 with et_export;
 with et_conventions;
-with et_kicad;
+with et_kicad.schematic;
 with et_kicad_to_native;
 with et_project;
 with et_project.modules;
@@ -390,7 +390,7 @@ procedure et is
 			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
 
 				-- do the import
-				et_kicad.import_design (project => project_name_import, log_threshold => 0);
+				et_kicad.schematic.import_design (project => project_name_import, log_threshold => 0);
 
 				-- convert to native project (with a default rig configuration file)
 				log (text => et_string_processing.row_separator_single);

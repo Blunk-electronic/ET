@@ -739,7 +739,6 @@ package et_kicad_libraries is
 	alternative_representation_no	: constant type_alternative_representation := 1;
 
 
--- IMPORT
 
 	schematic_version_valid 	: boolean := false;	
 	sheet_header_entered		: boolean := false;	

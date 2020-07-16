@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                                KICAD                                     --
+--                            KICAD PROJECT                                 --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 --         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -34,32 +34,60 @@
 --
 --   history of changes:
 --
---   ToDo:
---		1. Warning if virtual component pins apply for all units. Usually 
---			virtual components (such as power flags) have only one unit. If the
---			check "common to all units in component" is set, ET generates an
---			extra unit. Why ? ET assumes the affeced pin is a power pin. Power pins
---			in turn are assigned to an extra unit (in EAGLE we speak of "supply symbols").
---		2. Warning if virtual component with one power pin has pin direction differing from power_out
---			Example: Power symbol "P3V3" must have pin direction power_out.	
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.directories;			use ada.directories;
-with ada.exceptions; 			use ada.exceptions;
-with ada.environment_variables;
+with ada.text_io;				use ada.text_io;
+with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.containers; 			use ada.containers;
+with ada.containers.doubly_linked_lists;
+with ada.containers.ordered_maps;
+with ada.containers.ordered_sets;
+with ada.containers.indefinite_ordered_maps;
+with ada.containers.vectors;
 
-with et_conventions;
--- with et_kicad.pcb;				--use et_kicad.pcb;
+with et_general;				use et_general;
+-- with et_project;
+-- with et_geometry;
+-- with et_schematic;
+-- with et_terminals;
+-- with et_packages;
+-- with et_pcb;
+with et_kicad_general;			use et_kicad_general;
+with kicad_coordinates;			use kicad_coordinates;
+-- with et_kicad_pcb;
+-- with et_import;
+-- with et_coordinates;			use et_coordinates;
+-- use et_coordinates.pac_geometry_sch;
 
-package body et_kicad is
+-- with et_pcb_coordinates;
+with et_string_processing;		use et_string_processing;
+-- with et_text;
+-- with et_symbols;				--use et_symbols;
+-- with et_devices;				use et_devices;
+-- with et_frames;
 
-	procedure dummy is begin null; end;
+with et_kicad;					use et_kicad;
+-- with et_kicad_libraries;		use et_kicad_libraries;
+-- with et_kicad_packages;			use et_kicad_packages;
+
+package et_kicad_project is
+
+	d : natural;
 	
-end et_kicad;
+-- 	-- A collection of modules.
+-- 	-- CS: Currently kicad does not support multiple modules (so called multi-board support).
+-- 	-- Therefore the collection contains only one module.
+-- 	package type_modules is new ordered_maps (
+-- 		-- This is the module name like "MY_MOTOR_DRIVER" or "BLOOD_SAMPLE_ANALYZER"
+-- 		key_type 		=> type_submodule_name.bounded_string,
+-- 		"<" 			=> type_submodule_name."<",											 
+-- 		element_type 	=> type_module);
+-- 
+-- 	modules : type_modules.map;
+-- 	module_cursor : type_modules.cursor;
+
+
+end et_kicad_project;
 
 -- Soli Deo Gloria
 

@@ -50,12 +50,12 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_string_processing;
-with et_schematic;
+with et_schematic;				use et_schematic;
 with et_general;
-with et_terminals;
+with et_terminals;				use et_terminals;
 with et_packages;
 with et_pcb;
-with et_pcb_coordinates;
+with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_kicad_general;			use et_kicad_general;
 with et_text;
 with et_terminals;				use et_terminals;
@@ -64,32 +64,16 @@ with et_packages;
 with et_devices;				use et_devices;
 with et_frames;
 
--- with et_kicad;					use et_kicad;
+-- with et_kicad_project;			use et_kicad_project;
+with et_kicad.schematic;		
 with et_kicad_libraries;		--use et_kicad_libraries;
 with et_kicad_packages;			use et_kicad_packages;
 
-package et_kicad_pcb is
+package et_kicad.pcb is
 
 	use et_terminals.pac_shapes;
 	use et_terminals.pac_text;
 	use et_pcb_coordinates.pac_geometry_brd;
-	
-	-- V4:
-	pcb_new_version_4_0_7		: constant string (1..5)	:= "4.0.7";
-	pcb_file_format_version_4	: constant string (1..1)	:= "4";
-	
-	host_name_pcbnew			: constant string (1..6)	:= "pcbnew";
-
-	-- V5:
-	pcb_new_version_5_0_0		: constant string (1..11)	:= "5.0.0-5.0.0"; -- CS update version number or find better solution
-	-- Newly created projects without a board have a line like:
-	--  (kicad_pcb (version 4) (host kicad "dummy file") )
-	-- For this reason we need a constant:
-	host_name_pcbnew_dummy_v5	: constant string (1..5)	:= "kicad";
-
-
-	
-
 
 
 	
@@ -299,7 +283,7 @@ package et_kicad_pcb is
 		 );
 
 	-- CS it is not fully clear what aux_axis_origin is good for:
-	aux_axis_origin_min : constant et_pcb_coordinates.type_distance := zero;
+	aux_axis_origin_min : constant et_pcb_coordinates.type_distance := pac_geometry_brd.zero;
 	aux_axis_origin_max : constant et_pcb_coordinates.type_distance := 500.0;
 	subtype type_aux_axis_origin is et_pcb_coordinates.type_distance 
 		range aux_axis_origin_min .. aux_axis_origin_max;
@@ -324,13 +308,13 @@ package et_kicad_pcb is
 		micro_vias_allowed	: et_pcb.type_micro_vias_allowed;
 		micro_via_min_size	: type_via_diameter;	-- micro vias
 		micro_via_min_drill	: type_drill_size;		-- micro vias
-		pcb_text_width		: type_text_line_width;	-- all kinds of texts (no matter what layer)
+		pcb_text_width		: et_terminals.pac_text.type_text_line_width;	-- all kinds of texts (no matter what layer)
 		pcb_text_size_x		: et_terminals.pac_text.type_text_size;
 		pcb_text_size_y		: et_terminals.pac_text.type_text_size;		
 		module_edge_width	: et_packages.type_general_line_width;
 		module_text_size_x	: et_terminals.pac_text.type_text_size;
 		module_text_size_y	: et_terminals.pac_text.type_text_size;
-		module_text_width	: type_text_line_width; -- line width
+		module_text_width	: et_terminals.pac_text.type_text_line_width; -- line width
 		pad_size_x			: et_terminals.type_pad_size;
 		pad_size_y			: et_terminals.type_pad_size;
 		pad_drill			: type_drill_size;
@@ -698,9 +682,73 @@ package et_kicad_pcb is
 -- 	-- Converts the packages (from package_libraries) to native packages.
 -- 	-- NOTE: Packages of the board (incl. their deviations from the package_libraries) are ignored !
 
-		
+	-- This is general board stuff:
+	type type_board_with_paper_size is new et_pcb.type_board with record
+		paper_size	: et_frames.type_paper_size;
+	end record;
+
 	
-end et_kicad_pcb;
+	type type_module is record
+		board_available	: et_schematic.type_board_available := et_schematic.false;
+
+		-- V4 uses search lists:
+		-- The search list of project library directories and names:
+		search_list_library_dirs	: type_project_lib_dirs.list; 	-- search list for library directories (active, passive, ...)
+		search_list_library_comps	: type_library_names.list; 		-- search list for component libraries (bel_logic, bel_primitives, ...)
+		-- NOTE: There is no search list for packages, because they are nowhere declared (not even in the project conf. file)
+
+		-- V5 uses sym-lib-tables and fp-lib-tables to locate libraries:
+		sym_lib_tables		: type_lib_table.list; -- symbols
+		fp_lib_tables		: type_lib_table.list; -- footprints/packages		
+		
+		component_libraries	: et_kicad_libraries.type_device_libraries.map; -- V4 and V5
+		footprints			: et_kicad_packages.type_libraries.map;	-- V5 only. V4 packages are in et_kicad_pcb.package_libraries
+		
+		strands	    		: et_kicad.schematic.type_strands.list;				-- the strands of the module (incl. net names and segments)
+		junctions			: et_kicad.schematic.type_junctions.list;				-- net junctions (for ERC, statistics, ...)
+
+		components			: et_kicad.schematic.type_components_schematic.map;	-- the components of the module
+		net_classes			: et_pcb.type_net_classes.map;		-- the net classes
+		no_connections		: et_kicad.schematic.type_no_connection_flags.list;	-- the list of no-connection-flags
+		portlists			: et_kicad.schematic.type_portlists.map;				-- the portlists of the module (components with their ports)
+		netlist				: et_kicad.schematic.type_netlist.map;					-- net names and connected component ports (incl. position of port)
+		hierarchic_sheets	: et_kicad.schematic.type_hierarchic_sheets.map;		-- hierarchic sheets. Serve as interface between hierarchic sheets.
+
+		-- CS Drawing frames: not completely modelled. Still under construction.
+		-- Thereis probably no need for a list of frames. Schematic has a single template for all sheets.
+		-- Layout also has a template. 
+		-- So the name of the templates for schematic and layout should suffice.
+		frames      		: et_kicad.schematic.type_frames.list;					-- schematic frames (of both schematic and layout)
+		
+		notes       		: et_kicad.schematic.type_texts.list;					-- notes
+	
+		sheet_headers		: et_kicad.schematic.type_sheet_headers.map;			-- the list of sheet headers
+		-- CS: images
+
+		-- The nets of the module: net names, class, 
+		-- schematic related stuff: strands, segments, labels, junctions
+		-- board related stuff: lines, arcs, vias, polygons
+		nets 	    	: et_kicad.schematic.type_nets.map; 
+		
+		-- General non-component related board stuff:
+		-- paper size, silk screen, documentation, ...
+		board			: type_board_with_paper_size;
+	end record;
+
+
+	-- A collection of modules.
+	-- CS: Currently kicad does not support multiple modules (so called multi-board support).
+	-- Therefore the collection contains only one module.
+	package type_modules is new ordered_maps (
+		-- This is the module name like "MY_MOTOR_DRIVER" or "BLOOD_SAMPLE_ANALYZER"
+		key_type 		=> type_submodule_name.bounded_string,
+		"<" 			=> type_submodule_name."<",											 
+		element_type 	=> type_module);
+
+	modules : type_modules.map;
+	module_cursor : type_modules.cursor;		
+	
+end et_kicad.pcb;
 
 -- Soli Deo Gloria
 

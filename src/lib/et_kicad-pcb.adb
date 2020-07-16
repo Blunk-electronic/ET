@@ -50,7 +50,7 @@ with et_symbols;
 
 with et_string_processing;		use et_string_processing;
 
-package body et_kicad_pcb is
+package body et_kicad.pcb is
 
 	use et_general.type_net_name;
 	
@@ -232,9 +232,9 @@ package body et_kicad_pcb is
 		file_name		: in string; -- pwr_supply.kicad_pcb
 		lines			: in pac_lines_of_file.list;
 		log_threshold	: in et_string_processing.type_log_level) 
-		return et_kicad_pcb.type_board is
+		return type_board is
 
-		board : et_kicad_pcb.type_board; -- to be returned
+		board : type_board; -- to be returned
 
 		use et_pcb;
 		use et_packages;
@@ -539,7 +539,7 @@ package body et_kicad_pcb is
 		terminal_pad_drill_offset : type_point;
 		
 		-- The center of an smt pad or the position of the drill of a tht pad:		
-		terminal_position	: type_position;
+		terminal_position	: pac_geometry_brd.type_position;
 		
 		pad_size_x : type_pad_size;
 		pad_size_y : type_pad_size;		
@@ -3051,7 +3051,7 @@ package body et_kicad_pcb is
 			-- Raises alarm if package already exists in container.
 			
 				-- This cursor points to the last inserted package:
-				package_cursor : et_kicad_pcb.type_packages_board.cursor;
+				package_cursor : type_packages_board.cursor;
 
 				-- This flag goes true once a package is to be inserted that already exists (by its reference).
 				package_inserted : boolean;
@@ -3212,7 +3212,7 @@ package body et_kicad_pcb is
 
 			procedure insert_layer is
 			-- Inserts the layer (when reading section "layers") in the temporarily container "layers".
-				layer_cursor : et_kicad_pcb.type_layers.cursor; -- mandatory, never read
+				layer_cursor : type_layers.cursor; -- mandatory, never read
 				layer_inserted : boolean; -- goes true if layer id already used
 			begin -- insert_layer
 
@@ -3311,38 +3311,38 @@ package body et_kicad_pcb is
 				-- depending on the layer extended with specific properties.
 				case board_arc.layer is
 					when TOP_SILK =>
-						board.silk_screen.top.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.silk_screen.top.arcs.append ((et_terminals.pac_shapes.type_arc (board_arc) with board_arc.width));
 						arc_silk_screen_properties (TOP, board.silk_screen.top.arcs.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						board.silk_screen.bottom.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.silk_screen.bottom.arcs.append ((et_terminals.pac_shapes.type_arc (board_arc) with board_arc.width));
 						arc_silk_screen_properties (BOTTOM, board.silk_screen.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						board.assy_doc.top.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.assy_doc.top.arcs.append ((et_terminals.pac_shapes.type_arc (board_arc) with board_arc.width));
 						arc_assy_doc_properties (TOP, board.assy_doc.top.arcs.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						board.assy_doc.bottom.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.assy_doc.bottom.arcs.append ((et_terminals.pac_shapes.type_arc (board_arc) with board_arc.width));
 						arc_assy_doc_properties (BOTTOM, board.assy_doc.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						board.stencil.top.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.stencil.top.arcs.append ((et_terminals.pac_shapes.type_arc (board_arc) with board_arc.width));
 						arc_stencil_properties (TOP, board.stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						board.stencil.bottom.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.stencil.bottom.arcs.append ((et_terminals.pac_shapes.type_arc (board_arc) with board_arc.width));
 						arc_stencil_properties (BOTTOM, board.stencil.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						board.stop_mask.top.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.stop_mask.top.arcs.append ((et_terminals.pac_shapes.type_arc (board_arc) with board_arc.width));
 						arc_stop_mask_properties (TOP, board.stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						board.stop_mask.bottom.arcs.append ((pac_shapes.type_arc (board_arc) with board_arc.width));
+						board.stop_mask.bottom.arcs.append ((et_terminals.pac_shapes.type_arc (board_arc) with board_arc.width));
 						arc_stop_mask_properties (BOTTOM, board.stop_mask.bottom.arcs.last, log_threshold + 1);
 
 
@@ -3367,7 +3367,7 @@ package body et_kicad_pcb is
 						arc_keepout_properties (BOTTOM, board.keepout.bottom.arcs.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
-						board.contours.arcs.append ((pac_shapes.type_arc (board_arc) with locked => NO));
+						board.contours.arcs.append ((et_terminals.pac_shapes.type_arc (board_arc) with locked => NO));
 						arc_pcb_contour_properties (board.contours.arcs.last, log_threshold + 1);
 						
 					when others => invalid_layer;
@@ -3389,65 +3389,65 @@ package body et_kicad_pcb is
 				-- Filling circles is not supported by kicad -> default to no filling.
 				case board_circle.layer is
 					when TOP_SILK =>
-						board.silk_screen.top.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.silk_screen.top.circles.append ((et_terminals.pac_shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 						
 						circle_silk_screen_properties (TOP, board.silk_screen.top.circles.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						board.silk_screen.bottom.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.silk_screen.bottom.circles.append ((et_terminals.pac_shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_silk_screen_properties (BOTTOM, board.silk_screen.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_ASSY =>
-						board.assy_doc.top.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.assy_doc.top.circles.append ((et_terminals.pac_shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_assy_doc_properties (TOP, board.assy_doc.top.circles.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						board.assy_doc.bottom.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.assy_doc.bottom.circles.append ((et_terminals.pac_shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_assy_doc_properties (BOTTOM, board.assy_doc.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_PASTE =>
-						board.stencil.top.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.stencil.top.circles.append ((et_terminals.pac_shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_stencil_properties (TOP, board.stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						board.stencil.bottom.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.stencil.bottom.circles.append ((et_terminals.pac_shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_stencil_properties (BOTTOM, board.stencil.bottom.circles.last, log_threshold + 1);
 
 					when TOP_STOP =>
-						board.stop_mask.top.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.stop_mask.top.circles.append ((et_terminals.pac_shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_stop_mask_properties (TOP, board.stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						board.stop_mask.bottom.circles.append ((pac_shapes.type_circle (board_circle) with
+						board.stop_mask.bottom.circles.append ((et_terminals.pac_shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_stop_mask_properties (BOTTOM, board.stop_mask.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_KEEP =>
-						board.keepout.top.circles.append ((pac_shapes.type_circle (board_circle) with filled => NO));
+						board.keepout.top.circles.append ((et_terminals.pac_shapes.type_circle (board_circle) with filled => NO));
 
 						circle_keepout_properties (TOP, board.keepout.top.circles.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						board.keepout.bottom.circles.append ((pac_shapes.type_circle (board_circle) with filled => NO));
+						board.keepout.bottom.circles.append ((et_terminals.pac_shapes.type_circle (board_circle) with filled => NO));
 
 						circle_keepout_properties (BOTTOM, board.keepout.bottom.circles.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
-						board.contours.circles.append ((pac_shapes.type_circle (board_circle) with locked => NO));
+						board.contours.circles.append ((et_terminals.pac_shapes.type_circle (board_circle) with locked => NO));
 						circle_pcb_contour_properties (board.contours.circles.last, log_threshold + 1);
 						
 					when others => invalid_layer;
@@ -3463,38 +3463,38 @@ package body et_kicad_pcb is
 				case board_line.layer is
 
 					when TOP_SILK =>
-						board.silk_screen.top.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.silk_screen.top.lines.append ((et_terminals.pac_shapes.type_line (board_line) with board_line.width));
 						line_silk_screen_properties (TOP, board.silk_screen.top.lines.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						board.silk_screen.bottom.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.silk_screen.bottom.lines.append ((et_terminals.pac_shapes.type_line (board_line) with board_line.width));
 						line_silk_screen_properties (BOTTOM, board.silk_screen.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						board.assy_doc.top.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.assy_doc.top.lines.append ((et_terminals.pac_shapes.type_line (board_line) with board_line.width));
 						line_assy_doc_properties (TOP, board.assy_doc.top.lines.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						board.assy_doc.bottom.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.assy_doc.bottom.lines.append ((et_terminals.pac_shapes.type_line (board_line) with board_line.width));
 						line_assy_doc_properties (BOTTOM, board.assy_doc.bottom.lines.last, log_threshold + 1);
 
 
 					when TOP_PASTE =>
-						board.stencil.top.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.stencil.top.lines.append ((et_terminals.pac_shapes.type_line (board_line) with board_line.width));
 						line_stencil_properties (TOP, board.stencil.top.lines.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						board.stencil.bottom.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.stencil.bottom.lines.append ((et_terminals.pac_shapes.type_line (board_line) with board_line.width));
 						line_stencil_properties (BOTTOM, board.stencil.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						board.stop_mask.top.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.stop_mask.top.lines.append ((et_terminals.pac_shapes.type_line (board_line) with board_line.width));
 						line_stop_mask_properties (TOP, board.stop_mask.top.lines.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						board.stop_mask.bottom.lines.append ((pac_shapes.type_line (board_line) with board_line.width));
+						board.stop_mask.bottom.lines.append ((et_terminals.pac_shapes.type_line (board_line) with board_line.width));
 						line_stop_mask_properties (BOTTOM, board.stop_mask.bottom.lines.last, log_threshold + 1);
 
 
@@ -3514,7 +3514,7 @@ package body et_kicad_pcb is
 
 						
 					when EDGE_CUTS =>
-						board.contours.lines.append ((pac_shapes.type_line (board_line) with locked => NO));
+						board.contours.lines.append ((et_terminals.pac_shapes.type_line (board_line) with locked => NO));
 						line_pcb_contour_properties (board.contours.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -3596,20 +3596,20 @@ package body et_kicad_pcb is
 				-- is formed and appended to the list of silk screen circles.
 				case package_arc.layer is
 					when TOP_SILK =>
-						package_silk_screen.top.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_silk_screen.top.arcs.append ((et_terminals.pac_shapes.type_arc (package_arc) with package_arc.width));
 						arc_silk_screen_properties (TOP, package_silk_screen.top.arcs.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						package_silk_screen.bottom.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_silk_screen.bottom.arcs.append ((et_terminals.pac_shapes.type_arc (package_arc) with package_arc.width));
 						arc_silk_screen_properties (BOTTOM, package_silk_screen.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						package_assy_doc.top.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_assy_doc.top.arcs.append ((et_terminals.pac_shapes.type_arc (package_arc) with package_arc.width));
 						arc_assy_doc_properties (TOP, package_assy_doc.top.arcs.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						package_assy_doc.bottom.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_assy_doc.bottom.arcs.append ((et_terminals.pac_shapes.type_arc (package_arc) with package_arc.width));
 						arc_assy_doc_properties (BOTTOM, package_assy_doc.bottom.arcs.last, log_threshold + 1);
 
 						
@@ -3635,29 +3635,29 @@ package body et_kicad_pcb is
 
 						
 					when TOP_COPPER => 
-						package_copper.top.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_copper.top.arcs.append ((et_terminals.pac_shapes.type_arc (package_arc) with package_arc.width));
 						arc_copper_properties (TOP, package_copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						package_copper.bottom.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_copper.bottom.arcs.append ((et_terminals.pac_shapes.type_arc (package_arc) with package_arc.width));
 						arc_copper_properties (BOTTOM, package_copper.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						package_stop_mask.top.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_stop_mask.top.arcs.append ((et_terminals.pac_shapes.type_arc (package_arc) with package_arc.width));
 						arc_stop_mask_properties (TOP, package_stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						package_stop_mask.bottom.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_stop_mask.bottom.arcs.append ((et_terminals.pac_shapes.type_arc (package_arc) with package_arc.width));
 						arc_stop_mask_properties (BOTTOM, package_stop_mask.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						package_stencil.top.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_stencil.top.arcs.append ((et_terminals.pac_shapes.type_arc (package_arc) with package_arc.width));
 						arc_stencil_properties (TOP, package_stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						package_stencil.bottom.arcs.append ((pac_shapes.type_arc (package_arc) with package_arc.width));
+						package_stencil.bottom.arcs.append ((et_terminals.pac_shapes.type_arc (package_arc) with package_arc.width));
 						arc_stencil_properties (BOTTOM, package_stencil.bottom.arcs.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -3682,71 +3682,71 @@ package body et_kicad_pcb is
 				-- Filling circles is not supported by kicad -> default to no filling.
 				case package_circle.layer is
 					when TOP_SILK =>
-						package_silk_screen.top.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_silk_screen.top.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 
 						circle_silk_screen_properties (TOP, package_silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						package_silk_screen.bottom.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_silk_screen.bottom.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_silk_screen_properties (BOTTOM, package_silk_screen.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_ASSY =>
-						package_assy_doc.top.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_assy_doc.top.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 
 						circle_assy_doc_properties (TOP, package_assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						package_assy_doc.bottom.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_assy_doc.bottom.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_assy_doc_properties (BOTTOM, package_assy_doc.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_KEEP =>
-						package_keepout.top.circles.append ((pac_shapes.type_circle (package_circle) with filled => NO)); 
+						package_keepout.top.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with filled => NO)); 
 						
 						circle_keepout_properties (TOP, package_keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						package_keepout.bottom.circles.append ((pac_shapes.type_circle (package_circle) with filled => NO)); 
+						package_keepout.bottom.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with filled => NO)); 
 						
 						circle_keepout_properties (BOTTOM, package_keepout.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_COPPER => 
-						package_copper.top.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_copper.top.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width));
 
 						circle_copper_properties (TOP, package_copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						package_copper.bottom.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_copper.bottom.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width));
 
 						circle_copper_properties (BOTTOM, package_copper.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_STOP =>
-						package_stop_mask.top.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_stop_mask.top.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 
 						circle_stop_mask_properties (TOP, package_stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						package_stop_mask.bottom.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_stop_mask.bottom.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_stop_mask_properties (BOTTOM, package_stop_mask.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_PASTE =>
-						package_stencil.top.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_stencil.top.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_stencil_properties (TOP, package_stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						package_stencil.bottom.circles.append ((pac_shapes.type_circle (package_circle) with
+						package_stencil.bottom.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_stencil_properties (BOTTOM, package_stencil.bottom.circles.last, log_threshold + 1);
@@ -3824,7 +3824,7 @@ package body et_kicad_pcb is
 			-- This is layout related stuff.
 			
 				-- This cursor points to the last inserted terminal:
-				terminal_cursor : et_kicad_pcb.type_terminals.cursor;
+				terminal_cursor : type_terminals.cursor;
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
 
@@ -4111,8 +4111,8 @@ package body et_kicad_pcb is
 				-- Otherwise abort due to a duplicated usage:
 				if terminal_inserted then
 					et_terminals.terminal_properties (
-						terminal		=> et_terminals.type_terminal (et_kicad_pcb.type_terminals.element (terminal_cursor)),
-						name			=> et_kicad_pcb.type_terminals.key (terminal_cursor),
+						terminal		=> et_terminals.type_terminal (type_terminals.element (terminal_cursor)),
+						name			=> type_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);
 
 					-- Whether the terminal is connected with a net or not, can be followed by the lenght of
@@ -4236,7 +4236,7 @@ package body et_kicad_pcb is
 					container	=> board.segments,
 					new_item	=> segment);
 
-				log (text => "segment " & to_string (pac_shapes.type_line (segment)) & -- start and end point
+				log (text => "segment " & to_string (et_terminals.pac_shapes.type_line (segment)) & -- start and end point
 					 " width" & pac_geometry_brd.to_string (segment.width) &
 					 " layer" & to_string (segment.layer) &
 					 " net_id" & to_string (segment.net_id) &
@@ -4651,7 +4651,7 @@ package body et_kicad_pcb is
 
 		-- Here the board data goes. 
 		-- CS: If Kicad supports multi boards some day, this must become a list of boards.
-		board : et_kicad_pcb.type_board;
+		board : type_board;
 
 		procedure merge_board_and_schematic (log_threshold : in type_log_level) is
 		-- Merges the board with the schematic module.
@@ -4724,19 +4724,20 @@ package body et_kicad_pcb is
 			procedure add_board_objects (
 			-- Adds board objects to the schematic module.
 				mod_name : in kicad_coordinates.type_submodule_name.bounded_string;
-				module   : in out et_kicad.type_module) is
+				module   : in out type_module) is
 
 				-- The nets of the module are copied here (in their present state):
-				use et_kicad.type_nets;
-				nets 		: et_kicad.type_nets.map := module.nets;
-				net_cursor	: et_kicad.type_nets.cursor := nets.first;
+				use type_nets;
+				nets 		: et_kicad.schematic.type_nets.map := module.nets;
+				net_cursor	: et_kicad.schematic.type_nets.cursor := nets.first;
 				
 				net_id		: type_net_id; -- the net id used by kicad
 
 				-- The components of the module are copied here (in their present state):
-				use et_kicad.type_components_schematic;
-				components			: et_kicad.type_components_schematic.map := module.components;
-				component_cursor	: et_kicad.type_components_schematic.cursor := components.first;
+				use schematic;
+				use schematic.type_components_schematic;
+				components			: type_components_schematic.map := module.components;
+				component_cursor	: type_components_schematic.cursor := components.first;
 
 				use type_packages_board;
 				package_cursor		: type_packages_board.cursor;
@@ -4751,10 +4752,10 @@ package body et_kicad_pcb is
 					net_cursor : type_netlist.cursor := board.netlist.first;
 					id : type_net_id; -- to be returned
 					
-					use et_kicad.type_ports_with_reference;
-					portlist : et_kicad.type_ports_with_reference.set;
-					port : et_kicad.type_port_with_reference;
-					terminal : et_devices.type_terminal;
+					use type_ports_with_reference;
+					portlist	: type_ports_with_reference.set;
+					port		: schematic.type_port_with_reference;
+					terminal	: et_devices.type_terminal;
 					net_name_in_board : type_net_name.bounded_string;
 				begin -- to_net_id
 
@@ -4780,7 +4781,7 @@ package body et_kicad_pcb is
 
 						
 					else -- The net has no explicitely given name. the name is something like N$56.
-						portlist := et_kicad.real_components_in_net (module => mod_name, net => name, log_threshold => log_threshold + 4);
+						portlist := real_components_in_net (module => mod_name, net => name, log_threshold => log_threshold + 4);
 						-- Returns a list of component ports that are connected with the given net.
 
 						-- Load the first port of the portlist. 
@@ -4788,7 +4789,7 @@ package body et_kicad_pcb is
 						port := element (portlist.first);
 
 						-- The physical terminal name must be obtained now:
-						terminal := et_kicad.to_terminal (port, mod_name, log_threshold + 4);
+						terminal := to_terminal (port, mod_name, log_threshold + 4);
 
 						-- Terminal contains the component reference (like IC45) and the
 						-- physical terminal name (like G7).
@@ -4989,7 +4990,7 @@ package body et_kicad_pcb is
 				procedure add_route (
 				-- adds routing information to the schematic module
 					net_name	: in type_net_name.bounded_string;
-					net			: in out et_kicad.type_net) is
+					net			: in out schematic.type_net) is
 				begin
 					net.route := route (net_id);
 				end add_route;
@@ -4997,7 +4998,7 @@ package body et_kicad_pcb is
 				procedure update_component_in_schematic (
 				-- Updates the component in the schematic with position, text placeholders
 					comp_ref	: in type_name;
-					component	: in out et_kicad.type_component_schematic) is
+					component	: in out type_component_schematic) is
 				begin
 					component.position := package_position;
 					component.text_placeholders := text_placeholders;
@@ -5115,8 +5116,8 @@ package body et_kicad_pcb is
 					nets_of_class		: type_nets_of_class.list;
 					net_cursor_board	: type_nets_of_class.cursor;
 
-					use et_kicad.type_nets;
-					net_cursor_schematic : et_kicad.type_nets.cursor;
+					use schematic.type_nets;
+					net_cursor_schematic : schematic.type_nets.cursor;
 
 					function to_net_name (net_name_in : in type_net_name.bounded_string)
 					-- Translates from an anonymous kicad net name like "Net-(IC2-Pad11)" to an 
@@ -5183,7 +5184,7 @@ package body et_kicad_pcb is
 						-- terminal_name -- E14
 
 						-- Get the name of the net connected with the given terminal:
-						net_name_out := et_kicad.connected_net (mod_name, package_name, terminal_name, log_threshold + 4);
+						net_name_out := connected_net (mod_name, package_name, terminal_name, log_threshold + 4);
 
 						log_indentation_up;
 						log (text => "the " & et_general.system_name & " net name is " 
@@ -5197,7 +5198,7 @@ package body et_kicad_pcb is
 					procedure set_net_class (
 					-- Sets the class of the given net in the schematic module.
 						net_name	: in type_net_name.bounded_string;
-						net 		: in out et_kicad.type_net) is
+						net 		: in out schematic.type_net) is
 					begin
 						net.class := key (net_class_cursor_board);
 						log (text => " net name " & et_general.to_string (net_name), level => log_threshold + 3);
@@ -5228,12 +5229,12 @@ package body et_kicad_pcb is
 							-- If it could not be found, it is an anonymous net. The name "Net-(IC2-Pad11)" must then
 							-- be translated to the anonymous ET net name like "N$45".
 							net_cursor_schematic := module.nets.find (element (net_cursor_board));
-							if net_cursor_schematic = et_kicad.type_nets.no_element then
+							if net_cursor_schematic = schematic.type_nets.no_element then
 								-- anonymous net -> translate to ET notation
 								net_cursor_schematic := module.nets.find (to_net_name (element (net_cursor_board)));
 							end if;
 						
-							et_kicad.type_nets.update_element (
+							schematic.type_nets.update_element (
 								container	=> module.nets, -- the current schematic module
 								position	=> net_cursor_schematic, -- the current net
 								process		=> set_net_class'access); -- set the net class
@@ -5290,6 +5291,7 @@ package body et_kicad_pcb is
 				end transfer_floating_polygons;
 
 				use et_symbols;
+				use schematic.type_nets;
 				
 			begin -- add_board_objects
 				-- General board stuff (not related to any components) is
@@ -5305,7 +5307,7 @@ package body et_kicad_pcb is
 
 				-- segments, vias and polygons (only those polygons that are connected with a net)
 				log_indentation_up;
-				while net_cursor /= et_kicad.type_nets.no_element loop
+				while net_cursor /= schematic.type_nets.no_element loop
 
 					-- We are interested in nets that have more than one terminal connected.
 					-- Nets with less than two terminals do not appear in a kicad board file and must be skipped here.
@@ -5314,7 +5316,7 @@ package body et_kicad_pcb is
 					-- The Kicad notation like "Net-(X1-Pad5)" is NOT used !!!
 					-- The id of a name-less net (like N$5) can be obtained still, by looking up the terminals
 					-- of a component package. See details in procedure to_net_id.
-					if et_kicad.real_components_in_net (
+					if real_components_in_net (
 						module			=> mod_name,
 						net 			=> key (net_cursor),
 						log_threshold	=> log_threshold + 4).length > 1 then
@@ -5325,7 +5327,7 @@ package body et_kicad_pcb is
 								 to_string (net_id), level => log_threshold + 2);
 
 							-- add route (segments and vias) to module.nets (see et_schematic type_module)
-							et_kicad.type_nets.update_element (
+							schematic.type_nets.update_element (
 								container	=> module.nets,
 								position	=> find (module.nets, key (net_cursor)),
 								process		=> add_route'access);
@@ -5338,11 +5340,11 @@ package body et_kicad_pcb is
 				transfer_net_classes;
 
 				-- update package positions in schematic module
-				while component_cursor /= et_kicad.type_components_schematic.no_element loop -- (cursor points to schematic components)
+				while component_cursor /= type_components_schematic.no_element loop -- (cursor points to schematic components)
 
 					-- We are interested in real components only. Virtual schematic components
 					-- do not appear in a board and thus are skipped.
-					if element (component_cursor).appearance = PCB then
+					if element (component_cursor).appearance = et_symbols.PCB then
 
 						-- set package reference as the component reference (from schematic)
 						package_reference := key (component_cursor);
@@ -5374,7 +5376,7 @@ package body et_kicad_pcb is
 								text_placeholders := to_placeholders;
 								
 								-- update component in schematic module
-								et_kicad.type_components_schematic.update_element (
+								type_components_schematic.update_element (
 									container 	=> module.components,
 									position	=> find (module.components, package_reference),
 									process		=> update_component_in_schematic'access);
@@ -5413,8 +5415,8 @@ package body et_kicad_pcb is
 		begin -- merge_board_and_schematic
 			log (text => "merging board and schematic ...", level => log_threshold + 1);
 
-			et_kicad.modules.update_element (
-				position	=> et_kicad.module_cursor,
+			modules.update_element (
+				position	=> module_cursor,
 				process		=> add_board_objects'access);
 
 			exception
@@ -5428,7 +5430,7 @@ package body et_kicad_pcb is
 
 		procedure set_board_available_flag (
 			module_name	: in kicad_coordinates.type_submodule_name.bounded_string;
-			module		: in out et_kicad.type_module) is
+			module		: in out type_module) is
 		begin
 			module.board_available := et_schematic.TRUE;
 		end set_board_available_flag;
@@ -5451,7 +5453,7 @@ package body et_kicad_pcb is
 				-- Store a single line in variable "line"
 				line := et_string_processing.read_line (
 						line 			=> get_line,
-						comment_mark	=> et_kicad.comment_mark,
+						comment_mark	=> comment_mark,
 						test_whole_line	=> false, -- comment marks at begin of line matter
 						number 			=> ada.text_io.line (current_input),
 						ifs 			=> latin_1.space); -- fields are separated by space
@@ -5472,8 +5474,8 @@ package body et_kicad_pcb is
 
 				-- Now the board file has been read AND it is not a dummy:
 				--  - Set the board_available flag in the module (By default it is cleared).
-				et_kicad.modules.update_element (
-					position	=> et_kicad.module_cursor,
+				modules.update_element (
+					position	=> module_cursor,
 					process		=> set_board_available_flag'access);
 
 				-- do the merge
@@ -5490,22 +5492,21 @@ package body et_kicad_pcb is
 	procedure read_boards (log_threshold : in et_string_processing.type_log_level) is
 	-- Imports layout files. The files to be imported are named after the schematic modules.
 	-- The schematic modules are indicated by module_cursor.
-		use et_kicad.type_modules;
+		use type_modules;
 		use et_string_processing;
 		use ada.directories;
-		use et_kicad;
 	begin
 		-- We start with the first module of the modules.
 		module_cursor := modules.first;
 
 		-- Process one module after another.
 		-- module_cursor points to the module.
-		while module_cursor /= et_kicad.type_modules.no_element loop
+		while module_cursor /= type_modules.no_element loop
 			log (text => "module " & kicad_coordinates.to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 	
 			-- read the layout file
-			et_kicad_pcb.read_board (
+			read_board (
 				file_name => compose (
 						name 		=> kicad_coordinates.to_string (key (module_cursor)),
 						extension	=> file_extension_board),
@@ -5574,7 +5575,7 @@ package body et_kicad_pcb is
 	end terminal_count;
 	
 	
-end et_kicad_pcb;
+end et_kicad.pcb;
 
 -- Soli Deo Gloria
 
