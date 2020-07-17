@@ -51,6 +51,33 @@ package et_kicad_general is
 	system_name	: constant string := "KiCad";
 
 	comment_mark : constant string := "#";
+
+	
+-- V4
+	pcb_new_version_4_0_7		: constant string := "4.0.7";
+	pcb_file_format_version_4	: constant string := "4";
+	
+	host_name_pcbnew			: constant string := "pcbnew";
+
+-- V5
+	pcb_new_version_5_0_0		: constant string := "5.0.0-5.0.0"; -- CS update version number or find better solution
+	-- Newly created projects without a board have a line like:
+	--  (kicad_pcb (version 4) (host kicad "dummy file") )
+	-- For this reason we need a constant:
+	host_name_pcbnew_dummy_v5	: constant string := "kicad";
+
+
+    encoding_default 					: constant string := "utf-8";	
+
+	file_extension_project   			: constant string := "pro";
+	file_extension_schematic 			: constant string := "sch";
+	file_extension_schematic_lib		: constant string := "lib";
+	file_extension_board	 			: constant string := "kicad_pcb";
+
+	schematic_version_v4	: constant positive := 2; -- CS use dedicated type for schematic version
+    schematic_version_v5	: constant positive := 4;
+
+	
 	
 	-- If lines of a file are to be collected we use this simple list:
 	package pac_lines_of_file is new doubly_linked_lists (
@@ -59,7 +86,7 @@ package et_kicad_general is
 
 
 	
-	-- TIMESTAMP
+-- TIMESTAMP
 	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
 	type type_timestamp is new string (1..8); -- like "3459A3C1"
 	timestamp_default : constant type_timestamp := "00000000";
@@ -67,7 +94,8 @@ package et_kicad_general is
 	procedure check_timestamp (timestamp : in type_timestamp);
 	-- Checks the given timestamp for valid characters and plausible time.
 
-	-- LIBRARIES
+	
+-- LIBRARIES
 	-- To handle library paths we (mis)use type_device_model_file 
 	-- and type_package_model_file under different names:
 	package type_package_library_name renames et_packages.type_package_model_file;

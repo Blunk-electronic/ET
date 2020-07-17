@@ -65,7 +65,6 @@ with et_symbols;				--use et_symbols;
 with et_devices;				use et_devices;
 with et_frames;
 
--- with et_kicad_pcb;				use et_kicad_pcb;
 with et_kicad_libraries;		use et_kicad_libraries;
 with et_kicad_packages;			use et_kicad_packages;
 

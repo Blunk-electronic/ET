@@ -35,25 +35,6 @@
 --   history of changes:
 --
 --   ToDo:
---		1. Warning if virtual component pins apply for all units. Usually 
---			virtual components (such as power flags) have only one unit. If the
---			check "common to all units in component" is set, ET generates an
---			extra unit. Why ? ET assumes the affeced pin is a power pin. Power pins
---			in turn are assigned to an extra unit (in EAGLE we speak of "supply symbols").
---		2. Warning if virtual component with one power pin has pin direction differing from power_out
---			Example: Power symbol "P3V3" must have pin direction power_out.	
-
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.directories;			use ada.directories;
-with ada.exceptions; 			use ada.exceptions;
-with ada.environment_variables;
-
-with et_conventions;
--- with et_kicad.pcb;				--use et_kicad.pcb;
 
 package body et_kicad is
 

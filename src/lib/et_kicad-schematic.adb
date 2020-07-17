@@ -2074,6 +2074,8 @@ package body et_kicad.schematic is
 					log_indentation_down;
 				end locate_libraries;
 
+				project_file_handle : ada.text_io.file_type;
+				
 			begin -- read_proj_v4
 				log (
 					text => "V4 project file is " 
