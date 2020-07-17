@@ -7913,10 +7913,11 @@ package body et_kicad.schematic is
 			log_indentation_up;			
 
 			-- log particular library to be searched in.
-			log (text => "generic name " & enclose_in_quotes (
-					to_string (element (component_cursor_sch).generic_name) 
-					& " in " & et_devices.to_string (element (component_cursor_sch).library_name)),
-					level => log_threshold + 2);
+			log (text => "generic name " 
+				& enclose_in_quotes (to_string (element (component_cursor_sch).generic_name)) 
+				& " in " 
+				& enclose_in_quotes (et_devices.to_string (element (component_cursor_sch).library_name)),
+				level => log_threshold + 2);
 
 			-- Set cursor of the generic model in library. If cursor is empty, the component
 			-- is not there -> error and abort.
