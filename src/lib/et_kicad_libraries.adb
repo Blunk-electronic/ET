@@ -238,7 +238,7 @@ package body et_kicad_libraries is
 
 	function to_string (
 		no_connection_flag	: in type_no_connection_flag;
-		scope				: in kicad_coordinates.type_scope) return string is
+		scope				: in et_kicad_coordinates.type_scope) return string is
 	-- Returns the position of the given no-connection-flag as string.
 	begin	
 		return (to_string (position => no_connection_flag.coordinates, scope => scope));
@@ -3549,7 +3549,7 @@ package body et_kicad_libraries is
 		use et_text;
 	begin
 		log (text => "text note" & to_string (
-			position => note.position, scope => kicad_coordinates.XY), level => log_threshold);
+			position => note.position, scope => et_kicad_coordinates.XY), level => log_threshold);
 
 		log_indentation_up;
 

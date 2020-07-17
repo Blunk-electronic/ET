@@ -43,7 +43,7 @@ with ada.exceptions;
 with ada.numerics.generic_elementary_functions;
 with et_string_processing;
 
-package body kicad_coordinates is
+package body et_kicad_coordinates is
 	
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is begin
 		return type_schematic_file_name.to_string (schematic);
@@ -289,7 +289,7 @@ package body kicad_coordinates is
 	end set_sheet;
 
 	
-end kicad_coordinates;
+end et_kicad_coordinates;
 
 -- Soli Deo Gloria
 

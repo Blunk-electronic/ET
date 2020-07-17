@@ -49,7 +49,7 @@ with et_string_processing;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
-package kicad_coordinates is
+package et_kicad_coordinates is
 	
 	schematic_file_name_length : constant positive := 100; -- includes extension
 	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); 
@@ -130,7 +130,7 @@ package kicad_coordinates is
 		end record;
 
 		
-end kicad_coordinates;
+end et_kicad_coordinates;
 
 -- Soli Deo Gloria
 

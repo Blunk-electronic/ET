@@ -68,7 +68,7 @@ package body et_kicad.schematic is
 	begin
 		-- CS: test if given submodule has an extension. if not return
 		-- submodule as it is.
-		return to_submodule_name (base_name (kicad_coordinates.to_string (file_name)));
+		return to_submodule_name (base_name (et_kicad_coordinates.to_string (file_name)));
 	end to_submodule_name;
 
 	-- Here we append a sheet name to the path_to_sheet.
@@ -122,7 +122,7 @@ package body et_kicad.schematic is
 	-- The unit is an element in the given list of units.
 		name 	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
-		return kicad_coordinates.type_position is
+		return et_kicad_coordinates.type_position is
 		unit_cursor : type_units_schematic.cursor;
 	begin
 		unit_cursor := type_units_schematic.find (container => units, key => name);
@@ -436,7 +436,7 @@ package body et_kicad.schematic is
 
 	function to_string (
 		no_connection_flag	: in type_no_connection_flag;
-		scope				: in kicad_coordinates.type_scope) return string is
+		scope				: in et_kicad_coordinates.type_scope) return string is
 	-- Returns the position of the given no-connection-flag as string.
 	begin	
 		return (to_string (position => no_connection_flag.coordinates, scope => scope));
@@ -1190,7 +1190,7 @@ package body et_kicad.schematic is
 				if log_level >= log_threshold + 2 then
 					log_indentation_up;
 					log (text => "strand at " & to_string (
-						position => element (strand).position, scope => kicad_coordinates.MODULE));
+						position => element (strand).position, scope => et_kicad_coordinates.MODULE));
 					log_indentation_down;
 				end if;
 				
@@ -1227,7 +1227,7 @@ package body et_kicad.schematic is
 					if anonymous (element (strand).name) then
 						log (WARNING, "net " & et_general.to_string (element (strand).name) 
 							& " at" & to_string (
-								position => element (strand).position, scope => kicad_coordinates.MODULE)
+								position => element (strand).position, scope => et_kicad_coordinates.MODULE)
 							& " has no dedicated name !");
 					end if;
 
@@ -1815,7 +1815,7 @@ package body et_kicad.schematic is
 				while strand /= type_strands.no_element loop
 					log (text => "strand #" & trim (count_type'image (strand_number), left) &
 						 " at" & to_string (
-							position => element (strand).position, scope => kicad_coordinates.MODULE)
+							position => element (strand).position, scope => et_kicad_coordinates.MODULE)
 						);
 
 					query_element (
@@ -3133,7 +3133,7 @@ package body et_kicad.schematic is
 					
 					log (text => to_string (
 							segment	=> type_wild_segments.element (segment_cursor),
-							scope	=> kicad_coordinates.XY),
+							scope	=> et_kicad_coordinates.XY),
 						 level => log_threshold + 1);
 
 					scratch := type_net_segment (type_wild_segments.element (segment_cursor));
@@ -3153,7 +3153,7 @@ package body et_kicad.schematic is
 				return type_same_coord_result is
 
 				sc : type_same_coord_result;
-				line_start, line_end : kicad_coordinates.type_position;
+				line_start, line_end : et_kicad_coordinates.type_position;
 				s, e : boolean; -- indicate the end point, that has been processed already
 				untouched, half_processed : boolean; -- indicate whether a segment is completely untouched or processed in only one direction
 
@@ -4857,7 +4857,7 @@ package body et_kicad.schematic is
 
 				procedure warn is begin 
 					log (WARNING, " text note at " 
-						& kicad_coordinates.to_string (position => note.position, scope => SHEET) 
+						& et_kicad_coordinates.to_string (position => note.position, scope => SHEET) 
 						& " might be misplaced !");
 				end;
 				
@@ -5000,7 +5000,7 @@ package body et_kicad.schematic is
 				
 				alternative_references		: type_alternative_references.list;
 				unit_name					: type_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
-				position					: kicad_coordinates.type_position;
+				position					: et_kicad_coordinates.type_position;
 				orientation					: et_coordinates.type_rotation;
 				mirror						: type_mirror;
 				timestamp					: type_timestamp; -- 59F202F2
@@ -5531,7 +5531,7 @@ package body et_kicad.schematic is
 					exception
 						when constraint_error =>
 							log (ERROR, "component " & to_string (reference)
-									& " " & kicad_coordinates.to_string (position => position),
+									& " " & et_kicad_coordinates.to_string (position => position),
 								console => true);
 							raise constraint_error;
 					
@@ -6976,7 +6976,7 @@ package body et_kicad.schematic is
 -- 							& to_string (name_after) & " ...",
 -- 							level => 2
 -- 						);
-					log (text => to_string (position => strand.position, scope => kicad_coordinates.MODULE),
+					log (text => to_string (position => strand.position, scope => et_kicad_coordinates.MODULE),
 						level => log_threshold + 1);
 
 					log_indentation_down;
@@ -7138,7 +7138,7 @@ package body et_kicad.schematic is
 				sits_on_segment := true;
 			else
 				log (ERROR, "missing junction at " 
-					& to_string (port.coordinates, kicad_coordinates.MODULE),
+					& to_string (port.coordinates, et_kicad_coordinates.MODULE),
 						console => true);
 				raise constraint_error;
 			end if;
@@ -7539,7 +7539,7 @@ package body et_kicad.schematic is
 			port_cursor : type_ports_library.cursor; 
 
 			unit_name_lib : type_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
-			unit_position : kicad_coordinates.type_position; -- the coordinates of the current unit
+			unit_position : et_kicad_coordinates.type_position; -- the coordinates of the current unit
 			-- CS: external units
 
 			procedure add_port is
@@ -7559,7 +7559,7 @@ package body et_kicad.schematic is
 					ports		: in out type_ports.list) is
 					use type_modules;
 					
-					port_coordinates : kicad_coordinates.type_position;
+					port_coordinates : et_kicad_coordinates.type_position;
 
 					function left_open return type_port_open is
 					-- Returns true if a no-connect-flag sits at the port_coordinates.
@@ -8125,18 +8125,18 @@ package body et_kicad.schematic is
 							if element (port_cursor).direction = POWER_IN then
 								if not connected_by_other_unit then
 									log (ERROR, "power supply not connected at" 
-										& to_string (element (port_cursor).coordinates, kicad_coordinates.MODULE)
+										& to_string (element (port_cursor).coordinates, et_kicad_coordinates.MODULE)
 										& " nor via other units of this component !");
 									raise constraint_error;
 								end if;
 							else
 								log (WARNING, "port not connected at" 
-									& to_string (element (port_cursor).coordinates, kicad_coordinates.MODULE));
+									& to_string (element (port_cursor).coordinates, et_kicad_coordinates.MODULE));
 							end if;
 
 						else
 							log (WARNING, "port not connected at" 
-								& to_string (element (port_cursor).coordinates, kicad_coordinates.MODULE));
+								& to_string (element (port_cursor).coordinates, et_kicad_coordinates.MODULE));
 						end if;
 					end if;
 				
@@ -8730,7 +8730,7 @@ package body et_kicad.schematic is
 
 				type type_junction is record
 					expected : boolean := false;
-					position : kicad_coordinates.type_position;
+					position : et_kicad_coordinates.type_position;
 				end record;
 
 				junction : type_junction;
@@ -8823,7 +8823,7 @@ package body et_kicad.schematic is
 
 						log (text => et_general.to_string (element (strand_cursor_sec).name)
 							& " at " 
-							& to_string (element (strand_cursor_sec).position, scope => kicad_coordinates.MODULE),
+							& to_string (element (strand_cursor_sec).position, scope => et_kicad_coordinates.MODULE),
 							level => log_threshold + 3);
 					
 						query_element (
@@ -8883,7 +8883,7 @@ package body et_kicad.schematic is
 					if junction.expected then
 						if not junction_here then
 							log (WARNING, "missing net junction at " 
-							 & to_string (junction.position, kicad_coordinates.MODULE));
+							 & to_string (junction.position, et_kicad_coordinates.MODULE));
 						end if;
 					end if;
 					
@@ -8902,7 +8902,7 @@ package body et_kicad.schematic is
 			
 				log (text => et_general.to_string (element (strand_cursor_prim).name)
 					& " at " 
-					& to_string (element (strand_cursor_prim).position, scope => kicad_coordinates.MODULE),
+					& to_string (element (strand_cursor_prim).position, scope => et_kicad_coordinates.MODULE),
 					level => log_threshold + 1);
 			
 				-- query segments of current strand
@@ -9024,7 +9024,7 @@ package body et_kicad.schematic is
 
 				if not segment_here then
 					log (WARNING, "orphaned net junction at " 
-						 & to_string (element (junction_cursor).coordinates, kicad_coordinates.MODULE));
+						 & to_string (element (junction_cursor).coordinates, et_kicad_coordinates.MODULE));
 				end if;
 					
 				next (junction_cursor);	
@@ -9183,7 +9183,7 @@ package body et_kicad.schematic is
 			procedure log_misplaced_junction is
 			begin
 				log (WARNING, "misplaced net junction at " 
-					& to_string (element (junction_cursor).coordinates, kicad_coordinates.MODULE));
+					& to_string (element (junction_cursor).coordinates, et_kicad_coordinates.MODULE));
 			end log_misplaced_junction;
 			
 		begin -- query_junctions
@@ -9265,7 +9265,7 @@ package body et_kicad.schematic is
 						while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
 
 							log (text => to_string (element (no_connection_flag_cursor).coordinates, 
-													scope => kicad_coordinates.MODULE),
+													scope => et_kicad_coordinates.MODULE),
 								level => log_threshold + 4);
 						
 							-- now we have element (segment_cursor) 
@@ -9285,7 +9285,7 @@ package body et_kicad.schematic is
 								begin
 									if on_line (type_point (element (no_connection_flag_cursor).coordinates), line) then
 										log (WARNING, "no-connection-flag misplaced on a net at " 
-											& to_string (element (no_connection_flag_cursor).coordinates, kicad_coordinates.MODULE));
+											& to_string (element (no_connection_flag_cursor).coordinates, et_kicad_coordinates.MODULE));
 									end if;
 
 								end;
@@ -9335,7 +9335,7 @@ package body et_kicad.schematic is
 
 				log (text => et_general.to_string (element (strand_cursor).name)
 					& " at " 
-					& to_string (element (strand_cursor).position, scope => kicad_coordinates.MODULE),
+					& to_string (element (strand_cursor).position, scope => et_kicad_coordinates.MODULE),
 					level => log_threshold + 1);
 			
 				-- query segments of current strand
@@ -9434,7 +9434,7 @@ package body et_kicad.schematic is
 				if flag_orphaned then
 					-- no_connection_flag is not placed at any port
 					log (WARNING, "orphaned no_connection_flag found at " 
-						 & to_string (element (no_connection_flag_cursor).coordinates, kicad_coordinates.MODULE));
+						 & to_string (element (no_connection_flag_cursor).coordinates, et_kicad_coordinates.MODULE));
 				end if;
 					
 			end query_portlists;
@@ -9561,7 +9561,7 @@ package body et_kicad.schematic is
 
 	function to_string (
 		junction	: in type_net_junction;
-		scope		: in kicad_coordinates.type_scope) 
+		scope		: in et_kicad_coordinates.type_scope) 
 		return string is
 		-- Returns the position of the given junction as string.
 	begin	
@@ -9581,10 +9581,10 @@ package body et_kicad.schematic is
 	
 	function to_string (
 		segment	: in type_net_segment_base'class;
-		scope 	: in kicad_coordinates.type_scope := kicad_coordinates.SHEET)
+		scope 	: in et_kicad_coordinates.type_scope := et_kicad_coordinates.SHEET)
 		return string is
 	-- Returns the start and end coordinates of the given net segment.
-		use kicad_coordinates;
+		use et_kicad_coordinates;
 	begin
 		return (" start"
 			& to_string (position => segment.coordinates_start, scope => scope)
@@ -9679,7 +9679,7 @@ package body et_kicad.schematic is
 						
 						when UNKNOWN	=> -- CS: verification required
 							log (ERROR, show_net & " has a port with unknown direction at " 
-								& to_string (element (port_cursor).coordinates, scope => kicad_coordinates.MODULE)
+								& to_string (element (port_cursor).coordinates, scope => et_kicad_coordinates.MODULE)
 								& et_schematic.show_danger (et_schematic.not_predictable),
 								console => true
 								);
@@ -9722,7 +9722,7 @@ package body et_kicad.schematic is
 					when 1 =>
 						log (WARNING, "net " & et_general.to_string (key (net_cursor)) 
 							& " has only one port at "
-							& to_string (element (ports.first).coordinates, scope => kicad_coordinates.MODULE));
+							& to_string (element (ports.first).coordinates, scope => et_kicad_coordinates.MODULE));
 
 						-- warn about single inputs
 						if input_count = 1 then
@@ -10111,7 +10111,7 @@ package body et_kicad.schematic is
 										log (text => "probing " & to_string (component) 
 											& " port " & to_string (element (port_cursor).name)
 											& latin_1.space
-											& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
+											& to_string (position => element (port_cursor).coordinates, scope => et_kicad_coordinates.MODULE),
 											level => log_threshold + 5);
 
 										-- test if port sits on segment
@@ -10121,7 +10121,7 @@ package body et_kicad.schematic is
 											log (text => "connected with " & to_string (component) 
 												& " port " & to_string (element (port_cursor).name)
 												& latin_1.space
-												& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
+												& to_string (position => element (port_cursor).coordinates, scope => et_kicad_coordinates.MODULE),
 												level => log_threshold + 3);
 											
 											log_indentation_down;
@@ -10181,7 +10181,7 @@ package body et_kicad.schematic is
 
 						-- log strand coordinates
 						log (text => "strand " & to_string (element (strand_cursor).position, 
-									scope => kicad_coordinates.MODULE),
+									scope => et_kicad_coordinates.MODULE),
 							 level => log_threshold + 3);
 
 						query_element (
@@ -11402,7 +11402,7 @@ package body et_kicad.schematic is
 		use et_text;
 	begin
 		log (text => "text note" & to_string (
-			position => note.position, scope => kicad_coordinates.XY), level => log_threshold);
+			position => note.position, scope => et_kicad_coordinates.XY), level => log_threshold);
 
 		log_indentation_up;
 

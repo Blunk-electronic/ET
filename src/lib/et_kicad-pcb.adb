@@ -4718,7 +4718,7 @@ package body et_kicad.pcb is
 			
 			procedure add_board_objects (
 			-- Adds board objects to the schematic module.
-				mod_name : in kicad_coordinates.type_submodule_name.bounded_string;
+				mod_name : in et_kicad_coordinates.type_submodule_name.bounded_string;
 				module   : in out type_module) is
 
 				-- The nets of the module are copied here (in their present state):
@@ -5424,7 +5424,7 @@ package body et_kicad.pcb is
 		end merge_board_and_schematic;
 
 		procedure set_board_available_flag (
-			module_name	: in kicad_coordinates.type_submodule_name.bounded_string;
+			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			module.board_available := et_schematic.TRUE;
@@ -5498,14 +5498,14 @@ package body et_kicad.pcb is
 		-- Process one module after another.
 		-- module_cursor points to the module.
 		while module_cursor /= type_modules.no_element loop
-			log (text => "module " & enclose_in_quotes (kicad_coordinates.to_string (key (module_cursor))),
+			log (text => "module " & enclose_in_quotes (et_kicad_coordinates.to_string (key (module_cursor))),
 				 level => log_threshold);
 			log_indentation_up;
 	
 			-- read the layout file
 			read_board (
 				file_name => compose (
-						name 		=> kicad_coordinates.to_string (key (module_cursor)),
+						name 		=> et_kicad_coordinates.to_string (key (module_cursor)),
 						extension	=> file_extension_board),
 				log_threshold 	=> log_threshold + 1);
 

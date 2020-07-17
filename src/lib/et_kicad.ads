@@ -36,7 +36,7 @@
 --
 
 with et_general;				use et_general;
-with kicad_coordinates;			use kicad_coordinates;
+with et_kicad_coordinates;		use et_kicad_coordinates;
 with et_string_processing;		use et_string_processing;
 with et_kicad_libraries;		use et_kicad_libraries;
 with et_kicad_packages;			use et_kicad_packages;

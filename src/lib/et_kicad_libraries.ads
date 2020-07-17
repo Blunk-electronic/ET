@@ -52,7 +52,7 @@ with et_terminals;
 with et_packages;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;
-with kicad_coordinates;			use kicad_coordinates;
+with et_kicad_coordinates;		use et_kicad_coordinates;
 
 with et_import;
 with et_coordinates;			use et_coordinates;
@@ -138,7 +138,7 @@ package et_kicad_libraries is
 	
 	-- A text/note in the schematic:
 	type type_text is new type_text_basic with record
-		position	: kicad_coordinates.type_position;
+		position	: et_kicad_coordinates.type_position;
 	end record;
 
 	function content (text : in type_text_placeholder) return string;
@@ -446,7 +446,7 @@ package et_kicad_libraries is
 
 	-- No-connection-flags indicate that a component port is intentionally left unconnected.
 	type type_no_connection_flag is record
-		coordinates : kicad_coordinates.type_position;
+		coordinates : et_kicad_coordinates.type_position;
 		-- CS: processed flag
 	end record;
 
@@ -455,7 +455,7 @@ package et_kicad_libraries is
 
 	function to_string (
 		no_connection_flag	: in type_no_connection_flag;
-		scope				: in kicad_coordinates.type_scope) return string;
+		scope				: in et_kicad_coordinates.type_scope) return string;
 	-- Returns the position of the given no-connection-flag as string.
 
 	type type_port_open is new boolean;
@@ -464,7 +464,7 @@ package et_kicad_libraries is
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
 		name			: et_symbols.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
-		coordinates 	: kicad_coordinates.type_position;
+		coordinates 	: et_kicad_coordinates.type_position;
 		direction		: type_port_direction; -- example: "passive"
 		style			: type_port_style;
 		appearance		: et_schematic.type_appearance_schematic;
