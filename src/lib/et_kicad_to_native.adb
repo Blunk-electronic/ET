@@ -2409,6 +2409,9 @@ package body et_kicad_to_native is
 			use et_symbols;
 			
 		begin -- copy_components
+			log (text => "copying schematic devices ...", level => log_threshold + 1);
+			log_indentation_up;
+			
 			-- load a copy of kicad schematic components
 			components_kicad := element (module_cursor_kicad).components;
 			
@@ -2416,7 +2419,7 @@ package body et_kicad_to_native is
 			component_cursor_kicad := components_kicad.first;
 			while component_cursor_kicad /= et_kicad.schematic.type_components_schematic.no_element loop
 
-				log (text => "component " & to_string (key (component_cursor_kicad)), level => log_threshold + 2);
+				log (text => to_string (key (component_cursor_kicad)), level => log_threshold + 2);
 				
 				-- depending on the appearance of the kicad component, we create a virtual or real 
 				-- component in the native schematic module.
@@ -2443,6 +2446,18 @@ package body et_kicad_to_native is
 							inserted	=> component_inserted); -- should always be true
 
 					when PCB =>
+-- 						log (text => "placeholders silk top" & count_type'image (et_packages.pac_text_placeholders.length (
+-- 							element (component_cursor_kicad).text_placeholders.silk_screen.top)));
+-- 
+-- 						log (text => "placeholders silk bottom" & count_type'image (et_packages.pac_text_placeholders.length (
+-- 							element (component_cursor_kicad).text_placeholders.silk_screen.bottom)));
+-- 
+-- 						log (text => "placeholders assy top" & count_type'image (et_packages.pac_text_placeholders.length (
+-- 							element (component_cursor_kicad).text_placeholders.assy_doc.top)));
+-- 
+-- 						log (text => "placeholders assy bottom" & count_type'image (et_packages.pac_text_placeholders.length (
+-- 							element (component_cursor_kicad).text_placeholders.assy_doc.bottom)));
+						
 						et_schematic.type_devices.insert (
 							container	=> module.devices,
 							key			=> key (component_cursor_kicad), -- IC308, R12
@@ -2476,6 +2491,8 @@ package body et_kicad_to_native is
 				next (component_cursor_kicad);
 
 			end loop;
+
+			log_indentation_down;
 		end copy_components;
 
 		procedure copy_nets is

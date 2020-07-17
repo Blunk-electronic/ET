@@ -46,8 +46,6 @@ with et_geometry;				use et_geometry;
 with et_pcb_stack;
 with et_symbols;
 
-with et_string_processing;		use et_string_processing;
-
 package body et_kicad.pcb is
 
 	use et_general.type_net_name;
@@ -1168,7 +1166,7 @@ package body et_kicad.pcb is
 			-- Argument complete. Increment argument counter of section.
 			section.arg_counter := section.arg_counter + 1;
 			
-			log (text => "arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), level => log_threshold + 4);
+			log (text => "arg:" & to_string (section.arg_counter) & space & to_string (arg), level => log_threshold + 4);
 
 			-- Validate arguments according to current section and the parent section.
 			-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
@@ -4139,7 +4137,6 @@ package body et_kicad.pcb is
 				use et_packages;
 				use et_text;
 			begin
-				
 				-- Since there is no alignment information provided, use default values:
 				package_text.alignment := (horizontal => CENTER, vertical => BOTTOM);
 
@@ -5434,7 +5431,7 @@ package body et_kicad.pcb is
 		end set_board_available_flag;
 		
 	begin -- read_board
-		log (text => "reading board file " & file_name & " ...", level => log_threshold);
+		log (text => "reading board file " & enclose_in_quotes (file_name) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		if ada.directories.exists (file_name) then
@@ -5481,7 +5478,8 @@ package body et_kicad.pcb is
 			end if;
 			
 		else
-			log (text => "board file " & file_name & " not available. nothing to do.", level => log_threshold);
+			log (text => "board file " & enclose_in_quotes (file_name)
+				 & " not available. nothing to do.", level => log_threshold);
 		end if;
 		
 		log_indentation_down;
@@ -5500,7 +5498,8 @@ package body et_kicad.pcb is
 		-- Process one module after another.
 		-- module_cursor points to the module.
 		while module_cursor /= type_modules.no_element loop
-			log (text => "module " & kicad_coordinates.to_string (key (module_cursor)), level => log_threshold);
+			log (text => "module " & enclose_in_quotes (kicad_coordinates.to_string (key (module_cursor))),
+				 level => log_threshold);
 			log_indentation_up;
 	
 			-- read the layout file

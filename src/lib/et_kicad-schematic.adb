@@ -61,14 +61,13 @@ package body et_kicad.schematic is
 
 
 	
+	-- Returns the base name of the given schematic file name as submodule name.
 	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
 		return type_submodule_name.bounded_string is
-	-- Returns the base name of the given schematic file name as submodule name.
 		use ada.directories;
 	begin
 		-- CS: test if given submodule has an extension. if not return
 		-- submodule as it is.
-		--return to_bounded_string (base_name (et_coordinates.to_string (submodule)));
 		return to_submodule_name (base_name (kicad_coordinates.to_string (file_name)));
 	end to_submodule_name;
 
@@ -6521,8 +6520,6 @@ package body et_kicad.schematic is
 			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
 
 				-- Kicad uses Y axis positive downwards style (in both schematic and board)
--- 				et_coordinates.Y_axis_positive := et_coordinates.downwards;
-				
 				-- Derive top level schematic file name from project name.
 				-- Clears tmp_component_libraries (which is a temparily storage).
 				-- Creates empty component/symbol libraries in tmp_component_libraries.
@@ -6531,9 +6528,16 @@ package body et_kicad.schematic is
 				-- For V5:	Reads sym-lib-tables and stores them in sym_lib_tables.
 				--			Creates empty package libraries in et_kicad_pcb.package_libraries.
 				top_level_schematic	:= read_project_file (log_threshold + 1);
+				log_indentation_up;
 				
-				module_name := to_submodule_name (kicad_coordinates.to_string (top_level_schematic));
+				log (text => "top level schematic is " & enclose_in_quotes (to_string (top_level_schematic)),
+					 level => log_threshold + 2);
+				
+				module_name := to_submodule_name (top_level_schematic);
 
+				log (text => "creating module " & enclose_in_quotes (to_string (module_name)),
+					 level => log_threshold + 2);
+				
 				-- create the module:
 				type_modules.insert (
 					container	=> modules,
@@ -6719,10 +6723,9 @@ package body et_kicad.schematic is
 				log_indentation_up;
 				et_kicad.pcb.read_boards (log_threshold);
 				log_indentation_down;
-
+				
 			when others =>
 				null; -- CS: add import of other CAD kicad formats (v6, v7, ..) here
-
 				
 		end case;
 
@@ -7910,9 +7913,9 @@ package body et_kicad.schematic is
 			log_indentation_up;			
 
 			-- log particular library to be searched in.
-			log (text => "generic name " 
-					& to_string (element (component_cursor_sch).generic_name) 
-					& " in " & et_devices.to_string (element (component_cursor_sch).library_name),
+			log (text => "generic name " & enclose_in_quotes (
+					to_string (element (component_cursor_sch).generic_name) 
+					& " in " & et_devices.to_string (element (component_cursor_sch).library_name)),
 					level => log_threshold + 2);
 
 			-- Set cursor of the generic model in library. If cursor is empty, the component

@@ -36,7 +36,7 @@
 --
 with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
 with ada.strings.maps;			use ada.strings.maps;
@@ -49,7 +49,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_string_processing;
+with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
 with et_general;
 with et_terminals;				use et_terminals;
