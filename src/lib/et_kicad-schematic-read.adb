@@ -1988,7 +1988,7 @@ function read (
 		
 		alternative_references		: type_alternative_references.list;
 		unit_name					: type_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
-		position					: et_kicad_coordinates.type_position;
+		unit_position				: et_kicad_coordinates.type_position;
 		orientation					: et_coordinates.type_rotation;
 		mirror						: type_mirror;
 		timestamp					: type_timestamp; -- 59F202F2
@@ -2012,7 +2012,6 @@ function read (
 		-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text_placeholder
 			text_position : type_point;
 			size : et_kicad_libraries.pac_text.type_text_size;
-
 			use et_text;
 		begin
 			-- test if the field content is longer than allowed:
@@ -2021,6 +2020,10 @@ function read (
 			set (X, mil_to_distance (f (element (line_cursor), 5)), text_position);
 			set (Y, mil_to_distance (f (element (line_cursor), 6)), text_position);
 
+			-- Kicad provides the absolute position of a text placeholder.
+			-- But ET requires the position relative to the unit:
+			text_position := type_point (distance_relative (text_position, type_point (unit_position)));
+			
 			size := mil_to_distance (f (element (line_cursor), 7));
 
 			return (
@@ -2047,8 +2050,8 @@ function read (
 
 				-- build text alignment
 				alignment	=> (
-								horizontal	=> to_alignment_horizontal (f (element (line_cursor), 9)),
-								vertical	=> to_alignment_vertical   (f (element (line_cursor), 10)))
+					horizontal	=> to_alignment_horizontal (f (element (line_cursor), 9)),
+					vertical	=> to_alignment_vertical   (f (element (line_cursor), 10)))
 				);
 		end to_field;
 
@@ -2063,7 +2066,7 @@ function read (
 				log (ERROR,
 						"component " & to_string (reference) 
 						& latin_1.space
-						& to_string (position => position)
+						& to_string (position => unit_position)
 						& latin_1.lf
 						& "text field " & to_string (m) & " missing !",
 					console => true);
@@ -2207,7 +2210,7 @@ function read (
 					others =>
 						log (ERROR, 
 							"invalid field in component " & to_string (reference)
-							& to_string (position => position),
+							& to_string (position => unit_position),
 							console => true);
 						log (text => ada.exceptions.exception_message (event), console => true);
 						-- CS: evaluate prog position and provided more detailled output
@@ -2517,7 +2520,7 @@ function read (
 			exception
 				when constraint_error =>
 					log (ERROR, "component " & to_string (reference)
-							& " " & et_kicad_coordinates.to_string (position => position),
+							& " " & to_string (position => unit_position),
 						console => true);
 					raise constraint_error;
 			
@@ -2543,7 +2546,7 @@ function read (
 						unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...	
 						unit 		=> (
 							appearance		=> VIRTUAL,
-							position		=> position,
+							position		=> unit_position,
 							rotation		=> orientation,
 							mirror			=> mirror,
 							timestamp		=> timestamp,
@@ -2579,7 +2582,7 @@ function read (
 						unit 		=> 
 							(
 							appearance		=> et_symbols.PCB,
-							position		=> position,
+							position		=> unit_position,
 							rotation		=> orientation,
 							mirror			=> mirror,
 							timestamp		=> timestamp,
@@ -2622,7 +2625,7 @@ function read (
 				raise constraint_error;
 			end if;
 			
-			if x (position) /= mil_to_distance (f (line,2)) then
+			if x (unit_position) /= mil_to_distance (f (line,2)) then
 -- 					log (text => "position invalid. expected '" & to_string (position.x) 
 -- 						& "' found '" 
 -- 						& field (line,2)
@@ -2630,7 +2633,7 @@ function read (
 				raise constraint_error; -- CS: write useful message
 			end if;
 
-			if y (position) /= mil_to_distance (f (line,3)) then
+			if y (unit_position) /= mil_to_distance (f (line,3)) then
 				raise constraint_error; -- CS: write useful message
 			end if;
 
@@ -2973,14 +2976,12 @@ function read (
 			-- Read unit coordinates from a line like "P 3200 4500".
 			elsif f (element (line_cursor), 1) = schematic_component_identifier_coord then -- "P"
 			
-				--set_x (position, mil_to_distance (f (element (line_cursor), 2))); -- "3200"
-				set (X, mil_to_distance (f (element (line_cursor), 2)), position); -- "3200"
-				--set_y (position, mil_to_distance (f (element (line_cursor), 3))); -- "4500"
-				set (Y, mil_to_distance (f (element (line_cursor), 3)), position); -- "4500"
+				set (X, mil_to_distance (f (element (line_cursor), 2)), unit_position); -- "3200"
+				set (Y, mil_to_distance (f (element (line_cursor), 3)), unit_position); -- "4500"
 
-				-- The unit coordinates is more than just x/y :
-				set_path (position, path_to_sheet);
-				set_sheet (position, sheet_number);
+				-- The unit coordinates is more than just x/y. We also have path and sheet number:
+				set_path (unit_position, path_to_sheet);
+				set_sheet (unit_position, sheet_number);
 
 			-- Read alternative reference like "AR Path="/59EF082F" Ref="N23"  Part="1"
 			elsif f (element (line_cursor), 1) = schematic_component_identifier_path then -- "AR"
