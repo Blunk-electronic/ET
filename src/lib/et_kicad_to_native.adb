@@ -2544,21 +2544,33 @@ package body et_kicad_to_native is
 					use et_kicad.schematic.type_simple_labels;
 					simple_label_cursor : et_kicad.schematic.type_simple_labels.cursor := segment.label_list_simple.first;
 
+					use et_coordinates;
+					use et_coordinates.pac_geometry_sch;
+
+					-- Simple labels require to be shifted slightly both to the right and up.
+					-- This prevents them to sit directly on the net segment:
+					-- CS: The offset should depend on the direction of the segment.
+					-- Currently this simple minded approach shifts to the right and up
+					-- no matter whether the segment runs horizontally or vertically.
+					offset : constant type_point := type_point (pac_geometry_sch.set (x => 1.0, y => 1.0));
+
+					-- the new label position after applying the offset:
+					simple_label_position : type_point;
+					
 					use et_kicad.schematic.type_tag_labels;
 					tag_label_cursor : et_kicad.schematic.type_tag_labels.cursor := segment.label_list_tag.first;
 
 					-- Kicad label can be rotated by 180 or 270 degree. This function translates 
 					-- to native label rotation:
-					function to_rotation (rk : in et_coordinates.type_rotation) 
+					function to_rotation (rk : in type_rotation) 
 						return et_text.type_rotation_documentation is 
 						use et_text;
-						use et_coordinates;
 						use et_schematic.pac_text;
 					begin
 						if rk = 180.0 then
 							return HORIZONTAL;
 						
-						elsif rk = pac_geometry_sch.zero_rotation then
+						elsif rk = zero_rotation then
 							return HORIZONTAL;
 
 						elsif rk = 270.0 then
@@ -2579,16 +2591,20 @@ package body et_kicad_to_native is
 					
 					-- simple labels
 					while simple_label_cursor /= et_kicad.schematic.type_simple_labels.no_element loop
-
+						
 						log (text => "simple label" & et_kicad.schematic.to_string (
 								label => et_kicad.schematic.type_net_label (element (simple_label_cursor))),
 							level => log_threshold + 5);
-						
+
+						-- move label by offset
+						simple_label_position := element (simple_label_cursor).coordinates;
+						move_by (simple_label_position, offset);
+
 						et_schematic.type_net_labels.append (
 							container	=> labels,
 							new_item	=> (
 								appearance		=> et_schematic.SIMPLE,
-								position		=> element (simple_label_cursor).coordinates,
+								position		=> simple_label_position,
 								rotation_simple	=> to_rotation (rk => element (simple_label_cursor).rotation),
 								size			=> element (simple_label_cursor).size,
 								width			=> element (simple_label_cursor).width)

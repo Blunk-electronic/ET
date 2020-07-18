@@ -1705,7 +1705,7 @@ function read (
 		-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
 		set (X, mil_to_distance (f (element (line_cursor), 3)), label.coordinates);
 		set (Y, mil_to_distance (f (element (line_cursor), 4)), label.coordinates);
-
+		
 		label.rotation := to_angle (f (element (line_cursor), 5));
 		label.size := mil_to_distance (f (element (line_cursor), 6));
 		--label.style := to_text_style (style_in => f (element (line_cursor), 7), text => true);
