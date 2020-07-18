@@ -3321,11 +3321,20 @@ package body et_kicad_to_native is
 						begin -- copy_rectangle
 							-- compute width and height of the rectangle:
 							width  := distance (axis => X, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
+							if width < zero then
+								rectangle.corner_A := type_point (invert (rectangle.corner_A, X));
+								rectangle.corner_B := type_point (invert (rectangle.corner_B, X));
+							end if;
+							
 							height := distance (axis => Y, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
+							if height < zero then
+								rectangle.corner_A := type_point (invert (rectangle.corner_A, Y));
+								rectangle.corner_B := type_point (invert (rectangle.corner_B, Y));
+							end if;
 
 							-- compute corner points of the rectangle:
-							-- corner_A is the lower left corner of the rectangle -> already known by the given rectangle
-							-- corner_B is the upper right corner of the rectangle -> already known by the given rectangle
+							-- corner_A is the lower left corner of the rectangle
+							-- corner_B is the upper right corner of the rectangle
 
 							-- corner_C is the lower right corner:
 							corner_C := type_point (set (

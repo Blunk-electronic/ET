@@ -248,7 +248,7 @@ package et_kicad_libraries is
 	-- It is sufficient to specifiy the diagonal of the rectangle.
 	type type_symbol_rectangle is record
 		corner_A	: type_point;
-		corner_B	: type_point;
+		corner_B	: type_point; -- diagonal to corner_A
 		width		: et_symbols.type_line_width;
 		fill		: type_fill;
 	end record;
