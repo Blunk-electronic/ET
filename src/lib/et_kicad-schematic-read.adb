@@ -1703,11 +1703,7 @@ function read (
 		line_cursor := pac_lines_of_file.first (lines);
 
 		-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
-		--set_path (label.coordinates, path_to_sheet);
-		--set_sheet (label.coordinates, sheet_number);
-		--set_x (label.coordinates, mil_to_distance (f (element (line_cursor), 3)));
 		set (X, mil_to_distance (f (element (line_cursor), 3)), label.coordinates);
-		--set_y (label.coordinates, mil_to_distance (f (element (line_cursor), 4)));
 		set (Y, mil_to_distance (f (element (line_cursor), 4)), label.coordinates);
 
 		label.rotation := to_angle (f (element (line_cursor), 5));
@@ -1784,11 +1780,7 @@ function read (
 			label.global := true;
 		end if;
 
-		--set_path (label.coordinates, path_to_sheet);
-		--set_sheet (label.coordinates, sheet_number);
-		--set_x (label.coordinates, mil_to_distance (f (element (line_cursor), 3)));
 		set (X, mil_to_distance (f (element (line_cursor), 3)), label.coordinates);
-		--set_y (label.coordinates, mil_to_distance (f (element (line_cursor), 4)));
 		set (Y, mil_to_distance (f (element (line_cursor), 4)), label.coordinates);
 
 		label.rotation := to_angle (f (element (line_cursor), 5));
@@ -2026,9 +2018,7 @@ function read (
 			-- test if the field content is longer than allowed:
 			check_text_content_length (f (element (line_cursor), 3));
 			
-			--set_x (text_position, mil_to_distance (f (element (line_cursor), 5)));
 			set (X, mil_to_distance (f (element (line_cursor), 5)), text_position);
-			--set_y (text_position, mil_to_distance (f (element (line_cursor), 6)));
 			set (Y, mil_to_distance (f (element (line_cursor), 6)), text_position);
 
 			size := mil_to_distance (f (element (line_cursor), 7));

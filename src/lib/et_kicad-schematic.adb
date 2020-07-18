@@ -1871,9 +1871,9 @@ package body et_kicad.schematic is
 		o_out : et_coordinates.type_rotation;
 	begin
 		case o_in is
-			when 0 => o_out :=   0.0;
+			when 0 => o_out := 180.0;
 			when 1 => o_out :=  90.0;
-			when 2 => o_out := 180.0;
+			when 2 => o_out :=   0.0;
 			when 3 => o_out := 270.0;
 		end case;
 		return o_out;
