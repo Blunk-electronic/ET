@@ -1864,21 +1864,22 @@ package body et_kicad.schematic is
 		end if;
 	end write_nets;
 
-	function to_angle (text_in : in string) return et_coordinates.type_rotation is
-	-- Converts the label orientation to type_rotation.
+	-- Converts the rotaton of a label or a text to a relative rotation.
+	function to_relative_rotation (text_in : in string) 
+		return et_coordinates.type_rotation_relative is
 	-- CS: use a dedicated type for input parameter.
-		o_in : type_label_orientation := type_label_orientation'value(text_in);
-		o_out : et_coordinates.type_rotation;
+		o_in	: type_label_orientation := type_label_orientation'value (text_in);
+		o_out	: et_coordinates.type_rotation_relative;
 	begin
 		case o_in is
 			when 0 => o_out := 180.0;
 			when 1 => o_out :=  90.0;
 			when 2 => o_out :=   0.0;
-			when 3 => o_out := 270.0;
+			when 3 => o_out := -90.0;
 		end case;
 		return o_out;
 		-- CS: exception handler
-	end to_angle;
+	end to_relative_rotation;
 
 	function to_direction (text_in : in string) 
 		return et_schematic.type_net_label_direction is

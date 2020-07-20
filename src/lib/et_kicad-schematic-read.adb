@@ -1706,7 +1706,7 @@ function read (
 		set (X, mil_to_distance (f (element (line_cursor), 3)), label.coordinates);
 		set (Y, mil_to_distance (f (element (line_cursor), 4)), label.coordinates);
 		
-		label.rotation := to_angle (f (element (line_cursor), 5));
+		label.rotation := to_relative_rotation (f (element (line_cursor), 5));
 		label.size := mil_to_distance (f (element (line_cursor), 6));
 		--label.style := to_text_style (style_in => f (element (line_cursor), 7), text => true);
 		label.width := mil_to_distance (f (element (line_cursor), 8));
@@ -1783,7 +1783,7 @@ function read (
 		set (X, mil_to_distance (f (element (line_cursor), 3)), label.coordinates);
 		set (Y, mil_to_distance (f (element (line_cursor), 4)), label.coordinates);
 
-		label.rotation := to_angle (f (element (line_cursor), 5));
+		label.rotation := to_relative_rotation (f (element (line_cursor), 5));
 		label.direction := to_direction (f (element (line_cursor), 7));
 
 		-- build text attributes from size, font and line width
@@ -1865,7 +1865,7 @@ function read (
 		set (Y, mil_to_distance (f (element (line_cursor), 4)), note.position);
 		
 		--note.rotation := to_angle (f (element (line_cursor), 5));
-		rotation := to_angle (f (element (line_cursor), 5));
+		rotation := to_relative_rotation (f (element (line_cursor), 5));
 
 		-- Notes might be upside down or readable from the left. So we must fit the rotation
 		-- into a range between 0 and 90 degree:

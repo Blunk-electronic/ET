@@ -253,7 +253,8 @@ package et_schematic is
 				direction		: type_net_label_direction;
 
 				-- The tag label can be rotated arbitrary about the position:
-				rotation_tag	: et_coordinates.type_rotation := et_coordinates.pac_geometry_sch.zero_rotation;
+				--rotation_tag	: et_coordinates.type_rotation := et_coordinates.pac_geometry_sch.zero_rotation;
+				rotation_tag	: et_coordinates.type_rotation_relative := et_coordinates.pac_geometry_sch.zero_rotation;
 
 			when SIMPLE =>
 				-- The simple label can be read from the front or from the right:
