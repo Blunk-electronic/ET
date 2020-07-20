@@ -2757,7 +2757,7 @@ package body et_kicad_to_native is
 					use et_kicad.schematic.type_tag_labels;
 					tag_label_cursor : et_kicad.schematic.type_tag_labels.cursor := segment.label_list_tag.first;
 
-					-- Kicad label can be rotated by 180 or 270 degree. This function translates 
+					-- Kicad label can be rotated by 180 or -90 degree. This function translates 
 					-- to native label rotation:
 					function to_rotation (rk : in type_rotation) 
 						return et_text.type_rotation_documentation is 
@@ -2770,7 +2770,7 @@ package body et_kicad_to_native is
 						elsif rk = zero_rotation then
 							return HORIZONTAL;
 
-						elsif rk = 270.0 then
+						elsif rk = -90.0 then
 							return VERTICAL;
 
 						elsif rk = 90.0 then
