@@ -2759,7 +2759,7 @@ package body et_kicad_to_native is
 
 					-- Kicad label can be rotated by 180 or -90 degree. This function translates 
 					-- to native label rotation:
-					function to_rotation (rk : in type_rotation) 
+					function to_rotation (rk : in type_rotation_relative) 
 						return et_text.type_rotation_documentation is 
 						use et_text;
 						use et_schematic.pac_text;
