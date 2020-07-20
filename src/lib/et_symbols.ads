@@ -291,9 +291,10 @@ package et_symbols is
 		position	: type_point; -- this is the point of connection with a net
 		length		: type_port_length := port_length_default; 
 		
-		rotation	: et_coordinates.type_rotation := 0.0; -- CS use type_rotation_relative ?
+		--rotation	: et_coordinates.type_rotation := 0.0; -- CS use type_rotation_relative ?
+		rotation	: et_coordinates.type_rotation_relative := 0.0;
 		--  90.0 -- to be connected with a net from above,
-		-- 270.0 -- from below,
+		-- -90.0 -- from below,
 		-- 180.0 -- from the left,
 		--   0.0 -- from the right
 		

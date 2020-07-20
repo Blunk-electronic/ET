@@ -1819,13 +1819,15 @@ package body et_kicad_libraries is
 				end to_style;
 
 				-- Translates orientation up/down/left/right (U/D/L/R) to rotation:
-				function to_rotation (orientation : in string) return et_coordinates.type_rotation is
+				function to_rotation (orientation : in string) 
+					return et_coordinates.type_rotation_relative 
+				is
 					orient : constant character := orientation (orientation'first);
-					rot : et_coordinates.type_rotation := 0.0;
+					rot : et_coordinates.type_rotation_relative := 0.0;
 				begin
 					case orient is
 						when 'D' => rot :=  90.0; -- to be connected with a net from above,
-						when 'U' => rot := 270.0; -- from below,
+						when 'U' => rot := -90.0; -- from below,
 						when 'R' => rot := 180.0; -- from the left,
 						when 'L' => rot :=   0.0; -- from the right
 						when others => 
