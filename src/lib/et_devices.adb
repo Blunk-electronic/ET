@@ -892,12 +892,6 @@ package body et_devices is
 		
 		return port_cursor;
 	end properties;
-	
-	
-	
-
-	
-
 
 	
 end et_devices;

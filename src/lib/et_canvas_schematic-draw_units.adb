@@ -745,10 +745,11 @@ procedure draw_units (
 		-- This results in a drawing box being greater than required.
 		-- This in turn causes the symbol to be drawn even if it is not in the given area.
 		if unit_rotation /= zero_rotation then
--- 			put_line (to_string (boundaries));
--- 			put_line ("unit rotated by" & to_string (unit_rotation));
+			--put_line (to_string (boundaries));
+			--put_line ("A unit rotated by" & to_string (unit_rotation));
 			rotate (boundaries, unit_rotation);
--- 			put_line (to_string (boundaries));
+			--put_line ("B unit rotated by" & to_string (unit_rotation));
+			--put_line (to_string (boundaries));
 		end if;
 		
 		make_bounding_box;
