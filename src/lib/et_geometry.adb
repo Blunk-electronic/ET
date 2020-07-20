@@ -672,15 +672,10 @@ package body et_geometry is
 		end;
 		
 		procedure rotate_by (
-		-- Rotates the given point BY the given angle around the origin.
-		-- Changes point.x and point.y only.							 
 			point		: in out type_point'class;
 			rotation	: in type_rotation) is
 
-			-- CS probably way to much stuff here. simplify. instead of type_float_distance use just float ?
-			
-			type type_float_distance is digits 7 range -1000.0 .. 1000.0; -- CS: refine
-			package functions_distance is new ada.numerics.generic_elementary_functions (type_float_distance);
+			package functions_distance is new ada.numerics.generic_elementary_functions (float);
 			use functions_distance;
 			
 			type type_float_angle is digits 4 range -719.9 .. 719.9; -- CS: refine			
@@ -688,8 +683,8 @@ package body et_geometry is
 			use functions_angle;
 
 			angle_out			: type_float_angle;		-- unit is degrees
-			distance_to_origin	: type_float_distance;	-- unit is mm
-			scratch				: type_float_distance;
+			distance_to_origin	: float;	-- unit is mm
+			scratch				: float;
 
 		begin -- rotate
 			-- Do nothing if the given rotation is zero.
@@ -697,16 +692,16 @@ package body et_geometry is
 
 				-- compute distance of given point to origin
 				if x (point) = zero and y (point) = zero then
-					distance_to_origin := type_float_distance (zero);
+					distance_to_origin := float (zero);
 				elsif x (point) = zero then
-					distance_to_origin := type_float_distance (abs (y (point)));
+					distance_to_origin := float (abs (y (point)));
 				elsif y (point) = zero then
-					distance_to_origin := type_float_distance (abs (x (point)));
+					distance_to_origin := float (abs (x (point)));
 				else
 					distance_to_origin := sqrt (
-						type_float_distance (abs (x (point))) ** type_float_distance (2) 
+						float (abs (x (point))) ** float (2) 
 						+
-						type_float_distance (abs (y (point))) ** type_float_distance (2)
+						float (abs (y (point))) ** float (2)
 						);
 				end if;
 				
@@ -732,9 +727,9 @@ package body et_geometry is
 
 				else
 					angle_out := type_float_angle (arctan (
-						x => type_float_distance (x (point)),
-						y => type_float_distance (y (point)),
-						cycle => type_float_distance (units_per_cycle))
+						x => float (x (point)),
+						y => float (y (point)),
+						cycle => float (units_per_cycle))
 						);
 				end if;
 
@@ -742,11 +737,11 @@ package body et_geometry is
 				angle_out := angle_out + type_float_angle (rotation);
 
 				-- compute new x   -- (cos angle_out) * distance_to_origin
-				scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
+				scratch := cos (float (angle_out), float (units_per_cycle));
 				set (axis => X, point => point, value => type_distance (scratch * distance_to_origin));
 
 				-- compute new y   -- (sin angle_out) * distance_to_origin
-				scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
+				scratch := sin (float (angle_out), float (units_per_cycle));
 				set (axis => Y, point => point, value => type_distance (scratch * distance_to_origin));
 		
 			end if; -- if angle not zero
@@ -758,9 +753,8 @@ package body et_geometry is
 			rotation	: in type_rotation) is
 
 			-- CS probably way to much stuff here. simplify. use code of procedure rotate_by (see above).
-			
-			type type_float_distance is digits 7 range -1000.0 .. 1000.0; -- CS: refine
-			package functions_distance is new ada.numerics.generic_elementary_functions (type_float_distance);
+
+			package functions_distance is new ada.numerics.generic_elementary_functions (float);
 			use functions_distance;
 			
 			type type_float_angle is digits 4 range -719.9 .. 719.9; -- CS: refine			
@@ -768,23 +762,23 @@ package body et_geometry is
 			use functions_angle;
 
 			angle_out			: type_float_angle;		-- unit is degrees
-			distance_to_origin	: type_float_distance;	-- unit is mm
-			scratch				: type_float_distance;
+			distance_to_origin	: float;	-- unit is mm
+			scratch				: float;
 
 		begin -- rotate
 
 			-- compute distance of given point to origin
 			if x (point) = zero and y (point) = zero then
-				distance_to_origin := type_float_distance (zero);
+				distance_to_origin := float (zero);
 			elsif x (point) = zero then
-				distance_to_origin := type_float_distance (abs (y (point)));
+				distance_to_origin := float (abs (y (point)));
 			elsif y (point) = zero then
-				distance_to_origin := type_float_distance (abs (x (point)));
+				distance_to_origin := float (abs (x (point)));
 			else
 				distance_to_origin := sqrt (
-					type_float_distance (abs (x (point))) ** type_float_distance (2) 
+					float (abs (x (point))) ** float (2) 
 					+
-					type_float_distance (abs (y (point))) ** type_float_distance (2)
+					float (abs (y (point))) ** float (2)
 					);
 			end if;
 
@@ -792,11 +786,11 @@ package body et_geometry is
 			angle_out := type_float_angle (rotation);
 
 			-- compute new x   -- (cos angle_out) * distance_to_origin
-			scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
+			scratch := cos (float (angle_out), float (units_per_cycle));
 			set (axis => X, point => point, value => type_distance (scratch * distance_to_origin));
 
 			-- compute new y   -- (sin angle_out) * distance_to_origin
-			scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
+			scratch := sin (float (angle_out), float (units_per_cycle));
 			set (axis => Y, point => point, value => type_distance (scratch * distance_to_origin));
 			
 		end rotate_to;
