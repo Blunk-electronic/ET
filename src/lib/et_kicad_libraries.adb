@@ -1818,16 +1818,16 @@ package body et_kicad_libraries is
 					-- CS: exception handler
 				end to_style;
 
+				-- Translates orientation up/down/left/right (U/D/L/R) to rotation:
 				function to_rotation (orientation : in string) return et_coordinates.type_rotation is
-				-- Translates orientation up/down/left/right (U/D/L/R) to angle.
 					orient : constant character := orientation (orientation'first);
 					rot : et_coordinates.type_rotation := 0.0;
 				begin
 					case orient is
-						when 'D' => rot := 90.0; -- to be connected with a net from top
-						when 'U' => rot := 270.0; -- below
-						when 'R' => rot := 180.0; -- left
-						when 'L' => rot := 0.0; -- right
+						when 'D' => rot :=  90.0; -- to be connected with a net from above,
+						when 'U' => rot := 270.0; -- from below,
+						when 'R' => rot := 180.0; -- from the left,
+						when 'L' => rot :=   0.0; -- from the right
 						when others => 
 							log (ERROR, "invalid port orientation !", console => true);
 							raise constraint_error;
@@ -1847,12 +1847,9 @@ package body et_kicad_libraries is
 				tmp_terminal_name := et_terminals.type_terminal_name.to_bounded_string (f (line,3)); -- H5, 14
 
 				-- compose position
-				--set_x (port.position, mil_to_distance (mil => f (line,4)));
 				set (X, mil_to_distance (mil => f (line,4)), port.position);
-				
-				--set_y (port.position, mil_to_distance (mil => f (line,5)));
 				set (Y, mil_to_distance (mil => f (line,5)), port.position);
-				mirror (point => port.position, axis => x);
+				--mirror (point => port.position, axis => x);
 
 				-- compose length
 				port.length := mil_to_distance (mil => f (line,6)); -- CS port length may assume zero. do something !

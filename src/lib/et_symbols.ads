@@ -290,7 +290,12 @@ package et_symbols is
 	type type_port_base is tagged record
 		position			: type_point; -- this is the point of connection with a net
 		length				: type_port_length := port_length_default; 
+		
 		rotation			: et_coordinates.type_rotation := 0.0; -- CS use type_rotation_relative ?
+		--  90.0 -- to be connected with a net from above,
+		-- 270.0 -- from below,
+		-- 180.0 -- from the left,
+		--   0.0 -- from the right
 		
 		port_name_visible		: type_port_name_visible := port_name_visible_default;
 		port_name_size			: pac_text.type_text_size := text_size_default;
