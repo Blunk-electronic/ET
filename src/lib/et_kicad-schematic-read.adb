@@ -1838,11 +1838,9 @@ function read (
 
 		-- The label header "Text Notes 3400 2800 0 60 Italic 12" and the next line like
 		-- "ERC32 Test Board" is read here. It contains the actual text.
-
-		--use et_symbols.pac_text;
 		
 		note : type_text; -- the text note being built
-		rotation : et_coordinates.type_rotation;
+		rotation : et_coordinates.type_rotation_relative;
 
 		procedure warn is begin 
 			log (WARNING, " text note at " 
@@ -1859,12 +1857,10 @@ function read (
 		-- set coordinates
 		set_path (note.position, path_to_sheet);
 		set_sheet (note.position, sheet_number);
-		--set_x (note.position, mil_to_distance (f (element (line_cursor), 3)));
+
 		set (X, mil_to_distance (f (element (line_cursor), 3)), note.position);
-		--set_y (note.position, mil_to_distance (f (element (line_cursor), 4)));
 		set (Y, mil_to_distance (f (element (line_cursor), 4)), note.position);
 		
-		--note.rotation := to_angle (f (element (line_cursor), 5));
 		rotation := to_relative_rotation (f (element (line_cursor), 5));
 
 		-- Notes might be upside down or readable from the left. So we must fit the rotation
@@ -1872,12 +1868,13 @@ function read (
 		if rotation < 0.0 then
 			note.rotation := 90.0;
 			warn;
-		elsif rotation > 90.0 and rotation < 270.0 then
+		--elsif rotation > 90.0 and rotation < 270.0 then
+		elsif rotation > 90.0 then
 			note.rotation := 0.0;
 			warn;					
-		elsif rotation > 270.0 then
-			note.rotation := 90.0;
-			warn;
+		--elsif rotation > 270.0 then
+		--	note.rotation := 90.0;
+		--	warn;
 		end if;
 
 		-- set text size and check for excessive size
