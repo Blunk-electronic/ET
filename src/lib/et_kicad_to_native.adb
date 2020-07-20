@@ -2186,6 +2186,203 @@ package body et_kicad_to_native is
 
 		return point_out;
 	end;
+
+	-- Converts shapes of symbols to native shapes:
+	function convert_shapes (
+		shapes			: in et_kicad_libraries.type_symbol_shapes;
+		log_threshold	: in type_log_level)
+		return et_symbols.type_shapes is
+
+		use et_kicad_libraries;
+		
+		use et_symbols;		
+		native_shapes : et_symbols.type_shapes;
+
+		procedure copy_line (cursor : in et_kicad_libraries.type_symbol_lines.cursor) is begin
+			type_lines.append (
+				container	=> native_shapes.lines,
+				new_item	=> et_kicad_libraries.type_symbol_lines.element (cursor));
+		end;
+
+		procedure copy_arc (cursor : in et_kicad_libraries.type_symbol_arcs.cursor) is begin
+			type_arcs.append (
+				container	=> native_shapes.arcs,
+				new_item	=> type_arc (et_kicad_libraries.type_symbol_arcs.element (cursor)));
+		end;
+
+		procedure copy_circle (cursor : in et_kicad_libraries.type_symbol_circles.cursor) is begin
+			type_circles.append (
+				container	=> native_shapes.circles,
+				new_item	=> (
+					type_circle_base (et_kicad_libraries.type_symbol_circles.element (cursor))
+					with filled => NO));
+		end;						
+
+		procedure copy_polyline (cursor : in et_kicad_libraries.type_symbol_polylines.cursor) is 
+		-- Converts a polyline to single lines and appends them to native_shapes.lines.
+			use et_kicad;
+			use type_symbol_points;
+
+			-- This is the given kicad polyline:
+			polyline : type_symbol_polyline := type_symbol_polylines.element (cursor);
+
+			-- This cursor points to a particular point of the polyline:
+			point_cursor : type_symbol_points.cursor := polyline.points.first;
+
+			-- This is the native line that will be appended to native.shapes.lines:
+			line : type_line := (width => polyline.width, others => <>);
+
+			-- This flag indicates whether a start or an end point of a line is expected:
+			start : boolean := true; -- when start point -> true, when end point -> false
+		begin
+			-- Advance through points of polyline and assign line start and and points.
+			-- Then append the line to native.shapes.lines.
+			while point_cursor /= type_symbol_points.no_element loop
+
+				case start is
+					when TRUE =>
+						-- The point is a start point if another point follows. Otherwise nothing happens.
+						if next (point_cursor) /= type_symbol_points.no_element then
+							line.start_point := element (point_cursor); -- start point
+							start := false; -- up next: end point
+						end if;
+
+					when FALSE =>
+						line.end_point := element (point_cursor); -- end point
+						start := true; -- up next: start point
+
+						-- append line to collection of native lines
+						et_symbols.type_lines.append (
+							container	=> native_shapes.lines,
+							new_item	=> line);
+
+						-- Set cursor one point back so that this point serves as start point
+						-- for the next segment.
+						previous (point_cursor);
+
+				end case;
+
+				next (point_cursor); -- advance to next point
+			end loop;
+		end copy_polyline;
+
+		procedure copy_rectangle (cursor : in et_kicad_libraries.type_symbol_rectangles.cursor) is
+		-- Converts a rectangle to four lines and appends them to native_shapes.lines.
+			use et_kicad;
+			use type_symbol_rectangles;
+			use et_coordinates;
+			
+			-- This is the given kicad rectangle:
+			rectangle : type_symbol_rectangle := type_symbol_rectangles.element (cursor);
+
+			-- This is the native line that will be appended to native_shapes.lines:
+			line : type_line := (width => rectangle.width, others => <>);
+			width, height : et_coordinates.type_distance;
+
+			-- These two points are required to form the final rectangle:
+			corner_C, corner_D : pac_geometry_sch.type_point;
+			
+			procedure append_line is begin
+				et_symbols.type_lines.append (
+					container	=> native_shapes.lines,
+					new_item	=> line);
+			end;
+
+			use pac_geometry_sch;
+			
+		begin -- copy_rectangle
+			log_indentation_up;
+			log (text => "start " & to_string (rectangle.corner_A) 
+				 & " end" & to_string (rectangle.corner_B),
+				 level => log_threshold + 2);
+			
+			-- compute width and height of the rectangle:
+			width  := distance (axis => X, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
+
+			log (text => "width" & to_string (width), level => log_threshold + 2);
+			
+			if width < zero then
+				rectangle.corner_A := type_point (invert (rectangle.corner_A, X));
+				rectangle.corner_B := type_point (invert (rectangle.corner_B, X));
+				width := - width;
+			end if;
+			
+			height := distance (axis => Y, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
+
+			log (text => "height" & to_string (height), level => log_threshold + 2);
+			
+			if height < zero then
+				rectangle.corner_A := type_point (invert (rectangle.corner_A, Y));
+				rectangle.corner_B := type_point (invert (rectangle.corner_B, Y));
+				height := - height;
+			end if;
+
+			log (text => "new start " & to_string (rectangle.corner_A) 
+				 & " new end" & to_string (rectangle.corner_B),
+				 level => log_threshold + 2);
+			
+			-- compute corner points of the rectangle:
+			-- corner_A is the lower left corner of the rectangle
+			-- corner_B is the upper right corner of the rectangle
+
+			-- corner_C is the lower right corner:
+			corner_C := type_point (set (
+				x => x (rectangle.corner_A) + width,
+				y => y (rectangle.corner_A)
+				));
+
+			-- corner_D is the upper left corner:
+			corner_D := type_point (set (
+				x => x (rectangle.corner_A),
+				y => y (rectangle.corner_A) + height
+				));
+			
+			-- lower horizontal line
+			line.start_point := rectangle.corner_A;
+			line.end_point := corner_C;
+			append_line;
+			
+			-- upper horizontal line	
+			line.start_point := corner_D;
+			line.end_point := rectangle.corner_B;
+			append_line;
+
+			-- left vertical line
+			line.start_point := rectangle.corner_A;
+			line.end_point := corner_D;
+			append_line;
+
+			-- right vertical line
+			line.start_point := corner_C;
+			line.end_point := rectangle.corner_B;
+			append_line;
+
+			log_indentation_down;
+		end copy_rectangle;
+
+	begin -- convert_shapes
+		log (text => "converting shapes ...", level => log_threshold);
+		log_indentation_up;
+
+		log (text => "lines ...", level => log_threshold + 1);
+		et_kicad_libraries.type_symbol_lines.iterate (shapes.lines, copy_line'access);
+
+		log (text => "arcs ...", level => log_threshold + 1);
+		et_kicad_libraries.type_symbol_arcs.iterate (shapes.arcs, copy_arc'access);
+
+		log (text => "circles ...", level => log_threshold + 1);
+		et_kicad_libraries.type_symbol_circles.iterate (shapes.circles, copy_circle'access);
+
+		log (text => "polylines ...", level => log_threshold + 1);
+		et_kicad_libraries.type_symbol_polylines.iterate (shapes.polylines, copy_polyline'access);
+
+		log (text => "rectangles ...", level => log_threshold + 1);
+		et_kicad_libraries.type_symbol_rectangles.iterate (shapes.rectangles, copy_rectangle'access);
+
+		log_indentation_down;
+		return native_shapes;
+	end convert_shapes;
+
 	
 	procedure to_native (
 		project_name	: in et_project.pac_project_name.bounded_string;
@@ -3221,168 +3418,14 @@ package body et_kicad_to_native is
 							next (port_cursor_kicad);
 						end loop;
 					end copy_ports;
-
-					function convert_shapes (shapes : in et_kicad_libraries.type_symbol_shapes) 
-						return et_symbols.type_shapes is
-
-						use et_symbols;
-						native_shapes : et_symbols.type_shapes;
-
-						procedure copy_line (cursor : in et_kicad_libraries.type_symbol_lines.cursor) is begin
-							type_lines.append (
-								container	=> native_shapes.lines,
-								new_item	=> et_kicad_libraries.type_symbol_lines.element (cursor));
-						end;
-
-						procedure copy_arc (cursor : in et_kicad_libraries.type_symbol_arcs.cursor) is begin
-							type_arcs.append (
-								container	=> native_shapes.arcs,
-								new_item	=> type_arc (et_kicad_libraries.type_symbol_arcs.element (cursor)));
-						end;
-
-						procedure copy_circle (cursor : in et_kicad_libraries.type_symbol_circles.cursor) is begin
-							type_circles.append (
-								container	=> native_shapes.circles,
-								new_item	=> (
-									type_circle_base (et_kicad_libraries.type_symbol_circles.element (cursor))
-									with filled => NO));
-						end;						
-
-						procedure copy_polyline (cursor : in et_kicad_libraries.type_symbol_polylines.cursor) is 
-						-- Converts a polyline to single lines and appends them to native_shapes.lines.
-							use et_kicad;
-							use type_symbol_points;
-
-							-- This is the given kicad polyline:
-							polyline : type_symbol_polyline := type_symbol_polylines.element (cursor);
-
-							-- This cursor points to a particular point of the polyline:
-							point_cursor : type_symbol_points.cursor := polyline.points.first;
-
-							-- This is the native line that will be appended to native.shapes.lines:
-							line : type_line := (width => polyline.width, others => <>);
-
-							-- This flag indicates whether a start or an end point of a line is expected:
-							start : boolean := true; -- when start point -> true, when end point -> false
-						begin
-							-- Advance through points of polyline and assign line start and and points.
-							-- Then append the line to native.shapes.lines.
-							while point_cursor /= type_symbol_points.no_element loop
-
-								case start is
-									when TRUE =>
-										-- The point is a start point if another point follows. Otherwise nothing happens.
-										if next (point_cursor) /= type_symbol_points.no_element then
-											line.start_point := element (point_cursor); -- start point
-											start := false; -- up next: end point
-										end if;
-
-									when FALSE =>
-										line.end_point := element (point_cursor); -- end point
-										start := true; -- up next: start point
-
-										-- append line to collection of native lines
-										et_symbols.type_lines.append (
-											container	=> native_shapes.lines,
-											new_item	=> line);
-
-										-- Set cursor one point back so that this point serves as start point
-										-- for the next segment.
-										previous (point_cursor);
-
-								end case;
-
-								next (point_cursor); -- advance to next point
-							end loop;
-						end copy_polyline;
-
-						procedure copy_rectangle (cursor : in et_kicad_libraries.type_symbol_rectangles.cursor) is
-						-- Converts a rectangle to four lines and appends them to native_shapes.lines.
-							use et_kicad;
-							use type_symbol_rectangles;
-							use et_coordinates;
-							
-							-- This is the given kicad rectangle:
-							rectangle : type_symbol_rectangle := type_symbol_rectangles.element (cursor);
-
-							-- This is the native line that will be appended to native_shapes.lines:
-							line : type_line := (width => rectangle.width, others => <>);
-							width, height : et_coordinates.type_distance;
-							corner_C, corner_D : pac_geometry_sch.type_point;
-							
-							procedure append_line is begin
-								et_symbols.type_lines.append (
-									container	=> native_shapes.lines,
-									new_item	=> line);
-							end;
-
-							use pac_geometry_sch;
-							
-						begin -- copy_rectangle
-							-- compute width and height of the rectangle:
-							width  := distance (axis => X, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
-							if width < zero then
-								rectangle.corner_A := type_point (invert (rectangle.corner_A, X));
-								rectangle.corner_B := type_point (invert (rectangle.corner_B, X));
-							end if;
-							
-							height := distance (axis => Y, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
-							if height < zero then
-								rectangle.corner_A := type_point (invert (rectangle.corner_A, Y));
-								rectangle.corner_B := type_point (invert (rectangle.corner_B, Y));
-							end if;
-
-							-- compute corner points of the rectangle:
-							-- corner_A is the lower left corner of the rectangle
-							-- corner_B is the upper right corner of the rectangle
-
-							-- corner_C is the lower right corner:
-							corner_C := type_point (set (
-								x => x (rectangle.corner_A) + width,
-								y => y (rectangle.corner_A)
-								));
-
-							-- corner_D is the upper left corner:
-							corner_D := type_point (set (
-								x => x (rectangle.corner_A),
-								y => y (rectangle.corner_A) + height
-								));
-							
-							-- lower horizontal line
-							line.start_point := rectangle.corner_A;
-							line.end_point := corner_C;
-							append_line;
-							
-							-- upper horizontal line
-							line.start_point := corner_D;
-							line.end_point := rectangle.corner_B;
-							append_line;
-
-							-- left vertical line
-							line.start_point := rectangle.corner_A;
-							line.end_point := corner_D;
-							append_line;
-
-							-- right vertical line
-							line.start_point := corner_C;
-							line.end_point := rectangle.corner_B;
-							append_line;
-
-						end copy_rectangle;
-
-					begin -- convert_shapes
-						et_kicad_libraries.type_symbol_lines.iterate (shapes.lines, copy_line'access);
-						et_kicad_libraries.type_symbol_arcs.iterate (shapes.arcs, copy_arc'access);
-						et_kicad_libraries.type_symbol_circles.iterate (shapes.circles, copy_circle'access);
-
-						et_kicad_libraries.type_symbol_polylines.iterate (shapes.polylines, copy_polyline'access);
-						et_kicad_libraries.type_symbol_rectangles.iterate (shapes.rectangles, copy_rectangle'access);
-						return native_shapes;
-					end convert_shapes;
 					
 				begin -- copy_units
 					while unit_cursor_kicad /= et_kicad_libraries.type_units_library.no_element loop
-
+						
+						log (text => "unit " & enclose_in_quotes (to_string (key (unit_cursor_kicad))),
+							 level => log_threshold + 4);
+						log_indentation_up;
+						
 						-- Copy the portlist of the current unit. It is required when ports are inserted in the native unit.
 						ports_kicad := element (unit_cursor_kicad).symbol.ports;
 
@@ -3404,7 +3447,7 @@ package body et_kicad_to_native is
 										-- If the unit is real, then the symbol is real too:
 										symbol		=> (type_symbol_base (element (unit_cursor_kicad).symbol)
 											with 
-												shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes),
+												shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes, log_threshold + 5),
 												appearance	=> PCB,
 												ports		=> et_symbols.type_ports.empty_map, -- ports will come later
 												name		=> element (unit_cursor_kicad).symbol.name, 	-- placeholder
@@ -3433,7 +3476,7 @@ package body et_kicad_to_native is
 										-- If the unit is virtual, then the symbol is virtual too:
 										symbol		=> (type_symbol_base (element (unit_cursor_kicad).symbol)
 											with 
-												shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes),
+												shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes, log_threshold + 5),
 												appearance	=> VIRTUAL,
 												ports		=> et_symbols.type_ports.empty_map, -- ports will come later
 												-- NOTE: Other placeholders discarded here.
@@ -3450,6 +3493,8 @@ package body et_kicad_to_native is
 							process		=> copy_ports'access);
 						
 						next (unit_cursor_kicad);
+
+						log_indentation_down;
 					end loop;
 				end copy_units;
 

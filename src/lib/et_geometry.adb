@@ -463,7 +463,24 @@ package body et_geometry is
 		end mirror;
 
 		function distance (
-		-- Returns the absolute distance on the given axis between the given points.
+			point_1	: in type_point;
+			point_2	: in type_point;
+			axis	: in type_axis_2d) 
+			return type_distance is
+			dis : type_distance;
+		begin
+			case axis is
+				when X =>
+					dis := (point_2.x - point_1.x);
+
+				when Y =>
+					dis := (point_2.y - point_1.y);
+			end case;
+					
+			return type_distance (dis);
+		end distance;
+		
+		function distance_abs (
 			point_1	: in type_point;
 			point_2	: in type_point;
 			axis	: in type_axis_2d) 
@@ -479,7 +496,7 @@ package body et_geometry is
 			end case;
 					
 			return type_distance (dis);
-		end distance;
+		end distance_abs;
 
 		function "+" (point_one, point_two : in type_point) return type_point'class is
 			d : type_point;
@@ -966,13 +983,14 @@ package body et_geometry is
 		begin -- which_zone
 			-- The greater distance from start to end point in X or Y determines 
 			-- whether the line is handled like a horizontal or vertical drawn line.
-			if distance (line.start_point, line.end_point, X) > distance (line.start_point, line.end_point, Y) then
+			if distance_abs (line.start_point, line.end_point, X) > 
+			   distance_abs (line.start_point, line.end_point, Y) then
 
 				-- distance in X greater -> decision will be made along the X axis.
 				-- The line will be handled like a horizontal drawn line.
 				
 				-- calculate the zone border. This depends on the line length in X direction.
-				line_length := distance (line.start_point, line.end_point, X);
+				line_length := distance_abs (line.start_point, line.end_point, X);
 				zone_border := line_length / type_distance (line_zone_division_factor);
 
 				if x (line.start_point) < x (line.end_point) then 
@@ -1002,7 +1020,7 @@ package body et_geometry is
 				-- The line will be handled like a vertical drawn line.
 
 				-- calculate the zone border. This depends on the line length in X direction.
-				line_length := distance (line.start_point, line.end_point, Y);
+				line_length := distance_abs (line.start_point, line.end_point, Y);
 				zone_border := line_length / type_distance (line_zone_division_factor);
 
 				if y (line.start_point) < y (line.end_point) then 

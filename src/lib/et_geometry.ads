@@ -245,8 +245,16 @@ package et_geometry is
 			point	: in out type_point;
 			axis	: in type_axis_2d);	
 
+		-- Returns the distance on the given axis between the given points.
 		function distance (
+			point_1	: in type_point;
+			point_2	: in type_point;
+			axis	: in type_axis_2d) 
+			return type_distance;
+		
 		-- Returns the absolute distance on the given axis between the given points.
+		-- NOTE: The result in both x and y is always greater or equal zero.
+		function distance_abs (
 			point_1	: in type_point;
 			point_2	: in type_point;
 			axis	: in type_axis_2d) 
