@@ -44,7 +44,7 @@ with et_string_processing;		use et_string_processing;
 with et_canvas_schematic;
 with et_canvas_board;
 
-package scripting is
+package et_scripting is
 	comment_mark : constant string := ("#");
 	
 	script_name : pac_script_name.bounded_string;
@@ -351,7 +351,7 @@ package scripting is
 
 
 	
-end scripting;
+end et_scripting;
 
 -- Soli Deo Gloria
 

@@ -46,7 +46,7 @@ with gtk.gentry;
 with gtk.combo_box_text;	with gtk.combo_box_text;	
 -- with gtkada.style;			use gtkada.style;
 
-with scripting;
+with et_scripting;
 
 package gui_board.callbacks is
 

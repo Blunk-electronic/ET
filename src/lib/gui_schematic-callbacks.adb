@@ -130,7 +130,7 @@ package body gui_schematic.callbacks is
 	procedure execute_script (script : in pac_script_name.bounded_string) is
 		use ada.directories;
 		use et_string_processing;
-		use scripting;
+		use et_scripting;
 		use pac_script_name;
 
 		-- We assemble a command that executes a script
@@ -163,7 +163,7 @@ package body gui_schematic.callbacks is
 		cmd := read_line (
 			line 			=> line_as_typed_by_operator,
 			number			=> 1,  -- this is the one and only line
-			comment_mark 	=> scripting.comment_mark,
+			comment_mark 	=> et_scripting.comment_mark,
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> latin_1.space); -- fields are separated by space
 
@@ -196,7 +196,7 @@ package body gui_schematic.callbacks is
 		use ada.directories;	
 		use gtk.gentry;
 		use et_string_processing;
-		use scripting;
+		use et_scripting;
 
 		-- The operator enters a command like "rename device R1 R2".
 		-- The operator is not required to type domain and module name.
@@ -231,7 +231,7 @@ package body gui_schematic.callbacks is
 		cmd := read_line (
 			line 			=> line_as_typed_by_operator,
 			number			=> 1,  -- this is the one and only line
-			comment_mark 	=> scripting.comment_mark,
+			comment_mark 	=> et_scripting.comment_mark,
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> latin_1.space); -- fields are separated by space
 

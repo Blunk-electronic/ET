@@ -57,7 +57,7 @@ with et_kicad_to_native;
 with et_project;
 with et_project.modules;
 with et_project.rigs;
-with scripting;
+with et_scripting;
 
 with et_packages;
 with pcb_rw;
@@ -506,7 +506,7 @@ procedure et is
 		use et_devices.type_device_model_file;
 		use et_frames.pac_template_name;
 
-		exit_code_script : scripting.type_exit_code;
+		exit_code_script : et_scripting.type_exit_code;
 		
 	begin -- process_commandline_arguments
 		-- The arguments are processed according to a certain priority.
@@ -548,20 +548,20 @@ procedure et is
 					case runmode is
 						when MODE_HEADLESS =>
 					
-							exit_code_script := scripting.execute_script (script_name, log_threshold => 0);
+							exit_code_script := et_scripting.execute_script (script_name, log_threshold => 0);
 
 							-- evaluate exit code
 							case exit_code_script is
-								when scripting.ERROR =>
+								when et_scripting.ERROR =>
 									log (ERROR, " execution of script " & et_general.to_string (script_name) &
 										" failed !", console => true);
 									raise constraint_error;
 
-								when scripting.WARNINGS =>
+								when et_scripting.WARNINGS =>
 									log (WARNING, " execution of script " & et_general.to_string (script_name) &
 										" produced warnings !", console => true);
 
-								when scripting.SUCCESSFUL =>
+								when et_scripting.SUCCESSFUL =>
 									log (text => "execution of script " & et_general.to_string (script_name) & " successful");
 									
 							end case;
