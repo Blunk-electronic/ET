@@ -156,6 +156,8 @@ procedure copy_device (
 					rotate_by (name.position, rot (destination));
 					rotate_by (value.position, rot (destination));
 					rotate_by (purpose.position, rot (destination));
+
+-- 					rotate_to (name.position.rotation, et_symbols.pac_text.snap (rot (destination)));
 					
 					type_units.insert (
 						container	=> device.units,
