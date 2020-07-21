@@ -3947,6 +3947,10 @@ package body et_schematic_ops is
 			next_name : type_name := 
 				next_device_name (module_cursor, element (device_cursor_lib).prefix);
 
+			name	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
+			value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
+			purpose	: et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE);
+			
 			unit_cursors : type_unit_cursors_lib;
 
 			use pac_units_internal;
@@ -3968,20 +3972,30 @@ package body et_schematic_ops is
 							new_item	=> (
 								appearance	=> VIRTUAL,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								others 		=> <>)
+								others 		=> <>) -- mirror
 								);
 						
 					when PCB =>
+
+						-- rotate the placeholders according to rotation given by caller:
+						name	:= element (unit_cursors.int).symbol.name;
+						value	:= element (unit_cursors.int).symbol.value;
+						purpose	:= element (unit_cursors.int).symbol.purpose;
+
+						rotate_by (name.position, rot (place));
+						rotate_by (value.position, rot (place));
+						rotate_by (purpose.position, rot (place));
+						
 						type_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
 								appearance	=> PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								name		=> element (unit_cursors.int).symbol.name, -- placeholder for device name
-								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
-								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
-								others 		=> <>)
+								name		=> name, 	
+								value		=> value,	
+								purpose		=> purpose,	
+								others 		=> <>) -- mirror
 								);
 						
 				end case;
@@ -4007,7 +4021,7 @@ package body et_schematic_ops is
 							new_item	=> (
 								appearance	=> VIRTUAL,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
-								others 		=> <>)
+								others 		=> <>) -- mirror
 								);
 						
 					when PCB =>
@@ -4020,6 +4034,15 @@ package body et_schematic_ops is
 
 						-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
 						-- and constraint_error would arise here:
+
+						-- rotate the placeholders according to rotation given by caller:
+						name	:= element (symbol_cursor).name;
+						value	:= element (symbol_cursor).value;
+						purpose	:= element (symbol_cursor).purpose;
+
+						rotate_by (name.position, rot (place));
+						rotate_by (value.position, rot (place));
+						rotate_by (purpose.position, rot (place));
 						
 						type_units.insert (
 							container	=> device.units,
@@ -4027,10 +4050,10 @@ package body et_schematic_ops is
 							new_item	=> (
 								appearance	=> PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
-								name		=> element (symbol_cursor).name,	-- placeholder for device name
-								value		=> element (symbol_cursor).value,	-- placeholder for device value
-								purpose		=> element (symbol_cursor).purpose,	-- placeholder for device purpose
-								others 		=> <>)
+								name		=> name,	
+								value		=> value,	
+								purpose		=> purpose,	
+								others 		=> <>) -- mirror
 								);
 
 				end case;
