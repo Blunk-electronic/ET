@@ -375,7 +375,9 @@ package body et_project.modules is
 			position	=> module_cursor,
 			inserted	=> inserted);
 
-		if not inserted then
+		if inserted then
+			save_module (module_name, log_threshold + 1);
+		else
 			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 					" already exists -> not created.", level => log_threshold + 1);
 		end if;

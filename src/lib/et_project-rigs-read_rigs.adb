@@ -325,9 +325,9 @@ procedure read_rigs (
 										
 										-- test whether a module with this generic name exists
 										if not exists (generic_name) then
-											log (ERROR, "module " & enclose_in_quotes (to_string (generic_name)) &
+											log (WARNING, "Module " & enclose_in_quotes (to_string (generic_name)) &
 													" does not exist !", console => true);
-											raise constraint_error;
+											--raise constraint_error;
 										end if;
 										
 									elsif kw = keyword_instance_name then
