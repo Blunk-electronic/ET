@@ -3955,7 +3955,7 @@ package body et_schematic_ops is
 
 			use pac_units_internal;
 			use pac_units_external;
-
+			
 			procedure add_unit_internal (
 			-- Add an internal unit to the schematic device.
 			-- The unit to be added is accessed by unit_cursors.int.
@@ -4010,6 +4010,7 @@ package body et_schematic_ops is
 				use type_symbols;
 				symbol_cursor : type_symbols.cursor;
 				symbol_file : type_symbol_model_file.bounded_string; -- *.sym
+						
 			begin
 				log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 				
@@ -4522,6 +4523,10 @@ package body et_schematic_ops is
 			device_cursor_lib : et_devices.type_devices.cursor;
 			unit_cursors : type_unit_cursors_lib;
 
+			name	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
+			value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
+			purpose	: et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE);
+				
 			use pac_units_external;
 			use pac_units_internal;
 			use et_devices.type_devices;
@@ -4533,7 +4538,7 @@ package body et_schematic_ops is
 				device		: in out et_schematic.type_device) is
 				use et_symbols;
 			begin
-				log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
+				log (text => "invoking internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
 					when VIRTUAL =>
@@ -4547,15 +4552,21 @@ package body et_schematic_ops is
 								);
 						
 					when PCB =>
+
+						-- rotate the placeholders according to rotation given by caller:
+						name	:= element (unit_cursors.int).symbol.name;
+						value	:= element (unit_cursors.int).symbol.value;
+						purpose	:= element (unit_cursors.int).symbol.purpose;
+						
 						type_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
 								appearance	=> PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								name		=> element (unit_cursors.int).symbol.name, 		-- placeholder for device name
-								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
-								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
+								name		=> name,
+								value		=> value,
+								purpose		=> purpose,
 								others 		=> <>)
 								);
 				end case;
@@ -4572,7 +4583,7 @@ package body et_schematic_ops is
 				symbol_cursor : type_symbols.cursor;
 				symbol_file : type_symbol_model_file.bounded_string; -- *.sym
 			begin
-				log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
+				log (text => "invoking external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
 					when VIRTUAL =>
@@ -4595,6 +4606,15 @@ package body et_schematic_ops is
 
 						-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
 						-- and constraint_error would arise here:
+
+						-- rotate the placeholders according to rotation given by caller:
+						name	:= element (symbol_cursor).name;
+						value	:= element (symbol_cursor).value;
+						purpose	:= element (symbol_cursor).purpose;
+
+						rotate_by (name.position, rot (place));
+						rotate_by (value.position, rot (place));
+						rotate_by (purpose.position, rot (place));
 						
 						type_units.insert (
 							container	=> device.units,
@@ -4602,9 +4622,9 @@ package body et_schematic_ops is
 							new_item	=> (
 								appearance	=> PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								name		=> element (symbol_cursor).name,	-- placeholder for device name
-								value		=> element (symbol_cursor).value,	-- placeholder for device value
-								purpose		=> element (symbol_cursor).purpose,	-- placeholder for device purpose
+								name		=> name,
+								value		=> value,
+								purpose		=> purpose,
 								others 		=> <>)
 								);
 				end case;
