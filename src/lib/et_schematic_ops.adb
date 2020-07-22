@@ -3421,13 +3421,13 @@ package body et_schematic_ops is
 		return next_name;
 	end next_device_name;
 
-	function first_unit (device_cursor : in et_devices.type_devices.cursor) return type_unit_cursors_lib is
+	function first_unit (device_cursor : in et_devices.type_devices.cursor) return type_device_units is
 	-- Returns the cursor of the first internal or external unit. Searches first in internal and
 	-- then in external units. The search order is further-on determined
 	-- by the add levels of the units. Priority is add level MUST, then ALWAYS, then NEXT, then REQUEST, then CAN.
 	-- If no suitable internal unit found, the cursor of internal units in the return is no_element.
 	-- If no suitable external unit found, the cursor of external units in the return is no_element.
-		cursors : type_unit_cursors_lib; -- to be returned
+		cursors : type_device_units; -- to be returned
 		use et_devices.type_devices;
 		use pac_units_internal;
 		use pac_units_external;
@@ -3540,9 +3540,9 @@ package body et_schematic_ops is
 	-- Returns the cursor of the desired internal or external unit.
 		device_cursor	: in et_devices.type_devices.cursor;
 		unit_name		: in type_unit_name.bounded_string)
-		return type_unit_cursors_lib is
+		return type_device_units is
 
-		cursors : type_unit_cursors_lib; -- to be returned
+		cursors : type_device_units; -- to be returned
 		
 		use et_devices.type_devices;
 		use type_unit_name;

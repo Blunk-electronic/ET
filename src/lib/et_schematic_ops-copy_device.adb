@@ -61,7 +61,7 @@ procedure copy_device (
 
 		placeholders : type_rotated_placeholders;
 		
-		unit_cursors : type_unit_cursors_lib;
+		unit_cursors : type_device_units;
 		ports : et_symbols.type_ports.map;
 		unit_name : et_devices.type_unit_name.bounded_string;
 

@@ -66,7 +66,7 @@ procedure add_device (
 
 		placeholders : type_rotated_placeholders;
 		
-		unit_cursors : type_unit_cursors_lib;
+		unit_cursors : type_device_units;
 
 		use pac_units_internal;
 		use pac_units_external;

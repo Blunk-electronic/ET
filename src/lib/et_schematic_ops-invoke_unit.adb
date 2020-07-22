@@ -73,7 +73,7 @@ procedure invoke_unit (
 
 		device_model : type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		device_cursor_lib : et_devices.type_devices.cursor;
-		unit_cursors : type_unit_cursors_lib;
+		unit_cursors : type_device_units;
 
 		placeholders : type_rotated_placeholders;
 		

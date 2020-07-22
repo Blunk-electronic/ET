@@ -428,7 +428,7 @@ package et_devices is
 
 
 	-- When querying units of a device this type is required:
-	type type_unit_cursors_lib is record -- CS rename to type_unit_cursors
+	type type_device_units is record
 		int : pac_units_internal.cursor;
 		ext : pac_units_external.cursor;
 	end record;
