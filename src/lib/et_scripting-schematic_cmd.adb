@@ -882,7 +882,7 @@ begin -- schematic_cmd
 								module_name		=> module,
 								device_name		=> to_name (f (5)),
 								unit_name		=> to_name (f (6)),
-								place			=> to_position 
+								destination		=> to_position 
 									(
 									sheet => to_sheet (f (7)),
 									point => type_point (set
