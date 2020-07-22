@@ -324,7 +324,7 @@ begin -- add_device
 	-- Read the device file and store it in the rig wide device 
 	-- library et_devices.devices.
 	-- If the device is already in the library, nothing happpens.
-	device_rw.read_device (
+	et_device_rw.read_device (
 		file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
 		log_threshold	=> log_threshold + 1);
 

@@ -58,7 +58,7 @@ with et_pcb_rw;					use et_pcb_rw;
 with et_pcb_rw.device_packages;	use et_pcb_rw.device_packages;
 with schematic_rw;				use schematic_rw;
 with symbol_rw;					use symbol_rw;
-with device_rw;					use device_rw;
+with et_device_rw;				use et_device_rw;
 with et_symbols;
 with et_meta;
 

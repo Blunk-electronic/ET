@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              DEVICE_RW                                   --
+--                         DEVICE READ AND WRITE                            --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -66,7 +66,7 @@ with et_text;
 with et_symbols;
 with et_packages;				use et_packages;
 
-package body device_rw is
+package body et_device_rw is
 
 	use et_terminals;
 	
@@ -1626,4 +1626,4 @@ package body device_rw is
 
 	end read_device;
 	
-end device_rw;
+end et_device_rw;

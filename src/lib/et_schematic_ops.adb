@@ -44,7 +44,7 @@ with et_conventions;
 with et_pcb_coordinates;
 with et_terminals;
 with et_packages;
-with device_rw;
+with et_device_rw;
 
 package body et_schematic_ops is
 

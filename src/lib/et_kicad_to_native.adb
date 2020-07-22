@@ -65,7 +65,7 @@ with netlists;
 with et_text;
 with et_pcb_rw;
 with et_pcb_rw.device_packages;	--use et_pcb_rw.device_packages;
-with device_rw;
+with et_device_rw;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_frames;
@@ -3747,7 +3747,7 @@ package body et_kicad_to_native is
 
 			procedure save_device (device_cursor : in et_devices.type_devices.cursor) is
 			begin
-				device_rw.save_device (
+				et_device_rw.save_device (
 					-- library name like: 
 					-- libraries/devices/__-__-lbr-bel_connector_and_jumper_FEMALE_01X06.dev
 					file_name		=> to_file_name (to_string (key (device_cursor))),

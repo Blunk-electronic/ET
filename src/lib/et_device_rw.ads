@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              DEVICE_RW                                   --
+--                         DEVICE READ AND WRITE                            --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -41,7 +41,7 @@ with et_devices;				use et_devices;
 with et_symbols;
 with et_pcb_stack;
 
-package device_rw is
+package et_device_rw is
 
 	keyword_symbol_file			: constant string := "symbol_model";
 	keyword_prefix				: constant string := "prefix";		
@@ -99,4 +99,4 @@ package device_rw is
 		log_threshold	: in et_string_processing.type_log_level);
 
 	
-end device_rw;
+end et_device_rw;

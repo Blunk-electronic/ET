@@ -67,7 +67,7 @@ with et_symbols;
 with symbol_rw;
 
 with et_devices;
-with device_rw;
+with et_device_rw;
 
 with et_frames;
 with et_frame_rw;
@@ -446,7 +446,7 @@ procedure et is
 		-- If device_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only device in et_devices.devices is saved.
 		if length (device_name_save_as) > 0 then
-			device_rw.save_device (
+			et_device_rw.save_device (
 				file_name 		=> device_name_save_as,
 				device			=> et_devices.type_devices.last_element (et_devices.devices),
 				log_threshold	=> 0);
@@ -621,7 +621,7 @@ procedure et is
 			elsif length (device_name_create) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for device editing
 				
-				device_rw.create_device (device_name_create, device_appearance, log_threshold => 0);
+				et_device_rw.create_device (device_name_create, device_appearance, log_threshold => 0);
 
 				-- optionally the device can be saved under a different name
 				save_device_as; -- if device_name_save_as is empty nothing happens
@@ -629,7 +629,7 @@ procedure et is
 			elsif length (device_name_open) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for device editing
 				
-				device_rw.read_device (device_name_open, log_threshold => 0);
+				et_device_rw.read_device (device_name_open, log_threshold => 0);
 
 				-- optionally the device can be saved under a different name				
 				save_device_as; -- if device_name_save_as is empty nothing happens
