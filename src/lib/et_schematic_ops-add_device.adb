@@ -44,14 +44,13 @@ procedure add_device (
 	destination		: in et_coordinates.type_position; -- sheet/x/y,rotation
 	log_threshold	: in type_log_level) is
 	
-	use et_coordinates;
+	use et_symbols;
 	
 	module_cursor : pac_generic_modules.cursor; -- points to the targeted module
 
 	use et_devices.type_devices;
 	device_cursor_lib : et_devices.type_devices.cursor; -- points to the device in the library
 
-	use et_symbols;
 	
 	procedure add (
 		module_name	: in type_module_name.bounded_string;
