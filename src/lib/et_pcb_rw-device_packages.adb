@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                        PCB_RW.DEVICE_PACKAGES                            --
+--                   PCB READ AND WRITE FOR DEVICE PACKAGES                 --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -45,10 +45,10 @@ with ada.exceptions;
 with ada.containers.ordered_maps;
 
 with et_general;				use et_general;
-with general_rw;				use general_rw;
+with et_general_rw;				use et_general_rw;
 with et_text;					use et_text;
 
-package body pcb_rw.device_packages is
+package body et_pcb_rw.device_packages is
 
 	procedure create_package (
 	-- Creates a package and stores the package in container et_packages.packages.								 								 
@@ -733,7 +733,7 @@ package body pcb_rw.device_packages is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 7; -- incl. section init
 
-		package stack is new general_rw.stack_lifo (
+		package stack is new et_general_rw.stack_lifo (
 			item	=> type_section,
 			max 	=> max_section_depth);
 
@@ -3108,4 +3108,4 @@ package body pcb_rw.device_packages is
 
 	
 	
-end pcb_rw.device_packages;
+end et_pcb_rw.device_packages;

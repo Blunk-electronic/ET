@@ -49,7 +49,7 @@ with ada.containers.ordered_maps;
 
 with et_general;				use et_general;
 
-with general_rw;				use general_rw;
+with et_general_rw;				use et_general_rw;
 with et_geometry;				use et_geometry;
 with et_text;					--use et_text;
 
@@ -399,7 +399,7 @@ package body symbol_rw is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 3; -- incl. section init
 
-		package stack is new general_rw.stack_lifo (
+		package stack is new et_general_rw.stack_lifo (
 			item	=> type_section,
 			max 	=> max_section_depth);
 

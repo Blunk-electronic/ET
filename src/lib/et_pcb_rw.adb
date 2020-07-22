@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                                PCB_RW                                    --
+--                         PCB READ AND WRITE                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -50,10 +50,10 @@ with ada.containers.ordered_maps;
 
 with et_general;				use et_general;
 with et_string_processing;
-with general_rw;				use general_rw;
+with et_general_rw;				use et_general_rw;
 with et_text;					use et_text;
 
-package body pcb_rw is
+package body et_pcb_rw is
 
 	procedure write_text_properties (t : in et_packages.type_text'class) is
 		use et_packages;
@@ -1492,4 +1492,4 @@ package body pcb_rw is
 		circle_end;
 	end write_circle;
 	
-end pcb_rw;
+end et_pcb_rw;

@@ -56,10 +56,10 @@ with et_coordinates;			use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
 with et_string_processing;
-with general_rw;				use general_rw;
+with et_general_rw;				use et_general_rw;
 with schematic_rw;				use schematic_rw;
 with symbol_rw;					use symbol_rw;
-with pcb_rw.device_packages;
+with et_pcb_rw.device_packages;
 with et_conventions;
 with et_geometry;				use et_geometry;
 with et_text;
@@ -274,7 +274,7 @@ package body device_rw is
 		-- Here we track the sections. On entering a section, its name is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 6;
-		package stack is new general_rw.stack_lifo (
+		package stack is new et_general_rw.stack_lifo (
 			item	=> type_section,
 			max 	=> max_section_depth);
 
@@ -376,7 +376,7 @@ package body device_rw is
 
 			-- Read package model (like libraries/packages/__#__#lbr#bel_ic_pretty#S_SO14.pac)
 			-- and do a conductor layer check if required.
-			pcb_rw.device_packages.read_package (variant.package_model, check_layers, log_threshold + 1);
+			et_pcb_rw.device_packages.read_package (variant.package_model, check_layers, log_threshold + 1);
 
 			-- clean up for next variant
 			variant := (others => <>);

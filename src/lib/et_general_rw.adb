@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             GENERAL_RW                                   --
+--                        GENERAL READ AND WRITE                            --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -46,7 +46,7 @@ with ada.exceptions;
 
 with et_string_processing;
 
-package body general_rw is
+package body et_general_rw is
 	
 	-- This function returns the string at position in given line:
 	-- It is frequently used when reading lines of files.
@@ -235,4 +235,4 @@ package body general_rw is
 	end stack_lifo;
 
 	
-end general_rw;
+end et_general_rw;

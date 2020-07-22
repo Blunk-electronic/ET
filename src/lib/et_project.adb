@@ -41,7 +41,7 @@ with ada.directories;
 with gnat.directory_operations;
 
 with et_export;
-with general_rw;				use general_rw;
+with et_general_rw;				use et_general_rw;
 
 with et_project.modules;
 with et_project.rigs;

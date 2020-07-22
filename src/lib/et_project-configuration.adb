@@ -45,7 +45,7 @@ with ada.directories;
 with gnat.directory_operations;
 
 with ada.containers;            	use ada.containers;
-with general_rw;					use general_rw;
+with et_general_rw;					use et_general_rw;
 
 with et_conventions;
 

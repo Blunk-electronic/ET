@@ -70,7 +70,7 @@ procedure read_module (
 	-- Here we track the sections. On entering a section, its name is
 	-- pushed onto the stack. When leaving a section the latest section name is popped.
 	max_section_depth : constant positive := 11;
-	package stack is new general_rw.stack_lifo (
+	package stack is new et_general_rw.stack_lifo (
 		item	=> type_section,
 		max 	=> max_section_depth);
 
@@ -496,7 +496,7 @@ procedure read_module (
 
 		elsif kw = keyword_origin then -- origin x 40 y 60
 			expect_field_count (line, 5);
-			frame_board_origin := pcb_rw.to_position (line, 2);
+			frame_board_origin := et_pcb_rw.to_position (line, 2);
 		else
 			invalid_keyword (kw);
 		end if;
@@ -4765,7 +4765,7 @@ procedure read_module (
 										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 										validate_signal_layer;
 
-									elsif kw = pcb_rw.keyword_width then -- width 0.5
+									elsif kw = et_pcb_rw.keyword_width then -- width 0.5
 										expect_field_count (line, 2);
 										board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 										
@@ -4785,7 +4785,7 @@ procedure read_module (
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = pcb_rw.keyword_width then -- width 0.5
+											if kw = et_pcb_rw.keyword_width then -- width 0.5
 												expect_field_count (line, 2);
 												board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 												
@@ -4827,7 +4827,7 @@ procedure read_module (
 									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = pcb_rw.keyword_width then -- width 0.5
+									if kw = et_pcb_rw.keyword_width then -- width 0.5
 										expect_field_count (line, 2);
 										board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 
@@ -4880,7 +4880,7 @@ procedure read_module (
 										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 										validate_signal_layer;
 										
-									elsif kw = pcb_rw.keyword_width then -- width 0.5
+									elsif kw = et_pcb_rw.keyword_width then -- width 0.5
 										expect_field_count (line, 2);
 										board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 										
@@ -4901,7 +4901,7 @@ procedure read_module (
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = pcb_rw.keyword_width then -- width 0.5
+											if kw = et_pcb_rw.keyword_width then -- width 0.5
 												expect_field_count (line, 2);
 												board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 												
@@ -4947,7 +4947,7 @@ procedure read_module (
 									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = pcb_rw.keyword_width then -- width 0.5
+									if kw = et_pcb_rw.keyword_width then -- width 0.5
 										expect_field_count (line, 2);
 										board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 
@@ -5000,7 +5000,7 @@ procedure read_module (
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = pcb_rw.keyword_width then -- circumfence line width 0.5
+											if kw = et_pcb_rw.keyword_width then -- circumfence line width 0.5
 												expect_field_count (line, 2);
 												board_line_width := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line, 2));
 
@@ -5085,7 +5085,7 @@ procedure read_module (
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = pcb_rw.keyword_width then -- width 0.5
+									if kw = et_pcb_rw.keyword_width then -- width 0.5
 										expect_field_count (line, 2);
 										board_line_width := to_distance (f (line, 2));
 
@@ -5308,7 +5308,7 @@ procedure read_module (
 
 								elsif kw = keyword_pad_technology then -- pad_technology smt_only/tht_only/smt_and_tht
 									expect_field_count (line, 2);
-									pcb_rw.thermal.technology := to_pad_technology (f (line, 2));
+									et_pcb_rw.thermal.technology := to_pad_technology (f (line, 2));
 
 								elsif kw = keyword_pad_connection then -- pad_connection thermal/solid
 									expect_field_count (line, 2);
@@ -5316,11 +5316,11 @@ procedure read_module (
 									
 								elsif kw = keyword_thermal_width then -- thermal_width 0.3
 									expect_field_count (line, 2);
-									pcb_rw.thermal.width := to_distance (f (line, 2));
+									et_pcb_rw.thermal.width := to_distance (f (line, 2));
 
 								elsif kw = keyword_thermal_gap then -- thermal_gap 0.7
 									expect_field_count (line, 2);
-									pcb_rw.thermal.gap := to_distance (f (line, 2));
+									et_pcb_rw.thermal.gap := to_distance (f (line, 2));
 
 								else
 									invalid_keyword (kw);

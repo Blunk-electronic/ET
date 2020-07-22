@@ -43,7 +43,6 @@ procedure save_module (
 is
 	use et_string_processing;
 	use pac_generic_modules;
-	use general_rw;
 
 	-- backup the previous output destination
 	previous_output : ada.text_io.file_type renames current_output;
@@ -476,7 +475,7 @@ is
 				write (keyword => keyword_start, parameters => position (element (line_cursor).start_point));
 				write (keyword => keyword_end  , parameters => position (element (line_cursor).end_point));
 				write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
-				write (keyword => pcb_rw.keyword_width, parameters => to_string (element (line_cursor).width));
+				write (keyword => et_pcb_rw.keyword_width, parameters => to_string (element (line_cursor).width));
 
 				section_mark (section_line, FOOTER);
 				next (line_cursor);
@@ -488,7 +487,7 @@ is
 				write (keyword => keyword_center, parameters => position (element (arc_cursor).center));
 				write (keyword => keyword_start , parameters => position (element (arc_cursor).start_point));
 				write (keyword => keyword_end   , parameters => position (element (arc_cursor).end_point));
-				write (keyword => pcb_rw.keyword_width , parameters => to_string (element (arc_cursor).width));
+				write (keyword => et_pcb_rw.keyword_width , parameters => to_string (element (arc_cursor).width));
 				write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
 				
 				section_mark (section_arc, FOOTER);

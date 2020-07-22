@@ -43,7 +43,7 @@ with ada.tags;
 with ada.exceptions;
 with ada.directories;
 
-with general_rw;				use general_rw;
+with et_general_rw;				use et_general_rw;
 	
 package body et_project.rigs is
 

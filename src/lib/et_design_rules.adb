@@ -40,7 +40,7 @@ with ada.strings;					use ada.strings;
 with ada.characters.handling;		use ada.characters.handling;
 with gnat.directory_operations;
 with et_general;					use et_general;
-with general_rw;					use general_rw;
+with et_general_rw;					use et_general_rw;
 
 package body et_design_rules is
 

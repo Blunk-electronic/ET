@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                        PCB_RW.DEVICE_PACKAGES                            --
+--                   PCB READ AND WRITE FOR DEVICE PACKAGES                 --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -37,7 +37,7 @@
 
 --   do do:
 
-package pcb_rw.device_packages is
+package et_pcb_rw.device_packages is
 
 	section_pad_contours_smt	: constant string	:= "[PAD_CONTOURS_SMT";
 	section_pad_contours_tht	: constant string	:= "[PAD_CONTOURS_THT";	
@@ -108,4 +108,4 @@ package pcb_rw.device_packages is
 		log_threshold	: in et_string_processing.type_log_level);
 
 	
-end pcb_rw.device_packages;
+end et_pcb_rw.device_packages;

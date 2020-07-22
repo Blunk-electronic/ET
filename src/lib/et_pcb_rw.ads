@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               PCB_RW                                     --
+--                         PCB READ AND WRITE                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -48,7 +48,7 @@ with et_packages;				use et_packages;
 with et_pcb;
 with et_pcb_stack;
 
-package pcb_rw is
+package et_pcb_rw is
 
 	use et_pcb_coordinates.pac_geometry_brd;
 	
@@ -359,4 +359,4 @@ package pcb_rw is
 	procedure write_arc (cursor : in et_pcb.type_pcb_contour_arcs.cursor);
 	procedure write_circle (cursor : in et_pcb.type_pcb_contour_circles.cursor);
 	
-end pcb_rw;
+end et_pcb_rw;

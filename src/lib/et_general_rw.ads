@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             GENERAL_RW                                   --
+--                        GENERAL READ AND WRITE                            --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -40,7 +40,7 @@ with ada.containers;            use ada.containers;
 
 with et_string_processing;
 
-package general_rw is
+package et_general_rw is
 
 	comment_mark : constant string := ("--");
 									  
@@ -136,4 +136,4 @@ package general_rw is
 	end stack_lifo;
 
 	
-end general_rw;
+end et_general_rw;
