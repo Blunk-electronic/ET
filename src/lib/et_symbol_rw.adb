@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              SYMBOL_RW                                   --
+--                        SYMBOL READ AND WRITE                             --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -53,7 +53,7 @@ with et_general_rw;				use et_general_rw;
 with et_geometry;				use et_geometry;
 with et_text;					--use et_text;
 
-package body symbol_rw is
+package body et_symbol_rw is
 
 	function to_grid (
 		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
@@ -1148,4 +1148,4 @@ package body symbol_rw is
 	end read_symbol;
 
 	
-end symbol_rw;
+end et_symbol_rw;

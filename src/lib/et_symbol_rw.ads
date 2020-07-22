@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              SYMBOL_RW                                   --
+--                        SYMBOL READ AND WRITE                             --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -39,7 +39,7 @@ with et_string_processing;
 with et_coordinates;
 with et_symbols;			use et_symbols;
 
-package symbol_rw is
+package et_symbol_rw is
 
 	use et_coordinates.pac_geometry_sch;
 	
@@ -103,4 +103,4 @@ package symbol_rw is
 		log_threshold	: in et_string_processing.type_log_level);
 
 	
-end symbol_rw;
+end et_symbol_rw;

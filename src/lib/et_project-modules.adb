@@ -49,18 +49,19 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_export;
-with et_pcb_coordinates;
-with et_material;
 with et_text;					use et_text;
-with et_geometry;				use et_geometry;
 with et_general_rw;				use et_general_rw;
-with et_pcb_rw;					use et_pcb_rw;
-with et_pcb_rw.device_packages;	use et_pcb_rw.device_packages;
-with schematic_rw;				use schematic_rw;
-with symbol_rw;					use symbol_rw;
-with et_device_rw;				use et_device_rw;
-with et_symbols;
 with et_meta;
+
+with et_pcb_coordinates;
+with et_geometry;				use et_geometry;
+with et_symbols;
+
+with et_symbol_rw;				use et_symbol_rw;
+with et_device_rw;				use et_device_rw;
+with et_pcb_rw;					use et_pcb_rw;
+with schematic_rw;				use schematic_rw;
+with et_material;
 
 with et_conventions;
 with et_project.rigs;

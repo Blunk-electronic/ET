@@ -36,6 +36,7 @@
 --
 
 with et_frame_rw;
+with et_pcb_rw.device_packages;	use et_pcb_rw.device_packages;
 
 separate (et_project.modules)
 

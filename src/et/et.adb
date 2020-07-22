@@ -64,7 +64,7 @@ with et_pcb_rw;
 with et_pcb_rw.device_packages;
 
 with et_symbols;
-with symbol_rw;
+with et_symbol_rw;
 
 with et_devices;
 with et_device_rw;
@@ -433,7 +433,7 @@ procedure et is
 		-- If symbol_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only symbol in et_symbols.symbols is saved.
 		if length (symbol_name_save_as) > 0 then
-			symbol_rw.save_symbol (
+			et_symbol_rw.save_symbol (
 				file_name 		=> symbol_name_save_as,
 				symbol			=> et_symbols.type_symbols.last_element (et_symbols.symbols),
 				log_threshold	=> 0);
@@ -603,7 +603,7 @@ procedure et is
 			elsif length (symbol_name_create) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for symbol editing
 				
-				symbol_rw.create_symbol (symbol_name_create, symbol_appearance, log_threshold => 0);
+				et_symbol_rw.create_symbol (symbol_name_create, symbol_appearance, log_threshold => 0);
 
 				-- optionally the symbol can be saved under a different name
 				save_symbol_as; -- if symbol_name_save_as is empty nothing happens
@@ -611,7 +611,7 @@ procedure et is
 			elsif length (symbol_name_open) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for symbol editing
 				
-				symbol_rw.read_symbol (symbol_name_open, log_threshold => 0);
+				et_symbol_rw.read_symbol (symbol_name_open, log_threshold => 0);
 
 				-- optionally the symbol can be saved under a different name				
 				save_symbol_as; -- if symbol_name_save_as is empty nothing happens

@@ -58,7 +58,7 @@ use et_coordinates.pac_geometry_sch;
 with et_string_processing;
 with et_general_rw;				use et_general_rw;
 with schematic_rw;				use schematic_rw;
-with symbol_rw;					use symbol_rw;
+with et_symbol_rw;				use et_symbol_rw;
 with et_pcb_rw.device_packages;
 with et_conventions;
 with et_geometry;				use et_geometry;
