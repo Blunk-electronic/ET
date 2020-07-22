@@ -1603,6 +1603,9 @@ package body et_schematic_ops is
 		
 	end default_text_positions;
 
+	
+
+	
 	procedure rotate_unit (
 	-- Rotates the given unit within the schematic. Disconnects the unit from
 	-- start or end points of net segments.
@@ -3418,11 +3421,6 @@ package body et_schematic_ops is
 		return next_name;
 	end next_device_name;
 
-	type type_unit_cursors_lib is record
-		int : pac_units_internal.cursor;
-		ext : pac_units_external.cursor;
-	end record;
-
 	function first_unit (device_cursor : in et_devices.type_devices.cursor) return type_unit_cursors_lib is
 	-- Returns the cursor of the first internal or external unit. Searches first in internal and
 	-- then in external units. The search order is further-on determined
@@ -3646,7 +3644,7 @@ package body et_schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in et_devices.type_variant_name.bounded_string; -- N, D, S_0805
-		place			: in et_coordinates.type_position; -- sheet/x/y,rotation
+		destination		: in et_coordinates.type_position; -- sheet/x/y,rotation
 		log_threshold	: in type_log_level) is separate;
 
 	procedure copy_device (

@@ -41,7 +41,7 @@ procedure add_device (
 	module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 	variant			: in et_devices.type_variant_name.bounded_string; -- N, D, S_0805
-	place			: in et_coordinates.type_position; -- sheet/x/y,rotation
+	destination		: in et_coordinates.type_position; -- sheet/x/y,rotation
 	log_threshold	: in type_log_level) is
 	
 	use et_coordinates;
@@ -64,9 +64,7 @@ procedure add_device (
 		next_name : type_name := 
 			next_device_name (module_cursor, element (device_cursor_lib).prefix);
 
-		name	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
-		value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
-		purpose	: et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE);
+		placeholders : type_rotated_placeholders;
 		
 		unit_cursors : type_unit_cursors_lib;
 
@@ -88,30 +86,25 @@ procedure add_device (
 						key			=> key (unit_cursors.int), -- the unit name like A, B
 						new_item	=> (
 							appearance	=> VIRTUAL,
-							position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 							others 		=> <>) -- mirror
 							);
 					
 				when PCB =>
 
-					-- rotate the placeholders according to rotation given by caller:
-					name	:= element (unit_cursors.int).symbol.name;
-					value	:= element (unit_cursors.int).symbol.value;
-					purpose	:= element (unit_cursors.int).symbol.purpose;
-
-					rotate_by (name.position, rot (place));
-					rotate_by (value.position, rot (place));
-					rotate_by (purpose.position, rot (place));
+					-- Rotate the positions of placeholders and their rotation about
+					-- their own origin according to rotation given by caller:
+					placeholders := rotate_placeholders (unit_cursors.int, destination);
 					
 					type_units.insert (
 						container	=> device.units,
 						key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
 						new_item	=> (
 							appearance	=> PCB,
-							position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-							name		=> name, 	
-							value		=> value,	
-							purpose		=> purpose,	
+							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+							name		=> placeholders.name,
+							value		=> placeholders.value,
+							purpose		=> placeholders.purpose,
 							others 		=> <>) -- mirror
 							);
 					
@@ -138,7 +131,7 @@ procedure add_device (
 						key			=> key (unit_cursors.ext), -- the unit name like A, B
 						new_item	=> (
 							appearance	=> VIRTUAL,
-							position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
+							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
 							others 		=> <>) -- mirror
 							);
 					
@@ -153,24 +146,19 @@ procedure add_device (
 					-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
 					-- and constraint_error would arise here:
 
-					-- rotate the placeholders according to rotation given by caller:
-					name	:= element (symbol_cursor).name;
-					value	:= element (symbol_cursor).value;
-					purpose	:= element (symbol_cursor).purpose;
-
-					rotate_by (name.position, rot (place));
-					rotate_by (value.position, rot (place));
-					rotate_by (purpose.position, rot (place));
+					-- Rotate the positions of placeholders and their rotation about
+					-- their own origin according to rotation given by caller:
+					placeholders := rotate_placeholders (symbol_cursor, destination);
 					
 					type_units.insert (
 						container	=> device.units,
 						key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
 						new_item	=> (
 							appearance	=> PCB,
-							position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
-							name		=> name,	
-							value		=> value,	
-							purpose		=> purpose,	
+							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
+							name		=> placeholders.name,	
+							value		=> placeholders.value,	
+							purpose		=> placeholders.purpose,	
 							others 		=> <>) -- mirror
 							);
 
@@ -291,11 +279,11 @@ procedure add_device (
 
 		-- Calculate the absolute positions of the unit ports. Rotate first if required:
 		log (text => "calculating absolute port positions ...", level => log_threshold + 2);
-		if rot (place) /= zero_rotation then
-			rotate_ports (ports, rot (place));
+		if rot (destination) /= zero_rotation then
+			rotate_ports (ports, rot (destination));
 		end if;
 
-		move_ports (ports, place);
+		move_ports (ports, destination);
 		
 		-- Insert the new unit ports in the nets (type_module.nets):
 		insert_ports (
@@ -303,7 +291,7 @@ procedure add_device (
 			device			=> next_name,
 			unit			=> unit_name,
 			ports			=> ports,
-			sheet			=> et_coordinates.sheet (place),
+			sheet			=> et_coordinates.sheet (destination),
 			log_threshold	=> log_threshold + 2);
 		
 		log_indentation_down;
@@ -316,16 +304,16 @@ begin -- add_device
 			" adding device " & to_string (device_model) &
 			" package variant " & to_string (variant) &
 			" at" &
-			to_string (position => place) &
-			" rotation" & to_string (rot (place)),
+			to_string (position => destination) &
+			" rotation" & to_string (rot (destination)),
 			level => log_threshold);
 		
 	else -- virtual device
 		log (text => "module " & to_string (module_name) &
 			" adding device " & to_string (device_model) &
 			" at" &
-			to_string (position => place) &
-			" rotation" & to_string (rot (place)),
+			to_string (position => destination) &
+			" rotation" & to_string (rot (destination)),
 			level => log_threshold);
 	end if;
 		

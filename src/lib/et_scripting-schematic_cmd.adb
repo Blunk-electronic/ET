@@ -278,7 +278,7 @@ begin -- schematic_cmd
 							add_device (
 								module_name 	=> module,
 								device_model	=> to_file_name (f (5)),
-								place			=> to_position 
+								destination		=> to_position 
 									(
 									sheet => to_sheet (f (6)),
 									point => type_point (set 
@@ -297,7 +297,7 @@ begin -- schematic_cmd
 							add_device (
 								module_name 	=> module,
 								device_model	=> to_file_name (f (5)),
-								place			=> to_position 
+								destination		=> to_position 
 									(
 									sheet => to_sheet (f (6)),
 									point => type_point (set 

@@ -426,9 +426,24 @@ package et_devices is
 
 	end record;
 
-	
-	
 
+	-- When querying units of a device this type is required:
+	type type_unit_cursors_lib is record -- CS rename to type_unit_cursors
+		int : pac_units_internal.cursor;
+		ext : pac_units_external.cursor;
+	end record;
+
+	-- Use this function to adopt placeholder position and rotation 
+	-- of a internal symbol.
+	-- Rotates the positions of placeholders and their rotation about
+	-- their own origin according to rotation given by destination:
+	function rotate_placeholders (
+		symbol_cursor	: in pac_units_internal.cursor;
+		destination		: in et_coordinates.type_position)
+		return type_rotated_placeholders;
+
+
+	
 	
 	package type_devices is new indefinite_ordered_maps ( -- CS rename to pac_devices
 		key_type 		=> type_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev

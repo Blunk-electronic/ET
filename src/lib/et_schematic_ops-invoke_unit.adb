@@ -103,7 +103,7 @@ procedure invoke_unit (
 					
 				when PCB =>
 
-					-- rotate the placeholders according to rotation given by caller:
+					-- rotate positions of the placeholders according to rotation given by caller:
 					name	:= element (unit_cursors.int).symbol.name;
 					value	:= element (unit_cursors.int).symbol.value;
 					purpose	:= element (unit_cursors.int).symbol.purpose;

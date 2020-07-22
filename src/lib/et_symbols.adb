@@ -336,6 +336,60 @@ package body et_symbols is
 		return type_symbols.find (symbols, symbol);
 	end locate;
 
+
+	procedure rotate (
+		phs			: in out type_rotated_placeholders;
+		rotation	: in type_rotation)
+	is begin
+		-- Rotate the POSITIONS	of the placeholders about
+		-- the origin of the symbol:
+		rotate_by (phs.name.position, rotation);
+		rotate_by (phs.value.position, rotation);
+		rotate_by (phs.purpose.position, rotation);
+
+		-- Rotate the placeholders about THEIR OWN ORIGIN.
+		-- The resulting angle is the sum of the initial 
+		-- rotation (given by the symbol model) and the rotation
+		-- of the unit.
+		-- After summing up the rotation must be snapped to either
+		-- HORIZONTAL or VERTICAL so that the text is readable
+		-- from the right or from the front of the drawing.
+		phs.name.rotation := pac_text.snap (
+			pac_text.to_rotation (phs.name.rotation) + rotation);
+
+		phs.value.rotation := pac_text.snap (
+			pac_text.to_rotation (phs.value.rotation) + rotation);
+
+		phs.purpose.rotation := pac_text.snap (
+			pac_text.to_rotation (phs.purpose.rotation) + rotation);
+
+	end rotate;
+
+	-- Use this function to adopt placeholder position and rotation of a symbol.
+	-- Rotates the positions of placeholders and their rotation about
+	-- their own origin according to rotation given by destination:
+	function rotate_placeholders (
+		symbol_cursor	: in type_symbols.cursor;
+		destination		: in et_coordinates.type_position)
+		return type_rotated_placeholders
+	is
+		use et_symbols;
+		use type_symbols;
+		r : type_rotated_placeholders; -- to be returned
+	begin
+		r.name		:= element (symbol_cursor).name;
+		r.value		:= element (symbol_cursor).value;
+		r.purpose	:= element (symbol_cursor).purpose;
+
+		-- rotate the positions of placeholders according to rotation given by caller:
+		rotate (r, rot (destination));
+		
+		return r;
+	end rotate_placeholders;
+
+
+
+	
 	procedure compute_boundaries ( 
 		symbol			: in type_symbols.cursor;
 		log_threshold	: in et_string_processing.type_log_level) is

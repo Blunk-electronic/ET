@@ -677,6 +677,28 @@ package body et_devices is
 	end to_string;
 
 
+	function rotate_placeholders (
+		symbol_cursor	: in pac_units_internal.cursor;
+		destination		: in et_coordinates.type_position)
+		return type_rotated_placeholders
+	is
+		use pac_units_internal;
+		use et_coordinates.pac_geometry_sch;
+
+		r : type_rotated_placeholders; -- to be returned
+	begin
+		r.name		:= element (symbol_cursor).symbol.name;
+		r.value		:= element (symbol_cursor).symbol.value;
+		r.purpose	:= element (symbol_cursor).symbol.purpose;
+
+		-- rotate the positions of placeholders according to rotation given by caller:
+		rotate (r, rot (destination));
+		
+		return r;
+	end rotate_placeholders;
+
+	
+
 	function units_total (
 		device_cursor	: in type_devices.cursor)
 		return type_unit_count is

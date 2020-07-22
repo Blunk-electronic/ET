@@ -553,14 +553,48 @@ package et_symbols is
 
 	symbol_library_file_extension : constant string := "sym";
 
-	-- HERE RIG WIDE SYMBOLS ARE KEPT:	
+	-- HERE RIG WIDE EXTERNAL SYMBOLS ARE KEPT:	
 	symbols : type_symbols.map;
 
+	-- NOTE: Devices can use internal or external symbols. An internal symbol
+	-- is modelled inside the device, is fixed to the that device
+	-- and can be used by that device exclusively.
+	-- For example after importing a KiCad project there will only be internal
+	-- symbols.
+	--  External symbols provide much more flexibilty as they can be used by many
+	-- devices. There is no fixed connection between device and symbol.
+	
 	function locate (symbol : in type_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
 		return type_symbols.cursor;
 
-	
 
+	-- When placing, copying, invoking units their placeholders must be
+	-- changed according to the rotation of the affected unit. We basically
+	-- deal with only those placeholders:
+	type type_rotated_placeholders is record
+		name	: type_text_placeholder (meaning => et_symbols.NAME);
+		value	: type_text_placeholder (meaning => et_symbols.VALUE);
+		purpose	: type_text_placeholder (meaning => et_symbols.PURPOSE);
+	end record;
+
+	-- This procedure is called by function et_symbols.rotate_placeholders and
+	-- by the function et_devices.rotate_placeholders. It does the actual
+	-- rotating of placeholders of a symbol.
+	procedure rotate (
+		phs			: in out type_rotated_placeholders;
+		rotation	: in type_rotation); -- the rotation of the unit
+	
+	-- Use this function to adopt placeholder position and rotation 
+	-- of a external symbol. Exter
+	-- Rotates the positions of placeholders and their rotation about
+	-- their own origin according to rotation given by destination:
+	function rotate_placeholders (
+		symbol_cursor	: in type_symbols.cursor;
+		destination		: in et_coordinates.type_position) -- x/y/rotation of the unit
+		return type_rotated_placeholders;
+
+
+	
 -- MISC
 
 	
