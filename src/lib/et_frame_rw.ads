@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              FRAME_RW                                    --
+--                     DRAWING FRAME READ AND WRITE                         --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -47,7 +47,7 @@ with et_general;				use et_general;
 with et_text;
 with et_frames;					use et_frames;
 
-package frame_rw is
+package et_frame_rw is
 
 	keyword_domain			: constant string := "domain";				
 	keyword_paper_size		: constant string := "paper_size";
@@ -165,7 +165,7 @@ package frame_rw is
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_frame;
 	
-end frame_rw;
+end et_frame_rw;
 
 -- Soli Deo Gloria
 

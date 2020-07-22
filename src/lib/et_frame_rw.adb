@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              FRAME_RW                                    --
+--                     DRAWING FRAME READ AND WRITE                         --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -55,7 +55,7 @@ with et_frames;					use et_frames;
 with et_string_processing;		use et_string_processing;
 with general_rw;				use general_rw;
 
-package body frame_rw is
+package body et_frame_rw is
 
 	function to_string (position : in type_position) return string is
 	-- returns something like "x 120 y 12"
@@ -1351,7 +1351,7 @@ package body frame_rw is
 		
 	end read_frame;
 	
-end frame_rw;
+end et_frame_rw;
 
 -- Soli Deo Gloria
 

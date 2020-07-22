@@ -70,7 +70,7 @@ with et_devices;
 with device_rw;
 
 with et_frames;
-with frame_rw;
+with et_frame_rw;
 
 with et_coordinates;
 
@@ -639,14 +639,14 @@ procedure et is
 			elsif length (frame_name_create) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for frame editing
 				
-				frame_rw.create_frame (frame_name_create, frame_domain, log_threshold => 0); -- incl. save to file
+				et_frame_rw.create_frame (frame_name_create, frame_domain, log_threshold => 0); -- incl. save to file
 
 			elsif length (frame_name_open) > 0 then
 				runmode := MODE_HEADLESS; -- CS as long as there is no GUI for frame editing
 				
 				declare
 					use et_frames;
-					use frame_rw;
+					use et_frame_rw;
 					frame : type_frame (frame_domain);
 				begin
 					frame := read_frame (frame_name_open, frame_domain, log_threshold => 0);

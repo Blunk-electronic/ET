@@ -60,7 +60,6 @@ with schematic_rw;				use schematic_rw;
 with symbol_rw;					use symbol_rw;
 with device_rw;					use device_rw;
 with et_symbols;
-with frame_rw;
 with et_meta;
 
 with et_conventions;

@@ -35,6 +35,8 @@
 --   history of changes:
 --
 
+with et_frame_rw;
+
 separate (et_project.modules)
 
 procedure read_module (
@@ -48,7 +50,7 @@ procedure read_module (
 	previous_input : ada.text_io.file_type renames current_input;
 
 	use et_string_processing;
-
+	
 	-- Environment variables like $templates could be in file name.
 	-- In order to test whether the given module file exists, file name_name must be expanded
 	-- so that the environment variables are replaced by the real paths like:
@@ -999,7 +1001,7 @@ procedure read_module (
 				pac_schematic_descriptions.clear (sheet_descriptions);
 				
 				-- read the frame template file
-				module.frames.frame := frame_rw.read_frame (
+				module.frames.frame := et_frame_rw.read_frame (
 					file_name		=> frame_template_schematic,
 					domain			=> SCHEMATIC,
 					log_threshold	=> log_threshold + 2);
@@ -1037,7 +1039,7 @@ procedure read_module (
 				module.board.frame.template := frame_template_board;
 
 				-- read the frame template file
-				module.board.frame.frame := frame_rw.read_frame (
+				module.board.frame.frame := et_frame_rw.read_frame (
 					file_name		=> frame_template_board,
 					domain			=> PCB,
 					log_threshold	=> log_threshold + 2);
