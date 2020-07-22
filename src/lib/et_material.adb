@@ -56,7 +56,7 @@ with gnat.directory_operations;
 with ada.exceptions;
 
 with et_general;				use et_general;
-with assembly_variants;
+with et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_export;
 with et_csv;					use et_csv;

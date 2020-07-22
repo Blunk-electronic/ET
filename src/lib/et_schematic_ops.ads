@@ -58,7 +58,7 @@ with et_project;				use et_project;
 with et_project.modules;		use et_project.modules;
 with et_text;
 with submodules;
-with assembly_variants;
+with et_assembly_variants;
 with numbering;
 with et_material;
 with netlists;
@@ -542,7 +542,7 @@ package et_schematic_ops is
 	-- Describes an assembly variant. Overwrites the previous description.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
-		description		: in assembly_variants.type_description; -- "this is the low budget variant"
+		description		: in et_assembly_variants.type_description; -- "this is the low budget variant"
 		log_threshold	: in type_log_level);
 
 	procedure mount_device (

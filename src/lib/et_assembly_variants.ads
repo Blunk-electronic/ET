@@ -51,7 +51,7 @@ with et_material;
 with et_string_processing;		use et_string_processing;
 with et_devices;				use et_devices;
 
-package assembly_variants is
+package et_assembly_variants is
 
 	keyword_active	: constant string := "active";	
 	
@@ -119,7 +119,7 @@ package assembly_variants is
 	-- Returns true if the given device is to be mounted according to given assembly variant.
 	-- If variant points to no element the default variant is assumed and the device regarded as mounted.
 	
-end assembly_variants;
+end et_assembly_variants;
 
 -- Soli Deo Gloria
 

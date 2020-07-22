@@ -61,7 +61,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_brd;
 
 -- with submodules;
-with assembly_variants;
+with et_assembly_variants;
 with pick_and_place;
 with et_devices;				use et_devices;
 with et_conventions;

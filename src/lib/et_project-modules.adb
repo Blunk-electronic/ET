@@ -60,7 +60,7 @@ with et_symbols;
 with et_symbol_rw;				use et_symbol_rw;
 with et_device_rw;				use et_device_rw;
 with et_pcb_rw;					use et_pcb_rw;
-with schematic_rw;				use schematic_rw;
+with et_schematic_rw;			use et_schematic_rw;
 with et_material;
 
 with et_conventions;
@@ -628,9 +628,9 @@ package body et_project.modules is
 			-- Sets flag variant_found.
 				submodule_name	: in type_module_name.bounded_string;
 				submodule		: in et_schematic.type_module) is
-				use assembly_variants;
+				use et_assembly_variants;
 			begin
-				if assembly_variants.pac_variants.contains (submodule.variants, variant) then
+				if et_assembly_variants.pac_variants.contains (submodule.variants, variant) then
 					variant_found := true;
 				end if;
 			end query_variants;
@@ -674,7 +674,7 @@ package body et_project.modules is
 		variant		: in et_general.type_variant_name.bounded_string) -- low_cost
 		return boolean is
 
-		use assembly_variants.pac_variants;
+		use et_assembly_variants.pac_variants;
 
 		result : boolean := false; -- to be returned
 
@@ -715,20 +715,20 @@ package body et_project.modules is
 		procedure query_variants (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use assembly_variants.pac_variants;
-			variant_cursor : assembly_variants.pac_variants.cursor;
+			use et_assembly_variants.pac_variants;
+			variant_cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure query_devices (
 				variant_name	: in et_general.type_variant_name.bounded_string;
-				variant			: in assembly_variants.type_variant) is
-				use assembly_variants;
-				use assembly_variants.type_devices;
-				device_cursor : assembly_variants.type_devices.cursor;
+				variant			: in et_assembly_variants.type_variant) is
+				use et_assembly_variants;
+				use et_assembly_variants.type_devices;
+				device_cursor : et_assembly_variants.type_devices.cursor;
 			begin
 				device_cursor := find (variant.devices, device);
 
 				-- The device may be listed in the assembly variant:
-				if device_cursor /= assembly_variants.type_devices.no_element then
+				if device_cursor /= et_assembly_variants.type_devices.no_element then
 					case element (device_cursor).mounted is
 						when YES => result := true; -- mounted with alternative value, partcode or purpose
 						when NO  => result := false; -- not mounted
@@ -773,21 +773,21 @@ package body et_project.modules is
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
 		device	: in type_name)
-		return assembly_variants.type_devices.cursor is
+		return et_assembly_variants.type_devices.cursor is
 
-		cursor : assembly_variants.type_devices.cursor; -- to be returned;
+		cursor : et_assembly_variants.type_devices.cursor; -- to be returned;
 		
 		procedure query_variants (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use assembly_variants.pac_variants;
+			use et_assembly_variants.pac_variants;
 			
-			variant_cursor : assembly_variants.pac_variants.cursor;
+			variant_cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure query_devices (
 				variant_name	: in et_general.type_variant_name.bounded_string;
-				variant			: in assembly_variants.type_variant) is
-				use assembly_variants.type_devices;
+				variant			: in et_assembly_variants.type_variant) is
+				use et_assembly_variants.type_devices;
 			begin
 				cursor := find (variant.devices, device);
 			end query_devices;
@@ -823,21 +823,21 @@ package body et_project.modules is
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
-		return assembly_variants.type_submodules.cursor is
+		return et_assembly_variants.type_submodules.cursor is
 
-		cursor : assembly_variants.type_submodules.cursor; -- to be returned;
+		cursor : et_assembly_variants.type_submodules.cursor; -- to be returned;
 		
 		procedure query_variants (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use assembly_variants.pac_variants;
+			use et_assembly_variants.pac_variants;
 
-			variant_cursor : assembly_variants.pac_variants.cursor;
+			variant_cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure query_submodules (
 				variant_name	: in et_general.type_variant_name.bounded_string;
-				variant			: in assembly_variants.type_variant) is
-				use assembly_variants.type_submodules;
+				variant			: in et_assembly_variants.type_variant) is
+				use et_assembly_variants.type_submodules;
 			begin
 				cursor := find (variant.submodules, submod);
 			end query_submodules;
@@ -852,7 +852,7 @@ package body et_project.modules is
 		
 	begin -- alternative_submodule
 		if et_general.is_default (variant) then
-			cursor := assembly_variants.type_submodules.no_element;
+			cursor := et_assembly_variants.type_submodules.no_element;
 		else
 			pac_generic_modules.query_element (
 				position	=> module,

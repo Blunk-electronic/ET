@@ -91,7 +91,7 @@ procedure read_module (
 	procedure set_active_assembly_variant is
 	-- Assigns to the module the active assembly variant.
 		use et_schematic;
-		use assembly_variants;
+		use et_assembly_variants;
 		
 		kw : constant string := f (line, 1);
 
@@ -556,9 +556,9 @@ procedure read_module (
 	
 	-- assembly variants
 	assembly_variant_name			: et_general.type_variant_name.bounded_string; -- low_cost
-	assembly_variant_description	: assembly_variants.type_description; -- "variant without temp. sensor"
-	assembly_variant_devices		: assembly_variants.type_devices.map;
-	assembly_variant_submodules		: assembly_variants.type_submodules.map;
+	assembly_variant_description	: et_assembly_variants.type_description; -- "variant without temp. sensor"
+	assembly_variant_devices		: et_assembly_variants.type_devices.map;
+	assembly_variant_submodules		: et_assembly_variants.type_submodules.map;
 	
 	-- temporarily collection of units:
 	device_units	: et_schematic.type_units.map; -- PWR, A, B, ...
@@ -2792,15 +2792,15 @@ procedure read_module (
 				module_name	: in type_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 				inserted : boolean;
-				use assembly_variants;
-				use assembly_variants.pac_variants;
-				cursor : assembly_variants.pac_variants.cursor;
+				use et_assembly_variants;
+				use et_assembly_variants.pac_variants;
+				cursor : et_assembly_variants.pac_variants.cursor;
 			begin
 				log (text => "assembly variant " & 
 						enclose_in_quotes (to_variant (assembly_variant_name)), level => log_threshold + 2);
 
 				-- insert variant in container variants
-				assembly_variants.pac_variants.insert (
+				et_assembly_variants.pac_variants.insert (
 					container	=> module.variants,
 					key			=> assembly_variant_name,
 					inserted	=> inserted,
@@ -2821,7 +2821,7 @@ procedure read_module (
 				-- clean up for next assembly variant
 				assembly_variant_name := to_variant ("");
 				assembly_variant_description := to_unbounded_string ("");
-				assembly_variant_devices := assembly_variants.type_devices.empty_map;
+				assembly_variant_devices := et_assembly_variants.type_devices.empty_map;
 				assembly_variant_submodules := type_submodules.empty_map;
 				
 			end insert_assembly_variant;
@@ -4238,12 +4238,12 @@ procedure read_module (
 								use et_devices;
 								kw : string 	:= f (line, 1);
 								device_name		: type_name; -- R1
-								device			: access assembly_variants.type_device;
-								device_cursor	: assembly_variants.type_devices.cursor;
+								device			: access et_assembly_variants.type_device;
+								device_cursor	: et_assembly_variants.type_devices.cursor;
 								
 								submod_name		: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 								submod_var		: et_general.type_variant_name.bounded_string; -- low_cost
-								submod_cursor	: assembly_variants.type_submodules.cursor;
+								submod_cursor	: et_assembly_variants.type_submodules.cursor;
 								inserted		: boolean;
 							begin
 								-- CS: In the following: set a corresponding parameter-found-flag
@@ -4254,7 +4254,7 @@ procedure read_module (
 								elsif kw = keyword_description then -- description "variant without temperature sensor"
 									expect_field_count (line, 2);
 
-									assembly_variant_description := assembly_variants.to_unbounded_string (f (line, 2));
+									assembly_variant_description := et_assembly_variants.to_unbounded_string (f (line, 2));
 									
 								-- A line like "device R1 not_mounted" or
 								-- a line like "device R1 value 270R partcode 12345" or		
@@ -4278,16 +4278,16 @@ procedure read_module (
 									if f (line, 3) = keyword_not_mounted then
 										-- line like "device R1 not_mounted"
 
-										device := new assembly_variants.type_device'(
-											mounted	=> assembly_variants.NO);
+										device := new et_assembly_variants.type_device'(
+											mounted	=> et_assembly_variants.NO);
 										
 									elsif f (line, 3) = keyword_value then
 										-- line like "device R1 value 270R partcode 12345"
 
 										-- create a device with discriminant "mounted" where
 										-- pointer assembly_variant_device is pointing at.
-										device := new assembly_variants.type_device'(
-											mounted	=> assembly_variants.YES,
+										device := new et_assembly_variants.type_device'(
+											mounted	=> et_assembly_variants.YES,
 											others	=> <>); -- to be assigned later
 										
 										-- there must be at least 6 fields:
@@ -4329,7 +4329,7 @@ procedure read_module (
 									end if;											
 
 									-- Insert the device in the current assembly variant:
-									assembly_variants.type_devices.insert (
+									et_assembly_variants.type_devices.insert (
 										container	=> assembly_variant_devices,
 										key			=> device_name, -- R1
 										new_item	=> device.all,
@@ -4372,7 +4372,7 @@ procedure read_module (
 										-- read_submodule_files has been executed. See far below.
 
 										-- Insert the submodule in the current assembly variant:
-										assembly_variants.type_submodules.insert (
+										et_assembly_variants.type_submodules.insert (
 											container	=> assembly_variant_submodules,
 											key			=> submod_name, -- OSC1
 											new_item	=> (variant => submod_var), -- type_submodule is a record with currently only one element
@@ -6098,15 +6098,15 @@ procedure read_module (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
 
-			use assembly_variants;
-			use assembly_variants.pac_variants;
+			use et_assembly_variants;
+			use et_assembly_variants.pac_variants;
 			
-			variant_cursor : assembly_variants.pac_variants.cursor := module.variants.first;
+			variant_cursor : et_assembly_variants.pac_variants.cursor := module.variants.first;
 			variant_name : et_general.type_variant_name.bounded_string; -- low_cost
 
 			procedure query_submodules (
 				variant_name	: in et_general.type_variant_name.bounded_string;
-				variant			: in assembly_variants.type_variant) is
+				variant			: in et_assembly_variants.type_variant) is
 				use type_submodules;
 				submod_cursor : type_submodules.cursor := variant.submodules.first;
 				submod_name : type_module_instance_name.bounded_string; -- CLK_GENERATOR
@@ -6145,11 +6145,11 @@ procedure read_module (
 			end query_submodules;
 			
 		begin -- query_variants
-			if variant_cursor = assembly_variants.pac_variants.no_element then
+			if variant_cursor = et_assembly_variants.pac_variants.no_element then
 				log (text => "no variants specified", level => log_threshold);
 			else
 				-- iterate assembly variants of parent module
-				while variant_cursor /= assembly_variants.pac_variants.no_element loop
+				while variant_cursor /= et_assembly_variants.pac_variants.no_element loop
 					variant_name := key (variant_cursor);
 
 					-- show assembly variant of parent module

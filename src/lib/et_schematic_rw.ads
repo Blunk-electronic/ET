@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             SCHEMATIC_RW                                 --
+--                         SCHEMATIC READ AND WRITE                         --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -38,7 +38,7 @@
 with et_coordinates;			use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
-package schematic_rw is
+package et_schematic_rw is
 
 	keyword_sheet				: constant string := "sheet";	
 	
@@ -50,4 +50,4 @@ package schematic_rw is
 	-- Returns something like "sheet 3 x 12.34 y 45.0".
 	
 	
-end schematic_rw;
+end et_schematic_rw;

@@ -43,7 +43,7 @@ with et_coordinates;			use et_coordinates;
 with et_schematic;
 with submodules;
 with netlists;
-with assembly_variants;
+with et_assembly_variants;
 with et_terminals;
 with et_drills;
 with et_packages;
@@ -345,7 +345,7 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
 		device	: in type_name)
-		return assembly_variants.type_devices.cursor;
+		return et_assembly_variants.type_devices.cursor;
 
 	function alternative_submodule (
 	-- Returns a cursor to the alternative submodule variant in the given module
@@ -361,7 +361,7 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
-		return assembly_variants.type_submodules.cursor;
+		return et_assembly_variants.type_submodules.cursor;
 
 -- 	function package_model (
 -- 		module	: in pac_generic_modules.cursor; -- the module like motor_driver

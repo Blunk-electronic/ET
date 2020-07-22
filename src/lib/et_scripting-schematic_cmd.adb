@@ -692,7 +692,7 @@ begin -- schematic_cmd
 								(
 								module_name		=> module,
 								variant_name	=> to_variant (f (5)), -- low_cost
-								description		=> assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
+								description		=> et_assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
 								log_threshold	=> log_threshold + 1);
 							
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1);

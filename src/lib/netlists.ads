@@ -49,7 +49,7 @@ with ada.containers.indefinite_ordered_sets;
 
 with et_general;				use et_general;
 with submodules;
-with assembly_variants;
+with et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_symbols;
 with et_terminals;

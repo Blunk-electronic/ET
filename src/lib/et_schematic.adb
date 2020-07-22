@@ -252,7 +252,7 @@ package body et_schematic is
 	
 	function ports (
 		net		: in type_nets.cursor;
-		variant	: in assembly_variants.pac_variants.cursor)
+		variant	: in et_assembly_variants.pac_variants.cursor)
 		return type_ports is
 	-- Returns the ports of devices, submodules and netchangers in
 	-- the given net. The given assembly variant determines whether
@@ -278,7 +278,7 @@ package body et_schematic is
 			-- Inserts the device/port in result.devices. Skips the device/port
 			-- according to the given assembly variant.
 			begin
-				if assembly_variants.is_mounted (
+				if et_assembly_variants.is_mounted (
 					device		=> element (device_cursor).device_name, -- IC4, R101
 					variant		=> variant) 
 				then

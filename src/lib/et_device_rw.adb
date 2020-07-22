@@ -57,7 +57,7 @@ use et_coordinates.pac_geometry_sch;
 
 with et_string_processing;
 with et_general_rw;				use et_general_rw;
-with schematic_rw;				use schematic_rw;
+with et_schematic_rw;			use et_schematic_rw;
 with et_symbol_rw;				use et_symbol_rw;
 with et_pcb_rw.device_packages;
 with et_conventions;
@@ -390,7 +390,7 @@ package body et_device_rw is
 		units_internal		: pac_units_internal.map;
 		units_external		: pac_units_external.map;
 
-		-- CS move to schematic_rw
+		-- CS move to et_schematic_rw ? wrong ? better to et_symbol_rw ?
 		symbol_line			: type_line;
 		symbol_arc			: type_arc;
 		symbol_circle		: type_circle;

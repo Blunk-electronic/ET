@@ -57,7 +57,7 @@ with cairo;						--use cairo;
 with et_general;				use et_general;
 
 with et_coordinates;
-with assembly_variants;
+with et_assembly_variants;
 with et_string_processing;
 with et_packages;
 with et_pcb;
@@ -399,7 +399,7 @@ package et_schematic is
 	
 	function ports (
 		net		: in type_nets.cursor;
-		variant	: in assembly_variants.pac_variants.cursor)
+		variant	: in et_assembly_variants.pac_variants.cursor)
 		return type_ports;
 	-- Returns the ports of devices, submodules and netchangers in
 	-- the given net. The given assembly variant determines whether
@@ -504,7 +504,7 @@ package et_schematic is
 		nets 	    	: type_nets.map;
 
 		-- the assembly variants of the module
-		variants		: assembly_variants.pac_variants.map;
+		variants		: et_assembly_variants.pac_variants.map;
 		active_variant	: et_general.type_variant_name.bounded_string; -- "premium"
 		
 		-- General non-component related board stuff (silk screen, documentation, ...):

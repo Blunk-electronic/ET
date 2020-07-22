@@ -9215,16 +9215,16 @@ package body et_schematic_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use assembly_variants;
+		use et_assembly_variants;
 
 		procedure create (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 			inserted : boolean;
-			cursor : assembly_variants.pac_variants.cursor;
+			cursor : et_assembly_variants.pac_variants.cursor;
 		begin
 			-- create the variant
-			assembly_variants.pac_variants.insert (
+			et_assembly_variants.pac_variants.insert (
 				container	=> module.variants,
 				key			=> variant_name,
 				position	=> cursor,
@@ -9260,18 +9260,18 @@ package body et_schematic_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use assembly_variants;
+		use et_assembly_variants;
 
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use assembly_variants.pac_variants;
-			cursor : assembly_variants.pac_variants.cursor;
+			use et_assembly_variants.pac_variants;
+			cursor : et_assembly_variants.pac_variants.cursor;
 		begin
 			-- before deleting, the variant must be located
 			cursor := find (module.variants, variant_name);
 
-			if cursor /= assembly_variants.pac_variants.no_element then
+			if cursor /= et_assembly_variants.pac_variants.no_element then
 				
 				delete (
 					container	=> module.variants,
@@ -9301,33 +9301,33 @@ package body et_schematic_ops is
 	-- Describes an assembly variant. Overwrites the previous description.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost											
-		description		: in assembly_variants.type_description; -- "this is the low budget variant"
+		description		: in et_assembly_variants.type_description; -- "this is the low budget variant"
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use assembly_variants;
+		use et_assembly_variants;
 
 		procedure describe (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use assembly_variants.pac_variants;
-			cursor : assembly_variants.pac_variants.cursor;
+			use et_assembly_variants.pac_variants;
+			cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure assign_description (
 				name		: in et_general.type_variant_name.bounded_string;
-				variant		: in out assembly_variants.type_variant) is
+				variant		: in out et_assembly_variants.type_variant) is
 			begin
 				variant.description := description;
 			end assign_description;
 			
 		begin -- describe
 			-- before describing, the variant must be located
-			cursor := assembly_variants.pac_variants.find (module.variants, variant_name);
+			cursor := et_assembly_variants.pac_variants.find (module.variants, variant_name);
 
-			if cursor /= assembly_variants.pac_variants.no_element then
+			if cursor /= et_assembly_variants.pac_variants.no_element then
 
-				assembly_variants.pac_variants.update_element (
+				et_assembly_variants.pac_variants.update_element (
 					container	=> module.variants,
 					position	=> cursor,
 					process		=> assign_description'access);
@@ -9368,7 +9368,7 @@ package body et_schematic_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use assembly_variants;
+		use et_assembly_variants;
 
 		function write_purpose return string is
 			use type_purpose;
@@ -9383,14 +9383,14 @@ package body et_schematic_ops is
 		procedure mount (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use assembly_variants.pac_variants;
-			cursor : assembly_variants.pac_variants.cursor;
+			use et_assembly_variants.pac_variants;
+			cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure insert_device (
 				name		: in et_general.type_variant_name.bounded_string;
-				variant		: in out assembly_variants.type_variant) is
-				use assembly_variants.type_devices;
-				cursor : assembly_variants.type_devices.cursor;
+				variant		: in out et_assembly_variants.type_variant) is
+				use et_assembly_variants.type_devices;
+				cursor : et_assembly_variants.type_devices.cursor;
 				inserted : boolean;
 			begin
 				-- Locate the device in the variant.
@@ -9398,7 +9398,7 @@ package body et_schematic_ops is
 				-- as specified by the operator.
 				cursor := find (variant.devices, device);
 
-				if cursor /= assembly_variants.type_devices.no_element then -- device already there
+				if cursor /= et_assembly_variants.type_devices.no_element then -- device already there
 					delete (variant.devices, cursor);
 				end if;
 					
@@ -9418,11 +9418,11 @@ package body et_schematic_ops is
 			
 		begin -- mount
 			-- the variant must exists
-			cursor := assembly_variants.pac_variants.find (module.variants, variant_name);
+			cursor := et_assembly_variants.pac_variants.find (module.variants, variant_name);
 
-			if cursor /= assembly_variants.pac_variants.no_element then
+			if cursor /= et_assembly_variants.pac_variants.no_element then
 
-				assembly_variants.pac_variants.update_element (
+				et_assembly_variants.pac_variants.update_element (
 					container	=> module.variants,
 					position	=> cursor,
 					process		=> insert_device'access);
@@ -9469,26 +9469,26 @@ package body et_schematic_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use assembly_variants;
+		use et_assembly_variants;
 
 		procedure unmount (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use assembly_variants.pac_variants;
-			cursor : assembly_variants.pac_variants.cursor;
+			use et_assembly_variants.pac_variants;
+			cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure insert_device (
 				name		: in et_general.type_variant_name.bounded_string;
-				variant		: in out assembly_variants.type_variant) is
-				use assembly_variants.type_devices;
-				cursor : assembly_variants.type_devices.cursor;
+				variant		: in out et_assembly_variants.type_variant) is
+				use et_assembly_variants.type_devices;
+				cursor : et_assembly_variants.type_devices.cursor;
 				inserted : boolean;
 			begin
 				-- Locate the device in the variant.
 				-- If already there, delete it and insert it anew.
 				cursor := find (variant.devices, device);
 
-				if cursor /= assembly_variants.type_devices.no_element then -- device already there
+				if cursor /= et_assembly_variants.type_devices.no_element then -- device already there
 					delete (variant.devices, cursor);
 				end if;
 					
@@ -9505,11 +9505,11 @@ package body et_schematic_ops is
 			
 		begin -- unmount
 			-- the variant must exists
-			cursor := assembly_variants.pac_variants.find (module.variants, variant_name);
+			cursor := et_assembly_variants.pac_variants.find (module.variants, variant_name);
 
-			if cursor /= assembly_variants.pac_variants.no_element then
+			if cursor /= et_assembly_variants.pac_variants.no_element then
 
-				assembly_variants.pac_variants.update_element (
+				et_assembly_variants.pac_variants.update_element (
 					container	=> module.variants,
 					position	=> cursor,
 					process		=> insert_device'access);
@@ -9552,25 +9552,25 @@ package body et_schematic_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use assembly_variants;
+		use et_assembly_variants;
 
 		procedure remove (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use assembly_variants.pac_variants;
-			cursor : assembly_variants.pac_variants.cursor;
+			use et_assembly_variants.pac_variants;
+			cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure delete_device (
 				name		: in et_general.type_variant_name.bounded_string;
-				variant		: in out assembly_variants.type_variant) is
-				use assembly_variants.type_devices;
-				cursor : assembly_variants.type_devices.cursor;
+				variant		: in out et_assembly_variants.type_variant) is
+				use et_assembly_variants.type_devices;
+				cursor : et_assembly_variants.type_devices.cursor;
 			begin
 				-- Locate the device in the variant. Issue error message
 				-- if not found.
 				cursor := find (variant.devices, device);
 
-				if cursor /= assembly_variants.type_devices.no_element then  -- device in assembly variant
+				if cursor /= et_assembly_variants.type_devices.no_element then  -- device in assembly variant
 					delete (variant.devices, cursor); -- delete device
 				else
 					log (ERROR, "device " & to_string (device) &
@@ -9584,11 +9584,11 @@ package body et_schematic_ops is
 			
 		begin -- remove
 			-- the variant must exist
-			cursor := assembly_variants.pac_variants.find (module.variants, variant_name);
+			cursor := et_assembly_variants.pac_variants.find (module.variants, variant_name);
 
-			if cursor /= assembly_variants.pac_variants.no_element then
+			if cursor /= et_assembly_variants.pac_variants.no_element then
 
-				assembly_variants.pac_variants.update_element (
+				et_assembly_variants.pac_variants.update_element (
 					container	=> module.variants,
 					position	=> cursor,
 					process		=> delete_device'access);
@@ -9633,19 +9633,19 @@ package body et_schematic_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use assembly_variants;
+		use et_assembly_variants;
 
 		procedure query_variants (
 		-- Locates the targeted assembly variant of the parent module.
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use assembly_variants.pac_variants;
-			cursor : assembly_variants.pac_variants.cursor;
+			use et_assembly_variants.pac_variants;
+			cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure mount (
 				name		: in et_general.type_variant_name.bounded_string; -- low_cost (parent module)
-				variant		: in out assembly_variants.type_variant) is
-				use assembly_variants.type_submodules;
+				variant		: in out et_assembly_variants.type_variant) is
+				use et_assembly_variants.type_submodules;
 				cursor : type_submodules.cursor;
 			begin
 				-- Locate the submodule instance in the variant of the parent module.
@@ -9668,12 +9668,12 @@ package body et_schematic_ops is
 			
 		begin -- query_variants
 			-- the variant (low_cost) must exist in the parent module
-			cursor := assembly_variants.pac_variants.find (module.variants, variant_parent);
+			cursor := et_assembly_variants.pac_variants.find (module.variants, variant_parent);
 
-			if cursor /= assembly_variants.pac_variants.no_element then
+			if cursor /= et_assembly_variants.pac_variants.no_element then
 
 				-- Insert the submodule instance with the desired variant:
-				assembly_variants.pac_variants.update_element (
+				et_assembly_variants.pac_variants.update_element (
 					container	=> module.variants,
 					position	=> cursor,
 					process		=> mount'access);
@@ -9728,19 +9728,19 @@ package body et_schematic_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use assembly_variants;
+		use et_assembly_variants;
 
 		procedure query_variants (
 		-- Locates the targeted assembly variant of the parent module.
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use assembly_variants.pac_variants;
-			cursor : assembly_variants.pac_variants.cursor;
+			use et_assembly_variants.pac_variants;
+			cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure remove (
 				name		: in et_general.type_variant_name.bounded_string; -- low_cost (parent module)
-				variant		: in out assembly_variants.type_variant) is
-				use assembly_variants.type_submodules;
+				variant		: in out et_assembly_variants.type_variant) is
+				use et_assembly_variants.type_submodules;
 				cursor : type_submodules.cursor;
 			begin
 				-- Locate the submodule instance in the variant of the parent module.
@@ -9760,12 +9760,12 @@ package body et_schematic_ops is
 			
 		begin -- query_variants
 			-- the variant (low_cost) must exist in the parent module
-			cursor := assembly_variants.pac_variants.find (module.variants, variant_parent);
+			cursor := et_assembly_variants.pac_variants.find (module.variants, variant_parent);
 
-			if cursor /= assembly_variants.pac_variants.no_element then
+			if cursor /= et_assembly_variants.pac_variants.no_element then
 
 				-- Remove the submodule instance
-				assembly_variants.pac_variants.update_element (
+				et_assembly_variants.pac_variants.update_element (
 					container	=> module.variants,
 					position	=> cursor,
 					process		=> remove'access);
@@ -10661,7 +10661,7 @@ package body et_schematic_ops is
 -- 
 -- 		module_cursor : type_modules.cursor; -- points to the module
 -- 
--- 		use assembly_variants;
+-- 		use et_assembly_variants;
 -- 		use et_material;
 -- 
 -- 		bill_of_material : et_material.type_devices.map;
@@ -10701,7 +10701,7 @@ package body et_schematic_ops is
 -- 					cursor_bom : et_material.type_devices.cursor;
 -- 
 -- 					use et_schematic.type_devices;
--- 					use assembly_variants.type_devices;
+-- 					use et_assembly_variants.type_devices;
 -- 				begin -- query_properties_default
 -- 
 -- 					-- the device must be real (appearance SCH_PCB)
@@ -10740,8 +10740,8 @@ package body et_schematic_ops is
 -- 					cursor_bom : et_material.type_devices.cursor;
 -- 
 -- 					use et_schematic.type_devices;
--- 					alt_dev_cursor : assembly_variants.type_devices.cursor;
--- 					use assembly_variants.type_devices;
+-- 					alt_dev_cursor : et_assembly_variants.type_devices.cursor;
+-- 					use et_assembly_variants.type_devices;
 -- 				begin -- query_properties_variants
 -- 
 -- 					-- the device must be real (appearance SCH_PCB)
@@ -10755,7 +10755,7 @@ package body et_schematic_ops is
 -- 							-- Get a cursor to the alternative device as specified in the assembly variant:
 -- 							alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
 -- 							
--- 							if alt_dev_cursor = assembly_variants.type_devices.no_element then
+-- 							if alt_dev_cursor = et_assembly_variants.type_devices.no_element then
 -- 							-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
 -- 
 -- 								-- issue warning if device has no partcode
@@ -10888,8 +10888,8 @@ package body et_schematic_ops is
 -- 			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 -- 			offset			: type_name_index;
 -- 
--- 			use assembly_variants.type_submodules;
--- 			alt_submod : assembly_variants.type_submodules.cursor;
+-- 			use et_assembly_variants.type_submodules;
+-- 			alt_submod : et_assembly_variants.type_submodules.cursor;
 -- 		begin
 -- 			log_indentation_up;
 -- 
@@ -10927,7 +10927,7 @@ package body et_schematic_ops is
 -- 								variant	=> variant,
 -- 								submod	=> module_instance);
 -- 
--- 					if alt_submod = assembly_variants.type_submodules.no_element then
+-- 					if alt_submod = et_assembly_variants.type_submodules.no_element then
 -- 					-- no variant specified for this submodule -> collect devices of default variant
 -- 
 -- 						variant := default;
@@ -11055,8 +11055,8 @@ package body et_schematic_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use assembly_variants;
-		use assembly_variants.pac_variants;
+		use et_assembly_variants;
+		use et_assembly_variants.pac_variants;
 		use et_general.type_variant_name;
 
 		procedure make_for_variant (variant_name : in et_general.type_variant_name.bounded_string) is
@@ -11099,7 +11099,7 @@ package body et_schematic_ops is
 						cursor_bom : et_material.type_devices.cursor;
 
 						use et_schematic.type_devices;
-						use assembly_variants.type_devices;
+						use et_assembly_variants.type_devices;
 						use et_symbols;
 					begin -- query_properties_default
 
@@ -11139,8 +11139,8 @@ package body et_schematic_ops is
 						cursor_bom : et_material.type_devices.cursor;
 
 						use et_schematic.type_devices;
-						alt_dev_cursor : assembly_variants.type_devices.cursor;
-						use assembly_variants.type_devices;
+						alt_dev_cursor : et_assembly_variants.type_devices.cursor;
+						use et_assembly_variants.type_devices;
 						use et_symbols;
 					begin -- query_properties_variants
 
@@ -11155,7 +11155,7 @@ package body et_schematic_ops is
 								-- Get a cursor to the alternative device as specified in the assembly variant:
 								alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
 								
-								if alt_dev_cursor = assembly_variants.type_devices.no_element then
+								if alt_dev_cursor = et_assembly_variants.type_devices.no_element then
 								-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
 
 									-- issue warning if device has no partcode
@@ -11289,8 +11289,8 @@ package body et_schematic_ops is
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 				offset			: type_name_index;
 
-				use assembly_variants.type_submodules;
-				alt_submod : assembly_variants.type_submodules.cursor;
+				use et_assembly_variants.type_submodules;
+				alt_submod : et_assembly_variants.type_submodules.cursor;
 			begin
 				log_indentation_up;
 
@@ -11328,7 +11328,7 @@ package body et_schematic_ops is
 									variant	=> variant,
 									submod	=> module_instance);
 
-						if alt_submod = assembly_variants.type_submodules.no_element then
+						if alt_submod = et_assembly_variants.type_submodules.no_element then
 						-- no variant specified for this submodule -> collect devices of default variant
 
 							variant := default;
@@ -11421,7 +11421,7 @@ package body et_schematic_ops is
 			log_indentation_down;
 		end make_for_variant;
 		
-		procedure query_variant (variant_cursor : in assembly_variants.pac_variants.cursor) is
+		procedure query_variant (variant_cursor : in et_assembly_variants.pac_variants.cursor) is
 			use et_general.type_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
@@ -11444,7 +11444,7 @@ package body et_schematic_ops is
 		make_for_variant (default);
 
 		-- make netlists of other variants
-		assembly_variants.pac_variants.iterate (element (module_cursor).variants, query_variant'access);
+		et_assembly_variants.pac_variants.iterate (element (module_cursor).variants, query_variant'access);
 				
 		log_indentation_down;
 	end make_boms;
@@ -11691,8 +11691,8 @@ package body et_schematic_ops is
 
 		use netlists;
 		use et_general.type_net_name;
-		use assembly_variants;
-		use assembly_variants.pac_variants;
+		use et_assembly_variants;
+		use et_assembly_variants.pac_variants;
 		use et_general.type_variant_name;
 
 		procedure make_for_variant (variant_name : in et_general.type_variant_name.bounded_string) is
@@ -11719,8 +11719,8 @@ package body et_schematic_ops is
 				prefix			: in et_general.type_net_name.bounded_string; -- DRV3/OSC1/
 				offset			: in type_name_index) is
 
-				use assembly_variants.pac_variants;
-				variant_cursor : assembly_variants.pac_variants.cursor;
+				use et_assembly_variants.pac_variants;
+				variant_cursor : et_assembly_variants.pac_variants.cursor;
 				
 				procedure query_nets (
 					module_name	: in type_module_name.bounded_string;
@@ -11781,10 +11781,10 @@ package body et_schematic_ops is
 					
 				begin -- query_nets
 					if is_default (variant) then
-						variant_cursor := assembly_variants.pac_variants.no_element;
+						variant_cursor := et_assembly_variants.pac_variants.no_element;
 					else
 						variant_cursor := find (module.variants, variant);
-						if variant_cursor = assembly_variants.pac_variants.no_element then
+						if variant_cursor = et_assembly_variants.pac_variants.no_element then
 							assembly_variant_not_found (variant);
 						end if;
 					end if;
@@ -11880,8 +11880,8 @@ package body et_schematic_ops is
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 				offset			: type_name_index;
 
-				use assembly_variants.type_submodules;
-				alt_submod : assembly_variants.type_submodules.cursor;
+				use et_assembly_variants.type_submodules;
+				alt_submod : et_assembly_variants.type_submodules.cursor;
 
 				procedure insert_submodule is begin
 				-- Insert a submodule in netlist_tree. Wherever procedure query_submodules is
@@ -11951,7 +11951,7 @@ package body et_schematic_ops is
 									variant	=> variant,
 									submod	=> module_instance);
 
-						if alt_submod = assembly_variants.type_submodules.no_element then
+						if alt_submod = et_assembly_variants.type_submodules.no_element then
 						-- no variant specified for this submodule -> collect devices of default variant
 
 							variant := default;
@@ -12117,7 +12117,7 @@ package body et_schematic_ops is
 			log_indentation_down;
 		end make_for_variant;
 		
-		procedure query_variant (variant_cursor : in assembly_variants.pac_variants.cursor) is
+		procedure query_variant (variant_cursor : in et_assembly_variants.pac_variants.cursor) is
 			use et_general.type_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
@@ -12138,7 +12138,7 @@ package body et_schematic_ops is
 		make_for_variant (default);
 
 		-- make netlists of other variants
-		assembly_variants.pac_variants.iterate (element (module_cursor).variants, query_variant'access);
+		et_assembly_variants.pac_variants.iterate (element (module_cursor).variants, query_variant'access);
 		
 		log_indentation_down;
 	end make_netlists;

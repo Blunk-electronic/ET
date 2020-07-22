@@ -428,7 +428,7 @@ is
 			while strand_cursor /= type_strands.no_element loop
 				section_mark (section_strand, HEADER);
 
-				write (keyword => keyword_position, parameters => schematic_rw.position (element (strand_cursor).position));
+				write (keyword => keyword_position, parameters => et_schematic_rw.position (element (strand_cursor).position));
 
 				query_element (strand_cursor, query_segments'access);
 				
@@ -759,14 +759,14 @@ is
 
 	procedure query_assembly_variants is
 	-- writes the assembly variants in the module file
-		use assembly_variants;
-		use assembly_variants.pac_variants;
+		use et_assembly_variants;
+		use et_assembly_variants.pac_variants;
 
 		procedure query_devices (
 			variant_name	: in et_general.type_variant_name.bounded_string;
-			variant			: in assembly_variants.type_variant) is
-			use assembly_variants.type_devices;
-			device_cursor : assembly_variants.type_devices.cursor := variant.devices.first;
+			variant			: in et_assembly_variants.type_variant) is
+			use et_assembly_variants.type_devices;
+			device_cursor : et_assembly_variants.type_devices.cursor := variant.devices.first;
 
 			function purpose return string is 
 				use et_devices;
@@ -785,7 +785,7 @@ is
 			use et_devices;
 			
 		begin -- query_devices
-			while device_cursor /= assembly_variants.type_devices.no_element loop
+			while device_cursor /= et_assembly_variants.type_devices.no_element loop
 				case element (device_cursor).mounted is
 					when NO =>
 						write (
@@ -812,10 +812,10 @@ is
 
 		procedure query_submodules (
 			variant_name	: in et_general.type_variant_name.bounded_string;
-			variant			: in assembly_variants.type_variant) is
-			use assembly_variants;
-			use assembly_variants.type_submodules;
-			submodule_cursor : assembly_variants.type_submodules.cursor := variant.submodules.first;
+			variant			: in et_assembly_variants.type_variant) is
+			use et_assembly_variants;
+			use et_assembly_variants.type_submodules;
+			submodule_cursor : et_assembly_variants.type_submodules.cursor := variant.submodules.first;
 		begin
 			while submodule_cursor /= type_submodules.no_element loop
 				write (
@@ -828,7 +828,7 @@ is
 			end loop;
 		end query_submodules;
 
-		procedure write (variant_cursor : in assembly_variants.pac_variants.cursor) is begin
+		procedure write (variant_cursor : in et_assembly_variants.pac_variants.cursor) is begin
 			section_mark (section_assembly_variant, HEADER);
 			write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)));
 			write (keyword => keyword_description, wrap => true, parameters => to_string (element (variant_cursor).description));

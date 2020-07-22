@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             SCHEMATIC_RW                                 --
+--                         SCHEMATIC READ AND WRITE                         --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -38,7 +38,7 @@
 with ada.strings; 				use ada.strings;
 with et_geometry;				use et_geometry;
 
-package body schematic_rw is
+package body et_schematic_rw is
 
 	function position (pos : in et_coordinates.type_position) return string is
 	-- Returns something like "sheet 3 x 12.34 y 45.0".
@@ -55,4 +55,4 @@ package body schematic_rw is
 	end position;
 
 	
-end schematic_rw;
+end et_schematic_rw;

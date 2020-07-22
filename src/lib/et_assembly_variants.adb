@@ -38,7 +38,7 @@
 with ada.characters;			use ada.characters;
 with ada.characters.handling;	use ada.characters.handling;
 
-package body assembly_variants is
+package body et_assembly_variants is
 
 	function to_mounted (mounted : in string) return type_mounted is begin
 		return type_mounted'value (mounted);
@@ -101,7 +101,7 @@ package body assembly_variants is
 		
 	end is_mounted;
 	
-end assembly_variants;
+end et_assembly_variants;
 	
 -- Soli Deo Gloria
 

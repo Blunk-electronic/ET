@@ -59,7 +59,7 @@ with et_pcb_stack;
 with et_board_ops;
 
 with submodules;
-with assembly_variants;
+with et_assembly_variants;
 with pick_and_place;
 with et_material;
 with netlists;

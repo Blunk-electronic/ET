@@ -937,8 +937,8 @@ package body et_board_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use assembly_variants;
-		use assembly_variants.pac_variants;
+		use et_assembly_variants;
+		use et_assembly_variants.pac_variants;
 		use et_general.type_variant_name;
 
 		procedure make_for_variant (variant_name : in et_general.type_variant_name.bounded_string) is
@@ -1001,7 +1001,7 @@ package body et_board_ops is
 						cursor_pnp : pick_and_place.type_devices.cursor;
 
 						use et_schematic.type_devices;
-						use assembly_variants.type_devices;
+						use et_assembly_variants.type_devices;
 						use et_symbols;
 
 					begin -- query_properties_default
@@ -1039,8 +1039,8 @@ package body et_board_ops is
 						cursor_pnp : pick_and_place.type_devices.cursor;
 
 						use et_schematic.type_devices;
-						alt_dev_cursor : assembly_variants.type_devices.cursor;
-						use assembly_variants.type_devices;
+						alt_dev_cursor : et_assembly_variants.type_devices.cursor;
+						use et_assembly_variants.type_devices;
 						use et_symbols;
 						
 					begin -- query_properties_variants
@@ -1056,7 +1056,7 @@ package body et_board_ops is
 								-- Get a cursor to the alternative device as specified in the assembly variant:
 								alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
 								
-								if alt_dev_cursor = assembly_variants.type_devices.no_element then
+								if alt_dev_cursor = et_assembly_variants.type_devices.no_element then
 								-- Device has no entry in the assembly variant. -> It is to be stored in pnp list as it is:
 								
 									apply_offset (device_name, offset, log_threshold + 2);
@@ -1189,8 +1189,8 @@ package body et_board_ops is
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 				offset			: et_devices.type_name_index;
 
-				use assembly_variants.type_submodules;
-				alt_submod : assembly_variants.type_submodules.cursor;
+				use et_assembly_variants.type_submodules;
+				alt_submod : et_assembly_variants.type_submodules.cursor;
 			begin
 				log_indentation_up;
 
@@ -1228,7 +1228,7 @@ package body et_board_ops is
 									variant	=> variant,
 									submod	=> module_instance);
 
-						if alt_submod = assembly_variants.type_submodules.no_element then
+						if alt_submod = et_assembly_variants.type_submodules.no_element then
 						-- no variant specified for this submodule -> collect devices of default variant
 
 							variant := default;
@@ -1343,7 +1343,7 @@ package body et_board_ops is
 			log_indentation_down;
 		end make_for_variant;
 		
-		procedure query_variant (variant_cursor : in assembly_variants.pac_variants.cursor) is
+		procedure query_variant (variant_cursor : in et_assembly_variants.pac_variants.cursor) is
 			use et_general.type_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
