@@ -384,9 +384,9 @@ is
 					while port_cursor /= type_ports_netchanger.no_element loop
 
 						write (keyword => keyword_netchanger, parameters => 
-							submodules.to_string (element (port_cursor).index)
+							et_submodules.to_string (element (port_cursor).index)
 							& space & keyword_port
-							& submodules.to_string (element (port_cursor).port)
+							& et_submodules.to_string (element (port_cursor).port)
 							); -- netchanger 1 port master/slave
 
 						next (port_cursor);
@@ -869,7 +869,7 @@ is
 	
 	procedure query_netchangers is
 	-- writes the netchangers in the module file
-		use submodules;
+		use et_submodules;
 		use type_netchangers;
 
 		procedure query_netchanger (cursor : type_netchangers.cursor) is
@@ -955,16 +955,16 @@ is
 
 	procedure query_submodules is		
 		use et_schematic;
-		use submodules;
+		use et_submodules;
 		use type_submodules;
 
-		procedure query_ports (port_cursor : in submodules.type_submodule_ports.cursor) is
+		procedure query_ports (port_cursor : in et_submodules.type_submodule_ports.cursor) is
 			use type_submodule_ports;
 		begin
 			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, parameters => et_general.to_string (key (port_cursor))); -- name clk_out
 			write (keyword => keyword_position, parameters => position (element (port_cursor).position)); -- position x 0 y 10
-			write (keyword => submodules.keyword_direction, parameters => to_string (element (port_cursor).direction)); -- direction master/slave
+			write (keyword => et_submodules.keyword_direction, parameters => to_string (element (port_cursor).direction)); -- direction master/slave
 			section_mark (section_port, FOOTER);
 		end;
 
@@ -976,7 +976,7 @@ is
 			write (keyword => keyword_file, parameters => type_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
 			write (keyword => keyword_position, parameters => position (element (submodule_cursor).position));
-			write (keyword => submodules.keyword_size, parameters => 
+			write (keyword => et_submodules.keyword_size, parameters => 
 				space & keyword_x & to_string (element (submodule_cursor).size.x) &
 				space & keyword_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
 			

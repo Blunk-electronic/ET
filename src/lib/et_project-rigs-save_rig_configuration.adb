@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               PROJECT                                    --
+--                    PROJECT SAVE RIG CONFIGURATION                        --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --

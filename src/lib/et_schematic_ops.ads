@@ -57,9 +57,9 @@ with et_schematic;				use et_schematic;
 with et_project;				use et_project;
 with et_project.modules;		use et_project.modules;
 with et_text;
-with submodules;
+with et_submodules;
 with et_assembly_variants;
-with numbering;
+with et_numbering;
 with et_material;
 with et_netlists;
 with et_symbols;
@@ -70,7 +70,7 @@ package et_schematic_ops is
 	
 	procedure device_not_found (name : in type_name);
 	procedure device_already_exists (name : in type_name);
-	procedure netchanger_not_found (index : in submodules.type_netchanger_id);
+	procedure netchanger_not_found (index : in et_submodules.type_netchanger_id);
 	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string);	
 	procedure net_not_found (name : in et_general.type_net_name.bounded_string);
 	procedure assembly_variant_not_found (variant : in et_general.type_variant_name.bounded_string);
@@ -225,7 +225,7 @@ package et_schematic_ops is
 	function exists_netchanger (
 	-- Returns true if given netchanger exists in module indicated by module_cursor.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		index			: in submodules.type_netchanger_id) -- 1, 2, 3, ...
+		index			: in et_submodules.type_netchanger_id) -- 1, 2, 3, ...
 		return boolean;
 
 	procedure place_junction (
@@ -281,14 +281,14 @@ package et_schematic_ops is
 	procedure delete_netchanger (
 	-- Deletes a netchanger.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		log_threshold	: in type_log_level);
 
 	procedure move_netchanger (
 	-- Moves the given netchanger. Disconnects the netchanger from
 	-- start or end points of net segments.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in type_point; -- x/y
@@ -301,7 +301,7 @@ package et_schematic_ops is
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
@@ -310,7 +310,7 @@ package et_schematic_ops is
 	-- Rotates the given netchanger. Disconnects it from
 	-- start or end points of net segments.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in et_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level);
@@ -425,10 +425,10 @@ package et_schematic_ops is
 	procedure add_submodule (
 	-- Adds a submodule instance to the schematic.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		file			: in submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
+		file			: in et_submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		position		: in et_coordinates.type_position; -- sheet, lower left corner x/y 
-		size			: in submodules.type_submodule_size; -- the size of the box in x and y
+		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
 		log_threshold	: in type_log_level);
 	
 	procedure add_port (
@@ -438,9 +438,9 @@ package et_schematic_ops is
 		port_name		: in et_general.type_net_name.bounded_string; -- clk_out
 		position		: in type_point; -- x/y along the edge of the box
 
-		direction		: in submodules.type_netchanger_port_name; -- master/slave. 
+		direction		: in et_submodules.type_netchanger_port_name; -- master/slave. 
 		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
-		-- a netlist is exported. See specification submodules.type_submodule_port.
+		-- a netlist is exported. See specification et_submodules.type_submodule_port.
 		
 		log_threshold	: in type_log_level);
 
@@ -522,7 +522,7 @@ package et_schematic_ops is
 	procedure set_submodule_file (
 	-- Sets the file name of a submodule instance.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		file			: in submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
+		file			: in et_submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level);
 
@@ -590,7 +590,7 @@ package et_schematic_ops is
 	function sort_by_coordinates (
 		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-		return numbering.type_devices.map;
+		return et_numbering.type_devices.map;
 
 	function unit_positions_valid (
 	-- Returns true if no unit sits on top of another.

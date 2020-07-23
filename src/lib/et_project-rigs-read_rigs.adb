@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               PROJECT                                    --
+--                         PROJECT READ RIGS                                --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --

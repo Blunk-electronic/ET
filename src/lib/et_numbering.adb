@@ -35,24 +35,7 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.text_io;				use ada.text_io;
-
-with ada.exceptions;
-with ada.directories;
-with gnat.directory_operations;
-
-with ada.containers;            use ada.containers;
-
-with et_general;				use et_general;
--- with et_string_processing;		use et_string_processing;
-with et_devices;				use et_devices;
-
-package body numbering is
+package body et_numbering is
 
 	function "<" (left, right : in type_module) return boolean is
 		use type_module_name;
@@ -105,7 +88,7 @@ package body numbering is
 	end;
 
 	
-end numbering;
+end et_numbering;
 	
 -- Soli Deo Gloria
 

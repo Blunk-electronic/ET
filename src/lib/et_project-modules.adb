@@ -176,7 +176,7 @@ package body et_project.modules is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 					procedure query_ports (segment : in type_net_segment) is 
-						use submodules;
+						use et_submodules;
 
 						use et_netlists;
 						use type_ports_netchanger;
@@ -251,7 +251,7 @@ package body et_project.modules is
 	-- to a parent module.
 		module		: in pac_generic_modules.cursor;
 		net			: in et_schematic.type_nets.cursor;
-		direction	: in submodules.type_netchanger_port_name) -- master/slave 
+		direction	: in et_submodules.type_netchanger_port_name) -- master/slave 
 		return boolean is
 		
 		result : boolean := false; -- to be returned. goes true on the first
@@ -270,7 +270,7 @@ package body et_project.modules is
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 				procedure query_ports (segment : in type_net_segment) is 
-					use submodules;
+					use et_submodules;
 
 					use et_netlists;
 					use type_ports_netchanger;
@@ -476,15 +476,15 @@ package body et_project.modules is
 	function exists (
 	-- Returns true if the given module provides the given port.
 	-- The module being searched in must be in the rig already.
-		module			: in submodules.type_submodules.cursor;
+		module			: in et_submodules.type_submodules.cursor;
 		port			: in et_general.type_net_name.bounded_string; -- clock_output
-		direction		: in submodules.type_netchanger_port_name) -- master/slave
+		direction		: in et_submodules.type_netchanger_port_name) -- master/slave
 		return boolean is
 
 		result : boolean := false; -- to be returned
 		
 		use et_string_processing;
-		use submodules;
+		use et_submodules;
 		use et_schematic;
 		
 		submodule_file : type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
@@ -585,7 +585,7 @@ package body et_project.modules is
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use submodules.type_submodules;
+			use et_submodules.type_submodules;
 		begin
 			if contains (module.submods, instance) then
 				instance_found := true;
@@ -616,9 +616,9 @@ package body et_project.modules is
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use submodules;
-			use submodules.type_submodules;
-			submod_instance_cursor : submodules.type_submodules.cursor;
+			use et_submodules;
+			use et_submodules.type_submodules;
+			submod_instance_cursor : et_submodules.type_submodules.cursor;
 			submod_path : type_submodule_path.bounded_string;
 			submod_name	: type_module_name.bounded_string;
 			submod_cursor : pac_generic_modules.cursor;

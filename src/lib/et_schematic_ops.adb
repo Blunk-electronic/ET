@@ -85,8 +85,8 @@ package body et_schematic_ops is
 		raise constraint_error;
 	end;
 
-	procedure netchanger_not_found (index : in submodules.type_netchanger_id) is begin
-		log (ERROR, "netchanger" & submodules.to_string (index) & " not found !", console => true);
+	procedure netchanger_not_found (index : in et_submodules.type_netchanger_id) is begin
+		log (ERROR, "netchanger" & et_submodules.to_string (index) & " not found !", console => true);
 		raise constraint_error;
 	end;
 
@@ -665,7 +665,7 @@ package body et_schematic_ops is
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
-			use submodules;			
+			use et_submodules;			
 			use type_submodules;
 			submod_cursor : type_submodules.cursor;
 			submod_position : et_coordinates.type_position;
@@ -739,12 +739,12 @@ package body et_schematic_ops is
 	function position (
 	-- Returns the sheet/x/y position of the given netchanger port.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in submodules.type_netchanger_id; -- 1,2,3,...
-		port			: in submodules.type_netchanger_port_name; -- SLAVE/MASTER
+		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
+		port			: in et_submodules.type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
 		return et_coordinates.type_position is
 
-		use submodules;
+		use et_submodules;
 		port_position : et_coordinates.type_position; -- to be returned		
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being inquired
@@ -2815,7 +2815,7 @@ package body et_schematic_ops is
 		return boolean is
 
 		use et_general.type_module_instance_name;
-		use submodules;
+		use et_submodules;
 		
 		result : boolean := false; -- to be returned, goes true once the target has been found
 
@@ -2866,7 +2866,7 @@ package body et_schematic_ops is
 	function exists_netchanger (
 	-- Returns true if given netchanger exists in module indicated by module_cursor.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		index			: in submodules.type_netchanger_id) -- 1, 2, 3, ...
+		index			: in et_submodules.type_netchanger_id) -- 1, 2, 3, ...
 		return boolean is
 
 		result : boolean := false; -- to be returned, goes true once the target has been found		
@@ -2874,7 +2874,7 @@ package body et_schematic_ops is
 		procedure query_netchangers (
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
-			use submodules.type_netchangers;
+			use et_submodules.type_netchangers;
 		begin -- query_netchangers
 			if contains (module.netchangers, index) then
 				result := true;
@@ -3067,7 +3067,7 @@ package body et_schematic_ops is
 						-- By the position assigns the ports to the new segments. 
 							use et_netlists;
 							use et_netlists.type_ports_netchanger;
-							use submodules;
+							use et_submodules;
 
 							procedure query_ports (cursor : in type_ports_netchanger.cursor) is
 								index			: type_netchanger_id; -- 1,2,3,...
@@ -3666,9 +3666,9 @@ package body et_schematic_ops is
 	function next_netchanger_index (
 	-- Returns the next available netchanger index in the module.
 		module_cursor	: in pac_generic_modules.cursor)
-		return submodules.type_netchanger_id is
+		return et_submodules.type_netchanger_id is
 
-		use submodules;
+		use et_submodules;
 		next_idx : type_netchanger_id; -- to be returned
 
 		procedure search_gap (
@@ -3720,12 +3720,12 @@ package body et_schematic_ops is
 	-- CS: Automatic splitting the segment into two and placing a junction is not supported
 	-- jet and probably not a good idea.
 		module			: in pac_generic_modules.cursor;		-- the module
-		index			: in submodules.type_netchanger_id;	-- the netchanger id
-		ports			: in submodules.type_netchanger_ports; -- the ports to be inserted
+		index			: in et_submodules.type_netchanger_id;	-- the netchanger id
+		ports			: in et_submodules.type_netchanger_ports; -- the ports to be inserted
 		sheet			: in type_sheet;	-- the sheet to look at
 		log_threshold	: in type_log_level) is
 
-		use submodules;
+		use et_submodules;
 		
 		procedure query_nets (
 			module_name	: in type_module_name.bounded_string;
@@ -3879,7 +3879,7 @@ package body et_schematic_ops is
 		procedure query_netchangers (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use submodules;
+			use et_submodules;
 			use type_netchangers;
 			cursor : type_netchangers.cursor;
 			index : type_netchanger_id;
@@ -3940,7 +3940,7 @@ package body et_schematic_ops is
 	procedure delete_ports (
 	-- Deletes ports of the given netchanger in nets.
 		module			: in pac_generic_modules.cursor;			-- the module
-		index			: in submodules.type_netchanger_id;	-- the netchanger id
+		index			: in et_submodules.type_netchanger_id;	-- the netchanger id
 		sheet			: in et_coordinates.type_sheet;		-- the sheet where the netchanger is
 		log_threshold	: in type_log_level) is
 
@@ -3979,7 +3979,7 @@ package body et_schematic_ops is
 					procedure query_ports (segment : in out type_net_segment) is
 						use et_netlists;
 						use type_ports_netchanger;
-						use submodules;
+						use et_submodules;
 						port_cursor : type_ports_netchanger.cursor;
 
 						procedure delete_port is begin
@@ -4068,11 +4068,11 @@ package body et_schematic_ops is
 	procedure delete_netchanger (
 	-- Deletes a netchanger.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
-		use submodules;
+		use et_submodules;
 
 		procedure query_netchangers (
 			module_name	: in type_module_name.bounded_string;
@@ -4144,13 +4144,13 @@ package body et_schematic_ops is
 	-- start or end points of net segments BEFORE the move. 
 	-- Connects netchanger ports with segment end or strart points AFTER the move.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
-		use submodules;
+		use et_submodules;
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_netchangers (
@@ -4278,8 +4278,8 @@ package body et_schematic_ops is
 	-- Does NOT create a new connection with a segments if a port
 	-- lands between start and end point.
 		module			: in pac_generic_modules.cursor;	-- the module
-		ports_before	: in submodules.type_netchanger_ports;	-- the old port positions
-		ports_after		: in submodules.type_netchanger_ports;	-- the new port positions
+		ports_before	: in et_submodules.type_netchanger_ports;	-- the old port positions
+		ports_after		: in et_submodules.type_netchanger_ports;	-- the new port positions
 		sheet			: in type_sheet;			-- the sheet to look at
 		log_threshold	: in type_log_level) is
 
@@ -4457,12 +4457,12 @@ package body et_schematic_ops is
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
-		use submodules;
+		use et_submodules;
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure movable_test (
@@ -4471,12 +4471,12 @@ package body et_schematic_ops is
 		-- The criteria for movement are: no device, no submodule ports there.
 		-- The ports allowed here are the ports-to-be-dragged itself.
 			location 			: in et_coordinates.type_position; -- only sheet number matters
-			netchanger_ports	: in submodules.type_netchanger_ports) -- x/y of master and slave port
+			netchanger_ports	: in et_submodules.type_netchanger_ports) -- x/y of master and slave port
 			is			
 
 			procedure test_point (
 				point		: in et_coordinates.type_position; -- sheet/x/y -- the point to be probed
-				port_name	: in submodules.type_netchanger_port_name) -- master/slave
+				port_name	: in et_submodules.type_netchanger_port_name) -- master/slave
 				is 
 				use et_netlists;
 				ports : type_ports;
@@ -4669,12 +4669,12 @@ package body et_schematic_ops is
 	-- Rotates the given netchanger. Disconnects it from
 	-- start or end points of net segments.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in et_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level) is
 
-		use submodules;
+		use et_submodules;
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_netchangers (
@@ -5435,8 +5435,8 @@ package body et_schematic_ops is
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
 			use et_schematic.type_devices;
-			use submodules.type_submodules;
-			use submodules.type_netchangers;			
+			use et_submodules.type_submodules;
+			use et_submodules.type_netchangers;			
 			
 			procedure query_devices (device_cursor : in et_schematic.type_devices.cursor) is
 
@@ -5511,12 +5511,12 @@ package body et_schematic_ops is
 				--log_indentation_down;
 			end query_devices;
 
-			procedure query_submodules (submodule_cursor : in submodules.type_submodules.cursor) is
+			procedure query_submodules (submodule_cursor : in et_submodules.type_submodules.cursor) is
 				submodule_position : et_coordinates.type_position;
-				ports : submodules.type_submodule_ports.map;
+				ports : et_submodules.type_submodule_ports.map;
 
-				procedure query_port (port_cursor : in submodules.type_submodule_ports.cursor) is
-					use submodules.type_submodule_ports;
+				procedure query_port (port_cursor : in et_submodules.type_submodule_ports.cursor) is
+					use et_submodules.type_submodule_ports;
 					use et_general.type_net_name;
 				begin
 					log (text => "port " & type_net_name.to_string (key (port_cursor)) &
@@ -5550,29 +5550,29 @@ package body et_schematic_ops is
 
 					ports := element (submodule_cursor).ports;
 					
-					submodules.move_ports (ports, submodule_position);
+					et_submodules.move_ports (ports, submodule_position);
 
-					submodules.type_submodule_ports.iterate (ports, query_port'access);
+					et_submodules.type_submodule_ports.iterate (ports, query_port'access);
 
 					log_indentation_down;
 				end if;
 				
 			end query_submodules;
 
-			procedure query_netchangers (netchanger_cursor : in submodules.type_netchangers.cursor) is
+			procedure query_netchangers (netchanger_cursor : in et_submodules.type_netchangers.cursor) is
 				netchanger_position : et_coordinates.type_position;
-				ports : submodules.type_netchanger_ports;
+				ports : et_submodules.type_netchanger_ports;
 				use et_netlists;
 			begin -- query_netchangers
 				netchanger_position := element (netchanger_cursor).position_sch;
 
 				-- Look at netchangers on the given sheet of place:
 				if sheet (netchanger_position) = sheet (place) then
-					log (text => "netchanger " & submodules.to_string (key (netchanger_cursor)), level => log_threshold + 1);
+					log (text => "netchanger " & et_submodules.to_string (key (netchanger_cursor)), level => log_threshold + 1);
 					log_indentation_up;	
 					
 					-- get the absolute port positions of the netchanger
-					ports := submodules.netchanger_ports (netchanger_cursor);
+					ports := et_submodules.netchanger_ports (netchanger_cursor);
 
 					-- If the port sits at x/y of place then we have a match.
 					-- The match can either be at the msster or slave port.
@@ -5581,7 +5581,7 @@ package body et_schematic_ops is
 					-- First test whether the master port sits here:
 					if ports.master = type_point (place) then
 
-						log (text => "port " & submodules.to_string (submodules.MASTER) &
+						log (text => "port " & et_submodules.to_string (et_submodules.MASTER) &
 							" at" & to_string (ports.master),
 							level => log_threshold + 2);
 						
@@ -5592,14 +5592,14 @@ package body et_schematic_ops is
 							new_item	=> 
 								(
 								index	=> key (netchanger_cursor),
-								port	=> submodules.MASTER
+								port	=> et_submodules.MASTER
 								)
 							);
 
 					-- Second, test wheter slave port sits here:
 					elsif ports.slave = type_point (place) then
 
-						log (text => "port " & submodules.to_string (submodules.SLAVE) &
+						log (text => "port " & et_submodules.to_string (et_submodules.SLAVE) &
 							" at" & to_string (ports.slave),
 							level => log_threshold + 2);
 						
@@ -5610,7 +5610,7 @@ package body et_schematic_ops is
 							new_item	=> 
 								(
 								index	=> key (netchanger_cursor),
-								port	=> submodules.SLAVE
+								port	=> et_submodules.SLAVE
 								)
 							);
 					end if;
@@ -7163,17 +7163,17 @@ package body et_schematic_ops is
 	procedure add_submodule (
 	-- Adds a submodule instance to the schematic.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		file			: in submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
+		file			: in et_submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		position		: in et_coordinates.type_position; -- sheet, lower left corner x/y 
-		size			: in submodules.type_submodule_size; -- the size of the box in x and y
+		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		full_file_name : constant string := expand (submodules.to_string (file));
+		full_file_name : constant string := expand (et_submodules.to_string (file));
 		
-		use submodules;
+		use et_submodules;
 
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
@@ -7396,15 +7396,15 @@ package body et_schematic_ops is
 		port_name		: in type_net_name.bounded_string; -- clk_out
 		position		: in type_point; -- x/y along the edge of the box
 		
-		direction		: in submodules.type_netchanger_port_name; -- master/slave. 
+		direction		: in et_submodules.type_netchanger_port_name; -- master/slave. 
 		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
-		-- a netlist is exported. See specification submodules.type_submodule_port.
+		-- a netlist is exported. See specification et_submodules.type_submodule_port.
 		
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use submodules;
+		use et_submodules;
 
 		-- The place where the box is in the parent module:
 		submodule_position : et_coordinates.type_position;
@@ -7667,7 +7667,7 @@ package body et_schematic_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use submodules;
+		use et_submodules;
 
 		-- The place where the box is in the parent module:
 		submodule_position : et_coordinates.type_position;
@@ -7755,7 +7755,7 @@ package body et_schematic_ops is
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
-		use submodules;
+		use et_submodules;
 
 		-- The place where the box is in the parent module:
 		submodule_position : et_coordinates.type_position;
@@ -8149,7 +8149,7 @@ package body et_schematic_ops is
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
-		use submodules;
+		use et_submodules;
 
 		-- The place where the box is in the parent module:
 		submodule_position : et_coordinates.type_position;
@@ -8430,7 +8430,7 @@ package body et_schematic_ops is
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level) is
 
-		use submodules;
+		use et_submodules;
 
 		-- The place where the box is in the parent module:
 		submodule_position : et_coordinates.type_position;
@@ -8492,7 +8492,7 @@ package body et_schematic_ops is
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
-		use submodules;
+		use et_submodules;
 
 		-- The place where the box is in the parent module BEFORE and AFTER the move:
 		submodule_position_before : et_coordinates.type_position;
@@ -8594,7 +8594,7 @@ package body et_schematic_ops is
 				ports := element (submod_cursor).ports;
 
 				-- calculate the absolute port positions AFTER the move:
-				submodules.move_ports (ports, submodule_position_after);
+				et_submodules.move_ports (ports, submodule_position_after);
 
 				-- ports now provides port names and absoltue x/y positions.
 				-- The new ports will be inserted in the nets now:
@@ -8645,7 +8645,7 @@ package body et_schematic_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 		
-		use submodules;
+		use et_submodules;
 
 		-- This type describes a submodule port before and after the drag operation:
 		type type_drag is record
@@ -8850,7 +8850,7 @@ package body et_schematic_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 		
-		use submodules;
+		use et_submodules;
 
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
@@ -8931,7 +8931,7 @@ package body et_schematic_ops is
 				ports := element (submod_cursor).ports;
 
 				-- calculate the absolute port positions:
-				submodules.move_ports (ports, element (submod_cursor).position);
+				et_submodules.move_ports (ports, element (submod_cursor).position);
 
 				-- ports now provides port names and absoltue x/y positions.
 				-- The new ports will be inserted in the nets now:
@@ -8968,7 +8968,7 @@ package body et_schematic_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 		
-		use submodules;
+		use et_submodules;
 
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
@@ -9030,7 +9030,7 @@ package body et_schematic_ops is
 					log_threshold	=> log_threshold + 1);
 
 				-- calculate the absolute port positions:
-				submodules.move_ports (submodule_old.ports, submodule_old.position);
+				et_submodules.move_ports (submodule_old.ports, submodule_old.position);
 				
 				-- submodule_old.ports provides port names and absolute x/y positions.
 				-- The new ports will be inserted in the nets now:
@@ -9074,15 +9074,15 @@ package body et_schematic_ops is
 	procedure set_submodule_file (
 	-- Sets the file name of a submodule instance.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		file			: in submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
+		file			: in et_submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		full_file_name : constant string := expand (submodules.to_string (file));
+		full_file_name : constant string := expand (et_submodules.to_string (file));
 		
-		use submodules;
+		use et_submodules;
 
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
@@ -9886,9 +9886,9 @@ package body et_schematic_ops is
 	function sort_by_coordinates (
 		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level) 
-		return numbering.type_devices.map is
-		use numbering;
-		devices : numbering.type_devices.map; -- to be returned
+		return et_numbering.type_devices.map is
+		use et_numbering;
+		devices : et_numbering.type_devices.map; -- to be returned
 
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
@@ -9902,13 +9902,13 @@ package body et_schematic_ops is
 					unit_name : type_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
 					unit_position : et_coordinates.type_position := element (unit_cursor).position;
 					inserted : boolean := false;
-					cursor_sort : numbering.type_devices.cursor;
+					cursor_sort : et_numbering.type_devices.cursor;
 				begin -- sort
 					log (text => "unit " & to_string (unit_name) &
 						" at " & to_string (position => unit_position),
 						 level => log_threshold + 2);
 					
-					numbering.type_devices.insert 
+					et_numbering.type_devices.insert 
 						(
 						container	=> devices,
 						key			=> unit_position, -- sheet/x/y
@@ -9972,8 +9972,8 @@ package body et_schematic_ops is
 		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 		return boolean is
-		use numbering;
-		devices : numbering.type_devices.map;
+		use et_numbering;
+		devices : et_numbering.type_devices.map;
 	begin
 		devices := sort_by_coordinates (module_cursor, log_threshold);
 		-- If a unit sits on top of another unit, sort_by_coordinates throws a
@@ -9995,11 +9995,11 @@ package body et_schematic_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_conventions;
-		use numbering;
+		use et_numbering;
 
 		-- The list of devices sorted by their coordinates.
 		-- By their order in this list the devices will be renumbered.
-		devices : numbering.type_devices.map;
+		devices : et_numbering.type_devices.map;
 
 		function renumber (cat : in et_conventions.type_device_category) return boolean is
 		-- Renumbers devices of given category. Returns true if all devices
@@ -10008,8 +10008,8 @@ package body et_schematic_ops is
 		-- run of this function does not try to renumber them again.
 			result : boolean := true;
 			
-			use numbering.type_devices;
-			cursor : numbering.type_devices.cursor := devices.first;
+			use et_numbering.type_devices;
+			cursor : et_numbering.type_devices.cursor := devices.first;
 			name_before, name_after : type_name; -- R1
 			use et_coordinates;
 			sheet_before, sheet_now : type_sheet := type_sheet'first;
@@ -10035,11 +10035,11 @@ package body et_schematic_ops is
 
 				-- Start with the unit indicated by cursor. All other
 				-- units of the device come after this one.
-				cursor_done : numbering.type_devices.cursor := cursor;
+				cursor_done : et_numbering.type_devices.cursor := cursor;
 
 				procedure set_done (
 					coordinates : in et_coordinates.type_position;
-					device		: in out numbering.type_device) is
+					device		: in out et_numbering.type_device) is
 				begin
 					device.done := true;
 				end;
@@ -10047,7 +10047,7 @@ package body et_schematic_ops is
 			begin -- mark_units_done
 				log (text => "marking all units done ...", level => log_threshold + 2);
 				
-				while cursor_done /= numbering.type_devices.no_element loop
+				while cursor_done /= et_numbering.type_devices.no_element loop
 					
 					if element (cursor_done).name = name_before then -- IC5
 						
@@ -10066,7 +10066,7 @@ package body et_schematic_ops is
 			end mark_units_done;
 			
 		begin -- renumber
-			while cursor /= numbering.type_devices.no_element loop
+			while cursor /= et_numbering.type_devices.no_element loop
 
 				if not element (cursor).done then
 					name_before := element (cursor).name; -- R1
@@ -10182,9 +10182,9 @@ package body et_schematic_ops is
 	-- NOTE: This is about the indexes used by the generic module.
 		module_cursor		: in pac_generic_modules.cursor; -- the cursor to the module
 		log_threshold		: in type_log_level) 
-		return numbering.type_index_range is
+		return et_numbering.type_index_range is
 
-		index_range : numbering.type_index_range; -- to be returned
+		index_range : et_numbering.type_index_range; -- to be returned
 
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
@@ -10210,7 +10210,7 @@ package body et_schematic_ops is
 			end loop;
 
 			if length (module.devices) > 0 then
-				log (text => numbering.to_index_range (module_name, index_range),
+				log (text => et_numbering.to_index_range (module_name, index_range),
 					 level => log_threshold + 1);
 			else
 				log (WARNING, "no devices found in module " &
@@ -10248,14 +10248,14 @@ package body et_schematic_ops is
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor := generic_modules.first;
-		index_range : numbering.type_index_range;
+		index_range : et_numbering.type_index_range;
 
-		use numbering;
+		use et_numbering;
 		
 		package type_ranges is new ordered_maps (
 			key_type		=> type_module_name.bounded_string, -- motor_driver (generic module name)
 			"<"				=> type_module_name."<",
-			element_type	=> numbering.type_index_range); -- 3..190
+			element_type	=> et_numbering.type_index_range); -- 3..190
 
 		-- The device name indexes of all (sub)modules are stored here:
 		ranges : type_ranges.map;
@@ -10263,20 +10263,20 @@ package body et_schematic_ops is
 		function query_range (module : in type_module_name.bounded_string)
 		-- Returns the index range of the given generic module.
 		-- NOTE: This is about the indexes used by the generic module.			
-			return numbering.type_index_range is
+			return et_numbering.type_index_range is
 			cursor : type_ranges.cursor;
 		begin
 			cursor := type_ranges.find (ranges, module);
 			return type_ranges.element (cursor);
 		end query_range;
 		
-		submod_tree : numbering.type_modules.tree;
-		tree_cursor : numbering.type_modules.cursor;
+		submod_tree : et_numbering.type_modules.tree;
+		tree_cursor : et_numbering.type_modules.cursor;
 
 		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 		package stack is new et_general.stack_lifo (
-			item	=> numbering.type_modules.cursor,
-			max 	=> submodules.nesting_depth_max);
+			item	=> et_numbering.type_modules.cursor,
+			max 	=> et_submodules.nesting_depth_max);
 
 		-- For calculating the device index offset of submodule instances:
 		-- The highest used device name index across the module is stored here.
@@ -10292,13 +10292,13 @@ package body et_schematic_ops is
 		procedure set_offset is 
 		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 		-- until the deepest submodule (the bottom of the design structure) has been reached.
-			use numbering.type_modules;
+			use et_numbering.type_modules;
 			module_name 	: type_module_name.bounded_string; -- motor_driver
 			parent_name 	: type_module_name.bounded_string; -- water_pump
 			module_range 	: type_index_range;
 			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 
-			procedure assign_offset (module : in out numbering.type_module) is begin
+			procedure assign_offset (module : in out et_numbering.type_module) is begin
 			-- assign the device name offset to the current submodule according to the latest index_max.
 				module.device_names_offset := index_max + 1;
 				
@@ -10316,7 +10316,7 @@ package body et_schematic_ops is
 			tree_cursor := first_child (tree_cursor);
 
 			-- iterate through the submodules on this level
-			while tree_cursor /= numbering.type_modules.no_element loop
+			while tree_cursor /= et_numbering.type_modules.no_element loop
 				module_name := element (tree_cursor).name;
 				module_instance := element (tree_cursor).instance;
 				module_range := query_range (module_name);
@@ -10340,7 +10340,7 @@ package body et_schematic_ops is
 				
 				log (text => "index max" & to_string (index_max), level => log_threshold + 1);
 				
-				if first_child (tree_cursor) = numbering.type_modules.no_element then 
+				if first_child (tree_cursor) = et_numbering.type_modules.no_element then 
 					-- no submodules on the current level. means we can't go deeper.
 					
 					log_indentation_up;
@@ -10379,8 +10379,8 @@ package body et_schematic_ops is
 			module.submod_tree := submod_tree;
 		end;
 
-		procedure query_submodules (submod_cursor : in numbering.type_modules.cursor) is
-			use numbering.type_modules;
+		procedure query_submodules (submod_cursor : in et_numbering.type_modules.cursor) is
+			use et_numbering.type_modules;
 			-- Map from submodule_cursor to module in et_project.modules:
 
 			-- submod_cursor points to a submodule in the submod_tree:
@@ -10426,7 +10426,7 @@ package body et_schematic_ops is
 			new_item	=> index_range);
 
 		-- submodules:		
-		numbering.type_modules.iterate (element (module_cursor).submod_tree, query_submodules'access);
+		et_numbering.type_modules.iterate (element (module_cursor).submod_tree, query_submodules'access);
 		
 		-- calculation of index ranges complete
 		----------------
@@ -10452,7 +10452,7 @@ package body et_schematic_ops is
 		submod_tree := element (module_cursor).submod_tree;
 
 		-- set the cursor inside the tree at root position:
-		tree_cursor := numbering.type_modules.root (submod_tree);
+		tree_cursor := et_numbering.type_modules.root (submod_tree);
 		
 		stack.init;
 
@@ -10483,10 +10483,10 @@ package body et_schematic_ops is
 		procedure query_submodules (
    			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use numbering;
+			use et_numbering;
 
-			procedure query (cursor : in numbering.type_modules.cursor) is
-				use numbering.type_modules;
+			procedure query (cursor : in et_numbering.type_modules.cursor) is
+				use et_numbering.type_modules;
 			begin
 				log (text => "instance " & to_string (element (cursor).instance) &
 					 " offset " & to_string (element (cursor).device_names_offset),
@@ -10495,7 +10495,7 @@ package body et_schematic_ops is
 			end query;
 			
 		begin
-			numbering.type_modules.iterate (module.submod_tree, query'access);
+			et_numbering.type_modules.iterate (module.submod_tree, query'access);
 		end query_submodules;
 
 	begin
@@ -10516,24 +10516,24 @@ package body et_schematic_ops is
 		-- the cursor to the given top module
 		module_cursor : pac_generic_modules.cursor;
 		
-		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
-		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
+		submod_tree : et_numbering.type_modules.tree := et_numbering.type_modules.empty_tree;
+		tree_cursor : et_numbering.type_modules.cursor := et_numbering.type_modules.root (submod_tree);
 
 		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 		package stack is new et_general.stack_lifo (
-			item	=> numbering.type_modules.cursor,
-			max 	=> submodules.nesting_depth_max);
+			item	=> et_numbering.type_modules.cursor,
+			max 	=> et_submodules.nesting_depth_max);
 		
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use submodules;
-			use submodules.type_submodules;
-			submod_cursor	: submodules.type_submodules.cursor := module.submods.first;
+			use et_submodules;
+			use et_submodules.type_submodules;
+			submod_cursor	: et_submodules.type_submodules.cursor := module.submods.first;
 			submod_name		: type_module_name.bounded_string; -- $ET_TEMPLATES/motor_driver
 			submod_instance	: type_module_instance_name.bounded_string; -- OSC1
 		begin -- query_submodules in given top module
-			while submod_cursor /= submodules.type_submodules.no_element loop
+			while submod_cursor /= et_submodules.type_submodules.no_element loop
 				submod_name := to_module_name (remove_extension (to_string (element (submod_cursor).file)));
 				submod_instance := key (submod_cursor);
 				log (text => "submodule " & enclose_in_quotes (to_string (submod_name)) &
@@ -10543,10 +10543,10 @@ package body et_schematic_ops is
 				-- at this level must be saved on the stack:
 				stack.push (tree_cursor);
 
-				numbering.type_modules.insert_child (
+				et_numbering.type_modules.insert_child (
 					container	=> submod_tree,
 					parent		=> tree_cursor,
-					before		=> numbering.type_modules.no_element,
+					before		=> et_numbering.type_modules.no_element,
 					new_item	=> (
 							name				=> submod_name,
 							instance			=> submod_instance,
@@ -10586,7 +10586,7 @@ package body et_schematic_ops is
 			log_indentation_up;
 			
 			log (text => "submodules total" & 
-				 count_type'image (numbering.type_modules.node_count (module.submod_tree) - 1),
+				 count_type'image (et_numbering.type_modules.node_count (module.submod_tree) - 1),
 				 level => log_threshold + 1
 				);
 
@@ -10651,401 +10651,6 @@ package body et_schematic_ops is
 				level => log_threshold);
 		end if;
 	end;
-	
--- 	procedure make_bom ( -- CS obsolete
--- 	-- Exports a BOM file from the given top module and assembly variant.
--- 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
--- 		variant_top		: in type_variant_name.bounded_string; -- low_cost
--- 		bom_file		: in et_material.type_file_name.bounded_string; -- CAM/motor_driver_bom.csv
--- 		log_threshold	: in type_log_level) is
--- 
--- 		module_cursor : type_modules.cursor; -- points to the module
--- 
--- 		use et_assembly_variants;
--- 		use et_material;
--- 
--- 		bill_of_material : et_material.type_devices.map;
--- 
--- 		procedure collect (
--- 		-- Collects devices of the given module and its variant in container bill_of_material.
--- 		-- Adds to the device index the given offset.
--- 		-- If offset is zero, we are dealing with the top module.
--- 			module_cursor	: in type_modules.cursor;
--- 			variant			: in type_variant_name.bounded_string;
--- 			offset			: in type_name_index) is
--- 			
--- 			procedure query_devices (
--- 				module_name	: in type_module_name.bounded_string;
--- 				module		: in et_schematic.type_module) is
--- 
--- 				device_name : type_name;
--- 				inserted : boolean;
--- 				
--- 				procedure test_inserted is begin
--- 					if not inserted then
--- 						log (ERROR, "multiple occurence of device " & to_string (device_name),
--- 								console => true);
--- 						raise constraint_error;
--- 					end if;
--- 				end;
--- 
--- 				procedure test_partcode (partcode : in et_material.type_partcode.bounded_string) is
--- 				begin
--- 					if type_partcode.length (partcode) = 0 then
--- 						log (WARNING, text => "device " & to_string (device_name) &
--- 							 " has no partcode !");
--- 					end if;
--- 				end;
--- 				
--- 				procedure query_properties_default (cursor_schematic : in et_schematic.type_devices.cursor) is 
--- 					cursor_bom : et_material.type_devices.cursor;
--- 
--- 					use et_schematic.type_devices;
--- 					use et_assembly_variants.type_devices;
--- 				begin -- query_properties_default
--- 
--- 					-- the device must be real (appearance SCH_PCB)
--- 					if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
--- 
--- 						-- the package must be real
--- 						if has_real_package (cursor_schematic) then
--- 
--- 							device_name := et_schematic.type_devices.key (cursor_schematic);
--- 
--- 							-- issue warning if device has no partcode
--- 							test_partcode (element (cursor_schematic).partcode);
--- 							
--- 							-- Store device in bill_of_material as it is:
--- 
--- 							apply_offset (device_name, offset, log_threshold + 2);
--- 							
--- 							et_material.type_devices.insert (
--- 								container	=> bill_of_material,
--- 								key			=> device_name, -- IC4, R3
--- 								new_item	=> (
--- 									value		=> element (cursor_schematic).value,
--- 									partcode	=> element (cursor_schematic).partcode,
--- 									purpose		=> element (cursor_schematic).purpose,
--- 									packge		=> et_schematic.package_model (cursor_schematic)),
--- 								position	=> cursor_bom,
--- 								inserted	=> inserted);
--- 							
--- 							test_inserted;
--- 							
--- 						end if;
--- 					end if;
--- 				end query_properties_default;
--- 
--- 				procedure query_properties_variants (cursor_schematic : in et_schematic.type_devices.cursor) is 
--- 					cursor_bom : et_material.type_devices.cursor;
--- 
--- 					use et_schematic.type_devices;
--- 					alt_dev_cursor : et_assembly_variants.type_devices.cursor;
--- 					use et_assembly_variants.type_devices;
--- 				begin -- query_properties_variants
--- 
--- 					-- the device must be real (appearance SCH_PCB)
--- 					if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
--- 
--- 						-- the package must be real
--- 						if has_real_package (cursor_schematic) then
--- 						
--- 							device_name := et_schematic.type_devices.key (cursor_schematic);
--- 							
--- 							-- Get a cursor to the alternative device as specified in the assembly variant:
--- 							alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
--- 							
--- 							if alt_dev_cursor = et_assembly_variants.type_devices.no_element then
--- 							-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
--- 
--- 								-- issue warning if device has no partcode
--- 								test_partcode (element (cursor_schematic).partcode);
--- 								
--- 								apply_offset (device_name, offset, log_threshold + 2);
--- 								
--- 								et_material.type_devices.insert (
--- 									container	=> bill_of_material,
--- 									key			=> device_name, -- IC4, R3
--- 									new_item	=> (
--- 										value		=> element (cursor_schematic).value,
--- 										partcode	=> element (cursor_schematic).partcode,	
--- 										purpose		=> element (cursor_schematic).purpose,
--- 										packge		=> et_schematic.package_model (cursor_schematic)),
--- 									position	=> cursor_bom,
--- 									inserted	=> inserted);
--- 
--- 								test_inserted;
--- 
--- 							else
--- 							-- Device has an entry in the assembly variant. Depending on the mounted-flag
--- 							-- it is to be skipped or inserted in bill_of_material with alternative properties.
--- 							-- NOTE: The package model is not affected by the assembly variant.
--- 								case element (alt_dev_cursor).mounted is
--- 									when NO =>
--- 										log (text => to_string (device_name) & " not mounted -> skipped",
--- 											level => log_threshold + 2);
--- 										
--- 									when YES =>
--- 										-- issue warning if device has no partcode
--- 										test_partcode (element (alt_dev_cursor).partcode);
--- 
--- 										apply_offset (device_name, offset, log_threshold + 2);
--- 										
--- 										-- Insert the device in bill with alternative properties as defined
--- 										-- in the assembly variant:
--- 										et_material.type_devices.insert (
--- 											container	=> bill_of_material,
--- 											key			=> device_name, -- IC4, R3
--- 											new_item	=> (
--- 												value		=> element (alt_dev_cursor).value,
--- 												partcode	=> element (alt_dev_cursor).partcode,
--- 												purpose		=> element (alt_dev_cursor).purpose,
--- 												packge		=> et_schematic.package_model (cursor_schematic)),
--- 											position	=> cursor_bom,
--- 											inserted	=> inserted);
--- 
--- 										test_inserted;
--- 
--- 										-- check partcode content
--- 										et_conventions.validate_partcode (
--- 											partcode		=> et_material.type_devices.element (cursor_bom).partcode,
--- 											device_name		=> device_name,
--- 											packge			=> to_package_name (ada.directories.base_name (to_string (material.type_devices.element (cursor_bom).packge))),
--- 											value			=> et_material.type_devices.element (cursor_bom).value,
--- 											log_threshold	=> log_threshold + 3);
--- 
--- 								end case;
--- 							end if;
--- 
--- 						end if;
--- 					end if;
--- 				end query_properties_variants;
--- 				
--- 			begin -- query_devices
--- 				-- if default variant given, then assembly variants are irrelevant:
--- 				if is_default (variant) then
--- 
--- 					log (text => "collecting devices from module " &
--- 							enclose_in_quotes (to_string (module_name)) &
--- 							" default variant by applying device index offset" & 
--- 							et_libraries.to_string (offset), -- 100
--- 						level => log_threshold + 1);
--- 					
--- 					log_indentation_up;
--- 					
--- 					et_schematic.type_devices.iterate (
--- 						container	=> module.devices,
--- 						process		=> query_properties_default'access);
--- 
--- 				-- if a particular variant given, then collect devices accordingly:
--- 				else
--- 					log (text => "collecting devices from module " &
--- 							enclose_in_quotes (to_string (module_name)) &
--- 							" variant " & enclose_in_quotes (to_variant (variant)) &
--- 							" by applying device index offset" & 
--- 							et_libraries.to_string (offset), -- 100
--- 						level => log_threshold + 1);
--- 					
--- 					log_indentation_up;
--- 				
--- 					et_schematic.type_devices.iterate (
--- 						container	=> module.devices,
--- 						process		=> query_properties_variants'access);
--- 
--- 				end if;
--- 				
--- 				log_indentation_down;
--- 			end query_devices;
--- 
--- 		begin -- collect
--- 			et_project.type_modules.query_element (
--- 				position	=> module_cursor,
--- 				process		=> query_devices'access);
--- 			
--- 		end collect;
--- 			
--- 		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
--- 		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
--- 
--- 		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
--- 		package stack_level is new et_general.stack_lifo (
--- 			item	=> numbering.type_modules.cursor,
--- 			max 	=> submodules.nesting_depth_max);
--- 
--- 		-- Another stack keeps record of the assembly variant on submodule levels.
--- 		package stack_variant is new et_general.stack_lifo (
--- 			item	=> type_variant_name.bounded_string,
--- 			max 	=> submodules.nesting_depth_max);
--- 		
--- 		variant : type_variant_name.bounded_string; -- low_cost
--- 		
--- 		procedure query_submodules is 
--- 		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
--- 		-- until the deepest submodule (the bottom of the design structure) has been reached.
--- 			use numbering.type_modules;
--- 			module_name 	: type_module_name.bounded_string; -- motor_driver
--- 			parent_name 	: type_module_name.bounded_string; -- water_pump
--- 			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
--- 			offset			: type_name_index;
--- 
--- 			use et_assembly_variants.type_submodules;
--- 			alt_submod : et_assembly_variants.type_submodules.cursor;
--- 		begin
--- 			log_indentation_up;
--- 
--- 			-- start with the first submodule on the current hierarchy level
--- 			tree_cursor := first_child (tree_cursor);
--- 
--- 			-- iterate through the submodules on this level
--- 			while tree_cursor /= numbering.type_modules.no_element loop
--- 				module_name := element (tree_cursor).name;
--- 				module_instance := element (tree_cursor).instance;
--- 
--- 				log (text => "instance " & enclose_in_quotes (to_string (module_instance)) &
--- 					 " of generic module " & enclose_in_quotes (to_string (module_name)),
--- 					 level => log_threshold + 1);
--- 
--- 				-- In case we are on the first level, the parent module is the given top module.
--- 				-- In that case the parent variant is the given variant of the top module.
--- 				-- If the top module has the default variant, all submodules in all levels
--- 				-- assume default variant too.
--- 				if parent (tree_cursor) = root (submod_tree) then
--- 					parent_name := make_bom.module_name;
--- 					variant := variant_top; -- argument of make_bom
--- 				else
--- 					parent_name := element (parent (tree_cursor)).name;
--- 				end if;
--- 
--- 				-- Get the device name offset of the current submodule;
--- 				offset := element (tree_cursor).device_names_offset;
--- 
--- 				if not is_default (variant) then
--- 					-- Query in parent module: Is there any assembly variant specified for this submodule ?
--- 
--- 					alt_submod := alternative_submodule (
--- 								module	=> locate_module (parent_name),
--- 								variant	=> variant,
--- 								submod	=> module_instance);
--- 
--- 					if alt_submod = et_assembly_variants.type_submodules.no_element then
--- 					-- no variant specified for this submodule -> collect devices of default variant
--- 
--- 						variant := default;
--- 					else
--- 					-- alternative variant specified for this submodule
--- 						variant := element (alt_submod).variant;
--- 					end if;
--- 
--- 				end if;
--- 
--- 				-- collect devices from current module
--- 				collect (
--- 					module_cursor	=> locate_module (module_name),
--- 					variant			=> variant,
--- 					offset			=> offset);
--- 
--- 				
--- 				if first_child (tree_cursor) = numbering.type_modules.no_element then 
--- 				-- No submodules on the current level. means we can't go deeper:
--- 					
--- 					log_indentation_up;
--- 					log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
--- 					log_indentation_down;
--- 				else
--- 				-- There are submodules on the current level:
--- 					
--- 					-- backup the cursor to the current submodule on this level
--- 					stack_level.push (tree_cursor);
--- 
--- 					-- backup the parent assembly variant
--- 					stack_variant.push (variant);
--- 
--- 					-- iterate through submodules on the level below
--- 					query_submodules; -- this is recursive !
--- 
--- 					-- restore cursor to submodule (see stack_level.push above)
--- 					tree_cursor := stack_level.pop;
--- 
--- 					-- restore the parent assembly variant (see stack_variant.push above)
--- 					variant := stack_variant.pop;
--- 				end if;
--- 
--- 				next_sibling (tree_cursor); -- next submodule on this level
--- 			end loop;
--- 			
--- 			log_indentation_down;
--- 
--- 			exception
--- 				when event: others =>
--- 					log_indentation_reset;
--- 					log (text => ada.exceptions.exception_information (event), console => true);
--- 					raise;
--- 			
--- 		end query_submodules;
--- 		
--- 	begin -- make_bom
--- 		-- The variant name is optional. If not provided, the default variant will be exported.
--- 		if is_default (variant_top) then
--- 			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
--- 				" default variant" &
--- 				" exporting BOM to file " & to_string (bom_file),
--- 				level => log_threshold);
--- 		else
--- 			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
--- 				" variant " & enclose_in_quotes (to_variant (variant_top)) &
--- 				" exporting BOM to file " & to_string (bom_file),
--- 				level => log_threshold);
--- 		end if;
--- 		
--- 		log_indentation_up;
--- 			
--- 		-- locate the given top module
--- 		module_cursor := locate_module (module_name);
--- 
--- 		-- Build the submodule tree of the module according to the current design structure.
--- 		-- All further operations rely on this tree:
--- 		et_schematic_ops.build_submodules_tree (
--- 			module_name 	=> module_name,
--- 			log_threshold	=> log_threshold + 1);
--- 		
--- 		if exists (module_cursor, variant_top) then
--- 
--- 			-- collect devices of the given top module. the top module has no device index offset
--- 			collect (module_cursor, variant_top, 0); 
--- 
--- 			-- take a copy of the submodule tree of the given top module:
--- 			submod_tree := element (module_cursor).submod_tree;
--- 
--- 			-- set the cursor inside the tree at root position:
--- 			tree_cursor := numbering.type_modules.root (submod_tree);
--- 			
--- 			stack_level.init;
--- 			stack_variant.init;
--- 
--- 			-- collect devices of the submodules
--- 			query_submodules;
--- 
--- 			-- write the bom
--- -- 			et_material.write_bom (
--- -- 				bom				=> bill_of_material,	-- the container that holds the bom
--- -- 				file_name		=> bom_file, 			-- tmp/my_project_bom.csv
--- -- 				--format			=> NATIVE,				-- CS should be an argument in the future
--- -- 				format			=> EAGLE,				-- CS should be an argument in the future
--- -- 				log_threshold	=> log_threshold + 1);
--- 			
--- 		else
--- 			assembly_variant_not_found (variant_top);
--- 		end if;
--- 		
--- 		log_indentation_down;
--- 
--- 		exception
--- 			when event: others =>
--- 				log_indentation_reset;
--- 				log (text => ada.exceptions.exception_information (event), console => true);
--- 				raise;
--- 	
--- 	end make_bom;
 
 	procedure make_boms (
 	-- Generates the BOM files of all assembly variants from the given top module.
@@ -11265,25 +10870,25 @@ package body et_schematic_ops is
 				
 			end collect;
 				
-			submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
-			tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
+			submod_tree : et_numbering.type_modules.tree := et_numbering.type_modules.empty_tree;
+			tree_cursor : et_numbering.type_modules.cursor := et_numbering.type_modules.root (submod_tree);
 
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 			package stack_level is new et_general.stack_lifo (
-				item	=> numbering.type_modules.cursor,
-				max 	=> submodules.nesting_depth_max);
+				item	=> et_numbering.type_modules.cursor,
+				max 	=> et_submodules.nesting_depth_max);
 
 			-- Another stack keeps record of the assembly variant on submodule levels.
 			package stack_variant is new et_general.stack_lifo (
 				item	=> et_general.type_variant_name.bounded_string,
-				max 	=> submodules.nesting_depth_max);
+				max 	=> et_submodules.nesting_depth_max);
 			
 			variant : et_general.type_variant_name.bounded_string; -- low_cost
 			
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
-				use numbering.type_modules;
+				use et_numbering.type_modules;
 				module_name 	: type_module_name.bounded_string; -- motor_driver
 				parent_name 	: type_module_name.bounded_string; -- water_pump
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
@@ -11298,7 +10903,7 @@ package body et_schematic_ops is
 				tree_cursor := first_child (tree_cursor);
 
 				-- iterate through the submodules on this level
-				while tree_cursor /= numbering.type_modules.no_element loop
+				while tree_cursor /= et_numbering.type_modules.no_element loop
 					module_name := element (tree_cursor).name;
 					module_instance := element (tree_cursor).instance;
 
@@ -11346,7 +10951,7 @@ package body et_schematic_ops is
 						offset			=> offset);
 
 					
-					if first_child (tree_cursor) = numbering.type_modules.no_element then 
+					if first_child (tree_cursor) = et_numbering.type_modules.no_element then 
 					-- No submodules on the current level. means we can't go deeper:
 						
 						log_indentation_up;
@@ -11401,7 +11006,7 @@ package body et_schematic_ops is
 			submod_tree := element (module_cursor).submod_tree;
 
 			-- set the cursor inside the tree at root position:
-			tree_cursor := numbering.type_modules.root (submod_tree);
+			tree_cursor := et_numbering.type_modules.root (submod_tree);
 			
 			stack_level.init;
 			stack_variant.init;
@@ -11608,9 +11213,9 @@ package body et_schematic_ops is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance	: in type_module_instance_name.bounded_string; -- OSC1
 		port_name		: in type_net_name.bounded_string) -- clock_out
-		return submodules.type_netchanger_port_name is
+		return et_submodules.type_netchanger_port_name is
 
-		use submodules;
+		use et_submodules;
 		direction : type_netchanger_port_name; -- to be returned
 
 		procedure query_submodules (
@@ -11658,7 +11263,7 @@ package body et_schematic_ops is
 
 		procedure query_ports (port_cursor : in et_schematic.type_ports_submodule.cursor) is
 			port : et_schematic.type_port_submodule := element (port_cursor);
-			direction : submodules.type_netchanger_port_name; -- master/slave
+			direction : et_submodules.type_netchanger_port_name; -- master/slave
 		begin
  			-- get the direction of the current submodule port
 			direction := port_direction (module_cursor, port.module_name, port.port_name);
@@ -11708,7 +11313,7 @@ package body et_schematic_ops is
 			-- This stack keeps record of the netlist_cursor as we go trough the design structure.
 			package stack_netlist is new et_general.stack_lifo (
 				item	=> et_netlists.type_modules.cursor,
-				max 	=> submodules.nesting_depth_max);
+				max 	=> et_submodules.nesting_depth_max);
 			
 			procedure collect_nets (
 			-- Collects net names of the given module and its variant in container netlist.
@@ -11831,16 +11436,16 @@ package body et_schematic_ops is
 
 			end collect_nets;
 			
-			submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
-			tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
+			submod_tree : et_numbering.type_modules.tree := et_numbering.type_modules.empty_tree;
+			tree_cursor : et_numbering.type_modules.cursor := et_numbering.type_modules.root (submod_tree);
 			
 			function make_prefix return et_general.type_net_name.bounded_string is
 			-- Builds a string like CLK_GENERATOR/FLT1/ from the parent submodule instances.
 			-- Starts at the position of the current tree_cursor and goes up to the first submodule level.
 			-- NOTE: The nets in the top module do not have prefixes.
 				prefix : et_general.type_net_name.bounded_string;
-				use numbering.type_modules;
-				cursor : numbering.type_modules.cursor := tree_cursor;
+				use et_numbering.type_modules;
+				cursor : et_numbering.type_modules.cursor := tree_cursor;
 			begin
 				-- The first prefix to PREPEND is the name of the current submodule instance:
 				prefix := et_netlists.to_prefix (element (cursor).instance);
@@ -11861,20 +11466,20 @@ package body et_schematic_ops is
 			
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 			package stack_level is new et_general.stack_lifo (
-				item	=> numbering.type_modules.cursor,
-				max 	=> submodules.nesting_depth_max);
+				item	=> et_numbering.type_modules.cursor,
+				max 	=> et_submodules.nesting_depth_max);
 
 			-- Another stack keeps record of the assembly variant at the submodule level.
 			package stack_variant is new et_general.stack_lifo (
 				item	=> et_general.type_variant_name.bounded_string,
-				max 	=> submodules.nesting_depth_max);
+				max 	=> et_submodules.nesting_depth_max);
 			
 			variant : et_general.type_variant_name.bounded_string; -- low_cost
 			
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
-				use numbering.type_modules;
+				use et_numbering.type_modules;
 				module_name 	: type_module_name.bounded_string; -- motor_driver
 				parent_name 	: type_module_name.bounded_string; -- water_pump
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
@@ -11921,7 +11526,7 @@ package body et_schematic_ops is
 				tree_cursor := first_child (tree_cursor);
 
 				-- iterate through the submodules on this level
-				while tree_cursor /= numbering.type_modules.no_element loop
+				while tree_cursor /= et_numbering.type_modules.no_element loop
 					module_name := element (tree_cursor).name;
 					module_instance := element (tree_cursor).instance;
 
@@ -11965,7 +11570,7 @@ package body et_schematic_ops is
 					-- Insert submodule in netlist_tree.
 					insert_submodule;
 					
-					if first_child (tree_cursor) = numbering.type_modules.no_element then 
+					if first_child (tree_cursor) = et_numbering.type_modules.no_element then 
 					-- No submodules on the current level. means we can't go deeper:
 						
 						log_indentation_up;
@@ -12061,7 +11666,7 @@ package body et_schematic_ops is
 			submod_tree := element (module_cursor).submod_tree;
 
 			-- set the cursor inside the tree at root position:
-			tree_cursor := numbering.type_modules.root (submod_tree);
+			tree_cursor := et_numbering.type_modules.root (submod_tree);
 			
 			stack_level.init;
 			stack_variant.init;
@@ -12258,8 +11863,8 @@ package body et_schematic_ops is
 
 				exception when event: others =>
 					log (ERROR, "net " & to_string (net) &
-						" netchanger" & submodules.to_string (port.index) &
-						" port" & submodules.to_string (port.port) &
+						" netchanger" & et_submodules.to_string (port.index) &
+						" port" & et_submodules.to_string (port.port) &
 						" already used !",
 						console => true);
 					-- CS: show the net, sheet, xy where the port is in use already
@@ -12340,8 +11945,8 @@ package body et_schematic_ops is
 									use et_netlists;
 									
 									procedure query_port (port_cursor : in type_ports_netchanger.cursor) is begin
-										log (text => "netchanger " & submodules.to_string (element (port_cursor).index) &
-											 " port " & submodules.to_string (element (port_cursor).port), level => log_threshold + 4);
+										log (text => "netchanger " & et_submodules.to_string (element (port_cursor).index) &
+											 " port " & et_submodules.to_string (element (port_cursor).port), level => log_threshold + 4);
 
 										if not exists_netchanger (
 											module_cursor	=> module_cursor,
@@ -12349,7 +11954,7 @@ package body et_schematic_ops is
 
 											error;
 											
-											log (ERROR, "netchanger" & submodules.to_string (element (port_cursor).index) &
+											log (ERROR, "netchanger" & et_submodules.to_string (element (port_cursor).index) &
 												 " does not exist !");
 										end if;
 

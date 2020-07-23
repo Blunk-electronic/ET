@@ -37,8 +37,8 @@
 
 with ada.exceptions;
 
-with submodules;
-with numbering;
+with et_submodules;
+with et_numbering;
 with et_symbols;
 with et_packages;
 with et_pcb_rw.device_packages;
@@ -834,8 +834,8 @@ package body et_board_ops is
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use submodules.type_submodules;
-			submod_cursor : submodules.type_submodules.cursor;
+			use et_submodules.type_submodules;
+			submod_cursor : et_submodules.type_submodules.cursor;
 		begin
 			submod_cursor := find (module.submods, instance);
 			position := element (submod_cursor).position_in_board;
@@ -866,12 +866,12 @@ package body et_board_ops is
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out et_schematic.type_module) is
-			use submodules.type_submodules;
-			submod_cursor : submodules.type_submodules.cursor;
+			use et_submodules.type_submodules;
+			submod_cursor : et_submodules.type_submodules.cursor;
 
 			procedure move (
 				instance	: in et_general.type_module_instance_name.bounded_string;
-				submodule	: in out submodules.type_submodule) is
+				submodule	: in out et_submodules.type_submodule) is
 			begin
 				case coordinates is
 					when ABSOLUTE =>
@@ -944,9 +944,9 @@ package body et_board_ops is
 		procedure make_for_variant (variant_name : in et_general.type_variant_name.bounded_string) is
 			
 			-- Here we collect the pick and place data in the first step. It will then
-			-- be passed to procedure pick_and_place.write_pnp.
-			use pick_and_place;
-			pnp : pick_and_place.type_devices.map;
+			-- be passed to procedure et_pick_and_place.write_pnp.
+			use et_pick_and_place;
+			pnp : et_pick_and_place.type_devices.map;
 
 			procedure collect (
 			-- Collects devices of the given module and its variant in container pnp.
@@ -998,7 +998,7 @@ package body et_board_ops is
 					end;
 
 					procedure query_properties_default (cursor_schematic : in et_schematic.type_devices.cursor) is 
-						cursor_pnp : pick_and_place.type_devices.cursor;
+						cursor_pnp : et_pick_and_place.type_devices.cursor;
 
 						use et_schematic.type_devices;
 						use et_assembly_variants.type_devices;
@@ -1017,7 +1017,7 @@ package body et_board_ops is
 								-- Store device in pnp list as it is:
 								apply_offset (device_name, offset, log_threshold + 2);
 								
-								pick_and_place.type_devices.insert (
+								et_pick_and_place.type_devices.insert (
 									container	=> pnp,
 									key			=> device_name, -- IC4, R3
 									new_item	=> (
@@ -1036,7 +1036,7 @@ package body et_board_ops is
 					end query_properties_default;
 
 					procedure query_properties_variants (cursor_schematic : in et_schematic.type_devices.cursor) is 
-						cursor_pnp : pick_and_place.type_devices.cursor;
+						cursor_pnp : et_pick_and_place.type_devices.cursor;
 
 						use et_schematic.type_devices;
 						alt_dev_cursor : et_assembly_variants.type_devices.cursor;
@@ -1061,7 +1061,7 @@ package body et_board_ops is
 								
 									apply_offset (device_name, offset, log_threshold + 2);
 
-									pick_and_place.type_devices.insert (
+									et_pick_and_place.type_devices.insert (
 										container	=> pnp,
 										key			=> device_name, -- IC4, R3
 										new_item	=> (
@@ -1089,7 +1089,7 @@ package body et_board_ops is
 
 											-- Insert the device in pnp list with alternative properties as defined
 											-- in the assembly variant:
-											pick_and_place.type_devices.insert (
+											et_pick_and_place.type_devices.insert (
 												container	=> pnp,
 												key			=> device_name, -- IC4, R3
 												new_item	=> (
@@ -1157,25 +1157,25 @@ package body et_board_ops is
 				
 			end collect;
 	
-			submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
-			tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
+			submod_tree : et_numbering.type_modules.tree := et_numbering.type_modules.empty_tree;
+			tree_cursor : et_numbering.type_modules.cursor := et_numbering.type_modules.root (submod_tree);
 
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 			package stack_level is new et_general.stack_lifo (
-				item	=> numbering.type_modules.cursor,
-				max 	=> submodules.nesting_depth_max);
+				item	=> et_numbering.type_modules.cursor,
+				max 	=> et_submodules.nesting_depth_max);
 
 			-- Another stack keeps record of the assembly variant on submodule levels.
 			package stack_variant is new et_general.stack_lifo (
 				item	=> et_general.type_variant_name.bounded_string,
-				max 	=> submodules.nesting_depth_max);
+				max 	=> et_submodules.nesting_depth_max);
 			
 			variant : et_general.type_variant_name.bounded_string; -- low_cost
 
 			-- Another stack keeps record of the submodule position (inside the parent module) on submodule levels.
 			package stack_position_in_board is new et_general.stack_lifo (
 				item	=> type_position,
-				max 	=> submodules.nesting_depth_max);
+				max 	=> et_submodules.nesting_depth_max);
 
 			-- This is the position of the submodule in the board (usually its lower left corner):
 			position_in_board : type_position := origin_zero_rotation;
@@ -1183,7 +1183,7 @@ package body et_board_ops is
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
-				use numbering.type_modules;
+				use et_numbering.type_modules;
 				module_name 	: type_module_name.bounded_string; -- motor_driver
 				parent_name 	: type_module_name.bounded_string; -- water_pump
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
@@ -1198,7 +1198,7 @@ package body et_board_ops is
 				tree_cursor := first_child (tree_cursor);
 
 				-- iterate through the submodules on this level
-				while tree_cursor /= numbering.type_modules.no_element loop
+				while tree_cursor /= et_numbering.type_modules.no_element loop
 					module_name := element (tree_cursor).name;
 					module_instance := element (tree_cursor).instance;
 
@@ -1257,7 +1257,7 @@ package body et_board_ops is
 						position_in_board	=> position_in_board -- the position of the submodule inside the parent module
 						);
 
-					if first_child (tree_cursor) = numbering.type_modules.no_element then 
+					if first_child (tree_cursor) = et_numbering.type_modules.no_element then 
 					-- No submodules on the current level. means we can't go deeper:
 						
 						log_indentation_up;
@@ -1323,7 +1323,7 @@ package body et_board_ops is
 			submod_tree := element (module_cursor).submod_tree;
 
 			-- set the cursor inside the tree at root position:
-			tree_cursor := numbering.type_modules.root (submod_tree);
+			tree_cursor := et_numbering.type_modules.root (submod_tree);
 			
 			stack_level.init;
 			stack_variant.init;
@@ -1333,7 +1333,7 @@ package body et_board_ops is
 			query_submodules;
 
 			-- write the pick and place file
-			pick_and_place.write_pnp (
+			et_pick_and_place.write_pnp (
 				pnp				=> pnp,				-- the container that holds the pick and place list
 				module_name		=> module_name,		-- motor_driver
 				variant_name	=> variant_name,	-- low_cost

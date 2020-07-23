@@ -351,7 +351,7 @@ begin -- schematic_cmd
 											x => to_distance (f (7)),
 											y => to_distance (f (8))
 											)),
-								direction		=> submodules.to_port_name (f (9)),
+								direction		=> et_submodules.to_port_name (f (9)),
 								log_threshold	=> log_threshold + 1
 								);
 
@@ -365,7 +365,7 @@ begin -- schematic_cmd
 						when 11 =>
 							add_submodule (
 								module_name 	=> module, -- parent module (where the submodule is to be inserted)
-								file			=> submodules.to_submodule_path (f (5)),
+								file			=> et_submodules.to_submodule_path (f (5)),
 								instance		=> et_general.to_instance_name (f (6)), -- submodule instance name
 								position		=> to_position 
 									(
@@ -592,7 +592,7 @@ begin -- schematic_cmd
 							delete_netchanger
 								(
 								module_name		=> module,
-								index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+								index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
 								log_threshold		=> log_threshold + 1);
 
 						when 6 .. count_type'last => command_too_long (cmd, fields - 1);
@@ -747,7 +747,7 @@ begin -- schematic_cmd
 						when 8 =>
 							drag_netchanger (
 								module_name 	=> module,
-								index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+								index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
 								coordinates		=> to_coordinates (f (6)), -- relative/absolute
 								point			=> type_point (set (
 													x => to_distance (f (7)),
@@ -993,7 +993,7 @@ begin -- schematic_cmd
 							move_netchanger
 								(
 								module_name 	=> module,
-								index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
+								index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
 								coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 								sheet			=> to_sheet_relative (f (7)),
 								point			=> type_point (set (
@@ -1474,7 +1474,7 @@ begin -- schematic_cmd
 						when 7 =>
 							rotate_netchanger (
 								module_name 	=> module,
-								index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+								index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
 								coordinates		=> to_coordinates (f (6)), -- relative/absolute
 								rotation		=> to_rotation (f (7)), -- 90
 								log_threshold	=> log_threshold + 1
@@ -1574,7 +1574,7 @@ begin -- schematic_cmd
 							set_submodule_file (
 								module_name 	=> module,
 								instance		=> et_general.to_instance_name (f (5)),
-								file			=> submodules.to_submodule_path (f (6)),
+								file			=> et_submodules.to_submodule_path (f (6)),
 								log_threshold	=> log_threshold + 1
 								);
 

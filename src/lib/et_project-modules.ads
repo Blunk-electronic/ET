@@ -41,7 +41,7 @@ with ada.containers.ordered_maps;
 
 with et_coordinates;			use et_coordinates;
 with et_schematic;
-with submodules;
+with et_submodules;
 with et_netlists;
 with et_assembly_variants;
 with et_terminals;
@@ -107,7 +107,7 @@ package et_project.modules is
 	function netchanger_as_port_available (
 		module		: in pac_generic_modules.cursor;
 		net			: in et_schematic.type_nets.cursor;
-		direction	: in submodules.type_netchanger_port_name) -- master/slave 		
+		direction	: in et_submodules.type_netchanger_port_name) -- master/slave 		
 		return boolean;
 	
 	-- Saves the given generic module. The path and file name is specified
@@ -285,9 +285,9 @@ package et_project.modules is
 	function exists (
 	-- Returns true if the given module provides the given port.
 	-- The module being searched in must be in the rig already.						
-		module			: in submodules.type_submodules.cursor;
+		module			: in et_submodules.type_submodules.cursor;
 		port			: in et_general.type_net_name.bounded_string;
-		direction		: in submodules.type_netchanger_port_name) -- master/slave		
+		direction		: in et_submodules.type_netchanger_port_name) -- master/slave		
 		return boolean;
 
 	function exists (

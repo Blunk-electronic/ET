@@ -62,8 +62,8 @@ with et_string_processing;
 with et_packages;
 with et_pcb;
 with et_pcb_coordinates;
-with submodules;
-with numbering;
+with et_submodules;
+with et_numbering;
 with et_material;
 with et_netlists;
 with et_geometry;
@@ -495,8 +495,8 @@ package et_schematic is
 		
 		devices			: type_devices.map;						-- the devices of the module
 		net_classes		: et_pcb.type_net_classes.map;			-- the net classes
-		submods			: submodules.type_submodules.map;		-- instances of submodules (boxes)
-		netchangers		: submodules.type_netchangers.map;		-- netchangers
+		submods			: et_submodules.type_submodules.map;		-- instances of submodules (boxes)
+		netchangers		: et_submodules.type_netchangers.map;		-- netchangers
 		
 		texts       	: pac_texts.list; -- general notes in schematic, not related to drawing frames !
 
@@ -513,7 +513,7 @@ package et_schematic is
 		-- The tree of submodules is stored here. 
 		-- NOTE: This container is exclusively used if the module is a top module.
 		-- In submodules it is not used (should always be empty):
-		submod_tree		: numbering.type_modules.tree;
+		submod_tree		: et_numbering.type_modules.tree;
 
 		-- The netlists containing nets of top module and submodule instances:
 		-- Provide information on primary nets and their subordinated secondary nets per 

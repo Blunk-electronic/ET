@@ -48,7 +48,7 @@ with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_sets;
 
 with et_general;				use et_general;
-with submodules;
+with et_submodules;				use et_submodules;
 with et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_symbols;
@@ -95,7 +95,7 @@ package et_netlists is
 	type type_submodule_port_extended is record
 		module		: type_module_instance_name.bounded_string; -- MOT_DRV_3
 		port		: type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
-		direction	: submodules.type_netchanger_port_name; -- master/slave
+		direction	: type_netchanger_port_name; -- master/slave
 	end record;
 
 	function "<" (left, right : in type_submodule_port_extended) return boolean;
@@ -115,8 +115,8 @@ package et_netlists is
 	
 	-- This is the port of a netchanger as it appears in a net segment:
 	type type_port_netchanger is record
-		index	: submodules.type_netchanger_id := submodules.type_netchanger_id'first;
-		port	: submodules.type_netchanger_port_name := submodules.SLAVE; -- CS reasonable default ?
+		index	: type_netchanger_id := type_netchanger_id'first;
+		port	: type_netchanger_port_name := SLAVE; -- CS reasonable default ?
 	end record;
 
 	function "<" (left, right : in type_port_netchanger) return boolean;	

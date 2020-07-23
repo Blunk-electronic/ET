@@ -40,7 +40,7 @@ with ada.text_io;				use ada.text_io;
 with et_pcb_coordinates;
 with et_schematic;
 
-with submodules;				use submodules;
+with et_submodules;				use et_submodules;
 
 with et_display.schematic;
 

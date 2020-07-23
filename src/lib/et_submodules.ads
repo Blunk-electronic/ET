@@ -59,7 +59,7 @@ with et_pcb_stack;
 with et_pcb_coordinates;
 with et_symbols;
 
-package submodules is
+package et_submodules is
 	use pac_geometry_sch;
 	
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
@@ -339,7 +339,7 @@ package submodules is
 -- 	end record;
 	
 	
-end submodules;
+end et_submodules;
 
 -- Soli Deo Gloria
 

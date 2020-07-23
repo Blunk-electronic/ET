@@ -317,10 +317,10 @@ procedure read_module (
 	function to_size (
 		line : in type_fields_of_line; -- "size x 30 y 40"
 		from : in positive)
-		return submodules.type_submodule_size is
+		return et_submodules.type_submodule_size is
 		use et_coordinates.pac_geometry_sch;
 		
-		size : submodules.type_submodule_size; -- to be returned
+		size : et_submodules.type_submodule_size; -- to be returned
 		place : positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing x or y
@@ -527,11 +527,11 @@ procedure read_module (
 	end read_sheet_description;
 	
 	-- submodules
-	submodule_port			: submodules.type_submodule_port;
+	submodule_port			: et_submodules.type_submodule_port;
 	submodule_port_name		: et_general.type_net_name.bounded_string; -- RESET
-	submodule_ports			: submodules.type_submodule_ports.map;
+	submodule_ports			: et_submodules.type_submodule_ports.map;
 	submodule_name 			: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-	submodule				: submodules.type_submodule;
+	submodule				: et_submodules.type_submodule;
 
 	note : et_schematic.type_text;
 
@@ -589,8 +589,8 @@ procedure read_module (
 	unit_placeholder_purpose	: et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE);
 
 	-- temporarily a netchanger is stored here:
-	netchanger		: submodules.type_netchanger;
-	netchanger_id	: submodules.type_netchanger_id := submodules.type_netchanger_id'first;
+	netchanger		: et_submodules.type_netchanger;
+	netchanger_id	: et_submodules.type_netchanger_id := et_submodules.type_netchanger_id'first;
 				
 	-- general board stuff
 	board_text : et_packages.type_text_with_content;
@@ -953,9 +953,9 @@ procedure read_module (
 				module		: in out et_schematic.type_module) is
 				use et_schematic;
 				inserted : boolean;
-				use submodules;
-				use submodules.type_submodules;
-				cursor : submodules.type_submodules.cursor;
+				use et_submodules;
+				use et_submodules.type_submodules;
+				cursor : et_submodules.type_submodules.cursor;
 			begin
 				log (text => "submodule " & et_general.to_string (submodule_name), level => log_threshold + 1);
 
@@ -2762,7 +2762,7 @@ procedure read_module (
 				module_name	: in type_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 				inserted : boolean;
-				use submodules;
+				use et_submodules;
 				use type_netchangers;
 				cursor : type_netchangers.cursor;
 			begin
@@ -3160,7 +3160,7 @@ procedure read_module (
 							submodule.ports := submodule_ports;
 
 							-- clean up for next collection of ports
-							submodules.type_submodule_ports.clear (submodule_ports);
+							et_submodules.type_submodule_ports.clear (submodule_ports);
 							
 						when others => invalid_section;
 					end case;
@@ -3665,14 +3665,14 @@ procedure read_module (
 							case stack.parent (degree => 2) is
 								when SEC_SUBMODULE =>
 									declare
-										cursor : submodules.type_submodule_ports.cursor;
+										cursor : et_submodules.type_submodule_ports.cursor;
 										inserted : boolean;
 									begin
 										-- Test whether the port sits at the edge of the submodule box:
-										if submodules.at_edge (submodule_port.position, submodule.size) then
+										if et_submodules.at_edge (submodule_port.position, submodule.size) then
 											
 											-- append port to collection of submodule ports
-											submodules.type_submodule_ports.insert (
+											et_submodules.type_submodule_ports.insert (
 												container	=> submodule_ports,
 												key			=> submodule_port_name, -- RESET
 												new_item	=> submodule_port,
@@ -4671,16 +4671,16 @@ procedure read_module (
 								elsif kw = keyword_netchanger then -- netchanger 1 port master/slave
 									expect_field_count (line, 4);
 									
-									net_netchanger_port.index := submodules.to_netchanger_id (f (line, 2)); -- 1
+									net_netchanger_port.index := et_submodules.to_netchanger_id (f (line, 2)); -- 1
 
 									if f (line, 3) = keyword_port then -- port
-										net_netchanger_port.port := submodules.to_port_name (f (line, 4)); -- MASTER, SLAVE
+										net_netchanger_port.port := et_submodules.to_port_name (f (line, 4)); -- MASTER, SLAVE
 
 										-- Insert netchanger port in collection of netchanger ports. First make sure it is
 										-- not already in the net segment.
 										if et_netlists.type_ports_netchanger.contains (net_netchanger_ports, net_netchanger_port) then
-											log (ERROR, "netchanger" & submodules.to_string (net_netchanger_port.index) &
-												submodules.to_string (net_netchanger_port.port) & " port" & 
+											log (ERROR, "netchanger" & et_submodules.to_string (net_netchanger_port.index) &
+												et_submodules.to_string (net_netchanger_port.port) & " port" & 
 												" already in net segment !", console => true);
 											raise constraint_error;
 										end if;
@@ -5516,13 +5516,13 @@ procedure read_module (
 					case stack.parent is
 						when SEC_SUBMODULES =>
 							declare
-								use submodules;
+								use et_submodules;
 								kw : string := f (line, 1);
 							begin
 								-- CS: In the following: set a corresponding parameter-found-flag
 								if kw = keyword_file then -- file $ET_TEMPLATES/motor_driver.mod
 									expect_field_count (line, 2);
-									submodule.file := submodules.to_submodule_path (f (line, 2));
+									submodule.file := et_submodules.to_submodule_path (f (line, 2));
 
 								elsif kw = keyword_name then -- name stepper_driver
 									expect_field_count (line, 2);
@@ -5534,7 +5534,7 @@ procedure read_module (
 									-- extract position of submodule starting at field 2
 									submodule.position := to_position (line, 2);
 
-								elsif kw = submodules.keyword_size then -- size x 30 y 30
+								elsif kw = et_submodules.keyword_size then -- size x 30 y 30
 									expect_field_count (line, 5);
 
 									-- extract size of submodule starting at field 2
@@ -5548,7 +5548,7 @@ procedure read_module (
 
 								elsif kw = keyword_view_mode then -- view_mode origin/instance
 									expect_field_count (line, 2);
-									submodule.view_mode := submodules.to_view_mode (f (line, 2));
+									submodule.view_mode := et_submodules.to_view_mode (f (line, 2));
 
 								else
 									invalid_keyword (kw);
@@ -5577,10 +5577,10 @@ procedure read_module (
 											-- extract port position starting at field 2
 											submodule_port.position := to_position (line, 2);
 
-										elsif kw = submodules.keyword_direction then -- direction master/slave
+										elsif kw = et_submodules.keyword_direction then -- direction master/slave
 											expect_field_count (line, 2);
 
-											submodule_port.direction := submodules.to_port_name (f (line, 2));
+											submodule_port.direction := et_submodules.to_port_name (f (line, 2));
 										else
 											invalid_keyword (kw);
 										end if;
@@ -5988,7 +5988,7 @@ procedure read_module (
 								-- CS: In the following: set a corresponding parameter-found-flag
 								if kw = keyword_name then -- name 1, 2, 304, ...
 									expect_field_count (line, 2);
-									netchanger_id := submodules.to_netchanger_id (f (line, 2));
+									netchanger_id := et_submodules.to_netchanger_id (f (line, 2));
 									
 								elsif kw = keyword_position_in_schematic then -- position_in_schematic sheet 1 x 1.000 y 5.555
 									expect_field_count (line, 7);
@@ -6053,11 +6053,11 @@ procedure read_module (
 	-- module files (like templates/clock_generator.mod).
 	-- NOTE: The parent procedure "read_module_file" calls itself here !
 
-		use submodules;
+		use et_submodules;
 		use type_submodules;
 
 		-- Here the copy of submodules lives:
-		submods : submodules.type_submodules.map;
+		submods : et_submodules.type_submodules.map;
 		
 		procedure get_submodules (
 		-- Copies the submodules in submods.

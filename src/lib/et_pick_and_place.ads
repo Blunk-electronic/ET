@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -38,27 +38,16 @@
 
 
 with ada.text_io;				use ada.text_io;
-with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
-with ada.containers.vectors;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
 
 with et_general;				use et_general;
-
--- with assembly_variants;
 with et_string_processing;		use et_string_processing;
--- with et_pcb;
 with et_pcb_coordinates;		use et_pcb_coordinates;
--- with submodules;
--- with numbering;
 with et_devices;				use et_devices;
 
-package pick_and_place is
+package et_pick_and_place is
 
 	
 	-- Whenever we deal with pick & place files this type should be used:
@@ -97,7 +86,7 @@ package pick_and_place is
 		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level);
 	
-end pick_and_place;
+end et_pick_and_place;
 
 -- Soli Deo Gloria
 

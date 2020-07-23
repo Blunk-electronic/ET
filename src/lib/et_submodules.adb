@@ -38,7 +38,7 @@
 
 with et_string_processing;		use et_string_processing;
 
-package body submodules is
+package body et_submodules is
 
 	function to_submodule_size (size : in type_submodule_size) return string is begin
 		return " size (x/y)" &
@@ -91,7 +91,7 @@ package body submodules is
 		return type_submodule_path.to_bounded_string (path);
 	end;
 
-	function to_string (path : in submodules.type_submodule_path.bounded_string) return string is begin
+	function to_string (path : in type_submodule_path.bounded_string) return string is begin
 		return type_submodule_path.to_string (path);
 	end;
 
@@ -186,7 +186,7 @@ package body submodules is
 		return ports;
 	end netchanger_ports;
 	
-end submodules;
+end et_submodules;
 
 -- Soli Deo Gloria
 

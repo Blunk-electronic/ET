@@ -55,15 +55,9 @@ with ada.directories;
 with gnat.directory_operations;
 with ada.exceptions;
 
-with et_general;				use et_general;
 with et_export;
-with et_assembly_variants;
-with et_string_processing;		use et_string_processing;
+
 with et_csv;					use et_csv;
-with submodules;
-with et_symbols;
-with et_packages;
-with et_devices;				use et_devices;
 
 package body et_netlists is
 	
@@ -127,9 +121,7 @@ package body et_netlists is
 		return to_net_name (to_string (instance) & level_separator);
 	end;
 
-	function "<" (left, right : in type_port_netchanger) return boolean is
-		use submodules;
-	begin
+	function "<" (left, right : in type_port_netchanger) return boolean is begin
 		if left.index < right.index then
 			return true;
 		elsif left.index > right.index then
@@ -142,13 +134,11 @@ package body et_netlists is
 	end;
 
 	
-	function to_string (net_scope : in type_net_scope) return string is
-	begin
+	function to_string (net_scope : in type_net_scope) return string is begin
 		return " " & to_lower (type_net_scope'image (net_scope));
 	end to_string;
 
-	function to_net_scope (scope : in string) return type_net_scope is
-	begin
+	function to_net_scope (scope : in string) return type_net_scope is begin
 		return type_net_scope'value (scope);
 	end to_net_scope;
 
@@ -210,18 +200,14 @@ package body et_netlists is
 			use type_submodule_ports_extended;
 			use type_ports_netchanger;
 
-			procedure count_netchanger_ports (cursor : in type_ports_netchanger.cursor) is
-				use submodules;
-			begin
+			procedure count_netchanger_ports (cursor : in type_ports_netchanger.cursor) is begin
 				case element (cursor).port is
 					when MASTER => port_count.netchangers.masters := port_count.netchangers.masters + 1;
 					when SLAVE => port_count.netchangers.slaves := port_count.netchangers.slaves + 1;
 				end case;
 			end;
 
-			procedure count_submodule_ports (cursor : in type_submodule_ports_extended.cursor) is
-				use submodules;
-			begin
+			procedure count_submodule_ports (cursor : in type_submodule_ports_extended.cursor) is begin
 				case element (cursor).direction is
 					when MASTER => port_count.submodules.masters := port_count.submodules.masters + 1;
 					when SLAVE => port_count.submodules.slaves := port_count.submodules.slaves + 1;
@@ -477,7 +463,6 @@ package body et_netlists is
 			-- points to an element (means it points no longer to no_element).
 				net_name	: in type_net_name;
 				net			: in type_net) is
-				use submodules;
 			begin
 				netchanger_cursor := find 
 					(
@@ -490,8 +475,6 @@ package body et_netlists is
 					);
 					-- the given port is a composite of index and port name (master/slave)
 			end query_netchangers;
-
-			use submodules;
 			
 		begin -- query_nets
 			log_indentation_up;
@@ -691,7 +674,7 @@ package body et_netlists is
 			port_to_search_for := (
 				module		=> element (module_cursor).instance_name, -- MOT_DRV_2
 				port		=> type_nets.key (net_cursor).base_name,  -- clock_out
-				direction	=> submodules.SLAVE);
+				direction	=> SLAVE);
 
 			-- iterate in nets of parent module
 			query_element (parent_module_cursor, query_nets'access);
@@ -1006,7 +989,6 @@ package body et_netlists is
 				
 			procedure query_netchanger (port_cursor : in type_ports_netchanger.cursor) is
 				use type_ports_netchanger;
-				use submodules;
 				net_cursor : type_nets.cursor;
 			begin
 				if element (port_cursor).port = MASTER then
@@ -1046,7 +1028,6 @@ package body et_netlists is
 
 			procedure query_submodule (port_cursor : in type_submodule_ports_extended.cursor) is
 				use type_submodule_ports_extended;
-				use submodules;
 				net_cursor : type_nets.cursor;
 			begin
 				if element (port_cursor).direction = MASTER then
