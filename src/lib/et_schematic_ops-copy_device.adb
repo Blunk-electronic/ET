@@ -34,6 +34,13 @@
 --
 --   history of changes:
 --
+--   ToDo:
+--		- Currently the positions of placeholders are not copied from the 
+--		  source unit. Instead the positions as defined by the library symbol 
+--		  are taken.
+--		- To fix this issue copy_device must be provided with the name of the
+--		  source unit. From the source unit the positions must then be copied
+--		  to the new unit.
 
 separate (et_schematic_ops)
 
