@@ -48,7 +48,7 @@ with gtk.combo_box_text;	with gtk.combo_box_text;
 
 with et_scripting;
 
-package gui_board.callbacks is
+package et_gui_board.callbacks is
 
 	-- Terminates the main window:
 	procedure terminate_main (self : access gtk_widget_record'class);
@@ -81,7 +81,7 @@ package gui_board.callbacks is
 
 
 	
-end gui_board.callbacks;
+end et_gui_board.callbacks;
 
 -- Soli Deo Gloria
 

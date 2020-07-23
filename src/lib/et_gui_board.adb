@@ -57,13 +57,13 @@ with et_project;				use et_project;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_string_processing;		use et_string_processing;
 
-with gui_board.callbacks;		use gui_board.callbacks;
+with et_gui_board.callbacks;	use et_gui_board.callbacks;
 with et_canvas_board;			use et_canvas_board;
 		
 use et_canvas_board.pac_canvas;
 
 
-package body gui_board is
+package body et_gui_board is
 
 	procedure init_window (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
@@ -97,8 +97,8 @@ package body gui_board is
 		build_coordinates_display;
 
 		-- Connect to the on_activate signal (on hitting enter key) of the entry (which is a child of console):
-		gtk_entry (cursor_position_x.get_child).on_activate (gui_board.callbacks.set_cursor_position_x'access);
-		gtk_entry (cursor_position_y.get_child).on_activate (gui_board.callbacks.set_cursor_position_y'access);
+		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
+		gtk_entry (cursor_position_y.get_child).on_activate (set_cursor_position_y'access);
 		
 -- 		-- toolbar on the left
 -- 		gtk_new (toolbar);
@@ -142,7 +142,7 @@ package body gui_board is
 		build_console;
 
 		-- Connect to the on_activate signal of the entry (which is a child of console):
-		gtk_entry (console.get_child).on_activate (gui_board.callbacks.execute_command'access); -- on hitting enter
+		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
 
 		build_canvas;
 		gtk_new (canvas);
@@ -161,7 +161,7 @@ package body gui_board is
 	end init_window;
 	
 	
-end gui_board;
+end et_gui_board;
 
 -- Soli Deo Gloria
 

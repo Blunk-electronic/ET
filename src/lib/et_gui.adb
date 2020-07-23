@@ -39,12 +39,8 @@ with gtk.main;
 
 with ada.text_io;				use ada.text_io;
 
-with et_general;				use et_general;
-with et_project;				use et_project;
-with et_string_processing;		use et_string_processing;
-
 with gui_schematic;
-with gui_board;
+with et_gui_board;
 -- with gui_board.callbacks;
 with gui_schematic.callbacks;
 
@@ -76,7 +72,7 @@ package body et_gui is
 		-- CS test if board available (see et_schematic.type_module)
 		
 		-- Set up the board window.
-		gui_board.init_window (project, module, log_threshold + 1);
+		et_gui_board.init_window (project, module, log_threshold + 1);
 
 		-- If a script was given, execute it now:
 		-- NOTE 1: The script execution must start AFTER BOTH schematic and board 

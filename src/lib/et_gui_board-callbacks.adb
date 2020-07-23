@@ -53,7 +53,7 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.directories;
 
-package body gui_board.callbacks is
+package body et_gui_board.callbacks is
 
 	procedure terminate_main (self : access gtk_widget_record'class) is begin
 		put_line ("exiting ...");
@@ -300,7 +300,7 @@ package body gui_board.callbacks is
 
 
 	
-end gui_board.callbacks;
+end et_gui_board.callbacks;
 
 -- Soli Deo Gloria
 

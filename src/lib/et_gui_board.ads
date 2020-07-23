@@ -41,7 +41,7 @@ with et_project.modules;		use et_project.modules;
 with et_string_processing;		use et_string_processing;
 
 
-package gui_board is
+package et_gui_board is
 
 	-- Creates and displays the board editor window.
 	-- Executes the given script (if "script" is empty, no script will be executed.
@@ -50,7 +50,7 @@ package gui_board is
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		log_threshold_in: in type_log_level);
 	
-end gui_board;
+end et_gui_board;
 
 -- Soli Deo Gloria
 
