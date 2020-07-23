@@ -35,26 +35,24 @@
 --   history of changes:
 --
 
-with gdk.event;					use gdk.event;
-
 with gtk.main;
 with gtk.window;				use gtk.window;
-with ada.text_io;				use ada.text_io;
-with et_general;
+
 with et_geometry;				use et_geometry;
 with et_pcb_coordinates;
 with et_canvas_board;			use et_canvas_board;
-use et_canvas_board.pac_canvas;
 with et_canvas_schematic;
 
-with et_string_processing;		use et_string_processing;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.directories;
 
-package body et_gui_board.callbacks is
+package body et_gui.board_callbacks is
 
+	use et_canvas_board.pac_canvas;
+	use et_pcb_coordinates.pac_geometry_brd;
+	
 	procedure terminate_main (self : access gtk_widget_record'class) is begin
 		put_line ("exiting ...");
 		gtk.main.main_quit;
@@ -109,7 +107,6 @@ package body et_gui_board.callbacks is
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
 		use gtk.gentry;
-		use et_pcb_coordinates.pac_geometry_brd;
 		cp : type_point := cursor_main.position;
 	begin
 		set (point => cp, axis => X, value => to_distance (get_text (self)));
@@ -121,7 +118,6 @@ package body et_gui_board.callbacks is
 	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
 		use gtk.gentry;
-		use et_pcb_coordinates.pac_geometry_brd;
 		cp : type_point := cursor_main.position;
 	begin
 		set (point => cp, axis => Y, value => to_distance (get_text (self)));
@@ -300,7 +296,7 @@ package body et_gui_board.callbacks is
 
 
 	
-end et_gui_board.callbacks;
+end et_gui.board_callbacks;
 
 -- Soli Deo Gloria
 

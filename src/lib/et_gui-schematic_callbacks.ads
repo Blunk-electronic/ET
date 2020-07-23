@@ -35,20 +35,20 @@
 --   history of changes:
 --
 
-with gdk;				use gdk;
-with gdk.event;			use gdk.event;
+with gdk;					use gdk;
+with gdk.event;				use gdk.event;
 
 with glib;					use glib;
 with gtk.widget;  			use gtk.widget;
-with gtk.button;    	 	--use gtk.button;
+with gtk.button;     		--use gtk.button;
 with glib.object;			--use glib.object;
 with gtk.gentry;
-with gtk.combo_box_text;	with gtk.combo_box_text;	
+with gtk.combo_box_text;	use gtk.combo_box_text;	
 -- with gtkada.style;			use gtkada.style;
-
+	
 with et_scripting;
 
-package et_gui_board.callbacks is
+package et_gui.schematic_callbacks is
 
 	-- Terminates the main window:
 	procedure terminate_main (self : access gtk_widget_record'class);
@@ -63,25 +63,32 @@ package et_gui_board.callbacks is
 -- 	procedure zoom_in (self : access glib.object.gobject_record'class);
 -- 	procedure zoom_out (self : access glib.object.gobject_record'class);
 
-
+	
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class);
 	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class);
 
 	-- Executes a script.
 	procedure execute_script (script : in pac_script_name.bounded_string);	
 
-	-- Executes a command typed on the console by the operator:
+	-- Executes a command typed on the console by the operator:	
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class);
 
-
+	
+-- 	procedure echo_command (self : access gtk.combo_box.gtk_combo_box_record'class);
+	
 	function on_key_event (
 		self	: access gtk_widget_record'class;
 		event	: in gdk_event_key) 
 		return boolean;
 
+-- 	function on_button_event (
+-- 		self  : access gtk_widget_record'class;
+-- 		event : gdk_event_button)
+-- 		return boolean;
+
 
 	
-end et_gui_board.callbacks;
+end et_gui.schematic_callbacks;
 
 -- Soli Deo Gloria
 

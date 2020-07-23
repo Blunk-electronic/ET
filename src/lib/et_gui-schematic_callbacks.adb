@@ -35,24 +35,23 @@
 --   history of changes:
 --
 
-with gdk.event;					use gdk.event;
-
 with gtk.main;
 with gtk.window;				use gtk.window;
-with ada.text_io;				use ada.text_io;
-with et_canvas_schematic;		use et_canvas_schematic;
-use et_canvas_schematic.pac_canvas;
-with et_canvas_board;
 
 with et_geometry;				use et_geometry;
+with et_canvas_schematic;		use et_canvas_schematic;
+with et_canvas_board;
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.directories;
 
-package body et_gui_schematic.callbacks is
+package body et_gui.schematic_callbacks is
 
+	use et_canvas_schematic.pac_canvas;
+	use et_coordinates.pac_geometry_sch;
+	
 	procedure terminate_main (self : access gtk_widget_record'class) is begin
 		put_line ("exiting ...");
 		gtk.main.main_quit;
@@ -309,7 +308,7 @@ package body et_gui_schematic.callbacks is
 -- 	end on_button_event;
 
 	
-end et_gui_schematic.callbacks;
+end et_gui.schematic_callbacks;
 
 -- Soli Deo Gloria
 

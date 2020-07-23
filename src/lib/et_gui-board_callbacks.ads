@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              GUI BOARD                                   --
+--                          GUI BOARD CALLBACKS                             --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -35,22 +35,53 @@
 --   history of changes:
 --
 
-with et_general;				use et_general;
-with et_project;				use et_project;
-with et_project.modules;		use et_project.modules;
-with et_string_processing;		use et_string_processing;
+with gdk;					use gdk;
+with gdk.event;				use gdk.event;
 
+with glib;					use glib;
+with gtk.widget;  			use gtk.widget;
+with gtk.button;    	 	--use gtk.button;
+with glib.object;			--use glib.object;
+with gtk.gentry;
+with gtk.combo_box_text;	with gtk.combo_box_text;	
+-- with gtkada.style;			use gtkada.style;
 
-package et_gui_board is
+with et_scripting;
 
-	-- Creates and displays the board editor window.
-	-- Executes the given script (if "script" is empty, no script will be executed.
-	procedure init_window (
-		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
-		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
-		log_threshold_in: in type_log_level);
+package et_gui.board_callbacks is
+
+	-- Terminates the main window:
+	procedure terminate_main (self : access gtk_widget_record'class);
+
+	-- Scales the canvas so that the frame fits into.
+	function window_resized (
+		self  : access gtk_widget_record'class;
+		event : gdk.event.gdk_event_configure) 
+		return boolean;
 	
-end et_gui_board;
+-- 	procedure zoom_to_fit (self : access glib.object.gobject_record'class);	
+-- 	procedure zoom_in (self : access glib.object.gobject_record'class);
+-- 	procedure zoom_out (self : access glib.object.gobject_record'class);
+
+
+	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class);
+	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class);
+
+	-- Executes a script.
+	procedure execute_script (script : in pac_script_name.bounded_string);	
+
+	-- Executes a command typed on the console by the operator:
+	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class);
+
+
+	function on_key_event (
+		self	: access gtk_widget_record'class;
+		event	: in gdk_event_key) 
+		return boolean;
+
+
+	
+end et_gui.board_callbacks;
 
 -- Soli Deo Gloria
 

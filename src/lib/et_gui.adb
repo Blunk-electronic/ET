@@ -36,15 +36,242 @@
 --
 
 with gtk.main;
+with gtk.window; 				use gtk.window;
+with gtk.widget;  				use gtk.widget;
+with gtk.box;					use gtk.box;
+with gtk.button;     			use gtk.button;
+with gtk.toolbar; 				use gtk.toolbar;
+with gtk.tool_button;			use gtk.tool_button;
+with gtk.enums;					use gtk.enums;
+with gtk.gentry;				use gtk.gentry;
+with gtk.frame;					use gtk.frame;
+with gtk.scrolled_window;		use gtk.scrolled_window;
+with glib.object;				use glib.object;
 
 with ada.text_io;				use ada.text_io;
 
-with et_gui_schematic;
-with et_gui_board;
-with et_gui_schematic.callbacks;
+with et_gui.schematic_callbacks;
+with et_canvas_schematic;
+
+with et_gui.board_callbacks;
+with et_canvas_board;
 
 package body et_gui is
 
+	procedure init_schematic (
+		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
+		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
+		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
+		log_threshold_in: in type_log_level) is
+
+		use et_gui.schematic_callbacks;	
+		use et_canvas_schematic;
+		use et_canvas_schematic.pac_canvas;
+		
+	begin
+		-- Set the log threshold. Everything that happens in the gui may be logged
+		-- using the gui wide variable log_threshold:
+		log_threshold := log_threshold_in;
+
+		-- Set the current project name:
+		current_active_project := project;
+		
+		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
+
+		-- Show the module name and sheet number in the title bar:
+		set_title_bar (pac_generic_modules.key (module), sheet);
+		
+		window.set_default_size (1024, 768);
+
+		-- If the operator wishes to terminate the program (by clicking X)
+		-- the procedure terminate_main (in gui_cb) is to be called.
+		window.on_destroy (terminate_main'access);
+
+		-- If the operator minimizes, maximizes or changes the size in some way:
+		window.on_configure_event (window_resized'access);
+
+		-- For reaction to keys pressed on the keyboard:
+		window.on_key_press_event (on_key_event'access);
+		
+		build_background_boxes;
+
+		build_coordinates_display;
+
+		-- Connect to the on_activate signal (on hitting enter key) of the entry (which is a child of console):
+		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
+		gtk_entry (cursor_position_y.get_child).on_activate (set_cursor_position_y'access);
+
+		
+-- 		-- toolbar on the left
+-- 		gtk_new (toolbar);
+-- 		set_orientation (toolbar, orientation_vertical);
+-- 		pack_start (box_left, toolbar, expand => false);
+
+
+		
+
+		
+		
+-- 		-- Create a button and place it in the toolbar:
+-- 		gtk.tool_button.gtk_new (button_zoom_to_fit, label => "FIT");
+-- 		insert (toolbar, button_zoom_to_fit);
+-- 
+-- 		-- If the operator clicks the button
+-- 		-- call the procedure zoom_to_fit in package callbacks_4:
+-- 		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar);
+
+
+
+		
+-- 		-- Create a button and place it in the toolbar:
+-- 		gtk.tool_button.gtk_new (button_zoom_in, label => "IN");
+-- 		insert (toolbar, button_zoom_in);
+-- 
+-- 		-- If the operator clicks the button
+-- 		-- call the procedure zoom_in in package callbacks_4:
+-- 		button_zoom_in.on_clicked (zoom_in'access, toolbar);
+
+
+
+		
+-- 		-- Create another button and place it in the toolbar:
+-- 		gtk.tool_button.gtk_new (button_zoom_out, label => "OUT");
+-- 		insert (toolbar, button_zoom_out);
+-- 
+-- 		-- If the operator clicks the button
+-- 		-- call the procedure zoom_out in package callbacks_4:
+-- 		button_zoom_out.on_clicked (zoom_out'access, toolbar);
+
+
+
+		
+		build_console;
+		
+		-- Connect to the on_activate signal of the entry (which is a child of console):
+		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
+		
+
+		build_canvas;
+		gtk_new (canvas);
+		
+		-- set the module to be opened and optionally the sheet to be displayed:
+		init_drawing (module, sheet);
+
+		-- draw the schematic sheet
+-- 		redraw (canvas); -- CS no need
+		
+		add (scrolled, canvas); -- place the canvas in the scrolled window
+		
+		scale_to_fit (canvas);
+
+		-- display the schematic:
+		window.show_all;
+		
+	end init_schematic;
+
+	
+	procedure init_board (
+		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
+		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
+		log_threshold_in: in type_log_level) is
+
+		use et_gui.board_callbacks;
+		use et_canvas_board;
+		use et_canvas_board.pac_canvas;
+		
+	begin
+		-- Set the log threshold. Everything that happens in the gui may be logged
+		-- using the gui wide variable log_threshold:
+		pac_canvas.log_threshold := log_threshold_in;
+
+		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
+
+		-- Show the module name in the title bar:
+		set_title_bar (pac_generic_modules.key (module));
+		
+		window.set_default_size (1024, 768);
+
+		-- If the operator wishes to terminate the program (by clicking X)
+		-- the procedure terminate_main (in gui_cb) is to be called.
+		window.on_destroy (terminate_main'access);
+
+		-- If the operator minimizes, maximizes or changes the size in some way:
+		window.on_configure_event (window_resized'access);
+
+		-- For reaction to keys pressed on the keyboard:
+		window.on_key_press_event (on_key_event'access);
+		
+
+		build_background_boxes;
+		
+		build_coordinates_display;
+
+		-- Connect to the on_activate signal (on hitting enter key) of the entry (which is a child of console):
+		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
+		gtk_entry (cursor_position_y.get_child).on_activate (set_cursor_position_y'access);
+		
+-- 		-- toolbar on the left
+-- 		gtk_new (toolbar);
+-- 		set_orientation (toolbar, orientation_vertical);
+-- 		pack_start (box_left, toolbar, expand => false);
+-- 
+
+-- 		
+-- 		-- Create a button and place it in the toolbar:
+-- 		gtk.tool_button.gtk_new (button_zoom_to_fit, label => "FIT");
+-- 		insert (toolbar, button_zoom_to_fit);
+-- 
+-- 		-- If the operator clicks the button
+-- 		-- call the procedure zoom_to_fit in package callbacks_4:
+-- 		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar);
+-- 
+-- 
+-- 
+-- 		
+-- 		-- Create a button and place it in the toolbar:
+-- 		gtk.tool_button.gtk_new (button_zoom_in, label => "IN");
+-- 		insert (toolbar, button_zoom_in);
+-- 
+-- 		-- If the operator clicks the button
+-- 		-- call the procedure zoom_in in package callbacks_4:
+-- 		button_zoom_in.on_clicked (zoom_in'access, toolbar);
+-- 
+-- 
+-- 
+-- 		
+-- 		-- Create another button and place it in the toolbar:
+-- 		gtk.tool_button.gtk_new (button_zoom_out, label => "OUT");
+-- 		insert (toolbar, button_zoom_out);
+-- 
+-- 		-- If the operator clicks the button
+-- 		-- call the procedure zoom_out in package callbacks_4:
+-- 		button_zoom_out.on_clicked (zoom_out'access, toolbar);
+
+
+
+		build_console;
+
+		-- Connect to the on_activate signal of the entry (which is a child of console):
+		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
+
+		build_canvas;
+		gtk_new (canvas);
+
+		-- draw the board layout
+-- 		redraw (canvas);  -- CS no need
+		
+		add (scrolled, canvas); -- place the canvas in the scrolled window
+		
+		scale_to_fit (canvas);
+		
+		-- display the board:
+		window.show_all;
+
+		
+	end init_board;
+
+
+	
 	procedure single_module (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor;				-- cursor of generic module
@@ -66,12 +293,12 @@ package body et_gui is
 		gtk.main.init; -- initialize the main gtk stuff
 
 		-- Set up the schematic window.
-		et_gui_schematic.init_window (project, module, sheet, log_threshold + 1);
+		init_schematic (project, module, sheet, log_threshold + 1);
 
 		-- CS test if board available (see et_schematic.type_module)
 		
 		-- Set up the board window.
-		et_gui_board.init_window (project, module, log_threshold + 1);
+		init_board (project, module, log_threshold + 1);
 
 		-- If a script was given, execute it now:
 		-- NOTE 1: The script execution must start AFTER BOTH schematic and board 
@@ -80,7 +307,7 @@ package body et_gui is
 		--         Both launch the script in the same way. But in case there is no board
 		--         available, it is more reasonable to launch the script from the schematic.
 		if pac_script_name.length (script) > 0 then
-			et_gui_schematic.callbacks.execute_script (script);
+			et_gui.schematic_callbacks.execute_script (script);
 		end if;
 		
 		-- Start the main gtk loop. This is a loop that permanently draws the widgets and
