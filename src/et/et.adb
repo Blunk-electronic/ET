@@ -74,7 +74,7 @@ with et_frame_rw;
 
 with et_coordinates;
 
-with gui;
+with et_gui;
 
 procedure et is
 
@@ -454,7 +454,7 @@ procedure et is
 	end;
 
 	procedure launch_gui is 
-		use gui;
+		use et_gui;
 		use et_project.modules;
 		use et_project.modules.pac_generic_modules;
 		use pac_module_file_name;
@@ -488,7 +488,7 @@ procedure et is
 		-- We pass the script name (even if empty) to the schematic so
 		-- that it gets executed from there. If the script name is empty,
 		-- no script will be executed by the gui.
-		gui.single_module (
+		single_module (
 			project			=> project_name_open,	-- blood_sample_analyzer
 			module			=> module_cursor,		-- cursor to generic module
 			sheet			=> module_sheet, 		-- 1, 3, 10, ... as given via cmd line

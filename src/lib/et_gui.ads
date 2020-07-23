@@ -41,7 +41,7 @@ with et_project;				use et_project;
 with et_project.modules;		use et_project.modules;
 with et_coordinates;			use et_coordinates;
 
-package gui is
+package et_gui is
 
 	-- Starts the GUI and displays the given module (schematic and board):
 	procedure single_module (
@@ -53,7 +53,7 @@ package gui is
 		);
 
 	
-end gui;
+end et_gui;
 
 -- Soli Deo Gloria
 

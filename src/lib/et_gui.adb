@@ -48,7 +48,7 @@ with gui_board;
 -- with gui_board.callbacks;
 with gui_schematic.callbacks;
 
-package body gui is
+package body et_gui is
 
 	procedure single_module (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
@@ -94,7 +94,7 @@ package body gui is
 		
 	end single_module;	
 	
-end gui;
+end et_gui;
 
 -- Soli Deo Gloria
 
