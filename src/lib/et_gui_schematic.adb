@@ -51,13 +51,13 @@ with glib.object;				use glib.object;
 with ada.text_io;				use ada.text_io;
 with ada.directories;
 
-with gui_schematic.callbacks;	use gui_schematic.callbacks;	
-with et_canvas_schematic;		use et_canvas_schematic;
+with et_gui_schematic.callbacks;	use et_gui_schematic.callbacks;	
+with et_canvas_schematic;			use et_canvas_schematic;
 		
 use et_canvas_schematic.pac_canvas;
 
 
-package body gui_schematic is
+package body et_gui_schematic is
 
 	procedure init_window (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
@@ -94,8 +94,8 @@ package body gui_schematic is
 		build_coordinates_display;
 
 		-- Connect to the on_activate signal (on hitting enter key) of the entry (which is a child of console):
-		gtk_entry (cursor_position_x.get_child).on_activate (gui_schematic.callbacks.set_cursor_position_x'access);
-		gtk_entry (cursor_position_y.get_child).on_activate (gui_schematic.callbacks.set_cursor_position_y'access);
+		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
+		gtk_entry (cursor_position_y.get_child).on_activate (set_cursor_position_y'access);
 
 		
 -- 		-- toolbar on the left
@@ -144,7 +144,7 @@ package body gui_schematic is
 		build_console;
 		
 		-- Connect to the on_activate signal of the entry (which is a child of console):
-		gtk_entry (console.get_child).on_activate (gui_schematic.callbacks.execute_command'access); -- on hitting enter
+		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
 		
 
 		build_canvas;
@@ -167,7 +167,7 @@ package body gui_schematic is
 	end init_window;
 	
 	
-end gui_schematic;
+end et_gui_schematic;
 
 -- Soli Deo Gloria
 

@@ -39,10 +39,9 @@ with gtk.main;
 
 with ada.text_io;				use ada.text_io;
 
-with gui_schematic;
+with et_gui_schematic;
 with et_gui_board;
--- with gui_board.callbacks;
-with gui_schematic.callbacks;
+with et_gui_schematic.callbacks;
 
 package body et_gui is
 
@@ -67,7 +66,7 @@ package body et_gui is
 		gtk.main.init; -- initialize the main gtk stuff
 
 		-- Set up the schematic window.
-		gui_schematic.init_window (project, module, sheet, log_threshold + 1);
+		et_gui_schematic.init_window (project, module, sheet, log_threshold + 1);
 
 		-- CS test if board available (see et_schematic.type_module)
 		
@@ -81,7 +80,7 @@ package body et_gui is
 		--         Both launch the script in the same way. But in case there is no board
 		--         available, it is more reasonable to launch the script from the schematic.
 		if pac_script_name.length (script) > 0 then
-			gui_schematic.callbacks.execute_script (script);
+			et_gui_schematic.callbacks.execute_script (script);
 		end if;
 		
 		-- Start the main gtk loop. This is a loop that permanently draws the widgets and

@@ -48,7 +48,7 @@ with gtkada.style;			use gtkada.style;
 	
 with et_scripting;
 
-package gui_schematic.callbacks is
+package et_gui_schematic.callbacks is
 
 
 	-- Terminates the main window:
@@ -89,7 +89,7 @@ package gui_schematic.callbacks is
 
 
 	
-end gui_schematic.callbacks;
+end et_gui_schematic.callbacks;
 
 -- Soli Deo Gloria
 

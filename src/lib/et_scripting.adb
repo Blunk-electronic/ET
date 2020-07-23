@@ -69,6 +69,7 @@ with et_devices;				use et_devices;
 with et_display;				use et_display;
 with et_display.schematic;
 with et_display.board;
+
 with glib;
 with gtk.main;
 
