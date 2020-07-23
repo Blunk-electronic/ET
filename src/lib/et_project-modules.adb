@@ -153,7 +153,7 @@ package body et_project.modules is
 	function port_connected (
 	-- Returns true if given port of netchanger is connected with any net.
 		module	: in pac_generic_modules.cursor;
-		port	: in netlists.type_port_netchanger)
+		port	: in et_netlists.type_port_netchanger)
 		return boolean is
 		result : boolean := false; -- to be returned. goes true on the first (and only) match.
 
@@ -178,7 +178,7 @@ package body et_project.modules is
 					procedure query_ports (segment : in type_net_segment) is 
 						use submodules;
 
-						use netlists;
+						use et_netlists;
 						use type_ports_netchanger;
 						port_cursor : type_ports_netchanger.cursor := segment.ports_netchangers.first;
 					begin
@@ -272,7 +272,7 @@ package body et_project.modules is
 				procedure query_ports (segment : in type_net_segment) is 
 					use submodules;
 
-					use netlists;
+					use et_netlists;
 					use type_ports_netchanger;
 					port_cursor : type_ports_netchanger.cursor := segment.ports_netchangers.first;
 				begin
@@ -509,10 +509,10 @@ package body et_project.modules is
 			if net_cursor /= type_nets.no_element then -- net found
 
 				case element (net_cursor).scope is
-					when netlists.GLOBAL => 
+					when et_netlists.GLOBAL => 
 						result := true;
 
-					when netlists.LOCAL =>
+					when et_netlists.LOCAL =>
 						if netchanger_as_port_available (module_cursor, net_cursor, direction) then
 							result := true;
 						else

@@ -62,7 +62,7 @@ with submodules;
 with et_assembly_variants;
 with pick_and_place;
 with et_material;
-with netlists;
+with et_netlists;
 with et_geometry;		use et_geometry; -- due to frequently used keywords
 with et_symbols;
 with et_devices;		use et_devices;

@@ -453,8 +453,8 @@ procedure read_module (
 	net_submodule_port : et_schematic.type_port_submodule;
 	net_submodule_ports : et_schematic.type_ports_submodule.set;
 
-	net_netchanger_port : netlists.type_port_netchanger;
-	net_netchanger_ports : netlists.type_ports_netchanger.set;
+	net_netchanger_port : et_netlists.type_port_netchanger;
+	net_netchanger_ports : et_netlists.type_ports_netchanger.set;
 	
 	route		: et_pcb.type_route;
 	route_via	: et_pcb.type_via;
@@ -3153,7 +3153,7 @@ procedure read_module (
 							-- clean up for next port collections (of another net segment)
 							et_schematic.type_ports_device.clear (net_device_ports);
 							et_schematic.type_ports_submodule.clear (net_submodule_ports);
-							netlists.type_ports_netchanger.clear (net_netchanger_ports);
+							et_netlists.type_ports_netchanger.clear (net_netchanger_ports);
 
 						when SEC_SUBMODULE =>
 							-- copy collection of ports to submodule
@@ -4548,7 +4548,7 @@ procedure read_module (
 									end if;
 								elsif kw = keyword_scope then
 									expect_field_count (line, 2);
-									net.scope := netlists.to_net_scope (f (line,2));
+									net.scope := et_netlists.to_net_scope (f (line,2));
 									
 								else
 									invalid_keyword (kw);
@@ -4678,14 +4678,14 @@ procedure read_module (
 
 										-- Insert netchanger port in collection of netchanger ports. First make sure it is
 										-- not already in the net segment.
-										if netlists.type_ports_netchanger.contains (net_netchanger_ports, net_netchanger_port) then
+										if et_netlists.type_ports_netchanger.contains (net_netchanger_ports, net_netchanger_port) then
 											log (ERROR, "netchanger" & submodules.to_string (net_netchanger_port.index) &
 												submodules.to_string (net_netchanger_port.port) & " port" & 
 												" already in net segment !", console => true);
 											raise constraint_error;
 										end if;
 										
-										netlists.type_ports_netchanger.insert (net_netchanger_ports, net_netchanger_port);
+										et_netlists.type_ports_netchanger.insert (net_netchanger_ports, net_netchanger_port);
 
 										-- clean up for next netchanger port
 										net_netchanger_port := (others => <>);

@@ -35,32 +35,14 @@
 --   history of changes:
 --
 
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-
-with ada.text_io;				use ada.text_io;
-
 with ada.exceptions;
-with ada.directories;
 
-with ada.containers;            use ada.containers;
-with ada.containers.ordered_maps;
-
-with et_general;
-with et_coordinates;
-with et_string_processing;
-with et_export;
-with et_import;
-with et_csv;
-with et_packages;
-with et_symbols;
-with et_devices;				use et_devices;
 
 package body et_schematic is
 
+	use et_devices;
+	
 	function "<" (left, right : in type_port_device) return boolean is
 		use et_symbols.type_port_name;
 	begin
@@ -269,7 +251,7 @@ package body et_schematic is
 		procedure query_segments (segment_cursor : in type_net_segments.cursor) is
 			use type_ports_device;
 
-			use netlists;
+			use et_netlists;
 			use type_ports_netchanger;
 			
 			use type_ports_submodule;

@@ -65,7 +65,7 @@ with et_symbols;
 with et_packages;
 with et_devices;				use et_devices;
 
-package body netlists is
+package body et_netlists is
 	
 	function to_string (name : in type_file_name.bounded_string) return string is begin
 		return type_file_name.to_string (name);
@@ -1206,7 +1206,7 @@ package body netlists is
 	end make_netlist;
 
 	
-end netlists;
+end et_netlists;
 
 -- Soli Deo Gloria
 

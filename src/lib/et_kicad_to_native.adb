@@ -61,7 +61,7 @@ with et_kicad_coordinates;
 with et_import;
 
 with et_material;
-with netlists;
+with et_netlists;
 with et_text;
 with et_pcb_rw;
 with et_pcb_rw.device_packages;	--use et_pcb_rw.device_packages;
@@ -3080,7 +3080,7 @@ package body et_kicad_to_native is
 					key			=> key (kicad_net_cursor), -- net name
 					new_item	=> (
 							-- convert the kicad net scope to native net scope
-							scope	=> netlists.to_net_scope (et_kicad.schematic.to_string (
+							scope	=> et_netlists.to_net_scope (et_kicad.schematic.to_string (
 										element (kicad_net_cursor).scope)),
 							others 	=> <>)
 					);

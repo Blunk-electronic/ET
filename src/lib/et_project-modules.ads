@@ -42,7 +42,7 @@ with ada.containers.ordered_maps;
 with et_coordinates;			use et_coordinates;
 with et_schematic;
 with submodules;
-with netlists;
+with et_netlists;
 with et_assembly_variants;
 with et_terminals;
 with et_drills;
@@ -93,7 +93,7 @@ package et_project.modules is
 	-- Returns true if given port of netchanger is connected with any net.
 	function port_connected (
 		module	: in pac_generic_modules.cursor;	
-		port	: in netlists.type_port_netchanger)
+		port	: in et_netlists.type_port_netchanger)
 		return boolean;
 
 	-- Returns a cursor to the given net in the given module.

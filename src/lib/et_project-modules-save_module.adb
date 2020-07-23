@@ -293,7 +293,7 @@ is
 				use type_ports_device;
 				use type_ports_submodule;
 
-				use netlists;
+				use et_netlists;
 				use type_ports_netchanger;
 				
 				procedure query_labels (segment : in type_net_segment) is
@@ -597,7 +597,7 @@ is
 
 			write (keyword => keyword_name, parameters => et_general.to_string (key (net_cursor)));
 			write (keyword => keyword_class, parameters => to_string (element (net_cursor).class));
-			write (keyword => keyword_scope, parameters => netlists.to_string (element (net_cursor).scope));
+			write (keyword => keyword_scope, parameters => et_netlists.to_string (element (net_cursor).scope));
 
 			query_element (net_cursor, query_strands'access);
 			query_element (net_cursor, query_route'access);

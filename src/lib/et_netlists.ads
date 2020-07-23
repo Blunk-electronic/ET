@@ -56,7 +56,7 @@ with et_terminals;
 with et_packages;
 with et_devices;				use et_devices;
 
-package netlists is
+package et_netlists is
 
 	comment_mark : constant string := "#";
 
@@ -288,7 +288,7 @@ package netlists is
 		log_threshold	: in type_log_level)
 		return type_netlist.tree;
 	
-end netlists;
+end et_netlists;
 
 -- Soli Deo Gloria
 

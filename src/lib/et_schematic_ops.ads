@@ -61,7 +61,7 @@ with submodules;
 with et_assembly_variants;
 with numbering;
 with et_material;
-with netlists;
+with et_netlists;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_conventions;
@@ -357,7 +357,7 @@ package et_schematic_ops is
 	type type_ports is record
 		devices		: type_ports_device.set;
 		submodules	: type_ports_submodule.set;
-		netchangers	: netlists.type_ports_netchanger.set;
+		netchangers	: et_netlists.type_ports_netchanger.set;
 	end record;
 
 	function no_ports (ports : in type_ports) return boolean;
@@ -403,7 +403,7 @@ package et_schematic_ops is
 	-- Sets the scope of a net.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		scope			: in netlists.type_net_scope; -- local/global
+		scope			: in et_netlists.type_net_scope; -- local/global
 		log_threshold	: in type_log_level);
 	
 	procedure place_net_label (

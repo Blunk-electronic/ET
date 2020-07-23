@@ -65,7 +65,7 @@ with et_pcb_coordinates;
 with submodules;
 with numbering;
 with et_material;
-with netlists;
+with et_netlists;
 with et_geometry;
 with et_text;
 with et_symbols;
@@ -310,7 +310,7 @@ package et_schematic is
 		junctions			: type_junctions;
 		ports_devices		: type_ports_device.set;
 		ports_submodules	: type_ports_submodule.set;
-		ports_netchangers	: netlists.type_ports_netchanger.set;
+		ports_netchangers	: et_netlists.type_ports_netchanger.set;
 	end record;
 	
 	package type_net_segments is new doubly_linked_lists (type_net_segment);
@@ -348,7 +348,7 @@ package et_schematic is
 
 	type type_net is new type_net_base with record
 		strands		: type_strands.list;
-		scope		: netlists.type_net_scope := netlists.LOCAL;
+		scope		: et_netlists.type_net_scope := et_netlists.LOCAL;
 	end record;
 	
 	package type_nets is new ordered_maps (
@@ -394,7 +394,7 @@ package et_schematic is
 	type type_ports is record
 		devices		: type_ports_device.set;
 		submodules	: type_ports_submodule.set;
-		netchangers	: netlists.type_ports_netchanger.set;
+		netchangers	: et_netlists.type_ports_netchanger.set;
 	end record;
 	
 	function ports (
@@ -433,8 +433,8 @@ package et_schematic is
 	package type_netlists is new ordered_maps (
 		key_type		=> et_general.type_variant_name.bounded_string, -- low_cost, empty if default variant
 		"<"				=> et_general.type_variant_name."<",
-		element_type	=> netlists.type_netlist.tree, -- provides info on primary and secondary net dependencies
-		"="				=> netlists.type_netlist."=");
+		element_type	=> et_netlists.type_netlist.tree, -- provides info on primary and secondary net dependencies
+		"="				=> et_netlists.type_netlist."=");
 
 
 

@@ -1559,7 +1559,7 @@ begin -- schematic_cmd
 							set_scope (
 								module_name 	=> module,
 								net_name		=> et_general.to_net_name (f (5)),
-								scope			=> netlists.to_net_scope (f (6)),
+								scope			=> et_netlists.to_net_scope (f (6)),
 								log_threshold	=> log_threshold + 1
 								);
 
