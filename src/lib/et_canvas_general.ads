@@ -255,6 +255,15 @@ package pac_canvas is
 	-- redraws the canvas:
 	procedure redraw (view : in type_view_ptr);
 
+	function on_key_event (
+		self	: access gtk_widget_record'class;
+		event	: in gdk_event_key) 
+		return boolean;
+
+-- 	function on_button_event (
+-- 		self  : access gtk_widget_record'class;
+-- 		event : gdk_event_button)
+-- 		return boolean;
 
 	
 	-- Updates the coordinates of the cursor and the distances

@@ -113,6 +113,49 @@ package body pac_canvas is
 	procedure redraw (view : in type_view_ptr) is begin
 		queue_draw (view);
 	end;
+
+	function on_key_event (
+		self	: access gtk_widget_record'class;
+		event	: in gdk_event_key) 
+		return boolean is
+
+		-- This is required in order to propagate the key-pressed events to sub-windows.
+		result : boolean; -- to be returned. Indicates that the event has been handled.
+
+		-- Make a pointer to the main window:
+		current_window : constant gtk_window := gtk_window (self);
+
+	begin
+		--new_line;
+-- 		put_line ("top level key pressed");
+
+		-- Set the focus to the canvas:
+-- 		set_focus (current_window, canvas);
+
+		-- Propagate the key-press event to the canvas:
+		result := propagate_key_event (current_window, event);
+
+-- 		if result = true then
+-- 			put_line ("got handled");
+-- 		else
+-- 			put_line ("not handled");
+-- 		end if;
+		
+		return result;
+	end on_key_event;
+
+-- 	function on_button_event (
+-- 		self  : access gtk_widget_record'class;
+-- 		event : gdk_event_button)
+-- 		return boolean
+-- 	is
+-- -- 		self    : constant type_view_ptr := type_view_ptr (view);
+-- 	begin
+-- 		put_line ("top mouse button pressed");
+-- 
+-- 		return false; -- indicates that event has been handled
+-- 	end on_button_event;
+
 	
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;

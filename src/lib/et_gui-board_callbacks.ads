@@ -35,7 +35,6 @@
 --   history of changes:
 --
 
-
 with et_scripting;
 
 package et_gui.board_callbacks is
@@ -45,14 +44,6 @@ package et_gui.board_callbacks is
 
 	-- Executes a command typed on the console by the operator:
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class);
-
-
-	function on_key_event (
-		self	: access gtk_widget_record'class;
-		event	: in gdk_event_key) 
-		return boolean;
-
-
 	
 end et_gui.board_callbacks;
 

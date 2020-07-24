@@ -48,18 +48,6 @@ package et_gui.schematic_callbacks is
 	
 -- 	procedure echo_command (self : access gtk.combo_box.gtk_combo_box_record'class);
 	
-	function on_key_event (
-		self	: access gtk_widget_record'class;
-		event	: in gdk_event_key) 
-		return boolean;
-
--- 	function on_button_event (
--- 		self  : access gtk_widget_record'class;
--- 		event : gdk_event_button)
--- 		return boolean;
-
-
-	
 end et_gui.schematic_callbacks;
 
 -- Soli Deo Gloria
