@@ -81,6 +81,13 @@ package body pac_canvas is
 		add (box_back, box_right);
 	end build_background_boxes;
 
+	procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
+	begin
+		put_line ("zoom to fit ...");
+		scale_to_fit (canvas);
+-- 		put_line (to_string (get_scale (canvas)));
+	end;
+	
 	procedure build_toolbars is
 		spacing : gint;
 	begin

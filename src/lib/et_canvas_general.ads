@@ -162,6 +162,15 @@ package pac_canvas is
 	-- Builds the drawing area and places it in box_right.
 	procedure build_canvas;
 
+-- 	-- Scales the canvas so that the frame fits into.
+-- 	function window_resized (
+-- 		self  : access gtk_widget_record'class;
+-- 		event : gdk.event.gdk_event_configure) 
+-- 		return boolean;
+-- CS: causes the view to shift on moving the window. better don't use it.
+	
+	procedure zoom_to_fit (self : access glib.object.gobject_record'class);
+	
 	procedure build_toolbars;
 
 	

@@ -92,36 +92,6 @@ package body et_gui.schematic_callbacks is
 		
 		redraw (canvas);
 	end set_cursor_position_y;
-	
-	procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
-	begin
-		put_line ("zoom to fit ...");
-		scale_to_fit (canvas);
--- 		put_line (to_string (get_scale (canvas)));
-	end;
-
--- 	procedure zoom_in (self : access glib.object.gobject_record'class) is 
--- 		scale : gdouble;
--- 		use geometry;
--- 	begin
--- 		put_line ("zooming in ...");
--- 		scale := get_scale (canvas);
--- 		scale := scale + 0.1;
--- 		set_scale (canvas, scale);
--- 		-- 		put_line (to_string (get_scale (canvas)));
--- 	end;
-
--- 	procedure zoom_out (self : access glib.object.gobject_record'class) is 
--- 		scale : gdouble;
--- 	begin
--- 		put_line ("zooming out ...");
--- 		scale := get_scale (canvas);
--- 		if scale >= 0.0 then
--- 			scale := scale - 0.1;
--- 			set_scale (canvas, scale);
--- 		end if;
--- -- 		put_line (to_string (get_scale (canvas)));
--- 	end;
 
 	procedure execute_script (script : in pac_script_name.bounded_string) is
 		use ada.directories;

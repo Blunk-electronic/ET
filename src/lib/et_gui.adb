@@ -91,7 +91,6 @@ package body et_gui is
 		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar_left);
 
 
-
 		
 -- 		-- Create a button and place it in the toolbar:
 -- 		gtk.tool_button.gtk_new (button_zoom_in, label => "IN");
@@ -100,17 +99,6 @@ package body et_gui is
 -- 		-- If the operator clicks the button
 -- 		-- call the procedure zoom_in in package callbacks_4:
 -- 		button_zoom_in.on_clicked (zoom_in'access, toolbar);
-
-
-
-		
--- 		-- Create another button and place it in the toolbar:
--- 		gtk.tool_button.gtk_new (button_zoom_out, label => "OUT");
--- 		insert (toolbar, button_zoom_out);
--- 
--- 		-- If the operator clicks the button
--- 		-- call the procedure zoom_out in package callbacks_4:
--- 		button_zoom_out.on_clicked (zoom_out'access, toolbar);
 
 
 
@@ -127,9 +115,6 @@ package body et_gui is
 		-- set the module to be opened and optionally the sheet to be displayed:
 		init_drawing (module, sheet);
 
-		-- draw the schematic sheet
--- 		redraw (canvas); -- CS no need
-		
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 		
 		scale_to_fit (canvas);
@@ -184,26 +169,12 @@ package body et_gui is
 		build_toolbars;
 		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar_left);
 
-
--- 		-- Create a button and place it in the toolbar:
 -- 		gtk.tool_button.gtk_new (button_zoom_in, label => "IN");
 -- 		insert (toolbar, button_zoom_in);
 -- 
 -- 		-- If the operator clicks the button
 -- 		-- call the procedure zoom_in in package callbacks_4:
 -- 		button_zoom_in.on_clicked (zoom_in'access, toolbar);
--- 
--- 
--- 
--- 		
--- 		-- Create another button and place it in the toolbar:
--- 		gtk.tool_button.gtk_new (button_zoom_out, label => "OUT");
--- 		insert (toolbar, button_zoom_out);
--- 
--- 		-- If the operator clicks the button
--- 		-- call the procedure zoom_out in package callbacks_4:
--- 		button_zoom_out.on_clicked (zoom_out'access, toolbar);
-
 
 
 		build_console;
@@ -214,9 +185,6 @@ package body et_gui is
 		build_canvas;
 		gtk_new (canvas);
 
-		-- draw the board layout
--- 		redraw (canvas);  -- CS no need
-		
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 		
 		scale_to_fit (canvas);
@@ -224,7 +192,6 @@ package body et_gui is
 		-- display the board:
 		window.show_all;
 
-		
 	end init_board;
 
 
