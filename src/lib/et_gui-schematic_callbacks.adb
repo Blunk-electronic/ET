@@ -114,9 +114,8 @@ package body et_gui.schematic_callbacks is
 
 	end execute_script;
 	
-	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class) is 
+	procedure execute_command (self : access gtk_entry_record'class) is 
 		use ada.directories;	
-		use gtk.gentry;
 		use et_string_processing;
 		use et_scripting;
 

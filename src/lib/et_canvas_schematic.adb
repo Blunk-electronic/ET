@@ -37,7 +37,6 @@
 
 with ada.text_io;					use ada.text_io;
 with et_display.schematic;
-
 with et_colors.schematic;			use et_colors.schematic;
 
 package body et_canvas_schematic is
@@ -272,10 +271,6 @@ package body et_canvas_schematic is
 		-- set active sheet:
 		current_active_sheet := sheet;
 	end init_drawing;
-
--- 	procedure redraw (view : in type_view_ptr) is begin
--- 		queue_draw (view);
--- 	end;
 
 	function convert_and_shift_y (
 		self	: not null access type_view;

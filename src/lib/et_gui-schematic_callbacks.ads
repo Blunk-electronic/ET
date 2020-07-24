@@ -43,7 +43,7 @@ package et_gui.schematic_callbacks is
 	procedure execute_script (script : in pac_script_name.bounded_string);	
 
 	-- Executes a command typed on the console by the operator:	
-	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class);
+	procedure execute_command (self : access gtk_entry_record'class);
 
 	
 -- 	procedure echo_command (self : access gtk.combo_box.gtk_combo_box_record'class);
