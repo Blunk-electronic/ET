@@ -45,6 +45,7 @@
 --  it must be instantiated with the package that provides the respective
 --  measurement system.
 
+with gtk.main;					use gtk.main;
 with gtk.widget;  				use gtk.widget;
 with gtk.window; 				use gtk.window;
 with gtk.box;					use gtk.box;
@@ -168,7 +169,8 @@ package pac_canvas is
 -- 		event : gdk.event.gdk_event_configure) 
 -- 		return boolean;
 -- CS: causes the view to shift on moving the window. better don't use it.
-	
+
+	procedure terminate_main (self : access gtk_widget_record'class);
 	procedure zoom_to_fit (self : access glib.object.gobject_record'class);
 	
 	procedure build_toolbars;

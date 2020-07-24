@@ -40,9 +40,6 @@ with et_scripting;
 
 package et_gui.board_callbacks is
 
-	-- Terminates the main window:
-	procedure terminate_main (self : access gtk_widget_record'class);
-
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class);
 	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class);
 

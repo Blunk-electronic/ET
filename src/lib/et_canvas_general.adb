@@ -81,6 +81,28 @@ package body pac_canvas is
 		add (box_back, box_right);
 	end build_background_boxes;
 
+-- 	function window_resized (
+-- 		self  : access gtk_widget_record'class;
+-- 		event : gdk.event.gdk_event_configure) 
+-- 		return boolean is
+-- 		-- Get the current scale:
+-- 		scale : gdouble := get_scale (canvas);
+-- 	begin
+-- 		-- Assign the scale anew:
+-- 		set_scale (canvas, scale);
+-- 
+-- 		-- NOTE: Do not call scale_to_fit here !
+-- 		-- It would undo zoom operations called by a script that is passed
+-- 		-- on startup.
+-- 		
+-- 		return true;
+-- 	end;
+	
+	procedure terminate_main (self : access gtk_widget_record'class) is begin
+		put_line ("exiting ...");
+		gtk.main.main_quit;
+	end;
+	
 	procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
 	begin
 		put_line ("zoom to fit ...");

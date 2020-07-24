@@ -48,11 +48,6 @@ package body et_gui.board_callbacks is
 
 	use et_canvas_board.pac_canvas;
 	use et_pcb_coordinates.pac_geometry_brd;
-	
-	procedure terminate_main (self : access gtk_widget_record'class) is begin
-		put_line ("exiting ...");
-		gtk.main.main_quit;
-	end;
 
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
