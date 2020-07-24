@@ -35,11 +35,7 @@
 --   history of changes:
 --
 
-with gtk.main;
-with gtk.window;				use gtk.window;
-
-with et_geometry;				use et_geometry;
-with et_pcb_coordinates;
+with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_canvas_board;			use et_canvas_board;
 with et_canvas_schematic;
 

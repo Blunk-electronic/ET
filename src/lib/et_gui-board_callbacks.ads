@@ -35,16 +35,6 @@
 --   history of changes:
 --
 
-with gdk;					use gdk;
-with gdk.event;				use gdk.event;
-
-with glib;					use glib;
-with gtk.widget;  			use gtk.widget;
-with gtk.button;    	 	--use gtk.button;
-with glib.object;			--use glib.object;
-with gtk.gentry;
-with gtk.combo_box_text;	with gtk.combo_box_text;	
--- with gtkada.style;			use gtkada.style;
 
 with et_scripting;
 

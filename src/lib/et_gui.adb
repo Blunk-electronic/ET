@@ -35,21 +35,6 @@
 --   history of changes:
 --
 
-with gtk.main;
-with gtk.window; 				use gtk.window;
-with gtk.widget;  				use gtk.widget;
-with gtk.box;					use gtk.box;
-with gtk.button;     			use gtk.button;
-with gtk.toolbar; 				use gtk.toolbar;
-with gtk.tool_button;			use gtk.tool_button;
-with gtk.enums;					use gtk.enums;
-with gtk.gentry;				use gtk.gentry;
-with gtk.frame;					use gtk.frame;
-with gtk.scrolled_window;		use gtk.scrolled_window;
-with glib.object;				use glib.object;
-
-with ada.text_io;				use ada.text_io;
-
 with et_gui.schematic_callbacks;
 with et_canvas_schematic;
 
@@ -278,6 +263,8 @@ package body et_gui is
 		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 		script			: in pac_script_name.bounded_string; -- rename_nets.scr
 		log_threshold	: in type_log_level) is
+
+		use et_coordinates;
 	begin
 		log (text => row_separator_single, level => log_threshold);
 		log (text => "starting GUI ...", level => log_threshold);

@@ -35,10 +35,7 @@
 --   history of changes:
 --
 
-with gtk.main;
-with gtk.window;				use gtk.window;
-
-with et_geometry;				use et_geometry;
+with et_coordinates;			use et_coordinates;
 with et_canvas_schematic;		use et_canvas_schematic;
 with et_canvas_board;
 
