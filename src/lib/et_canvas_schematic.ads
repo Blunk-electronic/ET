@@ -187,10 +187,6 @@ package et_canvas_schematic is
 		module	: in et_project.modules.pac_generic_modules.cursor; -- the module to be drawn in schematic and layout
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be drawn
 
-	-- Redraws the schematic:
-	procedure redraw (view : in type_view_ptr);
-
-
 	overriding procedure move_cursor (
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;  -- relative/absolute

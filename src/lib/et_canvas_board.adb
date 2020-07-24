@@ -467,9 +467,9 @@ package body et_canvas_board is
 		
 	end draw_internal;
 
-	procedure redraw (view : in type_view_ptr) is begin
-		queue_draw (view);
-	end;
+-- 	procedure redraw (view : in type_view_ptr) is begin
+-- 		queue_draw (view);
+-- 	end;
 	
 	function convert_and_shift_y (
 		self	: not null access type_view;

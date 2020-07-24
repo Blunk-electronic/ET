@@ -49,28 +49,6 @@ package body et_gui.schematic_callbacks is
 	use et_canvas_schematic.pac_canvas;
 	use et_coordinates.pac_geometry_sch;
 
-	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
-		use et_general;
-		use gtk.gentry;
-		cp : type_point := cursor_main.position;
-	begin
-		set (point => cp, axis => X, value => to_distance (get_text (self)));
-		move_cursor (canvas, ABSOLUTE, cursor_main, cp);
-		
-		redraw (canvas);
-	end set_cursor_position_x;
-
-	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class) is 
-		use et_general;
-		use gtk.gentry;
-		cp : type_point := cursor_main.position;
-	begin
-		set (point => cp, axis => Y, value => to_distance (get_text (self)));
-		move_cursor (canvas, ABSOLUTE, cursor_main, cp);
-		
-		redraw (canvas);
-	end set_cursor_position_y;
-
 	procedure execute_script (script : in pac_script_name.bounded_string) is
 		use ada.directories;
 		use et_string_processing;
@@ -127,7 +105,7 @@ package body et_gui.schematic_callbacks is
 		
 		-- refresh schematic and board
 		redraw (canvas);
-		et_canvas_board.redraw (et_canvas_board.pac_canvas.canvas);
+		et_canvas_board.pac_canvas.redraw (et_canvas_board.pac_canvas.canvas);
 		
 		-- CS output error message in gui
 
@@ -202,7 +180,7 @@ package body et_gui.schematic_callbacks is
 		
 		-- refresh schematic and board
 		redraw (canvas);
-		et_canvas_board.redraw (et_canvas_board.pac_canvas.canvas);
+		et_canvas_board.pac_canvas.redraw (et_canvas_board.pac_canvas.canvas);
 		
 		-- CS output error message in gui
 

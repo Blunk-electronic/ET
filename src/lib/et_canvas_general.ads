@@ -172,6 +172,10 @@ package pac_canvas is
 
 	procedure terminate_main (self : access gtk_widget_record'class);
 	procedure zoom_to_fit (self : access glib.object.gobject_record'class);
+
+	
+	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class);
+	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class);
 	
 	procedure build_toolbars;
 
@@ -247,6 +251,12 @@ package pac_canvas is
 
 	canvas	: type_view_ptr;
 
+	
+	-- redraws the canvas:
+	procedure redraw (view : in type_view_ptr);
+
+
+	
 	-- Updates the coordinates of the cursor and the distances
 	-- displayed left of the canvas:
 	procedure update_coordinates_display (

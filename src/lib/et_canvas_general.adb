@@ -109,6 +109,33 @@ package body pac_canvas is
 		scale_to_fit (canvas);
 -- 		put_line (to_string (get_scale (canvas)));
 	end;
+
+	procedure redraw (view : in type_view_ptr) is begin
+		queue_draw (view);
+	end;
+	
+	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
+		use et_general;
+		use gtk.gentry;
+		cp : type_point := cursor_main.position;
+	begin
+		set (point => cp, axis => X, value => to_distance (get_text (self)));
+		move_cursor (canvas, ABSOLUTE, cursor_main, cp);
+		
+		redraw (canvas);
+	end set_cursor_position_x;
+
+	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class) is 
+		use et_general;
+		use gtk.gentry;
+		cp : type_point := cursor_main.position;
+	begin
+		set (point => cp, axis => Y, value => to_distance (get_text (self)));
+		move_cursor (canvas, ABSOLUTE, cursor_main, cp);
+		
+		redraw (canvas);
+	end set_cursor_position_y;
+
 	
 	procedure build_toolbars is
 		spacing : gint;

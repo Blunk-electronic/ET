@@ -40,9 +40,6 @@ with et_scripting;
 
 package et_gui.board_callbacks is
 
-	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class);
-	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class);
-
 	-- Executes a script.
 	procedure execute_script (script : in pac_script_name.bounded_string);	
 

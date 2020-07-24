@@ -159,11 +159,6 @@ package et_canvas_board is
 		context : type_draw_context;
 		area    : type_rectangle);
 
-
-	-- Redraws the board:
-	procedure redraw (view : in type_view_ptr);
-
-
 	overriding procedure move_cursor (
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;  -- relative/absolute
