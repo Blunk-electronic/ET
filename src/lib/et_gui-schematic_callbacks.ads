@@ -49,7 +49,7 @@ package et_gui.schematic_callbacks is
 -- 		return boolean;
 -- CS: causes the view to shift on moving the window. better don't use it.
 	
--- 	procedure zoom_to_fit (self : access glib.object.gobject_record'class);	
+	procedure zoom_to_fit (self : access glib.object.gobject_record'class);	
 -- 	procedure zoom_in (self : access glib.object.gobject_record'class);
 -- 	procedure zoom_out (self : access glib.object.gobject_record'class);
 

@@ -87,23 +87,8 @@ package body et_gui is
 		gtk_entry (cursor_position_y.get_child).on_activate (set_cursor_position_y'access);
 
 		
--- 		-- toolbar on the left
--- 		gtk_new (toolbar);
--- 		set_orientation (toolbar, orientation_vertical);
--- 		pack_start (box_left, toolbar, expand => false);
-
-
-		
-
-		
-		
--- 		-- Create a button and place it in the toolbar:
--- 		gtk.tool_button.gtk_new (button_zoom_to_fit, label => "FIT");
--- 		insert (toolbar, button_zoom_to_fit);
--- 
--- 		-- If the operator clicks the button
--- 		-- call the procedure zoom_to_fit in package callbacks_4:
--- 		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar);
+		build_toolbars;
+		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar_left);
 
 
 
@@ -194,25 +179,12 @@ package body et_gui is
 		-- Connect to the on_activate signal (on hitting enter key) of the entry (which is a child of console):
 		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
 		gtk_entry (cursor_position_y.get_child).on_activate (set_cursor_position_y'access);
-		
--- 		-- toolbar on the left
--- 		gtk_new (toolbar);
--- 		set_orientation (toolbar, orientation_vertical);
--- 		pack_start (box_left, toolbar, expand => false);
--- 
 
--- 		
--- 		-- Create a button and place it in the toolbar:
--- 		gtk.tool_button.gtk_new (button_zoom_to_fit, label => "FIT");
--- 		insert (toolbar, button_zoom_to_fit);
--- 
--- 		-- If the operator clicks the button
--- 		-- call the procedure zoom_to_fit in package callbacks_4:
--- 		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar);
--- 
--- 
--- 
--- 		
+		
+		build_toolbars;
+		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar_left);
+
+
 -- 		-- Create a button and place it in the toolbar:
 -- 		gtk.tool_button.gtk_new (button_zoom_in, label => "IN");
 -- 		insert (toolbar, button_zoom_in);

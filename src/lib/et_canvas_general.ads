@@ -56,6 +56,8 @@ with gtk.adjustment;			use gtk.adjustment;
 with gtk.combo_box_text;		use gtk.combo_box_text;
 with gtk.gentry;				use gtk.gentry;
 with gtk.label;					use gtk.label;
+with gtk.toolbar; 				use gtk.toolbar;
+with gtk.tool_button;			use gtk.tool_button;
 
 with gdk;						use gdk;
 with gdk.types;
@@ -92,17 +94,22 @@ generic
 package pac_canvas is
 	use geometry;
 
-	window : gtk_window; -- This is he main window.	
+	window 					: gtk_window; -- the main window.	
 	
-	box_back				: gtk_box; -- This is an access/pointer to the actual box.
-	box_left, box_right		: gtk_box;
+	box_back				: gtk_hbox; -- This is an access/pointer to the actual box.
+	box_left, box_right		: gtk_vbox;
 
+	box_toolbars				: gtk_hbox;
+	toolbar_left, toolbar_right	: gtk_toolbar;
+	
+	button_zoom_to_fit		: gtk_tool_button;
+	button_demo				: gtk_tool_button; -- CS for testing only
+	
 	-- Builds the background boxes box_back, box_left, and box_right:
 	procedure build_background_boxes;
-
 	
 	-- main position display:
-	box_positions			: gtk_box;		-- the main box around all kinds of position readouts
+	box_positions			: gtk_vbox;		-- the main box around all kinds of position readouts
 	
 	-- mouse position
 	label_mouse_position	: gtk_label;
@@ -155,7 +162,7 @@ package pac_canvas is
 	-- Builds the drawing area and places it in box_right.
 	procedure build_canvas;
 
-
+	procedure build_toolbars;
 
 	
 	-- This variable serves for logging debug messages an other stuff.

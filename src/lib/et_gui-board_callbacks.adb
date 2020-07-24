@@ -71,12 +71,12 @@ package body et_gui.board_callbacks is
 -- 		return true;
 -- 	end;
 		
--- 	procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
--- 	begin
--- 		put_line ("zoom to fit ...");
--- 		scale_to_fit (canvas);
--- -- 		put_line (to_string (get_scale (canvas)));
--- 	end;
+	procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
+	begin
+		put_line ("zoom to fit ...");
+		scale_to_fit (canvas);
+-- 		put_line (to_string (get_scale (canvas)));
+	end;
 
 -- 	procedure zoom_in (self : access glib.object.gobject_record'class) is 
 -- 		scale : gdouble;

@@ -45,14 +45,8 @@
 --  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
-with gtk.window; 			use gtk.window;
--- with gtk.combo_box_text;	use gtk.combo_box_text;
-with gtk.gentry;			use gtk.gentry;
-
-with glib;					use glib;
-with cairo;					use cairo;
-with cairo.pattern;			use cairo.pattern;
-with gtkada.style;
+with glib;						use glib;
+with cairo;						use cairo;
 
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;

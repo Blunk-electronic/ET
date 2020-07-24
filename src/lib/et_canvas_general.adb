@@ -71,7 +71,7 @@ package body pac_canvas is
 		add (window, box_back);
 
 		-- left box
-		gtk_new_hbox (box_left);
+		gtk_new_vbox (box_left);
 		set_spacing (box_left, 10);
 		pack_start (box_back, box_left, expand => false);
 
@@ -80,6 +80,41 @@ package body pac_canvas is
 		set_spacing (box_right, 10);
 		add (box_back, box_right);
 	end build_background_boxes;
+
+	procedure build_toolbars is
+		spacing : gint;
+	begin
+		spacing := 10;
+		
+		-- The main box around all toolbars:
+		gtk_new_hbox (box_toolbars);
+		set_spacing (box_toolbars, spacing);
+		set_border_width (box_toolbars, 10);
+		pack_start (box_left, box_toolbars, expand => false);
+		
+		----------------------------------------------------------
+		-- TOOLBAR ON THE LEFT
+		gtk_new (toolbar_left);
+		set_orientation (toolbar_left, orientation_vertical);
+		pack_start (box_toolbars, toolbar_left, expand => false);
+
+		-- Create a button and place it in the toolbar:
+		gtk_new (button_zoom_to_fit, label => "FIT");
+		insert (toolbar_left, button_zoom_to_fit);
+
+		----------------------------------------------------------
+		-- TOOLBAR ON THE RIGHT
+		gtk_new (toolbar_right);
+		set_orientation (toolbar_right, orientation_vertical);
+		pack_start (box_toolbars, toolbar_right, expand => false);
+
+		-- Create a button and place it in the toolbar:
+		gtk_new (button_demo, label => "DEMO");
+		insert (toolbar_right, button_demo);
+		
+
+		
+	end build_toolbars;
 	
 	procedure build_coordinates_display is 
 		spacing : gint;
