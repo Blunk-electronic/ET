@@ -42,11 +42,12 @@ package et_gui.schematic_callbacks is
 	-- Terminates the main window:
 	procedure terminate_main (self : access gtk_widget_record'class);
 
-	-- Scales the canvas so that the frame fits into.
-	function window_resized (
-		self  : access gtk_widget_record'class;
-		event : gdk.event.gdk_event_configure) 
-		return boolean;
+-- 	-- Scales the canvas so that the frame fits into.
+-- 	function window_resized (
+-- 		self  : access gtk_widget_record'class;
+-- 		event : gdk.event.gdk_event_configure) 
+-- 		return boolean;
+-- CS: causes the view to shift on moving the window. better don't use it.
 	
 -- 	procedure zoom_to_fit (self : access glib.object.gobject_record'class);	
 -- 	procedure zoom_in (self : access glib.object.gobject_record'class);

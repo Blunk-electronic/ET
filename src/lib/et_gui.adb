@@ -73,7 +73,7 @@ package body et_gui is
 		window.on_destroy (terminate_main'access);
 
 		-- If the operator minimizes, maximizes or changes the size in some way:
-		window.on_configure_event (window_resized'access);
+		--window.on_configure_event (window_resized'access);
 
 		-- For reaction to keys pressed on the keyboard:
 		window.on_key_press_event (on_key_event'access);
@@ -181,7 +181,7 @@ package body et_gui is
 		window.on_destroy (terminate_main'access);
 
 		-- If the operator minimizes, maximizes or changes the size in some way:
-		window.on_configure_event (window_resized'access);
+		--window.on_configure_event (window_resized'access);
 
 		-- For reaction to keys pressed on the keyboard:
 		window.on_key_press_event (on_key_event'access);

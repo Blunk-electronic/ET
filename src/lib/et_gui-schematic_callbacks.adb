@@ -54,22 +54,22 @@ package body et_gui.schematic_callbacks is
 		gtk.main.main_quit;
 	end;
 
-	function window_resized (
-		self  : access gtk_widget_record'class;
-		event : gdk.event.gdk_event_configure) 
-		return boolean is
-		-- Get the current scale:
-		scale : gdouble := get_scale (canvas);
-	begin
-		-- Assign the scale anew:
-		set_scale (canvas, scale);
-
-		-- NOTE: Do not call scale_to_fit here !
-		-- It would undo zoom operations called by a script that is passed
-		-- on startup.
-		
-		return true;
-	end;
+-- 	function window_resized (
+-- 		self  : access gtk_widget_record'class;
+-- 		event : gdk.event.gdk_event_configure) 
+-- 		return boolean is
+-- 		-- Get the current scale:
+-- 		scale : gdouble := get_scale (canvas);
+-- 	begin
+-- 		-- Assign the scale anew:
+-- 		set_scale (canvas, scale);
+-- 
+-- 		-- NOTE: Do not call scale_to_fit here !
+-- 		-- It would undo zoom operations called by a script that is passed
+-- 		-- on startup.
+-- 		
+-- 		return true;
+-- 	end;
 
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
