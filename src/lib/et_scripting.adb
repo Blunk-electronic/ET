@@ -170,6 +170,23 @@ package body et_scripting is
 			raise;
 	end;
 
+	
+	function to_string (mode : in type_drawing_mode_schematic) return string is
+		s : string := type_drawing_mode_schematic'image (mode);
+	begin
+		return s (mode_prefix'length + 1 .. s'last);
+	end;
+
+	function to_drawing_mode (mode : in string) 
+		return type_drawing_mode_schematic 
+	is begin
+		return type_drawing_mode_schematic'value (mode_prefix & mode);
+		exception when event: others => 
+			log (ERROR, "mode " & enclose_in_quotes (mode) & " invalid !", console => true);
+			raise;
+	end;
+
+	
 	function to_string (noun : in type_noun_board) return string is 
 		s : string := type_noun_board'image (noun);
 	begin

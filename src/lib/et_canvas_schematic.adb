@@ -38,6 +38,7 @@
 with ada.text_io;					use ada.text_io;
 with et_display.schematic;
 with et_colors.schematic;			use et_colors.schematic;
+with et_scripting;
 
 package body et_canvas_schematic is
 
@@ -435,6 +436,15 @@ package body et_canvas_schematic is
 		return self.get_frame.title_block_schematic.position;
 	end title_block_position;
 
+	function get_drawing_mode (
+		self	: not null access type_view)
+		return string 
+	is
+		use et_scripting;
+	begin
+		return to_string (et_scripting.drawing_mode_schematic);
+	end get_drawing_mode;
+	
 	procedure evaluate_key (
 		self	: not null access type_view;
 		key		: in gdk_key_type) is

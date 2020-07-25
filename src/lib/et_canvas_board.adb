@@ -642,6 +642,14 @@ package body et_canvas_board is
 		return element (current_active_module).board.origin;
 	end board_origin;
 
+	function get_drawing_mode (
+		self	: not null access type_view)
+		return string is
+	begin
+		-- 		return to_string (et_scripting.drawing_mode_schematic); -- CS
+		return "test";
+	end get_drawing_mode;
+	
 	procedure evaluate_key (
 		self	: not null access type_view;
 		key		: in gdk_key_type) is

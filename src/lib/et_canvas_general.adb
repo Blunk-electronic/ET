@@ -398,7 +398,21 @@ package body pac_canvas is
 		pack_start (box_drawing_mode, drawing_mode, expand => true);
 		
 	end build_drawing_mode_display;
+
 	
+	
+	procedure update_drawing_mode_display (
+		self	: not null access type_view'class)
+	is 
+		-- update cursor position
+		mode : constant string := self.get_drawing_mode;
+	begin
+		-- Get the drawing mode
+		gtk_entry (drawing_mode.get_child).set_text (mode);
+
+	end update_drawing_mode_display;
+
+
 	
 	procedure build_console is begin
 		-- box for console on the right top

@@ -226,6 +226,10 @@ package et_canvas_schematic is
 		self : not null access type_view)
 		return et_frames.type_position;
 
+	overriding function get_drawing_mode (
+		self	: not null access type_view)
+		return string;
+	
 	overriding procedure evaluate_key (
 		self	: not null access type_view;
 		key		: in gdk_key_type);
