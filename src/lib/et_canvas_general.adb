@@ -380,6 +380,26 @@ package body pac_canvas is
 
 	end update_coordinates_display;
 
+	procedure build_drawing_mode_display is
+		spacing : gint;
+	begin
+		spacing := 10;
+		
+		-- The main box around all kinds of position readouts:
+		gtk_new_hbox (box_drawing_mode);
+		set_spacing (box_drawing_mode, spacing);
+		set_border_width (box_drawing_mode, 10);
+		pack_start (box_left, box_drawing_mode, expand => false);
+
+		gtk_new (label_drawing_mode, "MODE");
+		pack_start (box_drawing_mode, label_drawing_mode, expand => false);
+
+		gtk_new_with_entry (drawing_mode);
+		pack_start (box_drawing_mode, drawing_mode, expand => true);
+		
+	end build_drawing_mode_display;
+	
+	
 	procedure build_console is begin
 		-- box for console on the right top
 		gtk_new_vbox (box_console);

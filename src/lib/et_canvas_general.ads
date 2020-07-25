@@ -129,7 +129,7 @@ package pac_canvas is
 	
 	label_cursor_position_x, label_cursor_position_y : gtk_label;
 	cursor_position_x, cursor_position_y : gtk_combo_box_text;
-
+	
 	-- distances
 	type type_distances is record
 		label	: gtk_label;
@@ -140,7 +140,17 @@ package pac_canvas is
 	end record;
 
 	distances : type_distances;
+
+
 	
+	-- mode display
+	label_drawing_mode	: gtk_label;
+	box_drawing_mode	: gtk_hbox;
+	drawing_mode		: gtk_combo_box_text;
+
+	procedure build_drawing_mode_display;
+	
+		
 	
 	-- Builds the boxes and combo boxes that display mouse and cursor position,
 	-- distance between cursor and mouse pointer.
