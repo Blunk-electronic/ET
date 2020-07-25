@@ -45,6 +45,7 @@
 --  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
+with gdk.types;					use gdk.types;
 with glib;						use glib;
 with cairo;						use cairo;
 
@@ -224,6 +225,11 @@ package et_canvas_schematic is
 	overriding function title_block_position (
 		self : not null access type_view)
 		return et_frames.type_position;
+
+	overriding procedure evaluate_key (
+		self	: not null access type_view;
+		key		: in gdk_key_type);
+
 	
 end et_canvas_schematic;
 

@@ -61,7 +61,7 @@ with gtk.toolbar; 				use gtk.toolbar;
 with gtk.tool_button;			use gtk.tool_button;
 
 with gdk;						use gdk;
-with gdk.types;
+with gdk.types;					use gdk.types;
 with gdk.event;					use gdk.event;
 
 with glib;						use glib;
@@ -550,7 +550,12 @@ package pac_canvas is
 	function title_block_position (
 		self : not null access type_view)
 		return et_frames.type_position is abstract;
-									  
+
+	procedure evaluate_key (
+		self	: not null access type_view;
+		key		: in gdk_key_type) is null;
+
+	
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);
 	-- Called when one of the scrollbars has changed value.

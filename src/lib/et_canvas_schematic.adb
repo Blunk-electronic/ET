@@ -434,6 +434,21 @@ package body et_canvas_schematic is
 	begin
 		return self.get_frame.title_block_schematic.position;
 	end title_block_position;
+
+	procedure evaluate_key (
+		self	: not null access type_view;
+		key		: in gdk_key_type) is
+	begin
+		null;
+		put_line ("schematic: evaluating other key ...");
+
+-- 		put_line ("key pressed");
+-- 		new_line;
+		put_line (gdk_key_type'image (key));
+
+-- 		put_line (gdk_modifier_type'image (key_ctrl));
+		
+	end evaluate_key;
 	
 end et_canvas_schematic;
 

@@ -1046,7 +1046,7 @@ package body pac_canvas is
 
 		return result;
 	end on_scroll_event;
-	
+
 	function on_key_pressed_event (
 		view  : access gtk_widget_record'class;
 		event : gdk_event_key) return boolean is
@@ -1114,9 +1114,10 @@ package body pac_canvas is
 					
 				when others =>
 					-- put_line ("other key pressed");
+					canvas.evaluate_key (key);
 
 					-- CS: test the TAB key explicitely in order to return false ?
-					event_handled := false;
+					event_handled := true;
 			end case;
 
 		end if;

@@ -45,17 +45,18 @@
 --  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
-with glib;					use glib;
-with cairo;					use cairo;
+with gdk.types;					use gdk.types;
+with glib;						use glib;
+with cairo;						use cairo;
 
 with et_general;
-with et_geometry;			use et_geometry;
-with et_pcb_coordinates;	use et_pcb_coordinates;
-with et_terminals;			use et_terminals;
-with et_packages;			--use et_packages;
-with et_project.modules;	use et_project.modules;
+with et_geometry;				use et_geometry;
+with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_terminals;				use et_terminals;
+with et_packages;
+with et_project.modules;		use et_project.modules;
 with et_schematic;
-with et_frames;				--use et_frames;
+with et_frames;
 
 
 with et_canvas_general;
@@ -205,7 +206,10 @@ package et_canvas_board is
 		self : not null access type_view)
 		return type_point;
 
-		
+	overriding procedure evaluate_key (
+		self	: not null access type_view;
+		key		: in gdk_key_type);
+	
 end et_canvas_board;
 
 -- Soli Deo Gloria

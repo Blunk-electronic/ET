@@ -641,6 +641,14 @@ package body et_canvas_board is
 	begin
 		return element (current_active_module).board.origin;
 	end board_origin;
+
+	procedure evaluate_key (
+		self	: not null access type_view;
+		key		: in gdk_key_type) is
+	begin
+		null;
+		put_line ("board: evaluating other key ...");
+	end evaluate_key;
 	
 end et_canvas_board;
 
