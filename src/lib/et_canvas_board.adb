@@ -40,6 +40,7 @@ with ada.text_io;				use ada.text_io;
 with et_canvas_schematic;
 with et_display.board;
 with et_colors.board;			use et_colors.board;
+with et_modes.board;			use et_modes.board;
 with et_pcb;
 with et_pcb_stack;
 with et_text;
@@ -646,8 +647,7 @@ package body et_canvas_board is
 		self	: not null access type_view)
 		return string is
 	begin
-		-- 		return to_string (et_scripting.drawing_mode_schematic); -- CS
-		return "test";
+		return to_string (op_mode);
 	end get_drawing_mode;
 	
 	procedure evaluate_key (
@@ -656,6 +656,9 @@ package body et_canvas_board is
 	begin
 		null;
 		put_line ("board: evaluating other key ...");
+
+
+		self.update_drawing_mode_display;
 	end evaluate_key;
 	
 end et_canvas_board;

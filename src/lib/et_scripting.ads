@@ -68,7 +68,7 @@ package et_scripting is
 	domain_prefix : constant string := ("DOM_");
 	verb_prefix : constant string := ("VERB_");
 	noun_prefix : constant string := ("NOUN_");
-	mode_prefix : constant string := ("MODE_");
+
 	
 	type type_domain is (
 		DOM_PROJECT,
@@ -190,14 +190,6 @@ package et_scripting is
 
 	function to_string (noun : in type_noun_schematic) return string;
 	function to_noun (noun : in string) return type_noun_schematic;
-
-	type type_drawing_mode_schematic is (MODE_SHOW, MODE_DELETE);
-	drawing_mode_schematic_default : constant type_drawing_mode_schematic := MODE_SHOW;
-
-	function to_string (mode : in type_drawing_mode_schematic) return string;
-	function to_drawing_mode (mode : in string) return type_drawing_mode_schematic;
-
-	drawing_mode_schematic : type_drawing_mode_schematic := drawing_mode_schematic_default;
 
 	
 -- BOARD

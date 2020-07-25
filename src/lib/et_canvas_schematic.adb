@@ -38,7 +38,7 @@
 with ada.text_io;					use ada.text_io;
 with et_display.schematic;
 with et_colors.schematic;			use et_colors.schematic;
-with et_scripting;
+with et_modes.schematic;			use et_modes.schematic;
 
 package body et_canvas_schematic is
 
@@ -439,10 +439,8 @@ package body et_canvas_schematic is
 	function get_drawing_mode (
 		self	: not null access type_view)
 		return string 
-	is
-		use et_scripting;
-	begin
-		return to_string (et_scripting.drawing_mode_schematic);
+	is begin
+		return to_string (op_mode);
 	end get_drawing_mode;
 	
 	procedure evaluate_key (
@@ -457,7 +455,8 @@ package body et_canvas_schematic is
 		put_line (gdk_key_type'image (key));
 
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
-		
+
+		self.update_drawing_mode_display;
 	end evaluate_key;
 	
 end et_canvas_schematic;
