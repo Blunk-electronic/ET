@@ -59,7 +59,7 @@ function schematic_cmd (
 	domain	: type_domain; -- DOM_SCHEMATIC
 	module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	
-	verb : type_verb_schematic;
+	verb : type_verb;
 	noun : type_noun_schematic;
 
 	

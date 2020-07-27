@@ -38,7 +38,7 @@
 
 package et_modes.schematic is
 
-	type type_verb_schematic is (
+	type type_verb is (
 		VERB_ADD,
 		VERB_BUILD,
 		VERB_CHECK,
@@ -69,12 +69,12 @@ package et_modes.schematic is
 		VERB_ZOOM		
 		);
 
-	default : constant type_verb_schematic := VERB_SHOW;
+	default : constant type_verb := VERB_SHOW;
 	
-	op_mode : type_verb_schematic := default;
+	op_mode : type_verb := default;
 	
-	function to_string (verb : in type_verb_schematic) return string;
-	function to_verb (verb : in string) return type_verb_schematic;
+	function to_string (verb : in type_verb) return string;
+	function to_verb (verb : in string) return type_verb;
 
 	
 	

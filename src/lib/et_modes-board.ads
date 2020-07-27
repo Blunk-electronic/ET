@@ -38,7 +38,7 @@
 
 package et_modes.board is
 	
-	type type_verb_board is (
+	type type_verb is (
 		VERB_ADD,
 		VERB_DELETE,
 		VERB_DISPLAY,
@@ -62,12 +62,12 @@ package et_modes.board is
 		--WRITE
 		);
 
-	default : constant type_verb_board := VERB_ADD; -- CS show
+	default : constant type_verb := VERB_ADD; -- CS show
 
-	op_mode : type_verb_board := default;
+	op_mode : type_verb := default;
 	
-	function to_string (verb : in type_verb_board) return string;
-	function to_verb (verb : in string) return type_verb_board;
+	function to_string (verb : in type_verb) return string;
+	function to_verb (verb : in string) return type_verb;
 	
 	
 end et_modes.board;

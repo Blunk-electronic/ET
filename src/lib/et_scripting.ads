@@ -50,6 +50,14 @@ package et_scripting is
 	
 	script_name : pac_script_name.bounded_string;
 
+	
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:
+	domain_prefix	: constant string := ("DOM_");
+	noun_prefix		: constant string := ("NOUN_");
+
+
+	
 	procedure invalid_noun (noun : in string);
 	
 	procedure command_incomplete (cmd : in type_fields_of_line);
@@ -194,45 +202,6 @@ package et_scripting is
 
 	function to_string (noun : in type_noun_board) return string;
 	function to_noun (noun : in string) return type_noun_board;
-
-
--- CANVAS
-	
-	type type_verb_canvas is (
-		VERB_DISPLAY,
-		VERB_POSITION,
-		VERB_SHOW,
-		VERB_ZOOM		
-		);
-
-	-- Removes the verb_prefix from given verb and returns the remainder as string.
-	-- VERB_DISPLAY becomes DISPLAY:
-	function to_string (verb : in type_verb_canvas) return string;
-
-	-- Prepends the verb_prefix to the given string and returns a type_verb_canvas.
-	-- DISPLAY becomes VERB_DISPLAY:
-	function to_verb (verb : in string) return type_verb_canvas;
-
-	-- Returns true if the given verb (as string) is a canvas related verb.
--- 	function is_canvas_related (verb : in string) return boolean;
-
-	type type_noun_canvas is (
-		NOUN_CENTER,
-		NOUN_CURSOR,
-		NOUN_DEVICE,
-		NOUN_FIT,
-		NOUN_LEVEL,
-		NOUN_MODULE,
-		NOUN_SHEET
-		);
-
-	-- Removes the noun_prefix from given noun and returns the remainder as string.
-	-- NOUNT_FIT becomes FIT:
-	function to_string (noun : in type_noun_canvas) return string;
-
-	-- Prepends the noun_prefix to the given string and returns a type_noun_canvas.
-	-- FIT becomes NOUN_FIT:
-	function to_noun (noun : in string) return type_noun_canvas;
 
 
 

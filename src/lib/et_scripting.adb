@@ -121,42 +121,6 @@ package body et_scripting is
 			raise;
 	end;
 	
--- 	function to_string (verb : in type_verb_board) return string is 
--- 	-- Removes the verb_prefix from verb and returns the remainder as string.
--- 	-- VERB_ADD becomes ADD.
--- 		s : string := type_verb_board'image (verb);
--- 	begin
--- 		return s (verb_prefix'length + 1 .. s'last);
--- 	end;
--- 
--- 	function to_verb (verb : in string) return type_verb_board is begin
--- 	-- Prepends the verb_prefix to the given string and returns a type_verb_board.
--- 	-- ADD becomes VERB_ADD.
--- 		return type_verb_board'value (verb_prefix & verb);
--- 	
--- 		exception when event: others => 
--- 			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
--- 			raise;
--- 	end;
-	
--- 	function to_string (verb : in type_verb_schematic) return string is 
--- 	-- Removes the domain_prefix from verb and returns the remainder as string.
--- 	-- VERB_ADD becomes ADD.
--- 		s : string := type_verb_schematic'image (verb);
--- 	begin
--- 		return s (verb_prefix'length + 1 .. s'last);
--- 	end;
--- 
--- 	function to_verb (verb : in string) return type_verb_schematic is begin
--- 	-- Prepends the verb_prefix to the given string and returns a type_verb_schematic.
--- 	-- ADD becomes VERB_ADD.
--- 		return type_verb_schematic'value (verb_prefix & verb);
--- 	
--- 		exception when event: others => 
--- 			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
--- 			raise;
--- 	end;
-	
 	function to_string (noun : in type_noun_schematic) return string is 
 		s : string := type_noun_schematic'image (noun);
 	begin
@@ -248,35 +212,6 @@ package body et_scripting is
 	end;
 
 
--- CANVAS
-
-	function to_string (verb : in type_verb_canvas) return string is 
-		s : constant string := type_verb_canvas'image (verb);
-	begin
-		return s (verb_prefix'length + 1 .. s'last);
-	end;
-
-	function to_verb (verb : in string) return type_verb_canvas is begin
-		return type_verb_canvas'value (verb_prefix & verb);
-	
-		exception when event: others => 
-			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
-			raise;
-	end;
-
-	function to_string (noun : in type_noun_canvas) return string is 
-		s : constant string := type_noun_canvas'image (noun);
-	begin
-		return s (noun_prefix'length + 1 .. s'last);
-	end;
-
-	function to_noun (noun : in string) return type_noun_canvas is begin
-		return type_noun_canvas'value (noun_prefix & noun);
-	
-		exception when event: others => 
-			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
-			raise;
-	end;
 
 	procedure terminate_main is begin
 		log_indentation_reset;

@@ -61,7 +61,7 @@ function board_cmd (
 	domain	: type_domain; -- DOM_BOARD
 	module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
-	verb	: type_verb_board;
+	verb	: type_verb;
 	noun	: type_noun_board;
 	
 	
