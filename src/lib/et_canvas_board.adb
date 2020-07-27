@@ -674,6 +674,26 @@ package body et_canvas_board is
 
 		self.update_drawing_mode_display;
 	end evaluate_key;
+
+	overriding procedure button_pressed (
+		self	: not null access type_view;
+		button	: in type_mouse_button;
+		point	: in type_point) 
+	is
+	begin
+		put_line ("point " & to_string (point));
+		
+		case button is
+			when 1 => -- left button
+				put_line ("left button");
+				
+				self.move_cursor (ABSOLUTE, cursor_main, point);
+				self.queue_draw; -- without frame and grid initialization
+
+			when others => null;
+		end case;
+
+	end button_pressed;
 	
 end et_canvas_board;
 

@@ -1165,26 +1165,23 @@ package body pac_canvas is
 		return boolean
 	is
 		self : constant type_view_ptr := type_view_ptr (view);
-		
-		mouse_button : constant positive := positive (event.button);
-		view_point : constant type_view_point := (event.x, event.y);
-		model_point : constant type_point := self.view_to_model (view_point);
-		drawing_point : constant type_point := self.model_to_drawing (model_point);
+
+		-- get the clicked mouse button:
+		mouse_button : constant type_mouse_button := type_mouse_button (event.button);
+
+		-- Convert from mouse pointer position to drawing point:
+		view_point		: constant type_view_point := (event.x, event.y);
+		model_point		: constant type_point := self.view_to_model (view_point);
+		drawing_point	: constant type_point := self.model_to_drawing (model_point);
 	begin
 -- 		put_line ("mouse button " & positive'image (mouse_button) & " pressed");
 
-		case mouse_button is
-			when 1 => -- left button
-				self.move_cursor (ABSOLUTE, cursor_main, drawing_point);
-				self.queue_draw; -- without frame and grid initialization
-
-			when others => null;
-		end case;
-
 		-- After any click somewhere in the canvas, the canvas gets the keyboard focus:
 		self.grab_focus;
+
+		self.button_pressed (mouse_button, drawing_point);
 		
-		return true; -- indicates that event has been handled
+		return true; -- indicates the caller that the event has been handled
 	end on_button_event;
 	
 	procedure init (

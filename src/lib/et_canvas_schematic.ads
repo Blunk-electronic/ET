@@ -236,6 +236,10 @@ package et_canvas_schematic is
 		self	: not null access type_view;
 		key		: in gdk_key_type);
 
+	overriding procedure button_pressed (
+		self	: not null access type_view;
+		button	: in type_mouse_button;
+		point	: in type_point);
 	
 end et_canvas_schematic;
 

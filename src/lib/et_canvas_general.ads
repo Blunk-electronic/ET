@@ -270,12 +270,6 @@ package pac_canvas is
 		event	: in gdk_event_key) 
 		return boolean;
 
--- 	function on_button_event (
--- 		self  : access gtk_widget_record'class;
--- 		event : gdk_event_button)
--- 		return boolean;
-
-	
 	-- Updates the coordinates of the cursor and the distances
 	-- displayed left of the canvas:
 	procedure update_coordinates_display (
@@ -568,12 +562,24 @@ package pac_canvas is
 		self : not null access type_view)
 		return et_frames.type_position is abstract;
 
+	-- Evaluates the given keyboard key and sets the operation mode:
 	procedure evaluate_key (
 		self	: not null access type_view;
 		key		: in gdk_key_type) is null;
 
+	type type_mouse_button is new positive range 1 .. 7; -- CS range correct ?
+	-- 1 - left button
+	-- 2 - middle
+	-- 3 - right button
+	-- CS others ?
 	
+	procedure button_pressed (
+		self	: not null access type_view;
+		button	: in type_mouse_button;
+		point	: in type_point) is null;
+								  
 private
+
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);
 	-- Called when one of the scrollbars has changed value.
 
