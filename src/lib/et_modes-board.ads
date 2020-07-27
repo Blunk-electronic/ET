@@ -38,19 +38,6 @@
 
 package et_modes.board is
 	
--- 	type type_mode is (
--- 		MODE_SHOW,
--- 		MODE_DELETE
--- 		);
-	
--- 	default : constant type_mode := MODE_SHOW;
-
--- 	function to_string (mode : in type_mode) return string;
--- 	function to_mode (mode : in string) return type_mode;
-
--- 	op_mode : type_mode := default;
-
-------------
 	type type_verb_board is (
 		VERB_ADD,
 		VERB_DELETE,

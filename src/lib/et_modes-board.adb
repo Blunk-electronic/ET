@@ -37,22 +37,6 @@
 
 package body et_modes.board is
 
--- 	function to_string (mode : in type_mode) return string is
--- 		s : string := type_mode'image (mode);
--- 	begin
--- 		return s (mode_prefix'length + 1 .. s'last);
--- 	end;
--- 
--- 	function to_mode (mode : in string) 
--- 		return type_mode 
--- 	is begin
--- 		return type_mode'value (mode_prefix & mode);
--- 		exception when event: others => 
--- 			log (ERROR, "mode " & enclose_in_quotes (mode) & " invalid !", console => true);
--- 			raise;
--- 	end;
--- -------------
-
 	function to_string (verb : in type_verb_board) return string is 
 	-- Removes the verb_prefix from verb and returns the remainder as string.
 	-- VERB_ADD becomes ADD.

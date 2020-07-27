@@ -64,13 +64,6 @@ package et_scripting is
 		ERROR
 		);
 
--- 	-- Prefixes before enumeration types prevent clashes with gnat keywords
--- 	-- and package names:
--- 	domain_prefix : constant string := ("DOM_");
--- 	verb_prefix : constant string := ("VERB_");
--- 	noun_prefix : constant string := ("NOUN_");
-
-	
 	type type_domain is (
 		DOM_PROJECT,
 --		DOM_RIG,
@@ -84,7 +77,7 @@ package et_scripting is
 	function to_string (domain : in type_domain) return string;
 	function to_domain (domain : in string) return type_domain;
 	
-	type type_verb_project is (
+	type type_verb_project is ( -- CS move to et_modes.project
 		VERB_CREATE,
 		VERB_DELETE,
 		VERB_OPEN,
@@ -107,40 +100,6 @@ package et_scripting is
 
 	
 -- SCHEMATIC
-	
--- 	type type_verb_schematic is (
--- 		VERB_ADD,
--- 		VERB_BUILD,
--- 		VERB_CHECK,
--- 		VERB_COPY,
--- 		VERB_CREATE,
--- 		VERB_DELETE,
--- 		VERB_DESCRIBE,
--- 		VERB_DISPLAY,
--- 		VERB_DRAG,
--- 		VERB_DRAW,
--- 		VERB_EXECUTE,
--- 		VERB_EXIT,
--- 		VERB_INVOKE,
--- 		VERB_MAKE,
--- 		VERB_MOVE,
--- 		VERB_MOUNT,
--- 		VERB_PLACE,
--- 		VERB_POSITION,
--- 		VERB_QUIT,
--- 		VERB_REMOVE,
--- 		VERB_RENAME,
--- 		VERB_RENUMBER,
--- 		VERB_ROTATE,
--- 		VERB_SET,
--- 		VERB_SHOW,
--- 		VERB_UNMOUNT,
--- 		VERB_WRITE,
--- 		VERB_ZOOM		
--- 		);
--- 
--- 	function to_string (verb : in type_verb_schematic) return string;
--- 	function to_verb (verb : in string) return type_verb_schematic;
 	
 	type type_noun_schematic is (
 		NOUN_BOM,
@@ -195,34 +154,6 @@ package et_scripting is
 	
 -- BOARD
 	
--- 	type type_verb_board is (
--- 		VERB_ADD,
--- 		VERB_DELETE,
--- 		VERB_DISPLAY,
--- 		--DRAG,
--- 		VERB_DRAW,	
--- 		VERB_EXECUTE,
--- 		VERB_EXIT,
--- 		VERB_FLIP,
--- 		VERB_MAKE,
--- 		VERB_MOVE,
--- 		--PLACE,
--- 		VERB_POSITION,
--- 		VERB_QUIT,
--- 		VERB_RIPUP,
--- 		VERB_RENAME,
--- 		VERB_ROTATE,
--- 		VERB_ROUTE,
--- 		VERB_SET,
--- 		--VERB_SHOW CS
--- 		VERB_ZOOM
--- 		--WRITE
--- 		);
--- 
--- 	function to_string (verb : in type_verb_board) return string;
--- 	function to_verb (verb : in string) return type_verb_board;
-	
-
 	type type_noun_board is (
 		NOUN_ASSY, -- assembly documentation
 		NOUN_BOARD,
