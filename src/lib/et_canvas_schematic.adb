@@ -446,16 +446,26 @@ package body et_canvas_schematic is
 	procedure evaluate_key (
 		self	: not null access type_view;
 		key		: in gdk_key_type) is
-	begin
-		null;
-		put_line ("schematic: evaluating other key ...");
 
--- 		put_line ("key pressed");
--- 		new_line;
-		put_line (gdk_key_type'image (key));
--- 		op_mode := MODE_DELETE;
-		
+		use gdk.types;
+		use gdk.types.keysyms;
+	begin
+-- 		put_line ("schematic: evaluating other key ...");
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
+
+		case key is
+			when GDK_Delete =>
+				put_line ("DEL pressed");
+				op_mode := VERB_DELETE;
+
+			when GDK_LC_d => -- GDK_D
+				put_line ("d pressed");
+				op_mode := VERB_DRAW;
+
+				
+			when others =>
+				put_line ("other key pressed " & gdk_key_type'image (key));
+		end case;
 
 		self.update_drawing_mode_display;
 	end evaluate_key;

@@ -46,6 +46,8 @@
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
 with gdk.types;					use gdk.types;
+with gdk.types.keysyms;			use gdk.types.keysyms;
+
 with glib;						use glib;
 with cairo;						use cairo;
 
