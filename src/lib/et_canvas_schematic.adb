@@ -453,7 +453,8 @@ package body et_canvas_schematic is
 -- 		put_line ("key pressed");
 -- 		new_line;
 		put_line (gdk_key_type'image (key));
-
+-- 		op_mode := MODE_DELETE;
+		
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
 
 		self.update_drawing_mode_display;

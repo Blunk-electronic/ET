@@ -37,21 +37,39 @@
 
 package body et_modes.board is
 
-	function to_string (mode : in type_mode) return string is
-		s : string := type_mode'image (mode);
+-- 	function to_string (mode : in type_mode) return string is
+-- 		s : string := type_mode'image (mode);
+-- 	begin
+-- 		return s (mode_prefix'length + 1 .. s'last);
+-- 	end;
+-- 
+-- 	function to_mode (mode : in string) 
+-- 		return type_mode 
+-- 	is begin
+-- 		return type_mode'value (mode_prefix & mode);
+-- 		exception when event: others => 
+-- 			log (ERROR, "mode " & enclose_in_quotes (mode) & " invalid !", console => true);
+-- 			raise;
+-- 	end;
+-- -------------
+
+	function to_string (verb : in type_verb_board) return string is 
+	-- Removes the verb_prefix from verb and returns the remainder as string.
+	-- VERB_ADD becomes ADD.
+		s : string := type_verb_board'image (verb);
 	begin
-		return s (mode_prefix'length + 1 .. s'last);
+		return s (verb_prefix'length + 1 .. s'last);
 	end;
 
-	function to_mode (mode : in string) 
-		return type_mode 
-	is begin
-		return type_mode'value (mode_prefix & mode);
+	function to_verb (verb : in string) return type_verb_board is begin
+	-- Prepends the verb_prefix to the given string and returns a type_verb_board.
+	-- ADD becomes VERB_ADD.
+		return type_verb_board'value (verb_prefix & verb);
+	
 		exception when event: others => 
-			log (ERROR, "mode " & enclose_in_quotes (mode) & " invalid !", console => true);
+			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
 			raise;
 	end;
-
 	
 	
 end et_modes.board;

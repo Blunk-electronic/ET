@@ -46,6 +46,15 @@ package et_modes is
 	-- and package names:
 	mode_prefix : constant string := ("MODE_");
 
+------------
+
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:
+	domain_prefix : constant string := ("DOM_");
+	verb_prefix : constant string := ("VERB_");
+	noun_prefix : constant string := ("NOUN_");
+
+	
 	
 end et_modes;
 

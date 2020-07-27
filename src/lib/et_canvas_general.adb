@@ -404,10 +404,10 @@ package body pac_canvas is
 	procedure update_drawing_mode_display (
 		self	: not null access type_view'class)
 	is 
-		-- update cursor position
+		-- Get the current drawing mode
 		mode : constant string := self.get_drawing_mode;
 	begin
-		-- Get the drawing mode
+		-- show the drawing mode
 		gtk_entry (drawing_mode.get_child).set_text (mode);
 
 	end update_drawing_mode_display;

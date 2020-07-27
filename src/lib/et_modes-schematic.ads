@@ -38,18 +38,59 @@
 
 package et_modes.schematic is
 
-	type type_mode is (
-		MODE_SHOW,
-		MODE_DELETE
-		);
+-- 	type type_mode is (
+-- 		MODE_SHOW,
+-- 		MODE_DELETE
+-- 		);
 	
-	default : constant type_mode := MODE_SHOW;
+-- 	default : constant type_mode := MODE_SHOW;
 
-	function to_string (mode : in type_mode) return string;
-	function to_mode (mode : in string) return type_mode;
+-- 	function to_string (mode : in type_mode) return string;
+-- 	function to_mode (mode : in string) return type_mode;
 
-	op_mode : type_mode := default;
+-- 	op_mode : type_mode := default;
 
+----------
+	type type_verb_schematic is (
+		VERB_ADD,
+		VERB_BUILD,
+		VERB_CHECK,
+		VERB_COPY,
+		VERB_CREATE,
+		VERB_DELETE,
+		VERB_DESCRIBE,
+		VERB_DISPLAY,
+		VERB_DRAG,
+		VERB_DRAW,
+		VERB_EXECUTE,
+		VERB_EXIT,
+		VERB_INVOKE,
+		VERB_MAKE,
+		VERB_MOVE,
+		VERB_MOUNT,
+		VERB_PLACE,
+		VERB_POSITION,
+		VERB_QUIT,
+		VERB_REMOVE,
+		VERB_RENAME,
+		VERB_RENUMBER,
+		VERB_ROTATE,
+		VERB_SET,
+		VERB_SHOW,
+		VERB_UNMOUNT,
+		VERB_WRITE,
+		VERB_ZOOM		
+		);
+
+	default : constant type_verb_schematic := VERB_SHOW;
+	
+	op_mode : type_verb_schematic := default;
+	
+	function to_string (verb : in type_verb_schematic) return string;
+	function to_verb (verb : in string) return type_verb_schematic;
+
+	
+	
 end et_modes.schematic;
 
 -- Soli Deo Gloria

@@ -121,41 +121,41 @@ package body et_scripting is
 			raise;
 	end;
 	
-	function to_string (verb : in type_verb_board) return string is 
-	-- Removes the verb_prefix from verb and returns the remainder as string.
-	-- VERB_ADD becomes ADD.
-		s : string := type_verb_board'image (verb);
-	begin
-		return s (verb_prefix'length + 1 .. s'last);
-	end;
-
-	function to_verb (verb : in string) return type_verb_board is begin
-	-- Prepends the verb_prefix to the given string and returns a type_verb_board.
-	-- ADD becomes VERB_ADD.
-		return type_verb_board'value (verb_prefix & verb);
+-- 	function to_string (verb : in type_verb_board) return string is 
+-- 	-- Removes the verb_prefix from verb and returns the remainder as string.
+-- 	-- VERB_ADD becomes ADD.
+-- 		s : string := type_verb_board'image (verb);
+-- 	begin
+-- 		return s (verb_prefix'length + 1 .. s'last);
+-- 	end;
+-- 
+-- 	function to_verb (verb : in string) return type_verb_board is begin
+-- 	-- Prepends the verb_prefix to the given string and returns a type_verb_board.
+-- 	-- ADD becomes VERB_ADD.
+-- 		return type_verb_board'value (verb_prefix & verb);
+-- 	
+-- 		exception when event: others => 
+-- 			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
+-- 			raise;
+-- 	end;
 	
-		exception when event: others => 
-			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
-			raise;
-	end;
-	
-	function to_string (verb : in type_verb_schematic) return string is 
-	-- Removes the domain_prefix from verb and returns the remainder as string.
-	-- VERB_ADD becomes ADD.
-		s : string := type_verb_schematic'image (verb);
-	begin
-		return s (verb_prefix'length + 1 .. s'last);
-	end;
-
-	function to_verb (verb : in string) return type_verb_schematic is begin
-	-- Prepends the verb_prefix to the given string and returns a type_verb_schematic.
-	-- ADD becomes VERB_ADD.
-		return type_verb_schematic'value (verb_prefix & verb);
-	
-		exception when event: others => 
-			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
-			raise;
-	end;
+-- 	function to_string (verb : in type_verb_schematic) return string is 
+-- 	-- Removes the domain_prefix from verb and returns the remainder as string.
+-- 	-- VERB_ADD becomes ADD.
+-- 		s : string := type_verb_schematic'image (verb);
+-- 	begin
+-- 		return s (verb_prefix'length + 1 .. s'last);
+-- 	end;
+-- 
+-- 	function to_verb (verb : in string) return type_verb_schematic is begin
+-- 	-- Prepends the verb_prefix to the given string and returns a type_verb_schematic.
+-- 	-- ADD becomes VERB_ADD.
+-- 		return type_verb_schematic'value (verb_prefix & verb);
+-- 	
+-- 		exception when event: others => 
+-- 			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
+-- 			raise;
+-- 	end;
 	
 	function to_string (noun : in type_noun_schematic) return string is 
 		s : string := type_noun_schematic'image (noun);

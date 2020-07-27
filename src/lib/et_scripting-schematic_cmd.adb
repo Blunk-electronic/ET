@@ -35,6 +35,8 @@
 --   history of changes:
 --
 
+with et_modes.schematic;
+
 separate (et_scripting)
 	
 function schematic_cmd (
@@ -49,6 +51,7 @@ function schematic_cmd (
 	use et_devices;
 	use et_canvas_schematic.pac_canvas;
 	use et_display.schematic;
+	use et_modes.schematic;
 
 	-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
 	exit_code : type_exit_code := SUCCESSFUL;
@@ -259,6 +262,9 @@ begin -- schematic_cmd
 
 	-- read the verb from field 3
 	verb := to_verb (f (3));
+
+	-- The current operation mode is the same as the verb (both are of same type):
+	op_mode := verb;
 
 	-- There are some very short commands which do not require a verb.
 	-- For such commands we do not read the noun.
@@ -1710,11 +1716,18 @@ begin -- schematic_cmd
 			end case;
 			
 	end case;
+
+	canvas.update_drawing_mode_display;
 	
 	return exit_code;
+
 	
 	exception when event: others => 
-	
+
+		log (text => "mode " & to_string (op_mode), level => log_threshold, console => true);
+
+		canvas.update_drawing_mode_display;
+		
 		log (ERROR, "schematic command " & enclose_in_quotes (to_string (cmd)) &
 			" invalid !", console => true);
 

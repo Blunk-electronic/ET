@@ -38,17 +38,50 @@
 
 package et_modes.board is
 	
-	type type_mode is (
-		MODE_SHOW,
-		MODE_DELETE
-		);
+-- 	type type_mode is (
+-- 		MODE_SHOW,
+-- 		MODE_DELETE
+-- 		);
 	
-	default : constant type_mode := MODE_SHOW;
+-- 	default : constant type_mode := MODE_SHOW;
 
-	function to_string (mode : in type_mode) return string;
-	function to_mode (mode : in string) return type_mode;
+-- 	function to_string (mode : in type_mode) return string;
+-- 	function to_mode (mode : in string) return type_mode;
 
-	op_mode : type_mode := default;
+-- 	op_mode : type_mode := default;
+
+------------
+	type type_verb_board is (
+		VERB_ADD,
+		VERB_DELETE,
+		VERB_DISPLAY,
+		--DRAG,
+		VERB_DRAW,	
+		VERB_EXECUTE,
+		VERB_EXIT,
+		VERB_FLIP,
+		VERB_MAKE,
+		VERB_MOVE,
+		--PLACE,
+		VERB_POSITION,
+		VERB_QUIT,
+		VERB_RIPUP,
+		VERB_RENAME,
+		VERB_ROTATE,
+		VERB_ROUTE,
+		VERB_SET,
+		--VERB_SHOW CS
+		VERB_ZOOM
+		--WRITE
+		);
+
+	default : constant type_verb_board := VERB_ADD; -- CS show
+
+	op_mode : type_verb_board := default;
+	
+	function to_string (verb : in type_verb_board) return string;
+	function to_verb (verb : in string) return type_verb_board;
+	
 	
 end et_modes.board;
 

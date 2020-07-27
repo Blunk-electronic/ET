@@ -158,7 +158,7 @@ package body et_gui.schematic_callbacks is
 
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
-		log (text => "change to directory " &
+		log (text => "changing to directory " &
 				enclose_in_quotes (to_string (current_active_project)) & " ...",
 			level => log_threshold + 1);
 		
