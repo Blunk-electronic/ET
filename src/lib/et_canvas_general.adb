@@ -65,10 +65,15 @@ package body et_canvas_general is
 package body pac_canvas is
 	
 	procedure build_background_boxes is begin
+
+		gtk_new_vbox (box_main);
+-- 		set_spacing (box_main, 20);
+		add (window, box_main);
+		
 		-- background box
 		gtk_new_hbox (box_back);
 		set_spacing (box_back, 10);
-		add (window, box_back);
+		pack_start (box_main, box_back, expand => true);
 
 		-- left box
 		gtk_new_vbox (box_left);
@@ -79,6 +84,11 @@ package body pac_canvas is
 		gtk_new_vbox (box_right);
 		set_spacing (box_right, 10);
 		add (box_back, box_right);
+
+		-- status bar
+		gtk_new (label_status, "status");
+		pack_start (box_main, label_status, expand => false);
+		
 	end build_background_boxes;
 
 -- 	function window_resized (

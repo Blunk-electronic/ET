@@ -96,10 +96,13 @@ package pac_canvas is
 	use geometry;
 
 	window 					: gtk_window; -- the main window.	
-	
-	box_back				: gtk_hbox; -- This is an access/pointer to the actual box.
+
+	box_main				: gtk_vbox;
+	box_back				: gtk_hbox;
 	box_left, box_right		: gtk_vbox;
 
+	label_status			: gtk_label;
+	
 	box_toolbars				: gtk_hbox;
 	toolbar_left, toolbar_right	: gtk_toolbar;
 	
