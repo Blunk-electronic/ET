@@ -51,13 +51,6 @@ package et_scripting is
 	script_name : pac_script_name.bounded_string;
 
 	
-	-- Prefixes before enumeration types prevent clashes with gnat keywords
-	-- and package names:
-	domain_prefix	: constant string := ("DOM_");
-	noun_prefix		: constant string := ("NOUN_");
-
-
-	
 	procedure invalid_noun (noun : in string);
 	
 	procedure command_incomplete (cmd : in type_fields_of_line);
@@ -105,103 +98,6 @@ package et_scripting is
 	function to_string (noun : in type_noun_project) return string;
 	function to_noun (noun : in string) return type_noun_project;
 
-
-	
--- SCHEMATIC
-	
-	type type_noun_schematic is (
-		NOUN_BOM,
-		NOUN_CENTER,
-		NOUN_CURSOR,
-		NOUN_DEVICE,
-		NOUN_DEVICES,
-		--DEVICE_PARTCODE,
-		--DEVICE_PURPOSE,
-		--DEVICE_VALUE,
- 		NOUN_FIT,
-		NOUN_GRID,
-		NOUN_INTEGRITY,
-		NOUN_JUNCTION,
-		NOUN_LABEL,
-		NOUN_LEVEL,
-		NOUN_NAME,
-		NOUN_NAMES,
-		NOUN_MODULE,
-		NOUN_NET,
-		NOUN_NETS,
-		NOUN_NETCHANGER,
-		NOUN_NETLISTS,
-		NOUN_PARTCODE,
-		NOUN_PORT, -- of a submodule instance
-		NOUN_PORTS,
-		NOUN_PURPOSE,
-		NOUN_PURPOSES,		
-		NOUN_SCOPE,
-		NOUN_SCRIPT,
-		NOUN_SEGMENT, -- net segment
-		NOUN_SHEET,
-		NOUN_SUBMODULE,
-		NOUN_SUBMODULE_FILE,		
-		NOUN_SUBMODULES_TREE,
-		NOUN_TEXT,
-		NOUN_TEXTS,
-		NOUN_TEXT_SIZE,
-		NOUN_UNIT,
--- 		UNIT_NAME,
--- 		UNIT_PARTCODE,
--- 		UNIT_PURPOSE,
-		-- 		UNIT_VALUE
-		NOUN_VARIANT,
-		NOUN_VALUE,
-		NOUN_VALUES
-		);
-
-	function to_string (noun : in type_noun_schematic) return string;
-	function to_noun (noun : in string) return type_noun_schematic;
-
-	
--- BOARD
-	
-	type type_noun_board is (
-		NOUN_ASSY, -- assembly documentation
-		NOUN_BOARD,
-		NOUN_CENTER,
-		NOUN_CONDUCTORS,
-		NOUN_CURSOR,
-		NOUN_DEVICE,
-		NOUN_FREETRACK,
-		NOUN_FIT,
-		NOUN_GRID,
-		NOUN_KEEPOUT,
-		NOUN_LAYER, 	-- signal layer with dielectic
-		NOUN_LEVEL,
-		NOUN_NAME,
-		NOUN_NET,
-		NOUN_ORIGINS, -- the center of a package
-		NOUN_OUTLINE,
-		NOUN_PARTCODE,
-		NOUN_PNP, -- pick & place
-		NOUN_PURPOSE,
-		NOUN_RESTRICT,
-		NOUN_ROUTE_RESTRICT,
-		NOUN_SCRIPT,
-		NOUN_SILKSCREEN,
-		NOUN_STENCIL, -- solder mask or solder paste
-		NOUN_STOP, -- solder stop mask
-		NOUN_SUBMODULE,
-		NOUN_TEXT,
-		NOUN_TEXT_SIZE,
-		NOUN_TEXT_LINE_WIDTH,
--- 		TRACK,
-		NOUN_VALUE,
-		NOUN_VIA,
-		NOUN_VIAS,
-		NOUN_VIA_DRILL,
-		NOUN_VIA_RESTRICT
-		);
-
-	function to_string (noun : in type_noun_board) return string;
-	function to_noun (noun : in string) return type_noun_board;
 
 
 

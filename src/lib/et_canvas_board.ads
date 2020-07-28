@@ -209,9 +209,15 @@ package et_canvas_board is
 		self : not null access type_view)
 		return type_point;
 
-	overriding function get_drawing_mode (
+	
+	overriding function get_verb (
 		self	: not null access type_view)
 		return string;
+
+	overriding function get_noun (
+		self	: not null access type_view)
+		return string;
+
 	
 	overriding procedure evaluate_key (
 		self	: not null access type_view;

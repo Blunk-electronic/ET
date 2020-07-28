@@ -54,6 +54,22 @@ package body et_modes.board is
 			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
 			raise;
 	end;
+
+
+
+	function to_string (noun : in type_noun) return string is 
+		s : string := type_noun'image (noun);
+	begin
+		return s (noun_prefix'length + 1 .. s'last);
+	end;
+
+	function to_noun (noun : in string) return type_noun is begin
+		return type_noun'value (noun_prefix & noun);
+	
+		exception when event: others => 
+			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
+			raise;
+	end;
 	
 	
 end et_modes.board;

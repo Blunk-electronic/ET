@@ -436,12 +436,21 @@ package body et_canvas_schematic is
 		return self.get_frame.title_block_schematic.position;
 	end title_block_position;
 
-	function get_drawing_mode (
+	
+	function get_verb (
 		self	: not null access type_view)
 		return string 
 	is begin
-		return to_string (op_mode);
-	end get_drawing_mode;
+		return to_string (verb);
+	end get_verb;
+
+	function get_noun (
+		self	: not null access type_view)
+		return string is
+	begin
+		return to_string (noun);
+	end get_noun;
+	
 	
 	procedure evaluate_key (
 		self	: not null access type_view;
@@ -456,11 +465,11 @@ package body et_canvas_schematic is
 		case key is
 			when GDK_Delete =>
 				put_line ("DEL pressed");
-				op_mode := VERB_DELETE;
+				verb := VERB_DELETE;
 
 			when GDK_LC_d => -- GDK_D
 				put_line ("d pressed");
-				op_mode := VERB_DRAW;
+				verb := VERB_DRAW;
 
 				
 			when others =>

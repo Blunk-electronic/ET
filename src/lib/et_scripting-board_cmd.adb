@@ -60,10 +60,6 @@ function board_cmd (
 	
 	domain	: type_domain; -- DOM_BOARD
 	module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-
-	verb	: type_verb;
-	noun	: type_noun_board;
-	
 	
 	function f (place : in positive) return string is begin
 		return et_string_processing.field (cmd, place);
@@ -126,7 +122,7 @@ function board_cmd (
 	-- Enables/disables a certain non-conductor layer. If status is empty,
 	-- the layer will be enabled.
 	procedure display_non_conductor_layer ( -- GUI related
-		layer	: in type_noun_board;
+		layer	: in type_noun;
 		face	: in string; -- top/bottom
 		status	: in string := "") is 
 
@@ -1283,9 +1279,6 @@ begin -- board_cmd
 
 	-- read the verb from field 3
 	verb := to_verb (f (3));
-
-	-- The current operation mode is the same as the verb (both are of same type):
-	op_mode := verb;
 	
 	-- There are some very short commands which do not require a verb.
 	-- For such commands we do not read the noun.
@@ -2413,7 +2406,7 @@ begin -- board_cmd
 	
 	exception when event: others => 
 
-		log (text => "mode " & to_string (op_mode), level => log_threshold, console => true);
+		log (text => "mode " & to_string (verb), level => log_threshold, console => true);
 
 		canvas.update_mode_display;
 

@@ -284,12 +284,20 @@ package pac_canvas is
 	procedure update_coordinates_display (
 		self	: not null access type_view'class);
 
-	function get_drawing_mode (
+
+
+	
+	function get_verb (
 		self	: not null access type_view)
 		return string is abstract;
-								  
+
+	function get_noun (
+		self	: not null access type_view)
+		return string is abstract;
+	
 	procedure update_mode_display (
 		self	: not null access type_view'class);
+
 
 	
 	-- Returns the distance on the given axis rounded to the current grid.

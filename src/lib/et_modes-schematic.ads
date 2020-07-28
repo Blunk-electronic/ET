@@ -69,12 +69,67 @@ package et_modes.schematic is
 		VERB_ZOOM		
 		);
 
-	default : constant type_verb := VERB_SHOW;
+	verb_default : constant type_verb := VERB_SHOW;
 	
-	op_mode : type_verb := default;
+	verb : type_verb := verb_default;
 	
 	function to_string (verb : in type_verb) return string;
 	function to_verb (verb : in string) return type_verb;
+
+
+	type type_noun is (
+		NOUN_BOM,
+		NOUN_CENTER,
+		NOUN_CURSOR,
+		NOUN_DEVICE,
+		NOUN_DEVICES,
+		--DEVICE_PARTCODE,
+		--DEVICE_PURPOSE,
+		--DEVICE_VALUE,
+ 		NOUN_FIT,
+		NOUN_GRID,
+		NOUN_INTEGRITY,
+		NOUN_JUNCTION,
+		NOUN_LABEL,
+		NOUN_LEVEL,
+		NOUN_NAME,
+		NOUN_NAMES,
+		NOUN_MODULE,
+		NOUN_NET,
+		NOUN_NETS,
+		NOUN_NETCHANGER,
+		NOUN_NETLISTS,
+		NOUN_PARTCODE,
+		NOUN_PORT, -- of a submodule instance
+		NOUN_PORTS,
+		NOUN_PURPOSE,
+		NOUN_PURPOSES,		
+		NOUN_SCOPE,
+		NOUN_SCRIPT,
+		NOUN_SEGMENT, -- net segment
+		NOUN_SHEET,
+		NOUN_SUBMODULE,
+		NOUN_SUBMODULE_FILE,		
+		NOUN_SUBMODULES_TREE,
+		NOUN_TEXT,
+		NOUN_TEXTS,
+		NOUN_TEXT_SIZE,
+		NOUN_UNIT,
+-- 		UNIT_NAME,
+-- 		UNIT_PARTCODE,
+-- 		UNIT_PURPOSE,
+		-- 		UNIT_VALUE
+		NOUN_VARIANT,
+		NOUN_VALUE,
+		NOUN_VALUES
+		);
+
+	noun_default : constant type_noun := NOUN_NAME;
+	
+	noun : type_noun := noun_default;
+	
+	function to_string (noun : in type_noun) return string;
+	function to_noun (noun : in string) return type_noun;
 
 	
 	

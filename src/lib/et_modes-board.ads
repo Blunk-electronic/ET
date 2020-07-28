@@ -62,13 +62,62 @@ package et_modes.board is
 		--WRITE
 		);
 
-	default : constant type_verb := VERB_ADD; -- CS show
+	verb_default : constant type_verb := VERB_ADD; -- CS show
 
-	op_mode : type_verb := default;
+	verb : type_verb := verb_default;
 	
 	function to_string (verb : in type_verb) return string;
 	function to_verb (verb : in string) return type_verb;
 	
+
+	
+	type type_noun is (
+		NOUN_ASSY, -- assembly documentation
+		NOUN_BOARD,
+		NOUN_CENTER,
+		NOUN_CONDUCTORS,
+		NOUN_CURSOR,
+		NOUN_DEVICE,
+		NOUN_FREETRACK,
+		NOUN_FIT,
+		NOUN_GRID,
+		NOUN_KEEPOUT,
+		NOUN_LAYER, 	-- signal layer with dielectic
+		NOUN_LEVEL,
+		NOUN_NAME,
+		NOUN_NET,
+		NOUN_ORIGINS, -- the center of a package
+		NOUN_OUTLINE,
+		NOUN_PARTCODE,
+		NOUN_PNP, -- pick & place
+		NOUN_PURPOSE,
+		NOUN_RESTRICT,
+		NOUN_ROUTE_RESTRICT,
+		NOUN_SCRIPT,
+		NOUN_SILKSCREEN,
+		NOUN_STENCIL, -- solder mask or solder paste
+		NOUN_STOP, -- solder stop mask
+		NOUN_SUBMODULE,
+		NOUN_TEXT,
+		NOUN_TEXT_SIZE,
+		NOUN_TEXT_LINE_WIDTH,
+-- 		TRACK,
+		NOUN_VALUE,
+		NOUN_VIA,
+		NOUN_VIAS,
+		NOUN_VIA_DRILL,
+		NOUN_VIA_RESTRICT
+		);
+
+	noun_default : constant type_noun := NOUN_NAME;
+	
+	noun : type_noun := noun_default;
+
+	
+	function to_string (noun : in type_noun) return string;
+	function to_noun (noun : in string) return type_noun;
+
+
 	
 end et_modes.board;
 

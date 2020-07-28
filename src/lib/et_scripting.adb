@@ -121,33 +121,8 @@ package body et_scripting is
 			raise;
 	end;
 	
-	function to_string (noun : in type_noun_schematic) return string is 
-		s : string := type_noun_schematic'image (noun);
-	begin
-		return s (noun_prefix'length + 1 .. s'last);
-	end;
-
-	function to_noun (noun : in string) return type_noun_schematic is begin
-		return type_noun_schematic'value (noun_prefix & noun);
-		exception when event: others => 
-			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
-			raise;
-	end;
 
 	
-	function to_string (noun : in type_noun_board) return string is 
-		s : string := type_noun_board'image (noun);
-	begin
-		return s (noun_prefix'length + 1 .. s'last);
-	end;
-
-	function to_noun (noun : in string) return type_noun_board is begin
-		return type_noun_board'value (noun_prefix & noun);
-	
-		exception when event: others => 
-			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
-			raise;
-	end;
 
 	procedure expect_number (field : in count_type) is begin
 		log (ERROR, "number expected in field no." & count_type'image (field) & " !", console => true);

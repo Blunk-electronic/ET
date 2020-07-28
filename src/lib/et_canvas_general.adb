@@ -424,11 +424,12 @@ package body pac_canvas is
 		self	: not null access type_view'class)
 	is 
 		-- Get the current drawing mode
-		m : constant string := self.get_drawing_mode;
+		v : constant string := self.get_verb;
+		n : constant string := self.get_noun;
 	begin
 		-- show the drawing mode
-		gtk_entry (mode.cbox_mode_verb.get_child).set_text (m);
-
+		gtk_entry (mode.cbox_mode_verb.get_child).set_text (v);
+		gtk_entry (mode.cbox_mode_noun.get_child).set_text (n);
 	end update_mode_display;
 
 
