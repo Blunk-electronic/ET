@@ -48,6 +48,13 @@ package et_modes is
 	noun_prefix		: constant string := ("NOUN_");
 	domain_prefix	: constant string := ("DOM_");
 	
+	type type_expect_entry is (
+		EXP_VERB,
+		EXP_NOUN);
+
+	expect_entry_default : constant type_expect_entry := EXP_VERB;
+		
+
 	
 end et_modes;
 

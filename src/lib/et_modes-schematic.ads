@@ -132,6 +132,9 @@ package et_modes.schematic is
 	function to_noun (noun : in string) return type_noun;
 
 	
+
+	expect_entry : type_expect_entry := expect_entry_default;
+	
 	
 end et_modes.schematic;
 

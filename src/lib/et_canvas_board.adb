@@ -662,25 +662,69 @@ package body et_canvas_board is
 	procedure evaluate_key (
 		self	: not null access type_view;
 		key		: in gdk_key_type) is
+
 		use gdk.types;
 		use gdk.types.keysyms;
+
+		use et_modes;
 	begin
 -- 		put_line ("board: evaluating other key ...");
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
 
-		case key is
-			when GDK_Delete =>
-				put_line ("DEL pressed");
-				verb := VERB_DELETE;
-
-			when GDK_LC_d => -- GDK_D
-				put_line ("d pressed");
-				verb := VERB_DRAW;
+		if key = GDK_Escape then
+			expect_entry := expect_entry_default;
+			verb := verb_default;
+			noun := noun_default;
+		else
 				
-			when others =>
-				put_line ("other key pressed " & gdk_key_type'image (key));
-		end case;
+			case expect_entry is
+				when EXP_VERB =>
+					put_line ("VERB entered");
 
+					-- Next we expect an entry to select a noun.
+					-- If the verb entry is invalid then expect_entry
+					-- will be overwritten by EXP_VERB so that the
+					-- operator is required to re-enter a valid verb.
+					expect_entry := EXP_NOUN;
+					
+					case key is
+						when GDK_Delete =>
+							verb := VERB_DELETE;
+
+						when GDK_LC_d => -- GDK_D
+							verb := VERB_DRAW;
+
+						when GDK_LC_r =>
+							verb := VERB_ROUTE;
+
+							
+						when others =>
+							--put_line ("other key pressed " & gdk_key_type'image (key));
+
+							-- If invalid verb entered, overwrite expect_entry by EXP_VERB:
+							expect_entry := EXP_VERB;
+					end case;
+
+
+				when EXP_NOUN =>
+					put_line ("NOUN entered");
+
+					case key is
+						when GDK_LC_d =>
+							noun := NOUN_DEVICE;
+
+						when GDK_LC_n =>
+							noun := NOUN_NET;
+
+						when others =>
+							null;
+							
+					end case;
+
+			end case;
+
+		end if;
+		
 		self.update_mode_display;
 	end evaluate_key;
 
@@ -697,6 +741,33 @@ package body et_canvas_board is
 				put_line ("left button");
 				
 				self.move_cursor (ABSOLUTE, cursor_main, point);
+
+-- 				case verb is
+-- 					when VERB_DELETE =>
+-- 
+-- 						case noun is
+-- 							when NOUN_UNIT => null;
+-- 
+-- 							when NOUN_NET => null;
+-- 
+-- 							when others =>
+-- 								null;
+-- 								
+-- 						end case;
+-- 
+-- 					when VERB_DRAW =>
+-- 
+-- 						case noun is
+-- 							when NOUN_NET => null;
+-- 
+-- 							when others =>
+-- 								null;
+-- 								
+-- 						end case;
+-- 
+-- 					when others => null; -- CS
+-- 				end case;
+				
 				self.queue_draw; -- without frame and grid initialization
 
 			when others => null;
