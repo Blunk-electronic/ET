@@ -1717,7 +1717,7 @@ begin -- schematic_cmd
 			
 	end case;
 
-	canvas.update_drawing_mode_display;
+	canvas.update_mode_display;
 	
 	return exit_code;
 
@@ -1726,7 +1726,7 @@ begin -- schematic_cmd
 
 		log (text => "mode " & to_string (op_mode), level => log_threshold, console => true);
 
-		canvas.update_drawing_mode_display;
+		canvas.update_mode_display;
 		
 		log (ERROR, "schematic command " & enclose_in_quotes (to_string (cmd)) &
 			" invalid !", console => true);

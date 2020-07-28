@@ -143,12 +143,21 @@ package pac_canvas is
 
 
 	
-	-- mode display
-	label_drawing_mode	: gtk_label;
-	box_drawing_mode	: gtk_hbox;
-	drawing_mode		: gtk_combo_box_text;
+	-- mode
+	type type_mode is record
+		box_mode			: gtk_vbox;
+		box_mode_verb		: gtk_hbox;
+		box_mode_noun		: gtk_hbox;
+		label_mode			: gtk_label;
+		label_mode_verb		: gtk_label;
+		label_mode_noun		: gtk_label;
+		cbox_mode_verb		: gtk_combo_box_text;
+		cbox_mode_noun		: gtk_combo_box_text;
+	end record;
 
-	procedure build_drawing_mode_display;
+	mode : type_mode;
+	
+	procedure build_mode_display;
 	
 		
 	
@@ -279,7 +288,7 @@ package pac_canvas is
 		self	: not null access type_view)
 		return string is abstract;
 								  
-	procedure update_drawing_mode_display (
+	procedure update_mode_display (
 		self	: not null access type_view'class);
 
 	

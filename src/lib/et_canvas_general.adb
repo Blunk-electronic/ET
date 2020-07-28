@@ -380,37 +380,56 @@ package body pac_canvas is
 
 	end update_coordinates_display;
 
-	procedure build_drawing_mode_display is
+	procedure build_mode_display is
 		spacing : gint;
 	begin
 		spacing := 10;
 		
 		-- The main box around all kinds of position readouts:
-		gtk_new_hbox (box_drawing_mode);
-		set_spacing (box_drawing_mode, spacing);
-		set_border_width (box_drawing_mode, 10);
-		pack_start (box_left, box_drawing_mode, expand => false);
+		gtk_new_vbox (mode.box_mode);
+		set_spacing (mode.box_mode, spacing);
+		set_border_width (mode.box_mode, 10);
+		pack_start (box_left, mode.box_mode, expand => false);
 
-		gtk_new (label_drawing_mode, "MODE");
-		pack_start (box_drawing_mode, label_drawing_mode, expand => false);
+		gtk_new (mode.label_mode, "MODE");
+		pack_start (mode.box_mode, mode.label_mode, expand => false);
 
-		gtk_new_with_entry (drawing_mode);
-		pack_start (box_drawing_mode, drawing_mode, expand => true);
 		
-	end build_drawing_mode_display;
+		gtk_new_hbox (mode.box_mode_verb);
+		set_spacing (mode.box_mode_verb, spacing);
+		pack_start (mode.box_mode, mode.box_mode_verb, expand => false);
+		
+		gtk_new (mode.label_mode_verb, "VERB");
+		pack_start (mode.box_mode_verb, mode.label_mode_verb, expand => false);
+
+		gtk_new_with_entry (mode.cbox_mode_verb);
+		pack_start (mode.box_mode_verb, mode.cbox_mode_verb, expand => true);
+
+		
+		gtk_new_hbox (mode.box_mode_noun);
+		set_spacing (mode.box_mode_noun, spacing);
+		pack_start (mode.box_mode, mode.box_mode_noun, expand => false);
+
+		gtk_new (mode.label_mode_noun, "NOUN");
+		pack_start (mode.box_mode_noun, mode.label_mode_noun, expand => false);
+		
+		gtk_new_with_entry (mode.cbox_mode_noun);
+		pack_start (mode.box_mode_noun, mode.cbox_mode_noun, expand => true);
+		
+	end build_mode_display;
 
 	
 	
-	procedure update_drawing_mode_display (
+	procedure update_mode_display (
 		self	: not null access type_view'class)
 	is 
 		-- Get the current drawing mode
-		mode : constant string := self.get_drawing_mode;
+		m : constant string := self.get_drawing_mode;
 	begin
 		-- show the drawing mode
-		gtk_entry (drawing_mode.get_child).set_text (mode);
+		gtk_entry (mode.cbox_mode_verb.get_child).set_text (m);
 
-	end update_drawing_mode_display;
+	end update_mode_display;
 
 
 	

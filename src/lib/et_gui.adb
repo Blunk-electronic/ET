@@ -82,7 +82,7 @@ package body et_gui is
 
 		build_coordinates_display;
 
-		build_drawing_mode_display;
+		build_mode_display;
 
 		-- Connect to the on_activate signal (on hitting enter key) of the entry (which is a child of console):
 		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
@@ -124,7 +124,7 @@ package body et_gui is
 		-- display the schematic:
 		window.show_all;
 
-		canvas.update_drawing_mode_display;
+		canvas.update_mode_display;
 		
 	end init_schematic;
 
@@ -165,7 +165,7 @@ package body et_gui is
 		
 		build_coordinates_display;
 
-		build_drawing_mode_display;
+		build_mode_display;
 		
 		-- Connect to the on_activate signal (on hitting enter key) of the entry (which is a child of console):
 		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
@@ -198,7 +198,7 @@ package body et_gui is
 		-- display the board:
 		window.show_all;
 
-		canvas.update_drawing_mode_display;
+		canvas.update_mode_display;
 		
 	end init_board;
 

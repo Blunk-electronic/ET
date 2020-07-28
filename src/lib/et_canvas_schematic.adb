@@ -467,7 +467,7 @@ package body et_canvas_schematic is
 				put_line ("other key pressed " & gdk_key_type'image (key));
 		end case;
 
-		self.update_drawing_mode_display;
+		self.update_mode_display;
 	end evaluate_key;
 
 	overriding procedure button_pressed (
