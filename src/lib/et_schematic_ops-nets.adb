@@ -2712,6 +2712,19 @@ package body et_schematic_ops.nets is
 	end query_stub;
 
 
+
+	function query_segments (
+		module			: in pac_generic_modules.cursor;
+		place			: in et_coordinates.type_position; -- sheet/x/y
+		log_threshold	: in type_log_level)
+		return pac_segments.list
+	is
+		use pac_segments;
+		result : pac_segments.list;
+	begin
+		return result;
+	end query_segments;
+
 	
 end et_schematic_ops.nets;
 	

@@ -161,6 +161,26 @@ package et_schematic_ops.nets is
 		position		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level)
 		return type_stub;
+
+	-------------------------------------
+	use type_nets;
+	use type_strands;
+	use type_net_segments;
+	
+	type type_segment is record
+		net		: type_nets.cursor;
+		strand	: type_strands.cursor;
+		segment	: type_net_segments.cursor;
+	end record;
+		
+	package pac_segments is new doubly_linked_lists (type_segment);
+
+	function query_segments (
+		module			: in pac_generic_modules.cursor;
+		place			: in et_coordinates.type_position; -- sheet/x/y
+		log_threshold	: in type_log_level)
+		return pac_segments.list;
+		
 	
 end et_schematic_ops.nets;
 
