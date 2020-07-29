@@ -52,6 +52,7 @@ with et_coordinates;
 with et_pcb_coordinates;
 with et_schematic;
 with et_schematic_ops;
+with et_schematic_ops.nets;
 with et_terminals;
 with et_packages;
 with et_pcb;

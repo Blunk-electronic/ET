@@ -60,6 +60,7 @@ use et_coordinates.pac_geometry_sch;
 with et_project.modules;		use et_project.modules;
 with et_symbols;
 with et_schematic;
+with et_schematic_ops;
 with et_frames;
 with et_text;					use et_text;
 

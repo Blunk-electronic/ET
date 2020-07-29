@@ -86,6 +86,30 @@ package et_schematic_ops is
 		device_name		: in type_name; -- IC45
 		log_threshold	: in type_log_level);
 
+	-- Returns the sheet/x/y position of the given device and port.
+	function position (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_name; -- IC34
+		port_name		: in et_symbols.type_port_name.bounded_string; -- CE
+		log_threshold	: in type_log_level)
+		return et_coordinates.type_position;
+
+	-- Returns the sheet/x/y position of the given submodule port.
+	function position (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		submod_name		: in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+		port_name		: in type_net_name.bounded_string; -- RESET
+		log_threshold	: in type_log_level)
+		return et_coordinates.type_position;
+
+	-- Returns the sheet/x/y position of the given netchanger port.
+	function position (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
+		port			: in et_submodules.type_netchanger_port_name; -- SLAVE/MASTER
+		log_threshold	: in type_log_level)
+		return et_coordinates.type_position;
+	
 	procedure delete_unit (
 	-- Deletes a unit of a device. 
 	-- In case the last unit has been deleted, then the device is 
@@ -95,6 +119,16 @@ package et_schematic_ops is
 		unit_name		: in type_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level);
 
+	function between_start_and_end_point (
+	-- Returns true if given point sits between start and end point of given segment.
+	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
+	-- the greater can be the distance of point from the segment.
+		point 		: in type_point;
+		segment 	: in type_net_segments.cursor;
+		catch_zone	: in et_coordinates.type_catch_zone := zero)
+		return boolean;
+
+	
 -- 	type type_coordinates is (RELATIVE, ABSOLUTE);
 -- 
 -- 	function to_string (coordinates : in type_coordinates) return string;
@@ -159,6 +193,23 @@ package et_schematic_ops is
 		key_type		=> et_symbols.type_port_name.bounded_string,
 		"<"				=> et_symbols.type_port_name."<",
 		element_type	=> type_drag);
+
+	
+	
+	-- If ports at a certain position in a schematic are inquired this type is required:
+	type type_ports is record
+		devices		: type_ports_device.set;
+		submodules	: type_ports_submodule.set;
+		netchangers	: et_netlists.type_ports_netchanger.set;
+	end record;
+
+	function ports_at_place (
+	-- Returns lists of device, netchanger and submodule ports at the given place.
+		module_name		: in type_module_name.bounded_string;
+		place			: in et_coordinates.type_position;
+		log_threshold	: in type_log_level)		
+		return type_ports;	
+
 	
 	procedure drag_unit (
 	-- Drags the given unit within the schematic.
@@ -227,15 +278,6 @@ package et_schematic_ops is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		index			: in et_submodules.type_netchanger_id) -- 1, 2, 3, ...
 		return boolean;
-
-	procedure place_junction (
-	-- Places a net junction at the given position.
-	-- If the junction is to be placed between start and end point of a segment, then the segment 
-	-- is split in two new segments with the junction between them.
-	-- If there is no net segment at the given position, no junction is placed and warning issued.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		place			: in et_coordinates.type_position; -- sheet/x/y, rotation doesn't matter
-		log_threshold	: in type_log_level);
 
 	function next_device_name (
 	-- Returns for the given device prefix the next available device name in the module.
@@ -313,113 +355,6 @@ package et_schematic_ops is
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in et_coordinates.type_rotation; -- 90
-		log_threshold	: in type_log_level);
-	
-	type type_net_scope is (
-		STRAND,
-		SHEET,
-		EVERYWHERE
-		);
-	
-	procedure rename_net (
-	-- Renames a net. The scope determines whether to rename a certain strand,
-	-- all strands on a certain sheet or on all sheets.
-	-- CS If a particular strand on a sheet is to be renamed, the argument "place"
-	-- must provide sheet and x/y start position of strand. In the future x/y can be
-	-- any point on any segment of the strand.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name_before	: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		net_name_after	: in et_general.type_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
-		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in et_coordinates.type_position; -- sheet/x/y
-		log_threshold	: in type_log_level);
-
-	procedure delete_net (
-	-- Deletes a net. The scope determines whether to delete a certain strand,
-	-- all strands on a certain sheet or on all sheets.
-	-- CS If a particular strand on a sheet is to be deleted, the argument "place"
-	-- must provide sheet and x/y start position of strand. In the future x/y can be
-	-- any point on any segment of the strand.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in et_coordinates.type_position; -- sheet/x/y
-		log_threshold	: in type_log_level);
-
-	procedure delete_segment (
-	-- Deletes a segment of a net.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in et_coordinates.type_position; -- sheet/x/y
-		log_threshold	: in type_log_level);
-
-	-- If ports at a certain position in a schematic are inquired this type is required:
-	type type_ports is record
-		devices		: type_ports_device.set;
-		submodules	: type_ports_submodule.set;
-		netchangers	: et_netlists.type_ports_netchanger.set;
-	end record;
-
-	function no_ports (ports : in type_ports) return boolean;
-	-- Returns true if the given record of ports is completely emtpty.
-	
-	function ports_at_place (
-	-- Returns lists of device, netchanger and submodule ports at the given place.
-		module_name		: in type_module_name.bounded_string;
-		place			: in et_coordinates.type_position;
-		log_threshold	: in type_log_level)		
-		return type_ports;	
-	
-	procedure drag_segment (
-	-- Drags a segment of a net.
-	-- Place adresses the segment within the schematic. 
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in et_coordinates.type_position; -- sheet/x/y, this addresses the segment
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y, the new position 
-		log_threshold	: in type_log_level);
-
-	package type_net_names is new doubly_linked_lists (
-		element_type	=> et_general.type_net_name.bounded_string,
-		"="				=> et_general.type_net_name."="
-		);
-	
-	procedure draw_net (
-	-- Draws a segment of a net. If the start or end point of the new segment
-	-- meets a port then the port will be connected with the segment.
-	-- 1. If the segment is part of a new net, the net is created with a single segment
-	--  specified by start_point and end_point. If the new segment collides with a foreign
-	--  net, an error is raised.
-	-- 2. If the net_name is a name of an already existing net, the given net segment (specified
-	--  by start_point and end_point) will be added to the existing net.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		start_point		: in et_coordinates.type_position; -- sheet/x/y
-		end_point		: in type_point; -- x/y
-		log_threshold	: in type_log_level);
-
-	procedure set_scope (
-	-- Sets the scope of a net.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		scope			: in et_netlists.type_net_scope; -- local/global
-		log_threshold	: in type_log_level);
-	
-	procedure place_net_label (
-	-- Places a label next to a segment at position.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		segment_position: in et_coordinates.type_position; -- sheet/x/y
-		label_position	: in type_point := origin; -- x/y
-		rotation		: in et_coordinates.type_rotation := zero_rotation; -- 0, 90, 180. Relevant for simple labels only.
-		appearance 		: in type_net_label_appearance; -- simple/tag label		
-		direction		: in et_schematic.type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
-		log_threshold	: in type_log_level);
-
-	procedure delete_net_label (
-	-- Deletes a label.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		position		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 	
 	procedure add_submodule (
@@ -700,15 +635,6 @@ package et_schematic_ops is
 	-- CS type_port_query
 
 	-- CS function port_position 
-
-	-- Queries the position of the given net. If a stub is at the
-	-- given position returns the direction of the stub.
-	function query_stub (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		position		: in et_coordinates.type_position; -- sheet/x/y
-		log_threshold	: in type_log_level)
-		return type_stub;
 	
 end et_schematic_ops;
 
