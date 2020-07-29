@@ -459,7 +459,7 @@ package body et_canvas_schematic is
 		use gdk.types;
 		use gdk.types.keysyms;
 
-		use et_modes;
+		use et_modes;	
 	begin
 -- 		put_line ("schematic: evaluating other key ...");
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
@@ -468,11 +468,12 @@ package body et_canvas_schematic is
 			expect_entry := expect_entry_default;
 			verb := verb_default;
 			noun := noun_default;
+			status_clear;
 		else
 				
 			case expect_entry is
 				when EXP_VERB =>
-					put_line ("VERB entered");
+					--put_line ("VERB entered");
 
 					-- Next we expect an entry to select a noun.
 					-- If the verb entry is invalid then expect_entry
@@ -483,21 +484,24 @@ package body et_canvas_schematic is
 					case key is
 						when GDK_Delete =>
 							verb := VERB_DELETE;
-
+							status_enter_noun;
+							
 						when GDK_LC_d => -- GDK_D
 							verb := VERB_DRAW;
-
+							status_enter_noun;
 							
 						when others =>
 							--put_line ("other key pressed " & gdk_key_type'image (key));
-
-							-- If invalid verb entered, overwrite expect_entry by EXP_VERB:
+							
+							-- If invalid verb entered, overwrite expect_entry by EXP_VERB
+							-- and show error in status bar:
 							expect_entry := EXP_VERB;
+							status_verb_invalid;
 					end case;
 
 
 				when EXP_NOUN =>
-					put_line ("NOUN entered");
+					--put_line ("NOUN entered");
 
 					case verb is
 						when VERB_DELETE =>
@@ -505,13 +509,13 @@ package body et_canvas_schematic is
 							case key is
 								when GDK_LC_u =>
 									noun := NOUN_UNIT;
-
+									set_status (status_preamble_click_left & "delete unit." & status_hint_for_abort);
+									
 								when GDK_LC_n =>
 									noun := NOUN_NET;
-
-								when others =>
-									null;
+									set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
 									
+								when others => status_noun_invalid;
 							end case;
 
 						when VERB_DRAW =>
@@ -519,14 +523,14 @@ package body et_canvas_schematic is
 							case key is
 								when GDK_LC_n =>
 									noun := NOUN_NET;
-
-								when others =>
-									null;
+									status_clear;
 									
+								when others => status_noun_invalid;
 							end case;
 
 						when others => null; -- CS
 					end case;
+					
 			end case;
 
 		end if;

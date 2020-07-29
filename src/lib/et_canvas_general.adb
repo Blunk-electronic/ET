@@ -63,6 +63,28 @@ with et_project;
 package body et_canvas_general is
 
 package body pac_canvas is
+
+	procedure set_status (text : in string) is begin
+		label_status.set_text (text);
+	end set_status;
+
+	procedure status_clear is begin
+		set_status ("");
+	end status_clear;
+	
+	procedure status_enter_noun is begin
+		set_status ("Enter noun ! " & status_hint_for_abort);
+	end status_enter_noun;
+	
+	procedure status_verb_invalid is begin
+		set_status ("Verb invalid ! ");
+	end status_verb_invalid;
+
+	procedure status_noun_invalid is begin
+		set_status ("Noun invalid ! " & status_hint_for_abort);
+	end status_noun_invalid;
+
+	
 	
 	procedure build_background_boxes is begin
 
@@ -86,8 +108,9 @@ package body pac_canvas is
 		add (box_back, box_right);
 
 		-- status bar
-		gtk_new (label_status, "status");
+		gtk_new (label_status);
 		pack_start (box_main, label_status, expand => false);
+		status_enter_noun;
 		
 	end build_background_boxes;
 

@@ -102,6 +102,18 @@ package pac_canvas is
 	box_left, box_right		: gtk_vbox;
 
 	label_status			: gtk_label;
+
+	procedure set_status (text : in string);
+	procedure status_clear;
+	procedure status_enter_noun;
+	procedure status_verb_invalid;
+	procedure status_noun_invalid;
+
+	status_hint_for_abort		: constant string := " Hit ESC to abort.";
+	status_preamble_click_left	: constant string := "LEFT click to ";
+	status_preamble_click_right	: constant string := "RIGHT click to ";
+
+	
 	
 	box_toolbars				: gtk_hbox;
 	toolbar_left, toolbar_right	: gtk_toolbar;

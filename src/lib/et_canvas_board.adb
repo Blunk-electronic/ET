@@ -675,11 +675,12 @@ package body et_canvas_board is
 			expect_entry := expect_entry_default;
 			verb := verb_default;
 			noun := noun_default;
+			status_clear;
 		else
 				
 			case expect_entry is
 				when EXP_VERB =>
-					put_line ("VERB entered");
+					--put_line ("VERB entered");
 
 					-- Next we expect an entry to select a noun.
 					-- If the verb entry is invalid then expect_entry
@@ -690,37 +691,44 @@ package body et_canvas_board is
 					case key is
 						when GDK_Delete =>
 							verb := VERB_DELETE;
+							status_enter_noun;
 
 						when GDK_LC_d => -- GDK_D
 							verb := VERB_DRAW;
-
+							status_enter_noun;
+							
 						when GDK_LC_r =>
 							verb := VERB_ROUTE;
-
+							status_enter_noun;
 							
 						when others =>
 							--put_line ("other key pressed " & gdk_key_type'image (key));
 
-							-- If invalid verb entered, overwrite expect_entry by EXP_VERB:
+							-- If invalid verb entered, overwrite expect_entry by EXP_VERB
+							-- and show error in status bar:
 							expect_entry := EXP_VERB;
+							status_verb_invalid;
 					end case;
 
 
 				when EXP_NOUN =>
-					put_line ("NOUN entered");
+					--put_line ("NOUN entered");
 
-					case key is
-						when GDK_LC_d =>
-							noun := NOUN_DEVICE;
-
-						when GDK_LC_n =>
-							noun := NOUN_NET;
-
-						when others =>
-							null;
+					case verb is
+						when VERB_DELETE =>
 							
-					end case;
+							case key is
+								when GDK_LC_d =>
+									noun := NOUN_DEVICE;
+									set_status (status_preamble_click_left & "delete non-electrical device."
+										& status_hint_for_abort);
+									
+								when others => status_noun_invalid;
+							end case;
 
+						when others => null; -- CS
+					end case;
+					
 			end case;
 
 		end if;
