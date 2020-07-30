@@ -52,15 +52,6 @@ package et_schematic_ops.nets is
 		segment 	: in type_net_segments.cursor;
 		catch_zone	: in type_catch_zone := zero)
 		return boolean;
-
-	-- Returns true if given point sits on the given segment.
-	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
-	-- the greater can be the distance of point from the segment.
-	function on_segment (
-		point 		: in type_point;
-		segment 	: in type_net_segments.cursor;
-		catch_zone	: in type_catch_zone := zero)
-		return boolean;
 	
 	-- Returns a cursor to the requested net in the given module. If the net could
 	-- not be found, returns no_element.
@@ -94,13 +85,13 @@ package et_schematic_ops.nets is
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
-	procedure delete_segment (
 	-- Deletes a segment of a net.
+	procedure delete_segment (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
-
+	
 	function no_ports (ports : in type_ports) return boolean;
 	-- Returns true if the given record of ports is completely emtpty.
 	
@@ -190,8 +181,17 @@ package et_schematic_ops.nets is
 		strand	: type_strands.cursor;
 		segment	: type_net_segments.cursor;
 	end record;
-		
+
 	package pac_segments is new doubly_linked_lists (type_segment);
+
+-- 	function is_empty (segments : in pac_segments.list) return boolean;
+	
+	-- Deletes a segment of a net.
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		segment			: in type_segment; -- net/strand/segment
+		log_threshold	: in type_log_level);
+	
 
 	function query_segments (
 		module			: in pac_generic_modules.cursor;

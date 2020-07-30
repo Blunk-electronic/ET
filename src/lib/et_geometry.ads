@@ -498,9 +498,10 @@ package et_geometry is
 			BEYOND_END_POINTS	-- unlimited line assumed. extends beyond both start and end point into infinity
 			);
 		
+		-- Computes the shortest distance (perpendicular) of a given point from the given line. 
+		-- If the point is outside the
+		-- range of the x coordinate, then the corresponding flag in the return value is set.
 		function distance_point_line (
-		-- Computes the shortest distance (perpendicular) of a given point from the given line. If the point outside the
-		-- range of the x coordinate, the corresponding flag in the return value is set.
 			point		: in type_point; 
 			line		: in type_line;
 			line_range	: in type_line_range)

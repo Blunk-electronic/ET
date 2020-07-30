@@ -545,16 +545,26 @@ package body et_canvas_schematic is
 	is
 		procedure delete_net (point : in type_point) is 
 			use et_schematic_ops.nets;
+			use pac_segments;
 			segments : pac_segments.list;
+			segment_cursor : pac_segments.cursor;
 		begin
 			put_line ("deleting net ...");
 			
 			segments := query_segments (
 				module			=> current_active_module,
 				place			=> to_position (point, current_active_sheet),
-				catch_zone		=> catch_zone_default,
+				catch_zone		=> 0.5,
 				log_threshold	=> log_threshold + 1);
-			
+
+			if not is_empty (segments) then
+				segment_cursor := segments.first;
+				
+				delete_segment (
+					module_cursor	=> current_active_module,
+					segment			=> element (segment_cursor),
+					log_threshold	=> log_threshold + 1);
+			end if;
 		end delete_net;
 		
 	begin -- button_pressed

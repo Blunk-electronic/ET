@@ -1045,9 +1045,6 @@ package body et_geometry is
 		end which_zone;
 
 		function distance_point_line (
-		-- Computes the shortest distance (perpendicular) of a given point from the given line. If the point outside the
-		-- range of the x coordinate, the corresponding flag in the return value is set.
-
 		-- CS: provide range and accuracy via parameter
 		-- CS: type_Y_axis_positive (upwards, downwards) may matter here. 
 
@@ -1079,7 +1076,7 @@ package body et_geometry is
 			-- On match we exit this function prematurely and return the result
 			-- with the appropiate flags set.
 			case line_range is
-				when with_end_points | beyond_end_points =>
+				when WITH_END_POINTS | BEYOND_END_POINTS =>
 					
 					if point = line.start_point then
 						
@@ -1134,9 +1131,10 @@ package body et_geometry is
 				when others => null;
 			end case;
 
-			-- Test range of point in regard of the x position.
+			-- Test range of point in regard to the x position.
 			case line_range is
 				when BETWEEN_END_POINTS =>
+					
 					if result.distance = zero then
 
 						if delta_x = zero then -- vertical line
@@ -1170,7 +1168,7 @@ package body et_geometry is
 						
 					end if;
 					
-				when with_end_points =>
+				when WITH_END_POINTS =>
 					
 					if result.distance = zero then
 						
@@ -1205,7 +1203,7 @@ package body et_geometry is
 						end if;
 					end if;
 					
-				when beyond_end_points =>
+				when BEYOND_END_POINTS =>
 					if result.distance = zero then
 						result.out_of_range := false;
 					end if;

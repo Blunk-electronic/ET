@@ -70,28 +70,6 @@ package body et_schematic_ops.nets is
 			return false;
 		end if;
 	end between_start_and_end_point;
-
-	function on_segment (
-		point 		: in type_point;
-		segment 	: in type_net_segments.cursor;
-		catch_zone	: in type_catch_zone := zero)
-		return boolean 
-	is
-		use et_schematic.pac_shapes;
-		dist : type_distance_point_line;
-		use type_net_segments;
-	begin
-		dist := distance_point_line (
-			point 		=> point,
-			line		=> element (segment),
-			line_range	=> WITH_END_POINTS);
-
-		if not dist.out_of_range and dist.distance <= catch_zone then
-			return true;
-		else
-			return false;
-		end if;
-	end on_segment;
 	
 	function locate_net (
 		module		: in pac_generic_modules.cursor;
@@ -568,6 +546,16 @@ package body et_schematic_ops.nets is
 		log_indentation_down;		
 	end delete_net;
 
+-- 	function is_empty (segments : in pac_segments.list) return boolean is 
+-- 		use pac_segments;
+-- 	begin
+-- 		if length (segments) = 0 then
+-- 			return true;
+-- 		else
+-- 			return false;
+-- 		end if;
+-- 	end is_empty;
+	
 	procedure delete_segment (
 	-- Deletes a segment of a net.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -2755,7 +2743,67 @@ package body et_schematic_ops.nets is
 		
 	end query_stub;
 
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		segment			: in type_segment; -- net/strand/segment
+		log_threshold	: in type_log_level)
+	is
+		s : type_segment := segment;
+		
+		procedure query_net (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
 
+			procedure query_strands (
+			-- Searches the strands of the net for a segment that sits on given place.
+				net_name	: in et_general.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+				
+				procedure query_segments (strand : in out type_strand) is
+				begin
+					put_line ("strand " & to_string (strand.position));
+															  
+					delete (strand.segments, s.segment);
+				end query_segments;
+				
+			begin -- query_strands
+				update_element (
+					container	=> net.strands,
+					position	=> s.strand,
+					process		=> query_segments'access);
+
+				-- In case no more segments are left in the strand,
+				-- remove the now useless strand entirely.
+				if is_empty (element (s.strand).segments) then
+					delete (net.strands, s.strand);
+				end if;
+				
+			end query_strands;
+		
+		begin -- query_net
+			put_line ("net " & to_string (key (s.net)));
+			
+			update_element (
+				container	=> module.nets,
+				position	=> s.net,
+				process		=> query_strands'access);
+
+			-- If the net has no strands anymore, delete it entirely because a
+			-- net without strands is useless.
+			if is_empty (element (s.net).strands) then
+				delete (module.nets, s.net);
+			end if;
+			
+		end query_net;
+
+	begin
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_net'access);
+
+	end delete_segment;
+	
 
 	function query_segments (
 		module			: in pac_generic_modules.cursor;
@@ -2782,20 +2830,38 @@ package body et_schematic_ops.nets is
 				procedure query_segments (strand : in type_strand) is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 				begin
+					log (text => "probing strand at" & to_string (strand.position),
+						 level => log_threshold + 1);
+					
+					log_indentation_up;
+					
 					while segment_cursor /= type_net_segments.no_element loop
+						log (text => "probing segment" & to_string (element (segment_cursor)),
+							level => log_threshold + 1);
 
+						log (text => "point" & to_string (type_point (place)),
+							level => log_threshold + 1);
+
+						
 						-- If the segment is within the catch zone, append
 						-- the current net, stand and segment cursor to the result:
-						if on_segment (
+						if on_line (
 							point		=> type_point (place),
-							segment		=> segment_cursor,
-							catch_zone	=> catch_zone) then
+							line		=> element (segment_cursor),
+							accuracy	=> catch_zone) then
 
+							log_indentation_up;
+							log (text => "sits on segment", level => log_threshold + 1);
+						
 							result.append ((net_cursor, strand_cursor, segment_cursor));
+
+							log_indentation_down;
 						end if;
 
 						next (segment_cursor);
 					end loop;
+
+					log_indentation_down;
 				end query_segments;
 				
 			begin -- query_strands
@@ -2823,12 +2889,15 @@ package body et_schematic_ops.nets is
 
 	begin -- query_segments
 		log (text => "looking up net segments at" & to_string (place) 
-			 & " catch zone " & to_string (catch_zone), level => log_threshold);
+			 & " catch zone" & to_string (catch_zone), level => log_threshold);
+
+		log_indentation_up;
 		
 		query_element (
 			position	=> module,
 			process		=> query_nets'access);
 
+		log_indentation_down;
 		return result;
 	end query_segments;
 
