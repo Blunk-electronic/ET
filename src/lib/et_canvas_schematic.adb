@@ -543,7 +543,21 @@ package body et_canvas_schematic is
 		button	: in type_mouse_button;
 		point	: in type_point) 
 	is
-	begin
+		procedure delete_net (point : in type_point) is 
+			use et_schematic_ops.nets;
+			segments : pac_segments.list;
+		begin
+			put_line ("deleting net ...");
+			
+			segments := query_segments (
+				module			=> current_active_module,
+				place			=> to_position (point, current_active_sheet),
+				catch_zone		=> catch_zone_default,
+				log_threshold	=> log_threshold + 1);
+			
+		end delete_net;
+		
+	begin -- button_pressed
 		put_line ("point " & to_string (point));
 		
 		case button is
@@ -558,7 +572,7 @@ package body et_canvas_schematic is
 						case noun is
 							when NOUN_UNIT => null;
 
-							when NOUN_NET => null;
+							when NOUN_NET => delete_net (point);
 
 							when others =>
 								null;

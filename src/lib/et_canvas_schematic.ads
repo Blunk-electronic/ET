@@ -61,6 +61,7 @@ with et_project.modules;		use et_project.modules;
 with et_symbols;
 with et_schematic;
 with et_schematic_ops;
+with et_schematic_ops.nets;
 with et_frames;
 with et_text;					use et_text;
 

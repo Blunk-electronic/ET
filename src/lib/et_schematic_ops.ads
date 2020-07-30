@@ -118,16 +118,6 @@ package et_schematic_ops is
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level);
-
-	function between_start_and_end_point (
-	-- Returns true if given point sits between start and end point of given segment.
-	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
-	-- the greater can be the distance of point from the segment.
-		point 		: in type_point;
-		segment 	: in type_net_segments.cursor;
-		catch_zone	: in et_coordinates.type_catch_zone := zero)
-		return boolean;
-
 	
 -- 	type type_coordinates is (RELATIVE, ABSOLUTE);
 -- 

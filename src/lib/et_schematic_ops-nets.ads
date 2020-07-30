@@ -44,6 +44,24 @@ package et_schematic_ops.nets is
 		EVERYWHERE
 		);
 
+	function between_start_and_end_point (
+	-- Returns true if given point sits between start and end point of given segment.
+	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
+	-- the greater can be the distance of point from the segment.
+		point 		: in type_point;
+		segment 	: in type_net_segments.cursor;
+		catch_zone	: in type_catch_zone := zero)
+		return boolean;
+
+	-- Returns true if given point sits on the given segment.
+	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
+	-- the greater can be the distance of point from the segment.
+	function on_segment (
+		point 		: in type_point;
+		segment 	: in type_net_segments.cursor;
+		catch_zone	: in type_catch_zone := zero)
+		return boolean;
+	
 	-- Returns a cursor to the requested net in the given module. If the net could
 	-- not be found, returns no_element.
 	function locate_net (
@@ -178,6 +196,7 @@ package et_schematic_ops.nets is
 	function query_segments (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position; -- sheet/x/y
+		catch_zone		: in et_coordinates.type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_segments.list;
 		

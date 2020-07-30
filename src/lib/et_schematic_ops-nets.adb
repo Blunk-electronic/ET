@@ -49,6 +49,50 @@ package body et_schematic_ops.nets is
 		raise constraint_error;
 	end;
 
+	function between_start_and_end_point (
+		point 		: in type_point;
+		segment 	: in type_net_segments.cursor;
+		catch_zone	: in type_catch_zone := zero)
+		return boolean 
+	is
+		use et_schematic.pac_shapes;
+		dist : type_distance_point_line;
+		use type_net_segments;
+	begin
+		dist := distance_point_line (
+			point 		=> point,
+			line		=> element (segment),
+			line_range	=> BETWEEN_END_POINTS);
+
+		if not dist.out_of_range and dist.distance <= catch_zone then
+			return true;
+		else
+			return false;
+		end if;
+	end between_start_and_end_point;
+
+	function on_segment (
+		point 		: in type_point;
+		segment 	: in type_net_segments.cursor;
+		catch_zone	: in type_catch_zone := zero)
+		return boolean 
+	is
+		use et_schematic.pac_shapes;
+		dist : type_distance_point_line;
+		use type_net_segments;
+	begin
+		dist := distance_point_line (
+			point 		=> point,
+			line		=> element (segment),
+			line_range	=> WITH_END_POINTS);
+
+		if not dist.out_of_range and dist.distance <= catch_zone then
+			return true;
+		else
+			return false;
+		end if;
+	end on_segment;
+	
 	function locate_net (
 		module		: in pac_generic_modules.cursor;
 		net_name	: in et_general.type_net_name.bounded_string)		
@@ -1038,7 +1082,7 @@ package body et_schematic_ops.nets is
 						if between_start_and_end_point (
 							point		=> type_point (place),
 							segment		=> segment_cursor,
-							catch_zone	=> et_coordinates.catch_zone
+							catch_zone	=> catch_zone_default
 							) then
 
 							-- Calculate the zone of attack. This is where place is.
@@ -2716,12 +2760,75 @@ package body et_schematic_ops.nets is
 	function query_segments (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position; -- sheet/x/y
+		catch_zone		: in et_coordinates.type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_segments.list
 	is
 		use pac_segments;
 		result : pac_segments.list;
-	begin
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			net_cursor : type_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in type_net)
+			is
+				strand_cursor : type_strands.cursor := net.strands.first;
+
+				procedure query_segments (strand : in type_strand) is
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+				begin
+					while segment_cursor /= type_net_segments.no_element loop
+
+						-- If the segment is within the catch zone, append
+						-- the current net, stand and segment cursor to the result:
+						if on_segment (
+							point		=> type_point (place),
+							segment		=> segment_cursor,
+							catch_zone	=> catch_zone) then
+
+							result.append ((net_cursor, strand_cursor, segment_cursor));
+						end if;
+
+						next (segment_cursor);
+					end loop;
+				end query_segments;
+				
+			begin -- query_strands
+				while strand_cursor /= type_strands.no_element loop
+
+					-- We are interested in strands on the given sheet only:
+					if sheet (element (strand_cursor).position) = sheet (place) then
+						query_element (strand_cursor, query_segments'access);
+					end if;
+
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+			
+		begin -- query_nets
+			while net_cursor /= type_nets.no_element loop
+
+				query_element (
+					position	=> net_cursor,
+					process		=> query_strands'access);
+
+				next (net_cursor);
+			end loop;
+		end query_nets;
+
+	begin -- query_segments
+		log (text => "looking up net segments at" & to_string (place) 
+			 & " catch zone " & to_string (catch_zone), level => log_threshold);
+		
+		query_element (
+			position	=> module,
+			process		=> query_nets'access);
+
 		return result;
 	end query_segments;
 

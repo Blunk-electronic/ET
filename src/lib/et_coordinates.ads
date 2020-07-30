@@ -78,8 +78,8 @@ package et_coordinates is
 	
 	use pac_geometry_sch;
 	
-	subtype type_catch_zone is type_distance range 0.0 .. 10.0;
-	catch_zone : type_catch_zone := 2.0; -- CS: should be a system setting in the future
+	subtype type_catch_zone is type_distance_positive range 0.0 .. 10.0;
+	catch_zone_default : type_catch_zone := 2.0; -- CS: should be a system setting in the future
 	
 
 	

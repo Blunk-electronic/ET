@@ -939,29 +939,6 @@ package body et_schematic_ops is
 -- 				raise;
 -- 	end;
 
-	function between_start_and_end_point (
-		point 		: in type_point;
-		segment 	: in type_net_segments.cursor;
-		catch_zone	: in et_coordinates.type_catch_zone := zero)
-		return boolean 
-	is
-		use et_schematic.pac_shapes;
-		dist : type_distance_point_line;
-		use type_net_segments;
-	begin
-		dist := distance_point_line (
-			point 		=> point,
-			line		=> element (segment),
-			line_range	=> BETWEEN_END_POINTS);
-
-		--if not distance.out_of_range and distance.distance = zero then
-		if not dist.out_of_range and dist.distance <= catch_zone then
-			return true;
-		else
-			return false;
-		end if;
-	end between_start_and_end_point;
-
 	procedure insert_ports (
 	-- Inserts the given device ports in the net segments.
 	-- If a port lands on either the start or end point of a segment, it will
