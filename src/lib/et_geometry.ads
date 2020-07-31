@@ -429,6 +429,40 @@ package et_geometry is
 			right	: in type_boundaries);
 						
 		
+	-- VECTOR OPERATIONS
+		
+		type type_vector is private;
+
+		function to_vector (
+			point	: in type_point)
+			return type_vector;
+		
+		function absolute (
+			vector	: in type_vector)
+			return type_distance_positive;
+
+		function multiply (
+			v	: in type_vector;
+			a	: in type_distance)
+			return type_vector;
+		
+		function add (
+			a, b	: in type_vector)
+			return type_vector;
+
+		function subtract (
+			a, b	: in type_vector)
+			return type_vector;
+		
+		function cross_product (
+			a, b	: in type_vector)
+			return type_vector;
+		
+		function dot_product (
+			a, b	: in type_vector)
+			return type_distance;
+
+
 	-- LINE
 		type type_line is abstract tagged record
 			start_point 	: type_point;
@@ -436,6 +470,19 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+		function start_vector (
+			line	: in type_line)
+			return type_vector;
+
+		function direction_vector (
+			line	: in type_line)
+			return type_vector;
+		
+		function distance (
+			line	: in type_line;
+			point	: in type_point)
+			return type_distance;
+		
 		-- Returns the direction in degrees of a line.
 		-- Example: If a line runs from 0/0 to 1/1 then the result is 45 degree.
 		-- Example: If a line runs from -1/-1 to -4/-4 then the result is 225 degree.
@@ -752,6 +799,12 @@ package et_geometry is
 		
 		type type_polygon is new type_polygon_base with record
 			filled	: type_filled;
+		end record;
+
+		
+	private
+		type type_vector is	record
+			x, y, z : type_distance := zero;
 		end record;
 
 		

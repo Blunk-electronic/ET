@@ -911,6 +911,129 @@ package body et_geometry is
 			end if;
 		end union;
 
+
+	-- VECTOR OPERATIONS		
+
+		function to_vector (
+			point	: in type_point)
+			return type_vector is
+		begin
+			return (
+				x => point.x,
+				y => point.y,
+				z => zero
+				);
+		end to_vector;
+
+		function absolute (
+			vector	: in type_vector)
+			return type_distance_positive
+		is
+			package functions is new ada.numerics.generic_elementary_functions (float);
+			use functions;
+		begin
+			return type_distance_positive (
+				sqrt (
+					float (vector.x) ** 2 + 
+					float (vector.y) ** 2 +
+					float (vector.z) ** 2)
+				);
+		end absolute;
+
+
+		function multiply (
+			v	: in type_vector;
+			a	: in type_distance)
+			return type_vector
+		is begin
+			return (
+				x => a * v.x,
+				y => a * v.y,
+				z => a * v.z);
+		end multiply;
+				
+		function add (
+			a, b	: in type_vector)
+			return type_vector
+		is begin
+			return (
+				x => a.x + b.x,
+				y => a.y + b.y,
+				z => a.z + b.z);
+		end add;
+		
+		function subtract (
+			a, b	: in type_vector)
+			return type_vector
+		is begin
+			return (
+				x => a.x - b.x,
+				y => a.y - b.y,
+				z => a.z - b.z);
+		end subtract;
+		
+		function cross_product (
+			a, b	: in type_vector)
+			return type_vector
+		is begin
+			return (
+				x => a.y * b.z - a.z * b.y,
+				y => a.z * b.x - a.x * b.z,
+				z => a.x * b.y - a.y * b.x);
+		end cross_product;
+
+		function dot_product (
+			a, b	: in type_vector)
+			return type_distance
+		is begin
+			return (a.x * b.x  +  a.y * b.y  +  a.z * b.z);
+		end dot_product;
+
+
+
+		function start_vector (
+			line	: in type_line)
+			return type_vector is
+		begin
+			return (
+				x => line.start_point.x,
+				y => line.start_point.y,
+				z => zero
+				);
+		end start_vector;
+
+		function direction_vector (
+			line	: in type_line)
+			return type_vector is
+		begin
+			return (
+				x => line.end_point.x - line.start_point.x,
+				y => line.end_point.y - line.start_point.y,
+				z => zero
+				);
+		end direction_vector;
+
+		function distance (
+			line	: in type_line;
+			point	: in type_point)
+			return type_distance
+		is
+			dv : constant type_vector := direction_vector (line);
+			sv : constant type_vector := start_vector (line);
+			pv : constant type_vector := to_vector (point);
+			
+			d1 : constant type_vector := subtract (pv, sv);
+			m, n : type_distance_positive;
+		begin
+			m := absolute (cross_product (dv, d1));
+			n := absolute (dv);
+			
+			return (m / n);
+		end distance;
+
+
+		
+		
 		function direction (
 			line	: in type_line)
 			return type_rotation is
