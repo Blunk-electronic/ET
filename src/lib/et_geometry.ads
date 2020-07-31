@@ -481,7 +481,7 @@ package et_geometry is
 		function distance (
 			line	: in type_line;
 			point	: in type_point)
-			return type_distance;
+			return type_distance_positive;
 		
 		-- Returns the direction in degrees of a line.
 		-- Example: If a line runs from 0/0 to 1/1 then the result is 45 degree.

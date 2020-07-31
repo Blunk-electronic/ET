@@ -1016,7 +1016,7 @@ package body et_geometry is
 		function distance (
 			line	: in type_line;
 			point	: in type_point)
-			return type_distance
+			return type_distance_positive
 		is
 			dv : constant type_vector := direction_vector (line);
 			sv : constant type_vector := start_vector (line);
@@ -1178,21 +1178,25 @@ package body et_geometry is
 
 			result : type_distance_point_line; -- to be returned
 	
-			type type_float is digits 11 range -100000000.0 .. 100000000.0; -- CS: probably way too much
-			package functions is new ada.numerics.generic_elementary_functions (type_float);
+-- 			type type_float is digits 11 range -100000000.0 .. 100000000.0; -- CS: probably way too much
+-- 			package functions is new ada.numerics.generic_elementary_functions (type_float);
+-- 
+-- 			s : type_point := line.start_point;
+-- 			e : type_point := line.end_point;		
 
-			s : type_point := line.start_point;
-			e : type_point := line.end_point;		
+-- 			delta_x : type_distance := x (e) - x (s);
+-- 			delta_y : type_distance := y (e) - y (s);
+-- 			
+-- 			line_scratch : type_point;
+-- 
+			-- 			s1,s2,s3,s4,s5,s6,s7,s8 : type_float;
 
-			delta_x : type_distance := x (e) - x (s);
-			delta_y : type_distance := y (e) - y (s);
-			
-			line_scratch : type_point;
+			dl : constant type_rotation := direction (line);
 
-			s1,s2,s3,s4,s5,s6,s7,s8 : type_float;
-			
+			i : type_point;
+
 		begin
-			-- The first an simplest test is to figure out whether
+			-- The first and simplest test is to figure out whether
 			-- the given point sits at the start or end point of the line.
 			-- This test applies for a range that includes the start and end 
 			-- points of the line. 
@@ -1222,115 +1226,124 @@ package body et_geometry is
 			-- If either delta_x or delta_y is zero, the computation is simple.
 			-- Otherwise we must do a bit more as described in 
 			-- https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
-			if delta_x = zero then
-				result.distance := abs (x (point) - x (s));
-				
-			elsif delta_y = zero then
-				result.distance := abs (y (s) - y (point));
-				
-			else
-				s1 := type_float ((y (e) - y (s)) * x (point));
-				s2 := type_float ((x (e) - x (s)) * y (point));
-				s3 := type_float (x (e) * y (s));
-				s4 := type_float (y (e) * x (s));
-				s5 := abs (s1 - s2 + s3 - s4);
-				s6 := type_float (y (e) - y (s)) ** 2;
-				s7 := type_float (x (e) - x (s)) ** 2;
-				s8 := functions.sqrt (s6 + s7);
+-- 			if delta_x = zero then
+-- 				result.distance := abs (x (point) - x (s));
+-- 				
+-- 			elsif delta_y = zero then
+-- 				result.distance := abs (y (s) - y (point));
+-- 				
+-- 			else
+-- 				s1 := type_float ((y (e) - y (s)) * x (point));
+-- 				s2 := type_float ((x (e) - x (s)) * y (point));
+-- 				s3 := type_float (x (e) * y (s));
+-- 				s4 := type_float (y (e) * x (s));
+-- 				s5 := abs (s1 - s2 + s3 - s4);
+-- 				s6 := type_float (y (e) - y (s)) ** 2;
+-- 				s7 := type_float (x (e) - x (s)) ** 2;
+-- 				s8 := functions.sqrt (s6 + s7);
+-- 
+-- 				result.distance := type_distance (s5 / s8); -- always positive
+-- 			end if;
 
-				result.distance := type_distance (s5 / s8); -- always positive
+			result.distance := distance (line, point);
+
+			-- Compute the point of intersection:
+			i := type_point (move (point, dl + 90.0, result.distance));
+
+			if distance (line, i) /= zero then
+				i := type_point (move (point, dl - 90.0, result.distance));
 			end if;
 			
-			-- If the range check adresses the line end points, the direction of the line
-			-- matters. Means if it was drawn from the left to the right or the other way around.
-			-- Swap start/end coordinates of line if drawn from right to the left.
-			case line_range is
-				when BETWEEN_END_POINTS | WITH_END_POINTS =>
-					if delta_x < zero then 
-						line_scratch := s;
-						s := e;
-						e := line_scratch;
-					end if;
-				when others => null;
-			end case;
-
-			-- Test range of point in regard to the x position.
-			case line_range is
-				when BETWEEN_END_POINTS =>
-					
-					if result.distance = zero then
-
-						if delta_x = zero then -- vertical line
-							
-							if delta_y > zero then -- line drawn away from x-axis
-								if y (point) >= y (e) or y (point) <= y (s) then
-								-- point above, below or on end points of line
-									result.out_of_range := true;
-								else
-									result.out_of_range := false;
-								end if;
-								
-							else -- line drawn toward x-axis
-								if y (point) >= y (s) or y (point) <= y (e) then
-								-- point above,below or on end points of line
-									result.out_of_range := true;
-								else
-									result.out_of_range := false;
-								end if;
-							end if;
-							
-						else -- line is a slope or horizontal
-								
-							if x (point) >= x (e) or x (point) <= x (s) then
-								result.out_of_range := true;
-							else
-								result.out_of_range := false;
-							end if;
-							
-						end if;
-						
-					end if;
-					
-				when WITH_END_POINTS =>
-					
-					if result.distance = zero then
-						
-						if delta_x = zero then -- vertical line
-							
-							if delta_y > zero then -- line drawn away from x-axis
-								-- if point above or below end points of line
-								if y (point) > y (e) or y (point) < y (s) then 
-									-- point above or below end points of line
-									result.out_of_range := true;
-								else
-									result.out_of_range := false;
-								end if;
-								
-							else -- line drawn toward x-axis
-								-- if point above or below end points of line
-								if y (point) > y (s) or y (point) < y (e) then 
-								-- point above or below end points of line								
-									result.out_of_range := true;
-								else
-									result.out_of_range := false;
-								end if;
-							end if;
-							
-						else -- line is a slope or horizontal
-							if x (point) > x (e) or x (point) < x (s) then
-								result.out_of_range := true;
-							else
-								result.out_of_range := false;
-							end if;
-							
-						end if;
-					end if;
-					
-				when BEYOND_END_POINTS =>
-					if result.distance = zero then
-						result.out_of_range := false;
-					end if;
-			end case;
+-- 			-- If the range check adresses the line end points, the direction of the line
+-- 			-- matters. Means if it was drawn from the left to the right or the other way around.
+-- 			-- Swap start/end coordinates of line if drawn from right to the left.
+-- 			case line_range is
+-- 				when BETWEEN_END_POINTS | WITH_END_POINTS =>
+-- 					if delta_x < zero then 
+-- 						line_scratch := s;
+-- 						s := e;
+-- 						e := line_scratch;
+-- 					end if;
+-- 				when others => null;
+-- 			end case;
+-- 
+-- 			-- Test range of point in regard to the x position.
+-- 			case line_range is
+-- 				when BETWEEN_END_POINTS =>
+-- 					
+-- 					if result.distance = zero then
+-- 
+-- 						if delta_x = zero then -- vertical line
+-- 							
+-- 							if delta_y > zero then -- line drawn away from x-axis
+-- 								if y (point) >= y (e) or y (point) <= y (s) then
+-- 								-- point above, below or on end points of line
+-- 									result.out_of_range := true;
+-- 								else
+-- 									result.out_of_range := false;
+-- 								end if;
+-- 								
+-- 							else -- line drawn toward x-axis
+-- 								if y (point) >= y (s) or y (point) <= y (e) then
+-- 								-- point above,below or on end points of line
+-- 									result.out_of_range := true;
+-- 								else
+-- 									result.out_of_range := false;
+-- 								end if;
+-- 							end if;
+-- 							
+-- 						else -- line is a slope or horizontal
+-- 								
+-- 							if x (point) >= x (e) or x (point) <= x (s) then
+-- 								result.out_of_range := true;
+-- 							else
+-- 								result.out_of_range := false;
+-- 							end if;
+-- 							
+-- 						end if;
+-- 						
+-- 					end if;
+-- 					
+-- 				when WITH_END_POINTS =>
+-- 					
+-- 					if result.distance = zero then
+-- 						
+-- 						if delta_x = zero then -- vertical line
+-- 							
+-- 							if delta_y > zero then -- line drawn away from x-axis
+-- 								-- if point above or below end points of line
+-- 								if y (point) > y (e) or y (point) < y (s) then 
+-- 									-- point above or below end points of line
+-- 									result.out_of_range := true;
+-- 								else
+-- 									result.out_of_range := false;
+-- 								end if;
+-- 								
+-- 							else -- line drawn toward x-axis
+-- 								-- if point above or below end points of line
+-- 								if y (point) > y (s) or y (point) < y (e) then 
+-- 								-- point above or below end points of line								
+-- 									result.out_of_range := true;
+-- 								else
+-- 									result.out_of_range := false;
+-- 								end if;
+-- 							end if;
+-- 							
+-- 						else -- line is a slope or horizontal
+-- 							if x (point) > x (e) or x (point) < x (s) then
+-- 								result.out_of_range := true;
+-- 							else
+-- 								result.out_of_range := false;
+-- 							end if;
+-- 							
+-- 						end if;
+-- 					end if;
+-- 					
+-- 				when BEYOND_END_POINTS =>
+-- 					if result.distance = zero then
+-- 						result.out_of_range := false;
+-- 					end if;
+-- 			end case;
 			
 			return result;
 		end distance_point_line;
