@@ -5336,7 +5336,7 @@ package body et_kicad.schematic is
 						strand : in type_strand) is
 						segment_cursor_sec : type_net_segments.cursor := strand.segments.first;
 						use et_schematic.pac_shapes;
-						distance : type_distance_point_line;
+						dist : type_distance_point_line;
 					begin -- query_segments_sec
 						log_indentation_up;
 						log (text => "quering segments ...", level => log_threshold + 4);
@@ -5361,12 +5361,12 @@ package body et_kicad.schematic is
 								begin
 									-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
 									-- exit prematurely and return the coordinates of the expected junction.
-									distance := distance_point_line (
+									dist := distance_point_line (
 										point 		=> type_point (element (segment_cursor_prim).coordinates_start),
 										line		=> line,
 										line_range	=> BETWEEN_END_POINTS);
 								
-									if (not distance.out_of_range) and distance.distance = zero then
+									if (not dist.out_of_range) and dist.distance = zero then
 										junction_position.expected := true;
 										junction_position.position := element (segment_cursor_prim).coordinates_start;
 										exit;
@@ -5375,12 +5375,12 @@ package body et_kicad.schematic is
 									-- If END point of primary segment sits BETWEEN start and end point of secondary segment,
 									-- exit prematurely and return the coordinates of the expected junction.
 
-									distance := distance_point_line (
+									dist := distance_point_line (
 										point 		=> type_point (element (segment_cursor_prim).coordinates_end),
 										line		=> line,
 										line_range	=> BETWEEN_END_POINTS);
 								
-									if (not distance.out_of_range) and distance.distance = zero then
+									if (not dist.out_of_range) and dist.distance = zero then
 										junction_position.expected := true;
 										junction_position.position := element (segment_cursor_prim).coordinates_end;
 										exit;

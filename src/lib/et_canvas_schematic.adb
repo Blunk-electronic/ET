@@ -554,7 +554,7 @@ package body et_canvas_schematic is
 			segments := query_segments (
 				module			=> current_active_module,
 				place			=> to_position (point, current_active_sheet),
-				catch_zone		=> 0.5,
+				catch_zone		=> catch_zone_default,
 				log_threshold	=> log_threshold + 1);
 
 			if not is_empty (segments) then

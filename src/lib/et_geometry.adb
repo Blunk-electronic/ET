@@ -989,7 +989,28 @@ package body et_geometry is
 			return (a.x * b.x  +  a.y * b.y  +  a.z * b.z);
 		end dot_product;
 
-
+		function divide (
+			a, b	: in type_vector)
+			return type_distance
+		is
+			lambda : type_distance;
+		begin
+			-- It does not matter if we use
+			-- the x,y or z component for this calculation.
+			-- But we must skip the case when
+			-- a division by zero is ahead.
+			if b.x /= zero then
+				lambda := a.x / b.x;
+			elsif b.y /= zero then
+				lambda := a.y / b.y;
+			elsif b.z /= zero then
+				lambda := a.z / b.z;
+			else
+				put_line ("ERROR while vector division ");
+			end if;
+			
+			return lambda;
+		end divide;
 
 		function start_vector (
 			line	: in type_line)
@@ -1002,6 +1023,17 @@ package body et_geometry is
 				);
 		end start_vector;
 
+		function end_vector (
+			line	: in type_line)
+			return type_vector is
+		begin
+			return (
+				x => line.end_point.x,
+				y => line.end_point.y,
+				z => zero
+				);
+		end end_vector;
+		
 		function direction_vector (
 			line	: in type_line)
 			return type_vector is
@@ -1168,36 +1200,27 @@ package body et_geometry is
 		end which_zone;
 
 		function distance_point_line (
-		-- CS: provide range and accuracy via parameter
-		-- CS: type_Y_axis_positive (upwards, downwards) may matter here. 
-
 			point		: in type_point;
 			line		: in type_line;
-			line_range	: in type_line_range) 
+			line_range	: in type_line_range;
+			accuracy	: in type_accuracy := zero)
 			return type_distance_point_line is
 
 			result : type_distance_point_line; -- to be returned
-	
--- 			type type_float is digits 11 range -100000000.0 .. 100000000.0; -- CS: probably way too much
--- 			package functions is new ada.numerics.generic_elementary_functions (type_float);
--- 
--- 			s : type_point := line.start_point;
--- 			e : type_point := line.end_point;		
 
--- 			delta_x : type_distance := x (e) - x (s);
--- 			delta_y : type_distance := y (e) - y (s);
--- 			
--- 			line_scratch : type_point;
--- 
-			-- 			s1,s2,s3,s4,s5,s6,s7,s8 : type_float;
+			line_direction : type_rotation;
+			line_direction_vector : type_vector;
+			line_start_vector, line_end_vector : type_vector;
 
-			dl : constant type_rotation := direction (line);
-
-			i : type_point;
-
+			exact_point : type_point;
+			exact_point_vector : type_vector;
+			
+			lambda_forward, lambda_backward : type_distance;
+			
 		begin
 			-- The first and simplest test is to figure out whether
 			-- the given point sits at the start or end point of the line.
+			-- Mind: result.distance has default zero.
 			-- This test applies for a range that includes the start and end 
 			-- points of the line. 
 			-- On match we exit this function prematurely and return the result
@@ -1208,11 +1231,13 @@ package body et_geometry is
 					if point = line.start_point then
 						
 						result.sits_on_start := true;
+						result.out_of_range := false;
 						return result;
 
 					elsif point = line.end_point then
 						
 						result.sits_on_end := true;
+						result.out_of_range := false;
 						return result;
 
 					end if;
@@ -1220,130 +1245,83 @@ package body et_geometry is
 				when others => null;
 			end case;
 
-			-- The next test depends on the orientation of the given line.
-			-- The line is vertical if delta_x is zero. It is horizontal if
-			-- delta_y is zero.
-			-- If either delta_x or delta_y is zero, the computation is simple.
-			-- Otherwise we must do a bit more as described in 
-			-- https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
--- 			if delta_x = zero then
--- 				result.distance := abs (x (point) - x (s));
--- 				
--- 			elsif delta_y = zero then
--- 				result.distance := abs (y (s) - y (point));
--- 				
--- 			else
--- 				s1 := type_float ((y (e) - y (s)) * x (point));
--- 				s2 := type_float ((x (e) - x (s)) * y (point));
--- 				s3 := type_float (x (e) * y (s));
--- 				s4 := type_float (y (e) * x (s));
--- 				s5 := abs (s1 - s2 + s3 - s4);
--- 				s6 := type_float (y (e) - y (s)) ** 2;
--- 				s7 := type_float (x (e) - x (s)) ** 2;
--- 				s8 := functions.sqrt (s6 + s7);
--- 
--- 				result.distance := type_distance (s5 / s8); -- always positive
--- 			end if;
-
+			-- Compute the distance of the point from the line.
+			-- This computation does not care about end or start point of the line.
+			-- It assumes an indefinite long line without start or end point.
 			result.distance := distance (line, point);
 
-			-- Compute the point of intersection:
-			i := type_point (move (point, dl + 90.0, result.distance));
-
-			if distance (line, i) /= zero then
-				i := type_point (move (point, dl - 90.0, result.distance));
-			end if;
+			--put_line ("distance " & to_string (result.distance));
 			
--- 			-- If the range check adresses the line end points, the direction of the line
--- 			-- matters. Means if it was drawn from the left to the right or the other way around.
--- 			-- Swap start/end coordinates of line if drawn from right to the left.
--- 			case line_range is
--- 				when BETWEEN_END_POINTS | WITH_END_POINTS =>
--- 					if delta_x < zero then 
--- 						line_scratch := s;
--- 						s := e;
--- 						e := line_scratch;
--- 					end if;
--- 				when others => null;
--- 			end case;
--- 
--- 			-- Test range of point in regard to the x position.
--- 			case line_range is
--- 				when BETWEEN_END_POINTS =>
--- 					
--- 					if result.distance = zero then
--- 
--- 						if delta_x = zero then -- vertical line
--- 							
--- 							if delta_y > zero then -- line drawn away from x-axis
--- 								if y (point) >= y (e) or y (point) <= y (s) then
--- 								-- point above, below or on end points of line
--- 									result.out_of_range := true;
--- 								else
--- 									result.out_of_range := false;
--- 								end if;
--- 								
--- 							else -- line drawn toward x-axis
--- 								if y (point) >= y (s) or y (point) <= y (e) then
--- 								-- point above,below or on end points of line
--- 									result.out_of_range := true;
--- 								else
--- 									result.out_of_range := false;
--- 								end if;
--- 							end if;
--- 							
--- 						else -- line is a slope or horizontal
--- 								
--- 							if x (point) >= x (e) or x (point) <= x (s) then
--- 								result.out_of_range := true;
--- 							else
--- 								result.out_of_range := false;
--- 							end if;
--- 							
--- 						end if;
--- 						
--- 					end if;
--- 					
--- 				when WITH_END_POINTS =>
--- 					
--- 					if result.distance = zero then
--- 						
--- 						if delta_x = zero then -- vertical line
--- 							
--- 							if delta_y > zero then -- line drawn away from x-axis
--- 								-- if point above or below end points of line
--- 								if y (point) > y (e) or y (point) < y (s) then 
--- 									-- point above or below end points of line
--- 									result.out_of_range := true;
--- 								else
--- 									result.out_of_range := false;
--- 								end if;
--- 								
--- 							else -- line drawn toward x-axis
--- 								-- if point above or below end points of line
--- 								if y (point) > y (s) or y (point) < y (e) then 
--- 								-- point above or below end points of line								
--- 									result.out_of_range := true;
--- 								else
--- 									result.out_of_range := false;
--- 								end if;
--- 							end if;
--- 							
--- 						else -- line is a slope or horizontal
--- 							if x (point) > x (e) or x (point) < x (s) then
--- 								result.out_of_range := true;
--- 							else
--- 								result.out_of_range := false;
--- 							end if;
--- 							
--- 						end if;
--- 					end if;
--- 					
--- 				when BEYOND_END_POINTS =>
--- 					if result.distance = zero then
--- 						result.out_of_range := false;
--- 					end if;
--- 			end case;
+			-- If the point sits somewhere on the line, we must figure out
+			-- where exactly it is. If it is not on the line, then there is
+			-- nothing to do.
+			if result.distance <= accuracy then -- on the line
+
+				line_direction := direction (line);
+				line_direction_vector := direction_vector (line);
+				
+				-- Compute the exact point on the line:
+				exact_point := type_point (move (point, line_direction + 90.0, result.distance));
+				
+				if distance (line, exact_point) /= zero then
+					exact_point := type_point (move (point, line_direction - 90.0, result.distance));
+				end if;
+				
+				exact_point_vector := to_vector (exact_point);
+				
+				-- intersection = line.start_point + lambda_forward  * line_direction_vector
+				-- intersection = line.end_point   + lambda_backward * line_direction_vector
+				
+				line_start_vector := start_vector (line);
+				lambda_forward := divide (subtract (exact_point_vector, line_start_vector), line_direction_vector);
+
+				if lambda_forward < zero then -- point sits before start of line
+					case line_range is
+						when BEYOND_END_POINTS => result.out_of_range := false;
+						when others => result.out_of_range := true;
+					end case;
+
+					return result; -- no more computations required
+				end if;
+				
+				if lambda_forward = zero then -- point sits at start of line
+					result.sits_on_start := true;
+					case line_range is
+						when BETWEEN_END_POINTS => result.out_of_range := true;
+						when others => result.out_of_range := false;
+					end case;
+
+					return result; -- no more computations required
+				end if;
+
+				--put_line ("after start");
+				
+				line_end_vector := end_vector (line);
+				lambda_backward := divide (subtract (exact_point_vector, line_end_vector), line_direction_vector);
+
+				if lambda_backward > zero then -- point sits after end of line
+					case line_range is
+						when BEYOND_END_POINTS => result.out_of_range := false;
+						when others => result.out_of_range := true;
+					end case;
+
+					return result; -- no more computations required
+				end if;
+
+				if lambda_backward = zero then -- point sits at end of line
+					result.sits_on_end := true;
+					case line_range is
+						when BETWEEN_END_POINTS => result.out_of_range := true;
+						when others => result.out_of_range := false;
+					end case;
+
+					return result; -- no more computations required
+				end if;
+
+				--put_line ("before end");
+
+				result.out_of_range := false;
+			end if;
 			
 			return result;
 		end distance_point_line;
@@ -1359,7 +1337,7 @@ package body et_geometry is
 			distance : type_distance_point_line;
 		begin
 			--distance := distance_point_line (point, line, BETWEEN_END_POINTS);
-			distance := distance_point_line (point, line, WITH_END_POINTS);
+			distance := distance_point_line (point, line, WITH_END_POINTS, accuracy);
 
 			if not distance.out_of_range and distance.distance <= accuracy then
 				return true;

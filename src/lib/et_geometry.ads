@@ -462,6 +462,10 @@ package et_geometry is
 			a, b	: in type_vector)
 			return type_distance;
 
+		function divide (
+			a, b	: in type_vector)
+			return type_distance;
+
 
 	-- LINE
 		type type_line is abstract tagged record
@@ -474,10 +478,17 @@ package et_geometry is
 			line	: in type_line)
 			return type_vector;
 
-		function direction_vector (
+		function end_vector (
 			line	: in type_line)
 			return type_vector;
 		
+		function direction_vector (
+			line	: in type_line)
+			return type_vector;
+
+		-- Computes the distance of the point from the line.
+		-- This computation does not care about end or start point of the line.
+		-- It assumes an indefinite long line without start or end point.
 		function distance (
 			line	: in type_line;
 			point	: in type_point)
@@ -536,7 +547,7 @@ package et_geometry is
 			distance		: type_distance_positive := zero;
 			sits_on_start	: boolean := false;
 			sits_on_end		: boolean := false;
-			out_of_range	: boolean := false;
+			out_of_range	: boolean := true;
 		end record;
 
 		type type_line_range is (
@@ -546,12 +557,11 @@ package et_geometry is
 			);
 		
 		-- Computes the shortest distance (perpendicular) of a given point from the given line. 
-		-- If the point is outside the
-		-- range of the x coordinate, then the corresponding flag in the return value is set.
 		function distance_point_line (
 			point		: in type_point; 
 			line		: in type_line;
-			line_range	: in type_line_range)
+			line_range	: in type_line_range;
+			accuracy	: in type_accuracy := zero)
 			return type_distance_point_line;
 
 		function on_line (

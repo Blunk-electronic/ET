@@ -2895,7 +2895,7 @@ package body et_kicad_to_native is
 					use pac_geometry_sch;
 					use pac_shapes;
 
-					distance : pac_shapes.type_distance_point_line;
+					dist : pac_shapes.type_distance_point_line;
 
 					terminal : et_devices.type_terminal;
 				begin
@@ -2920,7 +2920,7 @@ package body et_kicad_to_native is
 
 -- 							-- calculate distance of port from segment
 
--- 							distance := geometry.distance_point_line (
+-- 							dist := geometry.distance_point_line (
 -- 								point 		=> et_coordinates.geometry.type_point (element (port_cursor_kicad).coordinates),
 -- 								line_start	=> et_coordinates.geometry.type_point (segment.coordinates_start),
 -- 								line_end	=> et_coordinates.geometry.type_point (segment.coordinates_end),
@@ -2934,14 +2934,14 @@ package body et_kicad_to_native is
 									start_point	=> type_point (segment.coordinates_start), 
 									end_point	=> type_point (segment.coordinates_end));
 							begin
-								distance := et_schematic.pac_shapes.distance_point_line (
+								dist := et_schematic.pac_shapes.distance_point_line (
 									point 		=> type_point (element (port_cursor_kicad).coordinates),
 									line 		=> type_line (line),
 									line_range	=> WITH_END_POINTS);
 							end;
 							
 							-- If port sits on segment, append it to ports_of_segment.
-							if (not distance.out_of_range) and distance.distance = zero then
+							if (not dist.out_of_range) and dist.distance = zero then
 
 								-- Get the name of the unit:
 								terminal := to_terminal (
