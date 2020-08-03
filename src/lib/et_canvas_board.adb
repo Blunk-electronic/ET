@@ -742,7 +742,7 @@ package body et_canvas_board is
 		point	: in type_point) 
 	is
 	begin
-		log (text => to_string (button) & "at " & to_string (point), level => log_threshold);
+		log (text => to_string (button) & " at" & to_string (point), level => log_threshold);
 		
 		case button is
 			when 1 => -- left button

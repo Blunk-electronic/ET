@@ -1569,6 +1569,22 @@ package body pac_canvas is
 	begin
 		return (0.0, 0.0, paper_width, paper_height);
 	end paper_bounding_box;
+
+
+
+	procedure set_request_clarification is begin
+		request_clarificaton := YES;
+
+		-- show instruction in status bar
+		set_status ("clarify object by right click or page up/down key !");
+	end set_request_clarification;
+	
+	procedure reset_request_clarification is begin
+		request_clarificaton := NO;
+
+		-- clear status bar
+		status_clear;
+	end reset_request_clarification;
 	
 end pac_canvas;
 	

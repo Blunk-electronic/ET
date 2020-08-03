@@ -546,15 +546,15 @@ package body et_schematic_ops.nets is
 		log_indentation_down;		
 	end delete_net;
 
--- 	function is_empty (segments : in pac_segments.list) return boolean is 
--- 		use pac_segments;
--- 	begin
--- 		if length (segments) = 0 then
--- 			return true;
--- 		else
--- 			return false;
--- 		end if;
--- 	end is_empty;
+	function more_than_one (segments : in pac_segments.list) return boolean is 
+		use pac_segments;
+	begin
+		if length (segments) > 1 then
+			return true;
+		else
+			return false;
+		end if;
+	end more_than_one;
 	
 	procedure delete_segment (
 	-- Deletes a segment of a net.

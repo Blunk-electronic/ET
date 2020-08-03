@@ -543,36 +543,65 @@ package body et_canvas_schematic is
 		button	: in type_mouse_button;
 		point	: in type_point) 
 	is
-		procedure delete_net (point : in type_point) is 
+		procedure delete_net_segment (point : in type_point) is 
 			use et_schematic_ops.nets;
 			use pac_segments;
-			segments : pac_segments.list;
 			segment_cursor : pac_segments.cursor;
 		begin
 			log (text => "deleting net segment", level => log_threshold);
 			log_indentation_up;
 			
 			-- Collect all segments in the vicinity of the given point:
-			segments := query_segments (
+			selected_segments := query_segments (
 				module			=> current_active_module,
 				place			=> to_position (point, current_active_sheet),
 				catch_zone		=> catch_zone_default,
 				log_threshold	=> log_threshold + 1);
 
-			if not is_empty (segments) then
-				segment_cursor := segments.first;
+			-- evaluate the number of segments found here:
+			case length (selected_segments) is
+				when 0 =>
+					reset_request_clarification;
+					
+				when 1 =>
+					segment_cursor := selected_segments.first;
 				
-				delete_segment (
-					module_cursor	=> current_active_module,
-					segment			=> element (segment_cursor),
-					log_threshold	=> log_threshold + 1);
-			end if;
+					delete_segment (
+						module_cursor	=> current_active_module,
+						segment			=> element (segment_cursor),
+						log_threshold	=> log_threshold + 1);
 
+					reset_request_clarification;
+					
+				when others =>
+					--log (text => "many objects", level => log_threshold + 2);
+					set_request_clarification;
+
+					-- preselect the first segment
+					selected_segment := selected_segments.first;
+			end case;
+			
 			log_indentation_down;
-		end delete_net;
+		end delete_net_segment;
+
+		procedure clarify_net_segment is
+			use et_schematic;
+			use et_schematic_ops.nets;
+			use pac_segments;
+			s : type_net_segments.cursor := element (selected_segment).segment;
+		begin
+			log (text => "segment" & to_string (s), level => log_threshold, console => true);
+
+			if next (selected_segment) /= pac_segments.no_element then
+				next (selected_segment);
+			else
+				selected_segment := selected_segments.first;
+			end if;
+			
+		end clarify_net_segment;
 		
 	begin -- button_pressed
-		log (text => to_string (button) & "at " & to_string (point), level => log_threshold);
+		log (text => to_string (button) & " at" & to_string (point), level => log_threshold);
 		
 		case button is
 			when 1 => -- left button
@@ -585,7 +614,7 @@ package body et_canvas_schematic is
 						case noun is
 							when NOUN_UNIT => null;
 
-							when NOUN_NET => delete_net (point);
+							when NOUN_NET => delete_net_segment (point);
 
 							when others =>
 								null;
@@ -605,8 +634,26 @@ package body et_canvas_schematic is
 					when others => null; -- CS
 				end case;
 				
-				self.queue_draw; -- without frame and grid initialization
+				self.queue_draw;
 
+			when 3 => -- right button
+
+				case verb is
+					when VERB_DELETE =>
+
+						case noun is
+							when NOUN_UNIT => null;
+
+							when NOUN_NET => clarify_net_segment;
+
+							when others =>
+								null;
+								
+						end case;
+
+					when others => null; -- CS
+				end case;
+				
 			when others => null;
 		end case;
 

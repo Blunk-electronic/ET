@@ -184,7 +184,11 @@ package et_schematic_ops.nets is
 
 	package pac_segments is new doubly_linked_lists (type_segment);
 
--- 	function is_empty (segments : in pac_segments.list) return boolean;
+	selected_segments : pac_segments.list;
+	selected_segment : pac_segments.cursor;
+	
+	-- Returns true if segments contains more than one segment:
+	function more_than_one (segments : in pac_segments.list) return boolean;
 	
 	-- Deletes a segment of a net.
 	procedure delete_segment (

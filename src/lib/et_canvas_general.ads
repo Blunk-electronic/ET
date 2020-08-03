@@ -612,6 +612,12 @@ package pac_canvas is
 		self	: not null access type_view;
 		button	: in type_mouse_button;
 		point	: in type_point) is null;
+
+	type type_request_clarification is (NO, YES);
+	request_clarificaton : type_request_clarification := NO;
+
+	procedure set_request_clarification;
+	procedure reset_request_clarification;
 								  
 private
 
