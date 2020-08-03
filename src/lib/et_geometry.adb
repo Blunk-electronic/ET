@@ -1203,7 +1203,7 @@ package body et_geometry is
 			point		: in type_point;
 			line		: in type_line;
 			line_range	: in type_line_range;
-			accuracy	: in type_accuracy := zero)
+			catch_zone	: in type_accuracy := zero)
 			return type_distance_point_line is
 
 			result : type_distance_point_line; -- to be returned
@@ -1216,7 +1216,6 @@ package body et_geometry is
 			exact_point_vector : type_vector;
 			
 			lambda_forward, lambda_backward : type_distance;
-			
 		begin
 			-- The first and simplest test is to figure out whether
 			-- the given point sits at the start or end point of the line.
@@ -1255,22 +1254,30 @@ package body et_geometry is
 			-- If the point sits somewhere on the line, we must figure out
 			-- where exactly it is. If it is not on the line, then there is
 			-- nothing to do.
-			if result.distance <= accuracy then -- on the line
+			if result.distance <= catch_zone then -- on the line
 
 				line_direction := direction (line);
 				line_direction_vector := direction_vector (line);
 				
-				-- Compute the exact point on the line:
+				-- Compute the exact point on the line: The intersection of a line that runs
+				-- from the given point perpendicular to the given line.
+				-- At this stage we do not know in which direction to go. So we just try
+				-- to go in 90 degree direction. If the distance of exact_point from the line
+				-- is not zero, then we try in -90 degree direction.
 				exact_point := type_point (move (point, line_direction + 90.0, result.distance));
 				
 				if distance (line, exact_point) /= zero then
 					exact_point := type_point (move (point, line_direction - 90.0, result.distance));
 				end if;
-				
+			
 				exact_point_vector := to_vector (exact_point);
-				
-				-- intersection = line.start_point + lambda_forward  * line_direction_vector
-				-- intersection = line.end_point   + lambda_backward * line_direction_vector
+
+				-- Any point on a line can be computed by this formula (see textbook on vector algebra):
+				-- exact_point = line.start_point + lambda_forward  * line_direction_vector
+				-- exact_point = line.end_point   + lambda_backward * line_direction_vector
+
+				-- Using these formula we can calculate whether exact_point sits between 
+				-- (or at) the start and end point of the line:
 				
 				line_start_vector := start_vector (line);
 				lambda_forward := divide (subtract (exact_point_vector, line_start_vector), line_direction_vector);
@@ -1327,19 +1334,16 @@ package body et_geometry is
 		end distance_point_line;
 
 		function on_line (
-		-- Returns true if the given point sits on the given line.
-		-- The optional parameter accuracy may be used to specifiy the range at
-		-- which the point is regarded as sitting on the line.
 			point		: in type_point;
 			line		: in type_line;
-			accuracy	: in type_accuracy := zero)
+			catch_zone	: in type_accuracy := zero)
 			return boolean is
 			distance : type_distance_point_line;
 		begin
 			--distance := distance_point_line (point, line, BETWEEN_END_POINTS);
-			distance := distance_point_line (point, line, WITH_END_POINTS, accuracy);
+			distance := distance_point_line (point, line, WITH_END_POINTS, catch_zone);
 
-			if not distance.out_of_range and distance.distance <= accuracy then
+			if not distance.out_of_range and distance.distance <= catch_zone then
 				return true;
 			else
 				return false;

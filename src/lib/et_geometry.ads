@@ -462,6 +462,10 @@ package et_geometry is
 			a, b	: in type_vector)
 			return type_distance;
 
+		-- Divides the components x,y,z of vector a
+		-- by one of the components of vector b.
+		-- At least one of the components of b 
+		-- must not be zero.
 		function divide (
 			a, b	: in type_vector)
 			return type_distance;
@@ -557,11 +561,15 @@ package et_geometry is
 			);
 		
 		-- Computes the shortest distance (perpendicular) of a given point from the given line. 
+		-- The optional parameter catch_zone specifies the range at which the point is regarded
+		-- as stitting on the line.
+		-- In the result the flag out_of_range will be cleared if the point sits on the line
+		-- or within the catch_zone.
 		function distance_point_line (
 			point		: in type_point; 
 			line		: in type_line;
 			line_range	: in type_line_range;
-			accuracy	: in type_accuracy := zero)
+			catch_zone	: in type_accuracy := zero)
 			return type_distance_point_line;
 
 		function on_line (
@@ -570,7 +578,7 @@ package et_geometry is
 		-- which the point is regarded as sitting on the line.
 			point		: in type_point;
 			line		: in type_line;
-			accuracy	: in type_accuracy := zero)
+			catch_zone	: in type_accuracy := zero)
 			return boolean; 
 		
 	-- ARC

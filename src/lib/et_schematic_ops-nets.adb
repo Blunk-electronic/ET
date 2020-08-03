@@ -2848,7 +2848,7 @@ package body et_schematic_ops.nets is
 						if on_line (
 							point		=> type_point (place),
 							line		=> element (segment_cursor),
-							accuracy	=> catch_zone) then
+							catch_zone	=> catch_zone) then
 
 							log_indentation_up;
 							log (text => "sits on segment", level => log_threshold + 1);
