@@ -1219,7 +1219,7 @@ package body et_geometry is
 			point		: in type_point;
 			line		: in type_line;
 			line_range	: in type_line_range;
-			catch_zone	: in type_accuracy := zero)
+			catch_zone	: in type_catch_zone := zero)
 			return type_distance_point_line is
 
 			result : type_distance_point_line; -- to be returned
@@ -1352,7 +1352,7 @@ package body et_geometry is
 		function on_line (
 			point		: in type_point;
 			line		: in type_line;
-			catch_zone	: in type_accuracy := zero)
+			catch_zone	: in type_catch_zone := zero)
 			return boolean is
 			distance : type_distance_point_line;
 		begin
@@ -1601,7 +1601,7 @@ package body et_geometry is
 		-- which the point is regarded as sitting on the arc.
 			point		: in type_point;
 			arc			: in type_arc;
-			accuracy	: in type_accuracy := zero)
+			accuracy	: in type_catch_zone := zero)
 			return boolean is
 		begin
 			return false; 
@@ -1746,7 +1746,7 @@ package body et_geometry is
 		-- which the point is regarded as sitting on the circle.
 			point		: in type_point;
 			circle		: in type_circle;
-			accuracy	: in type_accuracy := zero)
+			accuracy	: in type_catch_zone := zero)
 			return boolean is
 		begin
 			return false; 

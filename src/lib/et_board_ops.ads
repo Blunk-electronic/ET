@@ -296,7 +296,7 @@ package et_board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 -- ROUTE RESTRICT
@@ -325,7 +325,7 @@ package et_board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 -- VIA RESTRICT
@@ -354,7 +354,7 @@ package et_board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 	
@@ -384,7 +384,7 @@ package et_board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 -- SILK SCREEN
@@ -417,7 +417,7 @@ package et_board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 
@@ -450,7 +450,7 @@ package et_board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 -- KEEPOUT
@@ -482,7 +482,7 @@ package et_board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 -- STOP MASK
@@ -514,7 +514,7 @@ package et_board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 -- STENCIL
@@ -547,7 +547,7 @@ package et_board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 

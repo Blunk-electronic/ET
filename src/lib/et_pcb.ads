@@ -202,7 +202,7 @@ package et_pcb is
 		point		: in type_point; -- x/y
 		layer		: in type_signal_layer;
 		line		: in pac_copper_lines.cursor;
-		accuracy	: in type_accuracy)
+		accuracy	: in type_catch_zone)
 		return boolean;
 	
 	type type_copper_arc is new et_packages.type_copper_arc with record

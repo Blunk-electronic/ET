@@ -84,7 +84,7 @@ package et_geometry is
 		zero : constant type_distance := 0.0;
 
 		subtype type_distance_positive is type_distance range zero .. type_distance'last;
-		subtype type_accuracy is type_distance range zero .. type_distance'last/1000;
+		subtype type_catch_zone is type_distance_positive range zero .. type_distance_positive'last/1000;
 
 		grid_max : constant type_distance_positive := type_distance_positive'last/1000;
 		subtype type_distance_grid is type_distance_positive range zero .. grid_max;
@@ -570,7 +570,7 @@ package et_geometry is
 			point		: in type_point; 
 			line		: in type_line;
 			line_range	: in type_line_range;
-			catch_zone	: in type_accuracy := zero)
+			catch_zone	: in type_catch_zone := zero)
 			return type_distance_point_line;
 
 		function on_line (
@@ -579,7 +579,7 @@ package et_geometry is
 		-- which the point is regarded as sitting on the line.
 			point		: in type_point;
 			line		: in type_line;
-			catch_zone	: in type_accuracy := zero)
+			catch_zone	: in type_catch_zone := zero)
 			return boolean; 
 		
 	-- ARC
@@ -622,7 +622,7 @@ package et_geometry is
 		-- which the point is regarded as sitting on the arc.
 			point		: in type_point;
 			arc			: in type_arc;
-			accuracy	: in type_accuracy := zero)
+			accuracy	: in type_catch_zone := zero)
 			return boolean; 
 		
 		function arc_end_point (
@@ -684,7 +684,7 @@ package et_geometry is
 		-- which the point is regarded as sitting on the circle.
 			point		: in type_point;
 			circle		: in type_circle;
-			accuracy	: in type_accuracy := zero)
+			accuracy	: in type_catch_zone := zero)
 			return boolean;
 		
 		

@@ -115,7 +115,7 @@ package body et_pcb is
 		point			: in type_point; -- x/y
 		layer			: in type_signal_layer;
 		line			: in pac_copper_lines.cursor;
-		accuracy		: in type_accuracy)
+		accuracy		: in type_catch_zone)
 		return boolean is
 		result : boolean := false; -- to be returned
 		use pac_copper_lines;

@@ -2078,14 +2078,11 @@ package body et_board_ops is
 	end draw_track_arc;
 	
 	procedure ripup_track_segment (
-	-- Rips up the track segment of a net that crosses the given point in given layer.
-	-- CS currently rips up the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -2254,7 +2251,6 @@ package body et_board_ops is
 	end;
 	
 	procedure draw_route_restrict_line (
-	-- Draws a route restrict line.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in type_route_restrict_line;
 		log_threshold	: in type_log_level) is
@@ -2330,7 +2326,6 @@ package body et_board_ops is
 	end draw_route_restrict_arc;
 
 	procedure draw_route_restrict_circle (
-	-- Draws a route restrict circle.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in type_route_restrict_circle;
 		log_threshold	: in type_log_level) is
@@ -2368,12 +2363,9 @@ package body et_board_ops is
 	end draw_route_restrict_circle;
 
 	procedure delete_route_restrict (
-	-- Deletes the segment of route restrict that crosses the given point.
-	-- CS currently rips up the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -2455,7 +2447,6 @@ package body et_board_ops is
 -- VIA RESTRICT
 
 	procedure draw_via_restrict_line (
-	-- Draws a via restrict line.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in type_via_restrict_line;
 		log_threshold	: in type_log_level) is
@@ -2493,7 +2484,6 @@ package body et_board_ops is
 	end draw_via_restrict_line;
 
 	procedure draw_via_restrict_arc (
-	-- Draws a via restrict arc.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		arc				: in type_via_restrict_arc;
 		log_threshold	: in type_log_level) is
@@ -2531,7 +2521,6 @@ package body et_board_ops is
 	end draw_via_restrict_arc;
 
 	procedure draw_via_restrict_circle (
-	-- Draws a via restrict circle.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in type_via_restrict_circle;
 		log_threshold	: in type_log_level) is
@@ -2569,12 +2558,9 @@ package body et_board_ops is
 	end draw_via_restrict_circle;
 
 	procedure delete_via_restrict (
-	-- Deletes the segment of via restrict that crosses the given point.
-	-- CS currently rips up the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -2658,7 +2644,6 @@ package body et_board_ops is
 -- BOARD OUTLINE
 
 	procedure draw_outline_line (
-	-- Draws a line in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in et_pcb.type_pcb_contour_line;
 		log_threshold	: in type_log_level) is
@@ -2693,7 +2678,6 @@ package body et_board_ops is
 	end draw_outline_line;
 
 	procedure draw_outline_arc (
-	-- Draws an arc in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		arc				: in et_pcb.type_pcb_contour_arc;
 		log_threshold	: in type_log_level) is
@@ -2763,12 +2747,9 @@ package body et_board_ops is
 	end draw_outline_circle;
 
 	procedure delete_outline (
-	-- Deletes the segment of the outline that crosses the given point.
-	-- CS currently rips up the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -2850,7 +2831,6 @@ package body et_board_ops is
 -- SILK SCREEN
 
 	procedure draw_silk_screen_line (
-	-- Draws a line in the PCB silk screen.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_silk_line;
@@ -2895,7 +2875,6 @@ package body et_board_ops is
 	end draw_silk_screen_line;
 
 	procedure draw_silk_screen_arc (
-	-- Draws an arc in the PCB silk screen.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_silk_arc;		
@@ -2942,7 +2921,6 @@ package body et_board_ops is
 	end draw_silk_screen_arc;
 
 	procedure draw_silk_screen_circle (
-	-- Draws a circle in the PCB silk screen.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle;
@@ -2988,13 +2966,10 @@ package body et_board_ops is
 	end draw_silk_screen_circle;
 
 	procedure delete_silk_screen (
-	-- Deletes the segment of the silk_screen that crosses the given point.
-	-- CS currently deletes the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -3096,7 +3071,6 @@ package body et_board_ops is
 -- ASSEMBLY DOCUMENTATION
 	
 	procedure draw_assy_doc_line (
-	-- Draws a line in the PCB assembly documentation.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_doc_line;
@@ -3141,7 +3115,6 @@ package body et_board_ops is
 	end draw_assy_doc_line;
 
 	procedure draw_assy_doc_arc (
-	-- Draws an arc in the assembly documentation.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_doc_arc;		
@@ -3188,7 +3161,6 @@ package body et_board_ops is
 	end draw_assy_doc_arc;
 
 	procedure draw_assy_doc_circle (
-	-- Draws a circle in the assembly documentation.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle;
@@ -3234,13 +3206,10 @@ package body et_board_ops is
 	end draw_assy_doc_circle;
 
 	procedure delete_assy_doc (
-	-- Deletes the segment of the assembly documentation that crosses the given point.
-	-- CS currently deletes the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -3341,7 +3310,6 @@ package body et_board_ops is
 -- KEEPOUT
 
 	procedure draw_keepout_line (
-	-- Draws a line in the keepout layer.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_keepout_line;
@@ -3386,7 +3354,6 @@ package body et_board_ops is
 	end draw_keepout_line;
 
 	procedure draw_keepout_arc (
-	-- Draws an arc in the keepout layer.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_keepout_arc;		
@@ -3432,7 +3399,6 @@ package body et_board_ops is
 	end draw_keepout_arc;
 
 	procedure draw_keepout_circle (
-	-- Draws an circle in the keepout layer.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle_solid;
@@ -3478,13 +3444,10 @@ package body et_board_ops is
 	end draw_keepout_circle;
 
 	procedure delete_keepout (
-	-- Deletes the segment of the keepout layer that crosses the given point.
-	-- CS currently deletes the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -3585,7 +3548,6 @@ package body et_board_ops is
 -- STOP MASK
 	
 	procedure draw_stop_line (
-	-- Draws a line in the stop mask layer.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stop_line;
@@ -3630,7 +3592,6 @@ package body et_board_ops is
 	end draw_stop_line;
 
 	procedure draw_stop_arc (
-	-- Draws an arc in the stop mask layer.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_stop_arc;		
@@ -3677,7 +3638,6 @@ package body et_board_ops is
 	end draw_stop_arc;
 
 	procedure draw_stop_circle (
-	-- Draws an circle in the stop mask layer.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle;
@@ -3723,13 +3683,10 @@ package body et_board_ops is
 	end draw_stop_circle;
 
 	procedure delete_stop (
-	-- Deletes the segment of the stop mask that crosses the given point.
-	-- CS currently deletes the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -3830,7 +3787,6 @@ package body et_board_ops is
 -- STENCIL
 	
 	procedure draw_stencil_line (
-	-- Draws a line in the stencil layer.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stencil_line;
@@ -3875,7 +3831,6 @@ package body et_board_ops is
 	end draw_stencil_line;
 
 	procedure draw_stencil_arc (
-	-- Draws an arc in the stencil layer.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_stencil_arc;		
@@ -3922,7 +3877,6 @@ package body et_board_ops is
 	end draw_stencil_arc;
 
 	procedure draw_stencil_circle (
-	-- Draws an circle in the stencil layer.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle;
@@ -3968,13 +3922,10 @@ package body et_board_ops is
 	end draw_stencil_circle;
 
 	procedure delete_stencil (
-	-- Deletes the segment of the stencil that crosses the given point.
-	-- CS currently deletes the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
-		accuracy		: in type_accuracy;
+		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
