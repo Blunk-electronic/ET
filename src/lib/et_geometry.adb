@@ -1199,6 +1199,22 @@ package body et_geometry is
 			return center;
 		end which_zone;
 
+		function out_of_range (d : in type_distance_point_line) return boolean is begin
+			return d.out_of_range;
+		end out_of_range;
+
+		function distance (d : in type_distance_point_line) return type_distance is begin
+			return d.distance;
+		end distance;
+
+		function on_start_point (d : in type_distance_point_line) return boolean is begin
+			return d.sits_on_start;
+		end on_start_point;
+	
+		function on_end_point (d : in type_distance_point_line) return boolean is begin
+			return d.sits_on_end;
+		end on_end_point;
+		
 		function distance_point_line (
 			point		: in type_point;
 			line		: in type_line;

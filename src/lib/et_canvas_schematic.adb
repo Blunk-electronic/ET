@@ -550,7 +550,8 @@ package body et_canvas_schematic is
 			segment_cursor : pac_segments.cursor;
 		begin
 			put_line ("deleting net ...");
-			
+
+			-- Collect all segments in the vicinity of the given point:
 			segments := query_segments (
 				module			=> current_active_module,
 				place			=> to_position (point, current_active_sheet),

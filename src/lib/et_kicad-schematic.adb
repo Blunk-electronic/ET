@@ -3358,7 +3358,7 @@ package body et_kicad.schematic is
 			line		=> line,
 			line_range	=> BETWEEN_END_POINTS);
 
-		if (not d.out_of_range) and d.distance = zero then
+		if (not out_of_range (d)) and distance (d) = zero then
 			sits_on_segment := true;
 		end if;
 
@@ -3622,7 +3622,7 @@ package body et_kicad.schematic is
 		sits_on_segment : boolean := false;
 
 		use et_schematic.pac_shapes;
-		distance : type_distance_point_line;
+		distance_port_segment : type_distance_point_line;
 
 		function junction_here return boolean is
 		-- Returns true if a junction sits at the coordinates of the given port.
@@ -3745,15 +3745,15 @@ package body et_kicad.schematic is
 			if same_path_and_sheet (port.coordinates, segment.coordinates_start) then
 
 				-- calculate the shortes distance of point from line.
-				distance := distance_point_line (
+				distance_port_segment := distance_point_line (
 					point 		=> type_point (port.coordinates),
 					line		=> line,
-					line_range	=> with_end_points);
+					line_range	=> WITH_END_POINTS);
 
-				if (not distance.out_of_range) and distance.distance = zero then
+				if (not out_of_range (distance_port_segment)) and distance (distance_port_segment) = zero then
 
 					-- If point sits on either start or end point of given line
-					if distance.sits_on_start or distance.sits_on_end then
+					if on_start_point (distance_port_segment) or on_end_point (distance_port_segment) then
 
 						-- If another segment meets here a junction is required:
 						if another_segment_here then
@@ -5366,7 +5366,7 @@ package body et_kicad.schematic is
 										line		=> line,
 										line_range	=> BETWEEN_END_POINTS);
 								
-									if (not dist.out_of_range) and dist.distance = zero then
+									if (not out_of_range (dist)) and distance (dist) = zero then
 										junction_position.expected := true;
 										junction_position.position := element (segment_cursor_prim).coordinates_start;
 										exit;
@@ -5379,8 +5379,8 @@ package body et_kicad.schematic is
 										point 		=> type_point (element (segment_cursor_prim).coordinates_end),
 										line		=> line,
 										line_range	=> BETWEEN_END_POINTS);
-								
-									if (not dist.out_of_range) and dist.distance = zero then
+
+									if (not out_of_range (dist)) and distance (dist) = zero then
 										junction_position.expected := true;
 										junction_position.position := element (segment_cursor_prim).coordinates_end;
 										exit;

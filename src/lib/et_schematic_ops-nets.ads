@@ -192,7 +192,7 @@ package et_schematic_ops.nets is
 		segment			: in type_segment; -- net/strand/segment
 		log_threshold	: in type_log_level);
 	
-
+	-- Collect all net segments in the vicinity of the given point:
 	function query_segments (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position; -- sheet/x/y

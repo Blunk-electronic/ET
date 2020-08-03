@@ -64,7 +64,7 @@ package body et_schematic_ops.nets is
 			line		=> element (segment),
 			line_range	=> BETWEEN_END_POINTS);
 
-		if not dist.out_of_range and dist.distance <= catch_zone then
+		if (not out_of_range (dist)) and distance (dist) <= catch_zone then
 			return true;
 		else
 			return false;

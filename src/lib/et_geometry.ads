@@ -547,13 +547,14 @@ package et_geometry is
 			line	: in type_line'class) 
 			return type_line_zone;
 
-		type type_distance_point_line is record -- CS private ?
-			distance		: type_distance_positive := zero;
-			sits_on_start	: boolean := false;
-			sits_on_end		: boolean := false;
-			out_of_range	: boolean := true;
-		end record;
+		type type_distance_point_line is private;
 
+		-- These function return the status of the components of the given type_distance_point_line:
+		function out_of_range (d : in type_distance_point_line) return boolean;
+		function distance (d : in type_distance_point_line) return type_distance;
+		function on_start_point (d : in type_distance_point_line) return boolean;
+		function on_end_point (d : in type_distance_point_line) return boolean;
+		
 		type type_line_range is (
 			BETWEEN_END_POINTS,	-- start and end point excluded
 			WITH_END_POINTS,	-- start and end point included
@@ -823,6 +824,13 @@ package et_geometry is
 	private
 		type type_vector is	record
 			x, y, z : type_distance := zero;
+		end record;
+
+		type type_distance_point_line is record
+			distance		: type_distance_positive := zero;
+			sits_on_start	: boolean := false;
+			sits_on_end		: boolean := false;
+			out_of_range	: boolean := true;
 		end record;
 
 		
