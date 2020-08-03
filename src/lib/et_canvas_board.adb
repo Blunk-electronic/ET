@@ -742,11 +742,10 @@ package body et_canvas_board is
 		point	: in type_point) 
 	is
 	begin
-		put_line ("point " & to_string (point));
+		log (text => to_string (button) & "at " & to_string (point), level => log_threshold);
 		
 		case button is
 			when 1 => -- left button
-				put_line ("left button");
 				
 				self.move_cursor (ABSOLUTE, cursor_main, point);
 

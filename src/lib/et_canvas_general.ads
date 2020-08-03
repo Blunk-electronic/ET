@@ -604,6 +604,9 @@ package pac_canvas is
 	-- 2 - middle
 	-- 3 - right button
 	-- CS others ?
+
+	-- Returns something like "right button" or "left button":
+	function to_string (b : in type_mouse_button) return string;
 	
 	procedure button_pressed (
 		self	: not null access type_view;

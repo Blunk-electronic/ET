@@ -549,8 +549,9 @@ package body et_canvas_schematic is
 			segments : pac_segments.list;
 			segment_cursor : pac_segments.cursor;
 		begin
-			put_line ("deleting net ...");
-
+			log (text => "deleting net segment", level => log_threshold);
+			log_indentation_up;
+			
 			-- Collect all segments in the vicinity of the given point:
 			segments := query_segments (
 				module			=> current_active_module,
@@ -566,14 +567,15 @@ package body et_canvas_schematic is
 					segment			=> element (segment_cursor),
 					log_threshold	=> log_threshold + 1);
 			end if;
+
+			log_indentation_down;
 		end delete_net;
 		
 	begin -- button_pressed
-		put_line ("point " & to_string (point));
+		log (text => to_string (button) & "at " & to_string (point), level => log_threshold);
 		
 		case button is
 			when 1 => -- left button
-				put_line ("left button");
 				
 				self.move_cursor (ABSOLUTE, cursor_main, point);
 

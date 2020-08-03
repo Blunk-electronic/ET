@@ -1211,6 +1211,17 @@ package body pac_canvas is
 
 		return event_handled;
 	end on_key_pressed_event;
+
+	function to_string (b : in type_mouse_button) return string is 
+		button : constant string := " button clicked";
+	begin
+		case b is
+			when 1 => return "left" & button;
+			when 2 => return "middle" & button;
+			when 3 => return "right" & button;
+			when others => return "button" & type_mouse_button'image (b);
+		end case;
+	end to_string;
 	
 	function on_button_event (
 		view  : access gtk_widget_record'class;

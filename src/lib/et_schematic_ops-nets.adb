@@ -2761,7 +2761,8 @@ package body et_schematic_ops.nets is
 				
 				procedure query_segments (strand : in out type_strand) is
 				begin
-					put_line ("strand " & to_string (strand.position));
+					log (text => "segment " & to_string (element (s.segment)), 
+						 level => log_threshold + 1);
 															  
 					delete (strand.segments, s.segment);
 				end query_segments;
@@ -2781,7 +2782,8 @@ package body et_schematic_ops.nets is
 			end query_strands;
 		
 		begin -- query_net
-			put_line ("net " & to_string (key (s.net)));
+			log (text => "net name is " & to_string (key (s.net)), level => log_threshold);
+			log_indentation_up;
 			
 			update_element (
 				container	=> module.nets,
@@ -2793,7 +2795,8 @@ package body et_schematic_ops.nets is
 			if is_empty (element (s.net).strands) then
 				delete (module.nets, s.net);
 			end if;
-			
+
+			log_indentation_down;
 		end query_net;
 
 	begin
@@ -2838,10 +2841,6 @@ package body et_schematic_ops.nets is
 					while segment_cursor /= type_net_segments.no_element loop
 						log (text => "probing segment" & to_string (element (segment_cursor)),
 							level => log_threshold + 1);
-
-						log (text => "point" & to_string (type_point (place)),
-							level => log_threshold + 1);
-
 						
 						-- If the segment is within the catch zone, append
 						-- the current net, stand and segment cursor to the result:
