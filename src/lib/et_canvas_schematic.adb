@@ -677,71 +677,72 @@ package body et_canvas_schematic is
 		button	: in type_mouse_button;
 		point	: in type_point) 
 	is
-		
+		procedure left_button is begin
+			self.move_cursor (ABSOLUTE, cursor_main, point);
+
+			case verb is
+				when VERB_DELETE =>
+
+					case noun is
+						when NOUN_UNIT => null;
+
+						when NOUN_NET => 
+							if not clarification_pending then
+								delete_net_segment (point);
+							else
+								delete_selected_net_segment;
+							end if;
+
+						when others =>
+							null;
+							
+					end case;
+
+				when VERB_DRAW =>
+
+					case noun is
+						when NOUN_NET => null;
+
+						when others =>
+							null;
+							
+					end case;
+
+				when others => null; -- CS
+			end case;
+			
+			self.queue_draw;
+		end left_button;
+
+		procedure right_button is begin
+			case verb is
+				when VERB_DELETE =>
+
+					case noun is
+						when NOUN_UNIT => null;
+
+						when NOUN_NET => 
+							if clarification_pending then
+								clarify_net_segment;
+							end if;
+
+						when others =>
+							null;
+							
+					end case;
+
+				when others => null; -- CS
+			end case;
+
+			-- CS ? self.queue_draw; 
+		end right_button;
+			
 	begin -- button_pressed
 		log (text => to_string (button) & " at" & to_string (point), level => log_threshold);
 		
 		case button is
-			when 1 => -- left button
-				
-				self.move_cursor (ABSOLUTE, cursor_main, point);
-
-				case verb is
-					when VERB_DELETE =>
-
-						case noun is
-							when NOUN_UNIT => null;
-
-							when NOUN_NET => 
-								if not clarification_pending then
-									delete_net_segment (point);
-								else
-									delete_selected_net_segment;
-								end if;
-
-							when others =>
-								null;
-								
-						end case;
-
-					when VERB_DRAW =>
-
-						case noun is
-							when NOUN_NET => null;
-
-							when others =>
-								null;
-								
-						end case;
-
-					when others => null; -- CS
-				end case;
-				
-				self.queue_draw;
-
-			when 3 => -- right button
-
-				case verb is
-					when VERB_DELETE =>
-
-						case noun is
-							when NOUN_UNIT => null;
-
-							when NOUN_NET => 
-								if clarification_pending then
-									clarify_net_segment;
-								end if;
-
-							when others =>
-								null;
-								
-						end case;
-
-					when others => null; -- CS
-				end case;
-
-				-- CS ? self.queue_draw; 
-				
+			when 1 => left_button;
+			when 3 => right_button;
 			when others => null;
 		end case;
 
