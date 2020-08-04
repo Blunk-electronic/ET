@@ -562,7 +562,7 @@ package body et_canvas_schematic is
 			reset_request_clarification;
 			status_enter_verb;
 		else
-				
+	
 			case expect_entry is
 				when EXP_VERB =>
 					--put_line ("VERB entered");
@@ -610,6 +610,43 @@ package body et_canvas_schematic is
 								when GDK_LC_n =>
 									noun := NOUN_NET;
 									set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
+
+								when GDK_Return =>
+
+									case noun is
+										when NOUN_UNIT => null;
+
+										when NOUN_NET => 
+											if not clarification_pending then
+												delete_net_segment (cursor_main.position);
+											else
+												delete_selected_net_segment;
+											end if;
+
+										when others =>
+											null;
+											
+									end case;
+
+									self.queue_draw;
+
+								when GDK_page_down =>
+									case noun is
+										when NOUN_UNIT => null;
+
+										when NOUN_NET => 
+											if clarification_pending then
+												clarify_net_segment;
+											end if;
+
+										when others =>
+											null;
+											
+									end case;
+
+									self.queue_draw;
+
+
 									
 								when others => status_noun_invalid;
 							end case;
@@ -702,6 +739,8 @@ package body et_canvas_schematic is
 
 					when others => null; -- CS
 				end case;
+
+				-- CS ? self.queue_draw; 
 				
 			when others => null;
 		end case;

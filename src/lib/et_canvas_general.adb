@@ -1203,10 +1203,11 @@ package body pac_canvas is
 					self.queue_draw; -- without frame and grid initialization
 					event_handled := true;
 
-				-- CTRL and Shift are reserved for scrolling zoom and scrolling (right/left).
-				-- So there is nothing to do: 
-				when GDK_Control_L | GDK_Control_R | GDK_Shift_L | GDK_Shift_R =>
-					null;
+				-- Some keys are reserved. Nothing happens if they are pressed:
+				-- - CTRL and Shift for scrolling zoom and scrolling (right/left).
+				-- - Tab to navigate in the GUI
+				when GDK_Control_L | GDK_Control_R | GDK_Shift_L | GDK_Shift_R |
+					GDK_Tab => null;
 					
 				when others =>
 					-- put_line ("other key pressed");
@@ -1585,7 +1586,7 @@ package body pac_canvas is
 		request_clarificaton := YES;
 
 		-- show instruction in status bar
-		set_status ("clarify object by right click or page up/down key !");
+		set_status ("clarify object by right click or page-down key !");
 	end set_request_clarification;
 	
 	procedure reset_request_clarification is begin
