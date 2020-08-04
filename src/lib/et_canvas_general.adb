@@ -1585,6 +1585,13 @@ package body pac_canvas is
 		-- clear status bar
 		status_clear;
 	end reset_request_clarification;
+
+	function clarification_pending return boolean is begin
+		case request_clarificaton is 
+			when YES => return true;
+			when NO  => return false;
+		end case;
+	end clarification_pending;
 	
 end pac_canvas;
 	

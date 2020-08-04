@@ -1260,6 +1260,29 @@ package body et_geometry is
 				when others => null;
 			end case;
 
+			-- If the ends of the line are included,
+			-- test whether the point is in the vicinity of the line start or end point.
+			-- Exit this function prematurely in that case.
+			if line_range = WITH_END_POINTS then
+
+				-- compute distance of point to start of line:
+				result.distance := distance_total (point, line.start_point);
+				
+				if result.distance <= catch_zone then
+					result.out_of_range := false;
+					return result;
+				end if;
+
+				-- compute distance of point to end of line:
+				result.distance := distance_total (point, line.end_point);
+				
+				if result.distance <= catch_zone then
+					result.out_of_range := false;
+					return result;
+				end if;
+
+			end if;
+			
 			-- Compute the distance of the point from the line.
 			-- This computation does not care about end or start point of the line.
 			-- It assumes an indefinite long line without start or end point.

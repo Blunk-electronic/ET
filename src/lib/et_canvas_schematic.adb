@@ -468,7 +468,9 @@ package body et_canvas_schematic is
 			expect_entry := expect_entry_default;
 			verb := verb_default;
 			noun := noun_default;
-			status_clear;
+			--status_clear;
+
+			reset_request_clarification; -- clears status bar also
 		else
 				
 			case expect_entry is
@@ -548,7 +550,7 @@ package body et_canvas_schematic is
 			use pac_segments;
 			segment_cursor : pac_segments.cursor;
 		begin
-			log (text => "deleting net segment", level => log_threshold);
+			log (text => "deleting net segment ...", level => log_threshold);
 			log_indentation_up;
 			
 			-- Collect all segments in the vicinity of the given point:
@@ -588,17 +590,40 @@ package body et_canvas_schematic is
 			use et_schematic;
 			use et_schematic_ops.nets;
 			use pac_segments;
-			s : type_net_segments.cursor := element (selected_segment).segment;
+			s : type_net_segments.cursor;
 		begin
-			log (text => "segment" & to_string (s), level => log_threshold, console => true);
-
+			-- On every call of this procedure we must advance from one
+			-- segment to the next in a circular manner. So if the end 
+			-- of the list is reached, then the cursor selected_segment
+			-- moves back to the start of the segment list.
 			if next (selected_segment) /= pac_segments.no_element then
 				next (selected_segment);
 			else
 				selected_segment := selected_segments.first;
 			end if;
+
+			-- show the selected segment in the status bar
+			s := element (selected_segment).segment;
 			
+			set_status (to_string (s));
 		end clarify_net_segment;
+
+		procedure delete_net_segment is
+			use et_schematic_ops.nets;
+			use pac_segments;
+		begin
+			log (text => "deleting net segment after clarification ...", level => log_threshold);
+			log_indentation_up;
+
+			delete_segment (
+				module_cursor	=> current_active_module,
+				segment			=> element (selected_segment),
+				log_threshold	=> log_threshold + 1);
+
+			reset_request_clarification;
+
+			log_indentation_down;
+		end delete_net_segment;
 		
 	begin -- button_pressed
 		log (text => to_string (button) & " at" & to_string (point), level => log_threshold);
@@ -614,7 +639,12 @@ package body et_canvas_schematic is
 						case noun is
 							when NOUN_UNIT => null;
 
-							when NOUN_NET => delete_net_segment (point);
+							when NOUN_NET => 
+								if not clarification_pending then
+									delete_net_segment (point);
+								else
+									delete_net_segment;
+								end if;
 
 							when others =>
 								null;
@@ -644,7 +674,10 @@ package body et_canvas_schematic is
 						case noun is
 							when NOUN_UNIT => null;
 
-							when NOUN_NET => clarify_net_segment;
+							when NOUN_NET => 
+								if clarification_pending then
+									clarify_net_segment;
+								end if;
 
 							when others =>
 								null;

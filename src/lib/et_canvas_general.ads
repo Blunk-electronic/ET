@@ -618,6 +618,8 @@ package pac_canvas is
 
 	procedure set_request_clarification;
 	procedure reset_request_clarification;
+
+	function clarification_pending return boolean;
 								  
 private
 
