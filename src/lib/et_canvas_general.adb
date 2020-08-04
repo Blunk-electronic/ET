@@ -71,6 +71,10 @@ package body pac_canvas is
 	procedure status_clear is begin
 		set_status ("");
 	end status_clear;
+
+	procedure status_enter_verb is begin
+		set_status ("Enter verb !" & status_hint_for_abort);
+	end status_enter_verb;
 	
 	procedure status_enter_noun is begin
 		set_status ("Enter noun ! " & status_hint_for_abort);
@@ -110,7 +114,7 @@ package body pac_canvas is
 		-- status bar
 		gtk_new (label_status);
 		pack_start (box_main, label_status, expand => false);
-		status_enter_noun;
+		status_enter_verb;
 		
 	end build_background_boxes;
 
@@ -1198,6 +1202,11 @@ package body pac_canvas is
 					canvas.move_cursor (DOWN, cursor_main);
 					self.queue_draw; -- without frame and grid initialization
 					event_handled := true;
+
+				-- CTRL and Shift are reserved for scrolling zoom and scrolling (right/left).
+				-- So there is nothing to do: 
+				when GDK_Control_L | GDK_Control_R | GDK_Shift_L | GDK_Shift_R =>
+					null;
 					
 				when others =>
 					-- put_line ("other key pressed");
@@ -1583,7 +1592,7 @@ package body pac_canvas is
 		request_clarificaton := NO;
 
 		-- clear status bar
-		status_clear;
+		--status_clear;
 	end reset_request_clarification;
 
 	function clarification_pending return boolean is begin

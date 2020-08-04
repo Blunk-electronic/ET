@@ -105,6 +105,7 @@ package pac_canvas is
 
 	procedure set_status (text : in string);
 	procedure status_clear;
+	procedure status_enter_verb;
 	procedure status_enter_noun;
 	procedure status_verb_invalid;
 	procedure status_noun_invalid;

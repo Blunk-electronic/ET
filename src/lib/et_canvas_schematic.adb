@@ -471,6 +471,8 @@ package body et_canvas_schematic is
 			--status_clear;
 
 			reset_request_clarification; -- clears status bar also
+
+			status_enter_verb;
 		else
 				
 			case expect_entry is
@@ -574,6 +576,7 @@ package body et_canvas_schematic is
 						log_threshold	=> log_threshold + 1);
 
 					reset_request_clarification;
+					set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
 					
 				when others =>
 					--log (text => "many objects", level => log_threshold + 2);
@@ -621,7 +624,8 @@ package body et_canvas_schematic is
 				log_threshold	=> log_threshold + 1);
 
 			reset_request_clarification;
-
+			set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
+			
 			log_indentation_down;
 		end delete_net_segment;
 		
