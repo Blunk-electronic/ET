@@ -452,6 +452,96 @@ package body et_canvas_schematic is
 	end get_noun;
 	
 	
+
+	-- Deletes a net segment in the vicinity of given point.
+	-- If more than one segment near point found, then it sets the
+	-- cursor selected_segment to the first segment and requests
+	-- for clarification.
+	procedure delete_net_segment (point : in type_point) is 
+		use et_schematic_ops.nets;
+		use pac_segments;
+		segment_cursor : pac_segments.cursor;
+	begin
+		log (text => "deleting net segment ...", level => log_threshold);
+		log_indentation_up;
+		
+		-- Collect all segments in the vicinity of the given point:
+		selected_segments := query_segments (
+			module			=> current_active_module,
+			place			=> to_position (point, current_active_sheet),
+			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			log_threshold	=> log_threshold + 1);
+
+		-- evaluate the number of segments found here:
+		case length (selected_segments) is
+			when 0 =>
+				reset_request_clarification;
+				
+			when 1 =>
+				segment_cursor := selected_segments.first;
+			
+				delete_segment (
+					module_cursor	=> current_active_module,
+					segment			=> element (segment_cursor),
+					log_threshold	=> log_threshold + 1);
+
+				reset_request_clarification;
+				set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
+				
+			when others =>
+				--log (text => "many objects", level => log_threshold + 2);
+				set_request_clarification;
+
+				-- preselect the first segment
+				selected_segment := selected_segments.first;
+		end case;
+		
+		log_indentation_down;
+	end delete_net_segment;
+
+	-- Advances cursor selected_segment to next segment in list selected_segments.
+	procedure clarify_net_segment is
+		use et_schematic;
+		use et_schematic_ops.nets;
+		use pac_segments;
+		s : type_net_segments.cursor;
+	begin
+		-- On every call of this procedure we must advance from one
+		-- segment to the next in a circular manner. So if the end 
+		-- of the list is reached, then the cursor selected_segment
+		-- moves back to the start of the segment list.
+		if next (selected_segment) /= pac_segments.no_element then
+			next (selected_segment);
+		else
+			selected_segment := selected_segments.first;
+		end if;
+
+		-- show the selected segment in the status bar
+		s := element (selected_segment).segment;
+		
+		set_status (to_string (s));
+	end clarify_net_segment;
+
+	-- Deletes the net segment being pointed at by cursor selected_segment.
+	procedure delete_selected_net_segment is
+		use et_schematic_ops.nets;
+		use pac_segments;
+	begin
+		log (text => "deleting net segment after clarification ...", level => log_threshold);
+		log_indentation_up;
+
+		delete_segment (
+			module_cursor	=> current_active_module,
+			segment			=> element (selected_segment),
+			log_threshold	=> log_threshold + 1);
+
+		reset_request_clarification;
+		set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
+		
+		log_indentation_down;
+	end delete_selected_net_segment;
+
+	
 	procedure evaluate_key (
 		self	: not null access type_view;
 		key		: in gdk_key_type) is
@@ -542,92 +632,12 @@ package body et_canvas_schematic is
 		self.update_mode_display;
 	end evaluate_key;
 
+	
 	overriding procedure button_pressed (
 		self	: not null access type_view;
 		button	: in type_mouse_button;
 		point	: in type_point) 
 	is
-		procedure delete_net_segment (point : in type_point) is 
-			use et_schematic_ops.nets;
-			use pac_segments;
-			segment_cursor : pac_segments.cursor;
-		begin
-			log (text => "deleting net segment ...", level => log_threshold);
-			log_indentation_up;
-			
-			-- Collect all segments in the vicinity of the given point:
-			selected_segments := query_segments (
-				module			=> current_active_module,
-				place			=> to_position (point, current_active_sheet),
-				catch_zone		=> catch_zone_default,
-				log_threshold	=> log_threshold + 1);
-
-			-- evaluate the number of segments found here:
-			case length (selected_segments) is
-				when 0 =>
-					reset_request_clarification;
-					
-				when 1 =>
-					segment_cursor := selected_segments.first;
-				
-					delete_segment (
-						module_cursor	=> current_active_module,
-						segment			=> element (segment_cursor),
-						log_threshold	=> log_threshold + 1);
-
-					reset_request_clarification;
-					set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
-					
-				when others =>
-					--log (text => "many objects", level => log_threshold + 2);
-					set_request_clarification;
-
-					-- preselect the first segment
-					selected_segment := selected_segments.first;
-			end case;
-			
-			log_indentation_down;
-		end delete_net_segment;
-
-		procedure clarify_net_segment is
-			use et_schematic;
-			use et_schematic_ops.nets;
-			use pac_segments;
-			s : type_net_segments.cursor;
-		begin
-			-- On every call of this procedure we must advance from one
-			-- segment to the next in a circular manner. So if the end 
-			-- of the list is reached, then the cursor selected_segment
-			-- moves back to the start of the segment list.
-			if next (selected_segment) /= pac_segments.no_element then
-				next (selected_segment);
-			else
-				selected_segment := selected_segments.first;
-			end if;
-
-			-- show the selected segment in the status bar
-			s := element (selected_segment).segment;
-			
-			set_status (to_string (s));
-		end clarify_net_segment;
-
-		procedure delete_net_segment is
-			use et_schematic_ops.nets;
-			use pac_segments;
-		begin
-			log (text => "deleting net segment after clarification ...", level => log_threshold);
-			log_indentation_up;
-
-			delete_segment (
-				module_cursor	=> current_active_module,
-				segment			=> element (selected_segment),
-				log_threshold	=> log_threshold + 1);
-
-			reset_request_clarification;
-			set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
-			
-			log_indentation_down;
-		end delete_net_segment;
 		
 	begin -- button_pressed
 		log (text => to_string (button) & " at" & to_string (point), level => log_threshold);
@@ -647,7 +657,7 @@ package body et_canvas_schematic is
 								if not clarification_pending then
 									delete_net_segment (point);
 								else
-									delete_net_segment;
+									delete_selected_net_segment;
 								end if;
 
 							when others =>
