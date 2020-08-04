@@ -675,7 +675,9 @@ package body et_canvas_board is
 			expect_entry := expect_entry_default;
 			verb := verb_default;
 			noun := noun_default;
-			status_clear;
+
+			reset_request_clarification;
+			status_enter_verb;
 		else
 				
 			case expect_entry is
@@ -687,6 +689,10 @@ package body et_canvas_board is
 					-- will be overwritten by EXP_VERB so that the
 					-- operator is required to re-enter a valid verb.
 					expect_entry := EXP_NOUN;
+
+					-- As long as no valid noun has been entered
+					-- display the default noun:
+					noun := noun_default;
 					
 					case key is
 						when GDK_Delete =>
