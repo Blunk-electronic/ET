@@ -176,33 +176,33 @@ package et_schematic_ops.nets is
 	use type_strands;
 	use type_net_segments;
 	
-	type type_segment is record
+	type type_selected_segment is record
 		net		: type_nets.cursor;
 		strand	: type_strands.cursor;
 		segment	: type_net_segments.cursor;
 	end record;
 
-	package pac_segments is new doubly_linked_lists (type_segment);
+	package pac_selected_segments is new doubly_linked_lists (type_selected_segment);
 
-	selected_segments : pac_segments.list;
-	selected_segment : pac_segments.cursor;
+	selected_segments	: pac_selected_segments.list;
+	selected_segment	: pac_selected_segments.cursor;
 	
 	-- Returns true if segments contains more than one segment:
-	function more_than_one (segments : in pac_segments.list) return boolean;
+	function more_than_one (segments : in pac_selected_segments.list) return boolean;
 	
-	-- Deletes a segment of a net.
-	procedure delete_segment (
+	-- Deletes a selected segment of a net.
+	procedure delete_selected_segment (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		segment			: in type_segment; -- net/strand/segment
+		segment			: in type_selected_segment; -- net/strand/segment
 		log_threshold	: in type_log_level);
 	
-	-- Collect all net segments in the vicinity of the given point:
-	function query_segments (
+	-- Collects all net segments in the vicinity of the given point:
+	function collect_segments (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
-		return pac_segments.list;
+		return pac_selected_segments.list;
 		
 	
 end et_schematic_ops.nets;

@@ -338,7 +338,8 @@ package body et_schematic_ops.units is
 
 			procedure query_units (
 				device_name	: in type_name;
-				device		: in out et_schematic.type_device) is
+				device		: in out et_schematic.type_device)
+			is
 				use et_schematic.type_units;
 				unit_cursor : et_schematic.type_units.cursor;
 
@@ -600,6 +601,92 @@ package body et_schematic_ops.units is
 			process		=> query_devices'access);
 
 	end rotate_unit;
+
+
+
+	procedure delete_selected_unit (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		unit			: in type_selected_unit; -- device/unit
+		log_threshold	: in type_log_level)
+	is null; -- CS
+
+	
+	
+	function collect_units (
+		module			: in pac_generic_modules.cursor;
+		place			: in et_coordinates.type_position; -- sheet/x/y
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_selected_units.list
+	is
+		use pac_selected_units;
+		result : pac_selected_units.list;
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
+
+			procedure query_units (
+				device_name	: in type_name;
+				device		: in et_schematic.type_device)
+			is
+				use et_schematic.type_units;
+				unit_cursor : et_schematic.type_units.cursor;
+			begin
+				-- We are interested in units on the given sheet only:
+				if sheet (element (unit_cursor).position) = sheet (place) then
+
+					log (text => "probing unit" & to_string (unit_cursor),
+						level => log_threshold + 1);
+
+					if in_catch_zone (place, catch_zone, element (unit_cursor).position) then
+						log_indentation_up;
+
+						log (text => "sits on segment", level => log_threshold + 1);
+						result.append ((device_cursor, unit_cursor));
+						
+						log_indentation_down;
+					end if;
+				end if;
+
+			end query_units;
+			
+		begin -- query_devices
+			while device_cursor /= et_schematic.type_devices.no_element loop
+
+				log (text => "probing device" & to_string (key (device_cursor)),
+					 level => log_threshold + 1);
+				log_indentation_up;
+					 
+				query_element (
+					position	=> device_cursor,
+					process		=> query_units'access);
+
+				next (device_cursor);
+
+				log_indentation_down;
+			end loop;
+		end query_devices;
+
+	begin -- collect_units
+		log (text => "looking up units at" & to_string (place) 
+			 & " catch zone" & to_string (catch_zone), level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		log_indentation_down;
+		
+		return result;
+		
+	end collect_units;
+
 
 	
 end et_schematic_ops.units;

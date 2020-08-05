@@ -270,9 +270,18 @@ package et_geometry is
 		--			d.y := point_two.y - point_one.y;
 
 		
-		function distance_total (point_one, point_two : in type_point) return type_distance;
 		-- Computes the total distance between point_one and point_two.
+		function distance_total (
+			point_one, point_two : in type_point)
+			return type_distance_positive;
 
+		-- Returns true if point_2 is within the catch zone around point_1:
+		function in_catch_zone (
+			point_1		: in type_point; -- the reference point
+			catch_zone	: in type_catch_zone; -- zone around reference point
+			point_2 	: in type_point) -- the point being tested
+			return boolean;
+		
 		function add (left, right : in type_rotation) return type_rotation;
 		-- Adds two angles.
 		-- If result greater 360 degree then 360 degree is subtracted from result.

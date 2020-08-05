@@ -151,11 +151,15 @@ package et_schematic is
 
 	-- Units of a device are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
-	package type_units is new indefinite_ordered_maps (
+	package type_units is new indefinite_ordered_maps ( -- CS rename to pac_units
 		key_type		=> et_devices.type_unit_name.bounded_string,
 		"<" 			=> et_devices.type_unit_name."<",
 		element_type 	=> type_unit);
 
+	-- Returns a string that tells the name and position of given unit.
+	function to_string (unit : in type_units.cursor) return string;
+
+	
 	package type_unit_positions is new ordered_maps (
 		key_type		=> et_devices.type_unit_name.bounded_string, -- A, B, IO_BANK_1
 		"<" 			=> et_devices.type_unit_name."<",

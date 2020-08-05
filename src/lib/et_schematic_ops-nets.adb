@@ -546,8 +546,8 @@ package body et_schematic_ops.nets is
 		log_indentation_down;		
 	end delete_net;
 
-	function more_than_one (segments : in pac_segments.list) return boolean is 
-		use pac_segments;
+	function more_than_one (segments : in pac_selected_segments.list) return boolean is 
+		use pac_selected_segments;
 	begin
 		if length (segments) > 1 then
 			return true;
@@ -2743,12 +2743,12 @@ package body et_schematic_ops.nets is
 		
 	end query_stub;
 
-	procedure delete_segment (
+	procedure delete_selected_segment (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		segment			: in type_segment; -- net/strand/segment
+		segment			: in type_selected_segment; -- net/strand/segment
 		log_threshold	: in type_log_level)
 	is
-		s : type_segment := segment;
+		s : type_selected_segment := segment;
 		
 		procedure query_net (
 			module_name	: in type_module_name.bounded_string;
@@ -2805,18 +2805,18 @@ package body et_schematic_ops.nets is
 			position	=> module_cursor,
 			process		=> query_net'access);
 
-	end delete_segment;
+	end delete_selected_segment;
 	
 
-	function query_segments (
+	function collect_segments (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
-		return pac_segments.list
+		return pac_selected_segments.list
 	is
-		use pac_segments;
-		result : pac_segments.list;
+		use pac_selected_segments;
+		result : pac_selected_segments.list;
 
 		procedure query_nets (
 			module_name	: in type_module_name.bounded_string;
@@ -2886,7 +2886,7 @@ package body et_schematic_ops.nets is
 			end loop;
 		end query_nets;
 
-	begin -- query_segments
+	begin -- collect_segments
 		log (text => "looking up net segments at" & to_string (place) 
 			 & " catch zone" & to_string (catch_zone), level => log_threshold);
 
@@ -2897,8 +2897,10 @@ package body et_schematic_ops.nets is
 			process		=> query_nets'access);
 
 		log_indentation_down;
+		
 		return result;
-	end query_segments;
+		
+	end collect_segments;
 
 	
 end et_schematic_ops.nets;

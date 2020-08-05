@@ -70,6 +70,32 @@ package et_schematic_ops.units is
 		rotation		: in et_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level);
 
+	-------------------
+
+	type type_selected_unit is record
+		device	: et_schematic.type_devices.cursor;
+		unit	: et_schematic.type_units.cursor;
+	end record;
+
+	package pac_selected_units is new doubly_linked_lists (type_selected_unit);
+
+	selected_units	: pac_selected_units.list;
+	selected_unit	: pac_selected_units.cursor;
+
+	-- Deletes a selected unit of a device.
+	procedure delete_selected_unit (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		unit			: in type_selected_unit; -- device/unit
+		log_threshold	: in type_log_level);
+	
+	-- Collects all units in the vicinity of the given point:
+	function collect_units (
+		module			: in pac_generic_modules.cursor;
+		place			: in et_coordinates.type_position; -- sheet/x/y
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_selected_units.list;
+
 	
 end et_schematic_ops.units;
 

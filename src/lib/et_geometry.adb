@@ -523,10 +523,13 @@ package body et_geometry is
 			return d;
 		end distance_relative;
 		
-		function distance_total (point_one, point_two : in type_point) return type_distance is
+		function distance_total (
+			point_one, point_two : in type_point) 
+			return type_distance_positive 
+		is
 			package functions is new ada.numerics.generic_elementary_functions (float);
 			
-			distance : type_distance; -- to be returned
+			distance : type_distance_positive; -- to be returned
 			delta_x, delta_y : float := 0.0;
 		begin
 			if point_one = point_two then
@@ -546,6 +549,21 @@ package body et_geometry is
 				
 			return distance;
 		end distance_total;
+
+		function in_catch_zone (
+			point_1		: in type_point; -- the reference point
+			catch_zone	: in type_catch_zone; -- zone around reference point
+			point_2 	: in type_point) -- the point being tested
+			return boolean 
+		is
+			d : type_distance_positive := distance_total (point_1, point_2);
+		begin
+			if d <= catch_zone then
+				return true;
+			else
+				return false;
+			end if;
+		end in_catch_zone;
 				
 		function add (left, right : in type_rotation) return type_rotation is
 		-- Adds two angles.

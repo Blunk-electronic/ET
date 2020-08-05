@@ -344,6 +344,12 @@ package body et_schematic is
 		return type_mirror'value (style);
 	end to_mirror_style;
 
+	function to_string (unit : in type_units.cursor) return string is
+		use type_units;
+	begin
+		return "unit " & to_string (key (unit)) & to_string (type_point (element (unit).position));
+	end to_string;
+	
 	function unit_positions (units : in type_units.map) return type_unit_positions.map is
 	-- Returns a list of units and their coordinates in the schematic.
 		list : type_unit_positions.map; -- to be returned
