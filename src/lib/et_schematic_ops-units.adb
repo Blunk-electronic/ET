@@ -159,6 +159,16 @@ package body et_schematic_ops.units is
 
 	end delete_unit;
 
+	procedure delete_unit (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in et_schematic.type_devices.cursor;
+		unit_cursor		: in et_schematic.type_units.cursor;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null; -- CS
+	end delete_unit;
+	
 	procedure move_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
@@ -608,7 +618,23 @@ package body et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		unit			: in type_selected_unit; -- device/unit
 		log_threshold	: in type_log_level)
-	is null; -- CS
+	is 
+		use et_schematic.type_devices;
+		use et_schematic.type_units;
+		
+		u : type_selected_unit := unit;
+		
+	begin
+		delete_unit (
+			module_name		=> key (module_cursor),
+			device_name		=> key (u.device),
+			unit_name		=> key (u.unit),
+			log_threshold	=> log_threshold);
+
+		-- CS delete_unit (module_cursor, u.device, u.unit, log_threshold);
+
+		
+	end delete_selected_unit;
 
 	
 	
@@ -634,30 +660,35 @@ package body et_schematic_ops.units is
 				device		: in et_schematic.type_device)
 			is
 				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor;
+				unit_cursor : et_schematic.type_units.cursor := device.units.first;
 			begin
-				-- We are interested in units on the given sheet only:
-				if sheet (element (unit_cursor).position) = sheet (place) then
+				while unit_cursor /= et_schematic.type_units.no_element loop
+					
+					-- We are interested in units on the given sheet only:
+					if sheet (element (unit_cursor).position) = sheet (place) then
 
-					log (text => "probing unit" & to_string (unit_cursor),
-						level => log_threshold + 1);
+						log (text => "probing unit " & to_string (unit_cursor),
+							level => log_threshold + 1);
 
-					if in_catch_zone (place, catch_zone, element (unit_cursor).position) then
-						log_indentation_up;
+						if in_catch_zone (place, catch_zone, element (unit_cursor).position) then
+							log_indentation_up;
 
-						log (text => "sits on segment", level => log_threshold + 1);
-						result.append ((device_cursor, unit_cursor));
-						
-						log_indentation_down;
+							log (text => "in catch zone", level => log_threshold + 1);
+							result.append ((device_cursor, unit_cursor));
+							
+							log_indentation_down;
+						end if;
 					end if;
-				end if;
 
+					next (unit_cursor);
+				end loop;
+				
 			end query_units;
 			
 		begin -- query_devices
 			while device_cursor /= et_schematic.type_devices.no_element loop
 
-				log (text => "probing device" & to_string (key (device_cursor)),
+				log (text => "probing device " & to_string (key (device_cursor)),
 					 level => log_threshold + 1);
 				log_indentation_up;
 					 

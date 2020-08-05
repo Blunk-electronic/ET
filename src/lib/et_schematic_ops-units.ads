@@ -38,13 +38,22 @@
 
 package et_schematic_ops.units is
 	
-	procedure delete_unit (
 	-- Deletes a unit of a device. 
 	-- In case the last unit has been deleted, then the device is 
 	-- deleted entirely from module.devices.
+	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
+		log_threshold	: in type_log_level);
+
+	-- Deletes a unit of a device. 
+	-- In case the last unit has been deleted, then the device is 
+	-- deleted entirely from module.devices.
+	procedure delete_unit (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_cursor	: in et_schematic.type_devices.cursor;
+		unit_cursor		: in et_schematic.type_units.cursor;
 		log_threshold	: in type_log_level);
 
 	procedure move_unit (

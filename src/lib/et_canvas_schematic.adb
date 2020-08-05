@@ -790,8 +790,13 @@ package body et_canvas_schematic is
 				when VERB_DELETE =>
 
 					case noun is
-						when NOUN_UNIT => null;
-
+						when NOUN_UNIT =>
+							if not clarification_pending then
+								delete_unit (point);
+							else
+								delete_selected_unit;
+							end if;
+							
 						when NOUN_NET => 
 							if not clarification_pending then
 								delete_net_segment (point);
@@ -825,7 +830,10 @@ package body et_canvas_schematic is
 				when VERB_DELETE =>
 
 					case noun is
-						when NOUN_UNIT => null;
+						when NOUN_UNIT =>
+							if clarification_pending then
+								clarify_unit;
+							end if;
 
 						when NOUN_NET => 
 							if clarification_pending then

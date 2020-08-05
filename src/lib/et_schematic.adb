@@ -347,7 +347,7 @@ package body et_schematic is
 	function to_string (unit : in type_units.cursor) return string is
 		use type_units;
 	begin
-		return "unit " & to_string (key (unit)) & to_string (type_point (element (unit).position));
+		return to_string (key (unit)) & to_string (type_point (element (unit).position));
 	end to_string;
 	
 	function unit_positions (units : in type_units.map) return type_unit_positions.map is
