@@ -625,6 +625,8 @@ package et_schematic_ops is
 	-- CS type_port_query
 
 	-- CS function port_position 
+
+
 	
 end et_schematic_ops;
 

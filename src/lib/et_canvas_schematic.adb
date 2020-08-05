@@ -541,6 +541,103 @@ package body et_canvas_schematic is
 		log_indentation_down;
 	end delete_selected_net_segment;
 
+
+-- 	type type_units is record
+-- 		device	: et_schematic.type_devices.cursor;
+-- 		unit	: et_schematic.type_units.cursor;
+-- 	end record;
+	
+	-- Deletes a unit in the vicinity of given point.
+	-- If more than one unit near point found, then it sets the
+	-- cursor selected_unit to the first unit and requests
+	-- for clarification.
+	procedure delete_unit (point : in type_point) is 
+-- 		use et_schematic_ops.nets;
+-- 		use pac_segments;
+-- 		segment_cursor : pac_segments.cursor;
+	begin
+		log (text => "deleting unit ...", level => log_threshold);
+		log_indentation_up;
+		
+		-- Collect all units in the vicinity of the given point:
+-- 		selected_segments := query_segments (
+-- 			module			=> current_active_module,
+-- 			place			=> to_position (point, current_active_sheet),
+-- 			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+-- 			log_threshold	=> log_threshold + 1);
+
+		-- evaluate the number of units found here:
+-- 		case length (selected_units) is
+-- 			when 0 =>
+-- 				reset_request_clarification;
+-- 				
+-- 			when 1 =>
+-- -- 				unit_cursor := selected_units.first;
+-- 			
+-- -- 				delete_segment (
+-- -- 					module_cursor	=> current_active_module,
+-- -- 					segment			=> element (segment_cursor),
+-- -- 					log_threshold	=> log_threshold + 1);
+-- 
+-- 				reset_request_clarification;
+-- 				set_status (status_preamble_click_left & "delete unit." & status_hint_for_abort);
+-- 				
+-- 			when others =>
+-- 				--log (text => "many objects", level => log_threshold + 2);
+-- 				set_request_clarification;
+-- 
+-- 				-- preselect the first segment
+-- 				selected_unit := selected_units.first;
+-- 		end case;
+		
+		log_indentation_down;
+	end delete_unit;
+
+	-- Advances cursor selected_unit to next unit in list selected_units.
+	procedure clarify_unit is
+		use et_schematic;
+-- 		use et_schematic_ops.nets;
+-- 		use pac_segments;
+-- 		s : type_net_segments.cursor;
+	begin
+		-- On every call of this procedure we must advance from one
+		-- unit to the next in a circular manner. So if the end 
+		-- of the list is reached, then the cursor selected_unit
+		-- moves back to the start of the unit list.
+-- 		if next (selected_unit) /= pac_units.no_element then
+-- 			next (selected_unit);
+-- 		else
+-- 			selected_unit := selected_units.first;
+-- 		end if;
+
+		-- show the selected segment in the status bar
+-- 		s := element (selected_unit).unit;
+		
+		-- 		set_status (to_string (s));
+		null;
+	end clarify_unit;
+	
+	-- Deletes the unit being pointed at by cursor selected_unit.
+	procedure delete_selected_unit is
+-- 		use et_schematic_ops.nets;
+-- 		use pac_segments;
+	begin
+		log (text => "deleting unit after clarification ...", level => log_threshold);
+		log_indentation_up;
+
+-- 		delete_segment (
+-- 			module_cursor	=> current_active_module,
+-- 			segment			=> element (selected_segment),
+-- 			log_threshold	=> log_threshold + 1);
+
+		reset_request_clarification;
+		set_status (status_preamble_click_left & "delete unit." & status_hint_for_abort);
+		
+		log_indentation_down;
+	end delete_selected_unit;
+
+
+	
 	
 	procedure evaluate_key (
 		self	: not null access type_view;
@@ -564,7 +661,12 @@ package body et_canvas_schematic is
 				when GDK_Return =>
 
 					case noun is
-						when NOUN_UNIT => null;
+						when NOUN_UNIT =>
+							if not clarification_pending then
+								delete_unit (cursor_main.position);
+							else
+								delete_selected_unit;
+							end if;
 
 						when NOUN_NET => 
 							if not clarification_pending then
@@ -582,7 +684,10 @@ package body et_canvas_schematic is
 
 				when GDK_page_down =>
 					case noun is
-						when NOUN_UNIT => null;
+						when NOUN_UNIT =>
+							if clarification_pending then
+								clarify_unit;
+							end if;
 
 						when NOUN_NET => 
 							if clarification_pending then
