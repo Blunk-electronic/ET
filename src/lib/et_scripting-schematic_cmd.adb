@@ -47,6 +47,7 @@ function schematic_cmd (
 	use et_project;
 	use et_schematic_ops;
 	use et_schematic_ops.nets;
+	use et_schematic_ops.units;
 	use et_coordinates;
 	use pac_geometry_sch;
 	use et_devices;

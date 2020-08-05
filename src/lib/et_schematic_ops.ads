@@ -70,10 +70,60 @@ package et_schematic_ops is
 	
 	procedure device_not_found (name : in type_name);
 	procedure device_already_exists (name : in type_name);
+	procedure relative_rotation_invalid;
 	procedure netchanger_not_found (index : in et_submodules.type_netchanger_id);
 	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string);	
 	procedure net_not_found (name : in et_general.type_net_name.bounded_string);
 	procedure assembly_variant_not_found (variant : in et_general.type_variant_name.bounded_string);
+
+	procedure unit_not_found (name : in type_unit_name.bounded_string);
+	
+	-- Writes the positions of the device units in the log file.
+	procedure log_unit_positions (
+		positions 		: in type_unit_positions.map;
+		log_threshold	: in type_log_level);
+
+	-- Returns a map of ports of the given device and unit.
+	-- The coordinates of the ports are default xy-positions relative
+	-- to the center of the unit.
+	function ports_of_unit (
+		device_cursor	: in et_schematic.type_devices.cursor;
+		unit_name		: in type_unit_name.bounded_string)
+		return et_symbols.type_ports.map;
+
+	-- Deletes ports of the given device in nets.
+	procedure delete_ports (
+		module			: in pac_generic_modules.cursor;		-- the module
+		device			: in type_name;			-- the device
+		ports			: in et_symbols.type_ports.map := et_symbols.type_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
+		sheets			: in type_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
+		log_threshold	: in type_log_level);
+
+	-- Moves the given unit ports by given offset.
+	procedure move_ports ( -- CS move to et_symbols ?
+		ports	: in out et_symbols.type_ports.map; -- the portlist
+		offset	: in et_coordinates.type_position); -- the offset (only x/y matters)
+
+	-- Inserts the given device ports in the net segments.
+	-- If a port lands on either the start or end point of a segment, it will
+	-- be regarded as "connected" with the segment.
+	-- If a ports lands between start or end point of a segment, nothing happens
+	-- because the docking to net segments is possible on segment ends/starts only.
+	-- CS: Automatic splitting the segment into two and placing a junction is not supported
+	-- jet and probably not a good idea.
+	procedure insert_ports (
+		module			: in pac_generic_modules.cursor;		-- the module
+		device			: in type_name;					-- the device
+		unit			: in type_unit_name.bounded_string;	-- the unit name like A, C, PWR
+		ports			: in et_symbols.type_ports.map; -- the ports to be inserted
+		sheet			: in type_sheet;				-- the sheet to look at
+		log_threshold	: in type_log_level);
+
+	-- Rotates the given unit ports by given angle around the origin.
+	procedure rotate_ports ( -- CS move to et_symbols ?
+		ports	: in out et_symbols.type_ports.map; -- the portlist
+		angle	: in et_coordinates.type_rotation); -- 90
+
 	
 	procedure set_grid (
 	-- Sets the grid of the module.
@@ -109,30 +159,32 @@ package et_schematic_ops is
 		port			: in et_submodules.type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
 		return et_coordinates.type_position;
+
+
 	
-	procedure delete_unit (
-	-- Deletes a unit of a device. 
-	-- In case the last unit has been deleted, then the device is 
-	-- deleted entirely from module.devices.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
-		log_threshold	: in type_log_level);
+-- 	procedure delete_unit (
+-- 	-- Deletes a unit of a device. 
+-- 	-- In case the last unit has been deleted, then the device is 
+-- 	-- deleted entirely from module.devices.
+-- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+-- 		device_name		: in type_name; -- IC45
+-- 		unit_name		: in type_unit_name.bounded_string; -- A
+-- 		log_threshold	: in type_log_level);
 	
 -- 	type type_coordinates is (RELATIVE, ABSOLUTE);
 -- 
 -- 	function to_string (coordinates : in type_coordinates) return string;
 -- 	function to_coordinates (coordinates : in string) return type_coordinates;
 
-	procedure move_unit (
-	-- Moves the given unit.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
-		coordinates		: in type_coordinates; -- relative/absolute
-		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in type_point; -- x/y
-		log_threshold	: in type_log_level);
+-- 	procedure move_unit (
+-- 	-- Moves the given unit.
+-- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+-- 		device_name		: in type_name; -- IC45
+-- 		unit_name		: in type_unit_name.bounded_string; -- A
+-- 		coordinates		: in type_coordinates; -- relative/absolute
+-- 		sheet			: in type_sheet_relative; -- -3/0/2
+-- 		point			: in type_point; -- x/y
+-- 		log_threshold	: in type_log_level);
 
 	procedure move_unit_placeholder (
 	-- Moves the name placeholder of the given unit.
@@ -151,16 +203,16 @@ package et_schematic_ops is
 		unit_name		: in type_unit_name.bounded_string)
 		return et_symbols.type_default_text_positions;
 	
-	procedure rotate_unit (
-	-- Rotates the given unit. Disconnects the unit from
-	-- start or end points of net segments.
-	-- Rotates the placeholders around the unit.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
-		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_coordinates.type_rotation; -- 90
-		log_threshold	: in type_log_level);
+-- 	procedure rotate_unit (
+-- 	-- Rotates the given unit. Disconnects the unit from
+-- 	-- start or end points of net segments.
+-- 	-- Rotates the placeholders around the unit.
+-- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+-- 		device_name		: in type_name; -- IC45
+-- 		unit_name		: in type_unit_name.bounded_string; -- A
+-- 		coordinates		: in type_coordinates; -- relative/absolute		
+-- 		rotation		: in et_coordinates.type_rotation; -- 90
+-- 		log_threshold	: in type_log_level);
 
 	procedure rotate_unit_placeholder (
 	-- Rotates the given unit placeholder around its origin.
