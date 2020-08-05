@@ -549,8 +549,70 @@ package body et_canvas_schematic is
 		use gdk.types;
 		use gdk.types.keysyms;
 
-		use et_modes;	
-	begin
+		use et_modes;
+
+		procedure delete is begin
+			case key is
+				when GDK_LC_u =>
+					noun := NOUN_UNIT;
+					set_status (status_preamble_click_left & "delete unit." & status_hint_for_abort);
+					
+				when GDK_LC_n =>
+					noun := NOUN_NET;
+					set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
+
+				when GDK_Return =>
+
+					case noun is
+						when NOUN_UNIT => null;
+
+						when NOUN_NET => 
+							if not clarification_pending then
+								delete_net_segment (cursor_main.position);
+							else
+								delete_selected_net_segment;
+							end if;
+
+						when others =>
+							null;
+							
+					end case;
+
+					self.queue_draw;
+
+				when GDK_page_down =>
+					case noun is
+						when NOUN_UNIT => null;
+
+						when NOUN_NET => 
+							if clarification_pending then
+								clarify_net_segment;
+							end if;
+
+						when others =>
+							null;
+							
+					end case;
+
+					self.queue_draw;
+
+					
+				when others => status_noun_invalid;
+			end case;
+		end delete;
+
+		procedure draw is begin
+			case key is
+				when GDK_LC_n =>
+					noun := NOUN_NET;
+					status_clear;
+					
+				when others => status_noun_invalid;
+			end case;
+		end draw;
+		
+	begin -- evaluate_key
+		
 -- 		put_line ("schematic: evaluating other key ...");
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
 
@@ -600,66 +662,9 @@ package body et_canvas_schematic is
 					--put_line ("NOUN entered");
 
 					case verb is
-						when VERB_DELETE =>
+						when VERB_DELETE => delete;
 
-							case key is
-								when GDK_LC_u =>
-									noun := NOUN_UNIT;
-									set_status (status_preamble_click_left & "delete unit." & status_hint_for_abort);
-									
-								when GDK_LC_n =>
-									noun := NOUN_NET;
-									set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
-
-								when GDK_Return =>
-
-									case noun is
-										when NOUN_UNIT => null;
-
-										when NOUN_NET => 
-											if not clarification_pending then
-												delete_net_segment (cursor_main.position);
-											else
-												delete_selected_net_segment;
-											end if;
-
-										when others =>
-											null;
-											
-									end case;
-
-									self.queue_draw;
-
-								when GDK_page_down =>
-									case noun is
-										when NOUN_UNIT => null;
-
-										when NOUN_NET => 
-											if clarification_pending then
-												clarify_net_segment;
-											end if;
-
-										when others =>
-											null;
-											
-									end case;
-
-									self.queue_draw;
-
-
-									
-								when others => status_noun_invalid;
-							end case;
-
-						when VERB_DRAW =>
-
-							case key is
-								when GDK_LC_n =>
-									noun := NOUN_NET;
-									status_clear;
-									
-								when others => status_noun_invalid;
-							end case;
+						when VERB_DRAW => draw;
 
 						when others => null; -- CS
 					end case;
