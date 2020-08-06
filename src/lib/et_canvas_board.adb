@@ -59,6 +59,20 @@ package body et_canvas_board is
 		window.set_title (title & to_string (module));
 	end set_title_bar;
 
+
+	procedure redraw_board is begin
+		redraw (canvas);
+	end redraw_board;
+	
+	procedure redraw_schematic is begin
+		et_canvas_schematic.redraw_schematic;
+	end redraw_schematic;
+
+	procedure redraw is begin
+		redraw_schematic;
+		redraw_board;
+	end redraw;
+	
 	function to_string (
 		self	: not null access type_view;
 		point	: in type_point;
@@ -738,8 +752,10 @@ package body et_canvas_board is
 			end case;
 
 		end if;
+
+		redraw;		
+		update_mode_display (canvas);
 		
-		self.update_mode_display;
 	end evaluate_key;
 
 	overriding procedure button_pressed (
@@ -786,6 +802,7 @@ package body et_canvas_board is
 			when others => null;
 		end case;
 
+		redraw;
 	end button_pressed;
 	
 end et_canvas_board;

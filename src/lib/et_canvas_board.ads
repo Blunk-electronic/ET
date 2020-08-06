@@ -111,6 +111,10 @@ package et_canvas_board is
 		drawing	: type_drawing;
 	end record;
 
+	procedure redraw_board;
+	procedure redraw_schematic;
+	procedure redraw;
+	
 	overriding function to_string (
 		self	: not null access type_view;
 		point	: in type_point;
@@ -227,7 +231,6 @@ package et_canvas_board is
 		self	: not null access type_view;
 		button	: in type_mouse_button;
 		point	: in type_point);
-
 	
 end et_canvas_board;
 

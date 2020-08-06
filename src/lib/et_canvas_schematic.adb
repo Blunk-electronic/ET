@@ -36,9 +36,12 @@
 --
 
 with ada.text_io;					use ada.text_io;
+
+with et_canvas_board;
 with et_display.schematic;
 with et_colors.schematic;			use et_colors.schematic;
 with et_modes.schematic;			use et_modes.schematic;
+
 
 package body et_canvas_schematic is
 
@@ -52,6 +55,21 @@ package body et_canvas_schematic is
 			" sheet " & to_sheet (sheet));
 	end set_title_bar;
 
+	
+	procedure redraw_board is begin
+		et_canvas_board.redraw_board;
+	end redraw_board;
+	
+	procedure redraw_schematic is begin
+		redraw (canvas);
+	end redraw_schematic;
+
+	procedure redraw is begin
+		redraw_schematic;
+		redraw_board;
+	end redraw;
+	
+	
 	function to_string (
 		self	: not null access type_view;
 		point	: in type_point;
@@ -676,8 +694,6 @@ package body et_canvas_schematic is
 							
 					end case;
 
-					self.queue_draw;
-
 				when GDK_page_down =>
 					case noun is
 						when NOUN_UNIT =>
@@ -694,9 +710,6 @@ package body et_canvas_schematic is
 							null;
 							
 					end case;
-
-					self.queue_draw;
-
 					
 				when others => status_noun_invalid;
 			end case;
@@ -773,8 +786,10 @@ package body et_canvas_schematic is
 			end case;
 
 		end if;
+
+		redraw;
+		update_mode_display (canvas);
 		
-		self.update_mode_display;
 	end evaluate_key;
 
 	
@@ -822,7 +837,6 @@ package body et_canvas_schematic is
 				when others => null; -- CS
 			end case;
 			
-			self.queue_draw;
 		end left_button;
 
 		procedure right_button is begin
@@ -848,7 +862,6 @@ package body et_canvas_schematic is
 				when others => null; -- CS
 			end case;
 
-			-- CS ? self.queue_draw; 
 		end right_button;
 			
 	begin -- button_pressed
@@ -860,6 +873,7 @@ package body et_canvas_schematic is
 			when others => null;
 		end case;
 
+		redraw;
 	end button_pressed;
 	
 end et_canvas_schematic;

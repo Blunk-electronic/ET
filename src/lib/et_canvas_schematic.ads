@@ -128,6 +128,10 @@ package et_canvas_schematic is
 		drawing	: type_drawing;
 	end record;
 
+	procedure redraw_board;
+	procedure redraw_schematic;
+	procedure redraw;
+	
 	-- Returns the name of the currently active module:
 	function active_module return et_general.type_module_name.bounded_string;
 
