@@ -175,7 +175,9 @@ package et_schematic_ops.nets is
 	use type_nets;
 	use type_strands;
 	use type_net_segments;
-	
+
+	-- Whenever a segment is selected via the GUI, we store its
+	-- parent net, strand and the segment itself via this type:
 	type type_selected_segment is record
 		net		: type_nets.cursor;
 		strand	: type_strands.cursor;
@@ -184,6 +186,7 @@ package et_schematic_ops.nets is
 
 	package pac_selected_segments is new doubly_linked_lists (type_selected_segment);
 
+	-- These variables are used by the GUI when the operator selects a segment:
 	selected_segments	: pac_selected_segments.list;
 	selected_segment	: pac_selected_segments.cursor;
 	

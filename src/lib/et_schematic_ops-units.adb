@@ -159,16 +159,6 @@ package body et_schematic_ops.units is
 
 	end delete_unit;
 
-	procedure delete_unit (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in et_schematic.type_devices.cursor;
-		unit_cursor		: in et_schematic.type_units.cursor;
-		log_threshold	: in type_log_level)
-	is
-	begin
-		null; -- CS
-	end delete_unit;
-	
 	procedure move_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
@@ -613,27 +603,109 @@ package body et_schematic_ops.units is
 	end rotate_unit;
 
 
+	procedure delete_unit (
+		module_cursor	: in pac_generic_modules.cursor;
+		unit			: in out type_selected_unit;
+		log_threshold	: in type_log_level)
+	is
+		use et_schematic.type_devices;
+		use et_schematic.type_units;
 
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			
+			-- temporarily storage of unit coordinates.
+			-- There will be only one unit in this container.
+			position_of_unit : type_unit_positions.map;
+
+			ports : et_symbols.type_ports.map;
+
+			procedure query_units (
+				device_name	: in type_name;
+				device		: in out et_schematic.type_device) is
+			begin
+				-- Load the single unit position and insert in container "position_of_unit"
+				type_unit_positions.insert (
+					container	=> position_of_unit, 
+					key			=> key (unit.unit),
+					new_item	=> element (unit.unit).position);
+
+				log_unit_positions (position_of_unit, log_threshold + 1);
+				
+				-- delete the unit
+				delete (device.units, key (unit.unit));
+				
+			end query_units;
+			
+			units_invoked : boolean := true; -- goes false if no unit used anymore
+
+			procedure query_number_of_invoked_units (
+				device_name	: in type_name;
+				device		: in et_schematic.type_device) is
+			begin
+				if length (device.units) = 0 then
+					units_invoked := false;
+				end if;
+			end query_number_of_invoked_units;
+
+		begin -- query_devices
+			-- Fetch the ports of the unit to be deleted.
+			ports := ports_of_unit (unit.device, key (unit.unit));
+
+			-- locate the unit, load position and then delete the targeted unit
+			update_element (
+				container	=> module.devices,
+				position	=> unit.device,
+				process		=> query_units'access);
+			
+			-- Delete the ports of the targeted unit from module.nets
+			delete_ports (
+				module			=> module_cursor,
+				device			=> key (unit.device),
+				ports			=> ports,
+				sheets			=> position_of_unit, -- there is only one unit -> only one sheet to look at
+				log_threshold	=> log_threshold + 1);
+
+			-- In case no more units are invoked then the device must be
+			-- deleted entirely from module.devices.
+			-- First we query the number of still invoked units. If none invoked,
+			-- the flag units_invoked goes false.
+			query_element (
+				position	=> unit.device,
+				process		=> query_number_of_invoked_units'access);
+
+			if not units_invoked then
+				delete (module.devices, unit.device);
+			end if;
+
+		end query_devices;
+
+	begin
+		log (text => "module " & to_string (key (module_cursor)) &
+			 " deleting " & to_string (key (unit.device)) & " unit " & 
+			 to_string (key (unit.unit)) & " ...", level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+		
+		log_indentation_down;				
+	end delete_unit;
+
+	
 	procedure delete_selected_unit (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		unit			: in type_selected_unit; -- device/unit
 		log_threshold	: in type_log_level)
 	is 
-		use et_schematic.type_devices;
-		use et_schematic.type_units;
-		
-		u : type_selected_unit := unit;
-		
+		su : type_selected_unit := unit;		
 	begin
-		delete_unit (
-			module_name		=> key (module_cursor),
-			device_name		=> key (u.device),
-			unit_name		=> key (u.unit),
-			log_threshold	=> log_threshold);
-
-		-- CS delete_unit (module_cursor, u.device, u.unit, log_threshold);
-
-		
+		delete_unit (module_cursor, su, log_threshold);
+		-- NOTE: su has been modified !
 	end delete_selected_unit;
 
 	

@@ -40,20 +40,11 @@ package et_schematic_ops.units is
 	
 	-- Deletes a unit of a device. 
 	-- In case the last unit has been deleted, then the device is 
-	-- deleted entirely from module.devices.
+	-- deleted entirely from the module.
 	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
-		log_threshold	: in type_log_level);
-
-	-- Deletes a unit of a device. 
-	-- In case the last unit has been deleted, then the device is 
-	-- deleted entirely from module.devices.
-	procedure delete_unit (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in et_schematic.type_devices.cursor;
-		unit_cursor		: in et_schematic.type_units.cursor;
 		log_threshold	: in type_log_level);
 
 	procedure move_unit (
@@ -81,6 +72,8 @@ package et_schematic_ops.units is
 
 	-------------------
 
+	-- Whenever a unit is selected via the GUI, we store its
+	-- parent device and the unit itself via this type:
 	type type_selected_unit is record
 		device	: et_schematic.type_devices.cursor;
 		unit	: et_schematic.type_units.cursor;
@@ -88,9 +81,22 @@ package et_schematic_ops.units is
 
 	package pac_selected_units is new doubly_linked_lists (type_selected_unit);
 
+	-- These variables are used by the GUI when the operator selects a unit:
 	selected_units	: pac_selected_units.list;
 	selected_unit	: pac_selected_units.cursor;
 
+	-- Deletes a unit of a device. 
+	-- In case the last unit has been deleted, then the device is 
+	-- deleted entirely from the module.
+	-- It is quite similar as the previous procedure delete_unit (see above)
+	-- The difference is that it does not search for the module, device and unit
+	-- because we provide this information by cursors in the parameter list.
+	-- Mind that the parameter unit is an in/out !
+	procedure delete_unit (
+		module_cursor	: in pac_generic_modules.cursor;
+		unit			: in out type_selected_unit;
+		log_threshold	: in type_log_level);
+	
 	-- Deletes a selected unit of a device.
 	procedure delete_selected_unit (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
