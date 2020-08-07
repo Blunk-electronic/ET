@@ -536,6 +536,8 @@ package body et_canvas_schematic is
 
 		-- show the selected segment in the status bar
 		s := element (selected_segment).segment;
+
+		-- CS highlight the selected segment
 		
 		set_status (to_string (s));
 	end clarify_net_segment;
@@ -625,8 +627,10 @@ package body et_canvas_schematic is
 			selected_unit := selected_units.first;
 		end if;
 
-		-- show the selected segment in the status bar
+		-- show the selected unit in the status bar
 		u := element (selected_unit).unit;
+
+		-- CS highlight the selected unit
 		
 		set_status (to_string (u));
 	end clarify_unit;
