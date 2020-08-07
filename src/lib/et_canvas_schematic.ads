@@ -94,11 +94,15 @@ package et_canvas_schematic is
 	--  - net segments
 	--  - lines, arcs, circles of documentation
 	-- we instantiate this package:
-	package pac_draw_misc is new et_canvas_primitive_draw_ops.pac_draw (
+	package pac_draw_misc is new et_canvas_primitive_draw_ops.pac_draw ( -- CS rename to pac_draw_schematic
 		pac_canvas	=> pac_canvas,
 		pac_shapes	=> et_schematic.pac_shapes,
 		pac_text	=> et_schematic.pac_text);
 	
+	package pac_draw_symbols is new et_canvas_primitive_draw_ops.pac_draw (
+		pac_canvas	=> pac_canvas,
+		pac_shapes	=> et_symbols.pac_shapes,
+		pac_text	=> et_symbols.pac_text);
 	
 
 	-- The currently active project is stored here:

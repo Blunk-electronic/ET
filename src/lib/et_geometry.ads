@@ -643,7 +643,7 @@ package et_geometry is
 
 		procedure move_by (
 		-- Moves an arc by the given offset. 
-			arc		: in out type_arc'class;
+			arc		: in out type_arc;
 			offset	: in type_point);
 
 		procedure move_to (

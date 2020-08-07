@@ -173,7 +173,7 @@ package pac_draw is
 		return cairo_text_extents;
 	
 	-- Draws a text in the drawing plane.
-	-- Draws the text in case it is inside the given area or whether the
+	-- Draws the text in case it is inside the given area or if the
 	-- text intersects the given area.
 	-- If area is no_rectangle then the text would be drawn in any case.
 	procedure draw_text (
