@@ -212,15 +212,6 @@ package body et_canvas_schematic is
 		sch_placeholder_purpose : in et_symbols.type_text_placeholder		
 		)
 	is
-
-
-		
-	-- CS Could be useful to use the primitive draw operations of et_canvas_draw:
-	-- In order to draw objects of a symbol we instantiate this package:
-	-- 	package pac_draw_symbol is new et_canvas_draw.pac_draw (
-	-- 		pac_canvas	=> pac_canvas,
-	-- 		pac_shapes	=> et_symbols.pac_shapes);
-
 		use et_symbols;
 		use et_symbols.pac_shapes;
 		use pac_draw_symbols;
@@ -231,71 +222,12 @@ package body et_canvas_schematic is
 		use type_ports;
 		use type_texts;
 
-		-- First we take a copy the boundaries of the symbol.
-		boundaries : type_boundaries := symbol.boundaries;
-
-		-- This is the bounding box required for drawing the symbol.
-		-- The sole purpose of the bounding box is to draw the symbol
-		-- only in case it is inside the given area or if it intersects
-		-- the given area. This way we avoid it to be drawn on the cairo
-		-- context if it is outside the area -> saves computing time.
--- 		bounding_box : type_rectangle; -- model coordinates
-		
--- 		procedure make_bounding_box is begin
--- 			-- In the next steps the boundaries are to be extended.
--- 			-- Reason: The operator may have changed positions of
--- 			-- placeholders (for name, value and purpose) from their initial
--- 			-- position as specified in the symbol model. So the boundaries
--- 			-- may have become wider.
--- 			-- Other things like lines, arcs, ports and texts can't be moved separately in the 
--- 			-- schematic editor. They already have been included in the bounding box.
--- 			-- See procedure et_symbols.compute_boundaries for details.
--- 			
--- 			-- In case the symbol belongs to a real device, probe placeholders and
--- 			-- update boundaries. If a placeholder is inside the boundaries,
--- 			-- nothing happens -> The boundaries are NOT changed.
--- 			if symbol.appearance = PCB then
--- 				-- CS: Currently the area occupied by the text content is ignored.
--- 				pac_shapes.union (boundaries, symbol.name.position);
--- 				pac_shapes.union (boundaries, symbol.value.position);
--- 				pac_shapes.union (boundaries, symbol.purpose.position);
--- 			end if;
--- 
--- 			bounding_box := (
--- 				-- The bounding box origin is the upper left corner.
--- 				-- The box position in x is shifted by the smallest_x to the left.
--- 				-- The box position in y is shifted by the greatest_y (upwards).
--- 				-- The box position in y is additonally converted to y axis going downwards.
--- 				x		=> position.x 
--- 							- abs (boundaries.smallest_x),
--- 				
--- 				y		=> convert_and_shift_y (self,
--- 							  position.y
--- 							+ abs (boundaries.greatest_y)), -- convert y to "downwards"
--- 
--- 				-- The box width is the difference between greatest x and smallest x.
--- 				-- The box height is the difference between greatest y and smallest y.
--- 				width	=> boundaries.greatest_x - boundaries.smallest_x,
--- 				height	=> boundaries.greatest_y - boundaries.smallest_y
--- 				);
--- 			
--- 		end make_bounding_box;
-
-		-- Transposes the x-value from the drawing to the view.
-		function transpose_x (x : in type_distance) return type_view_coordinate is begin
-			--return convert_x (x - boundaries.smallest_x);
-			return convert_x (x);
-		end;
-
-		-- Transposes the y-value from the drawing to the view.
-		function transpose_y (y : in type_distance) return type_view_coordinate is begin
-			--return convert_y (abs (y - boundaries.greatest_y));
-			return convert_y (- y);
-		end;
+		type type_line is new pac_shapes.type_line with null record;
+		type type_arc is new pac_shapes.type_arc with null record;		
+		type type_circle is new pac_shapes.type_circle with null record;
 		
 		procedure draw_line (c : in type_lines.cursor) is 
 			-- Take a copy of the given line:
-			type type_line is new pac_shapes.type_line with null record;
 			line : type_line := (pac_shapes.type_line (element (c)) with null record);
 		begin
 			rotate_by (line, unit_rotation);
@@ -306,7 +238,6 @@ package body et_canvas_schematic is
 
 		procedure draw_arc (c : in type_arcs.cursor) is 
 			-- Take a copy of the given arc:
-			type type_arc is new pac_shapes.type_arc with null record;
 			arc : type_arc := (pac_shapes.type_arc (element (c)) with null record);
 		begin
 			rotate_by (arc, unit_rotation);
@@ -316,7 +247,6 @@ package body et_canvas_schematic is
 		end draw_arc;
 
 		procedure draw_circle (c : in type_circles.cursor) is 
-			type type_circle is new pac_shapes.type_circle with null record;
 			circle : type_circle := (pac_shapes.type_circle (element (c)) with null record);
 		begin
 			rotate_by (circle, unit_rotation);
@@ -331,10 +261,7 @@ package body et_canvas_schematic is
 			start_point			: type_point := element (c).position;
 			end_point			: type_point := element (c).position;
 
-			type type_line is new pac_shapes.type_line with null record;
 			line : type_line;
-
-			type type_circle is new pac_shapes.type_circle with null record;
 			circle : type_circle;
 			
 			pos_port_name		: type_point;
@@ -368,6 +295,8 @@ package body et_canvas_schematic is
 
 				-- Rotate the position of the port name by the unit rotation:
 				rotate_by (pos_port_name, unit_rotation);
+
+				-- Move the name by the unit position:
 				move_by (pos_port_name, position);
 				
 				set_color_symbols (context.cr);
@@ -405,7 +334,9 @@ package body et_canvas_schematic is
 				use et_devices;
 				properties : type_port_properties_access;
 			begin
-
+				-- Rotate the position of the terminal name by the unit rotation:
+				rotate_by (pos_terminal_name, unit_rotation);
+				
 				-- Compute the position of the origin of the terminal name regarding 
 				-- its distance from the line of the port:
 				if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
@@ -428,8 +359,7 @@ package body et_canvas_schematic is
 					raise constraint_error; -- CS should never happen
 				end if;
 
-				-- Rotate the position of the terminal name by the unit rotation:
-				rotate_by (pos_terminal_name, unit_rotation);
+				-- Move the name by the unit position:
 				move_by (pos_terminal_name, position);
 				
 				set_color_symbols (context.cr);
@@ -462,8 +392,8 @@ package body et_canvas_schematic is
 			end draw_terminal_name;
 			
 		begin -- draw_port
-			-- set line width
-			cairo.set_line_width (context.cr, type_view_coordinate (et_symbols.port_line_width));
+			set_color_symbols (context.cr);
+			set_line_width (context.cr, type_view_coordinate (et_symbols.port_line_width));
 			
 			-- Compute following positions according to port rotation and length:
 			-- - end point of port
@@ -473,7 +403,8 @@ package body et_canvas_schematic is
 			--   by procedure draw_terminal_name.)
 			--
 			-- NOTE: These computations leave the rotation of the unit outside. For the moment we
-			-- assume the unit is not rotated. The positions will be rotated later.
+			-- assume the unit is not rotated. We look at the default rotation of the ports.
+			-- The the final port positions will be computed later.
 			if element (c).rotation = 0.0 then -- end point points to the left
 				set (axis => X, value => x (start_point) - element (c).length, point => end_point);
 
@@ -527,12 +458,11 @@ package body et_canvas_schematic is
 			end if;
 
 			-- Rotate the start and end point by rotation of unit:
--- 			rotate_by (start_point, unit_rotation);
--- 			rotate_by (end_point, unit_rotation);
+			rotate_by (start_point, unit_rotation);
+			rotate_by (end_point, unit_rotation);
 
 			line.start_point := start_point;
 			line.end_point := end_point;
-			rotate_by (line, unit_rotation);
 			move_by (line, position);
 			
 			-- Draw the line of the port:
@@ -578,27 +508,28 @@ package body et_canvas_schematic is
 		end draw_port;
 
 		-- This procedure draws fixed documentational texts like "MUX" or "CT16" as they 
-		-- are frequently placed inside symbols:
+		-- are frequently placed inside symbols.
+		-- Call this procedure after drawing the symbol body because it
+		-- does not change the color to symbol color.
 		procedure draw_text (c : in type_texts.cursor) is 
-			position : type_point := element (c).position;
-			use pac_draw_misc;
 			use pac_text;
+			p : type_point := element (c).position;
 		begin
 			-- Rotate the position of the text.
 			-- This adds the unit_rotation to the given rotation.
-			rotate_by (position, unit_rotation);
+			rotate_by (p, unit_rotation);
+
+			-- Move text by unit position
+			move_by (p, position);
 			
-			pac_draw_misc.draw_text 
+			draw_text 
 				(
+				area		=> in_area,
 				context		=> context,
 				content		=> element (c).content,
 				size		=> element (c).size,
 				font		=> et_symbols.text_font,
-
-				-- text position x/y relative to symbol origin:
-				x			=> transpose_x (x (position)),
-				y			=> transpose_y (y (position)),
-
+				position	=> p,
 				origin		=> false, -- no origin required
 				
 				-- Text rotation around its anchor point.
@@ -607,38 +538,37 @@ package body et_canvas_schematic is
 				-- it is readable from the front or the right.
 				rotation	=> to_rotation (snap (element (c).rotation + unit_rotation)),
 
-				alignment	=> element (c).alignment
+				alignment	=> element (c).alignment,
+				height		=> self.frame_height
 				);
 		end draw_text;
 
 		-- This procedure draws text placeholders for device name, value and purpose:
 		procedure draw_placeholders is 
-			use et_text;
 			use et_devices;
-			use pac_draw_misc;
 			use pac_text;
 			
-			position : type_point;
+			p : type_point;
 		begin
 			set_color_placeholders (context.cr);
 			
 			-- DEVICE NAME:
-			position := sch_placeholder_name.position;
+			p := sch_placeholder_name.position;
 
 			--put_line (to_string (device_name) & " " & to_string (unit_name) & " " & to_string (unit_count));
 
 			if device_names_enabled then
+
+				-- Move placeholder by unit position
+				move_by (p, position);
 				
-				pac_draw_misc.draw_text (
+				draw_text (
+					area		=> in_area,
 					context		=> context,
 					content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
 					size		=> symbol.name.size,
 					font		=> et_symbols.name_font,
-					
-					-- text position x/y relative to symbol origin:
-					x			=> transpose_x (x (position)),
-					y			=> transpose_y (y (position)),
-
+					position	=> p,
 					origin		=> true, -- origin required
 					
 					-- Text rotation around its anchor point.
@@ -646,7 +576,9 @@ package body et_canvas_schematic is
 					-- This has been done in schematic_ops.rotate_unit already.
 					rotation	=> to_rotation (sch_placeholder_name.rotation),
 					
-					alignment	=> sch_placeholder_name.alignment);
+					alignment	=> sch_placeholder_name.alignment,
+					height		=> self.frame_height
+					);
 			end if;
 			
 			-- VALUE
@@ -655,18 +587,18 @@ package body et_canvas_schematic is
 				-- The value may be empty. We do not draw it in this case:
 				if not is_empty (device_value) then
 
-					position := sch_placeholder_value.position;
+					p := sch_placeholder_value.position;
+
+					-- Move text by unit position
+					move_by (p, position);
 					
-					pac_draw_misc.draw_text (
+					draw_text (
+						area		=> in_area,
 						context		=> context,
 						content		=> to_content (to_string (device_value)), -- 100R
 						size		=> symbol.value.size,
 						font		=> et_symbols.value_font,
-						
-						-- text position x/y relative to symbol origin:
-						x			=> transpose_x (x (position)),
-						y			=> transpose_y (y (position)),
-
+						position	=> p,
 						origin		=> true, -- origin required
 						
 						-- Text rotation around its anchor point.
@@ -674,7 +606,9 @@ package body et_canvas_schematic is
 						-- This has been done in schematic_ops.rotate_unit already.
 						rotation	=> to_rotation (sch_placeholder_value.rotation),
 
-						alignment	=> sch_placeholder_value.alignment);
+						alignment	=> sch_placeholder_value.alignment,
+						height		=> self.frame_height
+						);
 				end if;
 			end if;
 			
@@ -684,18 +618,18 @@ package body et_canvas_schematic is
 				-- The purpose may be empty. We do not draw it in this case:
 				if not is_empty (device_purpose) then
 
-					position := sch_placeholder_purpose.position;
-						
-					pac_draw_misc.draw_text (
+					p := sch_placeholder_purpose.position;
+
+					-- Move text by unit position
+					move_by (p, position);
+					
+					draw_text (
+						area		=> in_area,
 						context		=> context,
 						content		=> to_content (to_string (device_purpose)), -- "brightness control"
 						size		=> symbol.purpose.size,
 						font		=> et_symbols.purpose_font,
-
-						-- text position x/y relative to symbol origin:
-						x			=> transpose_x (x (position)),
-						y			=> transpose_y (y (position)),
-
+						position	=> p,
 						origin		=> true, -- origin required
 						
 						-- Text rotation around its anchor point.
@@ -703,7 +637,9 @@ package body et_canvas_schematic is
 						-- This has been done in schematic_ops.rotate_unit already.
 						rotation	=> to_rotation (sch_placeholder_purpose.rotation),
 
-						alignment	=> sch_placeholder_purpose.alignment);
+						alignment	=> sch_placeholder_purpose.alignment,
+						height		=> self.frame_height
+						);
 				end if;
 			end if;
 			
@@ -732,14 +668,6 @@ package body et_canvas_schematic is
 		end draw_origin;
 		
 	begin -- draw_symbol
-		save (context.cr);
-
-		-- Prepare the current transformation matrix (CTM) so that
-		-- all following drawing is relative to the center of the symbol:
--- 			translate (
--- 				context.cr,
--- 				convert_x (x (center)),	
--- 				convert_y (y (center)));
 		
 		-- SYMBOL BODY
 		set_color_symbols (context.cr);
@@ -764,9 +692,6 @@ package body et_canvas_schematic is
 
 		-- draw origin (the crosshair) at the center of the symbol
 		draw_origin;
-		
-
-		restore (context.cr);
 
 	end draw_symbol;
 
