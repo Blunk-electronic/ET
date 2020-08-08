@@ -136,7 +136,7 @@ procedure draw_units (
 						unit_name		=> unit_name,
 						unit_count		=> unit_count,
 						
-						position		=> unit_position,
+						unit_position	=> unit_position,
 						unit_rotation	=> unit_rotation,
 
 						sch_placeholder_name	=> sch_placeholder_name,
@@ -162,7 +162,7 @@ procedure draw_units (
 						unit_name		=> unit_name,
 						unit_count		=> unit_count,
 						
-						position		=> unit_position,
+						unit_position	=> unit_position,
 						unit_rotation	=> unit_rotation,
 
 						sch_placeholder_name	=> sch_placeholder_name,

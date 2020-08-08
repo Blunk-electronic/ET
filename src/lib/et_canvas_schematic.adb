@@ -197,7 +197,7 @@ package body et_canvas_schematic is
 		device_purpose	: in et_devices.type_purpose.bounded_string; -- like "brightness control"
 		unit_name		: in et_devices.type_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 		unit_count		: in et_devices.type_unit_count;
-		position		: in type_point; -- x/y on the schematic sheet -- CS rename to unit_position
+		unit_position	: in type_point; -- x/y on the schematic sheet
 		unit_rotation	: in type_rotation;
 		sch_placeholder_name	: in et_symbols.type_text_placeholder;
 		sch_placeholder_value	: in et_symbols.type_text_placeholder;

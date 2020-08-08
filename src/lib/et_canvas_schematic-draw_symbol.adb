@@ -47,7 +47,7 @@ procedure draw_symbol (
 	device_purpose	: in et_devices.type_purpose.bounded_string; -- like "brightness control"
 	unit_name		: in et_devices.type_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 	unit_count		: in et_devices.type_unit_count;
-	position		: in type_point; -- x/y on the schematic sheet -- CS rename to unit_position
+	unit_position	: in type_point; -- x/y on the schematic sheet
 	unit_rotation	: in type_rotation;
 	sch_placeholder_name	: in et_symbols.type_text_placeholder;
 	sch_placeholder_value	: in et_symbols.type_text_placeholder;
@@ -73,7 +73,7 @@ is
 		line : type_line := (pac_shapes.type_line (element (c)) with null record);
 	begin
 		rotate_by (line, unit_rotation);
-		move_by (line, position);
+		move_by (line, unit_position);
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 		draw_line (in_area, context, line, self.frame_height);
 	end draw_line;
@@ -83,7 +83,7 @@ is
 		arc : type_arc := (pac_shapes.type_arc (element (c)) with null record);
 	begin
 		rotate_by (arc, unit_rotation);
-		move_by (arc, position);
+		move_by (arc, unit_position);
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 		draw_arc (in_area, context, arc, self.frame_height);
 	end draw_arc;
@@ -92,7 +92,7 @@ is
 		circle : type_circle := (pac_shapes.type_circle (element (c)) with null record);
 	begin
 		rotate_by (circle, unit_rotation);
-		move_by (circle, position);
+		move_by (circle, unit_position);
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 
 		-- the circle is not filled -> actual "filled" is NO
@@ -139,11 +139,11 @@ is
 			rotate_by (pos_port_name, unit_rotation);
 
 			-- Move the name by the unit position:
-			move_by (pos_port_name, position);
+			move_by (pos_port_name, unit_position);
 			
 			set_color_symbols (context.cr);
 
-			pac_draw_symbols.draw_text (
+			draw_text (
 				area		=> in_area,
 				context		=> context,
 				content		=> to_content (to_string (key (c))),
@@ -202,7 +202,7 @@ is
 			end if;
 
 			-- Move the name by the unit position:
-			move_by (pos_terminal_name, position);
+			move_by (pos_terminal_name, unit_position);
 			
 			set_color_symbols (context.cr);
 
@@ -214,7 +214,7 @@ is
 				unit_name		=> unit_name,
 				port_name		=> key (c));
 
-			pac_draw_symbols.draw_text (
+			draw_text (
 				area		=> in_area,
 				context		=> context,
 				content		=> to_content (to_string (properties.terminal)), -- H4, 1, 16
@@ -305,7 +305,7 @@ is
 
 		line.start_point := start_point;
 		line.end_point := end_point;
-		move_by (line, position);
+		move_by (line, unit_position);
 		
 		-- Draw the line of the port:
 		draw_line (in_area, context, line, self.frame_height);
@@ -362,7 +362,7 @@ is
 		rotate_by (p, unit_rotation);
 
 		-- Move text by unit position
-		move_by (p, position);
+		move_by (p, unit_position);
 		
 		draw_text 
 			(
@@ -402,7 +402,7 @@ is
 		if device_names_enabled then
 
 			-- Move placeholder by unit position
-			move_by (p, position);
+			move_by (p, unit_position);
 			
 			draw_text (
 				area		=> in_area,
@@ -432,7 +432,7 @@ is
 				p := sch_placeholder_value.position;
 
 				-- Move text by unit position
-				move_by (p, position);
+				move_by (p, unit_position);
 				
 				draw_text (
 					area		=> in_area,
@@ -463,7 +463,7 @@ is
 				p := sch_placeholder_purpose.position;
 
 				-- Move text by unit position
-				move_by (p, position);
+				move_by (p, unit_position);
 				
 				draw_text (
 					area		=> in_area,
@@ -488,15 +488,14 @@ is
 	end draw_placeholders;
 
 	procedure draw_origin is 
-		type type_line is new et_schematic.pac_shapes.type_line with null record;
 		
 		line_horizontal : constant type_line := ( -- from left to right
-			start_point		=> type_point (set (x => x (position) - origin_half_size, y => y (position))),
-			end_point		=> type_point (set (x => x (position) + origin_half_size, y => y (position))));
+			start_point		=> type_point (set (x => x (unit_position) - origin_half_size, y => y (unit_position))),
+			end_point		=> type_point (set (x => x (unit_position) + origin_half_size, y => y (unit_position))));
 
 		line_vertical : constant type_line := ( -- from bottom to top
-			start_point		=> type_point (set (x => x (position), y => y (position) - origin_half_size)),
-			end_point		=> type_point (set (x => x (position), y => y (position) + origin_half_size)));
+			start_point		=> type_point (set (x => x (unit_position), y => y (unit_position) - origin_half_size)),
+			end_point		=> type_point (set (x => x (unit_position), y => y (unit_position) + origin_half_size)));
 
 	begin
 	-- NOTE: This is about the origin of the symbol !
@@ -505,8 +504,8 @@ is
 		
 		-- NOTE: The origin is never rotated.
 
-		pac_draw_misc.draw_line (in_area, context, line_horizontal, self.frame_height);
-		pac_draw_misc.draw_line (in_area, context, line_vertical, self.frame_height);
+		draw_line (in_area, context, line_horizontal, self.frame_height);
+		draw_line (in_area, context, line_vertical, self.frame_height);
 	end draw_origin;
 	
 begin -- draw_symbol
