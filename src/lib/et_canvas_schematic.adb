@@ -330,6 +330,13 @@ package body et_canvas_schematic is
 		procedure draw_port (c : in type_ports.cursor) is
 			start_point			: type_point := element (c).position;
 			end_point			: type_point := element (c).position;
+
+			type type_line is new pac_shapes.type_line with null record;
+			line : type_line;
+
+			type type_circle is new pac_shapes.type_circle with null record;
+			circle : type_circle;
+			
 			pos_port_name		: type_point;
 			pos_terminal_name	: type_point;
 			
@@ -398,9 +405,6 @@ package body et_canvas_schematic is
 				use et_devices;
 				properties : type_port_properties_access;
 			begin
-				-- Rotate the position of the terminal name by the unit rotation:
-				rotate_by (pos_terminal_name, unit_rotation);
-				move_by (pos_terminal_name, position);
 
 				-- Compute the position of the origin of the terminal name regarding 
 				-- its distance from the line of the port:
@@ -424,6 +428,10 @@ package body et_canvas_schematic is
 					raise constraint_error; -- CS should never happen
 				end if;
 
+				-- Rotate the position of the terminal name by the unit rotation:
+				rotate_by (pos_terminal_name, unit_rotation);
+				move_by (pos_terminal_name, position);
+				
 				set_color_symbols (context.cr);
 
 				-- Get the properties of the port. Properties is a record that provides
@@ -450,31 +458,6 @@ package body et_canvas_schematic is
 					rotation	=> to_rotation (snap (rotation_total)),
 					alignment	=> alignment,
 					height		=> self.frame_height);
-
-				
--- 				pac_draw_misc.draw_text 
--- 					(
--- 					context		=> context,
--- 					content		=> to_content (to_string (properties.terminal)), -- H4, 1, 16
--- 					size		=> element (c).terminal_name_size,
--- 					font		=> et_symbols.text_font,
--- 
--- 					-- text position x/y relative to symbol origin:
--- 					x			=> transpose_x (x (pos_terminal_name)),
--- 					y			=> transpose_y (y (pos_terminal_name)),
--- 
--- 					origin		=> false, -- no origin required
--- 					
--- 					-- Text rotation around its anchor point.
--- 					-- This is documentational text. Its rotation must
--- 					-- be snapped to either HORIZONAL or VERTICAL so that
--- 					-- it is readable from the front or the right.
--- 					rotation	=> to_rotation (snap (rotation_total)),
--- 
--- 					alignment	=> alignment
--- 					);
--- 
--- 				cairo.stroke (context.cr);
 
 			end draw_terminal_name;
 			
@@ -544,23 +527,17 @@ package body et_canvas_schematic is
 			end if;
 
 			-- Rotate the start and end point by rotation of unit:
-			rotate_by (start_point, unit_rotation);
-			rotate_by (end_point, unit_rotation);
+-- 			rotate_by (start_point, unit_rotation);
+-- 			rotate_by (end_point, unit_rotation);
 
-			-- Draw the line of the port:
-			cairo.move_to (
-				context.cr,
-				transpose_x (x (start_point)),
-				transpose_y (y (start_point))
-				);
+			line.start_point := start_point;
+			line.end_point := end_point;
+			rotate_by (line, unit_rotation);
+			move_by (line, position);
 			
-			cairo.line_to (
-				context.cr,
-				transpose_x (end_point.x),
-				transpose_y (end_point.y)
-				);
+			-- Draw the line of the port:
+			draw_line (in_area, context, line, self.frame_height);
 
-			cairo.stroke (context.cr);
 
 			-- Draw the circle around a port if the layer is enabled:
 			if ports_enabled then
@@ -568,21 +545,13 @@ package body et_canvas_schematic is
 				-- The start point of the port must have a small green circle around it.
 				-- set color and line width
 				set_color_ports (context.cr);
-				cairo.set_line_width (context.cr, type_view_coordinate (port_circle_line_width));
+				set_line_width (context.cr, type_view_coordinate (port_circle_line_width));
 
-				cairo.new_sub_path (context.cr); -- required to suppress an initial line
-				cairo.arc (
-					cr		=> context.cr,
-					xc		=> transpose_x (x (start_point)),
-					yc		=> transpose_y (y (start_point)),
-					radius	=> type_view_coordinate (port_circle_radius),
+				circle.center := line.start_point;
+				circle.radius := port_circle_radius;
 
-					-- it must be a full circle starting at 0 degree and ending at 360 degree:
-					angle1	=> 0.0,
-					angle2	=> type_view_coordinate (2 * pi)
-					);
-
-				cairo.stroke (context.cr);
+				-- the circle is not filled -> actual "filled" is NO
+				draw_circle (in_area, context, circle, NO, self.frame_height);
 
 				-- CS draw port direction, weakness, power level ?
 				-- probably better in draw_terminal_name or draw_port_name ?
@@ -594,14 +563,11 @@ package body et_canvas_schematic is
 	-- 					port_name		=> key (c));
 				
 			end if;
-
-
 			
 			-- draw port name
 			if element (c).port_name_visible = YES then
 				draw_port_name;
 			end if;
-		
 			
 			-- Draw terminal name if this is the symbol of a real device. 
 			-- Virtual symbols do not have terminal names.
