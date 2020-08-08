@@ -584,14 +584,15 @@ package body et_canvas_schematic is
 	end delete_selected_net_segment;
 
 
--- 	procedure highlight_selected_unit (
+	procedure highlight_selected_unit
 -- 		self	: not null access type_view;
 -- 		in_area	: in type_rectangle := no_rectangle;
 -- 		context : in type_draw_context)
--- 	is
--- 	begin
--- 		null;
--- 	end highlight_selected_unit;
+	is
+		a : type_rectangle := canvas.get_visible_area;
+	begin
+		null;
+	end highlight_selected_unit;
 
 	
 	-- Deletes a unit in the vicinity of given point.
