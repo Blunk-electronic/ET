@@ -1128,9 +1128,6 @@ package body et_symbol_rw is
 				inserted	=> symbol_inserted,
 				new_item	=> symbol.all);
 			
-			-- The GUI needs to know the area occupied by the symbol:
-			compute_boundaries (symbol_cursor, log_threshold + 1);
-			
 			-- CS Check integrity of symbol (style guides, conventions ...)
 			-- use symbol_cursor to access the symbol
 		end if;

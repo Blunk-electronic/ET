@@ -489,7 +489,6 @@ package et_symbols is
 	type type_symbol (appearance : type_appearance) is new type_symbol_base with record
 		shapes			: type_shapes; -- the collection of shapes
 		ports			: type_ports.map;
-		boundaries		: type_boundaries;
 		case appearance is
 			when PCB =>
 				-- Placeholders for device wide texts. To be filled with content when 
@@ -592,16 +591,6 @@ package et_symbols is
 		symbol_cursor	: in type_symbols.cursor;
 		destination		: in et_coordinates.type_position) -- x/y/rotation of the unit
 		return type_rotated_placeholders;
-
-
-	
--- MISC
-
-	
-	-- Computes the bounding box of the given symbol:
-	procedure compute_boundaries (
-		symbol			: in type_symbols.cursor;
-		log_threshold	: in et_string_processing.type_log_level);
 	
 		
 end et_symbols;

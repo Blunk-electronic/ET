@@ -411,100 +411,6 @@ package body et_device_rw is
 		port_power_level		: type_power_level := port_power_level_default;
 
 		unit_external : type_unit_external;
-
-		procedure compute_boundaries ( 
-			unit_cursor		: in pac_units_internal.cursor;
-			log_threshold	: in et_string_processing.type_log_level) is
-			use et_string_processing;
-
-			-- Initially the symbol.boundaries are not determined. The operator
-			-- is not responsible for setting them.
-			-- All elements of the symbol must be probed and the greatest and
-			-- smallest x and y positions detected.
-			-- Thus the boundaries of the symbol are updated many times here.
-
-			procedure query_items (
-				unit_name	: in type_unit_name.bounded_string; -- like "I/O-Bank 3" "A" or "B"
-				unit		: in out type_unit_internal) is 
-
-				use type_lines;
-				use type_circles;
-				use type_arcs;
-				use type_ports;
-				use type_texts;
-
-				use et_symbols;
-				use et_symbols.pac_shapes;
-				
-				procedure query_line (c : in type_lines.cursor) is begin
-					union (unit.symbol.boundaries, boundaries (element (c)));
-				end;
-
-				procedure query_circle (c : in type_circles.cursor) is begin
-					union (unit.symbol.boundaries, boundaries (element (c)));
-				end;
-
-				procedure query_arc (c : in type_arcs.cursor) is begin
-					union (unit.symbol.boundaries, boundaries (element (c)));
-				end;
-
-				procedure query_port (c : in type_ports.cursor) is 
-					-- The port position is the point of connection with a net.
-					-- Regardless of the rotation or length of the port,
-					-- this end of the port points always away from the
-					-- symbol center.
-					-- To make things easy, we just add the circle that indicates
-					-- a port to the boundaries. This way the circle becomes completely
-					-- part of the boundaries:
-
-					type circle is new et_symbols.pac_shapes.type_circle with null record;
-					cr : constant circle := (
-							center => element (c).position,
-							radius => port_circle_radius);
-				begin
-					union (unit.symbol.boundaries, boundaries (cr));
-				end;
-
-				procedure query_text (c : in type_texts.cursor) is begin
-					-- CS Currently we care for the position of the text
-					-- only. The text length and size is ignored.
-					-- We assume the text is completely inside the symbol body.
-					-- In that sense there is no sense in adding the text
-					-- position to the boundaries which is done by this statement:
-					union (unit.symbol.boundaries, element (c).position);
-				end;
-				
-			begin -- query_items
-				log_indentation_up;
-
-				-- Probe elements of the symbol and unite them in symbol.boundaries:
-				iterate (unit.symbol.shapes.lines, query_line'access);
-				iterate (unit.symbol.shapes.circles, query_circle'access);
-				iterate (unit.symbol.shapes.arcs, query_arc'access);
-				iterate (unit.symbol.ports, query_port'access);
-				iterate (unit.symbol.texts, query_text'access);
-				
-				-- Probe placeholders in case the symbol belongs to
-				-- a real device:
-				if unit.symbol.appearance = PCB then
-					union (unit.symbol.boundaries, unit.symbol.name.position);
-					union (unit.symbol.boundaries, unit.symbol.value.position);
-					union (unit.symbol.boundaries, unit.symbol.purpose.position);
-				end if;
-
-				log (text => to_string (unit.symbol.boundaries), level => log_threshold + 1);
-				log_indentation_down;
-			end query_items;
-			
-		begin -- compute_boundaries
-			log (text => "computing boundaries of internal symbol ...", level => log_threshold);
-
-			pac_units_internal.update_element (
-				container	=> units_internal,
-				position	=> unit_cursor,
-				process		=> query_items'access);
-			
-		end compute_boundaries;
 		
 		procedure insert_unit_internal is
 		-- Inserts in the temporarily collection of internal units a new unit.
@@ -559,9 +465,6 @@ package body et_device_rw is
 					& " already used by an external unit !", console => true);
 				raise constraint_error;
 			end if;
-
-			-- The GUI needs to know the area occupied by the symbol:
-			compute_boundaries (position, log_threshold + 1);
 			
 			-- clean up for next unit
 			unit_name := to_name ("");
