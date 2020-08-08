@@ -209,7 +209,7 @@ package body et_canvas_schematic is
 		self	: not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
-	
+
 	procedure draw_submodules (
 		self	: not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
@@ -584,6 +584,14 @@ package body et_canvas_schematic is
 	end delete_selected_net_segment;
 
 
+-- 	procedure highlight_selected_unit (
+-- 		self	: not null access type_view;
+-- 		in_area	: in type_rectangle := no_rectangle;
+-- 		context : in type_draw_context)
+-- 	is
+-- 	begin
+-- 		null;
+-- 	end highlight_selected_unit;
 
 	
 	-- Deletes a unit in the vicinity of given point.
@@ -652,7 +660,7 @@ package body et_canvas_schematic is
 		-- show the selected unit in the status bar
 		u := element (selected_unit).unit;
 
-		-- CS highlight the selected unit
+-- CS		highlight_selected_unit;
 		
 		set_status (to_string (u));
 	end clarify_unit;
