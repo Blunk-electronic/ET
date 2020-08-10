@@ -176,6 +176,13 @@ package body et_canvas_schematic is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	procedure draw_tag_label (
+		self	: not null access type_view;
+		in_area	: in type_rectangle := no_rectangle;
+		context : in type_draw_context;
+		net		: in et_general.type_net_name.bounded_string;
+		label	: in et_schematic.type_net_label) is separate;
+	
 	procedure draw_nets (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;

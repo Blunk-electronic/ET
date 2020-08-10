@@ -50,102 +50,6 @@ procedure draw_nets (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
-	procedure draw_tag_label (
-		net		: in et_general.type_net_name.bounded_string;
-		label	: in type_net_label) is
-		use et_text;
-		use pac_draw_misc;
-
-		-- type type_line is new pac_shapes.type_line with null record;
-		-- line_left : type_line;
-
-		content : type_text_content.bounded_string := to_content (to_string (net));
-		-- CS append to content the position of the net on the next sheet (strand position)
-		
-		-- The position, width and height of the enshrouding box (lower left corner)
-		-- as if the box was drawn for a label in zero rotation:
-		box_position : type_point;
-		box_width	: type_distance_positive;
-		box_height	: constant type_distance_positive := type_distance_positive (label.size) * tag_label_height_to_size_ratio;
-
-		-- The text rotation must be either 0 or 90 degree (documentational text) and is thus
-		-- to be calculated according to the rotation of the label:
-		text_rotation : type_rotation;
-
-		-- The alignment is assigned as if the text were drawn at zero rotation.
-		-- The vertical alignment is always CENTER. Horizontal alignment changes depending on 
-		-- the rotation of the label:
-		text_alignment : type_text_alignment := (vertical => CENTER, horizontal => <>);
-
-		-- The text position is not the same as the label position, thus it must be 
-		-- calculated according to the label rotation and tag_label_text_offset (see et_schematic specs):
-		text_position : type_point;
-	begin
-		set_line_width (context.cr, type_view_coordinate (tag_label_box_line_width));
-		
-		-- CS paint box outline depending on label signal direction
-
-		-- Calculate the box width according to text content, size and font:
-		box_width := type_distance_positive (get_text_extents (context, content, label.size, net_label_font).width)
-					 + 2.0 * tag_label_text_offset;
-
-		if label.rotation_tag = zero_rotation then
-			box_position := type_point (set (x (label.position), y (label.position) - box_height * 0.5));
-			draw_rectangle (in_area, context, box_position, box_width, box_height, self.frame_height);
-
-			text_rotation := zero_rotation;
-			text_position := type_point (set (x (label.position) + tag_label_text_offset, y (label.position)));
-			text_alignment.horizontal := LEFT;
-		end if;
-
-		if label.rotation_tag = 90.0 then
-			box_position := type_point (set (x (label.position) - box_height * 0.5, y (label.position)));
-			draw_rectangle (in_area, context, box_position, box_height, box_width, self.frame_height);
-
-			text_rotation := 90.0;
-			text_position := type_point (set (x (label.position), y (label.position) + tag_label_text_offset));
-			text_alignment.horizontal := LEFT;
-		end if;
-
-		if label.rotation_tag = 180.0 then
-			box_position := type_point (set (x (label.position) - box_width, y (label.position) - box_height * 0.5));
-			draw_rectangle (in_area, context, box_position, box_width, box_height, self.frame_height);
-
-			text_rotation := zero_rotation;
-			text_position := type_point (set (x (label.position) - tag_label_text_offset, y (label.position)));
-			text_alignment.horizontal := RIGHT;
-		end if;
-
-		if label.rotation_tag = -90.0 then
-			box_position := type_point (set (x (label.position) - box_height * 0.5, y (label.position) - box_width));
-			draw_rectangle (in_area, context, box_position, box_height, box_width, self.frame_height);
-
-			text_rotation := 90.0;
-			text_position := type_point (set (x (label.position), y (label.position) - tag_label_text_offset));
-			text_alignment.horizontal := RIGHT;
-		end if;
-			
-		pac_draw_misc.draw_text (
-			area		=> in_area,
-			context		=> context,
-			content		=> content,
-			size		=> label.size,
-			font		=> net_label_font,
-			position	=> text_position,
-			origin		=> false, -- no origin for net names required
-			
-			-- Text rotation about its anchor point. This is documentational text.
-			-- It is readable from the front or the right.
-			rotation	=> text_rotation,
-
-			alignment	=> text_alignment,
-			height		=> self.frame_height
-			);
-
-
-		cairo.stroke (context.cr);
-	end draw_tag_label;
-	
 	procedure query_nets (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
@@ -197,7 +101,7 @@ procedure draw_nets (
 								);
 
 						when TAG =>
-							draw_tag_label (net_name, element (c));
+							draw_tag_label (self, in_area, context, net_name, element (c));
 
 					end case;
 				end query_label; 
@@ -209,7 +113,7 @@ procedure draw_nets (
 					while segment_cursor /= type_net_segments.no_element loop
 
 						-- set line width for net segments:
-						cairo.set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
+						set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
 
 						-- draw the net segment:
 						pac_draw_misc.draw_line (
@@ -219,8 +123,6 @@ procedure draw_nets (
 							height		=> self.frame_height
 							);
 
-						cairo.stroke (context.cr);
-						
 						-- draw junctions:
 						
 						-- at start point of segment:
@@ -268,7 +170,7 @@ procedure draw_nets (
 			next (net_cursor);
 		end loop;
 
-		cairo.stroke (context.cr);
+		cairo.stroke (context.cr); -- CS ?
 	end query_nets;
 	
 begin
