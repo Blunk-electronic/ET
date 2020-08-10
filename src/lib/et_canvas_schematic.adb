@@ -210,6 +210,49 @@ package body et_canvas_schematic is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	-- Draws a single selected unit:
+	procedure draw_selected_unit (
+		self	: not null access type_view;
+		in_area	: in type_rectangle := no_rectangle;
+		context : in type_draw_context;
+		unit	: in et_schematic_ops.units.type_selected_unit) is separate;
+
+	-- Draws a single selected net segment:
+	procedure draw_selected_net_segment (
+		self	: not null access type_view;
+		in_area	: in type_rectangle := no_rectangle;
+		context : in type_draw_context;
+		segment	: in et_schematic_ops.nets.type_selected_segment) is separate;
+
+	
+	procedure highlight_selection (
+		self	: not null access type_view;
+		in_area	: in type_rectangle := no_rectangle;
+		context : in type_draw_context)
+	is
+		use et_schematic_ops.units;
+		use pac_selected_units;
+
+		use et_schematic_ops.nets;
+		use pac_selected_segments;
+	begin
+		null;
+		case noun is
+			when NOUN_UNIT =>
+				if selected_unit /= pac_selected_units.no_element then
+					draw_selected_unit (self, in_area, context, element (selected_unit));
+				end if;
+
+			when NOUN_NET =>
+				if selected_segment /= pac_selected_segments.no_element then
+					draw_selected_net_segment (self, in_area, context, element (selected_segment));
+				end if;
+
+			when others => null; -- CS
+		end case;
+				
+	end highlight_selection;
+	
 	procedure draw_submodules (
 		self	: not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
@@ -275,6 +318,8 @@ package body et_canvas_schematic is
 		
 		draw_submodules (self, area_shifted, context);
 
+		highlight_selection (self, area_shifted, context);
+		
 		-- The cursor is drawn last so that is in the foreground:
 		draw_cursor (self, area_shifted, context, cursor_main);
 		
@@ -559,8 +604,6 @@ package body et_canvas_schematic is
 		-- show the selected segment in the status bar
 		s := element (selected_segment).segment;
 
-		-- CS highlight the selected segment
-		
 		set_status (to_string (s));
 	end clarify_net_segment;
 
@@ -577,23 +620,14 @@ package body et_canvas_schematic is
 			segment			=> element (selected_segment),
 			log_threshold	=> log_threshold + 1);
 
+		-- Update list of selected net segments:
+		delete (selected_segments, selected_segment);
+		
 		reset_request_clarification;
 		set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
 		
 		log_indentation_down;
 	end delete_selected_net_segment;
-
-
-	procedure highlight_selected_unit
--- 		self	: not null access type_view;
--- 		in_area	: in type_rectangle := no_rectangle;
--- 		context : in type_draw_context)
-	is
-		a : type_rectangle := canvas.get_visible_area;
-	begin
-		null;
-	end highlight_selected_unit;
-
 	
 	-- Deletes a unit in the vicinity of given point.
 	-- If more than one unit near point found, then it sets the
@@ -660,10 +694,8 @@ package body et_canvas_schematic is
 
 		-- show the selected unit in the status bar
 		u := element (selected_unit).unit;
-
--- CS		highlight_selected_unit;
-		
-		set_status (to_string (u));
+	
+		set_status ("unit " & to_string (u));
 	end clarify_unit;
 	
 	-- Deletes the unit being pointed at by cursor selected_unit.
@@ -679,6 +711,9 @@ package body et_canvas_schematic is
 			unit			=> element (selected_unit),
 			log_threshold	=> log_threshold + 1);
 
+		-- Update list of selected units:
+		delete (selected_units, selected_unit);
+		
 		reset_request_clarification;
 		set_status (status_preamble_click_left & "delete unit." & status_hint_for_abort);
 		

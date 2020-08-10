@@ -449,6 +449,9 @@ package pac_canvas is
 
 
 	grid_default : constant type_distance_positive := 10.0;
+
+-- 	context_global : type_draw_context;
+-- 	area_global : type_rectangle;
 	
 	-- Redraw either the whole view, or a specific part of it only.
 	-- The transformation matrix has already been set on the context.

@@ -681,7 +681,7 @@ package body et_schematic_ops.units is
 
 		end query_devices;
 
-	begin
+	begin -- delete_unit
 		log (text => "module " & to_string (key (module_cursor)) &
 			 " deleting " & to_string (key (unit.device)) & " unit " & 
 			 to_string (key (unit.unit)) & " ...", level => log_threshold);
