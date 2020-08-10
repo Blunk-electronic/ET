@@ -590,6 +590,8 @@ package body pac_draw is
 				context.cr,
 				convert_x (position.x),
 				shift_y (position.y, frame_height));
+
+			stroke (context.cr);
 			
 		end if;
 		

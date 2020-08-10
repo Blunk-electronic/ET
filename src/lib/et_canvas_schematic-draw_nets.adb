@@ -35,20 +35,19 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-
-with et_schematic;				use et_schematic;
-
-use et_schematic.type_nets;
-use et_schematic.type_strands;
-use et_schematic.type_net_segments;
-
 separate (et_canvas_schematic)
 
 procedure draw_nets (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
+
+	use et_schematic;
+	use et_schematic.type_nets;
+	use et_schematic.type_strands;
+	use et_schematic.type_net_segments;
+
+	use pac_draw_misc;
 
 	procedure query_nets (
 		module_name	: in type_module_name.bounded_string;
@@ -66,7 +65,7 @@ procedure draw_nets (
 				junction : type_junction_symbol := junction_symbol;
 
 				procedure draw_junction is begin
-					pac_draw_misc.draw_circle (
+					draw_circle (
 						area		=> in_area,
 						context		=> context,
 						circle		=> junction,
@@ -83,7 +82,7 @@ procedure draw_nets (
 
 					case element (c).appearance is
 						when SIMPLE =>
-							pac_draw_misc.draw_text (
+							draw_text (
 								area		=> in_area,
 								context		=> context,
 								content		=> to_content (to_string (key (net_cursor))),
@@ -116,7 +115,7 @@ procedure draw_nets (
 						set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
 
 						-- draw the net segment:
-						pac_draw_misc.draw_line (
+						draw_line (
 							area		=> in_area,
 							context		=> context,
 							line		=> element (segment_cursor),
@@ -170,7 +169,6 @@ procedure draw_nets (
 			next (net_cursor);
 		end loop;
 
-		cairo.stroke (context.cr); -- CS ?
 	end query_nets;
 	
 begin

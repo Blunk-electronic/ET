@@ -43,6 +43,7 @@ procedure draw_selected_net_segment (
 	context : in type_draw_context;
 	segment	: in et_schematic_ops.nets.type_selected_segment) is
 
+	use pac_draw_misc;
 	use et_schematic_ops.nets;
 	use pac_selected_segments;
 
@@ -55,17 +56,17 @@ begin
 	-- set line width for net segments:
 	set_line_width (context.cr, type_view_coordinate (net_line_width));
 
--- 	-- draw the net segment:
--- 	pac_draw_misc.draw_line (
--- 		area		=> in_area,
--- 		context		=> context,
--- 		line		=> element (segment.segment),
--- 		height		=> self.frame_height
--- 		);
--- 	
--- 
+	-- draw the net segment:
+	draw_line (
+		area		=> in_area,
+		context		=> context,
+		line		=> element (segment.segment),
+		height		=> self.frame_height
+		);
+	
+
 -- 	put_line ("D");
--- 	
+	
 end draw_selected_net_segment;
 
 
