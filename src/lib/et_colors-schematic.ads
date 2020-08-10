@@ -54,10 +54,16 @@ package et_colors.schematic is
 	symbols			: type_color := red;
 	texts			: type_color := turquise;
 
+	brightness_default : constant type_brightness := 0.5;
+	
 	procedure set_color_cursor (context : in cairo_context);	
 	procedure set_color_background (context : in cairo_context);
 	procedure set_color_frame (context : in cairo_context);	
-	procedure set_color_nets (context : in cairo_context);
+	
+	procedure set_color_nets (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default);
+	
 	procedure set_color_origin (context : in cairo_context);	
 	procedure set_color_placeholders (context : in cairo_context);	
 	procedure set_color_ports (context : in cairo_context);	

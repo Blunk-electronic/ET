@@ -51,7 +51,7 @@ procedure draw_selected_net_segment (
 	use type_net_segments;
 	
 begin
-	set_color_nets (context.cr);
+	set_color_nets (context.cr, 1.0);
 
 	-- set line width for net segments:
 	set_line_width (context.cr, type_view_coordinate (net_line_width));

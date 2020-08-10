@@ -62,12 +62,17 @@ package body et_colors.schematic is
 			frame.blue);
 	end set_color_frame;
 	
-	procedure set_color_nets (context : in cairo_context) is begin
+	procedure set_color_nets (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default)
+	is
+		c : type_color := dim_to (nets, brightness);
+	begin
 		set_source_rgb (
 			context, 
-			nets.red,
-			nets.green,
-			nets.blue);
+			c.red,
+			c.green,
+			c.blue);
 	end set_color_nets;
 
 	procedure set_color_origin (context : in cairo_context) is begin
