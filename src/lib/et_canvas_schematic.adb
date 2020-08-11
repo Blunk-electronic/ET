@@ -43,6 +43,7 @@ with et_devices;
 
 with et_canvas_board;
 with et_display.schematic;			use et_display.schematic;
+with et_colors;						use et_colors;
 with et_colors.schematic;			use et_colors.schematic;
 with et_modes.schematic;			use et_modes.schematic;
 
@@ -208,7 +209,8 @@ package body et_canvas_schematic is
 		unit_rotation	: in type_rotation;
 		sch_placeholder_name	: in et_symbols.type_text_placeholder;
 		sch_placeholder_value	: in et_symbols.type_text_placeholder;
-		sch_placeholder_purpose : in et_symbols.type_text_placeholder)		
+		sch_placeholder_purpose : in et_symbols.type_text_placeholder;
+		brightness		: in type_brightness := NORMAL)
 		is separate;
 
 	-- Draws all units:

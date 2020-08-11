@@ -51,8 +51,8 @@ procedure draw_symbol (
 	unit_rotation	: in type_rotation;
 	sch_placeholder_name	: in et_symbols.type_text_placeholder;
 	sch_placeholder_value	: in et_symbols.type_text_placeholder;
-	sch_placeholder_purpose : in et_symbols.type_text_placeholder		
-	)
+	sch_placeholder_purpose : in et_symbols.type_text_placeholder;
+	brightness		: in type_brightness := NORMAL)
 is
 	use et_symbols;
 	use et_symbols.pac_shapes;
@@ -141,7 +141,7 @@ is
 			-- Move the name by the unit position:
 			move_by (pos_port_name, unit_position);
 			
-			set_color_symbols (context.cr);
+			set_color_symbols (context.cr, brightness);
 
 			draw_text (
 				area		=> in_area,
@@ -204,7 +204,7 @@ is
 			-- Move the name by the unit position:
 			move_by (pos_terminal_name, unit_position);
 			
-			set_color_symbols (context.cr);
+			set_color_symbols (context.cr, brightness);
 
 			-- Get the properties of the port. Properties is a record that provides
 			-- the terminal name. Other things of properties are not relevant here:
@@ -234,7 +234,7 @@ is
 		end draw_terminal_name;
 		
 	begin -- draw_port
-		set_color_symbols (context.cr);
+		set_color_symbols (context.cr, brightness);
 		set_line_width (context.cr, type_view_coordinate (et_symbols.port_line_width));
 		
 		-- Compute following positions according to port rotation and length:
@@ -316,7 +316,7 @@ is
 		
 			-- The start point of the port must have a small green circle around it.
 			-- set color and line width
-			set_color_ports (context.cr);
+			set_color_ports (context.cr, brightness);
 			set_line_width (context.cr, type_view_coordinate (port_circle_line_width));
 
 			circle.center := line.start_point;
@@ -392,7 +392,7 @@ is
 		
 		p : type_point;
 	begin
-		set_color_placeholders (context.cr);
+		set_color_placeholders (context.cr, brightness);
 		
 		-- DEVICE NAME:
 		p := sch_placeholder_name.position;
@@ -499,7 +499,7 @@ is
 
 	begin
 	-- NOTE: This is about the origin of the symbol !
-		set_color_origin (context.cr);
+		set_color_origin (context.cr, brightness);
 		set_line_width (context.cr, type_view_coordinate (origin_line_width));
 		
 		-- NOTE: The origin is never rotated.
@@ -511,7 +511,7 @@ is
 begin -- draw_symbol
 	
 	-- SYMBOL BODY
-	set_color_symbols (context.cr);
+	set_color_symbols (context.cr, brightness);
 
 	iterate (symbol.shapes.lines, draw_line'access);
 	iterate (symbol.shapes.arcs, draw_arc'access);
@@ -522,7 +522,7 @@ begin -- draw_symbol
 	iterate (symbol.ports, draw_port'access); -- has internal color settings
 
 	-- SYMBOL TEXTS
-	set_color_symbols (context.cr);
+	set_color_symbols (context.cr, brightness);
 	iterate (symbol.texts, draw_text'access);
 	
 	-- Draw placeholders if this is the symbol of a real device. 

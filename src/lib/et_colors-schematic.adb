@@ -54,12 +54,14 @@ package body et_colors.schematic is
 			background.blue);
 	end set_color_background;
 
-	procedure set_color_frame (context : in cairo_context) is begin
-		set_source_rgb (
-			context, 
-			frame.red,
-			frame.green,
-			frame.blue);
+	procedure set_color_frame (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default)
+	is begin
+		-- CS query color schema defined by user
+		-- and overwrite value of variable frame
+		
+		set_color (context, frame, brightness);
 	end set_color_frame;
 	
 	procedure set_color_nets (
@@ -72,12 +74,14 @@ package body et_colors.schematic is
 		set_color (context, nets, brightness);
 	end set_color_nets;
 
-	procedure set_color_origin (context : in cairo_context) is begin
-		set_source_rgb (
-			context, 
-			origin.red,
-			origin.green,
-			origin.blue);
+	procedure set_color_origin (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default)
+	is begin
+		-- CS query color schema defined by user
+		-- and overwrite value of variable origin
+		
+		set_color (context, origin, brightness);
 	end set_color_origin;
 	
 	procedure set_color_placeholders (
@@ -90,20 +94,24 @@ package body et_colors.schematic is
 		set_color (context, placeholders, brightness);
 	end set_color_placeholders;
 
-	procedure set_color_ports (context : in cairo_context) is begin
-		set_source_rgb (
-			context, 
-			ports.red,
-			ports.green,
-			ports.blue);
+	procedure set_color_ports (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default)
+	is begin
+		-- CS query color schema defined by user
+		-- and overwrite value of variable ports
+		
+		set_color (context, ports, brightness);
 	end set_color_ports;
 
-	procedure set_color_submodules (context : in cairo_context) is begin
-		set_source_rgb (
-			context, 
-			submodules.red,
-			submodules.green,
-			submodules.blue);
+	procedure set_color_submodules (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default)
+	is begin
+		-- CS query color schema defined by user
+		-- and overwrite value of variable submodules
+		
+		set_color (context, submodules, brightness);
 	end set_color_submodules;
 	
 	procedure set_color_symbols (

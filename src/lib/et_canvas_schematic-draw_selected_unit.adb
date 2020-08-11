@@ -105,8 +105,9 @@ procedure draw_selected_unit (
 
 					sch_placeholder_name	=> sch_placeholder_name,
 					sch_placeholder_value	=> sch_placeholder_value,
-					sch_placeholder_purpose => sch_placeholder_purpose
-					);
+					sch_placeholder_purpose => sch_placeholder_purpose,
+
+					brightness		=> BRIGHT);
 				
 			when INT =>
 				--put_line ("internal unit");						
@@ -131,8 +132,9 @@ procedure draw_selected_unit (
 
 					sch_placeholder_name	=> sch_placeholder_name,
 					sch_placeholder_value	=> sch_placeholder_value,
-					sch_placeholder_purpose => sch_placeholder_purpose
-					);
+					sch_placeholder_purpose => sch_placeholder_purpose,
+
+					brightness		=> BRIGHT);
 		end case;
 	end locate_symbol;
 	

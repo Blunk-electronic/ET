@@ -56,20 +56,30 @@ package et_colors.schematic is
 	
 	procedure set_color_cursor (context : in cairo_context);	
 	procedure set_color_background (context : in cairo_context);
-	procedure set_color_frame (context : in cairo_context);	
+	
+	procedure set_color_frame (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default);
 	
 	procedure set_color_nets (
 		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default);
 	
-	procedure set_color_origin (context : in cairo_context);	
+	procedure set_color_origin (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default);
 	
 	procedure set_color_placeholders (
 		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default);
 	
-	procedure set_color_ports (context : in cairo_context);	
-	procedure set_color_submodules (context : in cairo_context);	
+	procedure set_color_ports (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default);
+	
+	procedure set_color_submodules (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default);
 	
 	procedure set_color_symbols (
 		context		: in cairo_context;
