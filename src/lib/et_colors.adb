@@ -43,9 +43,9 @@ with cairo.matrix;
 
 package body et_colors is
 
-	function dim_to (
+	function dim (
 		color		: in type_color;
-		brightness	: in type_brightness)
+		brightness	: in type_dim_factor)
 		return type_color is
 
 		use type color_range;
@@ -58,14 +58,14 @@ package body et_colors is
 		result.blue		:= color.blue * b;
 		
 		return result;
-	end dim_to;
+	end dim;
 
 	
 	procedure create_fill_pattern (
 		context			: in cairo_context;
 		color			: in type_color;
 		opacity			: in type_opacity;
-		gap_brightness	: in type_brightness := fill_pattern_gap_brightness_default;
+		gap_brightness	: in type_dim_factor := fill_pattern_gap_brightness_default;
 		style			: in type_fill_style;
 		scale			: in type_scale)
 	is
@@ -146,7 +146,7 @@ package body et_colors is
 			when STRIPED_0 | STRIPED_45 | STRIPED_90 | STRIPED_135 =>
 
 				-- Set the brightness of the color that is to fill the gaps between lines or dots:
-				gap_color := dim_to (color, gap_brightness);
+				gap_color := dim (color, gap_brightness);
 				
 				add_gap (0.50);
 				add_foreground (0.51);

@@ -64,9 +64,9 @@ package body et_colors.schematic is
 	
 	procedure set_color_nets (
 		context		: in cairo_context;
-		brightness	: in type_brightness := brightness_default)
+		brightness	: in type_dim_factor := dim_factor_default)
 	is
-		c : type_color := dim_to (nets, brightness);
+		c : type_color := dim (nets, brightness);
 	begin
 		set_source_rgb (
 			context, 

@@ -62,14 +62,16 @@ package et_colors is
 	default_opacity : constant type_opacity := 0.5;
 	no_opacity : constant type_opacity := 1.0;
 
-	type type_brightness is new color_range; -- 0.0 -> dark, 1.0 -> bright
+	type type_dim_factor is new color_range; -- 0.0 -> dark, 1.0 -> bright
 
 	-- Changes the brightness of a given color to the value
 	-- given by brightness:
-	function dim_to (
+	function dim (
 		color		: in type_color;
-		brightness	: in type_brightness)
+		brightness	: in type_dim_factor)
 		return type_color;
+
+	type type_brightness is (DARK, NORMAL, BRIGHT);
 	
 	type type_fill_style is (
 		SOLID, 
@@ -84,7 +86,7 @@ package et_colors is
 -- CS HATCHED_45
 		);
 
-	fill_pattern_gap_brightness_default : constant type_brightness := 0.5;
+	fill_pattern_gap_brightness_default : constant type_dim_factor := 0.5;
 	
 	-- Creates a fill pattern in the given context:
 	procedure create_fill_pattern (
@@ -94,7 +96,7 @@ package et_colors is
 		-- background	: in type_color; ?
 
 		-- the brightness of the gaps betweeen lines and dots:
-		gap_brightness	: in type_brightness := fill_pattern_gap_brightness_default;
+		gap_brightness	: in type_dim_factor := fill_pattern_gap_brightness_default;
 		
 		style			: in type_fill_style;	-- the style (solid, striped, dotted)
 		scale			: in type_scale);		-- the scale of the canvas
