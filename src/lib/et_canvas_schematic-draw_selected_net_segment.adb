@@ -49,7 +49,39 @@ procedure draw_selected_net_segment (
 
 	use et_colors;
 	use et_schematic;
+	use type_nets;
 	use type_net_segments;
+	use type_net_labels;
+
+	net : type_net_name.bounded_string := key (segment.net);
+	
+	procedure query_label (c : in type_net_labels.cursor) is 
+		use pac_text;
+	begin
+		case element (c).appearance is
+			
+			when TAG => 
+				draw_tag_label (self, in_area, context, net, element (c));
+
+			when SIMPLE =>	
+				draw_text (
+					area		=> in_area,
+					context		=> context,
+					content		=> to_content (to_string (net)),
+					size		=> element (c).size,
+					font		=> net_label_font,
+					position	=> element (c).position,
+					origin		=> true,
+					
+					-- Text rotation around its anchor point.
+					-- This is documentational text.
+					-- It is readable from the front or the right.
+					rotation	=> to_rotation (element (c).rotation_simple),
+					alignment	=> (LEFT, BOTTOM),
+					height		=> self.frame_height
+					);
+		end case;
+	end query_label;
 	
 begin
 	set_color_nets (context.cr, BRIGHT);
@@ -64,11 +96,9 @@ begin
 		line		=> element (segment.segment),
 		height		=> self.frame_height
 		);
-	
--- 
--- 	draw_tag_label (
--- 		self, in_area, context, 
--- 	put_line ("D");
+
+	-- draw all labels attached to the segment:
+	iterate (element (segment.segment).labels, query_label'access);
 	
 end draw_selected_net_segment;
 
