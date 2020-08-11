@@ -220,20 +220,23 @@ package body et_canvas_schematic is
 		context : in type_draw_context) is separate;
 
 	-- Draws a single selected unit:
+	-- The unit will be drawn highlighted.
 	procedure draw_selected_unit (
 		self	: not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
 		unit	: in et_schematic_ops.units.type_selected_unit) is separate;
 
-	-- Draws a single selected net segment and the net labels attached to it:
+	-- Draws a single selected net segment and the net labels attached to it.
+	-- The net segment and the labels will be drawn highlighted.
 	procedure draw_selected_net_segment (
 		self	: not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
 		segment	: in et_schematic_ops.nets.type_selected_segment) is separate;
 
-	
+
+	-- Draws selected objects highlighted.
 	procedure highlight_selection (
 		self	: not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
@@ -245,7 +248,6 @@ package body et_canvas_schematic is
 		use et_schematic_ops.nets;
 		use pac_selected_segments;
 	begin
-		null;
 		case noun is
 			when NOUN_UNIT =>
 				if selected_unit /= pac_selected_units.no_element then
@@ -311,9 +313,6 @@ package body et_canvas_schematic is
 		draw_units (self, area_shifted, context);
 		
 		draw_frame (self, area_shifted, context);
-
-		-- CS: rework the order of drawing layers so that top layers
-		-- always obscure layers underneath.
 		
 		-- Draw nets if layer is enabled:
 		if nets_enabled then
@@ -329,7 +328,6 @@ package body et_canvas_schematic is
 
 		highlight_selection (self, area_shifted, context);
 		
-		-- The cursor is drawn last so that is in the foreground:
 		draw_cursor (self, area_shifted, context, cursor_main);
 		
 		restore (context.cr);
