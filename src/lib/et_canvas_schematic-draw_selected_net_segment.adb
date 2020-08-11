@@ -47,11 +47,12 @@ procedure draw_selected_net_segment (
 	use et_schematic_ops.nets;
 	use pac_selected_segments;
 
+	use et_colors;
 	use et_schematic;
 	use type_net_segments;
 	
 begin
-	set_color_nets (context.cr, 1.0);
+	set_color_nets (context.cr, BRIGHT);
 
 	-- set line width for net segments:
 	set_line_width (context.cr, type_view_coordinate (net_line_width));
@@ -64,7 +65,9 @@ begin
 		height		=> self.frame_height
 		);
 	
-
+-- 
+-- 	draw_tag_label (
+-- 		self, in_area, context, 
 -- 	put_line ("D");
 	
 end draw_selected_net_segment;

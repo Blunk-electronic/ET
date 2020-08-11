@@ -64,6 +64,8 @@ package et_colors is
 
 	type type_dim_factor is new color_range; -- 0.0 -> dark, 1.0 -> bright
 
+	dim_factor_default : constant type_dim_factor := 0.6;
+	
 	-- Changes the brightness of a given color to the value
 	-- given by brightness:
 	function dim (
@@ -72,6 +74,14 @@ package et_colors is
 		return type_color;
 
 	type type_brightness is (DARK, NORMAL, BRIGHT);
+	brightness_default : constant type_brightness := NORMAL;
+
+	-- Sets the given color and brightness in the given context:
+	procedure set_color (
+		context		: in cairo_context;
+		color		: in type_color;
+		brightness	: in type_brightness);
+
 	
 	type type_fill_style is (
 		SOLID, 

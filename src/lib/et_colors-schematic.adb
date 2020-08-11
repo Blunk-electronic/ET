@@ -64,15 +64,12 @@ package body et_colors.schematic is
 	
 	procedure set_color_nets (
 		context		: in cairo_context;
-		brightness	: in type_dim_factor := dim_factor_default)
-	is
-		c : type_color := dim (nets, brightness);
-	begin
-		set_source_rgb (
-			context, 
-			c.red,
-			c.green,
-			c.blue);
+		brightness	: in type_brightness := brightness_default)
+	is begin
+		-- CS query color schema defined by user
+		-- and overwrite value of variable nets
+		
+		set_color (context, nets, brightness);
 	end set_color_nets;
 
 	procedure set_color_origin (context : in cairo_context) is begin
@@ -83,12 +80,14 @@ package body et_colors.schematic is
 			origin.blue);
 	end set_color_origin;
 	
-	procedure set_color_placeholders (context : in cairo_context) is begin
-		set_source_rgb (
-			context, 
-			placeholders.red,
-			placeholders.green,
-			placeholders.blue);
+	procedure set_color_placeholders (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default)
+	is begin										
+		-- CS query color schema defined by user
+		-- and overwrite value of variable placeholders
+		
+		set_color (context, placeholders, brightness);
 	end set_color_placeholders;
 
 	procedure set_color_ports (context : in cairo_context) is begin
@@ -107,20 +106,24 @@ package body et_colors.schematic is
 			submodules.blue);
 	end set_color_submodules;
 	
-	procedure set_color_symbols (context : in cairo_context) is begin
-		set_source_rgb (
-			context, 
-			symbols.red,
-			symbols.green,
-			symbols.blue);
+	procedure set_color_symbols (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default)
+	is begin
+		-- CS query color schema defined by user
+		-- and overwrite value of variable symbols
+		
+		set_color (context, symbols, brightness);
 	end set_color_symbols;
 
-	procedure set_color_texts (context : in cairo_context) is begin
-		set_source_rgb (
-			context, 
-			texts.red,
-			texts.green,
-			texts.blue);
+	procedure set_color_texts (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default)
+	is begin
+		-- CS query color schema defined by user
+		-- and overwrite value of variable nets
+		
+		set_color (context, texts, brightness);
 	end set_color_texts;
 	
 end et_colors.schematic;

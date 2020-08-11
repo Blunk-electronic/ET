@@ -90,6 +90,7 @@ package et_colors.board is
 -- 	submodules		: type_color := mangenta; -- boundaries
 
 
+
 	procedure set_color_cursor (context : in cairo_context);
 	
 	procedure set_color_background (

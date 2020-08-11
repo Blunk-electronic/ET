@@ -53,8 +53,6 @@ package et_colors.schematic is
 	submodules		: type_color := mangenta;
 	symbols			: type_color := red;
 	texts			: type_color := turquise;
-
-	dim_factor_default : constant type_dim_factor := 0.5;
 	
 	procedure set_color_cursor (context : in cairo_context);	
 	procedure set_color_background (context : in cairo_context);
@@ -62,14 +60,24 @@ package et_colors.schematic is
 	
 	procedure set_color_nets (
 		context		: in cairo_context;
-		brightness	: in type_dim_factor := dim_factor_default);
+		brightness	: in type_brightness := brightness_default);
 	
 	procedure set_color_origin (context : in cairo_context);	
-	procedure set_color_placeholders (context : in cairo_context);	
+	
+	procedure set_color_placeholders (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default);
+	
 	procedure set_color_ports (context : in cairo_context);	
 	procedure set_color_submodules (context : in cairo_context);	
-	procedure set_color_symbols (context : in cairo_context);
-	procedure set_color_texts (context : in cairo_context);	
+	
+	procedure set_color_symbols (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default);
+									
+	procedure set_color_texts (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default);
 
 end et_colors.schematic;
 

@@ -60,6 +60,22 @@ package body et_colors is
 		return result;
 	end dim;
 
+	procedure set_color (
+		context		: in cairo_context;
+		color		: in type_color;
+		brightness	: in type_brightness)
+	is 
+		c : type_color;
+	begin
+		case brightness is
+			when DARK 	=>	c := dim (color, 0.25);
+			when NORMAL	=>	c := dim (color, dim_factor_default);
+			when BRIGHT	=>	c := dim (color, 1.0);
+		end case;
+
+		set_source_rgb (context, c.red, c.green, c.blue);
+	end set_color;
+
 	
 	procedure create_fill_pattern (
 		context			: in cairo_context;
