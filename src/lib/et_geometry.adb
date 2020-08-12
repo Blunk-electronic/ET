@@ -111,7 +111,13 @@ package body et_geometry is
 			package functions is new ada.numerics.generic_elementary_functions (float);
 			use functions;
 		begin
-			return type_rotation (arctan (y, x, float (units_per_cycle)));
+			-- NOTE: If x and y are zero then the arctan operation is not possible. 
+			-- In this case we assume the resuling angle is zero.
+			if x = 0.0 and y = 0.0 then
+				return zero_rotation;
+			else
+				return type_rotation (arctan (y, x, float (units_per_cycle)));
+			end if;
 		end rotation;
 		
 		function to_string (boundaries : in type_boundaries) return string is begin
@@ -586,26 +592,48 @@ package body et_geometry is
 			return result;
 		end;
 
+
+		
 		function distance_polar (point_one, point_two : in type_point) return type_distance_polar is
 			result : type_distance_polar;
 
 			package functions is new ada.numerics.generic_elementary_functions (float);
 			use functions;
 			delta_x, delta_y : float := 0.0;
+			
 		begin
 			result.absolute := distance_total (point_one, point_two);
 
-			delta_x := float (x (point_two) - x (point_one));
-			delta_y := float (y (point_two) - y (point_one));
+			-- NOTE: If the total distance between the points is zero then
+			-- the arctan operation is not possible. In this case we assume
+			-- the resuling angle is zero.
+			-- So we do the angle computation only if there is a distance between the points:
+			if result.absolute /= zero then
+				
+				delta_x := float (x (point_two) - x (point_one));
+				delta_y := float (y (point_two) - y (point_one));
 
-			result.angle := type_rotation (arctan (
-						x => delta_x,
-						y => delta_y,
-						cycle => float (units_per_cycle))
-						);
+				result.angle := type_rotation (arctan (
+						x 		=> delta_x,
+						y		=> delta_y,
+						cycle	=> float (units_per_cycle)));
+			else
+				-- distance is zero
+				result.angle := zero_rotation;
+			end if;
 			
 			return result;
 		end distance_polar;
+
+		function angle (distance : in type_distance_polar) return type_rotation is begin
+			return distance.angle;
+		end angle;
+	
+		function absolute (distance : in type_distance_polar) return type_distance_positive is begin
+			return distance.absolute;
+		end absolute;
+
+
 		
 -- 		function create (
 -- 			point		: in type_point'class;
@@ -744,6 +772,7 @@ package body et_geometry is
 					end if;
 
 				else
+					-- neither x nor y of point is zero
 					angle_out := type_float_angle (arctan (
 						x => float (x (point)),
 						y => float (y (point)),
@@ -1094,7 +1123,13 @@ package body et_geometry is
 			package pac_functions is new ada.numerics.generic_elementary_functions (float);
 			use pac_functions;
 		begin
-			return type_rotation (arctan (dy, dx, float (units_per_cycle)));
+			-- NOTE: If dx and dy are zero then the arctan operation is not possible. 
+			-- In this case we assume the resuling angle is zero.
+			if dx = 0.0 and dy = 0.0 then
+				return zero_rotation;
+			else
+				return type_rotation (arctan (dy, dx, float (units_per_cycle)));
+			end if;
 		end direction;
 
 		procedure move_by (
@@ -1448,14 +1483,26 @@ package body et_geometry is
 			result.radius := distance_total (arc_tmp.center, arc_tmp.start_point);
 
 			-- calculate the angles where the arc begins and ends:
-			result.angle_start := to_degrees (arctan (
-							y => float (arc_tmp.start_point.y),
-							x => float (arc_tmp.start_point.x)));
 
-			result.angle_end := to_degrees (arctan (
-							y => float (arc_tmp.end_point.y),
-							x => float (arc_tmp.end_point.x)));
+			-- NOTE: If x and y are zero then the arctan operation is not possible. 
+			-- In this case we assume the resuling angle is zero.
+			
+			if arc_tmp.start_point.x = zero and arc_tmp.start_point.y = zero then
+				result.angle_start := zero_rotation;
+			else
+				result.angle_start := to_degrees (arctan (
+						y => float (arc_tmp.start_point.y),
+						x => float (arc_tmp.start_point.x)));
+			end if;
 
+			if arc_tmp.end_point.x = zero and arc_tmp.end_point.y = zero then
+				result.angle_end := zero_rotation;
+			else
+				result.angle_end := to_degrees (arctan (
+						y => float (arc_tmp.end_point.y),
+						x => float (arc_tmp.end_point.x)));
+			end if;
+			
 			-- direction is not changed:
 			result.direction := arc.direction;
 			
@@ -1685,10 +1732,17 @@ package body et_geometry is
 			radius := float (distance_total (arc.center, arc.start_point));
 
 			-- calculate the angle where the arc begins:
-			angle_start := arctan (
-							y => float (arc.start_point.y),
-							x => float (arc.start_point.x));
 
+			-- NOTE: If x and y are zero then the arctan operation is not possible. 
+			-- In this case we assume the resuling angle is zero.
+			if arc.start_point.x = zero and arc.start_point.y = zero then
+				angle_start := 0.0;
+			else
+				angle_start := arctan (
+						y => float (arc.start_point.y),
+						x => float (arc.start_point.x));
+			end if;
+			
 			-- the angle where the arc ends:
 			angle_end := angle_start + to_radians (angle);
 

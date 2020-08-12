@@ -287,16 +287,19 @@ package et_geometry is
 		-- If result greater 360 degree then 360 degree is subtracted from result.
 		-- If result less than 360 degree then 360 degree is added to the result.
 
-		type type_distance_polar is record -- CS private ?
-			absolute: type_distance_positive;
-			angle	: type_rotation;
-		end record;
+
+		
+		type type_distance_polar is private;
 
 		function distance_polar (point_one, point_two : in type_point) return type_distance_polar;
 		-- Returns the distance of point_two to point_one.	
 		-- Subtracts point_one.x from point_two.y and point_one.y from point_two.y
 		-- returns	total := sqrt ((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
 		--			angle := arctan ((point_two.y - point_one.y) / (point_two.x - point_one.x)
+
+		function angle (distance : in type_distance_polar) return type_rotation;
+		function absolute (distance : in type_distance_polar) return type_distance_positive;
+
 
 		
 		type type_position is new type_point with private;
@@ -406,6 +409,11 @@ package et_geometry is
 			x, y : type_distance := zero;
 		end record;
 
+		type type_distance_polar is record
+			absolute: type_distance_positive;
+			angle	: type_rotation;
+		end record;
+		
 		origin : constant type_point := (others => zero);
 		
 		type type_position is new type_point with record
@@ -413,7 +421,7 @@ package et_geometry is
 		end record;
 
 		origin_zero_rotation : constant type_position := (others => <>);
-
+		
 		boundaries_default : constant type_boundaries := (others => <>);
 		
 	end generic_pac_geometry;
