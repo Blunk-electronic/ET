@@ -985,6 +985,8 @@ package body pac_canvas is
 
 		update_coordinates_display (self);
 
+		self.evaluate_mouse_position (drawing_point);
+		
 		return true; -- indicates that event has been handled
 	end on_mouse_movement;
 

@@ -248,11 +248,29 @@ package et_canvas_schematic is
 		self	: not null access type_view)
 		return string;
 
+	type type_net_segment is record
+		being_drawn	: boolean := false;
+
+		start_point	: type_point;
+		end_point	: type_point;
+
+		corner_required	: boolean := false;
+		corner_point	: type_point;
+	end record;
+
+	net_segment : type_net_segment;
+
+	procedure reset_net_segment;
+	
 	
 	overriding procedure evaluate_key (
 		self	: not null access type_view;
 		key		: in gdk_key_type);
 
+	overriding procedure evaluate_mouse_position (
+		self	: not null access type_view;
+		point	: in type_point);
+	
 	overriding procedure button_pressed (
 		self	: not null access type_view;
 		button	: in type_mouse_button;

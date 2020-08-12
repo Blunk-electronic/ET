@@ -728,7 +728,9 @@ package body et_canvas_schematic is
 	end delete_selected_unit;
 
 
-	
+	procedure reset_net_segment is begin
+		net_segment := (others => <>);
+	end reset_net_segment;
 	
 	procedure evaluate_key (
 		self	: not null access type_view;
@@ -796,7 +798,8 @@ package body et_canvas_schematic is
 			case key is
 				when GDK_LC_n =>
 					noun := NOUN_NET;
-					status_clear;
+					set_status (status_preamble_click_left & "set start point." & status_hint_for_abort);
+					reset_net_segment;
 					
 				when others => status_noun_invalid;
 			end case;
@@ -813,6 +816,7 @@ package body et_canvas_schematic is
 			noun := noun_default;
 			
 			reset_request_clarification;
+			reset_net_segment;
 			status_enter_verb;
 		else
 	
@@ -869,6 +873,26 @@ package body et_canvas_schematic is
 		
 	end evaluate_key;
 
+	overriding procedure evaluate_mouse_position (
+		self	: not null access type_view;
+		point	: in type_point) 
+	is
+	begin
+		case verb is
+			when VERB_DRAW =>
+				case noun is
+					when NOUN_NET =>
+						if net_segment.being_drawn then
+							null;
+							put_line ("drawing net segmnt" & to_string (point));
+						end if;
+
+					when others => null;
+				end case;
+				
+			when others => null;
+		end case;
+	end evaluate_mouse_position;
 	
 	overriding procedure button_pressed (
 		self	: not null access type_view;
@@ -904,8 +928,25 @@ package body et_canvas_schematic is
 				when VERB_DRAW =>
 
 					case noun is
-						when NOUN_NET => null;
+						when NOUN_NET =>
+							if not net_segment.being_drawn then
+								net_segment.being_drawn := true;
+								
+								-- set start point
+								net_segment.start_point := point;
+								
+								set_status ("start point" & to_string (net_segment.start_point) & ". " &
+									status_preamble_click_left & "set end point." & status_hint_for_abort);
+							else
+								-- set end point
+								net_segment.end_point := point;
+								
+								set_status ("end point" & to_string (net_segment.end_point) & ". ");
 
+								reset_net_segment;
+-- 								status_clear;
+							end if;
+							
 						when others =>
 							null;
 							
