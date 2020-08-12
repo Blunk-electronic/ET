@@ -263,6 +263,71 @@ package body et_canvas_schematic is
 		end case;
 				
 	end highlight_selection;
+
+	procedure draw_net_segment_being_drawn (
+		self	: not null access type_view;
+		in_area	: in type_rectangle := no_rectangle;
+		context : in type_draw_context)
+	is
+		use et_schematic;
+		use pac_draw_misc;
+
+		type type_line is new pac_shapes.type_line with null record;
+		line : type_line;
+
+
+		-- The x/y position of the mouse pointer:
+		position_pointer_x : gint;
+		position_pointer_y : gint;
+
+		-- The point in the view (in pixels):
+		view_point : type_view_point;
+
+		-- The point in the model (in millimeters):
+		model_point : type_point;
+
+		-- The point in the drawing (in millimeters):
+		drawing_point : type_point;
+		
+	begin
+		if verb = VERB_DRAW and noun = NOUN_NET and net_segment.being_drawn = true then
+
+			
+			-- Get the mouse position:
+			self.get_pointer (position_pointer_x, position_pointer_y);
+
+			-- Convert mouse position to view_point:
+			view_point.x := type_view_coordinate (position_pointer_x);
+			view_point.y := type_view_coordinate (position_pointer_y);
+
+			-- Convert the view_point to a model_point:
+			model_point := self.view_to_model (view_point);
+
+			-- Convert the model_point to the point in the drawing:
+			drawing_point := model_to_drawing (self, model_point);
+
+			
+			line.start_point := net_segment.start_point;
+			line.end_point := drawing_point;
+			
+			set_color_nets (context.cr);
+
+			-- set line width for net segments:
+			set_line_width (context.cr, type_view_coordinate (net_line_width));
+
+			put_line (to_string (line));
+			
+			-- draw the net segment:
+			draw_line (
+				area		=> in_area,
+				context		=> context,
+				line		=> line,
+				height		=> self.frame_height
+				);
+			
+		end if;
+	end draw_net_segment_being_drawn;
+	
 	
 	procedure draw_submodules (
 		self	: not null access type_view;
@@ -327,6 +392,8 @@ package body et_canvas_schematic is
 		draw_submodules (self, area_shifted, context);
 
 		highlight_selection (self, area_shifted, context);
+
+		draw_net_segment_being_drawn (self, area_shifted, context);
 		
 		draw_cursor (self, area_shifted, context, cursor_main);
 		
@@ -884,7 +951,8 @@ package body et_canvas_schematic is
 					when NOUN_NET =>
 						if net_segment.being_drawn then
 							null;
-							put_line ("drawing net segmnt" & to_string (point));
+							--put_line ("drawing net segment" & to_string (point));
+							redraw;
 						end if;
 
 					when others => null;
@@ -941,10 +1009,10 @@ package body et_canvas_schematic is
 								-- set end point
 								net_segment.end_point := point;
 								
-								set_status ("end point" & to_string (net_segment.end_point) & ". ");
+								--set_status ("end point" & to_string (net_segment.end_point) & ". ");
 
 								reset_net_segment;
--- 								status_clear;
+								status_clear;
 							end if;
 							
 						when others =>
