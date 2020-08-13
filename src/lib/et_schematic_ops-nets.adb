@@ -2940,6 +2940,10 @@ package body et_schematic_ops.nets is
 		use pac_selected_segments;
 		segments_at_start_point : pac_selected_segments.list;
 		segments_at_end_point	: pac_selected_segments.list;
+
+		use et_schematic.type_nets;
+		net_cursor	: type_nets.cursor;
+		net_name	: type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 	begin
 		log (text => "adding net segment on sheet" & to_sheet (sheet) & to_string (segment), 
 			 level => log_threshold);
@@ -2964,6 +2968,14 @@ package body et_schematic_ops.nets is
 		-- If no net segments at BOTH start AND end point, create a new net:
 		if is_empty (segments_at_start_point) and is_empty (segments_at_end_point) then
 			null; --
+			-- 			net_name := next_anonymous 
+			net_name := to_net_name ("N$2");
+
+			net_cursor := locate_net (module, net_name);
+
+			draw_net_segment (
+				module, net_cursor, sheet, net_name, segment, log_threshold + 1);
+
 		end if;
 
 		-- If net segments at start AND end point:
