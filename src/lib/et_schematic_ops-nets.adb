@@ -1307,27 +1307,17 @@ package body et_schematic_ops.nets is
 		log_indentation_down;
 		return nets;
 	end nets_at_place;
-	
-	procedure draw_net (
-	-- Draws a segment of a net. If the start or end point of the new segment
-	-- meets a port then the port will be connected with the segment.
-	-- 1. If the segment is part of a new net, the net is created with a single segment
-	--  specified by start_point and end_point. If the new segment collides with a foreign
-	--  net, an error is raised.
-	-- 2. If the net_name is a name of an already existing net, the given net segment (specified
-	--  by start_point and end_point) will be added to the existing net. A junction will be
-	--  placed where the new segment meets the existing net.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		start_point		: in et_coordinates.type_position; -- sheet/x/y
-		end_point		: in type_point; -- x/y
-		log_threshold	: in type_log_level) is
-		
-		module_cursor : pac_generic_modules.cursor; -- points to the module
 
+	procedure draw_net_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in out type_nets.cursor;
+		sheet			: in type_sheet;
+		net_name		: in type_net_name.bounded_string;
+		segment_new		: in et_schematic.type_net_segment;
+		log_threshold	: in type_log_level)
+	is 
 		use et_schematic.type_nets;
-		net_cursor : type_nets.cursor; -- points to the net
-		segment : type_net_segment;
+		segment : type_net_segment := segment_new;
 		point : et_coordinates.type_position;
 
 		type type_junction is record
@@ -1384,24 +1374,26 @@ package body et_schematic_ops.nets is
 		
 			------------
 			-- Test whether any foreign nets cross the start point of the segment:
-			point := start_point;
+			point := to_position (
+					sheet => sheet,
+					point => segment_new.start_point);
 			
 			net_names := nets_at_place (
 					module_name		=> module_name,
 					place			=> point,
-					log_threshold	=> log_threshold + 1);
+					log_threshold	=> log_threshold);
 
 			evaluate_net_names (point);
 			
 			-- Test whether any foreign nets cross the end point of the segment:
 			point := to_position (
-					sheet => sheet (start_point),
-					point => end_point);
+					sheet => sheet,
+					point => segment_new.end_point);
 			
 			net_names := nets_at_place (
 					module_name		=> module_name,
 					place			=> point,
-					log_threshold	=> log_threshold + 1);
+					log_threshold	=> log_threshold);
 
 			evaluate_net_names (point);
 			-------------
@@ -1413,8 +1405,10 @@ package body et_schematic_ops.nets is
 			-- look for any ports at start point of the new net segment
 			ports := ports_at_place (
 					module_name		=> module_name,
-					place			=> start_point,
-					log_threshold	=> log_threshold + 1);
+					place			=> to_position (
+										sheet => sheet,
+										point => segment_new.start_point),
+					log_threshold	=> log_threshold);
 
 			assign_ports_to_segment;
 
@@ -1423,9 +1417,9 @@ package body et_schematic_ops.nets is
 			ports := ports_at_place (
 					module_name		=> module_name,
 					place			=> to_position (
-										sheet => sheet (start_point),
-										point => end_point),
-					log_threshold	=> log_threshold + 1);
+										sheet => sheet,
+										point => segment_new.end_point),
+					log_threshold	=> log_threshold);
 
 			assign_ports_to_segment;
 			------------
@@ -1437,8 +1431,8 @@ package body et_schematic_ops.nets is
 				container	=> strand.segments,
 				new_item	=> segment);
 
-			-- set the sheet number of the strand by deriving it from the segment start point
-			set_sheet (strand.position, sheet (start_point));
+			-- set the sheet number of the strand
+			set_sheet (strand.position, sheet);
 			
 			-- set lowest x/y position of strand
 			set_strand_position (strand);
@@ -1563,7 +1557,7 @@ package body et_schematic_ops.nets is
 					-- Iterate strands. Cancel prematurely once a segment has been found.
 					-- Look at strands on the relevant sheet only.
 					while result.cursor /= type_strands.no_element loop
-						if sheet (element (result.cursor).position) = sheet (place) then
+						if et_coordinates.sheet (element (result.cursor).position) = et_coordinates.sheet (place) then
 
 							type_strands.query_element (
 								position	=> result.cursor,
@@ -1623,15 +1617,14 @@ package body et_schematic_ops.nets is
 				net_name	: in type_net_name.bounded_string;
 				net			: in out type_net) is
 				strand : type_strand;
-			begin -- create_strand
-				
+			begin				
 				-- insert segment in strand
 				type_net_segments.append (
 					container	=> strand.segments,
 					new_item	=> segment);
 
-				-- set the sheet number of the strand by deriving it from the segment start point
-				set_sheet (strand.position, sheet (start_point));
+				-- set the sheet number of the strand
+				set_sheet (strand.position, sheet);
 				
 				-- set lowest x/y position of strand
 				set_strand_position (strand);
@@ -1668,7 +1661,7 @@ package body et_schematic_ops.nets is
 				end merge;
 					
 			begin -- merge_strands
-				log (text => "merging strands ...", level => log_threshold + 3);
+				log (text => "merging strands ...", level => log_threshold + 2);
 				
 				-- Append segments_source to the strand indicated by strand_at_end:
 				type_strands.update_element (
@@ -1686,24 +1679,26 @@ package body et_schematic_ops.nets is
 		begin -- extend_net
 			------------
 			-- Obtain the names of nets that cross the start point of the segment:
-			point := start_point;
-			
+			point := to_position (
+					sheet => sheet,
+					point => segment_new.start_point);
+
 			net_names := nets_at_place (
 					module_name		=> module_name,
 					place			=> point,
-					log_threshold	=> log_threshold + 1);
+					log_threshold	=> log_threshold);
 
 			evaluate_net_names (point); -- modifies the attach_to_strand flag
 			
 			-- Obtain the names of nets that cross the end point of the segment:
 			point := to_position (
-					sheet => sheet (start_point),
-					point => end_point);
+					sheet => sheet,
+					point => segment_new.end_point);
 			
 			net_names := nets_at_place (
 					module_name		=> module_name,
 					place			=> point,
-					log_threshold	=> log_threshold + 1);
+					log_threshold	=> log_threshold);
 
 			evaluate_net_names (point); -- modifies the attach_to_strand flag
 			-------------
@@ -1714,22 +1709,29 @@ package body et_schematic_ops.nets is
 			--    or whether the segment is going to start a new strand.
 			
 			if attach_to_strand then
-				log (text => "attaching segment to strand ...", level => log_threshold + 2);
+				log (text => "attaching segment to strand ...", level => log_threshold + 1);
 				log_indentation_up;
 				
 				-- Obtain the cursor to the strand that crosses the start point:
-				strand_at_start := which_strand (start_point);
+				strand_at_start := which_strand (to_position (
+													sheet	=> sheet,
+													point	=> segment_new.start_point));
 				
 				if not dead_end (strand_at_start) then
 					-- The start point will be connected with a strand:
 					log (text => "with its start point at " & 
-						 to_string (position => start_point), level => log_threshold + 3);
+						 to_string (position => to_position (
+													sheet	=> sheet,
+													point	=> segment_new.start_point)),
+						 level => log_threshold + 2);
 
 					-- If required, prepare placing a junction at start point of segment.
 					-- The junction will be placed later.
 					if strand_at_start.junction_required then
 						junction_at_start_point.required := true;
-						junction_at_start_point.place := start_point;
+						junction_at_start_point.place := to_position (
+														sheet	=> sheet,
+														point	=> segment_new.start_point);
 					end if;
 				end if;
 
@@ -1738,8 +1740,10 @@ package body et_schematic_ops.nets is
 					-- look for any ports at start point of the new net segment
 					ports := ports_at_place (
 							module_name		=> module_name,
-							place			=> start_point,
-							log_threshold	=> log_threshold + 3);
+							place			=> to_position (
+												sheet	=> sheet,
+												point	=> segment_new.start_point),
+							log_threshold	=> log_threshold + 2);
 
 					assign_ports_to_segment;
 				end if;
@@ -1747,25 +1751,25 @@ package body et_schematic_ops.nets is
 				
 				-- Alternatively the strand could be crossing the end point:
 				strand_at_end := which_strand (to_position (
-									sheet => sheet (start_point),
-									point => end_point));
+									sheet => sheet,
+									point => segment_new.end_point));
 
 				if not dead_end (strand_at_end) then
 					-- The end point will be connected with a strand:
 					log (text => "with its end point at " & to_string (
 								position => to_position (
-									sheet => sheet (start_point),
-									point => end_point)
+									sheet => sheet,
+									point => segment_new.end_point)
 									),
-						 level => log_threshold + 3);
+						 level => log_threshold + 2);
 
 					-- If required, prepare placing a junction at end point of segment.
 					-- The junction will be placed later.
 					if strand_at_end.junction_required then
 						junction_at_end_point.required := true;
 						junction_at_end_point.place := to_position (
-									sheet => sheet (start_point),
-									point => end_point);
+									sheet => sheet,
+									point => segment_new.end_point);
 					end if;
 				end if;
 				
@@ -1776,9 +1780,9 @@ package body et_schematic_ops.nets is
 					ports := ports_at_place (
 							module_name		=> module_name,
 							place			=> to_position (
-												sheet => sheet (start_point),
-												point => end_point),
-							log_threshold	=> log_threshold + 1);
+												sheet => sheet,
+												point => segment_new.end_point),
+							log_threshold	=> log_threshold);
 
 					assign_ports_to_segment;
 				end if;
@@ -1820,6 +1824,64 @@ package body et_schematic_ops.nets is
 			
 		end extend_net;
 
+	begin -- draw_net_segment
+
+		-- If no net named after net_name exists yet, notify operator that a 
+		-- new net will be created.
+		-- If the net already exists, extend it by a net segment.
+		if net_cursor = type_nets.no_element then
+
+			-- net does not exist yet
+			log (text => "creating new net " & to_string (net_name), level => log_threshold);
+
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> create_net'access);
+		else
+			-- net exists. extend the net by the given net segment
+			log (text => "extending net " & to_string (net_name), level => log_threshold);
+			log_indentation_up;
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> extend_net'access);
+
+			-- place junctions if required
+			if junction_at_start_point.required then
+				place_junction (
+					module_name		=> key (module_cursor), -- CS use place_junction which takes a cursor instead
+					place			=> junction_at_start_point.place,
+					log_threshold	=> log_threshold + 1);
+			end if;
+
+			if junction_at_end_point.required then
+				place_junction (
+					module_name		=> key (module_cursor), -- CS use place_junction which takes a cursor instead
+					place			=> junction_at_end_point.place,
+					log_threshold	=> log_threshold + 1);
+			end if;
+
+			
+			log_indentation_down;
+		end if;
+
+	end draw_net_segment;
+	
+	procedure draw_net (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		start_point		: in et_coordinates.type_position; -- sheet/x/y
+		end_point		: in type_point; -- x/y
+		log_threshold	: in type_log_level) is
+		
+		module_cursor : pac_generic_modules.cursor; -- points to the module
+
+		use et_schematic.type_nets;
+		net_cursor : type_nets.cursor; -- points to the net
+		segment : type_net_segment;
+
 	begin -- draw_net
 		log (text => "module " & to_string (module_name) &
 			" drawing net " & to_string (net_name) &
@@ -1838,47 +1900,10 @@ package body et_schematic_ops.nets is
 		segment.end_point := end_point;
 		
 		log_indentation_up;
-		
-		-- If no net named after net_name exists yet, notify operator that a 
-		-- new net will be created.
-		-- If the net already exists, extend it by a net segment.
-		if net_cursor = type_nets.no_element then
 
-			-- net does not exist yet
-			log (text => "creating new net " & to_string (net_name), level => log_threshold + 1);
-
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> create_net'access);
-		else
-			-- net exists. extend the net by the given net segment
-			log (text => "extending net " & to_string (net_name), level => log_threshold + 1);
-			log_indentation_up;
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> extend_net'access);
-
-			-- place junctions if required
-			if junction_at_start_point.required then
-				place_junction (
-					module_name		=> module_name,
-					place			=> junction_at_start_point.place,
-					log_threshold	=> log_threshold + 2);
-			end if;
-
-			if junction_at_end_point.required then
-				place_junction (
-					module_name		=> module_name,
-					place			=> junction_at_end_point.place,
-					log_threshold	=> log_threshold + 2);
-			end if;
-
-			
-			log_indentation_down;
-		end if;
+		draw_net_segment (
+			module_cursor, net_cursor, sheet (start_point),
+			net_name, segment, log_threshold + 1);
 
 		log_indentation_down;
 		

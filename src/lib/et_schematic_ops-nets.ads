@@ -115,6 +115,14 @@ package et_schematic_ops.nets is
 		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)
 		return type_net_names.list;
+
+	procedure draw_net_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in out type_nets.cursor;
+		sheet			: in type_sheet;
+		net_name		: in type_net_name.bounded_string;
+		segment_new		: in et_schematic.type_net_segment;
+		log_threshold	: in type_log_level);
 	
 	procedure draw_net (
 	-- Draws a segment of a net. If the start or end point of the new segment
@@ -123,7 +131,9 @@ package et_schematic_ops.nets is
 	--  specified by start_point and end_point. If the new segment collides with a foreign
 	--  net, an error is raised.
 	-- 2. If the net_name is a name of an already existing net, the given net segment (specified
-	--  by start_point and end_point) will be added to the existing net.
+	--  by start_point and end_point) will be added to the existing net. A junction will be
+	--  placed where the new segment meets the existing net.
+						   
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		start_point		: in et_coordinates.type_position; -- sheet/x/y
@@ -145,6 +155,17 @@ package et_schematic_ops.nets is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		place			: in et_coordinates.type_position; -- sheet/x/y, rotation doesn't matter
 		log_threshold	: in type_log_level);
+
+-- CS
+-- 	procedure place_junction (
+-- 	-- Places a net junction at the given position.
+-- 	-- If the junction is to be placed between start and end point of a segment, then the segment 
+-- 	-- is split in two new segments with the junction between them.
+-- 	-- If there is no net segment at the given position, no junction is placed and warning issued.
+-- 		module_cursor	: in pac_generic_modules.cursor;
+-- 		place			: in et_coordinates.type_position; -- sheet/x/y, rotation doesn't matter
+-- 		log_threshold	: in type_log_level);
+
 	
 	procedure place_net_label (
 	-- Places a label next to a segment at position.
