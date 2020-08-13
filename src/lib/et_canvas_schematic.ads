@@ -150,6 +150,11 @@ package et_canvas_schematic is
 		point	: in type_point) 
 		return string;
 
+	overriding function snap_to_grid (
+		self	: not null access type_view;
+		point	: in type_point) 
+		return type_point;
+
 	
 	-- Returns the bounding box of all items of the current sheet.
 	overriding function bounding_box (self : not null access type_view)

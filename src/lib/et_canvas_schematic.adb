@@ -99,6 +99,15 @@ package body et_canvas_schematic is
 		return round_to_string (point, element (current_active_module).grid);
 	end;
 
+	function snap_to_grid (
+		self	: not null access type_view;
+		point	: in type_point)
+		return type_point is
+	begin
+		return type_point (round (point, element (current_active_module).grid));
+	end snap_to_grid;
+
+
 	
 	function model_to_drawing (
 		self		: not null access type_view;
@@ -275,36 +284,14 @@ package body et_canvas_schematic is
 		type type_line is new pac_shapes.type_line with null record;
 		line : type_line;
 
-
-		-- The x/y position of the mouse pointer:
-		position_pointer_x : gint;
-		position_pointer_y : gint;
-
-		-- The point in the view (in pixels):
-		view_point : type_view_point;
-
-		-- The point in the model (in millimeters):
-		model_point : type_point;
-
 		-- The point in the drawing (in millimeters):
 		drawing_point : type_point;
 		
 	begin
 		if verb = VERB_DRAW and noun = NOUN_NET and net_segment.being_drawn = true then
-
 			
 			-- Get the mouse position:
-			self.get_pointer (position_pointer_x, position_pointer_y);
-
-			-- Convert mouse position to view_point:
-			view_point.x := type_view_coordinate (position_pointer_x);
-			view_point.y := type_view_coordinate (position_pointer_y);
-
-			-- Convert the view_point to a model_point:
-			model_point := self.view_to_model (view_point);
-
-			-- Convert the model_point to the point in the drawing:
-			drawing_point := model_to_drawing (self, model_point);
+			drawing_point := mouse_position (self);
 
 			
 			line.start_point := net_segment.start_point;

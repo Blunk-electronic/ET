@@ -87,8 +87,7 @@ package body pac_canvas is
 	procedure status_noun_invalid is begin
 		set_status ("Noun invalid ! " & status_hint_for_abort);
 	end status_noun_invalid;
-
-	
+		
 	
 	procedure build_background_boxes is begin
 
@@ -366,16 +365,6 @@ package body pac_canvas is
 	is 
 		use et_general;
 
-		-- The x/y position of the mouse pointer:
-		position_pointer_x : gint;
-		position_pointer_y : gint;
-
-		-- The point in the view (in pixels):
-		view_point : type_view_point;
-
-		-- The point in the model (in millimeters):
-		model_point : type_point;
-
 		-- The point in the drawing (in millimeters):
 		drawing_point : type_point;
 
@@ -386,18 +375,8 @@ package body pac_canvas is
 		distance_pol : type_distance_polar;
 	begin
 		-- Get the mouse position:
-		self.get_pointer (position_pointer_x, position_pointer_y);
-
-		-- Convert mouse position to view_point:
-		view_point.x := type_view_coordinate (position_pointer_x);
-		view_point.y := type_view_coordinate (position_pointer_y);
-
-		-- Convert the view_point to a model_point:
-		model_point := self.view_to_model (view_point);
-
-		-- Convert the model_point to the point in the drawing:
-		drawing_point := model_to_drawing (self, model_point);
-
+		drawing_point := mouse_position (self);
+		
 		-- Get the distance (in x and y) from cursor to mouse position:
 		distance_xy := type_point (distance_relative (cursor_main.position, drawing_point));
 
@@ -681,6 +660,40 @@ package body pac_canvas is
 	
 -- CONVERSIONS BETWEEN COORDINATE SYSTEMS
 
+	function mouse_position (
+		self	: not null access type_view'class)
+		return type_point is
+
+		-- The x/y position of the mouse pointer:
+		position_pointer_x : gint;
+		position_pointer_y : gint;
+
+		-- The point in the view (in pixels):
+		view_point : type_view_point;
+
+		-- The point in the model (in millimeters):
+		model_point : type_point;
+
+		-- The point in the drawing (in millimeters):
+		drawing_point : type_point;
+	begin
+		-- Get the mouse position:
+		self.get_pointer (position_pointer_x, position_pointer_y);
+
+		-- Convert mouse position to view_point:
+		view_point.x := type_view_coordinate (position_pointer_x);
+		view_point.y := type_view_coordinate (position_pointer_y);
+
+		-- Convert the view_point to a model_point:
+		model_point := self.view_to_model (view_point);
+
+		-- Convert the model_point to the point in the drawing:
+		drawing_point := model_to_drawing (self, model_point);
+		
+		return drawing_point;
+	end mouse_position;
+
+	
 	function vtm (
 		view_point	: in type_view_point;
 		scale		: in type_scale;

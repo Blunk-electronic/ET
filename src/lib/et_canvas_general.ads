@@ -328,6 +328,12 @@ package pac_canvas is
 		self	: not null access type_view;
 		point	: in type_point) 
 		return string is abstract;
+
+	-- Returns the given point x/y rounded to the current grid.
+	function snap_to_grid (
+		self	: not null access type_view;
+		point	: in type_point) 
+		return type_point is abstract;
 	
 	procedure viewport_changed (self : not null access type_view'class);
 
@@ -353,7 +359,10 @@ package pac_canvas is
 		self	: not null access type_view'class;
 		cr		: cairo.cairo_context);
 
-
+	-- Returns the position of the pointer in the drawing:
+	function mouse_position (
+		self	: not null access type_view'class)
+		return type_point;
 
 	function vtm (
 		view_point	: in type_view_point;
