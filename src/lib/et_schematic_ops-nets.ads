@@ -207,7 +207,12 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level)
 		return pac_selected_segments.list;
 		
-	
+	procedure add_segment (
+		module			: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		segment			: in type_net_segment;
+		log_threshold	: in type_log_level);
+		
 end et_schematic_ops.nets;
 
 -- Soli Deo Gloria

@@ -295,14 +295,14 @@ package body et_canvas_schematic is
 
 			
 			line.start_point := net_segment.start_point;
-			line.end_point := drawing_point;
+			line.end_point := snap_to_grid (self, drawing_point);
 			
 			set_color_nets (context.cr);
 
 			-- set line width for net segments:
 			set_line_width (context.cr, type_view_coordinate (net_line_width));
 
-			put_line (to_string (line));
+			--put_line (to_string (line));
 			
 			-- draw the net segment:
 			draw_line (
@@ -995,8 +995,17 @@ package body et_canvas_schematic is
 							else
 								-- set end point
 								net_segment.end_point := snap_to_grid (self, point);
-								
+
+								declare
+									s : et_schematic.type_net_segment;
+									use et_schematic_ops.nets;
+								begin
+									s.start_point := net_segment.start_point;
+									s.end_point := net_segment.end_point;
+									
 								--set_status ("end point" & to_string (net_segment.end_point) & ". ");
+									add_segment (current_active_module, current_active_sheet, s, log_threshold + 1);
+								end;
 
 								reset_net_segment;
 								status_clear;

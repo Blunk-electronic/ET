@@ -1437,7 +1437,7 @@ package body et_schematic_ops.nets is
 				container	=> strand.segments,
 				new_item	=> segment);
 
-			-- set the sheet number of the strand by deriving it from the segement start point
+			-- set the sheet number of the strand by deriving it from the segment start point
 			set_sheet (strand.position, sheet (start_point));
 			
 			-- set lowest x/y position of strand
@@ -1630,7 +1630,7 @@ package body et_schematic_ops.nets is
 					container	=> strand.segments,
 					new_item	=> segment);
 
-				-- set the sheet number of the strand by deriving it from the segement start point
+				-- set the sheet number of the strand by deriving it from the segment start point
 				set_sheet (strand.position, sheet (start_point));
 				
 				-- set lowest x/y position of strand
@@ -1829,7 +1829,7 @@ package body et_schematic_ops.nets is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		-- The net can be in the module already. Locate the requested nets in the module.
+		-- The net can be in the module already. Locate the requested net in the module.
 		-- net_cursor will point to no_element if the net is not already there.
 		net_cursor := locate_net (module_cursor, net_name);
 
@@ -1839,7 +1839,7 @@ package body et_schematic_ops.nets is
 		
 		log_indentation_up;
 		
-		-- If no net named net_name exists yet, notify operator that a 
+		-- If no net named after net_name exists yet, notify operator that a 
 		-- new net will be created.
 		-- If the net already exists, extend it by a net segment.
 		if net_cursor = type_nets.no_element then
@@ -2902,6 +2902,58 @@ package body et_schematic_ops.nets is
 		
 	end collect_segments;
 
+
+	procedure add_segment (
+		module			: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		segment			: in type_net_segment;
+		log_threshold	: in type_log_level)
+	is 
+		start_point : et_coordinates.type_position := to_position (segment.start_point, sheet);
+		end_point	: et_coordinates.type_position := to_position (segment.end_point, sheet);
+
+		use pac_selected_segments;
+		segments_at_start_point : pac_selected_segments.list;
+		segments_at_end_point	: pac_selected_segments.list;
+	begin
+		log (text => "adding net segment on sheet" & to_sheet (sheet) & to_string (segment), 
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		segments_at_start_point := collect_segments (
+			module			=> module,
+			place			=> start_point,
+			catch_zone		=> zero,
+			log_threshold	=> log_threshold + 1);
+
+-- 		if more_than_one (segments_at_start_point) then
+-- 			log (ERROR, "More than text => .length > 1
+				 
+		segments_at_end_point := collect_segments (
+			module			=> module,
+			place			=> end_point,
+			catch_zone		=> zero,
+			log_threshold	=> log_threshold + 1);
+
+		-- If no net segments at BOTH start AND end point, create a new net:
+		if is_empty (segments_at_start_point) and is_empty (segments_at_end_point) then
+			null; --
+		end if;
+
+		-- If net segments at start AND end point:
+		if not is_empty (segments_at_start_point) and not is_empty (segments_at_end_point) then
+			null; -- CS test net names on both ends
+		end if;
+
+		
+-- 		query_element (
+-- 			position	=> module,
+-- 			process		=> query_nets'access);
+
+		log_indentation_down;
+
+	end add_segment;
 	
 end et_schematic_ops.nets;
 	
