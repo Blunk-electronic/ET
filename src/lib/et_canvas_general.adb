@@ -992,7 +992,8 @@ package body pac_canvas is
 		drawing_point := model_to_drawing (self, model_point);
 		-- put_line (" drawing " & to_string (self, drawing_point));
 
-		-- update mouse position display (left of the canvas):
+		-- Update mouse position display (left of the canvas).
+		-- NOTE: The position displayed here is snapped/rounded to the grid:
 		gtk_entry (mouse_position_x.get_child).set_text (to_string (self, drawing_point, X));
 		gtk_entry (mouse_position_y.get_child).set_text (to_string (self, drawing_point, Y));
 
@@ -1258,6 +1259,7 @@ package body pac_canvas is
 		-- get the clicked mouse button:
 		mouse_button : constant type_mouse_button := type_mouse_button (event.button);
 
+		-- Get the mouse pointer position.
 		-- Convert from mouse pointer position to drawing point:
 		view_point		: constant type_view_point := (event.x, event.y);
 		model_point		: constant type_point := self.view_to_model (view_point);

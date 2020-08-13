@@ -988,13 +988,13 @@ package body et_canvas_schematic is
 								net_segment.being_drawn := true;
 								
 								-- set start point
-								net_segment.start_point := point;
+								net_segment.start_point := snap_to_grid (self, point);
 								
 								set_status ("start point" & to_string (net_segment.start_point) & ". " &
 									status_preamble_click_left & "set end point." & status_hint_for_abort);
 							else
 								-- set end point
-								net_segment.end_point := point;
+								net_segment.end_point := snap_to_grid (self, point);
 								
 								--set_status ("end point" & to_string (net_segment.end_point) & ". ");
 
