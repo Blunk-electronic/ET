@@ -785,6 +785,92 @@ package body et_canvas_schematic is
 	procedure reset_net_segment is begin
 		net_segment := (others => <>);
 	end reset_net_segment;
+
+	procedure draw_segment (
+		module			: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		segment			: in et_schematic.type_net_segment;
+		log_threshold	: in type_log_level)
+	is 
+		start_point : et_coordinates.type_position := to_position (segment.start_point, sheet);
+		end_point	: et_coordinates.type_position := to_position (segment.end_point, sheet);
+
+		use et_schematic;
+		use et_schematic_ops.nets;
+		use pac_selected_segments;
+		segments_at_start_point : pac_selected_segments.list;
+		segments_at_end_point	: pac_selected_segments.list;
+
+		use et_schematic.type_nets;
+		net_cursor	: et_schematic.type_nets.cursor;
+		net_name	: type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+	begin
+		log (text => "adding net segment on sheet" & to_sheet (sheet) & to_string (segment), 
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		segments_at_start_point := collect_segments (
+			module			=> module,
+			place			=> start_point,
+			catch_zone		=> zero,
+			log_threshold	=> log_threshold + 1);
+
+		segments_at_end_point := collect_segments (
+			module			=> module,
+			place			=> end_point,
+			catch_zone		=> zero,
+			log_threshold	=> log_threshold + 1);
+
+		-- If no net segments at BOTH start AND end point, create a new 
+		-- anonymous net with a name like N$234:
+		if is_empty (segments_at_start_point) and is_empty (segments_at_end_point) then
+			null; --
+			-- 			net_name := next_anonymous 
+			net_name := to_net_name ("N$2");
+
+			net_cursor := et_schematic_ops.nets.locate_net (module, net_name);
+
+			-- Insert the final net segment in the module:
+			insert_segment (
+				module, net_cursor, sheet, net_name, segment, log_threshold + 1);
+
+		end if;
+
+		-- If net segments at start AND end point:
+		if not is_empty (segments_at_start_point) and not is_empty (segments_at_end_point) then
+			null; -- CS test net names on both ends
+		end if;
+
+		
+-- 		query_element (
+-- 			position	=> module,
+-- 			process		=> query_nets'access);
+
+		log_indentation_down;
+
+	end draw_segment;
+
+	function valid_for_net_segment (
+		point			: in type_point;
+		log_threshold	: in type_log_level)
+		return boolean 
+	is
+		use et_schematic_ops.nets;
+	begin
+		if all_belong_to_same_net (
+			collect_segments (
+				module			=> current_active_module,
+				place			=> to_position (point, current_active_sheet),
+				catch_zone		=> zero,
+				log_threshold	=> log_threshold)) 
+		then
+			return true;
+		else
+			set_status ("More than one net here. Choose another place for the junction !");
+			return false;
+		end if;
+	end valid_for_net_segment;
 	
 	procedure evaluate_key (
 		self	: not null access type_view;
@@ -986,29 +1072,35 @@ package body et_canvas_schematic is
 						when NOUN_NET =>
 							if not net_segment.being_drawn then
 								net_segment.being_drawn := true;
-								
-								-- set start point
+
 								net_segment.start_point := snap_to_grid (self, point);
-								
-								set_status ("start point" & to_string (net_segment.start_point) & ". " &
-									status_preamble_click_left & "set end point." & status_hint_for_abort);
+
+								-- Before processing the start point furhter, it must be validated:
+								if valid_for_net_segment (net_segment.start_point, log_threshold + 1) then
+
+									set_status ("start point" & to_string (net_segment.start_point) & ". " &
+										status_preamble_click_left & "set end point." & status_hint_for_abort);
+								end if;
+
 							else
 								-- set end point
 								net_segment.end_point := snap_to_grid (self, point);
 
-								declare
-									s : et_schematic.type_net_segment;
-									use et_schematic_ops.nets;
-								begin
-									s.start_point := net_segment.start_point;
-									s.end_point := net_segment.end_point;
-									
-								--set_status ("end point" & to_string (net_segment.end_point) & ". ");
-									add_segment (current_active_module, current_active_sheet, s, log_threshold + 1);
-								end;
+								-- Before processing the start point furhter, it must be validated:
+								if valid_for_net_segment (net_segment.end_point, log_threshold + 1) then
 
-								reset_net_segment;
-								status_clear;
+									draw_segment (
+										module			=> current_active_module,
+										sheet			=> current_active_sheet,
+										segment			=> (
+												start_point	=> net_segment.start_point,
+												end_point	=> net_segment.end_point,
+												others		=> <>), -- no labels and no ports, just a bare segment
+										log_threshold	=>	log_threshold + 1);
+
+									reset_net_segment;
+									status_clear;
+								end if;
 							end if;
 							
 						when others =>

@@ -116,16 +116,8 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level)
 		return type_net_names.list;
 
-	procedure draw_net_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in out type_nets.cursor;
-		sheet			: in type_sheet;
-		net_name		: in type_net_name.bounded_string;
-		segment_new		: in et_schematic.type_net_segment;
-		log_threshold	: in type_log_level);
-	
-	procedure draw_net (
-	-- Draws a segment of a net. If the start or end point of the new segment
+	-- Inserts a net segment in the module.
+	-- If the start or end point of the new segment
 	-- meets a port then the port will be connected with the segment.
 	-- 1. If the segment is part of a new net, the net is created with a single segment
 	--  specified by start_point and end_point. If the new segment collides with a foreign
@@ -133,7 +125,16 @@ package et_schematic_ops.nets is
 	-- 2. If the net_name is a name of an already existing net, the given net segment (specified
 	--  by start_point and end_point) will be added to the existing net. A junction will be
 	--  placed where the new segment meets the existing net.
-						   
+	procedure insert_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in out type_nets.cursor;
+		sheet			: in type_sheet;
+		net_name		: in type_net_name.bounded_string;
+		segment_new		: in et_schematic.type_net_segment;
+		log_threshold	: in type_log_level);
+
+	procedure insert_net (
+	-- See description for procedure insert_segment.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		start_point		: in et_coordinates.type_position; -- sheet/x/y
@@ -213,6 +214,12 @@ package et_schematic_ops.nets is
 	
 	-- Returns true if segments contains more than one segment:
 	function more_than_one (segments : in pac_selected_segments.list) return boolean;
+
+	-- Tests if all given segments belong to the same net. 
+	-- Returns false if net names differ.
+	function all_belong_to_same_net (
+		segments	: in pac_selected_segments.list)
+		return boolean;
 	
 	-- Deletes a selected segment of a net.
 	procedure delete_selected_segment (
@@ -227,12 +234,6 @@ package et_schematic_ops.nets is
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_selected_segments.list;
-		
-	procedure add_segment (
-		module			: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;
-		segment			: in type_net_segment;
-		log_threshold	: in type_log_level);
 		
 end et_schematic_ops.nets;
 

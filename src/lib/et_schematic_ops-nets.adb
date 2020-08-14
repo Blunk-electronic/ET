@@ -1308,7 +1308,7 @@ package body et_schematic_ops.nets is
 		return nets;
 	end nets_at_place;
 
-	procedure draw_net_segment (
+	procedure insert_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in out type_nets.cursor;
 		sheet			: in type_sheet;
@@ -1824,7 +1824,7 @@ package body et_schematic_ops.nets is
 			
 		end extend_net;
 
-	begin -- draw_net_segment
+	begin -- insert_segment
 
 		-- If no net named after net_name exists yet, notify operator that a 
 		-- new net will be created.
@@ -1867,9 +1867,9 @@ package body et_schematic_ops.nets is
 			log_indentation_down;
 		end if;
 
-	end draw_net_segment;
+	end insert_segment;
 	
-	procedure draw_net (
+	procedure insert_net (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		start_point		: in et_coordinates.type_position; -- sheet/x/y
@@ -1882,9 +1882,9 @@ package body et_schematic_ops.nets is
 		net_cursor : type_nets.cursor; -- points to the net
 		segment : type_net_segment;
 
-	begin -- draw_net
+	begin -- insert_net
 		log (text => "module " & to_string (module_name) &
-			" drawing net " & to_string (net_name) &
+			" inserting net " & to_string (net_name) &
 			" segment from" & to_string (position => start_point) &
 			" to" & to_string (end_point), level => log_threshold);
 		
@@ -1901,13 +1901,13 @@ package body et_schematic_ops.nets is
 		
 		log_indentation_up;
 
-		draw_net_segment (
+		insert_segment (
 			module_cursor, net_cursor, sheet (start_point),
 			net_name, segment, log_threshold + 1);
 
 		log_indentation_down;
 		
-	end draw_net;
+	end insert_net;
 
 	procedure set_scope (
 	-- Sets the scope of a net.
@@ -2768,6 +2768,35 @@ package body et_schematic_ops.nets is
 		
 	end query_stub;
 
+	function all_belong_to_same_net (
+		segments	: in pac_selected_segments.list)
+		return boolean 
+	is 
+		use pac_selected_segments;
+		net_name : type_net_name.bounded_string;
+		net_names_differ : boolean := false;
+		
+		procedure query_segment (c : in pac_selected_segments.cursor) is 
+			use type_nets;
+			use type_net_name;
+			
+			s : type_selected_segment := element (c);
+		begin
+			if c = segments.first then
+				net_name := key (s.net);
+			else
+				if key (s.net) /= net_name then
+					net_names_differ := true;
+				end if;
+			end if;
+		end query_segment;
+		
+	begin
+		iterate (segments, query_segment'access);
+
+		return net_names_differ;
+	end all_belong_to_same_net;
+	
 	procedure delete_selected_segment (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		segment			: in type_selected_segment; -- net/strand/segment
@@ -2926,71 +2955,6 @@ package body et_schematic_ops.nets is
 		return result;
 		
 	end collect_segments;
-
-
-	procedure add_segment (
-		module			: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;
-		segment			: in type_net_segment;
-		log_threshold	: in type_log_level)
-	is 
-		start_point : et_coordinates.type_position := to_position (segment.start_point, sheet);
-		end_point	: et_coordinates.type_position := to_position (segment.end_point, sheet);
-
-		use pac_selected_segments;
-		segments_at_start_point : pac_selected_segments.list;
-		segments_at_end_point	: pac_selected_segments.list;
-
-		use et_schematic.type_nets;
-		net_cursor	: type_nets.cursor;
-		net_name	: type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-	begin
-		log (text => "adding net segment on sheet" & to_sheet (sheet) & to_string (segment), 
-			 level => log_threshold);
-
-		log_indentation_up;
-
-		segments_at_start_point := collect_segments (
-			module			=> module,
-			place			=> start_point,
-			catch_zone		=> zero,
-			log_threshold	=> log_threshold + 1);
-
--- 		if more_than_one (segments_at_start_point) then
--- 			log (ERROR, "More than text => .length > 1
-				 
-		segments_at_end_point := collect_segments (
-			module			=> module,
-			place			=> end_point,
-			catch_zone		=> zero,
-			log_threshold	=> log_threshold + 1);
-
-		-- If no net segments at BOTH start AND end point, create a new net:
-		if is_empty (segments_at_start_point) and is_empty (segments_at_end_point) then
-			null; --
-			-- 			net_name := next_anonymous 
-			net_name := to_net_name ("N$2");
-
-			net_cursor := locate_net (module, net_name);
-
-			draw_net_segment (
-				module, net_cursor, sheet, net_name, segment, log_threshold + 1);
-
-		end if;
-
-		-- If net segments at start AND end point:
-		if not is_empty (segments_at_start_point) and not is_empty (segments_at_end_point) then
-			null; -- CS test net names on both ends
-		end if;
-
-		
--- 		query_element (
--- 			position	=> module,
--- 			process		=> query_nets'access);
-
-		log_indentation_down;
-
-	end add_segment;
 	
 end et_schematic_ops.nets;
 	

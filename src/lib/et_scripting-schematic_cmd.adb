@@ -832,7 +832,7 @@ begin -- schematic_cmd
 				when NOUN_NET =>
 					case fields is
 						when 10 =>
-							draw_net
+							insert_net
 								(
 								module_name		=> module,
 								net_name		=> to_net_name (f (5)), -- RESET
