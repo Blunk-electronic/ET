@@ -856,20 +856,34 @@ package body et_canvas_schematic is
 		log_threshold	: in type_log_level)
 		return boolean 
 	is
+		result : boolean := false;
+		
 		use et_schematic_ops.nets;
+		use pac_selected_segments;
+		segments : pac_selected_segments.list;
 	begin
-		if all_belong_to_same_net (
-			collect_segments (
-				module			=> current_active_module,
-				place			=> to_position (point, current_active_sheet),
-				catch_zone		=> zero,
-				log_threshold	=> log_threshold)) 
-		then
-			return true;
+		segments := collect_segments (
+			module			=> current_active_module,
+			place			=> to_position (point, current_active_sheet),
+			catch_zone		=> zero,
+			log_threshold	=> log_threshold); 
+
+		-- If there are no segments at given point, then the point is valid:
+		if is_empty (segments) then
+			result := true;
 		else
-			set_status ("More than one net here. Choose another place for the junction !");
-			return false;
+			-- Test if all segments here belong to the same net then the 
+			-- point is valid:
+			if all_belong_to_same_net (segments) then
+				result := true;
+			else
+				-- point invalid because more than one nets found here:
+				set_status ("More than one net here. Choose another place for the junction !");
+				result := false;
+			end if;
 		end if;
+
+		return result;
 	end valid_for_net_segment;
 	
 	procedure evaluate_key (
@@ -1071,13 +1085,14 @@ package body et_canvas_schematic is
 					case noun is
 						when NOUN_NET =>
 							if not net_segment.being_drawn then
-								net_segment.being_drawn := true;
 
 								net_segment.start_point := snap_to_grid (self, point);
 
 								-- Before processing the start point furhter, it must be validated:
 								if valid_for_net_segment (net_segment.start_point, log_threshold + 1) then
 
+									net_segment.being_drawn := true;
+									
 									set_status ("start point" & to_string (net_segment.start_point) & ". " &
 										status_preamble_click_left & "set end point." & status_hint_for_abort);
 								end if;

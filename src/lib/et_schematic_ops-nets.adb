@@ -2772,6 +2772,8 @@ package body et_schematic_ops.nets is
 		segments	: in pac_selected_segments.list)
 		return boolean 
 	is 
+		result : boolean := true;
+		
 		use pac_selected_segments;
 		net_name : type_net_name.bounded_string;
 		net_names_differ : boolean := false;
@@ -2784,9 +2786,10 @@ package body et_schematic_ops.nets is
 		begin
 			if c = segments.first then
 				net_name := key (s.net);
+				result := true;
 			else
 				if key (s.net) /= net_name then
-					net_names_differ := true;
+					result := false;
 				end if;
 			end if;
 		end query_segment;
@@ -2794,7 +2797,7 @@ package body et_schematic_ops.nets is
 	begin
 		iterate (segments, query_segment'access);
 
-		return net_names_differ;
+		return result;
 	end all_belong_to_same_net;
 	
 	procedure delete_selected_segment (
