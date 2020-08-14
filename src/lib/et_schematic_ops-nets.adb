@@ -91,6 +91,17 @@ package body et_schematic_ops.nets is
 		
 		return cursor;
 	end locate_net;
+
+	function lowest_available_anonymous_net (
+		module		: in pac_generic_modules.cursor)
+		return type_net_name.bounded_string
+	is
+		result : type_net_name.bounded_string; -- like N$56
+	begin
+-- 		for i in 
+
+		return result;
+	end lowest_available_anonymous_net;
 	
 	procedure rename_net (
 	-- Renames a net. The scope determines whether to rename a certain strand,

@@ -279,16 +279,38 @@ package body et_general is
 		return type_net_name.to_string (net_name);
 	end to_string;
 
-	function anonymous (net_name : in type_net_name.bounded_string) return boolean is
-	-- Returns true if the given net name is anonymous.
+	function anonymous (net_name : in type_net_name.bounded_string) -- N$456
+		return boolean 
+	is
+		result : boolean := true;
+
+		-- Extract the prefix. It should be "N$":
+		prefix : constant string := slice (net_name, 1, 2);
+
+		-- Extract the index. It should be a number like "456"
+		index_string : constant string := slice (net_name, 3, length (net_name));
 	begin
-		-- CS: this is just a test if anonymous_net_name_prefix is somewhere
-		-- in the net name. Should be improved.
-		if type_net_name.count (net_name, anonymous_net_name_prefix) > 0 then
-			return true;
+		-- If the net name does not start with N$ then it is not an anonymous net.
+		-- Otherwise the trailing characters must be investigated:
+		if prefix = anonymous_net_name_prefix then
+
+			-- Could be an anonymous net. Check the index_string. 
+			-- If index_string contains something that is not a digit,
+			-- then it is not an anonymous net. Abort loop prematurely:			
+			for c in index_string'first .. index_string'last loop
+				if not is_digit (index_string (c)) then
+					result := false;
+					exit;
+				end if;
+			end loop;
+
+			-- Result is still true if index_string contains only digits.
+			
 		else 
-			return false;
+			result := false; -- not anonymous
 		end if;
+
+		return result;
 	end anonymous;
 
 	

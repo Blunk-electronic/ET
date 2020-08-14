@@ -177,10 +177,11 @@ package et_general is
 -- NET NAMES
     -- If the name of a strand can not be identified, we default to the well proved "N$" notation:
 	anonymous_net_name_prefix : constant string := "N$";
-
+	subtype type_anonymous_net_index is natural range 0 .. 1_000_000;
+	
 	-- The name of a net may have 100 characters which seems sufficient for now.
 	net_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set ("_-#");
-	net_inversion_mark : constant string := "#";
+	net_inversion_mark : constant string := "#"; -- CS required ?
  	net_name_length_max : constant natural := 100;
 	package type_net_name is new generic_bounded_length (net_name_length_max); use type_net_name;
 
