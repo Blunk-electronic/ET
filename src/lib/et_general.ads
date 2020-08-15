@@ -177,7 +177,7 @@ package et_general is
 -- NET NAMES
     -- If the name of a strand can not be identified, we default to the well proved "N$" notation:
 	anonymous_net_name_prefix : constant string := "N$";
-	subtype type_anonymous_net_index is natural range 0 .. 1_000_000;
+	subtype type_anonymous_net_index is positive range 1 .. 1_000_000;
 	
 	-- The name of a net may have 100 characters which seems sufficient for now.
 	net_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set ("_-#");
@@ -197,6 +197,10 @@ package et_general is
 	function to_net_name (net_name : in string) return type_net_name.bounded_string;
 	function to_string (net_name : in type_net_name.bounded_string) return string;
 
+	-- Returns a name for an anonymous net like N$56
+	function to_anonymous_net_name (index : in type_anonymous_net_index) 
+		return type_net_name.bounded_string;
+	
 	function anonymous (net_name : in type_net_name.bounded_string) return boolean;
 	-- Returns true if the given net name is anonymous.
 

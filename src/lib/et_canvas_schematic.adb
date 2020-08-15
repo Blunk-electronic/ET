@@ -786,7 +786,8 @@ package body et_canvas_schematic is
 		net_segment := (others => <>);
 	end reset_net_segment;
 
-	procedure draw_segment (
+	-- Inserts a net segment in the module.
+	procedure insert_net_segment (
 		module			: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;
 		segment			: in et_schematic.type_net_segment;
@@ -814,27 +815,28 @@ package body et_canvas_schematic is
 			module			=> module,
 			place			=> start_point,
 			catch_zone		=> zero,
-			log_threshold	=> log_threshold + 1);
+			log_threshold	=> log_threshold + 2);
 
 		segments_at_end_point := collect_segments (
 			module			=> module,
 			place			=> end_point,
 			catch_zone		=> zero,
-			log_threshold	=> log_threshold + 1);
+			log_threshold	=> log_threshold + 2);
 
 		-- If no net segments at BOTH start AND end point, create a new 
 		-- anonymous net with a name like N$234:
 		if is_empty (segments_at_start_point) and is_empty (segments_at_end_point) then
-			null; --
-			-- 			net_name := next_anonymous 
-			net_name := to_net_name ("N$2");
 
-			net_cursor := et_schematic_ops.nets.locate_net (module, net_name);
+			net_name := lowest_available_anonymous_net (module); -- N$234
+			
+			log (text => "creating new anonymous net " & to_string (net_name), level => log_threshold + 1);
+			log_indentation_up;
 
-			-- Insert the final net segment in the module:
-			insert_segment (
-				module, net_cursor, sheet, net_name, segment, log_threshold + 1);
+			-- Insert the new net with this single segment in the module:
+			et_schematic_ops.nets.insert_segment (
+				module, net_cursor, sheet, net_name, segment, log_threshold + 2);
 
+			log_indentation_down;
 		end if;
 
 		-- If net segments at start AND end point:
@@ -849,7 +851,7 @@ package body et_canvas_schematic is
 
 		log_indentation_down;
 
-	end draw_segment;
+	end insert_net_segment;
 
 	function valid_for_net_segment (
 		point			: in type_point;
@@ -1088,8 +1090,8 @@ package body et_canvas_schematic is
 
 								net_segment.start_point := snap_to_grid (self, point);
 
-								-- Before processing the start point furhter, it must be validated:
-								if valid_for_net_segment (net_segment.start_point, log_threshold + 1) then
+								-- Before processing the start point further, it must be validated:
+								if valid_for_net_segment (net_segment.start_point, log_threshold + 3) then
 
 									net_segment.being_drawn := true;
 									
@@ -1101,10 +1103,10 @@ package body et_canvas_schematic is
 								-- set end point
 								net_segment.end_point := snap_to_grid (self, point);
 
-								-- Before processing the start point furhter, it must be validated:
-								if valid_for_net_segment (net_segment.end_point, log_threshold + 1) then
+								-- Before processing the start point further, it must be validated:
+								if valid_for_net_segment (net_segment.end_point, log_threshold + 3) then
 
-									draw_segment (
+									insert_net_segment (
 										module			=> current_active_module,
 										sheet			=> current_active_sheet,
 										segment			=> (
@@ -1154,7 +1156,7 @@ package body et_canvas_schematic is
 		end right_button;
 			
 	begin -- button_pressed
-		log (text => to_string (button) & " at" & to_string (point), level => log_threshold);
+		--log (text => to_string (button) & " at" & to_string (point), level => log_threshold);
 		
 		case button is
 			when 1 => left_button;

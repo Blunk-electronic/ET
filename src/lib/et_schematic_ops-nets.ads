@@ -60,9 +60,12 @@ package et_schematic_ops.nets is
 		net_name	: in et_general.type_net_name.bounded_string)		
 		return type_nets.cursor;
 
+	-- Searches the module for an anonymous net with the lowest index available.
+	-- Example: If the module contains nets like N$2, N$4, N$5 and N$101 then
+	-- the lowest available name would be N$3.
 	function lowest_available_anonymous_net (
 		module		: in pac_generic_modules.cursor)
-		return type_net_name.bounded_string;
+		return type_net_name.bounded_string; -- N$3
 	
 	procedure rename_net (
 	-- Renames a net. The scope determines whether to rename a certain strand,

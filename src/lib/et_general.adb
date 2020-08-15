@@ -279,6 +279,16 @@ package body et_general is
 		return type_net_name.to_string (net_name);
 	end to_string;
 
+	function to_anonymous_net_name (index : in type_anonymous_net_index) -- 56
+		return type_net_name.bounded_string -- N$56
+	is
+		name : constant string := anonymous_net_name_prefix -- N$
+			& trim (type_anonymous_net_index'image (index), left); -- 56
+	begin
+		return to_net_name (name); -- N$56
+	end to_anonymous_net_name;
+
+	
 	function anonymous (net_name : in type_net_name.bounded_string) -- N$456
 		return boolean 
 	is

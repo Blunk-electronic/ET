@@ -75,6 +75,7 @@ package body et_schematic_ops.nets is
 		module		: in pac_generic_modules.cursor;
 		net_name	: in et_general.type_net_name.bounded_string)		
 		return type_nets.cursor is
+		
 		cursor : et_schematic.type_nets.cursor;
 
 		procedure query_nets (
@@ -96,11 +97,33 @@ package body et_schematic_ops.nets is
 		module		: in pac_generic_modules.cursor)
 		return type_net_name.bounded_string
 	is
-		result : type_net_name.bounded_string; -- like N$56
-	begin
--- 		for i in 
+		net : type_net_name.bounded_string; -- like N$56
+		cursor : et_schematic.type_nets.cursor;
 
-		return result;
+		-- This flag goes true once a suitable net
+		-- name has been found:
+		candiate_found : boolean := false; 
+	begin
+		-- Propose net names like N$1, N$2, ... and locate them
+		-- in the module. The search ends once a net like N$56 can not
+		-- be located. This net name would be returned to the caller.
+		for i in type_anonymous_net_index'first .. type_anonymous_net_index'last loop
+
+			-- compose net name and locate it in module:
+			net := to_anonymous_net_name (i); -- N$1, N$2, ...
+			cursor := locate_net (module, net);
+
+			if cursor = et_schematic.type_nets.no_element then -- not located
+				candiate_found := true;
+				exit;
+			end if;
+		end loop;
+
+		if not candiate_found then
+			raise constraint_error;
+		end if;
+		
+		return net;
 	end lowest_available_anonymous_net;
 	
 	procedure rename_net (
