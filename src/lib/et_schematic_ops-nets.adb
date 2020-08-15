@@ -2802,6 +2802,27 @@ package body et_schematic_ops.nets is
 		
 	end query_stub;
 
+	function first_net (segments : in pac_selected_segments.list) 
+		return type_net_name.bounded_string -- RESET_N, MASTER_CLOCK
+	is
+		use pac_selected_segments;
+		seg : type_selected_segment;
+		c	: pac_selected_segments.cursor;
+		net : type_net_name.bounded_string; -- to be returned
+	begin
+		if is_empty (segments) then
+			return net; -- empty string
+		else
+			-- Get the first segment of given list of segments.
+			seg := element (segments.first);
+
+			-- get the name of the net
+			net := key (seg.net);
+		end if;
+
+		return net;
+	end first_net;
+	
 	function all_belong_to_same_net (
 		segments	: in pac_selected_segments.list)
 		return boolean 

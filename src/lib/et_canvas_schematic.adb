@@ -805,7 +805,19 @@ package body et_canvas_schematic is
 		use et_schematic.type_nets;
 		net_cursor	: et_schematic.type_nets.cursor;
 		net_name	: type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-	begin
+
+		net_name_start, net_name_end : type_net_name.bounded_string;
+		empty_name : constant type_net_name.bounded_string := to_net_name ("");
+
+		function is_empty (n : in type_net_name.bounded_string) return boolean is 
+			use type_net_name;
+		begin
+			if n = empty_name then return true;
+			else return false;
+			end if;
+		end is_empty;
+	
+	begin -- insert_net_segment
 		log (text => "adding net segment on sheet" & to_sheet (sheet) & to_string (segment), 
 			 level => log_threshold);
 
@@ -817,15 +829,19 @@ package body et_canvas_schematic is
 			catch_zone		=> zero,
 			log_threshold	=> log_threshold + 2);
 
+		net_name_start := first_net (segments_at_start_point);
+		
 		segments_at_end_point := collect_segments (
 			module			=> module,
 			place			=> end_point,
 			catch_zone		=> zero,
 			log_threshold	=> log_threshold + 2);
 
-		-- If no net segments at BOTH start AND end point, create a new 
+		net_name_end := first_net (segments_at_end_point);
+		
+		-- If no nets at BOTH start AND end point, create a new 
 		-- anonymous net with a name like N$234:
-		if is_empty (segments_at_start_point) and is_empty (segments_at_end_point) then
+		if is_empty (net_name_start) and is_empty (net_name_end) then
 
 			net_name := lowest_available_anonymous_net (module); -- N$234
 			
@@ -839,16 +855,54 @@ package body et_canvas_schematic is
 			log_indentation_down;
 		end if;
 
-		-- If net segments at start AND end point:
-		if not is_empty (segments_at_start_point) and not is_empty (segments_at_end_point) then
-			null; -- CS test net names on both ends
+		-- If net at start point AND no net at end point then
+		-- the net at the start point is extended by the new segment:
+		if not is_empty (net_name_start) and is_empty (net_name_end) then
+						
+			log (text => "attaching start point of segment to net " & to_string (net_name_start),
+				 level => log_threshold + 1);
+			log_indentation_up;
+
+			net_cursor := et_schematic_ops.nets.locate_net (module, net_name_start);
+			
+			-- Insert the new segment:
+			et_schematic_ops.nets.insert_segment (
+				module, net_cursor, sheet, net_name_start, segment, log_threshold + 2);
+
+			log_indentation_down;
 		end if;
 
-		
--- 		query_element (
--- 			position	=> module,
--- 			process		=> query_nets'access);
+		-- If net at end point AND no net at start_point point then
+		-- the net at the end point is extended by the new segment:
+		if not is_empty (net_name_end) and is_empty (net_name_start) then
+						
+			log (text => "attaching end point of segment to net " & to_string (net_name_end),
+				 level => log_threshold + 1);
+			log_indentation_up;
 
+			net_cursor := et_schematic_ops.nets.locate_net (module, net_name_end);
+			
+			-- Insert the new segment:
+			et_schematic_ops.nets.insert_segment (
+				module, net_cursor, sheet, net_name_end, segment, log_threshold + 2);
+
+			log_indentation_down;
+		end if;
+
+		status_clear;
+		
+		-- If net at start point AND at end point,nt then
+		-- the net at the end point is extended by the new segment:
+		if not is_empty (net_name_end) and not is_empty (net_name_start) then
+			
+			log (WARNING, "Attempt to connect net " & to_string (net_name_start) &
+				 " with net " & to_string (net_name_end) & " rejected !");
+
+			set_status ("Attempt to connect net " & to_string (net_name_start) &
+						" with net " & to_string (net_name_end) & " rejected !" &
+					   " Solution: Rename one of them !");
+		end if;
+		
 		log_indentation_down;
 
 	end insert_net_segment;
@@ -1116,7 +1170,6 @@ package body et_canvas_schematic is
 										log_threshold	=>	log_threshold + 1);
 
 									reset_net_segment;
-									status_clear;
 								end if;
 							end if;
 							

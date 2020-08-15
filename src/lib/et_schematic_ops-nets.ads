@@ -124,14 +124,15 @@ package et_schematic_ops.nets is
 		return type_net_names.list;
 
 	-- Inserts a net segment in the module.
-	-- If the start or end point of the new segment
-	-- meets a port then the port will be connected with the segment.
-	-- 1. If the segment is part of a new net, the net is created with a single segment
-	--  specified by start_point and end_point. If the new segment collides with a foreign
-	--  net, an error is raised.
-	-- 2. If the net_name is a name of an already existing net, the given net segment (specified
-	--  by start_point and end_point) will be added to the existing net. A junction will be
-	--  placed where the new segment meets the existing net.
+	-- 1. If the start or end point of the new segment
+	--    meets a port then the port will be connected with the segment.
+	-- 2. If the segment_new collides with a foreign net, an error is raised.
+	-- 3. If the net_name is a name of an already existing net, then the
+	--    given net segment_new will be added to the existing net. A junction will be
+	--    automaticall be placed where the new segment joins the existing net.
+	-- 4. If net_cursor equals no_element then a new net named after net_name will be created.
+	-- 5. After this procedure net_cursor points to the net that has just been created
+	--    or extended by segment_new.
 	procedure insert_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in out type_nets.cursor;
@@ -218,6 +219,12 @@ package et_schematic_ops.nets is
 	-- These variables are used by the GUI when the operator selects a segment:
 	selected_segments	: pac_selected_segments.list;
 	selected_segment	: pac_selected_segments.cursor;
+
+	-- Returns the net name of the first segment in 
+	-- given list of net segments.
+	-- If the given list is empty then an empty net name will be returned.
+	function first_net (segments : in pac_selected_segments.list) 
+		return type_net_name.bounded_string; -- RESET_N, MASTER_CLOCK
 	
 	-- Returns true if segments contains more than one segment:
 	function more_than_one (segments : in pac_selected_segments.list) return boolean;
