@@ -473,35 +473,35 @@ package body et_geometry is
 			point_2	: in type_point;
 			axis	: in type_axis_2d) 
 			return type_distance is
-			dis : type_distance;
+			d : type_distance;
 		begin
 			case axis is
 				when X =>
-					dis := (point_2.x - point_1.x);
+					d := (point_2.x - point_1.x);
 
 				when Y =>
-					dis := (point_2.y - point_1.y);
+					d := (point_2.y - point_1.y);
 			end case;
-					
-			return type_distance (dis);
+
+			return d;
 		end distance;
 		
 		function distance_abs (
 			point_1	: in type_point;
 			point_2	: in type_point;
 			axis	: in type_axis_2d) 
-			return type_distance is
-			dis : type_distance;
+			return type_distance_positive is
+			d : type_distance_positive;
 		begin
 			case axis is
 				when X =>
-					dis := abs (point_2.x - point_1.x);
+					d := abs (point_2.x - point_1.x);
 
 				when Y =>
-					dis := abs (point_2.y - point_1.y);
+					d := abs (point_2.y - point_1.y);
 			end case;
 					
-			return type_distance (dis);
+			return d;
 		end distance_abs;
 
 		function "+" (point_one, point_two : in type_point) return type_point'class is
@@ -1166,6 +1166,180 @@ package body et_geometry is
 			rotate_by (line.end_point, rotation);
 		end rotate_by;
 
+		function to_route (
+			start_point, end_point	: in type_point;
+			style					: in type_bend_style)
+			return type_route is
+
+			dx : constant type_distance := distance (start_point, end_point, X);
+			dy : constant type_distance := distance (start_point, end_point, Y);
+
+			-- The area required for the route is a rectangle.
+			-- We need to figure out whether it is wider than tall:
+			function wider_than_tall return boolean is begin
+				if abs (dx) > abs (dy) then return true;
+				else return false;
+				end if;
+			end;
+
+			sup_start, sup_end : type_point; -- support points near given start and end point
+
+			-- distance of support points from given start or end point:
+			ds : constant type_distance_positive := 1.0;
+
+			bended : type_bended := YES;
+			bend_point : type_point;
+
+			procedure compute_bend_point is 
+				type type_line_here is new type_line with null record;
+				first_line	: constant type_line_here := (start_point, sup_start);
+				second_line	: constant type_line_here := (end_point, sup_end);
+				
+				first_line_start		: constant type_vector := start_vector (first_line);
+				first_line_direction	: constant type_vector := direction_vector (first_line);
+
+				second_line_start		: constant type_vector := start_vector (second_line);
+				second_line_direction	: constant type_vector := direction_vector (second_line);
+
+			begin
+				null;
+			end compute_bend_point;
+			
+		begin
+			-- If start and end point are equally then raise error:
+			if start_point = end_point then
+				raise constraint_error;
+			end if;
+			
+			-- If start and end point have same x or y position, then we
+			-- have a straight direct line between them.
+			if dx = zero or dy = zero then
+				bended := NO;
+			else
+
+				case style is
+					when STRAIGTH_THEN_ANGLED =>
+						-- compute support point near start point:
+						-- The first line must run straight from start point:
+						if wider_than_tall then
+							sup_start := type_point (set (start_point.x + ds, start_point.y));
+						else
+							sup_start := type_point (set (start_point.x, start_point.y + ds));
+						end if;
+
+						-- compute support point near end point:
+						-- The second line must run angled from end point:
+						if dx > zero then -- to the right
+							if dy > zero then -- upwards
+								sup_end := type_point (set (end_point.x + ds, end_point.y + ds));
+								--  45 degree
+							else
+								sup_end := type_point (set (end_point.x + ds, end_point.y - ds));
+								-- -45 degree
+							end if;
+						else -- to the left
+							if dy > zero then -- upwards
+								sup_end := type_point (set (end_point.x - ds, end_point.y + ds));
+								-- 135 degree
+							else
+								sup_end := type_point (set (end_point.x - ds, end_point.y - ds));
+								-- 225 degree
+							end if;
+						end if;
+
+						compute_bend_point;
+						
+					when DIRECT => bended := NO;
+
+					when ANGLED_THEN_STRAIGHT =>
+						-- Compute support point near start point:
+						-- The first line must run angled from start point:
+						if dx > zero then -- to the right
+							if dy > zero then -- upwards
+								sup_start := type_point (set (start_point.x + ds, start_point.y + ds));
+								--  45 degree
+							else -- downwards
+								sup_start := type_point (set (start_point.x + ds, start_point.y - ds));
+								-- -45 degree
+							end if;
+						else -- to the left
+							if dy > zero then -- upwards
+								sup_start := type_point (set (start_point.x - ds, start_point.y + ds));
+								-- 135 degree
+							else -- downwards
+								sup_start := type_point (set (start_point.x - ds, start_point.y - ds));
+								-- 225 degree
+							end if;
+						end if;
+
+						-- compute support point near end point:
+						-- The second line must run straight from end point:
+						if wider_than_tall then
+							sup_end := type_point (set (end_point.x + ds, end_point.y));
+							-- horizontally
+						else
+							sup_end := type_point (set (end_point.x, end_point.y + ds));
+							-- vertically
+						end if;
+
+						compute_bend_point;
+						
+					when VERTICAL_THEN_HORIZONTAL =>
+						-- Compute support point near start point:
+						-- The first line must run vertically from start point:
+-- 						if dy > zero then -- upwards
+						sup_start := type_point (set (start_point.x, start_point.y + ds));
+						-- vertically
+						
+-- 						else -- downwards
+-- 							sup_start := type_point (set (start_point.x, start_point.y - ds));
+-- 						end if;
+
+						-- compute support point near end point:
+						-- The second line must run horizontally from end point:
+-- 						if wider_than_tall then
+						sup_end := type_point (set (end_point.x + ds, end_point.y));
+						-- horizontally
+						
+-- 						else
+-- 							sup_end := type_point (set (end_point.x, end_point.y + ds));
+-- 						end if;
+
+						compute_bend_point;
+						
+					when HORIZONTAL_THEN_VERTICAL =>
+						-- Compute support point near start point:
+						-- The first line must run horizontal from start point:
+-- 						if dx > zero then -- to the right
+						sup_start := type_point (set (start_point.x + ds, start_point.y));
+						-- horizontally
+						
+-- 						else -- to the left
+-- 							sup_start := type_point (set (start_point.x - ds, start_point.y));
+-- 						end if;
+
+						-- compute support point near end point:
+						-- The second line must run vertically from end point:
+-- 						if wider_than_tall then
+						sup_end := type_point (set (end_point.x, end_point.y + ds));
+						-- vertically
+						
+-- 						else
+-- 							sup_end := type_point (set (end_point.x, end_point.y + ds));
+-- 						end if;
+
+						compute_bend_point;
+						
+				end case;
+			end if;
+				
+			if bended = NO then
+				return (NO, start_point, end_point);
+			else
+				return (YES, start_point, end_point, bend_point);
+			end if;
+
+		end to_route;
 		
 		function boundaries (line : in type_line) return type_boundaries is begin
 			return boundaries (line.start_point, line.end_point);

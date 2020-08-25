@@ -74,6 +74,24 @@ package et_geometry is
 	scale_default : constant type_scale := 1.0;
 	scale_factor_on_zoom : constant type_scale := 1.05;
 
+
+
+	
+	-- LINE BENDING -------
+
+	type type_bend_style is (
+		STRAIGTH_THEN_ANGLED,
+		DIRECT,
+		ANGLED_THEN_STRAIGHT,
+		VERTICAL_THEN_HORIZONTAL,
+		HORIZONTAL_THEN_VERTICAL
+		);
+
+	type type_bended is (NO, YES);
+
+
+	
+	-------------------------
 	
 	generic
 		type type_distance is delta <>;
@@ -245,20 +263,20 @@ package et_geometry is
 			point	: in out type_point;
 			axis	: in type_axis_2d);	
 
-		-- Returns the distance on the given axis between the given points.
+		-- Returns the distance along the given axis between the given points.
 		function distance (
 			point_1	: in type_point;
 			point_2	: in type_point;
 			axis	: in type_axis_2d) 
 			return type_distance;
 		
-		-- Returns the absolute distance on the given axis between the given points.
+		-- Returns the absolute distance along the given axis between the given points.
 		-- NOTE: The result in both x and y is always greater or equal zero.
 		function distance_abs (
 			point_1	: in type_point;
 			point_2	: in type_point;
 			axis	: in type_axis_2d) 
-			return type_distance;
+			return type_distance_positive;
 
 		function "+" (point_one, point_two : in type_point) return type_point'class;
 		function "-" (point_one, point_two : in type_point) return type_point'class;
@@ -495,14 +513,17 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+		-- Returns the location vector of the start point of a line:
 		function start_vector (
 			line	: in type_line)
 			return type_vector;
 
+		-- Returns the location vector of the end point of a line:
 		function end_vector (
 			line	: in type_line)
 			return type_vector;
-		
+
+		-- Returns the direction vector of a line:
 		function direction_vector (
 			line	: in type_line)
 			return type_vector;
@@ -544,7 +565,26 @@ package et_geometry is
 			rotation	: in type_rotation);
 
 
-		
+		-- When creating a route from one point to another use this type.
+		-- If no bend, then we have just a start and an end point which 
+		--  will result in a direct line between the two points.
+		-- If bended, then we get an extra point where the bending takes place
+		--  which will result in two lines that connect the two points:
+		type type_route (bended : type_bended) is record
+			start_point, end_point : type_point;
+			case bended is
+				when NO		=> null; -- no bend
+				when YES	=> bend_point : type_point;
+			end case;
+		end record;
+
+		-- Computes a route between two points according to the given bend style:
+		function to_route (
+			start_point, end_point	: in type_point;
+			style					: in type_bend_style)
+			return type_route;
+
+			
 		function boundaries (line : in type_line) return type_boundaries;
 		-- Returns the boundaries of the given line.
 		
