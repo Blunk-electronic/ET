@@ -289,76 +289,66 @@ package body et_canvas_schematic is
 
 		procedure compute_route (s, e : in type_point) is 
 			use pac_shapes;
+
+			-- Do the actual route calculation.
 			r : type_route := to_route (s, e, STRAIGTH_THEN_ANGLED);
-		begin
-			net_segment.bended := r.bended;
-			
-			if r.bended = NO then
-				
-				line.start_point := r.start_point;
-				line.end_point := r.end_point;
-				
+
+			procedure draw is begin
 				-- draw the net segment:
 				draw_line (
 					area		=> in_area,
 					context		=> context,
 					line		=> line,
 					height		=> self.frame_height);
+			end draw;
+			
+		begin -- compute_route
 
+			-- The calculated route may required a bend point.
+			-- Set/clear the "bended" flag of the net_segment being drawn.
+			net_segment.bended := r.bended;
+
+			-- set color and line width for net segments:
+			set_color_nets (context.cr);
+			set_line_width (context.cr, type_view_coordinate (net_line_width));
+
+			-- If the route does not require a bend point, draw a single line
+			-- from start to end point:
+			if r.bended = NO then
+				
+				line.start_point := r.start_point;
+				line.end_point := r.end_point;
+
+				draw;
+
+			-- If the route DOES require a bend point, then draw first a line
+			-- from start point to bend point. Then draw a second line from
+			-- bend point end point:
 			else
 				net_segment.bend_point := r.bend_point;
 
 				line.start_point := r.start_point;
 				line.end_point := r.bend_point;
 				
-				
-				-- draw the net segment:
-				draw_line (
-					area		=> in_area,
-					context		=> context,
-					line		=> line,
-					height		=> self.frame_height);
+				draw;
 
 				line.start_point := r.bend_point;
 				line.end_point := r.end_point;
 				
-				-- draw the net segment:
-				draw_line (
-					area		=> in_area,
-					context		=> context,
-					line		=> line,
-					height		=> self.frame_height);
-
+				draw;
 				
 			end if;
 		end compute_route;
 		
 	begin -- draw_net_segment_being_drawn
-		
 		if verb = VERB_DRAW and noun = NOUN_NET and net_segment.being_drawn = true then
 			
 			-- Get the mouse position:
 			drawing_point := mouse_position (self);
 
-			compute_route (net_segment.start_point, snap_to_grid (self, drawing_point));
-			
-			
-			set_color_nets (context.cr);
-
-			-- set line width for net segments:
-			set_line_width (context.cr, type_view_coordinate (net_line_width));
-
-			--put_line (to_string (line));
--- 			line.start_point := net_segment.start_point;
--- 			line.end_point := snap_to_grid (self, drawing_point);
--- 			
--- 			-- draw the net segment:
--- 			draw_line (
--- 				area		=> in_area,
--- 				context		=> context,
--- 				line		=> line,
--- 				height		=> self.frame_height
--- 				);
+			compute_route (
+				s	=> net_segment.start_point,				-- start of route
+				e	=> snap_to_grid (self, drawing_point));	-- end of route
 			
 		end if;
 	end draw_net_segment_being_drawn;
