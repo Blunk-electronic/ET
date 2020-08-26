@@ -253,14 +253,14 @@ package et_canvas_schematic is
 		self	: not null access type_view)
 		return string;
 
-	type type_net_segment is record
+	type type_net_segment is record -- CS rename to type_net_route
 		being_drawn	: boolean := false;
 
 		start_point	: type_point;
 		end_point	: type_point;
 
-		corner_required	: boolean := false;
-		corner_point	: type_point;
+		bended		: type_bended := NO;
+		bend_point	: type_point;
 	end record;
 
 	net_segment : type_net_segment;

@@ -286,16 +286,62 @@ package body et_canvas_schematic is
 
 		-- The point in the drawing (in millimeters):
 		drawing_point : type_point;
+
+		procedure compute_route (s, e : in type_point) is 
+			use pac_shapes;
+			r : type_route := to_route (s, e, STRAIGTH_THEN_ANGLED);
+		begin
+			net_segment.bended := r.bended;
+			
+			if r.bended = NO then
+				
+				line.start_point := r.start_point;
+				line.end_point := r.end_point;
+				
+				-- draw the net segment:
+				draw_line (
+					area		=> in_area,
+					context		=> context,
+					line		=> line,
+					height		=> self.frame_height);
+
+			else
+				net_segment.bend_point := r.bend_point;
+
+				line.start_point := r.start_point;
+				line.end_point := r.bend_point;
+				
+				
+				-- draw the net segment:
+				draw_line (
+					area		=> in_area,
+					context		=> context,
+					line		=> line,
+					height		=> self.frame_height);
+
+				line.start_point := r.bend_point;
+				line.end_point := r.end_point;
+				
+				-- draw the net segment:
+				draw_line (
+					area		=> in_area,
+					context		=> context,
+					line		=> line,
+					height		=> self.frame_height);
+
+				
+			end if;
+		end compute_route;
 		
-	begin
+	begin -- draw_net_segment_being_drawn
+		
 		if verb = VERB_DRAW and noun = NOUN_NET and net_segment.being_drawn = true then
 			
 			-- Get the mouse position:
 			drawing_point := mouse_position (self);
 
+			compute_route (net_segment.start_point, snap_to_grid (self, drawing_point));
 			
-			line.start_point := net_segment.start_point;
-			line.end_point := snap_to_grid (self, drawing_point);
 			
 			set_color_nets (context.cr);
 
@@ -303,14 +349,16 @@ package body et_canvas_schematic is
 			set_line_width (context.cr, type_view_coordinate (net_line_width));
 
 			--put_line (to_string (line));
-			
-			-- draw the net segment:
-			draw_line (
-				area		=> in_area,
-				context		=> context,
-				line		=> line,
-				height		=> self.frame_height
-				);
+-- 			line.start_point := net_segment.start_point;
+-- 			line.end_point := snap_to_grid (self, drawing_point);
+-- 			
+-- 			-- draw the net segment:
+-- 			draw_line (
+-- 				area		=> in_area,
+-- 				context		=> context,
+-- 				line		=> line,
+-- 				height		=> self.frame_height
+-- 				);
 			
 		end if;
 	end draw_net_segment_being_drawn;
@@ -1155,21 +1203,57 @@ package body et_canvas_schematic is
 
 							else
 								-- set end point
-								net_segment.end_point := snap_to_grid (self, point);
+								if net_segment.bended = NO then
+									
+									net_segment.end_point := snap_to_grid (self, point);
 
-								-- Before processing the start point further, it must be validated:
-								if valid_for_net_segment (net_segment.end_point, log_threshold + 3) then
+									-- Before processing the end point further, it must be validated:
+									if valid_for_net_segment (net_segment.end_point, log_threshold + 3) then
 
-									insert_net_segment (
-										module			=> current_active_module,
-										sheet			=> current_active_sheet,
-										segment			=> (
-												start_point	=> net_segment.start_point,
-												end_point	=> net_segment.end_point,
-												others		=> <>), -- no labels and no ports, just a bare segment
-										log_threshold	=>	log_threshold + 1);
+										insert_net_segment (
+											module			=> current_active_module,
+											sheet			=> current_active_sheet,
+											segment			=> (
+													start_point	=> net_segment.start_point,
+													end_point	=> net_segment.end_point,
+													others		=> <>), -- no labels and no ports, just a bare segment
+											log_threshold	=>	log_threshold + 1);
 
-									reset_net_segment;
+										reset_net_segment;
+									end if;
+
+								else
+									-- Before processing the BEND point further, it must be validated:
+									if valid_for_net_segment (net_segment.bend_point, log_threshold + 3) then
+
+										insert_net_segment (
+											module			=> current_active_module,
+											sheet			=> current_active_sheet,
+											segment			=> (
+													start_point	=> net_segment.start_point,
+													end_point	=> net_segment.bend_point,
+													others		=> <>), -- no labels and no ports, just a bare segment
+											log_threshold	=>	log_threshold + 1);
+
+										-- END POINT:
+										net_segment.end_point := snap_to_grid (self, point);
+
+										-- Before processing the END point further, it must be validated:
+										if valid_for_net_segment (net_segment.end_point, log_threshold + 3) then
+										
+											insert_net_segment (
+												module			=> current_active_module,
+												sheet			=> current_active_sheet,
+												segment			=> (
+														start_point	=> net_segment.bend_point,
+														end_point	=> net_segment.end_point,
+														others		=> <>), -- no labels and no ports, just a bare segment
+												log_threshold	=>	log_threshold + 1);
+										
+											reset_net_segment;
+										end if;
+									end if;
+
 								end if;
 							end if;
 							
