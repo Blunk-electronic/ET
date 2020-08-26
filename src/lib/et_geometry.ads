@@ -471,6 +471,10 @@ package et_geometry is
 		function to_vector (
 			point	: in type_point)
 			return type_vector;
+
+		function to_point (
+			v	: in type_vector)
+			return type_point;
 		
 		function absolute (
 			vector	: in type_vector)

@@ -972,6 +972,22 @@ package body et_geometry is
 				);
 		end to_vector;
 
+		function to_point (
+			v	: in type_vector)
+			return type_point is
+		begin
+			-- Since the return is a 2D point,
+			-- the z component of v must be zero:
+			if v.z /= zero then
+				raise constraint_error;
+			end if;
+						
+			return type_point (set (
+				x => v.x,
+				y => v.y
+				));
+		end to_point;
+		
 		function absolute (
 			vector	: in type_vector)
 			return type_distance_positive
@@ -1190,22 +1206,48 @@ package body et_geometry is
 			bended : type_bended := YES;
 			bend_point : type_point;
 
+			-- CS this procedure should be made public as "intersection" or similar
 			procedure compute_bend_point is 
 				type type_line_here is new type_line with null record;
 				first_line	: constant type_line_here := (start_point, sup_start);
 				second_line	: constant type_line_here := (end_point, sup_end);
-				
-				first_line_start		: constant type_vector := start_vector (first_line);
-				first_line_direction	: constant type_vector := direction_vector (first_line);
 
-				second_line_start		: constant type_vector := start_vector (second_line);
-				second_line_direction	: constant type_vector := direction_vector (second_line);
+				-- first line start vector:
+				S1 : constant type_vector := start_vector (first_line);
 
+				-- first line direction vector:
+				R1 : constant type_vector := direction_vector (first_line);
+
+				-- second line start vector:
+				S2 : constant type_vector := start_vector (second_line);
+
+				-- second line direction vector
+				R2 : constant type_vector := direction_vector (second_line);
+
+				-- scratch variables:
+				a, b, c, d, e, f, g : type_distance;
+				lambda_2 : type_distance;
+
+				-- location vector of intersection
+				I : type_vector;
 			begin
-				null;
+				a := S1.y;
+				b := type_distance (S2.x * R1.y) / R1.x;
+				c := type_distance (S1.x * R1.y) / R1.x;
+				d := S2.y;
+				e := R2.y;
+				f := type_distance (R2.x * R1.y) / R1.x;
+				g := 1.0 / (e - f);
+
+				lambda_2 := (a + b - c - d) * g;
+
+				I := add (S2, multiply (R2, lambda_2));
+				
+				bend_point := to_point (I);
 			end compute_bend_point;
 			
-		begin
+		begin -- to_route
+			
 			-- If start and end point are equally then raise error:
 			if start_point = end_point then
 				raise constraint_error;
@@ -1287,46 +1329,25 @@ package body et_geometry is
 					when VERTICAL_THEN_HORIZONTAL =>
 						-- Compute support point near start point:
 						-- The first line must run vertically from start point:
--- 						if dy > zero then -- upwards
 						sup_start := type_point (set (start_point.x, start_point.y + ds));
 						-- vertically
-						
--- 						else -- downwards
--- 							sup_start := type_point (set (start_point.x, start_point.y - ds));
--- 						end if;
 
-						-- compute support point near end point:
 						-- The second line must run horizontally from end point:
--- 						if wider_than_tall then
 						sup_end := type_point (set (end_point.x + ds, end_point.y));
 						-- horizontally
-						
--- 						else
--- 							sup_end := type_point (set (end_point.x, end_point.y + ds));
--- 						end if;
 
 						compute_bend_point;
 						
 					when HORIZONTAL_THEN_VERTICAL =>
 						-- Compute support point near start point:
 						-- The first line must run horizontal from start point:
--- 						if dx > zero then -- to the right
 						sup_start := type_point (set (start_point.x + ds, start_point.y));
 						-- horizontally
-						
--- 						else -- to the left
--- 							sup_start := type_point (set (start_point.x - ds, start_point.y));
--- 						end if;
 
 						-- compute support point near end point:
 						-- The second line must run vertically from end point:
--- 						if wider_than_tall then
 						sup_end := type_point (set (end_point.x, end_point.y + ds));
 						-- vertically
-						
--- 						else
--- 							sup_end := type_point (set (end_point.x, end_point.y + ds));
--- 						end if;
 
 						compute_bend_point;
 						
