@@ -1562,19 +1562,29 @@ package body et_schematic_ops.nets is
 								point 	=> type_point (place),
 								line	=> element (segment_cursor)) then
 
-								-- It is not allowed to place a junction in a sloped segment,
-								-- because splitting sloping segments seems a rare, difficult and dangerous task.
-								if segment_orientation (segment_cursor) = SLOPING then
-									junction_in_sloping_segment (place);
+-- 								-- It is not allowed to place a junction in a sloped segment,
+-- 								-- because splitting sloping segments seems a rare, difficult and dangerous task.
+-- 								if segment_orientation (segment_cursor) = SLOPING then
+-- 									junction_in_sloping_segment (place);
+-- 								end if;
+
+-- 								-- signal "strand iterator" to abort search prematurely
+-- 								segment_found := true;
+								
+								-- test whether a junction is required at place
+								if between_start_and_end_point (type_point (place), segment_cursor) then
+
+									-- It is not allowed to place a junction in a sloped segment,
+									-- because splitting sloping segments seems a rare, difficult and dangerous task.
+									if segment_orientation (segment_cursor) = SLOPING then
+										junction_in_sloping_segment (place);
+									end if;
+									
+									result.junction_required := true;
 								end if;
 
 								-- signal "strand iterator" to abort search prematurely
 								segment_found := true;
-								
-								-- test whether a junction is required at place
-								if between_start_and_end_point (type_point (place), segment_cursor) then
-									result.junction_required := true;
-								end if;
 								
 								exit; -- no further search required. 
 								

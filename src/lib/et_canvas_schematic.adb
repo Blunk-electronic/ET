@@ -929,7 +929,7 @@ package body et_canvas_schematic is
 
 		status_clear;
 		
-		-- If net at start point AND at end point,nt then
+		-- If net at start point AND at end point then
 		-- the net at the end point is extended by the new segment:
 		if not is_empty (net_name_end) and not is_empty (net_name_start) then
 			
@@ -971,7 +971,7 @@ package body et_canvas_schematic is
 			if all_belong_to_same_net (segments) then
 				result := true;
 			else
-				-- point invalid because more than one nets found here:
+				-- point invalid because more than one net found here:
 				set_status ("More than one net here. Choose another place for the junction !");
 				result := false;
 			end if;
