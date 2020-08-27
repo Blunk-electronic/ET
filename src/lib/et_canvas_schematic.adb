@@ -820,9 +820,9 @@ package body et_canvas_schematic is
 	end delete_selected_unit;
 
 
-	procedure reset_net_segment is begin
+	procedure reset_net_route is begin
 		net_route := (others => <>);
-	end reset_net_segment;
+	end reset_net_route;
 
 	-- Inserts a net segment in the module.
 	procedure insert_net_segment (
@@ -1047,7 +1047,7 @@ package body et_canvas_schematic is
 				when GDK_LC_n =>
 					noun := NOUN_NET;
 					set_status (status_preamble_click_left & "set start point." & status_hint_for_abort);
-					reset_net_segment;
+					reset_net_route;
 					
 				when others => status_noun_invalid;
 			end case;
@@ -1064,7 +1064,7 @@ package body et_canvas_schematic is
 			noun := noun_default;
 			
 			reset_request_clarification;
-			reset_net_segment;
+			reset_net_route;
 			status_enter_verb;
 		else
 	
@@ -1209,7 +1209,7 @@ package body et_canvas_schematic is
 													others		=> <>), -- no labels and no ports, just a bare segment
 											log_threshold	=>	log_threshold + 1);
 
-										reset_net_segment;
+										reset_net_route;
 									end if;
 
 								else
@@ -1240,7 +1240,7 @@ package body et_canvas_schematic is
 														others		=> <>), -- no labels and no ports, just a bare segment
 												log_threshold	=>	log_threshold + 1);
 										
-											reset_net_segment;
+											reset_net_route;
 										end if;
 									end if;
 

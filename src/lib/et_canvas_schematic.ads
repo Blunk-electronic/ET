@@ -253,25 +253,12 @@ package et_canvas_schematic is
 		self	: not null access type_view)
 		return string;
 
-	-- When a net is being drawn from one point to another
-	-- then we speak about a route from start point to end point
-	-- and optionally a bending point where the route changes
-	-- direction:
-	type type_net_route is record
-		being_drawn	: boolean := false;
-
-		start_point	: type_point;
-		end_point	: type_point;
-
-		bended		: type_bended := NO;
-		bend_point	: type_point;
-	end record;
-
-	-- When a net route is bein drawn, then this global variable
+	-- When a net route is being drawn, then this global variable
 	-- shall be used:
-	net_route : type_net_route;
+	net_route : et_schematic.pac_shapes.type_route_live;
 
-	procedure reset_net_segment;
+	-- Resets the components of global variable net_route:
+	procedure reset_net_route;
 	
 	
 	overriding procedure evaluate_key (

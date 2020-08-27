@@ -588,7 +588,23 @@ package et_geometry is
 			style					: in type_bend_style)
 			return type_route;
 
-			
+		-- When a route is being drawn from one point to another
+		-- then we speak about a route from start point to end point
+		-- and optionally a bending point where the route changes
+		-- direction.
+		-- This type is required for all kinds of lines (nets, documentation, tracks, ...)
+		-- when being drawn via the GUI.
+		type type_route_live is record
+			being_drawn	: boolean := false;
+
+			start_point	: type_point;
+			end_point	: type_point;
+
+			bended		: type_bended := NO;
+			bend_point	: type_point;
+		end record;
+
+		
 		function boundaries (line : in type_line) return type_boundaries;
 		-- Returns the boundaries of the given line.
 		
