@@ -1059,6 +1059,88 @@ package body et_canvas_schematic is
 					noun := NOUN_NET;
 					set_status (status_preamble_click_left & "set start point." & status_hint_for_abort);
 					reset_net_route;
+
+				when GDK_Space =>
+					case noun is
+						when NOUN_NET =>
+
+							if not net_route.being_drawn then
+
+								net_route.start_point := cursor_main.position;
+								net_route.end_point := cursor_main.position;
+								net_route.bend_point := cursor_main.position;
+
+								put_line ("start" & to_string (net_route.start_point));
+								
+								-- Before processing the start point further, it must be validated:
+								if valid_for_net_segment (net_route.start_point, log_threshold + 3) then
+
+									net_route.being_drawn := true;
+									
+									set_status ("start point" & to_string (net_route.start_point) & ". " &
+										--status_preamble_click_left & "set end point." & status_hint_for_abort);
+										"press space to set end point." & status_hint_for_abort);
+								end if;
+
+							else
+								-- set end point
+								if net_route.bended = NO then
+									
+									net_route.end_point := cursor_main.position;
+									put_line ("end" & to_string (net_route.end_point));
+
+									-- Before processing the end point further, it must be validated:
+									if valid_for_net_segment (net_route.end_point, log_threshold + 3) then
+
+										insert_net_segment (
+											module			=> current_active_module,
+											sheet			=> current_active_sheet,
+											segment			=> (
+													start_point	=> net_route.start_point,
+													end_point	=> net_route.end_point,
+													others		=> <>), -- no labels and no ports, just a bare segment
+											log_threshold	=>	log_threshold + 1);
+
+										reset_net_route;
+									end if;
+
+								else
+									-- Before processing the BEND point further, it must be validated:
+									if valid_for_net_segment (net_route.bend_point, log_threshold + 3) then
+
+										insert_net_segment (
+											module			=> current_active_module,
+											sheet			=> current_active_sheet,
+											segment			=> (
+													start_point	=> net_route.start_point,
+													end_point	=> net_route.bend_point,
+													others		=> <>), -- no labels and no ports, just a bare segment
+											log_threshold	=>	log_threshold + 1);
+
+										-- END POINT:
+										net_route.end_point := cursor_main.position;
+
+										-- Before processing the END point further, it must be validated:
+										if valid_for_net_segment (net_route.end_point, log_threshold + 3) then
+										
+											insert_net_segment (
+												module			=> current_active_module,
+												sheet			=> current_active_sheet,
+												segment			=> (
+														start_point	=> net_route.bend_point,
+														end_point	=> net_route.end_point,
+														others		=> <>), -- no labels and no ports, just a bare segment
+												log_threshold	=>	log_threshold + 1);
+										
+											reset_net_route;
+										end if;
+									end if;
+
+								end if;
+							end if;
+							
+						when others => null;
+					end case;
 					
 				when others => status_noun_invalid;
 			end case;
