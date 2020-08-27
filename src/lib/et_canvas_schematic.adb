@@ -291,7 +291,7 @@ package body et_canvas_schematic is
 			use pac_shapes;
 
 			-- Do the actual route calculation.
-			r : type_route := to_route (s, e, STRAIGTH_THEN_ANGLED);
+			r : type_route := to_route (s, e, net_route.bend_style);
 
 			procedure draw is begin
 				-- draw the net segment:
@@ -1277,6 +1277,17 @@ package body et_canvas_schematic is
 							
 					end case;
 
+				when VERB_DRAW =>
+
+					case noun is
+						when NOUN_NET =>
+							et_schematic.pac_shapes.next_bend_style (net_route);
+							
+						when others =>
+							null;
+							
+					end case;
+					
 				when others => null; -- CS
 			end case;
 

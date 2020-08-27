@@ -570,6 +570,8 @@ package et_geometry is
 
 
 		-- When creating a route from one point to another use this type.
+		-- NOTE: This is general stuff. This does apply to all kinds of lines
+		-- from one point to another (nets, documentation, tracks, ...) !
 		-- If no bend, then we have just a start and an end point which 
 		--  will result in a direct line between the two points.
 		-- If bended, then we get an extra point where the bending takes place
@@ -602,8 +604,11 @@ package et_geometry is
 
 			bended		: type_bended := NO;
 			bend_point	: type_point;
+			bend_style	: type_bend_style := STRAIGTH_THEN_ANGLED;
 		end record;
 
+		-- Switches to the next bend style of the given live route:
+		procedure next_bend_style (route : in out type_route_live);
 		
 		function boundaries (line : in type_line) return type_boundaries;
 		-- Returns the boundaries of the given line.

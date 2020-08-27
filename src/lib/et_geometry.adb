@@ -1387,6 +1387,22 @@ package body et_geometry is
 			end if;
 
 		end to_route;
+
+		procedure next_bend_style (route : in out type_route_live) is
+			i : constant natural := type_bend_style'pos (route.bend_style);
+			-- i points now to the current bend style
+
+			-- get the index of the last available bend style:
+			max : constant natural := type_bend_style'pos (type_bend_style'last);
+		begin
+			if i < max then
+				-- jump to next bend style
+				route.bend_style := type_bend_style'succ (type_bend_style'val (i));
+			else 
+				-- After the last bend style, jump back to the first bend style:
+				route.bend_style := type_bend_style'first;
+			end if;
+		end next_bend_style;
 		
 		function boundaries (line : in type_line) return type_boundaries is begin
 			return boundaries (line.start_point, line.end_point);
