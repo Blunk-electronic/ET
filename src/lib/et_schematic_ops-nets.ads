@@ -234,6 +234,13 @@ package et_schematic_ops.nets is
 	function all_belong_to_same_net (
 		segments	: in pac_selected_segments.list)
 		return boolean;
+
+	-- Tests if point sits between start and end point of any of the given segments.
+	-- Returns true in that case.
+	function between_start_and_end_point_of_sloping_segment (
+		point		: in type_point;
+		segments	: in pac_selected_segments.list)
+		return boolean;
 	
 	-- Deletes a selected segment of a net.
 	procedure delete_selected_segment (

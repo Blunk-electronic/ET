@@ -955,6 +955,8 @@ package body et_canvas_schematic is
 		use et_schematic_ops.nets;
 		use pac_selected_segments;
 		segments : pac_selected_segments.list;
+
+		choose : constant string := "Choose another place for the junction !";
 	begin
 		segments := collect_segments (
 			module			=> current_active_module,
@@ -968,11 +970,20 @@ package body et_canvas_schematic is
 		else
 			-- Test if all segments here belong to the same net then the 
 			-- point is valid:
-			if all_belong_to_same_net (segments) then
-				result := true;
+			if all_belong_to_same_net (segments) then 
+
+				-- Test for sloping segments here:
+				if between_start_and_end_point_of_sloping_segment (point, segments) then
+					set_status ("Junction in sloping segment not allowed. " & choose);
+					result := false;
+				else
+					-- no sloping segments here
+					result := true;
+				end if;
+
 			else
 				-- point invalid because more than one net found here:
-				set_status ("More than one net here. Choose another place for the junction !");
+				set_status ("More than one net here. " & choose);
 				result := false;
 			end if;
 		end if;

@@ -2864,6 +2864,33 @@ package body et_schematic_ops.nets is
 
 		return result;
 	end all_belong_to_same_net;
+
+	function between_start_and_end_point_of_sloping_segment (
+		point		: in type_point;
+		segments	: in pac_selected_segments.list)
+		return boolean 
+	is 
+		result : boolean := false;
+		
+		use pac_selected_segments;
+		
+		procedure query_segment (c : in pac_selected_segments.cursor) is 
+			s : type_selected_segment := element (c);
+		begin
+			if between_start_and_end_point (point, s.segment) then
+
+				if segment_orientation (s.segment) = SLOPING then
+					result := true;
+				end if;
+				
+			end if;
+		end query_segment;
+		
+	begin
+		iterate (segments, query_segment'access);
+
+		return result;
+	end between_start_and_end_point_of_sloping_segment;
 	
 	procedure delete_selected_segment (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
