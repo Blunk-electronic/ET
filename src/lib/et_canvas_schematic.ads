@@ -253,7 +253,11 @@ package et_canvas_schematic is
 		self	: not null access type_view)
 		return string;
 
-	type type_net_segment is record -- CS rename to type_net_route
+	-- When a net is being drawn from one point to another
+	-- then we speak about a route from start point to end point
+	-- and optionally a bending point where the route changes
+	-- direction:
+	type type_net_route is record
 		being_drawn	: boolean := false;
 
 		start_point	: type_point;
@@ -263,7 +267,9 @@ package et_canvas_schematic is
 		bend_point	: type_point;
 	end record;
 
-	net_segment : type_net_segment;
+	-- When a net route is bein drawn, then this global variable
+	-- shall be used:
+	net_route : type_net_route;
 
 	procedure reset_net_segment;
 	
