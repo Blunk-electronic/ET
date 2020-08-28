@@ -71,6 +71,7 @@ with et_canvas_primitive_draw_ops;
 with et_string_processing;			use et_string_processing;
 
 with et_canvas_schematic_nets;		use et_canvas_schematic_nets;
+with et_canvas_schematic_units;		use et_canvas_schematic_units;
 
 package et_canvas_schematic is
 

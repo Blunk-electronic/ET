@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         CANVAS SCHEMATIC NETS                            --
+--                        CANVAS SCHEMATIC UNITS                            --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -37,57 +37,40 @@
 -- DESCRIPTION:
 -- 
 
-with et_general;					use et_general;
--- with et_geometry;					use et_geometry;
+-- with et_general;				use et_general;
+-- with et_geometry;				use et_geometry;
 
-with et_coordinates;				use et_coordinates;
+with et_coordinates;			use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
-with et_project.modules;			use et_project.modules;
+with et_project.modules;		use et_project.modules;
+-- with et_symbols;
 with et_schematic;
-with et_schematic_ops;
-with et_schematic_ops.nets;
+-- with et_schematic_ops;
+-- with et_schematic_ops.nets;
+with et_schematic_ops.units;
 -- with et_text;						use et_text;
 
 with et_string_processing;			use et_string_processing;
 
-package et_canvas_schematic_nets is
+package et_canvas_schematic_units is
 
-	use et_project.modules.pac_generic_modules;
-	
-	-- Deletes a net segment in the vicinity of given point.
-	-- If more than one segment near point found, then it sets the
-	-- cursor selected_segment to the first segment and requests
+-- 	use et_project.modules.pac_generic_modules;
+
+	-- Deletes a unit in the vicinity of given point.
+	-- If more than one unit near point found, then it sets the
+	-- cursor selected_unit to the first unit and requests
 	-- for clarification.
-	procedure delete_net_segment (point : in type_point);
+	procedure delete_unit (point : in type_point);
 
-	-- Advances cursor selected_segment to next segment in list selected_segments.
-	procedure clarify_net_segment;
+	-- Advances cursor selected_unit to next unit in list selected_units.
+	procedure clarify_unit;
 
-	-- Deletes the net segment being pointed at by cursor selected_segment.
-	procedure delete_selected_net_segment;
+	-- Deletes the unit being pointed at by cursor selected_unit.
+	procedure delete_selected_unit;
 
-	-- When a net route is being drawn, then this global variable
-	-- shall be used:
-	net_route : et_schematic.pac_shapes.type_route_live;
 	
-	-- Resets the components of the net route.
-	-- Exception: Leaves the bend style as it is.
-	procedure reset_net_route;
-
-	-- Inserts a net segment in the module.
-	procedure insert_net_segment (
-		module			: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;
-		segment			: in et_schematic.type_net_segment;
-		log_threshold	: in type_log_level);
-
-	function valid_for_net_segment (
-		point			: in type_point;
-		log_threshold	: in type_log_level)
-		return boolean;
-	
-end et_canvas_schematic_nets;
+end et_canvas_schematic_units;
 
 -- Soli Deo Gloria
 
