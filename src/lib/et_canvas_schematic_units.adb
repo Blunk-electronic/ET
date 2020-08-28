@@ -43,10 +43,6 @@ package body et_canvas_schematic_units is
 
 	use et_canvas_schematic.pac_canvas;
 	
-	-- Deletes a unit in the vicinity of given point.
-	-- If more than one unit near point found, then it sets the
-	-- cursor selected_unit to the first unit and requests
-	-- for clarification.
 	procedure delete_unit (point : in type_point) is 
 		use et_schematic_ops.units;
 		use pac_selected_units;
@@ -89,7 +85,7 @@ package body et_canvas_schematic_units is
 		log_indentation_down;
 	end delete_unit;
 
-	-- Advances cursor selected_unit to next unit in list selected_units.
+
 	procedure clarify_unit is
 		use et_schematic;
 		use et_schematic_ops.units;
@@ -112,7 +108,7 @@ package body et_canvas_schematic_units is
 		set_status ("unit " & to_string (u));
 	end clarify_unit;
 	
-	-- Deletes the unit being pointed at by cursor selected_unit.
+
 	procedure delete_selected_unit is
 		use et_schematic_ops.units;
 		use pac_selected_units;

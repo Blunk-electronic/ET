@@ -37,20 +37,12 @@
 -- DESCRIPTION:
 -- 
 
--- with et_general;				use et_general;
--- with et_geometry;				use et_geometry;
-
-with et_coordinates;			use et_coordinates;
+with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
-with et_project.modules;		use et_project.modules;
--- with et_symbols;
+-- with et_project.modules;			use et_project.modules;
 with et_schematic;
--- with et_schematic_ops;
--- with et_schematic_ops.nets;
 with et_schematic_ops.units;
--- with et_text;						use et_text;
-
 with et_string_processing;			use et_string_processing;
 
 package et_canvas_schematic_units is

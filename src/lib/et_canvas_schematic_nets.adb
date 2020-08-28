@@ -43,10 +43,6 @@ package body et_canvas_schematic_nets is
 
 	use et_canvas_schematic.pac_canvas;
 	
-	-- Deletes a net segment in the vicinity of given point.
-	-- If more than one segment near point found, then it sets the
-	-- cursor selected_segment to the first segment and requests
-	-- for clarification.
 	procedure delete_net_segment (point : in type_point) is 
 		use et_schematic_ops.nets;
 		use pac_selected_segments;
@@ -89,7 +85,7 @@ package body et_canvas_schematic_nets is
 		log_indentation_down;
 	end delete_net_segment;
 
-	-- Advances cursor selected_segment to next segment in list selected_segments.
+	
 	procedure clarify_net_segment is
 		use et_schematic;
 		use et_schematic_ops.nets;
@@ -112,7 +108,7 @@ package body et_canvas_schematic_nets is
 		set_status (to_string (s));
 	end clarify_net_segment;
 
-	-- Deletes the net segment being pointed at by cursor selected_segment.
+	
 	procedure delete_selected_net_segment is
 		use et_schematic_ops.nets;
 		use pac_selected_segments;
@@ -134,15 +130,14 @@ package body et_canvas_schematic_nets is
 		log_indentation_down;
 	end delete_selected_net_segment;
 
-	-- Resets the components of the net route.
-	-- Exception: Leaves the bend style as it is.
+
 	procedure reset_net_route is begin
 		net_route := (
 			bend_style	=> net_route.bend_style,
 			others 		=> <>);
 	end reset_net_route;
 
-	-- Inserts a net segment in the module.
+
 	procedure insert_net_segment (
 		module			: in pac_generic_modules.cursor;
 		sheet			: in type_sheet;

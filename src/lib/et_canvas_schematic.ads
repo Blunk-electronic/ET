@@ -45,26 +45,26 @@
 --  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
-with gdk.types;					use gdk.types;
-with gdk.types.keysyms;			use gdk.types.keysyms;
+with gdk.types;						use gdk.types;
+with gdk.types.keysyms;				use gdk.types.keysyms;
 
-with glib;						use glib;
-with cairo;						use cairo;
+with glib;							use glib;
+with cairo;							use cairo;
 
-with et_general;				use et_general;
-with et_geometry;				use et_geometry;
+with et_general;					use et_general;
+with et_geometry;					use et_geometry;
 
-with et_coordinates;			use et_coordinates;
+with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
-with et_project.modules;		use et_project.modules;
+with et_project.modules;			use et_project.modules;
 with et_symbols;
 with et_schematic;
 with et_schematic_ops;
 with et_schematic_ops.nets;
 with et_schematic_ops.units;
 with et_frames;
-with et_text;					use et_text;
+with et_text;						use et_text;
 
 with et_canvas_general;
 with et_canvas_primitive_draw_ops;	
