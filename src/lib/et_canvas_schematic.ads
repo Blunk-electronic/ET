@@ -70,6 +70,8 @@ with et_canvas_general;
 with et_canvas_primitive_draw_ops;	
 with et_string_processing;			use et_string_processing;
 
+with et_canvas_schematic_nets;		use et_canvas_schematic_nets;
+
 package et_canvas_schematic is
 
 	use et_project.modules.pac_generic_modules;
@@ -253,13 +255,6 @@ package et_canvas_schematic is
 		self	: not null access type_view)
 		return string;
 
-	-- When a net route is being drawn, then this global variable
-	-- shall be used:
-	net_route : et_schematic.pac_shapes.type_route_live;
-
-	-- Resets the components of global variable net_route:
-	procedure reset_net_route;
-	
 	
 	overriding procedure evaluate_key (
 		self	: not null access type_view;
