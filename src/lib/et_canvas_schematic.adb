@@ -284,9 +284,6 @@ package body et_canvas_schematic is
 		type type_line is new pac_shapes.type_line with null record;
 		line : type_line;
 
-		-- The point in the drawing (in millimeters):
-		drawing_point : type_point;
-
 		procedure compute_route (s, e : in type_point) is 
 			use pac_shapes;
 
@@ -342,13 +339,26 @@ package body et_canvas_schematic is
 		
 	begin -- draw_net_segment_being_drawn
 		if verb = VERB_DRAW and noun = NOUN_NET and net_route.being_drawn = true then
-			
-			-- Get the mouse position:
-			drawing_point := mouse_position (self);
 
-			compute_route (
-				s	=> net_route.start_point,				-- start of route
-				e	=> snap_to_grid (self, drawing_point));	-- end of route
+			-- The route start point has been set eariler by procedures
+			-- evaluate_key or button_pressed.
+			-- For drawing here, the route end point is to be taken from
+			-- either the mouse pointer or the cursor position:
+			case net_route.drawing_tool is
+				
+				when MOUSE => 
+					
+					compute_route (
+						s	=> net_route.start_point,				-- start of route
+						e	=> snap_to_grid (self, mouse_position (self)));	-- end of route
+
+				when KEYBOARD =>
+
+					compute_route (
+						s	=> net_route.start_point,	-- start of route
+						e	=> cursor_main.position);	-- end of route
+
+			end case;
 			
 		end if;
 	end draw_net_segment_being_drawn;
@@ -1057,29 +1067,33 @@ package body et_canvas_schematic is
 			case key is
 				when GDK_LC_n =>
 					noun := NOUN_NET;
-					set_status (status_preamble_click_left & "set start point." & status_hint_for_abort);
+					
+					set_status (status_preamble_click_left & "or " 
+						& status_preamble_press_space 
+						& status_set_start_point 
+						& status_hint_for_abort);
+					
 					reset_net_route;
 
 				when GDK_Space =>
 					case noun is
 						when NOUN_NET =>
 
+							-- Set the tool being used for this net so that procedure
+							-- draw_net_segment_being_drawn knows where to get the end point from.
+							net_route.drawing_tool := KEYBOARD;
+
 							if not net_route.being_drawn then
 
 								net_route.start_point := cursor_main.position;
-								net_route.end_point := cursor_main.position;
-								net_route.bend_point := cursor_main.position;
-
-								put_line ("start" & to_string (net_route.start_point));
 								
 								-- Before processing the start point further, it must be validated:
 								if valid_for_net_segment (net_route.start_point, log_threshold + 3) then
 
 									net_route.being_drawn := true;
 									
-									set_status ("start point" & to_string (net_route.start_point) & ". " &
-										--status_preamble_click_left & "set end point." & status_hint_for_abort);
-										"press space to set end point." & status_hint_for_abort);
+									set_status (status_start_point & to_string (net_route.start_point) & ". " &
+										status_preamble_press_space & status_set_end_point & status_hint_for_abort);
 								end if;
 
 							else
@@ -1087,7 +1101,6 @@ package body et_canvas_schematic is
 								if net_route.bended = NO then
 									
 									net_route.end_point := cursor_main.position;
-									put_line ("end" & to_string (net_route.end_point));
 
 									-- Before processing the end point further, it must be validated:
 									if valid_for_net_segment (net_route.end_point, log_threshold + 3) then
@@ -1271,6 +1284,11 @@ package body et_canvas_schematic is
 
 					case noun is
 						when NOUN_NET =>
+
+							-- Set the tool being used for this net so that procedure
+							-- draw_net_segment_being_drawn knows where to get the end point from.
+							net_route.drawing_tool := MOUSE;
+							
 							if not net_route.being_drawn then
 
 								net_route.start_point := snap_to_grid (self, point);
@@ -1280,8 +1298,8 @@ package body et_canvas_schematic is
 
 									net_route.being_drawn := true;
 									
-									set_status ("start point" & to_string (net_route.start_point) & ". " &
-										status_preamble_click_left & "set end point." & status_hint_for_abort);
+									set_status (status_start_point & to_string (net_route.start_point) & ". " &
+										status_preamble_click_left & status_set_end_point & status_hint_for_abort);
 								end if;
 
 							else

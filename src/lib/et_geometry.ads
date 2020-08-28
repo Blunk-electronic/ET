@@ -447,6 +447,14 @@ package et_geometry is
 
 
 
+----- SHAPES ---------------------------------------------------
+	
+
+	-- While drawing we may need information about the tool being used.
+	-- This is relevant for GUI operations only:
+	type type_drawing_tool is (MOUSE, KEYBOARD);
+	
+
 	generic
 		with package pac_geometry is new generic_pac_geometry (<>);
 		
@@ -596,6 +604,8 @@ package et_geometry is
 		-- direction.
 		-- This type is required for all kinds of lines (nets, documentation, tracks, ...)
 		-- when being drawn via the GUI.
+		-- The route being drawn must provide information about the tool it is
+		-- being drawn with (mouse, touchpad, keyboard).
 		type type_route_live is record
 			being_drawn	: boolean := false;
 
@@ -605,6 +615,8 @@ package et_geometry is
 			bended		: type_bended := NO;
 			bend_point	: type_point;
 			bend_style	: type_bend_style := STRAIGTH_THEN_ANGLED;
+			
+			drawing_tool: type_drawing_tool := MOUSE;
 		end record;
 
 		-- Switches to the next bend style of the given live route:
