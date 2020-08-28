@@ -750,7 +750,7 @@ package body et_canvas_board is
 							case key is
 								when GDK_LC_d =>
 									noun := NOUN_DEVICE;
-									set_status (status_preamble_click_left & "delete non-electrical device."
+									set_status (status_click_left & "delete non-electrical device."
 										& status_hint_for_abort);
 									
 								when others => status_noun_invalid;

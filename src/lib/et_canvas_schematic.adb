@@ -680,7 +680,7 @@ package body et_canvas_schematic is
 					log_threshold	=> log_threshold + 1);
 
 				reset_request_clarification;
-				set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
+				set_status (status_click_left & "delete net segment." & status_hint_for_abort);
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
@@ -733,7 +733,7 @@ package body et_canvas_schematic is
 		delete (selected_segments, selected_segment);
 		
 		reset_request_clarification;
-		set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
+		set_status (status_click_left & "delete net segment." & status_hint_for_abort);
 		
 		log_indentation_down;
 	end delete_selected_net_segment;
@@ -771,7 +771,7 @@ package body et_canvas_schematic is
 					log_threshold	=> log_threshold + 1);
 
 				reset_request_clarification;
-				set_status (status_preamble_click_left & "delete unit." & status_hint_for_abort);
+				set_status (status_click_left & "delete unit." & status_hint_for_abort);
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
@@ -824,7 +824,7 @@ package body et_canvas_schematic is
 		delete (selected_units, selected_unit);
 		
 		reset_request_clarification;
-		set_status (status_preamble_click_left & "delete unit." & status_hint_for_abort);
+		set_status (status_click_left & "delete unit." & status_hint_for_abort);
 		
 		log_indentation_down;
 	end delete_selected_unit;
@@ -1017,14 +1017,23 @@ package body et_canvas_schematic is
 			case key is
 				when GDK_LC_u =>
 					noun := NOUN_UNIT;
-					set_status (status_preamble_click_left & "delete unit." & status_hint_for_abort);
+					
+					set_status (status_click_left 
+						& "or "
+						& status_press_space
+						& "to delete unit." & status_hint_for_abort);
+
 					
 				when GDK_LC_n =>
 					noun := NOUN_NET;
-					set_status (status_preamble_click_left & "delete net segment." & status_hint_for_abort);
+					
+					set_status (status_click_left 
+						& "or "
+						& status_press_space
+						& "to delete net segment." & status_hint_for_abort);
 
-				when GDK_Return =>
-
+					
+				when GDK_Space =>
 					case noun is
 						when NOUN_UNIT =>
 							if not clarification_pending then
@@ -1045,6 +1054,7 @@ package body et_canvas_schematic is
 							
 					end case;
 
+					
 				when GDK_page_down =>
 					case noun is
 						when NOUN_UNIT =>
@@ -1071,8 +1081,8 @@ package body et_canvas_schematic is
 				when GDK_LC_n =>
 					noun := NOUN_NET;
 					
-					set_status (status_preamble_click_left & "or " 
-						& status_preamble_press_space 
+					set_status (status_click_left & "or " 
+						& status_press_space 
 						& status_set_start_point 
 						& status_hint_for_abort);
 					
@@ -1096,7 +1106,7 @@ package body et_canvas_schematic is
 									net_route.being_drawn := true;
 									
 									set_status (status_start_point & to_string (net_route.start_point) & ". " &
-										status_preamble_press_space & status_set_end_point & status_hint_for_abort);
+										status_press_space & status_set_end_point & status_hint_for_abort);
 								end if;
 
 							else
@@ -1312,7 +1322,7 @@ package body et_canvas_schematic is
 									net_route.being_drawn := true;
 									
 									set_status (status_start_point & to_string (net_route.start_point) & ". " &
-										status_preamble_click_left & status_set_end_point & status_hint_for_abort);
+										status_click_left & status_set_end_point & status_hint_for_abort);
 								end if;
 
 							else
