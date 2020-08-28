@@ -614,7 +614,7 @@ package et_geometry is
 
 			bended		: type_bended := NO;
 			bend_point	: type_point;
-			bend_style	: type_bend_style := STRAIGTH_THEN_ANGLED;
+			bend_style	: type_bend_style := HORIZONTAL_THEN_VERTICAL;
 			
 			drawing_tool: type_drawing_tool := MOUSE;
 		end record;

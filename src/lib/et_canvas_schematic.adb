@@ -829,9 +829,12 @@ package body et_canvas_schematic is
 		log_indentation_down;
 	end delete_selected_unit;
 
-
+	-- Resets the components of the net route.
+	-- Exception: Leaves the bend style as it is.
 	procedure reset_net_route is begin
-		net_route := (others => <>);
+		net_route := (
+			bend_style	=> net_route.bend_style,
+			others 		=> <>);
 	end reset_net_route;
 
 	-- Inserts a net segment in the module.
@@ -1153,6 +1156,16 @@ package body et_canvas_schematic is
 							end if;
 							
 						when others => null;
+					end case;
+
+				when GDK_LC_b =>
+					case noun is
+						when NOUN_NET =>
+							et_schematic.pac_shapes.next_bend_style (net_route);
+							
+						when others =>
+							null;
+							
 					end case;
 					
 				when others => status_noun_invalid;
