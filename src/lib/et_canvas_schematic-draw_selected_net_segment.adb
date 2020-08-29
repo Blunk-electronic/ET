@@ -41,7 +41,7 @@ procedure draw_selected_net_segment (
 	self	: not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context;
-	segment	: in et_schematic_ops.nets.type_selected_segment) is
+	segment	: in type_selected_segment) is
 
 	use pac_draw_misc;
 	use et_schematic_ops.nets;

@@ -42,6 +42,290 @@ with et_canvas_schematic;			use et_canvas_schematic;
 package body et_canvas_schematic_nets is
 
 	use et_canvas_schematic.pac_canvas;
+
+	function lowest_available_anonymous_net (
+		module		: in pac_generic_modules.cursor)
+		return type_net_name.bounded_string
+	is
+		net : type_net_name.bounded_string; -- like N$56
+		cursor : et_schematic.type_nets.cursor;
+
+		-- This flag goes true once a suitable net
+		-- name has been found:
+		candiate_found : boolean := false; 
+	begin
+		-- Propose net names like N$1, N$2, ... and locate them
+		-- in the module. The search ends once a net like N$56 can not
+		-- be located. This net name would be returned to the caller.
+		for i in type_anonymous_net_index'first .. type_anonymous_net_index'last loop
+
+			-- compose net name and locate it in module:
+			net := to_anonymous_net_name (i); -- N$1, N$2, ...
+			cursor := locate_net (module, net);
+
+			if cursor = et_schematic.type_nets.no_element then -- not located
+				candiate_found := true;
+				exit;
+			end if;
+		end loop;
+
+		if not candiate_found then
+			raise constraint_error;
+		end if;
+		
+		return net;
+	end lowest_available_anonymous_net;
+	
+	function first_net (segments : in pac_selected_segments.list) 
+		return type_net_name.bounded_string -- RESET_N, MASTER_CLOCK
+	is
+		use pac_selected_segments;
+		seg : type_selected_segment;
+		c	: pac_selected_segments.cursor;
+		net : type_net_name.bounded_string; -- to be returned
+	begin
+		if is_empty (segments) then
+			return net; -- empty string
+		else
+			-- Get the first segment of given list of segments.
+			seg := element (segments.first);
+
+			-- get the name of the net
+			net := key (seg.net);
+		end if;
+
+		return net;
+	end first_net;
+
+	function more_than_one (segments : in pac_selected_segments.list) return boolean is 
+		use pac_selected_segments;
+	begin
+		if length (segments) > 1 then
+			return true;
+		else
+			return false;
+		end if;
+	end more_than_one;
+
+	
+	function all_belong_to_same_net (
+		segments	: in pac_selected_segments.list)
+		return boolean 
+	is 
+		result : boolean := true;
+		
+		use pac_selected_segments;
+		net_name : type_net_name.bounded_string;
+		net_names_differ : boolean := false;
+		
+		procedure query_segment (c : in pac_selected_segments.cursor) is 
+			use type_nets;
+			use type_net_name;
+			
+			s : type_selected_segment := element (c);
+		begin
+			if c = segments.first then
+				net_name := key (s.net);
+				result := true;
+			else
+				if key (s.net) /= net_name then
+					result := false;
+				end if;
+			end if;
+		end query_segment;
+		
+	begin
+		iterate (segments, query_segment'access);
+
+		return result;
+	end all_belong_to_same_net;
+
+	function between_start_and_end_point_of_sloping_segment (
+		point		: in type_point;
+		segments	: in pac_selected_segments.list)
+		return boolean 
+	is 
+		result : boolean := false;
+		
+		use pac_selected_segments;
+		
+		procedure query_segment (c : in pac_selected_segments.cursor) is 
+			s : type_selected_segment := element (c);
+		begin
+			if between_start_and_end_point (point, s.segment) then
+
+				if segment_orientation (s.segment) = SLOPING then
+					result := true;
+				end if;
+				
+			end if;
+		end query_segment;
+		
+	begin
+		iterate (segments, query_segment'access);
+
+		return result;
+	end between_start_and_end_point_of_sloping_segment;
+	
+	procedure delete_selected_segment (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		segment			: in type_selected_segment; -- net/strand/segment
+		log_threshold	: in type_log_level)
+	is
+		s : type_selected_segment := segment;
+		
+		procedure query_net (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure query_strands (
+			-- Searches the strands of the net for a segment that sits on given place.
+				net_name	: in et_general.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+				
+				procedure query_segments (strand : in out type_strand) is
+				begin
+					log (text => "segment " & to_string (element (s.segment)), 
+						 level => log_threshold + 1);
+															  
+					delete (strand.segments, s.segment);
+				end query_segments;
+				
+			begin -- query_strands
+				update_element (
+					container	=> net.strands,
+					position	=> s.strand,
+					process		=> query_segments'access);
+
+				-- In case no more segments are left in the strand,
+				-- remove the now useless strand entirely.
+				if is_empty (element (s.strand).segments) then
+					delete (net.strands, s.strand);
+				end if;
+				
+			end query_strands;
+		
+		begin -- query_net
+			log (text => "net name is " & to_string (key (s.net)), level => log_threshold);
+			log_indentation_up;
+			
+			update_element (
+				container	=> module.nets,
+				position	=> s.net,
+				process		=> query_strands'access);
+
+			-- If the net has no strands anymore, delete it entirely because a
+			-- net without strands is useless.
+			if is_empty (element (s.net).strands) then
+				delete (module.nets, s.net);
+			end if;
+
+			log_indentation_down;
+		end query_net;
+
+	begin
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_net'access);
+
+	end delete_selected_segment;
+	
+
+	function collect_segments (
+		module			: in pac_generic_modules.cursor;
+		place			: in et_coordinates.type_position; -- sheet/x/y
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_selected_segments.list
+	is
+		use pac_selected_segments;
+		result : pac_selected_segments.list;
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			net_cursor : type_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in type_net)
+			is
+				strand_cursor : type_strands.cursor := net.strands.first;
+
+				procedure query_segments (strand : in type_strand) is
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+				begin
+					log (text => "probing strand at" & to_string (strand.position),
+						 level => log_threshold + 1);
+					
+					log_indentation_up;
+					
+					while segment_cursor /= type_net_segments.no_element loop
+						log (text => "probing segment" & to_string (element (segment_cursor)),
+							level => log_threshold + 1);
+						
+						-- If the segment is within the catch zone, append
+						-- the current net, stand and segment cursor to the result:
+						if on_line (
+							point		=> type_point (place),
+							line		=> element (segment_cursor),
+							catch_zone	=> catch_zone) then
+
+							log_indentation_up;
+							log (text => "sits on segment", level => log_threshold + 1);
+						
+							result.append ((net_cursor, strand_cursor, segment_cursor));
+
+							log_indentation_down;
+						end if;
+
+						next (segment_cursor);
+					end loop;
+
+					log_indentation_down;
+				end query_segments;
+				
+			begin -- query_strands
+				while strand_cursor /= type_strands.no_element loop
+
+					-- We are interested in strands on the given sheet only:
+					if sheet (element (strand_cursor).position) = sheet (place) then
+						query_element (strand_cursor, query_segments'access);
+					end if;
+
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+			
+		begin -- query_nets
+			while net_cursor /= type_nets.no_element loop
+
+				query_element (
+					position	=> net_cursor,
+					process		=> query_strands'access);
+
+				next (net_cursor);
+			end loop;
+		end query_nets;
+
+	begin -- collect_segments
+		log (text => "looking up net segments at" & to_string (place) 
+			 & " catch zone" & to_string (catch_zone), level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module,
+			process		=> query_nets'access);
+
+		log_indentation_down;
+		
+		return result;
+		
+	end collect_segments;
+
 	
 	procedure delete_net_segment (point : in type_point) is 
 		use et_schematic_ops.nets;
@@ -214,7 +498,7 @@ package body et_canvas_schematic_nets is
 				 level => log_threshold + 1);
 			log_indentation_up;
 
-			net_cursor := et_schematic_ops.nets.locate_net (module, net_name_start);
+			net_cursor := locate_net (module, net_name_start);
 			
 			-- Insert the new segment:
 			et_schematic_ops.nets.insert_segment (
@@ -231,7 +515,7 @@ package body et_canvas_schematic_nets is
 				 level => log_threshold + 1);
 			log_indentation_up;
 
-			net_cursor := et_schematic_ops.nets.locate_net (module, net_name_end);
+			net_cursor := locate_net (module, net_name_end);
 			
 			-- Insert the new segment:
 			et_schematic_ops.nets.insert_segment (

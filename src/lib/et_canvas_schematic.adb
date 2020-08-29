@@ -242,7 +242,7 @@ package body et_canvas_schematic is
 		self	: not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
-		segment	: in et_schematic_ops.nets.type_selected_segment) is separate;
+		segment	: in type_selected_segment) is separate;
 
 
 	-- Draws selected objects highlighted.

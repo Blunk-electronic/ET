@@ -96,7 +96,8 @@ package et_project.modules is
 		port	: in et_netlists.type_port_netchanger)
 		return boolean;
 
-	-- Returns a cursor to the given net in the given module.
+	-- Returns a cursor to the requested net in the given module. If the net could
+	-- not be found, returns no_element.
 	function locate_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in type_net_name.bounded_string)

@@ -37,19 +37,84 @@
 -- DESCRIPTION:
 -- 
 
+with ada.containers;				use ada.containers;
+with ada.containers.doubly_linked_lists;
+
 with et_general;					use et_general;
 with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
 with et_project.modules;			use et_project.modules;
-with et_schematic;
+with et_schematic;					use et_schematic;
 with et_schematic_ops;
-with et_schematic_ops.nets;
+with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_string_processing;			use et_string_processing;
 
 package et_canvas_schematic_nets is
 
 	use et_project.modules.pac_generic_modules;
+
+	use type_nets;
+	use type_strands;
+	use type_net_segments;
+
+	-- Whenever a segment is selected via the GUI, we store its
+	-- parent net, strand and the segment itself via this type:
+	type type_selected_segment is record
+		net		: type_nets.cursor;
+		strand	: type_strands.cursor;
+		segment	: type_net_segments.cursor;
+	end record;
+
+	package pac_selected_segments is new doubly_linked_lists (type_selected_segment);
+
+	-- These variables are used by the GUI when the operator selects a segment:
+	selected_segments	: pac_selected_segments.list;
+	selected_segment	: pac_selected_segments.cursor;
+
+	-- Searches the module for an anonymous net with the lowest index available.
+	-- Example: If the module contains nets like N$2, N$4, N$5 and N$101 then
+	-- the lowest available name would be N$3.
+	function lowest_available_anonymous_net (
+		module		: in pac_generic_modules.cursor)
+		return type_net_name.bounded_string; -- N$3
+	
+	-- Returns the net name of the first segment in 
+	-- given list of net segments.
+	-- If the given list is empty then an empty net name will be returned.
+	function first_net (segments : in pac_selected_segments.list) 
+		return type_net_name.bounded_string; -- RESET_N, MASTER_CLOCK
+	
+	-- Returns true if segments contains more than one segment:
+	function more_than_one (segments : in pac_selected_segments.list) return boolean;
+
+	-- Tests if all given segments belong to the same net. 
+	-- Returns false if net names differ.
+	function all_belong_to_same_net (
+		segments	: in pac_selected_segments.list)
+		return boolean;
+
+	-- Tests if point sits between start and end point of any of the given segments.
+	-- Returns true in that case.
+	function between_start_and_end_point_of_sloping_segment (
+		point		: in type_point;
+		segments	: in pac_selected_segments.list)
+		return boolean;
+	
+	-- Deletes a selected segment of a net.
+	procedure delete_selected_segment (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		segment			: in type_selected_segment; -- net/strand/segment
+		log_threshold	: in type_log_level);
+	
+	-- Collects all net segments in the vicinity of the given point:
+	function collect_segments (
+		module			: in pac_generic_modules.cursor;
+		place			: in et_coordinates.type_position; -- sheet/x/y
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_selected_segments.list;
+
 	
 	-- Deletes a net segment in the vicinity of given point.
 	-- If more than one segment near point found, then it sets the
