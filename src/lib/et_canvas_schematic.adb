@@ -273,7 +273,7 @@ package body et_canvas_schematic is
 				
 	end highlight_selection;
 
-	procedure draw_net_segment_being_drawn (
+	procedure draw_net_route_being_drawn (
 		self	: not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context)
@@ -337,7 +337,7 @@ package body et_canvas_schematic is
 			end if;
 		end compute_route;
 		
-	begin -- draw_net_segment_being_drawn
+	begin -- draw_net_route_being_drawn
 		if verb = VERB_DRAW and noun = NOUN_NET and net_route.being_drawn = true then
 
 			-- The route start point has been set eariler by procedures
@@ -361,7 +361,7 @@ package body et_canvas_schematic is
 			end case;
 			
 		end if;
-	end draw_net_segment_being_drawn;
+	end draw_net_route_being_drawn;
 	
 	
 	procedure draw_submodules (
@@ -428,7 +428,7 @@ package body et_canvas_schematic is
 
 		highlight_selection (self, area_shifted, context);
 
-		draw_net_segment_being_drawn (self, area_shifted, context);
+		draw_net_route_being_drawn (self, area_shifted, context);
 		
 		draw_cursor (self, area_shifted, context, cursor_main);
 		
