@@ -37,18 +37,63 @@
 -- DESCRIPTION:
 -- 
 
+with ada.containers;            use ada.containers;
+with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_ordered_maps;
+
 with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
--- with et_project.modules;			use et_project.modules;
+with et_project.modules;			use et_project.modules;
 with et_schematic;
+with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.units;
 with et_string_processing;			use et_string_processing;
 
 package et_canvas_schematic_units is
 
--- 	use et_project.modules.pac_generic_modules;
+	use et_project.modules.pac_generic_modules;
 
+	-- Whenever a unit is selected via the GUI, we store its
+	-- parent device and the unit itself via this type:
+	type type_selected_unit is record
+		device	: et_schematic.type_devices.cursor;
+		unit	: et_schematic.type_units.cursor;
+	end record;
+
+	package pac_selected_units is new doubly_linked_lists (type_selected_unit);
+
+	-- These variables are used by the GUI when the operator selects a unit:
+	selected_units	: pac_selected_units.list;
+	selected_unit	: pac_selected_units.cursor;
+
+	-- Deletes a unit of a device. 
+	-- In case the last unit has been deleted, then the device is 
+	-- deleted entirely from the module.
+	-- It is quite similar as the previous procedure delete_unit (see above)
+	-- The difference is that it does not search for the module, device and unit
+	-- because we provide this information by cursors in the parameter list.
+	-- Mind that the parameter unit is an in/out !
+	procedure delete_unit (
+		module_cursor	: in pac_generic_modules.cursor;
+		unit			: in out type_selected_unit;
+		log_threshold	: in type_log_level);
+	
+	-- Deletes a selected unit of a device.
+	procedure delete_selected_unit (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		unit			: in type_selected_unit; -- device/unit
+		log_threshold	: in type_log_level);
+	
+	-- Collects all units in the vicinity of the given point:
+	function collect_units (
+		module			: in pac_generic_modules.cursor;
+		place			: in et_coordinates.type_position; -- sheet/x/y
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_selected_units.list;
+
+	
 	-- Deletes a unit in the vicinity of given point.
 	-- If more than one unit near point found, then it sets the
 	-- cursor selected_unit to the first unit and requests

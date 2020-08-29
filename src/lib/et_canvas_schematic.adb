@@ -234,7 +234,7 @@ package body et_canvas_schematic is
 		self	: not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
-		unit	: in et_schematic_ops.units.type_selected_unit) is separate;
+		unit	: in type_selected_unit) is separate;
 
 	-- Draws a single selected net segment and the net labels attached to it.
 	-- The net segment and the labels will be drawn highlighted.
