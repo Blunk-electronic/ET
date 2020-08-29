@@ -2509,6 +2509,7 @@ package body et_schematic_ops.nets is
 		end case;
 		
 		log_indentation_down;		
+		
 	end place_net_label;
 
 	procedure delete_net_label (

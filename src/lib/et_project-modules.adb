@@ -234,16 +234,38 @@ package body et_project.modules is
 		return result;
 	end port_connected;
 
+-- 	function locate_net (
+-- 	-- Returns a cursor to the given net in the given module.
+-- 		module_cursor	: in pac_generic_modules.cursor;
+-- 		net_name		: in type_net_name.bounded_string)
+-- 		return et_schematic.type_nets.cursor is
+-- 		use et_schematic.type_nets;
+-- 	begin
+-- 		return find (element (module_cursor).nets, net_name);
+--      CAUSED CONSTRAINT ERROR. WRONG MAP ... use function locate_net below instead.
+-- 	end locate_net;
+	
 	function locate_net (
-	-- Returns a cursor to the given net in the given module.
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in type_net_name.bounded_string)
+		net_name		: in type_net_name.bounded_string)		
 		return et_schematic.type_nets.cursor is
-		use et_schematic.type_nets;
-	begin
-		return find (element (module_cursor).nets, net_name);
-	end locate_net;
+		
+		cursor : et_schematic.type_nets.cursor;
 
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+		begin
+			cursor := et_schematic.type_nets.find (module.nets, net_name);
+		end query_nets;
+		
+	begin -- locate_net
+		query_element (
+			position	=> module_cursor,
+			process		=> query_nets'access);
+		
+		return cursor;
+	end locate_net;
 	
 	
 	function netchanger_as_port_available (
