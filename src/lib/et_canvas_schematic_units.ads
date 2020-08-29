@@ -39,7 +39,6 @@
 
 with ada.containers;            use ada.containers;
 with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_ordered_maps;
 
 with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_sch;
