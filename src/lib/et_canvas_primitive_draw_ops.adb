@@ -39,7 +39,8 @@ with ada.text_io;				use ada.text_io;
 with ada.numerics;				use ada.numerics;
 with glib;						use glib;
 -- with glib.types;				use glib.types;
-with Interfaces.C.Strings;
+-- with Interfaces.C.Strings;
+with gtkada.types;
 
 package body et_canvas_primitive_draw_ops is
 	
@@ -696,8 +697,11 @@ package body pac_draw is
 		text_area : aliased cairo_text_extents;
 
 		-- Convert the given content and store it in variable text:
-		use interfaces.c.strings;
-		text : constant interfaces.c.strings.chars_ptr := new_string (to_string (content));
+		--use interfaces.c.strings;
+		--text : constant interfaces.c.strings.chars_ptr := new_string (to_string (content));
+
+		use gtkada.types;
+		text : constant chars_ptr := new_string (to_string (content));
 
 		-- The point where we will start drawing the text:
 		sp : type_view_point;
@@ -751,8 +755,11 @@ package body pac_draw is
 
 		result : aliased cairo_text_extents; -- to be returned
 
-		use interfaces.c.strings;
-		text : interfaces.c.strings.chars_ptr := new_string (to_string (content));
+		--use interfaces.c.strings;
+		--text : interfaces.c.strings.chars_ptr := new_string (to_string (content));
+
+		use gtkada.types;
+		text : constant chars_ptr := new_string (to_string (content));
 	begin
 		select_font_face (context.cr, to_string (font.family), font.slant, font.weight);
 		set_font_size (context.cr, (to_points (size)));

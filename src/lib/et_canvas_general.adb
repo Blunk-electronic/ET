@@ -44,13 +44,14 @@ with ada.strings;				use ada.strings;
 with ada.strings.fixed;			use ada.strings.fixed;
 
 with interfaces.c.strings;		use interfaces.c.strings;
+with gnat.strings;				use gnat.strings;
 
 with gtk.bin;					use gtk.bin;
 with gtk.scrollable;			use gtk.scrollable;
 with gtk.style_context;			use gtk.style_context;
 with gtk.accel_group;
 
-with gtkada.types;				use gtkada.types;
+-- with gtkada.types;				use gtkada.types;
 with gtkada.handlers;			use gtkada.handlers;
 with gtkada.bindings;			use gtkada.bindings;
 
@@ -497,7 +498,8 @@ package body pac_canvas is
 	end;
 
 	
-	view_signals : constant gtkada.types.chars_ptr_array := (
+	-- view_signals : constant gtkada.types.chars_ptr_array := ( -- came with gtkada release 17.0
+	view_signals : constant interfaces.c.strings.chars_ptr_array := (
 		1 => new_string (string (signal_viewport_changed))
 		);
 
@@ -926,7 +928,8 @@ package body pac_canvas is
 	end;
 
 	function view_get_type return glib.gtype is
-		info : access ginterface_info;
+		--info : access ginterface_info; -- came with gtkada release 17.0
+		info : ginterface_info_access;
 	begin
 		if glib.object.initialize_class_record (
 			ancestor     => gtk.bin.get_type,
