@@ -817,11 +817,9 @@ package body et_canvas_schematic is
 					case noun is
 						when NOUN_UNIT =>
 							if not clarification_pending then
-								null;
-								--delete_unit (cursor_main.position);
+								move_unit (cursor_main.position);
 							else
-								null;
-								--delete_selected_unit;
+								move_selected_unit;
 							end if;
 
 
@@ -1051,11 +1049,9 @@ package body et_canvas_schematic is
 					case noun is
 						when NOUN_UNIT =>
 							if not clarification_pending then
-								null;
-								--delete_unit (point);
+								move_unit (point);
 							else
-								null;
-								--delete_selected_unit;
+								move_selected_unit;
 							end if;
 
 						when others =>
