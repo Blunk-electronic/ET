@@ -450,11 +450,6 @@ package et_geometry is
 ----- SHAPES ---------------------------------------------------
 	
 
-	-- While drawing we may need information about the tool being used.
-	-- This is relevant for GUI operations only:
-	type type_drawing_tool is (MOUSE, KEYBOARD);
-	
-
 	generic
 		with package pac_geometry is new generic_pac_geometry (<>);
 		
@@ -616,7 +611,7 @@ package et_geometry is
 			bend_point	: type_point;
 			bend_style	: type_bend_style := HORIZONTAL_THEN_VERTICAL;
 			
-			drawing_tool: type_drawing_tool := MOUSE;
+			tool		: type_tool := MOUSE;
 		end record;
 
 		-- Switches to the next bend style of the given live route:

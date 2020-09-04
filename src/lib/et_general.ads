@@ -250,6 +250,15 @@ package et_general is
 
 	function to_shape (shape : in string) return type_shape;
 	function to_shape (shape : in type_shape) return string;
+
+
+-- TOOLS
+	
+	-- While drawing and editing we need information about the tool being used.
+	-- This is relevant for GUI operations only:
+	type type_tool is (MOUSE, KEYBOARD);
+
+
 	
 -- GENERICS
 	

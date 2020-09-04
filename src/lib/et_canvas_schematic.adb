@@ -344,7 +344,7 @@ package body et_canvas_schematic is
 			-- evaluate_key or button_pressed.
 			-- For drawing here, the route end point is to be taken from
 			-- either the mouse pointer or the cursor position:
-			case net_route.drawing_tool is
+			case net_route.tool is
 				
 				when MOUSE => 
 					
@@ -714,7 +714,7 @@ package body et_canvas_schematic is
 
 							-- Set the tool being used for this net so that procedure
 							-- draw_net_segment_being_drawn knows where to get the end point from.
-							net_route.drawing_tool := KEYBOARD;
+							net_route.tool := KEYBOARD;
 
 							if not net_route.being_drawn then
 
@@ -968,7 +968,7 @@ package body et_canvas_schematic is
 
 							-- Set the tool being used for this net so that procedure
 							-- draw_net_segment_being_drawn knows where to get the end point from.
-							net_route.drawing_tool := MOUSE;
+							net_route.tool := MOUSE;
 							
 							if not net_route.being_drawn then
 
