@@ -43,6 +43,7 @@ with ada.containers.doubly_linked_lists;
 with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
+with et_general;					use et_general;
 with et_project.modules;			use et_project.modules;
 with et_schematic;
 with et_schematic_ops;				use et_schematic_ops;
@@ -95,6 +96,14 @@ package et_canvas_schematic_units is
 
 
 -- MOVE UNIT
+
+	type type_unit is record
+		being_moved	: boolean := false;
+		tool		: type_tool := MOUSE;
+		position	: type_point;
+	end record;
+
+	unit : type_unit;
 	
 	-- Moves a unit in the vicinity of given point.
 	-- If more than one unit near point found, then it sets the
