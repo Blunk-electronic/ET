@@ -492,30 +492,6 @@ package body et_canvas_board is
 		
 	end draw_internal;
 
-	
-	function convert_and_shift_y (
-		self	: not null access type_view;
-		y		: in type_distance_total)
-		return type_view_coordinate is 
-	begin
-		return type_view_coordinate 
-			(
-			self.frame_height 
-			- y
-			);
-	end;
-		
-	function convert_and_shift_y (
-		self	: not null access type_view;
-		y		: in type_distance_total)
-		return type_distance_total is 
-	begin
-		return (
-			self.frame_height 
-			- y
-			);
-	end;
-
 
 	procedure move_cursor (
 		self		: not null access type_view;

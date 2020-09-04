@@ -135,20 +135,6 @@ package et_canvas_board is
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;
 
-	-- This function converts a y-value.
-	-- The input y increases upwards. The output y increases downwards.
-	overriding function convert_and_shift_y (
-		self	: not null access type_view;
-		y		: in type_distance_total) 
-		return type_distance_total;
-		
-	-- This function converts a y-value.
-	-- The input y increases upwards. The output y increases downwards.
-	overriding function convert_and_shift_y (
-		self	: not null access type_view;
-		y		: in type_distance_total)
-		return type_view_coordinate;
-
 	overriding function model_to_drawing (
 		self		: not null access type_view;
 		model_point : in type_point)

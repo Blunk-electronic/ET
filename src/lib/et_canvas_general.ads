@@ -489,21 +489,6 @@ package pac_canvas is
 
 	
 
-	-- This function converts a y-value from the drawing to the view.
-	-- The input y increases upwards. The output y increases downwards.
-	function convert_and_shift_y ( -- CS remove
-		self	: not null access type_view;
-		y		: in type_distance)
-		return type_view_coordinate is abstract;
-
-	-- This function converts a y-value from the view to the drawing.
-	-- The input y increases upwards. The output y increases downwards.
-	function convert_and_shift_y ( -- CS remove
-		self	: not null access type_view;
-		y		: in type_distance) 
-		return type_distance is abstract;
-
-
 	-- This function calculates the grid coordinate on the axis that comes
 	-- before the given coordinate.
 	-- Example 1: If coordinate is 215.6 and grid size is 10, then x becomes 210.
