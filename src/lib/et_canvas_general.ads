@@ -618,12 +618,19 @@ package pac_canvas is
 		button	: in type_mouse_button;
 		point	: in type_point) is null;
 
+
+	
+	-- Whenever the operator is required to clarify which object is meant,
+	-- we use this type:
 	type type_request_clarification is (NO, YES);
+
+	-- A global status variable that indicates whether clarification is required or not:
 	request_clarificaton : type_request_clarification := NO;
 
 	procedure set_request_clarification;
 	procedure reset_request_clarification;
 
+	-- Returns true if the global flag "request_clarificaton" is YES:
 	function clarification_pending return boolean;
 								  
 private

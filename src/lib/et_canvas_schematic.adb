@@ -801,7 +801,41 @@ package body et_canvas_schematic is
 				when others => status_noun_invalid;
 			end case;
 		end draw;
-		
+
+		procedure move is begin
+			case key is
+				when GDK_LC_u =>
+					noun := NOUN_UNIT;
+
+					set_status (status_click_left 
+						& "or "
+						& status_press_space
+						& "to move unit." & status_hint_for_abort);
+
+					
+				when GDK_Space =>
+					case noun is
+						when NOUN_UNIT =>
+							if not clarification_pending then
+								null;
+								--delete_unit (cursor_main.position);
+							else
+								null;
+								--delete_selected_unit;
+							end if;
+
+
+						when others =>
+							null;
+							
+					end case;
+
+					
+				when others => status_noun_invalid;
+			end case;
+		end move;
+
+					
 	begin -- evaluate_key
 		
 -- 		put_line ("schematic: evaluating other key ...");
@@ -836,10 +870,14 @@ package body et_canvas_schematic is
 							verb := VERB_DELETE;
 							status_enter_noun;
 							
-						when GDK_LC_d => -- GDK_D
+						when GDK_LC_d =>
 							verb := VERB_DRAW;
 							status_enter_noun;
-							
+
+						when GDK_LC_m =>
+							verb := VERB_MOVE;
+							status_enter_noun;
+
 						when others =>
 							--put_line ("other key pressed " & gdk_key_type'image (key));
 							
@@ -857,6 +895,8 @@ package body et_canvas_schematic is
 						when VERB_DELETE => delete;
 
 						when VERB_DRAW => draw;
+
+						when VERB_MOVE => move;
 
 						when others => null; -- CS
 					end case;
@@ -1006,6 +1046,24 @@ package body et_canvas_schematic is
 							
 					end case;
 
+				when VERB_MOVE =>
+
+					case noun is
+						when NOUN_UNIT =>
+							if not clarification_pending then
+								null;
+								--delete_unit (point);
+							else
+								null;
+								--delete_selected_unit;
+							end if;
+
+						when others =>
+							null;
+							
+					end case;
+
+					
 				when others => null; -- CS
 			end case;
 			
@@ -1014,7 +1072,6 @@ package body et_canvas_schematic is
 		procedure right_button is begin
 			case verb is
 				when VERB_DELETE =>
-
 					case noun is
 						when NOUN_UNIT =>
 							if clarification_pending then
@@ -1032,7 +1089,6 @@ package body et_canvas_schematic is
 					end case;
 
 				when VERB_DRAW =>
-
 					case noun is
 						when NOUN_NET =>
 							et_schematic.pac_shapes.next_bend_style (net_route);
@@ -1041,6 +1097,19 @@ package body et_canvas_schematic is
 							null;
 							
 					end case;
+					
+				when VERB_MOVE =>
+					case noun is
+						when NOUN_UNIT =>
+							if clarification_pending then
+								clarify_unit;
+							end if;
+
+						when others =>
+							null;
+							
+					end case;
+
 					
 				when others => null; -- CS
 			end case;

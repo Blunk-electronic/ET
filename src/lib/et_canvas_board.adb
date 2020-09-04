@@ -702,7 +702,7 @@ package body et_canvas_board is
 						when GDK_LC_d => -- GDK_D
 							verb := VERB_DRAW;
 							status_enter_noun;
-							
+
 						when GDK_LC_r =>
 							verb := VERB_ROUTE;
 							status_enter_noun;
