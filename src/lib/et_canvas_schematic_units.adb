@@ -37,6 +37,7 @@
 
 with ada.text_io;					use ada.text_io;
 with et_general;					use et_general;
+with et_geometry;					use et_geometry;
 with et_symbols;					use et_symbols;
 with et_devices;					use et_devices;
 with et_schematic;					use et_schematic;
@@ -316,7 +317,7 @@ package body et_canvas_schematic_units is
 			unit			=> element (selected_unit),
 			log_threshold	=> log_threshold + 1);
 
-		-- clear list of selected units:
+		-- remove selected unit from list of selected units:
 		delete (selected_units, selected_unit);
 		
 		reset_request_clarification;
@@ -327,26 +328,61 @@ package body et_canvas_schematic_units is
 	
 
 -- MOVE UNIT
-	
-	procedure move (
-		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		unit			: in type_selected_unit; -- device/unit
-		log_threshold	: in type_log_level)
-	is 
-		su : type_selected_unit := unit;		
-	begin
-		-- 		delete_unit (module_cursor, su, log_threshold);
-		null;
-		-- NOTE: su has been modified !
-	end move;
 
-	
-	procedure move_unit (point : in type_point) is 
-		use et_schematic_ops.units;
+	procedure reset_unit is 
 		use pac_selected_units;
-		unit_cursor : pac_selected_units.cursor;
 	begin
-		log (text => "moving unit ...", level => log_threshold);
+		unit := (others => <>);
+
+		clear (selected_units);
+		selected_unit := pac_selected_units.no_element;
+	end reset_unit;
+	
+	procedure finalize_move (
+		destination		: in type_point;
+		log_threshold	: in type_log_level)
+	is
+		use pac_selected_units;
+		su : type_selected_unit;
+
+		use et_schematic.type_devices;
+		use et_schematic.type_units;
+	begin
+		log (text => "finalizing move ...", level => log_threshold);
+		log_indentation_up;
+
+		if selected_unit /= pac_selected_units.no_element then
+
+			su := element (selected_unit);
+			
+			move_unit (
+				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+				device_name		=> key (su.device),
+				unit_name		=> key (su.unit),
+				coordinates		=> ABSOLUTE,
+				sheet			=> current_active_sheet,
+				point			=> destination,
+				log_threshold	=> log_threshold);
+
+		else
+			log (text => "nothing to do", level => log_threshold);
+		end if;
+			
+		log_indentation_down;
+
+		-- remove selected unit from list of selected units:
+		-- 		delete (selected_units, selected_unit);
+
+		set_status (status_click_left & "move unit." & status_hint_for_abort);
+		
+		reset_unit;
+	end finalize_move;
+	
+	
+	procedure find_units (point : in type_point) is 
+		use pac_selected_units;
+	begin
+		log (text => "locating units ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- Collect all units in the vicinity of the given point:
@@ -360,15 +396,12 @@ package body et_canvas_schematic_units is
 		case length (selected_units) is
 			when 0 =>
 				reset_request_clarification;
+				reset_unit;
 				
 			when 1 =>
-				unit_cursor := selected_units.first;
-			
-				move (
-					module_cursor	=> current_active_module,
-					unit			=> element (unit_cursor),
-					log_threshold	=> log_threshold + 1);
-
+				unit.being_moved := true;
+				selected_unit := selected_units.first;
+				
 				reset_request_clarification;
 				set_status (status_click_left & "move unit." & status_hint_for_abort);
 				
@@ -381,29 +414,23 @@ package body et_canvas_schematic_units is
 		end case;
 		
 		log_indentation_down;
-	end move_unit;
+	end find_units;
 
 
-	procedure move_selected_unit is
-		use et_schematic_ops.units;
-		use pac_selected_units;
-	begin
-		log (text => "moving unit after clarification ...", level => log_threshold);
-		log_indentation_up;
-
-		move (
-			module_cursor	=> current_active_module,
-			unit			=> element (selected_unit),
-			log_threshold	=> log_threshold + 1);
-
-		-- clear list of selected units:
-		delete (selected_units, selected_unit);
-		
-		reset_request_clarification;
-		set_status (status_click_left & "move unit." & status_hint_for_abort);
-		
-		log_indentation_down;
-	end move_selected_unit;
+-- 	procedure move_selected_unit is
+-- 		use et_schematic_ops.units;
+-- 		use pac_selected_units;
+-- 	begin
+-- 		log (text => "moving unit after clarification ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		unit.being_moved := true;
+-- 		
+-- 		reset_request_clarification;
+-- -- 		set_status (status_click_left & "move unit." & status_hint_for_abort);
+-- 		
+-- 		log_indentation_down;
+-- 	end move_selected_unit;
 
 	
 end et_canvas_schematic_units;

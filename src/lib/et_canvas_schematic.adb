@@ -824,18 +824,45 @@ package body et_canvas_schematic is
 		
 					case noun is
 						when NOUN_UNIT =>
-							-- Set the tool being used for moving the unit:
-							unit.tool := KEYBOARD;
-							
-							if not clarification_pending then
-								move_unit (cursor_main.position);
+							if not unit.being_moved then
+								
+								-- Set the tool being used for moving the unit:
+								unit.tool := KEYBOARD;
+								
+								if not clarification_pending then
+									find_units (cursor_main.position);
+								else
+									--move_selected_unit;
+									unit.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
 							else
-								move_selected_unit;
-							end if;
+								finalize_move (
+									destination		=> cursor_main.position,
+									log_threshold	=> log_threshold + 1);
 
+							end if;
 
 						when others =>
 							null;
+							
+					end case;
+
+				-- If page down pressed, then the operator is clarifying:
+				when GDK_page_down =>
+					case noun is
+						when NOUN_UNIT =>
+							if clarification_pending then
+								clarify_unit;
+							end if;
+
+-- 						when NOUN_NET => 
+-- 							if clarification_pending then
+-- 								clarify_net_segment;
+-- 							end if;
+
+						when others => null;
 							
 					end case;
 
@@ -857,6 +884,7 @@ package body et_canvas_schematic is
 			
 			reset_request_clarification;
 			reset_net_route;
+			reset_unit;
 			status_enter_verb;
 		else	
 			case expect_entry is
@@ -1063,9 +1091,11 @@ package body et_canvas_schematic is
 							unit.tool := MOUSE;
 							
 							if not clarification_pending then
-								move_unit (point);
+								find_units (point);
 							else
-								move_selected_unit;
+								--move_selected_unit;
+								unit.being_moved := true;
+								reset_request_clarification;
 							end if;
 
 						when others =>

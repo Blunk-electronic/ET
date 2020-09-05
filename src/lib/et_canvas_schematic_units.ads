@@ -47,7 +47,7 @@ with et_general;					use et_general;
 with et_project.modules;			use et_project.modules;
 with et_schematic;
 with et_schematic_ops;				use et_schematic_ops;
-with et_schematic_ops.units;
+with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_string_processing;			use et_string_processing;
 
 package et_canvas_schematic_units is
@@ -100,20 +100,33 @@ package et_canvas_schematic_units is
 	type type_unit is record
 		being_moved	: boolean := false;
 		tool		: type_tool := MOUSE;
-		position	: type_point;
 	end record;
 
 	unit : type_unit;
+
+	-- This procedure:
+	-- - Clears list of selected units.
+	-- - Sets global variable selected_unit to no_element so that procedure highlight_selection
+	--   no longer highlights the unit.
+	-- - resets global variable "unit" to its default values
+	procedure reset_unit;
+
+	-- Assigns the given destination to the selected_unit:
+	procedure finalize_move (
+		destination		: in type_point;
+		log_threshold	: in type_log_level);
 	
-	-- Moves a unit in the vicinity of given point.
+	-- Locates all units in the vicinity of given point.
 	-- If more than one unit near point found, then it sets the
 	-- cursor selected_unit to the first unit and requests
 	-- for clarification.
-	procedure move_unit (point : in type_point);
+	-- If there is only one unite, sets global variable selected_unit accordingly.
+	-- If there is no unit, then selected_unit is set to no_element.
+	procedure find_units (point : in type_point);
 
-	-- Moves the unit being pointed at by cursor selected_unit.
-	-- Call this procedure after a clarification.
-	procedure move_selected_unit;
+-- 	-- Moves the unit being pointed at by cursor selected_unit.
+-- 	-- Call this procedure after a clarification.
+-- 	procedure move_selected_unit;
 	
 end et_canvas_schematic_units;
 
