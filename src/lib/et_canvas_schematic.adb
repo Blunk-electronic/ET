@@ -635,6 +635,7 @@ package body et_canvas_schematic is
 
 		procedure delete is begin
 			case key is
+				-- EVALUATE KEY FOR NOUN:
 				when GDK_LC_u =>
 					noun := NOUN_UNIT;
 					
@@ -652,7 +653,7 @@ package body et_canvas_schematic is
 						& status_press_space
 						& "to delete net segment." & status_hint_for_abort);
 
-					
+				-- If space pressed, then the operator wishes to operate via keyboard:	
 				when GDK_Space =>
 					case noun is
 						when NOUN_UNIT =>
@@ -674,7 +675,7 @@ package body et_canvas_schematic is
 							
 					end case;
 
-					
+				-- If page down pressed, then the operator is clarifying:
 				when GDK_page_down =>
 					case noun is
 						when NOUN_UNIT =>
@@ -698,6 +699,7 @@ package body et_canvas_schematic is
 
 		procedure draw is begin
 			case key is
+				-- EVALUATE KEY FOR NOUN:
 				when GDK_LC_n =>
 					noun := NOUN_NET;
 					
@@ -708,6 +710,7 @@ package body et_canvas_schematic is
 					
 					reset_net_route;
 
+				-- If space pressed, then the operator wishes to operate via keyboard:
 				when GDK_Space =>
 					case noun is
 						when NOUN_NET =>
@@ -788,6 +791,8 @@ package body et_canvas_schematic is
 						when others => null;
 					end case;
 
+				-- If B pressed, then a bend style is being selected.
+				-- this affects only certain modes and is ignored otherwise:
 				when GDK_LC_b =>
 					case noun is
 						when NOUN_NET =>
@@ -804,6 +809,7 @@ package body et_canvas_schematic is
 
 		procedure move is begin
 			case key is
+				-- EVALUATE KEY FOR NOUN:
 				when GDK_LC_u =>
 					noun := NOUN_UNIT;
 
@@ -812,10 +818,15 @@ package body et_canvas_schematic is
 						& status_press_space
 						& "to move unit." & status_hint_for_abort);
 
-					
+				-- If space pressed then the operator wishes to operate
+				-- by keyboard:
 				when GDK_Space =>
+		
 					case noun is
 						when NOUN_UNIT =>
+							-- Set the tool being used for moving the unit:
+							unit.tool := KEYBOARD;
+							
 							if not clarification_pending then
 								move_unit (cursor_main.position);
 							else
@@ -847,8 +858,7 @@ package body et_canvas_schematic is
 			reset_request_clarification;
 			reset_net_route;
 			status_enter_verb;
-		else
-	
+		else	
 			case expect_entry is
 				when EXP_VERB =>
 					--put_line ("VERB entered");
@@ -862,7 +872,8 @@ package body et_canvas_schematic is
 					-- As long as no valid noun has been entered
 					-- display the default noun:
 					noun := noun_default;
-					
+
+					-- EVALUATE KEY FOR VERB:
 					case key is
 						when GDK_Delete =>
 							verb := VERB_DELETE;
@@ -1048,6 +1059,9 @@ package body et_canvas_schematic is
 
 					case noun is
 						when NOUN_UNIT =>
+							-- Set the tool being used for moving the unit:
+							unit.tool := MOUSE;
+							
 							if not clarification_pending then
 								move_unit (point);
 							else
