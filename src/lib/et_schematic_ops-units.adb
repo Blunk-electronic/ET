@@ -197,13 +197,17 @@ package body et_schematic_ops.units is
 				begin
 					case coordinates is
 						when ABSOLUTE =>
-							unit.position := to_position (point, type_sheet (sheet));
+							-- build the new position while preserving rotation:
+							unit.position := to_position (
+								point		=> point, 
+								sheet		=> type_sheet (sheet),
+								rotation	=> rot (unit.position));
 
 						when RELATIVE =>
 							move (
 								position	=> unit.position,
-								offset		=> to_position_relative (point, sheet)
-								);
+								offset		=> to_position_relative (point, sheet));
+								-- rotation remains as it is
 					end case;
 
 					-- store new unit position
