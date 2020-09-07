@@ -356,7 +356,11 @@ package body et_canvas_schematic_nets is
 					log_threshold	=> log_threshold + 1);
 
 				reset_request_clarification;
-				set_status (status_click_left & "delete net segment." & status_hint_for_abort);
+				
+				set_status (status_click_left 
+					& "or "
+					& status_press_space
+					& "to delete net segment." & status_hint_for_abort);
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
@@ -389,7 +393,7 @@ package body et_canvas_schematic_nets is
 		-- show the selected segment in the status bar
 		s := element (selected_segment).segment;
 
-		set_status (to_string (s));
+		set_status (to_string (s) & ". " & status_next_object_clarification);
 	end clarify_net_segment;
 
 	
@@ -409,7 +413,11 @@ package body et_canvas_schematic_nets is
 		delete (selected_segments, selected_segment);
 		
 		reset_request_clarification;
-		set_status (status_click_left & "delete net segment." & status_hint_for_abort);
+		
+		set_status (status_click_left 
+			& "or "
+			& status_press_space
+			& "to delete net segment." & status_hint_for_abort);
 		
 		log_indentation_down;
 	end delete_selected_net_segment;

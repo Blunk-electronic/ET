@@ -148,7 +148,9 @@ package body et_canvas_schematic_units is
 		-- show the selected unit in the status bar
 		u := element (selected_unit).unit;
 	
-		set_status ("unit " & to_string (u));
+		set_status ("selected unit " & to_string (u) 
+			& ". " & status_next_object_clarification);
+		
 	end clarify_unit;
 
 
@@ -292,7 +294,11 @@ package body et_canvas_schematic_units is
 					log_threshold	=> log_threshold + 1);
 
 				reset_request_clarification;
-				set_status (status_click_left & "delete unit." & status_hint_for_abort);
+
+				set_status (status_click_left 
+					& "or "
+					& status_press_space
+					& "to delete unit." & status_hint_for_abort);
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
@@ -321,7 +327,11 @@ package body et_canvas_schematic_units is
 		delete (selected_units, selected_unit);
 		
 		reset_request_clarification;
-		set_status (status_click_left & "delete unit." & status_hint_for_abort);
+		
+		set_status (status_click_left
+			& "or "
+			& status_press_space
+			& "to delete unit." & status_hint_for_abort);
 		
 		log_indentation_down;
 	end delete_selected_unit;
@@ -370,10 +380,10 @@ package body et_canvas_schematic_units is
 			
 		log_indentation_down;
 
-		-- remove selected unit from list of selected units:
-		-- 		delete (selected_units, selected_unit);
-
-		set_status (status_click_left & "move unit." & status_hint_for_abort);
+		set_status (status_click_left 
+			& "or "
+			& status_press_space
+			& "to move unit." & status_hint_for_abort);
 		
 		reset_unit;
 	end finalize_move;
@@ -403,7 +413,11 @@ package body et_canvas_schematic_units is
 				selected_unit := selected_units.first;
 				
 				reset_request_clarification;
-				set_status (status_click_left & "move unit." & status_hint_for_abort);
+				
+				set_status (status_click_left 
+					& "or "
+					& status_press_space
+					& "to move unit." & status_hint_for_abort);
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);

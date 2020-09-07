@@ -118,6 +118,11 @@ package pac_canvas is
 	status_end_point			: constant string := "end point";
 	status_set_end_point		: constant string := "to set end point.";
 	status_set_start_point		: constant string := "to set start point.";
+
+	status_next_object_clarification : constant string := 
+		"For next object click RIGHT or press page-down.";
+		--& " Confirm selection with LEFT click or SPACE key.";
+
 	
 	box_toolbars				: gtk_hbox;
 	toolbar_left, toolbar_right	: gtk_toolbar;
