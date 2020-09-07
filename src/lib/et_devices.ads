@@ -254,7 +254,8 @@ package et_devices is
 
 	unit_name_length_max : constant natural := 50;	
 	-- CS unit_name_characters, length check, character check
-	package type_unit_name is new generic_bounded_length (unit_name_length_max); use type_unit_name;
+	package type_unit_name is new generic_bounded_length (unit_name_length_max); -- CS rename to pac_unit_name
+	use type_unit_name;
 
 	unit_name_default : constant type_unit_name.bounded_string := type_unit_name.to_bounded_string ("");
 	

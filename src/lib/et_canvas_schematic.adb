@@ -258,10 +258,10 @@ package body et_canvas_schematic is
 		use pac_selected_segments;
 	begin
 		case noun is
-			when NOUN_UNIT =>
-				if selected_unit /= pac_selected_units.no_element then
-					draw_selected_unit (self, in_area, context, element (selected_unit));
-				end if;
+-- 			when NOUN_UNIT =>
+-- 				if selected_unit /= pac_selected_units.no_element then
+-- 					draw_selected_unit (self, in_area, context, element (selected_unit));
+-- 				end if;
 
 			when NOUN_NET =>
 				if selected_segment /= pac_selected_segments.no_element then
@@ -949,8 +949,17 @@ package body et_canvas_schematic is
 				case noun is
 					when NOUN_NET =>
 						if net_route.being_drawn then
-							null;
-							--put_line ("drawing net segment" & to_string (point));
+							redraw;
+						end if;
+
+
+					when others => null;
+				end case;
+
+			when VERB_MOVE =>
+				case noun is
+					when NOUN_UNIT =>
+						if unit.being_moved then
 							redraw;
 						end if;
 

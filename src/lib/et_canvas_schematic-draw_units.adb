@@ -62,6 +62,7 @@ procedure draw_units (
 	sch_placeholder_purpose : et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE);
 
 	unit_rotation : type_rotation;
+
 	
 -- 	-- This function returns true if the given placeholder has been moved from the
 -- 	-- default position and rotation or if the alignment has been changed:
@@ -97,6 +98,31 @@ procedure draw_units (
 -- 
 -- 		return result;
 -- 	end moved_by_operator;
+
+	-- Returns true if the given device and unit are selected.
+	function is_selected (
+		d : in et_schematic.type_devices.cursor;
+		u : in et_schematic.type_units.cursor)
+		return boolean is
+		use pac_selected_units;
+		use et_devices;
+		use type_unit_name;
+	begin
+		-- If there are no selected units at all, then there is nothing to do:
+		if is_empty (selected_units) then
+			return false;
+		else
+			-- Compare given device and unit name with selected unit:
+			if key (d) = key (element (selected_unit).device) and then
+				key (u) = key (element (selected_unit).unit) then
+				-- CS: Improvement: compare cursors directly ?
+				
+				return true;
+			else
+				return false;
+			end if;
+		end if;
+	end is_selected;
 	
 	procedure query_devices (device_cursor : in et_schematic.type_devices.cursor) is
 		
@@ -105,6 +131,8 @@ procedure draw_units (
 			element (device_cursor).model;	-- ../libraries/devices/transistor/pnp.dev
 
 		unit_position : type_point; -- only x and y relevant
+
+		brightness : type_brightness := NORMAL;
 		
 		procedure locate_symbol (unit_cursor : in et_devices.type_unit_cursors) is
 			use et_devices;
@@ -141,7 +169,9 @@ procedure draw_units (
 
 						sch_placeholder_name	=> sch_placeholder_name,
 						sch_placeholder_value	=> sch_placeholder_value,
-						sch_placeholder_purpose => sch_placeholder_purpose
+						sch_placeholder_purpose => sch_placeholder_purpose,
+
+						brightness		=> brightness
 						);
 					
 				when INT =>
@@ -167,7 +197,9 @@ procedure draw_units (
 
 						sch_placeholder_name	=> sch_placeholder_name,
 						sch_placeholder_value	=> sch_placeholder_value,
-						sch_placeholder_purpose => sch_placeholder_purpose
+						sch_placeholder_purpose => sch_placeholder_purpose,
+
+						brightness		=> brightness						
 						);
 			end case;
 		end locate_symbol;
@@ -175,15 +207,48 @@ procedure draw_units (
 		procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
 			use et_devices;
 			use et_symbols;
+			
 			device_cursor_lib : type_devices.cursor;
 		begin
 			-- we want to draw only those units which are on the active sheet:
 			if element (unit_cursor).position.sheet = current_active_sheet then
+
+				-- get the name of the unit
 				unit_name := key (unit_cursor);
-				unit_position := type_point (element (unit_cursor).position);
-				unit_rotation := rot (element (unit_cursor).position);
 				--put_line (to_string (unit_name));
 
+				-- Get the position of the unit (as it is according to the module database).
+				-- If the unit is selected and being moved the the position
+				-- will be overwritten by the position of the mouse or the cursor.
+				unit_position := type_point (element (unit_cursor).position);
+
+				-- The default brightness is NORMAL. If the unit is selected then
+				-- the brightness will be increased:
+				brightness := NORMAL;
+				
+				if is_selected (device_cursor, unit_cursor) then
+
+					-- increase brightness
+					brightness := BRIGHT;
+
+					-- overwrite position
+					if unit.being_moved then
+					
+						case unit.tool is
+							when MOUSE =>
+								unit_position := self.snap_to_grid (self.mouse_position);
+								
+							when KEYBOARD =>
+								unit_position := cursor_main.position;
+						end case;
+					end if;
+
+				end if;
+
+				-- get the rotation of the unit
+				unit_rotation := rot (element (unit_cursor).position);
+
+				
 				-- Get a copy of the placeholders of the unit:
 				if element (unit_cursor).appearance = PCB then
 					sch_placeholder_name := element (unit_cursor).name;
