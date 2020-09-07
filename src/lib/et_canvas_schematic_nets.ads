@@ -41,6 +41,7 @@ with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_general;					use et_general;
+with et_canvas_general;				use et_canvas_general;
 with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
@@ -115,6 +116,13 @@ package et_canvas_schematic_nets is
 		log_threshold	: in type_log_level)
 		return pac_selected_segments.list;
 
+
+	status_delete : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete net segment." 
+		& status_hint_for_abort;
 	
 	-- Deletes a net segment in the vicinity of given point.
 	-- If more than one segment near point found, then it sets the

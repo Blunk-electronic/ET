@@ -254,7 +254,7 @@ package body et_canvas_schematic_units is
 		log_indentation_down;				
 	end delete_unit;
 	
-	procedure delete (
+	procedure finalize_delete (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		unit			: in type_selected_unit; -- device/unit
 		log_threshold	: in type_log_level)
@@ -263,7 +263,7 @@ package body et_canvas_schematic_units is
 	begin
 		delete_unit (module_cursor, su, log_threshold);
 		-- NOTE: su has been modified !
-	end delete;
+	end finalize_delete;
 	
 	procedure delete_unit (point : in type_point) is 
 		use et_schematic_ops.units;
@@ -288,17 +288,14 @@ package body et_canvas_schematic_units is
 			when 1 =>
 				unit_cursor := selected_units.first;
 			
-				delete (
+				finalize_delete (
 					module_cursor	=> current_active_module,
 					unit			=> element (unit_cursor),
 					log_threshold	=> log_threshold + 1);
 
 				reset_request_clarification;
 
-				set_status (status_click_left 
-					& "or "
-					& status_press_space
-					& "to delete unit." & status_hint_for_abort);
+				set_status (status_delete);
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
@@ -318,7 +315,7 @@ package body et_canvas_schematic_units is
 		log (text => "deleting unit after clarification ...", level => log_threshold);
 		log_indentation_up;
 
-		delete (
+		finalize_delete (
 			module_cursor	=> current_active_module,
 			unit			=> element (selected_unit),
 			log_threshold	=> log_threshold + 1);
@@ -328,10 +325,7 @@ package body et_canvas_schematic_units is
 		
 		reset_request_clarification;
 		
-		set_status (status_click_left
-			& "or "
-			& status_press_space
-			& "to delete unit." & status_hint_for_abort);
+		set_status (status_delete);
 		
 		log_indentation_down;
 	end delete_selected_unit;
@@ -380,10 +374,7 @@ package body et_canvas_schematic_units is
 			
 		log_indentation_down;
 
-		set_status (status_click_left 
-			& "or "
-			& status_press_space
-			& "to move unit." & status_hint_for_abort);
+		set_status (status_move);
 		
 		reset_unit;
 	end finalize_move;
@@ -414,10 +405,7 @@ package body et_canvas_schematic_units is
 				
 				reset_request_clarification;
 				
-				set_status (status_click_left 
-					& "or "
-					& status_press_space
-					& "to move unit." & status_hint_for_abort);
+				set_status (status_move);
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);

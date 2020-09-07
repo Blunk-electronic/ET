@@ -62,7 +62,7 @@ with et_schematic;
 with et_frames;
 
 
-with et_canvas_general;
+with et_canvas_general;				use et_canvas_general;
 with et_canvas_primitive_draw_ops;
 with et_string_processing;			use et_string_processing;
 

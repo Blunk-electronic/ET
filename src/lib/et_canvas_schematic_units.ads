@@ -44,6 +44,7 @@ with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
 with et_general;					use et_general;
+with et_canvas_general;				use et_canvas_general;
 with et_project.modules;			use et_project.modules;
 with et_schematic;
 with et_schematic_ops;				use et_schematic_ops;
@@ -80,6 +81,13 @@ package et_canvas_schematic_units is
 
 
 -- DELETE UNIT
+
+	status_delete : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete unit." 
+		& status_hint_for_abort;
 	
 	-- Deletes a unit in the vicinity of given point.
 	-- If more than one unit near point found, then it sets the
@@ -103,6 +111,13 @@ package et_canvas_schematic_units is
 	end record;
 
 	unit : type_unit;
+
+	status_move : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move unit." 
+		& status_hint_for_abort;
 
 	-- This procedure:
 	-- - Clears list of selected units.

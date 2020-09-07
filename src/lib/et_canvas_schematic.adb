@@ -639,19 +639,12 @@ package body et_canvas_schematic is
 				when GDK_LC_u =>
 					noun := NOUN_UNIT;
 					
-					set_status (status_click_left 
-						& "or "
-						& status_press_space
-						& "to delete unit." & status_hint_for_abort);
-
+					set_status (et_canvas_schematic_units.status_delete);
 					
 				when GDK_LC_n =>
 					noun := NOUN_NET;
 					
-					set_status (status_click_left 
-						& "or "
-						& status_press_space
-						& "to delete net segment." & status_hint_for_abort);
+					set_status (et_canvas_schematic_nets.status_delete);
 
 				-- If space pressed, then the operator wishes to operate via keyboard:	
 				when GDK_Space =>
@@ -813,10 +806,7 @@ package body et_canvas_schematic is
 				when GDK_LC_u =>
 					noun := NOUN_UNIT;
 
-					set_status (status_click_left 
-						& "or "
-						& status_press_space
-						& "to move unit." & status_hint_for_abort);
+					set_status (status_move);
 
 				-- If space pressed then the operator wishes to operate
 				-- by keyboard:

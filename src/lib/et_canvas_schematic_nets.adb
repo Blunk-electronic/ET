@@ -357,10 +357,7 @@ package body et_canvas_schematic_nets is
 
 				reset_request_clarification;
 				
-				set_status (status_click_left 
-					& "or "
-					& status_press_space
-					& "to delete net segment." & status_hint_for_abort);
+				set_status (status_delete);
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
@@ -414,10 +411,7 @@ package body et_canvas_schematic_nets is
 		
 		reset_request_clarification;
 		
-		set_status (status_click_left 
-			& "or "
-			& status_press_space
-			& "to delete net segment." & status_hint_for_abort);
+		set_status (status_delete);
 		
 		log_indentation_down;
 	end delete_selected_net_segment;
