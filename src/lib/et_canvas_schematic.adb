@@ -828,6 +828,8 @@ package body et_canvas_schematic is
 								end if;
 								
 							else
+								-- Finally assign the cursor position to the
+								-- currently selected unit:
 								finalize_move (
 									destination		=> cursor_main.position,
 									log_threshold	=> log_threshold + 1);
@@ -1077,17 +1079,27 @@ package body et_canvas_schematic is
 
 					case noun is
 						when NOUN_UNIT =>
-							-- Set the tool being used for moving the unit:
-							unit.tool := MOUSE;
-							
-							if not clarification_pending then
-								find_units (point);
-							else
-								--move_selected_unit;
-								unit.being_moved := true;
-								reset_request_clarification;
-							end if;
+							if not unit.being_moved then
+								
+								-- Set the tool being used for moving the unit:
+								unit.tool := MOUSE;
+								
+								if not clarification_pending then
+									find_units (point);
+								else
+									unit.being_moved := true;
+									reset_request_clarification;
+								end if;
 
+							else
+								-- Finally assign the pointer position to the
+								-- currently selected unit:
+								finalize_move (
+									destination		=> snap_to_grid (self, point),
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+							
 						when others =>
 							null;
 							

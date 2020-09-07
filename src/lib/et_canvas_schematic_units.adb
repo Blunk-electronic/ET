@@ -341,7 +341,9 @@ package body et_canvas_schematic_units is
 		clear (selected_units);
 		selected_unit := pac_selected_units.no_element;
 	end reset_unit;
-	
+
+	-- Assigns the final position after the move to the selected unit.
+	-- Resets the global variable "unit".
 	procedure finalize_move (
 		destination		: in type_point;
 		log_threshold	: in type_log_level)
