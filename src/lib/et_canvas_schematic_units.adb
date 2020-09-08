@@ -300,11 +300,7 @@ package body et_canvas_schematic_units is
 					module_cursor	=> current_active_module,
 					unit			=> element (unit_cursor),
 					log_threshold	=> log_threshold + 1);
--- 
--- 				reset_request_clarification;
--- 
--- 				set_status (status_delete);
--- 				
+
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
@@ -326,13 +322,6 @@ package body et_canvas_schematic_units is
 			module_cursor	=> current_active_module,
 			unit			=> element (selected_unit),
 			log_threshold	=> log_threshold + 1);
-
-		-- remove selected unit from list of selected units:
--- 		delete (proposed_units, selected_unit);
-		
--- 		reset_request_clarification;
--- 		
--- 		set_status (status_delete);
 		
 		log_indentation_down;
 	end delete_selected_unit;
@@ -342,9 +331,7 @@ package body et_canvas_schematic_units is
 
 	procedure reset_unit is begin
 		unit := (others => <>);
-
-		clear (proposed_units);
-		selected_unit := pac_proposed_units.no_element;
+		clear_proposed_units;
 	end reset_unit;
 
 	-- Assigns the final position after the move to the selected unit.
@@ -422,23 +409,6 @@ package body et_canvas_schematic_units is
 		log_indentation_down;
 	end find_units;
 
-
--- 	procedure move_selected_unit is
--- 		use et_schematic_ops.units;
--- 		use pac_proposed_units;
--- 	begin
--- 		log (text => "moving unit after clarification ...", level => log_threshold);
--- 		log_indentation_up;
--- 
--- 		unit.being_moved := true;
--- 		
--- 		reset_request_clarification;
--- -- 		set_status (status_click_left & "move unit." & status_hint_for_abort);
--- 		
--- 		log_indentation_down;
--- 	end move_selected_unit;
-
-	
 end et_canvas_schematic_units;
 
 -- Soli Deo Gloria

@@ -808,7 +808,7 @@ package body et_canvas_schematic is
 				when GDK_LC_u =>
 					noun := NOUN_UNIT;
 
-					set_status (status_move);
+					set_status (et_canvas_schematic_units.status_move);
 
 				-- If space pressed then the operator wishes to operate
 				-- by keyboard:

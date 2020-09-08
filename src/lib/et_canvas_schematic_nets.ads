@@ -120,6 +120,8 @@ package et_canvas_schematic_nets is
 		return pac_proposed_segments.list;
 
 
+-- DELETE NET SEGMENT
+	
 	status_delete : constant string := 
 		status_click_left 
 		& "or "
@@ -139,6 +141,9 @@ package et_canvas_schematic_nets is
 	-- Deletes the net segment being pointed at by cursor selected_segment.
 	procedure delete_selected_net_segment;
 
+
+-- DRAW NET SEGMENT
+	
 	-- When a net route is being drawn, then this global variable
 	-- shall be used:
 	net_route : et_schematic.pac_shapes.type_route_live;
@@ -160,6 +165,30 @@ package et_canvas_schematic_nets is
 		point			: in type_point;
 		log_threshold	: in type_log_level)
 		return boolean;
+
+
+-- MOVE NET SEGMENT
+
+	type type_segment is record
+		being_moved	: boolean := false;
+		tool		: type_tool := MOUSE;
+	end record;
+
+	segment : type_segment;
+
+	status_move : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move net segment." 
+		& status_hint_for_abort;
+
+	-- This procedure:
+	-- - Clears list of selected units.
+	-- - Sets global variable selected_unit to no_element so that procedure highlight_selection
+	--   no longer highlights the unit.
+	-- - resets global variable "unit" to its default values
+-- 	procedure reset_unit;
 	
 end et_canvas_schematic_nets;
 
