@@ -35,6 +35,8 @@
 --   history of changes:
 --
 
+with ada.exceptions;
+
 separate (et_canvas_schematic)
 
 procedure draw_nets (
@@ -49,6 +51,34 @@ procedure draw_nets (
 
 	use pac_draw_misc;
 
+	function is_selected (
+		s : in type_net_segments.cursor)
+		return boolean is
+		use pac_proposed_segments;
+	begin
+		if is_empty (proposed_segments) then
+			return false;
+		else
+			if selected_segment /= pac_proposed_segments.no_element then
+				if s = element (selected_segment).segment then
+					return true;
+				else
+					return false;
+				end if;
+			else
+				return false;
+			end if;
+		end if;
+
+-- 		exception
+-- 			when event: others =>
+-- 				log_indentation_reset;
+-- 				log (text => "ABC", console => true);
+-- 				log (text => ada.exceptions.exception_information (event), console => true);
+-- 				raise;
+		
+	end is_selected;
+	
 	procedure query_nets (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
@@ -114,6 +144,10 @@ procedure draw_nets (
 						-- set line width for net segments:
 						set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
 
+						if is_selected (segment_cursor) then
+							set_color_nets (context.cr, BRIGHT);
+						end if;
+						
 						-- draw the net segment:
 						draw_line (
 							area		=> in_area,
@@ -138,6 +172,8 @@ procedure draw_nets (
 
 						-- draw labels
 						type_net_labels.iterate (element (segment_cursor).labels, query_label'access);
+
+						set_color_nets (context.cr, NORMAL);
 						
 						next (segment_cursor);
 					end loop;

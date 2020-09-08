@@ -235,43 +235,45 @@ package body et_canvas_schematic is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
 		unit	: in type_selected_unit) is separate;
-
+	-- CS: not used currently
+	
 	-- Draws a single selected net segment and the net labels attached to it.
 	-- The net segment and the labels will be drawn highlighted.
-	procedure draw_selected_net_segment (
+	procedure draw_selected_net_segment ( 
 		self	: not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
 		segment	: in type_selected_segment) is separate;
+	-- CS: not used currently
 
-
-	-- Draws selected objects highlighted.
-	procedure highlight_selection (
-		self	: not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
-		context : in type_draw_context)
-	is
-		use et_schematic_ops.units;
-		use pac_selected_units;
-
-		use et_schematic_ops.nets;
-		use pac_selected_segments;
-	begin
-		case noun is
--- 			when NOUN_UNIT =>
--- 				if selected_unit /= pac_selected_units.no_element then
--- 					draw_selected_unit (self, in_area, context, element (selected_unit));
--- 				end if;
-
-			when NOUN_NET =>
-				if selected_segment /= pac_selected_segments.no_element then
-					draw_selected_net_segment (self, in_area, context, element (selected_segment));
-				end if;
-
-			when others => null; -- CS
-		end case;
-				
-	end highlight_selection;
+-- 	-- Draws selected objects highlighted.
+-- 	procedure highlight_selection (
+-- 		self	: not null access type_view;
+-- 		in_area	: in type_rectangle := no_rectangle;
+-- 		context : in type_draw_context)
+-- 	is
+-- 		use et_schematic_ops.units;
+-- 		use pac_selected_units;
+-- 
+-- 		use et_schematic_ops.nets;
+-- 		use pac_proposed_segments;
+-- 	begin
+-- 		case noun is
+-- -- 			when NOUN_UNIT =>
+-- -- 				if selected_unit /= pac_selected_units.no_element then
+-- -- 					draw_selected_unit (self, in_area, context, element (selected_unit));
+-- -- 				end if;
+-- 
+-- 			when NOUN_NET =>
+-- 				null;
+-- -- 				if selected_segment /= pac_proposed_segments.no_element then
+-- -- 					draw_selected_net_segment (self, in_area, context, element (selected_segment));
+-- -- 				end if;
+-- 
+-- 			when others => null; -- CS
+-- 		end case;
+-- 				
+-- 	end highlight_selection;
 
 	procedure draw_net_route_being_drawn (
 		self	: not null access type_view;
@@ -426,7 +428,7 @@ package body et_canvas_schematic is
 		
 		draw_submodules (self, area_shifted, context);
 
-		highlight_selection (self, area_shifted, context);
+		--highlight_selection (self, area_shifted, context);
 
 		draw_net_route_being_drawn (self, area_shifted, context);
 		

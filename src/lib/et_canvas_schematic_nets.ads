@@ -67,12 +67,14 @@ package et_canvas_schematic_nets is
 		segment	: type_net_segments.cursor;
 	end record;
 
-	package pac_selected_segments is new doubly_linked_lists (type_selected_segment);
+	package pac_proposed_segments is new doubly_linked_lists (type_selected_segment);
 
 	-- These variables are used by the GUI when the operator selects a segment:
-	selected_segments	: pac_selected_segments.list;
-	selected_segment	: pac_selected_segments.cursor;
+	proposed_segments	: pac_proposed_segments.list;
+	selected_segment	: pac_proposed_segments.cursor;
 
+	procedure clear_proposed_segments;
+	
 	-- Searches the module for an anonymous net with the lowest index available.
 	-- Example: If the module contains nets like N$2, N$4, N$5 and N$101 then
 	-- the lowest available name would be N$3.
@@ -83,23 +85,23 @@ package et_canvas_schematic_nets is
 	-- Returns the net name of the first segment in 
 	-- given list of net segments.
 	-- If the given list is empty then an empty net name will be returned.
-	function first_net (segments : in pac_selected_segments.list) 
+	function first_net (segments : in pac_proposed_segments.list) 
 		return type_net_name.bounded_string; -- RESET_N, MASTER_CLOCK
 	
 	-- Returns true if segments contains more than one segment:
-	function more_than_one (segments : in pac_selected_segments.list) return boolean;
+	function more_than_one (segments : in pac_proposed_segments.list) return boolean;
 
 	-- Tests if all given segments belong to the same net. 
 	-- Returns false if net names differ.
 	function all_belong_to_same_net (
-		segments	: in pac_selected_segments.list)
+		segments	: in pac_proposed_segments.list)
 		return boolean;
 
 	-- Tests if point sits between start and end point of any of the given segments.
 	-- Returns true in that case.
 	function between_start_and_end_point_of_sloping_segment (
 		point		: in type_point;
-		segments	: in pac_selected_segments.list)
+		segments	: in pac_proposed_segments.list)
 		return boolean;
 	
 	-- Deletes a selected segment of a net.
@@ -114,7 +116,7 @@ package et_canvas_schematic_nets is
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
-		return pac_selected_segments.list;
+		return pac_proposed_segments.list;
 
 
 	status_delete : constant string := 
@@ -130,7 +132,7 @@ package et_canvas_schematic_nets is
 	-- for clarification.
 	procedure delete_net_segment (point : in type_point);
 
-	-- Advances cursor selected_segment to next segment in list selected_segments.
+	-- Advances cursor selected_segment to next segment in list proposed_segments.
 	procedure clarify_net_segment;
 
 	-- Deletes the net segment being pointed at by cursor selected_segment.

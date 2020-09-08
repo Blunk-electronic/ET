@@ -45,7 +45,7 @@ procedure draw_selected_net_segment (
 
 	use pac_draw_misc;
 	use et_schematic_ops.nets;
-	use pac_selected_segments;
+	use pac_proposed_segments;
 
 	use et_colors;
 	use et_schematic;
