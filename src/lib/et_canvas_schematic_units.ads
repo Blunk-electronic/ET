@@ -62,19 +62,22 @@ package et_canvas_schematic_units is
 		unit	: et_schematic.type_units.cursor;
 	end record;
 
-	package pac_selected_units is new doubly_linked_lists (type_selected_unit);
+	package pac_proposed_units is new doubly_linked_lists (type_selected_unit);
+	use pac_proposed_units;
 
 	-- These variables are used by the GUI when the operator selects a unit:
-	selected_units	: pac_selected_units.list;
-	selected_unit	: pac_selected_units.cursor;
+	proposed_units	: pac_proposed_units.list;
+	selected_unit	: pac_proposed_units.cursor;
 
+	procedure clear_proposed_units;
+	
 	-- Collects all units in the vicinity of the given point:
 	function collect_units (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
-		return pac_selected_units.list;
+		return pac_proposed_units.list;
 
 	-- Advances cursor selected_unit to next unit in list selected_units.
 	procedure clarify_unit;

@@ -156,7 +156,14 @@ procedure draw_nets (
 							height		=> self.frame_height
 							);
 
-						-- draw junctions:
+						-- draw labels
+						type_net_labels.iterate (element (segment_cursor).labels, query_label'access);
+
+						set_color_nets (context.cr, NORMAL);
+
+						
+						-- Draw junctions.
+						-- There is no highlighting for junctions.
 						
 						-- at start point of segment:
 						if element (segment_cursor).junctions.start_point then
@@ -169,11 +176,6 @@ procedure draw_nets (
 							junction.center := element (segment_cursor).end_point;
 							draw_junction;
 						end if;
-
-						-- draw labels
-						type_net_labels.iterate (element (segment_cursor).labels, query_label'access);
-
-						set_color_nets (context.cr, NORMAL);
 						
 						next (segment_cursor);
 					end loop;

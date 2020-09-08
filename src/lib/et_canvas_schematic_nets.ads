@@ -68,7 +68,8 @@ package et_canvas_schematic_nets is
 	end record;
 
 	package pac_proposed_segments is new doubly_linked_lists (type_selected_segment);
-
+	use pac_proposed_segments;
+	
 	-- These variables are used by the GUI when the operator selects a segment:
 	proposed_segments	: pac_proposed_segments.list;
 	selected_segment	: pac_proposed_segments.cursor;

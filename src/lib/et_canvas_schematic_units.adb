@@ -48,15 +48,19 @@ package body et_canvas_schematic_units is
 
 	use et_canvas_schematic.pac_canvas;
 
+	procedure clear_proposed_units is begin
+		clear (proposed_units);
+		selected_unit := pac_proposed_units.no_element;
+	end clear_proposed_units;
+		
 	function collect_units (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
-		return pac_selected_units.list
+		return pac_proposed_units.list
 	is
-		use pac_selected_units;
-		result : pac_selected_units.list;
+		result : pac_proposed_units.list;
 
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
@@ -132,17 +136,16 @@ package body et_canvas_schematic_units is
 	procedure clarify_unit is
 		use et_schematic;
 		use et_schematic_ops.units;
-		use pac_selected_units;
 		u : type_units.cursor;
 	begin
 		-- On every call of this procedure we must advance from one
 		-- unit to the next in a circular manner. So if the end 
 		-- of the list is reached, then the cursor selected_unit
 		-- moves back to the start of the unit list.
-		if next (selected_unit) /= pac_selected_units.no_element then
+		if next (selected_unit) /= pac_proposed_units.no_element then
 			next (selected_unit);
 		else
-			selected_unit := selected_units.first;
+			selected_unit := proposed_units.first;
 		end if;
 
 		-- show the selected unit in the status bar
@@ -263,46 +266,51 @@ package body et_canvas_schematic_units is
 	begin
 		delete_unit (module_cursor, su, log_threshold);
 		-- NOTE: su has been modified !
+
+		reset_request_clarification;
+		
+		set_status (status_delete);
+		
+		clear_proposed_units;
 	end finalize_delete;
 	
 	procedure delete_unit (point : in type_point) is 
 		use et_schematic_ops.units;
-		use pac_selected_units;
-		unit_cursor : pac_selected_units.cursor;
+		unit_cursor : pac_proposed_units.cursor;
 	begin
 		log (text => "deleting unit ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- Collect all units in the vicinity of the given point:
-		selected_units := collect_units (
+		proposed_units := collect_units (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
 			catch_zone		=> catch_zone_default, -- CS should depend on current scale
 			log_threshold	=> log_threshold + 1);
 
 		-- evaluate the number of units found here:
-		case length (selected_units) is
+		case length (proposed_units) is
 			when 0 =>
 				reset_request_clarification;
 				
 			when 1 =>
-				unit_cursor := selected_units.first;
+				unit_cursor := proposed_units.first;
 			
 				finalize_delete (
 					module_cursor	=> current_active_module,
 					unit			=> element (unit_cursor),
 					log_threshold	=> log_threshold + 1);
-
-				reset_request_clarification;
-
-				set_status (status_delete);
-				
+-- 
+-- 				reset_request_clarification;
+-- 
+-- 				set_status (status_delete);
+-- 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
 
 				-- preselect the first unit
-				selected_unit := selected_units.first;
+				selected_unit := proposed_units.first;
 		end case;
 		
 		log_indentation_down;
@@ -310,7 +318,6 @@ package body et_canvas_schematic_units is
 
 	procedure delete_selected_unit is
 		use et_schematic_ops.units;
-		use pac_selected_units;
 	begin
 		log (text => "deleting unit after clarification ...", level => log_threshold);
 		log_indentation_up;
@@ -321,11 +328,11 @@ package body et_canvas_schematic_units is
 			log_threshold	=> log_threshold + 1);
 
 		-- remove selected unit from list of selected units:
-		delete (selected_units, selected_unit);
+-- 		delete (proposed_units, selected_unit);
 		
-		reset_request_clarification;
-		
-		set_status (status_delete);
+-- 		reset_request_clarification;
+-- 		
+-- 		set_status (status_delete);
 		
 		log_indentation_down;
 	end delete_selected_unit;
@@ -333,13 +340,11 @@ package body et_canvas_schematic_units is
 
 -- MOVE UNIT
 
-	procedure reset_unit is 
-		use pac_selected_units;
-	begin
+	procedure reset_unit is begin
 		unit := (others => <>);
 
-		clear (selected_units);
-		selected_unit := pac_selected_units.no_element;
+		clear (proposed_units);
+		selected_unit := pac_proposed_units.no_element;
 	end reset_unit;
 
 	-- Assigns the final position after the move to the selected unit.
@@ -348,7 +353,6 @@ package body et_canvas_schematic_units is
 		destination		: in type_point;
 		log_threshold	: in type_log_level)
 	is
-		use pac_selected_units;
 		su : type_selected_unit;
 
 		use et_schematic.type_devices;
@@ -357,7 +361,7 @@ package body et_canvas_schematic_units is
 		log (text => "finalizing move ...", level => log_threshold);
 		log_indentation_up;
 
-		if selected_unit /= pac_selected_units.no_element then
+		if selected_unit /= pac_proposed_units.no_element then
 
 			su := element (selected_unit);
 			
@@ -382,28 +386,26 @@ package body et_canvas_schematic_units is
 	end finalize_move;
 	
 	
-	procedure find_units (point : in type_point) is 
-		use pac_selected_units;
-	begin
+	procedure find_units (point : in type_point) is begin
 		log (text => "locating units ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- Collect all units in the vicinity of the given point:
-		selected_units := collect_units (
+		proposed_units := collect_units (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
 			catch_zone		=> catch_zone_default, -- CS should depend on current scale
 			log_threshold	=> log_threshold + 1);
 
 		-- evaluate the number of units found here:
-		case length (selected_units) is
+		case length (proposed_units) is
 			when 0 =>
 				reset_request_clarification;
 				reset_unit;
 				
 			when 1 =>
 				unit.being_moved := true;
-				selected_unit := selected_units.first;
+				selected_unit := proposed_units.first;
 				
 				reset_request_clarification;
 				
@@ -414,7 +416,7 @@ package body et_canvas_schematic_units is
 				set_request_clarification;
 
 				-- preselect the first unit
-				selected_unit := selected_units.first;
+				selected_unit := proposed_units.first;
 		end case;
 		
 		log_indentation_down;
@@ -423,7 +425,7 @@ package body et_canvas_schematic_units is
 
 -- 	procedure move_selected_unit is
 -- 		use et_schematic_ops.units;
--- 		use pac_selected_units;
+-- 		use pac_proposed_units;
 -- 	begin
 -- 		log (text => "moving unit after clarification ...", level => log_threshold);
 -- 		log_indentation_up;

@@ -43,9 +43,7 @@ package body et_canvas_schematic_nets is
 
 	use et_canvas_schematic.pac_canvas;
 
-	procedure clear_proposed_segments is
-		use pac_proposed_segments;
-	begin
+	procedure clear_proposed_segments is begin
 		clear (proposed_segments);
 		selected_segment := pac_proposed_segments.no_element;
 	end clear_proposed_segments;
@@ -86,7 +84,6 @@ package body et_canvas_schematic_nets is
 	function first_net (segments : in pac_proposed_segments.list) 
 		return type_net_name.bounded_string -- RESET_N, MASTER_CLOCK
 	is
-		use pac_proposed_segments;
 		seg : type_selected_segment;
 		c	: pac_proposed_segments.cursor;
 		net : type_net_name.bounded_string; -- to be returned
@@ -105,7 +102,6 @@ package body et_canvas_schematic_nets is
 	end first_net;
 
 	function more_than_one (segments : in pac_proposed_segments.list) return boolean is 
-		use pac_proposed_segments;
 	begin
 		if length (segments) > 1 then
 			return true;
@@ -121,7 +117,6 @@ package body et_canvas_schematic_nets is
 	is 
 		result : boolean := true;
 		
-		use pac_proposed_segments;
 		net_name : type_net_name.bounded_string;
 		net_names_differ : boolean := false;
 		
@@ -153,8 +148,6 @@ package body et_canvas_schematic_nets is
 		return boolean 
 	is 
 		result : boolean := false;
-		
-		use pac_proposed_segments;
 		
 		procedure query_segment (c : in pac_proposed_segments.cursor) is 
 			s : type_selected_segment := element (c);
@@ -252,7 +245,6 @@ package body et_canvas_schematic_nets is
 		log_threshold	: in type_log_level)
 		return pac_proposed_segments.list
 	is
-		use pac_proposed_segments;
 		result : pac_proposed_segments.list;
 
 		procedure query_nets (
@@ -342,7 +334,6 @@ package body et_canvas_schematic_nets is
 	
 	procedure delete_net_segment (point : in type_point) is 
 		use et_schematic_ops.nets;
-		use pac_proposed_segments;
 		segment_cursor : pac_proposed_segments.cursor;
 	begin
 		log (text => "deleting net segment ...", level => log_threshold);
@@ -383,7 +374,6 @@ package body et_canvas_schematic_nets is
 	procedure clarify_net_segment is
 		use et_schematic;
 		use et_schematic_ops.nets;
-		use pac_proposed_segments;
 		s : type_net_segments.cursor;
 	begin
 		-- On every call of this procedure we must advance from one
@@ -405,7 +395,6 @@ package body et_canvas_schematic_nets is
 	
 	procedure delete_selected_net_segment is
 		use et_schematic_ops.nets;
-		use pac_proposed_segments;
 	begin
 		log (text => "deleting net segment after clarification ...", level => log_threshold);
 		log_indentation_up;
@@ -437,7 +426,6 @@ package body et_canvas_schematic_nets is
 
 		use et_schematic;
 		use et_schematic_ops.nets;
-		use pac_proposed_segments;
 		segments_at_start_point : pac_proposed_segments.list;
 		segments_at_end_point	: pac_proposed_segments.list;
 
@@ -554,7 +542,6 @@ package body et_canvas_schematic_nets is
 		result : boolean := false;
 		
 		use et_schematic_ops.nets;
-		use pac_proposed_segments;
 		segments : pac_proposed_segments.list;
 
 		choose : constant string := "Choose another place for the junction !";

@@ -104,20 +104,24 @@ procedure draw_units (
 		d : in et_schematic.type_devices.cursor;
 		u : in et_schematic.type_units.cursor)
 		return boolean is
-		use pac_selected_units;
+		use pac_proposed_units;
 		use et_devices;
 		use type_unit_name;
 	begin
 		-- If there are no selected units at all, then there is nothing to do:
-		if is_empty (selected_units) then
+		if is_empty (proposed_units) then
 			return false;
 		else
-			-- Compare given device and unit name with selected unit:
-			if key (d) = key (element (selected_unit).device) and then
-				key (u) = key (element (selected_unit).unit) then
-				-- CS: Improvement: compare cursors directly ?
-				
-				return true;
+			if selected_unit /= pac_proposed_units.no_element then
+				-- Compare given device and unit name with selected unit:
+				if key (d) = key (element (selected_unit).device) and then
+					key (u) = key (element (selected_unit).unit) then
+					-- CS: Improvement: compare cursors directly ?
+					
+					return true;
+				else
+					return false;
+				end if;
 			else
 				return false;
 			end if;
