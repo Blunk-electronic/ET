@@ -123,13 +123,13 @@ package et_canvas_schematic_units is
 		& status_hint_for_abort;
 
 	-- This procedure:
-	-- - Clears list of selected units.
-	-- - Sets global variable selected_unit to no_element so that procedure highlight_selection
-	--   no longer highlights the unit.
+	-- - Clears list of proposed units.
+	-- - Sets global variable selected_unit to no_element.
 	-- - resets global variable "unit" to its default values
 	procedure reset_unit;
 
-	-- Assigns the given destination to the selected_unit:
+	-- Assigns the final position after the move to the selected unit.
+	-- Resets the global variable "unit".
 	procedure finalize_move (
 		destination		: in type_point;
 		log_threshold	: in type_log_level);

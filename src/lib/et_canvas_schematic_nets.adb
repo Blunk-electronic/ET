@@ -36,7 +36,8 @@
 --
 
 with ada.text_io;					use ada.text_io;
-
+with ada.strings;					use ada.strings;
+with et_geometry;					use et_geometry;
 with et_canvas_schematic;			use et_canvas_schematic;
 
 package body et_canvas_schematic_nets is
@@ -375,6 +376,7 @@ package body et_canvas_schematic_nets is
 		use et_schematic;
 		use et_schematic_ops.nets;
 		s : type_net_segments.cursor;
+		n : type_net_name.bounded_string;
 	begin
 		-- On every call of this procedure we must advance from one
 		-- segment to the next in a circular manner. So if the end 
@@ -389,7 +391,11 @@ package body et_canvas_schematic_nets is
 		-- show the selected segment in the status bar
 		s := element (selected_segment).segment;
 
-		set_status (to_string (s) & ". " & status_next_object_clarification);
+		-- get the name of the selected net
+		n := key (element (selected_segment).net);
+		
+		set_status ("net " & to_string (n) & space 
+			& to_string (s) & ". " & status_next_object_clarification);
 	end clarify_net_segment;
 
 	
@@ -578,6 +584,90 @@ package body et_canvas_schematic_nets is
 
 		return result;
 	end valid_for_net_segment;
+
+
+-- DRAG/MOVE NET SEGMENT
+
+	procedure reset_segment is begin
+		segment := (others => <>);
+		clear_proposed_segments;
+	end reset_segment;
+
+	
+	procedure finalize_drag (
+		destination		: in type_point;
+		log_threshold	: in type_log_level) is
+
+		net_name : type_net_name.bounded_string;
+		place : et_coordinates.type_position := to_position (segment.point_of_attack, current_active_sheet);
+	begin
+		log (text => "finalizing drag ...", level => log_threshold);
+		log_indentation_up;
+
+		if selected_segment /= pac_proposed_segments.no_element then
+
+			net_name := key (element (selected_segment).net);
+-- 			su := element (selected_unit);
+
+			drag_segment (
+				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+				net_name		=> net_name,
+				place			=> place,
+				coordinates		=> et_geometry.ABSOLUTE,
+				point			=> destination,
+				log_threshold	=> log_threshold + 1);
+
+
+		else
+			log (text => "nothing to do", level => log_threshold);
+		end if;
+			
+		log_indentation_down;
+
+		set_status (status_move);
+		
+		reset_segment;
+
+	end finalize_drag;
+
+	
+	procedure find_segments (point : in type_point) is 
+		use et_schematic_ops.nets;
+	begin
+		log (text => "locating net segments ...", level => log_threshold);
+		log_indentation_up;
+		
+		-- Collect all segments in the vicinity of the given point:
+		proposed_segments := collect_segments (
+			module			=> current_active_module,
+			place			=> to_position (point, current_active_sheet),
+			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			log_threshold	=> log_threshold + 1);
+
+		-- evaluate the number of segments found here:
+		case length (proposed_segments) is
+			when 0 =>
+				reset_request_clarification;
+				reset_segment;
+				
+			when 1 =>
+				segment.being_moved := true;
+				selected_segment := proposed_segments.first;
+
+				reset_request_clarification;
+
+				set_status (status_move);
+				
+			when others =>
+				--log (text => "many objects", level => log_threshold + 2);
+				set_request_clarification;
+
+				-- preselect the first segment
+				selected_segment := proposed_segments.first;
+		end case;
+		
+		log_indentation_down;
+	end find_segments;
 	
 end et_canvas_schematic_nets;
 

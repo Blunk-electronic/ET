@@ -167,15 +167,23 @@ package et_canvas_schematic_nets is
 		return boolean;
 
 
--- MOVE NET SEGMENT
+-- DRAG/MOVE NET SEGMENT
 
 	type type_segment is record
-		being_moved	: boolean := false;
-		tool		: type_tool := MOUSE;
+		being_moved		: boolean := false;
+		tool			: type_tool := MOUSE;
+		point_of_attack	: type_point;
 	end record;
 
 	segment : type_segment;
 
+	status_drag : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to drag net segment." 
+		& status_hint_for_abort;
+	
 	status_move : constant string := 
 		status_click_left 
 		& "or "
@@ -184,11 +192,23 @@ package et_canvas_schematic_nets is
 		& status_hint_for_abort;
 
 	-- This procedure:
-	-- - Clears list of selected units.
-	-- - Sets global variable selected_unit to no_element so that procedure highlight_selection
-	--   no longer highlights the unit.
-	-- - resets global variable "unit" to its default values
--- 	procedure reset_unit;
+	-- - Clears list of proposed segments.
+	-- - Sets global variable selected_segment.
+	-- - resets global variable "segment" to its default values
+	procedure reset_segment;
+
+	-- Assigns the given destination after the drag to the selected segment.
+	-- Resets the global variable "segment".
+	procedure finalize_drag (
+		destination		: in type_point;
+		log_threshold	: in type_log_level);
+	
+	-- Locates all net segments in the vicinity of given point.
+	-- If more than one segment near point found, then it sets the
+	-- cursor selected_segment to the first segment and requests
+	-- for clarification.
+	procedure find_segments (point : in type_point);
+
 	
 end et_canvas_schematic_nets;
 

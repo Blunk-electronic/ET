@@ -93,7 +93,7 @@ package et_schematic_ops.nets is
 	-- Place adresses the segment within the schematic. 
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in et_coordinates.type_position; -- sheet/x/y, this addresses the segment
+		place			: in et_coordinates.type_position; -- sheet/x/y, the point of attack, this addresses the segment
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y, the new position 
 		log_threshold	: in type_log_level);

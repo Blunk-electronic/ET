@@ -1048,7 +1048,7 @@ package body et_schematic_ops.nets is
 								line	=> element (segment_cursor));
 
 							-- depending on zone, drag start point, end point or both
-							log (text => "dragging at " & type_line_zone'image (zone), level => log_threshold + 2);
+							log (text => "dragging at " & type_line_zone'image (zone), level => log_threshold + 1);
 
 							-- Test whether the zone is movable. If not movable, nothing happens.
 							if movable (element (segment_cursor), zone) then
@@ -1065,7 +1065,7 @@ package body et_schematic_ops.nets is
 									position	=> segment_cursor,
 									process		=> move_targeted_segment'access);
 							else
-								log (WARNING, "segment is tied to a port. Dragging not possible !");
+								log (WARNING, "Segment is tied to a port. Dragging not possible !");
 							end if;
 
 							-- signal the calling unit to abort the search
@@ -1151,16 +1151,20 @@ package body et_schematic_ops.nets is
 	begin -- drag_segment
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_name) &
-					" dragging in net " & to_string (net_name) &
-					" segment at" & to_string (position => place) &
-					" to" & to_string (point), level => log_threshold);
+				log (text => "module " 
+					& enclose_in_quotes (to_string (module_name))
+					& " dragging in net " 
+					& enclose_in_quotes (to_string (net_name))
+					& " segment at" & to_string (position => place)
+					& " to" & to_string (point), level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & to_string (module_name) &
-					" dragging in net " & to_string (net_name) &
-					" segment at" & to_string (position => place) &
-					" by" & to_string (point), level => log_threshold);
+				log (text => "module " 
+					& enclose_in_quotes (to_string (module_name))
+					& " dragging in net " 
+					& enclose_in_quotes (to_string (net_name))
+					& " segment at" & to_string (position => place)
+					& " by" & to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module

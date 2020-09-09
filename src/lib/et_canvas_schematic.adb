@@ -692,6 +692,101 @@ package body et_canvas_schematic is
 			end case;
 		end delete;
 
+		procedure drag is begin
+			case key is
+				-- EVALUATE KEY FOR NOUN:
+				when GDK_LC_n =>
+					noun := NOUN_NET;
+
+					set_status (et_canvas_schematic_nets.status_drag);
+
+
+-- 				when GDK_LC_u =>
+-- 					noun := NOUN_UNIT;
+-- 
+-- 					--set_status (et_canvas_schematic_units.status_move);
+-- 					null; -- CS
+
+				-- If space pressed then the operator wishes to operate
+				-- by keyboard:
+				when GDK_Space =>
+		
+					case noun is
+						when NOUN_NET =>
+							if not segment.being_moved then
+								
+								-- Set the tool being used for moving the segment:
+								segment.tool := KEYBOARD;
+								
+								if not clarification_pending then
+									find_segments (cursor_main.position);
+									segment.point_of_attack := cursor_main.position;
+								else
+									segment.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally assign the cursor position to the
+								-- currently selected segment:
+								et_canvas_schematic_nets.finalize_drag (
+									destination		=> cursor_main.position,
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+
+-- 						when NOUN_UNIT =>
+-- 							null;
+							-- CS
+-- 							if not unit.being_moved then
+-- 								
+-- 								-- Set the tool being used for moving the unit:
+-- 								unit.tool := KEYBOARD;
+-- 								
+-- 								if not clarification_pending then
+-- 									find_units (cursor_main.position);
+-- 								else
+-- 									--move_selected_unit;
+-- 									unit.being_moved := true;
+-- 									reset_request_clarification;
+-- 								end if;
+-- 								
+-- 							else
+-- 								-- Finally assign the cursor position to the
+-- 								-- currently selected unit:
+-- 								et_canvas_schematic_units.finalize_move (
+-- 									destination		=> cursor_main.position,
+-- 									log_threshold	=> log_threshold + 1);
+-- 
+-- 							end if;
+
+						when others =>
+							null;
+							
+					end case;
+
+				-- If page down pressed, then the operator is clarifying:
+				when GDK_page_down =>
+					case noun is
+-- 						when NOUN_UNIT =>
+-- 							if clarification_pending then
+-- 								clarify_unit;
+-- 							end if;
+
+						when NOUN_NET => 
+							if clarification_pending then
+								clarify_net_segment;
+							end if;
+
+						when others => null;
+							
+					end case;
+					
+				when others => status_noun_invalid;
+			end case;
+
+		end drag;
+		
 		procedure draw is begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
@@ -805,6 +900,13 @@ package body et_canvas_schematic is
 		procedure move is begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
+-- 				when GDK_LC_n =>
+-- 					noun := NOUN_NET;
+
+					-- CS
+					--set_status (et_canvas_schematic_nets.status_move);
+
+
 				when GDK_LC_u =>
 					noun := NOUN_UNIT;
 
@@ -815,6 +917,29 @@ package body et_canvas_schematic is
 				when GDK_Space =>
 		
 					case noun is
+-- CS
+-- 						when NOUN_NET =>
+-- 							if not segment.being_moved then
+-- 								
+-- 								-- Set the tool being used for moving the segment:
+-- 								segment.tool := KEYBOARD;
+-- 								
+-- 								if not clarification_pending then
+-- 									find_segments (cursor_main.position);
+-- 								else
+-- 									segment.being_moved := true;
+-- 									reset_request_clarification;
+-- 								end if;
+-- 								
+-- 							else
+-- 								-- Finally assign the cursor position to the
+-- 								-- currently selected segment:
+-- 								et_canvas_schematic_nets.finalize_move (
+-- 									destination		=> cursor_main.position,
+-- 									log_threshold	=> log_threshold + 1);
+-- 
+-- 							end if;
+
 						when NOUN_UNIT =>
 							if not unit.being_moved then
 								
@@ -832,7 +957,7 @@ package body et_canvas_schematic is
 							else
 								-- Finally assign the cursor position to the
 								-- currently selected unit:
-								finalize_move (
+								et_canvas_schematic_units.finalize_move (
 									destination		=> cursor_main.position,
 									log_threshold	=> log_threshold + 1);
 
@@ -901,10 +1026,14 @@ package body et_canvas_schematic is
 							verb := VERB_DELETE;
 							status_enter_noun;
 							
+						when GDK_LC_g =>
+							verb := VERB_DRAG;
+							status_enter_noun;
+
 						when GDK_LC_d =>
 							verb := VERB_DRAW;
 							status_enter_noun;
-
+							
 						when GDK_LC_m =>
 							verb := VERB_MOVE;
 							status_enter_noun;
@@ -924,9 +1053,8 @@ package body et_canvas_schematic is
 
 					case verb is
 						when VERB_DELETE => delete;
-
+						when VERB_DRAG => drag;
 						when VERB_DRAW => draw;
-
 						when VERB_MOVE => move;
 
 						when others => null; -- CS
@@ -943,8 +1071,7 @@ package body et_canvas_schematic is
 
 	overriding procedure evaluate_mouse_position (
 		self	: not null access type_view;
-		point	: in type_point) 
-	is
+		point	: in type_point) is
 	begin
 		case verb is
 			when VERB_DRAW =>
@@ -958,8 +1085,13 @@ package body et_canvas_schematic is
 					when others => null;
 				end case;
 
-			when VERB_MOVE =>
+			when VERB_DRAG | VERB_MOVE =>
 				case noun is
+					when NOUN_NET =>
+						if segment.being_moved then
+							redraw;
+						end if;
+
 					when NOUN_UNIT =>
 						if unit.being_moved then
 							redraw;
@@ -1105,7 +1237,7 @@ package body et_canvas_schematic is
 							else
 								-- Finally assign the pointer position to the
 								-- currently selected unit:
-								finalize_move (
+								et_canvas_schematic_units.finalize_move (
 									destination		=> snap_to_grid (self, point),
 									log_threshold	=> log_threshold + 1);
 
