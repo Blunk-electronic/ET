@@ -690,7 +690,7 @@ package body et_schematic_ops.nets is
 	-- Place adresses the segment within the schematic. 
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in et_coordinates.type_position; -- sheet/x/y, this addresses the segment
+		place			: in et_coordinates.type_position; -- sheet/x/y, the point of attack, this addresses the segment
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y, the new position 
 		log_threshold	: in type_log_level) is
@@ -703,7 +703,7 @@ package body et_schematic_ops.nets is
 		use et_schematic.type_strands;
 
 		procedure no_segment is begin
-			log (WARNING, "segment not found at" & to_string (position => place) &
+			log (WARNING, "Segment not found at" & to_string (position => place) &
 			 ". Check net name and position !");
 		end;
 
@@ -868,30 +868,48 @@ package body et_schematic_ops.nets is
 					use et_schematic.pac_shapes;
 					zone : type_line_zone;
 
-					procedure move_targeted_segment (segment : in out type_net_segment) is begin
+					procedure move_targeted_segment (segment : in out type_net_segment) is 
+						-- In case absolute movement is required we need these values:
+						dx : constant type_distance := distance (type_point (place), point, X);
+						dy : constant type_distance := distance (type_point (place), point, Y);
+					begin
 						case zone is
 							when START_POINT =>
 								case coordinates is
 									when ABSOLUTE =>
-										segment.start_point := point; -- given position is absolute
+										if dx = zero or dy = zero then
 
+											move_by (
+												point	=> segment.start_point,
+												offset	=> set (dx, dy));
+										
+										else
+											segment.start_point := point;
+										end if;
+										
 									when RELATIVE =>
 										move_by (
 											point	=> segment.start_point,
-											offset	=> point -- the given position is relative
-											);
+											offset	=> point);
 								end case;
 								
 							when END_POINT =>
 								case coordinates is
 									when ABSOLUTE =>
-										segment.end_point := point; -- given position is absolute
+										if dx = zero or dy = zero then
+
+											move_by (
+												point	=> segment.end_point,
+												offset	=> set (dx, dy));
+
+										else
+											segment.end_point := point;
+										end if;
 
 									when RELATIVE =>
 										move_by (
 											point	=> segment.end_point,
-											offset	=> point -- the given position is relative
-											);
+											offset	=> point);
 								end case;
 
 							when CENTER =>

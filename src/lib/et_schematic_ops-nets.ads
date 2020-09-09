@@ -88,9 +88,8 @@ package et_schematic_ops.nets is
 	function no_ports (ports : in type_ports) return boolean;
 	-- Returns true if the given record of ports is completely emtpty.
 	
-	procedure drag_segment (
 	-- Drags a segment of a net.
-	-- Place adresses the segment within the schematic. 
+	procedure drag_segment (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		place			: in et_coordinates.type_position; -- sheet/x/y, the point of attack, this addresses the segment
