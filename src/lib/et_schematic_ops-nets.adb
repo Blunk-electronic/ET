@@ -70,6 +70,28 @@ package body et_schematic_ops.nets is
 			return false;
 		end if;
 	end between_start_and_end_point;
+
+	function on_segment (
+		point 		: in type_point;
+		segment 	: in type_net_segments.cursor;
+		catch_zone	: in type_catch_zone := zero)
+		return boolean 
+	is
+		use et_schematic.pac_shapes;
+		dist : type_distance_point_line;
+		use type_net_segments;
+	begin
+		dist := distance_point_line (
+			point 		=> point,
+			line		=> element (segment),
+			line_range	=> WITH_END_POINTS);
+
+		if (not out_of_range (dist)) and distance (dist) <= catch_zone then
+			return true;
+		else
+			return false;
+		end if;
+	end on_segment;
 	
 	procedure rename_net (
 	-- Renames a net. The scope determines whether to rename a certain strand,
@@ -1054,11 +1076,11 @@ package body et_schematic_ops.nets is
 
 						-- If segment crosses the given x/y position (in place) then
 						-- the segment has been found:
-						if between_start_and_end_point (
+						if on_segment (
 							point		=> type_point (place),
 							segment		=> segment_cursor,
-							catch_zone	=> catch_zone_default
-							) then
+							catch_zone	=> catch_zone_default)
+						then
 
 							-- Calculate the zone of attack. This is where place is.
 							zone := which_zone (
@@ -1084,15 +1106,18 @@ package body et_schematic_ops.nets is
 									container	=> strand.segments,
 									position	=> segment_cursor,
 									process		=> move_targeted_segment'access);
+
+								-- Signal the caller to abort the search as a suitable
+								-- segment has been found now:
+								segment_found := true;
+
+								-- no further search required
+								exit;
+
 							else
 								log (WARNING, "Segment is tied to a port. Dragging not possible !");
 							end if;
 
-							-- signal the calling unit to abort the search
-							segment_found := true;
-
-							-- no further search required
-							exit;
 						end if;
 
 						next (segment_cursor);

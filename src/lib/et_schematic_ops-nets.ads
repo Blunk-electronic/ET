@@ -52,6 +52,15 @@ package et_schematic_ops.nets is
 		segment 	: in type_net_segments.cursor;
 		catch_zone	: in type_catch_zone := zero)
 		return boolean;
+
+	function on_segment (
+	-- Returns true if given point sits on the given segment.
+	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
+	-- the greater can be the distance of point from the segment.
+		point 		: in type_point;
+		segment 	: in type_net_segments.cursor;
+		catch_zone	: in type_catch_zone := zero)
+		return boolean;
 	
 	procedure rename_net (
 	-- Renames a net. The scope determines whether to rename a certain strand,
