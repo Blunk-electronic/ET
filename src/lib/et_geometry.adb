@@ -1458,7 +1458,7 @@ package body et_geometry is
 				-- distance in Y greater or equal distance in X -> decision will be made along the Y axis.
 				-- The line will be handled like a vertical drawn line.
 
-				-- calculate the zone border. This depends on the line length in X direction.
+				-- calculate the zone border. This depends on the line length in Y direction.
 				line_length := distance_abs (line.start_point, line.end_point, Y);
 				zone_border := line_length / type_distance (line_zone_division_factor);
 
@@ -1486,7 +1486,7 @@ package body et_geometry is
 				
 			end if;
 			
-			return center;
+			return zone;
 		end which_zone;
 
 		function out_of_range (d : in type_distance_point_line) return boolean is begin
