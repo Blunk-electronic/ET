@@ -720,9 +720,9 @@ package body et_schematic_ops.nets is
 	-- Place adresses the segment within the schematic. 
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in et_coordinates.type_position; -- sheet/x/y, the point of attack, this addresses the segment
+		point_of_attack	: in et_coordinates.type_position; -- sheet/x/y
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y, the new position 
+		destination		: in type_point; -- x/y, the new position 
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -733,7 +733,7 @@ package body et_schematic_ops.nets is
 		use et_schematic.type_strands;
 
 		procedure no_segment is begin
-			log (WARNING, "No segment found at" & to_string (position => place) &
+			log (WARNING, "No segment found at" & to_string (position => point_of_attack) &
 			 ". Check net name and position !");
 		end;
 
@@ -834,21 +834,21 @@ package body et_schematic_ops.nets is
 		begin -- movable
 			log_indentation_up;
 			
-			-- The point of interest is on the sheet specified in argument "place".
+			-- The point of interest is on the sheet specified in argument "point_of_attack".
 			-- The x/y coordinates are taken from the segment start or end point.
 			
 			case zone is
 				when START_POINT =>
 					point := to_position (
 							point => segment.start_point,
-							sheet => sheet (place));
+							sheet => sheet (point_of_attack));
 
 					search_ports; -- sets result to false if a port is connected with the start point
 					
 				when END_POINT =>
 					point := to_position (
 							point => segment.end_point,
-							sheet => sheet (place));
+							sheet => sheet (point_of_attack));
 
 					search_ports; -- sets result to false if a port is connected with the end point
 					
@@ -858,7 +858,7 @@ package body et_schematic_ops.nets is
 					-- If start point is movable, then the end point must be checked too.
 					point := to_position (
 							point => segment.start_point,
-							sheet => sheet (place));
+							sheet => sheet (point_of_attack));
 
 					search_ports; -- sets result to false if a port is connected with the start point
 
@@ -866,7 +866,7 @@ package body et_schematic_ops.nets is
 					if result = true then
 						point := to_position (
 								point => segment.end_point,
-								sheet => sheet (place));
+								sheet => sheet (point_of_attack));
 
 						search_ports; -- sets result to false if a port is connected with the end point
 					end if;
@@ -882,7 +882,7 @@ package body et_schematic_ops.nets is
 			module		: in out type_module) is
 
 			procedure query_strands (
-			-- Searches the strands of the net for a segment that sits on given place.
+			-- Searches the strands of the net for a segment that sits on given point_of_attack.
 				net_name	: in et_general.type_net_name.bounded_string;
 				net			: in out et_schematic.type_net) is
 				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
@@ -900,8 +900,8 @@ package body et_schematic_ops.nets is
 
 					procedure move_targeted_segment (segment : in out type_net_segment) is 
 						-- In case absolute movement is required we need these values:
-						dx : constant type_distance := distance (type_point (place), point, X);
-						dy : constant type_distance := distance (type_point (place), point, Y);
+						dx : constant type_distance := distance (type_point (point_of_attack), destination, X);
+						dy : constant type_distance := distance (type_point (point_of_attack), destination, Y);
 					begin
 						-- CS: move tag labels along with start/end point
 						
@@ -916,13 +916,13 @@ package body et_schematic_ops.nets is
 												offset	=> set (dx, dy));
 										
 										else
-											segment.start_point := point;
+											segment.start_point := destination;
 										end if;
 										
 									when RELATIVE =>
 										move_by (
 											point	=> segment.start_point,
-											offset	=> point);
+											offset	=> destination);
 								end case;
 								
 							when END_POINT =>
@@ -935,13 +935,13 @@ package body et_schematic_ops.nets is
 												offset	=> set (dx, dy));
 
 										else
-											segment.end_point := point;
+											segment.end_point := destination;
 										end if;
 
 									when RELATIVE =>
 										move_by (
 											point	=> segment.end_point,
-											offset	=> point);
+											offset	=> destination);
 								end case;
 
 							when CENTER =>
@@ -953,12 +953,12 @@ package body et_schematic_ops.nets is
 									when RELATIVE =>
 										move_by (
 											point	=> segment.start_point,
-											offset	=> point -- the given position is relative
+											offset	=> destination -- the given position is relative
 											);
 
 										move_by (
 											point	=> segment.end_point,
-											offset	=> point -- the given position is relative
+											offset	=> destination -- the given position is relative
 											);
 										
 								end case;
@@ -1037,7 +1037,7 @@ package body et_schematic_ops.nets is
 									module_name	=> module_name, 
 									place 		=> to_position (
 													point => segment.start_point,
-													sheet => sheet (place)),
+													sheet => sheet (point_of_attack)),
 									log_threshold => log_threshold + 1
 									);
 
@@ -1049,7 +1049,7 @@ package body et_schematic_ops.nets is
 									module_name	=> module_name, 
 									place 		=> to_position (
 													point => segment.end_point,
-													sheet => sheet (place)),
+													sheet => sheet (point_of_attack)),
 									log_threshold => log_threshold + 1
 									);
 
@@ -1061,7 +1061,7 @@ package body et_schematic_ops.nets is
 									module_name	=> module_name, 
 									place 		=> to_position (
 													point => segment.start_point,
-													sheet => sheet (place)),
+													sheet => sheet (point_of_attack)),
 									log_threshold => log_threshold + 1
 									);
 
@@ -1072,7 +1072,7 @@ package body et_schematic_ops.nets is
 									module_name	=> module_name, 
 									place 		=> to_position (
 													point => segment.end_point,
-													sheet => sheet (place)),
+													sheet => sheet (point_of_attack)),
 									log_threshold => log_threshold + 1
 									);
 								
@@ -1084,18 +1084,18 @@ package body et_schematic_ops.nets is
 					-- MOVE TARGETED SEGMENT
 					while segment_cursor /= type_net_segments.no_element loop
 
-						-- If segment crosses the given x/y position (in place) then
+						-- If segment crosses the given x/y position (in point_of_attack) then
 						-- the segment has been found:
 						if on_segment (
-							point		=> type_point (place),
+							point		=> type_point (point_of_attack),
 							segment		=> segment_cursor,
 							catch_zone	=> catch_zone_default)
 						then
 							--log (text => "point of attack sits on segment", level => log_threshold + 1);
 							
-							-- Calculate the zone of attack. This is where place is.
+							-- Calculate the zone of attack:
 							zone := which_zone (
-								point	=> place,
+								point	=> point_of_attack,
 								line	=> element (segment_cursor));
 
 							-- depending on zone, drag start point, end point or both
@@ -1173,7 +1173,7 @@ package body et_schematic_ops.nets is
 				-- as soon as a segment has been found.
 				while not segment_found and strand_cursor /= type_strands.no_element loop
 					
-					if sheet (element (strand_cursor).position) = sheet (place) then
+					if sheet (element (strand_cursor).position) = sheet (point_of_attack) then
 
 						-- signal the calling unit that a strand has been found:
 						strand_found := true;
@@ -1211,16 +1211,16 @@ package body et_schematic_ops.nets is
 					& enclose_in_quotes (to_string (module_name))
 					& " dragging net " 
 					& enclose_in_quotes (to_string (net_name))
-					& " segment at" & to_string (position => place)
-					& " to" & to_string (point), level => log_threshold);
+					& " segment at" & to_string (position => point_of_attack)
+					& " to" & to_string (destination), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " 
 					& enclose_in_quotes (to_string (module_name))
 					& " dragging net " 
 					& enclose_in_quotes (to_string (net_name))
-					& " segment at" & to_string (position => place)
-					& " by" & to_string (point), level => log_threshold);
+					& " segment at" & to_string (position => point_of_attack)
+					& " by" & to_string (destination), level => log_threshold);
 		end case;
 		
 		-- locate module

@@ -787,7 +787,7 @@ begin -- schematic_cmd
 								(
 								module_name		=> module,
 								net_name		=> to_net_name (f (5)), -- RESET
-								place			=> to_position (
+								point_of_attack	=> to_position (
 													point => type_point (set (
 														x => to_distance (f (7)),
 														y => to_distance (f (8)))),
@@ -795,7 +795,7 @@ begin -- schematic_cmd
 								
 								coordinates		=> to_coordinates (f (9)), -- relative/absolute
 								
-								point			=> type_point (set (
+								destination		=> type_point (set (
 													x => to_distance (f (10)),
 													y => to_distance (f (11)))),
 								

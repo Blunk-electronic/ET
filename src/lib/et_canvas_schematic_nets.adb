@@ -599,7 +599,7 @@ package body et_canvas_schematic_nets is
 		log_threshold	: in type_log_level) is
 
 		net_name : type_net_name.bounded_string;
-		place : et_coordinates.type_position := to_position (segment.point_of_attack, current_active_sheet);
+		point_of_attack : et_coordinates.type_position := to_position (segment.point_of_attack, current_active_sheet);
 	begin
 		log (text => "finalizing drag ...", level => log_threshold);
 		log_indentation_up;
@@ -612,9 +612,9 @@ package body et_canvas_schematic_nets is
 			drag_segment (
 				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
 				net_name		=> net_name,
-				place			=> place,
+				point_of_attack	=> point_of_attack,
 				coordinates		=> et_geometry.ABSOLUTE,
-				point			=> destination,
+				destination		=> destination,
 				log_threshold	=> log_threshold + 1);
 
 

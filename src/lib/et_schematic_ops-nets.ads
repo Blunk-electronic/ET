@@ -101,9 +101,9 @@ package et_schematic_ops.nets is
 	procedure drag_segment (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in et_coordinates.type_position; -- sheet/x/y, the point of attack, this addresses the segment
+		point_of_attack	: in et_coordinates.type_position; -- sheet/x/y
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y, the new position 
+		destination		: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	package type_net_names is new doubly_linked_lists (
