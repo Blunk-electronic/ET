@@ -1421,6 +1421,8 @@ package body et_geometry is
 			zone_border : type_distance;
 			
 		begin -- which_zone
+			-- CS: The algorithm used here is not the best. Improve using vector algebra ?
+			
 			-- The greater distance from start to end point in X or Y determines 
 			-- whether the line is handled like a horizontal or vertical drawn line.
 			if distance_abs (line.start_point, line.end_point, X) > 

@@ -713,7 +713,149 @@ package body et_schematic_ops.nets is
 
 		return result;
 	end no_ports;
-	
+
+	function movable (
+		module_name		: in type_module_name.bounded_string;
+		segment			: in type_net_segment;
+		zone			: in et_schematic.pac_shapes.type_line_zone;
+		point_of_attack	: in et_coordinates.type_position;
+		log_threshold	: in type_log_level) 
+		return boolean is
+
+		use et_schematic.pac_shapes;
+		
+		result : boolean := true; -- to be returned. true means the zone is movable.
+		-- Goes false once a port has been found in the given zone.
+
+		point : et_coordinates.type_position;
+
+		procedure search_ports is
+		-- Searches ports of devices, netchangers and submodules that sit on
+		-- the point of interest.	
+		-- On the first finding, sets result to false and finishes. If no 
+		-- finding, result remains true.	
+			use type_ports_device;
+			use type_ports_submodule;
+
+			use et_netlists;
+			use type_ports_netchanger;
+
+			device : type_ports_device.cursor := segment.ports_devices.first;
+			submodule : type_ports_submodule.cursor := segment.ports_submodules.first;
+			netchanger : type_ports_netchanger.cursor := segment.ports_netchangers.first;
+		begin -- search_ports
+			while device /= type_ports_device.no_element loop
+
+				if position (
+					module_name		=> module_name,
+					device_name		=> element (device).device_name,
+					port_name		=> element (device).port_name,
+					log_threshold	=> log_threshold + 2) 
+					
+					= point then
+
+					result := false; -- not movable
+					exit;
+
+				end if;
+				
+				next (device);
+			end loop;
+
+			-- if no device port found, search in submodule ports
+			if result = true then
+
+				while submodule /= type_ports_submodule.no_element loop
+
+					if position (
+						module_name		=> module_name,
+						submod_name		=> element (submodule).module_name,
+						port_name		=> element (submodule).port_name,
+						log_threshold	=> log_threshold + 2) 
+						
+						= point then
+
+						result := false; -- not movable
+						exit;
+
+					end if;
+					
+					next (submodule);
+				end loop;
+
+			end if;
+
+			-- if no submodule port found, search in netchanger ports
+			if result = true then
+
+				while netchanger /= type_ports_netchanger.no_element loop
+
+					if position (
+						module_name		=> module_name,
+						index			=> element (netchanger).index,
+						port			=> element (netchanger).port,
+						log_threshold	=> log_threshold + 2) 
+						
+						= point then
+
+						result := false; -- not movable
+						exit;
+
+					end if;
+					
+					next (netchanger);
+				end loop;
+
+			end if;
+
+			-- if no port found, result is still true
+		end search_ports;
+		
+	begin -- movable
+		log_indentation_up;
+		
+		-- The point of interest is on the sheet specified in argument "point_of_attack".
+		-- The x/y coordinates are taken from the segment start or end point.
+		
+		case zone is
+			when START_POINT =>
+				point := to_position (
+						point => segment.start_point,
+						sheet => sheet (point_of_attack));
+
+				search_ports; -- sets result to false if a port is connected with the start point
+				
+			when END_POINT =>
+				point := to_position (
+						point => segment.end_point,
+						sheet => sheet (point_of_attack));
+
+				search_ports; -- sets result to false if a port is connected with the end point
+				
+			when CENTER =>
+				-- Both start and end point must be checked for any ports.
+				-- First check the start point of the segment.
+				-- If start point is movable, then the end point must be checked too.
+				point := to_position (
+						point => segment.start_point,
+						sheet => sheet (point_of_attack));
+
+				search_ports; -- sets result to false if a port is connected with the start point
+
+				-- If start point is movable, check end point.
+				if result = true then
+					point := to_position (
+							point => segment.end_point,
+							sheet => sheet (point_of_attack));
+
+					search_ports; -- sets result to false if a port is connected with the end point
+				end if;
+		end case;
+
+		log_indentation_down;
+		
+		return result;
+	end movable;
 	
 	procedure drag_segment (
 	-- Drags a segment of a net.
@@ -736,146 +878,6 @@ package body et_schematic_ops.nets is
 			log (WARNING, "No segment found at" & to_string (position => point_of_attack) &
 			 ". Check net name and position !");
 		end;
-
-		function movable (
-			segment	: in type_net_segment;
-			zone	: in et_schematic.pac_shapes.type_line_zone) 
-			return boolean is
-
-			use et_schematic.pac_shapes;
-			
-			result : boolean := true; -- to be returned. true means the zone is movable.
-			-- Goes false once a port has been found in the given zone.
-
-			point : et_coordinates.type_position;
-
-			procedure search_ports is
-			-- Searches ports of devices, netchangers and submodules that sit on
-			-- the point of interest.	
-			-- On the first finding, sets result to false and finishes. If no 
-			-- finding, result remains true.	
-				use type_ports_device;
-				use type_ports_submodule;
-
-				use et_netlists;
-				use type_ports_netchanger;
-
-				device : type_ports_device.cursor := segment.ports_devices.first;
-				submodule : type_ports_submodule.cursor := segment.ports_submodules.first;
-				netchanger : type_ports_netchanger.cursor := segment.ports_netchangers.first;
-			begin -- search_ports
-				while device /= type_ports_device.no_element loop
-
-					if position (
-						module_name		=> module_name,
-						device_name		=> element (device).device_name,
-						port_name		=> element (device).port_name,
-						log_threshold	=> log_threshold + 2) 
-						
-						= point then
-
-						result := false; -- not movable
-						exit;
-
-					end if;
-					
-					next (device);
-				end loop;
-
-				-- if no device port found, search in submodule ports
-				if result = true then
-
-					while submodule /= type_ports_submodule.no_element loop
-
-						if position (
-							module_name		=> module_name,
-							submod_name		=> element (submodule).module_name,
-							port_name		=> element (submodule).port_name,
-							log_threshold	=> log_threshold + 2) 
-							
-							= point then
-
-							result := false; -- not movable
-							exit;
-
-						end if;
-						
-						next (submodule);
-					end loop;
-
-				end if;
-
-				-- if no submodule port found, search in netchanger ports
-				if result = true then
-
-					while netchanger /= type_ports_netchanger.no_element loop
-
-						if position (
-							module_name		=> module_name,
-							index			=> element (netchanger).index,
-							port			=> element (netchanger).port,
-							log_threshold	=> log_threshold + 2) 
-							
-							= point then
-
-							result := false; -- not movable
-							exit;
-
-						end if;
-						
-						next (netchanger);
-					end loop;
-
-				end if;
-
-				-- if no port found, result is still true
-			end search_ports;
-			
-		begin -- movable
-			log_indentation_up;
-			
-			-- The point of interest is on the sheet specified in argument "point_of_attack".
-			-- The x/y coordinates are taken from the segment start or end point.
-			
-			case zone is
-				when START_POINT =>
-					point := to_position (
-							point => segment.start_point,
-							sheet => sheet (point_of_attack));
-
-					search_ports; -- sets result to false if a port is connected with the start point
-					
-				when END_POINT =>
-					point := to_position (
-							point => segment.end_point,
-							sheet => sheet (point_of_attack));
-
-					search_ports; -- sets result to false if a port is connected with the end point
-					
-				when CENTER =>
-					-- Both start and end point must be checked for any ports.
-					-- First check the start point of the segment.
-					-- If start point is movable, then the end point must be checked too.
-					point := to_position (
-							point => segment.start_point,
-							sheet => sheet (point_of_attack));
-
-					search_ports; -- sets result to false if a port is connected with the start point
-
-					-- If start point is movable, check end point.
-					if result = true then
-						point := to_position (
-								point => segment.end_point,
-								sheet => sheet (point_of_attack));
-
-						search_ports; -- sets result to false if a port is connected with the end point
-					end if;
-			end case;
-
-			log_indentation_down;
-			
-			return result;
-		end movable;
 		
 		procedure query_net (
 			module_name	: in type_module_name.bounded_string;
@@ -1104,8 +1106,11 @@ package body et_schematic_ops.nets is
 								& " at " & type_line_zone'image (zone), level => log_threshold + 1);
 
 							-- Test whether the zone is movable. If not movable, nothing happens.
-							if movable (element (segment_cursor), zone) then
-
+							if movable (
+								module_name, element (segment_cursor),
+								zone, point_of_attack, log_threshold + 1)
+							then
+								
 								-- Backup the cursor of the targeted segment.
 								-- Backup the segment as it was BEFORE the dragging.
 								-- They are required later.

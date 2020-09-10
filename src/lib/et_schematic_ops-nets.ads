@@ -96,6 +96,16 @@ package et_schematic_ops.nets is
 	
 	function no_ports (ports : in type_ports) return boolean;
 	-- Returns true if the given record of ports is completely emtpty.
+
+	-- Tests whether the zone of a net segment is movable.
+	-- Returns true if movable, returns falso otherwise.
+	function movable (
+		module_name		: in type_module_name.bounded_string;
+		segment			: in type_net_segment;
+		zone			: in et_schematic.pac_shapes.type_line_zone;
+		point_of_attack	: in et_coordinates.type_position;
+		log_threshold	: in type_log_level) 
+		return boolean;
 	
 	-- Drags a segment of a net.
 	procedure drag_segment (

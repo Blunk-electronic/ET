@@ -78,6 +78,42 @@ procedure draw_nets (
 -- 				raise;
 		
 	end is_selected;
+
+	procedure draw_moving_segments (segment_cursor : in type_net_segments.cursor) is
+		use et_schematic.pac_shapes;
+		use et_schematic_ops.nets;
+
+		-- Calculate the zone of attack:
+		zone : constant type_line_zone := which_zone (
+				point	=> segment.point_of_attack,
+				line	=> element (segment_cursor));
+	begin
+		if movable (
+			module_name		=> key (current_active_module),
+			segment			=> element (segment_cursor),
+			zone			=> zone,
+			point_of_attack	=> to_position (segment.point_of_attack, current_active_sheet),
+			log_threshold	=> log_threshold + 1)
+		then
+			
+			case verb is
+				when VERB_DRAG =>
+					null;
+
+					draw_line (
+						area		=> in_area,
+						context		=> context,
+						line		=> element (segment_cursor),
+						height		=> self.frame_height);
+
+	-- 			when VERB_MOVE =>
+	-- 				null;
+
+				when others => null;
+			end case;
+
+		end if;
+	end draw_moving_segments;
 	
 	procedure query_nets (
 		module_name	: in type_module_name.bounded_string;
@@ -146,16 +182,33 @@ procedure draw_nets (
 
 						if is_selected (segment_cursor) then
 							set_color_nets (context.cr, BRIGHT);
+						
+							if segment.being_moved then
+								-- Draw the net segments being moved or dragged.
+								-- If we are dragging a segment, then other attached segments
+								-- will be dragged along.
+								-- If we are moving a single segment, then only the current segment
+								-- will be moved.
+								draw_moving_segments (segment_cursor);
+							else
+								-- Draw the net segment as it is according to module database
+								-- highlighted:
+								draw_line (
+									area		=> in_area,
+									context		=> context,
+									line		=> element (segment_cursor),
+									height		=> self.frame_height);
+							end if;
+						else
+							-- Draw the net segment as it is according to module database
+							-- in normal brightness:
+							draw_line (
+								area		=> in_area,
+								context		=> context,
+								line		=> element (segment_cursor),
+								height		=> self.frame_height);
 						end if;
 						
-						-- draw the net segment:
-						draw_line (
-							area		=> in_area,
-							context		=> context,
-							line		=> element (segment_cursor),
-							height		=> self.frame_height
-							);
-
 						-- draw labels
 						type_net_labels.iterate (element (segment_cursor).labels, query_label'access);
 
