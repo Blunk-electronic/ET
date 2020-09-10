@@ -78,7 +78,7 @@ package et_coordinates is
 	
 	use pac_geometry_sch;
 	
-	catch_zone_default : type_catch_zone := 2.0; -- CS: should be a system setting in the future
+	catch_zone_default : constant type_catch_zone := 2.0; -- CS: should be a system setting in the future
 	
 
 	

@@ -86,6 +86,12 @@ package body et_schematic_ops.nets is
 			line		=> element (segment),
 			line_range	=> WITH_END_POINTS);
 
+		log (text => 
+			"catch zone" & to_string (catch_zone) 
+			& " distance " & to_string (distance (dist))
+			& " out of range " & boolean'image (out_of_range (dist))
+			);
+		
 		if (not out_of_range (dist)) and distance (dist) <= catch_zone then
 			return true;
 		else
@@ -725,7 +731,7 @@ package body et_schematic_ops.nets is
 		use et_schematic.type_strands;
 
 		procedure no_segment is begin
-			log (WARNING, "Segment not found at" & to_string (position => place) &
+			log (WARNING, "No segment found at" & to_string (position => place) &
 			 ". Check net name and position !");
 		end;
 
@@ -895,6 +901,8 @@ package body et_schematic_ops.nets is
 						dx : constant type_distance := distance (type_point (place), point, X);
 						dy : constant type_distance := distance (type_point (place), point, Y);
 					begin
+						-- CS: move tag labels along with start/end point
+						
 						case zone is
 							when START_POINT =>
 								case coordinates is
@@ -1081,7 +1089,8 @@ package body et_schematic_ops.nets is
 							segment		=> segment_cursor,
 							catch_zone	=> catch_zone_default)
 						then
-
+							log (text => "point of attack sits on segment", level => log_threshold + 1);
+							
 							-- Calculate the zone of attack. This is where place is.
 							zone := which_zone (
 								point	=> place,
@@ -1198,7 +1207,7 @@ package body et_schematic_ops.nets is
 			when ABSOLUTE =>
 				log (text => "module " 
 					& enclose_in_quotes (to_string (module_name))
-					& " dragging in net " 
+					& " dragging net " 
 					& enclose_in_quotes (to_string (net_name))
 					& " segment at" & to_string (position => place)
 					& " to" & to_string (point), level => log_threshold);
@@ -1206,7 +1215,7 @@ package body et_schematic_ops.nets is
 			when RELATIVE =>
 				log (text => "module " 
 					& enclose_in_quotes (to_string (module_name))
-					& " dragging in net " 
+					& " dragging net " 
 					& enclose_in_quotes (to_string (net_name))
 					& " segment at" & to_string (position => place)
 					& " by" & to_string (point), level => log_threshold);

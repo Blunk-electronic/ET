@@ -760,8 +760,7 @@ package body et_canvas_schematic is
 -- 
 -- 							end if;
 
-						when others =>
-							null;
+						when others => null;
 							
 					end case;
 
@@ -888,8 +887,7 @@ package body et_canvas_schematic is
 						when NOUN_NET =>
 							et_schematic.pac_shapes.next_bend_style (net_route);
 							
-						when others =>
-							null;
+						when others => null;
 							
 					end case;
 					
@@ -963,8 +961,7 @@ package body et_canvas_schematic is
 
 							end if;
 
-						when others =>
-							null;
+						when others => null;
 							
 					end case;
 
@@ -989,7 +986,6 @@ package body et_canvas_schematic is
 				when others => status_noun_invalid;
 			end case;
 		end move;
-
 					
 	begin -- evaluate_key
 		
@@ -1130,11 +1126,44 @@ package body et_canvas_schematic is
 								delete_selected_net_segment;
 							end if;
 
-						when others =>
-							null;
-							
+						when others => null;
 					end case;
 
+				when VERB_DRAG =>
+
+					case noun is
+-- 						when NOUN_UNIT =>
+-- 							if not clarification_pending then
+-- 								delete_unit (point);
+-- 							else
+-- 								delete_selected_unit;
+-- 							end if;
+							
+						when NOUN_NET => 
+							if not segment.being_moved then
+
+								-- Set the tool being used for dragging the net segment:
+								segment.tool := MOUSE;
+								
+								if not clarification_pending then
+									find_segments (point);
+									segment.point_of_attack := snap_to_grid (self, point);
+								else
+									segment.being_moved := true;
+									reset_request_clarification;
+								end if;
+
+							else
+								-- Finally assign the cursor position to the
+								-- currently selected segment:
+								et_canvas_schematic_nets.finalize_drag (
+									destination		=> snap_to_grid (self, point),
+									log_threshold	=> log_threshold + 1);
+							end if;
+							
+						when others => null;
+					end case;
+					
 				when VERB_DRAW =>
 
 					case noun is
@@ -1213,9 +1242,7 @@ package body et_canvas_schematic is
 								end if;
 							end if;
 							
-						when others =>
-							null;
-							
+						when others => null;							
 					end case;
 
 				when VERB_MOVE =>
@@ -1243,11 +1270,8 @@ package body et_canvas_schematic is
 
 							end if;
 							
-						when others =>
-							null;
-							
+						when others => null;							
 					end case;
-
 					
 				when others => null; -- CS
 			end case;
@@ -1268,19 +1292,30 @@ package body et_canvas_schematic is
 								clarify_net_segment;
 							end if;
 
-						when others =>
-							null;
-							
+						when others => null;							
 					end case;
 
+				when VERB_DRAG =>
+					case noun is
+-- 						when NOUN_UNIT =>
+-- 							if clarification_pending then
+-- 								clarify_unit;
+-- 							end if;
+
+						when NOUN_NET => 
+							if clarification_pending then
+								clarify_net_segment;
+							end if;
+
+						when others => null;							
+					end case;
+					
 				when VERB_DRAW =>
 					case noun is
 						when NOUN_NET =>
 							et_schematic.pac_shapes.next_bend_style (net_route);
 							
-						when others =>
-							null;
-							
+						when others => null;							
 					end case;
 					
 				when VERB_MOVE =>
@@ -1290,11 +1325,8 @@ package body et_canvas_schematic is
 								clarify_unit;
 							end if;
 
-						when others =>
-							null;
-							
+						when others => null;							
 					end case;
-
 					
 				when others => null; -- CS
 			end case;
