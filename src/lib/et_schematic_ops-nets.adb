@@ -62,7 +62,8 @@ package body et_schematic_ops.nets is
 		dist := distance_point_line (
 			point 		=> point,
 			line		=> element (segment),
-			line_range	=> BETWEEN_END_POINTS);
+			line_range	=> BETWEEN_END_POINTS,
+			catch_zone	=> catch_zone);
 
 		if (not out_of_range (dist)) and distance (dist) <= catch_zone then
 			return true;
@@ -84,13 +85,14 @@ package body et_schematic_ops.nets is
 		dist := distance_point_line (
 			point 		=> point,
 			line		=> element (segment),
-			line_range	=> WITH_END_POINTS);
+			line_range	=> WITH_END_POINTS,
+			catch_zone	=> catch_zone);
 
-		log (text => 
-			"catch zone" & to_string (catch_zone) 
-			& " distance " & to_string (distance (dist))
-			& " out of range " & boolean'image (out_of_range (dist))
-			);
+-- 		log (text => 
+-- 			"catch zone" & to_string (catch_zone) 
+-- 			& " distance " & to_string (distance (dist))
+-- 			& " out of range " & boolean'image (out_of_range (dist))
+-- 			);
 		
 		if (not out_of_range (dist)) and distance (dist) <= catch_zone then
 			return true;
@@ -1089,7 +1091,7 @@ package body et_schematic_ops.nets is
 							segment		=> segment_cursor,
 							catch_zone	=> catch_zone_default)
 						then
-							log (text => "point of attack sits on segment", level => log_threshold + 1);
+							--log (text => "point of attack sits on segment", level => log_threshold + 1);
 							
 							-- Calculate the zone of attack. This is where place is.
 							zone := which_zone (

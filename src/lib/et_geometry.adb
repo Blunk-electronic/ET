@@ -45,6 +45,8 @@ with ada.characters.handling;	use ada.characters.handling;
 
 with ada.numerics.generic_elementary_functions;
 
+with et_string_processing;		use et_string_processing;
+
 package body et_geometry is
 
 	function to_string (coordinates : in type_coordinates) return string is begin
@@ -1409,7 +1411,6 @@ package body et_geometry is
 		end boundaries;
 		
 		function which_zone (
-		-- Calculates the zone of the line where point is nearest.
 			point	: in type_point'class;
 			line	: in type_line'class) 
 			return type_line_zone is
@@ -1612,6 +1613,7 @@ package body et_geometry is
 				lambda_forward := divide (subtract (exact_point_vector, line_start_vector), line_direction_vector);
 
 				if lambda_forward < zero then -- point sits before start of line
+-- 					log (text => "before start point");
 					case line_range is
 						when BEYOND_END_POINTS => result.out_of_range := false;
 						when others => result.out_of_range := true;
@@ -1621,6 +1623,7 @@ package body et_geometry is
 				end if;
 				
 				if lambda_forward = zero then -- point sits at start of line
+-- 					log (text => "at start point");
 					result.sits_on_start := true;
 					case line_range is
 						when BETWEEN_END_POINTS => result.out_of_range := true;
@@ -1630,12 +1633,13 @@ package body et_geometry is
 					return result; -- no more computations required
 				end if;
 
-				--put_line ("after start");
+-- 				log (text => "after start point");
 				
 				line_end_vector := end_vector (line);
 				lambda_backward := divide (subtract (exact_point_vector, line_end_vector), line_direction_vector);
 
 				if lambda_backward > zero then -- point sits after end of line
+-- 					log (text => "after end point");
 					case line_range is
 						when BEYOND_END_POINTS => result.out_of_range := false;
 						when others => result.out_of_range := true;
@@ -1645,6 +1649,7 @@ package body et_geometry is
 				end if;
 
 				if lambda_backward = zero then -- point sits at end of line
+-- 					log (text => "at end point");
 					result.sits_on_end := true;
 					case line_range is
 						when BETWEEN_END_POINTS => result.out_of_range := true;
@@ -1654,7 +1659,7 @@ package body et_geometry is
 					return result; -- no more computations required
 				end if;
 
-				--put_line ("before end");
+-- 				log (text => "before end point");
 
 				result.out_of_range := false;
 			end if;

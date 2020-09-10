@@ -630,8 +630,9 @@ package et_geometry is
 		type type_line_zone is (START_POINT, CENTER, END_POINT);
 		line_zone_division_factor : constant positive := 4;
 		
-		function which_zone (
 		-- Calculates the zone of the line where point is nearest.
+		-- Point is not required to sit exactly on the line.
+		function which_zone (
 			point	: in type_point'class;
 			line	: in type_line'class) 
 			return type_line_zone;
