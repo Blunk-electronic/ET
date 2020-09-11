@@ -604,26 +604,33 @@ package body et_canvas_schematic_nets is
 		log (text => "finalizing drag ...", level => log_threshold);
 		log_indentation_up;
 
-		if selected_segment /= pac_proposed_segments.no_element then
+		-- Finalize only if procedure et_canvas_schematic.draw_nets has
+		-- granted permission:
+		if segment.finalizing_granted then
+	
+			if selected_segment /= pac_proposed_segments.no_element then
 
-			net_name := key (element (selected_segment).net);
--- 			su := element (selected_unit);
+				net_name := key (element (selected_segment).net);
 
-			drag_segment (
-				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
-				net_name		=> net_name,
-				point_of_attack	=> point_of_attack,
-				coordinates		=> et_geometry.ABSOLUTE,
-				destination		=> destination,
-				log_threshold	=> log_threshold + 1);
+				drag_segment (
+					module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+					net_name		=> net_name,
+					point_of_attack	=> point_of_attack,
+					coordinates		=> et_geometry.ABSOLUTE,
+					destination		=> destination,
+					log_threshold	=> log_threshold + 1);
 
 
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
 		else
-			log (text => "nothing to do", level => log_threshold);
+			log (text => "not granted", level => log_threshold);
 		end if;
-			
+		
 		log_indentation_down;
-
+		
 		set_status (status_move);
 		
 		reset_segment;

@@ -100,7 +100,7 @@ package et_schematic_ops.nets is
 	-- Tests whether the zone of a net segment is movable.
 	-- Returns true if movable, returns falso otherwise.
 	function movable (
-		module_name		: in type_module_name.bounded_string;
+		module_name		: in type_module_name.bounded_string; -- CS should be a cursor
 		segment			: in type_net_segment;
 		zone			: in et_schematic.pac_shapes.type_line_zone;
 		point_of_attack	: in et_coordinates.type_position;

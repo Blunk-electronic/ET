@@ -746,7 +746,7 @@ package body et_schematic_ops.nets is
 		begin -- search_ports
 			while device /= type_ports_device.no_element loop
 
-				if position (
+				if position ( -- CS use a similar function that takes only cursors ?
 					module_name		=> module_name,
 					device_name		=> element (device).device_name,
 					port_name		=> element (device).port_name,
@@ -767,7 +767,7 @@ package body et_schematic_ops.nets is
 
 				while submodule /= type_ports_submodule.no_element loop
 
-					if position (
+					if position ( -- CS use a similar function that takes only cursors ?
 						module_name		=> module_name,
 						submod_name		=> element (submodule).module_name,
 						port_name		=> element (submodule).port_name,
@@ -790,7 +790,7 @@ package body et_schematic_ops.nets is
 
 				while netchanger /= type_ports_netchanger.no_element loop
 
-					if position (
+					if position ( -- CS use a similar function that takes only cursors ?
 						module_name		=> module_name,
 						index			=> element (netchanger).index,
 						port			=> element (netchanger).port,
@@ -858,8 +858,6 @@ package body et_schematic_ops.nets is
 	end movable;
 	
 	procedure drag_segment (
-	-- Drags a segment of a net.
-	-- Place adresses the segment within the schematic. 
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		point_of_attack	: in et_coordinates.type_position; -- sheet/x/y

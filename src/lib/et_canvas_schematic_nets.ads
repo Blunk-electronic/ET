@@ -169,10 +169,14 @@ package et_canvas_schematic_nets is
 
 -- DRAG/MOVE NET SEGMENT
 
+	type type_being_moved is new boolean;
+	type type_finalizing_granted is new boolean;
+	
 	type type_segment is record
-		being_moved		: boolean := false;
-		tool			: type_tool := MOUSE;
-		point_of_attack	: type_point;
+		being_moved			: type_being_moved := false;
+		tool				: type_tool := MOUSE;
+		point_of_attack		: type_point;
+		finalizing_granted	: type_finalizing_granted := false; -- CS dedicated type ?
 	end record;
 
 	segment : type_segment;

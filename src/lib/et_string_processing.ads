@@ -61,6 +61,8 @@ package et_string_processing is
 	-- routing tables). However, it is limited to a reasonable value. See above.
 	type type_log_level is range 0..log_level_max;
 
+-- 	no_logging : constant type_log_level := type_log_level'last;
+	
 	function to_string (
 	-- Returns the given log level as string. 
 		log_level	: in type_log_level;
@@ -93,13 +95,14 @@ package et_string_processing is
 
 	type type_message_importance is (NORMAL, NOTE, WARNING, ERROR);
 
+	-- Writes the given text with the current log_indentation in the current output. 
+	-- If the system wide log level is greater or equal the the given log_level the given text is put on the log.
+	-- Does not log anything if given level is no_logging.
 	procedure log (
 		importance	: in type_message_importance := NORMAL;
 		text		: in string;
 		level		: in type_log_level := type_log_level'first;
 		console		: in boolean := false);
-	-- Writes the given text with the current log_indentation in the current output. 
-	-- If the system wide log level is greater or equal the the given log_level the given text is put on the log.
 
 	
 

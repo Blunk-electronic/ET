@@ -79,6 +79,35 @@ procedure draw_nets (
 		
 	end is_selected;
 
+	-- Draws the given net segment as it is according to module database:
+	procedure draw_fixed_segment (
+		s : in type_net_segments.cursor) 
+	is begin
+		draw_line (
+			area		=> in_area,
+			context		=> context,
+			line		=> element (s),
+			height		=> self.frame_height);
+	end draw_fixed_segment;
+
+	-- Draws a net segment:
+	procedure draw_preliminary_segment (
+		s : in type_net_segment) 
+	is begin
+		draw_line (
+			area		=> in_area,
+			context		=> context,
+			line		=> s,
+			height		=> self.frame_height);
+	end draw_preliminary_segment;
+	
+	-- Draws the net segment being moved or dragged.
+	-- If we are dragging a segment, then other attached segments
+	-- will be dragged along.
+	-- If we are moving a single segment, then only the current segment
+	-- will be moved:
+	-- NOTE: The given net segment (via cursor segment_cursor) is the original segment
+	-- as it is given by the module database.
 	procedure draw_moving_segments (segment_cursor : in type_net_segments.cursor) is
 		use et_schematic.pac_shapes;
 		use et_schematic_ops.nets;
@@ -87,31 +116,92 @@ procedure draw_nets (
 		zone : constant type_line_zone := which_zone (
 				point	=> segment.point_of_attack,
 				line	=> element (segment_cursor));
-	begin
+
+		dx, dy : type_distance;
+
+		destination : type_point;
+		segment_preliminary : type_net_segment;
+		
+	begin -- draw_moving_segments
+		
+		-- First test whether the segment is movable at all.
+		-- Ports connected with the segment may prohibit moving the segment
+		-- as they belong to symbols which are not dragged along.
+		-- If the segment is not movable then it will be drawn as given by
+		-- the module database.
 		if movable (
 			module_name		=> key (current_active_module),
 			segment			=> element (segment_cursor),
 			zone			=> zone,
 			point_of_attack	=> to_position (segment.point_of_attack, current_active_sheet),
-			log_threshold	=> log_threshold + 1)
+			log_threshold	=> log_threshold + 10) -- CS: avoids excessive log information
 		then
+			-- segment is movable
+
+			-- Take a copy of the original net segment:
+			segment_preliminary := element (segment_cursor);
+
+			-- calculate the destination point according to the current drawing tool:
+			case segment.tool is
+				when MOUSE =>
+					destination := self.snap_to_grid (self.mouse_position);
+
+				when KEYBOARD =>
+					destination := cursor_main.position;
+			end case;
+
+			-- calculate the distance in x and y from point of attack to destination:
+			dx := distance (segment.point_of_attack, destination, X);
+			dy := distance (segment.point_of_attack, destination, Y);
 			
 			case verb is
 				when VERB_DRAG =>
-					null;
+					case zone is
+						when START_POINT =>
+							if dx = zero or dy = zero then
 
-					draw_line (
-						area		=> in_area,
-						context		=> context,
-						line		=> element (segment_cursor),
-						height		=> self.frame_height);
+								move_by (
+									point	=> segment_preliminary.start_point,
+									offset	=> set (dx, dy));
+							
+							else
+								segment_preliminary.start_point := destination;
+							end if;
 
+							draw_preliminary_segment (segment_preliminary);
+
+							segment.finalizing_granted := true;
+							
+						when END_POINT =>
+							if dx = zero or dy = zero then
+
+								move_by (
+									point	=> segment_preliminary.end_point,
+									offset	=> set (dx, dy));
+							
+							else
+								segment_preliminary.end_point := destination;
+							end if;
+
+							draw_preliminary_segment (segment_preliminary);
+
+							segment.finalizing_granted := true;
+							
+						when CENTER =>
+							-- CS currently dragging at center not possible
+							draw_fixed_segment (segment_cursor);
+							
+						when others => null;
+					end case;
+					
 	-- 			when VERB_MOVE =>
 	-- 				null;
 
 				when others => null;
 			end case;
-
+		else
+			-- Not movable. Draw as given in database:
+			draw_fixed_segment (segment_cursor);
 		end if;
 	end draw_moving_segments;
 	
@@ -193,20 +283,12 @@ procedure draw_nets (
 							else
 								-- Draw the net segment as it is according to module database
 								-- highlighted:
-								draw_line (
-									area		=> in_area,
-									context		=> context,
-									line		=> element (segment_cursor),
-									height		=> self.frame_height);
+								draw_fixed_segment (segment_cursor);
 							end if;
 						else
 							-- Draw the net segment as it is according to module database
 							-- in normal brightness:
-							draw_line (
-								area		=> in_area,
-								context		=> context,
-								line		=> element (segment_cursor),
-								height		=> self.frame_height);
+							draw_fixed_segment (segment_cursor);
 						end if;
 						
 						-- draw labels
