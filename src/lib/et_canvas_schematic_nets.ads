@@ -171,12 +171,15 @@ package et_canvas_schematic_nets is
 
 	type type_being_moved is new boolean;
 	type type_finalizing_granted is new boolean;
+
+	package pac_already_drawn_segments is new doubly_linked_lists (type_net_segments.cursor);
 	
 	type type_segment is record
-		being_moved			: type_being_moved := false;
-		tool				: type_tool := MOUSE;
-		point_of_attack		: type_point;
-		finalizing_granted	: type_finalizing_granted := false; -- CS dedicated type ?
+		being_moved				: type_being_moved := false;
+		tool					: type_tool := MOUSE;
+		point_of_attack			: type_point;
+		already_drawn_segments	: pac_already_drawn_segments.list; -- used when dragging
+		finalizing_granted		: type_finalizing_granted := false;
 	end record;
 
 	segment : type_segment;

@@ -36,6 +36,7 @@
 --
 
 with ada.exceptions;
+with ada.containers.doubly_linked_lists;
 
 separate (et_canvas_schematic)
 
@@ -48,7 +49,8 @@ procedure draw_nets (
 	use et_schematic.type_nets;
 	use et_schematic.type_strands;
 	use et_schematic.type_net_segments;
-
+	use et_schematic.pac_shapes;
+	
 	use pac_draw_misc;
 
 	function is_selected (
@@ -79,15 +81,23 @@ procedure draw_nets (
 		
 	end is_selected;
 
+-- 	package pac_already_drawn_segments is new ada.containers.doubly_linked_lists (type_net_segments.cursor);
+	use pac_already_drawn_segments;
+-- 	already_drawn_segments : pac_already_drawn_segments.list;
+	
 	-- Draws the given net segment as it is according to module database:
 	procedure draw_fixed_segment (
 		s : in type_net_segments.cursor) 
 	is begin
-		draw_line (
-			area		=> in_area,
-			context		=> context,
-			line		=> element (s),
-			height		=> self.frame_height);
+		if not contains (segment.already_drawn_segments, s) then
+			
+			draw_line (
+				area		=> in_area,
+				context		=> context,
+				line		=> element (s),
+				height		=> self.frame_height);
+
+		end if;
 	end draw_fixed_segment;
 
 	-- Draws a net segment:
@@ -100,7 +110,79 @@ procedure draw_nets (
 			line		=> s,
 			height		=> self.frame_height);
 	end draw_preliminary_segment;
-	
+
+	procedure draw_attached_segments (
+		strand_cursor		: in type_strands.cursor;
+		segment_original	: in type_net_segments.cursor;
+		segment_preliminary	: in type_net_segment;
+		zone				: in type_line_zone)
+	is 		
+		procedure query_segment (c : in type_net_segments.cursor) is
+			sp : type_net_segment; -- a preliminary net segment
+
+			procedure draw_and_mark is begin
+				draw_preliminary_segment (sp);
+
+				-- mark segment as already drawn
+				segment.already_drawn_segments.append (segment_original);
+
+			end draw_and_mark;
+			
+		begin -- query_segment
+			
+			-- Skip original segment. It has been drawn already by caller:
+			if c /= segment_original then
+
+				-- Take a copy of the current segment.
+				-- Depending on the zone we are dragging at (in the original segment),
+				-- the start or/and end point of the segment will be overwritten.
+				sp := element (c);
+				
+				case zone is -- the zone of the original segment we are dragging at
+					when START_POINT =>
+						if element (segment_original).start_point = sp.start_point then
+						-- Start point of sp is attached to the start point of the original segment.
+							sp.start_point := segment_preliminary.start_point;
+
+							draw_and_mark;
+						end if;
+
+						if element (segment_original).start_point = sp.end_point then
+						-- end point of sp is attached to the start point of the original segment
+							sp.end_point := segment_preliminary.start_point;
+
+							draw_and_mark;
+						end if;
+						
+					when END_POINT =>
+						if element (segment_original).end_point = sp.start_point then
+						-- Start point of sp is attached to the end point of the original segment.
+							sp.start_point := segment_preliminary.end_point;
+
+							draw_and_mark;
+						end if;
+
+						if element (segment_original).end_point = sp.end_point then
+						-- end point of sp is attached to the end point of the original segment
+							sp.end_point := segment_preliminary.end_point;
+
+							draw_and_mark;
+						end if;
+		
+					when CENTER => null; -- CS
+					
+				end case;
+				
+			end if;
+		end query_segment;
+		
+	begin
+		type_net_segments.iterate (
+			container	=> element (strand_cursor).segments,
+			process		=> query_segment'access);
+		
+	end draw_attached_segments;
+										 
 	-- Draws the net segment being moved or dragged.
 	-- If we are dragging a segment, then other attached segments
 	-- will be dragged along.
@@ -108,8 +190,10 @@ procedure draw_nets (
 	-- will be moved:
 	-- NOTE: The given net segment (via cursor segment_cursor) is the original segment
 	-- as it is given by the module database.
-	procedure draw_moving_segments (segment_cursor : in type_net_segments.cursor) is
-		use et_schematic.pac_shapes;
+	procedure draw_moving_segments (
+		strand_cursor	: in type_strands.cursor;
+		segment_cursor	: in type_net_segments.cursor) 
+	is
 		use et_schematic_ops.nets;
 
 		-- Calculate the zone of attack:
@@ -170,7 +254,15 @@ procedure draw_nets (
 
 							draw_preliminary_segment (segment_preliminary);
 
-							segment.finalizing_granted := true;
+							-- Drawing attached segments requires the original
+							-- net segment (before the drag operation):
+							draw_attached_segments (
+								strand_cursor		=> strand_cursor,
+								segment_original	=> segment_cursor,
+								segment_preliminary	=> segment_preliminary,
+								zone				=> zone);
+							
+							segment.finalizing_granted := true;  -- CS
 							
 						when END_POINT =>
 							if dx = zero or dy = zero then
@@ -185,10 +277,19 @@ procedure draw_nets (
 
 							draw_preliminary_segment (segment_preliminary);
 
-							segment.finalizing_granted := true;
+							-- Drawing attached segments requires the original
+							-- net segment (before the drag operation):
+							draw_attached_segments (
+								strand_cursor		=> strand_cursor,
+								segment_original	=> segment_cursor,
+								segment_preliminary	=> segment_preliminary,
+								zone				=> zone);
+							
+							segment.finalizing_granted := true;  -- CS
 							
 						when CENTER =>
 							-- CS currently dragging at center not possible
+							-- so we draw the selected_segment as it is:
 							draw_fixed_segment (segment_cursor);
 							
 						when others => null;
@@ -279,7 +380,7 @@ procedure draw_nets (
 								-- will be dragged along.
 								-- If we are moving a single segment, then only the current segment
 								-- will be moved.
-								draw_moving_segments (segment_cursor);
+								draw_moving_segments (strand_cursor, segment_cursor);
 							else
 								-- Draw the net segment as it is according to module database
 								-- highlighted:
