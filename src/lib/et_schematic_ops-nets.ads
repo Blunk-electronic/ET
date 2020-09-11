@@ -108,6 +108,9 @@ package et_schematic_ops.nets is
 		return boolean;
 	
 	-- Drags a segment of a net.
+	-- If the segment meets a port, then the port will be connected with the net.
+	-- NOTE: If the segment meets another net, then these two nets will NOT be connected.
+	--       CS: The resulting overlapping segments should be detected by the ERC.
 	procedure drag_segment (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
