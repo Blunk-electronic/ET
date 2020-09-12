@@ -998,8 +998,10 @@ package body et_canvas_schematic is
 			noun := noun_default;
 			
 			reset_request_clarification;
-			reset_net_route;
-			reset_unit;
+			
+			reset_net_route; -- after drawing a net route
+			reset_segment; -- after move/drag
+			reset_unit; -- after moving a unit
 			status_enter_verb;
 		else	
 			case expect_entry is

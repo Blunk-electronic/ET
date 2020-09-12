@@ -36,6 +36,7 @@
 --
 
 with ada.exceptions;
+with ada.containers;						use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 separate (et_canvas_schematic)
@@ -53,6 +54,35 @@ procedure draw_nets (
 	
 	use pac_draw_misc;
 
+	procedure draw_junctions (
+		s : in type_net_segments.cursor)
+	is
+		j : type_junction_symbol := junction_symbol;
+
+		procedure draw is begin
+			draw_circle (
+				area		=> in_area,
+				context		=> context,
+				circle		=> j,
+				filled		=> YES,
+				height		=> self.frame_height);
+		end draw;
+		
+	begin
+		-- at start point of segment:
+		if element (s).junctions.start_point then
+			j.center := element (s).start_point;
+			draw;
+		end if;
+
+		-- at end point of segment:
+		if element (s).junctions.end_point then
+			j.center := element (s).end_point;
+			draw;
+		end if;
+
+	end draw_junctions;
+								
 	-- Returns true if the given segment is selected.
 	-- Returns false if there are no proposed segments or
 	-- if the given segment is not selected.
@@ -84,15 +114,16 @@ procedure draw_nets (
 		
 	end is_selected;
 
--- 	package pac_already_drawn_segments is new ada.containers.doubly_linked_lists (type_net_segments.cursor);
+	package pac_already_drawn_segments is new doubly_linked_lists (type_net_segment);
 	use pac_already_drawn_segments;
--- 	already_drawn_segments : pac_already_drawn_segments.list;
+	already_drawn_segments : pac_already_drawn_segments.list;
 	
-	-- Draws the given net segment as it is according to module database:
+	-- Draws the given net segment as it is according to module database
+	-- if it has not already been drawn:
 	procedure draw_fixed_segment (
 		s : in type_net_segments.cursor) 
 	is begin
-		if not contains (segment.already_drawn_segments, s) then
+		if not contains (already_drawn_segments, element (s)) then
 			
 			draw_line (
 				area		=> in_area,
@@ -131,15 +162,14 @@ procedure draw_nets (
 		procedure query_segment (c : in type_net_segments.cursor) is
 			secondary_segment : type_net_segment;
 
-			-- Draw the secondary segment and marks it as drawn.
+			-- Draw the secondary segment and mark it as drawn.
 			-- It must be marked as drawn so that procedure query_nets
 			-- does not draw it in its inital state according to the database.
 			procedure draw_and_mark is begin
 				draw_preliminary_segment (secondary_segment);
 
 				-- mark segment as already drawn
-				segment.already_drawn_segments.append (original_segment);
-
+				already_drawn_segments.append (element (c));
 			end draw_and_mark;
 			
 		begin -- query_segment
@@ -343,16 +373,16 @@ procedure draw_nets (
 
 			procedure query_segments (strand : in type_strand) is
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
-				junction : type_junction_symbol := junction_symbol;
+-- 				junction : type_junction_symbol := junction_symbol;
 
-				procedure draw_junction is begin
-					draw_circle (
-						area		=> in_area,
-						context		=> context,
-						circle		=> junction,
-						filled		=> YES,
-						height		=> self.frame_height);
-				end draw_junction;
+-- 				procedure draw_junction is begin
+-- 					draw_circle (
+-- 						area		=> in_area,
+-- 						context		=> context,
+-- 						circle		=> junction,
+-- 						filled		=> YES,
+-- 						height		=> self.frame_height);
+-- 				end draw_junction;
 
 				procedure query_label (c : in type_net_labels.cursor) is 
 					use type_net_labels;
@@ -389,14 +419,16 @@ procedure draw_nets (
 			begin -- query_segments
 				-- draw nets of the active sheet only:
 				if strand.position.sheet = current_active_sheet then
+
+					-- set line width for net segments:
+					set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
+
+					-- First we draw selected segments or those being moved/dragged:
+					set_color_nets (context.cr, BRIGHT);
 					
 					while segment_cursor /= type_net_segments.no_element loop
-
-						-- set line width for net segments:
-						set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
-
+						
 						if is_selected (segment_cursor) then
-							set_color_nets (context.cr, BRIGHT);
 						
 							if segment.being_moved then
 								-- Draw the net segments being moved or dragged.
@@ -406,36 +438,45 @@ procedure draw_nets (
 								-- will be moved.
 								draw_moving_segments (strand_cursor, segment_cursor);
 							else
-								-- Draw the net segment as it is according to module database
-								-- highlighted:
+								-- Draw the net segment as it is according to module database:
 								draw_fixed_segment (segment_cursor);
 							end if;
-						else
-							-- Draw the net segment as it is according to module database
-							-- in normal brightness:
+						end if;
+						
+						next (segment_cursor);
+					end loop;
+
+					
+					-- Now we draw the remaining segments:
+					set_color_nets (context.cr, NORMAL);
+					segment_cursor := strand.segments.first;
+					
+					while segment_cursor /= type_net_segments.no_element loop
+
+						if not is_selected (segment_cursor) then
+
+							-- Draw the net segment as it is according to module database:
 							draw_fixed_segment (segment_cursor);
 						end if;
 						
 						-- draw labels
 						type_net_labels.iterate (element (segment_cursor).labels, query_label'access);
 
-						set_color_nets (context.cr, NORMAL);
 
 						
-						-- Draw junctions.
-						-- There is no highlighting for junctions.
+						draw_junctions (segment_cursor);
 						
-						-- at start point of segment:
-						if element (segment_cursor).junctions.start_point then
-							junction.center := element (segment_cursor).start_point;
-							draw_junction;
-						end if;
-
-						-- at end point of segment:
-						if element (segment_cursor).junctions.end_point then
-							junction.center := element (segment_cursor).end_point;
-							draw_junction;
-						end if;
+-- 						-- at start point of segment:
+-- 						if element (segment_cursor).junctions.start_point then
+-- 							junction.center := element (segment_cursor).start_point;
+-- 							draw_junction;
+-- 						end if;
+-- 
+-- 						-- at end point of segment:
+-- 						if element (segment_cursor).junctions.end_point then
+-- 							junction.center := element (segment_cursor).end_point;
+-- 							draw_junction;
+-- 						end if;
 						
 						next (segment_cursor);
 					end loop;
