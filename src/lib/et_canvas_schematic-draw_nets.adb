@@ -53,6 +53,9 @@ procedure draw_nets (
 	
 	use pac_draw_misc;
 
+	-- Returns true if the given segment is selected.
+	-- Returns false if there are no proposed segments or
+	-- if the given segment is not selected.
 	function is_selected (
 		s : in type_net_segments.cursor)
 		return boolean is
@@ -111,60 +114,72 @@ procedure draw_nets (
 			height		=> self.frame_height);
 	end draw_preliminary_segment;
 
-	procedure draw_attached_segments (
+	-- Draws secondary nets which are attached to the primary net.
+	procedure draw_secondary_segments (
 		strand_cursor		: in type_strands.cursor;
-		segment_original	: in type_net_segments.cursor;
-		segment_preliminary	: in type_net_segment;
+
+		-- The segment as it is according to database (before the drag)										  
+		original_segment	: in type_net_segments.cursor;
+
+		-- The primary segment being drawn:
+		primary_segment		: in type_net_segment;
+
+		-- the zone being dragged:
 		zone				: in type_line_zone)
 	is 		
+		
 		procedure query_segment (c : in type_net_segments.cursor) is
-			sp : type_net_segment; -- a preliminary net segment
+			secondary_segment : type_net_segment;
 
+			-- Draw the secondary segment and marks it as drawn.
+			-- It must be marked as drawn so that procedure query_nets
+			-- does not draw it in its inital state according to the database.
 			procedure draw_and_mark is begin
-				draw_preliminary_segment (sp);
+				draw_preliminary_segment (secondary_segment);
 
 				-- mark segment as already drawn
-				segment.already_drawn_segments.append (segment_original);
+				segment.already_drawn_segments.append (original_segment);
 
 			end draw_and_mark;
 			
 		begin -- query_segment
 			
 			-- Skip original segment. It has been drawn already by caller:
-			if c /= segment_original then
+			if c /= original_segment then
 
 				-- Take a copy of the current segment.
+				-- From now on we call it "secondary segment".
 				-- Depending on the zone we are dragging at (in the original segment),
-				-- the start or/and end point of the segment will be overwritten.
-				sp := element (c);
+				-- the start or/and end point of the secondary segment will be overwritten.
+				secondary_segment := element (c);
 				
 				case zone is -- the zone of the original segment we are dragging at
 					when START_POINT =>
-						if element (segment_original).start_point = sp.start_point then
-						-- Start point of sp is attached to the start point of the original segment.
-							sp.start_point := segment_preliminary.start_point;
+						if element (original_segment).start_point = secondary_segment.start_point then
+						-- Start point of secondary segement is attached to the start point of the original segment.
+							secondary_segment.start_point := primary_segment.start_point;
 
 							draw_and_mark;
 						end if;
 
-						if element (segment_original).start_point = sp.end_point then
-						-- end point of sp is attached to the start point of the original segment
-							sp.end_point := segment_preliminary.start_point;
+						if element (original_segment).start_point = secondary_segment.end_point then
+						-- end point of secondary net segement to the start point of the original segment
+							secondary_segment.end_point := primary_segment.start_point;
 
 							draw_and_mark;
 						end if;
 						
 					when END_POINT =>
-						if element (segment_original).end_point = sp.start_point then
-						-- Start point of sp is attached to the end point of the original segment.
-							sp.start_point := segment_preliminary.end_point;
+						if element (original_segment).end_point = secondary_segment.start_point then
+						-- Start point of secondary segement is attached to the end point of the original segment.
+							secondary_segment.start_point := primary_segment.end_point;
 
 							draw_and_mark;
 						end if;
 
-						if element (segment_original).end_point = sp.end_point then
-						-- end point of sp is attached to the end point of the original segment
-							sp.end_point := segment_preliminary.end_point;
+						if element (original_segment).end_point = secondary_segment.end_point then
+						-- end point of secondary segement is attached to the end point of the original segment
+							secondary_segment.end_point := primary_segment.end_point;
 
 							draw_and_mark;
 						end if;
@@ -177,53 +192,57 @@ procedure draw_nets (
 		end query_segment;
 		
 	begin
+		-- Iterate all segments of the given strand.
+		-- Skip the original segment:
 		type_net_segments.iterate (
 			container	=> element (strand_cursor).segments,
 			process		=> query_segment'access);
 		
-	end draw_attached_segments;
+	end draw_secondary_segments;
 										 
 	-- Draws the net segment being moved or dragged.
 	-- If we are dragging a segment, then other attached segments
 	-- will be dragged along.
 	-- If we are moving a single segment, then only the current segment
 	-- will be moved:
-	-- NOTE: The given net segment (via cursor segment_cursor) is the original segment
-	-- as it is given by the module database.
+	-- NOTE: The given original net segment (via cursor) is the segment
+	-- as given by the module database.
 	procedure draw_moving_segments (
-		strand_cursor	: in type_strands.cursor;
-		segment_cursor	: in type_net_segments.cursor) 
+		strand_cursor		: in type_strands.cursor;
+		original_segment	: in type_net_segments.cursor) 
 	is
 		use et_schematic_ops.nets;
 
-		-- Calculate the zone of attack:
+		-- Calculate the zone where the original segement is being attacked:
 		zone : constant type_line_zone := which_zone (
 				point	=> segment.point_of_attack,
-				line	=> element (segment_cursor));
+				line	=> element (original_segment));
 
 		dx, dy : type_distance;
 
 		destination : type_point;
-		segment_preliminary : type_net_segment;
+		primary_segment : type_net_segment;
 		
 	begin -- draw_moving_segments
 		
-		-- First test whether the segment is movable at all.
+		-- First test whether the original segment is movable at all.
 		-- Ports connected with the segment may prohibit moving the segment
 		-- as they belong to symbols which are not dragged along.
 		-- If the segment is not movable then it will be drawn as given by
 		-- the module database.
 		if movable (
 			module_name		=> key (current_active_module),
-			segment			=> element (segment_cursor),
+			segment			=> element (original_segment),
 			zone			=> zone,
 			point_of_attack	=> to_position (segment.point_of_attack, current_active_sheet),
 			log_threshold	=> log_threshold + 10) -- CS: avoids excessive log information
 		then
 			-- segment is movable
 
-			-- Take a copy of the original net segment:
-			segment_preliminary := element (segment_cursor);
+			-- Take a copy of the original net segment.
+			-- We call this copy from now on "primary segment" because other
+			-- segments (secondary segments) could be connected with it.
+			primary_segment := element (original_segment);
 
 			-- calculate the destination point according to the current drawing tool:
 			case segment.tool is
@@ -240,26 +259,30 @@ procedure draw_nets (
 			
 			case verb is
 				when VERB_DRAG =>
+
+					-- Depending on the zone being dragged, we move the
+					-- start or/and end point of the primary segment:
 					case zone is
 						when START_POINT =>
 							if dx = zero or dy = zero then
 
 								move_by (
-									point	=> segment_preliminary.start_point,
+									point	=> primary_segment.start_point,
 									offset	=> set (dx, dy));
 							
 							else
-								segment_preliminary.start_point := destination;
+								primary_segment.start_point := destination;
 							end if;
 
-							draw_preliminary_segment (segment_preliminary);
+							-- Draw the primary segment in its temporarily state:
+							draw_preliminary_segment (primary_segment);
 
-							-- Drawing attached segments requires the original
+							-- Drawing attached secondary segments requires the original
 							-- net segment (before the drag operation):
-							draw_attached_segments (
+							draw_secondary_segments (
 								strand_cursor		=> strand_cursor,
-								segment_original	=> segment_cursor,
-								segment_preliminary	=> segment_preliminary,
+								original_segment	=> original_segment,
+								primary_segment		=> primary_segment,
 								zone				=> zone);
 							
 							segment.finalizing_granted := true;  -- CS
@@ -268,21 +291,22 @@ procedure draw_nets (
 							if dx = zero or dy = zero then
 
 								move_by (
-									point	=> segment_preliminary.end_point,
+									point	=> primary_segment.end_point,
 									offset	=> set (dx, dy));
 							
 							else
-								segment_preliminary.end_point := destination;
+								primary_segment.end_point := destination;
 							end if;
 
-							draw_preliminary_segment (segment_preliminary);
+							-- Draw the primary segment in its temporarily state:
+							draw_preliminary_segment (primary_segment);
 
-							-- Drawing attached segments requires the original
+							-- Drawing attached secondary segments requires the original
 							-- net segment (before the drag operation):
-							draw_attached_segments (
+							draw_secondary_segments (
 								strand_cursor		=> strand_cursor,
-								segment_original	=> segment_cursor,
-								segment_preliminary	=> segment_preliminary,
+								original_segment	=> original_segment,
+								primary_segment		=> primary_segment,
 								zone				=> zone);
 							
 							segment.finalizing_granted := true;  -- CS
@@ -290,7 +314,7 @@ procedure draw_nets (
 						when CENTER =>
 							-- CS currently dragging at center not possible
 							-- so we draw the selected_segment as it is:
-							draw_fixed_segment (segment_cursor);
+							draw_fixed_segment (original_segment);
 							
 						when others => null;
 					end case;
@@ -302,7 +326,7 @@ procedure draw_nets (
 			end case;
 		else
 			-- Not movable. Draw as given in database:
-			draw_fixed_segment (segment_cursor);
+			draw_fixed_segment (original_segment);
 		end if;
 	end draw_moving_segments;
 	
