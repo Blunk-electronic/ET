@@ -54,6 +54,7 @@ procedure draw_nets (
 	
 	use pac_draw_misc;
 
+	-- Draws the junctions of a segment:
 	procedure draw_junctions (
 		s : in type_net_segments.cursor)
 	is
@@ -82,7 +83,37 @@ procedure draw_nets (
 		end if;
 
 	end draw_junctions;
-								
+
+	-- Draws the junctions of a segment:
+	procedure draw_junctions (
+		s : in type_net_segment)
+	is
+		j : type_junction_symbol := junction_symbol;
+
+		procedure draw is begin
+			draw_circle (
+				area		=> in_area,
+				context		=> context,
+				circle		=> j,
+				filled		=> YES,
+				height		=> self.frame_height);
+		end draw;
+		
+	begin
+		-- at start point of segment:
+		if s.junctions.start_point then
+			j.center := s.start_point;
+			draw;
+		end if;
+
+		-- at end point of segment:
+		if s.junctions.end_point then
+			j.center := s.end_point;
+			draw;
+		end if;
+
+	end draw_junctions;
+	
 	-- Returns true if the given segment is selected.
 	-- Returns false if there are no proposed segments or
 	-- if the given segment is not selected.
@@ -114,12 +145,19 @@ procedure draw_nets (
 		
 	end is_selected;
 
+	-- We need a list segments that have been drawn already.
+	-- Reason: While draggin/moving segments temporarily segments are drawn.
+	--         During this time the original segments (as given in database)
+	--         must not be drawn.
 	package pac_already_drawn_segments is new doubly_linked_lists (type_net_segment);
 	use pac_already_drawn_segments;
+	-- This list keeps record of already drawn segments:
 	already_drawn_segments : pac_already_drawn_segments.list;
 	
 	-- Draws the given net segment as it is according to module database
-	-- if it has not already been drawn:
+	-- if it has not already been drawn.
+	-- Draws also possible junctions that may exist at start or end point
+	-- of the segment.
 	procedure draw_fixed_segment (
 		s : in type_net_segments.cursor) 
 	is begin
@@ -131,10 +169,14 @@ procedure draw_nets (
 				line		=> element (s),
 				height		=> self.frame_height);
 
+			draw_junctions (s);
+			
 		end if;
 	end draw_fixed_segment;
 
-	-- Draws a net segment:
+	-- Draws a net segment.
+	-- Draws also possible junctions that may exist at start or end point
+	-- of the segment.
 	procedure draw_preliminary_segment (
 		s : in type_net_segment) 
 	is begin
@@ -143,6 +185,8 @@ procedure draw_nets (
 			context		=> context,
 			line		=> s,
 			height		=> self.frame_height);
+
+		draw_junctions (s);
 	end draw_preliminary_segment;
 
 	-- Draws secondary nets which are attached to the primary net.
@@ -373,16 +417,6 @@ procedure draw_nets (
 
 			procedure query_segments (strand : in type_strand) is
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
--- 				junction : type_junction_symbol := junction_symbol;
-
--- 				procedure draw_junction is begin
--- 					draw_circle (
--- 						area		=> in_area,
--- 						context		=> context,
--- 						circle		=> junction,
--- 						filled		=> YES,
--- 						height		=> self.frame_height);
--- 				end draw_junction;
 
 				procedure query_label (c : in type_net_labels.cursor) is 
 					use type_net_labels;
@@ -461,22 +495,6 @@ procedure draw_nets (
 						
 						-- draw labels
 						type_net_labels.iterate (element (segment_cursor).labels, query_label'access);
-
-
-						
-						draw_junctions (segment_cursor);
-						
--- 						-- at start point of segment:
--- 						if element (segment_cursor).junctions.start_point then
--- 							junction.center := element (segment_cursor).start_point;
--- 							draw_junction;
--- 						end if;
--- 
--- 						-- at end point of segment:
--- 						if element (segment_cursor).junctions.end_point then
--- 							junction.center := element (segment_cursor).end_point;
--- 							draw_junction;
--- 						end if;
 						
 						next (segment_cursor);
 					end loop;
