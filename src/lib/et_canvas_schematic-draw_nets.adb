@@ -113,6 +113,44 @@ procedure draw_nets (
 		end if;
 
 	end draw_junctions;
+
+	procedure draw_labels (
+		n : in type_nets.cursor;
+		s : in type_net_segment)
+	is 
+		use type_net_labels;
+		use et_text;
+		use pac_text;
+
+		procedure draw (l : in type_net_labels.cursor) is begin
+			case element (l).appearance is
+				when SIMPLE =>
+					draw_text (
+						area		=> in_area,
+						context		=> context,
+						content		=> to_content (to_string (key (n))),
+						size		=> element (l).size,
+						font		=> net_label_font,
+						position	=> element (l).position,
+						origin		=> true, -- CS must be false on export to image
+						
+						-- Text rotation around its anchor point.
+						-- This is documentational text.
+						-- It is readable from the front or the right.
+						rotation	=> to_rotation (element (l).rotation_simple),
+						alignment	=> (LEFT, BOTTOM),
+						height		=> self.frame_height
+						);
+
+				when TAG =>
+					draw_tag_label (self, in_area, context, key (n), element (l));
+
+			end case;
+		end draw;
+		
+	begin
+		iterate (s.labels, draw'access);
+	end draw_labels;
 	
 	-- Returns true if the given segment is selected.
 	-- Returns false if there are no proposed segments or
@@ -178,8 +216,10 @@ procedure draw_nets (
 	-- Draws also possible junctions that may exist at start or end point
 	-- of the segment.
 	procedure draw_preliminary_segment (
+		n : in type_nets.cursor;
 		s : in type_net_segment) 
-	is begin
+	is
+	begin
 		draw_line (
 			area		=> in_area,
 			context		=> context,
@@ -187,10 +227,13 @@ procedure draw_nets (
 			height		=> self.frame_height);
 
 		draw_junctions (s);
+
+		draw_labels (n, s);
 	end draw_preliminary_segment;
 
 	-- Draws secondary nets which are attached to the primary net.
 	procedure draw_secondary_segments (
+		net_cursor			: in type_nets.cursor;
 		strand_cursor		: in type_strands.cursor;
 
 		-- The segment as it is according to database (before the drag)										  
@@ -210,7 +253,7 @@ procedure draw_nets (
 			-- It must be marked as drawn so that procedure query_nets
 			-- does not draw it in its inital state according to the database.
 			procedure draw_and_mark is begin
-				draw_preliminary_segment (secondary_segment);
+				draw_preliminary_segment (net_cursor, secondary_segment);
 
 				-- mark segment as already drawn
 				already_drawn_segments.append (element (c));
@@ -230,14 +273,14 @@ procedure draw_nets (
 				case zone is -- the zone of the original segment we are dragging at
 					when START_POINT =>
 						if element (original_segment).start_point = secondary_segment.start_point then
-						-- Start point of secondary segement is attached to the start point of the original segment.
+						-- Start point of secondary segment is attached to the start point of the original segment.
 							secondary_segment.start_point := primary_segment.start_point;
 
 							draw_and_mark;
 						end if;
 
 						if element (original_segment).start_point = secondary_segment.end_point then
-						-- end point of secondary net segement to the start point of the original segment
+						-- end point of secondary net segment to the start point of the original segment
 							secondary_segment.end_point := primary_segment.start_point;
 
 							draw_and_mark;
@@ -245,14 +288,14 @@ procedure draw_nets (
 						
 					when END_POINT =>
 						if element (original_segment).end_point = secondary_segment.start_point then
-						-- Start point of secondary segement is attached to the end point of the original segment.
+						-- Start point of secondary segment is attached to the end point of the original segment.
 							secondary_segment.start_point := primary_segment.end_point;
 
 							draw_and_mark;
 						end if;
 
 						if element (original_segment).end_point = secondary_segment.end_point then
-						-- end point of secondary segement is attached to the end point of the original segment
+						-- end point of secondary segment is attached to the end point of the original segment
 							secondary_segment.end_point := primary_segment.end_point;
 
 							draw_and_mark;
@@ -282,6 +325,7 @@ procedure draw_nets (
 	-- NOTE: The given original net segment (via cursor) is the segment
 	-- as given by the module database.
 	procedure draw_moving_segments (
+		net_cursor			: in type_nets.cursor;
 		strand_cursor		: in type_strands.cursor;
 		original_segment	: in type_net_segments.cursor) 
 	is
@@ -348,12 +392,18 @@ procedure draw_nets (
 								primary_segment.start_point := destination;
 							end if;
 
+							move_net_labels (
+								segment_before	=> element (original_segment),
+								segment_after	=> primary_segment,
+								zone			=> zone);
+							
 							-- Draw the primary segment in its temporarily state:
-							draw_preliminary_segment (primary_segment);
+							draw_preliminary_segment (net_cursor, primary_segment);
 
 							-- Drawing attached secondary segments requires the original
 							-- net segment (before the drag operation):
 							draw_secondary_segments (
+								net_cursor			=> net_cursor,
 								strand_cursor		=> strand_cursor,
 								original_segment	=> original_segment,
 								primary_segment		=> primary_segment,
@@ -372,12 +422,18 @@ procedure draw_nets (
 								primary_segment.end_point := destination;
 							end if;
 
+							move_net_labels (
+								segment_before	=> element (original_segment),
+								segment_after	=> primary_segment,
+								zone			=> zone);
+							
 							-- Draw the primary segment in its temporarily state:
-							draw_preliminary_segment (primary_segment);
+							draw_preliminary_segment (net_cursor, primary_segment);
 
 							-- Drawing attached secondary segments requires the original
 							-- net segment (before the drag operation):
 							draw_secondary_segments (
+								net_cursor			=> net_cursor,
 								strand_cursor		=> strand_cursor,
 								original_segment	=> original_segment,
 								primary_segment		=> primary_segment,
@@ -418,37 +474,37 @@ procedure draw_nets (
 			procedure query_segments (strand : in type_strand) is
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
 
-				procedure query_label (c : in type_net_labels.cursor) is 
-					use type_net_labels;
-					use et_text;
-					use pac_text;
-				begin
+-- 				procedure query_label (c : in type_net_labels.cursor) is 
+-- 					use type_net_labels;
+-- 					use et_text;
+-- 					use pac_text;
+-- 				begin
 					--put_line ("label at" & to_string (element (c).position));
-
-					case element (c).appearance is
-						when SIMPLE =>
-							draw_text (
-								area		=> in_area,
-								context		=> context,
-								content		=> to_content (to_string (key (net_cursor))),
-								size		=> element (c).size,
-								font		=> net_label_font,
-								position	=> element (c).position,
-								origin		=> true, -- CS must be false on export to image
-								
-								-- Text rotation around its anchor point.
-								-- This is documentational text.
-								-- It is readable from the front or the right.
-								rotation	=> to_rotation (element (c).rotation_simple),
-								alignment	=> (LEFT, BOTTOM),
-								height		=> self.frame_height
-								);
-
-						when TAG =>
-							draw_tag_label (self, in_area, context, net_name, element (c));
-
-					end case;
-				end query_label; 
+				
+-- 					case element (c).appearance is
+-- 						when SIMPLE =>
+-- 							draw_text (
+-- 								area		=> in_area,
+-- 								context		=> context,
+-- 								content		=> to_content (to_string (key (net_cursor))),
+-- 								size		=> element (c).size,
+-- 								font		=> net_label_font,
+-- 								position	=> element (c).position,
+-- 								origin		=> true, -- CS must be false on export to image
+-- 								
+-- 								-- Text rotation around its anchor point.
+-- 								-- This is documentational text.
+-- 								-- It is readable from the front or the right.
+-- 								rotation	=> to_rotation (element (c).rotation_simple),
+-- 								alignment	=> (LEFT, BOTTOM),
+-- 								height		=> self.frame_height
+-- 								);
+-- 
+-- 						when TAG =>
+-- 							draw_tag_label (self, in_area, context, net_name, element (c));
+-- 
+-- 					end case;
+-- 				end query_label; 
 					
 			begin -- query_segments
 				-- draw nets of the active sheet only:
@@ -470,10 +526,12 @@ procedure draw_nets (
 								-- will be dragged along.
 								-- If we are moving a single segment, then only the current segment
 								-- will be moved.
-								draw_moving_segments (strand_cursor, segment_cursor);
+								draw_moving_segments (net_cursor, strand_cursor, segment_cursor);
 							else
 								-- Draw the net segment as it is according to module database:
 								draw_fixed_segment (segment_cursor);
+
+								draw_labels (net_cursor, element (segment_cursor));
 							end if;
 						end if;
 						
@@ -491,10 +549,12 @@ procedure draw_nets (
 
 							-- Draw the net segment as it is according to module database:
 							draw_fixed_segment (segment_cursor);
+
+							draw_labels (net_cursor, element (segment_cursor));
 						end if;
 						
 						-- draw labels
-						type_net_labels.iterate (element (segment_cursor).labels, query_label'access);
+						--type_net_labels.iterate (element (segment_cursor).labels, query_label'access);
 						
 						next (segment_cursor);
 					end loop;
