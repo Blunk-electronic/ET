@@ -40,8 +40,6 @@ with ada.strings.unbounded;			use ada.strings.unbounded;
 with ada.exceptions;
 
 package body et_schematic_ops.nets is
-
-	use pac_generic_modules;
 	
 	procedure junction_in_sloping_segment (point : in et_coordinates.type_position) is begin
 		log (ERROR, "Junction not allowed in a sloping net segment at" & to_string (point),
@@ -856,6 +854,60 @@ package body et_schematic_ops.nets is
 		
 		return result;
 	end movable;
+
+	procedure move_net_labels (
+		segment_before	: in type_net_segment;
+		segment_after	: in out type_net_segment;
+		zone			: in type_line_zone)
+	is 
+		-- Calculate the displacement of the start and end point:
+		
+		delta_start : constant type_point := type_point (
+			distance_relative (segment_before.start_point, segment_after.start_point));
+		
+		delta_end	: constant type_point := type_point (
+			distance_relative (segment_before.end_point, segment_after.end_point));
+															
+		use type_net_labels;
+		label_cursor : type_net_labels.cursor := segment_after.labels.first;
+
+		procedure move (l : in out type_net_label) is begin
+			case l.appearance is
+				when TAG => 
+					-- Moving the tag labels is quite simple because
+					-- they are always at start or end point.
+					-- So the label position change is just the displacement
+					-- of the start or end point:
+					case zone is
+						when START_POINT => 
+							move_by (l.position, delta_start);
+							
+						when END_POINT => 
+							move_by (l.position, delta_end);
+
+						when CENTER =>
+							move_by (l.position, delta_start);
+							move_by (l.position, delta_end);
+							
+					end case;
+
+					-- CS: change rotation of label ?
+					
+				when SIMPLE => null; -- CS
+					-- This requires a bit more math because simple labels
+					-- are mostly between start and end point.
+
+					-- CS: change rotation of label ?
+			end case;
+		end move;
+		
+	begin -- move_net_labels
+		while label_cursor /= type_net_labels.no_element loop
+			update_element (segment_after.labels, label_cursor, move'access);
+			next (label_cursor);
+		end loop;
+		
+	end move_net_labels;
 	
 	procedure drag_segment (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -895,16 +947,16 @@ package body et_schematic_ops.nets is
 					segment_cursor_target : type_net_segments.cursor;
 					target_segment_before : type_net_segment;
 
-					use et_schematic.pac_shapes;
 					zone : type_line_zone;
 
 					procedure move_targeted_segment (segment : in out type_net_segment) is 
 						-- In case absolute movement is required we need these values:
 						dx : constant type_distance := distance (type_point (point_of_attack), destination, X);
 						dy : constant type_distance := distance (type_point (point_of_attack), destination, Y);
+
+						-- backup the segment as it was before the move/drag:
+						segment_before : constant type_net_segment := segment;
 					begin
-						-- CS: move tag labels along with start/end point
-						
 						case zone is
 							when START_POINT =>
 								case coordinates is
@@ -963,29 +1015,70 @@ package body et_schematic_ops.nets is
 										
 								end case;
 						end case;
+
+						move_net_labels (
+							segment_before	=> segment_before,
+							segment_after	=> segment,
+							zone			=> zone);
+						
 					end move_targeted_segment;
 
 					procedure move_connected_segment (connected_segment : in out type_net_segment) is 
 					-- This procedure moves the start/end points of segments that are connected
 					-- with the target_segment_before.
 
+						-- backup the segment as it was before the move/drag:
+						segment_before : constant type_net_segment := connected_segment;
+						
 						procedure copy_start_point is begin
 							if connected_segment.start_point = target_segment_before.start_point then
+								
+								-- The connected segment is being dragged at its start point:
 								connected_segment.start_point := element (segment_cursor_target).start_point;
+
+								move_net_labels (
+									segment_before	=> segment_before,
+									segment_after	=> connected_segment,
+									zone			=> START_POINT);
+
 							end if;
 
 							if connected_segment.end_point = target_segment_before.start_point then
+								
+								-- The connected segment is being dragged at its end point:
 								connected_segment.end_point := element (segment_cursor_target).start_point;
+
+								move_net_labels (
+									segment_before	=> segment_before,
+									segment_after	=> connected_segment,
+									zone			=> END_POINT);
+
 							end if;
 						end;
 
 						procedure copy_end_point is begin
 							if connected_segment.start_point = target_segment_before.end_point then
+
+								-- The connected segment is being dragged at its start point:
 								connected_segment.start_point := element (segment_cursor_target).end_point;
+
+								move_net_labels (
+									segment_before	=> segment_before,
+									segment_after	=> connected_segment,
+									zone			=> START_POINT);
+
 							end if;
 
 							if connected_segment.end_point = target_segment_before.end_point then
+								-- The connected segment is being dragged at its end point:
+								
 								connected_segment.end_point := element (segment_cursor_target).end_point;
+
+								move_net_labels (
+									segment_before	=> segment_before,
+									segment_after	=> connected_segment,
+									zone			=> END_POINT);
+
 							end if;
 						end;
 						
