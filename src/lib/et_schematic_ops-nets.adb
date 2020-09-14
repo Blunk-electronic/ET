@@ -879,15 +879,24 @@ package body et_schematic_ops.nets is
 					-- So the label position change is just the displacement
 					-- of the start or end point:
 					case zone is
-						when START_POINT => 
-							move_by (l.position, delta_start);
+						when START_POINT =>
+							if l.position = segment_before.start_point then
+								move_by (l.position, delta_start);
+							end if;
 							
 						when END_POINT => 
-							move_by (l.position, delta_end);
+							if l.position = segment_before.end_point then
+								move_by (l.position, delta_end);
+							end if;
 
 						when CENTER =>
-							move_by (l.position, delta_start);
-							move_by (l.position, delta_end);
+							if l.position = segment_before.start_point then
+								move_by (l.position, delta_start);
+							end if;
+
+							if l.position = segment_before.end_point then
+								move_by (l.position, delta_end);
+							end if;
 							
 					end case;
 

@@ -173,13 +173,6 @@ procedure draw_nets (
 				return false;
 			end if;
 		end if;
-
--- 		exception
--- 			when event: others =>
--- 				log_indentation_reset;
--- 				log (text => "ABC", console => true);
--- 				log (text => ada.exceptions.exception_information (event), console => true);
--- 				raise;
 		
 	end is_selected;
 
@@ -218,8 +211,7 @@ procedure draw_nets (
 	procedure draw_preliminary_segment (
 		n : in type_nets.cursor;
 		s : in type_net_segment) 
-	is
-	begin
+	is begin
 		draw_line (
 			area		=> in_area,
 			context		=> context,
@@ -262,7 +254,7 @@ procedure draw_nets (
 		begin -- query_segment
 			
 			-- Skip original segment. It has been drawn already by caller:
-			if c /= original_segment then
+			if element (c) /= element (original_segment) then
 
 				-- Take a copy of the current segment.
 				-- From now on we call it "secondary segment".
@@ -473,40 +465,7 @@ procedure draw_nets (
 
 			procedure query_segments (strand : in type_strand) is
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
-
--- 				procedure query_label (c : in type_net_labels.cursor) is 
--- 					use type_net_labels;
--- 					use et_text;
--- 					use pac_text;
--- 				begin
-					--put_line ("label at" & to_string (element (c).position));
-				
--- 					case element (c).appearance is
--- 						when SIMPLE =>
--- 							draw_text (
--- 								area		=> in_area,
--- 								context		=> context,
--- 								content		=> to_content (to_string (key (net_cursor))),
--- 								size		=> element (c).size,
--- 								font		=> net_label_font,
--- 								position	=> element (c).position,
--- 								origin		=> true, -- CS must be false on export to image
--- 								
--- 								-- Text rotation around its anchor point.
--- 								-- This is documentational text.
--- 								-- It is readable from the front or the right.
--- 								rotation	=> to_rotation (element (c).rotation_simple),
--- 								alignment	=> (LEFT, BOTTOM),
--- 								height		=> self.frame_height
--- 								);
--- 
--- 						when TAG =>
--- 							draw_tag_label (self, in_area, context, net_name, element (c));
--- 
--- 					end case;
--- 				end query_label; 
-					
-			begin -- query_segments
+			begin
 				-- draw nets of the active sheet only:
 				if strand.position.sheet = current_active_sheet then
 
@@ -552,10 +511,7 @@ procedure draw_nets (
 
 							draw_labels (net_cursor, element (segment_cursor));
 						end if;
-						
-						-- draw labels
-						--type_net_labels.iterate (element (segment_cursor).labels, query_label'access);
-						
+
 						next (segment_cursor);
 					end loop;
 
