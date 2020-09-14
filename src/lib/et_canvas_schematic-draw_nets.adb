@@ -437,6 +437,7 @@ procedure draw_nets (
 							-- CS currently dragging at center not possible
 							-- so we draw the selected_segment as it is:
 							draw_fixed_segment (original_segment);
+							draw_labels (net_cursor, element (original_segment));
 							
 						when others => null;
 					end case;
@@ -449,6 +450,7 @@ procedure draw_nets (
 		else
 			-- Not movable. Draw as given in database:
 			draw_fixed_segment (original_segment);
+			draw_labels (net_cursor, element (original_segment));
 		end if;
 	end draw_moving_segments;
 	
