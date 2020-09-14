@@ -746,13 +746,15 @@ In the example below the net motor_on is attacked on sheet 1 at x/y 120/100. The
 is close to start point. So the start point will be dragged by dx/dy of 0/10.
 The decision whether the start or end point (or both) will be dragged depends on the point of attack.
 If the start or end point is tied to any port, no dragging will be performed.
-Absolute dragging with the center of the segment is not supported.
 Dragging is not possible across sheets.
 ```
 schematic led_driver drag segment motor_on 1 110 100 relative 0 -10 # point of attack 110 100 by dx dy
 ```
 ```
 schematic led_driver drag segment motor_on 1 110 89 relative 0 10 # point of attack 120 100 by dx dy
+```
+```
+schematic led_driver drag segment motor_on 1 100 80 absolute 120 90 # point of attack 100 80 to 120 90
 ```
 
 ### NAMING AND RENAMING

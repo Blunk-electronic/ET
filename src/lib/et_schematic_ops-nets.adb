@@ -1008,8 +1008,13 @@ package body et_schematic_ops.nets is
 							when CENTER =>
 								case coordinates is
 									when ABSOLUTE =>
-										-- CS: currently absolute dragging at the center is not possible.
-										log (WARNING, "absolute dragging at center not possible !");
+										move_by (
+											point	=> segment.start_point,
+											offset	=> set (dx, dy));
+
+										move_by (
+											point	=> segment.end_point,
+											offset	=> set (dx, dy));
 
 									when RELATIVE =>
 										move_by (
@@ -1288,7 +1293,8 @@ package body et_schematic_ops.nets is
 							position	=> strand_cursor,
 							process		=> query_segments'access);
 
- 					end if;
+					end if;
+					
 					next (strand_cursor);
 				end loop;
 
