@@ -250,7 +250,39 @@ procedure draw_nets (
 				-- mark segment as already drawn
 				already_drawn_segments.append (element (c));
 			end draw_and_mark;
-			
+
+			procedure drag_at_start is begin
+				if element (original_segment).start_point = secondary_segment.start_point then
+				-- Start point of secondary segment is attached to the start point of the original segment.
+					secondary_segment.start_point := primary_segment.start_point;
+
+					draw_and_mark;
+				end if;
+
+				if element (original_segment).start_point = secondary_segment.end_point then
+				-- end point of secondary net segment is attached to the start point of the original segment
+					secondary_segment.end_point := primary_segment.start_point;
+
+					draw_and_mark;
+				end if;
+			end drag_at_start;
+
+			procedure drag_at_end is begin
+				if element (original_segment).end_point = secondary_segment.start_point then
+				-- Start point of secondary segment is attached to the end point of the original segment.
+					secondary_segment.start_point := primary_segment.end_point;
+
+					draw_and_mark;
+				end if;
+
+				if element (original_segment).end_point = secondary_segment.end_point then
+				-- end point of secondary segment is attached to the end point of the original segment
+					secondary_segment.end_point := primary_segment.end_point;
+
+					draw_and_mark;
+				end if;
+			end drag_at_end;
+		
 		begin -- query_segment
 			
 			-- Skip original segment. It has been drawn already by caller:
@@ -263,38 +295,15 @@ procedure draw_nets (
 				secondary_segment := element (c);
 				
 				case zone is -- the zone of the original segment we are dragging at
-					when START_POINT =>
-						if element (original_segment).start_point = secondary_segment.start_point then
-						-- Start point of secondary segment is attached to the start point of the original segment.
-							secondary_segment.start_point := primary_segment.start_point;
-
-							draw_and_mark;
-						end if;
-
-						if element (original_segment).start_point = secondary_segment.end_point then
-						-- end point of secondary net segment to the start point of the original segment
-							secondary_segment.end_point := primary_segment.start_point;
-
-							draw_and_mark;
-						end if;
+					when START_POINT => 
+						drag_at_start;
 						
 					when END_POINT =>
-						if element (original_segment).end_point = secondary_segment.start_point then
-						-- Start point of secondary segment is attached to the end point of the original segment.
-							secondary_segment.start_point := primary_segment.end_point;
-
-							draw_and_mark;
-						end if;
-
-						if element (original_segment).end_point = secondary_segment.end_point then
-						-- end point of secondary segment is attached to the end point of the original segment
-							secondary_segment.end_point := primary_segment.end_point;
-
-							draw_and_mark;
-						end if;
+						drag_at_end;
 		
-					when CENTER => null; -- CS
-					
+					when CENTER =>
+						drag_at_start;
+						drag_at_end;
 				end case;
 				
 			end if;
@@ -332,6 +341,31 @@ procedure draw_nets (
 
 		destination : type_point;
 		primary_segment : type_net_segment;
+
+		-- Moves net labels of the primary segment.
+		-- Draws the primary segment.
+		-- Draws secondary segments.
+		-- Signals that the finalizing is granted (see et_canvas_schematic_nets.finalize_drag).
+		procedure move_labels_and_secondary_nets is begin
+			move_net_labels (
+				segment_before	=> element (original_segment),
+				segment_after	=> primary_segment,
+				zone			=> zone);
+			
+			-- Draw the primary segment in its temporarily state:
+			draw_preliminary_segment (net_cursor, primary_segment);
+
+			-- Drawing attached secondary segments requires the original
+			-- net segment (before the drag operation):
+			draw_secondary_segments (
+				net_cursor			=> net_cursor,
+				strand_cursor		=> strand_cursor,
+				original_segment	=> original_segment,
+				primary_segment		=> primary_segment,
+				zone				=> zone);
+			
+			segment.finalizing_granted := true;
+		end move_labels_and_secondary_nets;
 		
 	begin -- draw_moving_segments
 		
@@ -384,25 +418,8 @@ procedure draw_nets (
 								primary_segment.start_point := destination;
 							end if;
 
-							move_net_labels (
-								segment_before	=> element (original_segment),
-								segment_after	=> primary_segment,
-								zone			=> zone);
-							
-							-- Draw the primary segment in its temporarily state:
-							draw_preliminary_segment (net_cursor, primary_segment);
-
-							-- Drawing attached secondary segments requires the original
-							-- net segment (before the drag operation):
-							draw_secondary_segments (
-								net_cursor			=> net_cursor,
-								strand_cursor		=> strand_cursor,
-								original_segment	=> original_segment,
-								primary_segment		=> primary_segment,
-								zone				=> zone);
-							
-							segment.finalizing_granted := true;  -- CS
-							
+							move_labels_and_secondary_nets;
+										
 						when END_POINT =>
 							if dx = zero or dy = zero then
 
@@ -414,32 +431,19 @@ procedure draw_nets (
 								primary_segment.end_point := destination;
 							end if;
 
-							move_net_labels (
-								segment_before	=> element (original_segment),
-								segment_after	=> primary_segment,
-								zone			=> zone);
-							
-							-- Draw the primary segment in its temporarily state:
-							draw_preliminary_segment (net_cursor, primary_segment);
-
-							-- Drawing attached secondary segments requires the original
-							-- net segment (before the drag operation):
-							draw_secondary_segments (
-								net_cursor			=> net_cursor,
-								strand_cursor		=> strand_cursor,
-								original_segment	=> original_segment,
-								primary_segment		=> primary_segment,
-								zone				=> zone);
-							
-							segment.finalizing_granted := true;  -- CS
+							move_labels_and_secondary_nets;
 							
 						when CENTER =>
-							-- CS currently dragging at center not possible
-							-- so we draw the selected_segment as it is:
-							draw_fixed_segment (original_segment);
-							draw_labels (net_cursor, element (original_segment));
-							
-						when others => null;
+							move_by (
+								point	=> primary_segment.start_point,
+								offset	=> set (dx, dy));
+
+							move_by (
+								point	=> primary_segment.end_point,
+								offset	=> set (dx, dy));
+
+							move_labels_and_secondary_nets;
+
 					end case;
 					
 	-- 			when VERB_MOVE =>
