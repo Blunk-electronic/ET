@@ -160,32 +160,6 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level)
 		return et_coordinates.type_position;
 
-
-	
--- 	procedure delete_unit (
--- 	-- Deletes a unit of a device. 
--- 	-- In case the last unit has been deleted, then the device is 
--- 	-- deleted entirely from module.devices.
--- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
--- 		device_name		: in type_name; -- IC45
--- 		unit_name		: in type_unit_name.bounded_string; -- A
--- 		log_threshold	: in type_log_level);
-	
--- 	type type_coordinates is (RELATIVE, ABSOLUTE);
--- 
--- 	function to_string (coordinates : in type_coordinates) return string;
--- 	function to_coordinates (coordinates : in string) return type_coordinates;
-
--- 	procedure move_unit (
--- 	-- Moves the given unit.
--- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
--- 		device_name		: in type_name; -- IC45
--- 		unit_name		: in type_unit_name.bounded_string; -- A
--- 		coordinates		: in type_coordinates; -- relative/absolute
--- 		sheet			: in type_sheet_relative; -- -3/0/2
--- 		point			: in type_point; -- x/y
--- 		log_threshold	: in type_log_level);
-
 	procedure move_unit_placeholder (
 	-- Moves the name placeholder of the given unit.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -202,17 +176,6 @@ package et_schematic_ops is
 		device_cursor	: in et_schematic.type_devices.cursor;
 		unit_name		: in type_unit_name.bounded_string)
 		return et_symbols.type_default_text_positions;
-	
--- 	procedure rotate_unit (
--- 	-- Rotates the given unit. Disconnects the unit from
--- 	-- start or end points of net segments.
--- 	-- Rotates the placeholders around the unit.
--- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
--- 		device_name		: in type_name; -- IC45
--- 		unit_name		: in type_unit_name.bounded_string; -- A
--- 		coordinates		: in type_coordinates; -- relative/absolute		
--- 		rotation		: in et_coordinates.type_rotation; -- 90
--- 		log_threshold	: in type_log_level);
 
 	procedure rotate_unit_placeholder (
 	-- Rotates the given unit placeholder around its origin.
@@ -252,18 +215,16 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level)		
 		return type_ports;	
 
-	
-	procedure drag_unit ( -- CS move to et_schematic_ops.nets
-	-- Drags the given unit within the schematic.
-	-- Already existing connections with net segments are kept.
-	-- Net segment positions are modified.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y -- CS rename to destination
-		log_threshold	: in type_log_level);
+	-- Returns true if at given place a net segment starts or ends.
+	function net_segment_at_place (
+		module_cursor	: in pac_generic_modules.cursor;
+		place			: in et_coordinates.type_position)
+		return boolean;
 
+	procedure dragging_not_possible (
+		port 		: in string;
+		position	: in et_coordinates.type_position);
+	
 	procedure rename_device (
 	-- Renames the given device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

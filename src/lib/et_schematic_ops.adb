@@ -1656,172 +1656,172 @@ package body et_schematic_ops is
 
 	end rotate_unit_placeholder;
 	
-	procedure drag_net_segments (
-	-- Drags the net segments according to the given drag_list of a unit.
-	-- Changes the position of start or end points of segments.
-	-- Does NOT create new connections with segments if a port
-	-- lands on the start or end point of another segment.
-	-- Does NOT create a new connection with a segments if a port
-	-- lands between start and end point.
-		module			: in pac_generic_modules.cursor;		-- the module
-		drag_list		: in type_drags_of_ports.map;	-- the old and new port positions
-		sheet			: in type_sheet;				-- the sheet to look at
-		log_threshold	: in type_log_level) is
-
-		procedure query_nets (
-			module_name	: in type_module_name.bounded_string;
-			module		: in out type_module) is
-
-			procedure query_net (net_cursor : in type_nets.cursor) is
-				use type_nets;
-				use et_symbols;
-
-				procedure query_strands (
-					net_name	: in type_net_name.bounded_string;
-					net			: in out type_net) is
-					use et_coordinates;
-					
-					use type_strands;
-					strand_cursor : type_strands.cursor;
-					
-					use type_drags_of_ports;
-					drag_cursor : type_drags_of_ports.cursor := drag_list.first;
-
-					drag_processed : boolean;
-					
-					procedure query_segments (strand : in out type_strand) is
-						use type_net_segments;
-
-						procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
-
-							procedure change_segment (segment : in out type_net_segment) is 
-							-- Changes the position of start or end point of a segment according to the drag point.
-							begin -- change_segment
-								
-								-- if port sits on a start point of a segment -> move start point
-								if segment.start_point = element (drag_cursor).before then
-									log (text => "move segment start point from" & 
-										to_string (segment.start_point),
-										level => log_threshold + 3);
-
-									segment.start_point := element (drag_cursor).after;
-
-									log (text => "to" & 
-										to_string (segment.start_point),
-										level => log_threshold + 3);
-
-									drag_processed := true;
-								end if;
-
-								-- if port sits on an end point of a segment -> move end point
-								if segment.end_point = element (drag_cursor).before then
-									log (text => "move segment end point from" & 
-										to_string (segment.end_point),
-										level => log_threshold + 3);
-
-									segment.end_point := element (drag_cursor).after;
-
-									log (text => "to" & 
-										to_string (segment.end_point),
-										level => log_threshold + 3);
-
-									drag_processed := true;
-								end if;
-
-							end change_segment;
-
-						begin -- query_segment
-							log_indentation_up;
-							log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
-							log_indentation_up;
-							
-							update_element (
-								container	=> strand.segments,
-								position	=> segment_cursor,
-								process		=> change_segment'access);
-											
-							log_indentation_down;
-							log_indentation_down;
-						end query_segment;
-						
-					begin -- query_segments
-						iterate (strand.segments, query_segment'access);
-
-						-- Update strand position if any movement took place.
-						if drag_processed then
-							set_strand_position (strand); 
-						end if;
-						
-					end query_segments;
-						
-				begin -- query_strands
-					-- loop in drag list
-					while drag_cursor /= type_drags_of_ports.no_element loop
-						log (text => "probing port " & to_string (key (drag_cursor)), level => log_threshold + 1);
-						log_indentation_up;
-
-						-- If the current drag point sits on a strand, this flag will go true. Other 
-						-- strands will then not be looked at because the point can only sit on 
-						-- one strand.
-						drag_processed := false;
-						
-						strand_cursor := net.strands.first;
-						while strand_cursor /= type_strands.no_element loop
-							
-							-- We pick out only the strands on the targeted sheet:
-							if et_coordinates.sheet (element (strand_cursor).position) = sheet then
-								log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
-
-								log_indentation_up;
-								log (text => "strand " & to_string (position => element (strand_cursor).position),
-									level => log_threshold + 1);
-							
-								-- Iterate in segments of strand. If drag point sits on any segment
-								-- the flag drag_processed goes true.
-								update_element (
-									container	=> net.strands,
-									position	=> strand_cursor,
-									process		=> query_segments'access);
-							
-								log_indentation_down;
-							end if;
-
-							-- If the drag point has been processed, there is no need to look up
-							-- other strands for this port.
-							if drag_processed then exit; end if;
-							
-							next (strand_cursor);
-						end loop;
-
-						log_indentation_down;
-						next (drag_cursor);
-					end loop;
-						
-				end query_strands;
-				
-			begin -- query_net
-				update_element (
-					container	=> module.nets,
-					position	=> net_cursor,
-					process		=> query_strands'access);
-			end query_net;				
-			
-		begin -- query_nets
-			type_nets.iterate (module.nets, query_net'access);
-		end query_nets;
-
-	begin -- drag_net_segments
-		log (text => "dragging net segments with units on sheet" & 
-			 to_sheet (sheet) & " ...", level => log_threshold);
-		log_indentation_up;
-
-		update_element (
-			container	=> generic_modules,
-			position	=> module,
-			process		=> query_nets'access);
-
-		log_indentation_down;
-	end drag_net_segments;
+-- 	procedure drag_net_segments (
+-- 	-- Drags the net segments according to the given drag_list of a unit.
+-- 	-- Changes the position of start or end points of segments.
+-- 	-- Does NOT create new connections with segments if a port
+-- 	-- lands on the start or end point of another segment.
+-- 	-- Does NOT create a new connection with a segments if a port
+-- 	-- lands between start and end point.
+-- 		module			: in pac_generic_modules.cursor;		-- the module
+-- 		drag_list		: in type_drags_of_ports.map;	-- the old and new port positions
+-- 		sheet			: in type_sheet;				-- the sheet to look at
+-- 		log_threshold	: in type_log_level) is
+-- 
+-- 		procedure query_nets (
+-- 			module_name	: in type_module_name.bounded_string;
+-- 			module		: in out type_module) is
+-- 
+-- 			procedure query_net (net_cursor : in type_nets.cursor) is
+-- 				use type_nets;
+-- 				use et_symbols;
+-- 
+-- 				procedure query_strands (
+-- 					net_name	: in type_net_name.bounded_string;
+-- 					net			: in out type_net) is
+-- 					use et_coordinates;
+-- 					
+-- 					use type_strands;
+-- 					strand_cursor : type_strands.cursor;
+-- 					
+-- 					use type_drags_of_ports;
+-- 					drag_cursor : type_drags_of_ports.cursor := drag_list.first;
+-- 
+-- 					drag_processed : boolean;
+-- 					
+-- 					procedure query_segments (strand : in out type_strand) is
+-- 						use type_net_segments;
+-- 
+-- 						procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
+-- 
+-- 							procedure change_segment (segment : in out type_net_segment) is 
+-- 							-- Changes the position of start or end point of a segment according to the drag point.
+-- 							begin -- change_segment
+-- 								
+-- 								-- if port sits on a start point of a segment -> move start point
+-- 								if segment.start_point = element (drag_cursor).before then
+-- 									log (text => "move segment start point from" & 
+-- 										to_string (segment.start_point),
+-- 										level => log_threshold + 3);
+-- 
+-- 									segment.start_point := element (drag_cursor).after;
+-- 
+-- 									log (text => "to" & 
+-- 										to_string (segment.start_point),
+-- 										level => log_threshold + 3);
+-- 
+-- 									drag_processed := true;
+-- 								end if;
+-- 
+-- 								-- if port sits on an end point of a segment -> move end point
+-- 								if segment.end_point = element (drag_cursor).before then
+-- 									log (text => "move segment end point from" & 
+-- 										to_string (segment.end_point),
+-- 										level => log_threshold + 3);
+-- 
+-- 									segment.end_point := element (drag_cursor).after;
+-- 
+-- 									log (text => "to" & 
+-- 										to_string (segment.end_point),
+-- 										level => log_threshold + 3);
+-- 
+-- 									drag_processed := true;
+-- 								end if;
+-- 
+-- 							end change_segment;
+-- 
+-- 						begin -- query_segment
+-- 							log_indentation_up;
+-- 							log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
+-- 							log_indentation_up;
+-- 							
+-- 							update_element (
+-- 								container	=> strand.segments,
+-- 								position	=> segment_cursor,
+-- 								process		=> change_segment'access);
+-- 											
+-- 							log_indentation_down;
+-- 							log_indentation_down;
+-- 						end query_segment;
+-- 						
+-- 					begin -- query_segments
+-- 						iterate (strand.segments, query_segment'access);
+-- 
+-- 						-- Update strand position if any movement took place.
+-- 						if drag_processed then
+-- 							set_strand_position (strand); 
+-- 						end if;
+-- 						
+-- 					end query_segments;
+-- 						
+-- 				begin -- query_strands
+-- 					-- loop in drag list
+-- 					while drag_cursor /= type_drags_of_ports.no_element loop
+-- 						log (text => "probing port " & to_string (key (drag_cursor)), level => log_threshold + 1);
+-- 						log_indentation_up;
+-- 
+-- 						-- If the current drag point sits on a strand, this flag will go true. Other 
+-- 						-- strands will then not be looked at because the point can only sit on 
+-- 						-- one strand.
+-- 						drag_processed := false;
+-- 						
+-- 						strand_cursor := net.strands.first;
+-- 						while strand_cursor /= type_strands.no_element loop
+-- 							
+-- 							-- We pick out only the strands on the targeted sheet:
+-- 							if et_coordinates.sheet (element (strand_cursor).position) = sheet then
+-- 								log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
+-- 
+-- 								log_indentation_up;
+-- 								log (text => "strand " & to_string (position => element (strand_cursor).position),
+-- 									level => log_threshold + 1);
+-- 							
+-- 								-- Iterate in segments of strand. If drag point sits on any segment
+-- 								-- the flag drag_processed goes true.
+-- 								update_element (
+-- 									container	=> net.strands,
+-- 									position	=> strand_cursor,
+-- 									process		=> query_segments'access);
+-- 							
+-- 								log_indentation_down;
+-- 							end if;
+-- 
+-- 							-- If the drag point has been processed, there is no need to look up
+-- 							-- other strands for this port.
+-- 							if drag_processed then exit; end if;
+-- 							
+-- 							next (strand_cursor);
+-- 						end loop;
+-- 
+-- 						log_indentation_down;
+-- 						next (drag_cursor);
+-- 					end loop;
+-- 						
+-- 				end query_strands;
+-- 				
+-- 			begin -- query_net
+-- 				update_element (
+-- 					container	=> module.nets,
+-- 					position	=> net_cursor,
+-- 					process		=> query_strands'access);
+-- 			end query_net;				
+-- 			
+-- 		begin -- query_nets
+-- 			type_nets.iterate (module.nets, query_net'access);
+-- 		end query_nets;
+-- 
+-- 	begin -- drag_net_segments
+-- 		log (text => "dragging net segments with units on sheet" & 
+-- 			 to_sheet (sheet) & " ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		update_element (
+-- 			container	=> generic_modules,
+-- 			position	=> module,
+-- 			process		=> query_nets'access);
+-- 
+-- 		log_indentation_down;
+-- 	end drag_net_segments;
 
 	function net_segment_at_place (
 	-- Returns true if at given place a net segment starts or ends.
@@ -2134,301 +2134,301 @@ package body et_schematic_ops is
 	end ports_at_place;
 
 	
-	procedure drag_unit (
-	-- Drags the given unit within the schematic.
-	-- Already existing connections with net segments are kept.
-	-- Net segment positions are modified.
-	-- This operation applies to a single sheet. Dragging from one sheet
-	-- to another is not possible.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y
-		log_threshold	: in type_log_level) is
-
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
-		procedure movable_test (
-		-- Tests whether the given unit ports at their individual location are movable. 
-		-- The criteria for movement are: no netchanger port, no device port, no submodule ports there.
-		-- The only port allowed at a individual drag point is the port-to-be-dragged itself.
-			location 	: in et_coordinates.type_position; -- only sheet number matters
-			unit_ports	: in et_symbols.type_ports.map)
-			is
-			use et_symbols;
-			use et_symbols.type_ports;
-			port_cursor : et_symbols.type_ports.cursor := unit_ports.first;
-
-			procedure test_point (port_cursor : in et_symbols.type_ports.cursor) is
-				point : et_coordinates.type_position; -- the point
-				ports : type_ports;
-				port : et_schematic.type_port_device;
-				use type_ports_submodule;
-				use type_ports_device;
-				use et_netlists.type_ports_netchanger;
-			begin
-				-- assemble the point to be probed
-				point := to_position (
-							point	=> element (port_cursor).position,
-							sheet	=> sheet (location));
-				
-				-- If no net segments start or end at given point then this test won't
-				-- complain. If segments are meeting this point, no other ports must be
-				-- here (except the port-to-be-dragged):
-				if net_segment_at_place (module_cursor, point) then
-
-					-- There are net segments starting or ending at point.
-					-- Make sure at point are no ports of devices, submodules or other 
-					-- netchangers (except the unit port to be dragged):
-
-					port := (device_name, unit_name, key (port_cursor)); -- IC12, CE
-					
-					-- Collect all ports of possible other devices, submodules and netchangers
-					-- at given point:
-					ports := ports_at_place (module_name, point, log_threshold + 2);
-
-					-- If no netchanger and no submodule ports here:
-					if is_empty (ports.netchangers) and is_empty (ports.submodules) then
-
-						-- If the ONE and ONLY device/unit port is the 
-						-- port-to-be-dragged then everything is fine.
-						if length (ports.devices) = 1 then
-							
-							if contains (ports.devices, port) then
-								null; -- fine -> movable test passed
-							else
-								-- there is another netchanger port
-								dragging_not_possible (to_string (key (port_cursor)), point);
-							end if;
-						
-						else
-							-- there are more submodule ports
-							dragging_not_possible (to_string (key (port_cursor)), point);
-						end if;
-						
-					else -- device or netchanger ports here
-						dragging_not_possible (to_string (key (port_cursor)), point);
-					end if;
-				end if;
-			end test_point;
-			
-		begin -- movable_test
-			log (text => "movable test ...", level => log_threshold + 1);
-			log_indentation_up;
-
-			while port_cursor /= et_symbols.type_ports.no_element loop
-				test_point (port_cursor);
-				next (port_cursor);
-			end loop;
-			
-			log_indentation_down;
-		end movable_test;
-		
-		function make_drag_list ( 
-		-- Merges the two maps ports_old and ports_new to a drag list.
-		-- The resulting drag list tells which port is to be moved from old to new position.
-			ports_old : in et_symbols.type_ports.map;
-			ports_new : in et_symbols.type_ports.map) 
-			return type_drags_of_ports.map is
-			use type_drags_of_ports;
-			drag_list : type_drags_of_ports.map;
-
-			-- ports_old and ports_new are both equally long and contain 
-			-- equal keys (the port names). So we use two cursors and advance them
-			-- simultaneously in a loop (see below).
-			use et_symbols.type_ports;
-			cursor_old : et_symbols.type_ports.cursor := ports_old.first;
-			cursor_new : et_symbols.type_ports.cursor := ports_new.first;
-		begin
-			-- Loop in ports_old, copy the key to the drag list.
-			-- Take the old position from ports_old and the new position from ports_new:
-			while cursor_old /= et_symbols.type_ports.no_element loop
-				insert (
-					container	=> drag_list,
-					key			=> key (cursor_old), -- the port name
-					new_item	=> (
-								before	=> element (cursor_old).position, -- x/y
-								after	=> element (cursor_new).position) -- x/y
-					   );
-				
-				next (cursor_old);
-				next (cursor_new);
-			end loop;
-			
-			return drag_list;
-		end make_drag_list;
-		
-		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
-			module		: in out type_module) is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
-
-			-- temporarily storage of unit coordinates.
-			-- There will be only one unit in this container.
-			--position_of_unit_old : type_unit_positions.map;
-			position_of_unit_old : et_coordinates.type_position;	
-			position_of_unit_new : et_coordinates.type_position;
-
-			ports, ports_old, ports_new : et_symbols.type_ports.map;
-
-			procedure query_unit_location (
-				device_name	: in type_name;
-				device		: in et_schematic.type_device) is
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor;
-			begin
-				if contains (device.units, unit_name) then
-					unit_cursor := find (device.units, unit_name); -- the unit should be there
-
-					-- store old unit position
-					position_of_unit_old := element (unit_cursor).position;
-					log (text => "unit position old: " & to_string (position => position_of_unit_old), level => log_threshold + 1);
-				else
-					unit_not_found (unit_name);
-				end if;
-			end query_unit_location;
-			
-			procedure query_units (
-				device_name	: in type_name;
-				device		: in out et_schematic.type_device) is
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor;
-
-				procedure move_unit (
-					unit_name	: in type_unit_name.bounded_string;
-					unit		: in out et_schematic.type_unit) is
-					use et_coordinates;
-
-					-- Load the current sheet number where the unit is.
-					-- NOTE: The sheet number does not change in drag operations.
-					sheet : type_sheet := et_coordinates.sheet (unit.position);
-				begin
-					-- Set new x/y position. Sheet number is unchanged.
-					case coordinates is
-						when ABSOLUTE =>
-							unit.position := to_position (point, sheet);
-
-						when RELATIVE =>
-							move_by (
-								point	=> unit.position,
-								offset	=> point
-								);
-					end case;
-					
-					exception
-						when event: others =>
-							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
-							log (text => ada.exceptions.exception_information (event), console => true);
-							raise;
-					
-				end move_unit;
-				
-			begin -- query_units
-				unit_cursor := find (device.units, unit_name); -- the unit should be there
-
-				-- move the unit
-				update_element (
-					container	=> device.units,
-					position	=> unit_cursor,
-					process		=> move_unit'access);
-
-				-- store new unit position
-				position_of_unit_new := element (unit_cursor).position;
-				
-				log (text => "unit position new: " & to_string (position => position_of_unit_new), level => log_threshold + 1);
-			end query_units;
-			
-		begin -- query_devices
-			if contains (module.devices, device_name) then
-				device_cursor := find (module.devices, device_name); -- the device should be there
-
-				log_indentation_up;
-
-				-- Before the actual drag, the coordinates of the
-				-- unit must be fetched. These coordinates will later assist
-				-- in changing the positions of connected net segments.
-				
-				-- locate the unit, store old position in position_of_unit_old
-				query_element (
-					position	=> device_cursor,
-					process		=> query_unit_location'access);
-				
-				-- Fetch the ports of the unit to be moved. These are the default port positions
-				-- (relative to the symbol origin) as they are defined in the device model.
-				ports := ports_of_unit (device_cursor, unit_name);
-				
-				-- Calculate the old and new positions of the unit ports:
-				ports_old := ports;
-
-				move_ports (ports_old, position_of_unit_old); 
-				-- ports_old now contains the absolute port positions in the schematic BEFORE the move.
-
-				-- Test whether the ports of the unit can be dragged:
-				movable_test (position_of_unit_old, ports_old);
-
-				-- locate the unit, move it, store new position in position_of_unit_new
-				update_element (
-					container	=> module.devices,
-					position	=> device_cursor,
-					process		=> query_units'access);
-				
-				ports_new := ports;
-				move_ports (ports_new, position_of_unit_new);
-				-- ports_new now contains the absolute port positions in the schematic AFTER the move.
-				
-				-- Change net segments in the affected nets (type_module.nets):
-				drag_net_segments (
-					module			=> module_cursor,
-					drag_list		=> make_drag_list (ports_old, ports_new),
-					sheet			=> et_coordinates.sheet (position_of_unit_new), -- or position_of_unit_old
-					log_threshold	=> log_threshold + 1);
-
-				-- The drag operation might result in new port-to-net connections.
-				-- So we must insert new ports in segments.
-				-- Insert possible new unit ports in the nets (type_module.nets):
-				log_indentation_up;
-				
-				insert_ports (
-					module			=> module_cursor,
-					device			=> device_name,
-					unit			=> unit_name,
-					ports			=> ports_new,
-					sheet			=> et_coordinates.sheet (position_of_unit_new),
-					log_threshold	=> log_threshold + 1);
-
-				log_indentation_down;
-				log_indentation_down;				
-			else
-				device_not_found (device_name);
-			end if;
-		end query_devices;
-		
-	begin -- drag_unit
-		case coordinates is
-			when ABSOLUTE =>
-				log (text => "module " & to_string (module_name) &
-					" dragging " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " to" &
-					to_string (point), level => log_threshold);
-
-			when RELATIVE =>
-				log (text => "module " & to_string (module_name) &
-					" dragging " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " by" & 
-					to_string (point), level => log_threshold);
-		end case;
-		
-		-- locate module
-		module_cursor := locate_module (module_name);
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
-
-	end drag_unit;
+-- 	procedure drag_unit (
+-- 	-- Drags the given unit within the schematic.
+-- 	-- Already existing connections with net segments are kept.
+-- 	-- Net segment positions are modified.
+-- 	-- This operation applies to a single sheet. Dragging from one sheet
+-- 	-- to another is not possible.
+-- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+-- 		device_name		: in type_name; -- IC45
+-- 		unit_name		: in type_unit_name.bounded_string; -- A
+-- 		coordinates		: in type_coordinates; -- relative/absolute
+-- 		point			: in type_point; -- x/y
+-- 		log_threshold	: in type_log_level) is
+-- 
+-- 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
+-- 
+-- 		procedure movable_test (
+-- 		-- Tests whether the given unit ports at their individual location are movable. 
+-- 		-- The criteria for movement are: no netchanger port, no device port, no submodule ports there.
+-- 		-- The only port allowed at a individual drag point is the port-to-be-dragged itself.
+-- 			location 	: in et_coordinates.type_position; -- only sheet number matters
+-- 			unit_ports	: in et_symbols.type_ports.map)
+-- 			is
+-- 			use et_symbols;
+-- 			use et_symbols.type_ports;
+-- 			port_cursor : et_symbols.type_ports.cursor := unit_ports.first;
+-- 
+-- 			procedure test_point (port_cursor : in et_symbols.type_ports.cursor) is
+-- 				point : et_coordinates.type_position; -- the point
+-- 				ports : type_ports;
+-- 				port : et_schematic.type_port_device;
+-- 				use type_ports_submodule;
+-- 				use type_ports_device;
+-- 				use et_netlists.type_ports_netchanger;
+-- 			begin
+-- 				-- assemble the point to be probed
+-- 				point := to_position (
+-- 							point	=> element (port_cursor).position,
+-- 							sheet	=> sheet (location));
+-- 				
+-- 				-- If no net segments start or end at given point then this test won't
+-- 				-- complain. If segments are meeting this point, no other ports must be
+-- 				-- here (except the port-to-be-dragged):
+-- 				if net_segment_at_place (module_cursor, point) then
+-- 
+-- 					-- There are net segments starting or ending at point.
+-- 					-- Make sure at point are no ports of devices, submodules or other 
+-- 					-- netchangers (except the unit port to be dragged):
+-- 
+-- 					port := (device_name, unit_name, key (port_cursor)); -- IC12, CE
+-- 					
+-- 					-- Collect all ports of possible other devices, submodules and netchangers
+-- 					-- at given point:
+-- 					ports := ports_at_place (module_name, point, log_threshold + 2);
+-- 
+-- 					-- If no netchanger and no submodule ports here:
+-- 					if is_empty (ports.netchangers) and is_empty (ports.submodules) then
+-- 
+-- 						-- If the ONE and ONLY device/unit port is the 
+-- 						-- port-to-be-dragged then everything is fine.
+-- 						if length (ports.devices) = 1 then
+-- 							
+-- 							if contains (ports.devices, port) then
+-- 								null; -- fine -> movable test passed
+-- 							else
+-- 								-- there is another netchanger port
+-- 								dragging_not_possible (to_string (key (port_cursor)), point);
+-- 							end if;
+-- 						
+-- 						else
+-- 							-- there are more submodule ports
+-- 							dragging_not_possible (to_string (key (port_cursor)), point);
+-- 						end if;
+-- 						
+-- 					else -- device or netchanger ports here
+-- 						dragging_not_possible (to_string (key (port_cursor)), point);
+-- 					end if;
+-- 				end if;
+-- 			end test_point;
+-- 			
+-- 		begin -- movable_test
+-- 			log (text => "movable test ...", level => log_threshold + 1);
+-- 			log_indentation_up;
+-- 
+-- 			while port_cursor /= et_symbols.type_ports.no_element loop
+-- 				test_point (port_cursor);
+-- 				next (port_cursor);
+-- 			end loop;
+-- 			
+-- 			log_indentation_down;
+-- 		end movable_test;
+-- 		
+-- 		function make_drag_list ( 
+-- 		-- Merges the two maps ports_old and ports_new to a drag list.
+-- 		-- The resulting drag list tells which port is to be moved from old to new position.
+-- 			ports_old : in et_symbols.type_ports.map;
+-- 			ports_new : in et_symbols.type_ports.map) 
+-- 			return type_drags_of_ports.map is
+-- 			use type_drags_of_ports;
+-- 			drag_list : type_drags_of_ports.map;
+-- 
+-- 			-- ports_old and ports_new are both equally long and contain 
+-- 			-- equal keys (the port names). So we use two cursors and advance them
+-- 			-- simultaneously in a loop (see below).
+-- 			use et_symbols.type_ports;
+-- 			cursor_old : et_symbols.type_ports.cursor := ports_old.first;
+-- 			cursor_new : et_symbols.type_ports.cursor := ports_new.first;
+-- 		begin
+-- 			-- Loop in ports_old, copy the key to the drag list.
+-- 			-- Take the old position from ports_old and the new position from ports_new:
+-- 			while cursor_old /= et_symbols.type_ports.no_element loop
+-- 				insert (
+-- 					container	=> drag_list,
+-- 					key			=> key (cursor_old), -- the port name
+-- 					new_item	=> (
+-- 								before	=> element (cursor_old).position, -- x/y
+-- 								after	=> element (cursor_new).position) -- x/y
+-- 					   );
+-- 				
+-- 				next (cursor_old);
+-- 				next (cursor_new);
+-- 			end loop;
+-- 			
+-- 			return drag_list;
+-- 		end make_drag_list;
+-- 		
+-- 		procedure query_devices (
+-- 			module_name	: in type_module_name.bounded_string;
+-- 			module		: in out type_module) is
+-- 			use et_schematic.type_devices;
+-- 			device_cursor : et_schematic.type_devices.cursor;
+-- 
+-- 			-- temporarily storage of unit coordinates.
+-- 			-- There will be only one unit in this container.
+-- 			--position_of_unit_old : type_unit_positions.map;
+-- 			position_of_unit_old : et_coordinates.type_position;	
+-- 			position_of_unit_new : et_coordinates.type_position;
+-- 
+-- 			ports, ports_old, ports_new : et_symbols.type_ports.map;
+-- 
+-- 			procedure query_unit_location (
+-- 				device_name	: in type_name;
+-- 				device		: in et_schematic.type_device) is
+-- 				use et_schematic.type_units;
+-- 				unit_cursor : et_schematic.type_units.cursor;
+-- 			begin
+-- 				if contains (device.units, unit_name) then
+-- 					unit_cursor := find (device.units, unit_name); -- the unit should be there
+-- 
+-- 					-- store old unit position
+-- 					position_of_unit_old := element (unit_cursor).position;
+-- 					log (text => "unit position old: " & to_string (position => position_of_unit_old), level => log_threshold + 1);
+-- 				else
+-- 					unit_not_found (unit_name);
+-- 				end if;
+-- 			end query_unit_location;
+-- 			
+-- 			procedure query_units (
+-- 				device_name	: in type_name;
+-- 				device		: in out et_schematic.type_device) is
+-- 				use et_schematic.type_units;
+-- 				unit_cursor : et_schematic.type_units.cursor;
+-- 
+-- 				procedure move_unit (
+-- 					unit_name	: in type_unit_name.bounded_string;
+-- 					unit		: in out et_schematic.type_unit) is
+-- 					use et_coordinates;
+-- 
+-- 					-- Load the current sheet number where the unit is.
+-- 					-- NOTE: The sheet number does not change in drag operations.
+-- 					sheet : type_sheet := et_coordinates.sheet (unit.position);
+-- 				begin
+-- 					-- Set new x/y position. Sheet number is unchanged.
+-- 					case coordinates is
+-- 						when ABSOLUTE =>
+-- 							unit.position := to_position (point, sheet);
+-- 
+-- 						when RELATIVE =>
+-- 							move_by (
+-- 								point	=> unit.position,
+-- 								offset	=> point
+-- 								);
+-- 					end case;
+-- 					
+-- 					exception
+-- 						when event: others =>
+-- 							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
+-- 							log (text => ada.exceptions.exception_information (event), console => true);
+-- 							raise;
+-- 					
+-- 				end move_unit;
+-- 				
+-- 			begin -- query_units
+-- 				unit_cursor := find (device.units, unit_name); -- the unit should be there
+-- 
+-- 				-- move the unit
+-- 				update_element (
+-- 					container	=> device.units,
+-- 					position	=> unit_cursor,
+-- 					process		=> move_unit'access);
+-- 
+-- 				-- store new unit position
+-- 				position_of_unit_new := element (unit_cursor).position;
+-- 				
+-- 				log (text => "unit position new: " & to_string (position => position_of_unit_new), level => log_threshold + 1);
+-- 			end query_units;
+-- 			
+-- 		begin -- query_devices
+-- 			if contains (module.devices, device_name) then
+-- 				device_cursor := find (module.devices, device_name); -- the device should be there
+-- 
+-- 				log_indentation_up;
+-- 
+-- 				-- Before the actual drag, the coordinates of the
+-- 				-- unit must be fetched. These coordinates will later assist
+-- 				-- in changing the positions of connected net segments.
+-- 				
+-- 				-- locate the unit, store old position in position_of_unit_old
+-- 				query_element (
+-- 					position	=> device_cursor,
+-- 					process		=> query_unit_location'access);
+-- 				
+-- 				-- Fetch the ports of the unit to be moved. These are the default port positions
+-- 				-- (relative to the symbol origin) as they are defined in the device model.
+-- 				ports := ports_of_unit (device_cursor, unit_name);
+-- 				
+-- 				-- Calculate the old and new positions of the unit ports:
+-- 				ports_old := ports;
+-- 
+-- 				move_ports (ports_old, position_of_unit_old); 
+-- 				-- ports_old now contains the absolute port positions in the schematic BEFORE the move.
+-- 
+-- 				-- Test whether the ports of the unit can be dragged:
+-- 				movable_test (position_of_unit_old, ports_old);
+-- 
+-- 				-- locate the unit, move it, store new position in position_of_unit_new
+-- 				update_element (
+-- 					container	=> module.devices,
+-- 					position	=> device_cursor,
+-- 					process		=> query_units'access);
+-- 				
+-- 				ports_new := ports;
+-- 				move_ports (ports_new, position_of_unit_new);
+-- 				-- ports_new now contains the absolute port positions in the schematic AFTER the move.
+-- 				
+-- 				-- Change net segments in the affected nets (type_module.nets):
+-- 				drag_net_segments (
+-- 					module			=> module_cursor,
+-- 					drag_list		=> make_drag_list (ports_old, ports_new),
+-- 					sheet			=> et_coordinates.sheet (position_of_unit_new), -- or position_of_unit_old
+-- 					log_threshold	=> log_threshold + 1);
+-- 
+-- 				-- The drag operation might result in new port-to-net connections.
+-- 				-- So we must insert new ports in segments.
+-- 				-- Insert possible new unit ports in the nets (type_module.nets):
+-- 				log_indentation_up;
+-- 				
+-- 				insert_ports (
+-- 					module			=> module_cursor,
+-- 					device			=> device_name,
+-- 					unit			=> unit_name,
+-- 					ports			=> ports_new,
+-- 					sheet			=> et_coordinates.sheet (position_of_unit_new),
+-- 					log_threshold	=> log_threshold + 1);
+-- 
+-- 				log_indentation_down;
+-- 				log_indentation_down;				
+-- 			else
+-- 				device_not_found (device_name);
+-- 			end if;
+-- 		end query_devices;
+-- 		
+-- 	begin -- drag_unit
+-- 		case coordinates is
+-- 			when ABSOLUTE =>
+-- 				log (text => "module " & to_string (module_name) &
+-- 					" dragging " & to_string (device_name) & " unit " & 
+-- 					to_string (unit_name) & " to" &
+-- 					to_string (point), level => log_threshold);
+-- 
+-- 			when RELATIVE =>
+-- 				log (text => "module " & to_string (module_name) &
+-- 					" dragging " & to_string (device_name) & " unit " & 
+-- 					to_string (unit_name) & " by" & 
+-- 					to_string (point), level => log_threshold);
+-- 		end case;
+-- 		
+-- 		-- locate module
+-- 		module_cursor := locate_module (module_name);
+-- 		
+-- 		update_element (
+-- 			container	=> generic_modules,
+-- 			position	=> module_cursor,
+-- 			process		=> query_devices'access);
+-- 
+-- 	end drag_unit;
 
 	-- Renames the device ports of the net segements affected by a rename operation.
 	-- Leaves the unit and port names as they are because this is solely about device names.

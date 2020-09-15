@@ -59,10 +59,24 @@ package et_schematic_ops.units is
 		point			: in type_point; -- x/y -- CS rename to destination
 		log_threshold	: in type_log_level);
 
+	procedure drag_unit (
+	-- Drags the given unit within the schematic.
+	-- Already existing connections with net segments are kept.
+	-- Net segment positions are modified.
+	-- Net segment positions are modified.
+	-- This operation applies to a single sheet. Dragging from one sheet
+	-- to another is not possible.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_point; -- x/y -- CS rename to destination
+		log_threshold	: in type_log_level);
+	
 	procedure rotate_unit (
 	-- Rotates the given unit. Disconnects the unit from
 	-- start or end points of net segments.
-	-- Rotates the placeholders around the unit.
+	-- Rotates the placeholders about the unit center.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
