@@ -369,6 +369,41 @@ package body et_canvas_schematic_units is
 		
 		reset_unit;
 	end finalize_move;
+
+	procedure finalize_drag (
+		destination		: in type_point;
+		log_threshold	: in type_log_level)
+	is
+		su : type_selected_unit;
+
+		use et_schematic.type_devices;
+		use et_schematic.type_units;
+	begin
+		log (text => "finalizing drag ...", level => log_threshold);
+		log_indentation_up;
+
+		if selected_unit /= pac_proposed_units.no_element then
+
+			su := element (selected_unit);
+			
+			drag_unit (
+				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+				device_name		=> key (su.device),
+				unit_name		=> key (su.unit),
+				coordinates		=> ABSOLUTE,
+				point			=> destination,
+				log_threshold	=> log_threshold);
+
+		else
+			log (text => "nothing to do", level => log_threshold);
+		end if;
+			
+		log_indentation_down;
+
+		set_status (status_move);
+		
+		reset_unit;
+	end finalize_drag;
 	
 	
 	procedure find_units (point : in type_point) is begin

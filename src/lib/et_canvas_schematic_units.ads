@@ -122,6 +122,14 @@ package et_canvas_schematic_units is
 		& "to move unit." 
 		& status_hint_for_abort;
 
+	status_drag : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to drag unit." 
+		& status_hint_for_abort;
+
+	
 	-- This procedure:
 	-- - Clears list of proposed units.
 	-- - Sets global variable selected_unit to no_element.
@@ -131,6 +139,12 @@ package et_canvas_schematic_units is
 	-- Assigns the final position after the move to the selected unit.
 	-- Resets the global variable "unit".
 	procedure finalize_move (
+		destination		: in type_point;
+		log_threshold	: in type_log_level);
+
+	-- Assigns the final position after the drag to the selected unit.
+	-- Resets the global variable "unit".
+	procedure finalize_drag (
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
 	
