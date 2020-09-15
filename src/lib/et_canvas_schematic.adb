@@ -713,7 +713,7 @@ package body et_canvas_schematic is
 								if not clarification_pending then
 									find_units (cursor_main.position);
 								else
-									--move_selected_unit;
+									find_attached_segments;
 									unit.being_moved := true;
 									reset_request_clarification;
 								end if;
@@ -1110,6 +1110,7 @@ package body et_canvas_schematic is
 								if not clarification_pending then
 									find_units (point);
 								else
+									find_attached_segments;
 									unit.being_moved := true;
 									reset_request_clarification;
 								end if;

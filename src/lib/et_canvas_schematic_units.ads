@@ -156,6 +156,10 @@ package et_canvas_schematic_units is
 	-- If there is no unit, then selected_unit is set to no_element.
 	procedure find_units (point : in type_point);
 
+	-- Locates net segments attached to the unit indicated by
+	-- cursor selected_unit:
+	procedure find_attached_segments;
+	
 -- 	-- Moves the unit being pointed at by cursor selected_unit.
 -- 	-- Call this procedure after a clarification.
 -- 	procedure move_selected_unit;

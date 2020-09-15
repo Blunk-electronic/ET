@@ -59,6 +59,19 @@ package et_schematic_ops.units is
 		point			: in type_point; -- x/y -- CS rename to destination
 		log_threshold	: in type_log_level);
 
+	-- Tests whether the given unit ports at their individual location are movable. 
+	-- The criteria for movement are: no netchanger port, no device port, no submodule ports there.
+	-- The only port allowed at an individual drag point is the port-to-be-dragged itself.
+	-- CS: Becomes obsolete once ports at the same x/y position are prevented.
+	function movable (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_name;
+		unit_name		: in type_unit_name.bounded_string;
+		location 		: in et_coordinates.type_position; -- only sheet number matters
+		unit_ports		: in et_symbols.type_ports.map;
+		log_threshold	: in type_log_level)
+		return boolean;
+	
 	procedure drag_unit (
 	-- Drags the given unit within the schematic.
 	-- Already existing connections with net segments are kept.

@@ -379,7 +379,7 @@ procedure draw_nets (
 			segment			=> element (original_segment),
 			zone			=> zone,
 			point_of_attack	=> to_position (segment.point_of_attack, current_active_sheet),
-			log_threshold	=> log_threshold + 10) -- CS: avoids excessive log information
+			log_threshold	=> log_threshold + 10) -- CS: avoids excessive log information. find a more elegant way.
 		then
 			-- segment is movable
 

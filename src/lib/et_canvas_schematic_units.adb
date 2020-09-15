@@ -442,6 +442,35 @@ package body et_canvas_schematic_units is
 		log_indentation_down;
 	end find_units;
 
+	procedure find_attached_segments is
+		ports : et_symbols.type_ports.map;
+		device_name : type_name;
+		unit_name : type_unit_name.bounded_string;
+		unit_position : et_coordinates.type_position;
+		
+		procedure get_ports (su : in type_selected_unit) is 
+			use et_schematic.type_units;
+		begin
+			unit_position := element (su.unit).position;
+			ports := ports_of_unit (su.device, key (su.unit));
+			move_ports (ports, unit_position);
+		end get_ports;
+		
+	begin
+		query_element (selected_unit, get_ports'access);
+		-- now the ports of the selected unit are in "ports"
+
+		-- Test whether the ports of the unit can be dragged.
+		-- CS: Becomes obsolete once ports at the same x/y position are prevented.
+		if movable (current_active_module, device_name, unit_name, 
+			unit_position, ports, log_threshold + 10)
+			-- CS: level 10 avoids excessive log information. find a more elegant way.
+		then
+			null;
+		end if;
+		
+	end find_attached_segments;
+
 end et_canvas_schematic_units;
 
 -- Soli Deo Gloria
