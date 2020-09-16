@@ -663,82 +663,6 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
--- 		procedure movable_test (
--- 		-- Tests whether the given unit ports at their individual location are movable. 
--- 		-- The criteria for movement are: no netchanger port, no device port, no submodule ports there.
--- 		-- The only port allowed at an individual drag point is the port-to-be-dragged itself.
--- 			location 	: in et_coordinates.type_position; -- only sheet number matters
--- 			unit_ports	: in et_symbols.type_ports.map)
--- 		is
--- 			use et_symbols;
--- 			use et_symbols.type_ports;
--- 			port_cursor : et_symbols.type_ports.cursor := unit_ports.first;
--- 
--- 			procedure test_point (port_cursor : in et_symbols.type_ports.cursor) is
--- 				point : et_coordinates.type_position; -- the point
--- 				ports : type_ports;
--- 				port : et_schematic.type_port_device;
--- 				use type_ports_submodule;
--- 				use type_ports_device;
--- 				use et_netlists.type_ports_netchanger;
--- 			begin
--- 				-- assemble the point to be probed
--- 				point := to_position (
--- 							point	=> element (port_cursor).position,
--- 							sheet	=> sheet (location));
--- 				
--- 				-- If no net segments start or end at given point then this test won't
--- 				-- complain. If segments are meeting this point, no other ports must be
--- 				-- here (except the port-to-be-dragged):
--- 				if net_segment_at_place (module_cursor, point) then
--- 
--- 					-- There are net segments starting or ending at point.
--- 					-- Make sure at point are no ports of devices, submodules or other 
--- 					-- netchangers (except the unit port to be dragged):
--- 
--- 					port := (device_name, unit_name, key (port_cursor)); -- IC12, CE
--- 					
--- 					-- Collect all ports of possible other devices, submodules and netchangers
--- 					-- at given point:
--- 					ports := ports_at_place (module_name, point, log_threshold + 2);
--- 
--- 					-- If no netchanger and no submodule ports here:
--- 					if is_empty (ports.netchangers) and is_empty (ports.submodules) then
--- 
--- 						-- If the ONE and ONLY device/unit port is the 
--- 						-- port-to-be-dragged then everything is fine.
--- 						if length (ports.devices) = 1 then
--- 							
--- 							if contains (ports.devices, port) then
--- 								null; -- fine -> movable test passed
--- 							else
--- 								-- there is another netchanger port
--- 								dragging_not_possible (to_string (key (port_cursor)), point);
--- 							end if;
--- 						
--- 						else
--- 							-- there are more submodule ports
--- 							dragging_not_possible (to_string (key (port_cursor)), point);
--- 						end if;
--- 						
--- 					else -- device or netchanger ports here
--- 						dragging_not_possible (to_string (key (port_cursor)), point);
--- 					end if;
--- 				end if;
--- 			end test_point;
--- 			
--- 		begin -- movable_test
--- 			log (text => "movable test ...", level => log_threshold + 1);
--- 			log_indentation_up;
--- 
--- 			while port_cursor /= et_symbols.type_ports.no_element loop
--- 				test_point (port_cursor);
--- 				next (port_cursor);
--- 			end loop;
--- 			
--- 			log_indentation_down;
--- 		end movable_test;
 		
 		function make_drag_list ( 
 		-- Merges the two maps ports_old and ports_new to a drag list.
@@ -881,7 +805,10 @@ package body et_schematic_ops.units is
 				-- ports_old now contains the absolute port positions in the schematic BEFORE the move.
 
 				-- Test whether the ports of the unit can be dragged.
-				-- CS: Becomes obsolete once ports at the same x/y position are prevented.
+				-- CS: Might become obsolete once ports at the same x/y position are prevented.
+				-- CS: Before the drag: If a port of the unit sits at the same place
+				--     where a port of another unit is, then a net segment should be
+				--     inserted between them ?
 				movable_test (module_cursor, device_name, unit_name, 
 					position_of_unit_old, ports_old, log_threshold + 1);
 

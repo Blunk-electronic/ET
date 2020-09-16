@@ -51,6 +51,8 @@ with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_string_processing;			use et_string_processing;
 
+with et_canvas_schematic_nets;
+
 package et_canvas_schematic_units is
 
 	use et_project.modules.pac_generic_modules;
@@ -106,7 +108,7 @@ package et_canvas_schematic_units is
 
 
 
--- MOVE UNIT
+-- MOVE/DRAG UNIT
 
 	type type_unit is record
 		being_moved	: boolean := false;
@@ -142,6 +144,10 @@ package et_canvas_schematic_units is
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
 
+-- 	type type_selected_segment is new et_canvas_schematic_nets.type_selected_segment with record
+-- 		zone	: et_schematic.pac_shapes.type_line_zone;
+-- 	end record;
+	
 	-- Assigns the final position after the drag to the selected unit.
 	-- Resets the global variable "unit".
 	procedure finalize_drag (

@@ -443,29 +443,82 @@ package body et_canvas_schematic_units is
 	end find_units;
 
 	procedure find_attached_segments is
+		-- Device and unit name of the selected unit:
+		use et_schematic.type_devices;
+		use et_schematic.type_units;
+		su : type_selected_unit := element (selected_unit);
+		device_name : constant type_name := key (su.device);
+		unit_name : constant type_unit_name.bounded_string := key (su.unit);
+
+		-- The ports with their positions the selected unit:
 		ports : et_symbols.type_ports.map;
-		device_name : type_name;
-		unit_name : type_unit_name.bounded_string;
+
+		-- The initial position of the selected unit before 
+		-- the drag:
 		unit_position : et_coordinates.type_position;
 		
 		procedure get_ports (su : in type_selected_unit) is 
 			use et_schematic.type_units;
 		begin
+			-- Get the unit position before the drag:
 			unit_position := element (su.unit).position;
+
+			-- Get the default port positions as defined in the library:
 			ports := ports_of_unit (su.device, key (su.unit));
+
+			-- Calculate the port positions in the schematic
+			-- before the drag:
 			move_ports (ports, unit_position);
 		end get_ports;
+
 		
-	begin
+		procedure query_port (p : in et_symbols.type_ports.cursor) is
+			use et_schematic.type_nets;
+			use et_symbols.type_ports;
+
+			procedure query_net (n : in type_nets.cursor) is
+				use et_schematic.type_strands;
+
+				procedure query_strand (s : in type_strands.cursor) is
+					use et_schematic.type_net_segments;
+
+					procedure query_segment (g : in type_net_segments.cursor) is
+					begin
+						if element (g).start_point = element (p).position then
+							null;
+						end if;
+
+						if element (g).end_point = element (p).position then
+							null;
+						end if;
+					end query_segment;
+					
+				begin -- query_strand
+					if sheet (element (s).position) = current_active_sheet then
+						iterate (element (s).segments, query_segment'access);
+					end if;
+				end query_strand;
+				
+			begin
+				iterate (element (n).strands, query_strand'access);
+			end query_net;
+			
+		begin
+			iterate (element (current_active_module).nets, query_net'access);
+		end query_port;
+		
+	begin -- find_attached_segments
 		query_element (selected_unit, get_ports'access);
 		-- now the ports of the selected unit are in "ports"
-
+		
 		-- Test whether the ports of the unit can be dragged.
-		-- CS: Becomes obsolete once ports at the same x/y position are prevented.
+		-- CS: Might become obsolete once ports at the same x/y position are prevented.
 		if movable (current_active_module, device_name, unit_name, 
 			unit_position, ports, log_threshold + 10)
 			-- CS: level 10 avoids excessive log information. find a more elegant way.
 		then
+			et_symbols.type_ports.iterate (ports, query_port'access);
+		else
 			null;
 		end if;
 		

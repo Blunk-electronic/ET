@@ -62,7 +62,7 @@ package et_schematic_ops.units is
 	-- Tests whether the given unit ports at their individual location are movable. 
 	-- The criteria for movement are: no netchanger port, no device port, no submodule ports there.
 	-- The only port allowed at an individual drag point is the port-to-be-dragged itself.
-	-- CS: Becomes obsolete once ports at the same x/y position are prevented.
+	-- CS: Might become obsolete once ports at the same x/y position are prevented.
 	function movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_name;
@@ -77,6 +77,9 @@ package et_schematic_ops.units is
 	-- Already existing connections with net segments are kept.
 	-- Net segment positions are modified.
 	-- Net segment positions are modified.
+	-- CS: Before the drag: If a port of the unit sits at the same place
+	--     where a port of another unit is, then a net segment should be
+	--     inserted between them ?
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
