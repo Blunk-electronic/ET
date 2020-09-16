@@ -239,12 +239,12 @@ package body et_canvas_schematic is
 	
 	-- Draws a single selected net segment and the net labels attached to it.
 	-- The net segment and the labels will be drawn highlighted.
-	procedure draw_selected_net_segment ( 
-		self	: not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
-		context : in type_draw_context;
-		segment	: in type_selected_segment) is separate;
-	-- CS: not used currently
+-- 	procedure draw_selected_net_segment ( 
+-- 		self	: not null access type_view;
+-- 		in_area	: in type_rectangle := no_rectangle;
+-- 		context : in type_draw_context;
+-- 		segment	: in type_selected_segment) is separate;
+-- 	-- CS: not used currently
 
 	procedure draw_net_route_being_drawn (
 		self	: not null access type_view;
@@ -968,6 +968,7 @@ package body et_canvas_schematic is
 			
 			reset_net_route; -- after drawing a net route
 			reset_segment; -- after move/drag
+			reset_segments_being_dragged; -- after dragging a unit
 			reset_unit; -- after moving a unit
 			status_enter_verb;
 		else	

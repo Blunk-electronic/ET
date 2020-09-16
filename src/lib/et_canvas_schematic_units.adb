@@ -370,6 +370,10 @@ package body et_canvas_schematic_units is
 		reset_unit;
 	end finalize_move;
 
+	procedure reset_segments_being_dragged is begin
+		segments_being_dragged.clear;
+	end reset_segments_being_dragged;
+	
 	procedure finalize_drag (
 		destination		: in type_point;
 		log_threshold	: in type_log_level)
@@ -483,13 +487,22 @@ package body et_canvas_schematic_units is
 					use et_schematic.type_net_segments;
 
 					procedure query_segment (g : in type_net_segments.cursor) is
+						use et_schematic.pac_shapes;
 					begin
 						if element (g).start_point = element (p).position then
-							null;
+							segments_being_dragged.append ((
+								net		=> n,
+								strand	=> s,
+								segment	=> g,
+								zone	=> START_POINT));
 						end if;
 
 						if element (g).end_point = element (p).position then
-							null;
+							segments_being_dragged.append ((
+								net		=> n,
+								strand	=> s,
+								segment	=> g,
+								zone	=> END_POINT));
 						end if;
 					end query_segment;
 					

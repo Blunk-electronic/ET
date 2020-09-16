@@ -44,6 +44,77 @@ package body et_canvas_schematic_nets is
 
 	use et_canvas_schematic.pac_canvas;
 
+	procedure delete_selected_segment (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		segment			: in type_selected_segment; -- net/strand/segment
+		log_threshold	: in type_log_level)
+	is
+		s : type_selected_segment := segment;
+		
+		procedure query_net (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure query_strands (
+			-- Searches the strands of the net for a segment that sits on given place.
+				net_name	: in et_general.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+				
+				procedure query_segments (strand : in out type_strand) is
+				begin
+					log (text => "segment " & to_string (element (s.segment)), 
+						 level => log_threshold + 1);
+															  
+					delete (strand.segments, s.segment);
+				end query_segments;
+				
+			begin -- query_strands
+				update_element (
+					container	=> net.strands,
+					position	=> s.strand,
+					process		=> query_segments'access);
+
+				-- In case no more segments are left in the strand,
+				-- remove the now useless strand entirely.
+				if is_empty (element (s.strand).segments) then
+					delete (net.strands, s.strand);
+				end if;
+				
+			end query_strands;
+		
+		begin -- query_net
+			log (text => "net name is " & to_string (key (s.net)), level => log_threshold);
+			log_indentation_up;
+			
+			update_element (
+				container	=> module.nets,
+				position	=> s.net,
+				process		=> query_strands'access);
+
+			-- If the net has no strands anymore, delete it entirely because a
+			-- net without strands is useless.
+			if is_empty (element (s.net).strands) then
+				delete (module.nets, s.net);
+			end if;
+
+			log_indentation_down;
+		end query_net;
+
+	begin
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_net'access);
+
+		clear_proposed_segments;
+
+		reset_request_clarification;
+		
+		set_status (status_delete);
+		
+	end delete_selected_segment;
+
+	
 	procedure clear_proposed_segments is begin
 		clear (proposed_segments);
 		selected_segment := pac_proposed_segments.no_element;
@@ -167,76 +238,6 @@ package body et_canvas_schematic_nets is
 
 		return result;
 	end between_start_and_end_point_of_sloping_segment;
-	
-	procedure delete_selected_segment (
-		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		segment			: in type_selected_segment; -- net/strand/segment
-		log_threshold	: in type_log_level)
-	is
-		s : type_selected_segment := segment;
-		
-		procedure query_net (
-			module_name	: in type_module_name.bounded_string;
-			module		: in out type_module) is
-
-			procedure query_strands (
-			-- Searches the strands of the net for a segment that sits on given place.
-				net_name	: in et_general.type_net_name.bounded_string;
-				net			: in out et_schematic.type_net) is
-				
-				procedure query_segments (strand : in out type_strand) is
-				begin
-					log (text => "segment " & to_string (element (s.segment)), 
-						 level => log_threshold + 1);
-															  
-					delete (strand.segments, s.segment);
-				end query_segments;
-				
-			begin -- query_strands
-				update_element (
-					container	=> net.strands,
-					position	=> s.strand,
-					process		=> query_segments'access);
-
-				-- In case no more segments are left in the strand,
-				-- remove the now useless strand entirely.
-				if is_empty (element (s.strand).segments) then
-					delete (net.strands, s.strand);
-				end if;
-				
-			end query_strands;
-		
-		begin -- query_net
-			log (text => "net name is " & to_string (key (s.net)), level => log_threshold);
-			log_indentation_up;
-			
-			update_element (
-				container	=> module.nets,
-				position	=> s.net,
-				process		=> query_strands'access);
-
-			-- If the net has no strands anymore, delete it entirely because a
-			-- net without strands is useless.
-			if is_empty (element (s.net).strands) then
-				delete (module.nets, s.net);
-			end if;
-
-			log_indentation_down;
-		end query_net;
-
-	begin
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_net'access);
-
-		clear_proposed_segments;
-
-		reset_request_clarification;
-		
-		set_status (status_delete);
-		
-	end delete_selected_segment;
 	
 
 	function collect_segments (

@@ -134,7 +134,7 @@ procedure draw_nets (
 						position	=> element (l).position,
 						origin		=> true, -- CS must be false on export to image
 						
-						-- Text rotation around its anchor point.
+						-- Text rotation about its anchor point.
 						-- This is documentational text.
 						-- It is readable from the front or the right.
 						rotation	=> to_rotation (element (l).rotation_simple),
@@ -176,7 +176,7 @@ procedure draw_nets (
 		
 	end is_selected;
 
-	-- We need a list segments that have been drawn already.
+	-- We need a list of segments that have been drawn already.
 	-- Reason: While draggin/moving segments temporarily segments are drawn.
 	--         During this time the original segments (as given in database)
 	--         must not be drawn.

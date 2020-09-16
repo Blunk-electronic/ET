@@ -144,9 +144,21 @@ package et_canvas_schematic_units is
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
 
--- 	type type_selected_segment is new et_canvas_schematic_nets.type_selected_segment with record
--- 		zone	: et_schematic.pac_shapes.type_line_zone;
--- 	end record;
+
+	-- While dragging a unit, the attached segments must be dragged along.
+	-- So we need a list of selected segments.
+	-- There must also be information about the zone of the segment being dragged at:
+	type type_segment_being_dragged is new et_canvas_schematic_nets.type_selected_segment with record
+		zone	: et_schematic.pac_shapes.type_line_zone;
+	end record;
+
+	package pac_segments_being_dragged is new doubly_linked_lists (type_segment_being_dragged);
+	use pac_segments_being_dragged;
+
+	segments_being_dragged : pac_segments_being_dragged.list;
+
+	-- Clears list of segments being dragged:
+	procedure reset_segments_being_dragged;
 	
 	-- Assigns the final position after the drag to the selected unit.
 	-- Resets the global variable "unit".

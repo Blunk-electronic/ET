@@ -61,12 +61,19 @@ package et_canvas_schematic_nets is
 
 	-- Whenever a segment is selected via the GUI, we store its
 	-- parent net, strand and the segment itself via this type:
-	type type_selected_segment is record
+	type type_selected_segment is tagged record
 		net		: type_nets.cursor;
 		strand	: type_strands.cursor;
 		segment	: type_net_segments.cursor;
 	end record;
 
+	-- Deletes a selected segment of a net.
+	procedure delete_selected_segment (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		segment			: in type_selected_segment; -- net/strand/segment
+		log_threshold	: in type_log_level);
+
+	
 	package pac_proposed_segments is new doubly_linked_lists (type_selected_segment);
 	use pac_proposed_segments;
 	
@@ -105,11 +112,11 @@ package et_canvas_schematic_nets is
 		segments	: in pac_proposed_segments.list)
 		return boolean;
 	
-	-- Deletes a selected segment of a net.
-	procedure delete_selected_segment (
-		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		segment			: in type_selected_segment; -- net/strand/segment
-		log_threshold	: in type_log_level);
+-- 	-- Deletes a selected segment of a net.
+-- 	procedure delete_selected_segment (
+-- 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+-- 		segment			: in type_selected_segment; -- net/strand/segment
+-- 		log_threshold	: in type_log_level);
 	
 	-- Collects all net segments in the vicinity of the given point:
 	function collect_segments (
