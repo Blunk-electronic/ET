@@ -479,8 +479,8 @@ package body et_canvas_schematic_units is
 			-- Get the default port positions as defined in the library:
 			ports := ports_of_unit (su.device, key (su.unit));
 
-			-- Calculate the port positions in the schematic
-			-- before the drag:
+			-- Calculate the port positions in the schematic before the drag:
+			rotate_ports (ports, rot (unit_position));
 			move_ports (ports, unit_position);
 		end get_ports;
 
@@ -505,7 +505,7 @@ package body et_canvas_schematic_units is
 								segment	=> g,
 								zone	=> START_POINT));
 
-							log (text => "dg1" & to_string (element (g)), console => true);
+							--log (text => "dg1" & to_string (element (g)), console => true);
 						end if;
 
 						if element (g).end_point = element (p).position then
@@ -515,7 +515,7 @@ package body et_canvas_schematic_units is
 								segment	=> g,
 								zone	=> END_POINT));
 
-							log (text => "dg1" & to_string (element (g)), console => true);
+							--log (text => "dg1" & to_string (element (g)), console => true);
 						end if;
 					end query_segment;
 					
@@ -534,7 +534,7 @@ package body et_canvas_schematic_units is
 		end query_port;
 		
 	begin -- find_attached_segments
-		log (text => "find attached segments", console => true);
+		--log (text => "find attached segments", console => true);
 		
 		query_element (selected_unit, get_ports'access);
 		-- now the ports of the selected unit are in "ports"

@@ -799,12 +799,12 @@ package body et_schematic_ops.units is
 					process		=> query_unit_location'access);
 				
 				-- Fetch the ports of the unit to be moved. These are the default port positions
-				-- (relative to the symbol origin) as they are defined in the device model.
+				-- (relative to the symbol origin) as they are defined in the library model.
 				ports := ports_of_unit (device_cursor, unit_name);
 				
 				-- Calculate the old and new positions of the unit ports:
 				ports_old := ports;
-
+				rotate_ports (ports_old, rot (position_of_unit_old));
 				move_ports (ports_old, position_of_unit_old); 
 				-- ports_old now contains the absolute port positions in the schematic BEFORE the move.
 
@@ -823,6 +823,7 @@ package body et_schematic_ops.units is
 					process		=> query_units'access);
 				
 				ports_new := ports;
+				rotate_ports (ports_new, rot (position_of_unit_new));
 				move_ports (ports_new, position_of_unit_new);
 				-- ports_new now contains the absolute port positions in the schematic AFTER the move.
 				
