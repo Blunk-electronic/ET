@@ -500,9 +500,9 @@ package body et_canvas_schematic_units is
 					begin
 						if element (g).start_point = element (p).position then
 							segments_being_dragged.append ((
-								net		=> n,
-								strand	=> s,
-								segment	=> g,
+-- 								net		=> n,
+-- 								strand	=> s,
+								segment	=> element (g),
 								zone	=> START_POINT));
 
 							--log (text => "dg1" & to_string (element (g)), console => true);
@@ -510,9 +510,9 @@ package body et_canvas_schematic_units is
 
 						if element (g).end_point = element (p).position then
 							segments_being_dragged.append ((
-								net		=> n,
-								strand	=> s,
-								segment	=> g,
+-- 								net		=> n,
+-- 								strand	=> s,
+								segment	=> element (g),
 								zone	=> END_POINT));
 
 							--log (text => "dg1" & to_string (element (g)), console => true);

@@ -152,7 +152,9 @@ package et_canvas_schematic_units is
 	use et_schematic.pac_shapes;
 	subtype type_drag_zone is type_line_zone range START_POINT .. END_POINT;
 	
-	type type_segment_being_dragged is new et_canvas_schematic_nets.type_selected_segment with record
+-- 	type type_segment_being_dragged is new et_canvas_schematic_nets.type_selected_segment with record
+	type type_segment_being_dragged is record
+		segment	: et_schematic.type_net_segment;
 		zone	: type_drag_zone;
 	end record;
 

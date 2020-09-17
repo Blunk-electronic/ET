@@ -461,68 +461,50 @@ procedure draw_nets (
 		end if;
 	end draw_moving_segments;
 
+	-- Draws the segments attached to a unit being dragged.
 	procedure draw_segment_being_dragged_along_with_unit (
-		s : in type_net_segments.cursor) -- the segment as given in database
+		s : in type_net_segments.cursor) -- the original segment as given in database
 	is
 		tool_position : type_point;
 		displacement : type_point;
 		
 		use pac_segments_being_dragged;
-		
--- 		procedure query_segment (g : in pac_segments_being_dragged.cursor) is
--- 			s1 : type_net_segment;
--- 
--- 			procedure probe2 (dg : in type_net_segment) is
--- 				s1 : type_net_segment;
--- 			begin
--- 				--if dg = element (s) then
--- 				log (text => "dg" & to_string (dg), console => true);
--- 			
--- 				-- Test whether the given segment (of database) is being dragged:
--- 				if 	element (s).start_point = dg.start_point and
--- 					element (s).end_point   = dg.end_point
--- 				then
--- 				
--- 					log (text => "match", console => true);
--- 					
--- 					s1 := element (s);
--- 					
--- 					case element (g).zone is
--- 						when START_POINT =>
--- 							move_by (s1.start_point, displacement);
--- 						
--- 						when END_POINT =>
--- 							move_by (s1.end_point, displacement);
--- 					end case;
--- 
--- 					draw_line (
--- 						area		=> in_area,
--- 						context		=> context,
--- 						line		=> s1,
--- 						height		=> self.frame_height);
--- 					
--- 				end if;
--- 			end probe2;
--- 			
--- 		begin
--- 			query_element (
--- 				position	=> element (g).segment,
--- 				process		=> probe2'access);
--- 
--- -- 			GNAT.Exception_Traces.Trace_On (GNAT.Exception_Traces.Every_Raise); 
--- 			
--- 		end query_segment;
 
+		-- Tests if the segment being dragged is the same as the given segment.
+		-- If the segments are identical, then a copy of the original segment is
+		-- taken. According to the drag zone, the start or end point of this copy
+		-- is moved by the calculated displacement.
+		-- Finally the segment is marked as drawn so that is won't be drawn anew by
+		-- the callers.
 		procedure query_segment (g : in pac_segments_being_dragged.cursor) is
-			g1 : type_segment_being_dragged := element (g);
-			c : type_net_segments.cursor := g1.segment;
-			--g2 : type_net_segment := element (g1.segment);
+			copy_of_original_segment : type_net_segment;
 		begin
-			null;
-			log (text => "segment" & to_string (element (c)), console => true);
+			if element (g).segment = element (s) then
+				--log (text => "segment" & to_string (element (g).segment), console => true);
+
+				copy_of_original_segment := element (s);
+
+				case element (g).zone is
+					when START_POINT =>
+						move_by (copy_of_original_segment.start_point, displacement);
+					
+					when END_POINT =>
+						move_by (copy_of_original_segment.end_point, displacement);
+				end case;
+
+				draw_line (
+					area		=> in_area,
+					context		=> context,
+					line		=> copy_of_original_segment,
+					height		=> self.frame_height);
+
+				-- mark segment as already drawn
+				already_drawn_segments.append (element (s));
+				
+			end if;
 		end query_segment;
 		
-	begin
+	begin -- draw_segment_being_dragged_along_with_unit
 		if not is_empty (segments_being_dragged) then
 
 			-- Calculate the displacement of segments according to the
@@ -543,8 +525,6 @@ procedure draw_nets (
 -- 			log (text => "count       " & count_type'image (length (segments_being_dragged)), console => true);
 -- 			
 			segments_being_dragged.iterate (query_segment'access);
-		else
-			null;
 		end if;
 	end draw_segment_being_dragged_along_with_unit;
 	
