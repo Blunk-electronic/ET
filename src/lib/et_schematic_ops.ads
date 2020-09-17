@@ -119,7 +119,7 @@ package et_schematic_ops is
 		sheet			: in type_sheet;				-- the sheet to look at
 		log_threshold	: in type_log_level);
 
-	-- Rotates the given unit ports by given angle around the origin.
+	-- Rotates the given unit ports by given angle about the origin.
 	procedure rotate_ports ( -- CS move to et_symbols ?
 		ports	: in out et_symbols.type_ports.map; -- the portlist
 		angle	: in et_coordinates.type_rotation); -- 90

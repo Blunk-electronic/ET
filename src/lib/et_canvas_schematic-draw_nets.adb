@@ -35,6 +35,9 @@
 --   history of changes:
 --
 
+with gnat;
+with gnat.exception_traces;
+
 with ada.exceptions;
 with ada.containers;						use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -467,35 +470,50 @@ procedure draw_nets (
 		use pac_segments_being_dragged;
 		
 		procedure query_segment (g : in pac_segments_being_dragged.cursor) is
-			g1 : constant type_segment_being_dragged := element (g);
 			s1 : type_net_segment;
-		begin
 
-			-- Test whether the given segment (of database) is being dragged:
--- 			if 	element (s).start_point = element (g1.segment).start_point and
--- 				element (s).end_point   = element (g1.segment).end_point
-
+			procedure probe2 (dg : in type_net_segment) is
+				s1 : type_net_segment;
+			begin
+				--if dg = element (s) then
+				log (text => "dg" & to_string (dg), console => true);
 			
-			if element (s) = element (g1.segment) then
-				null;
--- 
--- 				s1 := element (s);
+				-- Test whether the given segment (of database) is being dragged:
+				if 	element (s).start_point = dg.start_point and
+					element (s).end_point   = dg.end_point
+				then
 				
--- 				case g1.zone is
--- 					when START_POINT =>
--- 						move_by (s1.start_point, displacement);
--- 					
--- 					when END_POINT =>
--- 						move_by (s1.end_point, displacement);
--- 				end case;
+					log (text => "match", console => true);
+					
+					s1 := element (s);
+					
+					case element (g).zone is
+						when START_POINT =>
+							move_by (s1.start_point, displacement);
+						
+						when END_POINT =>
+							move_by (s1.end_point, displacement);
+					end case;
 
--- 				draw_line (
--- 					area		=> in_area,
--- 					context		=> context,
--- 					line		=> s1,
--- 					height		=> self.frame_height);
-				
-			end if;
+					draw_line (
+						area		=> in_area,
+						context		=> context,
+						line		=> s1,
+						height		=> self.frame_height);
+					
+				end if;
+			end probe2;
+			
+		begin
+-- 			put_line ("seg");
+-- 			null;
+			
+			query_element (
+				position	=> element (g).segment,
+				process		=> probe2'access);
+
+-- 			GNAT.Exception_Traces.Trace_On (GNAT.Exception_Traces.Every_Raise); 
+			
 		end query_segment;
 
 	begin
@@ -514,10 +532,11 @@ procedure draw_nets (
 			-- This is the displacement of the attached segments:
 			displacement := type_point (distance_relative (unit.original_position, tool_position));
 
-			log (text => "original    " & to_string (unit.original_position), console => true);
-			log (text => "displacement" & to_string (displacement), console => true);
-
-			segments_being_dragged.iterate (query_segment'access);
+-- 			log (text => "original    " & to_string (unit.original_position), console => true);
+-- 			log (text => "displacement" & to_string (displacement), console => true);
+-- 			log (text => "count       " & count_type'image (length (segments_being_dragged)), console => true);
+-- 			
+-- 			segments_being_dragged.iterate (query_segment'access);
 		else
 			null;
 		end if;

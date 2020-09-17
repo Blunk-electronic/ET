@@ -433,6 +433,8 @@ package body et_canvas_schematic_units is
 			when 1 =>
 				unit.being_moved := true;
 				selected_unit := proposed_units.first;
+
+				find_attached_segments;
 				
 				reset_request_clarification;
 
@@ -502,6 +504,8 @@ package body et_canvas_schematic_units is
 								strand	=> s,
 								segment	=> g,
 								zone	=> START_POINT));
+
+							log (text => "dg1" & to_string (element (g)), console => true);
 						end if;
 
 						if element (g).end_point = element (p).position then
@@ -510,6 +514,8 @@ package body et_canvas_schematic_units is
 								strand	=> s,
 								segment	=> g,
 								zone	=> END_POINT));
+
+							log (text => "dg1" & to_string (element (g)), console => true);
 						end if;
 					end query_segment;
 					
@@ -528,6 +534,8 @@ package body et_canvas_schematic_units is
 		end query_port;
 		
 	begin -- find_attached_segments
+		log (text => "find attached segments", console => true);
+		
 		query_element (selected_unit, get_ports'access);
 		-- now the ports of the selected unit are in "ports"
 		
