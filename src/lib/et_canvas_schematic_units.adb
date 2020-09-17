@@ -41,6 +41,7 @@ with et_geometry;					use et_geometry;
 with et_symbols;					use et_symbols;
 with et_devices;					use et_devices;
 with et_schematic;					use et_schematic;
+with et_modes.schematic;
 
 with et_canvas_schematic;			use et_canvas_schematic;
 
@@ -327,7 +328,7 @@ package body et_canvas_schematic_units is
 	end delete_selected_unit;
 	
 
--- MOVE UNIT
+-- MOVE/DRAG UNIT
 
 	procedure reset_unit is begin
 		unit := (others => <>);
@@ -404,13 +405,15 @@ package body et_canvas_schematic_units is
 			
 		log_indentation_down;
 
-		set_status (status_move);
+		set_status (status_drag);
 		
 		reset_unit;
 	end finalize_drag;
 	
 	
-	procedure find_units (point : in type_point) is begin
+	procedure find_units (point : in type_point) is 
+		use et_modes.schematic;
+	begin
 		log (text => "locating units ...", level => log_threshold);
 		log_indentation_up;
 		
@@ -432,8 +435,12 @@ package body et_canvas_schematic_units is
 				selected_unit := proposed_units.first;
 				
 				reset_request_clarification;
-				
-				set_status (status_move);
+
+				case verb is
+					when VERB_DRAG => set_status (status_drag);
+					when VERB_MOVE => set_status (status_move);
+					when others => null;
+				end case;
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);

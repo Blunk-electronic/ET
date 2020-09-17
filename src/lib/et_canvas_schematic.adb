@@ -230,11 +230,11 @@ package body et_canvas_schematic is
 
 	-- Draws a single selected unit:
 	-- The unit will be drawn highlighted.
-	procedure draw_selected_unit (
-		self	: not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
-		context : in type_draw_context;
-		unit	: in type_selected_unit) is separate;
+-- 	procedure draw_selected_unit (
+-- 		self	: not null access type_view;
+-- 		in_area	: in type_rectangle := no_rectangle;
+-- 		context : in type_draw_context;
+-- 		unit	: in type_selected_unit) is separate;
 	-- CS: not used currently
 	
 	-- Draws a single selected net segment and the net labels attached to it.

@@ -225,11 +225,12 @@ procedure draw_units (
 				-- If the unit is selected and being moved the the position
 				-- will be overwritten by the position of the mouse or the cursor.
 				unit_position := type_point (element (unit_cursor).position);
-
+				
 				-- The default brightness is NORMAL. If the unit is selected then
 				-- the brightness will be increased:
 				brightness := NORMAL;
-				
+
+				-- CS test verb and noun ?
 				if is_selected (device_cursor, unit_cursor) then
 
 					-- increase brightness
@@ -238,6 +239,11 @@ procedure draw_units (
 					-- overwrite position
 					if unit.being_moved then
 					
+						-- In case the unit is being dragged, backup original position
+						-- in global variable "unit". Procedure draw_nets requires that
+						-- to calculate the displacement of attached net segments:
+						unit.original_position := unit_position;
+
 						case unit.tool is
 							when MOUSE =>
 								unit_position := self.snap_to_grid (self.mouse_position);
@@ -245,8 +251,9 @@ procedure draw_units (
 							when KEYBOARD =>
 								unit_position := cursor_main.position;
 						end case;
-					end if;
 
+
+					end if;
 				end if;
 
 				-- get the rotation of the unit

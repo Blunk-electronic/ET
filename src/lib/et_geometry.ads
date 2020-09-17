@@ -627,7 +627,7 @@ package et_geometry is
 		--
 		-- The position of the bar (|) in this drawing depends on the zone_division_factor.
 		-- The center length is twice the length of start/end point.
-		type type_line_zone is (START_POINT, CENTER, END_POINT);
+		type type_line_zone is (START_POINT, END_POINT, CENTER);
 		line_zone_division_factor : constant positive := 4;
 		
 		-- Calculates the zone of the line where point is nearest.

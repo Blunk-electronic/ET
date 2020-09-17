@@ -744,16 +744,20 @@ package body et_schematic_ops.units is
 					-- NOTE: The sheet number does not change in drag operations.
 					sheet : type_sheet := et_coordinates.sheet (unit.position);
 				begin
-					-- Set new x/y position. Sheet number is unchanged.
+					-- Set new x/y position. 
+					-- Preserve sheet number and rotation.
 					case coordinates is
 						when ABSOLUTE =>
-							unit.position := to_position (point, sheet);
 
+							unit.position := to_position (
+								point		=> point, 
+								sheet		=> sheet,
+								rotation	=> rot (unit.position));
+							
 						when RELATIVE =>
 							move_by (
 								point	=> unit.position,
-								offset	=> point
-								);
+								offset	=> point);
 					end case;
 					
 					exception

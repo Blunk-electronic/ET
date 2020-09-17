@@ -111,8 +111,9 @@ package et_canvas_schematic_units is
 -- MOVE/DRAG UNIT
 
 	type type_unit is record
-		being_moved	: boolean := false;
-		tool		: type_tool := MOUSE;
+		being_moved			: boolean := false;
+		tool				: type_tool := MOUSE;
+		original_position	: type_point;
 	end record;
 
 	unit : type_unit;
@@ -148,8 +149,11 @@ package et_canvas_schematic_units is
 	-- While dragging a unit, the attached segments must be dragged along.
 	-- So we need a list of selected segments.
 	-- There must also be information about the zone of the segment being dragged at:
+	use et_schematic.pac_shapes;
+	subtype type_drag_zone is type_line_zone range START_POINT .. END_POINT;
+	
 	type type_segment_being_dragged is new et_canvas_schematic_nets.type_selected_segment with record
-		zone	: et_schematic.pac_shapes.type_line_zone;
+		zone	: type_drag_zone;
 	end record;
 
 	package pac_segments_being_dragged is new doubly_linked_lists (type_segment_being_dragged);

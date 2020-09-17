@@ -332,7 +332,7 @@ procedure draw_nets (
 	is
 		use et_schematic_ops.nets;
 
-		-- Calculate the zone where the original segement is being attacked:
+		-- Calculate the zone where the original segment is being attacked:
 		zone : constant type_line_zone := which_zone (
 				point	=> segment.point_of_attack,
 				line	=> element (original_segment));
@@ -457,6 +457,71 @@ procedure draw_nets (
 			draw_labels (net_cursor, element (original_segment));
 		end if;
 	end draw_moving_segments;
+
+	procedure draw_segment_being_dragged_along_with_unit (
+		s : in type_net_segments.cursor) -- the segment as given in database
+	is
+		tool_position : type_point;
+		displacement : type_point;
+		
+		use pac_segments_being_dragged;
+		
+		procedure query_segment (g : in pac_segments_being_dragged.cursor) is
+			g1 : constant type_segment_being_dragged := element (g);
+			s1 : type_net_segment;
+		begin
+
+			-- Test whether the given segment (of database) is being dragged:
+-- 			if 	element (s).start_point = element (g1.segment).start_point and
+-- 				element (s).end_point   = element (g1.segment).end_point
+
+			
+			if element (s) = element (g1.segment) then
+				null;
+-- 
+-- 				s1 := element (s);
+				
+-- 				case g1.zone is
+-- 					when START_POINT =>
+-- 						move_by (s1.start_point, displacement);
+-- 					
+-- 					when END_POINT =>
+-- 						move_by (s1.end_point, displacement);
+-- 				end case;
+
+-- 				draw_line (
+-- 					area		=> in_area,
+-- 					context		=> context,
+-- 					line		=> s1,
+-- 					height		=> self.frame_height);
+				
+			end if;
+		end query_segment;
+
+	begin
+		if not is_empty (segments_being_dragged) then
+
+			-- Calculate the displacement of segments according to the
+			-- current drawing tool and the current displacement of the unit:
+			case unit.tool is
+				when MOUSE =>
+					tool_position := self.snap_to_grid (self.mouse_position);
+
+				when KEYBOARD =>
+					tool_position := cursor_main.position;
+			end case;
+
+			-- This is the displacement of the attached segments:
+			displacement := type_point (distance_relative (unit.original_position, tool_position));
+
+			log (text => "original    " & to_string (unit.original_position), console => true);
+			log (text => "displacement" & to_string (displacement), console => true);
+
+			segments_being_dragged.iterate (query_segment'access);
+		else
+			null;
+		end if;
+	end draw_segment_being_dragged_along_with_unit;
 	
 	procedure query_nets (
 		module_name	: in type_module_name.bounded_string;
@@ -482,7 +547,11 @@ procedure draw_nets (
 					set_color_nets (context.cr, BRIGHT);
 					
 					while segment_cursor /= type_net_segments.no_element loop
-						
+
+						-- CS test verb and noun ?
+						draw_segment_being_dragged_along_with_unit (segment_cursor);
+
+						-- CS test verb and noun ?						
 						if is_selected (segment_cursor) then
 						
 							if segment.being_moved then
