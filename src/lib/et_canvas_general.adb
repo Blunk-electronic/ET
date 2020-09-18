@@ -377,6 +377,7 @@ package body pac_canvas is
 	begin
 		-- Get the mouse position:
 		drawing_point := mouse_position (self);
+		-- CS: Assumes a random value if mouse outside the window.
 		
 		-- Get the distance (in x and y) from cursor to mouse position:
 		distance_xy := type_point (distance_relative (cursor_main.position, drawing_point));
@@ -384,6 +385,10 @@ package body pac_canvas is
 		-- Get the distance (in x and y) from cursor to mouse position:
 		distance_pol := distance_polar (cursor_main.position, drawing_point);
 
+		-- update mouse pointer position:
+		--gtk_entry (mouse_position_x.get_child).set_text (to_string (self, drawing_point, X));
+		--gtk_entry (mouse_position_y.get_child).set_text (to_string (self, drawing_point, Y));
+		-- no need. will be done by function on_mouse_movement.
 		
 		-- update distance display:
 		gtk_entry (distances.display_x.get_child).set_text (to_string (self, distance_xy, X));
