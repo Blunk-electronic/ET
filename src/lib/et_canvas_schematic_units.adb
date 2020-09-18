@@ -406,6 +406,8 @@ package body et_canvas_schematic_units is
 		log_indentation_down;
 
 		set_status (status_drag);
+
+		reset_segments_being_dragged;
 		
 		reset_unit;
 	end finalize_drag;

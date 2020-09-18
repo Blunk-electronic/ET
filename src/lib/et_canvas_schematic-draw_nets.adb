@@ -462,6 +462,7 @@ procedure draw_nets (
 	end draw_moving_segments;
 
 	-- Draws the segments attached to a unit being dragged.
+	-- If the list segments_being_dragged is empty, nothing happens.
 	procedure draw_segment_being_dragged_along_with_unit (
 		s : in type_net_segments.cursor) -- the original segment as given in database
 	is
@@ -523,7 +524,7 @@ procedure draw_nets (
 -- 			log (text => "original    " & to_string (unit.original_position), console => true);
 -- 			log (text => "displacement" & to_string (displacement), console => true);
 -- 			log (text => "count       " & count_type'image (length (segments_being_dragged)), console => true);
--- 			
+			
 			segments_being_dragged.iterate (query_segment'access);
 		end if;
 	end draw_segment_being_dragged_along_with_unit;
@@ -555,7 +556,8 @@ procedure draw_nets (
 
 						-- CS test verb and noun ?
 						draw_segment_being_dragged_along_with_unit (segment_cursor);
-
+						-- (If segments_being_dragged is empty, then nothing happens.)
+						
 						-- CS test verb and noun ?						
 						if is_selected (segment_cursor) then
 						
