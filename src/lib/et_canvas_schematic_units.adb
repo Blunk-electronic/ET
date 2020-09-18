@@ -554,6 +554,273 @@ package body et_canvas_schematic_units is
 		
 	end find_attached_segments;
 
+
+	-- Rotates a unit of a device by 90 degree clockwise. 
+	-- Mind that the parameter unit is an in/out !
+	procedure rotate_unit (
+		module_cursor	: in pac_generic_modules.cursor;
+		unit			: in out type_selected_unit;
+		log_threshold	: in type_log_level)
+	is
+		rotation : constant et_coordinates.type_rotation := 90.0;
+
+		use et_schematic.type_devices;
+		use et_schematic.type_units;
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			position_of_unit : et_coordinates.type_position;
+			rotation_before : et_coordinates.type_rotation;
+
+			ports_lib, ports_scratch : et_symbols.type_ports.map;
+
+			procedure query_units (
+				device_name	: in type_name;
+				device		: in out et_schematic.type_device)
+			is
+				use et_schematic.type_units;
+				unit_cursor : et_schematic.type_units.cursor;
+
+				procedure rotate_unit (
+					name	: in type_unit_name.bounded_string; -- A
+					unit	: in out et_schematic.type_unit) is
+
+					preamble : constant string := " placeholder now at";
+
+					procedure rotate_placeholders_relative (rot : in type_rotation) is 
+						use et_symbols.pac_text;
+					begin
+						-- Rotate position of placeholders around the unit origin. 
+					
+						-- NAME
+						-- Rotate the placeholder around its own anchor point so that it
+						-- it is readable from the front or from the right.
+						unit.name.rotation := snap (unit.name.rotation + rot);
+
+						-- rotate the placeholder anchor point around the symbol origin:
+						rotate_by (unit.name.position, rot);
+
+						log (text => "name" & preamble & to_string (unit.name.position), 
+								level => log_threshold + 2);
+
+
+						-- VALUE
+						-- Rotate the placeholder around its own anchor point so that it
+						-- it is readable from the front or from the right.
+						unit.value.rotation := snap (unit.value.rotation + rot);
+
+						-- rotate the placeholder anchor point around the symbol origin:
+						rotate_by (unit.value.position, rot);
+
+						log (text => "value" & preamble & to_string (unit.value.position), 
+								level => log_threshold + 2);
+
+
+						-- PURPOSE
+						-- Rotate the placeholder around its own anchor point so that it
+						-- it is readable from the front or from the right.
+						unit.purpose.rotation := snap (unit.purpose.rotation + rot);
+
+						-- rotate the placeholder anchor point around the symbol origin:
+						rotate_by (unit.purpose.position, rot);
+
+						log (text => "purpose" & preamble & to_string (unit.purpose.position), 
+								level => log_threshold + 2);
+
+					end rotate_placeholders_relative;
+
+				begin -- rotate_unit
+-- 					case coordinates is
+-- 						when ABSOLUTE =>
+-- 							set (unit.position, rotation);
+-- 							rotate_placeholders_absolute (rotation);
+-- 							
+-- 						when RELATIVE =>
+							set (unit.position, add (rotation_before, rotation));
+							
+							log (text => "rotation now" & to_string (rot (unit.position)),
+									level => log_threshold + 1);
+
+							rotate_placeholders_relative (rotation);
+-- 					end case;
+				end rotate_unit;
+				
+			begin -- query_units
+
+				-- load unit position and current rotation
+				position_of_unit := element (unit.unit).position;
+				rotation_before := rot (element (unit.unit).position);
+
+				-- log unit position and current rotation
+				log (text => to_string (position => position_of_unit) &
+					" rotation before" & to_string (rotation_before),
+					level => log_threshold + 1);
+
+				log_indentation_up;
+				
+				type_units.update_element (
+					container	=> device.units,
+					position	=> unit.unit,
+					process		=> rotate_unit'access);
+
+				log_indentation_down;
+			end query_units;
+
+		begin -- query_devices
+
+			-- rotate the unit
+			update_element (
+				container	=> module.devices,
+				position	=> unit.device,
+				process		=> query_units'access);
+			
+			log_indentation_up;
+
+			-- Fetch the ports of the unit to be rotated.
+			-- The coordinates here are the default positions (in the library model)
+			-- relative to the center of the units.
+			ports_lib := ports_of_unit (unit.device, type_units.key (unit.unit));
+			
+			ports_scratch := ports_lib;						 
+
+			-- Calculate the absolute positions of the unit ports in the schematic
+			-- as they are BEFORE the rotation:
+			rotate_ports (ports_scratch, rotation_before);
+			move_ports (ports_scratch, position_of_unit);
+			
+			-- Delete the old ports of the targeted unit from module.nets.
+			-- The unit is on a certain sheet. The procedure delete_ports however
+			-- requires a list of unit positions (containing sheet numbers).
+			-- So we create a list "sheets", put the unit name and position in it,
+			-- and pass it to procedure delete_ports:
+			declare
+				sheets : type_unit_positions.map;
+			begin
+				type_unit_positions.insert (
+					container	=> sheets,
+					key			=> key (unit.unit),
+					new_item	=> position_of_unit);
+
+				delete_ports (
+					module			=> module_cursor,
+					device			=> key (unit.device),
+					ports			=> ports_scratch,
+					sheets			=> sheets, 
+					log_threshold	=> log_threshold + 1);
+			end;
+
+			-- Calculate the new positions of the unit ports.
+-- 			case coordinates is
+-- 				when ABSOLUTE =>
+-- 					rotate_ports (ports_lib, rotation);
+-- 				when RELATIVE =>
+						-- The given angle of rotation adds to the rotation_before:
+					rotate_ports (ports_lib, add (rotation_before, rotation));
+-- 			end case;
+			
+			move_ports (ports_lib, position_of_unit);
+			
+			-- Insert the new unit ports in the nets (type_module.nets):
+			insert_ports (
+				module			=> module_cursor,
+				device			=> key (unit.device),
+				unit			=> key (unit.unit),
+				ports			=> ports_lib,
+				sheet			=> et_coordinates.sheet (position_of_unit),
+				log_threshold	=> log_threshold + 1);
+			
+			log_indentation_down;				
+
+		end query_devices;
+		
+	begin -- rotate_unit
+		log (text => "module " & to_string (key (module_cursor)) &
+			 " rotating " & to_string (key (unit.device)) & " unit " & 
+			 to_string (key (unit.unit)) & " ...", level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+		
+		log_indentation_down;				
+	end rotate_unit;
+	
+	procedure finalize_rotate (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		unit			: in type_selected_unit; -- device/unit
+		log_threshold	: in type_log_level)
+	is 
+		su : type_selected_unit := unit;		
+	begin
+		rotate_unit (module_cursor, su, log_threshold);
+		-- NOTE: su has been modified !
+
+		reset_request_clarification;
+		
+		set_status (status_rotate);
+		
+		clear_proposed_units;
+	end finalize_rotate;
+	
+	procedure rotate_unit (point : in type_point) is 
+		use et_schematic_ops.units;
+		unit_cursor : pac_proposed_units.cursor;
+	begin
+		log (text => "rotating unit ...", level => log_threshold);
+		log_indentation_up;
+		
+		-- Collect all units in the vicinity of the given point:
+		proposed_units := collect_units (
+			module			=> current_active_module,
+			place			=> to_position (point, current_active_sheet),
+			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			log_threshold	=> log_threshold + 1);
+
+		-- evaluate the number of units found here:
+		case length (proposed_units) is
+			when 0 =>
+				reset_request_clarification;
+				
+			when 1 =>
+				unit_cursor := proposed_units.first;
+			
+				finalize_rotate (
+					module_cursor	=> current_active_module,
+					unit			=> element (unit_cursor),
+					log_threshold	=> log_threshold + 1);
+
+			when others =>
+				--log (text => "many objects", level => log_threshold + 2);
+				set_request_clarification;
+
+				-- preselect the first unit
+				selected_unit := proposed_units.first;
+		end case;
+		
+		log_indentation_down;
+	end rotate_unit;
+
+	procedure rotate_selected_unit is
+		use et_schematic_ops.units;
+	begin
+		log (text => "rotating unit after clarification ...", level => log_threshold);
+		log_indentation_up;
+
+		finalize_rotate (
+			module_cursor	=> current_active_module,
+			unit			=> element (selected_unit),
+			log_threshold	=> log_threshold + 1);
+		
+		log_indentation_down;
+	end rotate_selected_unit;
+	
 end et_canvas_schematic_units;
 
 -- Soli Deo Gloria

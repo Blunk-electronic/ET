@@ -132,6 +132,13 @@ package et_canvas_schematic_units is
 		& "to drag unit." 
 		& status_hint_for_abort;
 
+	status_rotate : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to rotate unit." 
+		& status_hint_for_abort;
+
 	
 	-- This procedure:
 	-- - Clears list of proposed units.
@@ -183,6 +190,14 @@ package et_canvas_schematic_units is
 	-- Locates net segments attached to the unit indicated by
 	-- cursor selected_unit:
 	procedure find_attached_segments;
+
+
+	procedure rotate_unit (point : in type_point);
+
+	-- Rotate the unit being pointed at by cursor selected_unit.
+	-- Call this procedure after a clarification.
+	procedure rotate_selected_unit;
+
 	
 -- 	-- Moves the unit being pointed at by cursor selected_unit.
 -- 	-- Call this procedure after a clarification.

@@ -953,7 +953,47 @@ package body et_canvas_schematic is
 				when others => status_noun_invalid;
 			end case;
 		end move;
+
+		procedure rotate is begin
+			case key is
+				-- EVALUATE KEY FOR NOUN:
+				when GDK_LC_u =>
+					noun := NOUN_UNIT;
 					
+					set_status (et_canvas_schematic_units.status_rotate);
+	
+
+				-- If space pressed, then the operator wishes to operate via keyboard:	
+				when GDK_Space =>
+					case noun is
+						when NOUN_UNIT =>
+							if not clarification_pending then
+								rotate_unit (cursor_main.position);
+							else
+								rotate_selected_unit;
+							end if;
+
+						when others => null;
+							
+					end case;
+
+				-- If page down pressed, then the operator is clarifying:
+				when GDK_page_down =>
+					case noun is
+						when NOUN_UNIT =>
+							if clarification_pending then
+								clarify_unit;
+							end if;
+
+						when others => null;
+							
+					end case;
+					
+				when others => status_noun_invalid;
+			end case;
+		end rotate;
+
+		
 	begin -- evaluate_key
 		
 -- 		put_line ("schematic: evaluating other key ...");
@@ -1004,6 +1044,10 @@ package body et_canvas_schematic is
 							verb := VERB_MOVE;
 							status_enter_noun;
 
+						when GDK_LC_r =>
+							verb := VERB_ROTATE;
+							status_enter_noun;
+							
 						when others =>
 							--put_line ("other key pressed " & gdk_key_type'image (key));
 							
@@ -1018,10 +1062,11 @@ package body et_canvas_schematic is
 					--put_line ("NOUN entered");
 
 					case verb is
-						when VERB_DELETE => delete;
-						when VERB_DRAG => drag;
-						when VERB_DRAW => draw;
-						when VERB_MOVE => move;
+						when VERB_DELETE	=> delete;
+						when VERB_DRAG		=> drag;
+						when VERB_DRAW		=> draw;
+						when VERB_MOVE		=> move;
+						when VERB_ROTATE	=> rotate;
 
 						when others => null; -- CS
 					end case;
@@ -1259,6 +1304,20 @@ package body et_canvas_schematic is
 							
 						when others => null;							
 					end case;
+
+				when VERB_ROTATE =>
+
+					case noun is
+						when NOUN_UNIT =>
+							if not clarification_pending then
+								rotate_unit (point);
+							else
+								rotate_selected_unit;
+							end if;
+							
+						when others => null;
+					end case;
+
 					
 				when others => null; -- CS
 			end case;
@@ -1306,6 +1365,16 @@ package body et_canvas_schematic is
 					end case;
 					
 				when VERB_MOVE =>
+					case noun is
+						when NOUN_UNIT =>
+							if clarification_pending then
+								clarify_unit;
+							end if;
+
+						when others => null;							
+					end case;
+
+				when VERB_ROTATE =>
 					case noun is
 						when NOUN_UNIT =>
 							if clarification_pending then

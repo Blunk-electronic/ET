@@ -89,10 +89,11 @@ package et_schematic_ops.units is
 		point			: in type_point; -- x/y -- CS rename to destination
 		log_threshold	: in type_log_level);
 	
-	procedure rotate_unit (
-	-- Rotates the given unit. Disconnects the unit from
-	-- start or end points of net segments.
+	-- Rotates the given unit. 
+	-- Disconnects the unit from attached net segments before the rotation.
+	-- Connects the unit with net segments after the rotation.
 	-- Rotates the placeholders about the unit center.
+	procedure rotate_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
