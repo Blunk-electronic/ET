@@ -1616,9 +1616,6 @@ package body pac_canvas is
 	
 	procedure reset_request_clarification is begin
 		request_clarificaton := NO;
-
-		-- clear status bar
-		--status_clear;
 	end reset_request_clarification;
 
 	function clarification_pending return boolean is begin

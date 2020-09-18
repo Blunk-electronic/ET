@@ -328,7 +328,7 @@ package body et_canvas_schematic_units is
 	end delete_selected_unit;
 	
 
--- MOVE/DRAG UNIT
+-- MOVE/DRAG/ROTATE UNIT
 
 	procedure reset_unit is begin
 		unit := (others => <>);
@@ -436,15 +436,18 @@ package body et_canvas_schematic_units is
 				unit.being_moved := true;
 				selected_unit := proposed_units.first;
 
-				find_attached_segments;
-				
-				reset_request_clarification;
-
 				case verb is
-					when VERB_DRAG => set_status (status_drag);
-					when VERB_MOVE => set_status (status_move);
+					when VERB_DRAG => 
+						find_attached_segments;
+						set_status (status_drag);
+						
+					when VERB_MOVE => 
+						set_status (status_move);
+						
 					when others => null;
 				end case;
+
+				reset_request_clarification;
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
@@ -553,9 +556,11 @@ package body et_canvas_schematic_units is
 		end if;
 		
 	end find_attached_segments;
-
-
+	
 	-- Rotates a unit of a device by 90 degree clockwise. 
+	-- Disconnects the unit from attached net segments before the rotation.
+	-- Connects the unit with net segments after the rotation.
+	-- Rotates the placeholders about the unit center.
 	-- Mind that the parameter unit is an in/out !
 	procedure rotate_unit (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -634,19 +639,12 @@ package body et_canvas_schematic_units is
 					end rotate_placeholders_relative;
 
 				begin -- rotate_unit
--- 					case coordinates is
--- 						when ABSOLUTE =>
--- 							set (unit.position, rotation);
--- 							rotate_placeholders_absolute (rotation);
--- 							
--- 						when RELATIVE =>
-							set (unit.position, add (rotation_before, rotation));
-							
-							log (text => "rotation now" & to_string (rot (unit.position)),
-									level => log_threshold + 1);
+					set (unit.position, add (rotation_before, rotation));
+					
+					log (text => "rotation now" & to_string (rot (unit.position)),
+							level => log_threshold + 1);
 
-							rotate_placeholders_relative (rotation);
--- 					end case;
+					rotate_placeholders_relative (rotation);
 				end rotate_unit;
 				
 			begin -- query_units
@@ -714,13 +712,8 @@ package body et_canvas_schematic_units is
 			end;
 
 			-- Calculate the new positions of the unit ports.
--- 			case coordinates is
--- 				when ABSOLUTE =>
--- 					rotate_ports (ports_lib, rotation);
--- 				when RELATIVE =>
-						-- The given angle of rotation adds to the rotation_before:
-					rotate_ports (ports_lib, add (rotation_before, rotation));
--- 			end case;
+			-- The fixed angle of rotation adds to the rotation_before:
+			rotate_ports (ports_lib, add (rotation_before, rotation));
 			
 			move_ports (ports_lib, position_of_unit);
 			
@@ -738,9 +731,11 @@ package body et_canvas_schematic_units is
 		end query_devices;
 		
 	begin -- rotate_unit
-		log (text => "module " & to_string (key (module_cursor)) &
-			 " rotating " & to_string (key (unit.device)) & " unit " & 
-			 to_string (key (unit.unit)) & " ...", level => log_threshold);
+		log (text => "module " & to_string (key (module_cursor)) 
+			 & " rotating " & to_string (key (unit.device)) & " unit " 
+			 & to_string (key (unit.unit)) 
+			 & " by " & to_string (rotation) & " degree ...",
+			 level => log_threshold);
 
 		log_indentation_up;
 

@@ -108,7 +108,7 @@ package et_canvas_schematic_units is
 
 
 
--- MOVE/DRAG UNIT
+-- MOVE/DRAG/ROTATE UNIT
 
 	type type_unit is record
 		being_moved			: boolean := false;
@@ -191,18 +191,13 @@ package et_canvas_schematic_units is
 	-- cursor selected_unit:
 	procedure find_attached_segments;
 
-
+	
 	procedure rotate_unit (point : in type_point);
 
 	-- Rotate the unit being pointed at by cursor selected_unit.
 	-- Call this procedure after a clarification.
 	procedure rotate_selected_unit;
 
-	
--- 	-- Moves the unit being pointed at by cursor selected_unit.
--- 	-- Call this procedure after a clarification.
--- 	procedure move_selected_unit;
-	
 end et_canvas_schematic_units;
 
 -- Soli Deo Gloria
