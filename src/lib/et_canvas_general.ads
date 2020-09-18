@@ -240,7 +240,9 @@ package pac_canvas is
 	-- The view coordinates are the 
 	-- coordinates of items on the screen and are expressed in pixels.
 	-- They change when the operators zooms or scrolls.
-	subtype type_view_coordinate is gdouble; -- gdouble is a real floating-point type (see glib.ads)
+	--subtype type_view_coordinate is gdouble; -- gdouble is a real floating-point type (see glib.ads)
+	-- CS: experimental narrowing the range of type_view_coordinate:
+	subtype type_view_coordinate is gdouble range -10_000.0 .. 10_000.0;
 	subtype type_view_coordinate_positive is type_view_coordinate range 0.0 .. type_view_coordinate'last;
 
 	-- The point inside the view.
