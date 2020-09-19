@@ -1248,7 +1248,6 @@ package body et_schematic_ops is
 -- 	end move_unit;
 
 	procedure move_unit_placeholder (
-	-- Moves the name placeholder of the given unit.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
@@ -1277,13 +1276,21 @@ package body et_schematic_ops is
 					unit_name	: in type_unit_name.bounded_string;
 					unit		: in out et_schematic.type_unit) is
 					use et_coordinates;
-				begin
+
+					-- In case absolute movement is required, calculate the
+					-- new position of the placeholder relative to the unit origin:
+					pos_abs : constant type_point := 
+						type_point (distance_relative (type_point (unit.position), point));
+						
+				begin -- move_placeholder
+					
 					-- The given meaning determines the placeholder to be moved:
 					case meaning is
 						when NAME =>
 							case coordinates is
 								when ABSOLUTE =>
-									unit.name.position := point;
+									--log (text => "pos " & to_string (point));
+									unit.name.position := pos_abs;
 
 								when RELATIVE =>
 									move_by (
@@ -1294,7 +1301,7 @@ package body et_schematic_ops is
 						when VALUE =>
 							case coordinates is
 								when ABSOLUTE =>
-									unit.value.position := point;
+									unit.value.position := pos_abs;
 
 								when RELATIVE =>
 									move_by (
@@ -1305,7 +1312,7 @@ package body et_schematic_ops is
 						when PURPOSE =>
 							case coordinates is
 								when ABSOLUTE =>
-									unit.purpose.position := point;
+									unit.purpose.position := pos_abs;
 
 								when RELATIVE =>
 									move_by (
@@ -1361,16 +1368,20 @@ package body et_schematic_ops is
 	begin -- move_unit_placeholder
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_name) &
-					" moving " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
-					to_string (point), level => log_threshold);
+				log (text => "module " & enclose_in_quotes (to_string (module_name))
+					& " moving " & to_string (device_name) 
+					& " unit " & to_string (unit_name) 
+					& " placeholder " & enclose_in_quotes (to_string (meaning))
+					& " to" & to_string (point),
+					level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & to_string (module_name) &
-					" moving " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " placeholder" & to_string (meaning) & " by" &
-					to_string (point), level => log_threshold);
+				log (text => "module " & enclose_in_quotes (to_string (module_name))
+					& " moving " & to_string (device_name) 
+					& " unit " & to_string (unit_name) 
+					& " placeholder " & enclose_in_quotes (to_string (meaning))
+					& " by" & to_string (point),
+					level => log_threshold);
 		end case;
 
 		-- locate module

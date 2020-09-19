@@ -137,7 +137,9 @@ package et_symbols is
         rotation	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
 	end record;
 	
-	-- This is a placeholder for a text. It does not have content yet, but a meaning:
+	-- This is a placeholder for a name, value or purpose.
+	-- It does not have content yet, but a meaning.
+	-- The position is just x/y relative to the symbol origin.
 	type type_text_placeholder (meaning : type_placeholder_meaning) is new type_text_basic with record
 		position : type_point;
 	end record;

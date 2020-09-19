@@ -360,6 +360,9 @@ package body et_canvas_schematic_units is
 				point			=> destination,
 				log_threshold	=> log_threshold);
 
+			-- CS write a reduced procedure of move_unit that takes a 
+			-- module cursor, device cursor and unit cursor instead.
+			
 		else
 			log (text => "nothing to do", level => log_threshold);
 		end if;
@@ -815,6 +818,250 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;
 	end rotate_selected_unit;
+
+
+-- PLACEHOLDERS
+
+	procedure clarify_name_placeholder is
+		use et_schematic.type_devices;
+		use et_schematic.type_units;
+		u : type_units.cursor;
+		d : et_schematic.type_devices.cursor;
+	begin
+		-- On every call of this procedure we must advance from one
+		-- placeholder to the next in a circular manner. So if the end 
+		-- of the list is reached, then the cursor selected_name_placeholder
+		-- moves back to the start of the placeholder list.
+		if next (selected_name_placeholder) /= pac_proposed_name_placeholders.no_element then
+			next (selected_name_placeholder);
+		else
+			selected_name_placeholder := proposed_name_placeholders.first;
+		end if;
+
+		-- show the selected placeholder in the status bar
+		u := element (selected_name_placeholder).unit;
+		d := element (selected_name_placeholder).device;
+		
+		set_status ("selected placeholder " 
+			& to_string (key (d)) 
+			& "."
+			& to_string (key (u)) 
+			& ". " & status_next_object_clarification);
+		
+	end clarify_name_placeholder;
+	
+	procedure clear_proposed_name_placeholders is begin
+		clear (proposed_name_placeholders);
+		selected_name_placeholder := pac_proposed_name_placeholders.no_element;
+	end clear_proposed_name_placeholders;
+	
+	procedure reset_name_placeholder is begin
+		name_placeholder := (others => <>);
+		clear_proposed_name_placeholders;
+	end reset_name_placeholder;
+
+	procedure finalize_move_name (
+		destination		: in type_point;
+		log_threshold	: in type_log_level)
+	is
+		su : type_selected_unit;
+
+		use et_schematic.type_devices;
+		use et_schematic.type_units;
+	begin
+		log (text => "finalizing move placeholder ...", level => log_threshold);
+		log_indentation_up;
+
+		if selected_name_placeholder /= pac_proposed_name_placeholders.no_element then
+
+			su := element (selected_name_placeholder);
+
+			move_unit_placeholder (
+				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+				device_name		=> key (su.device),
+				unit_name		=> key (su.unit),
+				coordinates		=> ABSOLUTE,
+				point			=> destination,
+				meaning			=> NAME,
+				log_threshold	=> log_threshold);
+
+			-- CS write a reduced procedure of move_unit_placeholder that takes a 
+			-- module cursor, device cursor and unit cursor instead.
+				
+		else
+			log (text => "nothing to do", level => log_threshold);
+		end if;
+			
+		log_indentation_down;
+
+		set_status (status_move_name);
+		
+		reset_name_placeholder;
+	end finalize_move_name;
+
+	function collect_placeholders (
+		module			: in pac_generic_modules.cursor;
+		place			: in et_coordinates.type_position; -- sheet/x/y
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		category		: in type_placeholder_meaning; -- name, value, purpose
+		log_threshold	: in type_log_level)
+		return pac_proposed_name_placeholders.list
+	is
+		result : pac_proposed_name_placeholders.list;
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
+
+			procedure query_units (
+				device_name	: in type_name;
+				device		: in et_schematic.type_device)
+			is
+				use et_schematic.type_units;
+				unit_cursor : et_schematic.type_units.cursor := device.units.first;
+
+				placeholder_position : type_point;
+
+				procedure test_placeholder_position is 
+					pos_abs : et_coordinates.type_position;
+				begin
+					-- The current placeholder_position is relative to the unit position.
+					-- It must be moved by the unit position in order to get the absolute position:
+					move_by (placeholder_position, element (unit_cursor).position);
+
+					-- Add the sheet information to the position:
+					pos_abs := to_position (placeholder_position, sheet (place));
+					
+					--log (text => to_string (pos_abs), level => log_threshold + 1);
+
+					-- Test whether the placeholder is inside the catch zone around the given place:
+					if in_catch_zone (place, catch_zone, pos_abs) then
+						log_indentation_up;
+
+						log (text => "in catch zone", level => log_threshold + 1);
+						result.append ((device_cursor, unit_cursor));
+						
+						log_indentation_down;
+					end if;
+				end test_placeholder_position;
+		
+			begin -- query_units
+				while unit_cursor /= et_schematic.type_units.no_element loop
+					
+					-- We are interested in units on the given sheet only:
+					if sheet (element (unit_cursor).position) = sheet (place) then
+
+						log (text => "probing unit " & to_string (unit_cursor),
+							level => log_threshold + 1);
+
+						case category is
+							when NAME =>
+								-- Get the position of the name placeholder relative to the unit origin:
+								--placeholder_position := to_position (element (unit_cursor).name.position, sheet (place));
+								placeholder_position := element (unit_cursor).name.position;
+								test_placeholder_position;
+
+							when VALUE =>
+								-- Get the position of the value placeholder relative to the unit origin:
+								--placeholder_position := to_position (element (unit_cursor).value.position, sheet (place));
+								placeholder_position := element (unit_cursor).value.position;
+								test_placeholder_position;
+
+							when PURPOSE =>
+								-- Get the position of the purpose placeholder relative to the unit origin:
+								--placeholder_position := to_position (element (unit_cursor).purpose.position, sheet (place));
+								placeholder_position := element (unit_cursor).purpose.position;
+								test_placeholder_position;
+								
+						end case;
+					end if;
+
+					next (unit_cursor);
+				end loop;
+				
+			end query_units;
+			
+		begin -- query_devices
+			while device_cursor /= et_schematic.type_devices.no_element loop
+
+				-- Only real devices have placeholders. Virtual devices are skipped here:
+				if element (device_cursor).appearance = PCB then
+				
+					log (text => "probing device " & to_string (key (device_cursor)),
+						level => log_threshold + 1);
+					log_indentation_up;
+						
+					query_element (
+						position	=> device_cursor,
+						process		=> query_units'access);
+
+				end if;
+				
+				next (device_cursor);
+
+				log_indentation_down;
+			end loop;
+		end query_devices;
+
+	begin -- collect_placeholders
+		log (text => "looking up placeholders of category " 
+			& enclose_in_quotes (to_string (category))
+			& " at " & to_string (place) 
+			& " catch zone" & to_string (catch_zone),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		log_indentation_down;
+		
+		return result;
+		
+	end collect_placeholders;
+	
+	procedure find_name_placeholders (point : in type_point) is 
+		use et_modes.schematic;
+	begin
+		log (text => "locating name placeholders ...", level => log_threshold);
+		log_indentation_up;
+		
+		-- Collect all placeholders in the vicinity of the given point:
+		proposed_name_placeholders := collect_placeholders (
+			module			=> current_active_module,
+			place			=> to_position (point, current_active_sheet),
+			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			category		=> NAME,
+			log_threshold	=> log_threshold + 1);
+
+		-- evaluate the number of units found here:
+		case length (proposed_name_placeholders) is
+			when 0 =>
+				reset_request_clarification;
+				reset_name_placeholder;
+				
+			when 1 =>
+				name_placeholder.being_moved := true;
+				selected_name_placeholder := proposed_name_placeholders.first;
+
+				set_status (status_move_name);
+
+				reset_request_clarification;
+				
+			when others =>
+				set_request_clarification;
+
+				-- preselect the first placeholder
+				selected_name_placeholder := proposed_name_placeholders.first;
+		end case;
+		
+		log_indentation_down;
+	end find_name_placeholders;
 	
 end et_canvas_schematic_units;
 

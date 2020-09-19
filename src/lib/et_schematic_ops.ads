@@ -160,8 +160,8 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level)
 		return et_coordinates.type_position;
 
-	procedure move_unit_placeholder (
 	-- Moves the name placeholder of the given unit.
+	procedure move_unit_placeholder (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A

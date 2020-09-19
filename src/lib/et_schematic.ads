@@ -133,8 +133,8 @@ package et_schematic is
 		range et_symbols.VIRTUAL .. et_symbols.PCB;
 
 	-- In a schematic we find units spread all over.
-	-- A unit is a subsection of a device.
-	-- Some placeholders of a unit are available when the device appears in both schematic and layout:
+	-- A unit is a subset of a device.
+	-- Placeholders are available if the device appears in both schematic and layout:
 	type type_unit (appearance : type_appearance_schematic) is record
 		position	: et_coordinates.type_position; -- incl. rotation and sheet number
 		mirror		: type_mirror := NO;
@@ -146,7 +146,8 @@ package et_schematic is
 				purpose	: et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE); -- to be filled in schematic later by the user
 		end case;
 		-- NOTE: The placeholders are defined in et_symbols. Thus they have only
-		-- basic coordinates (x/y). Via the unit position the sheet number can be obtained.
+		-- basic coordinates (x/y relative to the unit position).
+		-- Via the unit position the sheet number can be obtained.
 	end record;
 
 	-- Units of a device are collected in a map.

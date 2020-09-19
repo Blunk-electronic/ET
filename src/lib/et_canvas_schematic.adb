@@ -871,10 +871,14 @@ package body et_canvas_schematic is
 					-- CS
 					--set_status (et_canvas_schematic_nets.status_move);
 
-
+				when GDK_LC_n =>
+					noun := NOUN_NAME;
+					
+					set_status (et_canvas_schematic_units.status_move_name);
+					
 				when GDK_LC_u =>
 					noun := NOUN_UNIT;
-
+					
 					set_status (et_canvas_schematic_units.status_move);
 
 				-- If space pressed then the operator wishes to operate
@@ -905,6 +909,29 @@ package body et_canvas_schematic is
 -- 
 -- 							end if;
 
+						when NOUN_NAME =>
+							if not name_placeholder.being_moved then
+
+								-- Set the tool being used for moving the placeholder:
+								name_placeholder.tool := KEYBOARD;
+
+								if not clarification_pending then
+									find_name_placeholders (cursor_main.position);
+								else
+									name_placeholder.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally assign the cursor position to the
+								-- currently selected placeholder:
+								et_canvas_schematic_units.finalize_move_name (
+									destination		=> cursor_main.position,
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+
+								
 						when NOUN_UNIT =>
 							if not unit.being_moved then
 								
@@ -940,10 +967,10 @@ package body et_canvas_schematic is
 								clarify_unit;
 							end if;
 
--- 						when NOUN_NET => 
--- 							if clarification_pending then
--- 								clarify_net_segment;
--- 							end if;
+						when NOUN_NAME => 
+							if clarification_pending then
+								clarify_name_placeholder;
+							end if;
 
 						when others => null;
 							

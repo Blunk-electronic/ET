@@ -443,7 +443,7 @@ schematic led_driver move value R1 1 relative 1 -4 # R1 unit 1 dx dy
 schematic led_driver move purpose R1 1 relative 1 -4 # R1 unit 1 dx dy
 ```
 
-Rotating placeholders is always around their anchor point:
+Rotating placeholders is always about their anchor point:
 ```
 schematic led_driver rotate name R1 1 0
 ```

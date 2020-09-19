@@ -198,6 +198,49 @@ package et_canvas_schematic_units is
 	-- Call this procedure after a clarification.
 	procedure rotate_selected_unit;
 
+
+-- PLACEHOLDERS
+
+-- 	-- Whenever a unit is selected via the GUI, we store its
+-- 	-- parent device and the unit itself via this type:
+-- 	type type_selected_unit is record
+-- 		device	: et_schematic.type_devices.cursor;
+-- 		unit	: et_schematic.type_units.cursor;
+-- 	end record;
+
+	package pac_proposed_name_placeholders is new doubly_linked_lists (type_selected_unit);
+	use pac_proposed_name_placeholders;
+
+	-- These variables are used by the GUI when the operator selects a unit:
+	proposed_name_placeholders	: pac_proposed_name_placeholders.list;
+	selected_name_placeholder	: pac_proposed_name_placeholders.cursor;
+
+	-- Advances cursor selected_name_placeholder to next placeholder in 
+	-- list proposed_name_placeholders.
+	procedure clarify_name_placeholder;
+	
+	procedure clear_proposed_name_placeholders;
+	
+	type type_name_placeholder is record
+		being_moved			: boolean := false;
+		tool				: type_tool := MOUSE;
+	end record;
+
+	name_placeholder : type_name_placeholder;
+	
+	status_move_name : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move name." 
+		& status_hint_for_abort;
+
+	procedure finalize_move_name (
+		destination		: in type_point;
+		log_threshold	: in type_log_level);
+	
+	procedure find_name_placeholders (point : in type_point);
+	
 end et_canvas_schematic_units;
 
 -- Soli Deo Gloria
