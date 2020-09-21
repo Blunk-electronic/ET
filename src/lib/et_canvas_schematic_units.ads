@@ -57,7 +57,8 @@ package et_canvas_schematic_units is
 
 	use et_project.modules.pac_generic_modules;
 
-	-- Whenever a unit is selected via the GUI, we store its
+	-- Whenever a unit or a placeholder thereof is selected
+	-- via the GUI, we store cursors of its
 	-- parent device and the unit itself via this type:
 	type type_selected_unit is record
 		device	: et_schematic.type_devices.cursor;
@@ -71,6 +72,7 @@ package et_canvas_schematic_units is
 	proposed_units	: pac_proposed_units.list;
 	selected_unit	: pac_proposed_units.cursor;
 
+	-- Clears the list proposed_units:
 	procedure clear_proposed_units;
 	
 	-- Collects all units in the vicinity of the given point:
@@ -87,6 +89,7 @@ package et_canvas_schematic_units is
 
 -- DELETE UNIT
 
+	-- to be output in the status bar:
 	status_delete : constant string := 
 		status_click_left 
 		& "or "
@@ -110,6 +113,7 @@ package et_canvas_schematic_units is
 
 -- MOVE/DRAG/ROTATE UNIT
 
+	-- Global information when a unit is being moved, dragged or rotated:
 	type type_unit is record
 		being_moved			: boolean := false;
 		tool				: type_tool := MOUSE;
@@ -118,6 +122,8 @@ package et_canvas_schematic_units is
 
 	unit : type_unit;
 
+	
+	-- to be output in the status bar:
 	status_move : constant string := 
 		status_click_left 
 		& "or "
@@ -125,6 +131,7 @@ package et_canvas_schematic_units is
 		& "to move unit." 
 		& status_hint_for_abort;
 
+	-- to be output in the status bar:
 	status_drag : constant string := 
 		status_click_left 
 		& "or "
@@ -132,6 +139,7 @@ package et_canvas_schematic_units is
 		& "to drag unit." 
 		& status_hint_for_abort;
 
+	-- to be output in the status bar:
 	status_rotate : constant string := 
 		status_click_left 
 		& "or "
@@ -191,7 +199,11 @@ package et_canvas_schematic_units is
 	-- cursor selected_unit:
 	procedure find_attached_segments;
 
-	
+
+	-- Rotates a unit in the vicinity of given point by 90 degree.
+	-- If more than one unit near point found, then it sets the
+	-- cursor selected_unit to the first unit and requests
+	-- for clarification.
 	procedure rotate_unit (point : in type_point);
 
 	-- Rotate the unit being pointed at by cursor selected_unit.
@@ -200,13 +212,6 @@ package et_canvas_schematic_units is
 
 
 -- PLACEHOLDERS
-
--- 	-- Whenever a unit is selected via the GUI, we store its
--- 	-- parent device and the unit itself via this type:
--- 	type type_selected_unit is record
--- 		device	: et_schematic.type_devices.cursor;
--- 		unit	: et_schematic.type_units.cursor;
--- 	end record;
 
 	package pac_proposed_name_placeholders is new doubly_linked_lists (type_selected_unit);
 	use pac_proposed_name_placeholders;
@@ -218,16 +223,19 @@ package et_canvas_schematic_units is
 	-- Advances cursor selected_name_placeholder to next placeholder in 
 	-- list proposed_name_placeholders.
 	procedure clarify_name_placeholder;
-	
+
+	-- Clears the list proposed_name_placeholders:
 	procedure clear_proposed_name_placeholders;
-	
+
+	-- Global information when a placeholder is being moved or rotated:
 	type type_name_placeholder is record
 		being_moved			: boolean := false;
 		tool				: type_tool := MOUSE;
 	end record;
 
 	name_placeholder : type_name_placeholder;
-	
+
+	-- to be output in the status bar:
 	status_move_name : constant string := 
 		status_click_left 
 		& "or "
@@ -235,10 +243,16 @@ package et_canvas_schematic_units is
 		& "to move name." 
 		& status_hint_for_abort;
 
+	-- Assigns the final position after the move to the selected placeholder.
+	-- Resets the global variable "name_placeholder".
 	procedure finalize_move_name (
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
-	
+
+	-- Locates all name placeholders in the vicinity of given point.
+	-- If more than one placeholder near point found, then it sets the
+	-- cursor selected_name_placeholder to the first placeholder and requests
+	-- for clarification.
 	procedure find_name_placeholders (point : in type_point);
 	
 end et_canvas_schematic_units;
