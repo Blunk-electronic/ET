@@ -38,7 +38,6 @@
 with ada.text_io;					use ada.text_io;
 with et_general;					use et_general;
 with et_geometry;					use et_geometry;
-with et_symbols;					use et_symbols;
 with et_devices;					use et_devices;
 with et_schematic;					use et_schematic;
 with et_modes.schematic;
@@ -822,7 +821,9 @@ package body et_canvas_schematic_units is
 
 -- PLACEHOLDERS
 
-	procedure clarify_name_placeholder is
+	procedure clarify_placeholder (
+		category	: in type_placeholder_meaning)
+	is
 		use et_schematic.type_devices;
 		use et_schematic.type_units;
 		u : type_units.cursor;
@@ -832,15 +833,20 @@ package body et_canvas_schematic_units is
 		-- placeholder to the next in a circular manner. So if the end 
 		-- of the list is reached, then the cursor selected_name_placeholder
 		-- moves back to the start of the placeholder list.
-		if next (selected_name_placeholder) /= pac_proposed_name_placeholders.no_element then
-			next (selected_name_placeholder);
-		else
-			selected_name_placeholder := proposed_name_placeholders.first;
-		end if;
+		case category is
+			when NAME =>
+				if next (selected_name_placeholder) /= pac_proposed_name_placeholders.no_element then
+					next (selected_name_placeholder);
+				else
+					selected_name_placeholder := proposed_name_placeholders.first;
+				end if;
 
-		-- show the selected placeholder in the status bar
-		u := element (selected_name_placeholder).unit;
-		d := element (selected_name_placeholder).device;
+				-- show the selected placeholder in the status bar
+				u := element (selected_name_placeholder).unit;
+				d := element (selected_name_placeholder).device;
+
+			when others => null;
+		end case;
 		
 		set_status ("selected placeholder " 
 			& to_string (key (d)) 
@@ -848,20 +854,36 @@ package body et_canvas_schematic_units is
 			& to_string (key (u)) 
 			& ". " & status_next_object_clarification);
 		
-	end clarify_name_placeholder;
+	end clarify_placeholder;
 	
-	procedure clear_proposed_name_placeholders is begin
-		clear (proposed_name_placeholders);
-		selected_name_placeholder := pac_proposed_name_placeholders.no_element;
-	end clear_proposed_name_placeholders;
-	
-	procedure reset_name_placeholder is begin
-		name_placeholder := (others => <>);
-		clear_proposed_name_placeholders;
-	end reset_name_placeholder;
+	procedure clear_proposed_placeholders (
+		category	: in type_placeholder_meaning)
+	is begin
+		case category is
+			when NAME =>
+				clear (proposed_name_placeholders);
+				selected_name_placeholder := pac_proposed_name_placeholders.no_element;
 
-	procedure finalize_move_name (
+			when others => null;
+		end case;
+	end clear_proposed_placeholders;
+	
+	procedure reset_placeholder (
+		category	: in type_placeholder_meaning)
+	is begin
+		case category is
+			when NAME =>
+				name_placeholder := (others => <>);
+				clear_proposed_placeholders (category);
+
+			when others =>
+				null;
+		end case;
+	end reset_placeholder;
+
+	procedure finalize_move_placeholder (
 		destination		: in type_point;
+		category		: in type_placeholder_meaning;
 		log_threshold	: in type_log_level)
 	is
 		su : type_selected_unit;
@@ -872,32 +894,37 @@ package body et_canvas_schematic_units is
 		log (text => "finalizing move placeholder ...", level => log_threshold);
 		log_indentation_up;
 
-		if selected_name_placeholder /= pac_proposed_name_placeholders.no_element then
+		case category is
+			when NAME =>
+				if selected_name_placeholder /= pac_proposed_name_placeholders.no_element then
 
-			su := element (selected_name_placeholder);
+					su := element (selected_name_placeholder);
 
-			move_unit_placeholder (
-				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
-				device_name		=> key (su.device),
-				unit_name		=> key (su.unit),
-				coordinates		=> ABSOLUTE,
-				point			=> destination,
-				meaning			=> NAME,
-				log_threshold	=> log_threshold);
+					move_unit_placeholder (
+						module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+						device_name		=> key (su.device),
+						unit_name		=> key (su.unit),
+						coordinates		=> ABSOLUTE,
+						point			=> destination,
+						meaning			=> NAME,
+						log_threshold	=> log_threshold);
 
-			-- CS write a reduced procedure of move_unit_placeholder that takes a 
-			-- module cursor, device cursor and unit cursor instead.
-				
-		else
-			log (text => "nothing to do", level => log_threshold);
-		end if;
-			
+					-- CS write a reduced procedure of move_unit_placeholder that takes a 
+					-- module cursor, device cursor and unit cursor instead.
+						
+				else
+					log (text => "nothing to do", level => log_threshold);
+				end if;
+
+			when others => null;
+		end case;
+		
 		log_indentation_down;
 
 		set_status (status_move_name);
 		
-		reset_name_placeholder;
-	end finalize_move_name;
+		reset_placeholder (category);
+	end finalize_move_placeholder;
 
 	function collect_placeholders (
 		module			: in pac_generic_modules.cursor;
@@ -1025,10 +1052,15 @@ package body et_canvas_schematic_units is
 		
 	end collect_placeholders;
 	
-	procedure find_name_placeholders (point : in type_point) is 
+	procedure find_placeholders (
+		point		: in type_point;
+		category	: in type_placeholder_meaning)
+	is 
 		use et_modes.schematic;
 	begin
-		log (text => "locating name placeholders ...", level => log_threshold);
+		log (text => "locating placeholders of category " 
+			 & enclose_in_quotes (to_string (category)) & " ...",
+			 level => log_threshold);
 		log_indentation_up;
 		
 		-- Collect all placeholders in the vicinity of the given point:
@@ -1036,32 +1068,60 @@ package body et_canvas_schematic_units is
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
 			catch_zone		=> catch_zone_default, -- CS should depend on current scale
-			category		=> NAME,
+			category		=> category,
 			log_threshold	=> log_threshold + 1);
 
-		-- evaluate the number of units found here:
-		case length (proposed_name_placeholders) is
-			when 0 =>
-				reset_request_clarification;
-				reset_name_placeholder;
-				
-			when 1 =>
-				name_placeholder.being_moved := true;
-				selected_name_placeholder := proposed_name_placeholders.first;
+		-- evaluate the number of placeholders found here:
+		case category is
+			when NAME =>
+				case length (proposed_name_placeholders) is
+					when 0 =>
+						reset_request_clarification;
+						reset_placeholder (category);
+						
+					when 1 =>
+						name_placeholder.being_moved := true;
+						selected_name_placeholder := proposed_name_placeholders.first;
 
-				set_status (status_move_name);
+						set_status (status_move_name);
 
-				reset_request_clarification;
-				
-			when others =>
-				set_request_clarification;
+						reset_request_clarification;
+						
+					when others =>
+						set_request_clarification;
 
-				-- preselect the first placeholder
-				selected_name_placeholder := proposed_name_placeholders.first;
+						-- preselect the first placeholder
+						selected_name_placeholder := proposed_name_placeholders.first;
+				end case;
+
+			when VALUE =>
+				null;
+-- 				case length (proposed_name_placeholders) is
+-- 					when 0 =>
+-- 						reset_request_clarification;
+-- 						reset_name_placeholder;
+-- 						
+-- 					when 1 =>
+-- 						name_placeholder.being_moved := true;
+-- 						selected_name_placeholder := proposed_name_placeholders.first;
+-- 
+-- 						set_status (status_move_name);
+-- 
+-- 						reset_request_clarification;
+-- 						
+-- 					when others =>
+-- 						set_request_clarification;
+-- 
+-- 						-- preselect the first placeholder
+-- 						selected_name_placeholder := proposed_name_placeholders.first;
+-- 				end case;
+
+			when PURPOSE =>
+				null;
+
 		end case;
-		
 		log_indentation_down;
-	end find_name_placeholders;
+	end find_placeholders;
 	
 end et_canvas_schematic_units;
 

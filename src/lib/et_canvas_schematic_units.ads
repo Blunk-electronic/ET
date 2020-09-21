@@ -46,6 +46,7 @@ use et_coordinates.pac_geometry_sch;
 with et_general;					use et_general;
 with et_canvas_general;				use et_canvas_general;
 with et_project.modules;			use et_project.modules;
+with et_symbols;					use et_symbols;
 with et_schematic;
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
@@ -113,7 +114,8 @@ package et_canvas_schematic_units is
 
 -- MOVE/DRAG/ROTATE UNIT
 
-	-- Global information when a unit is being moved, dragged or rotated:
+	-- Global information for the GUI when a unit is 
+	-- being moved, dragged or rotated:
 	type type_unit is record
 		being_moved			: boolean := false;
 		tool				: type_tool := MOUSE;
@@ -216,18 +218,21 @@ package et_canvas_schematic_units is
 	package pac_proposed_name_placeholders is new doubly_linked_lists (type_selected_unit);
 	use pac_proposed_name_placeholders;
 
-	-- These variables are used by the GUI when the operator selects a unit:
+	-- These variables are used by the GUI when the operator selects a placeholder:
 	proposed_name_placeholders	: pac_proposed_name_placeholders.list;
 	selected_name_placeholder	: pac_proposed_name_placeholders.cursor;
 
-	-- Advances cursor selected_name_placeholder to next placeholder in 
-	-- list proposed_name_placeholders.
-	procedure clarify_name_placeholder;
+	-- Advances to next placeholder in 
+	-- list of proposed placeholders:
+	procedure clarify_placeholder (
+		category	: in type_placeholder_meaning);
 
-	-- Clears the list proposed_name_placeholders:
-	procedure clear_proposed_name_placeholders;
+	-- Clears the list proposed placeholders:
+	procedure clear_proposed_placeholders (
+		category	: in type_placeholder_meaning);
 
-	-- Global information when a placeholder is being moved or rotated:
+	-- Global information for the GUI when a placeholder 
+	-- is being moved or rotated:
 	type type_name_placeholder is record
 		being_moved			: boolean := false;
 		tool				: type_tool := MOUSE;
@@ -235,6 +240,7 @@ package et_canvas_schematic_units is
 
 	name_placeholder : type_name_placeholder;
 
+	
 	-- to be output in the status bar:
 	status_move_name : constant string := 
 		status_click_left 
@@ -245,15 +251,18 @@ package et_canvas_schematic_units is
 
 	-- Assigns the final position after the move to the selected placeholder.
 	-- Resets the global variable "name_placeholder".
-	procedure finalize_move_name (
+	procedure finalize_move_placeholder (
 		destination		: in type_point;
+		category		: in type_placeholder_meaning;
 		log_threshold	: in type_log_level);
 
-	-- Locates all name placeholders in the vicinity of given point.
+	-- Locates all placeholders in the vicinity of given point.
 	-- If more than one placeholder near point found, then it sets the
 	-- cursor selected_name_placeholder to the first placeholder and requests
 	-- for clarification.
-	procedure find_name_placeholders (point : in type_point);
+	procedure find_placeholders (
+		point		: in type_point;
+		category	: in type_placeholder_meaning);
 	
 end et_canvas_schematic_units;
 

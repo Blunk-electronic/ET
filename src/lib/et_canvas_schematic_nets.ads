@@ -180,6 +180,8 @@ package et_canvas_schematic_nets is
 	type type_being_moved is new boolean;
 	type type_finalizing_granted is new boolean;
 
+	-- Global information for the GUI when a segment is being
+	-- moved or dragged:
 	type type_segment is record
 		being_moved				: type_being_moved := false;
 		tool					: type_tool := MOUSE;
@@ -189,6 +191,7 @@ package et_canvas_schematic_nets is
 
 	segment : type_segment;
 
+	
 	status_drag : constant string := 
 		status_click_left 
 		& "or "

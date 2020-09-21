@@ -916,7 +916,9 @@ package body et_canvas_schematic is
 								name_placeholder.tool := KEYBOARD;
 
 								if not clarification_pending then
-									find_name_placeholders (cursor_main.position);
+									find_placeholders (
+										point		=> cursor_main.position,
+										category	=> et_symbols.NAME);
 								else
 									name_placeholder.being_moved := true;
 									reset_request_clarification;
@@ -925,8 +927,9 @@ package body et_canvas_schematic is
 							else
 								-- Finally assign the cursor position to the
 								-- currently selected placeholder:
-								et_canvas_schematic_units.finalize_move_name (
+								et_canvas_schematic_units.finalize_move_placeholder (
 									destination		=> cursor_main.position,
+									category		=> et_symbols.NAME,
 									log_threshold	=> log_threshold + 1);
 
 							end if;
@@ -941,7 +944,6 @@ package body et_canvas_schematic is
 								if not clarification_pending then
 									find_units (cursor_main.position);
 								else
-									--move_selected_unit;
 									unit.being_moved := true;
 									reset_request_clarification;
 								end if;
@@ -969,7 +971,7 @@ package body et_canvas_schematic is
 
 						when NOUN_NAME => 
 							if clarification_pending then
-								clarify_name_placeholder;
+								clarify_placeholder (et_symbols.NAME);
 							end if;
 
 						when others => null;

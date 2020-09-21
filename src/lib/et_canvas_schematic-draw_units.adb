@@ -99,8 +99,8 @@ procedure draw_units (
 -- 		return result;
 -- 	end moved_by_operator;
 
-	-- Returns true if the given device and unit are selected.
-	function is_selected (
+	-- Returns true if the given unit is selected.
+	function unit_is_selected (
 		d : in et_schematic.type_devices.cursor;
 		u : in et_schematic.type_units.cursor)
 		return boolean is
@@ -126,7 +126,7 @@ procedure draw_units (
 				return false;
 			end if;
 		end if;
-	end is_selected;
+	end unit_is_selected;
 	
 	procedure query_devices (device_cursor : in et_schematic.type_devices.cursor) is
 		
@@ -231,7 +231,7 @@ procedure draw_units (
 				brightness := NORMAL;
 
 				-- CS test verb and noun ?
-				if is_selected (device_cursor, unit_cursor) then
+				if unit_is_selected (device_cursor, unit_cursor) then
 
 					-- increase brightness
 					brightness := BRIGHT;
