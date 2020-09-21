@@ -236,6 +236,7 @@ package et_canvas_schematic_units is
 	type type_name_placeholder is record
 		being_moved			: boolean := false;
 		tool				: type_tool := MOUSE;
+		absolute_position	: type_point; -- before the move
 	end record;
 
 	name_placeholder : type_name_placeholder;

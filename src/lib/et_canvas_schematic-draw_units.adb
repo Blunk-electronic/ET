@@ -127,6 +127,35 @@ procedure draw_units (
 			end if;
 		end if;
 	end unit_is_selected;
+
+	-- Returns true if the given placeholder is selected.
+	function placeholder_is_selected (
+		d : in et_schematic.type_devices.cursor;
+		u : in et_schematic.type_units.cursor)
+		return boolean is
+		use pac_proposed_name_placeholders;
+		use et_devices;
+		use type_unit_name;
+	begin
+		-- If there are no selected placeholders at all, then there is nothing to do:
+		if is_empty (proposed_name_placeholders) then
+			return false;
+		else
+			if selected_name_placeholder /= pac_proposed_name_placeholders.no_element then
+				-- Compare given device and unit name with selected unit:
+				if key (d) = key (element (selected_name_placeholder).device) and then
+					key (u) = key (element (selected_name_placeholder).unit) then
+					-- CS: Improvement: compare cursors directly ?
+					
+					return true;
+				else
+					return false;
+				end if;
+			else
+				return false;
+			end if;
+		end if;
+	end placeholder_is_selected;
 	
 	procedure query_devices (device_cursor : in et_schematic.type_devices.cursor) is
 		
@@ -252,7 +281,6 @@ procedure draw_units (
 								unit_position := cursor_main.position;
 						end case;
 
-
 					end if;
 				end if;
 
@@ -262,13 +290,45 @@ procedure draw_units (
 				
 				-- Get a copy of the placeholders of the unit:
 				if element (unit_cursor).appearance = PCB then
+
 					sch_placeholder_name := element (unit_cursor).name;
+					
+					if placeholder_is_selected (device_cursor, unit_cursor) then
+
+						-- increase brightness
+-- 						brightness := BRIGHT;
+
+						-- overwrite position
+						if name_placeholder.being_moved then
+
+							-- Calculate the absolute position of the placeholder 
+							-- as it is according to database BEFORE the move:
+							name_placeholder.absolute_position := sch_placeholder_name.position;
+							move_by (name_placeholder.absolute_position, unit_position);
+							
+							case name_placeholder.tool is
+								when MOUSE =>
+									sch_placeholder_name.position := self.snap_to_grid (self.mouse_position);
+									
+								when KEYBOARD =>
+									move_by (
+										point	=> sch_placeholder_name.position,
+										offset	=> distance_relative (name_placeholder.absolute_position, cursor_main.position));
+							end case;
+						end if;
+
+
+					end if;
+					
+						
 					sch_placeholder_value := element (unit_cursor).value;
 					sch_placeholder_purpose := element (unit_cursor).purpose;
 				end if;
 
 				device_cursor_lib := locate_device (device_model);
 				unit_count := units_total (device_cursor_lib);
+
+				-- locate and draw the symbol:
 				locate_symbol (locate_unit (device_cursor_lib, unit_name));
 			end if;
 		end query_units;
