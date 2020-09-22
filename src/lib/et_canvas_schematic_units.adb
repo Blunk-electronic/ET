@@ -881,6 +881,12 @@ package body et_canvas_schematic_units is
 		end case;
 	end reset_placeholder;
 
+	procedure reset_placeholders is begin
+		reset_placeholder (NAME);
+		reset_placeholder (VALUE);
+		reset_placeholder (PURPOSE);
+	end reset_placeholders;
+	
 	procedure finalize_move_placeholder (
 		destination		: in type_point;
 		category		: in type_placeholder_meaning;

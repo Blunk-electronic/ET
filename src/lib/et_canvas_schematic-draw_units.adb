@@ -301,19 +301,29 @@ procedure draw_units (
 						-- overwrite position
 						if name_placeholder.being_moved then
 
+							-- NOTE: The position of the placeholder is relative to the 
+							-- unit position !
+							
 							-- Calculate the absolute position of the placeholder 
 							-- as it is according to database BEFORE the move:
 							name_placeholder.absolute_position := sch_placeholder_name.position;
 							move_by (name_placeholder.absolute_position, unit_position);
-							
+
+							-- Depending on the tool used, calculate the new position of the 
+							-- placeholder relatie to the unit position:
 							case name_placeholder.tool is
 								when MOUSE =>
-									sch_placeholder_name.position := self.snap_to_grid (self.mouse_position);
+									move_by (
+										point	=> sch_placeholder_name.position,
+										offset	=> distance_relative (name_placeholder.absolute_position, self.snap_to_grid (self.mouse_position)));
+
+-- 									sch_placeholder_name.position := self.snap_to_grid (self.mouse_position);
 									
 								when KEYBOARD =>
 									move_by (
 										point	=> sch_placeholder_name.position,
 										offset	=> distance_relative (name_placeholder.absolute_position, cursor_main.position));
+
 							end case;
 						end if;
 

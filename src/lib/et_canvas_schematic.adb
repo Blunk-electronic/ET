@@ -1039,6 +1039,8 @@ package body et_canvas_schematic is
 			reset_segment; -- after move/drag
 			reset_segments_being_dragged; -- after dragging a unit
 			reset_unit; -- after moving a unit
+
+			reset_placeholders; -- after moving a placeholder
 			status_enter_verb;
 		else	
 			case expect_entry is
@@ -1127,6 +1129,11 @@ package body et_canvas_schematic is
 
 			when VERB_DRAG | VERB_MOVE =>
 				case noun is
+					when NOUN_NAME => 
+						if name_placeholder.being_moved then
+							redraw;
+						end if;
+					
 					when NOUN_NET =>
 						if segment.being_moved then
 							redraw;
@@ -1309,6 +1316,32 @@ package body et_canvas_schematic is
 				when VERB_MOVE =>
 
 					case noun is
+						when NOUN_NAME =>
+							if not name_placeholder.being_moved then
+
+								-- Set the tool being used for moving the placeholder:
+								name_placeholder.tool := MOUSE;
+
+								if not clarification_pending then
+									find_placeholders (
+										point		=> point,
+										category	=> et_symbols.NAME);
+								else
+									name_placeholder.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally assign the cursor position to the
+								-- currently selected placeholder:
+								et_canvas_schematic_units.finalize_move_placeholder (
+									destination		=> snap_to_grid (self, point),
+									category		=> et_symbols.NAME,
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+							
+						
 						when NOUN_UNIT =>
 							if not unit.being_moved then
 								
@@ -1400,6 +1433,11 @@ package body et_canvas_schematic is
 								clarify_unit;
 							end if;
 
+						when NOUN_NAME => 
+							if clarification_pending then
+								clarify_placeholder (et_symbols.NAME);
+							end if;
+							
 						when others => null;							
 					end case;
 

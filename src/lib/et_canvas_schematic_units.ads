@@ -241,6 +241,8 @@ package et_canvas_schematic_units is
 
 	name_placeholder : type_name_placeholder;
 
+	-- Resets global information of all placeholders:
+	procedure reset_placeholders;
 	
 	-- to be output in the status bar:
 	status_move_name : constant string := 
