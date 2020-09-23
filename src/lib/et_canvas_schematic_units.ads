@@ -231,12 +231,13 @@ package et_canvas_schematic_units is
 
 	
 	-- Global information for the GUI when a placeholder 
-	-- is being moved or rotated.
+	-- is being moved.
 	-- The category indicates whether the placeholder 
 	-- for name, value or purpose is meant.
 	type type_placeholder is record
 		category			: type_placeholder_meaning := NAME;
 		being_moved			: boolean := false;
+-- 		being_rotated		: boolean := false;
 		tool				: type_tool := MOUSE;
 		absolute_position	: type_point; -- before the move
 	end record;
@@ -258,20 +259,44 @@ package et_canvas_schematic_units is
 		& "to move placeholder." 
 		& status_hint_for_abort;
 
+	-- to be output in the status bar:
+	status_rotate_placeholder : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to rotate placeholder." 
+		& status_hint_for_abort;
+
+	
 	-- Assigns the final position after the move to the selected placeholder.
-	-- Resets the global variable "name_placeholder".
+	-- Resets the global variable "placeholder".
 	procedure finalize_move_placeholder (
 		destination		: in type_point;
 		category		: in type_placeholder_meaning;
 		log_threshold	: in type_log_level);
 
+	-- Assigns the final rotation after the rotation to the selected placeholder.
+	-- Resets the global variable "placeholder".
+-- 	procedure finalize_rotate_placeholder (
+-- 		rotation		: in et_text.type_rotation_documentation;
+-- 		category		: in type_placeholder_meaning;
+-- 		log_threshold	: in type_log_level);
+	
 	-- Locates all placeholders in the vicinity of given point.
 	-- If more than one placeholder near point found, then it sets the
-	-- cursor selected_name_placeholder to the first placeholder and requests
+	-- cursor selected_placeholder to the first placeholder and requests
 	-- for clarification.
 	procedure find_placeholders (
 		point		: in type_point;
 		category	: in type_placeholder_meaning);
+
+	procedure rotate_selected_placeholder (
+		category	: in type_placeholder_meaning);
+
+	procedure rotate_placeholder (
+		point 		: in type_point;
+		category	: in type_placeholder_meaning);
+
 	
 end et_canvas_schematic_units;
 

@@ -1604,7 +1604,7 @@ package body et_schematic_ops is
 				procedure rotate_placeholder (
 					name	: in type_unit_name.bounded_string; -- A
 					unit	: in out type_unit) is
-				begin -- rotate_placeholder
+				begin
 					case meaning is
 						when et_symbols.NAME =>
 							unit.name.rotation := rotation;
@@ -1615,8 +1615,6 @@ package body et_schematic_ops is
 						when PURPOSE =>
 							unit.purpose.rotation := rotation;
 
-						when others =>
-							raise constraint_error; -- CS no longer required
 					end case;
 				end rotate_placeholder;
 				

@@ -1065,11 +1065,27 @@ package body et_canvas_schematic is
 		procedure rotate is begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
+				when GDK_LC_n =>
+					noun := NOUN_NAME;
+					
+					set_status (et_canvas_schematic_units.status_rotate_placeholder);
+
+				when GDK_LC_p =>
+					noun := NOUN_PURPOSE;
+					
+					set_status (et_canvas_schematic_units.status_rotate_placeholder);
+
+					
 				when GDK_LC_u =>
 					noun := NOUN_UNIT;
 					
 					set_status (et_canvas_schematic_units.status_rotate);
-	
+
+				when GDK_LC_v =>
+					noun := NOUN_VALUE;
+					
+					set_status (et_canvas_schematic_units.status_rotate_placeholder);
+
 
 				-- If space pressed, then the operator wishes to operate via keyboard:	
 				when GDK_Space =>
@@ -1081,6 +1097,78 @@ package body et_canvas_schematic is
 								rotate_selected_unit;
 							end if;
 
+						when NOUN_NAME =>
+-- 							if not placeholder.being_rotated then
+
+								-- Set the tool being used for moving the placeholder:
+-- 								placeholder.tool := KEYBOARD;
+-- 								placeholder.category := et_symbols.NAME;
+
+								if not clarification_pending then
+									rotate_placeholder (
+										point		=> cursor_main.position,
+										category	=> et_symbols.NAME);
+								else
+									rotate_selected_placeholder (et_symbols.NAME);
+								end if;
+
+							
+-- 						when NOUN_PURPOSE =>
+-- 							if not placeholder.being_rotated then
+-- 
+-- 								-- Set the tool being used for moving the placeholder:
+-- 								placeholder.tool := KEYBOARD;
+-- 								placeholder.category := et_symbols.PURPOSE;
+-- 
+-- 								if not clarification_pending then
+-- 									find_placeholders (
+-- 										point		=> cursor_main.position,
+-- 										category	=> et_symbols.PURPOSE);
+-- 								else
+-- 									placeholder.being_rotated := true;
+-- 									reset_request_clarification;
+-- 								end if;
+-- 								
+-- 							else
+-- 								null;
+-- 								-- Finally assign the cursor position to the
+-- 								-- currently selected placeholder:
+-- -- 								et_canvas_schematic_units.finalize_rotate_placeholder (
+-- -- 									destination		=> cursor_main.position,
+-- -- 									category		=> et_symbols.PURPOSE,
+-- -- 									log_threshold	=> log_threshold + 1);
+-- 
+-- 							end if;
+-- 
+-- 
+-- 						when NOUN_VALUE =>
+-- 							if not placeholder.being_rotated then
+-- 
+-- 								-- Set the tool being used for moving the placeholder:
+-- 								placeholder.tool := KEYBOARD;
+-- 								placeholder.category := et_symbols.VALUE;
+-- 
+-- 								if not clarification_pending then
+-- 									find_placeholders (
+-- 										point		=> cursor_main.position,
+-- 										category	=> et_symbols.VALUE);
+-- 								else
+-- 									placeholder.being_rotated := true;
+-- 									reset_request_clarification;
+-- 								end if;
+-- 								
+-- 							else
+-- 								null;
+-- 								-- Finally assign the cursor position to the
+-- 								-- currently selected placeholder:
+-- -- 								et_canvas_schematic_units.finalize_move_placeholder (
+-- -- 									destination		=> cursor_main.position,
+-- -- 									category		=> et_symbols.VALUE,
+-- -- 									log_threshold	=> log_threshold + 1);
+-- 
+-- 							end if;
+
+							
 						when others => null;
 							
 					end case;
@@ -1088,9 +1176,24 @@ package body et_canvas_schematic is
 				-- If page down pressed, then the operator is clarifying:
 				when GDK_page_down =>
 					case noun is
+						when NOUN_NAME => 
+							if clarification_pending then
+								clarify_placeholder;
+							end if;
+
+						when NOUN_PURPOSE => 
+							if clarification_pending then
+								clarify_placeholder;
+							end if;
+
 						when NOUN_UNIT =>
 							if clarification_pending then
 								clarify_unit;
+							end if;
+							
+						when NOUN_VALUE => 
+							if clarification_pending then
+								clarify_placeholder;
 							end if;
 
 						when others => null;

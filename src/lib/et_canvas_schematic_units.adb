@@ -749,7 +749,7 @@ package body et_canvas_schematic_units is
 		log_indentation_down;				
 	end rotate_unit;
 	
-	procedure finalize_rotate (
+	procedure finalize_rotate_unit (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		unit			: in type_selected_unit; -- device/unit
 		log_threshold	: in type_log_level)
@@ -764,7 +764,7 @@ package body et_canvas_schematic_units is
 		set_status (status_rotate);
 		
 		clear_proposed_units;
-	end finalize_rotate;
+	end finalize_rotate_unit;
 	
 	procedure rotate_unit (point : in type_point) is 
 		use et_schematic_ops.units;
@@ -788,7 +788,7 @@ package body et_canvas_schematic_units is
 			when 1 =>
 				unit_cursor := proposed_units.first;
 			
-				finalize_rotate (
+				finalize_rotate_unit (
 					module_cursor	=> current_active_module,
 					unit			=> element (unit_cursor),
 					log_threshold	=> log_threshold + 1);
@@ -810,7 +810,7 @@ package body et_canvas_schematic_units is
 		log (text => "rotating unit after clarification ...", level => log_threshold);
 		log_indentation_up;
 
-		finalize_rotate (
+		finalize_rotate_unit (
 			module_cursor	=> current_active_module,
 			unit			=> element (selected_unit),
 			log_threshold	=> log_threshold + 1);
@@ -897,7 +897,7 @@ package body et_canvas_schematic_units is
 		
 		reset_placeholder;
 	end finalize_move_placeholder;
-
+	
 	function collect_placeholders (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position; -- sheet/x/y
@@ -1027,9 +1027,7 @@ package body et_canvas_schematic_units is
 	procedure find_placeholders (
 		point		: in type_point;
 		category	: in type_placeholder_meaning)
-	is 
-		use et_modes.schematic;
-	begin
+	is begin
 		log (text => "locating placeholders of category " 
 			 & enclose_in_quotes (to_string (category)) & " ...",
 			 level => log_threshold);
@@ -1066,6 +1064,165 @@ package body et_canvas_schematic_units is
 
 		log_indentation_down;
 	end find_placeholders;
+
+	procedure rotate_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		unit			: in out type_selected_unit;
+		category		: in type_placeholder_meaning;
+		log_threshold	: in type_log_level)
+	is
+		rotation : constant et_coordinates.type_rotation := 90.0;
+
+		use et_schematic.type_devices;
+		use et_schematic.type_units;
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			device_cursor : et_schematic.type_devices.cursor;
+
+			procedure query_units (
+				device_name	: in type_name;
+				device		: in out et_schematic.type_device) 
+			is 
+				unit_cursor : et_schematic.type_units.cursor;
+
+				procedure rotate_placeholder (
+					name	: in type_unit_name.bounded_string; -- A
+					unit	: in out et_schematic.type_unit) 
+				is
+					r : type_rotation;
+					use et_symbols.pac_text;
+				begin
+					case category is
+						when et_symbols.NAME =>
+-- 							r := et_symbols.pac_text.to_rotation (unit.name.rotation);
+							r := unit.name.rotation + rotation;
+
+							unit.name.rotation := snap (r);
+							
+-- 						when VALUE =>
+-- 							unit.value.rotation := rotation;
+-- 							
+-- 						when PURPOSE =>
+-- 							unit.purpose.rotation := rotation;
+
+						when others =>
+							raise constraint_error; -- CS no longer required
+					end case;
+				end rotate_placeholder;
+				
+			begin -- query_units
+				unit_cursor := find (device.units, key (unit.unit));
+
+				type_units.update_element (
+					container	=> device.units,
+					position	=> unit_cursor,
+					process		=> rotate_placeholder'access);
+				
+			end query_units;
+						
+		begin -- query_devices
+			device_cursor := find (module.devices, key (unit.device));
+
+			update_element (
+				container	=> module.devices,
+				position	=> device_cursor,
+				process		=> query_units'access);
+
+			
+		end query_devices;
+		
+	begin -- rotate_placeholder
+		log (text => "module " & to_string (key (module_cursor)) 
+			 & " rotating " & to_string (key (unit.device)) & " unit " 
+			 & to_string (key (unit.unit)) 
+			 & " placeholder " & enclose_in_quotes (to_string (category))
+			 & " by " & to_string (rotation) & " degree ...",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+		
+		log_indentation_down;				
+	end rotate_placeholder;
+	
+	procedure finalize_rotate_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;  -- motor_driver
+		unit			: in type_selected_unit;  -- device/unit
+		category		: in type_placeholder_meaning;
+		log_threshold	: in type_log_level)
+	is 
+		su : type_selected_unit := unit;
+	begin
+		rotate_placeholder (module_cursor, su, category, log_threshold + 1);
+	end finalize_rotate_placeholder;
+	
+	procedure rotate_selected_placeholder (
+		category	: in type_placeholder_meaning)
+	is begin
+		log (text => "rotating placeholder after clarification ...", level => log_threshold);
+		log_indentation_up;
+
+		finalize_rotate_placeholder (
+			module_cursor	=> current_active_module,
+			unit			=> element (selected_placeholder),
+			category		=> category,
+			log_threshold	=> log_threshold + 1);
+		
+		log_indentation_down;
+	end rotate_selected_placeholder;
+	
+	procedure rotate_placeholder (
+		point 		: in type_point;
+		category	: in type_placeholder_meaning)
+	is begin
+		log (text => "rotating placeholder ...",
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		-- Collect all placeholders in the vicinity of the given point:
+		proposed_placeholders := collect_placeholders (
+			module			=> current_active_module,
+			place			=> to_position (point, current_active_sheet),
+			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			category		=> category,
+			log_threshold	=> log_threshold + 1);
+
+		-- evaluate the number of placeholders found here:
+		case length (proposed_placeholders) is
+			when 0 =>
+				reset_request_clarification;
+				reset_placeholder;
+				
+			when 1 =>
+				selected_placeholder := proposed_placeholders.first;
+
+				finalize_rotate_placeholder (
+					module_cursor	=> current_active_module,
+					unit			=> element (selected_placeholder),
+					category		=> category,
+					log_threshold	=> log_threshold + 1);
+				
+				set_status (status_rotate_placeholder);
+
+				reset_request_clarification;
+				
+			when others =>
+				set_request_clarification;
+
+				-- preselect the first placeholder
+				selected_placeholder := proposed_placeholders.first;
+		end case;
+		
+		log_indentation_down;
+	end rotate_placeholder;
+
 	
 end et_canvas_schematic_units;
 
