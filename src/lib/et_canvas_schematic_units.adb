@@ -959,19 +959,16 @@ package body et_canvas_schematic_units is
 						case category is
 							when NAME =>
 								-- Get the position of the name placeholder relative to the unit origin:
-								--placeholder_position := to_position (element (unit_cursor).name.position, sheet (place));
 								placeholder_position := element (unit_cursor).name.position;
 								test_placeholder_position;
 
 							when VALUE =>
 								-- Get the position of the value placeholder relative to the unit origin:
-								--placeholder_position := to_position (element (unit_cursor).value.position, sheet (place));
 								placeholder_position := element (unit_cursor).value.position;
 								test_placeholder_position;
 
 							when PURPOSE =>
 								-- Get the position of the purpose placeholder relative to the unit origin:
-								--placeholder_position := to_position (element (unit_cursor).purpose.position, sheet (place));
 								placeholder_position := element (unit_cursor).purpose.position;
 								test_placeholder_position;
 								
@@ -1067,7 +1064,7 @@ package body et_canvas_schematic_units is
 
 	procedure rotate_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
-		unit			: in out type_selected_unit;
+		unit			: in type_selected_unit;
 		category		: in type_placeholder_meaning;
 		log_threshold	: in type_log_level)
 	is
@@ -1087,6 +1084,10 @@ package body et_canvas_schematic_units is
 			is 
 				unit_cursor : et_schematic.type_units.cursor;
 
+				-- Rotates the placeholder indicated by category
+				-- by 90 degree. Since the rotation of placeholders
+				-- is documentational, the rotation is always converted
+				-- to HORIZONTAL or VERTICAL via function "snap":
 				procedure rotate_placeholder (
 					name	: in type_unit_name.bounded_string; -- A
 					unit	: in out et_schematic.type_unit) 
@@ -1096,23 +1097,22 @@ package body et_canvas_schematic_units is
 				begin
 					case category is
 						when et_symbols.NAME =>
--- 							r := et_symbols.pac_text.to_rotation (unit.name.rotation);
 							r := unit.name.rotation + rotation;
-
 							unit.name.rotation := snap (r);
 							
--- 						when VALUE =>
--- 							unit.value.rotation := rotation;
--- 							
--- 						when PURPOSE =>
--- 							unit.purpose.rotation := rotation;
+						when VALUE =>
+							r := unit.value.rotation + rotation;
+							unit.value.rotation := snap (r);
+							
+						when PURPOSE =>
+							r := unit.purpose.rotation + rotation;
+							unit.purpose.rotation := snap (r);
 
-						when others =>
-							raise constraint_error; -- CS no longer required
 					end case;
 				end rotate_placeholder;
 				
 			begin -- query_units
+				-- Locate the given unit inside the device:
 				unit_cursor := find (device.units, key (unit.unit));
 
 				type_units.update_element (
@@ -1123,6 +1123,7 @@ package body et_canvas_schematic_units is
 			end query_units;
 						
 		begin -- query_devices
+			-- Locate the given device inside the module:
 			device_cursor := find (module.devices, key (unit.device));
 
 			update_element (
@@ -1134,11 +1135,11 @@ package body et_canvas_schematic_units is
 		end query_devices;
 		
 	begin -- rotate_placeholder
-		log (text => "module " & to_string (key (module_cursor)) 
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
 			 & " rotating " & to_string (key (unit.device)) & " unit " 
 			 & to_string (key (unit.unit)) 
 			 & " placeholder " & enclose_in_quotes (to_string (category))
-			 & " by " & to_string (rotation) & " degree ...",
+			 & " by" & to_string (rotation) & " degree ...",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1151,28 +1152,13 @@ package body et_canvas_schematic_units is
 		log_indentation_down;				
 	end rotate_placeholder;
 	
-	procedure finalize_rotate_placeholder (
-		module_cursor	: in pac_generic_modules.cursor;  -- motor_driver
-		unit			: in type_selected_unit;  -- device/unit
-		category		: in type_placeholder_meaning;
-		log_threshold	: in type_log_level)
-	is 
-		su : type_selected_unit := unit;
-	begin
-		rotate_placeholder (module_cursor, su, category, log_threshold + 1);
-	end finalize_rotate_placeholder;
-	
 	procedure rotate_selected_placeholder (
 		category	: in type_placeholder_meaning)
 	is begin
 		log (text => "rotating placeholder after clarification ...", level => log_threshold);
 		log_indentation_up;
 
-		finalize_rotate_placeholder (
-			module_cursor	=> current_active_module,
-			unit			=> element (selected_placeholder),
-			category		=> category,
-			log_threshold	=> log_threshold + 1);
+		rotate_placeholder (current_active_module, element (selected_placeholder), category, log_threshold + 1);
 		
 		log_indentation_down;
 	end rotate_selected_placeholder;
@@ -1203,11 +1189,7 @@ package body et_canvas_schematic_units is
 			when 1 =>
 				selected_placeholder := proposed_placeholders.first;
 
-				finalize_rotate_placeholder (
-					module_cursor	=> current_active_module,
-					unit			=> element (selected_placeholder),
-					category		=> category,
-					log_threshold	=> log_threshold + 1);
+				rotate_placeholder (current_active_module, element (selected_placeholder), category, log_threshold + 1);
 				
 				set_status (status_rotate_placeholder);
 

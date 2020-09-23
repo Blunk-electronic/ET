@@ -237,7 +237,6 @@ package et_canvas_schematic_units is
 	type type_placeholder is record
 		category			: type_placeholder_meaning := NAME;
 		being_moved			: boolean := false;
--- 		being_rotated		: boolean := false;
 		tool				: type_tool := MOUSE;
 		absolute_position	: type_point; -- before the move
 	end record;
@@ -275,13 +274,6 @@ package et_canvas_schematic_units is
 		category		: in type_placeholder_meaning;
 		log_threshold	: in type_log_level);
 
-	-- Assigns the final rotation after the rotation to the selected placeholder.
-	-- Resets the global variable "placeholder".
--- 	procedure finalize_rotate_placeholder (
--- 		rotation		: in et_text.type_rotation_documentation;
--- 		category		: in type_placeholder_meaning;
--- 		log_threshold	: in type_log_level);
-	
 	-- Locates all placeholders in the vicinity of given point.
 	-- If more than one placeholder near point found, then it sets the
 	-- cursor selected_placeholder to the first placeholder and requests
@@ -290,9 +282,15 @@ package et_canvas_schematic_units is
 		point		: in type_point;
 		category	: in type_placeholder_meaning);
 
+	-- Rotates the placeholder indicated by selected_placeholder:
 	procedure rotate_selected_placeholder (
 		category	: in type_placeholder_meaning);
 
+	-- Locates all placeholders of given category in the vicinity of given point.
+	-- If more than one placeholder near point found, then it sets the
+	-- cursor selected_placeholder to the first placeholder and requests
+	-- for clarification.
+	-- If only one placeholder found, then the placeholder will be rotated.
 	procedure rotate_placeholder (
 		point 		: in type_point;
 		category	: in type_placeholder_meaning);

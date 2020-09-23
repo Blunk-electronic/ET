@@ -1090,98 +1090,47 @@ package body et_canvas_schematic is
 				-- If space pressed, then the operator wishes to operate via keyboard:	
 				when GDK_Space =>
 					case noun is
+						when NOUN_NAME =>
+							if not clarification_pending then
+								rotate_placeholder (
+									point		=> cursor_main.position,
+									category	=> et_symbols.NAME);
+							else
+								rotate_selected_placeholder (et_symbols.NAME);
+							end if;
+							
+						when NOUN_PURPOSE =>
+							if not clarification_pending then
+								rotate_placeholder (
+									point		=> cursor_main.position,
+									category	=> et_symbols.PURPOSE);
+							else
+								rotate_selected_placeholder (et_symbols.PURPOSE);
+							end if;
+
 						when NOUN_UNIT =>
 							if not clarification_pending then
 								rotate_unit (cursor_main.position);
 							else
 								rotate_selected_unit;
 							end if;
-
-						when NOUN_NAME =>
--- 							if not placeholder.being_rotated then
-
-								-- Set the tool being used for moving the placeholder:
--- 								placeholder.tool := KEYBOARD;
--- 								placeholder.category := et_symbols.NAME;
-
-								if not clarification_pending then
-									rotate_placeholder (
-										point		=> cursor_main.position,
-										category	=> et_symbols.NAME);
-								else
-									rotate_selected_placeholder (et_symbols.NAME);
-								end if;
-
 							
--- 						when NOUN_PURPOSE =>
--- 							if not placeholder.being_rotated then
--- 
--- 								-- Set the tool being used for moving the placeholder:
--- 								placeholder.tool := KEYBOARD;
--- 								placeholder.category := et_symbols.PURPOSE;
--- 
--- 								if not clarification_pending then
--- 									find_placeholders (
--- 										point		=> cursor_main.position,
--- 										category	=> et_symbols.PURPOSE);
--- 								else
--- 									placeholder.being_rotated := true;
--- 									reset_request_clarification;
--- 								end if;
--- 								
--- 							else
--- 								null;
--- 								-- Finally assign the cursor position to the
--- 								-- currently selected placeholder:
--- -- 								et_canvas_schematic_units.finalize_rotate_placeholder (
--- -- 									destination		=> cursor_main.position,
--- -- 									category		=> et_symbols.PURPOSE,
--- -- 									log_threshold	=> log_threshold + 1);
--- 
--- 							end if;
--- 
--- 
--- 						when NOUN_VALUE =>
--- 							if not placeholder.being_rotated then
--- 
--- 								-- Set the tool being used for moving the placeholder:
--- 								placeholder.tool := KEYBOARD;
--- 								placeholder.category := et_symbols.VALUE;
--- 
--- 								if not clarification_pending then
--- 									find_placeholders (
--- 										point		=> cursor_main.position,
--- 										category	=> et_symbols.VALUE);
--- 								else
--- 									placeholder.being_rotated := true;
--- 									reset_request_clarification;
--- 								end if;
--- 								
--- 							else
--- 								null;
--- 								-- Finally assign the cursor position to the
--- 								-- currently selected placeholder:
--- -- 								et_canvas_schematic_units.finalize_move_placeholder (
--- -- 									destination		=> cursor_main.position,
--- -- 									category		=> et_symbols.VALUE,
--- -- 									log_threshold	=> log_threshold + 1);
--- 
--- 							end if;
-
+						when NOUN_VALUE =>
+							if not clarification_pending then
+								rotate_placeholder (
+									point		=> cursor_main.position,
+									category	=> et_symbols.VALUE);
+							else
+								rotate_selected_placeholder (et_symbols.VALUE);
+							end if;
 							
 						when others => null;
-							
 					end case;
 
 				-- If page down pressed, then the operator is clarifying:
 				when GDK_page_down =>
 					case noun is
-						when NOUN_NAME => 
-							if clarification_pending then
-								clarify_placeholder;
-							end if;
-
-						when NOUN_PURPOSE => 
+						when NOUN_NAME | NOUN_VALUE | NOUN_PURPOSE => 
 							if clarification_pending then
 								clarify_placeholder;
 							end if;
@@ -1189,11 +1138,6 @@ package body et_canvas_schematic is
 						when NOUN_UNIT =>
 							if clarification_pending then
 								clarify_unit;
-							end if;
-							
-						when NOUN_VALUE => 
-							if clarification_pending then
-								clarify_placeholder;
 							end if;
 
 						when others => null;
@@ -1311,7 +1255,7 @@ package body et_canvas_schematic is
 
 			when VERB_DRAG | VERB_MOVE =>
 				case noun is
-					when NOUN_NAME => 
+					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
 						if placeholder.being_moved then
 							redraw;
 						end if;
@@ -1607,12 +1551,40 @@ package body et_canvas_schematic is
 				when VERB_ROTATE =>
 
 					case noun is
+						when NOUN_NAME =>
+							if not clarification_pending then
+								rotate_placeholder (
+									point		=> point,
+									category	=> et_symbols.NAME);
+							else
+								rotate_selected_placeholder (et_symbols.NAME);
+							end if;
+							
+						when NOUN_PURPOSE =>
+							if not clarification_pending then
+								rotate_placeholder (
+									point		=> point,
+									category	=> et_symbols.PURPOSE);
+							else
+								rotate_selected_placeholder (et_symbols.PURPOSE);
+							end if;
+						
 						when NOUN_UNIT =>
 							if not clarification_pending then
 								rotate_unit (point);
 							else
 								rotate_selected_unit;
 							end if;
+
+						when NOUN_VALUE =>
+							if not clarification_pending then
+								rotate_placeholder (
+									point		=> point,
+									category	=> et_symbols.VALUE);
+							else
+								rotate_selected_placeholder (et_symbols.VALUE);
+							end if;
+
 							
 						when others => null;
 					end case;
@@ -1623,6 +1595,7 @@ package body et_canvas_schematic is
 			
 		end left_button;
 
+		-- If right button clicked, then the operator is clarifying:
 		procedure right_button is begin
 			case verb is
 				when VERB_DELETE =>
@@ -1692,6 +1665,11 @@ package body et_canvas_schematic is
 
 				when VERB_ROTATE =>
 					case noun is
+						when NOUN_NAME | NOUN_VALUE | NOUN_PURPOSE => 
+							if clarification_pending then
+								clarify_placeholder;
+							end if;
+
 						when NOUN_UNIT =>
 							if clarification_pending then
 								clarify_unit;
