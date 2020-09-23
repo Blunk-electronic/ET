@@ -178,7 +178,7 @@ package et_schematic_ops is
 		return et_symbols.type_default_text_positions;
 
 	procedure rotate_unit_placeholder (
-	-- Rotates the given unit placeholder around its origin.
+	-- Rotates the given unit placeholder about its origin.
 	-- The rotation is absolute.										  
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45

@@ -309,7 +309,7 @@ procedure draw_units (
 					if placeholder_is_selected (device_cursor, unit_cursor) then
 
 						-- increase brightness
--- 						brightness := BRIGHT;
+						brightness := BRIGHT;
 
 						if placeholder.being_moved then
 
