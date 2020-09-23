@@ -215,41 +215,47 @@ package et_canvas_schematic_units is
 
 -- PLACEHOLDERS
 
-	package pac_proposed_name_placeholders is new doubly_linked_lists (type_selected_unit);
-	use pac_proposed_name_placeholders;
+	package pac_proposed_placeholders is new doubly_linked_lists (type_selected_unit);
+	use pac_proposed_placeholders;
 
 	-- These variables are used by the GUI when the operator selects a placeholder:
-	proposed_name_placeholders	: pac_proposed_name_placeholders.list;
-	selected_name_placeholder	: pac_proposed_name_placeholders.cursor;
+	proposed_placeholders	: pac_proposed_placeholders.list;
+	selected_placeholder	: pac_proposed_placeholders.cursor;
 
 	-- Advances to next placeholder in 
 	-- list of proposed placeholders:
-	procedure clarify_placeholder (
-		category	: in type_placeholder_meaning);
+	procedure clarify_placeholder;
 
 	-- Clears the list proposed placeholders:
-	procedure clear_proposed_placeholders (
-		category	: in type_placeholder_meaning);
+	procedure clear_proposed_placeholders;
 
+	
 	-- Global information for the GUI when a placeholder 
-	-- is being moved or rotated:
-	type type_name_placeholder is record
+	-- is being moved or rotated.
+	-- The category indicates whether the placeholder 
+	-- for name, value or purpose is meant.
+	type type_placeholder is record
+		category			: type_placeholder_meaning := NAME;
 		being_moved			: boolean := false;
 		tool				: type_tool := MOUSE;
 		absolute_position	: type_point; -- before the move
 	end record;
 
-	name_placeholder : type_name_placeholder;
+	placeholder : type_placeholder;
 
-	-- Resets global information of all placeholders:
-	procedure reset_placeholders;
+	
+	
+	-- Resets placeholder and clears
+	-- the list of proposed placeholders:
+	procedure reset_placeholder;
+
 	
 	-- to be output in the status bar:
-	status_move_name : constant string := 
+	status_move_placeholder : constant string := 
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to move name." 
+		& "to move placeholder." 
 		& status_hint_for_abort;
 
 	-- Assigns the final position after the move to the selected placeholder.

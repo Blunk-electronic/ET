@@ -874,13 +874,24 @@ package body et_canvas_schematic is
 				when GDK_LC_n =>
 					noun := NOUN_NAME;
 					
-					set_status (et_canvas_schematic_units.status_move_name);
+					set_status (et_canvas_schematic_units.status_move_placeholder);
+
+				when GDK_LC_p =>
+					noun := NOUN_PURPOSE;
+					
+					set_status (et_canvas_schematic_units.status_move_placeholder);
 					
 				when GDK_LC_u =>
 					noun := NOUN_UNIT;
 					
 					set_status (et_canvas_schematic_units.status_move);
 
+				when GDK_LC_v =>
+					noun := NOUN_VALUE;
+					
+					set_status (et_canvas_schematic_units.status_move_placeholder);
+
+					
 				-- If space pressed then the operator wishes to operate
 				-- by keyboard:
 				when GDK_Space =>
@@ -910,17 +921,18 @@ package body et_canvas_schematic is
 -- 							end if;
 
 						when NOUN_NAME =>
-							if not name_placeholder.being_moved then
+							if not placeholder.being_moved then
 
 								-- Set the tool being used for moving the placeholder:
-								name_placeholder.tool := KEYBOARD;
+								placeholder.tool := KEYBOARD;
+								placeholder.category := et_symbols.NAME;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> cursor_main.position,
 										category	=> et_symbols.NAME);
 								else
-									name_placeholder.being_moved := true;
+									placeholder.being_moved := true;
 									reset_request_clarification;
 								end if;
 								
@@ -930,6 +942,33 @@ package body et_canvas_schematic is
 								et_canvas_schematic_units.finalize_move_placeholder (
 									destination		=> cursor_main.position,
 									category		=> et_symbols.NAME,
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+
+							
+						when NOUN_PURPOSE =>
+							if not placeholder.being_moved then
+
+								-- Set the tool being used for moving the placeholder:
+								placeholder.tool := KEYBOARD;
+								placeholder.category := et_symbols.PURPOSE;
+
+								if not clarification_pending then
+									find_placeholders (
+										point		=> cursor_main.position,
+										category	=> et_symbols.PURPOSE);
+								else
+									placeholder.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally assign the cursor position to the
+								-- currently selected placeholder:
+								et_canvas_schematic_units.finalize_move_placeholder (
+									destination		=> cursor_main.position,
+									category		=> et_symbols.PURPOSE,
 									log_threshold	=> log_threshold + 1);
 
 							end if;
@@ -957,6 +996,34 @@ package body et_canvas_schematic is
 
 							end if;
 
+
+						when NOUN_VALUE =>
+							if not placeholder.being_moved then
+
+								-- Set the tool being used for moving the placeholder:
+								placeholder.tool := KEYBOARD;
+								placeholder.category := et_symbols.VALUE;
+
+								if not clarification_pending then
+									find_placeholders (
+										point		=> cursor_main.position,
+										category	=> et_symbols.VALUE);
+								else
+									placeholder.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally assign the cursor position to the
+								-- currently selected placeholder:
+								et_canvas_schematic_units.finalize_move_placeholder (
+									destination		=> cursor_main.position,
+									category		=> et_symbols.VALUE,
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+
+							
 						when others => null;
 							
 					end case;
@@ -964,16 +1031,28 @@ package body et_canvas_schematic is
 				-- If page down pressed, then the operator is clarifying:
 				when GDK_page_down =>
 					case noun is
+
+						when NOUN_NAME => 
+							if clarification_pending then
+								clarify_placeholder;
+							end if;
+
+						when NOUN_PURPOSE => 
+							if clarification_pending then
+								clarify_placeholder;
+							end if;
+
 						when NOUN_UNIT =>
 							if clarification_pending then
 								clarify_unit;
 							end if;
-
-						when NOUN_NAME => 
+							
+						when NOUN_VALUE => 
 							if clarification_pending then
-								clarify_placeholder (et_symbols.NAME);
+								clarify_placeholder;
 							end if;
 
+							
 						when others => null;
 							
 					end case;
@@ -1040,7 +1119,7 @@ package body et_canvas_schematic is
 			reset_segments_being_dragged; -- after dragging a unit
 			reset_unit; -- after moving a unit
 
-			reset_placeholders; -- after moving a placeholder
+			reset_placeholder; -- after moving a placeholder
 			status_enter_verb;
 		else	
 			case expect_entry is
@@ -1130,7 +1209,7 @@ package body et_canvas_schematic is
 			when VERB_DRAG | VERB_MOVE =>
 				case noun is
 					when NOUN_NAME => 
-						if name_placeholder.being_moved then
+						if placeholder.being_moved then
 							redraw;
 						end if;
 					
@@ -1317,17 +1396,18 @@ package body et_canvas_schematic is
 
 					case noun is
 						when NOUN_NAME =>
-							if not name_placeholder.being_moved then
+							if not placeholder.being_moved then
 
 								-- Set the tool being used for moving the placeholder:
-								name_placeholder.tool := MOUSE;
+								placeholder.tool := MOUSE;
+								placeholder.category := et_symbols.NAME;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> point,
 										category	=> et_symbols.NAME);
 								else
-									name_placeholder.being_moved := true;
+									placeholder.being_moved := true;
 									reset_request_clarification;
 								end if;
 								
@@ -1337,6 +1417,32 @@ package body et_canvas_schematic is
 								et_canvas_schematic_units.finalize_move_placeholder (
 									destination		=> snap_to_grid (self, point),
 									category		=> et_symbols.NAME,
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+
+						when NOUN_PURPOSE =>
+							if not placeholder.being_moved then
+
+								-- Set the tool being used for moving the placeholder:
+								placeholder.tool := MOUSE;
+								placeholder.category := et_symbols.PURPOSE;
+
+								if not clarification_pending then
+									find_placeholders (
+										point		=> point,
+										category	=> et_symbols.PURPOSE);
+								else
+									placeholder.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally assign the cursor position to the
+								-- currently selected placeholder:
+								et_canvas_schematic_units.finalize_move_placeholder (
+									destination		=> snap_to_grid (self, point),
+									category		=> et_symbols.PURPOSE,
 									log_threshold	=> log_threshold + 1);
 
 							end if;
@@ -1363,6 +1469,34 @@ package body et_canvas_schematic is
 									log_threshold	=> log_threshold + 1);
 
 							end if;
+
+							
+						when NOUN_VALUE =>
+							if not placeholder.being_moved then
+
+								-- Set the tool being used for moving the placeholder:
+								placeholder.tool := MOUSE;
+								placeholder.category := et_symbols.VALUE;
+
+								if not clarification_pending then
+									find_placeholders (
+										point		=> point,
+										category	=> et_symbols.VALUE);
+								else
+									placeholder.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally assign the cursor position to the
+								-- currently selected placeholder:
+								et_canvas_schematic_units.finalize_move_placeholder (
+									destination		=> snap_to_grid (self, point),
+									category		=> et_symbols.VALUE,
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+
 							
 						when others => null;							
 					end case;
@@ -1428,15 +1562,27 @@ package body et_canvas_schematic is
 					
 				when VERB_MOVE =>
 					case noun is
+
+						when NOUN_NAME => 
+							if clarification_pending then
+								clarify_placeholder;
+							end if;
+
+						when NOUN_PURPOSE => 
+							if clarification_pending then
+								clarify_placeholder;
+							end if;
+
 						when NOUN_UNIT =>
 							if clarification_pending then
 								clarify_unit;
 							end if;
-
-						when NOUN_NAME => 
+							
+						when NOUN_VALUE => 
 							if clarification_pending then
-								clarify_placeholder (et_symbols.NAME);
+								clarify_placeholder;
 							end if;
+
 							
 						when others => null;							
 					end case;

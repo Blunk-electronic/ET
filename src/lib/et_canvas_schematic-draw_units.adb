@@ -133,18 +133,18 @@ procedure draw_units (
 		d : in et_schematic.type_devices.cursor;
 		u : in et_schematic.type_units.cursor)
 		return boolean is
-		use pac_proposed_name_placeholders;
+		use pac_proposed_placeholders;
 		use et_devices;
 		use type_unit_name;
 	begin
 		-- If there are no selected placeholders at all, then there is nothing to do:
-		if is_empty (proposed_name_placeholders) then
+		if is_empty (proposed_placeholders) then
 			return false;
 		else
-			if selected_name_placeholder /= pac_proposed_name_placeholders.no_element then
+			if selected_placeholder /= pac_proposed_placeholders.no_element then
 				-- Compare given device and unit name with selected unit:
-				if key (d) = key (element (selected_name_placeholder).device) and then
-					key (u) = key (element (selected_name_placeholder).unit) then
+				if key (d) = key (element (selected_placeholder).device) and then
+					key (u) = key (element (selected_placeholder).unit) then
 					-- CS: Improvement: compare cursors directly ?
 					
 					return true;
@@ -288,51 +288,102 @@ procedure draw_units (
 				unit_rotation := rot (element (unit_cursor).position);
 
 				
-				-- Get a copy of the placeholders of the unit:
+				-- If this is a real device, then get a copy of the 
+				-- placeholders of the unit.
+				-- NOTE: The position of the placeholders is relative to
+				-- the unit position !
+				-- If any of the placeholder of the unit is selected
+				-- and being moved, then calculate its new relative
+				-- position according to the tool being used. Otherwise
+				-- the position remains untouched. 
+				-- NOTE: There can only be just one placeholder being moved.
+				-- Which one is determined by the selector placeholder.category.
+				
 				if element (unit_cursor).appearance = PCB then
 
 					sch_placeholder_name := element (unit_cursor).name;
+					sch_placeholder_value := element (unit_cursor).value;
+					sch_placeholder_purpose := element (unit_cursor).purpose;
+
 					
 					if placeholder_is_selected (device_cursor, unit_cursor) then
 
 						-- increase brightness
 -- 						brightness := BRIGHT;
 
-						-- overwrite position
-						if name_placeholder.being_moved then
+						if placeholder.being_moved then
 
-							-- NOTE: The position of the placeholder is relative to the 
-							-- unit position !
-							
-							-- Calculate the absolute position of the placeholder 
-							-- as it is according to database BEFORE the move:
-							name_placeholder.absolute_position := sch_placeholder_name.position;
-							move_by (name_placeholder.absolute_position, unit_position);
-
-							-- Depending on the tool used, calculate the new position of the 
-							-- placeholder relatie to the unit position:
-							case name_placeholder.tool is
-								when MOUSE =>
-									move_by (
-										point	=> sch_placeholder_name.position,
-										offset	=> distance_relative (name_placeholder.absolute_position, self.snap_to_grid (self.mouse_position)));
-
--- 									sch_placeholder_name.position := self.snap_to_grid (self.mouse_position);
+							case placeholder.category is
+								when NAME =>
 									
-								when KEYBOARD =>
-									move_by (
-										point	=> sch_placeholder_name.position,
-										offset	=> distance_relative (name_placeholder.absolute_position, cursor_main.position));
+									-- Calculate the absolute position of the NAME placeholder 
+									-- as it was according to database BEFORE the move:
+									placeholder.absolute_position := sch_placeholder_name.position;
+									move_by (placeholder.absolute_position, unit_position);
+
+									-- Depending on the tool used, calculate the new position of the 
+									-- placeholder relative to the unit position:
+									case placeholder.tool is
+										when MOUSE =>
+											move_by (
+												point	=> sch_placeholder_name.position,
+												offset	=> distance_relative (placeholder.absolute_position, self.snap_to_grid (self.mouse_position)));
+
+										when KEYBOARD =>
+											move_by (
+												point	=> sch_placeholder_name.position,
+												offset	=> distance_relative (placeholder.absolute_position, cursor_main.position));
+
+									end case;
+
+								when PURPOSE =>
+
+									-- Calculate the absolute position of the PURPOSE placeholder 
+									-- as it was according to database BEFORE the move:
+									placeholder.absolute_position := sch_placeholder_purpose.position;
+									move_by (placeholder.absolute_position, unit_position);
+
+									-- Depending on the tool used, calculate the new position of the 
+									-- placeholder relative to the unit position:
+									case placeholder.tool is
+										when MOUSE =>
+											move_by (
+												point	=> sch_placeholder_purpose.position,
+												offset	=> distance_relative (placeholder.absolute_position, self.snap_to_grid (self.mouse_position)));
+
+										when KEYBOARD =>
+											move_by (
+												point	=> sch_placeholder_purpose.position,
+												offset	=> distance_relative (placeholder.absolute_position, cursor_main.position));
+
+									end case;
+
+								when VALUE =>
+
+									-- Calculate the absolute position of the VALUE placeholder 
+									-- as it was according to database BEFORE the move:
+									placeholder.absolute_position := sch_placeholder_value.position;
+									move_by (placeholder.absolute_position, unit_position);
+
+									-- Depending on the tool used, calculate the new position of the 
+									-- placeholder relative to the unit position:
+									case placeholder.tool is
+										when MOUSE =>
+											move_by (
+												point	=> sch_placeholder_value.position,
+												offset	=> distance_relative (placeholder.absolute_position, self.snap_to_grid (self.mouse_position)));
+
+										when KEYBOARD =>
+											move_by (
+												point	=> sch_placeholder_value.position,
+												offset	=> distance_relative (placeholder.absolute_position, cursor_main.position));
+
+									end case;
 
 							end case;
+									
 						end if;
-
-
 					end if;
-					
-						
-					sch_placeholder_value := element (unit_cursor).value;
-					sch_placeholder_purpose := element (unit_cursor).purpose;
 				end if;
 
 				device_cursor_lib := locate_device (device_model);

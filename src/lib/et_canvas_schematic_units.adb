@@ -821,9 +821,7 @@ package body et_canvas_schematic_units is
 
 -- PLACEHOLDERS
 
-	procedure clarify_placeholder (
-		category	: in type_placeholder_meaning)
-	is
+	procedure clarify_placeholder is
 		use et_schematic.type_devices;
 		use et_schematic.type_units;
 		u : type_units.cursor;
@@ -833,22 +831,17 @@ package body et_canvas_schematic_units is
 		-- placeholder to the next in a circular manner. So if the end 
 		-- of the list is reached, then the cursor selected_name_placeholder
 		-- moves back to the start of the placeholder list.
-		case category is
-			when NAME =>
-				if next (selected_name_placeholder) /= pac_proposed_name_placeholders.no_element then
-					next (selected_name_placeholder);
-				else
-					selected_name_placeholder := proposed_name_placeholders.first;
-				end if;
+		if next (selected_placeholder) /= pac_proposed_placeholders.no_element then
+			next (selected_placeholder);
+		else
+			selected_placeholder := proposed_placeholders.first;
+		end if;
 
-				-- show the selected placeholder in the status bar
-				u := element (selected_name_placeholder).unit;
-				d := element (selected_name_placeholder).device;
-
-			when others => null;
-		end case;
+		-- show the selected placeholder in the status bar
+		u := element (selected_placeholder).unit;
+		d := element (selected_placeholder).device;
 		
-		set_status ("selected placeholder " 
+		set_status ("selected placeholder of " 
 			& to_string (key (d)) 
 			& "."
 			& to_string (key (u)) 
@@ -856,36 +849,15 @@ package body et_canvas_schematic_units is
 		
 	end clarify_placeholder;
 	
-	procedure clear_proposed_placeholders (
-		category	: in type_placeholder_meaning)
-	is begin
-		case category is
-			when NAME =>
-				clear (proposed_name_placeholders);
-				selected_name_placeholder := pac_proposed_name_placeholders.no_element;
-
-			when others => null;
-		end case;
+	procedure clear_proposed_placeholders is begin
+		clear (proposed_placeholders);
+		selected_placeholder := pac_proposed_placeholders.no_element;
 	end clear_proposed_placeholders;
 	
-	procedure reset_placeholder (
-		category	: in type_placeholder_meaning)
-	is begin
-		case category is
-			when NAME =>
-				name_placeholder := (others => <>);
-				clear_proposed_placeholders (category);
-
-			when others =>
-				null;
-		end case;
+	procedure reset_placeholder is begin
+		placeholder := (others => <>);
+		clear_proposed_placeholders;
 	end reset_placeholder;
-
-	procedure reset_placeholders is begin
-		reset_placeholder (NAME);
-		reset_placeholder (VALUE);
-		reset_placeholder (PURPOSE);
-	end reset_placeholders;
 	
 	procedure finalize_move_placeholder (
 		destination		: in type_point;
@@ -900,36 +872,30 @@ package body et_canvas_schematic_units is
 		log (text => "finalizing move placeholder ...", level => log_threshold);
 		log_indentation_up;
 
-		case category is
-			when NAME =>
-				if selected_name_placeholder /= pac_proposed_name_placeholders.no_element then
+		if selected_placeholder /= pac_proposed_placeholders.no_element then
+			su := element (selected_placeholder);
 
-					su := element (selected_name_placeholder);
+			move_unit_placeholder (
+				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+				device_name		=> key (su.device),
+				unit_name		=> key (su.unit),
+				coordinates		=> ABSOLUTE,
+				point			=> destination,
+				meaning			=> category,
+				log_threshold	=> log_threshold);
 
-					move_unit_placeholder (
-						module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
-						device_name		=> key (su.device),
-						unit_name		=> key (su.unit),
-						coordinates		=> ABSOLUTE,
-						point			=> destination,
-						meaning			=> NAME,
-						log_threshold	=> log_threshold);
+			-- CS write a reduced procedure of move_unit_placeholder that takes a 
+			-- module cursor, device cursor and unit cursor instead.
 
-					-- CS write a reduced procedure of move_unit_placeholder that takes a 
-					-- module cursor, device cursor and unit cursor instead.
-						
-				else
-					log (text => "nothing to do", level => log_threshold);
-				end if;
-
-			when others => null;
-		end case;
-		
+		else
+			log (text => "nothing to do", level => log_threshold);
+		end if;
+			
 		log_indentation_down;
 
-		set_status (status_move_name);
+		set_status (status_move_placeholder);
 		
-		reset_placeholder (category);
+		reset_placeholder;
 	end finalize_move_placeholder;
 
 	function collect_placeholders (
@@ -938,9 +904,9 @@ package body et_canvas_schematic_units is
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		category		: in type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level)
-		return pac_proposed_name_placeholders.list
+		return pac_proposed_placeholders.list
 	is
-		result : pac_proposed_name_placeholders.list;
+		result : pac_proposed_placeholders.list;
 
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
@@ -1070,7 +1036,7 @@ package body et_canvas_schematic_units is
 		log_indentation_up;
 		
 		-- Collect all placeholders in the vicinity of the given point:
-		proposed_name_placeholders := collect_placeholders (
+		proposed_placeholders := collect_placeholders (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
 			catch_zone		=> catch_zone_default, -- CS should depend on current scale
@@ -1078,54 +1044,26 @@ package body et_canvas_schematic_units is
 			log_threshold	=> log_threshold + 1);
 
 		-- evaluate the number of placeholders found here:
-		case category is
-			when NAME =>
-				case length (proposed_name_placeholders) is
-					when 0 =>
-						reset_request_clarification;
-						reset_placeholder (category);
-						
-					when 1 =>
-						name_placeholder.being_moved := true;
-						selected_name_placeholder := proposed_name_placeholders.first;
+		case length (proposed_placeholders) is
+			when 0 =>
+				reset_request_clarification;
+				reset_placeholder;
+				
+			when 1 =>
+				placeholder.being_moved := true;
+				selected_placeholder := proposed_placeholders.first;
 
-						set_status (status_move_name);
+				set_status (status_move_placeholder);
 
-						reset_request_clarification;
-						
-					when others =>
-						set_request_clarification;
+				reset_request_clarification;
+				
+			when others =>
+				set_request_clarification;
 
-						-- preselect the first placeholder
-						selected_name_placeholder := proposed_name_placeholders.first;
-				end case;
-
-			when VALUE =>
-				null;
--- 				case length (proposed_name_placeholders) is
--- 					when 0 =>
--- 						reset_request_clarification;
--- 						reset_name_placeholder;
--- 						
--- 					when 1 =>
--- 						name_placeholder.being_moved := true;
--- 						selected_name_placeholder := proposed_name_placeholders.first;
--- 
--- 						set_status (status_move_name);
--- 
--- 						reset_request_clarification;
--- 						
--- 					when others =>
--- 						set_request_clarification;
--- 
--- 						-- preselect the first placeholder
--- 						selected_name_placeholder := proposed_name_placeholders.first;
--- 				end case;
-
-			when PURPOSE =>
-				null;
-
+				-- preselect the first placeholder
+				selected_placeholder := proposed_placeholders.first;
 		end case;
+
 		log_indentation_down;
 	end find_placeholders;
 	
