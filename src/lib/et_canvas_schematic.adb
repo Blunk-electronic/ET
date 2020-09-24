@@ -36,8 +36,11 @@
 --
 
 with ada.text_io;					use ada.text_io;
-with ada.numerics;					use ada.numerics;
+with ada.characters.handling;		use ada.characters.handling;
+with ada.strings;					use ada.strings;
+with ada.strings.fixed;				use ada.strings.fixed;
 
+with et_pcb_coordinates;
 with et_terminals;
 with et_devices;
 
@@ -430,14 +433,67 @@ package body et_canvas_schematic is
 	procedure init_drawing (
 		module	: in et_project.modules.pac_generic_modules.cursor; -- the module to be drawn
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be drawn
-	is begin
+	is
+		-- get the current grid of schematic:
+		grid : constant type_grid := element (module).grid;
+		
+		use gtk.gentry;
+	begin
 		-- set the active module:
 		current_active_module := module;
 		
 		-- set active sheet:
 		current_active_sheet := sheet;
+
+		-- Show the schematic grid size in the coordinates display:
+		gtk_entry (grid_x.get_child).set_text (trim (to_string (grid.x), left));
+		gtk_entry (grid_y.get_child).set_text (trim (to_string (grid.y), left));
+		
 	end init_drawing;
 
+
+	
+	procedure set_grid_x (self : access gtk.gentry.gtk_entry_record'class) is
+		use gtk.gentry;
+		use et_schematic_ops;
+
+		-- get the current grid		
+		grid : type_grid := element (current_active_module).grid;
+	begin
+		-- Assign grid to x AND y axis so that the operator is not requested
+		-- to manually assign y.
+		grid.x := to_distance (get_text (self));
+		grid.y := to_distance (get_text (self));
+
+		-- Show the grid:
+		gtk_entry (grid_x.get_child).set_text (trim (to_string (grid.x), left));
+		gtk_entry (grid_y.get_child).set_text (trim (to_string (grid.y), left));
+		
+		-- Finally set the grid in the module database:
+		set_grid (current_active_module, grid, log_threshold + 1);
+		redraw (canvas);
+	end set_grid_x;
+	
+	procedure set_grid_y (self : access gtk.gentry.gtk_entry_record'class) is
+		use gtk.gentry;
+		use et_schematic_ops;
+
+		-- get the current grid	
+		grid : type_grid := element (current_active_module).grid;
+	begin
+		-- Assign grid to y axis:
+		grid.y := to_distance (get_text (self));
+
+		-- Show the grid:
+		gtk_entry (grid_y.get_child).set_text (trim (to_string (grid.y), left));
+		
+		-- Finally set the grid in the module database:
+		set_grid (current_active_module, grid, log_threshold + 1);
+		redraw (canvas);
+	end set_grid_y;
+
+
+	
 	procedure move_cursor (
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;

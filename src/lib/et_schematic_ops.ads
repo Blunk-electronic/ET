@@ -125,11 +125,17 @@ package et_schematic_ops is
 		angle	: in et_coordinates.type_rotation); -- 90
 
 	
-	procedure set_grid (
 	-- Sets the grid of the module.
+	procedure set_grid (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		grid			: in type_grid;
 		log_threshold	: in type_log_level);		
+
+	procedure set_grid (
+		module_cursor	: in pac_generic_modules.cursor;
+		grid			: in type_grid;
+		log_threshold	: in type_log_level);
+
 	
 	procedure delete_device (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

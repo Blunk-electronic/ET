@@ -36,6 +36,9 @@
 --
 
 with ada.text_io;				use ada.text_io;
+with ada.characters.handling;	use ada.characters.handling;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed;			use ada.strings.fixed;
 
 with et_canvas_schematic;
 with et_display.board;
@@ -175,6 +178,48 @@ package body et_canvas_board is
 		return self.paper_bounding_box; -- CS should include all items of the current sheet.
 		-- means: also items outside the frame
 	end;
+
+
+	procedure set_grid_x (self : access gtk.gentry.gtk_entry_record'class) is
+		use gtk.gentry;
+		use et_board_ops;
+		use et_canvas_schematic;
+
+		-- get the current grid
+		grid : type_grid := element (current_active_module).board.grid;
+	begin
+		-- Assign grid to x AND y axis so that the operator is not requested
+		-- to manually assign y.
+		grid.x := to_distance (get_text (self));
+		grid.y := to_distance (get_text (self));
+
+		-- Show the grid:
+		gtk_entry (grid_x.get_child).set_text (trim (to_string (grid.x), left));
+		gtk_entry (grid_y.get_child).set_text (trim (to_string (grid.y), left));
+
+		-- Finally set the grid in the module database:
+		set_grid (current_active_module, grid, log_threshold + 1);
+		redraw (canvas);
+	end set_grid_x;
+	
+	procedure set_grid_y (self : access gtk.gentry.gtk_entry_record'class) is
+		use gtk.gentry;
+		use et_board_ops;
+		use et_canvas_schematic;
+		
+		-- get the current grid		
+		grid : type_grid := element (current_active_module).board.grid;
+	begin
+		-- Assign grid to y axis:
+		grid.y := to_distance (get_text (self));
+		
+		-- Show the grid:
+		gtk_entry (grid_y.get_child).set_text (trim (to_string (grid.y), left));
+
+		-- Finally set the grid in the module database:
+		set_grid (current_active_module, grid, log_threshold + 1);
+		redraw (canvas);
+	end set_grid_y;
 
 
 	
@@ -492,7 +537,17 @@ package body et_canvas_board is
 		
 	end draw_internal;
 
-
+	procedure init_drawing is
+		use et_canvas_schematic;
+		grid : constant type_grid := element (current_active_module).board.grid;
+		
+		use gtk.gentry;
+	begin
+		-- Show the board grid size in the coordinates display:
+		gtk_entry (grid_x.get_child).set_text (trim (to_string (grid.x), left));
+		gtk_entry (grid_y.get_child).set_text (trim (to_string (grid.y), left));
+	end init_drawing;
+	
 	procedure move_cursor (
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;

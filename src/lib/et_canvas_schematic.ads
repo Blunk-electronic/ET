@@ -48,6 +48,9 @@
 with gdk.types;						use gdk.types;
 with gdk.types.keysyms;				use gdk.types.keysyms;
 
+with gtk;
+with gtk.gentry;
+
 with glib;							use glib;
 with cairo;							use cairo;
 
@@ -70,6 +73,7 @@ with et_canvas_general;				use et_canvas_general;
 with et_canvas_primitive_draw_ops;	
 with et_string_processing;			use et_string_processing;
 
+with et_schematic_ops;
 with et_canvas_schematic_nets;		use et_canvas_schematic_nets;
 with et_canvas_schematic_units;		use et_canvas_schematic_units;
 
@@ -189,12 +193,25 @@ package et_canvas_schematic is
 	-- Sets the active module to be displayed in the canvas:
 	procedure set_module (
 		module	: in et_general.type_module_name.bounded_string); -- motor_driver
-	
-	-- Init the drawing:
+
+	-- Sets the global variables "current_active_module" and "current_active_sheet".
+	-- Sets the grid values to be displayed in the coordinates display.
 	procedure init_drawing (
 		module	: in et_project.modules.pac_generic_modules.cursor; -- the module to be drawn in schematic and layout
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be drawn
 
+	
+
+	-- These procedures set the grid as entered in the grid box:
+	
+	procedure set_grid_x (self : access gtk.gentry.gtk_entry_record'class);
+	-- Additionally sets the grid for y. Mostly grid of x and y axis are the same.
+	
+	procedure set_grid_y (self : access gtk.gentry.gtk_entry_record'class);
+
+
+	
+	
 	overriding procedure move_cursor (
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;  -- relative/absolute

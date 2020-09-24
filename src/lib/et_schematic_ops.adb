@@ -127,7 +127,6 @@ package body et_schematic_ops is
 	end;
 	
 	procedure set_grid (
-	-- Sets the grid of the module.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		grid			: in type_grid;
 		log_threshold	: in type_log_level) is
@@ -143,12 +142,38 @@ package body et_schematic_ops is
 		end;
 		
 	begin -- set_grid
-		log (text => "module " & to_string (module_name) &
-			" setting schematic grid" & to_string (grid),
+		log (text => "module " & enclose_in_quotes (to_string (module_name))
+			& " setting schematic grid" & to_string (grid),
 			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> do_it'access);
+
+	end set_grid;
+
+	procedure set_grid (
+		module_cursor	: in pac_generic_modules.cursor;
+		grid			: in type_grid;
+		log_threshold	: in type_log_level) is
+
+		use pac_generic_modules;
+
+		procedure do_it (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			module.grid := grid;
+		end;
+		
+	begin -- set_grid
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
+			& " setting schematic grid" & to_string (grid),
+			level => log_threshold);
 
 		update_element (
 			container	=> generic_modules,

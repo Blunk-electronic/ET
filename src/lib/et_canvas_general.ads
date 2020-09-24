@@ -136,6 +136,14 @@ package pac_canvas is
 	
 	-- main position display:
 	box_positions			: gtk_vbox;		-- the main box around all kinds of position readouts
+
+	-- grid
+	label_grid				: gtk_label;
+	box_grid				: gtk_vbox;
+	box_grid_x, box_grid_y	: gtk_hbox;
+
+	label_grid_x, label_grid_y	: gtk_label;
+	grid_x, grid_y				: gtk_combo_box_text;
 	
 	-- mouse position
 	label_mouse_position	: gtk_label;
@@ -220,6 +228,9 @@ package pac_canvas is
 	
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class);
 	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class);
+
+	--procedure set_grid_x (self : access gtk.gentry.gtk_entry_record'class) is null;
+	--procedure set_grid_y (self : access gtk.gentry.gtk_entry_record'class) is null;
 	
 	procedure build_toolbars;
 

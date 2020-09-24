@@ -189,12 +189,18 @@ package et_board_ops is
 		terminal_name	: in type_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position;
 
-	procedure set_grid (
 	-- Sets the grid of the module.
+	procedure set_grid (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		grid			: in type_grid;
 		log_threshold	: in type_log_level);		
 
+	procedure set_grid (
+		module_cursor	: in pac_generic_modules.cursor;
+		grid			: in type_grid;
+		log_threshold	: in type_log_level);
+
+	
 -- TRACKS AND FREETRACKS
 
 	procedure add_named_track (

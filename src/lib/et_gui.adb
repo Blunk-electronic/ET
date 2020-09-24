@@ -84,10 +84,12 @@ package body et_gui is
 
 		build_mode_display;
 
-		-- Connect to the on_activate signal (on hitting enter key) of the entry (which is a child of console):
+		-- Connect to the on_activate signal (on hitting enter key):
 		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
 		gtk_entry (cursor_position_y.get_child).on_activate (set_cursor_position_y'access);
 
+		gtk_entry (grid_x.get_child).on_activate (set_grid_x'access);
+		gtk_entry (grid_y.get_child).on_activate (set_grid_y'access);
 		
 		build_toolbars;
 		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar_left);
@@ -167,9 +169,13 @@ package body et_gui is
 
 		build_mode_display;
 		
-		-- Connect to the on_activate signal (on hitting enter key) of the entry (which is a child of console):
+		-- Connect to the on_activate signal (on hitting enter key):
 		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
 		gtk_entry (cursor_position_y.get_child).on_activate (set_cursor_position_y'access);
+
+		gtk_entry (grid_x.get_child).on_activate (set_grid_x'access);
+		gtk_entry (grid_y.get_child).on_activate (set_grid_y'access);
+
 
 		
 		build_toolbars;
@@ -191,6 +197,8 @@ package body et_gui is
 		build_canvas;
 		gtk_new (canvas);
 
+		init_drawing;
+		
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 		
 		scale_to_fit (canvas);

@@ -46,8 +46,10 @@
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
 with gdk.types;					use gdk.types;
-with gdk.types;					use gdk.types;
 with gdk.types.keysyms;			use gdk.types.keysyms;
+
+with gtk;
+with gtk.gentry;
 
 with glib;						use glib;
 with cairo;						use cairo;
@@ -61,6 +63,7 @@ with et_project.modules;		use et_project.modules;
 with et_schematic;
 with et_frames;
 
+with et_board_ops;
 
 with et_canvas_general;				use et_canvas_general;
 with et_canvas_primitive_draw_ops;
@@ -145,7 +148,17 @@ package et_canvas_board is
 		drawing_point : in type_point)	
 		return type_point;
 
+
+
+	-- These procedures set the grid as entered in the grid box:
 		
+	procedure set_grid_x (self : access gtk.gentry.gtk_entry_record'class);
+	-- Additionally sets the grid for y. Mostly grid of x and y axis are the same.
+	
+	procedure set_grid_y (self : access gtk.gentry.gtk_entry_record'class);
+
+
+	
 
 	-- Creates a new board view:
 	procedure gtk_new (
@@ -157,6 +170,9 @@ package et_canvas_board is
 		context : type_draw_context;
 		area    : type_rectangle);
 
+	-- Sets the grid values to be displayed in the coordinates display:
+	procedure init_drawing;
+	
 	overriding procedure move_cursor (
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;  -- relative/absolute

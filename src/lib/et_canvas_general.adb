@@ -262,7 +262,34 @@ package body pac_canvas is
 		set_spacing (box_positions, spacing);
 		set_border_width (box_positions, 10);
 		pack_start (box_left, box_positions, expand => false);
+		-------------------------------------------------------------------------
+		
+		-- The box for grid:
+		gtk_new_vbox (box_grid);
+		pack_start (box_positions, box_grid, expand => false);
+		gtk_new (label_grid, "grid");
+		pack_start (box_grid, label_grid, expand => false);
 
+		-- X
+		gtk_new_hbox (box_grid_x);
+		set_spacing (box_grid_x, spacing);
+		pack_start (box_grid, box_grid_x, expand => false);
+		gtk_new (label_grid_x, "X");
+		pack_start (box_grid_x, label_grid_x, expand => false);
+		gtk_new_with_entry (grid_x);
+		pack_start (box_grid_x, grid_x, expand => false);
+
+		-- Y
+		gtk_new_hbox (box_grid_y);
+		set_spacing (box_grid_y, spacing);
+		pack_start (box_grid, box_grid_y, expand => false);
+		gtk_new (label_grid_y, "Y");
+		pack_start (box_grid_y, label_grid_y, expand => false);
+		gtk_new_with_entry (grid_y);
+		pack_start (box_grid_y, grid_y, expand => false);
+
+		
+		-------------------------------------------------------------------------
 		-- The box for mouse pointer:
 		gtk_new_vbox (box_mouse_position);
 		pack_start (box_positions, box_mouse_position, expand => false);
@@ -288,7 +315,7 @@ package body pac_canvas is
 		gtk_new_with_entry (mouse_position_y);
 		pack_start (box_mouse_position_y, mouse_position_y, expand => false);
 
-
+		-------------------------------------------------------------------------
 		-- The box for cursor position:
 		gtk_new_vbox (box_cursor_position);
 		pack_start (box_positions, box_cursor_position, expand => false);
@@ -314,7 +341,7 @@ package body pac_canvas is
 		pack_start (box_cursor_position_y, cursor_position_y, expand => false);
 
 
-		
+		-------------------------------------------------------------------------
 		-- The box for distances:
 		gtk_new_vbox (distances.box);
 		pack_start (box_positions, distances.box, expand => false);
