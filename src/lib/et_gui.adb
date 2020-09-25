@@ -197,7 +197,7 @@ package body et_gui is
 		build_canvas;
 		gtk_new (canvas);
 
-		init_drawing;
+		--init_drawing;
 		
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 		

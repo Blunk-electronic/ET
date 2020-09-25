@@ -233,6 +233,9 @@ package et_canvas_schematic is
 		context 	: in type_draw_context;
 		cursor		: in type_cursor);
 
+	overriding function get_grid (
+		self : not null access type_view)
+		return type_grid;
 
 	overriding function get_frame (
 		self : not null access type_view)

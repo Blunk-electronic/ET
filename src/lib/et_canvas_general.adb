@@ -401,7 +401,14 @@ package body pac_canvas is
 
 		-- The distance in polar coordinates from cursor to mouse pointer:
 		distance_pol : type_distance_polar;
+
+		-- get the current grid
+		grid : constant type_grid := self.get_grid;
 	begin
+		-- update the grid display:
+		gtk_entry (grid_x.get_child).set_text (trim (to_string (grid.x), left));
+		gtk_entry (grid_y.get_child).set_text (trim (to_string (grid.y), left));
+		
 		-- Get the mouse position:
 		drawing_point := mouse_position (self);
 		-- CS: Assumes a random value if mouse outside the window.

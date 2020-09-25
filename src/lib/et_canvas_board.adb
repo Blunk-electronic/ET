@@ -537,16 +537,6 @@ package body et_canvas_board is
 		
 	end draw_internal;
 
-	procedure init_drawing is
-		use et_canvas_schematic;
-		grid : constant type_grid := element (current_active_module).board.grid;
-		
-		use gtk.gentry;
-	begin
-		-- Show the board grid size in the coordinates display:
-		gtk_entry (grid_x.get_child).set_text (trim (to_string (grid.x), left));
-		gtk_entry (grid_y.get_child).set_text (trim (to_string (grid.y), left));
-	end init_drawing;
 	
 	procedure move_cursor (
 		self		: not null access type_view;
@@ -654,6 +644,14 @@ package body et_canvas_board is
 		cairo.stroke (context.cr);		
 	end draw_cursor;
 
+	function get_grid (
+		self : not null access type_view)
+		return type_grid 
+	is
+		use et_canvas_schematic;
+	begin
+		return element (current_active_module).board.grid;
+	end get_grid;
 
 	function get_frame (
 		self : not null access type_view)

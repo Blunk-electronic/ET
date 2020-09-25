@@ -317,8 +317,8 @@ package pac_canvas is
 		event	: in gdk_event_key) 
 		return boolean;
 
-	-- Updates the coordinates of the cursor and the distances
-	-- displayed left of the canvas:
+	-- Updates the coordinates display (grid, cursor, pointer, distances, ...).
+	-- Called on mouse or cursor movement.
 	procedure update_coordinates_display (
 		self	: not null access type_view'class);
 
@@ -584,6 +584,11 @@ package pac_canvas is
 		context 	: in type_draw_context;
 		cursor		: in type_cursor) is null;
 
+	-- Returns the grid:
+	function get_grid (
+		self : not null access type_view)
+		return type_grid is abstract;
+	
 	-- Returns the frame:
 	function get_frame (
 		self : not null access type_view)

@@ -433,22 +433,12 @@ package body et_canvas_schematic is
 	procedure init_drawing (
 		module	: in et_project.modules.pac_generic_modules.cursor; -- the module to be drawn
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be drawn
-	is
-		-- get the current grid of schematic:
-		grid : constant type_grid := element (module).grid;
-		
-		use gtk.gentry;
-	begin
+	is begin
 		-- set the active module:
 		current_active_module := module;
 		
 		-- set active sheet:
 		current_active_sheet := sheet;
-
-		-- Show the schematic grid size in the coordinates display:
-		gtk_entry (grid_x.get_child).set_text (trim (to_string (grid.x), left));
-		gtk_entry (grid_y.get_child).set_text (trim (to_string (grid.y), left));
-		
 	end init_drawing;
 
 
@@ -600,6 +590,13 @@ package body et_canvas_schematic is
 		cairo.stroke (context.cr);		
 	end draw_cursor;
 
+	function get_grid (
+		self : not null access type_view)
+		return type_grid is
+	begin
+		return element (current_active_module).grid;
+	end get_grid;
+	
 	function get_frame (
 		self : not null access type_view)
 		return et_frames.type_frame is

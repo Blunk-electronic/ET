@@ -170,9 +170,7 @@ package et_canvas_board is
 		context : type_draw_context;
 		area    : type_rectangle);
 
-	-- Sets the grid values to be displayed in the coordinates display:
-	procedure init_drawing;
-	
+
 	overriding procedure move_cursor (
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;  -- relative/absolute
@@ -196,7 +194,10 @@ package et_canvas_board is
 		context 	: in type_draw_context;
 		cursor		: in type_cursor);
 
-
+	overriding function get_grid (
+		self : not null access type_view)
+		return type_grid;
+	
 	overriding function get_frame (
 		self : not null access type_view)
 		return et_frames.type_frame;
