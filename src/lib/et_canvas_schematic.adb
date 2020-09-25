@@ -494,10 +494,12 @@ package body et_canvas_schematic is
 	begin
 		case coordinates is
 			when ABSOLUTE =>
-				cursor.position := type_point (round (position, element (current_active_module).grid));
+				--cursor.position := type_point (round (position, element (current_active_module).grid));
+				cursor.position := type_point (round (position, self.get_grid));
 				
 			when RELATIVE =>
-				cursor.position := type_point (round (cursor.position + position, element (current_active_module).grid));
+				--cursor.position := type_point (round (cursor.position + position, element (current_active_module).grid));
+				cursor.position := type_point (round (cursor.position + position, self.get_grid));
 		end case;
 
 		update_coordinates_display (self);
@@ -511,7 +513,8 @@ package body et_canvas_schematic is
 
 		-- Get the currently active grid:
 		use et_project.modules.pac_generic_modules;
-		grid : constant type_grid := element (current_active_module).grid;
+		--grid : constant type_grid := element (current_active_module).grid;
+		grid : constant type_grid := self.get_grid;
 
 		-- Find the grid point nearest available to the current cursor position:
 		position_snapped : constant type_point := type_point (round (
@@ -593,8 +596,17 @@ package body et_canvas_schematic is
 	function get_grid (
 		self : not null access type_view)
 		return type_grid is
+		-- Get the default grid as defined in the module database:
+		g : type_grid := element (current_active_module).grid;
 	begin
-		return element (current_active_module).grid;
+		-- Scale the grid according to current grid level:
+		case grid_level is
+			when COARSE => scale_grid (g, grid_level_multiplier_coarse);
+			when NORMAL => scale_grid (g, grid_level_multiplier_normal);
+			when FINE	=> scale_grid (g, grid_level_multiplier_fine);
+		end case;
+				
+		return g;
 	end get_grid;
 	
 	function get_frame (

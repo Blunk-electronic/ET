@@ -140,8 +140,12 @@ package pac_canvas is
 	-- grid
 	label_grid				: gtk_label;
 	box_grid				: gtk_vbox;
+	box_grid_level			: gtk_hbox;
 	box_grid_x, box_grid_y	: gtk_hbox;
 
+	label_grid_level		: gtk_label;
+	cbox_grid_level			: gtk_combo_box_text;
+	
 	label_grid_x, label_grid_y	: gtk_label;
 	grid_x, grid_y				: gtk_combo_box_text;
 	
@@ -253,7 +257,7 @@ package pac_canvas is
 	-- They change when the operators zooms or scrolls.
 	--subtype type_view_coordinate is gdouble; -- gdouble is a real floating-point type (see glib.ads)
 	-- CS: experimental narrowing the range of type_view_coordinate:
-	subtype type_view_coordinate is gdouble range -10_000.0 .. 10_000.0;
+	subtype type_view_coordinate is gdouble range -100_000.0 .. 100_000.0;
 	subtype type_view_coordinate_positive is type_view_coordinate range 0.0 .. type_view_coordinate'last;
 
 	-- The point inside the view.
@@ -479,10 +483,21 @@ package pac_canvas is
 -- 		send_signal : boolean := true); -- sends "layout_changed" signal when true
 
 
-	grid_default : constant type_distance_positive := 10.0;
+	
+	-- The grid level is used to switch the grid size (the spacing between the grid points).
+	-- Depending on the grid level, a multiplier will be applied to
+	-- the default grid (as defined in the module database).
+	type type_grid_level is (
+			COARSE,
+			NORMAL,
+			FINE);
 
--- 	context_global : type_draw_context;
--- 	area_global : type_rectangle;
+	grid_level : type_grid_level := NORMAL;
+
+	procedure next_grid_level;
+
+
+
 	
 	-- Redraw either the whole view, or a specific part of it only.
 	-- The transformation matrix has already been set on the context.
@@ -584,7 +599,9 @@ package pac_canvas is
 		context 	: in type_draw_context;
 		cursor		: in type_cursor) is null;
 
-	-- Returns the grid:
+	-- Returns the grid of the current active module
+	-- scaled by a multiplier.
+	-- The multiplier depends on the current grid_level (COARSE,NORMAL,FINE):
 	function get_grid (
 		self : not null access type_view)
 		return type_grid is abstract;

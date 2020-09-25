@@ -74,6 +74,14 @@ package body et_geometry is
 
 	
 	package body generic_pac_geometry is
+
+		procedure scale_grid (
+			grid	: in out type_grid;
+			scale	: in type_distance_positive)
+		is begin
+			grid.x := grid.x * scale;
+			grid.y := grid.y * scale;
+		end scale_grid;
 		
 		function to_string (grid : in type_grid) return string is begin
 			return point_preamble & to_string (grid.x) & axis_separator & to_string (grid.y);

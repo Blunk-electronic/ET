@@ -51,7 +51,8 @@ is
 	-- See procedure draw_frame.
 	start_x, start_y : type_view_coordinate;
 
-	used_grid : constant type_grid := element (current_active_module).grid;
+	--used_grid : constant type_grid := element (current_active_module).grid;
+	used_grid : constant type_grid := self.get_grid;
 begin
 	-- The start point on the x-axis is aligned with the left frame border:
 	start_x := type_view_coordinate (self.frame_bounding_box.x) 

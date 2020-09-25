@@ -54,7 +54,8 @@ is
 	start_x, start_y : type_view_coordinate;
 
 	use et_canvas_schematic;
-	used_grid : constant type_grid := element (current_active_module).board.grid;
+	--used_grid : constant type_grid := element (current_active_module).board.grid;
+	used_grid : constant type_grid := self.get_grid;
 begin
 	-- The start point on the x-axis is aligned with the left frame border
 	-- and shifted right by the board origin x position.

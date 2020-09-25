@@ -270,6 +270,15 @@ package body pac_canvas is
 		gtk_new (label_grid, "grid");
 		pack_start (box_grid, label_grid, expand => false);
 
+		-- level
+		gtk_new_hbox (box_grid_level);
+		set_spacing (box_grid_level, spacing);
+		pack_start (box_grid, box_grid_level, expand => false);
+		gtk_new (label_grid_level, "level");
+		pack_start (box_grid_level, label_grid_level, expand => false);
+		gtk_new_with_entry (cbox_grid_level);
+		pack_start (box_grid_level, cbox_grid_level, expand => false);
+		
 		-- X
 		gtk_new_hbox (box_grid_x);
 		set_spacing (box_grid_x, spacing);
@@ -406,6 +415,7 @@ package body pac_canvas is
 		grid : constant type_grid := self.get_grid;
 	begin
 		-- update the grid display:
+		--gtk_entry (cbox_grid_level.get_child).set_text (
 		gtk_entry (grid_x.get_child).set_text (trim (to_string (grid.x), left));
 		gtk_entry (grid_y.get_child).set_text (trim (to_string (grid.y), left));
 		
@@ -1196,6 +1206,18 @@ package body pac_canvas is
 		return result;
 	end on_scroll_event;
 
+	procedure next_grid_level is
+	begin
+		if grid_level = type_grid_level'last then
+			grid_level := type_grid_level'first;
+		else
+			grid_level := type_grid_level'succ (grid_level);
+		end if;
+		
+		put_line (type_grid_level'image (grid_level));
+
+	end next_grid_level;
+	
 	function on_key_pressed_event (
 		view  : access gtk_widget_record'class;
 		event : gdk_event_key) return boolean is
@@ -1209,15 +1231,29 @@ package body pac_canvas is
 		
 		self    : constant type_view_ptr := type_view_ptr (view);
 
-		key_ctrl : gdk_modifier_type := event.state and control_mask;
-		key : gdk_key_type := event.keyval;
+		key_ctrl	: gdk_modifier_type := event.state and control_mask;
+		--key_shift	: gdk_modifier_type := event.state and shift_mask;
+		key			: gdk_key_type := event.keyval;
 	begin
 -- 		put_line ("key pressed");
 -- 		new_line;
 -- 		put_line (gdk_key_type'image (key));
+--		put_line (gdk_modifier_type'image (key_ctrl));
 
--- 		put_line (gdk_modifier_type'image (key_ctrl));
+		-- If shift left pressed, advance to next grid level:
+		if key = GDK_Shift_L then
 
+			-- advance to next grid level
+			next_grid_level;
+
+			-- Update new grid in coordinates display:
+			self.update_coordinates_display;
+
+			-- Draw the canvas so that the new grid is visible:
+			self.queue_draw;
+			event_handled := true;
+		end if;
+		
 		-- Zoom in/out on ctrl and +/- key:
 		if key_ctrl = control_mask then 
 			case key is

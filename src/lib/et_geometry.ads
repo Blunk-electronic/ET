@@ -112,6 +112,10 @@ package et_geometry is
 			x,y	: type_distance_grid := grid_default;
 		end record;
 
+		procedure scale_grid (
+			grid	: in out type_grid;
+			scale	: in type_distance_positive);			
+		
 		function to_string (grid : in type_grid) return string;
 		
 		type type_point is tagged private;

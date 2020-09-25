@@ -210,7 +210,12 @@ package et_canvas_schematic is
 	procedure set_grid_y (self : access gtk.gentry.gtk_entry_record'class);
 
 
-	
+	-- Multiplier for grid levels:
+	grid_level_multiplier_coarse	: constant type_distance_positive := 10.0;
+	grid_level_multiplier_normal	: constant type_distance_positive := 1.0;
+	grid_level_multiplier_fine		: constant type_distance_positive := 0.1;	
+
+
 	
 	overriding procedure move_cursor (
 		self		: not null access type_view;
