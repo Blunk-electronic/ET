@@ -104,8 +104,9 @@ package body et_gui.schematic_callbacks is
 		-- The majority of commands requires refreshing the schematic and board drawing.
 		
 		-- refresh schematic and board
-		redraw (canvas);
-		et_canvas_board.pac_canvas.redraw (et_canvas_board.pac_canvas.canvas);
+		redraw;
+		--redraw (canvas);
+		--et_canvas_board.pac_canvas.redraw (et_canvas_board.pac_canvas.canvas);
 		
 		-- CS output error message in gui
 
@@ -178,8 +179,9 @@ package body et_gui.schematic_callbacks is
 		-- The majority of commands requires refreshing the schematic and board drawing.
 		
 		-- refresh schematic and board
-		redraw (canvas);
-		et_canvas_board.pac_canvas.redraw (et_canvas_board.pac_canvas.canvas);
+		redraw;
+		--redraw (canvas);
+		--et_canvas_board.pac_canvas.redraw (et_canvas_board.pac_canvas.canvas);
 		
 		-- CS output error message in gui
 
