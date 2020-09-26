@@ -224,6 +224,53 @@ package et_canvas_schematic_nets is
 	-- for clarification.
 	procedure find_segments (point : in type_point);
 
+
+-- NET LABELS
+
+	-- Global information for the GUI when a labe is being
+	-- placed or moved:
+	type type_label is record
+		being_moved			: type_being_moved := false;
+		tool				: type_tool := MOUSE;
+		appearance			: type_net_label_appearance := SIMPLE;
+		finalizing_granted	: type_finalizing_granted := true; -- false; CS
+	end record;
+
+	label : type_label;
+
+
+	procedure clear_proposed_labels;		
+	
+	-- This procedure:
+	-- - Clears list of proposed net labels.
+	-- - resets global variable "label" to its default values
+	procedure reset_label;
+
+	status_place_label : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to place label." 
+		& status_hint_for_abort;	
+	
+	status_place_label_simple : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to place simple label." 
+		& status_hint_for_abort;	
+
+	status_place_label_tag : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to place tag label." 
+		& status_hint_for_abort;	
+
+	procedure finalize_place_segment (
+		destination		: in type_point;
+		log_threshold	: in type_log_level);
+
 	
 end et_canvas_schematic_nets;
 

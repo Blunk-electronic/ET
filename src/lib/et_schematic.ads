@@ -247,7 +247,9 @@ package et_schematic is
 	keyword_direction : constant string := "direction";
 	
 	type type_net_label_base is tagged record
+		-- The position of the label is absolute (relative to drawing origin):
 		position	: et_coordinates.pac_geometry_sch.type_point;
+		
         size		: et_symbols.pac_text.type_text_size := et_symbols.text_size_default;
 		width		: et_symbols.type_text_line_width := et_symbols.type_text_line_width'first;
 	end record;

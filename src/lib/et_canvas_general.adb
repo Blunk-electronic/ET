@@ -1245,35 +1245,34 @@ package body pac_canvas is
 -- 		new_line;
 -- 		put_line (gdk_key_type'image (key));
 --		put_line (gdk_modifier_type'image (key_ctrl));
-
-		-- If shift left pressed, advance to next grid level:
-		if key = GDK_Shift_L then
-
-			-- advance to next grid level
-			next_grid_density;
-
-			-- Update new grid in coordinates display:
-			self.update_coordinates_display;
-
-			-- Draw the canvas so that the new grid is visible:
-			self.queue_draw;
-			event_handled := true;
-		end if;
 		
-		-- Zoom in/out on ctrl and +/- key:
 		if key_ctrl = control_mask then 
+
 			case key is
+				
+				-- Zoom in/out on ctrl and +/- key:
 				when GDK_KP_Add | GDK_PLUS =>
--- 					put_line ("zoom in");
 					zoom_in (
 						point	=> drawing_to_model (self, cursor_main.position),
 						step	=> scale_factor_on_zoom);
 					
 				when GDK_KP_Subtract | GDK_minus =>
--- 					put_line ("zoom out");
 					zoom_out (
 						point	=> drawing_to_model (self, cursor_main.position),
 						step	=> scale_factor_on_zoom);
+
+				-- Advance to next grid density on ctrl and shift
+				when GDK_Shift_L | GDK_Shift_R => -- CS: ALT key ?
+
+					-- advance to next grid level
+					next_grid_density;
+
+					-- Update new grid in coordinates display:
+					self.update_coordinates_display;
+
+					-- Draw the canvas so that the new grid is visible:
+					self.queue_draw;
+					event_handled := true;
 					
 				when others => null;
 			end case;

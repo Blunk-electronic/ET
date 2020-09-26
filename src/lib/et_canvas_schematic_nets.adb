@@ -621,6 +621,7 @@ package body et_canvas_schematic_nets is
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
+				-- CS Use a procedure drag_segment that takes a cursor to the module instead.
 
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -676,6 +677,131 @@ package body et_canvas_schematic_nets is
 		
 		log_indentation_down;
 	end find_segments;
+
+
+	
+-- NET LABLES
+
+	procedure clear_proposed_labels is begin
+		null; -- CS
+	end clear_proposed_labels;
+		
+	
+	procedure reset_label is begin
+		label := (others => <>);
+		clear_proposed_labels;
+		clear_proposed_segments;
+	end reset_label;
+	
+
+	procedure place_label (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_selected_segment;
+		destination		: in type_point; -- x/y
+		appearance 		: in type_net_label_appearance; -- simple/tag
+		log_threshold	: in type_log_level) is
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+
+				procedure query_segments (strand : in out type_strand) is
+
+					procedure attach_label (segment : in out type_net_segment) is 
+						use type_net_labels;
+						label : type_net_label_base;
+					begin
+						-- The label position is absolute:
+						label.position := destination;
+
+						case appearance is
+							when SIMPLE =>
+								append (
+									container	=> segment.labels,
+									new_item	=> (label with
+										appearance		=> SIMPLE,
+										rotation_simple	=> pac_text.snap (zero_rotation)) -- CS
+									   );
+								
+							when TAG =>
+								-- A tag label can be attached to a stub only.
+								null; -- CS
+								
+						end case;
+
+					end attach_label;
+					
+				begin
+					update_element (
+						container	=> strand.segments,
+						position	=> segment.segment,
+						process		=> attach_label'access);
+
+				end query_segments;
+				
+			begin -- query_strands
+				update_element (
+					container	=> net.strands,
+					position	=> segment.strand,
+					process		=> query_segments'access);
+
+			end query_strands;
+			
+		begin -- query_nets
+			update_element (
+				container	=> module.nets,
+				position	=> segment.net,
+				process		=> query_strands'access);
+			
+		end query_nets;
+		
+	begin
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_nets'access);
+	end place_label;
+	
+	procedure finalize_place_segment (
+		destination		: in type_point;
+		log_threshold	: in type_log_level) is
+	begin
+		log (text => "finalizing place net segment ...", level => log_threshold);
+		log_indentation_up;
+
+		-- Finalize only if procedure et_canvas_schematic.draw_nets has
+		-- granted permission:
+		if label.finalizing_granted then
+			
+			if selected_segment /= pac_proposed_segments.no_element then
+
+				place_label (
+					module_cursor		=> current_active_module,
+					segment				=> element (selected_segment),
+					destination			=> destination,
+					appearance			=> label.appearance,
+					log_threshold		=> log_threshold + 1);
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+
+		else
+			log (text => "not granted", level => log_threshold);
+		end if;
+		
+		log_indentation_down;
+		
+		set_status (status_place_label);
+		
+		reset_label;
+
+	end finalize_place_segment;
+
 	
 end et_canvas_schematic_nets;
 

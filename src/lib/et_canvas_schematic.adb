@@ -1127,6 +1127,67 @@ package body et_canvas_schematic is
 			end case;
 		end move;
 
+		procedure place is 
+			use et_schematic;
+		begin
+			case key is
+				-- EVALUATE KEY FOR NOUN:
+				when GDK_LC_l =>
+					noun := NOUN_LABEL;
+					label.appearance := SIMPLE;
+					set_status (et_canvas_schematic_nets.status_place_label_simple);
+
+				when GDK_L =>
+					noun := NOUN_LABEL;
+					label.appearance := TAG;
+					set_status (et_canvas_schematic_nets.status_place_label_tag);
+
+				-- If space pressed, then the operator wishes to operate via keyboard:	
+				when GDK_Space =>
+					case noun is
+
+						when NOUN_LABEL =>
+							if not label.being_moved then
+								
+								-- Set the tool being used for placing the label:
+								label.tool := KEYBOARD;
+								
+								if not clarification_pending then
+									find_segments (cursor_main.position);
+								else
+									label.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally place the label at the current
+								-- cursor position:
+								et_canvas_schematic_nets.finalize_place_segment (
+									destination		=> cursor_main.position,
+									log_threshold	=> log_threshold + 1);
+							end if;
+							
+						when others => null;
+							
+					end case;
+
+				-- If page down pressed, then the operator is clarifying:
+				when GDK_page_down =>
+					case noun is
+
+						when NOUN_LABEL => 
+							if clarification_pending then
+								clarify_net_segment;
+							end if;
+
+						when others => null;
+							
+					end case;
+					
+				when others => status_noun_invalid;
+			end case;
+		end place;
+		
 		procedure rotate is begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
@@ -1266,6 +1327,10 @@ package body et_canvas_schematic is
 							verb := VERB_MOVE;
 							status_enter_noun;
 
+						when GDK_LC_p =>
+							verb := VERB_PLACE;
+							status_enter_noun;
+							
 						when GDK_LC_r =>
 							verb := VERB_ROTATE;
 							status_enter_noun;
@@ -1288,6 +1353,7 @@ package body et_canvas_schematic is
 						when VERB_DRAG		=> drag;
 						when VERB_DRAW		=> draw;
 						when VERB_MOVE		=> move;
+						when VERB_PLACE		=> place;
 						when VERB_ROTATE	=> rotate;
 
 						when others => null; -- CS

@@ -872,6 +872,8 @@ package body et_schematic_ops.nets is
 		label_cursor : type_net_labels.cursor := segment_after.labels.first;
 
 		procedure move (l : in out type_net_label) is begin
+			-- The position of a net label is absolute.
+			
 			case l.appearance is
 				when TAG => 
 					-- Moving the tag labels is quite simple because
@@ -2500,7 +2502,6 @@ package body et_schematic_ops.nets is
 	end place_junction;
 	
 	procedure place_net_label (
-	-- Places a label next to a segment at position.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		segment_position: in et_coordinates.type_position; -- sheet/x/y
 		label_position	: in type_point := origin; -- x/y
@@ -2597,7 +2598,6 @@ package body et_schematic_ops.nets is
 						if on_line (
 							point 	=> type_point (segment_position),
 							line	=> element (segment_cursor)) then
-
 							
 							update_element (
 								container	=> strand.segments,

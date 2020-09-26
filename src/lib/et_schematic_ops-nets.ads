@@ -196,10 +196,17 @@ package et_schematic_ops.nets is
 	procedure place_net_label (
 	-- Places a label next to a segment at position.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+
+		-- The reference point at the segment:
 		segment_position: in et_coordinates.type_position; -- sheet/x/y
+
+		-- The position of the label relative to segment_position:
 		label_position	: in type_point := origin; -- x/y
+		
 		rotation		: in et_coordinates.type_rotation := zero_rotation; -- 0, 90, 180. Relevant for simple labels only.
 		appearance 		: in type_net_label_appearance; -- simple/tag label		
+
+		-- The direction is relevant for tag labels only:
 		direction		: in et_schematic.type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level);
 
