@@ -39,6 +39,7 @@ with ada.text_io;					use ada.text_io;
 with ada.strings;					use ada.strings;
 with et_geometry;					use et_geometry;
 with et_canvas_schematic;			use et_canvas_schematic;
+with et_modes.schematic;
 
 package body et_canvas_schematic_nets is
 
@@ -642,6 +643,7 @@ package body et_canvas_schematic_nets is
 	
 	procedure find_segments (point : in type_point) is 
 		use et_schematic_ops.nets;
+		use et_modes.schematic;
 	begin
 		log (text => "locating net segments ...", level => log_threshold);
 		log_indentation_up;
@@ -653,26 +655,63 @@ package body et_canvas_schematic_nets is
 			catch_zone		=> catch_zone_default, -- CS should depend on current scale
 			log_threshold	=> log_threshold + 1);
 
-		-- evaluate the number of segments found here:
-		case length (proposed_segments) is
-			when 0 =>
-				reset_request_clarification;
-				reset_segment;
+		-- Since this procedure is called by several schematic operations,
+		-- we must test the current noun.
+		-- CS: It might be important in the future to test the current verb too.
+		
+		case noun is
+			when NOUN_NET =>
 				
-			when 1 =>
-				segment.being_moved := true;
-				selected_segment := proposed_segments.first;
+				-- evaluate the number of segments found here:
+				case length (proposed_segments) is
+					when 0 =>
+						reset_request_clarification;
+						reset_segment;
+						
+					when 1 =>
+						segment.being_moved := true;
+						selected_segment := proposed_segments.first;
 
-				reset_request_clarification;
+						reset_request_clarification;
 
-				set_status (status_move);
+						set_status (status_move);
+						
+					when others =>
+						set_request_clarification;
+
+						-- preselect the first segment
+						selected_segment := proposed_segments.first;
+				end case;
+
 				
-			when others =>
-				--log (text => "many objects", level => log_threshold + 2);
-				set_request_clarification;
+			when NOUN_LABEL =>
 
-				-- preselect the first segment
-				selected_segment := proposed_segments.first;
+				-- evaluate the number of segments found here:
+				case length (proposed_segments) is
+					when 0 =>
+						reset_request_clarification;
+						reset_label;
+						
+					when 1 =>
+						label.being_moved := true;
+						selected_segment := proposed_segments.first;
+
+						reset_request_clarification;
+
+						case label.appearance is
+							when SIMPLE	=> set_status (status_place_label_simple);
+							when TAG	=> set_status (status_place_label_tag);
+						end case;
+						
+					when others =>
+						set_request_clarification;
+
+						-- preselect the first segment
+						selected_segment := proposed_segments.first;
+				end case;
+
+
+			when others => null;
 		end case;
 		
 		log_indentation_down;

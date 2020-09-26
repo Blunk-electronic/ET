@@ -731,13 +731,10 @@ package body et_canvas_schematic is
 				-- EVALUATE KEY FOR NOUN:
 				when GDK_LC_n =>
 					noun := NOUN_NET;
-
 					set_status (et_canvas_schematic_nets.status_drag);
-
 
 				when GDK_LC_u =>
 					noun := NOUN_UNIT;
-
 					set_status (et_canvas_schematic_units.status_drag);
 
 
@@ -1384,13 +1381,18 @@ package body et_canvas_schematic is
 					when others => null;
 				end case;
 
-			when VERB_DRAG | VERB_MOVE =>
+			when VERB_DRAG | VERB_MOVE | VERB_PLACE =>
 				case noun is
+					when NOUN_LABEL =>
+						if label.being_moved then
+							redraw;
+						end if;
+						
 					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
 						if placeholder.being_moved then
 							redraw;
 						end if;
-					
+
 					when NOUN_NET =>
 						if segment.being_moved then
 							redraw;
@@ -1679,6 +1681,36 @@ package body et_canvas_schematic is
 						when others => null;							
 					end case;
 
+				when VERB_PLACE =>
+
+					case noun is
+
+						when NOUN_LABEL =>
+							if not label.being_moved then
+								
+								-- Set the tool being used for placing the label:
+								label.tool := MOUSE;
+								
+								if not clarification_pending then
+									find_segments (point);
+								else
+									label.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally place the label at the current 
+								-- pointer position:
+								et_canvas_schematic_nets.finalize_place_segment (
+									destination		=> snap_to_grid (self, point),
+									log_threshold	=> log_threshold + 1);
+							end if;
+							
+						when others => null;
+							
+					end case;
+
+					
 				when VERB_ROTATE =>
 
 					case noun is
@@ -1789,11 +1821,21 @@ package body et_canvas_schematic is
 							if clarification_pending then
 								clarify_placeholder;
 							end if;
-
 							
 						when others => null;							
 					end case;
 
+				when VERB_PLACE =>
+					case noun is
+						
+						when NOUN_LABEL => 
+							if clarification_pending then
+								clarify_net_segment;
+							end if;
+
+						when others => null;
+					end case;
+					
 				when VERB_ROTATE =>
 					case noun is
 						when NOUN_NAME | NOUN_VALUE | NOUN_PURPOSE => 
