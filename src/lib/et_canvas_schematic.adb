@@ -600,10 +600,10 @@ package body et_canvas_schematic is
 		g : type_grid := element (current_active_module).grid;
 	begin
 		-- Scale the grid according to current grid level:
-		case grid_level is
-			when COARSE => scale_grid (g, grid_level_multiplier_coarse);
-			when NORMAL => scale_grid (g, grid_level_multiplier_normal);
-			when FINE	=> scale_grid (g, grid_level_multiplier_fine);
+		case grid_density is
+			when COARSE => scale_grid (g, grid_density_multiplier_coarse);
+			when NORMAL => scale_grid (g, grid_density_multiplier_normal);
+			when FINE	=> scale_grid (g, grid_density_multiplier_fine);
 		end case;
 				
 		return g;

@@ -140,11 +140,11 @@ package pac_canvas is
 	-- grid
 	label_grid				: gtk_label;
 	box_grid				: gtk_vbox;
-	box_grid_level			: gtk_hbox;
+	box_grid_density		: gtk_hbox;
 	box_grid_x, box_grid_y	: gtk_hbox;
 
-	label_grid_level		: gtk_label;
-	cbox_grid_level			: gtk_combo_box_text;
+	label_grid_density		: gtk_label;
+	cbox_grid_density		: gtk_combo_box_text;
 	
 	label_grid_x, label_grid_y	: gtk_label;
 	grid_x, grid_y				: gtk_combo_box_text;
@@ -484,17 +484,20 @@ package pac_canvas is
 
 
 	
-	-- The grid level is used to switch the grid size (the spacing between the grid points).
-	-- Depending on the grid level, a multiplier will be applied to
+	-- The grid density is used to switch the grid size (the spacing between the grid points).
+	-- Depending on the grid density, a multiplier will be applied to
 	-- the default grid (as defined in the module database).
-	type type_grid_level is (
+	type type_grid_density is (
 			COARSE,
 			NORMAL,
 			FINE);
 
-	grid_level : type_grid_level := NORMAL;
+	function to_string (density : in type_grid_density) return string;
+	
+	grid_density_default : constant type_grid_density := NORMAL;
+	grid_density : type_grid_density := NORMAL;
 
-	procedure next_grid_level;
+	procedure next_grid_density;
 
 
 
@@ -601,7 +604,7 @@ package pac_canvas is
 
 	-- Returns the grid of the current active module
 	-- scaled by a multiplier.
-	-- The multiplier depends on the current grid_level (COARSE,NORMAL,FINE):
+	-- The multiplier depends on the current grid_density (COARSE,NORMAL,FINE):
 	function get_grid (
 		self : not null access type_view)
 		return type_grid is abstract;
