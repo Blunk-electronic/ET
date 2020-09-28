@@ -102,14 +102,6 @@ package body et_canvas_schematic is
 		return round_to_string (point, element (current_active_module).grid);
 	end;
 
-	function snap_to_grid (
-		self	: not null access type_view;
-		point	: in type_point)
-		return type_point is
-	begin
-		return type_point (round (point, element (current_active_module).grid));
-	end snap_to_grid;
-
 
 	
 	function model_to_drawing (

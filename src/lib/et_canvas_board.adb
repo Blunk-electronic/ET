@@ -125,16 +125,6 @@ package body et_canvas_board is
 		return p;
 	end;
 
-	function snap_to_grid (
-		self	: not null access type_view;
-		point	: in type_point)
-		return type_point is
-		use et_canvas_schematic;
-	begin
-		return type_point (round (point, element (current_active_module).board.grid));
-	end snap_to_grid;
-
-	
 	function drawing_to_model (
 		self			: not null access type_view;
 		drawing_point : in type_point)	

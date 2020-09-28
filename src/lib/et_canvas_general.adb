@@ -1560,6 +1560,16 @@ package body pac_canvas is
 		return type_view_coordinate (f * g);
 	end;
 
+
+	function snap_to_grid (
+		self	: not null access type_view'class;
+		point	: in type_point)
+		return type_point is
+	begin
+		return type_point (round (point, self.get_grid));
+	end snap_to_grid;
+
+	
 	procedure draw_grid (
 		context	: in type_draw_context;
 		area	: in type_rectangle; -- the area of the drawing to be displayed

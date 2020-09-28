@@ -355,12 +355,6 @@ package pac_canvas is
 		point	: in type_point) 
 		return string is abstract;
 
-	-- Returns the given point x/y rounded to the current grid.
-	function snap_to_grid (
-		self	: not null access type_view;
-		point	: in type_point) 
-		return type_point is abstract;
-	
 	procedure viewport_changed (self : not null access type_view'class);
 
 -- 	function on_layout_changed (
@@ -538,6 +532,14 @@ package pac_canvas is
 	-- The grid density threshold above which the grid will no longer be drawn.
 	-- The grid density equals 1/(grid_size * scale).
 	threshold_grid_density : constant type_view_coordinate := 0.05;
+
+	
+	-- Returns the given point x/y rounded to the current grid.
+	function snap_to_grid (
+		self	: not null access type_view'class;
+		point	: in type_point) 
+		return type_point;
+
 	
 	-- This procedure draws a grid on the given context for the given
 	-- area of the drawing. If the grid density in x AND y is below 

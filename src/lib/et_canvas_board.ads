@@ -128,12 +128,6 @@ package et_canvas_board is
 		self	: not null access type_view;
 		point	: in type_point) 
 		return string;
-
-	overriding function snap_to_grid (
-		self	: not null access type_view;
-		point	: in type_point) 
-		return type_point;
-	
 	
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;
