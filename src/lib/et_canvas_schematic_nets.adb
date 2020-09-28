@@ -115,6 +115,12 @@ package body et_canvas_schematic_nets is
 		
 	end delete_selected_segment;
 
+
+	function selected_net return type_net_name.bounded_string is
+		ss : constant type_selected_segment := element (selected_segment);
+	begin
+		return key (ss.net);
+	end selected_net;
 	
 	procedure clear_proposed_segments is begin
 		clear (proposed_segments);
@@ -721,15 +727,18 @@ package body et_canvas_schematic_nets is
 	
 -- NET LABLES
 
-	procedure clear_proposed_labels is begin
-		null; -- CS
-	end clear_proposed_labels;
+	--procedure clear_proposed_labels is begin
+		--proposed_labels.clear;
+		--clear_proposed_segments;
+	--end clear_proposed_labels;
 		
 	
 	procedure reset_label is begin
 		label := (others => <>);
-		clear_proposed_labels;
+		--clear_proposed_labels;
+
 		clear_proposed_segments;
+		proposed_labels.clear;
 	end reset_label;
 	
 
@@ -805,16 +814,19 @@ package body et_canvas_schematic_nets is
 			process		=> query_nets'access);
 	end place_label;
 	
-	procedure finalize_place_segment (
+	procedure finalize_place_label (
 		destination		: in type_point;
 		log_threshold	: in type_log_level) is
 	begin
-		log (text => "finalizing place net segment ...", level => log_threshold);
+		log (text => "finalizing place net label ...", level => log_threshold);
 		log_indentation_up;
 
-		-- Finalize only if procedure et_canvas_schematic.draw_nets has
-		-- granted permission:
-		if label.finalizing_granted then
+		-- A tag label can be placed once permission is granted by 
+		-- procedure et_canvas_schematic.draw_nets.
+		-- A simple label does not require permission and can be placed anywhere:
+		if (label.appearance = TAG and boolean (label.finalizing_granted))
+		or label.appearance = SIMPLE 
+		then
 			
 			if selected_segment /= pac_proposed_segments.no_element then
 
@@ -839,7 +851,7 @@ package body et_canvas_schematic_nets is
 		
 		reset_label;
 
-	end finalize_place_segment;
+	end finalize_place_label;
 
 	
 end et_canvas_schematic_nets;

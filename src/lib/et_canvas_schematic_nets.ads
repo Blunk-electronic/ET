@@ -82,6 +82,9 @@ package et_canvas_schematic_nets is
 	proposed_segments	: pac_proposed_segments.list;
 	selected_segment	: pac_proposed_segments.cursor;
 
+	-- Returns the name of the net of the selected_segment:
+	function selected_net return type_net_name.bounded_string;
+	
 	procedure clear_proposed_segments;
 	
 	-- Searches the module for an anonymous net with the lowest index available.
@@ -227,19 +230,25 @@ package et_canvas_schematic_nets is
 
 -- NET LABELS
 
-	-- Global information for the GUI when a labe is being
+	-- Global information for the GUI when a label is being
 	-- placed or moved:
 	type type_label is record
 		being_moved			: type_being_moved := false;
 		tool				: type_tool := MOUSE;
 		appearance			: type_net_label_appearance := SIMPLE;
-		finalizing_granted	: type_finalizing_granted := true; -- false; CS
+
+		-- If we are dealing with a TAG label, then a permission
+		-- is required to do the final placement.
+		-- For a simple label this flag has no meaning because
+		-- a simple net label can be placed anywhere.
+		finalizing_granted	: type_finalizing_granted := false;
 	end record;
 
 	label : type_label;
 
+	proposed_labels : type_net_labels.list;
 
-	procedure clear_proposed_labels;		
+	--procedure clear_proposed_labels;		
 	
 	-- This procedure:
 	-- - Clears list of proposed net labels.
@@ -267,7 +276,7 @@ package et_canvas_schematic_nets is
 		& "to place tag label." 
 		& status_hint_for_abort;	
 
-	procedure finalize_place_segment (
+	procedure finalize_place_label (
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
 

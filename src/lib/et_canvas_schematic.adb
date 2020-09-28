@@ -1151,7 +1151,7 @@ package body et_canvas_schematic is
 							else
 								-- Finally place the label at the current
 								-- cursor position:
-								et_canvas_schematic_nets.finalize_place_segment (
+								et_canvas_schematic_nets.finalize_place_label (
 									destination		=> cursor_main.position,
 									log_threshold	=> log_threshold + 1);
 							end if;
@@ -1281,7 +1281,10 @@ package body et_canvas_schematic is
 			reset_segments_being_dragged; -- after dragging a unit
 			reset_unit; -- after moving a unit
 
+			reset_label; -- after placing a label
+			
 			reset_placeholder; -- after moving a placeholder
+			
 			status_enter_verb;
 		else	
 			case expect_entry is
@@ -1693,7 +1696,7 @@ package body et_canvas_schematic is
 							else
 								-- Finally place the label at the current 
 								-- pointer position:
-								et_canvas_schematic_nets.finalize_place_segment (
+								et_canvas_schematic_nets.finalize_place_label (
 									destination		=> snap_to_grid (self, point),
 									log_threshold	=> log_threshold + 1);
 							end if;

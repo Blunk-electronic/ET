@@ -125,7 +125,7 @@ procedure draw_nets (
 		use et_text;
 		use pac_text;
 
-		procedure draw (l : in type_net_labels.cursor) is begin
+		procedure draw_fixed (l : in type_net_labels.cursor) is begin
 			case element (l).appearance is
 				when SIMPLE =>
 					draw_text (
@@ -149,11 +149,76 @@ procedure draw_nets (
 					draw_tag_label (self, in_area, context, key (n), element (l));
 
 			end case;
-		end draw;
+		end draw_fixed;
 		
-	begin
-		iterate (s.labels, draw'access);
+	begin -- draw_labels
+		
+		iterate (s.labels, draw_fixed'access);
+
 	end draw_labels;
+
+	-- Draws the net label being moved. If no net label
+	-- is being moved, nothing happens here:
+	procedure draw_label_being_moved is
+		use et_text;
+		use pac_text;
+		
+		l : type_net_label (label.appearance);
+	begin -- draw_label_being_moved
+		case verb is
+			when VERB_PLACE =>
+				if label.being_moved then
+
+					case label.tool is
+						when KEYBOARD	=> l.position := cursor_main.position;
+						when MOUSE		=> l.position := self.snap_to_grid (self.mouse_position);
+					end case;
+					
+					case label.appearance is
+						when SIMPLE =>
+
+							draw_text (
+								area		=> in_area,
+								context		=> context,
+								content		=> to_content (to_string (selected_net)),
+								size		=> l.size,
+								font		=> net_label_font,
+								position	=> l.position,
+								origin		=> true, -- CS must be false on export to image
+								
+								-- Text rotation about its anchor point.
+								-- This is documentational text.
+								-- It is readable from the front or the right.
+								rotation	=> to_rotation (l.rotation_simple),
+								alignment	=> (LEFT, BOTTOM),
+								height		=> self.frame_height);
+							
+
+						when TAG =>
+							draw_tag_label (self, in_area, context, selected_net, l);
+
+							declare
+								use et_schematic_ops.nets;
+								s : constant type_stub := query_stub (
+										module_name		=> key (current_active_module),
+										net_name		=> selected_net,
+										position		=> to_position (type_point (l.position), current_active_sheet),
+										log_threshold	=> log_threshold + 1);
+							begin
+								if s.is_stub then
+									label.finalizing_granted := true;
+								end if;
+							end;
+							
+					end case;
+				end if;
+
+			when others => null;
+		end case;
+
+	end draw_label_being_moved;
+
+	
 	
 	-- Returns true if the given segment is selected.
 	-- Returns false if there are no proposed segments or
@@ -573,6 +638,10 @@ procedure draw_nets (
 								draw_fixed_segment (segment_cursor);
 
 								draw_labels (net_cursor, element (segment_cursor));
+
+								-- Draw the net label being moved. If no net label
+								-- is being moved, nothing happens here:
+								draw_label_being_moved;
 							end if;
 						end if;
 						

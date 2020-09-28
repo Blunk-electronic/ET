@@ -2811,8 +2811,7 @@ package body et_schematic_ops.nets is
 		use type_nets;
 		use type_strands;
 
-		-- Query ports at the given position.
-		ports : constant type_ports := ports_at_place (module_name, position, log_threshold + 1);
+		ports : type_ports;
 		
 		stub_found : boolean := false;
 		direction : type_stub_direction;
@@ -2889,7 +2888,11 @@ package body et_schematic_ops.nets is
 		end query_strands;
 
 	begin -- query_stub
+		log (text => "querying stub at" & to_string (position), level => log_threshold);
 
+		-- Query ports at the given position.
+		ports := ports_at_place (module_name, position, log_threshold + 1);
+		
 		-- If there are no ports then examine the net further.
 		-- If there are devices, submodule or netchanger ports, then the given position
 		-- is definitely not a stub.
@@ -2916,7 +2919,7 @@ package body et_schematic_ops.nets is
 		else -- means there are ports at the given position
 			return (is_stub => false);
 		end if;
-		
+
 	end query_stub;
 	
 end et_schematic_ops.nets;
