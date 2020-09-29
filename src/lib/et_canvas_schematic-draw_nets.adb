@@ -197,6 +197,11 @@ procedure draw_nets (
 						when TAG =>
 							draw_tag_label (self, in_area, context, selected_net, l);
 
+							-- The current position must be tested whether it qualifies
+							-- for a tag label. If the position is suitable then the
+							-- flag label.finalizing_granted is set so that 
+							-- procedure finalize_place_label is allowed to do the final
+							-- placement of the label:
 							declare
 								use et_schematic_ops.nets;
 								s : constant type_stub := query_stub (
@@ -204,9 +209,15 @@ procedure draw_nets (
 										net_name		=> selected_net,
 										position		=> to_position (type_point (l.position), current_active_sheet),
 										log_threshold	=> log_threshold + 1);
+
+									-- CS use a function query_stub that take a module cursor and
+									-- a net cursor instead.
+								
 							begin
 								if s.is_stub then
 									label.finalizing_granted := true;
+								else
+									label.finalizing_granted := false;
 								end if;
 							end;
 							

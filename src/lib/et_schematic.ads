@@ -240,7 +240,9 @@ package et_schematic is
 	function to_string (appearance : in type_net_label_appearance) return string;
 	function to_appearance (appearance : in string) return type_net_label_appearance;
 	
-	type type_net_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE); -- POWER ?
+	type type_net_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE); -- CS POWER ?
+	net_label_direction_default : constant type_net_label_direction := PASSIVE;
+	
 	function to_string (direction : in type_net_label_direction) return string;
 	function to_direction (direction : in string) return type_net_label_direction;
 
@@ -257,7 +259,7 @@ package et_schematic is
 	type type_net_label (appearance : type_net_label_appearance) is new type_net_label_base with record
 		case appearance is
 			when TAG => 
-				direction		: type_net_label_direction;
+				direction		: type_net_label_direction := net_label_direction_default;
 
 				-- The tag label can be rotated arbitrary about the position:
 				--rotation_tag	: et_coordinates.type_rotation := et_coordinates.pac_geometry_sch.zero_rotation;

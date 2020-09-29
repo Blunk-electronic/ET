@@ -193,8 +193,8 @@ package et_schematic_ops.nets is
 -- 		log_threshold	: in type_log_level);
 
 	
-	procedure place_net_label (
 	-- Places a label next to a segment at position.
+	procedure place_net_label (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
 		-- The reference point at the segment:
@@ -202,8 +202,14 @@ package et_schematic_ops.nets is
 
 		-- The position of the label relative to segment_position:
 		label_position	: in type_point := origin; -- x/y
+
+		-- The rotation is relevant for simple labels only. The label will always be placed
+		-- so that is is readable from the front or from the right.
+		-- Whatever angle you provide here, the final roation will be either 0 or 90 degrees.
+		-- If the labe is a tag then this parameter has no meaning. The rotation of a tag
+		-- label will be automatically determined by the direction of the stub it will be attached to.
+		rotation		: in et_coordinates.type_rotation := zero_rotation;
 		
-		rotation		: in et_coordinates.type_rotation := zero_rotation; -- 0, 90, 180. Relevant for simple labels only.
 		appearance 		: in type_net_label_appearance; -- simple/tag label		
 
 		-- The direction is relevant for tag labels only:
@@ -224,7 +230,9 @@ package et_schematic_ops.nets is
 		position		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level)
 		return type_stub;
-		
+
+	-- CS write a function query_stub that take a module cursor and a net cursor instead.
+	
 end et_schematic_ops.nets;
 
 -- Soli Deo Gloria

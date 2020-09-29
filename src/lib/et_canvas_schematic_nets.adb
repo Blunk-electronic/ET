@@ -777,8 +777,29 @@ package body et_canvas_schematic_nets is
 								
 							when TAG =>
 								-- A tag label can be attached to a stub only.
-								null; -- CS
-								
+								declare
+									s : constant type_stub := query_stub (
+										module_name		=> key (module_cursor),
+										net_name		=> net_name,
+										position		=> to_position (type_point (destination), current_active_sheet),
+										log_threshold	=> log_threshold + 1);
+
+									-- CS use a function query_stub that take a module cursor and
+									-- a net cursor instead.
+								begin
+									append (
+										container	=> segment.labels,
+										new_item	=> (label with 
+											appearance		=> TAG,
+
+											-- derive the label rotation from the stub direction:
+											rotation_tag	=> to_label_rotation (s.direction),
+														
+											--direction		=> direction) -- the given signal direction
+											others			=> <>)
+										   );
+										
+								end;
 						end case;
 
 					end attach_label;
