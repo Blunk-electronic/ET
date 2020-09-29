@@ -195,7 +195,6 @@ procedure draw_nets (
 							
 
 						when TAG =>
-							draw_tag_label (self, in_area, context, selected_net, l);
 
 							-- The current position must be tested whether it qualifies
 							-- for a tag label. If the position is suitable then the
@@ -212,13 +211,19 @@ procedure draw_nets (
 
 									-- CS use a function query_stub that take a module cursor and
 									-- a net cursor instead.
-								
+
 							begin
 								if s.is_stub then
+									-- Set the rotation of the label according to the 
+									-- direction of the stub:
+									l.rotation_tag := to_label_rotation (s.direction);
+
 									label.finalizing_granted := true;
 								else
 									label.finalizing_granted := false;
 								end if;
+
+								draw_tag_label (self, in_area, context, selected_net, l);
 							end;
 							
 					end case;
