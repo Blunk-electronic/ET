@@ -664,26 +664,28 @@ package body et_canvas_schematic is
 		procedure delete is begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
+				when GDK_LC_l =>
+					noun := NOUN_LABEL;
+					set_status (et_canvas_schematic_nets.status_delete_label);
+				
 				when GDK_LC_u =>
-					noun := NOUN_UNIT;
-					
+					noun := NOUN_UNIT;					
 					set_status (et_canvas_schematic_units.status_delete);
 					
 				when GDK_LC_n =>
-					noun := NOUN_NET;
-					
+					noun := NOUN_NET;					
 					set_status (et_canvas_schematic_nets.status_delete);
 
 				-- If space pressed, then the operator wishes to operate via keyboard:	
 				when GDK_Space =>
 					case noun is
-						when NOUN_UNIT =>
+						when NOUN_LABEL =>
 							if not clarification_pending then
-								delete_unit (cursor_main.position);
+								delete_label (cursor_main.position);
 							else
-								delete_selected_unit;
+								delete_selected_label;
 							end if;
-
+						
 						when NOUN_NET => 
 							if not clarification_pending then
 								delete_net_segment (cursor_main.position);
@@ -691,6 +693,14 @@ package body et_canvas_schematic is
 								delete_selected_net_segment;
 							end if;
 
+						when NOUN_UNIT =>
+							if not clarification_pending then
+								delete_unit (cursor_main.position);
+							else
+								delete_selected_unit;
+							end if;
+
+							
 						when others =>
 							null;
 							
@@ -699,14 +709,19 @@ package body et_canvas_schematic is
 				-- If page down pressed, then the operator is clarifying:
 				when GDK_page_down =>
 					case noun is
-						when NOUN_UNIT =>
+						when NOUN_LABEL => 
 							if clarification_pending then
-								clarify_unit;
+								clarify_label;
 							end if;
 
 						when NOUN_NET => 
 							if clarification_pending then
 								clarify_net_segment;
+							end if;
+
+						when NOUN_UNIT =>
+							if clarification_pending then
+								clarify_unit;
 							end if;
 
 						when others =>

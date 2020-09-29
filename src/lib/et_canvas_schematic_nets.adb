@@ -729,7 +729,6 @@ package body et_canvas_schematic_nets is
 
 	--procedure clear_proposed_labels is begin
 		--proposed_labels.clear;
-		--clear_proposed_segments;
 	--end clear_proposed_labels;
 		
 	
@@ -741,7 +740,161 @@ package body et_canvas_schematic_nets is
 		proposed_labels.clear;
 	end reset_label;
 	
+	function collect_labels (
+		module			: in pac_generic_modules.cursor;
+		place			: in et_coordinates.type_position; -- sheet/x/y
+		catch_zone		: in type_catch_zone; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_proposed_labels.list
+	is
+		result : pac_proposed_labels.list;
 
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			net_cursor : type_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in type_net)
+			is
+				strand_cursor : type_strands.cursor := net.strands.first;
+
+				procedure query_segments (strand : in type_strand) is
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+					procedure query_labels (segment : in type_net_segment) is
+						use type_net_labels;
+						label_cursor : type_net_labels.cursor := segment.labels.first;
+						d : type_distance;
+					begin
+						while label_cursor /= type_net_labels.no_element loop
+							d := distance_total (
+								point_one	=> element (label_cursor).position,
+								point_two	=> type_point (place));
+
+							-- If the label position is within the catch zone, append
+							-- the current net, stand, segment and label cursor to the result:
+							if d <= catch_zone then
+								result.append ((net_cursor, strand_cursor, segment_cursor, label_cursor));
+							end if;
+							
+							next (label_cursor);
+						end loop;
+					end query_labels;
+					
+				begin -- query_segments
+					log (text => "probing strand at" & to_string (strand.position),
+						 level => log_threshold + 1);
+					
+					log_indentation_up;
+					
+					while segment_cursor /= type_net_segments.no_element loop
+						log (text => "probing segment" & to_string (element (segment_cursor)),
+							level => log_threshold + 1);
+
+						query_element (segment_cursor, query_labels'access);
+
+						next (segment_cursor);
+					end loop;
+
+					log_indentation_down;
+				end query_segments;
+				
+			begin -- query_strands
+				while strand_cursor /= type_strands.no_element loop
+
+					-- We are interested in strands on the given sheet only:
+					if sheet (element (strand_cursor).position) = sheet (place) then
+						query_element (strand_cursor, query_segments'access);
+					end if;
+
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+			
+		begin -- query_nets
+			while net_cursor /= type_nets.no_element loop
+
+				query_element (
+					position	=> net_cursor,
+					process		=> query_strands'access);
+
+				next (net_cursor);
+			end loop;
+		end query_nets;
+
+	begin -- collect_labels
+		log (text => "looking up net labels at" & to_string (place) 
+			 & " catch zone" & to_string (catch_zone), level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module,
+			process		=> query_nets'access);
+
+		log_indentation_down;
+		
+		return result;
+		
+	end collect_labels;
+
+
+	procedure delete_selected_label is
+		use et_schematic_ops.nets;
+	begin
+		log (text => "deleting net label after clarification ...", level => log_threshold);
+		log_indentation_up;
+
+		--delete_selected_segment (
+			--module_cursor	=> current_active_module,
+			--segment			=> element (selected_segment),
+			--log_threshold	=> log_threshold + 1);
+		
+		log_indentation_down;
+	end delete_selected_label;
+	
+	procedure delete_label (point : in type_point) is 
+		--use et_schematic_ops.nets;
+		--label_cursor : pac_proposed_labels.cursor;
+	begin
+		log (text => "deleting net label ...", level => log_threshold);
+		log_indentation_up;
+		
+		-- Collect all net labels in the vicinity of the given point:
+		proposed_labels := collect_labels (
+			module			=> current_active_module,
+			place			=> to_position (point, current_active_sheet),
+			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			log_threshold	=> log_threshold + 1);
+
+		-- evaluate the number of lables found here:
+		case length (proposed_segments) is
+			when 0 =>
+				reset_request_clarification;
+				
+			when 1 =>
+				delete_selected_label;
+				
+			when others =>
+				set_request_clarification;
+
+				-- preselect the first label
+				selected_label := proposed_labels.first;
+		end case;
+		
+		log_indentation_down;
+	end delete_label;
+
+
+	procedure clarify_label is
+	begin
+		null;
+	end clarify_label;
+	
+	
 	procedure place_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_selected_segment;

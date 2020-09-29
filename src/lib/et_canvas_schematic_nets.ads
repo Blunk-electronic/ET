@@ -39,6 +39,7 @@
 
 with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_doubly_linked_lists;
 
 with et_general;					use et_general;
 with et_canvas_general;				use et_canvas_general;
@@ -62,8 +63,7 @@ package et_canvas_schematic_nets is
 
 	-- Whenever a segment is selected via the GUI, we store its
 	-- parent net, strand and the segment itself via this type:
-	--type type_selected_segment is tagged record
-	type type_selected_segment is record
+	type type_selected_segment is tagged record
 		net		: type_nets.cursor;
 		strand	: type_strands.cursor;
 		segment	: type_net_segments.cursor;
@@ -248,15 +248,30 @@ package et_canvas_schematic_nets is
 
 	label : type_label;
 
-	proposed_labels : type_net_labels.list;
+	type type_selected_label is new type_selected_segment with record
+		lable	: type_net_labels.cursor;
+	end record;
 
+	package pac_proposed_labels is new indefinite_doubly_linked_lists (type_selected_label);
+
+	proposed_labels : pac_proposed_labels.list;
+	selected_label : pac_proposed_labels.cursor;
+	
 	--procedure clear_proposed_labels;		
+	
 	
 	-- This procedure:
 	-- - Clears list of proposed net labels.
 	-- - resets global variable "label" to its default values
 	procedure reset_label;
 
+	status_delete_label : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete label." 
+		& status_hint_for_abort;	
+	
 	status_place_label : constant string := 
 		status_click_left 
 		& "or "
@@ -278,6 +293,14 @@ package et_canvas_schematic_nets is
 		& "to place tag label." 
 		& status_hint_for_abort;	
 
+
+	procedure delete_selected_label;
+
+	procedure delete_label (point : in type_point);
+	
+
+	procedure clarify_label;
+	
 	procedure finalize_place_label (
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
