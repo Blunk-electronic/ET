@@ -1172,6 +1172,19 @@ package body et_canvas_schematic is
 						when others => null;
 							
 					end case;
+
+				when GDK_LC_r =>
+					case noun is
+
+						when NOUN_LABEL =>
+							-- Rotate simple label:
+							if label.being_moved then
+								toggle_rotation (label.rotation_simple);
+							end if;
+
+						when others => null;
+							
+					end case;
 					
 				when others => status_noun_invalid;
 			end case;
@@ -1828,6 +1841,11 @@ package body et_canvas_schematic is
 								clarify_net_segment;
 							end if;
 
+							-- Rotate simple label:
+							if label.being_moved then
+								toggle_rotation (label.rotation_simple);
+							end if;
+							
 						when others => null;
 					end case;
 					

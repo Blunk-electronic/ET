@@ -220,7 +220,16 @@ package body et_text is
 	end check_text_content_length;
 
 
-	
+	procedure toggle_rotation (rotation : in out type_rotation_documentation) is
+	begin
+		case rotation is
+			when HORIZONTAL	=> rotation := VERTICAL;
+			when VERTICAL	=> rotation := HORIZONTAL;
+		end case;
+	end toggle_rotation;
+
+
+-- GENERIC PART
 	
 	package body generic_pac_text is
 

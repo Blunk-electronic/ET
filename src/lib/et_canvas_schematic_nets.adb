@@ -761,18 +761,18 @@ package body et_canvas_schematic_nets is
 
 					procedure attach_label (segment : in out type_net_segment) is 
 						use type_net_labels;
-						label : type_net_label_base;
+						l : type_net_label_base;
 					begin
 						-- The label position is absolute:
-						label.position := destination;
+						l.position := destination;
 
 						case appearance is
 							when SIMPLE =>
 								append (
 									container	=> segment.labels,
-									new_item	=> (label with
+									new_item	=> (l with
 										appearance		=> SIMPLE,
-										rotation_simple	=> pac_text.snap (zero_rotation)) -- CS
+										rotation_simple	=> label.rotation_simple)
 									   );
 								
 							when TAG =>
@@ -789,7 +789,7 @@ package body et_canvas_schematic_nets is
 								begin
 									append (
 										container	=> segment.labels,
-										new_item	=> (label with 
+										new_item	=> (l with 
 											appearance		=> TAG,
 
 											-- derive the label rotation from the stub direction:

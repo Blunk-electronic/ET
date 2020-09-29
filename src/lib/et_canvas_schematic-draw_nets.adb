@@ -177,6 +177,8 @@ procedure draw_nets (
 					case label.appearance is
 						when SIMPLE =>
 
+							--l.rotation_simple := label.rotation_simple;
+							
 							draw_text (
 								area		=> in_area,
 								context		=> context,
@@ -189,7 +191,7 @@ procedure draw_nets (
 								-- Text rotation about its anchor point.
 								-- This is documentational text.
 								-- It is readable from the front or the right.
-								rotation	=> to_rotation (l.rotation_simple),
+								rotation	=> to_rotation (label.rotation_simple),
 								alignment	=> (LEFT, BOTTOM),
 								height		=> self.frame_height);
 							

@@ -261,12 +261,16 @@ package et_schematic is
 			when TAG => 
 				direction		: type_net_label_direction := net_label_direction_default;
 
-				-- The tag label can be rotated arbitrary about the position:
-				--rotation_tag	: et_coordinates.type_rotation := et_coordinates.pac_geometry_sch.zero_rotation;
+				-- A tag label can only be attached to a stub of a net, means to a dead end of a net segment.
+				-- The rotation of the label should depend on the direction of the stub. 
+				-- The rotation is about its own position. 
+				-- However, the shown text inside the label (net name and coordinates) is always readable
+				-- from the front or from the right.
 				rotation_tag	: et_coordinates.type_rotation_relative := et_coordinates.pac_geometry_sch.zero_rotation;
 
 			when SIMPLE =>
-				-- The simple label can be read from the front or from the right:
+				-- The simple label can be read from the front or from the right.
+				-- Its rotation can be HORIZONTAL or VERTICAL (0 or 90 degrees):
 				rotation_simple	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
 		end case;
 	end record;

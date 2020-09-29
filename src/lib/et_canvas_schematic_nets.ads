@@ -45,6 +45,7 @@ with et_canvas_general;				use et_canvas_general;
 with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
+with et_text;
 with et_project.modules;			use et_project.modules;
 with et_schematic;					use et_schematic;
 with et_schematic_ops;
@@ -236,7 +237,8 @@ package et_canvas_schematic_nets is
 		being_moved			: type_being_moved := false;
 		tool				: type_tool := MOUSE;
 		appearance			: type_net_label_appearance := SIMPLE;
-
+		rotation_simple		: et_text.type_rotation_documentation := et_text.HORIZONTAL;
+		
 		-- If we are dealing with a TAG label, then a permission
 		-- is required to do the final placement.
 		-- For a simple label this flag has no meaning because

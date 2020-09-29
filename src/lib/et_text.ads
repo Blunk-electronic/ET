@@ -131,6 +131,9 @@ package et_text is
 
 	type type_rotation_documentation is (HORIZONTAL, VERTICAL);
 
+	-- Toggles between HORIZONTAL and VERTICAL:
+	procedure toggle_rotation (rotation : in out type_rotation_documentation);
+
 	
 -- VECTORIZED TEXT
 
@@ -143,7 +146,9 @@ package et_text is
 	type type_vector_text_mirrored is (NO, YES);
 	vector_text_mirror_default : constant type_vector_text_mirrored := NO;
 
+
 	
+-- GENERIC PART
 	
 	generic
 		with package pac_shapes is new et_geometry.generic_pac_shapes (<>);
