@@ -249,10 +249,11 @@ package et_canvas_schematic_nets is
 	label : type_label;
 
 	type type_selected_label is new type_selected_segment with record
-		lable	: type_net_labels.cursor;
+		label : type_net_labels.cursor;
 	end record;
 
 	package pac_proposed_labels is new indefinite_doubly_linked_lists (type_selected_label);
+	use pac_proposed_labels;
 
 	proposed_labels : pac_proposed_labels.list;
 	selected_label : pac_proposed_labels.cursor;

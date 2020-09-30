@@ -2773,7 +2773,7 @@ package body et_schematic_ops.nets is
 		end query_nets;
 		
 	begin -- delete_net_label
-		log (text => "module " & to_string (module_name) &
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 			" deleting net label at" &
 			et_coordinates.to_string (position => position),
 			level => log_threshold);

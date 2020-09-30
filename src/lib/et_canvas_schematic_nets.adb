@@ -382,7 +382,6 @@ package body et_canvas_schematic_nets is
 	
 	procedure clarify_net_segment is
 		use et_schematic;
-		use et_schematic_ops.nets;
 		s : type_net_segments.cursor;
 		n : type_net_name.bounded_string;
 	begin
@@ -728,7 +727,7 @@ package body et_canvas_schematic_nets is
 -- NET LABLES
 
 	--procedure clear_proposed_labels is begin
-		--proposed_labels.clear;
+	--proposed_labels.clear;
 	--end clear_proposed_labels;
 		
 	
@@ -738,6 +737,7 @@ package body et_canvas_schematic_nets is
 
 		clear_proposed_segments;
 		proposed_labels.clear;
+		selected_label := pac_proposed_labels.no_element;
 	end reset_label;
 	
 	function collect_labels (
@@ -778,6 +778,10 @@ package body et_canvas_schematic_nets is
 							-- the current net, stand, segment and label cursor to the result:
 							if d <= catch_zone then
 								result.append ((net_cursor, strand_cursor, segment_cursor, label_cursor));
+								
+								log (text => " label found at" 
+									& to_string (element (label_cursor).position),
+									level => log_threshold + 2);
 							end if;
 							
 							next (label_cursor);
@@ -842,24 +846,114 @@ package body et_canvas_schematic_nets is
 	end collect_labels;
 
 
-	procedure delete_selected_label is
-		use et_schematic_ops.nets;
-	begin
+	procedure delete_selected_label (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_selected_label;
+		log_threshold	: in type_log_level)
+	is 
+		use type_net_labels;
+		label_position_sheet : constant type_sheet := sheet (element (label.strand).position);
+		
+		-- This flag goes true once the first net label that equals the given label
+		-- has been found t. All iterations are cancelled as soon as it goes true.
+		label_found : boolean := false;
+		
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			net_cursor : type_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+
+				strand_cursor : type_strands.cursor := net.strands.first;
+				
+				procedure query_segments (strand : in out type_strand) is
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+					procedure query_labels (segment : in out type_net_segment) is 
+						c : type_net_labels.cursor := segment.labels.first;
+					begin
+						while c /= type_net_labels.no_element loop
+
+							-- If label found, delete it from the label list
+							-- of that segment:
+							if element (c) = element (label.label) then
+								delete (segment.labels, c);
+								
+								label_found := true; -- aborts all iteration
+								exit; -- no further search required
+							end if;
+
+							next (c);
+						end loop;
+					end query_labels;
+					
+				begin -- query_segments
+					while not label_found and segment_cursor /= type_net_segments.no_element loop
+
+						update_element (
+							container	=> strand.segments,
+							position	=> segment_cursor,
+							process		=> query_labels'access);
+						
+						next (segment_cursor);
+					end loop;
+				end query_segments;
+				
+			begin -- query_strands
+				while not label_found and strand_cursor /= type_strands.no_element loop
+					
+					-- We pick out only the strands on the targeted sheet:
+					if sheet (element (strand_cursor).position) = label_position_sheet then
+
+						update_element (
+							container	=> net.strands,
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+					
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+			
+		begin -- query_nets
+			while not label_found and net_cursor /= type_nets.no_element loop
+
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_strands'access);
+
+				next (net_cursor);
+			end loop;
+		end query_nets;
+
+	begin -- delete_selected_label
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_nets'access);
+
+	end delete_selected_label;
+
+	procedure delete_selected_label is begin
 		log (text => "deleting net label after clarification ...", level => log_threshold);
 		log_indentation_up;
 
-		--delete_selected_segment (
-			--module_cursor	=> current_active_module,
-			--segment			=> element (selected_segment),
-			--log_threshold	=> log_threshold + 1);
+		delete_selected_label (
+			module_cursor	=> current_active_module,
+			label			=> element (selected_label),
+			log_threshold	=> log_threshold + 1);
 		
 		log_indentation_down;
 	end delete_selected_label;
 	
-	procedure delete_label (point : in type_point) is 
-		--use et_schematic_ops.nets;
-		--label_cursor : pac_proposed_labels.cursor;
-	begin
+	procedure delete_label (point : in type_point) is begin
 		log (text => "deleting net label ...", level => log_threshold);
 		log_indentation_up;
 		
@@ -871,13 +965,16 @@ package body et_canvas_schematic_nets is
 			log_threshold	=> log_threshold + 1);
 
 		-- evaluate the number of lables found here:
-		case length (proposed_segments) is
+		case length (proposed_labels) is
 			when 0 =>
 				reset_request_clarification;
 				
 			when 1 =>
-				delete_selected_label;
-				
+				delete_selected_label (
+					module_cursor	=> current_active_module,
+					label			=> element (proposed_labels.first),
+					log_threshold	=> log_threshold + 1);
+					
 			when others =>
 				set_request_clarification;
 
@@ -890,8 +987,40 @@ package body et_canvas_schematic_nets is
 
 
 	procedure clarify_label is
+		use et_schematic;
+		use type_net_labels;
+
+		s : type_net_segments.cursor;
+		n : type_net_name.bounded_string;
+
+		function info (c : in type_net_labels.cursor) return string is 
+			l : type_net_label := element (c);
+		begin
+			return "label at" & to_string (l.position); -- CS other properties like appearance, direction ?
+		end info;
+		
 	begin
-		null;
+		-- On every call of this procedure we must advance from one
+		-- label to the next in a circular manner. So if the end 
+		-- of the list is reached, then the cursor selected_label
+		-- moves back to the start of the label list.
+		if next (selected_label) /= pac_proposed_labels.no_element then
+			next (selected_label);
+		else
+			selected_label := proposed_labels.first;
+		end if;
+
+		-- get the segment of the net
+		s := element (selected_label).segment;
+		
+		-- get the name of the net
+		n := key (element (selected_label).net);
+		
+		set_status ("net " & to_string (n) & space 
+			--& to_string (s) 
+			& info (element (selected_label).label)
+			& ". " & status_next_object_clarification);
+		
 	end clarify_label;
 	
 	
