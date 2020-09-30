@@ -334,6 +334,7 @@ procedure draw_nets (
 	-- Returns false if there are no proposed segments or
 	-- if the given segment is not selected.
 	-- CS: rework as in function is_selected above !
+	-- compare net and strand !
 	function is_selected (
 		s : in type_net_segments.cursor)
 		return boolean is
