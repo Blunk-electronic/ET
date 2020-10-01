@@ -455,6 +455,7 @@ package body et_canvas_schematic is
 	is begin
 		reset_grid_density;
 		cursor_main.position := self.snap_to_grid (cursor_main.position);
+		self.update_coordinates_display;
 	end reset_grid_and_cursor;
 
 	
