@@ -426,17 +426,17 @@ package body pac_canvas is
 		-- Get the distance (in x and y) from cursor to mouse position:
 		distance_xy := type_point (distance_relative (cursor_main.position, drawing_point));
 
+		-- Snap the distance to the current grid:
+		distance_xy := self.snap_to_grid (distance_xy);
+
 		-- Get the distance (in x and y) from cursor to mouse position:
 		distance_pol := distance_polar (cursor_main.position, drawing_point);
 
-		-- update mouse pointer position:
-		--gtk_entry (mouse_position_x.get_child).set_text (to_string (self, drawing_point, X));
-		--gtk_entry (mouse_position_y.get_child).set_text (to_string (self, drawing_point, Y));
-		-- no need. will be done by function on_mouse_movement.
+		-- NOTE: The update of the mouse pointer position is done by function on_mouse_movement.
 		
 		-- update distance display:
-		gtk_entry (distances.display_x.get_child).set_text (to_string (self, distance_xy, X));
-		gtk_entry (distances.display_y.get_child).set_text (to_string (self, distance_xy, Y));
+		gtk_entry (distances.display_x.get_child).set_text (to_string (x (distance_xy)));
+		gtk_entry (distances.display_y.get_child).set_text (to_string (y (distance_xy)));
 		gtk_entry (distances.display_abs.get_child).set_text (to_string (absolute (distance_pol)));
 		gtk_entry (distances.display_angle.get_child).set_text (to_string (angle (distance_pol)));
 
@@ -1038,17 +1038,19 @@ package body pac_canvas is
 
 		-- Convert the view point (pixels) to the position (millimeters) in the model:
 		model_point := self.view_to_model (view_point);
-		-- put_line (" model " & to_string (model_point));
+		--put_line (" model " & to_string (model_point));
 
 		-- Convert model_point to drawing_point:
 		drawing_point := model_to_drawing (self, model_point);
-		-- put_line (" drawing " & to_string (self, drawing_point));
+
+		-- Snap the drawing point to the current grid:
+		drawing_point := self.snap_to_grid (drawing_point);
+		--put_line (to_string (x (drawing_point)));
 
 		-- Update mouse position display (left of the canvas).
-		-- NOTE: The position displayed here is snapped/rounded to the grid:
-		gtk_entry (mouse_position_x.get_child).set_text (to_string (self, drawing_point, X));
-		gtk_entry (mouse_position_y.get_child).set_text (to_string (self, drawing_point, Y));
-
+		gtk_entry (mouse_position_x.get_child).set_text (to_string (x (drawing_point)));
+		gtk_entry (mouse_position_y.get_child).set_text (to_string (y (drawing_point)));
+		
 		update_coordinates_display (self);
 
 		self.evaluate_mouse_position (drawing_point);
@@ -1220,7 +1222,9 @@ package body pac_canvas is
 		end if;
 	end next_grid_density;
 
-
+	procedure reset_grid_density is begin
+		grid_density := grid_density_default;
+	end reset_grid_density;
 
 	
 	

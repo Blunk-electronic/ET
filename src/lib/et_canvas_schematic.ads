@@ -146,17 +146,6 @@ package et_canvas_schematic is
 	-- Returns the name of the currently active module:
 	function active_module return et_general.type_module_name.bounded_string;
 
-	overriding function to_string (
-		self	: not null access type_view;
-		point	: in type_point;
-		axis	: in et_general.type_axis_2d)
-		return string;
-
-	overriding function to_string (
-		self	: not null access type_view;
-		point	: in type_point) 
-		return string;
-	
 	-- Returns the bounding box of all items of the current sheet.
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;
@@ -209,7 +198,10 @@ package et_canvas_schematic is
 	grid_density_multiplier_normal	: constant type_distance_positive := 1.0;
 	grid_density_multiplier_fine	: constant type_distance_positive := 0.1;	
 
-
+	-- Resets the grid density to default and snaps the cursor
+	-- to the nearest grid point:
+	procedure reset_grid_and_cursor (
+		self : not null access type_view);
 	
 	overriding procedure move_cursor (
 		self		: not null access type_view;

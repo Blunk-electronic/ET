@@ -77,31 +77,6 @@ package body et_canvas_schematic is
 		redraw_board;
 	end redraw;
 	
-	
-	function to_string (
-		self	: not null access type_view;
-		point	: in type_point;
-		axis	: in et_general.type_axis_2d)
-		return string 
-	is
-		use et_general;
-		use et_project.modules.pac_generic_modules;
-	begin
-		case axis is
-			when X => return to_string (round (x (point), element (current_active_module).grid.x));
-			when Y => return to_string (round (y (point), element (current_active_module).grid.y));
-		end case;
-	end;
-
-	function to_string (
-		self	: not null access type_view;
-		point	: in type_point)
-		return string is
-		use et_project.modules.pac_generic_modules;
-	begin
-		return round_to_string (point, element (current_active_module).grid);
-	end;
-
 
 	
 	function model_to_drawing (
@@ -474,6 +449,13 @@ package body et_canvas_schematic is
 		redraw (canvas);
 	end set_grid_y;
 
+	
+	procedure reset_grid_and_cursor (
+		self : not null access type_view)
+	is begin
+		reset_grid_density;
+		cursor_main.position := self.snap_to_grid (cursor_main.position);
+	end reset_grid_and_cursor;
 
 	
 	procedure move_cursor (
@@ -835,10 +817,18 @@ package body et_canvas_schematic is
 					
 					reset_net_route;
 
+					-- When drawing net segments, we enforce the default grid
+					-- and snap the cursor position to the default grid:
+					self.reset_grid_and_cursor;
+					
 				-- If space pressed, then the operator wishes to operate via keyboard:
 				when GDK_Space =>
 					case noun is
 						when NOUN_NET =>
+
+							-- When drawing net segments, we enforce the default grid
+							-- and snap the cursor position to the default grid:
+							self.reset_grid_and_cursor;
 
 							-- Set the tool being used for this net so that procedure
 							-- draw_net_segment_being_drawn knows where to get the end point from.
@@ -1526,6 +1516,10 @@ package body et_canvas_schematic is
 					case noun is
 						when NOUN_NET =>
 
+							-- When drawing net segments, we enforce the default grid
+							-- and snap the cursor position to the default grid:
+							self.reset_grid_and_cursor;
+							
 							-- Set the tool being used for this net so that procedure
 							-- draw_net_segment_being_drawn knows where to get the end point from.
 							net_route.tool := MOUSE;

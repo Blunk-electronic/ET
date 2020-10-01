@@ -342,19 +342,6 @@ package pac_canvas is
 
 
 	
-	-- Returns the distance on the given axis rounded to the current grid.
-	function to_string (
-		self	: not null access type_view;
-		point	: in type_point;
-		axis	: in et_general.type_axis_2d)
-		return string is abstract;
-	
-	-- Returns the given point x/y rounded to the current grid.
-	function to_string (
-		self	: not null access type_view;
-		point	: in type_point) 
-		return string is abstract;
-
 	procedure viewport_changed (self : not null access type_view'class);
 
 -- 	function on_layout_changed (
@@ -493,6 +480,7 @@ package pac_canvas is
 
 	procedure next_grid_density;
 
+	procedure reset_grid_density;
 
 
 	

@@ -118,17 +118,6 @@ package et_canvas_board is
 	procedure redraw_schematic;
 	procedure redraw;
 	
-	overriding function to_string (
-		self	: not null access type_view;
-		point	: in type_point;
-		axis	: in et_general.type_axis_2d)
-		return string;
-
-	overriding function to_string (
-		self	: not null access type_view;
-		point	: in type_point) 
-		return string;
-	
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;
 

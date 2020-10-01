@@ -76,30 +76,6 @@ package body et_canvas_board is
 		redraw_board;
 	end redraw;
 	
-	function to_string (
-		self	: not null access type_view;
-		point	: in type_point;
-		axis	: in et_general.type_axis_2d)
-		return string 
-	is
-		use et_general;
-		use et_canvas_schematic;
-	begin
-		case axis is
-			when X => return to_string (round (x (point), element (current_active_module).board.grid.x));
-			when Y => return to_string (round (y (point), element (current_active_module).board.grid.y));
-		end case;
-	end;
-
-	function to_string (
-		self	: not null access type_view;
-		point	: in type_point)
-		return string is
-		use et_canvas_schematic;		
-	begin
-		return round_to_string (point, element (current_active_module).board.grid);
-	end;
-	
 	function model_to_drawing (
 		self		: not null access type_view;
 		model_point : in type_point)	
