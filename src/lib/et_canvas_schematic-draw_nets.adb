@@ -124,7 +124,8 @@ procedure draw_nets (
 	function is_selected (
 		net		: in type_nets.cursor;
 		strand	: in type_strands.cursor;
-		segment	: in type_net_segments.cursor;
+		--segment	: in type_net_segments.cursor;
+		segment	: in type_net_segment;
 		label	: in type_net_labels.cursor)
 		return boolean is
 		use pac_proposed_labels;
@@ -141,7 +142,7 @@ procedure draw_nets (
 				
 				if element (net) = element (sl.net)
 				and element (strand) = element (sl.strand)
-				and element (segment) = element (sl.segment)
+				and segment = element (sl.segment)
 				and element (label) = element (sl.label)
 				then
 					return true;
@@ -155,42 +156,49 @@ procedure draw_nets (
 	end is_selected;
 	
 	procedure draw_labels (
-		n : in type_nets.cursor;
-		s : in type_net_segment)
+		net		: in type_nets.cursor;
+		strand	: in type_strands.cursor;
+		segment	: in type_net_segment)
 	is 
 		use type_net_labels;
 		use et_text;
 		use pac_text;
 
-		procedure draw_fixed (l : in type_net_labels.cursor) is begin
-			case element (l).appearance is
-				when SIMPLE =>
-					draw_text (
-						area		=> in_area,
-						context		=> context,
-						content		=> to_content (to_string (key (n))),
-						size		=> element (l).size,
-						font		=> net_label_font,
-						position	=> element (l).position,
-						origin		=> true, -- CS must be false on export to image
-						
-						-- Text rotation about its anchor point.
-						-- This is documentational text.
-						-- It is readable from the front or the right.
-						rotation	=> to_rotation (element (l).rotation_simple),
-						alignment	=> (LEFT, BOTTOM),
-						height		=> self.frame_height
-						);
+		procedure draw_fixed (label : in type_net_labels.cursor) is begin
 
-				when TAG =>
-					draw_tag_label (self, in_area, context, key (n), element (l));
+			-- Draw labels that are NOT selected:
+			if not is_selected (net, strand, segment, label) then
+				
+				case element (label).appearance is
+					when SIMPLE =>
+						draw_text (
+							area		=> in_area,
+							context		=> context,
+							content		=> to_content (to_string (key (net))),
+							size		=> element (label).size,
+							font		=> net_label_font,
+							position	=> element (label).position,
+							origin		=> true, -- CS must be false on export to image
+							
+							-- Text rotation about its anchor point.
+							-- This is documentational text.
+							-- It is readable from the front or the right.
+							rotation	=> to_rotation (element (label).rotation_simple),
+							alignment	=> (LEFT, BOTTOM),
+							height		=> self.frame_height
+							);
 
-			end case;
+					when TAG =>
+						draw_tag_label (self, in_area, context, key (net), element (label));
+
+				end case;
+				
+			end if;
 		end draw_fixed;
 		
 	begin -- draw_labels
 		
-		iterate (s.labels, draw_fixed'access);
+		iterate (segment.labels, draw_fixed'access);
 
 	end draw_labels;
 
@@ -289,8 +297,9 @@ procedure draw_nets (
 
 		begin
 			while label /= type_net_labels.no_element loop
-				if is_selected (net, strand, segment, label) then
 
+				if is_selected (net, strand, element (segment), label) then
+				
 					case element (label).appearance is
 						when SIMPLE =>
 							draw_text (
@@ -388,18 +397,19 @@ procedure draw_nets (
 	-- Draws also possible junctions that may exist at start or end point
 	-- of the segment.
 	procedure draw_preliminary_segment (
-		n : in type_nets.cursor;
-		s : in type_net_segment) 
+		net		: in type_nets.cursor;
+		strand	: in type_strands.cursor;
+		segment : in type_net_segment) 
 	is begin
 		draw_line (
 			area		=> in_area,
 			context		=> context,
-			line		=> s,
+			line		=> segment,
 			height		=> self.frame_height);
 
-		draw_junctions (s);
+		draw_junctions (segment);
 
-		draw_labels (n, s);
+		draw_labels (net, strand, segment);
 	end draw_preliminary_segment;
 
 	-- Draws secondary nets which are attached to the primary net.
@@ -424,7 +434,7 @@ procedure draw_nets (
 			-- It must be marked as drawn so that procedure query_nets
 			-- does not draw it in its inital state according to the database.
 			procedure draw_and_mark is begin
-				draw_preliminary_segment (net_cursor, secondary_segment);
+				draw_preliminary_segment (net_cursor, strand_cursor, secondary_segment);
 
 				-- mark segment as already drawn
 				already_drawn_segments.append (element (c));
@@ -532,7 +542,7 @@ procedure draw_nets (
 				zone			=> zone);
 			
 			-- Draw the primary segment in its temporarily state:
-			draw_preliminary_segment (net_cursor, primary_segment);
+			draw_preliminary_segment (net_cursor, strand_cursor, primary_segment);
 
 			-- Drawing attached secondary segments requires the original
 			-- net segment (before the drag operation):
@@ -633,7 +643,7 @@ procedure draw_nets (
 		else
 			-- Not movable. Draw as given in database:
 			draw_fixed_segment (original_segment);
-			draw_labels (net_cursor, element (original_segment));
+			draw_labels (net_cursor, strand_cursor, element (original_segment));
 		end if;
 	end draw_moving_segments;
 
@@ -748,7 +758,7 @@ procedure draw_nets (
 								-- Draw the net segment as it is according to module database:
 								draw_fixed_segment (segment_cursor);
 
-								draw_labels (net_cursor, element (segment_cursor));
+								draw_labels (net_cursor, strand_cursor, element (segment_cursor));
 
 								-- Draw the net label being moved. If no net label
 								-- is being moved, nothing happens here:
@@ -774,7 +784,7 @@ procedure draw_nets (
 							-- Draw the net segment as it is according to module database:
 							draw_fixed_segment (segment_cursor);
 
-							draw_labels (net_cursor, element (segment_cursor));
+							draw_labels (net_cursor, strand_cursor, element (segment_cursor));
 						end if;
 
 						next (segment_cursor);

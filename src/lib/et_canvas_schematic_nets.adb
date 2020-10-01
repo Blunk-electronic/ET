@@ -939,6 +939,12 @@ package body et_canvas_schematic_nets is
 			position	=> module_cursor,
 			process		=> query_nets'access);
 
+		reset_label;
+
+		reset_request_clarification;
+
+		set_status (status_delete_label);
+		
 	end delete_selected_label;
 
 	procedure delete_selected_label is begin
