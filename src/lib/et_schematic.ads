@@ -284,6 +284,9 @@ package et_schematic is
 		family	=> et_text.to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+
+	-- GUI relevant only: The alignment for simple labels:
+	net_label_alignment : constant et_text.type_text_alignment := (et_text.LEFT, et_text.BOTTOM);
 	
 	-- GUI relevant only: The line width of the box that enshroudes the net name of a tag label:
 	tag_label_box_line_width : constant type_distance_positive := 0.2;

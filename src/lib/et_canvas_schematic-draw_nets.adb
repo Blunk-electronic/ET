@@ -53,10 +53,14 @@ procedure draw_nets (
 	use et_schematic.type_nets;
 	use et_schematic.type_strands;
 	use et_schematic.type_net_segments;
+	use et_schematic.type_net_labels;
 	use et_schematic.pac_shapes;
 	
 	use pac_draw_misc;
 
+	use pac_proposed_segments;
+	use pac_proposed_labels;
+	
 	-- Draws the junctions of a segment:
 	procedure draw_junctions (
 		s : in type_net_segments.cursor)
@@ -124,13 +128,10 @@ procedure draw_nets (
 	function is_selected (
 		net		: in type_nets.cursor;
 		strand	: in type_strands.cursor;
-		--segment	: in type_net_segments.cursor;
 		segment	: in type_net_segment;
 		label	: in type_net_labels.cursor)
 		return boolean is
-		use pac_proposed_labels;
-		use type_net_labels;
-		
+
 		sl : type_selected_label;
 	begin
 		if is_empty (proposed_labels) then
@@ -154,52 +155,54 @@ procedure draw_nets (
 			end if;
 		end if;		
 	end is_selected;
+
+	-- Draws a single net label:
+	procedure draw_label (
+		net		: in type_net_name.bounded_string;
+		label	: in type_net_labels.cursor)
+	is
+		use et_text;
+		use pac_text;
+	begin
+		case element (label).appearance is
+			when SIMPLE =>
+				draw_text (
+					area		=> in_area,
+					context		=> context,
+					content		=> to_content (to_string (net)),
+					size		=> element (label).size,
+					font		=> net_label_font,
+					position	=> element (label).position,
+					origin		=> true, -- CS must be false on export to image
+					
+					-- Text rotation about its anchor point.
+					-- This is documentational text.
+					-- It is readable from the front or the right.
+					rotation	=> to_rotation (element (label).rotation_simple),
+					alignment	=> net_label_alignment,
+					height		=> self.frame_height
+					);
+
+			when TAG =>
+				draw_tag_label (self, in_area, context, net, element (label));
+
+		end case;
+	end draw_label;
 	
+	-- Draws labels that are NOT selected:
 	procedure draw_labels (
 		net		: in type_nets.cursor;
 		strand	: in type_strands.cursor;
 		segment	: in type_net_segment)
 	is 
-		use type_net_labels;
-		use et_text;
-		use pac_text;
-
 		procedure draw_fixed (label : in type_net_labels.cursor) is begin
-
-			-- Draw labels that are NOT selected:
 			if not is_selected (net, strand, segment, label) then
-				
-				case element (label).appearance is
-					when SIMPLE =>
-						draw_text (
-							area		=> in_area,
-							context		=> context,
-							content		=> to_content (to_string (key (net))),
-							size		=> element (label).size,
-							font		=> net_label_font,
-							position	=> element (label).position,
-							origin		=> true, -- CS must be false on export to image
-							
-							-- Text rotation about its anchor point.
-							-- This is documentational text.
-							-- It is readable from the front or the right.
-							rotation	=> to_rotation (element (label).rotation_simple),
-							alignment	=> (LEFT, BOTTOM),
-							height		=> self.frame_height
-							);
-
-					when TAG =>
-						draw_tag_label (self, in_area, context, key (net), element (label));
-
-				end case;
-				
+				draw_label (key (net), label);
 			end if;
 		end draw_fixed;
 		
-	begin -- draw_labels
-		
+	begin
 		iterate (segment.labels, draw_fixed'access);
-
 	end draw_labels;
 
 	-- Draws the net label being moved. If no net label
@@ -209,7 +212,7 @@ procedure draw_nets (
 		use pac_text;
 		
 		l : type_net_label (label.appearance);
-	begin -- draw_label_being_moved
+	begin
 		case verb is
 			when VERB_PLACE =>
 				if label.being_moved then
@@ -237,7 +240,7 @@ procedure draw_nets (
 								-- This is documentational text.
 								-- It is readable from the front or the right.
 								rotation	=> to_rotation (label.rotation_simple),
-								alignment	=> (LEFT, BOTTOM),
+								alignment	=> net_label_alignment,
 								height		=> self.frame_height);
 							
 
@@ -280,52 +283,24 @@ procedure draw_nets (
 		end case;
 
 	end draw_label_being_moved;
-	
+
+	-- Draws the net label as indicated by variable selected_label:
 	procedure draw_selected_label (
 		net		: in type_nets.cursor;
 		strand	: in type_strands.cursor;
 		segment	: in type_net_segments.cursor)
 	is
-		use pac_proposed_labels;
-
 		procedure query_label (s : in type_net_segment) is
 			use type_net_labels;
 			label : type_net_labels.cursor := s.labels.first;
-
-			use et_text;
-			use pac_text;
-
 		begin
 			while label /= type_net_labels.no_element loop
 
 				if is_selected (net, strand, element (segment), label) then
-				
-					case element (label).appearance is
-						when SIMPLE =>
-							draw_text (
-								area		=> in_area,
-								context		=> context,
-								content		=> to_content (to_string (key (net))),
-								size		=> element (label).size,
-								font		=> net_label_font,
-								position	=> element (label).position,
-								origin		=> true, -- CS must be false on export to image
-								
-								-- Text rotation about its anchor point.
-								-- This is documentational text.
-								-- It is readable from the front or the right.
-								rotation	=> to_rotation (element (label).rotation_simple),
-								alignment	=> (LEFT, BOTTOM),
-								height		=> self.frame_height
-								);
 
-						when TAG =>
-							draw_tag_label (self, in_area, context, key (net), element (label));
-
-					end case;
+					draw_label (key (net), label);
 
 					exit; -- there is only on selected label. no further search required
-					
 				end if;
 
 				next (label);
@@ -347,7 +322,6 @@ procedure draw_nets (
 	function is_selected (
 		s : in type_net_segments.cursor)
 		return boolean is
-		use pac_proposed_segments;
 	begin
 		if is_empty (proposed_segments) then
 			return false;
