@@ -132,6 +132,7 @@ procedure draw_nets (
 		label	: in type_net_labels.cursor)
 		return boolean is
 
+		use et_general.type_net_name;
 		sl : type_selected_label;
 	begin
 		if is_empty (proposed_labels) then
@@ -141,7 +142,7 @@ procedure draw_nets (
 
 				sl := element (selected_label);
 				
-				if element (net) = element (sl.net)
+				if key (net) = key (sl.net)
 				and element (strand) = element (sl.strand)
 				and segment = element (sl.segment)
 				and element (label) = element (sl.label)
@@ -291,7 +292,6 @@ procedure draw_nets (
 		segment	: in type_net_segments.cursor)
 	is
 		procedure query_label (s : in type_net_segment) is
-			use type_net_labels;
 			label : type_net_labels.cursor := s.labels.first;
 		begin
 			while label /= type_net_labels.no_element loop
@@ -317,17 +317,24 @@ procedure draw_nets (
 	-- Returns true if the given segment is selected.
 	-- Returns false if there are no proposed segments or
 	-- if the given segment is not selected.
-	-- CS: rework as in function is_selected above !
-	-- compare net and strand !
 	function is_selected (
-		s : in type_net_segments.cursor)
-		return boolean is
+		net		: in type_nets.cursor;
+		strand	: in type_strands.cursor;
+		segment	: in type_net_segments.cursor)
+		return boolean
+	is
+		use et_general.type_net_name;
+		ss : type_selected_segment;
 	begin
 		if is_empty (proposed_segments) then
 			return false;
 		else
 			if selected_segment /= pac_proposed_segments.no_element then
-				if s = element (selected_segment).segment then
+				ss := element (selected_segment);
+
+				if key (ss.net) = key (net)
+				and element (ss.strand) = element (strand)
+				and element (ss.segment) = element (segment) then
 					return true;
 				else
 					return false;
@@ -719,7 +726,7 @@ procedure draw_nets (
 						-- (If segments_being_dragged is empty, then nothing happens.)
 						
 						-- CS test verb and noun ?						
-						if is_selected (segment_cursor) then
+						if is_selected (net_cursor, strand_cursor, segment_cursor) then
 						
 							if segment.being_moved then
 								-- Draw the net segments being moved or dragged.
@@ -753,7 +760,7 @@ procedure draw_nets (
 					
 					while segment_cursor /= type_net_segments.no_element loop
 
-						if not is_selected (segment_cursor) then
+						if not is_selected (net_cursor, strand_cursor, segment_cursor) then
 
 							-- Draw the net segment as it is according to module database:
 							draw_fixed_segment (segment_cursor);

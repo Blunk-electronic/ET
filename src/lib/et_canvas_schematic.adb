@@ -1445,11 +1445,11 @@ package body et_canvas_schematic is
 				when VERB_DELETE =>
 
 					case noun is
-						when NOUN_UNIT =>
+						when NOUN_LABEL =>
 							if not clarification_pending then
-								delete_unit (point);
+								delete_label (point);
 							else
-								delete_selected_unit;
+								delete_selected_label;
 							end if;
 							
 						when NOUN_NET => 
@@ -1459,6 +1459,13 @@ package body et_canvas_schematic is
 								delete_selected_net_segment;
 							end if;
 
+						when NOUN_UNIT =>
+							if not clarification_pending then
+								delete_unit (point);
+							else
+								delete_selected_unit;
+							end if;
+							
 						when others => null;
 					end case;
 
@@ -1786,16 +1793,21 @@ package body et_canvas_schematic is
 			case verb is
 				when VERB_DELETE =>
 					case noun is
-						when NOUN_UNIT =>
+						when NOUN_LABEL => 
 							if clarification_pending then
-								clarify_unit;
+								clarify_label;
 							end if;
-
+							
 						when NOUN_NET => 
 							if clarification_pending then
 								clarify_net_segment;
 							end if;
 
+						when NOUN_UNIT =>
+							if clarification_pending then
+								clarify_unit;
+							end if;
+							
 						when others => null;							
 					end case;
 
