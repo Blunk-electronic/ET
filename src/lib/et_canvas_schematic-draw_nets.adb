@@ -189,6 +189,39 @@ procedure draw_nets (
 
 		end case;
 	end draw_label;
+
+	-- Draws a single net label that is being moved:
+	procedure draw_simple_label_being_moved (
+		net		: in type_net_name.bounded_string;
+		label	: in type_net_label)
+	is
+		use et_text;
+		use pac_text;
+	begin
+		--case element (label).appearance is
+			--when SIMPLE =>
+				draw_text (
+					area		=> in_area,
+					context		=> context,
+					content		=> to_content (to_string (net)),
+					size		=> label.size,
+					font		=> net_label_font,
+					position	=> label.position,
+					origin		=> true, -- CS must be false on export to image
+					
+					-- Text rotation about its anchor point.
+					-- This is documentational text.
+					-- It is readable from the front or the right.
+					rotation	=> to_rotation (label.rotation_simple),
+					alignment	=> net_label_alignment,
+					height		=> self.frame_height
+					);
+
+			--when TAG =>
+				--draw_tag_label (self, in_area, context, net, element (label));
+
+		--end case;
+	end draw_simple_label_being_moved;
 	
 	-- Draws labels that are NOT selected:
 	procedure draw_labels (
@@ -292,18 +325,37 @@ procedure draw_nets (
 		segment	: in type_net_segments.cursor)
 	is
 		procedure query_label (s : in type_net_segment) is
-			label : type_net_labels.cursor := s.labels.first;
+			label_cursor : type_net_labels.cursor := s.labels.first;
+
+			sl : type_net_label (SIMPLE);
 		begin
-			while label /= type_net_labels.no_element loop
+			while label_cursor /= type_net_labels.no_element loop
 
-				if is_selected (net, strand, element (segment), label) then
+				if is_selected (net, strand, element (segment), label_cursor) then
 
-					draw_label (key (net), label);
+					if label.being_moved then
+						-- Draw a copy of the label. Assign position
+						-- according to tool:
+						sl := element (label_cursor);
+						
+						case label.tool is
+							when KEYBOARD =>
+								sl.position := cursor_main.position;
+							when MOUSE =>
+								sl.position := self.snap_to_grid (self.mouse_position);
+						end case;
 
+						-- draw the temporarily label
+						draw_simple_label_being_moved (key (net), sl);
+					else
+						-- draw label as it is according to module database:
+						draw_label (key (net), label_cursor);
+					end if;
+														  
 					exit; -- there is only on selected label. no further search required
 				end if;
 
-				next (label);
+				next (label_cursor);
 			end loop;
 		end query_label;
 		
