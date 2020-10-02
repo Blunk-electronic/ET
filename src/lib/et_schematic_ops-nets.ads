@@ -222,6 +222,8 @@ package et_schematic_ops.nets is
 		position		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+	-- CS procedure move_net_label
+	
 	-- Queries the position of the given net. If a stub is at the
 	-- given position returns the direction of the stub.
 	function query_stub (

@@ -733,7 +733,7 @@ package body et_canvas_schematic_units is
 		end query_devices;
 		
 	begin -- rotate_unit
-		log (text => "module " & to_string (key (module_cursor)) 
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
 			 & " rotating " & to_string (key (unit.device)) & " unit " 
 			 & to_string (key (unit.unit)) 
 			 & " by " & to_string (rotation) & " degree ...",

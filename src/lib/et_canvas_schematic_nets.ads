@@ -294,7 +294,17 @@ package et_canvas_schematic_nets is
 		& "to place tag label." 
 		& status_hint_for_abort;	
 
+	status_move_label : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move simple label." 
+		& status_hint_for_abort;	
 
+	type type_label_category is (SIMPLE, TAG, BOTH);
+
+	function to_string (cat : in type_label_category) return string;
+	
 	procedure delete_selected_label;
 
 	procedure delete_label (point : in type_point);
@@ -306,6 +316,15 @@ package et_canvas_schematic_nets is
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
 
+	procedure find_labels (
+		point		: in type_point;
+		category	: in type_label_category);
+
+	procedure finalize_move_label (
+		destination		: in type_point;
+		log_threshold	: in type_log_level);
+
+	
 	
 end et_canvas_schematic_nets;
 

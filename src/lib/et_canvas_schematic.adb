@@ -931,6 +931,10 @@ package body et_canvas_schematic is
 					-- CS
 					--set_status (et_canvas_schematic_nets.status_move);
 
+				when GDK_LC_l =>
+					noun := NOUN_LABEL;
+					set_status (et_canvas_schematic_nets.status_move_label);
+
 				when GDK_LC_n =>
 					noun := NOUN_NAME;
 					
@@ -980,6 +984,31 @@ package body et_canvas_schematic is
 -- 
 -- 							end if;
 
+						when NOUN_LABEL =>
+							if not label.being_moved then
+
+								-- Set the tool being used for moving the label:
+								label.tool := KEYBOARD;
+
+								if not clarification_pending then
+									-- NOTE: Only simple labels can be moved.
+									-- Tag labels are always attached to a stub
+									-- and are moved along when the stub is moved.
+									find_labels (cursor_main.position, SIMPLE);
+								else
+									label.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally assign the cursor position to the
+								-- currently selected net label:
+								finalize_move_label (
+									destination		=> cursor_main.position,
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+						
 						when NOUN_NAME =>
 							if not placeholder.being_moved then
 
@@ -1092,6 +1121,11 @@ package body et_canvas_schematic is
 				when GDK_page_down =>
 					case noun is
 
+						when NOUN_LABEL => 
+							if clarification_pending then
+								clarify_label;
+							end if;
+						
 						when NOUN_NAME => 
 							if clarification_pending then
 								clarify_placeholder;
@@ -1598,8 +1632,33 @@ package body et_canvas_schematic is
 					end case;
 
 				when VERB_MOVE =>
-
+					
 					case noun is
+						when NOUN_LABEL =>
+							if not label.being_moved then
+
+								-- Set the tool being used for moving the label:
+								label.tool := MOUSE;
+
+								if not clarification_pending then
+									-- NOTE: Only simple labels can be moved.
+									-- Tag labels are always attached to a stub
+									-- and are moved along when the stub is moved.
+									find_labels (point, SIMPLE);
+								else
+									label.being_moved := true;
+									reset_request_clarification;
+								end if;
+								
+							else
+								-- Finally assign the mouse position to the
+								-- currently selected net label:
+								finalize_move_label (
+									destination		=> snap_to_grid (self, point),
+									log_threshold	=> log_threshold + 1);
+
+							end if;
+							
 						when NOUN_NAME =>
 							if not placeholder.being_moved then
 
@@ -1617,7 +1676,7 @@ package body et_canvas_schematic is
 								end if;
 								
 							else
-								-- Finally assign the cursor position to the
+								-- Finally assign the mouse position to the
 								-- currently selected placeholder:
 								et_canvas_schematic_units.finalize_move_placeholder (
 									destination		=> snap_to_grid (self, point),
@@ -1651,7 +1710,6 @@ package body et_canvas_schematic is
 									log_threshold	=> log_threshold + 1);
 
 							end if;
-							
 						
 						when NOUN_UNIT =>
 							if not unit.being_moved then
@@ -1674,7 +1732,6 @@ package body et_canvas_schematic is
 									log_threshold	=> log_threshold + 1);
 
 							end if;
-
 							
 						when NOUN_VALUE =>
 							if not placeholder.being_moved then
@@ -1832,6 +1889,11 @@ package body et_canvas_schematic is
 				when VERB_MOVE =>
 					case noun is
 
+						when NOUN_LABEL => 
+							if clarification_pending then
+								clarify_label;
+							end if;
+						
 						when NOUN_NAME => 
 							if clarification_pending then
 								clarify_placeholder;

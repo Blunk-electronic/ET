@@ -37,6 +37,7 @@
 
 with ada.text_io;					use ada.text_io;
 with ada.strings;					use ada.strings;
+with ada.characters.handling;
 with et_geometry;					use et_geometry;
 with et_canvas_schematic;			use et_canvas_schematic;
 with et_modes.schematic;
@@ -739,11 +740,14 @@ package body et_canvas_schematic_nets is
 		proposed_labels.clear;
 		selected_label := pac_proposed_labels.no_element;
 	end reset_label;
-	
+
+	-- This function collects net labels of a certain category
+	-- inside the catch zone around a place.
 	function collect_labels (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		catch_zone		: in type_catch_zone; -- the circular area around the place
+		category		: in type_label_category := BOTH; -- default is: collect all kinds of labels
 		log_threshold	: in type_log_level)
 		return pac_proposed_labels.list
 	is
@@ -767,22 +771,49 @@ package body et_canvas_schematic_nets is
 					procedure query_labels (segment : in type_net_segment) is
 						use type_net_labels;
 						label_cursor : type_net_labels.cursor := segment.labels.first;
-						d : type_distance;
-					begin
-						while label_cursor /= type_net_labels.no_element loop
-							d := distance_total (
+
+						-- Test distance between label and given place.
+						-- Appends the label if distance less or equal catch zone:
+						procedure test_distance is 
+							d : constant type_distance := distance_total (
 								point_one	=> element (label_cursor).position,
 								point_two	=> type_point (place));
-
+						begin
 							-- If the label position is within the catch zone, append
 							-- the current net, stand, segment and label cursor to the result:
 							if d <= catch_zone then
+
 								result.append ((net_cursor, strand_cursor, segment_cursor, label_cursor));
 								
-								log (text => " label found at" 
+								log (text => space 
+									& to_string (element (label_cursor).appearance) 
+									& " label found at" 
 									& to_string (element (label_cursor).position),
 									level => log_threshold + 2);
 							end if;
+						end test_distance;
+						
+					begin -- query_labels
+						while label_cursor /= type_net_labels.no_element loop
+
+							case category is
+								when BOTH => 
+									-- Label category does not matter. Test all kinds of labels:
+									test_distance;
+
+								when SIMPLE =>
+									-- Test only simple labels:
+									if element (label_cursor).appearance = SIMPLE then
+										test_distance;
+									end if;
+
+								when TAG =>
+									-- Test only tag labels:
+									if element (label_cursor).appearance = TAG then
+										test_distance;
+									end if;
+									
+							end case;
 							
 							next (label_cursor);
 						end loop;
@@ -832,7 +863,8 @@ package body et_canvas_schematic_nets is
 	begin -- collect_labels
 		log (text => "looking up net labels at" & to_string (place) 
 			 & " catch zone" & to_string (catch_zone), level => log_threshold);
-
+		-- CS output category of label
+		
 		log_indentation_up;
 		
 		query_element (
@@ -947,6 +979,12 @@ package body et_canvas_schematic_nets is
 		
 	end delete_selected_label;
 
+	function to_string (cat : in type_label_category) return string is 
+		use ada.characters.handling;
+	begin
+		return to_lower (type_label_category'image (cat));
+	end to_string;
+	
 	procedure delete_selected_label is begin
 		log (text => "deleting net label after clarification ...", level => log_threshold);
 		log_indentation_up;
@@ -1161,6 +1199,144 @@ package body et_canvas_schematic_nets is
 		reset_label;
 
 	end finalize_place_label;
+
+	procedure find_labels (
+		point		: in type_point;
+		category	: in type_label_category)
+	is begin
+		log (text => "locating net labels ...", level => log_threshold);
+		-- CS output category if simple or tag.
+		
+		log_indentation_up;
+
+		-- Collect all net labels in the vicinity of the given point:
+		proposed_labels := collect_labels (
+			module			=> current_active_module,
+			place			=> to_position (point, current_active_sheet),
+			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			category		=> category,
+			log_threshold	=> log_threshold + 1);
+
+		-- evaluate the number of lables found here:
+		case length (proposed_labels) is
+			when 0 =>
+				reset_request_clarification;
+				
+			when 1 =>
+				label.being_moved := true;
+				selected_label := proposed_labels.first;
+				
+				set_status (status_move_label);
+				
+				reset_request_clarification;
+				
+			when others =>
+				set_request_clarification;
+
+				-- preselect the first label
+				selected_label := proposed_labels.first;
+		end case;
+		
+		log_indentation_down;
+	end find_labels;
+
+	procedure move_selected_label (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_selected_label;
+		destination		: in type_point;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				procedure query_segments (strand : in out type_strand) is
+
+					procedure query_labels (segment : in out type_net_segment) is
+						use type_net_labels;
+						
+						procedure move (label : in out type_net_label) is begin
+							label.position := destination;
+						end move;
+						
+					begin
+						update_element (
+							container	=> segment.labels,
+							position	=> label.label,
+							process		=> move'access);
+						
+					end query_labels;
+					
+				begin
+					update_element (
+						container	=> strand.segments,
+						position	=> label.segment,
+						process		=> query_labels'access);
+					
+				end query_segments;
+				
+			begin
+				update_element (
+					container	=> net.strands,
+					position	=> label.strand,
+					process		=> query_segments'access);
+				
+			end query_strands;
+			
+		begin
+			update_element (
+				container	=> module.nets,
+				position	=> label.net,
+				process		=> query_strands'access);
+
+		end query_nets;
+		
+	begin -- move_selected_label
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
+			 & " moving net label to"
+			 & to_string (destination) & " ...",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_nets'access);
+		
+		log_indentation_down;				
+
+	end move_selected_label;
+	
+	procedure finalize_move_label (
+		destination		: in type_point;
+		log_threshold	: in type_log_level)
+	is
+		sl : type_selected_label;
+	begin
+		log (text => "finalizing move net label ...", level => log_threshold);
+		log_indentation_up;
+
+		if selected_label /= pac_proposed_labels.no_element then
+			sl := element (selected_label);
+
+			move_selected_label (current_active_module, sl, destination, log_threshold + 1);
+								
+		else
+			log (text => "nothing to do", level => log_threshold);
+		end if;
+			
+		log_indentation_down;
+
+		set_status (status_move_label);
+		
+		reset_label;
+	end finalize_move_label;
 
 	
 end et_canvas_schematic_nets;
