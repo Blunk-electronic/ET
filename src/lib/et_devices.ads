@@ -460,7 +460,8 @@ package et_devices is
 	function units_total (
 		device_cursor	: in type_devices.cursor)
 		return type_unit_count;
-							 
+
+	
 	function variant_available (
 	-- Returns true if given device provides the given package variant.								   
 	-- The given device must be real. Means appearance SCH_PCB.
@@ -468,6 +469,13 @@ package et_devices is
 		variant			: in type_variant_name.bounded_string)  -- D, N
 		return boolean;
 
+	-- Returns a list of available variants of the given device.
+	-- If the device is virtual, then an empty list will be returned.
+	function available_variants (
+		device_cursor	: in type_devices.cursor)
+		return pac_variants.map;
+
+	
 	function locate_device (model : in type_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
 	-- Locates the given generic device in container "devices".
 		return type_devices.cursor;

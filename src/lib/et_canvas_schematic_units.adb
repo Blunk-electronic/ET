@@ -36,9 +36,15 @@
 --
 
 with ada.text_io;					use ada.text_io;
+
+with gtkada.file_selection;
+with gtk.menu;
+with gtk.menu_item;
+
 with et_general;					use et_general;
 with et_geometry;					use et_geometry;
 with et_devices;					use et_devices;
+with et_device_rw;
 with et_schematic;					use et_schematic;
 with et_modes.schematic;
 
@@ -819,6 +825,70 @@ package body et_canvas_schematic_units is
 	end rotate_selected_unit;
 
 
+-- ADD UNIT/DEVICE
+	
+	procedure add_device is
+		use gtkada.file_selection;
+		use gtk.menu;
+		use gtk.menu_item;
+		use et_device_rw;
+
+		device_model : constant type_device_model_file.bounded_string := 
+			to_file_name (file_selection_dialog (
+				title => "Select a device model"));
+
+		use et_devices.type_devices;
+		device_cursor_lib : et_devices.type_devices.cursor; -- points to the device in the library
+
+		variants : pac_variants.map;
+
+		menu : gtk_menu;
+		--label : gtk_label;
+		i : gtk_menu_item;
+	begin
+		set_status ("selected device model: " & to_string (device_model));
+
+		-- Read the device file and store it in the rig wide device 
+		-- library et_devices.devices.
+		-- If the device is already in the library, nothing happpens.
+		read_device (
+			file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
+			log_threshold	=> log_threshold + 1);
+
+		-- locate the device in the library
+		device_cursor_lib := find (et_devices.devices, device_model);
+
+		-- get the available package variants:
+		variants := available_variants (device_cursor_lib);
+
+		--if is_empty (variants)
+		case element (device_cursor_lib).appearance is
+			when PCB => null;
+
+				menu := gtk_menu_new;
+
+				i := gtk_menu_item_new_with_label ("hello");
+				menu.append (i);
+				show (i);
+				
+				i := gtk_menu_item_new_with_label ("you");
+				menu.append (i);
+				show (i);
+
+				-- https://www.cc.gatech.edu/data_files/public/doc/gtk/tutorial/gtk_tut-14.html
+				
+				--menu.set_tearoff_state (true);
+				
+				--show (menu);
+				--menu.set_title ("Select package variant");
+				popup (menu);
+				
+			when VIRTUAL => null;
+		end case;
+	end add_device;
+
+	
+	
 -- PLACEHOLDERS
 
 	procedure clarify_placeholder is
@@ -1204,7 +1274,6 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;
 	end rotate_placeholder;
-
 	
 end et_canvas_schematic_units;
 

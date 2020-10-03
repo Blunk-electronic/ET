@@ -213,6 +213,19 @@ package et_canvas_schematic_units is
 	procedure rotate_selected_unit;
 
 
+-- ADD UNIT/DEVICE
+
+	-- to be output in the status bar:
+	status_add : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to add unit." 
+		& status_hint_for_abort;
+	
+	procedure add_device;
+
+	
 -- PLACEHOLDERS
 
 	package pac_proposed_placeholders is new doubly_linked_lists (type_selected_unit);

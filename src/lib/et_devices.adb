@@ -715,8 +715,6 @@ package body et_devices is
 
 	
 	function variant_available (
-	-- Returns true if given device provides the given package variant.
-	-- The given device must be real. Means appearance SCH_PCB.
 		device_cursor	: in type_devices.cursor;
 		variant			: in type_variant_name.bounded_string)  -- D, N
 		return boolean is
@@ -740,6 +738,22 @@ package body et_devices is
 		return result;
 	end variant_available;
 
+	function available_variants (
+		device_cursor	: in type_devices.cursor)
+		return pac_variants.map
+	is
+		result : pac_variants.map; -- to be returned
+		use type_devices;
+	begin
+		case element (device_cursor).appearance is
+			when PCB		=> result := element (device_cursor).variants;
+			when VIRTUAL	=> null;
+		end case;
+		
+		return result;
+	end available_variants;
+
+	
 	function locate_device (model : in type_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
 	-- Locates the given generic device in container "devices".
 		return type_devices.cursor is

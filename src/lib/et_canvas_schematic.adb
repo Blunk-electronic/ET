@@ -50,7 +50,6 @@ with et_colors;						use et_colors;
 with et_colors.schematic;			use et_colors.schematic;
 with et_modes.schematic;			use et_modes.schematic;
 
-
 package body et_canvas_schematic is
 
 	procedure set_title_bar (
@@ -1253,24 +1252,20 @@ package body et_canvas_schematic is
 			case key is
 				-- EVALUATE KEY FOR NOUN:
 				when GDK_LC_n =>
-					noun := NOUN_NAME;
-					
+					noun := NOUN_NAME;					
 					set_status (et_canvas_schematic_units.status_rotate_placeholder);
 
 				when GDK_LC_p =>
-					noun := NOUN_PURPOSE;
-					
+					noun := NOUN_PURPOSE;					
 					set_status (et_canvas_schematic_units.status_rotate_placeholder);
 
 					
 				when GDK_LC_u =>
-					noun := NOUN_UNIT;
-					
+					noun := NOUN_UNIT;					
 					set_status (et_canvas_schematic_units.status_rotate);
 
 				when GDK_LC_v =>
-					noun := NOUN_VALUE;
-					
+					noun := NOUN_VALUE;					
 					set_status (et_canvas_schematic_units.status_rotate_placeholder);
 
 
@@ -1335,6 +1330,18 @@ package body et_canvas_schematic is
 			end case;
 		end rotate;
 
+		procedure add is begin
+			case key is
+				-- EVALUATE KEY FOR NOUN:
+				when GDK_LC_d =>
+					noun := NOUN_DEVICE;					
+					set_status (et_canvas_schematic_units.status_add);
+
+					add_device;
+					
+				when others => null;
+			end case;
+		end add;
 		
 	begin -- evaluate_key
 		
@@ -1378,6 +1385,10 @@ package body et_canvas_schematic is
 						when GDK_Delete =>
 							verb := VERB_DELETE;
 							status_enter_noun;
+
+						when GDK_LC_a =>
+							verb := VERB_ADD;
+							status_enter_noun;
 							
 						when GDK_LC_g =>
 							verb := VERB_DRAG;
@@ -1413,6 +1424,7 @@ package body et_canvas_schematic is
 					--put_line ("NOUN entered");
 
 					case verb is
+						when VERB_ADD		=> add;
 						when VERB_DELETE	=> delete;
 						when VERB_DRAG		=> drag;
 						when VERB_DRAW		=> draw;
