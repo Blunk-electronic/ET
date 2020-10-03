@@ -723,10 +723,17 @@ package body et_canvas_schematic is
 					noun := NOUN_NET;
 					set_status (et_canvas_schematic_nets.status_drag);
 
+					-- When dragging net segments, we enforce the default grid
+					-- and snap the cursor position to the default grid:
+					self.reset_grid_and_cursor;
+					
 				when GDK_LC_u =>
 					noun := NOUN_UNIT;
 					set_status (et_canvas_schematic_units.status_drag);
 
+					-- When dragging units, we enforce the default grid
+					-- and snap the cursor position to the default grid:
+					self.reset_grid_and_cursor;
 
 				-- If space pressed then the operator wishes to operate
 				-- by keyboard:
@@ -735,6 +742,10 @@ package body et_canvas_schematic is
 					case noun is
 						when NOUN_NET =>
 							if not segment.being_moved then
+
+								-- When dragging net segments, we enforce the default grid
+								-- and snap the cursor position to the default grid:
+								self.reset_grid_and_cursor;
 								
 								-- Set the tool being used for moving the segment:
 								segment.tool := KEYBOARD;
@@ -758,6 +769,10 @@ package body et_canvas_schematic is
 
 						when NOUN_UNIT =>
 							if not unit.being_moved then
+
+								-- When dragging units, we enforce the default grid
+								-- and snap the cursor position to the default grid:
+								self.reset_grid_and_cursor;
 								
 								-- Set the tool being used for moving the unit:
 								unit.tool := KEYBOARD;
@@ -936,23 +951,23 @@ package body et_canvas_schematic is
 					set_status (et_canvas_schematic_nets.status_move_label);
 
 				when GDK_LC_n =>
-					noun := NOUN_NAME;
-					
+					noun := NOUN_NAME;					
 					set_status (et_canvas_schematic_units.status_move_placeholder);
 
 				when GDK_LC_p =>
-					noun := NOUN_PURPOSE;
-					
+					noun := NOUN_PURPOSE;					
 					set_status (et_canvas_schematic_units.status_move_placeholder);
 					
 				when GDK_LC_u =>
 					noun := NOUN_UNIT;
-					
 					set_status (et_canvas_schematic_units.status_move);
 
-				when GDK_LC_v =>
-					noun := NOUN_VALUE;
+					-- When moving units, we enforce the default grid
+					-- and snap the cursor position to the default grid:
+					self.reset_grid_and_cursor;
 					
+				when GDK_LC_v =>
+					noun := NOUN_VALUE;					
 					set_status (et_canvas_schematic_units.status_move_placeholder);
 
 					
@@ -1065,6 +1080,10 @@ package body et_canvas_schematic is
 								
 						when NOUN_UNIT =>
 							if not unit.being_moved then
+
+								-- When moving units, we enforce the default grid
+								-- and snap the cursor position to the default grid:
+								self.reset_grid_and_cursor;
 								
 								-- Set the tool being used for moving the unit:
 								unit.tool := KEYBOARD;
@@ -1499,6 +1518,10 @@ package body et_canvas_schematic is
 					case noun is
 						when NOUN_UNIT =>
 							if not unit.being_moved then
+
+								-- When dragging units, we enforce the default grid
+								-- and snap the cursor position to the default grid:
+								self.reset_grid_and_cursor;
 								
 								-- Set the tool being used for moving the unit:
 								unit.tool := MOUSE;
@@ -1519,11 +1542,14 @@ package body et_canvas_schematic is
 									log_threshold	=> log_threshold + 1);
 
 							end if;
-
 							
 						when NOUN_NET => 
 							if not segment.being_moved then
 
+								-- When dragging net segments, we enforce the default grid
+								-- and snap the cursor position to the default grid:
+								self.reset_grid_and_cursor;
+								
 								-- Set the tool being used for dragging the net segment:
 								segment.tool := MOUSE;
 								
@@ -1713,6 +1739,10 @@ package body et_canvas_schematic is
 						
 						when NOUN_UNIT =>
 							if not unit.being_moved then
+
+								-- When moving units, we enforce the default grid
+								-- and snap the cursor position to the default grid:
+								self.reset_grid_and_cursor;
 								
 								-- Set the tool being used for moving the unit:
 								unit.tool := MOUSE;
