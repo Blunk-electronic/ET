@@ -40,11 +40,13 @@ with ada.text_io;					use ada.text_io;
 with gtkada.file_selection;
 with gtk.menu;
 with gtk.menu_item;
+with gtk.menu_shell;
 
 with et_general;					use et_general;
 with et_geometry;					use et_geometry;
 with et_devices;					use et_devices;
 with et_device_rw;
+with et_packages;
 with et_schematic;					use et_schematic;
 with et_modes.schematic;
 
@@ -826,65 +828,99 @@ package body et_canvas_schematic_units is
 
 
 -- ADD UNIT/DEVICE
+	--use gtk.menu_shell;
+	
+	procedure variant_selected (self : access gtk.menu_item.gtk_menu_item_record'class) is
+
+		-- Extract the variant name from field 3 of the menu item:
+		var_name : constant string := get_field_from_line (
+			text_in		=> self.get_label,
+			position	=> 3);
+
+	begin
+		unit_add.variant := to_name (var_name);
+		
+		put_line (var_name & " selected");
+	end variant_selected;
 	
 	procedure add_device is
 		use gtkada.file_selection;
 		use gtk.menu;
 		use gtk.menu_item;
 		use et_device_rw;
+		use et_packages;
 
-		device_model : constant type_device_model_file.bounded_string := 
-			to_file_name (file_selection_dialog (
-				title => "Select a device model"));
+		device_model : type_device_model_file.bounded_string;
 
 		use et_devices.type_devices;
 		device_cursor_lib : et_devices.type_devices.cursor; -- points to the device in the library
 
+		use pac_variants;
 		variants : pac_variants.map;
-
-		menu : gtk_menu;
-		--label : gtk_label;
-		i : gtk_menu_item;
-	begin
-		set_status ("selected device model: " & to_string (device_model));
-
-		-- Read the device file and store it in the rig wide device 
-		-- library et_devices.devices.
-		-- If the device is already in the library, nothing happpens.
-		read_device (
-			file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
-			log_threshold	=> log_threshold + 1);
-
-		-- locate the device in the library
-		device_cursor_lib := find (et_devices.devices, device_model);
-
-		-- get the available package variants:
-		variants := available_variants (device_cursor_lib);
-
-		--if is_empty (variants)
-		case element (device_cursor_lib).appearance is
-			when PCB => null;
-
-				menu := gtk_menu_new;
-
-				i := gtk_menu_item_new_with_label ("hello");
-				menu.append (i);
-				show (i);
+		
+		procedure show_variants_menu is
+			m : gtk_menu;
+			i : gtk_menu_item;
+			
+			procedure query_variant (c : in pac_variants.cursor) is
+				package_model : constant string := to_string (element (c).package_model);
+			begin
+				-- Build the menu item. NOTE: The actual variant name must be
+				-- the 3rd string of the entry. Procedure variant_selected expects
+				-- it at this place:
+				i := gtk_menu_item_new_with_label (
+					"package variant: " & to_string (key (c))
+					& " model " & package_model);
 				
-				i := gtk_menu_item_new_with_label ("you");
-				menu.append (i);
-				show (i);
+				i.on_activate (variant_selected'access);
+				m.append (i);
+				i.show;
 
 				-- https://www.cc.gatech.edu/data_files/public/doc/gtk/tutorial/gtk_tut-14.html
-				
-				--menu.set_tearoff_state (true);
-				
-				--show (menu);
-				--menu.set_title ("Select package variant");
-				popup (menu);
-				
-			when VIRTUAL => null;
-		end case;
+			end query_variant;
+			
+		begin
+			m := gtk_menu_new;
+			variants.iterate (query_variant'access);
+
+			m.show;
+			m.popup;
+
+		end show_variants_menu;
+		
+	begin
+		device_model := to_file_name (file_selection_dialog (title => "Select a device model"));
+
+		if type_device_model_file.length (device_model) > 0 then
+			set_status ("selected device model: " & to_string (device_model));
+
+			-- Read the device file and store it in the rig wide device 
+			-- library et_devices.devices.
+			-- If the device is already in the library, nothing happpens.
+			read_device (
+				file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
+				log_threshold	=> log_threshold + 1);
+
+			-- locate the device in the library
+			device_cursor_lib := find (et_devices.devices, device_model);
+
+			unit_add.device := device_cursor_lib;
+			
+			-- get the available package variants:
+			variants := available_variants (device_cursor_lib);
+
+			case element (device_cursor_lib).appearance is
+				when PCB =>
+					if length (variants) > 1 then
+						show_variants_menu;
+					else
+						unit_add.variant := key (variants.first);
+					end if;
+					
+				when VIRTUAL => null;
+			end case;
+
+		end if;
 	end add_device;
 
 	

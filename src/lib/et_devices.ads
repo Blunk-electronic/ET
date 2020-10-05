@@ -352,6 +352,7 @@ package et_devices is
 	-- converts a type_variant_name to a string.
 	
 	function to_name (variant_name : in string) return type_variant_name.bounded_string;
+	-- CS rename to to_variant_name
 
 	procedure check_variant_name_length (variant_name : in string);
 	-- tests if the given variant name is not longer than allowed

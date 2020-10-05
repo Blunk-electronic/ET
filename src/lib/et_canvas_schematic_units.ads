@@ -47,6 +47,7 @@ with et_general;					use et_general;
 with et_canvas_general;				use et_canvas_general;
 with et_project.modules;			use et_project.modules;
 with et_symbols;					use et_symbols;
+with et_devices;					use et_devices;
 with et_schematic;
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
@@ -222,6 +223,15 @@ package et_canvas_schematic_units is
 		& status_press_space
 		& "to add unit." 
 		& status_hint_for_abort;
+
+	type type_unit_being_added is record
+		tool		: type_tool := MOUSE;
+		device		: type_devices.cursor;
+		variant		: et_devices.type_variant_name.bounded_string; -- N, D, S_0805
+	end record;
+
+	unit_add : type_unit_being_added;
+
 	
 	procedure add_device;
 
