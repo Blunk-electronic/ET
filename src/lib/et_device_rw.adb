@@ -930,9 +930,9 @@ package body et_device_rw is
 								expect_field_count (line, 2);
 
 								-- validate value
-								value := to_value (
-										value						=> f (line, 2),
-										error_on_invalid_character	=> false);
+								value := to_value_with_check (
+									value						=> f (line, 2),
+									error_on_invalid_character	=> false);
 
 								if not value_characters_valid (value) then
 									log (WARNING, "default value in device model " &

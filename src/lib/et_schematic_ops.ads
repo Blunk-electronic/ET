@@ -295,6 +295,7 @@ package et_schematic_ops is
 		prefix			: in type_prefix.bounded_string; -- C
 		category		: in type_device_category := ELECTRICAL)
 		return type_name; -- C2
+
 	
 	procedure add_device (
 	-- Adds a device to the schematic. The unit is determined by the unit add levels.
@@ -306,6 +307,8 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level);
 
 	-- CS procedure add_device with explicit device name like R12
+
+	-- CS procedure add_device that takes module cursor and model cursor
 	
 	procedure copy_device (
 	-- Copies the given device. Places the first unit of the device (according to add level)

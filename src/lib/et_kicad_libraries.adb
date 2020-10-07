@@ -1945,9 +1945,9 @@ package body et_kicad_libraries is
 						declare
 							value : type_value.bounded_string;
 						begin
-							value := to_value (
-									value 						=> content (text),
-									error_on_invalid_character	=> false);
+							value := to_value_with_check (
+								value 						=> content (text),
+								error_on_invalid_character	=> false);
 							-- For the operators convenice no error is raised if invalid
 							-- character found. This was the design gets imported but with
 							-- (lots of) warnings.
@@ -2139,7 +2139,7 @@ package body et_kicad_libraries is
 											leading_hash	=> true)),
 
 								prefix		=> tmp_prefix,
-								value		=> to_value (
+								value		=> to_value_with_check (
 												value => content (field_value),
 												error_on_invalid_character => false
 												),
@@ -2162,7 +2162,7 @@ package body et_kicad_libraries is
 							new_item	=> (
 								appearance		=> PCB,
 								prefix			=> tmp_prefix,
-								value			=> to_value (content (field_value)),
+								value			=> to_value_with_check (content (field_value)),
 								units			=> type_units_library.empty_map,
 
 								package_filter	=> type_package_filter.empty_set,

@@ -228,12 +228,17 @@ package et_canvas_schematic_units is
 		tool		: type_tool := MOUSE;
 		device		: type_devices.cursor;
 		variant		: et_devices.type_variant_name.bounded_string; -- N, D, S_0805
+		name		: type_unit_name.bounded_string;
 	end record;
 
 	unit_add : type_unit_being_added;
 
+	procedure reset_unit_add;
 	
 	procedure add_device;
+
+	procedure finalize_add_device (
+		position	: in type_point);
 
 	
 -- PLACEHOLDERS

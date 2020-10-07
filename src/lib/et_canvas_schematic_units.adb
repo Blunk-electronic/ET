@@ -828,7 +828,10 @@ package body et_canvas_schematic_units is
 
 
 -- ADD UNIT/DEVICE
-	--use gtk.menu_shell;
+
+	procedure reset_unit_add is begin
+		unit_add := (others => <>);
+	end reset_unit_add;
 	
 	procedure variant_selected (self : access gtk.menu_item.gtk_menu_item_record'class) is
 
@@ -836,11 +839,13 @@ package body et_canvas_schematic_units is
 		var_name : constant string := get_field_from_line (
 			text_in		=> self.get_label,
 			position	=> 3);
-
 	begin
 		unit_add.variant := to_name (var_name);
+		--put_line (var_name & " selected");
+
+		-- Set the tool being used for adding the device:
+		unit_add.tool := MOUSE;
 		
-		put_line (var_name & " selected");
 	end variant_selected;
 	
 	procedure add_device is
@@ -855,6 +860,8 @@ package body et_canvas_schematic_units is
 		use et_devices.type_devices;
 		device_cursor_lib : et_devices.type_devices.cursor; -- points to the device in the library
 
+		unit_name : et_devices.type_unit_name.bounded_string;
+		
 		use pac_variants;
 		variants : pac_variants.map;
 		
@@ -905,6 +912,8 @@ package body et_canvas_schematic_units is
 			device_cursor_lib := find (et_devices.devices, device_model);
 
 			unit_add.device := device_cursor_lib;
+
+			unit_add.name := first_unit (device_cursor_lib);
 			
 			-- get the available package variants:
 			variants := available_variants (device_cursor_lib);
@@ -923,7 +932,23 @@ package body et_canvas_schematic_units is
 		end if;
 	end add_device;
 
-	
+	procedure finalize_add_device (
+		position	: in type_point)
+	is 
+		use et_devices;
+		use et_devices.type_devices;
+	begin
+
+		add_device (
+			module_name		=> key (current_active_module),
+			device_model	=> et_devices.type_devices.key (unit_add.device),
+			variant			=> unit_add.variant,
+			destination		=> to_position (position, current_active_sheet),
+			log_threshold	=> log_threshold + 1);
+		
+		reset_unit_add;
+	end finalize_add_device;
+
 	
 -- PLACEHOLDERS
 

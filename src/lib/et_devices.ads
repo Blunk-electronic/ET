@@ -125,6 +125,7 @@ package et_devices is
 	package type_value is new generic_bounded_length (value_length_max);
 
 	function to_string (value : in type_value.bounded_string) return string;
+	function to_value (value : in string) return type_value.bounded_string;
 	
 	function value_length_valid (value : in string) return boolean;
 	-- Tests if the given value is longer than allowed. Returns false if too long.
@@ -143,7 +144,7 @@ package et_devices is
 	procedure value_invalid (value : in string);
 	-- Issues error message and raises constraint error.
 
-	function to_value (
+	function to_value_with_check (
 	-- Tests the given value for length and invalid characters.
 		value						: in string;
 		error_on_invalid_character	: in boolean := true)
@@ -186,10 +187,11 @@ package et_devices is
 
 	subtype type_index_width is positive range positive'first .. 5; -- see number of digits of type_device_name_index
 	
-	type type_name is record -- CS: should be private
+	type type_name is record -- CS: should be private, rename to type_device_name
 		prefix		: type_prefix.bounded_string := prefix_default; -- like "IC"
 		id			: type_name_index := name_index_default; -- like "303"
-		id_width	: type_index_width; -- the number of digits of the id. 3 in case of an id of 303 -- CS default ?
+		id_width	: type_index_width := type_index_width'first; -- the number of digits of the id. 
+		-- Example: id_width is 3 in case of an id like of 937
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
 
@@ -429,12 +431,9 @@ package et_devices is
 	end record;
 
 
-	-- When querying units of a device this type is required:
-	type type_device_units is record
-		int : pac_units_internal.cursor;
-		ext : pac_units_external.cursor;
-	end record;
 
+
+	
 	-- Use this function to adopt placeholder position and rotation 
 	-- of a internal symbol.
 	-- Rotates the positions of placeholders and their rotation about
@@ -457,6 +456,42 @@ package et_devices is
 	-- HERE RIG WIDE DEVICES ARE KEPT:
 	devices : type_devices.map;
 
+
+	
+	-- When querying units of a device this type is required:
+	type type_device_units is record
+		int : pac_units_internal.cursor;
+		ext : pac_units_external.cursor;
+	end record;
+	
+	-- Returns the cursor of the first internal or external unit.
+	-- Searches first in internal and then in external units. 
+	--  The search order is further-on determined
+	-- by the add levels of the units. Priority is add level MUST,
+	-- then ALWAYS, then NEXT, then REQUEST, then CAN.
+	--  If no suitable internal unit found, the cursor of internal 
+	-- units in the return is no_element.
+	--  If no suitable external unit found, the cursor of external
+	-- units in the return is no_element.
+	function first_unit (
+		device_cursor : in type_devices.cursor) 
+		return type_device_units;
+
+	-- Returns the name of the first unit.
+	-- It can be an internal or an external unit.
+	function first_unit (
+		device_cursor : in et_devices.type_devices.cursor) 
+		return type_unit_name.bounded_string;
+
+							
+	-- Returns the cursor of the desired internal or external unit.
+	function any_unit (
+		device_cursor	: in type_devices.cursor;
+		unit_name		: in type_unit_name.bounded_string)
+		return type_device_units;
+
+
+	
 	-- Returns the total number of units the given device provides:
 	function units_total (
 		device_cursor	: in type_devices.cursor)

@@ -767,7 +767,7 @@ procedure read_module (
 			expect_field_count (line, 2);
 
 			-- validate value
-			device_value := to_value (f (line, 2));
+			device_value := to_value_with_check (f (line, 2));
 
 		elsif kw = keyword_model then -- model /models/capacitor.dev
 			expect_field_count (line, 2);
@@ -4294,7 +4294,7 @@ procedure read_module (
 										expect_field_count (line, 6, warn => false);
 
 										-- read and validate value
-										device.value := to_value (f (line, 4));
+										device.value := to_value_with_check (f (line, 4));
 
 										-- read partcode
 										if f (line, 5) = et_material.keyword_partcode then

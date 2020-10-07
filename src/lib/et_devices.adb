@@ -144,12 +144,15 @@ package body et_devices is
 	end;
 	
 
-	function to_string (value : in type_value.bounded_string) return string is
-	-- Returns the given value as string.
-	begin
+	function to_string (value : in type_value.bounded_string) return string is begin
 		return type_value.to_string (value);
 	end;
 
+	function to_value (value : in string) return type_value.bounded_string is begin
+		return type_value.to_bounded_string (value);
+	end;
+
+	
 	function value_length_valid (value : in string) return boolean is
 	-- Tests if the given value is longer than allowed. Returns false if too long.
 	-- Returns true if length is in allowed range.		
@@ -203,7 +206,6 @@ package body et_devices is
 	end value_characters_valid;
 
 	procedure value_invalid (value : in string) is 
-	-- Issues error message and raises constraint error.
 		use et_string_processing;
 	begin
 		log (ERROR, "value " & enclose_in_quotes (value) &
@@ -211,7 +213,7 @@ package body et_devices is
 		raise constraint_error;
 	end;
 
-	function to_value (
+	function to_value_with_check (
 	-- Tests the given value for length and invalid characters.
 		value						: in string;
 		error_on_invalid_character	: in boolean := true)
@@ -237,7 +239,7 @@ package body et_devices is
 		end if;
 			
 		return value_out;
-	end to_value;
+	end to_value_with_check;
 
 	-- Returns true if value is empty ("").
 	function is_empty (value : in type_value.bounded_string) return boolean is 
@@ -677,6 +679,8 @@ package body et_devices is
 	end to_string;
 
 
+
+	
 	function rotate_placeholders (
 		symbol_cursor	: in pac_units_internal.cursor;
 		destination		: in et_coordinates.type_position)
@@ -697,6 +701,214 @@ package body et_devices is
 		return r;
 	end rotate_placeholders;
 
+
+
+	
+
+	function first_unit (
+		device_cursor : in type_devices.cursor) 
+		return type_device_units
+	is
+		cursors : type_device_units; -- to be returned
+		
+		use type_devices;
+		use pac_units_internal;
+		use pac_units_external;
+
+		use et_string_processing;
+
+		procedure query_units (
+			device_name	: in type_device_model_file.bounded_string;
+			device		: in type_device) is
+
+			function first_internal (add_level : in type_add_level) 
+				return pac_units_internal.cursor is
+			-- Searches for a unit with given add_level. Returns the cursor of that unit.
+			-- If no suitable unit found, returns cursor with no_element.
+				cursor : pac_units_internal.cursor := device.units_internal.first;
+			begin
+				while cursor /= pac_units_internal.no_element loop
+					if element (cursor).add_level = add_level then
+						return cursor; -- unit found, no further search required. exit prematurely.
+					end if;
+					next (cursor);
+				end loop;
+				-- no unit found. return no_element:
+				return pac_units_internal.no_element;
+			end;
+
+			function first_external (add_level : in type_add_level) 
+				return pac_units_external.cursor is
+			-- Searches for a unit with given add_level. Returns the cursor of that unit.
+			-- If no suitable unit found, returns cursor with no_element.
+				cursor : pac_units_external.cursor := device.units_external.first;
+			begin
+				while cursor /= pac_units_external.no_element loop
+					if element (cursor).add_level = add_level then
+						return cursor; -- unit found, no further search required. exit prematurely.
+					end if;
+					next (cursor);
+				end loop;
+				-- no unit found. return no_element:
+				return pac_units_external.no_element;
+			end;
+			
+		begin -- query_units
+			-- First search among the internal units for a MUST-unit:
+			cursors.int := first_internal (MUST);
+
+			-- if no MUST-unit found, search for an ALWAYS-unit:
+			if cursors.int = pac_units_internal.no_element then
+				cursors.int := first_internal (ALWAYS);
+
+				-- if no ALWAYS-unit found, search for a NEXT-unit:
+				if cursors.int = pac_units_internal.no_element then
+					cursors.int := first_internal (NEXT);
+
+					-- if no NEXT-unit found, search for a REQUEST-unit
+					if cursors.int = pac_units_internal.no_element then
+						cursors.int := first_internal (REQUEST);
+
+						-- if no REQUEST-unit found, search for a CAN-unit
+						if cursors.int = pac_units_internal.no_element then
+							cursors.int := first_internal (CAN);
+						end if;
+					end if;					
+				end if;
+			end if;
+
+			-- if no suitable internal unit found, search among the external units:
+			if cursors.int = pac_units_internal.no_element then
+
+				-- search among the external units for a MUST-unit
+				cursors.ext := first_external (MUST);
+
+				-- if no MUST-unit found, search for an ALWAYS-unit:
+				if cursors.ext = pac_units_external.no_element then
+					cursors.ext := first_external (ALWAYS);
+
+					-- if no ALWAYS-unit found, search for a NEXT-unit:
+					if cursors.ext = pac_units_external.no_element then
+						cursors.ext := first_external (NEXT);
+
+						-- if no NEXT-unit found, search for a REQUEST-unit
+						if cursors.ext = pac_units_external.no_element then
+							cursors.ext := first_external (REQUEST);
+
+							-- if no REQUEST-unit found, search for a CAN-unit
+							if cursors.ext = pac_units_external.no_element then
+								cursors.ext := first_external (CAN);
+							end if;
+						end if;					
+					end if;
+				end if;
+			
+				-- if no suitable external unit found, we have a problem:
+				if cursors.ext = pac_units_external.no_element then
+					log (ERROR, " Device model has no units !", console => true);
+					raise constraint_error;
+				end if;
+
+			end if;
+			
+		end query_units;
+		
+	begin -- first_unit
+		query_element (
+			position	=> device_cursor,
+			process		=> query_units'access);
+		
+		return cursors;
+	end first_unit;
+
+	function first_unit (
+		device_cursor : in type_devices.cursor) 
+		return type_unit_name.bounded_string
+	is
+		fu : constant type_device_units := first_unit (device_cursor);
+
+		use pac_units_internal;
+		use pac_units_external;
+		
+		unit_name : type_unit_name.bounded_string; -- to be returned
+	begin
+		-- The first unit is either internal or external.
+		
+		-- If first unit is an internal one:
+		if fu.int /= pac_units_internal.no_element then
+
+			unit_name := key (fu.int);
+			
+		-- If first unit is an external one:
+		elsif fu.ext /= pac_units_external.no_element then
+			
+			unit_name := key (fu.ext);
+			
+		else
+			raise constraint_error; -- CS should never happen. function first_unit excludes this case.
+		end if;
+
+		return unit_name;
+	end first_unit;
+	
+	function any_unit (
+		device_cursor	: in type_devices.cursor;
+		unit_name		: in type_unit_name.bounded_string)
+		return type_device_units is
+
+		cursors : type_device_units; -- to be returned
+		
+		use type_devices;
+		use type_unit_name;
+		use pac_units_internal;
+		use pac_units_external;
+
+		use et_string_processing;
+		
+		procedure query_units (
+			device_name	: in type_device_model_file.bounded_string;
+			device		: in type_device) is
+		begin -- query_units
+			-- First search among the internal units:
+			cursors.int := device.units_internal.first;
+
+			while cursors.int /= pac_units_internal.no_element loop
+				if key (cursors.int) = unit_name then
+					exit; -- unit found, no further search required. exit prematurely.
+				end if;
+				next (cursors.int);
+			end loop;
+
+			-- if no suitable internal unit found, search among the external units:
+			if cursors.int = pac_units_internal.no_element then
+
+				cursors.ext := device.units_external.first;
+
+				while cursors.ext /= pac_units_external.no_element loop
+					if key (cursors.ext) = unit_name then
+						exit; -- unit found, no further search required. exit prematurely.
+					end if;
+					next (cursors.ext);
+				end loop;
+				
+				-- if no suitable external unit found, we have a problem:
+				if cursors.ext = pac_units_external.no_element then
+					log (ERROR, "unit " & et_devices.to_string (unit_name) &
+						 " not found in device model !", console => true);
+					raise constraint_error;
+				end if;
+
+			end if;
+			
+		end query_units;
+		
+	begin -- any_unit
+		query_element (
+			position	=> device_cursor,
+			process		=> query_units'access);
+		
+		return cursors;
+	end any_unit;
 	
 
 	function units_total (

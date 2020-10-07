@@ -42,13 +42,13 @@ procedure draw_symbol (
 	in_area			: in type_rectangle := no_rectangle;
 	context 		: in type_draw_context;
 	symbol			: in et_symbols.type_symbol;
-	device_name		: in et_devices.type_name;
-	device_value	: in et_devices.type_value.bounded_string; -- like 100R or TL084
-	device_purpose	: in et_devices.type_purpose.bounded_string; -- like "brightness control"
+	device_name		: in et_devices.type_name := (others => <>);
+	device_value	: in et_devices.type_value.bounded_string := to_value (""); -- like 100R or TL084
+	device_purpose	: in et_devices.type_purpose.bounded_string := to_purpose (""); -- like "brightness control"
 	unit_name		: in et_devices.type_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 	unit_count		: in et_devices.type_unit_count;
 	unit_position	: in type_point; -- x/y on the schematic sheet
-	unit_rotation	: in type_rotation;
+	unit_rotation	: in type_rotation := zero_rotation;
 	sch_placeholder_name	: in et_symbols.type_text_placeholder;
 	sch_placeholder_value	: in et_symbols.type_text_placeholder;
 	sch_placeholder_purpose : in et_symbols.type_text_placeholder;

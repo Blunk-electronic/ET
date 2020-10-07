@@ -1428,7 +1428,7 @@ package body et_kicad.pcb is
 												null; -- CS write something useful
 											end if;
 											
-											package_value := et_devices.to_value (to_string (arg));
+											package_value := et_devices.to_value_with_check (to_string (arg));
 											
 											if not et_devices.value_characters_valid (package_value) then
 												null; -- CS write something useful

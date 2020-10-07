@@ -42,7 +42,7 @@ with ada.strings.fixed;				use ada.strings.fixed;
 
 with et_pcb_coordinates;
 with et_terminals;
-with et_devices;
+with et_devices;					use et_devices;
 
 with et_canvas_board;
 with et_display.schematic;			use et_display.schematic;
@@ -178,13 +178,13 @@ package body et_canvas_schematic is
 		in_area			: in type_rectangle := no_rectangle;
 		context 		: in type_draw_context;
 		symbol			: in et_symbols.type_symbol;
-		device_name		: in et_devices.type_name;
-		device_value	: in et_devices.type_value.bounded_string; -- like 100R or TL084
-		device_purpose	: in et_devices.type_purpose.bounded_string; -- like "brightness control"
+		device_name		: in et_devices.type_name := (others => <>);
+		device_value	: in et_devices.type_value.bounded_string := to_value (""); -- like 100R or TL084
+		device_purpose	: in et_devices.type_purpose.bounded_string := to_purpose (""); -- like "brightness control"
 		unit_name		: in et_devices.type_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 		unit_count		: in et_devices.type_unit_count;
 		unit_position	: in type_point; -- x/y on the schematic sheet
-		unit_rotation	: in type_rotation;
+		unit_rotation	: in type_rotation := zero_rotation;
 		sch_placeholder_name	: in et_symbols.type_text_placeholder;
 		sch_placeholder_value	: in et_symbols.type_text_placeholder;
 		sch_placeholder_purpose : in et_symbols.type_text_placeholder;
@@ -1330,7 +1330,9 @@ package body et_canvas_schematic is
 			end case;
 		end rotate;
 
-		procedure add is begin
+		procedure add is 
+			use et_devices.type_devices;
+		begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
 				when GDK_LC_d =>
@@ -1338,6 +1340,27 @@ package body et_canvas_schematic is
 					set_status (et_canvas_schematic_units.status_add);
 
 					add_device;
+
+				-- If space pressed, then the operator wishes to operate via keyboard:	
+				when GDK_Space =>
+					case noun is
+
+						when NOUN_DEVICE =>
+							if unit_add.device /= type_devices.no_element then
+								
+								-- Set the tool being used for placing the label:
+								--unit_add.tool := KEYBOARD;
+								
+								-- Finally place the unit at the current 
+								-- cursor position:
+								finalize_add_device (cursor_main.position);
+
+							end if;
+							
+						when others => null;
+							
+					end case;
+
 					
 				when others => null;
 			end case;
@@ -1350,8 +1373,10 @@ package body et_canvas_schematic is
 
 		if key = GDK_Escape then
 			expect_entry := expect_entry_default;
-			verb := verb_default;
-			noun := noun_default;
+			
+			verb := verb_default; -- CS ?
+			noun := noun_default; -- CS ?
+			-- if left off, verb and noun would remain as they are
 			
 			reset_request_clarification;
 			
@@ -1359,7 +1384,8 @@ package body et_canvas_schematic is
 			reset_segment; -- after move/drag
 			reset_segments_being_dragged; -- after dragging a unit
 			reset_unit; -- after moving a unit
-
+			reset_unit_add; -- after adding a device
+			
 			reset_label; -- after placing a label
 			
 			reset_placeholder; -- after moving a placeholder
@@ -1446,9 +1472,21 @@ package body et_canvas_schematic is
 
 	overriding procedure evaluate_mouse_position (
 		self	: not null access type_view;
-		point	: in type_point) is
+		point	: in type_point) 
+	is
+		use et_devices.type_devices;
 	begin
 		case verb is
+			when VERB_ADD =>
+				case noun is
+					when NOUN_DEVICE =>
+						if unit_add.device /= et_devices.type_devices.no_element then
+							redraw;
+						end if;
+
+					when others => null;
+				end case;
+			
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_NET =>
@@ -1484,6 +1522,7 @@ package body et_canvas_schematic is
 
 					when others => null;
 				end case;
+
 				
 			when others => null;
 		end case;
@@ -1494,10 +1533,30 @@ package body et_canvas_schematic is
 		button	: in type_mouse_button;
 		point	: in type_point) 
 	is
-		procedure left_button is begin
+		procedure left_button is 
+			use et_devices.type_devices;
+		begin
 			self.move_cursor (ABSOLUTE, cursor_main, point);
 
 			case verb is
+				when VERB_ADD =>
+
+					case noun is
+						when NOUN_DEVICE =>
+							if unit_add.device /= type_devices.no_element then
+									
+								---- Set the tool being used for adding the device:
+								--unit_add.tool := MOUSE;
+									
+								-- Finally place the unit at the current 
+								-- cursor position:
+								finalize_add_device (snap_to_grid (self, point));
+							end if;
+								
+						when others => null;
+								
+					end case;
+				
 				when VERB_DELETE =>
 
 					case noun is
@@ -1833,7 +1892,6 @@ package body et_canvas_schematic is
 						when others => null;
 							
 					end case;
-
 					
 				when VERB_ROTATE =>
 

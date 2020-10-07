@@ -411,12 +411,96 @@ procedure draw_units (
 		-- Iterate the units of the current device:
 		iterate (element (device_cursor).units, query_units'access);
 	end query_devices;
+
+	procedure draw_unit_being_added is
+		brightness : type_brightness := NORMAL;
 		
+		use et_devices;
+		use et_devices.type_devices;
+
+		procedure locate_symbol (unit_cursor : in et_devices.type_unit_cursors) is
+			use pac_units_external;
+			use pac_units_internal;
+
+			destination : type_point;
+			
+			use et_symbols;
+			use type_symbols;
+			symbol_model : type_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
+			symbol_cursor : et_symbols.type_symbols.cursor;
+		begin
+			case unit_add.tool is
+				when KEYBOARD	=> destination := cursor_main.position;
+				when MOUSE		=> destination := self.snap_to_grid (self.mouse_position);
+			end case;
+			
+			case unit_cursor.ext_int is
+				when EXT =>
+					--put_line ("external unit");
+					-- If the unit is external, we must fetch the symbol 
+					-- via its model file:
+					symbol_model := element (unit_cursor.external).file;
+					symbol_cursor := locate (symbol_model);
+					
+					draw_symbol (
+						self		=> self,
+						in_area		=> in_area,
+						context		=> context,
+						
+						symbol		=> type_symbols.element (symbol_cursor),
+
+						unit_name		=> unit_add.name,
+						unit_count		=> 1, --unit_count,
+						
+						unit_position	=> destination,
+
+						sch_placeholder_name	=> element (symbol_cursor).name,
+						sch_placeholder_value	=> element (symbol_cursor).value,
+						sch_placeholder_purpose => element (symbol_cursor).purpose,
+
+						brightness		=> brightness
+						);
+					
+				when INT =>
+					--put_line ("internal unit");						
+					-- If the unit is internal, we can fetch it the symbol 
+					-- directly from the unit:
+
+					draw_symbol (
+						self		=> self,
+						in_area		=> in_area,
+						context		=> context,
+						
+						symbol		=> element (unit_cursor.internal).symbol,
+
+						unit_name		=> unit_add.name,
+						unit_count		=> 1, --unit_count,
+						
+						unit_position	=> destination,
+
+						sch_placeholder_name	=> element (symbol_cursor).name,
+						sch_placeholder_value	=> element (symbol_cursor).value,
+						sch_placeholder_purpose => element (symbol_cursor).purpose,
+
+						brightness		=> brightness						
+						);
+			end case;
+		end locate_symbol;
+		
+	begin
+		if unit_add.device /= type_devices.no_element then
+			
+			locate_symbol (locate_unit (unit_add.device, unit_add.name));
+		end if;
+
+	end draw_unit_being_added;
+	
 begin
 	-- 	put_line ("draw units ...");
 	
 	iterate (element (current_active_module).devices, query_devices'access);
-	
+
+	draw_unit_being_added;
 end draw_units;
 
 

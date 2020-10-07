@@ -1096,7 +1096,7 @@ begin -- schematic_cmd
 						purpose : type_purpose.bounded_string; -- brightness_control
 					begin
 						-- validate value
-						value := to_value (f (7));
+						value := to_value_with_check (f (7));
 
 						-- validate partcode
 						partcode := et_material.to_partcode (f (8));
@@ -1591,7 +1591,7 @@ begin -- schematic_cmd
 								value : type_value.bounded_string; -- 470R
 							begin
 								-- validate value
-								value := to_value (f (6));
+								value := to_value_with_check (f (6));
 
 								-- set the value
 								set_value
