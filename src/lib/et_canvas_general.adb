@@ -1713,6 +1713,15 @@ package body pac_canvas is
 			when NO  => return false;
 		end case;
 	end clarification_pending;
+
+
+	procedure reset_activate_counter is begin
+		activate_counter := type_activate_counter'first;
+	end reset_activate_counter;
+
+	procedure increment_activate_counter is begin
+		activate_counter := activate_counter + 1;
+	end increment_activate_counter;
 	
 end pac_canvas;
 	

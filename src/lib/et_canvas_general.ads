@@ -666,7 +666,15 @@ package pac_canvas is
 
 	-- Returns true if the global flag "request_clarificaton" is YES:
 	function clarification_pending return boolean;
-								  
+
+
+	-- In order to count a number of clicks or keys pressed:
+	subtype type_activate_counter is natural range 0 .. 2;
+	activate_counter : type_activate_counter := type_activate_counter'first;
+	
+	procedure reset_activate_counter;
+	procedure increment_activate_counter;
+	
 private
 
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);

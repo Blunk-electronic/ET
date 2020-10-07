@@ -841,11 +841,11 @@ package body et_canvas_schematic_units is
 			position	=> 3);
 	begin
 		unit_add.variant := to_name (var_name);
-		--put_line (var_name & " selected");
-
-		-- Set the tool being used for adding the device:
-		unit_add.tool := MOUSE;
 		
+		set_status ("Variant " & var_name & " selected."
+			& " Left click to continue with mouse."
+			& " Space to continue with keyboard");
+
 	end variant_selected;
 	
 	procedure add_device is
@@ -895,7 +895,7 @@ package body et_canvas_schematic_units is
 
 		end show_variants_menu;
 		
-	begin
+	begin -- add_device
 		device_model := to_file_name (file_selection_dialog (title => "Select a device model"));
 
 		if type_device_model_file.length (device_model) > 0 then
@@ -914,6 +914,9 @@ package body et_canvas_schematic_units is
 			unit_add.device := device_cursor_lib;
 
 			unit_add.name := first_unit (device_cursor_lib);
+
+			-- build the next available device name:
+			unit_add.device_pre := next_device_name (current_active_module, element (device_cursor_lib).prefix);
 			
 			-- get the available package variants:
 			variants := available_variants (device_cursor_lib);
@@ -947,6 +950,10 @@ package body et_canvas_schematic_units is
 			log_threshold	=> log_threshold + 1);
 		
 		reset_unit_add;
+		reset_activate_counter;
+
+		set_status (status_add);
+		--status_enter_verb;
 	end finalize_add_device;
 
 	

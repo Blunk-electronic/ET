@@ -229,6 +229,7 @@ package et_canvas_schematic_units is
 		device		: type_devices.cursor;
 		variant		: et_devices.type_variant_name.bounded_string; -- N, D, S_0805
 		name		: type_unit_name.bounded_string;
+		device_pre	: et_devices.type_name := (others => <>);
 	end record;
 
 	unit_add : type_unit_being_added;

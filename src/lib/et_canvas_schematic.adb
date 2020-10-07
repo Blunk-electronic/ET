@@ -1339,22 +1339,41 @@ package body et_canvas_schematic is
 					noun := NOUN_DEVICE;					
 					set_status (et_canvas_schematic_units.status_add);
 
-					add_device;
+					-- open device model selection
+					add_device; 
 
 				-- If space pressed, then the operator wishes to operate via keyboard:	
 				when GDK_Space =>
 					case noun is
 
 						when NOUN_DEVICE =>
-							if unit_add.device /= type_devices.no_element then
-								
-								-- Set the tool being used for placing the label:
-								--unit_add.tool := KEYBOARD;
-								
-								-- Finally place the unit at the current 
-								-- cursor position:
-								finalize_add_device (cursor_main.position);
+							-- If a unit has been selected already, then
+							-- the number of "activate" actions must be counted.
+							-- The "activate" action in this case is pressing the
+							-- "space" key. After the first "activate" the tool
+							-- for placing the unit is set. After the second "activate"
+							-- the unit is placed at the current cursor position.
+							-- If no unit has been selected yet, then the device
+							-- model selection dialog opens.
+							if unit_add.device /= type_devices.no_element then -- unit selected
 
+								-- Set the tool being used for placing the unit:
+								increment_activate_counter;
+								
+								case activate_counter is
+									when 1 =>
+										unit_add.tool := KEYBOARD;
+
+									when 2 =>
+										-- Finally place the unit at the current 
+										-- cursor position:
+										finalize_add_device (cursor_main.position);
+
+									when others => null;
+								end case;
+
+							else -- no unit selected yet
+								add_device; -- open device model selection
 							end if;
 							
 						when others => null;
@@ -1389,7 +1408,8 @@ package body et_canvas_schematic is
 			reset_label; -- after placing a label
 			
 			reset_placeholder; -- after moving a placeholder
-			
+
+			reset_activate_counter;
 			status_enter_verb;
 		else	
 			case expect_entry is
@@ -1543,14 +1563,33 @@ package body et_canvas_schematic is
 
 					case noun is
 						when NOUN_DEVICE =>
+
+							-- If a unit has been selected already, then
+							-- the number of "activate" actions must be counted.
+							-- The "activate" action in this case is a left click.
+							-- After the first "activate" the tool
+							-- for placing the unit is set. After the second "activate"
+							-- the unit is placed at the current mouse position.
+							-- If no unit has been selected yet, then the device
+							-- model selection dialog opens.
 							if unit_add.device /= type_devices.no_element then
-									
-								---- Set the tool being used for adding the device:
-								--unit_add.tool := MOUSE;
-									
-								-- Finally place the unit at the current 
-								-- cursor position:
-								finalize_add_device (snap_to_grid (self, point));
+
+								increment_activate_counter;
+								
+								case activate_counter is
+									when 1 =>
+										unit_add.tool := MOUSE;
+
+									when 2 =>
+										-- Finally place the unit at the current 
+										-- mouse position:
+										finalize_add_device (snap_to_grid (self, point));
+
+									when others => null;
+								end case;
+
+							else -- no unit selected yet
+								add_device; -- open device model selection
 							end if;
 								
 						when others => null;

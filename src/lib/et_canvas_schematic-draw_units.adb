@@ -418,6 +418,7 @@ procedure draw_units (
 		use et_devices;
 		use et_devices.type_devices;
 
+
 		procedure locate_symbol (unit_cursor : in et_devices.type_unit_cursors) is
 			use pac_units_external;
 			use pac_units_internal;
@@ -428,6 +429,9 @@ procedure draw_units (
 			use type_symbols;
 			symbol_model : type_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
 			symbol_cursor : et_symbols.type_symbols.cursor;
+
+			unit_count : type_unit_count := units_total (unit_add.device);
+			
 		begin
 			case unit_add.tool is
 				when KEYBOARD	=> destination := cursor_main.position;
@@ -436,11 +440,16 @@ procedure draw_units (
 			
 			case unit_cursor.ext_int is
 				when EXT =>
-					--put_line ("external unit");
+					put_line ("external unit");
 					-- If the unit is external, we must fetch the symbol 
 					-- via its model file:
 					symbol_model := element (unit_cursor.external).file;
+
+					put_line ("external unit 2");
 					symbol_cursor := locate (symbol_model);
+
+					put_line ("external unit 3");
+					put_line (to_string (unit_add.device_pre));
 					
 					draw_symbol (
 						self		=> self,
@@ -449,8 +458,9 @@ procedure draw_units (
 						
 						symbol		=> type_symbols.element (symbol_cursor),
 
+						device_name		=> unit_add.device_pre,
 						unit_name		=> unit_add.name,
-						unit_count		=> 1, --unit_count,
+						unit_count		=> unit_count,
 						
 						unit_position	=> destination,
 
@@ -460,9 +470,11 @@ procedure draw_units (
 
 						brightness		=> brightness
 						);
+
+					put_line ("external unit 4");
 					
 				when INT =>
-					--put_line ("internal unit");						
+					put_line ("internal unit");						
 					-- If the unit is internal, we can fetch it the symbol 
 					-- directly from the unit:
 
@@ -474,7 +486,7 @@ procedure draw_units (
 						symbol		=> element (unit_cursor.internal).symbol,
 
 						unit_name		=> unit_add.name,
-						unit_count		=> 1, --unit_count,
+						unit_count		=> unit_count,
 						
 						unit_position	=> destination,
 
@@ -489,8 +501,10 @@ procedure draw_units (
 		
 	begin
 		if unit_add.device /= type_devices.no_element then
-			
-			locate_symbol (locate_unit (unit_add.device, unit_add.name));
+
+			if activate_counter = 1 then
+				locate_symbol (locate_unit (unit_add.device, unit_add.name));
+			end if;
 		end if;
 
 	end draw_unit_being_added;
