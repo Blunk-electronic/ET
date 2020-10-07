@@ -188,7 +188,10 @@ package body et_canvas_schematic is
 		sch_placeholder_name	: in et_symbols.type_text_placeholder;
 		sch_placeholder_value	: in et_symbols.type_text_placeholder;
 		sch_placeholder_purpose : in et_symbols.type_text_placeholder;
-		brightness		: in type_brightness := NORMAL)
+		brightness		: in type_brightness := NORMAL;
+
+		-- If preview is true, then the unit will be drawn less detailled.
+		preview			: in boolean := false)
 		is separate;
 
 	-- Draws all units:

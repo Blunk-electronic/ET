@@ -52,7 +52,8 @@ procedure draw_symbol (
 	sch_placeholder_name	: in et_symbols.type_text_placeholder;
 	sch_placeholder_value	: in et_symbols.type_text_placeholder;
 	sch_placeholder_purpose : in et_symbols.type_text_placeholder;
-	brightness		: in type_brightness := NORMAL)
+	brightness		: in type_brightness := NORMAL;
+	preview			: in boolean := false)
 is
 	use et_symbols;
 	use et_symbols.pac_shapes;
@@ -340,11 +341,15 @@ is
 		if element (c).port_name_visible = YES then
 			draw_port_name;
 		end if;
-		
+
+		-- If this is a preview, then no terminal name is to be drawn.
+		-- Otherwise, draw terminal name:
 		-- Draw terminal name if this is the symbol of a real device. 
 		-- Virtual symbols do not have terminal names.
-		if symbol.appearance = PCB and then element (c).terminal_name_visible = YES then
-			draw_terminal_name;
+		if not preview then
+			if symbol.appearance = PCB and then element (c).terminal_name_visible = YES then
+				draw_terminal_name;
+			end if;
 		end if;
 		
 	end draw_port;

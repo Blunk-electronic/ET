@@ -911,11 +911,20 @@ package body et_canvas_schematic_units is
 			-- locate the device in the library
 			device_cursor_lib := find (et_devices.devices, device_model);
 
+			-- assign the cursor to the device model:
 			unit_add.device := device_cursor_lib;
 
+			-- Assign the name of the first unit.
+			-- NOTE: When adding a device, the first unit within the device
+			-- will be placed first. Further units are to be placed via
+			-- invoke operations:
 			unit_add.name := first_unit (device_cursor_lib);
 
-			-- build the next available device name:
+			-- For a nice preview we also need the total of units provided
+			-- the the device:
+			unit_add.total := units_total (unit_add.device);
+			
+			-- assign the prospective device name:
 			unit_add.device_pre := next_device_name (current_active_module, element (device_cursor_lib).prefix);
 			
 			-- get the available package variants:

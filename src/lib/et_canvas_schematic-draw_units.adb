@@ -406,23 +406,25 @@ procedure draw_units (
 			device_purpose := element (device_cursor).purpose; -- like "brightness control"
 		end if;
 		
--- 		unit_count := et_devices.type_unit_count (length (element (device_cursor).units));
-
 		-- Iterate the units of the current device:
 		iterate (element (device_cursor).units, query_units'access);
 	end query_devices;
 
+	
+	-- Draws the unit being added. If there is no unit being added,
+	-- then nothing happens here. The unit is drawn in a preview.
 	procedure draw_unit_being_added is
-		brightness : type_brightness := NORMAL;
+		brightness : type_brightness := BRIGHT;
 		
 		use et_devices;
 		use et_devices.type_devices;
-
 
 		procedure locate_symbol (unit_cursor : in et_devices.type_unit_cursors) is
 			use pac_units_external;
 			use pac_units_internal;
 
+			-- The place where the unit will be drawn.
+			-- Depends on the tool used for placing the unit:
 			destination : type_point;
 			
 			use et_symbols;
@@ -430,9 +432,8 @@ procedure draw_units (
 			symbol_model : type_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
 			symbol_cursor : et_symbols.type_symbols.cursor;
 
-			unit_count : type_unit_count := units_total (unit_add.device);
-			
 		begin
+			-- Set the destination coordinates according to current tool:
 			case unit_add.tool is
 				when KEYBOARD	=> destination := cursor_main.position;
 				when MOUSE		=> destination := self.snap_to_grid (self.mouse_position);
@@ -440,16 +441,12 @@ procedure draw_units (
 			
 			case unit_cursor.ext_int is
 				when EXT =>
-					put_line ("external unit");
+					--put_line ("external unit");
+					
 					-- If the unit is external, we must fetch the symbol 
 					-- via its model file:
 					symbol_model := element (unit_cursor.external).file;
-
-					put_line ("external unit 2");
 					symbol_cursor := locate (symbol_model);
-
-					put_line ("external unit 3");
-					put_line (to_string (unit_add.device_pre));
 					
 					draw_symbol (
 						self		=> self,
@@ -460,7 +457,7 @@ procedure draw_units (
 
 						device_name		=> unit_add.device_pre,
 						unit_name		=> unit_add.name,
-						unit_count		=> unit_count,
+						unit_count		=> unit_add.total,
 						
 						unit_position	=> destination,
 
@@ -468,16 +465,15 @@ procedure draw_units (
 						sch_placeholder_value	=> element (symbol_cursor).value,
 						sch_placeholder_purpose => element (symbol_cursor).purpose,
 
-						brightness		=> brightness
-						);
+						brightness		=> brightness,
+						preview			=> true);
 
-					put_line ("external unit 4");
-					
+
 				when INT =>
-					put_line ("internal unit");						
+					--put_line ("internal unit");						
+					
 					-- If the unit is internal, we can fetch it the symbol 
 					-- directly from the unit:
-
 					draw_symbol (
 						self		=> self,
 						in_area		=> in_area,
@@ -486,7 +482,7 @@ procedure draw_units (
 						symbol		=> element (unit_cursor.internal).symbol,
 
 						unit_name		=> unit_add.name,
-						unit_count		=> unit_count,
+						unit_count		=> unit_add.total,
 						
 						unit_position	=> destination,
 
@@ -494,12 +490,15 @@ procedure draw_units (
 						sch_placeholder_value	=> element (symbol_cursor).value,
 						sch_placeholder_purpose => element (symbol_cursor).purpose,
 
-						brightness		=> brightness						
-						);
+						brightness		=> brightness,
+						preview			=> true);
 			end case;
 		end locate_symbol;
 		
 	begin
+		-- Once procedure et_canvas_schematic_units.add_device has assigned
+		-- a cursor to the device model we know that a unit is to be drawn.
+		-- It will be drawn after the first left click or pressing of space key.
 		if unit_add.device /= type_devices.no_element then
 
 			if activate_counter = 1 then
@@ -514,7 +513,10 @@ begin
 	
 	iterate (element (current_active_module).devices, query_devices'access);
 
+	-- Draw the unit being added. If no unit is being added, nothing 
+	-- happens here:
 	draw_unit_being_added;
+	
 end draw_units;
 
 
