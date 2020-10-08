@@ -266,8 +266,9 @@ package et_canvas_schematic_units is
 
 	-- Does the final invoking of the unit in the schematic:
 	procedure finalize_invoke (
-		position	: in type_point);
-
+		position		: in type_point;
+		log_threshold	: in type_log_level);
+	
 	-- Shows the available units of the selected device in a menu.
 	procedure show_units;
 	

@@ -1385,10 +1385,12 @@ package body et_canvas_schematic is
 					case noun is
 
 						when NOUN_UNIT =>
+							-- If no device has been selected already, then
+							-- set the tool used for invoking.
 							if unit_add.device = type_devices.no_element then
 
 								unit_add.tool := KEYBOARD;
-								
+
 								if not clarification_pending then
 									invoke_unit (cursor_main.position);
 								else
@@ -1396,7 +1398,7 @@ package body et_canvas_schematic is
 								end if;
 
 							else
-								finalize_invoke (cursor_main.position);
+								finalize_invoke (cursor_main.position, log_threshold + 1);
 							end if;
 							
 						when others => null;
@@ -1415,7 +1417,6 @@ package body et_canvas_schematic is
 						when others => null;
 							
 					end case;
-
 					
 				when others => null;
 			end case;
@@ -1539,10 +1540,11 @@ package body et_canvas_schematic is
 		use et_devices.type_devices;
 	begin
 		case verb is
-			when VERB_ADD =>
+			when VERB_ADD | VERB_INVOKE =>
 				case noun is
 					when NOUN_DEVICE =>
 						if unit_add.device /= et_devices.type_devices.no_element then
+							put_line ("redraw");
 							redraw;
 						end if;
 
@@ -1559,7 +1561,7 @@ package body et_canvas_schematic is
 
 					when others => null;
 				end case;
-
+				
 			when VERB_DRAG | VERB_MOVE | VERB_PLACE =>
 				case noun is
 					when NOUN_LABEL =>
@@ -1809,6 +1811,31 @@ package body et_canvas_schematic is
 						when others => null;							
 					end case;
 
+				when VERB_INVOKE =>
+
+					case noun is
+
+						when NOUN_UNIT =>
+							-- If no device has been selected already, then
+							-- set the tool used for invoking.
+							if unit_add.device = type_devices.no_element then
+
+								unit_add.tool := MOUSE;
+
+								if not clarification_pending then
+									invoke_unit (snap_to_grid (self, point));
+								else
+									show_units;
+								end if;
+
+							else
+								finalize_invoke (snap_to_grid (self, point), log_threshold + 1);
+							end if;
+							
+						when others => null;
+							
+					end case;
+					
 				when VERB_MOVE =>
 					
 					case noun is
@@ -2065,6 +2092,18 @@ package body et_canvas_schematic is
 							et_schematic.pac_shapes.next_bend_style (net_route);
 							
 						when others => null;							
+					end case;
+
+				when VERB_INVOKE =>
+					case noun is
+
+						when NOUN_UNIT => 
+							if clarification_pending then
+								clarify_unit;
+							end if;
+							
+						when others => null;
+							
 					end case;
 					
 				when VERB_MOVE =>

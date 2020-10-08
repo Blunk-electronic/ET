@@ -969,17 +969,32 @@ package body et_canvas_schematic_units is
 	end finalize_add_device;
 
 	procedure finalize_invoke (
-		position	: in type_point)
-	is begin
-		invoke_unit (
-			module_name		=> key (current_active_module),
-			device_name		=> unit_add.device_pre,
-			unit_name		=> unit_add.name,
-			destination		=> to_position (position, current_active_sheet),
-			log_threshold	=> log_threshold + 1);
+		position		: in type_point;
+		log_threshold	: in type_log_level)
+	is 
+		use type_unit_name;
+	begin
+		log (text => "finalizing invoke ...", level => log_threshold);
+		log_indentation_up;
+		
+		if length (unit_add.name) > 0 then
+			
+			invoke_unit (
+				module_name		=> key (current_active_module),
+				device_name		=> unit_add.device_pre,
+				unit_name		=> unit_add.name,
+				destination		=> to_position (position, current_active_sheet),
+				log_threshold	=> log_threshold + 1);
+		else
+			log (text => "nothing to do", level => log_threshold + 1);
+		end if;
 		
 		reset_unit_add;
+		reset_request_clarification;
 		set_status (status_invoke);
+
+		log_indentation_down;
+		
 	end finalize_invoke;
 		
 
@@ -991,16 +1006,31 @@ package body et_canvas_schematic_units is
 			text_in		=> self.get_label,
 			position	=> 2);
 	begin
+		put_line ("selected");
+		
 		-- assign the unit to be drawn:
 		unit_add.name := to_name (unit_name);
 
 		-- Signal procedure draw_units to draw this unit as a preview:
 		unit_add.via_invoke := true;
+
+		-- The list of proposed units and the cursor "selected_unit" are
+		-- no longer required. This operation also prevents the formerly
+		-- selected unit to be drawn highlighted:
+		clear_proposed_units;
 		
 		set_status ("Device " & to_string (unit_add.device_pre) 
 			& " unit " & unit_name & " selected.");
-			
+
 	end unit_selected;
+
+	procedure unit_selection_cancelled (self : access gtk.menu_shell.gtk_menu_shell_record'class) is
+	begin
+		set_status ("Unit selection cancelled");
+		reset_unit_add;
+
+		put_line ("deselected");
+	end unit_selection_cancelled;
 	
 	procedure show_units is
 		use et_schematic.type_devices;
@@ -1062,7 +1092,7 @@ package body et_canvas_schematic_units is
 					-- Connect the item with the "activate" signal which
 					-- in turn calls procedure unit_selected:
 					i.on_activate (unit_selected'access);
-				
+
 					m.append (i);
 					i.show;
 				end if;
@@ -1070,15 +1100,21 @@ package body et_canvas_schematic_units is
 			end query_name;
 			
 		begin -- show_menu
-			
+
+			-- create a menu
 			m := gtk_menu_new;
+
+			-- In case the operator closes the menu (via ESC for example)
+			-- then reset unit_add.
+			m.on_cancel (unit_selection_cancelled'access);
+			
 			unit_names.iterate (query_name'access);
 
 			-- If no units are available (because all are in use)
 			-- then we do not show a menu.
 			if units_available > 0 then
 				m.show;
-				m.popup;
+				m.popup; -- (button => 3, activate_time => 100);
 			else
 				set_status ("No more units of device " 
 					& to_string (unit_add.device_pre)
@@ -1088,6 +1124,8 @@ package body et_canvas_schematic_units is
 				--set_status (status_invoke);
 			end if;
 		end show_menu;
+
+		--use et_devices.type_devices;
 		
 	begin -- show_units
 		--put_line ("selected " & to_string (key (su.device)));
@@ -1101,6 +1139,10 @@ package body et_canvas_schematic_units is
 		-- assign the cursor to the device model:
 		unit_add.device := device_cursor_lib;
 
+		--if unit_add.device = et_devices.type_devices.no_element then
+			--put_line ("no device");
+		--end if;
+		
 		-- For a nice preview we also need the total of units provided
 		-- the the device:
 		unit_add.total := units_total (unit_add.device);
