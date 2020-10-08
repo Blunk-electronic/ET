@@ -490,6 +490,12 @@ package et_devices is
 		unit_name		: in type_unit_name.bounded_string)
 		return type_device_units;
 
+	package pac_unit_names is new doubly_linked_lists (type_unit_name.bounded_string);
+
+	-- Returns a list of all unit names of the given device:
+	function all_units (
+		device_cursor	: in type_devices.cursor)
+		return pac_unit_names.list;
 
 	
 	-- Returns the total number of units the given device provides:
@@ -512,8 +518,8 @@ package et_devices is
 		return pac_variants.map;
 
 	
-	function locate_device (model : in type_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
 	-- Locates the given generic device in container "devices".
+	function locate_device (model : in type_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
 		return type_devices.cursor;
 
 	-- For locating units this type is required by function locate_unit.

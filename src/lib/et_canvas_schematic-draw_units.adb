@@ -496,12 +496,20 @@ procedure draw_units (
 		end locate_symbol;
 		
 	begin
-		-- Once procedure et_canvas_schematic_units.add_device has assigned
-		-- a cursor to the device model we know that a unit is to be drawn.
-		-- It will be drawn after the first left click or pressing of space key.
+		-- Once a model has been assigned we know that the unit is to be drawn.
+		-- There are two cases when the assigment takes place:
+
+		-- 1. When adding a new device.
+		-- The assigment was via procedure et_canvas_schematic_units.add_device.
+		-- The unit will be drawn after the first left click or pressing of space key.
+
+		-- 2. When invoking a unit. 
+		-- The assigment was via procedure et_canvas_schematic_units.unit_selected.
+		
 		if unit_add.device /= type_devices.no_element then
 
-			if activate_counter = 1 then
+			if activate_counter = 1 -- case #2
+			or unit_add.via_invoke then -- case #1
 				locate_symbol (locate_unit (unit_add.device, unit_add.name));
 			end if;
 		end if;

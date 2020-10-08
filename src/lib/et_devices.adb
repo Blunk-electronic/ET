@@ -910,7 +910,33 @@ package body et_devices is
 		return cursors;
 	end any_unit;
 	
+	function all_units (
+		device_cursor	: in type_devices.cursor)
+		return pac_unit_names.list
+	is
+		result : pac_unit_names.list; -- to be returned
 
+		use et_devices.type_devices;
+		use pac_units_internal;
+		use pac_units_external;
+		
+		procedure query_internal (c : in pac_units_internal.cursor) is begin
+			result.append (key (c));
+		end query_internal;
+
+		procedure query_external (c : in pac_units_external.cursor) is begin
+			result.append (key (c));
+		end query_external;
+									 
+	begin
+		iterate (element (device_cursor).units_internal, query_internal'access);
+		iterate (element (device_cursor).units_external, query_external'access);
+
+		return result;
+	end all_units;
+
+
+	
 	function units_total (
 		device_cursor	: in type_devices.cursor)
 		return type_unit_count is

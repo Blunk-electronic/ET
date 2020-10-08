@@ -59,7 +59,8 @@ procedure invoke_unit (
 
 		procedure query_units_in_use (
 			device_name	: in type_name;
-			device		: in et_schematic.type_device) is
+			device		: in et_schematic.type_device)
+		is
 			use et_schematic.type_units;
 		begin
 			if contains (device.units, unit_name) then
@@ -190,7 +191,8 @@ procedure invoke_unit (
 
 			-- Locate the device model in the library:
 			device_model := element (device_cursor_sch).model;
-			device_cursor_lib := et_devices.type_devices.find (et_devices.devices, device_model);
+			--device_cursor_lib := et_devices.type_devices.find (et_devices.devices, device_model);
+			device_cursor_lib := locate_device (device_model);
 
 			-- Get cursor to the desired unit in device model.
 			-- The unit can be internal or external.

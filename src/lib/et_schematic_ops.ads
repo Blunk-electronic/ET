@@ -326,6 +326,8 @@ package et_schematic_ops is
 		destination		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+	-- CS procedure invoke_unit that takes module cursor and model cursor
+
 	procedure add_netchanger (
 	-- Adds a netchanger to the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

@@ -944,6 +944,9 @@ package body et_canvas_schematic_units is
 		end if;
 	end add_device;
 
+
+
+	
 	procedure finalize_add_device (
 		position	: in type_point)
 	is 
@@ -965,19 +968,153 @@ package body et_canvas_schematic_units is
 		--status_enter_verb;
 	end finalize_add_device;
 
+	procedure finalize_invoke (
+		position	: in type_point)
+	is begin
+		invoke_unit (
+			module_name		=> key (current_active_module),
+			device_name		=> unit_add.device_pre,
+			unit_name		=> unit_add.name,
+			destination		=> to_position (position, current_active_sheet),
+			log_threshold	=> log_threshold + 1);
+		
+		reset_unit_add;
+		set_status (status_invoke);
+	end finalize_invoke;
+		
 
+	-- Extracts from the selected menu item the unit name.
+	procedure unit_selected (self : access gtk.menu_item.gtk_menu_item_record'class) is
+		
+		-- Extract the unit name from field 2 of the menu item:
+		unit_name : constant string := get_field_from_line (
+			text_in		=> self.get_label,
+			position	=> 2);
+	begin
+		-- assign the unit to be drawn:
+		unit_add.name := to_name (unit_name);
+
+		-- Signal procedure draw_units to draw this unit as a preview:
+		unit_add.via_invoke := true;
+		
+		set_status ("Device " & to_string (unit_add.device_pre) 
+			& " unit " & unit_name & " selected.");
+			
+	end unit_selected;
+	
 	procedure show_units is
 		use et_schematic.type_devices;
 		
 		su : constant type_selected_unit := element (selected_unit);
 
 		device_model : type_device_model_file.bounded_string;
-	begin
-		put_line ("selected " & to_string (key (su.device)));
+		device_cursor_lib : et_devices.type_devices.cursor;
+		
+		unit_names : pac_unit_names.list;
+
+		procedure show_menu is
+			use gtk.menu;
+			use gtk.menu_item;
+
+			m : gtk_menu;
+			i : gtk_menu_item;
+
+			-- If no units are available, then no menu is to be shown.
+			-- So we must count units with this stuff:
+			subtype type_units_available is natural range 0 .. type_unit_count'last;
+			units_available : type_units_available := 0;
+			
+			use pac_unit_names;
+			
+			procedure query_name (c : in pac_unit_names.cursor) is 
+
+				in_use : boolean := false;
+
+				-- Sets the in_use flag if given unit is already in use:
+				procedure query_in_use (
+					device_name	: in type_name;
+					device		: in et_schematic.type_device) 
+				is
+					use et_schematic.type_units;
+				begin
+					if contains (device.units, element (c)) then
+						in_use := true;
+					end if;
+				end query_in_use;
+
+			begin -- query_name
+				-- Test whether the unit is already in use.
+				query_element (
+					position	=> su.device,
+					process		=> query_in_use'access);
+
+				-- If the unit is available then put its name on the menu:
+				if not in_use then -- unit is available
+					
+					units_available := units_available + 1;
+					
+					-- Build the menu item. NOTE: The actual unit name must be
+					-- the 2nd string of the entry. Procedure unit_selected expects
+					-- it at this place:
+					i := gtk_menu_item_new_with_label (
+						"unit " & to_string (element (c)));
+
+					-- Connect the item with the "activate" signal which
+					-- in turn calls procedure unit_selected:
+					i.on_activate (unit_selected'access);
+				
+					m.append (i);
+					i.show;
+				end if;
+
+			end query_name;
+			
+		begin -- show_menu
+			
+			m := gtk_menu_new;
+			unit_names.iterate (query_name'access);
+
+			-- If no units are available (because all are in use)
+			-- then we do not show a menu.
+			if units_available > 0 then
+				m.show;
+				m.popup;
+			else
+				set_status ("No more units of device " 
+					& to_string (unit_add.device_pre)
+					& " available !");
+
+				reset_unit_add;
+				--set_status (status_invoke);
+			end if;
+		end show_menu;
+		
+	begin -- show_units
+		--put_line ("selected " & to_string (key (su.device)));
 
 		device_model := element (su.device).model;
 
-		put_line ("model " & to_string (device_model));
+		--put_line ("model " & to_string (device_model));
+
+		device_cursor_lib := locate_device (device_model);
+
+		-- assign the cursor to the device model:
+		unit_add.device := device_cursor_lib;
+
+		-- For a nice preview we also need the total of units provided
+		-- the the device:
+		unit_add.total := units_total (unit_add.device);
+			
+		-- assign the prospective device name:
+		unit_add.device_pre := key (su.device);
+
+		-- collect the names of all units of the selected device:
+		unit_names := all_units (device_cursor_lib);
+
+		-- Show the units of the device in a menu. After the operator
+		-- has selected a unit, procedure unit_selected finally
+		-- assigns the unit name to unit_add.
+		show_menu;
 		
 	end show_units;
 

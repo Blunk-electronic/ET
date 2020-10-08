@@ -1385,13 +1385,18 @@ package body et_canvas_schematic is
 					case noun is
 
 						when NOUN_UNIT =>
+							if unit_add.device = type_devices.no_element then
 
-							unit_add.tool := KEYBOARD;
-							
-							if not clarification_pending then
-								invoke_unit (cursor_main.position);
+								unit_add.tool := KEYBOARD;
+								
+								if not clarification_pending then
+									invoke_unit (cursor_main.position);
+								else
+									show_units;
+								end if;
+
 							else
-								show_units;
+								finalize_invoke (cursor_main.position);
 							end if;
 							
 						when others => null;

@@ -239,6 +239,8 @@ package et_canvas_schematic_units is
 		-- The prospective device name once the add operation is complete.
 		-- This is relevant for the preview only:
 		device_pre	: et_devices.type_name := (others => <>);
+
+		via_invoke	: boolean := false;
 	end record;
 
 	unit_add : type_unit_being_added;
@@ -261,26 +263,18 @@ package et_canvas_schematic_units is
 		& "to invoke unit." 
 		& status_hint_for_abort;
 	
-	--type type_unit_being_invoked is record
-		--tool		: type_tool := MOUSE;
 
-		---- The cursor to the device model:
-		--device		: type_devices.cursor;
-		
-		--variant		: et_devices.type_variant_name.bounded_string; -- N, D, S_0805
-		--name		: type_unit_name.bounded_string; -- A, B, PWR_IO3
+	-- Does the final invoking of the unit in the schematic:
+	procedure finalize_invoke (
+		position	: in type_point);
 
-		---- The total number of units provided by the device model:
-		--total		: type_unit_count := type_unit_count'first;
-		
-		---- The prospective device name once the add operation is complete.
-		---- This is relevant for the preview only:
-		--device_pre	: et_devices.type_name := (others => <>);
-	--end record;
-
+	-- Shows the available units of the selected device in a menu.
+	procedure show_units;
+	
+	-- Collects units in the vicinity of the given point.
+	-- Requests for clarification if more than one unit found.
 	procedure invoke_unit (point : in type_point);
 	
-	procedure show_units;
 	
 -- PLACEHOLDERS
 
