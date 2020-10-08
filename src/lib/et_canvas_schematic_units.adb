@@ -965,6 +965,56 @@ package body et_canvas_schematic_units is
 		--status_enter_verb;
 	end finalize_add_device;
 
+
+	procedure show_units is
+		use et_schematic.type_devices;
+		
+		su : constant type_selected_unit := element (selected_unit);
+
+		device_model : type_device_model_file.bounded_string;
+	begin
+		put_line ("selected " & to_string (key (su.device)));
+
+		device_model := element (su.device).model;
+
+		put_line ("model " & to_string (device_model));
+		
+	end show_units;
+
+	
+	procedure invoke_unit (point : in type_point) is 
+		use et_schematic_ops.units;
+	begin
+		log (text => "invoking unit ...", level => log_threshold);
+		log_indentation_up;
+		
+		-- Collect all units in the vicinity of the given point:
+		proposed_units := collect_units (
+			module			=> current_active_module,
+			place			=> to_position (point, current_active_sheet),
+			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			log_threshold	=> log_threshold + 1);
+
+		-- evaluate the number of units found here:
+		case length (proposed_units) is
+			when 0 =>
+				reset_request_clarification;
+				
+			when 1 =>
+				selected_unit := proposed_units.first;
+			
+				show_units;
+
+			when others =>
+				set_request_clarification;
+
+				-- preselect the first unit
+				selected_unit := proposed_units.first;
+		end case;
+		
+		log_indentation_down;
+	end invoke_unit;
+	
 	
 -- PLACEHOLDERS
 

@@ -250,6 +250,37 @@ package et_canvas_schematic_units is
 	procedure finalize_add_device (
 		position	: in type_point);
 
+
+-- INVOKE UNIT
+	
+	-- to be output in the status bar:
+	status_invoke : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to invoke unit." 
+		& status_hint_for_abort;
+	
+	--type type_unit_being_invoked is record
+		--tool		: type_tool := MOUSE;
+
+		---- The cursor to the device model:
+		--device		: type_devices.cursor;
+		
+		--variant		: et_devices.type_variant_name.bounded_string; -- N, D, S_0805
+		--name		: type_unit_name.bounded_string; -- A, B, PWR_IO3
+
+		---- The total number of units provided by the device model:
+		--total		: type_unit_count := type_unit_count'first;
+		
+		---- The prospective device name once the add operation is complete.
+		---- This is relevant for the preview only:
+		--device_pre	: et_devices.type_name := (others => <>);
+	--end record;
+
+	procedure invoke_unit (point : in type_point);
+	
+	procedure show_units;
 	
 -- PLACEHOLDERS
 

@@ -1123,6 +1123,7 @@ package body et_canvas_schematic is
 
 				-- If page down pressed, then the operator is clarifying:
 				when GDK_page_down =>
+
 					case noun is
 
 						when NOUN_LABEL => 
@@ -1154,7 +1155,6 @@ package body et_canvas_schematic is
 						when others => null;
 							
 					end case;
-
 					
 				when others => status_noun_invalid;
 			end case;
@@ -1370,6 +1370,52 @@ package body et_canvas_schematic is
 				when others => null;
 			end case;
 		end add;
+
+		procedure invoke is 
+			use et_devices.type_devices;
+		begin
+			case key is
+				-- EVALUATE KEY FOR NOUN:
+				when GDK_LC_u =>
+					noun := NOUN_UNIT;					
+					set_status (et_canvas_schematic_units.status_invoke);
+
+				-- If space pressed, then the operator wishes to operate via keyboard:	
+				when GDK_Space =>
+					case noun is
+
+						when NOUN_UNIT =>
+
+							unit_add.tool := KEYBOARD;
+							
+							if not clarification_pending then
+								invoke_unit (cursor_main.position);
+							else
+								show_units;
+							end if;
+							
+						when others => null;
+							
+					end case;
+
+				-- If page down pressed, then the operator is clarifying:
+				when GDK_page_down =>
+					case noun is
+
+						when NOUN_UNIT => 
+							if clarification_pending then
+								clarify_unit;
+							end if;
+							
+						when others => null;
+							
+					end case;
+
+					
+				when others => null;
+			end case;
+		end invoke;
+
 		
 	begin -- evaluate_key
 		
@@ -1429,6 +1475,10 @@ package body et_canvas_schematic is
 						when GDK_LC_d =>
 							verb := VERB_DRAW;
 							status_enter_noun;
+
+						when GDK_LC_i =>
+							verb := VERB_INVOKE;
+							status_enter_noun;
 							
 						when GDK_LC_m =>
 							verb := VERB_MOVE;
@@ -1460,6 +1510,7 @@ package body et_canvas_schematic is
 						when VERB_DELETE	=> delete;
 						when VERB_DRAG		=> drag;
 						when VERB_DRAW		=> draw;
+						when VERB_INVOKE	=> invoke;
 						when VERB_MOVE		=> move;
 						when VERB_PLACE		=> place;
 						when VERB_ROTATE	=> rotate;
