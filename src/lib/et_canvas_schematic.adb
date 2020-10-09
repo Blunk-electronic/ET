@@ -1540,11 +1540,10 @@ package body et_canvas_schematic is
 		use et_devices.type_devices;
 	begin
 		case verb is
-			when VERB_ADD | VERB_INVOKE =>
+			when VERB_ADD =>
 				case noun is
 					when NOUN_DEVICE =>
 						if unit_add.device /= et_devices.type_devices.no_element then
-							put_line ("redraw");
 							redraw;
 						end if;
 
@@ -1587,6 +1586,15 @@ package body et_canvas_schematic is
 					when others => null;
 				end case;
 
+			when VERB_INVOKE =>
+				case noun is
+					when NOUN_UNIT =>
+						if unit_add.device /= et_devices.type_devices.no_element then
+							redraw;
+						end if;
+
+					when others => null;
+				end case;
 				
 			when others => null;
 		end case;

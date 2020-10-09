@@ -37,7 +37,11 @@
 
 with ada.text_io;					use ada.text_io;
 
+with glib;
+
 with gtkada.file_selection;
+with gtk.main;
+with gtk.widget;
 with gtk.menu;
 with gtk.menu_item;
 with gtk.menu_shell;
@@ -1006,7 +1010,7 @@ package body et_canvas_schematic_units is
 			text_in		=> self.get_label,
 			position	=> 2);
 	begin
-		put_line ("selected");
+		--put_line ("selected");
 		
 		-- assign the unit to be drawn:
 		unit_add.name := to_name (unit_name);
@@ -1029,26 +1033,63 @@ package body et_canvas_schematic_units is
 		set_status ("Unit selection cancelled");
 		reset_unit_add;
 
-		put_line ("deselected");
+		--put_line ("deselected");
 	end unit_selection_cancelled;
+
+	-- CS
+	procedure set_position ( -- of a menu
+		menu : not null access gtk.menu.gtk_menu_record'class;
+		x : out glib.gint;
+		y : out glib.gint;
+		push_in : out boolean)
+	is
+		use glib;
+		--use et_coordinates.pac_geometry_sch;
+
+		--cp : type_point := cursor_main.position;
+		--mp : type_point := canvas.drawing_to_model (cursor_main.position);
+		--vp : type_view_point;
+
+		use gtk.widget;
+		
+		a : gtk_allocation;
+	begin
+		canvas.get_allocation (a);
+
+		-- gdk.window.get_position
+		
+		--vp := canvas.model_to_view (mp);
+
+		--put_line (to_string (vp));
+		
+		--x := gint (type_view_coordinate (cp.x));
+		--y := gint (vp.y);
+
+		x := a.x;
+		y := a.y;
+		
+		push_in := true;
+	end set_position;
 	
 	procedure show_units is
 		use et_schematic.type_devices;
 		
 		su : constant type_selected_unit := element (selected_unit);
-
+		
 		device_model : type_device_model_file.bounded_string;
 		device_cursor_lib : et_devices.type_devices.cursor;
 		
 		unit_names : pac_unit_names.list;
-
+		
 		procedure show_menu is
+
+			--use glib;
 			use gtk.menu;
 			use gtk.menu_item;
 
-			m : gtk_menu;
-			i : gtk_menu_item;
-
+			m : gtk_menu; -- the menu
+			i : gtk_menu_item; -- an item on the menu
+									   
 			-- If no units are available, then no menu is to be shown.
 			-- So we must count units with this stuff:
 			subtype type_units_available is natural range 0 .. type_unit_count'last;
@@ -1114,7 +1155,16 @@ package body et_canvas_schematic_units is
 			-- then we do not show a menu.
 			if units_available > 0 then
 				m.show;
-				m.popup; -- (button => 3, activate_time => 100);
+				m.popup (
+					-- CS func => set_position'access,
+							
+					-- button 0 means: this is not triggered by a key press
+					-- or a button click:
+					button => 0,
+							
+					-- get_current_event_time causes the menu to remain
+					-- until a 2nd click.
+					activate_time => gtk.main.get_current_event_time);
 			else
 				set_status ("No more units of device " 
 					& to_string (unit_add.device_pre)
@@ -1124,8 +1174,6 @@ package body et_canvas_schematic_units is
 				--set_status (status_invoke);
 			end if;
 		end show_menu;
-
-		--use et_devices.type_devices;
 		
 	begin -- show_units
 		--put_line ("selected " & to_string (key (su.device)));
@@ -1133,16 +1181,12 @@ package body et_canvas_schematic_units is
 		device_model := element (su.device).model;
 
 		--put_line ("model " & to_string (device_model));
-
+		
 		device_cursor_lib := locate_device (device_model);
 
 		-- assign the cursor to the device model:
 		unit_add.device := device_cursor_lib;
 
-		--if unit_add.device = et_devices.type_devices.no_element then
-			--put_line ("no device");
-		--end if;
-		
 		-- For a nice preview we also need the total of units provided
 		-- the the device:
 		unit_add.total := units_total (unit_add.device);

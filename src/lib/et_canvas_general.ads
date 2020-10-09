@@ -422,7 +422,7 @@ package pac_canvas is
 	-- Converts a drawing point to a model point. See comments on function model_to_drawing.
 	function drawing_to_model (
 		self			: not null access type_view;
-		drawing_point : in type_point)	
+		drawing_point	: in type_point)	
 		return type_point is abstract;
 
 	
