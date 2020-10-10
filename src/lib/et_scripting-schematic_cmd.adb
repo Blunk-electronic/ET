@@ -79,16 +79,32 @@ function schematic_cmd (
 				x => to_distance (f (5)),
 				y => to_distance (f (6))));
 	begin
-		log (text => "center on point", level => log_threshold + 1);
-		center_on (canvas, c);
+		case runmode is
+			when MODE_MODULE =>
+
+				log (text => "center on point", level => log_threshold + 1);
+				center_on (canvas, c);
+
+			when others =>
+				skipped_in_this_runmode (log_threshold + 1);
+				
+		end case;
 	end zoom_center;
 
 	procedure set_scale (scale : in string) is  -- GUI related -- CS should be percent of scale_to_fit
 		use glib;
 		s : gdouble := gdouble'value (scale);
 	begin
-		log (text => "zoom level", level => log_threshold + 1);
-		set_scale (canvas, s);
+		case runmode is
+			when MODE_MODULE =>
+
+				log (text => "zoom level", level => log_threshold + 1);
+				set_scale (canvas, s);
+
+			when others =>
+				skipped_in_this_runmode (log_threshold + 1);
+				
+		end case;
 	end set_scale;
 
 	-- Positions the cursor absolute or relative:
@@ -99,10 +115,17 @@ function schematic_cmd (
 				x => to_distance (f (6)),
 				y => to_distance (f (7))));
 	begin
-		log (text => "place cursor" & to_string (coordinates) 
-			& to_string (position), level => log_threshold + 1);
-		
-		canvas.move_cursor (coordinates, cursor_main, position);
+		case runmode is
+			when MODE_MODULE =>
+				log (text => "place cursor" & to_string (coordinates) 
+					& to_string (position), level => log_threshold + 1);
+				
+				canvas.move_cursor (coordinates, cursor_main, position);
+
+			when others =>
+				skipped_in_this_runmode (log_threshold + 1);
+				
+		end case;
 	end position_cursor;		
 
 	-- CS unify procedures show_unit and show_first_unit. They differ only in 
@@ -1712,21 +1735,58 @@ begin -- schematic_cmd
 			
 	end case;
 
-	canvas.update_mode_display;
+	case runmode is
+		--when MODE_HEADLESS => null;
+		when MODE_MODULE =>
+			canvas.update_mode_display;
+			status_clear;
+			
+		when others => null;
+	end case;
+
+	--case cmd_entry_mode is
+
+		--when SINGLE_CMD =>
+			--canvas.update_mode_display;
+			--status_clear;
+			
+		--when others => null;
+	--end case;
+
 	
 	return exit_code;
 
 	
 	exception when event: others => 
 
-		log (text => "mode " & to_string (verb), level => log_threshold, console => true);
+		case cmd_entry_mode is
+			when SCRIPT =>
 
-		canvas.update_mode_display;
+				case runmode is
+					when MODE_HEADLESS =>
+						--log (text => "mode " & to_string (verb), level => log_threshold, console => true);
+
+						log (ERROR, "schematic command " & enclose_in_quotes (to_string (cmd)) &
+							" invalid !", console => true);
+
+						log (text => ada.exceptions.exception_information (event), console => true);
+
+					when MODE_MODULE =>
+						canvas.update_mode_display;
+						--set_status ("command invalid");
+						
+					when others => null; -- CS
+				end case;
+				
+			when SINGLE_CMD =>
+				log (text => "schematic command " & enclose_in_quotes (to_string (cmd)) &
+					" invalid !", console => true);
+				
+				--set_status ("command invalid");
+
+				canvas.update_mode_display;
+		end case;
 		
-		log (ERROR, "schematic command " & enclose_in_quotes (to_string (cmd)) &
-			" invalid !", console => true);
-
-		log (text => ada.exceptions.exception_information (event), console => true);		
 
 	return ERROR;
 

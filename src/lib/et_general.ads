@@ -49,23 +49,23 @@ package et_general is
 
 	system_name_cmd_line	: constant string := "et ";
 
-	-- Prefixes before enumeration types prevent clashes with gnat keywords
-	-- and package names:	
-	runmode_prefix : constant string := "MODE_";
+	---- Prefixes before enumeration types prevent clashes with gnat keywords
+	---- and package names:	
+	--runmode_prefix : constant string := "MODE_";
 	
-	type type_runmode is (
-		MODE_HEADLESS,
-		MODE_SYMBOL,
-		MODE_PACKAGE,
-		MODE_DEVICE,
-		MODE_MODULE,
-		MODE_RIG
-		);
+	--type type_runmode is (
+		--MODE_HEADLESS,
+		--MODE_SYMBOL,
+		--MODE_PACKAGE,
+		--MODE_DEVICE,
+		--MODE_MODULE,
+		--MODE_RIG
+		--);
 
-	runmode_default : constant type_runmode := MODE_MODULE;
+	--runmode_default : constant type_runmode := MODE_MODULE;
 
-	function to_runmode (mode : in string) return type_runmode;
-	function to_string (mode : in type_runmode) return string;
+	--function to_runmode (mode : in string) return type_runmode;
+	--function to_string (mode : in type_runmode) return string;
 
 
 

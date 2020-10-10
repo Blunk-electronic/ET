@@ -1168,16 +1168,32 @@ function board_cmd (
 				x => to_distance (f (5)),
 				y => to_distance (f (6))));
 	begin
-		log (text => "center on point", level => log_threshold + 1);
-		center_on (canvas, c);
+		case runmode is
+			when MODE_MODULE =>
+
+				log (text => "center on point", level => log_threshold + 1);
+				center_on (canvas, c);
+
+			when others =>
+				skipped_in_this_runmode (log_threshold + 1);
+				
+		end case;
 	end zoom_center;
 
 	procedure set_scale (scale : in string) is  -- GUI related -- CS should be percent of scale_to_fit
 		use glib;
 		s : gdouble := gdouble'value (scale);
 	begin
-		log (text => "zoom level", level => log_threshold + 1);
-		set_scale (canvas, s);
+		case runmode is
+			when MODE_MODULE =>
+
+				log (text => "zoom level", level => log_threshold + 1);
+				set_scale (canvas, s);
+
+			when others =>
+				skipped_in_this_runmode (log_threshold + 1);
+				
+		end case;
 	end set_scale;
 	
 	-- Positions the cursor absolute or relative:
@@ -1189,10 +1205,18 @@ function board_cmd (
 				x => to_distance (f (6)),
 				y => to_distance (f (7))));
 	begin
-		log (text => "place cursor" & to_string (coordinates) 
-			& to_string (position), level => log_threshold + 1);
+		case runmode is
+			when MODE_MODULE =>
+
+				log (text => "place cursor" & to_string (coordinates) 
+					& to_string (position), level => log_threshold + 1);
 		
-		canvas.move_cursor (coordinates, cursor_main, position);
+				canvas.move_cursor (coordinates, cursor_main, position);
+
+			when others =>
+				skipped_in_this_runmode (log_threshold + 1);
+				
+		end case;
 	end position_cursor;
 
 	procedure add_device is -- non-electric device !
@@ -2399,22 +2423,49 @@ begin -- board_cmd
 			
 	end case;
 
-	canvas.update_mode_display;
+	case runmode is
+		--when MODE_HEADLESS => null;
+		when MODE_MODULE =>
+			canvas.update_mode_display;
+			status_clear;
+			
+		when others => null;
+	end case;
+
 	
 	return exit_code;
 
 	
 	exception when event: others => 
 
-		log (text => "mode " & to_string (verb), level => log_threshold, console => true);
+		case cmd_entry_mode is
+			when SCRIPT =>
 
-		canvas.update_mode_display;
+				case runmode is
+					when MODE_HEADLESS =>
+						-- log (text => "mode " & to_string (verb), level => log_threshold, console => true);
+						
+						log (ERROR, "board command " & enclose_in_quotes (to_string (cmd)) &
+								" invalid !", console => true);
 
-		
-		log (ERROR, "board command " & enclose_in_quotes (to_string (cmd)) &
-				" invalid !", console => true);
+						log (text => ada.exceptions.exception_information (event), console => true);		
 
-		log (text => ada.exceptions.exception_information (event), console => true);		
+					when MODE_MODULE =>
+						canvas.update_mode_display;
+						--set_status ("command invalid");
+						
+					when others => null; -- CS
+				end case;
+
+			when SINGLE_CMD =>
+				log (text => "board command " & enclose_in_quotes (to_string (cmd)) &
+					" invalid !", console => true);
+				
+				set_status ("command invalid");
+
+				canvas.update_mode_display;
+
+		end case;
 
 	return ERROR;
 	

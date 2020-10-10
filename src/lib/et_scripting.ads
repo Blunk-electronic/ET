@@ -58,6 +58,8 @@ package et_scripting is
 	procedure command_too_long (
 		cmd		: in type_fields_of_line;
 		from	: in count_type);
+
+	procedure skipped_in_this_runmode (log_threshold : in type_log_level);
 	
 	type type_exit_code is (
 		SUCCESSFUL,

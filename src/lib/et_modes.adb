@@ -43,7 +43,22 @@
 
 package body et_modes is
 
-	procedure dummy is begin null; end;
+	function to_runmode (mode : in string) return type_runmode is begin
+		return type_runmode'value (runmode_prefix & mode);
+	end;
+
+	function to_string (mode : in type_runmode) return string is 
+		s : string := type_runmode'image (mode);
+	begin
+		return s (runmode_prefix'length + 1 .. s'last);
+	end;
+
+
+
+	function to_string (entry_mode : in type_cmd_entry_mode) return string is begin
+		return type_cmd_entry_mode'image (entry_mode);
+	end to_string;
+
 	
 end et_modes;
 	

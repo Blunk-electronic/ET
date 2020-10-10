@@ -163,10 +163,18 @@ package body et_scripting is
 	end;
 
 	procedure command_incomplete (cmd : in type_fields_of_line) is begin
-		log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
-			" not complete !", console => true);
+		case cmd_entry_mode is
+			when SCRIPT =>
+				log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
+					 " not complete !", console => true);
+				
+			when SINGLE_CMD =>
+				--log (text => "command not complete");
+				null; -- CS
+		end case;
+
 		raise constraint_error;
-	end;
+	end command_incomplete;
 
 	procedure command_too_long (
 		cmd		: in type_fields_of_line;
@@ -178,6 +186,11 @@ package body et_scripting is
 			 console => true);
 	end;
 
+	procedure skipped_in_this_runmode (log_threshold : in type_log_level) is begin
+		log (text => "skipped in current runmode "
+			& to_string (runmode), level => log_threshold);
+	end skipped_in_this_runmode;
+	
 	procedure validate_module_name (module : in type_module_name.bounded_string) is 
 		use et_project.modules;
 	begin

@@ -47,6 +47,7 @@ with ada.directories;			use ada.directories;
 
 --with gnat.source_info;
 
+with et_modes;					use et_modes;
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 with et_import;
@@ -112,7 +113,7 @@ procedure et is
 	
 	script_name				: pac_script_name.bounded_string;
 
-	runmode : type_runmode := runmode_default;
+	--runmode : type_runmode := runmode_default;
 	
 	dummy_name : constant string := "dummy";
 
@@ -547,7 +548,7 @@ procedure et is
 
 					case runmode is
 						when MODE_HEADLESS =>
-					
+							
 							exit_code_script := et_scripting.execute_script (script_name, log_threshold => 0);
 
 							-- evaluate exit code

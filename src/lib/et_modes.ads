@@ -40,8 +40,41 @@ with et_string_processing;		use et_string_processing;
 
 package et_modes is
 
-	procedure dummy;
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:	
+	runmode_prefix : constant string := "MODE_";
+	
+	type type_runmode is (
+		MODE_HEADLESS,
+		MODE_SYMBOL,
+		MODE_PACKAGE,
+		MODE_DEVICE,
+		MODE_MODULE,
+		MODE_RIG
+		);
 
+	runmode_default : constant type_runmode := MODE_MODULE;
+
+	runmode : type_runmode := runmode_default;
+	
+	function to_runmode (mode : in string) return type_runmode;
+	function to_string (mode : in type_runmode) return string;
+
+
+
+	type type_cmd_entry_mode is (
+		SINGLE_CMD,
+		SCRIPT);
+
+	cmd_entry_mode_default : constant type_cmd_entry_mode := SINGLE_CMD;
+
+	cmd_entry_mode : type_cmd_entry_mode := cmd_entry_mode_default;
+	
+	function to_string (entry_mode : in type_cmd_entry_mode) return string;
+	
+
+	
+	
 	-- Prefixes before enumeration types prevent clashes with gnat keywords
 	-- and package names:
 	verb_prefix		: constant string := ("VERB_");

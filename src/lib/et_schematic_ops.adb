@@ -40,20 +40,34 @@ with ada.strings.unbounded;			use ada.strings.unbounded;
 with ada.directories;
 with ada.exceptions;
 
+with et_modes;						use et_modes;
 with et_conventions;
 with et_pcb_coordinates;
 with et_terminals;
 with et_packages;
 with et_device_rw;
 
+with et_canvas_schematic;
+
 package body et_schematic_ops is
 
 	use pac_generic_modules;
+	use et_canvas_schematic.pac_canvas;
 	
 	procedure device_not_found (name : in type_name) is begin
-		log (ERROR, "device " & to_string (name) & " not found !", console => true);
+
+		case runmode is
+			when MODE_HEADLESS =>
+				log (ERROR, "device " & to_string (name) & " not found !", console => true);				
+				
+			when MODE_MODULE =>
+				set_status ("ERROR device " & to_string (name) & " not found !");
+
+			when others => null;
+		end case;
+		
 		raise constraint_error;
-	end;
+	end device_not_found;
 
 	procedure device_already_exists (name : in type_name) is begin
 		log (ERROR, "device " & to_string (name) & " already exists !", console => true);

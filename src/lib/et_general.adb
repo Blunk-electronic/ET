@@ -48,15 +48,15 @@ with et_string_processing;
 
 package body et_general is
 
-	function to_runmode (mode : in string) return type_runmode is begin
-		return type_runmode'value (runmode_prefix & mode);
-	end;
+	--function to_runmode (mode : in string) return type_runmode is begin
+		--return type_runmode'value (runmode_prefix & mode);
+	--end;
 
-	function to_string (mode : in type_runmode) return string is 
-		s : string := type_runmode'image (mode);
-	begin
-		return s (runmode_prefix'length + 1 .. s'last);
-	end;
+	--function to_string (mode : in type_runmode) return string is 
+		--s : string := type_runmode'image (mode);
+	--begin
+		--return s (runmode_prefix'length + 1 .. s'last);
+	--end;
 	
 	function expand (
 	-- Translates a file name like $HOME/libraries/devices/7400.dev to
