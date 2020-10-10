@@ -35,7 +35,7 @@
 --   history of changes:
 --
 
-with et_modes;					use et_modes;
+with et_modes;						use et_modes;
 
 with et_gui.schematic_callbacks;
 with et_canvas_schematic;

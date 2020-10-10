@@ -112,8 +112,6 @@ procedure et is
 	frame_domain			: et_frames.type_domain := et_frames.SCHEMATIC;
 	
 	script_name				: pac_script_name.bounded_string;
-
-	--runmode : type_runmode := runmode_default;
 	
 	dummy_name : constant string := "dummy";
 

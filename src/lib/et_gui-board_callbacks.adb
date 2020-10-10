@@ -35,6 +35,7 @@
 --   history of changes:
 --
 
+with et_modes;					use et_modes;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_canvas_board;			use et_canvas_board;
 with et_canvas_schematic;
@@ -76,6 +77,8 @@ package body et_gui.board_callbacks is
 		-- Backup the current directory (like /home/user/my_projects):
 		cur_dir_bak : constant string := current_directory;
 	begin
+		cmd_entry_mode := et_modes.SCRIPT;
+		
 		log (text => "executing command " & enclose_in_quotes (line_as_typed_by_operator), level => log_threshold);
 		log_indentation_up;
 		
@@ -144,6 +147,8 @@ package body et_gui.board_callbacks is
 		-- Backup the current directory (like /home/user/my_projects):
 		cur_dir_bak : constant string := current_directory;
 	begin
+		cmd_entry_mode := SINGLE_CMD;
+		
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
 		log_indentation_up;
 

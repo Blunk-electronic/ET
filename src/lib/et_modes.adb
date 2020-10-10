@@ -35,12 +35,6 @@
 --   history of changes:
 --
 
--- with ada.characters;			use ada.characters;
--- with ada.characters.handling;	use ada.characters.handling;
--- with ada.strings; 				use ada.strings;
--- with ada.strings.fixed; 		use ada.strings.fixed;
--- with ada.text_io;				use ada.text_io;
-
 package body et_modes is
 
 	function to_runmode (mode : in string) return type_runmode is begin
