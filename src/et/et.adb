@@ -544,8 +544,15 @@ procedure et is
 				-- If operator whishes to execute a script on the native project:
 				if length (script_name) > 0 then
 
+					-- NOTE: In headless mode the script will be executed right here.
+					-- In graphical mode (everything other than MODE_HEADLESS)
+					-- the script will NOT be executed here but FROM INSIDE the GUI 
+					-- as if it where an ordinary command entered by the operator.
+					
 					case runmode is
 						when MODE_HEADLESS =>
+
+							cmd_entry_mode := SCRIPT_ON_STARTUP;
 							
 							exit_code_script := et_scripting.execute_script (script_name, log_threshold => 0);
 

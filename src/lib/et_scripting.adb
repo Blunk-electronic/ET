@@ -550,7 +550,9 @@ package body et_scripting is
 		
 	begin -- execute_script
 		log (text => row_separator_double, level => log_threshold);
-		log (text => "executing script " & enclose_in_quotes (to_string (file_name)),
+		log (text => "executing script " 
+			 & enclose_in_quotes (to_string (file_name)),
+			 --& "in mode " & to_string (cmd_entry_mode),
 			 level => log_threshold, console => true);
 		log_indentation_up;
 
@@ -578,8 +580,6 @@ package body et_scripting is
 				name => simple_name (to_string (file_name))); -- demo.scr
 
 			set_input (file_handle);
-
-			cmd_entry_mode := SCRIPT;
 			
 			-- read the file line by line
 			while not end_of_file loop
@@ -626,8 +626,6 @@ package body et_scripting is
 		exception when event: others =>
 			if is_open (file_handle) then close (file_handle); end if;
 			set_input (standard_input);
-			cmd_entry_mode := cmd_entry_mode_default;
-			--raise;
 			return ERROR;
 		
 	end execute_script;

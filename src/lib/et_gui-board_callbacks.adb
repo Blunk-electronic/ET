@@ -77,7 +77,7 @@ package body et_gui.board_callbacks is
 		-- Backup the current directory (like /home/user/my_projects):
 		cur_dir_bak : constant string := current_directory;
 	begin
-		cmd_entry_mode := et_modes.SCRIPT;
+		cmd_entry_mode := SCRIPT_VIA_GUI;
 		
 		log (text => "executing command " & enclose_in_quotes (line_as_typed_by_operator), level => log_threshold);
 		log_indentation_up;

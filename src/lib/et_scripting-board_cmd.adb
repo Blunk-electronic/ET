@@ -1294,6 +1294,49 @@ function board_cmd (
 
 	end rename_device;
 
+	function evaluate_exception (
+		name	: in string;
+		message : in string) 
+		return type_exit_code
+	is begin
+		log (text => name & " : " & message, level => log_threshold); -- CS output runmode, cmd_entry_mode ?
+		
+		case cmd_entry_mode is
+			when SCRIPT_ON_STARTUP =>
+
+				--if runmode = MODE_HEADLESS then
+					--log (text => "mode " & to_string (verb), level => log_threshold, console => true);
+					--log (text => "runmode " & to_string (runmode));
+
+					log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
+						" : " & message, console => true);
+
+					return ERROR;
+					
+				--else -- GUI mode
+					--canvas.update_mode_display;
+					--set_status (message);
+
+					--return SUCCESSFUL;
+				--end if;
+
+			when SCRIPT_VIA_GUI =>
+
+				canvas.update_mode_display;
+				set_status (message);
+
+				return SUCCESSFUL;
+
+				
+			when SINGLE_CMD =>
+				--log (text => "single cmd");
+				set_status (message);
+				canvas.update_mode_display;
+
+				return SUCCESSFUL;
+		end case;
+	end evaluate_exception;
+
 	
 begin -- board_cmd
 	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
@@ -2435,39 +2478,59 @@ begin -- board_cmd
 	
 	return exit_code;
 
+
+	exception 
+
+		when event: semantic_error_1 =>
+
+			return evaluate_exception (
+				name	=> exception_name (event),
+				message	=> exception_message (event));
+		
+		when event: syntax_error_1 =>
+			
+			return evaluate_exception (
+				name	=> exception_name (event),
+				message	=> exception_message (event));
+
+
+		when event: others =>
+			log (text => "other error", console => true); -- CS
+ 			return ERROR;
+
 	
-	exception when event: others => 
+	--exception when event: others => 
 
-		case cmd_entry_mode is
-			when SCRIPT =>
+		--case cmd_entry_mode is
+			--when SCRIPT =>
 
-				case runmode is
-					when MODE_HEADLESS =>
-						-- log (text => "mode " & to_string (verb), level => log_threshold, console => true);
+				--case runmode is
+					--when MODE_HEADLESS =>
+						---- log (text => "mode " & to_string (verb), level => log_threshold, console => true);
 						
-						log (ERROR, "board command " & enclose_in_quotes (to_string (cmd)) &
-								" invalid !", console => true);
+						--log (ERROR, "board command " & enclose_in_quotes (to_string (cmd)) &
+								--" invalid !", console => true);
 
-						log (text => ada.exceptions.exception_information (event), console => true);		
+						--log (text => ada.exceptions.exception_information (event), console => true);		
 
-					when MODE_MODULE =>
-						canvas.update_mode_display;
-						--set_status ("command invalid");
+					--when MODE_MODULE =>
+						--canvas.update_mode_display;
+						----set_status ("command invalid");
 						
-					when others => null; -- CS
-				end case;
+					--when others => null; -- CS
+				--end case;
 
-			when SINGLE_CMD =>
-				log (text => "board command " & enclose_in_quotes (to_string (cmd)) &
-					" invalid !", console => true);
+			--when SINGLE_CMD =>
+				--log (text => "board command " & enclose_in_quotes (to_string (cmd)) &
+					--" invalid !", console => true);
 				
-				set_status ("command invalid");
+				--set_status ("command invalid");
 
-				canvas.update_mode_display;
+				--canvas.update_mode_display;
 
-		end case;
+		--end case;
 
-	return ERROR;
+	--return ERROR;
 	
 end board_cmd;
 	

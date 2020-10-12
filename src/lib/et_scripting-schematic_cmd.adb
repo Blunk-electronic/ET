@@ -276,16 +276,22 @@ function schematic_cmd (
 	end display;
 
 	function evaluate_exception (
-		name	: in string;
-		message : in string) 
+		name	: in string; -- exception name
+		message : in string) -- exception message
 		return type_exit_code
 	is begin
-		log (text => name & " : " & message, level => log_threshold); -- CS output runmode, cmd_entry_mode ?
+		log (text => name & " : " & message, level => log_threshold);
+
+		log (text => "runmode: " & to_string (runmode) 
+			 & " cmd_entry_mode: " & to_string (cmd_entry_mode),
+			 level => log_threshold);
 		
 		case cmd_entry_mode is
-			when SCRIPT =>
+			when SCRIPT_ON_STARTUP =>
 
-				if runmode = MODE_HEADLESS then
+				log (text => to_string (cmd_entry_mode), level => log_threshold);
+				
+				--if runmode = MODE_HEADLESS then
 					--log (text => "mode " & to_string (verb), level => log_threshold, console => true);
 					--log (text => "runmode " & to_string (runmode));
 
@@ -294,12 +300,20 @@ function schematic_cmd (
 
 					return ERROR;
 					
-				else -- GUI mode
-					canvas.update_mode_display;
-					set_status (message);
+				--else -- GUI mode
+					--canvas.update_mode_display;
+					--set_status (message);
 
-					return SUCCESSFUL;
-				end if;
+					--return SUCCESSFUL;
+				--end if;
+
+			when SCRIPT_VIA_GUI =>
+
+				canvas.update_mode_display;
+				set_status (message);
+
+				--return ERROR;
+				return SUCCESSFUL;
 				
 			when SINGLE_CMD =>
 				--log (text => "single cmd");
@@ -1778,16 +1792,6 @@ begin -- schematic_cmd
 			
 		when others => null;
 	end case;
-
-	--case cmd_entry_mode is
-
-		--when SINGLE_CMD =>
-			--canvas.update_mode_display;
-			--status_clear;
-			
-		--when others => null;
-	--end case;
-
 	
 	return exit_code;
 

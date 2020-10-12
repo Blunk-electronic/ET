@@ -68,6 +68,8 @@ with et_conventions;
 
 package et_board_ops is
 
+	semantic_error_1 : exception;
+	
 	procedure move_board (
 	-- Moves the origin of the board to the given point (relative to the lower left 
 	-- corner of the drawing frame):

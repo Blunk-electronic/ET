@@ -64,7 +64,9 @@ package et_modes is
 
 	type type_cmd_entry_mode is (
 		SINGLE_CMD,
-		SCRIPT);
+		SCRIPT_ON_STARTUP,
+		SCRIPT_VIA_GUI
+		);
 
 	cmd_entry_mode_default : constant type_cmd_entry_mode := SINGLE_CMD;
 
