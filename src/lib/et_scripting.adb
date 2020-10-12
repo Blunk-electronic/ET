@@ -158,22 +158,25 @@ package body et_scripting is
 
 	procedure invalid_noun (noun : in string) is begin
 		log (ERROR, "invalid noun " & enclose_in_quotes (noun) & " for this operation !",
-				console => true);
+			console => true);
 		raise constraint_error;
 	end;
 
 	procedure command_incomplete (cmd : in type_fields_of_line) is begin
-		case cmd_entry_mode is
-			when SCRIPT =>
-				log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
-					 " not complete !", console => true);
+		raise syntax_error_1 with "command not complete";
+		-- CS make use of number of fields in cmd
+		
+		--case cmd_entry_mode is
+			--when SCRIPT =>
+				--log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
+					 --" not complete !", console => true);
 				
-			when SINGLE_CMD =>
-				--log (text => "command not complete");
-				null; -- CS
-		end case;
+			--when SINGLE_CMD =>
+				----log (text => "command not complete");
+				--null; -- CS
+		--end case;
 
-		raise constraint_error;
+		--raise constraint_error;
 	end command_incomplete;
 
 	procedure command_too_long (
@@ -575,6 +578,8 @@ package body et_scripting is
 				name => simple_name (to_string (file_name))); -- demo.scr
 
 			set_input (file_handle);
+
+			cmd_entry_mode := SCRIPT;
 			
 			-- read the file line by line
 			while not end_of_file loop
@@ -621,6 +626,7 @@ package body et_scripting is
 		exception when event: others =>
 			if is_open (file_handle) then close (file_handle); end if;
 			set_input (standard_input);
+			cmd_entry_mode := cmd_entry_mode_default;
 			--raise;
 			return ERROR;
 		

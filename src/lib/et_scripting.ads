@@ -37,6 +37,7 @@
 --   ToDo: 
 
 with ada.containers;			use ada.containers;
+with ada.exceptions;			use ada.exceptions;
 
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
@@ -50,6 +51,7 @@ package et_scripting is
 	
 	script_name : pac_script_name.bounded_string;
 
+	syntax_error_1 : exception;
 	
 	procedure invalid_noun (noun : in string);
 	

@@ -55,18 +55,17 @@ package body et_schematic_ops is
 	use et_canvas_schematic.pac_canvas;
 	
 	procedure device_not_found (name : in type_name) is begin
-
-		case runmode is
-			when MODE_HEADLESS =>
-				log (ERROR, "device " & to_string (name) & " not found !", console => true);				
-				
-			when MODE_MODULE =>
-				set_status ("ERROR device " & to_string (name) & " not found !");
-
-			when others => null;
-		end case;
+		raise semantic_error_1 
+			with "device " & to_string (name) & " not found !";
 		
-		raise constraint_error;
+		--if runmode = MODE_HEADLESS then
+			--log (ERROR, "device " & to_string (name) & " not found !", console => true);				
+			--raise semantic_error_1;
+
+		--else
+			--set_status ("ERROR device " & to_string (name) & " not found !");
+			--raise semantic_error_2;
+		--end if;
 	end device_not_found;
 
 	procedure device_already_exists (name : in type_name) is begin
