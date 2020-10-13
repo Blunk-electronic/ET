@@ -239,6 +239,10 @@ package et_general is
 	-- This is relevant for GUI operations only:
 	type type_tool is (MOUSE, KEYBOARD);
 
+	
+-- EXCEPTIONS
+	syntax_error_1 : exception;
+	semantic_error_1 : exception;
 
 	
 -- GENERICS

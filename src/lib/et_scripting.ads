@@ -51,7 +51,8 @@ package et_scripting is
 	
 	script_name : pac_script_name.bounded_string;
 
-	syntax_error_1 : exception;
+	--syntax_error_1 : exception;
+	--semantic_error_1 : exception;
 	
 	procedure invalid_noun (noun : in string);
 	

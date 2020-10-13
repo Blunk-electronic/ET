@@ -249,6 +249,8 @@ package body et_scripting is
 				name => to_string (script_name)); -- demo.scr
 
 			set_input (file_handle);
+
+			cmd_entry_mode := SCRIPT_VIA_GUI;
 			
 			-- read the file line by line
 			while not end_of_file loop
@@ -279,13 +281,18 @@ package body et_scripting is
 			close (file_handle);
 			
 		else -- script file not found
+			log_indentation_down;
 			-- CS
-			log (ERROR, "script file " & enclose_in_quotes (to_string (script_name)) &
-				" not found !", console => true);
-			raise constraint_error;
+			--log (ERROR, "script file " & enclose_in_quotes (to_string (script_name)) &
+				--" not found !", console => true);
+			--raise constraint_error;
+
+			raise semantic_error_1 with 
+				"script file " & enclose_in_quotes (to_string (script_name)) 
+				& " not found !";
 		end if;
 
-		-- A script can be called from inside a script (nested scripts).
+		-- A script can be executed from inside a script (nested scripts).
 		-- When the top level script finishes then there might be no previous
 		-- input to switch to. So we test whether the previous_input is open
 		-- before swtiching back to it:
@@ -526,7 +533,10 @@ package body et_scripting is
 		
 		--return exit_code;
 
-		--exception when event: others => 
+		exception when event: others => 
+
+			log_indentation_down;
+			raise;
 		
 			--log (ERROR, "script " & to_string (file_name) & space &
 				--affected_line (cmd) & "command '" &
@@ -538,7 +548,8 @@ package body et_scripting is
 
 	end execute_command;
 
-	
+
+	-- Used in headless mode only:
 	function execute_script (
 		file_name		: in pac_script_name.bounded_string; -- dummy_module/my_script.scr
 		log_threshold	: in type_log_level)

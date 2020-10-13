@@ -113,9 +113,14 @@ package body et_gui.board_callbacks is
 		
 		-- CS output error message in gui
 
-
 		log_indentation_down;
 
+	exception when event: others =>
+		
+		-- Return to previous directory (like  /home/user/my_projects):
+		set_directory (cur_dir_bak);
+
+		log_indentation_down;
 	end execute_script;
 	
 	procedure execute_command (self : access gtk_entry_record'class) is 
@@ -189,6 +194,16 @@ package body et_gui.board_callbacks is
 		--et_canvas_schematic.pac_canvas.redraw (et_canvas_schematic.pac_canvas.canvas);
 
 		-- CS output error message in gui
+
+		log_indentation_down;
+
+	exception when event: others =>
+
+		-- Return to previous directory (like  /home/user/my_projects):
+		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",
+			 level => log_threshold + 1);
+
+		set_directory (cur_dir_bak);
 
 		log_indentation_down;
 	end execute_command;

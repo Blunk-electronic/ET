@@ -2707,7 +2707,7 @@ package body et_schematic_ops is
 
 			if device_cursor /= et_schematic.type_devices.no_element then -- the device should be there
 
-				-- Only real devices have a value. Issue warning if targeted device is virtual.
+				-- Only real devices have a value.
 				if element (device_cursor).appearance = PCB then
 
 					-- Check value regarding the device category:
@@ -2719,25 +2719,37 @@ package body et_schematic_ops is
 							process		=> set_value'access);
 
 					else
-						log (ERROR, "value " & enclose_in_quotes (to_string (value)) 
-							 & " invalid for this kind of device !", console => true);
-						-- CS more details ?
-						raise constraint_error;
+						--log (ERROR, "value " & enclose_in_quotes (to_string (value)) 
+						--& " invalid for this kind of device !", console => true);
+
+						log_indentation_down;
+						
+						raise semantic_error_1 with 
+							"value " & enclose_in_quotes (to_string (value)) 
+							& " invalid for this kind of device !";
+							-- CS more details ?
+							
 					end if;
-				else
-					log (WARNING, "device " & to_string (device_name) &
-						 " is virtual and has no value !");
+
+				else -- virtual device
+					log_indentation_down;
+						
+					raise semantic_error_1 with -- CS semantic_error_2 for warning ?
+						"device " & to_string (device_name) 
+						& " is virtual and has no value !";
 				end if;
 
 			else
+				log_indentation_down;
 				device_not_found (device_name);
 			end if;
 		end query_devices;
 		
 	begin -- set_value
-		log (text => "module " & to_string (module_name) &
-			" setting " & to_string (device_name) & " value to " &
-			enclose_in_quotes (to_string (value)),
+		log (text => "module " 
+			 & enclose_in_quotes (to_string (module_name)) 
+			 & " setting " & to_string (device_name) 
+			 & " value to " & to_string (value),
 			level => log_threshold);
 
 		log_indentation_up;
