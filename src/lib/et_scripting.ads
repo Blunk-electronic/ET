@@ -143,6 +143,7 @@ package et_scripting is
 	-- NOTE: This function should be called to execute a script on launching
 	-- ET via command line. This function must NOT be called when a script
 	-- is to be executed from inside a script !
+	-- To be used in in headless mode only.
 	function execute_script (
 		file_name		: in pac_script_name.bounded_string;
 		log_threshold	: in type_log_level)

@@ -229,13 +229,16 @@ package body et_scripting is
 		
 		file_handle : ada.text_io.file_type;
 
-		-- The line read from the script:
-		line : et_string_processing.type_fields_of_line;
+		-- The command read from the script:
+		cmd : et_string_processing.type_fields_of_line;
 
 		script_name : pac_script_name.bounded_string := to_script_name (file);
 	begin
-		log (text => "current directory: " & enclose_in_quotes (current_directory), level => log_threshold);
-		log (text => "executing project internal script: " & enclose_in_quotes (to_string (script_name)), level => log_threshold);
+		log (text => "current directory: " & enclose_in_quotes (current_directory),
+			 level => log_threshold);
+		
+		log (text => "executing project internal script: " & enclose_in_quotes (to_string (script_name)),
+			 level => log_threshold);
 		
 		log_indentation_up;
 		
@@ -255,7 +258,7 @@ package body et_scripting is
 			-- read the file line by line
 			while not end_of_file loop
 				
-				line := et_string_processing.read_line (
+				cmd := et_string_processing.read_line (
 					line 			=> get_line,
 					number			=> ada.text_io.line,
 					comment_mark 	=> comment_mark,
@@ -263,10 +266,10 @@ package body et_scripting is
 					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
-				if field_count (line) > 0 then
+				if field_count (cmd) > 0 then
 
-					-- execute the line as command
-					execute_command (script_name, line, log_threshold + 1);
+					-- execute the command
+					execute_command (script_name, cmd, log_threshold + 1);
 					
 				end if;
 			end loop;
@@ -278,7 +281,8 @@ package body et_scripting is
 			log_indentation_down;
 
 			raise semantic_error_1 with 
-				"script file " & enclose_in_quotes (to_string (script_name)) 
+				"script file " 
+				& enclose_in_quotes (to_string (script_name)) 
 				& " not found !";
 		end if;
 
@@ -504,7 +508,6 @@ package body et_scripting is
 	end execute_command;
 
 
-	-- Used in headless mode only:
 	function execute_script (
 		file_name		: in pac_script_name.bounded_string; -- dummy_module/my_script.scr
 		log_threshold	: in type_log_level)

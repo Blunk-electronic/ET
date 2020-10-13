@@ -39,7 +39,10 @@ with et_scripting;
 
 package et_gui.schematic_callbacks is
 
-	-- Executes a script.
+	-- Composes a console command like 
+	-- "schematic motor_driver execute script my_script.scr"
+	-- and sends it to procedure et_scripting.schematic_cmd
+	-- to be executed.:
 	procedure execute_script (script : in pac_script_name.bounded_string);	
 
 	-- Executes a command typed on the console by the operator:	

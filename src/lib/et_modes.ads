@@ -43,9 +43,9 @@ package et_modes is
 	-- Prefixes before enumeration types prevent clashes with gnat keywords
 	-- and package names:	
 	runmode_prefix : constant string := "MODE_";
-	
+
 	type type_runmode is (
-		MODE_HEADLESS,
+		MODE_HEADLESS, -- no GUI. commandline only
 		MODE_SYMBOL,
 		MODE_PACKAGE,
 		MODE_DEVICE,
@@ -61,7 +61,9 @@ package et_modes is
 	function to_string (mode : in type_runmode) return string;
 
 
-
+	-- Commands can be entered via:
+	-- - the console in the GUI as single command.
+	-- - via a script (a batch of commands)
 	type type_cmd_entry_mode is (
 		SINGLE_CMD,
 		VIA_SCRIPT
