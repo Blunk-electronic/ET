@@ -114,18 +114,15 @@ package et_scripting is
 
 	-- Executes a schematic command.
 	-- Assumes that the targeted module (like motor_driver) exists.
-	--function schematic_cmd (
 	procedure schematic_cmd (
 		cmd				: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
 		log_threshold	: in type_log_level);
-		--return type_exit_code;
 
 	-- Executes a board command.
 	-- Assumes that the targeted module (like motor_driver) exists.
 	procedure board_cmd (
 		cmd				: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
 		log_threshold	: in type_log_level);
-		--return type_exit_code;
 
 	-- Executes a script command like 
 	-- "schematic motor_driver draw net motor_on 1 150 100 150 130".
@@ -139,7 +136,6 @@ package et_scripting is
 		-- The command like "schematic motor_driver draw net motor_on 1 150 100 150 130":
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level);
-		--return type_exit_code;
 
 	-- Executes the given script file.
 	-- Changes into the directory where the script lives and starts

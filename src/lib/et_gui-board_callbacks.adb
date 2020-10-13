@@ -66,8 +66,6 @@ package body et_gui.board_callbacks is
 		
 		cmd : et_string_processing.type_fields_of_line;
 
-		exit_code : type_exit_code := SUCCESSFUL;
-
 		-- The command launches a script. Change into the project directory. 
 		-- The current directory is the parent directory of the active project. 
 		-- Example: The current directory is /home/user/my_projects . The directory
@@ -77,7 +75,7 @@ package body et_gui.board_callbacks is
 		-- Backup the current directory (like /home/user/my_projects):
 		cur_dir_bak : constant string := current_directory;
 	begin
-		cmd_entry_mode := SCRIPT_VIA_GUI;
+		cmd_entry_mode := VIA_SCRIPT;
 		
 		log (text => "executing command " & enclose_in_quotes (line_as_typed_by_operator), level => log_threshold);
 		log_indentation_up;
@@ -102,8 +100,6 @@ package body et_gui.board_callbacks is
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
 		
-		-- CS evaluate exit_code
-
 		-- The majority of commands requires refreshing the schematic and board drawing.
 		
 		-- refresh board and schematic
@@ -139,8 +135,6 @@ package body et_gui.board_callbacks is
 			get_text (self);
 		
 		cmd : et_string_processing.type_fields_of_line;
-
-		exit_code : type_exit_code := SUCCESSFUL;
 
 		-- The command might launch a script. To prepare for this case we must change
 		-- into the project directory. The current directory is the parent directory
@@ -183,8 +177,6 @@ package body et_gui.board_callbacks is
 			level => log_threshold + 1);
 
 		set_directory (cur_dir_bak);
-		
-		-- CS evaluate exit_code
 		
 		-- The majority of commands requires refreshing the schematic and board drawing.
 

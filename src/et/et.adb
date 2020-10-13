@@ -556,7 +556,7 @@ procedure et is
 					case runmode is
 						when MODE_HEADLESS =>
 
-							cmd_entry_mode := SCRIPT_ON_STARTUP;
+							--cmd_entry_mode := SCRIPT_ON_STARTUP;
 							
 							exit_code_script := et_scripting.execute_script (script_name, log_threshold => 0);
 

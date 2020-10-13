@@ -42,7 +42,6 @@ separate (et_scripting)
 procedure schematic_cmd (
 	cmd				: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
 	log_threshold	: in type_log_level)
-	--return type_exit_code is
 is
 	use et_project;
 	use et_schematic_ops;
@@ -55,9 +54,6 @@ is
 	use et_display.schematic;
 	use et_modes.schematic;
 
-	-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
---	exit_code : type_exit_code := SUCCESSFUL;
-	
 	domain	: type_domain; -- DOM_SCHEMATIC
 	module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	
@@ -278,7 +274,6 @@ is
 	procedure evaluate_exception (
 		name	: in string; -- exception name
 		message : in string) -- exception message
-		--return type_exit_code
 	is begin
 		log (text => name & " : " & message, level => log_threshold);
 
@@ -286,49 +281,25 @@ is
 			 & " cmd_entry_mode: " & to_string (cmd_entry_mode),
 			 level => log_threshold);
 		
-		--case cmd_entry_mode is
-			--when SCRIPT_ON_STARTUP =>
 
-				--log (text => to_string (cmd_entry_mode), level => log_threshold);
-				
-				if runmode = MODE_HEADLESS then
-					--log (text => "mode " & to_string (verb), level => log_threshold, console => true);
-					--log (text => "runmode " & to_string (runmode));
+		if runmode = MODE_HEADLESS then
 
-					log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
-						" : " & message, console => true);
+			log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
+				" : " & message, console => true);
+			
+		else -- GUI mode
+			canvas.update_mode_display;
+			
+			case cmd_entry_mode is
+				when SINGLE_CMD =>
+					set_status (message);
 
-					--return ERROR;
-					
-				else -- GUI mode
-					canvas.update_mode_display;
-					
-					case cmd_entry_mode is
-						when SINGLE_CMD =>
-							set_status (message);
+				when VIA_SCRIPT =>
+					set_status (affected_line (cmd) & space & message);
 
-						when SCRIPT_VIA_GUI =>
-							set_status (affected_line (cmd) & space & message);
+			end case;
+		end if;
 
-						when others => null; -- CS
-					end case;
-				end if;
-
-			--when SCRIPT_VIA_GUI =>
-
-				--canvas.update_mode_display;
-				--set_status (message);
-
-				----return ERROR;
-				----return SUCCESSFUL;
-				
-			--when SINGLE_CMD =>
-				----log (text => "single cmd");
-				--set_status (message);
-				--canvas.update_mode_display;
-
-				--return SUCCESSFUL;
-		--end case;
 	end evaluate_exception;
 	
 begin -- schematic_cmd
@@ -1799,8 +1770,6 @@ begin -- schematic_cmd
 			
 		when others => null;
 	end case;
-	
-	--return exit_code;
 
 	
 	exception 
@@ -1825,7 +1794,6 @@ begin -- schematic_cmd
 
 		when event: others =>
 			log (text => "other error", console => true); -- CS
-			--return ERROR;
 			raise;
 			
 end schematic_cmd;

@@ -39,13 +39,10 @@ with et_modes.board;
 
 separate (et_scripting)
 	
---function board_cmd (
 procedure board_cmd (
 	cmd				: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
 	log_threshold	: in type_log_level)
-	--return type_exit_code 
 is
-
 	use et_board_ops;
 	use et_packages;
 	use et_terminals.pac_shapes;
@@ -56,9 +53,6 @@ is
 	use et_canvas_board.pac_canvas;
 	use et_display.board;
 	use et_modes.board;
-	
-	-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
-	--exit_code : type_exit_code := SUCCESSFUL;
 	
 	domain	: type_domain; -- DOM_BOARD
 	module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1299,55 +1293,29 @@ is
 	procedure evaluate_exception (
 		name	: in string;
 		message : in string) 
-		--return type_exit_code
 	is begin
 		log (text => name & " : " & message, level => log_threshold); -- CS output runmode, cmd_entry_mode ?
 
 		log (text => "runmode: " & to_string (runmode) 
 			 & " cmd_entry_mode: " & to_string (cmd_entry_mode),
 			 level => log_threshold);
-		
-		--case cmd_entry_mode is
-			--when SCRIPT_ON_STARTUP =>
 
-				if runmode = MODE_HEADLESS then
-					--log (text => "mode " & to_string (verb), level => log_threshold, console => true);
-					--log (text => "runmode " & to_string (runmode));
+		if runmode = MODE_HEADLESS then
+			log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
+				" : " & message, console => true);
+			
+		else -- GUI mode
+			canvas.update_mode_display;
+			
+			case cmd_entry_mode is
+				when SINGLE_CMD =>
+					set_status (message);
 
-					log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
-						" : " & message, console => true);
+				when VIA_SCRIPT =>
+					set_status (affected_line (cmd) & space & message);
 
-					--return ERROR;
-					
-				else -- GUI mode
-					canvas.update_mode_display;
-					
-					case cmd_entry_mode is
-						when SINGLE_CMD =>
-							set_status (message);
-
-						when SCRIPT_VIA_GUI =>
-							set_status (affected_line (cmd) & space & message);
-
-						when others => null; -- CS
-					end case;
-				end if;
-				
-			--when SCRIPT_VIA_GUI =>
-
-				--canvas.update_mode_display;
-				--set_status (message);
-
-				--return SUCCESSFUL;
-
-				
-			--when SINGLE_CMD =>
-				----log (text => "single cmd");
-				--set_status (message);
-				--canvas.update_mode_display;
-
-				--return SUCCESSFUL;
-		--end case;
+			end case;
+		end if;
 	end evaluate_exception;
 
 	
@@ -2488,9 +2456,6 @@ begin -- board_cmd
 		when others => null;
 	end case;
 
-	
-	--return exit_code;
-
 
 	exception 
 
@@ -2514,40 +2479,6 @@ begin -- board_cmd
 			log (text => "other error", console => true); -- CS
 
 			raise;
-
-	
-	--exception when event: others => 
-
-		--case cmd_entry_mode is
-			--when SCRIPT =>
-
-				--case runmode is
-					--when MODE_HEADLESS =>
-						---- log (text => "mode " & to_string (verb), level => log_threshold, console => true);
-						
-						--log (ERROR, "board command " & enclose_in_quotes (to_string (cmd)) &
-								--" invalid !", console => true);
-
-						--log (text => ada.exceptions.exception_information (event), console => true);		
-
-					--when MODE_MODULE =>
-						--canvas.update_mode_display;
-						----set_status ("command invalid");
-						
-					--when others => null; -- CS
-				--end case;
-
-			--when SINGLE_CMD =>
-				--log (text => "board command " & enclose_in_quotes (to_string (cmd)) &
-					--" invalid !", console => true);
-				
-				--set_status ("command invalid");
-
-				--canvas.update_mode_display;
-
-		--end case;
-
-	--return ERROR;
 	
 end board_cmd;
 	

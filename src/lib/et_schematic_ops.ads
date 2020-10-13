@@ -68,9 +68,6 @@ with et_conventions;
 
 package et_schematic_ops is
 
-	--semantic_error_1 : exception;
-	--semantic_error_2 : exception;	
-	
 	procedure device_not_found (name : in type_name);
 	procedure device_already_exists (name : in type_name);
 	procedure relative_rotation_invalid;
