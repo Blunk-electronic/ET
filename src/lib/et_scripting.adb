@@ -230,7 +230,7 @@ package body et_scripting is
 		line : et_string_processing.type_fields_of_line;
 
 		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
-		exit_code : type_exit_code := SUCCESSFUL;
+		--exit_code : type_exit_code := SUCCESSFUL;
 
 		script_name : pac_script_name.bounded_string := to_script_name (file);
 	begin
@@ -264,13 +264,13 @@ package body et_scripting is
 				if field_count (line) > 0 then
 
 					-- execute the line as command
-					exit_code := execute_command (script_name, line, log_threshold + 1);
+					execute_command (script_name, line, log_threshold + 1);
 
-					-- evaluate exit code and do things necessary (abort, log messages, ...)
-					case exit_code is
-						when ERROR => raise constraint_error;
-						when others => null;
-					end case;
+					---- evaluate exit code and do things necessary (abort, log messages, ...)
+					--case exit_code is
+						--when ERROR => raise constraint_error;
+						--when others => null;
+					--end case;
 					
 				end if;
 			end loop;
@@ -279,6 +279,7 @@ package body et_scripting is
 			close (file_handle);
 			
 		else -- script file not found
+			-- CS
 			log (ERROR, "script file " & enclose_in_quotes (to_string (script_name)) &
 				" not found !", console => true);
 			raise constraint_error;
@@ -296,38 +297,44 @@ package body et_scripting is
 		log_indentation_down;
 
 		exception when event: others =>
-			log (
-				importance => ERROR,
-				text => "Execution of project internal script " 
-					& enclose_in_quotes (to_string (script_name))
-					& " failed !",
-				level => log_threshold + 1,
-				console => true
-				);
+			--log (
+				--importance => ERROR,
+				--text => "Execution of project internal script " 
+					--& enclose_in_quotes (to_string (script_name))
+					--& " failed !",
+				--level => log_threshold + 1,
+				--console => true
+				--);
 		
 			if is_open (file_handle) then close (file_handle); end if;
 			if is_open (previous_input) then set_input (previous_input); end if;
 
+			raise;
 	end execute_nested_script;
 
 	
 	
-	function schematic_cmd (
+	--function schematic_cmd (
+	procedure schematic_cmd (
 		cmd				: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
 		log_threshold	: in type_log_level)
-		return type_exit_code is separate;
+		--return type_exit_code
+	is separate;
 
-	function board_cmd (
+	--function board_cmd (
+	procedure board_cmd (
 		cmd				: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
 		log_threshold	: in type_log_level)
-		return type_exit_code is separate;
+		--return type_exit_code 
+	is separate;
 
 	
-	function execute_command (
+	procedure execute_command (
 		file_name		: in pac_script_name.bounded_string; -- for debug messages only
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level)
-		return type_exit_code is
+		--return type_exit_code 
+	is
 
 		function f (place : in positive) return string is begin
 			return et_string_processing.field (cmd, place);
@@ -340,7 +347,7 @@ package body et_scripting is
 		use et_project;
 		use et_project.modules;
 		
-		exit_code : type_exit_code := SUCCESSFUL;
+		--exit_code : type_exit_code := SUCCESSFUL;
 		domain	: type_domain; -- DOM_SCHEMATIC
 		module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
@@ -465,14 +472,15 @@ package body et_scripting is
 
 					-- The command must have at least four fields.
 					if field_count (cmd) >= 4 then
-						exit_code := schematic_cmd (cmd, log_threshold + 1);
+						--exit_code := schematic_cmd (cmd, log_threshold + 1);
+						schematic_cmd (cmd, log_threshold + 1);
 					else
 						command_incomplete (cmd);
 					end if;
 					
-					if exit_code = ERROR then
-						raise constraint_error;
-					end if;
+					--if exit_code = ERROR then
+						--raise constraint_error;
+					--end if;
 					
 				when DOM_BOARD =>
 					module := to_module_name (f (2));
@@ -489,14 +497,15 @@ package body et_scripting is
 
 					-- The command must have at least four fields.
 					if field_count (cmd) >= 4 then
-						exit_code := board_cmd (cmd, log_threshold + 1);
+						--exit_code := board_cmd (cmd, log_threshold + 1);
+						board_cmd (cmd, log_threshold + 1);
 					else
 						command_incomplete (cmd);
 					end if;
 
-					if exit_code = ERROR then
-						raise constraint_error;
-					end if;
+					--if exit_code = ERROR then
+						--raise constraint_error;
+					--end if;
 
 				when DOM_PROJECT =>
 
@@ -515,17 +524,17 @@ package body et_scripting is
 		
 		log_indentation_down;
 		
-		return exit_code;
+		--return exit_code;
 
-		exception when event: others => 
+		--exception when event: others => 
 		
-			log (ERROR, "script " & to_string (file_name) & space &
-				affected_line (cmd) & "command '" &
-				to_string (cmd) & "' invalid !", console => true);
+			--log (ERROR, "script " & to_string (file_name) & space &
+				--affected_line (cmd) & "command '" &
+				--to_string (cmd) & "' invalid !", console => true);
 
-			log (text => ada.exceptions.exception_information (event), console => true);		
+			--log (text => ada.exceptions.exception_information (event), console => true);		
 
-		return ERROR;
+		--return ERROR;
 
 	end execute_command;
 
@@ -595,13 +604,13 @@ package body et_scripting is
 				if field_count (line) > 0 then
 
 					-- execute the line as command
-					exit_code := execute_command (file_name, line, log_threshold + 1);
+					execute_command (file_name, line, log_threshold + 1);
 
 					-- evaluate exit code and do things necessary (abort, log messages, ...)
-					case exit_code is
-						when ERROR => exit;
-						when others => null;
-					end case;
+					--case exit_code is
+						--when ERROR => exit;
+						--when others => null;
+					--end case;
 					
 				end if;
 			end loop;

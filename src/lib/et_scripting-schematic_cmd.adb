@@ -39,11 +39,11 @@ with et_modes.schematic;
 
 separate (et_scripting)
 	
-function schematic_cmd (
+procedure schematic_cmd (
 	cmd				: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
 	log_threshold	: in type_log_level)
-	return type_exit_code is
-
+	--return type_exit_code is
+is
 	use et_project;
 	use et_schematic_ops;
 	use et_schematic_ops.nets;
@@ -56,7 +56,7 @@ function schematic_cmd (
 	use et_modes.schematic;
 
 	-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
-	exit_code : type_exit_code := SUCCESSFUL;
+--	exit_code : type_exit_code := SUCCESSFUL;
 	
 	domain	: type_domain; -- DOM_SCHEMATIC
 	module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -275,10 +275,10 @@ function schematic_cmd (
 		-- CS exception handler if status is invalid
 	end display;
 
-	function evaluate_exception (
+	procedure evaluate_exception (
 		name	: in string; -- exception name
 		message : in string) -- exception message
-		return type_exit_code
+		--return type_exit_code
 	is begin
 		log (text => name & " : " & message, level => log_threshold);
 
@@ -286,42 +286,49 @@ function schematic_cmd (
 			 & " cmd_entry_mode: " & to_string (cmd_entry_mode),
 			 level => log_threshold);
 		
-		case cmd_entry_mode is
-			when SCRIPT_ON_STARTUP =>
+		--case cmd_entry_mode is
+			--when SCRIPT_ON_STARTUP =>
 
-				log (text => to_string (cmd_entry_mode), level => log_threshold);
+				--log (text => to_string (cmd_entry_mode), level => log_threshold);
 				
-				--if runmode = MODE_HEADLESS then
+				if runmode = MODE_HEADLESS then
 					--log (text => "mode " & to_string (verb), level => log_threshold, console => true);
 					--log (text => "runmode " & to_string (runmode));
 
 					log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
 						" : " & message, console => true);
 
-					return ERROR;
+					--return ERROR;
 					
-				--else -- GUI mode
-					--canvas.update_mode_display;
-					--set_status (message);
+				else -- GUI mode
+					canvas.update_mode_display;
+					
+					case cmd_entry_mode is
+						when SINGLE_CMD =>
+							set_status (message);
 
-					--return SUCCESSFUL;
-				--end if;
+						when SCRIPT_VIA_GUI =>
+							set_status (affected_line (cmd) & space & message);
 
-			when SCRIPT_VIA_GUI =>
+						when others => null; -- CS
+					end case;
+				end if;
 
-				canvas.update_mode_display;
-				set_status (message);
+			--when SCRIPT_VIA_GUI =>
 
-				--return ERROR;
-				return SUCCESSFUL;
+				--canvas.update_mode_display;
+				--set_status (message);
+
+				----return ERROR;
+				----return SUCCESSFUL;
 				
-			when SINGLE_CMD =>
-				--log (text => "single cmd");
-				set_status (message);
-				canvas.update_mode_display;
+			--when SINGLE_CMD =>
+				----log (text => "single cmd");
+				--set_status (message);
+				--canvas.update_mode_display;
 
-				return SUCCESSFUL;
-		end case;
+				--return SUCCESSFUL;
+		--end case;
 	end evaluate_exception;
 	
 begin -- schematic_cmd
@@ -1793,27 +1800,33 @@ begin -- schematic_cmd
 		when others => null;
 	end case;
 	
-	return exit_code;
+	--return exit_code;
 
 	
 	exception 
 
 		when event: semantic_error_1 =>
 
-			return evaluate_exception (
-				name	=> exception_name (event),
-				message	=> exception_message (event));
-		
-		when event: syntax_error_1 =>
-			
-			return evaluate_exception (
+			--return evaluate_exception (
+			evaluate_exception (
 				name	=> exception_name (event),
 				message	=> exception_message (event));
 
+			raise;
+			
+		when event: syntax_error_1 =>
+			
+			--return evaluate_exception (
+			evaluate_exception (
+				name	=> exception_name (event),
+				message	=> exception_message (event));
+
+			raise;
 
 		when event: others =>
 			log (text => "other error", console => true); -- CS
- 			return ERROR;
+			--return ERROR;
+			raise;
 			
 end schematic_cmd;
 	

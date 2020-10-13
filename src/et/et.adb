@@ -545,9 +545,13 @@ procedure et is
 				if length (script_name) > 0 then
 
 					-- NOTE: In headless mode the script will be executed right here.
-					-- In graphical mode (everything other than MODE_HEADLESS)
+					-- Function et_scripting.execute_script parses the script line per line
+					-- and calls procedure et_scripting.execute_command for each line.
+					
+					-- In graphical mode (means everything other than MODE_HEADLESS)
 					-- the script will NOT be executed here but FROM INSIDE the GUI 
 					-- as if it where an ordinary command entered by the operator.
+					-- See procedure et_gui.single_module for more.
 					
 					case runmode is
 						when MODE_HEADLESS =>

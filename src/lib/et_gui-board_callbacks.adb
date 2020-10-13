@@ -97,7 +97,7 @@ package body et_gui.board_callbacks is
 		set_directory (to_string (et_canvas_schematic.current_active_project));
 		
 		-- execute the board command
-		exit_code := board_cmd (cmd, log_threshold);
+		board_cmd (cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
@@ -171,7 +171,7 @@ package body et_gui.board_callbacks is
 		set_directory (to_string (et_canvas_schematic.current_active_project));
 		
 		-- execute the board command
-		exit_code := board_cmd (cmd, log_threshold);
+		board_cmd (cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",

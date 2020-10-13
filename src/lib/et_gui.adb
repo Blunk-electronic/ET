@@ -244,14 +244,25 @@ package body et_gui is
 		-- Set up the board window.
 		init_board (project, module, log_threshold + 1);
 
-		-- If a script was given, execute it now:
+		-- If a script was given on starup as argument, execute it now:
 		-- NOTE 1: The script execution must start AFTER BOTH schematic and board 
 		--         have been completely displayed.
 		-- NOTE 2: The procedure execute_script is available in gui_board and gui_schematic.
 		--         Both launch the script in the same way. But in case there is no board
 		--         available, it is more reasonable to launch the script from the schematic.
 		if pac_script_name.length (script) > 0 then
+
 			et_gui.schematic_callbacks.execute_script (script);
+			-- 1. Composes a command that executes the script
+			--    like "schematic motor_driver execute script my_script.scr"
+			--    as if it was entered by the operator as an ordinary command.
+			-- 2. Launches the script via procedure et_scripting.schematic_cmd.
+			-- 3. Procedure et_scripting.schematic_cmd in turn calls 
+			--    et_scripting.execute_nested_script.
+			-- 4. et_scripting.execute_nested_script reads the script line per line
+			--    and calls for each line et_scripting.execute_command.
+			-- 5. et_scripting.execute_command parses the command and dispatches
+			--    to procedure schematic_cmd, board_cmd or project_cmd.
 		end if;
 		
 		-- Start the main gtk loop. This is a loop that permanently draws the widgets and

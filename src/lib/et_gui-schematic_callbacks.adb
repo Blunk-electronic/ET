@@ -56,7 +56,7 @@ package body et_gui.schematic_callbacks is
 		use et_scripting;
 		use pac_script_name;
 
-		-- We assemble a command that executes a script
+		-- We compose a command that executes a script
 		-- like "schematic motor_driver execute script my_script.scr:
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_SCHEMATIC)) & space &
@@ -97,7 +97,8 @@ package body et_gui.schematic_callbacks is
 		set_directory (to_string (et_canvas_schematic.current_active_project));
 		
 		-- execute the schematic command
-		exit_code := schematic_cmd (cmd, log_threshold);
+		--exit_code := schematic_cmd (cmd, log_threshold);
+		schematic_cmd (cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
@@ -171,7 +172,8 @@ package body et_gui.schematic_callbacks is
 		set_directory (to_string (current_active_project));
 		
 		-- execute the schematic command
-		exit_code := schematic_cmd (cmd, log_threshold);
+		--exit_code := schematic_cmd (cmd, log_threshold);
+		schematic_cmd (cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",
