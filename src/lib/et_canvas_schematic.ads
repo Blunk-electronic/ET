@@ -49,7 +49,6 @@ with gdk.types;						use gdk.types;
 with gdk.types.keysyms;				use gdk.types.keysyms;
 
 with gtk;
-with gtk.gentry;
 with gtk.gentry;					use gtk.gentry;
 
 with glib;							use glib;

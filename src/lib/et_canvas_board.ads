@@ -49,12 +49,12 @@ with gdk.types;					use gdk.types;
 with gdk.types.keysyms;			use gdk.types.keysyms;
 
 with gtk;
-with gtk.gentry;
+with gtk.gentry;				use gtk.gentry;
 
 with glib;						use glib;
 with cairo;						use cairo;
 
-with et_general;
+with et_general;				use et_general;
 with et_geometry;				use et_geometry;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_terminals;				use et_terminals;
@@ -107,6 +107,14 @@ package et_canvas_board is
 -- 	-- Initializes the internal data so that the model can send signals:
 -- 	procedure init (self : not null access type_model'class);
 
+	
+	-- Executes a script.
+	procedure execute_script (script : in pac_script_name.bounded_string);	
+
+	-- Executes a command typed on the console by the operator:
+	procedure execute_command (self : access gtk_entry_record'class);
+
+	
 
 -- VIEW OR CANVAS
 	

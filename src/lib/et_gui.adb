@@ -192,7 +192,7 @@ package body et_gui is
 		build_console;
 
 		-- Connect to the on_activate signal of the entry (which is a child of console):
-		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
+		gtk_entry (console.get_child).on_activate (et_canvas_board.execute_command'access); -- on hitting enter
 
 		build_canvas;
 		gtk_new (canvas);
