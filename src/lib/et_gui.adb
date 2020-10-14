@@ -38,8 +38,6 @@
 with et_modes;						use et_modes;
 
 with et_canvas_schematic;
-
-with et_gui.board_callbacks;
 with et_canvas_board;
 
 package body et_gui is
@@ -110,7 +108,7 @@ package body et_gui is
 		build_console;
 		
 		-- Connect to the on_activate signal of the entry (which is a child of console):
-		gtk_entry (console.get_child).on_activate (et_canvas_schematic.execute_command'access); -- on hitting enter
+		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
 		
 
 		build_canvas;
@@ -136,7 +134,6 @@ package body et_gui is
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		log_threshold_in: in type_log_level) is
 
-		use et_gui.board_callbacks;
 		use et_canvas_board;
 		use et_canvas_board.pac_canvas;
 		
@@ -192,7 +189,7 @@ package body et_gui is
 		build_console;
 
 		-- Connect to the on_activate signal of the entry (which is a child of console):
-		gtk_entry (console.get_child).on_activate (et_canvas_board.execute_command'access); -- on hitting enter
+		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
 
 		build_canvas;
 		gtk_new (canvas);
