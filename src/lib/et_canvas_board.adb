@@ -306,8 +306,7 @@ package body et_canvas_board is
 	end;
 
 
-	procedure set_grid_x (self : access gtk.gentry.gtk_entry_record'class) is
-		use gtk.gentry;
+	procedure set_grid_x (self : access gtk_entry_record'class) is
 		use et_board_ops;
 		use et_canvas_schematic;
 
@@ -328,8 +327,7 @@ package body et_canvas_board is
 		redraw (canvas);
 	end set_grid_x;
 	
-	procedure set_grid_y (self : access gtk.gentry.gtk_entry_record'class) is
-		use gtk.gentry;
+	procedure set_grid_y (self : access gtk_entry_record'class) is
 		use et_board_ops;
 		use et_canvas_schematic;
 		
