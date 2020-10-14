@@ -142,6 +142,7 @@ package et_canvas_schematic is
 	-- Executes a command typed on the console by the operator:	
 	procedure execute_command (self : access gtk_entry_record'class);
 
+
 	
 -- VIEW OR CANVAS
 
@@ -197,10 +198,10 @@ package et_canvas_schematic is
 
 	-- These procedures set the grid as entered in the grid box:
 	
-	procedure set_grid_x (self : access gtk.gentry.gtk_entry_record'class);
+	procedure set_grid_x (self : access gtk_entry_record'class);
 	-- Additionally sets the grid for y. Mostly grid of x and y axis are the same.
 	
-	procedure set_grid_y (self : access gtk.gentry.gtk_entry_record'class);
+	procedure set_grid_y (self : access gtk_entry_record'class);
 
 
 	-- Multiplier for grid densities:

@@ -37,7 +37,6 @@
 
 with et_modes;						use et_modes;
 
-with et_gui.schematic_callbacks;
 with et_canvas_schematic;
 
 with et_gui.board_callbacks;
@@ -51,7 +50,6 @@ package body et_gui is
 		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 		log_threshold_in: in type_log_level) is
 
-		use et_gui.schematic_callbacks;	
 		use et_canvas_schematic;
 		use et_canvas_schematic.pac_canvas;
 		
