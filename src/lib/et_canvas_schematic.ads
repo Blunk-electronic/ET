@@ -50,6 +50,7 @@ with gdk.types.keysyms;				use gdk.types.keysyms;
 
 with gtk;
 with gtk.gentry;
+with gtk.gentry;					use gtk.gentry;
 
 with glib;							use glib;
 with cairo;							use cairo;
@@ -132,7 +133,16 @@ package et_canvas_schematic is
 -- 	-- Initializes the internal data so that the model can send signals:
 -- 	procedure init (self : not null access type_model'class);
 
+	-- Composes a console command like 
+	-- "schematic motor_driver execute script my_script.scr"
+	-- and sends it to procedure et_scripting.schematic_cmd
+	-- to be executed.:
+	procedure execute_script (script : in pac_script_name.bounded_string);	
 
+	-- Executes a command typed on the console by the operator:	
+	procedure execute_command (self : access gtk_entry_record'class);
+
+	
 -- VIEW OR CANVAS
 
 	type type_view is new pac_canvas.type_view with record

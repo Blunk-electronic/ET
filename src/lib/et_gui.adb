@@ -112,7 +112,7 @@ package body et_gui is
 		build_console;
 		
 		-- Connect to the on_activate signal of the entry (which is a child of console):
-		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
+		gtk_entry (console.get_child).on_activate (et_canvas_schematic.execute_command'access); -- on hitting enter
 		
 
 		build_canvas;
@@ -252,7 +252,8 @@ package body et_gui is
 		--         available, it is more reasonable to launch the script from the schematic.
 		if pac_script_name.length (script) > 0 then
 
-			et_gui.schematic_callbacks.execute_script (script);
+			--et_gui.schematic_callbacks.execute_script (script);
+			et_canvas_schematic.execute_script (script);
 			-- 1. Composes a command that executes the script
 			--    like "schematic motor_driver execute script my_script.scr"
 			--    as if it was entered by the operator as an ordinary command.
