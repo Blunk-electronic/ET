@@ -1291,8 +1291,8 @@ is
 	end rename_device;
 
 	procedure evaluate_exception (
-		name	: in string;
-		message : in string) 
+		name	: in string; -- exception name
+		message : in string) -- exception message
 	is begin
 		log (text => name & " : " & message, level => log_threshold); -- CS output runmode, cmd_entry_mode ?
 
@@ -1312,7 +1312,17 @@ is
 					set_status (message);
 
 				when VIA_SCRIPT =>
-					set_status (affected_line (cmd) & space & message);
+
+					if not script_cmd_status.failed then
+						script_cmd_status.failed := true;
+						
+						set_status (
+							to_string (script_cmd_status.script_name) & " : "
+							& affected_line (script_cmd_status.cmd) 
+							& space & message);
+						
+						log (text => affected_line (script_cmd_status.cmd));
+					end if;
 
 			end case;
 		end if;
@@ -2448,7 +2458,6 @@ begin -- board_cmd
 	end case;
 
 	case runmode is
-		--when MODE_HEADLESS => null;
 		when MODE_MODULE =>
 			canvas.update_mode_display;
 			status_clear;

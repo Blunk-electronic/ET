@@ -1799,7 +1799,7 @@ begin -- schematic_cmd
 			evaluate_exception (
 				name	=> exception_name (event),
 				message	=> exception_message (event));
-
+			
 			raise;
 
 		when event: others =>
