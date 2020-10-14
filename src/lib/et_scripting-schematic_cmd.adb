@@ -295,7 +295,17 @@ is
 					set_status (message);
 
 				when VIA_SCRIPT =>
-					set_status (affected_line (cmd) & space & message);
+
+					if not script_cmd_status.failed then
+						script_cmd_status.failed := true;
+						
+						set_status (
+							to_string (script_cmd_status.script_name) & " : "
+							& affected_line (script_cmd_status.cmd) 
+							& space & message);
+						
+						log (text => affected_line (script_cmd_status.cmd));
+					end if;
 
 			end case;
 		end if;
@@ -303,7 +313,9 @@ is
 	end evaluate_exception;
 	
 begin -- schematic_cmd
-	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
+	log (text => "full command: " 
+		 & enclose_in_quotes (to_string (cmd)),
+		 level => log_threshold);
 
 	domain := to_domain (f (1)); -- DOM_SCHEMATIC
 	module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
@@ -1763,7 +1775,6 @@ begin -- schematic_cmd
 	end case;
 
 	case runmode is
-		--when MODE_HEADLESS => null;
 		when MODE_MODULE =>
 			canvas.update_mode_display;
 			status_clear;
@@ -1776,16 +1787,15 @@ begin -- schematic_cmd
 
 		when event: semantic_error_1 =>
 
-			--return evaluate_exception (
 			evaluate_exception (
 				name	=> exception_name (event),
 				message	=> exception_message (event));
 
 			raise;
+
 			
 		when event: syntax_error_1 =>
 			
-			--return evaluate_exception (
 			evaluate_exception (
 				name	=> exception_name (event),
 				message	=> exception_message (event));

@@ -39,7 +39,6 @@ with ada.characters;			use ada.characters;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.text_io;				use ada.text_io;
 
 with ada.exceptions;
 with ada.directories;
@@ -253,6 +252,8 @@ package body et_scripting is
 
 			set_input (file_handle);
 
+			script_cmd_status := (script_name => script_name, others => <>);
+			
 			cmd_entry_mode := VIA_SCRIPT;
 			
 			-- read the file line by line
@@ -260,7 +261,7 @@ package body et_scripting is
 				
 				cmd := et_string_processing.read_line (
 					line 			=> get_line,
-					number			=> ada.text_io.line,
+					number			=> ada.text_io.line (current_input),
 					comment_mark 	=> comment_mark,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
 					ifs 			=> space); -- fields are separated by space
@@ -268,6 +269,8 @@ package body et_scripting is
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if field_count (cmd) > 0 then
 
+					script_cmd_status.cmd := cmd;
+					
 					-- execute the command
 					execute_command (script_name, cmd, log_threshold + 1);
 					

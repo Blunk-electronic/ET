@@ -36,6 +36,7 @@
 --
 --   ToDo: 
 
+with ada.text_io;				use ada.text_io;
 with ada.containers;			use ada.containers;
 with ada.exceptions;			use ada.exceptions;
 
@@ -51,8 +52,14 @@ package et_scripting is
 	
 	script_name : pac_script_name.bounded_string;
 
-	--syntax_error_1 : exception;
-	--semantic_error_1 : exception;
+	type type_script_cmd_status is record
+		script_name	: pac_script_name.bounded_string;
+		cmd			: type_fields_of_line;
+		failed		: boolean := false;
+	end record;
+
+	script_cmd_status : type_script_cmd_status;
+	
 	
 	procedure invalid_noun (noun : in string);
 	
