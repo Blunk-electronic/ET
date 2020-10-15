@@ -299,7 +299,7 @@ is
 
 					when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 						
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 				
 			when ARC =>
@@ -325,7 +325,7 @@ is
 
 					when 14 .. count_type'last => command_too_long (cmd, fields - 1);
 						
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 
 			when CIRCLE =>
@@ -376,7 +376,7 @@ is
 							
 					when 12 .. count_type'last => command_too_long (cmd, fields - 1);
 						
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 
 						
@@ -416,7 +416,7 @@ is
 
 					when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 						
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 				
 			when ARC =>
@@ -443,7 +443,7 @@ is
 
 					when 14 .. count_type'last => command_too_long (cmd, fields - 1);
 						
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 
 			when CIRCLE =>
@@ -495,7 +495,7 @@ is
 
 					when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 					
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 						
 			when others => null;
@@ -526,7 +526,7 @@ is
 
 					when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 						
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 				
 			when ARC =>
@@ -553,7 +553,7 @@ is
 
 					when 14 .. count_type'last => command_too_long (cmd, fields - 1);
 						
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 
 			when CIRCLE =>
@@ -605,7 +605,7 @@ is
 
 					when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 					
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 						
 			when others => null;
@@ -637,7 +637,7 @@ is
 
 					when 12 .. count_type'last => command_too_long (cmd, fields - 1);
 						
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 				
 			when ARC =>
@@ -664,7 +664,7 @@ is
 
 					when 15 .. count_type'last => command_too_long (cmd, fields - 1);
 						
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 
 			when CIRCLE =>
@@ -728,7 +728,7 @@ is
 													),
 										log_threshold	=> log_threshold + 1);
 
-								when HATCHED => command_incomplete (cmd);
+								when HATCHED => command_incomplete;
 
 							end case;
 						end if;
@@ -766,7 +766,7 @@ is
 
 					when 13 .. count_type'last => command_too_long (cmd, fields - 1);
 						
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 
 						
@@ -799,7 +799,7 @@ is
 
 					when 12 .. count_type'last => command_too_long (cmd, fields - 1);
 						
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 				
 			when ARC =>
@@ -826,7 +826,7 @@ is
 
 					when 15 .. count_type'last => command_too_long (cmd, fields - 1);
 						
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 
 			when CIRCLE =>
@@ -890,7 +890,7 @@ is
 													),
 										log_threshold	=> log_threshold + 1);
 
-								when HATCHED => command_incomplete (cmd);
+								when HATCHED => command_incomplete;
 
 							end case;
 						end if;
@@ -928,7 +928,7 @@ is
 
 					when 13 .. count_type'last => command_too_long (cmd, fields - 1);
 						
-					when others => command_incomplete (cmd);
+					when others => command_incomplete;
 				end case;
 
 						
@@ -971,7 +971,7 @@ is
 
 						when 13 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				else
@@ -1005,7 +1005,7 @@ is
 									command_too_long (cmd, fields - 1);
 									
 								when others =>
-									command_incomplete (cmd);
+									command_incomplete;
 							end case;
 									
 						else
@@ -1032,7 +1032,7 @@ is
 										command_too_long (cmd, fields - 1);
 										
 									when others =>
-										command_incomplete (cmd);
+										command_incomplete;
 								end case;
 								
 							else
@@ -1068,7 +1068,7 @@ is
 									command_too_long (cmd, fields - 1);
 									
 								when others =>
-									command_incomplete (cmd);
+									command_incomplete;
 							end case;
 
 						else
@@ -1096,7 +1096,7 @@ is
 									when 15 .. count_type'last => command_too_long (cmd, fields - 1);
 										
 									when others => 
-										command_incomplete (cmd);
+										command_incomplete;
 								end case;
 								
 							else
@@ -1137,7 +1137,7 @@ is
 					when 16 .. count_type'last => command_too_long (cmd, fields - 1);
 						
 					when others =>
-						command_incomplete (cmd);
+						command_incomplete;
 				end case;
 
 		end case;
@@ -1336,6 +1336,11 @@ is
 		end if;
 	end evaluate_exception;
 
+	procedure propose_arguments is
+	begin
+		put_line ("propose arguments");
+		-- CS
+	end propose_arguments;
 	
 begin -- board_cmd
 	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
@@ -1366,7 +1371,7 @@ begin -- board_cmd
 
 						when 11 .. count_type'last => too_long;
 						
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_LAYER =>
@@ -1377,7 +1382,7 @@ begin -- board_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when others => invalid_noun (to_string (noun));
@@ -1391,7 +1396,7 @@ begin -- board_cmd
 
 						when 6 .. count_type'last => too_long;
 						
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_LAYER =>
@@ -1406,7 +1411,7 @@ begin -- board_cmd
 
 						when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 
 					end case;
 
@@ -1425,7 +1430,7 @@ begin -- board_cmd
 
 						when 8 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_SILKSCREEN =>
@@ -1448,7 +1453,7 @@ begin -- board_cmd
 							command_too_long (cmd, fields - 1);
 							
 						when others =>
-							command_incomplete (cmd);
+							command_incomplete;
 					end case;
 
 				when NOUN_ASSY =>
@@ -1469,7 +1474,7 @@ begin -- board_cmd
 
 						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_KEEPOUT =>
@@ -1490,7 +1495,7 @@ begin -- board_cmd
 
 						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_STENCIL =>
@@ -1511,7 +1516,7 @@ begin -- board_cmd
 
 						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_STOP =>
@@ -1532,7 +1537,7 @@ begin -- board_cmd
 
 						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_ROUTE_RESTRICT =>
@@ -1552,7 +1557,7 @@ begin -- board_cmd
 
 						when 8 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_VIA_RESTRICT =>
@@ -1572,7 +1577,7 @@ begin -- board_cmd
 
 						when 8 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -1586,7 +1591,7 @@ begin -- board_cmd
 						when 4 => display_grid; -- if status is omitted
 						when 5 => display_grid (f (5));
 						when 6 .. count_type'last => too_long;
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_SILKSCREEN -- like "board led_driver display silkscreen top [on/off]"
@@ -1595,7 +1600,7 @@ begin -- board_cmd
 						when 5 => display_non_conductor_layer (noun, f (5)); -- if status is omitted
 						when 6 => display_non_conductor_layer (noun, f (5), f (6));
 						when 7 .. count_type'last => too_long;
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_CONDUCTORS => -- like "board led_driver display conductors 2 [on/off]"
@@ -1603,7 +1608,7 @@ begin -- board_cmd
 						when 5 => display_conductor_layer (f (5)); -- if status is omitted
 						when 6 => display_conductor_layer (f (5), f (6));
 						when 7 .. count_type'last => too_long;
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_OUTLINE => -- like "board led_driver display outline [on/off]"
@@ -1611,7 +1616,7 @@ begin -- board_cmd
 						when 4 => display_outline; -- if status is omitted
 						when 5 => display_outline (f (5));
 						when 6 .. count_type'last => too_long;
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_RESTRICT => -- like "board led_driver display restrict route/via 2 [on/off]"
@@ -1619,7 +1624,7 @@ begin -- board_cmd
 						when 6 => display_restrict_layer (f (5), f (6)); -- if status is omitted
 						when 7 => display_restrict_layer (f (5), f (6), f (7));
 						when 8 .. count_type'last => too_long;
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_VIAS => -- like "board led_driver display vias [on/off]"
@@ -1630,7 +1635,7 @@ begin -- board_cmd
 						when 4 => display_vias; -- if status is omitted
 						when 5 => display_vias (f (5));
 						when 6 .. count_type'last => too_long;
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -1664,7 +1669,7 @@ begin -- board_cmd
 										command_too_long (cmd, fields - 1);
 										
 									when others =>
-										command_incomplete (cmd);
+										command_incomplete;
 								end case;
 								
 							when ARC =>
@@ -1693,7 +1698,7 @@ begin -- board_cmd
 										command_too_long (cmd, fields - 1);
 										
 									when others =>
-										command_incomplete (cmd);
+										command_incomplete;
 								end case;
 
 							when CIRCLE =>
@@ -1716,7 +1721,7 @@ begin -- board_cmd
 										command_too_long (cmd, fields - 1);
 										
 									when others =>
-										command_incomplete (cmd);
+										command_incomplete;
 								end case;
 
 						end case;
@@ -1751,7 +1756,7 @@ begin -- board_cmd
 										command_too_long (cmd, fields - 1);
 										
 									when others =>
-										command_incomplete (cmd);
+										command_incomplete;
 								end case;
 								
 							when ARC =>
@@ -1781,7 +1786,7 @@ begin -- board_cmd
 										command_too_long (cmd, fields - 1);
 										
 									when others =>
-										command_incomplete (cmd);
+										command_incomplete;
 								end case;
 
 							when CIRCLE =>
@@ -1848,7 +1853,7 @@ begin -- board_cmd
 														);
 
 												when HATCHED =>
-													command_incomplete (cmd);
+													command_incomplete;
 
 											end case;
 										end if;
@@ -1889,7 +1894,7 @@ begin -- board_cmd
 										command_too_long (cmd, fields - 1);
 										
 									when others =>
-										command_incomplete (cmd);
+										command_incomplete;
 								end case;
 
 										
@@ -1926,7 +1931,7 @@ begin -- board_cmd
 										command_too_long (cmd, fields - 1);
 										
 									when others =>
-										command_incomplete (cmd);
+										command_incomplete;
 								end case;
 								
 							when ARC =>
@@ -1956,7 +1961,7 @@ begin -- board_cmd
 										command_too_long (cmd, fields - 1);
 										
 									when others =>
-										command_incomplete (cmd);
+										command_incomplete;
 								end case;
 
 							when CIRCLE =>
@@ -2023,7 +2028,7 @@ begin -- board_cmd
 														);
 
 												when HATCHED =>
-													command_incomplete (cmd);
+													command_incomplete;
 
 											end case;
 										end if;
@@ -2065,7 +2070,7 @@ begin -- board_cmd
 										command_too_long (cmd, fields - 1);
 										
 									when others =>
-										command_incomplete (cmd);
+										command_incomplete;
 								end case;
 
 										
@@ -2101,7 +2106,7 @@ begin -- board_cmd
 								log_threshold	=> log_threshold + 1);
 
 						when 6 .. count_type'last => too_long;								
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 						
 				when others => invalid_noun (to_string (noun));
@@ -2123,7 +2128,7 @@ begin -- board_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when others => invalid_noun (to_string (noun));
@@ -2135,7 +2140,7 @@ begin -- board_cmd
 					case fields is
 						when 7 => position_cursor; -- position cursor absolute/relative 25 30
 						when 8 .. count_type'last => too_long;
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when others => invalid_noun (to_string (noun));
@@ -2149,7 +2154,7 @@ begin -- board_cmd
 
 						when 7 .. count_type'last => too_long;
 						
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when others => invalid_noun (to_string (noun));
@@ -2186,7 +2191,7 @@ begin -- board_cmd
 										command_too_long (cmd, fields - 1);
 										
 									when others =>
-										command_incomplete (cmd);
+										command_incomplete;
 								end case;
 								
 							when ARC =>
@@ -2218,7 +2223,7 @@ begin -- board_cmd
 										command_too_long (cmd, fields - 1);
 										
 									when others =>
-										command_incomplete (cmd);
+										command_incomplete;
 								end case;
 
 						end case;
@@ -2252,7 +2257,7 @@ begin -- board_cmd
 							command_too_long (cmd, fields - 1);
 							
 						when others =>
-							command_incomplete (cmd);
+							command_incomplete;
 					end case;
 
 				when NOUN_NET =>
@@ -2275,7 +2280,7 @@ begin -- board_cmd
 							command_too_long (cmd, fields - 1);
 							
 						when others =>
-							command_incomplete (cmd);
+							command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -2299,7 +2304,7 @@ begin -- board_cmd
 							command_too_long (cmd, fields - 1);
 							
 						when others =>
-							command_incomplete (cmd);
+							command_incomplete;
 					end case;
 
 				when others => invalid_noun (to_string (noun));
@@ -2319,7 +2324,7 @@ begin -- board_cmd
 							command_too_long (cmd, fields - 1);
 							
 						when others =>
-							command_incomplete (cmd);
+							command_incomplete;
 					end case;
 
 				when others => invalid_noun (to_string (noun));
@@ -2343,7 +2348,7 @@ begin -- board_cmd
 							command_too_long (cmd, fields - 1);
 							
 						when others =>
-							command_incomplete (cmd);
+							command_incomplete;
 					end case;
 					
 				when NOUN_DEVICE =>
@@ -2363,7 +2368,7 @@ begin -- board_cmd
 							command_too_long (cmd, fields - 1);
 							
 						when others =>
-							command_incomplete (cmd);
+							command_incomplete;
 					end case;
 
 				when NOUN_SUBMODULE =>
@@ -2383,7 +2388,7 @@ begin -- board_cmd
 							command_too_long (cmd, fields - 1);
 							
 						when others =>
-							command_incomplete (cmd);
+							command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -2404,7 +2409,7 @@ begin -- board_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -2417,7 +2422,7 @@ begin -- board_cmd
 -- 						case fields is
 -- 							when 5 => null; -- CS
 -- 							when 6 .. count_type'last => too_long;
--- 							when others => command_incomplete (cmd);
+-- 							when others => command_incomplete;
 -- 						end case;
 -- 						
 -- 					when others => invalid_noun (to_string (noun));
@@ -2433,7 +2438,7 @@ begin -- board_cmd
 
 						when 5 .. count_type'last => too_long;
 
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_LEVEL => -- zoom level 3
@@ -2443,7 +2448,7 @@ begin -- board_cmd
 
 						when 6 .. count_type'last => too_long;
 
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_CENTER => -- zoom center 10 10
@@ -2457,7 +2462,7 @@ begin -- board_cmd
 
 						when 8 .. count_type'last => too_long;
 
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -2484,6 +2489,7 @@ begin -- board_cmd
 
 			raise;
 			
+
 		when event: syntax_error_1 =>
 			
 			evaluate_exception (
@@ -2492,9 +2498,22 @@ begin -- board_cmd
 
 			raise;
 
+
+		when event: exception_command_incomplete =>
+			
+			evaluate_exception (
+				name	=> exception_name (event),
+				message	=> exception_message (event));
+
+			if cmd_entry_mode = SINGLE_CMD then
+				propose_arguments;
+			else
+				raise;
+			end if;
+
+			
 		when event: others =>
 			log (text => "other error", console => true); -- CS
-
 			raise;
 	
 end board_cmd;

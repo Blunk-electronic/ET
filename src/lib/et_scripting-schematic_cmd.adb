@@ -319,6 +319,43 @@ is
 		end if;
 
 	end evaluate_exception;
+
+	procedure propose_arguments is
+		incomplete : constant string := "Command incomplete ! ";
+	begin
+		put_line ("propose arguments");
+
+		case verb is
+			when VERB_INVOKE =>
+				case fields is
+					when 4 =>
+						set_status (incomplete & "Device name missing !");
+						-- no menu required. might become very long.
+						
+					when 5 =>
+						set_status (incomplete & "Unit name missing");
+
+					when 6 =>
+						set_status (incomplete & "Sheet number missing");
+
+					when 7 =>
+						set_status (incomplete & "x missing");
+
+					when 8 =>
+						set_status (incomplete & "y missing");
+						
+					when 9 =>
+						set_status (incomplete & "Rotation missing");
+
+						
+					when others => null;
+				end case;
+				
+			when others => null;
+		
+		end case;
+		
+	end propose_arguments;
 	
 begin -- schematic_cmd
 	log (text => "full command: " 
@@ -384,7 +421,7 @@ begin -- schematic_cmd
 
 						when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_NETCHANGER =>
@@ -407,7 +444,7 @@ begin -- schematic_cmd
 
 						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_PORT =>
@@ -428,7 +465,7 @@ begin -- schematic_cmd
 
 						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_SUBMODULE =>
@@ -456,7 +493,7 @@ begin -- schematic_cmd
 
 						when 12 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -474,7 +511,7 @@ begin -- schematic_cmd
 
 						when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when others => invalid_noun (to_string (noun));
@@ -491,7 +528,7 @@ begin -- schematic_cmd
 
 						when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 						
 				when others => invalid_noun (to_string (noun));
@@ -520,7 +557,7 @@ begin -- schematic_cmd
 
 						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_SUBMODULE =>
@@ -544,7 +581,7 @@ begin -- schematic_cmd
 
 						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -563,7 +600,7 @@ begin -- schematic_cmd
 							
 						when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when others => invalid_noun (to_string (noun));
@@ -581,7 +618,7 @@ begin -- schematic_cmd
 
 						when 6 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 							
 				when NOUN_LABEL =>
@@ -601,7 +638,7 @@ begin -- schematic_cmd
 							
 						when 8 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_NET =>
@@ -653,7 +690,7 @@ begin -- schematic_cmd
 							
 						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 
 					end case;
 
@@ -668,7 +705,7 @@ begin -- schematic_cmd
 
 						when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_PORT =>
@@ -684,7 +721,7 @@ begin -- schematic_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_SEGMENT =>
@@ -703,7 +740,7 @@ begin -- schematic_cmd
 
 						when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 							
 				when NOUN_SUBMODULE =>
@@ -717,7 +754,7 @@ begin -- schematic_cmd
 
 						when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_TEXT =>
@@ -734,7 +771,7 @@ begin -- schematic_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_VARIANT => 
@@ -748,7 +785,7 @@ begin -- schematic_cmd
 							
 						when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -768,7 +805,7 @@ begin -- schematic_cmd
 							
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -785,7 +822,7 @@ begin -- schematic_cmd
 						when 4 => display (noun); -- if status is omitted
 						when 5 => display (noun, f (5));
 						when 6 .. count_type'last => too_long; 
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -810,7 +847,7 @@ begin -- schematic_cmd
 
 						when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 							
 				when NOUN_NETCHANGER =>
@@ -828,7 +865,7 @@ begin -- schematic_cmd
 
 						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_PORT =>
@@ -847,7 +884,7 @@ begin -- schematic_cmd
 
 						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_SEGMENT =>
@@ -873,7 +910,7 @@ begin -- schematic_cmd
 
 						when 12 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_SUBMODULE =>
@@ -891,7 +928,7 @@ begin -- schematic_cmd
 
 						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -920,7 +957,7 @@ begin -- schematic_cmd
 
 						when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -936,7 +973,7 @@ begin -- schematic_cmd
 								log_threshold	=> log_threshold + 1);
 
 						when 6 .. count_type'last => too_long;								
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 						
 				when others => invalid_noun (to_string (noun));
@@ -968,7 +1005,7 @@ begin -- schematic_cmd
 
 						when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when others => invalid_noun (to_string (noun));
@@ -994,7 +1031,7 @@ begin -- schematic_cmd
 
 						when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_VALUE =>
@@ -1015,7 +1052,7 @@ begin -- schematic_cmd
 
 						when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_PORT =>
@@ -1034,7 +1071,7 @@ begin -- schematic_cmd
 
 						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 							
 				when NOUN_PURPOSE =>
@@ -1055,7 +1092,7 @@ begin -- schematic_cmd
 
 						when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_NETCHANGER =>
@@ -1076,7 +1113,7 @@ begin -- schematic_cmd
 
 						when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 							
 				when NOUN_TEXT =>
@@ -1098,7 +1135,7 @@ begin -- schematic_cmd
 
 						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_UNIT =>
@@ -1120,7 +1157,7 @@ begin -- schematic_cmd
 
 						when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 							
 				when others => invalid_noun (to_string (noun));
@@ -1138,7 +1175,7 @@ begin -- schematic_cmd
 
 						when 5 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_NETLISTS => 
@@ -1151,7 +1188,7 @@ begin -- schematic_cmd
 
 						when 5 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -1199,7 +1236,7 @@ begin -- schematic_cmd
 								
 							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete (cmd);
+							when others => command_incomplete;
 						end case;
 
 					end; -- declare
@@ -1217,7 +1254,7 @@ begin -- schematic_cmd
 
 						when 8 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 
 					end case;
 					
@@ -1246,7 +1283,7 @@ begin -- schematic_cmd
 
 						when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 							
 				when NOUN_LABEL =>
@@ -1299,7 +1336,7 @@ begin -- schematic_cmd
 							
 						when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd); -- incl. field count of 9
+						when others => command_incomplete; -- incl. field count of 9
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -1311,7 +1348,7 @@ begin -- schematic_cmd
 					case fields is
 						when 7 => position_cursor; -- position cursor absolute/relative 25 30
 						when 8 .. count_type'last => too_long;
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when others => invalid_noun (to_string (noun));
@@ -1331,7 +1368,7 @@ begin -- schematic_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_SUBMODULE =>
@@ -1346,7 +1383,7 @@ begin -- schematic_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -1367,7 +1404,7 @@ begin -- schematic_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case; 
 							
 				when NOUN_SUBMODULE =>
@@ -1382,7 +1419,7 @@ begin -- schematic_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_NET =>
@@ -1437,7 +1474,7 @@ begin -- schematic_cmd
 							
 						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when others => invalid_noun (to_string (noun));
@@ -1457,7 +1494,7 @@ begin -- schematic_cmd
 
 						when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -1483,7 +1520,7 @@ begin -- schematic_cmd
 
 						when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 							
 				when NOUN_NAME =>
@@ -1501,7 +1538,7 @@ begin -- schematic_cmd
 
 						when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 							
 				when NOUN_VALUE =>
@@ -1519,7 +1556,7 @@ begin -- schematic_cmd
 
 						when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 							
 				when NOUN_PURPOSE =>
@@ -1537,7 +1574,7 @@ begin -- schematic_cmd
 
 						when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 							
 				when NOUN_NETCHANGER =>
@@ -1553,7 +1590,7 @@ begin -- schematic_cmd
 
 						when 8 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -1574,7 +1611,7 @@ begin -- schematic_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 			
 				when NOUN_PARTCODE =>
@@ -1597,7 +1634,7 @@ begin -- schematic_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 							
 				when NOUN_PURPOSE =>
@@ -1621,7 +1658,7 @@ begin -- schematic_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_SCOPE =>
@@ -1636,7 +1673,7 @@ begin -- schematic_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_SUBMODULE_FILE =>
@@ -1651,7 +1688,7 @@ begin -- schematic_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_VALUE =>
@@ -1675,7 +1712,7 @@ begin -- schematic_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 							
 				when NOUN_TEXT_SIZE =>
@@ -1691,7 +1728,7 @@ begin -- schematic_cmd
 						when 5 => show_first_unit; -- show device R1
 						when 6 => show_unit; -- show device IC45 C
 						when 7 .. count_type'last => too_long;
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_MODULE =>
@@ -1699,14 +1736,14 @@ begin -- schematic_cmd
 						when 5 => show_module; -- show module LED-driver
 						when 6 => show_module_and_sheet; -- show module LED-driver 2
 						when 7 .. count_type'last => too_long;
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_SHEET =>
 					case fields is
 						when 5 => show_sheet;
 						when 6 .. count_type'last => too_long;
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -1726,7 +1763,7 @@ begin -- schematic_cmd
 
 						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -1750,7 +1787,7 @@ begin -- schematic_cmd
 
 						when 5 .. count_type'last => too_long;
 
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 
 				when NOUN_LEVEL => -- zoom level 3
@@ -1760,7 +1797,7 @@ begin -- schematic_cmd
 
 						when 6 .. count_type'last => too_long;
 
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when NOUN_CENTER => -- zoom center 10 10
@@ -1774,7 +1811,7 @@ begin -- schematic_cmd
 
 						when 8 .. count_type'last => too_long;
 
-						when others => command_incomplete (cmd);
+						when others => command_incomplete;
 					end case;
 					
 				when others => invalid_noun (to_string (noun));
@@ -1810,6 +1847,20 @@ begin -- schematic_cmd
 			
 			raise;
 
+			
+		when event: exception_command_incomplete =>
+			
+			evaluate_exception (
+				name	=> exception_name (event),
+				message	=> exception_message (event));
+
+			if cmd_entry_mode = SINGLE_CMD then
+				propose_arguments;
+			else
+				raise;
+			end if;
+
+			
 		when event: others =>
 			log (text => "other error", console => true); -- CS
 			raise;

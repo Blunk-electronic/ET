@@ -323,7 +323,7 @@ package et_schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC1
 		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
-		destination		: in et_coordinates.type_position; -- sheet/x/y
+		destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level);
 
 	-- CS procedure invoke_unit that takes module cursor and model cursor

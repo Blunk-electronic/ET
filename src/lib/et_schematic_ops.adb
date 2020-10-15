@@ -40,6 +40,8 @@ with ada.strings.unbounded;			use ada.strings.unbounded;
 with ada.directories;
 with ada.exceptions;
 
+with et_scripting_exceptions;		use et_scripting_exceptions;
+
 with et_modes;						use et_modes;
 with et_conventions;
 with et_pcb_coordinates;

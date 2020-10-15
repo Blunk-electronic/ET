@@ -107,11 +107,18 @@ package et_canvas_board is
 -- 	-- Initializes the internal data so that the model can send signals:
 -- 	procedure init (self : not null access type_model'class);
 
+
+
 	
-	-- Executes a script.
+	-- Composes a console command like 
+	-- "board motor_driver execute script my_script.scr"
+	-- and sends it to procedure et_scripting.board_cmd
+	-- to be executed.:
 	procedure execute_script (script : in pac_script_name.bounded_string);	
 
-	-- Executes a command typed on the console by the operator:
+	-- Executes a command as typed on the console by the operator
+	-- like "rename device R1 R2".
+	-- Calls et_scripting.board_cmd for the actual execution.
 	procedure execute_command (self : access gtk_entry_record'class);
 
 	

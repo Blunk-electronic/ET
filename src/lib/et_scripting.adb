@@ -44,6 +44,8 @@ with ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
 
+with et_scripting_exceptions;	use et_scripting_exceptions;
+
 with et_project;
 with et_project.modules;
 
@@ -161,21 +163,8 @@ package body et_scripting is
 		raise constraint_error;
 	end;
 
-	procedure command_incomplete (cmd : in type_fields_of_line) is begin
-		raise syntax_error_1 with "command not complete";
-		-- CS make use of number of fields in cmd
-		
-		--case cmd_entry_mode is
-			--when SCRIPT =>
-				--log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
-					 --" not complete !", console => true);
-				
-			--when SINGLE_CMD =>
-				----log (text => "command not complete");
-				--null; -- CS
-		--end case;
-
-		--raise constraint_error;
+	procedure command_incomplete is begin
+		raise exception_command_incomplete with "command not complete";
 	end command_incomplete;
 
 	procedure command_too_long (
@@ -216,7 +205,7 @@ package body et_scripting is
 	-- or
 	-- when executing a script from inside the GUI:
 	procedure execute_nested_script (
-		file			: in string;
+		file			: in string; -- like "rename_nets.scr"
 		log_threshold	: in et_string_processing.type_log_level) is
 		
 		use et_string_processing;
@@ -384,7 +373,7 @@ package body et_scripting is
 									command_too_long (cmd, fields - 1);
 									
 								when others => 
-									command_incomplete (cmd);
+									command_incomplete;
 							end case;							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -404,7 +393,7 @@ package body et_scripting is
 									command_too_long (cmd, fields - 1);
 									
 								when others => 
-									command_incomplete (cmd);
+									command_incomplete;
 							end case;							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -424,7 +413,7 @@ package body et_scripting is
 									command_too_long (cmd, fields - 1);
 									
 								when others => 
-									command_incomplete (cmd);
+									command_incomplete;
 							end case;							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -444,7 +433,7 @@ package body et_scripting is
 									command_too_long (cmd, fields - 1);
 									
 								when others => 
-									command_incomplete (cmd);
+									command_incomplete;
 							end case;							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -481,7 +470,7 @@ package body et_scripting is
 					if field_count (cmd) >= 4 then
 						schematic_cmd (cmd, log_threshold + 1);
 					else
-						command_incomplete (cmd);
+						command_incomplete;
 					end if;
 					
 				when DOM_BOARD =>
@@ -501,7 +490,7 @@ package body et_scripting is
 					if field_count (cmd) >= 4 then
 						board_cmd (cmd, log_threshold + 1);
 					else
-						command_incomplete (cmd);
+						command_incomplete;
 					end if;
 
 				when DOM_PROJECT =>
@@ -516,7 +505,7 @@ package body et_scripting is
 			end case;
 
 		else
-			command_incomplete (cmd);
+			command_incomplete;
 		end if;
 		
 		log_indentation_down;
@@ -596,12 +585,6 @@ package body et_scripting is
 
 					-- execute the line as command
 					execute_command (file_name, line, log_threshold + 1);
-
-					-- evaluate exit code and do things necessary (abort, log messages, ...)
-					--case exit_code is
-						--when ERROR => exit;
-						--when others => null;
-					--end case;
 					
 				end if;
 			end loop;

@@ -240,10 +240,6 @@ package et_general is
 	type type_tool is (MOUSE, KEYBOARD);
 
 	
--- EXCEPTIONS
-	syntax_error_1 : exception;
-	semantic_error_1 : exception;
-
 	
 -- GENERICS
 	

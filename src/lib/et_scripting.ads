@@ -77,8 +77,9 @@ package et_scripting is
 
 	
 	procedure invalid_noun (noun : in string);
-	
-	procedure command_incomplete (cmd : in type_fields_of_line);
+
+	-- Raises exception command_incomplete:
+	procedure command_incomplete;
 	
 	procedure command_too_long (
 		cmd		: in type_fields_of_line;
@@ -149,6 +150,8 @@ package et_scripting is
 	
 	-- Executes a script command like 
 	-- "schematic motor_driver draw net motor_on 1 150 100 150 130".
+	-- This procedure is called by function execute_script (see below) or
+	-- by procedure execute_nested_script.
 	-- Ensures that the targeted module (like motor_driver) exists.
 	-- Dispatches the command either schematic, board or project.
 	-- When called, the current working directory must be the
