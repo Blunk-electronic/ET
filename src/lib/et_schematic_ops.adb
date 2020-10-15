@@ -3327,6 +3327,22 @@ package body et_schematic_ops is
 		device_name		: in type_name; -- IC45
 		destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level) is separate;
+
+	function available_units (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_name; -- IC1
+		log_threshold	: in type_log_level)
+		return et_devices.pac_unit_names.list
+	is
+		result : et_devices.pac_unit_names.list;
+		
+	begin
+		log (text => "looking up available units of " & to_string (device_name),
+			 level => log_threshold);
+		
+		return result;
+	end available_units;
+
 	
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.

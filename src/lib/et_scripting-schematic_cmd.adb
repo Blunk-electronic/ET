@@ -334,7 +334,17 @@ is
 						
 					when 5 =>
 						set_status (incomplete & "Unit name missing");
-
+						declare
+							units : pac_unit_names.list;
+							use et_canvas_schematic;
+						begin
+							units := available_units (
+										current_active_module,
+										et_devices.to_name (f (5)),
+										log_threshold + 1);
+							null;
+						end;
+						
 					when 6 =>
 						set_status (incomplete & "Sheet number missing");
 

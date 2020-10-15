@@ -317,7 +317,13 @@ package et_schematic_ops is
 		device_name		: in type_name; -- IC45
 		destination		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
-	
+
+	function available_units (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_name; -- IC1
+		log_threshold	: in type_log_level)
+		return et_devices.pac_unit_names.list;
+								 
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
