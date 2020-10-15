@@ -294,6 +294,14 @@ is
 				when SINGLE_CMD =>
 					set_status (message);
 
+				-- Scripts can be nested.
+				-- In script mode we register only the first
+				-- error regardless of the nesting depth.
+				-- Because the operator needs to know which script
+				-- has actually failed at which line.
+				-- We MUST register the FIRST error because otherwise
+				-- the script name and command of the top level
+				-- script would instead be displayed in the GUI.
 				when VIA_SCRIPT =>
 
 					if not script_cmd_status.failed then

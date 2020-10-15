@@ -252,8 +252,13 @@ package body et_scripting is
 
 			set_input (file_handle);
 
+			-- Prepare the script command status in case a command
+			-- in the script fails:
 			script_cmd_status := (script_name => script_name, others => <>);
-			
+
+			-- Prepare the handling of the exception in case the script fails.
+			-- See procedures schematic_cmd.evaluate_exception or
+			-- board_cmd.evaluate_exception for example.
 			cmd_entry_mode := VIA_SCRIPT;
 			
 			-- read the file line by line
@@ -269,10 +274,23 @@ package body et_scripting is
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if field_count (cmd) > 0 then
 
+					-- Load the command to be executed in the script command status
+					-- in case the command fails:
 					script_cmd_status.cmd := cmd;
 					
-					-- execute the command
 					execute_command (script_name, cmd, log_threshold + 1);
+					-- Procedure execute_command dispatches to subprograms
+					-- that execute the command according to the 
+					-- targeted domain (first field in cmd) like project, 
+					-- schematic, board, ...
+					-- If the command fails and thus raises an exception,
+					-- then the flag script_cmd_status.failed
+					-- is set and the error registered. See procedures 
+					-- schematic_cmd.evaluate_exception or board_cmd.evaluate_exception
+					-- for example.
+					-- In case of a nested script, the exception itself is further 
+					-- propagated to the top level where the parent script
+					-- has been started.
 					
 				end if;
 			end loop;
