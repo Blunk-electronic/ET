@@ -318,6 +318,9 @@ package et_schematic_ops is
 		destination		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+	-- Returns the names of available units of the given device in the 
+	-- given generic module. "Available" means the unit exists and is
+	-- not already in use:
 	function available_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_name; -- IC1

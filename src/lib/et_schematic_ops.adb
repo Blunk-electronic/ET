@@ -3334,13 +3334,27 @@ package body et_schematic_ops is
 		log_threshold	: in type_log_level)
 		return et_devices.pac_unit_names.list
 	is
-		result : et_devices.pac_unit_names.list;
-		
+		use et_schematic.type_devices;
+		device_cursor_sch : et_schematic.type_devices.cursor;
+
+		device_model : type_device_model_file.bounded_string;
+		device_cursor_lib : et_devices.type_devices.cursor;
+
 	begin
 		log (text => "looking up available units of " & to_string (device_name),
 			 level => log_threshold);
-		
-		return result;
+
+		-- locate the device in the schematic:
+		device_cursor_sch := find (element (module_cursor).devices, device_name);
+
+		-- get the device model
+		device_model := element (device_cursor_sch).model;
+
+		-- locate the device in the library
+		device_cursor_lib := locate_device (device_model);
+
+		-- return the units names of the device
+		return all_units (device_cursor_lib);
 	end available_units;
 
 	
