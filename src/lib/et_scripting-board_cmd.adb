@@ -40,9 +40,17 @@ with et_modes.board;
 separate (et_scripting)
 	
 procedure board_cmd (
-	cmd				: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
+	cmd_in			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
 	log_threshold	: in type_log_level)
 is
+	-- Make a copy of the given command. In case the given command is incomplete
+	-- and we are in graphical mode (non-headless) then
+	-- this procedure interactively proposes arguments and completes the command.
+	cmd : type_fields_of_line := cmd_in;
+
+	-- cmd will now be processed and interactively completed
+
+	
 	use et_board_ops;
 	use et_packages;
 	use et_terminals.pac_shapes;
@@ -2505,7 +2513,7 @@ begin -- board_cmd
 				name	=> exception_name (event),
 				message	=> exception_message (event));
 
-			if cmd_entry_mode = SINGLE_CMD then
+			if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
 				propose_arguments;
 			else
 				raise;

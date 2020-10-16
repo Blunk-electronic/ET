@@ -317,12 +317,12 @@ package body et_scripting is
 	
 	
 	procedure schematic_cmd (
-		cmd				: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
+		cmd_in			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
 		log_threshold	: in type_log_level)
 	is separate;
 
 	procedure board_cmd (
-		cmd				: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
+		cmd_in			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
 		log_threshold	: in type_log_level)
 	is separate;
 

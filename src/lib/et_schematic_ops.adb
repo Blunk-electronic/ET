@@ -38,7 +38,7 @@
 with ada.strings;					use ada.strings;
 with ada.strings.unbounded;			use ada.strings.unbounded;
 with ada.directories;
-with ada.exceptions;
+with ada.exceptions;				use ada.exceptions;
 
 with et_scripting_exceptions;		use et_scripting_exceptions;
 
@@ -3343,7 +3343,7 @@ package body et_schematic_ops is
 		use pac_unit_names;
 		all_unit_names : pac_unit_names.list;
 		names_of_available_units : pac_unit_names.list;
-				
+
 		procedure query_in_use (c : in pac_unit_names.cursor) is 
 
 			in_use : boolean := false;
@@ -3368,30 +3368,56 @@ package body et_schematic_ops is
 
 			-- If the unit is available then append it to the result:
 			if not in_use then -- unit is available
+				log (text => "unit " & to_string (element (c)) & " available.",
+					 level => log_threshold + 2);
+				
 				names_of_available_units.append (element (c));
 			end if;
 		end query_in_use;
+
+		procedure get_device_model (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module)
+		is begin
+			-- locate the device in the schematic:
+			device_cursor_sch := find (module.devices, device_name);
+
+			device_model := element (device_cursor_sch).model;
+
+			log (text => "device model " & to_string (device_model),
+				level => log_threshold + 1);
+		end get_device_model;
 		
-	begin
-		log (text => "looking up available units of " & to_string (device_name),
+	begin -- available_units
+		log (text => "looking up available units of " 
+			 & to_string (device_name) & " ...",
 			 level => log_threshold);
 
-		-- locate the device in the schematic:
-		device_cursor_sch := find (element (module_cursor).devices, device_name);
+		log_indentation_up;
 
-		-- get the device model
-		device_model := element (device_cursor_sch).model;
-
+		-- get the device model:
+		query_element (module_cursor, get_device_model'access);
+				
 		-- locate the device in the library
 		device_cursor_lib := locate_device (device_model);
 
+		log_indentation_up;
+		
 		-- get the names of all names of the device
 		all_unit_names := all_units (device_cursor_lib);
 
 		-- extract available units
 		all_unit_names.iterate (query_in_use'access);
+
+		log_indentation_down;
+		log_indentation_down;
 		
 		return names_of_available_units;
+
+		--exception when event: others =>
+			--put_line (exception_information (event));
+
+			--return names_of_available_units;
 	end available_units;
 
 	

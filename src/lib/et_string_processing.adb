@@ -821,6 +821,14 @@ package body et_string_processing is
 			number => number);
 	end read_line;
 
+	procedure append (
+		line	: in out type_fields_of_line;
+		field	: in string)
+	is begin
+		line.fields.append (field);
+		line.field_count := line.field_count + 1;
+	end append;
+	
 	function append (
 		left	: in type_fields_of_line;
 		right	: in type_fields_of_line)

@@ -40,9 +40,17 @@ with et_modes.schematic;
 separate (et_scripting)
 	
 procedure schematic_cmd (
-	cmd				: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
+	cmd_in			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
 	log_threshold	: in type_log_level)
 is
+	-- Make a copy of the given command. In case the given command is incomplete
+	-- and we are in graphical mode (non-headless) then
+	-- this procedure interactively proposes arguments and completes the command.
+	cmd : type_fields_of_line := cmd_in;
+
+	-- cmd will now be processed and interactively completed
+	
+	
 	use et_project;
 	use et_schematic_ops;
 	use et_schematic_ops.nets;
@@ -271,6 +279,1465 @@ is
 		-- CS exception handler if status is invalid
 	end display;
 
+	procedure parse is
+		
+	begin
+		log (text => "parsing command: " & enclose_in_quotes (to_string (cmd)),
+			level => log_threshold);
+		
+		case verb is
+			when VERB_ADD =>
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 9 =>
+								-- If a virtual device is added, then no variant is required.
+								add_device (
+									module_name 	=> module,
+									device_model	=> to_file_name (f (5)),
+									destination		=> to_position 
+										(
+										sheet => to_sheet (f (6)),
+										point => type_point (set 
+													(
+													x => to_distance (f (7)),
+													y => to_distance (f (8))
+													)),
+										rotation => to_rotation (f (9))
+										),
+									variant			=> to_name (""),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 =>
+								-- A real device requires specification of a package variant.
+								add_device (
+									module_name 	=> module,
+									device_model	=> to_file_name (f (5)),
+									destination		=> to_position 
+										(
+										sheet => to_sheet (f (6)),
+										point => type_point (set 
+													(
+													x => to_distance (f (7)),
+													y => to_distance (f (8))
+													)),
+										rotation		=> to_rotation (f (9))
+										),
+									variant			=> to_name (f (10)),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_NETCHANGER =>
+						case fields is
+							when 8 =>
+								add_netchanger (
+									module_name 	=> module,
+									place			=> to_position 
+										(
+										sheet => to_sheet (f (5)),
+										point => type_point (set 
+													(
+													x => to_distance (f (6)),
+													y => to_distance (f (7))
+													)),
+										rotation		=> to_rotation (f (8))
+										),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_PORT =>
+						case fields is
+							when 9 =>
+								add_port (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									port_name		=> et_general.to_net_name (f (6)),
+									position		=> type_point (set 
+												(
+												x => to_distance (f (7)),
+												y => to_distance (f (8))
+												)),
+									direction		=> et_submodules.to_port_name (f (9)),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 11 =>
+								add_submodule (
+									module_name 	=> module, -- parent module (where the submodule is to be inserted)
+									file			=> et_submodules.to_submodule_path (f (5)),
+									instance		=> et_general.to_instance_name (f (6)), -- submodule instance name
+									position		=> to_position 
+										(
+										sheet => to_sheet (f (7)),
+										point => type_point (set 
+													(
+													x => to_distance (f (8)),
+													y => to_distance (f (9))
+													))
+										),
+									size => (
+										x => to_distance (f (10)),
+										y => to_distance (f (11))
+										),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 12 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_BUILD =>
+				case noun is
+					when NOUN_SUBMODULES_TREE =>
+						case fields is
+							when 4 =>
+								build_submodules_tree (
+									module_name 	=> module,
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_CHECK =>
+				case noun is
+					when NOUN_INTEGRITY =>
+						case fields is
+							when 4 =>
+								check_integrity (
+									module_name 	=> module,
+									log_threshold	=> log_threshold + 1);
+
+							when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+							
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_COPY =>
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 9 =>
+								copy_device (
+									module_name 	=> module,
+									device_name		=> to_name (f (5)),
+									destination		=> to_position 
+										(
+										sheet => to_sheet (f (6)),
+										point => type_point (set
+													(
+													x => to_distance (f (7)),
+													y => to_distance (f (8))
+													)),
+										rotation		=> to_rotation (f (9))
+										),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 9 =>
+								copy_submodule (
+									module_name 	=> module, -- parent module (where the submodule is to be copied)
+									instance_origin	=> et_general.to_instance_name (f (5)), -- submodule instance name
+									instance_new	=> et_general.to_instance_name (f (6)), -- submodule instance name
+									destination		=> to_position 
+										(
+										sheet => to_sheet (f (7)),
+										point => type_point (set
+													(
+													x => to_distance (f (8)),
+													y => to_distance (f (9))
+													))
+										),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_CREATE =>
+				case noun is
+					when NOUN_VARIANT => 
+						case fields is
+							when 5 =>
+								create_assembly_variant
+									(
+									module_name		=> module,
+									variant_name	=> to_variant (f (5)),
+									log_threshold	=> log_threshold + 1);
+								
+							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+																	
+			when VERB_DELETE =>
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 5 =>
+								delete_device (
+									module_name 	=> module,
+									device_name		=> to_name (f (5)),
+									log_threshold	=> log_threshold + 1);
+
+							when 6 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+								
+					when NOUN_LABEL =>
+						case fields is
+							when 7 =>
+								delete_net_label
+									(
+									module_name		=> module,
+
+									position		=> to_position (
+														point => type_point (set (
+															x => to_distance (f (6)),
+															y => to_distance (f (7)))),
+														sheet => to_sheet (f (5))), -- sheet number
+									
+									log_threshold	=> log_threshold + 1);
+								
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_NET =>
+						case fields is
+
+							-- If the statement has only 6 fields, the net scope is EVERYWHERE.
+							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
+							-- by the called procedure:
+							when 5 =>
+								delete_net
+									(
+									module_name			=> module,
+									net_name			=> to_net_name (f (5)), -- RESET
+									scope				=> EVERYWHERE,
+									place				=> to_position (
+															point => origin,
+															sheet => 1),
+									log_threshold		=> log_threshold + 1);
+
+							-- If the statement has 7 fields, the net scope is SHEET.
+							-- Sheet is set by the 7th argument. x and y assume default (0/0)
+							-- and are further-on ignored by the called procedure:
+							when 6 =>
+								delete_net
+									(
+									module_name			=> module,
+									net_name			=> to_net_name (f (5)), -- RESET
+									scope				=> SHEET,
+									place				=> to_position (
+															point => origin,
+															sheet => to_sheet (f (6))), -- sheet number
+									log_threshold		=> log_threshold + 1);
+
+							-- If the statement has 9 fields, the net scope is STRAND.
+							-- Place is set according to arguments 7..9.
+							when 8 =>
+								delete_net
+									(
+									module_name			=> module,
+									net_name			=> to_net_name (f (5)), -- RESET
+									scope				=> STRAND,
+									place				=> to_position (
+															point => type_point (set (
+																x => to_distance (f (7)),
+																y => to_distance (f (8)))),
+															sheet => to_sheet (f (6))), -- sheet number
+									log_threshold		=> log_threshold + 1);
+
+								
+							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+
+						end case;
+
+					when NOUN_NETCHANGER =>
+						case fields is
+							when 5 =>
+								delete_netchanger
+									(
+									module_name		=> module,
+									index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+									log_threshold		=> log_threshold + 1);
+
+							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_PORT =>
+						case fields is
+							when 6 =>
+								delete_port
+									(
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									port_name		=> et_general.to_net_name (f (6)),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_SEGMENT =>
+						case fields is
+							when 8 =>
+								delete_segment
+									(
+									module_name		=> module,
+									net_name		=> to_net_name (f (5)), -- RESET
+									place			=> to_position (
+														point => type_point (set (
+															x => to_distance (f (7)),
+															y => to_distance (f (8)))),
+														sheet => to_sheet (f (6))), -- sheet number
+									log_threshold	=> log_threshold + 1);
+
+							when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+								
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 5 =>
+								delete_submodule (
+									module_name 	=> module, -- parent module (where the submodule is to be deleted)
+									instance		=> et_general.to_instance_name (f (5)), -- submodule instance name
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_TEXT =>
+						NULL; -- CS
+						
+					when NOUN_UNIT =>
+						case fields is
+							when 6 =>
+								delete_unit (
+									module_name 	=> module,
+									device_name		=> to_name (f (5)),
+									unit_name		=> to_name (f (6)),
+									log_threshold	=> log_threshold + 1);
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_VARIANT => 
+						case fields is
+							when 5 =>
+								delete_assembly_variant
+									(
+									module_name		=> module,
+									variant_name	=> to_variant (f (5)),
+									log_threshold	=> log_threshold + 1);
+								
+							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_DESCRIBE =>
+				case noun is
+					when NOUN_VARIANT => 
+						case fields is
+							when 6 =>
+								describe_assembly_variant
+									(
+									module_name		=> module,
+									variant_name	=> to_variant (f (5)), -- low_cost
+									description		=> et_assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
+									log_threshold	=> log_threshold + 1);
+								
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_DISPLAY => -- GUI related
+				case noun is
+					when NOUN_PORTS		-- like "schematic led_driver display ports [on/off]"
+						| NOUN_NETS		-- like "schematic led_driver display nets [on/off]"
+						| NOUN_NAMES | NOUN_VALUES | NOUN_PURPOSES
+						| NOUN_TEXTS | NOUN_GRID
+						=>
+						case fields is
+							when 4 => display (noun); -- if status is omitted
+							when 5 => display (noun, f (5));
+							when 6 .. count_type'last => too_long; 
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+						
+			when VERB_DRAG =>
+				case noun is
+					when NOUN_UNIT =>
+						case fields is
+							when 9 =>
+								drag_unit
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)),
+									unit_name		=> to_name (f (6)),
+									coordinates		=> to_coordinates (f (7)), -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+								
+					when NOUN_NETCHANGER =>
+						case fields is
+							when 8 =>
+								drag_netchanger (
+									module_name 	=> module,
+									index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+									coordinates		=> to_coordinates (f (6)), -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (7)),
+														y => to_distance (f (8)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_PORT =>
+						case fields is
+							when 9 =>
+								drag_port (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									port_name		=> et_general.to_net_name (f (6)),
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+									point			=> type_point (set (
+												x => to_distance (f (8)),
+												y => to_distance (f (9)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_SEGMENT =>
+						case fields is
+							when 11 =>
+								drag_segment
+									(
+									module_name		=> module,
+									net_name		=> to_net_name (f (5)), -- RESET
+									point_of_attack	=> to_position (
+														point => type_point (set (
+															x => to_distance (f (7)),
+															y => to_distance (f (8)))),
+														sheet => to_sheet (f (6))), -- sheet number
+									
+									coordinates		=> to_coordinates (f (9)), -- relative/absolute
+									
+									destination		=> type_point (set (
+														x => to_distance (f (10)),
+														y => to_distance (f (11)))),
+									
+									log_threshold	=> log_threshold + 1);
+
+							when 12 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 8 =>
+								drag_submodule (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+									point			=> type_point (set (
+												x => to_distance (f (7)),
+												y => to_distance (f (8)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_DRAW =>
+				case noun is
+					when NOUN_NET =>
+						case fields is
+							when 10 =>
+								insert_net
+									(
+									module_name		=> module,
+									net_name		=> to_net_name (f (5)), -- RESET
+									start_point		=> to_position (
+															point => type_point (set (
+																x => to_distance (f (7)),
+																y => to_distance (f (8)))),
+															sheet => to_sheet (f (6))), -- sheet number
+									
+									end_point		=> type_point (set (
+														x => to_distance (f (9)),
+														y => to_distance (f (10)))),
+									
+									log_threshold	=> log_threshold + 1);
+
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_EXECUTE =>
+				case noun is
+					when NOUN_SCRIPT =>
+						case fields is
+							when 5 => 
+								execute_nested_script (
+									file			=> f (5),
+									log_threshold	=> log_threshold + 1);
+
+							when 6 .. count_type'last => too_long;								
+							when others => command_incomplete;
+						end case;
+							
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_EXIT | VERB_QUIT => terminate_main;
+				
+			when VERB_INVOKE =>
+				case noun is
+					when NOUN_UNIT =>
+						case fields is
+							when 10 =>
+								invoke_unit (
+									module_name		=> module,
+									device_name		=> to_name (f (5)),
+									unit_name		=> to_name (f (6)),
+									destination		=> to_position 
+										(
+										sheet => to_sheet (f (7)),
+										point => type_point (set
+													(
+													x => to_distance (f (8)),
+													y => to_distance (f (9))
+													)),
+										rotation		=> to_rotation (f (10))
+										),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_MOVE =>
+				case noun is
+					when NOUN_NAME =>
+						case fields is
+							when 9 =>
+								move_unit_placeholder
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+									meaning			=> et_symbols.NAME,
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_VALUE =>
+						case fields is
+							when 9 =>
+								move_unit_placeholder
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+									meaning			=> et_symbols.VALUE,
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_PORT =>
+						case fields is
+							when 9 =>
+								move_port (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									port_name		=> et_general.to_net_name (f (6)),
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+									point			=> type_point (set (
+												x => to_distance (f (8)),
+												y => to_distance (f (9)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+								
+					when NOUN_PURPOSE =>
+						case fields is
+							when 9 =>
+								move_unit_placeholder
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+									meaning			=> et_symbols.PURPOSE,
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_NETCHANGER =>
+						case fields is
+							when 9 =>
+								move_netchanger
+									(
+									module_name 	=> module,
+									index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+									sheet			=> to_sheet_relative (f (7)),
+									point			=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+										
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+								
+					when NOUN_TEXT =>
+						NULL; -- CS
+
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 9 =>
+								move_submodule (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+									sheet			=> to_sheet_relative (f (7)),
+									point			=> type_point (set (
+												x => to_distance (f (8)),
+												y => to_distance (f (9)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_UNIT =>
+						case fields is
+							when 10 =>
+								move_unit
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+									sheet			=> to_sheet_relative (f (8)),
+									point			=> type_point (set (
+														x => to_distance (f (9)),
+														y => to_distance (f (10)))),
+										
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+								
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_MAKE =>
+				case noun is
+					when NOUN_BOM => 
+						case fields is
+							when 4 =>
+								make_boms -- a BOM for each variant
+									(
+									module_name 	=> module,
+									log_threshold	=> log_threshold + 1);
+
+							when 5 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_NETLISTS => 
+						case fields is
+							when 4 =>
+								make_netlists 
+									(
+									module_name 	=> module,
+									log_threshold	=> log_threshold + 1);
+
+							when 5 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_MOUNT =>
+				case noun is
+					when NOUN_DEVICE => 
+						declare
+							value : type_value.bounded_string; -- 470R
+							partcode : et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+							purpose : type_purpose.bounded_string; -- brightness_control
+						begin
+							-- validate value
+							value := to_value_with_check (f (7));
+
+							-- validate partcode
+							partcode := et_material.to_partcode (f (8));
+							
+							case fields is
+								when 8 =>
+									-- set value and partcode
+									mount_device
+										(
+										module_name		=> module,
+										variant_name	=> to_variant (f (5)), -- low_cost
+										device			=> to_name (f (6)), -- R1
+										value			=> value, -- 220R
+										partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
+										log_threshold	=> log_threshold + 1);
+
+								when 9 =>
+									-- optionally the purpose can be set also
+									purpose := to_purpose (f (9)); -- brightness_control
+												
+									mount_device
+										(
+										module_name		=> module,
+										variant_name	=> to_variant (f (5)), -- low_cost
+										device			=> to_name (f (6)), -- R1
+										value			=> value, -- 220R
+										partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
+										purpose			=> purpose, -- brightness_control
+										log_threshold	=> log_threshold + 1);
+									
+								when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete;
+							end case;
+
+						end; -- declare
+
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 7 =>
+								mount_submodule
+									(
+									module_name		=> module,
+									variant_parent	=> to_variant (f (5)), -- low_cost
+									instance		=> et_general.to_instance_name (f (6)), -- OSC1
+									variant_submod	=> to_variant (f (7)), -- fixed_frequency
+									log_threshold	=> log_threshold + 1);
+
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_PLACE =>
+				case noun is
+					when NOUN_JUNCTION =>
+						case fields is
+							when 7 =>
+								place_junction 
+									(
+									module_name 	=> module,
+									place			=> to_position 
+														(
+														sheet => to_sheet (f (5)),
+														point => type_point (set (
+																	x => to_distance (f (6)),
+																	y => to_distance (f (7))
+																	))
+														),
+										
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+								
+					when NOUN_LABEL =>
+						case fields is
+							when 10 =>
+								-- SIMPLE LABEL
+								place_net_label
+									(
+									module_name			=> module,
+
+									segment_position	=> to_position (
+															point => type_point (set (
+																x => to_distance (f (6)),
+																y => to_distance (f (7)))),
+															sheet => to_sheet (f (5))), -- sheet number
+
+									label_position		=> type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+
+									rotation			=> to_rotation (f (10)), -- 0 / 90
+									appearance 			=> et_schematic.SIMPLE,
+
+									-- A simple label does not indicate the direction
+									-- of information flow. But this procedure call requires a
+									-- direction. So we just pass direction PASSIVE. It has no 
+									-- further meaning.
+									direction			=> et_schematic.PASSIVE,
+
+									log_threshold		=> log_threshold + 1);
+
+							when 8 =>
+								-- TAG LABEL
+								place_net_label
+									(
+									module_name			=> module,
+
+									segment_position	=> to_position (
+															point => type_point (set (
+																x => to_distance (f (6)),
+																y => to_distance (f (7)))),
+															sheet => to_sheet (f (5))), -- sheet number
+
+									appearance 			=> et_schematic.TAG,
+
+									-- A tag label requires specification of signal direction:
+									direction			=> et_schematic.to_direction (f (8)), -- INPUT, OUTPUT, PASSIVE, ...
+
+									log_threshold		=> log_threshold + 1);
+								
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete; -- incl. field count of 9
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_POSITION => -- GUI related
+				case noun is 
+					when NOUN_CURSOR =>
+						case fields is
+							when 7 => position_cursor; -- position cursor absolute/relative 25 30
+							when 8 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_REMOVE =>
+				case noun is
+					when NOUN_DEVICE => 
+						case fields is
+							when 6 =>
+								remove_device -- from assembly variant
+									(
+									module_name		=> module,
+									variant_name	=> to_variant (f (5)), -- low_cost
+									device			=> to_name (f (6)), -- R1
+									log_threshold	=> log_threshold + 1);
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 6 =>
+								remove_submodule
+									(
+									module_name		=> module,
+									variant_parent	=> to_variant (f (5)),
+									instance		=> et_general.to_instance_name (f (6)), -- OSC1
+									log_threshold	=> log_threshold + 1);
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_RENAME =>
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 6 =>
+								rename_device
+									(
+									module_name 		=> module,
+									device_name_before	=> to_name (f (5)), -- IC1
+									device_name_after	=> to_name (f (6)), -- IC23
+									log_threshold		=> log_threshold + 1
+									);
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case; 
+								
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 6 =>
+								rename_submodule
+									(
+									module_name		=> module,
+									instance_old	=> et_general.to_instance_name (f (5)), -- OSC1
+									instance_new	=> et_general.to_instance_name (f (6)), -- OSC2
+									log_threshold	=> log_threshold + 1);
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_NET =>
+						case fields is
+
+							-- If the statement has only 6 fields, the net scope is EVERYWHERE.
+							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
+							-- by the called procedure:
+							when 6 =>
+								rename_net
+									(
+									module_name			=> module,
+									net_name_before		=> to_net_name (f (5)), -- RESET
+									net_name_after		=> to_net_name (f (6)), -- RESET_N
+									scope				=> EVERYWHERE,
+									place				=> to_position (
+															point => origin,
+															sheet => 1),
+									log_threshold		=> log_threshold + 1);
+
+							-- If the statement has 7 fields, the net scope is SHEET.
+							-- Sheet is set by the 7th argument. x and y assume default (0/0)
+							-- and are further-on ignored by the called procedure:
+							when 7 =>
+								rename_net
+									(
+									module_name			=> module,
+									net_name_before		=> to_net_name (f (5)), -- RESET
+									net_name_after		=> to_net_name (f (6)), -- RESET_N
+									scope				=> SHEET,
+									place				=> to_position (
+															point => origin,
+															sheet => to_sheet (f (7))), -- sheet number
+									log_threshold		=> log_threshold + 1);
+
+							-- If the statement has 9 fields, the net scope is STRAND.
+							-- Place is set according to arguments 7..9.
+							when 9 =>
+								rename_net
+									(
+									module_name			=> module,
+									net_name_before		=> to_net_name (f (5)), -- RESET
+									net_name_after		=> to_net_name (f (6)), -- RESET_N
+									scope				=> STRAND,
+									place				=> to_position (
+															point => type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+															sheet => to_sheet (f (7))), -- sheet number
+									log_threshold		=> log_threshold + 1);
+
+								
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_RENUMBER =>
+				case noun is
+					when NOUN_DEVICES =>
+						case fields is
+							when 5 =>
+								renumber_devices
+									(
+									module_name 	=> module,
+									step_width		=> to_index (f (5)), -- 100
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_ROTATE =>
+				case noun is
+					when NOUN_TEXT =>
+						NULL; -- CS
+
+					when NOUN_UNIT =>
+						case fields is
+							when 8 =>
+								rotate_unit
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+									rotation		=> to_rotation (f (8)), -- 90
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+								
+					when NOUN_NAME =>
+						case fields is 
+							when 7 =>
+								rotate_unit_placeholder
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+									meaning			=> et_symbols.NAME,
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+								
+					when NOUN_VALUE =>
+						case fields is
+							when 7 =>
+								rotate_unit_placeholder
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+									meaning			=> et_symbols.VALUE,
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+								
+					when NOUN_PURPOSE =>
+						case fields is
+							when 7 =>
+								rotate_unit_placeholder
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+									meaning			=> et_symbols.PURPOSE,
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+								
+					when NOUN_NETCHANGER =>
+						case fields is
+							when 7 =>
+								rotate_netchanger (
+									module_name 	=> module,
+									index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+									coordinates		=> to_coordinates (f (6)), -- relative/absolute
+									rotation		=> to_rotation (f (7)), -- 90
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_SET =>
+				case noun is
+					when NOUN_GRID =>
+						case fields is
+							-- schematic led_driver set grid 5 5
+							when 6 =>
+								set_grid (
+									module_name 	=> module,
+									grid			=> (
+											x => to_distance (f (5)),
+											y => to_distance (f (6))),
+									log_threshold	=> log_threshold + 1);
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+				
+					when NOUN_PARTCODE =>
+						case fields is
+							when 6 =>
+								declare
+									partcode : et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+								begin
+									partcode := et_material.to_partcode (f (6));
+
+									-- set the purpose
+									set_partcode
+										(
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- R1
+										partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
+										log_threshold	=> log_threshold + 1
+										);
+								end;
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+								
+					when NOUN_PURPOSE =>
+						case fields is
+							when 6 =>
+								declare
+									use et_schematic;
+									purpose : type_purpose.bounded_string; -- brightness_control
+								begin
+									purpose := to_purpose (f (6));
+									
+									-- set the purpose
+									set_purpose
+										(
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- R1
+										purpose			=> purpose, -- brightness_control
+										log_threshold	=> log_threshold + 1
+										);
+								end;
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_SCOPE =>
+						case fields is
+							when 6 =>
+								set_scope (
+									module_name 	=> module,
+									net_name		=> et_general.to_net_name (f (5)),
+									scope			=> et_netlists.to_net_scope (f (6)),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_SUBMODULE_FILE =>
+						case fields is
+							when 6 =>
+								set_submodule_file (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									file			=> et_submodules.to_submodule_path (f (6)),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_VALUE =>
+						case fields is
+							when 6 =>
+								declare
+									value : type_value.bounded_string; -- 470R
+								begin
+									-- validate value
+									value := to_value_with_check (f (6));
+
+									-- set the value
+									set_value
+										(
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- R1
+										value			=> value, -- 470R
+										log_threshold	=> log_threshold + 1
+										);
+								end;
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete;
+						end case;
+								
+					when NOUN_TEXT_SIZE =>
+						NULL; -- CS
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_SHOW => -- GUI related
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 5 => show_first_unit; -- show device R1
+							when 6 => show_unit; -- show device IC45 C
+							when 7 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_MODULE =>
+						case fields is
+							when 5 => show_module; -- show module LED-driver
+							when 6 => show_module_and_sheet; -- show module LED-driver 2
+							when 7 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_SHEET =>
+						case fields is
+							when 5 => show_sheet;
+							when 6 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_UNMOUNT =>
+				case noun is
+					when NOUN_DEVICE => 
+						case fields is
+							when 6 =>
+								unmount_device
+									(
+									module_name		=> module,
+									variant_name	=> to_variant (f (5)), -- low_cost
+									device			=> to_name (f (6)), -- R1
+									log_threshold	=> log_threshold + 1);
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_WRITE =>
+				case noun is
+					when NOUN_TEXT =>
+						NULL; -- CS
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_ZOOM => -- GUI related
+				case noun is
+					when NOUN_FIT => -- zoom fit
+						case fields is
+							when 4 => 
+								log (text => "zoom to fit", level => log_threshold + 1);
+								scale_to_fit (canvas);
+
+							when 5 .. count_type'last => too_long;
+
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_LEVEL => -- zoom level 3
+						case fields is
+							when 5 => 
+								set_scale (f (5));
+
+							when 6 .. count_type'last => too_long;
+
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_CENTER => -- zoom center 10 10
+						case fields is
+							when 6 =>  -- zoom center 10 10
+								zoom_center;
+
+							when 7 =>  -- zoom center 10 10 0.5
+								zoom_center;
+								set_scale (f (7));
+
+							when 8 .. count_type'last => too_long;
+
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+		end case;
+
+		case runmode is
+			when MODE_MODULE =>
+				canvas.update_mode_display;
+				status_clear;
+				
+			when others => null;
+		end case;
+	end parse;
+		
+	
 	procedure evaluate_exception (
 		name	: in string; -- exception name
 		message : in string) -- exception message
@@ -323,18 +1790,22 @@ is
 	procedure propose_arguments is
 		incomplete : constant string := "Command incomplete ! ";
 	begin
-		put_line ("propose arguments");
+		log (text => incomplete & "Proposing arguments ...", level => log_threshold);
 
 		case verb is
 			when VERB_INVOKE =>
 				case fields is
 					when 4 =>
+						log (text => "Device name missing !", level => log_threshold);
 						set_status (incomplete & "Device name missing !");
 						-- no menu required. might become very long.
 						
 					when 5 =>
+						log (text => "Unit name missing !", level => log_threshold);
 						set_status (incomplete & "Unit name missing");
+						
 						declare
+							use pac_unit_names;
 							units : pac_unit_names.list;
 							use et_canvas_schematic;
 						begin
@@ -343,7 +1814,12 @@ is
 										et_devices.to_name (f (5)),
 										log_threshold + 1);
 
-							null;
+							
+							log (text => "selected unit " 
+								 & to_string (element (units.first)),
+								 level => log_threshold + 1);
+
+							append (cmd, to_string (element (units.first)));
 						end;
 						
 					when 6 =>
@@ -365,7 +1841,17 @@ is
 			when others => null;
 		
 		end case;
-		
+
+		log (text => "interactively extended command: " 
+			& enclose_in_quotes (to_string (cmd)),
+			level => log_threshold);
+
+		parse;
+
+		exception when event: others =>
+			log (text => exception_information (event));
+			raise;
+
 	end propose_arguments;
 	
 begin -- schematic_cmd
@@ -386,1457 +1872,9 @@ begin -- schematic_cmd
 		when others => noun := to_noun (f (4)); -- read noun from field 4
 	end case;
 
-	-- parse the command:	
-	case verb is
-		when VERB_ADD =>
-			case noun is
-				when NOUN_DEVICE =>
-					case fields is
-						when 9 =>
-							-- If a virtual device is added, then no variant is required.
-							add_device (
-								module_name 	=> module,
-								device_model	=> to_file_name (f (5)),
-								destination		=> to_position 
-									(
-									sheet => to_sheet (f (6)),
-									point => type_point (set 
-												(
-												x => to_distance (f (7)),
-												y => to_distance (f (8))
-												)),
-									rotation => to_rotation (f (9))
-									),
-								variant			=> to_name (""),
-								log_threshold	=> log_threshold + 1
-								);
+	parse;
+	
 
-						when 10 =>
-							-- A real device requires specification of a package variant.
-							add_device (
-								module_name 	=> module,
-								device_model	=> to_file_name (f (5)),
-								destination		=> to_position 
-									(
-									sheet => to_sheet (f (6)),
-									point => type_point (set 
-												(
-												x => to_distance (f (7)),
-												y => to_distance (f (8))
-												)),
-									rotation		=> to_rotation (f (9))
-									),
-								variant			=> to_name (f (10)),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 11 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_NETCHANGER =>
-					case fields is
-						when 8 =>
-							add_netchanger (
-								module_name 	=> module,
-								place			=> to_position 
-									(
-									sheet => to_sheet (f (5)),
-									point => type_point (set 
-												(
-												x => to_distance (f (6)),
-												y => to_distance (f (7))
-												)),
-									rotation		=> to_rotation (f (8))
-									),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_PORT =>
-					case fields is
-						when 9 =>
-							add_port (
-								module_name 	=> module,
-								instance		=> et_general.to_instance_name (f (5)),
-								port_name		=> et_general.to_net_name (f (6)),
-								position		=> type_point (set 
-											(
-											x => to_distance (f (7)),
-											y => to_distance (f (8))
-											)),
-								direction		=> et_submodules.to_port_name (f (9)),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_SUBMODULE =>
-					case fields is
-						when 11 =>
-							add_submodule (
-								module_name 	=> module, -- parent module (where the submodule is to be inserted)
-								file			=> et_submodules.to_submodule_path (f (5)),
-								instance		=> et_general.to_instance_name (f (6)), -- submodule instance name
-								position		=> to_position 
-									(
-									sheet => to_sheet (f (7)),
-									point => type_point (set 
-												(
-												x => to_distance (f (8)),
-												y => to_distance (f (9))
-												))
-									),
-								size => (
-									x => to_distance (f (10)),
-									y => to_distance (f (11))
-									),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 12 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_BUILD =>
-			case noun is
-				when NOUN_SUBMODULES_TREE =>
-					case fields is
-						when 4 =>
-							build_submodules_tree (
-								module_name 	=> module,
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-		when VERB_CHECK =>
-			case noun is
-				when NOUN_INTEGRITY =>
-					case fields is
-						when 4 =>
-							check_integrity (
-								module_name 	=> module,
-								log_threshold	=> log_threshold + 1);
-
-						when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-						
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_COPY =>
-			case noun is
-				when NOUN_DEVICE =>
-					case fields is
-						when 9 =>
-							copy_device (
-								module_name 	=> module,
-								device_name		=> to_name (f (5)),
-								destination		=> to_position 
-									(
-									sheet => to_sheet (f (6)),
-									point => type_point (set
-												(
-												x => to_distance (f (7)),
-												y => to_distance (f (8))
-												)),
-									rotation		=> to_rotation (f (9))
-									),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_SUBMODULE =>
-					case fields is
-						when 9 =>
-							copy_submodule (
-								module_name 	=> module, -- parent module (where the submodule is to be copied)
-								instance_origin	=> et_general.to_instance_name (f (5)), -- submodule instance name
-								instance_new	=> et_general.to_instance_name (f (6)), -- submodule instance name
-								destination		=> to_position 
-									(
-									sheet => to_sheet (f (7)),
-									point => type_point (set
-												(
-												x => to_distance (f (8)),
-												y => to_distance (f (9))
-												))
-									),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_CREATE =>
-			case noun is
-				when NOUN_VARIANT => 
-					case fields is
-						when 5 =>
-							create_assembly_variant
-								(
-								module_name		=> module,
-								variant_name	=> to_variant (f (5)),
-								log_threshold	=> log_threshold + 1);
-							
-						when 6 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when others => invalid_noun (to_string (noun));
-			end case;
-																
-		when VERB_DELETE =>
-			case noun is
-				when NOUN_DEVICE =>
-					case fields is
-						when 5 =>
-							delete_device (
-								module_name 	=> module,
-								device_name		=> to_name (f (5)),
-								log_threshold	=> log_threshold + 1);
-
-						when 6 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-							
-				when NOUN_LABEL =>
-					case fields is
-						when 7 =>
-							delete_net_label
-								(
-								module_name		=> module,
-
-								position		=> to_position (
-													point => type_point (set (
-														x => to_distance (f (6)),
-														y => to_distance (f (7)))),
-													sheet => to_sheet (f (5))), -- sheet number
-								
-								log_threshold	=> log_threshold + 1);
-							
-						when 8 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_NET =>
-					case fields is
-
-						-- If the statement has only 6 fields, the net scope is EVERYWHERE.
-						-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
-						-- by the called procedure:
-						when 5 =>
-							delete_net
-								(
-								module_name			=> module,
-								net_name			=> to_net_name (f (5)), -- RESET
-								scope				=> EVERYWHERE,
-								place				=> to_position (
-														point => origin,
-														sheet => 1),
-								log_threshold		=> log_threshold + 1);
-
-						-- If the statement has 7 fields, the net scope is SHEET.
-						-- Sheet is set by the 7th argument. x and y assume default (0/0)
-						-- and are further-on ignored by the called procedure:
-						when 6 =>
-							delete_net
-								(
-								module_name			=> module,
-								net_name			=> to_net_name (f (5)), -- RESET
-								scope				=> SHEET,
-								place				=> to_position (
-														point => origin,
-														sheet => to_sheet (f (6))), -- sheet number
-								log_threshold		=> log_threshold + 1);
-
-						-- If the statement has 9 fields, the net scope is STRAND.
-						-- Place is set according to arguments 7..9.
-						when 8 =>
-							delete_net
-								(
-								module_name			=> module,
-								net_name			=> to_net_name (f (5)), -- RESET
-								scope				=> STRAND,
-								place				=> to_position (
-														point => type_point (set (
-															x => to_distance (f (7)),
-															y => to_distance (f (8)))),
-														sheet => to_sheet (f (6))), -- sheet number
-								log_threshold		=> log_threshold + 1);
-
-							
-						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-
-					end case;
-
-				when NOUN_NETCHANGER =>
-					case fields is
-						when 5 =>
-							delete_netchanger
-								(
-								module_name		=> module,
-								index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
-								log_threshold		=> log_threshold + 1);
-
-						when 6 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_PORT =>
-					case fields is
-						when 6 =>
-							delete_port
-								(
-								module_name 	=> module,
-								instance		=> et_general.to_instance_name (f (5)),
-								port_name		=> et_general.to_net_name (f (6)),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_SEGMENT =>
-					case fields is
-						when 8 =>
-							delete_segment
-								(
-								module_name		=> module,
-								net_name		=> to_net_name (f (5)), -- RESET
-								place			=> to_position (
-													point => type_point (set (
-														x => to_distance (f (7)),
-														y => to_distance (f (8)))),
-													sheet => to_sheet (f (6))), -- sheet number
-								log_threshold	=> log_threshold + 1);
-
-						when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-							
-				when NOUN_SUBMODULE =>
-					case fields is
-						when 5 =>
-							delete_submodule (
-								module_name 	=> module, -- parent module (where the submodule is to be deleted)
-								instance		=> et_general.to_instance_name (f (5)), -- submodule instance name
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 6 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_TEXT =>
-					NULL; -- CS
-					
-				when NOUN_UNIT =>
-					case fields is
-						when 6 =>
-							delete_unit (
-								module_name 	=> module,
-								device_name		=> to_name (f (5)),
-								unit_name		=> to_name (f (6)),
-								log_threshold	=> log_threshold + 1);
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_VARIANT => 
-					case fields is
-						when 5 =>
-							delete_assembly_variant
-								(
-								module_name		=> module,
-								variant_name	=> to_variant (f (5)),
-								log_threshold	=> log_threshold + 1);
-							
-						when 6 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_DESCRIBE =>
-			case noun is
-				when NOUN_VARIANT => 
-					case fields is
-						when 6 =>
-							describe_assembly_variant
-								(
-								module_name		=> module,
-								variant_name	=> to_variant (f (5)), -- low_cost
-								description		=> et_assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
-								log_threshold	=> log_threshold + 1);
-							
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_DISPLAY => -- GUI related
-			case noun is
-				when NOUN_PORTS		-- like "schematic led_driver display ports [on/off]"
-					| NOUN_NETS		-- like "schematic led_driver display nets [on/off]"
-					| NOUN_NAMES | NOUN_VALUES | NOUN_PURPOSES
-					| NOUN_TEXTS | NOUN_GRID
-					=>
-					case fields is
-						when 4 => display (noun); -- if status is omitted
-						when 5 => display (noun, f (5));
-						when 6 .. count_type'last => too_long; 
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-					
-		when VERB_DRAG =>
-			case noun is
-				when NOUN_UNIT =>
-					case fields is
-						when 9 =>
-							drag_unit
-								(
-								module_name 	=> module,
-								device_name		=> to_name (f (5)),
-								unit_name		=> to_name (f (6)),
-								coordinates		=> to_coordinates (f (7)), -- relative/absolute
-								point			=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-							
-				when NOUN_NETCHANGER =>
-					case fields is
-						when 8 =>
-							drag_netchanger (
-								module_name 	=> module,
-								index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
-								coordinates		=> to_coordinates (f (6)), -- relative/absolute
-								point			=> type_point (set (
-													x => to_distance (f (7)),
-													y => to_distance (f (8)))),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_PORT =>
-					case fields is
-						when 9 =>
-							drag_port (
-								module_name 	=> module,
-								instance		=> et_general.to_instance_name (f (5)),
-								port_name		=> et_general.to_net_name (f (6)),
-								coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-								point			=> type_point (set (
-											x => to_distance (f (8)),
-											y => to_distance (f (9)))),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_SEGMENT =>
-					case fields is
-						when 11 =>
-							drag_segment
-								(
-								module_name		=> module,
-								net_name		=> to_net_name (f (5)), -- RESET
-								point_of_attack	=> to_position (
-													point => type_point (set (
-														x => to_distance (f (7)),
-														y => to_distance (f (8)))),
-													sheet => to_sheet (f (6))), -- sheet number
-								
-								coordinates		=> to_coordinates (f (9)), -- relative/absolute
-								
-								destination		=> type_point (set (
-													x => to_distance (f (10)),
-													y => to_distance (f (11)))),
-								
-								log_threshold	=> log_threshold + 1);
-
-						when 12 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_SUBMODULE =>
-					case fields is
-						when 8 =>
-							drag_submodule (
-								module_name 	=> module,
-								instance		=> et_general.to_instance_name (f (5)),
-								coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-								point			=> type_point (set (
-											x => to_distance (f (7)),
-											y => to_distance (f (8)))),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-		when VERB_DRAW =>
-			case noun is
-				when NOUN_NET =>
-					case fields is
-						when 10 =>
-							insert_net
-								(
-								module_name		=> module,
-								net_name		=> to_net_name (f (5)), -- RESET
-								start_point		=> to_position (
-														point => type_point (set (
-															x => to_distance (f (7)),
-															y => to_distance (f (8)))),
-														sheet => to_sheet (f (6))), -- sheet number
-								
-								end_point		=> type_point (set (
-													x => to_distance (f (9)),
-													y => to_distance (f (10)))),
-								
-								log_threshold	=> log_threshold + 1);
-
-						when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_EXECUTE =>
-			case noun is
-				when NOUN_SCRIPT =>
-					case fields is
-						when 5 => 
-							execute_nested_script (
-								file			=> f (5),
-								log_threshold	=> log_threshold + 1);
-
-						when 6 .. count_type'last => too_long;								
-						when others => command_incomplete;
-					end case;
-						
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_EXIT | VERB_QUIT => terminate_main;
-			
-		when VERB_INVOKE =>
-			case noun is
-				when NOUN_UNIT =>
-					case fields is
-						when 10 =>
-							invoke_unit (
-								module_name		=> module,
-								device_name		=> to_name (f (5)),
-								unit_name		=> to_name (f (6)),
-								destination		=> to_position 
-									(
-									sheet => to_sheet (f (7)),
-									point => type_point (set
-												(
-												x => to_distance (f (8)),
-												y => to_distance (f (9))
-												)),
-									rotation		=> to_rotation (f (10))
-									),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 11 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_MOVE =>
-			case noun is
-				when NOUN_NAME =>
-					case fields is
-						when 9 =>
-							move_unit_placeholder
-								(
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- IC1
-								unit_name		=> to_name (f (6)), -- A
-								coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-								point			=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
-								meaning			=> et_symbols.NAME,
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_VALUE =>
-					case fields is
-						when 9 =>
-							move_unit_placeholder
-								(
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- IC1
-								unit_name		=> to_name (f (6)), -- A
-								coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-								point			=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
-								meaning			=> et_symbols.VALUE,
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_PORT =>
-					case fields is
-						when 9 =>
-							move_port (
-								module_name 	=> module,
-								instance		=> et_general.to_instance_name (f (5)),
-								port_name		=> et_general.to_net_name (f (6)),
-								coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-								point			=> type_point (set (
-											x => to_distance (f (8)),
-											y => to_distance (f (9)))),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-							
-				when NOUN_PURPOSE =>
-					case fields is
-						when 9 =>
-							move_unit_placeholder
-								(
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- IC1
-								unit_name		=> to_name (f (6)), -- A
-								coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-								point			=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
-								meaning			=> et_symbols.PURPOSE,
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_NETCHANGER =>
-					case fields is
-						when 9 =>
-							move_netchanger
-								(
-								module_name 	=> module,
-								index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
-								coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-								sheet			=> to_sheet_relative (f (7)),
-								point			=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
-									
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-							
-				when NOUN_TEXT =>
-					NULL; -- CS
-
-				when NOUN_SUBMODULE =>
-					case fields is
-						when 9 =>
-							move_submodule (
-								module_name 	=> module,
-								instance		=> et_general.to_instance_name (f (5)),
-								coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-								sheet			=> to_sheet_relative (f (7)),
-								point			=> type_point (set (
-											x => to_distance (f (8)),
-											y => to_distance (f (9)))),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_UNIT =>
-					case fields is
-						when 10 =>
-							move_unit
-								(
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- IC1
-								unit_name		=> to_name (f (6)), -- A
-								coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-								sheet			=> to_sheet_relative (f (8)),
-								point			=> type_point (set (
-													x => to_distance (f (9)),
-													y => to_distance (f (10)))),
-									
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-							
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_MAKE =>
-			case noun is
-				when NOUN_BOM => 
-					case fields is
-						when 4 =>
-							make_boms -- a BOM for each variant
-								(
-								module_name 	=> module,
-								log_threshold	=> log_threshold + 1);
-
-						when 5 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_NETLISTS => 
-					case fields is
-						when 4 =>
-							make_netlists 
-								(
-								module_name 	=> module,
-								log_threshold	=> log_threshold + 1);
-
-						when 5 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-		when VERB_MOUNT =>
-			case noun is
-				when NOUN_DEVICE => 
-					declare
-						value : type_value.bounded_string; -- 470R
-						partcode : et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-						purpose : type_purpose.bounded_string; -- brightness_control
-					begin
-						-- validate value
-						value := to_value_with_check (f (7));
-
-						-- validate partcode
-						partcode := et_material.to_partcode (f (8));
-						
-						case fields is
-							when 8 =>
-								-- set value and partcode
-								mount_device
-									(
-									module_name		=> module,
-									variant_name	=> to_variant (f (5)), -- low_cost
-									device			=> to_name (f (6)), -- R1
-									value			=> value, -- 220R
-									partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
-									log_threshold	=> log_threshold + 1);
-
-							when 9 =>
-								-- optionally the purpose can be set also
-								purpose := to_purpose (f (9)); -- brightness_control
-											
-								mount_device
-									(
-									module_name		=> module,
-									variant_name	=> to_variant (f (5)), -- low_cost
-									device			=> to_name (f (6)), -- R1
-									value			=> value, -- 220R
-									partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
-									purpose			=> purpose, -- brightness_control
-									log_threshold	=> log_threshold + 1);
-								
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete;
-						end case;
-
-					end; -- declare
-
-				when NOUN_SUBMODULE =>
-					case fields is
-						when 7 =>
-							mount_submodule
-								(
-								module_name		=> module,
-								variant_parent	=> to_variant (f (5)), -- low_cost
-								instance		=> et_general.to_instance_name (f (6)), -- OSC1
-								variant_submod	=> to_variant (f (7)), -- fixed_frequency
-								log_threshold	=> log_threshold + 1);
-
-						when 8 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-		when VERB_PLACE =>
-			case noun is
-				when NOUN_JUNCTION =>
-					case fields is
-						when 7 =>
-							place_junction 
-								(
-								module_name 	=> module,
-								place			=> to_position 
-													(
-													sheet => to_sheet (f (5)),
-													point => type_point (set (
-																x => to_distance (f (6)),
-																y => to_distance (f (7))
-																))
-													),
-									
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-							
-				when NOUN_LABEL =>
-					case fields is
-						when 10 =>
-							-- SIMPLE LABEL
-							place_net_label
-								(
-								module_name			=> module,
-
-								segment_position	=> to_position (
-														point => type_point (set (
-															x => to_distance (f (6)),
-															y => to_distance (f (7)))),
-														sheet => to_sheet (f (5))), -- sheet number
-
-								label_position		=> type_point (set (
-															x => to_distance (f (8)),
-															y => to_distance (f (9)))),
-
-								rotation			=> to_rotation (f (10)), -- 0 / 90
-								appearance 			=> et_schematic.SIMPLE,
-
-								-- A simple label does not indicate the direction
-								-- of information flow. But this procedure call requires a
-								-- direction. So we just pass direction PASSIVE. It has no 
-								-- further meaning.
-								direction			=> et_schematic.PASSIVE,
-
-								log_threshold		=> log_threshold + 1);
-
-						when 8 =>
-							-- TAG LABEL
-							place_net_label
-								(
-								module_name			=> module,
-
-								segment_position	=> to_position (
-														point => type_point (set (
-															x => to_distance (f (6)),
-															y => to_distance (f (7)))),
-														sheet => to_sheet (f (5))), -- sheet number
-
-								appearance 			=> et_schematic.TAG,
-
-								-- A tag label requires specification of signal direction:
-								direction			=> et_schematic.to_direction (f (8)), -- INPUT, OUTPUT, PASSIVE, ...
-
-								log_threshold		=> log_threshold + 1);
-							
-						when 11 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete; -- incl. field count of 9
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_POSITION => -- GUI related
-			case noun is 
-				when NOUN_CURSOR =>
-					case fields is
-						when 7 => position_cursor; -- position cursor absolute/relative 25 30
-						when 8 .. count_type'last => too_long;
-						when others => command_incomplete;
-					end case;
-
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-		when VERB_REMOVE =>
-			case noun is
-				when NOUN_DEVICE => 
-					case fields is
-						when 6 =>
-							remove_device -- from assembly variant
-								(
-								module_name		=> module,
-								variant_name	=> to_variant (f (5)), -- low_cost
-								device			=> to_name (f (6)), -- R1
-								log_threshold	=> log_threshold + 1);
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_SUBMODULE =>
-					case fields is
-						when 6 =>
-							remove_submodule
-								(
-								module_name		=> module,
-								variant_parent	=> to_variant (f (5)),
-								instance		=> et_general.to_instance_name (f (6)), -- OSC1
-								log_threshold	=> log_threshold + 1);
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-		when VERB_RENAME =>
-			case noun is
-				when NOUN_DEVICE =>
-					case fields is
-						when 6 =>
-							rename_device
-								(
-								module_name 		=> module,
-								device_name_before	=> to_name (f (5)), -- IC1
-								device_name_after	=> to_name (f (6)), -- IC23
-								log_threshold		=> log_threshold + 1
-								);
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case; 
-							
-				when NOUN_SUBMODULE =>
-					case fields is
-						when 6 =>
-							rename_submodule
-								(
-								module_name		=> module,
-								instance_old	=> et_general.to_instance_name (f (5)), -- OSC1
-								instance_new	=> et_general.to_instance_name (f (6)), -- OSC2
-								log_threshold	=> log_threshold + 1);
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_NET =>
-					case fields is
-
-						-- If the statement has only 6 fields, the net scope is EVERYWHERE.
-						-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
-						-- by the called procedure:
-						when 6 =>
-							rename_net
-								(
-								module_name			=> module,
-								net_name_before		=> to_net_name (f (5)), -- RESET
-								net_name_after		=> to_net_name (f (6)), -- RESET_N
-								scope				=> EVERYWHERE,
-								place				=> to_position (
-														point => origin,
-														sheet => 1),
-								log_threshold		=> log_threshold + 1);
-
-						-- If the statement has 7 fields, the net scope is SHEET.
-						-- Sheet is set by the 7th argument. x and y assume default (0/0)
-						-- and are further-on ignored by the called procedure:
-						when 7 =>
-							rename_net
-								(
-								module_name			=> module,
-								net_name_before		=> to_net_name (f (5)), -- RESET
-								net_name_after		=> to_net_name (f (6)), -- RESET_N
-								scope				=> SHEET,
-								place				=> to_position (
-														point => origin,
-														sheet => to_sheet (f (7))), -- sheet number
-								log_threshold		=> log_threshold + 1);
-
-						-- If the statement has 9 fields, the net scope is STRAND.
-						-- Place is set according to arguments 7..9.
-						when 9 =>
-							rename_net
-								(
-								module_name			=> module,
-								net_name_before		=> to_net_name (f (5)), -- RESET
-								net_name_after		=> to_net_name (f (6)), -- RESET_N
-								scope				=> STRAND,
-								place				=> to_position (
-														point => type_point (set (
-															x => to_distance (f (8)),
-															y => to_distance (f (9)))),
-														sheet => to_sheet (f (7))), -- sheet number
-								log_threshold		=> log_threshold + 1);
-
-							
-						when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_RENUMBER =>
-			case noun is
-				when NOUN_DEVICES =>
-					case fields is
-						when 5 =>
-							renumber_devices
-								(
-								module_name 	=> module,
-								step_width		=> to_index (f (5)), -- 100
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 6 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-		when VERB_ROTATE =>
-			case noun is
-				when NOUN_TEXT =>
-					NULL; -- CS
-
-				when NOUN_UNIT =>
-					case fields is
-						when 8 =>
-							rotate_unit
-								(
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- IC1
-								unit_name		=> to_name (f (6)), -- A
-								coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-								rotation		=> to_rotation (f (8)), -- 90
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-							
-				when NOUN_NAME =>
-					case fields is 
-						when 7 =>
-							rotate_unit_placeholder
-								(
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- IC1
-								unit_name		=> to_name (f (6)), -- A
-								rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
-								meaning			=> et_symbols.NAME,
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-							
-				when NOUN_VALUE =>
-					case fields is
-						when 7 =>
-							rotate_unit_placeholder
-								(
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- IC1
-								unit_name		=> to_name (f (6)), -- A
-								rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
-								meaning			=> et_symbols.VALUE,
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-							
-				when NOUN_PURPOSE =>
-					case fields is
-						when 7 =>
-							rotate_unit_placeholder
-								(
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- IC1
-								unit_name		=> to_name (f (6)), -- A
-								rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
-								meaning			=> et_symbols.PURPOSE,
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-							
-				when NOUN_NETCHANGER =>
-					case fields is
-						when 7 =>
-							rotate_netchanger (
-								module_name 	=> module,
-								index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
-								coordinates		=> to_coordinates (f (6)), -- relative/absolute
-								rotation		=> to_rotation (f (7)), -- 90
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 8 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_SET =>
-			case noun is
-				when NOUN_GRID =>
-					case fields is
-						-- schematic led_driver set grid 5 5
-						when 6 =>
-							set_grid (
-								module_name 	=> module,
-								grid			=> (
-										x => to_distance (f (5)),
-										y => to_distance (f (6))),
-								log_threshold	=> log_threshold + 1);
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-			
-				when NOUN_PARTCODE =>
-					case fields is
-						when 6 =>
-							declare
-								partcode : et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-							begin
-								partcode := et_material.to_partcode (f (6));
-
-								-- set the purpose
-								set_partcode
-									(
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- R1
-									partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
-									log_threshold	=> log_threshold + 1
-									);
-							end;
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-							
-				when NOUN_PURPOSE =>
-					case fields is
-						when 6 =>
-							declare
-								use et_schematic;
-								purpose : type_purpose.bounded_string; -- brightness_control
-							begin
-								purpose := to_purpose (f (6));
-								
-								-- set the purpose
-								set_purpose
-									(
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- R1
-									purpose			=> purpose, -- brightness_control
-									log_threshold	=> log_threshold + 1
-									);
-							end;
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_SCOPE =>
-					case fields is
-						when 6 =>
-							set_scope (
-								module_name 	=> module,
-								net_name		=> et_general.to_net_name (f (5)),
-								scope			=> et_netlists.to_net_scope (f (6)),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_SUBMODULE_FILE =>
-					case fields is
-						when 6 =>
-							set_submodule_file (
-								module_name 	=> module,
-								instance		=> et_general.to_instance_name (f (5)),
-								file			=> et_submodules.to_submodule_path (f (6)),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_VALUE =>
-					case fields is
-						when 6 =>
-							declare
-								value : type_value.bounded_string; -- 470R
-							begin
-								-- validate value
-								value := to_value_with_check (f (6));
-
-								-- set the value
-								set_value
-									(
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- R1
-									value			=> value, -- 470R
-									log_threshold	=> log_threshold + 1
-									);
-							end;
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
-							
-						when others => command_incomplete;
-					end case;
-							
-				when NOUN_TEXT_SIZE =>
-					NULL; -- CS
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_SHOW => -- GUI related
-			case noun is
-				when NOUN_DEVICE =>
-					case fields is
-						when 5 => show_first_unit; -- show device R1
-						when 6 => show_unit; -- show device IC45 C
-						when 7 .. count_type'last => too_long;
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_MODULE =>
-					case fields is
-						when 5 => show_module; -- show module LED-driver
-						when 6 => show_module_and_sheet; -- show module LED-driver 2
-						when 7 .. count_type'last => too_long;
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_SHEET =>
-					case fields is
-						when 5 => show_sheet;
-						when 6 .. count_type'last => too_long;
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-		when VERB_UNMOUNT =>
-			case noun is
-				when NOUN_DEVICE => 
-					case fields is
-						when 6 =>
-							unmount_device
-								(
-								module_name		=> module,
-								variant_name	=> to_variant (f (5)), -- low_cost
-								device			=> to_name (f (6)), -- R1
-								log_threshold	=> log_threshold + 1);
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-		when VERB_WRITE =>
-			case noun is
-				when NOUN_TEXT =>
-					NULL; -- CS
-
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_ZOOM => -- GUI related
-			case noun is
-				when NOUN_FIT => -- zoom fit
-					case fields is
-						when 4 => 
-							log (text => "zoom to fit", level => log_threshold + 1);
-							scale_to_fit (canvas);
-
-						when 5 .. count_type'last => too_long;
-
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_LEVEL => -- zoom level 3
-					case fields is
-						when 5 => 
-							set_scale (f (5));
-
-						when 6 .. count_type'last => too_long;
-
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_CENTER => -- zoom center 10 10
-					case fields is
-						when 6 =>  -- zoom center 10 10
-							zoom_center;
-
-						when 7 =>  -- zoom center 10 10 0.5
-							zoom_center;
-							set_scale (f (7));
-
-						when 8 .. count_type'last => too_long;
-
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-	end case;
-
-	case runmode is
-		when MODE_MODULE =>
-			canvas.update_mode_display;
-			status_clear;
-			
-		when others => null;
-	end case;
 
 	
 	exception 
@@ -1865,7 +1903,7 @@ begin -- schematic_cmd
 				name	=> exception_name (event),
 				message	=> exception_message (event));
 
-			if cmd_entry_mode = SINGLE_CMD then
+			if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
 				propose_arguments;
 			else
 				raise;

@@ -211,8 +211,8 @@ package et_string_processing is
 	-- This type serves to collect strings. It MUST be a vector, because
 	-- this allows do pick out arbitrary strings by their indexes:
 	package type_list_of_strings is new indefinite_vectors (
-		index_type => positive, 
-		element_type => string);
+		index_type		=> positive, 
+		element_type	=> string);
 
 	-- This type is required when reading lines from files. It is a composite type
 	-- whose components are hidden. The can only be accessed by special functions and procedures. See below.
@@ -230,6 +230,11 @@ package et_string_processing is
 		delimiter		: in character := latin_1.quotation	-- the text delimiter sign (mostly ")
 		) return type_fields_of_line;
 
+	-- Appends a field to a line:
+	procedure append (
+		line	: in out type_fields_of_line;
+		field	: in string);
+	
 	-- Append right fields to left fields:
 	function append (
 		left	: in type_fields_of_line;
