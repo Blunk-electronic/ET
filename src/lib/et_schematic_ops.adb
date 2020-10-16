@@ -3340,6 +3340,38 @@ package body et_schematic_ops is
 		device_model : type_device_model_file.bounded_string;
 		device_cursor_lib : et_devices.type_devices.cursor;
 
+		use pac_unit_names;
+		all_unit_names : pac_unit_names.list;
+		names_of_available_units : pac_unit_names.list;
+				
+		procedure query_in_use (c : in pac_unit_names.cursor) is 
+
+			in_use : boolean := false;
+
+			-- Sets the in_use flag if given unit is already in use:
+			procedure query_in_use (
+				device_name	: in type_name;
+				device		: in et_schematic.type_device) 
+			is
+				use et_schematic.type_units;
+			begin
+				if contains (device.units, element (c)) then
+					in_use := true;
+				end if;
+			end query_in_use;
+
+		begin
+			-- Test whether the unit is already in use.
+			query_element (
+				position	=> device_cursor_sch,
+				process		=> query_in_use'access);
+
+			-- If the unit is available then append it to the result:
+			if not in_use then -- unit is available
+				names_of_available_units.append (element (c));
+			end if;
+		end query_in_use;
+		
 	begin
 		log (text => "looking up available units of " & to_string (device_name),
 			 level => log_threshold);
@@ -3353,8 +3385,13 @@ package body et_schematic_ops is
 		-- locate the device in the library
 		device_cursor_lib := locate_device (device_model);
 
-		-- return the units names of the device
-		return all_units (device_cursor_lib);
+		-- get the names of all names of the device
+		all_unit_names := all_units (device_cursor_lib);
+
+		-- extract available units
+		all_unit_names.iterate (query_in_use'access);
+		
+		return names_of_available_units;
 	end available_units;
 
 	
