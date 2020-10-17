@@ -262,8 +262,9 @@ package et_devices is
 	unit_name_default : constant type_unit_name.bounded_string := type_unit_name.to_bounded_string ("");
 	
 	function to_string (unit_name : in type_unit_name.bounded_string) return string;
-	function to_name (unit_name : in string) return type_unit_name.bounded_string;
-
+	function to_name (unit_name : in string) return type_unit_name.bounded_string; 
+	-- CS rename to to_unit_name
+	
 	device_unit_separator : constant character := '.';
 
 	-- A device may have up to 1000 units. CS: seems to be reasonable limit

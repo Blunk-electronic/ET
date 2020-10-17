@@ -37,6 +37,13 @@
 
 with et_modes.schematic;
 
+with et_scripting_interactive_schematic;
+
+with gtk.menu;
+with gtk.menu_item;
+with gtk.menu_shell;
+
+
 separate (et_scripting)
 	
 procedure schematic_cmd (
@@ -1785,7 +1792,9 @@ is
 
 	end evaluate_exception;
 
+	
 	procedure propose_arguments is
+		use et_scripting_interactive_schematic;
 		incomplete : constant string := "Command incomplete ! ";
 	begin
 		log (text => incomplete 
@@ -1803,25 +1812,15 @@ is
 					when 5 =>
 						log (text => "Unit name missing !", level => log_threshold);
 						set_status (incomplete & "Unit name missing");
-						
-						declare
-							use pac_unit_names;
-							units : pac_unit_names.list;
-							use et_canvas_schematic;
-						begin
-							units := available_units (
-										current_active_module,
-										et_devices.to_name (f (5)),
-										log_threshold + 1);
 
-							
-							log (text => "selected unit " 
-								 & to_string (element (units.first)),
-								 level => log_threshold + 1);
+						menu_propose_units (
+							units			=> available_units (
+												et_canvas_schematic.current_active_module,
+												et_devices.to_name (f (5)),
+												log_threshold + 1),
+							cmd				=> cmd,
+							log_threshold	=> log_threshold + 1);
 
-							append (cmd, to_string (element (units.first)));
-						end;
-						
 					when 6 =>
 						set_status (incomplete & "Sheet number missing");
 
