@@ -279,9 +279,7 @@ is
 		-- CS exception handler if status is invalid
 	end display;
 
-	procedure parse is
-		
-	begin
+	procedure parse is begin
 		log (text => "parsing command: " & enclose_in_quotes (to_string (cmd)),
 			level => log_threshold);
 		
@@ -1735,8 +1733,8 @@ is
 				
 			when others => null;
 		end case;
-	end parse;
-		
+
+	end parse;		
 	
 	procedure evaluate_exception (
 		name	: in string; -- exception name
@@ -1790,7 +1788,9 @@ is
 	procedure propose_arguments is
 		incomplete : constant string := "Command incomplete ! ";
 	begin
-		log (text => incomplete & "Proposing arguments ...", level => log_threshold);
+		log (text => incomplete 
+			& "Only" & count_type'image (fields) & " arguments provided. "
+			& "Proposing arguments ...", level => log_threshold);
 
 		case verb is
 			when VERB_INVOKE =>
@@ -1825,14 +1825,27 @@ is
 					when 6 =>
 						set_status (incomplete & "Sheet number missing");
 
+						log (text => "selected sheet 1", level => log_threshold + 1);
+						append (cmd, to_sheet (1));
+						
 					when 7 =>
 						set_status (incomplete & "x missing");
 
+						log (text => "selected x 100", level => log_threshold + 1);
+						append (cmd, "100.0");
+						
 					when 8 =>
 						set_status (incomplete & "y missing");
+
+						log (text => "selected y 140", level => log_threshold + 1);
+						append (cmd, "140.0");
+
 						
 					when 9 =>
 						set_status (incomplete & "Rotation missing");
+
+						log (text => "selected rotation 0", level => log_threshold + 1);
+						append (cmd, "0");
 
 						
 					when others => null;
@@ -1845,12 +1858,6 @@ is
 		log (text => "interactively extended command: " 
 			& enclose_in_quotes (to_string (cmd)),
 			level => log_threshold);
-
-		parse;
-
-		exception when event: others =>
-			log (text => exception_information (event));
-			raise;
 
 	end propose_arguments;
 	
@@ -1872,15 +1879,40 @@ begin -- schematic_cmd
 		when others => noun := to_noun (f (4)); -- read noun from field 4
 	end case;
 
+	-- Initialize the command status:
+	single_cmd_status := (others => <>);
+
+	-- Parse the command:
 	parse;
 	
+	-- In case parse throws an exception, then this loop will be skipped.
+	-- In headless mode this loop will alse be skipped because the flag
+	-- single_cmd_status.complete never changes it state.
+	
+	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
+	-- single_cmd_status.complete can change to false. In that case
+	-- the interactive completion iteration starts here. 
+	-- If the operator aborts the interactive completion cycle (by pressing ESC),
+	-- then this loop ends prematurely:	
 
+	while not single_cmd_status.complete loop
+	--if not single_cmd_status.complete then
+		propose_arguments;
 
+		if single_cmd_status.aborted then
+			exit;
+		else
+			-- Assume the command is complete now
+			-- and parse again:
+			single_cmd_status.complete := true;
+			parse;
+		end if;
+	end loop;
 	
 	exception 
 
 		when event: semantic_error_1 =>
-
+			
 			evaluate_exception (
 				name	=> exception_name (event),
 				message	=> exception_message (event));
@@ -1903,12 +1935,7 @@ begin -- schematic_cmd
 				name	=> exception_name (event),
 				message	=> exception_message (event));
 
-			if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
-				propose_arguments;
-			else
-				raise;
-			end if;
-
+			raise;
 			
 		when event: others =>
 			log (text => "other error", console => true); -- CS

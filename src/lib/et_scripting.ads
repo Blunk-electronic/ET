@@ -53,6 +53,8 @@ package et_scripting is
 	-- Script files have a name like "rename_power_nets.scr":
 	script_name : pac_script_name.bounded_string;
 
+
+	
 	-- Scripts can be nested.
 	-- In script mode we register only the first
 	-- exception regardless of the nesting depth.
@@ -73,7 +75,21 @@ package et_scripting is
 	-- The global variable that stores the status of the latest
 	-- script command:
 	script_cmd_status : type_script_cmd_status;
+
 	
+
+	-- In graphical mode (other than runmode headless) and 
+	-- single command entry mode (cmd_entry_mode) a command may be
+	-- incomplete. It will then be completed via an interactive
+	-- completition process. If this process is aborted by the
+	-- operator, then the flag "aborted" goes true.
+	type type_single_cmd_status is record
+		complete	: boolean := true;
+		aborted		: boolean := false;
+	end record;	
+
+	single_cmd_status : type_single_cmd_status;
+
 
 	
 	procedure invalid_noun (noun : in string);
