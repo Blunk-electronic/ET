@@ -50,14 +50,6 @@ procedure schematic_cmd (
 	cmd_in			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
 	log_threshold	: in type_log_level)
 is
-	-- Make a copy of the given command. In case the given command is incomplete
-	-- and we are in graphical mode (non-headless) then
-	-- this procedure interactively proposes arguments and completes the command.
-	cmd : type_fields_of_line := cmd_in;
-
-	-- cmd will now be processed and interactively completed
-	
-	
 	use et_project;
 	use et_schematic_ops;
 	use et_schematic_ops.nets;
@@ -73,15 +65,15 @@ is
 	module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	
 	function f (place : in positive) return string is begin
-		return et_string_processing.field (cmd, place);
+		return et_string_processing.field (single_cmd_status.cmd, place);
 	end;
 
 	function fields return count_type is begin
-		return et_string_processing.field_count (cmd);
+		return et_string_processing.field_count (single_cmd_status.cmd);
 	end;
 
 	procedure too_long is begin -- CS use it more often
-		command_too_long (cmd, fields - 1);
+		command_too_long (single_cmd_status.cmd, fields - 1);
 	end;
 
 	procedure zoom_center is -- GUI related
@@ -287,7 +279,8 @@ is
 	end display;
 
 	procedure parse is begin
-		log (text => "parsing command: " & enclose_in_quotes (to_string (cmd)),
+		log (text => "parsing command: " 
+			& enclose_in_quotes (to_string (single_cmd_status.cmd)),
 			level => log_threshold);
 		
 		case verb is
@@ -333,7 +326,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -356,7 +349,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -377,7 +370,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -405,7 +398,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 12 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -423,7 +416,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 5 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -440,7 +433,7 @@ is
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1);
 
-							when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 5 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -469,7 +462,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -493,7 +486,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -512,7 +505,7 @@ is
 									variant_name	=> to_variant (f (5)),
 									log_threshold	=> log_threshold + 1);
 								
-							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -530,7 +523,7 @@ is
 									device_name		=> to_name (f (5)),
 									log_threshold	=> log_threshold + 1);
 
-							when 6 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -550,7 +543,7 @@ is
 									
 									log_threshold	=> log_threshold + 1);
 								
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -602,7 +595,7 @@ is
 									log_threshold		=> log_threshold + 1);
 
 								
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 
@@ -617,7 +610,7 @@ is
 									index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
 									log_threshold		=> log_threshold + 1);
 
-							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -633,7 +626,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -652,7 +645,7 @@ is
 														sheet => to_sheet (f (6))), -- sheet number
 									log_threshold	=> log_threshold + 1);
 
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -666,7 +659,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -683,7 +676,7 @@ is
 									unit_name		=> to_name (f (6)),
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -697,7 +690,7 @@ is
 									variant_name	=> to_variant (f (5)),
 									log_threshold	=> log_threshold + 1);
 								
-							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -717,7 +710,7 @@ is
 									description		=> et_assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
 									log_threshold	=> log_threshold + 1);
 								
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -759,7 +752,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -777,7 +770,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -796,7 +789,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -822,7 +815,7 @@ is
 									
 									log_threshold	=> log_threshold + 1);
 
-							when 12 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -840,7 +833,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -869,7 +862,7 @@ is
 									
 									log_threshold	=> log_threshold + 1);
 
-							when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -917,7 +910,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -943,7 +936,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -964,7 +957,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -983,7 +976,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1004,7 +997,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -1025,7 +1018,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -1047,7 +1040,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1069,7 +1062,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -1087,7 +1080,7 @@ is
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1);
 
-							when 5 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 5 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1100,7 +1093,7 @@ is
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1);
 
-							when 5 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 5 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1148,7 +1141,7 @@ is
 										purpose			=> purpose, -- brightness_control
 										log_threshold	=> log_threshold + 1);
 									
-								when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+								when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 									
 								when others => command_incomplete;
 							end case;
@@ -1166,7 +1159,7 @@ is
 									variant_submod	=> to_variant (f (7)), -- fixed_frequency
 									log_threshold	=> log_threshold + 1);
 
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 
@@ -1195,7 +1188,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -1248,7 +1241,7 @@ is
 
 									log_threshold		=> log_threshold + 1);
 								
-							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete; -- incl. field count of 9
 						end case;
@@ -1280,7 +1273,7 @@ is
 									device			=> to_name (f (6)), -- R1
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1295,7 +1288,7 @@ is
 									instance		=> et_general.to_instance_name (f (6)), -- OSC1
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1316,7 +1309,7 @@ is
 									log_threshold		=> log_threshold + 1
 									);
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case; 
@@ -1331,7 +1324,7 @@ is
 									instance_new	=> et_general.to_instance_name (f (6)), -- OSC2
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1386,7 +1379,7 @@ is
 									log_threshold		=> log_threshold + 1);
 
 								
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1406,7 +1399,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1432,7 +1425,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -1450,7 +1443,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -1468,7 +1461,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -1486,7 +1479,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -1502,7 +1495,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1523,7 +1516,7 @@ is
 											y => to_distance (f (6))),
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1546,7 +1539,7 @@ is
 										);
 								end;
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -1570,7 +1563,7 @@ is
 										);
 								end;
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -1585,7 +1578,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1600,7 +1593,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1624,7 +1617,7 @@ is
 										);
 								end;
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
 								
 							when others => command_incomplete;
 						end case;
@@ -1675,7 +1668,7 @@ is
 									device			=> to_name (f (6)), -- R1
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1756,7 +1749,7 @@ is
 
 		if runmode = MODE_HEADLESS then
 
-			log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
+			log (ERROR, "command " & enclose_in_quotes (to_string (single_cmd_status.cmd)) &
 				" : " & message, console => true);
 			
 		else -- GUI mode
@@ -1818,33 +1811,36 @@ is
 												et_canvas_schematic.current_active_module,
 												et_devices.to_name (f (5)),
 												log_threshold + 1),
-							cmd				=> cmd,
 							log_threshold	=> log_threshold + 1);
 
+						--while not single_cmd_status.aborted or not single_cmd_status.extended loop
+							--single_cmd_status.extended := false;
+						--end loop;
+						
 					when 6 =>
 						set_status (incomplete & "Sheet number missing");
 
 						log (text => "selected sheet 1", level => log_threshold + 1);
-						append (cmd, to_sheet (1));
+						append (single_cmd_status.cmd, to_sheet (1));
 						
 					when 7 =>
 						set_status (incomplete & "x missing");
 
 						log (text => "selected x 100", level => log_threshold + 1);
-						append (cmd, "100.0");
+						append (single_cmd_status.cmd, "100.0");
 						
 					when 8 =>
 						set_status (incomplete & "y missing");
 
 						log (text => "selected y 140", level => log_threshold + 1);
-						append (cmd, "140.0");
+						append (single_cmd_status.cmd, "140.0");
 
 						
 					when 9 =>
 						set_status (incomplete & "Rotation missing");
 
 						log (text => "selected rotation 0", level => log_threshold + 1);
-						append (cmd, "0");
+						append (single_cmd_status.cmd, "0");
 
 						
 					when others => null;
@@ -1855,16 +1851,25 @@ is
 		end case;
 
 		log (text => "interactively extended command: " 
-			& enclose_in_quotes (to_string (cmd)),
+			& enclose_in_quotes (to_string (single_cmd_status.cmd)),
 			level => log_threshold);
 
 	end propose_arguments;
 	
 begin -- schematic_cmd
-	log (text => "full command: " 
-		 & enclose_in_quotes (to_string (cmd)),
+	log (text => "given command: " 
+		 & enclose_in_quotes (to_string (cmd_in)),
 		 level => log_threshold);
 
+	-- Make a copy of the given command. In case the given command is incomplete
+	-- and we are in graphical mode (non-headless) then
+	-- this procedure interactively proposes arguments and completes the command.
+	single_cmd_status := (cmd => cmd_in, others => <>);
+
+	-- single_cmd_status.cmd will now be processed and interactively completed
+
+	
+	
 	domain := to_domain (f (1)); -- DOM_SCHEMATIC
 	module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
 
@@ -1879,7 +1884,7 @@ begin -- schematic_cmd
 	end case;
 
 	-- Initialize the command status:
-	single_cmd_status := (others => <>);
+	--single_cmd_status := (others => <>);
 
 	-- Parse the command:
 	parse;
@@ -1896,6 +1901,8 @@ begin -- schematic_cmd
 
 	while not single_cmd_status.complete loop
 	--if not single_cmd_status.complete then
+		single_cmd_status.retries := single_cmd_status.retries + 1;
+		
 		propose_arguments;
 
 		if single_cmd_status.aborted then

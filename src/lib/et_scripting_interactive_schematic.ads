@@ -49,14 +49,11 @@ package et_scripting_interactive_schematic is
 	procedure unit_selection_cancelled (
 		self : access gtk_menu_shell_record'class);
 
-	unit_name : type_unit_name.bounded_string;
-	
 	procedure unit_selected (
 		self : access gtk_menu_item_record'class);
 
 	procedure menu_propose_units (									 
 		units			: in pac_unit_names.list;
-		cmd				: in out type_fields_of_line;
 		log_threshold	: in type_log_level);
 
 	

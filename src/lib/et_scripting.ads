@@ -76,7 +76,8 @@ package et_scripting is
 	-- script command:
 	script_cmd_status : type_script_cmd_status;
 
-	
+
+	subtype type_retries is natural range 0 .. 20;
 
 	-- In graphical mode (other than runmode headless) and 
 	-- single command entry mode (cmd_entry_mode) a command may be
@@ -84,8 +85,15 @@ package et_scripting is
 	-- completition process. If this process is aborted by the
 	-- operator, then the flag "aborted" goes true.
 	type type_single_cmd_status is record
+
+		-- the command to be executed like "schematic blood_sample_analyzer set value C1 100n"
+		cmd			: type_fields_of_line;
+
+		extended	: boolean := false;
 		complete	: boolean := true;
 		aborted		: boolean := false;
+
+		retries		: type_retries := 0;
 	end record;	
 
 	single_cmd_status : type_single_cmd_status;

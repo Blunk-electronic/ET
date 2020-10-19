@@ -42,14 +42,15 @@ with ada.text_io;				use ada.text_io;
 with ada.containers;			use ada.containers;
 
 with et_scripting;				use et_scripting;
+with et_canvas_schematic;		use et_canvas_schematic;
+use et_canvas_schematic.pac_canvas;
 
 package body et_scripting_interactive_schematic is
 
 	procedure unit_selection_cancelled (self : access gtk_menu_shell_record'class) is
 	begin
-		--set_status ("Unit selection cancelled");
-
-		put_line ("cancelled");
+		set_status ("Unit selection cancelled");
+		log (text => "Unit selection cancelled");
 		single_cmd_status.aborted := true;
 	end unit_selection_cancelled;
 
@@ -60,22 +61,23 @@ package body et_scripting_interactive_schematic is
 			text_in		=> self.get_label,
 			position	=> 2);
 	begin
-		put_line ("selected unit " & name);
-		unit_name := to_name (name);
+		put_line ("Selected unit " & name & " via pull down menu.");
+		--set_status ("selected unit " & name);
+		append (single_cmd_status.cmd, name);
 
+		single_cmd_status.extended := true;
 	end unit_selected;
 
 
 	procedure menu_propose_units (									 
 		units			: in pac_unit_names.list;
-		cmd				: in out type_fields_of_line;
 		log_threshold	: in type_log_level)
 	is
 		use gtk.menu;
 		use gtk.menu_item;
 		use pac_unit_names;
 
-		unit : type_unit_name.bounded_string;
+		unit_name : type_unit_name.bounded_string;
 
 		m : gtk_menu; -- the menu
 		i : gtk_menu_item; -- an item on the menu
@@ -94,6 +96,8 @@ package body et_scripting_interactive_schematic is
 		end query_name;
 		
 	begin
+		log (text => "proposing units ... ", level => log_threshold);
+
 		if length (units) > 1 then
 			m := gtk_menu_new;
 
@@ -104,7 +108,8 @@ package body et_scripting_interactive_schematic is
 
 			m.show;
 
-			m.popup (
+			m.popup
+				(
 				-- CS func => set_position'access,
 						
 				-- button 0 means: this is not triggered by a key press
@@ -115,16 +120,29 @@ package body et_scripting_interactive_schematic is
 				-- until a 2nd click.
 				activate_time => gtk.main.get_current_event_time);
 
-			unit := element (units.first); -- CS
-		else
-			unit := element (units.first);
-		end if;
-		
-		log (text => "selected unit " & to_string (unit),
+			log (text => "menu with" & count_type'image (length (units)) & " units is up",
 				level => log_threshold + 1);
+			
+			unit_name := element (units.first); -- CS
+			append (single_cmd_status.cmd, to_string (unit_name));
 
-		append (cmd, to_string (unit));
+			--while not single_cmd_status.extended loop
+				--null;
+			--end loop;
+			
+			--single_cmd_status.extended := false;
+				
+			
+		else
+			unit_name := element (units.first);
 
+			--set_status ("auto-selected last available unit " & to_string (unit_name));
+			log (text => "auto-selected last available unit " & to_string (unit_name),
+					level => log_threshold + 1);
+
+			append (single_cmd_status.cmd, to_string (unit_name));
+		end if;		
+		
 	end menu_propose_units;
 
 	
