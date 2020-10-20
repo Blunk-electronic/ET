@@ -42,6 +42,7 @@ with et_scripting_interactive_schematic;
 with gtk.menu;
 with gtk.menu_item;
 with gtk.menu_shell;
+with gtk.gentry;				use gtk.gentry;
 
 
 separate (et_scripting)
@@ -57,6 +58,7 @@ is
 	use et_coordinates;
 	use pac_geometry_sch;
 	use et_devices;
+	use et_canvas_schematic;
 	use et_canvas_schematic.pac_canvas;
 	use et_display.schematic;
 	use et_modes.schematic;
@@ -1808,16 +1810,14 @@ is
 
 						menu_propose_units (
 							units			=> available_units (
-												et_canvas_schematic.current_active_module,
+												current_active_module,
 												et_devices.to_name (f (5)),
 												log_threshold + 1),
 							log_threshold	=> log_threshold + 1);
 
 					when 6 =>
-						set_status (incomplete & "Sheet number missing");
-
-						log (text => "selected sheet 1", level => log_threshold + 1);
-						append (single_cmd_status.cmd, to_sheet (1));
+						set_status (incomplete & "Sheet number missing. Auto-selected current sheet.");
+						append_argument_to_command (single_cmd_status.cmd, to_sheet (current_active_sheet));
 						
 					when 7 =>
 						set_status (incomplete & "x missing");

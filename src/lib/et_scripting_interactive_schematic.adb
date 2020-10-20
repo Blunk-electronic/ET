@@ -49,6 +49,21 @@ use et_canvas_schematic.pac_canvas;
 
 package body et_scripting_interactive_schematic is
 
+	procedure append_argument_to_command (
+		cmd		: in out type_fields_of_line;
+		argument: in string;
+		trim	: in boolean := true)
+	is
+	begin
+		append (cmd, argument);
+
+		if trim then
+			cmd := remove (single_cmd_status.cmd, 1, 2);
+		end if;
+		
+		gtk_entry (console.get_child).set_text (to_string (cmd));
+	end append_argument_to_command;
+	
 	procedure unit_selection_cancelled (self : access gtk_menu_shell_record'class) is
 	begin
 		set_status ("Unit selection cancelled");
@@ -70,10 +85,15 @@ package body et_scripting_interactive_schematic is
 		-- append the number of the current active sheet,
 		-- remove field 1 and 2 (domain and module name) and
 		-- show the now extended command on the console:
-		append (single_cmd_status.cmd, name);
-		append (single_cmd_status.cmd, to_sheet (current_active_sheet));
-		single_cmd_status.cmd := remove (single_cmd_status.cmd, 1, 2);
-		gtk_entry (console.get_child).set_text (to_string (single_cmd_status.cmd));
+		append_argument_to_command (
+			cmd			=> single_cmd_status.cmd,
+			argument	=> name,
+			trim		=> false);
+		
+		append_argument_to_command (
+			cmd			=> single_cmd_status.cmd,
+			argument	=> to_sheet (current_active_sheet));
+
 	end unit_selected;
 
 
@@ -144,10 +164,14 @@ package body et_scripting_interactive_schematic is
 			-- append the number of the current active sheet,
 			-- remove field 1 and 2 (domain and module name) and
 			-- show the now extended command on the console:
-			append (single_cmd_status.cmd, to_string (unit_name));
-			append (single_cmd_status.cmd, to_sheet (current_active_sheet));
-			single_cmd_status.cmd := remove (single_cmd_status.cmd, 1, 2);
-			gtk_entry (console.get_child).set_text (to_string (single_cmd_status.cmd));
+			append_argument_to_command (
+				cmd			=> single_cmd_status.cmd,
+				argument	=> to_string (unit_name),
+				trim		=> false);
+			
+			append_argument_to_command (
+				cmd			=> single_cmd_status.cmd,
+				argument	=> to_sheet (current_active_sheet));
 
 		end if;		
 		
