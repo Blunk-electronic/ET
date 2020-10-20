@@ -37,10 +37,12 @@
 --   ToDo: 
 
 with gtk.main;
+with gtk.gentry;				use gtk.gentry;
 
 with ada.text_io;				use ada.text_io;
 with ada.containers;			use ada.containers;
 
+with et_coordinates;			use et_coordinates;
 with et_scripting;				use et_scripting;
 with et_canvas_schematic;		use et_canvas_schematic;
 use et_canvas_schematic.pac_canvas;
@@ -50,8 +52,8 @@ package body et_scripting_interactive_schematic is
 	procedure unit_selection_cancelled (self : access gtk_menu_shell_record'class) is
 	begin
 		set_status ("Unit selection cancelled");
-		log (text => "Unit selection cancelled");
-		single_cmd_status.aborted := true;
+		--log (text => "Unit selection cancelled");
+		--single_cmd_status.aborted := true;
 	end unit_selection_cancelled;
 
 	procedure unit_selected (self : access gtk_menu_item_record'class) is
@@ -61,11 +63,17 @@ package body et_scripting_interactive_schematic is
 			text_in		=> self.get_label,
 			position	=> 2);
 	begin
-		put_line ("Selected unit " & name & " via pull down menu.");
-		--set_status ("selected unit " & name);
-		append (single_cmd_status.cmd, name);
+		--put_line ("Selected unit " & name & " via pull down menu.");
+		set_status ("selected unit " & name);
 
-		single_cmd_status.extended := true;
+		-- Append the unit name to the command,
+		-- append the number of the current active sheet,
+		-- remove field 1 and 2 (domain and module name) and
+		-- show the now extended command on the console:
+		append (single_cmd_status.cmd, name);
+		append (single_cmd_status.cmd, to_sheet (current_active_sheet));
+		single_cmd_status.cmd := remove (single_cmd_status.cmd, 1, 2);
+		gtk_entry (console.get_child).set_text (to_string (single_cmd_status.cmd));
 	end unit_selected;
 
 
@@ -95,7 +103,7 @@ package body et_scripting_interactive_schematic is
 			i.show;
 		end query_name;
 		
-	begin
+	begin -- menu_propose_units
 		log (text => "proposing units ... ", level => log_threshold);
 
 		if length (units) > 1 then
@@ -123,24 +131,24 @@ package body et_scripting_interactive_schematic is
 			log (text => "menu with" & count_type'image (length (units)) & " units is up",
 				level => log_threshold + 1);
 			
-			unit_name := element (units.first); -- CS
-			append (single_cmd_status.cmd, to_string (unit_name));
-
-			--while not single_cmd_status.extended loop
-				--null;
-			--end loop;
-			
-			--single_cmd_status.extended := false;
-				
-			
 		else
 			unit_name := element (units.first);
 
 			--set_status ("auto-selected last available unit " & to_string (unit_name));
-			log (text => "auto-selected last available unit " & to_string (unit_name),
-					level => log_threshold + 1);
+			--log (text => "auto-selected last available unit " & to_string (unit_name),
+					--level => log_threshold + 1);
 
+			set_status ("selected last available unit " & to_string (unit_name));
+			
+			-- Append the unit name to the command,
+			-- append the number of the current active sheet,
+			-- remove field 1 and 2 (domain and module name) and
+			-- show the now extended command on the console:
 			append (single_cmd_status.cmd, to_string (unit_name));
+			append (single_cmd_status.cmd, to_sheet (current_active_sheet));
+			single_cmd_status.cmd := remove (single_cmd_status.cmd, 1, 2);
+			gtk_entry (console.get_child).set_text (to_string (single_cmd_status.cmd));
+
 		end if;		
 		
 	end menu_propose_units;

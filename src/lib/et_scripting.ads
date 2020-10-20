@@ -89,11 +89,11 @@ package et_scripting is
 		-- the command to be executed like "schematic blood_sample_analyzer set value C1 100n"
 		cmd			: type_fields_of_line;
 
-		extended	: boolean := false;
+		--extended	: boolean := false;
 		complete	: boolean := true;
-		aborted		: boolean := false;
+		--aborted		: boolean := false;
 
-		retries		: type_retries := 0;
+		--retries		: type_retries := 0;
 	end record;	
 
 	single_cmd_status : type_single_cmd_status;

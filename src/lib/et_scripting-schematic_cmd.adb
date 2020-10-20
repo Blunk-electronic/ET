@@ -1813,10 +1813,6 @@ is
 												log_threshold + 1),
 							log_threshold	=> log_threshold + 1);
 
-						--while not single_cmd_status.aborted or not single_cmd_status.extended loop
-							--single_cmd_status.extended := false;
-						--end loop;
-						
 					when 6 =>
 						set_status (incomplete & "Sheet number missing");
 
@@ -1850,9 +1846,9 @@ is
 		
 		end case;
 
-		log (text => "interactively extended command: " 
-			& enclose_in_quotes (to_string (single_cmd_status.cmd)),
-			level => log_threshold);
+		--log (text => "interactively extended command: " 
+			--& enclose_in_quotes (to_string (single_cmd_status.cmd)),
+			--level => log_threshold);
 
 	end propose_arguments;
 	
@@ -1883,37 +1879,29 @@ begin -- schematic_cmd
 		when others => noun := to_noun (f (4)); -- read noun from field 4
 	end case;
 
-	-- Initialize the command status:
-	--single_cmd_status := (others => <>);
-
 	-- Parse the command:
 	parse;
 	
-	-- In case parse throws an exception, then this loop will be skipped.
-	-- In headless mode this loop will alse be skipped because the flag
-	-- single_cmd_status.complete never changes it state.
+	-- In case parse throws an exception, then the follwing statements 
+	-- will be skipped.
 	
 	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
 	-- single_cmd_status.complete can change to false. In that case
 	-- the interactive completion iteration starts here. 
-	-- If the operator aborts the interactive completion cycle (by pressing ESC),
-	-- then this loop ends prematurely:	
-
-	while not single_cmd_status.complete loop
-	--if not single_cmd_status.complete then
-		single_cmd_status.retries := single_cmd_status.retries + 1;
+	if not single_cmd_status.complete then
 		
 		propose_arguments;
 
-		if single_cmd_status.aborted then
-			exit;
-		else
-			-- Assume the command is complete now
-			-- and parse again:
-			single_cmd_status.complete := true;
-			parse;
-		end if;
-	end loop;
+		--if single_cmd_status.aborted then
+			--exit;
+		--else
+			---- Assume the command is complete now
+			---- and parse again:
+			--single_cmd_status.complete := true;
+			--parse;
+		--end if;
+	--end loop;
+	end if;
 	
 	exception 
 
