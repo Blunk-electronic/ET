@@ -210,6 +210,14 @@ package pac_canvas is
 	-- Builds the console and places it in box_right.
 	procedure build_console;
 
+	-- Appends an argument to the given command.
+	-- If trim is true, the first two fields of the command
+	-- (domain and module name) will be removed.
+	-- Displays the command on the console.
+	procedure append_argument_to_command (
+		cmd		: in out type_fields_of_line;
+		argument: in string;
+		trim	: in boolean := true);
 
 	
 	box_drawing	: gtk_box;

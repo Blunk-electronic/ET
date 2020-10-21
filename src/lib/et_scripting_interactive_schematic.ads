@@ -46,11 +46,6 @@ with et_string_processing;		use et_string_processing;
 
 package et_scripting_interactive_schematic is
 
-	procedure append_argument_to_command (
-		cmd		: in out type_fields_of_line;
-		argument: in string;
-		trim	: in boolean := true);
-	
 	procedure unit_selection_cancelled (
 		self : access gtk_menu_shell_record'class);
 

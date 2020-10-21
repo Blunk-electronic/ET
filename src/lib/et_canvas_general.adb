@@ -498,7 +498,19 @@ package body pac_canvas is
 		gtk_entry (mode.cbox_mode_noun.get_child).set_text (n);
 	end update_mode_display;
 
+	procedure append_argument_to_command (
+		cmd		: in out type_fields_of_line;
+		argument: in string;
+		trim	: in boolean := true)
+	is begin
+		append (cmd, argument);
 
+		if trim then
+			cmd := remove (cmd, 1, 2);
+		end if;
+		
+		gtk_entry (console.get_child).set_text (to_string (cmd));
+	end append_argument_to_command;
 	
 	procedure build_console is begin
 		-- box for console on the right top

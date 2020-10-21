@@ -49,21 +49,6 @@ use et_canvas_schematic.pac_canvas;
 
 package body et_scripting_interactive_schematic is
 
-	procedure append_argument_to_command (
-		cmd		: in out type_fields_of_line;
-		argument: in string;
-		trim	: in boolean := true)
-	is
-	begin
-		append (cmd, argument);
-
-		if trim then
-			cmd := remove (single_cmd_status.cmd, 1, 2);
-		end if;
-		
-		gtk_entry (console.get_child).set_text (to_string (cmd));
-	end append_argument_to_command;
-	
 	procedure unit_selection_cancelled (self : access gtk_menu_shell_record'class) is
 	begin
 		set_status ("Unit selection cancelled");
@@ -81,7 +66,7 @@ package body et_scripting_interactive_schematic is
 		--put_line ("Selected unit " & name & " via pull down menu.");
 		set_status ("selected unit " & name);
 
-		-- Append the unit name to the command,
+		-- Append the unit name and the current sheet number to the command,
 		-- append the number of the current active sheet,
 		-- remove field 1 and 2 (domain and module name) and
 		-- show the now extended command on the console:
