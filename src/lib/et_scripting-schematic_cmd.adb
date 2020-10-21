@@ -36,7 +36,8 @@
 --
 
 with et_modes.schematic;
-
+with et_project.modules;
+with et_canvas_schematic_units;
 with et_scripting_interactive_schematic;
 
 with gtk.menu;
@@ -1790,7 +1791,16 @@ is
 	
 	procedure propose_arguments is
 		use et_scripting_interactive_schematic;
+		use et_canvas_schematic_units;
+		use et_project.modules;
+		
 		incomplete : constant string := "Command incomplete ! ";
+
+		device_cursor_sch	: et_schematic.type_devices.cursor;
+		device_name			: et_devices.type_name;
+		device_model		: type_device_model_file.bounded_string;
+		--device_cursor_lib	: et_devices.type_devices.cursor;
+
 	begin
 		log (text => incomplete 
 			& "Only" & count_type'image (fields) & " arguments provided. "
@@ -1802,54 +1812,62 @@ is
 					when 4 =>
 						log (text => "Device name missing !", level => log_threshold);
 						set_status (incomplete & "Device name missing !");
-						-- no menu required. might become very long.
+						-- no menu required. might become very long if there are hundreds of devices.
 						
-					when 5 =>
+					when 5 => -- like "invoke unit IC1"
 						log (text => "Unit name missing !", level => log_threshold);
 						set_status (incomplete & "Unit name missing");
 
-						menu_propose_units (
-							units			=> available_units (
-												current_active_module,
-												et_devices.to_name (f (5)),
-												log_threshold + 1),
-							log_threshold	=> log_threshold + 1);
+						device_name := et_devices.to_name (f (5));
 
-					when 6 =>
-						set_status (incomplete & "Sheet number missing. Auto-selected current sheet.");
-						append_argument_to_command (single_cmd_status.cmd, to_sheet (current_active_sheet));
+						if exists (current_active_module, device_name) then
+
+							device_cursor_sch := locate_device (current_active_module, device_name);
+							device_model := et_schematic.type_devices.element (device_cursor_sch).model;
+							unit_add.device := locate_device (device_model);
+							unit_add.variant := et_schematic.type_devices.element (device_cursor_sch).variant;
+							unit_add.total := units_total (unit_add.device);
+							unit_add.device_pre := et_schematic.type_devices.key (device_cursor_sch);
 						
-					when 7 =>
-						set_status (incomplete & "x missing");
+							menu_propose_units (
+								units			=> available_units (
+													current_active_module,
+													device_name,
+													log_threshold + 1),
+								log_threshold	=> log_threshold + 1);
 
-						log (text => "selected x 100", level => log_threshold + 1);
-						append (single_cmd_status.cmd, "100.0");
+						else
+							set_status ("ERROR. Device " & to_string (device_name) & " not found !");
+						end if;
 						
-					when 8 =>
-						set_status (incomplete & "y missing");
+					when 6 => -- like "invoke unit IC1 B"
+						--set_status (incomplete & "Sheet number missing. Auto-selected current sheet.");
+						device_name := et_devices.to_name (f (5));
 
-						log (text => "selected y 140", level => log_threshold + 1);
-						append (single_cmd_status.cmd, "140.0");
+						if exists (current_active_module, device_name) then
 
+							device_cursor_sch := locate_device (current_active_module, device_name);
+							device_model := et_schematic.type_devices.element (device_cursor_sch).model;
+							unit_add.device := locate_device (device_model);
+							unit_add.variant := et_schematic.type_devices.element (device_cursor_sch).variant;
+							unit_add.total := units_total (unit_add.device);
+							unit_add.device_pre := et_schematic.type_devices.key (device_cursor_sch);
+							
+							unit_add.name := to_name (f (6)); -- CS test existence and availability of unit
+							unit_add.via_invoke := true;
+							redraw;							
+						else
+							set_status ("ERROR. Device " & to_string (device_name) & " not found !");
+						end if;
+											
+					when others =>  -- like "invoke unit IC1 2 100 80 0"
+						set_status ("WARNING: Arguments after unit name are ignored.");
 						
-					when 9 =>
-						set_status (incomplete & "Rotation missing");
-
-						log (text => "selected rotation 0", level => log_threshold + 1);
-						append (single_cmd_status.cmd, "0");
-
-						
-					when others => null;
 				end case;
 				
 			when others => null;
 		
 		end case;
-
-		--log (text => "interactively extended command: " 
-			--& enclose_in_quotes (to_string (single_cmd_status.cmd)),
-			--level => log_threshold);
-
 	end propose_arguments;
 	
 begin -- schematic_cmd
@@ -1887,20 +1905,9 @@ begin -- schematic_cmd
 	
 	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
 	-- single_cmd_status.complete can change to false. In that case
-	-- the interactive completion iteration starts here. 
+	-- the interactive completiton starts here. 
 	if not single_cmd_status.complete then
-		
 		propose_arguments;
-
-		--if single_cmd_status.aborted then
-			--exit;
-		--else
-			---- Assume the command is complete now
-			---- and parse again:
-			--single_cmd_status.complete := true;
-			--parse;
-		--end if;
-	--end loop;
 	end if;
 	
 	exception 

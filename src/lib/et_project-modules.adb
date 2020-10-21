@@ -594,6 +594,30 @@ package body et_project.modules is
 
 		return device_found;
 	end exists;
+
+	function locate_device (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return et_schematic.type_devices.cursor 
+	is
+		result : et_schematic.type_devices.cursor;
+		
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use et_schematic.type_devices;
+		begin
+			result := find (module.devices, device);
+		end;
+
+	begin
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		return result;
+	end locate_device;
+
 	
 	function exists (
 	-- Returns true if the given module provides the given submodule instance.

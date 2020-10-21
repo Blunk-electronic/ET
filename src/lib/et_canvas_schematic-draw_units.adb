@@ -500,11 +500,11 @@ procedure draw_units (
 		-- There are two cases when the assigment takes place:
 
 		-- 1. When adding a new device.
-		-- The assigment was via procedure et_canvas_schematic_units.add_device.
+		-- The assignment was via procedure et_canvas_schematic_units.add_device.
 		-- The unit will be drawn after the first left click or pressing of space key.
 
 		-- 2. When invoking a unit. 
-		-- The assigment was via procedure et_canvas_schematic_units.unit_selected.
+		-- The assignment was via procedure et_canvas_schematic_units.unit_selected.
 		
 		if unit_add.device /= type_devices.no_element then
 

@@ -37,15 +37,17 @@
 --   ToDo: 
 
 with gtk.main;
-with gtk.gentry;				use gtk.gentry;
+with gtk.gentry;					use gtk.gentry;
 
-with ada.text_io;				use ada.text_io;
-with ada.containers;			use ada.containers;
+with ada.text_io;					use ada.text_io;
+with ada.containers;				use ada.containers;
 
-with et_coordinates;			use et_coordinates;
-with et_scripting;				use et_scripting;
-with et_canvas_schematic;		use et_canvas_schematic;
+with et_coordinates;				use et_coordinates;
+with et_scripting;					use et_scripting;
+with et_canvas_schematic;			use et_canvas_schematic;
 use et_canvas_schematic.pac_canvas;
+
+with et_canvas_schematic_units;		use et_canvas_schematic_units;
 
 package body et_scripting_interactive_schematic is
 
@@ -63,22 +65,11 @@ package body et_scripting_interactive_schematic is
 			text_in		=> self.get_label,
 			position	=> 2);
 	begin
-		--put_line ("Selected unit " & name & " via pull down menu.");
 		set_status ("selected unit " & name);
 
-		-- Append the unit name and the current sheet number to the command,
-		-- append the number of the current active sheet,
-		-- remove field 1 and 2 (domain and module name) and
-		-- show the now extended command on the console:
-		append_argument_to_command (
-			cmd			=> single_cmd_status.cmd,
-			argument	=> name,
-			trim		=> false);
-		
-		append_argument_to_command (
-			cmd			=> single_cmd_status.cmd,
-			argument	=> to_sheet (current_active_sheet));
-
+		unit_add.name := to_name (name);
+		unit_add.via_invoke := true;
+		redraw;
 	end unit_selected;
 
 
@@ -111,54 +102,47 @@ package body et_scripting_interactive_schematic is
 	begin -- menu_propose_units
 		log (text => "proposing units ... ", level => log_threshold);
 
-		if length (units) > 1 then
-			m := gtk_menu_new;
+		case length (units) is
+			when 0 =>
+				-- no menu required
+				set_status ("No more units available !");
+				
+			when 1 =>
+				-- no menu required
+				unit_name := element (units.first);
 
-			-- In case the operator closes the menu (via ESC for example)
-			m.on_cancel (unit_selection_cancelled'access);
+				set_status ("selected last available unit " & to_string (unit_name));
+				
+				unit_add.name := unit_name;
+				unit_add.via_invoke := true;
+				redraw;
+
+			when others =>
+				-- show available units in a menu
+				m := gtk_menu_new;
+
+				-- In case the operator closes the menu (via ESC for example)
+				m.on_cancel (unit_selection_cancelled'access);
+				
+				units.iterate (query_name'access);
+
+				m.show;
+
+				m.popup
+					(
+					-- CS func => set_position'access,
+							
+					-- button 0 means: this is not triggered by a key press
+					-- or a button click:
+					button => 0,
+							
+					-- get_current_event_time causes the menu to remain
+					-- until a 2nd click.
+					activate_time => gtk.main.get_current_event_time);
+
+				set_status ("Please select unit via menu !");
 			
-			units.iterate (query_name'access);
-
-			m.show;
-
-			m.popup
-				(
-				-- CS func => set_position'access,
-						
-				-- button 0 means: this is not triggered by a key press
-				-- or a button click:
-				button => 0,
-						
-				-- get_current_event_time causes the menu to remain
-				-- until a 2nd click.
-				activate_time => gtk.main.get_current_event_time);
-
-			log (text => "menu with" & count_type'image (length (units)) & " units is up",
-				level => log_threshold + 1);
-			
-		else
-			unit_name := element (units.first);
-
-			--set_status ("auto-selected last available unit " & to_string (unit_name));
-			--log (text => "auto-selected last available unit " & to_string (unit_name),
-					--level => log_threshold + 1);
-
-			set_status ("selected last available unit " & to_string (unit_name));
-			
-			-- Append the unit name to the command,
-			-- append the number of the current active sheet,
-			-- remove field 1 and 2 (domain and module name) and
-			-- show the now extended command on the console:
-			append_argument_to_command (
-				cmd			=> single_cmd_status.cmd,
-				argument	=> to_string (unit_name),
-				trim		=> false);
-			
-			append_argument_to_command (
-				cmd			=> single_cmd_status.cmd,
-				argument	=> to_sheet (current_active_sheet));
-
-		end if;		
+		end case;
 		
 	end menu_propose_units;
 

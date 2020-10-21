@@ -297,6 +297,14 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name)
 		return boolean;
+
+	-- Locates the given device in the given module and returns
+	-- the cursor to the device.
+	-- If the device does not exist, returns no_element.
+	function locate_device (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return et_schematic.type_devices.cursor;
 	
 	function exists (
 	-- Returns true if the given module provides the given submodule instance.

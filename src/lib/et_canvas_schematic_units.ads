@@ -240,6 +240,7 @@ package et_canvas_schematic_units is
 		-- This is relevant for the preview only:
 		device_pre	: et_devices.type_name := (others => <>);
 
+		-- When drawing a unit being added via invoke:
 		via_invoke	: boolean := false;
 	end record;
 
