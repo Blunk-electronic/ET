@@ -1812,7 +1812,8 @@ is
 					when 4 =>
 						log (text => "Device name missing !", level => log_threshold);
 						set_status (incomplete & "Device name missing !");
-						-- no menu required. might become very long if there are hundreds of devices.
+						-- No menu required and not reasonable.
+						-- It might become very long if there are hundreds of devices.
 						
 					when 5 => -- like "invoke unit IC1"
 						log (text => "Unit name missing !", level => log_threshold);
@@ -1841,7 +1842,6 @@ is
 						end if;
 						
 					when 6 => -- like "invoke unit IC1 B"
-						--set_status (incomplete & "Sheet number missing. Auto-selected current sheet.");
 						device_name := et_devices.to_name (f (5));
 
 						if exists (current_active_module, device_name) then
@@ -1854,7 +1854,10 @@ is
 							unit_add.device_pre := et_schematic.type_devices.key (device_cursor_sch);
 							
 							unit_add.name := to_name (f (6)); -- CS test existence and availability of unit
+
+							-- Allow drawing the unit:
 							unit_add.via_invoke := true;
+							
 							redraw;							
 						else
 							set_status ("ERROR. Device " & to_string (device_name) & " not found !");
@@ -1908,6 +1911,12 @@ begin -- schematic_cmd
 	-- the interactive completiton starts here. 
 	if not single_cmd_status.complete then
 		propose_arguments;
+	end if;
+
+	-- After every command (regardless if it is complete or not)
+	-- set the focus to the canvas:
+	if runmode /= MODE_HEADLESS then
+		canvas.grab_focus;
 	end if;
 	
 	exception 

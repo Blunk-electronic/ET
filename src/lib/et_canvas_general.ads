@@ -682,6 +682,10 @@ package pac_canvas is
 	
 	procedure reset_activate_counter;
 	procedure increment_activate_counter;
+
+
+	--type type_command_line_status is (ON, OFF);
+	--command_line : type_command_line_status := ON;
 	
 private
 

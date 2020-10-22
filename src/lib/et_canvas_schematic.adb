@@ -1598,6 +1598,8 @@ package body et_canvas_schematic is
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
 
 		if key = GDK_Escape then
+			--put_line ("ESC");
+			
 			expect_entry := expect_entry_default;
 			
 			verb := verb_default; -- CS ?

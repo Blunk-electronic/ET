@@ -54,8 +54,6 @@ package body et_scripting_interactive_schematic is
 	procedure unit_selection_cancelled (self : access gtk_menu_shell_record'class) is
 	begin
 		set_status ("Unit selection cancelled");
-		--log (text => "Unit selection cancelled");
-		--single_cmd_status.aborted := true;
 	end unit_selection_cancelled;
 
 	procedure unit_selected (self : access gtk_menu_item_record'class) is
@@ -68,7 +66,10 @@ package body et_scripting_interactive_schematic is
 		set_status ("selected unit " & name);
 
 		unit_add.name := to_name (name);
+
+		-- Allow drawing the unit:
 		unit_add.via_invoke := true;
+		
 		redraw;
 	end unit_selected;
 
@@ -114,6 +115,8 @@ package body et_scripting_interactive_schematic is
 				set_status ("selected last available unit " & to_string (unit_name));
 				
 				unit_add.name := unit_name;
+
+				-- Allow drawing the unit:
 				unit_add.via_invoke := true;
 				redraw;
 

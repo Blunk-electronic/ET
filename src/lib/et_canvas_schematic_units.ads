@@ -224,6 +224,7 @@ package et_canvas_schematic_units is
 		& "to add unit." 
 		& status_hint_for_abort;
 
+	-- When a unit is being added this type is required:
 	type type_unit_being_added is record
 		tool		: type_tool := MOUSE;
 

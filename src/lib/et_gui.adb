@@ -239,6 +239,11 @@ package body et_gui is
 		-- Set up the board window.
 		init_board (project, module, log_threshold + 1);
 
+		-- CS
+		et_canvas_schematic.pac_canvas.window.present;
+		--et_canvas_schematic.pac_canvas.console.grab_focus;
+
+		
 		-- If a script was given on starup as argument, execute it now:
 		-- NOTE 1: The script execution must start AFTER BOTH schematic and board 
 		--         have been completely displayed.
@@ -264,6 +269,8 @@ package body et_gui is
 		-- Start the main gtk loop. This is a loop that permanently draws the widgets and
 		-- samples them for possible signals sent.
 		gtk.main.main;
+
+
 		
 	end single_module;	
 	

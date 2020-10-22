@@ -162,15 +162,26 @@ package body pac_canvas is
 		-- Make a pointer to the main window:
 		current_window : constant gtk_window := gtk_window (self);
 
+		use gdk.types;
+		use gdk.types.keysyms;
+		
+		key : gdk_key_type := event.keyval;
 	begin
-		--new_line;
--- 		put_line ("top level key pressed");
+		--put_line ("top level key pressed");
+		
+		case key is
+			-- If the operator presses F3 then set the focus to the canvas:
+			when GDK_F3 =>
+				canvas.grab_focus;
+				status_clear;
+				
+				result := true; -- event handled
 
-		-- Set the focus to the canvas:
--- 		set_focus (current_window, canvas);
+			-- Other keys are propagated to the canvas:
+			when others =>
+				result := propagate_key_event (current_window, event);
 
-		-- Propagate the key-press event to the canvas:
-		result := propagate_key_event (current_window, event);
+		end case;
 
 -- 		if result = true then
 -- 			put_line ("got handled");
@@ -1265,7 +1276,7 @@ package body pac_canvas is
 		if key_ctrl = control_mask then 
 
 			case key is
-				
+			
 				-- Zoom in/out on ctrl and +/- key:
 				when GDK_KP_Add | GDK_PLUS =>
 					zoom_in (
@@ -1298,6 +1309,10 @@ package body pac_canvas is
 -- 				when GDK_Control_L | GDK_Control_R =>
 -- 					put_line ("ctrl pressed");
 
+				when GDK_F2 =>
+					set_status ("enter command");
+					console.grab_focus;
+					
 				when GDK_Right =>
 					canvas.move_cursor (RIGHT, cursor_main);
 					self.queue_draw; -- without frame and grid initialization
