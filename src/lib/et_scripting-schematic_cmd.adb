@@ -40,10 +40,10 @@ with et_project.modules;
 with et_canvas_schematic_units;
 with et_scripting_interactive_schematic;
 
-with gtk.menu;
-with gtk.menu_item;
-with gtk.menu_shell;
-with gtk.gentry;				use gtk.gentry;
+--with gtk.menu;
+--with gtk.menu_item;
+--with gtk.menu_shell;
+--with gtk.gentry;				use gtk.gentry;
 
 
 separate (et_scripting)
