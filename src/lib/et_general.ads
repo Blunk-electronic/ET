@@ -239,7 +239,10 @@ package et_general is
 	-- This is relevant for GUI operations only:
 	type type_tool is (MOUSE, KEYBOARD);
 
-	
+	function to_string (tool : in type_tool) return string;
+
+	function to_tool (tool : in string) return type_tool;
+
 	
 -- GENERICS
 	

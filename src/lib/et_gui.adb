@@ -78,9 +78,12 @@ package body et_gui is
 		
 		build_background_boxes;
 
+		build_primary_tool_display;
+
 		build_coordinates_display;
 
 		build_mode_display;
+
 
 		-- Connect to the on_activate signal (on hitting enter key):
 		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
@@ -161,6 +164,8 @@ package body et_gui is
 		
 
 		build_background_boxes;
+
+		build_primary_tool_display;
 		
 		build_coordinates_display;
 

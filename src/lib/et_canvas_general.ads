@@ -77,7 +77,7 @@ with cairo;						use cairo;
 with pango.layout;				use pango.layout;
 with system.storage_elements;	use system.storage_elements;
 
-with et_general;
+with et_general;				use et_general;
 with et_geometry;				use et_geometry;
 with et_frames;
 with et_string_processing;		use et_string_processing;
@@ -137,6 +137,14 @@ package pac_canvas is
 	-- main position display:
 	box_positions			: gtk_vbox;		-- the main box around all kinds of position readouts
 
+	-- primary tool
+	box_primary_tool		: gtk_vbox;
+	label_primary_tool		: gtk_label;
+	cbox_primary_tool		: gtk_combo_box_text;
+
+	procedure update_primary_tool_display;
+	procedure build_primary_tool_display;
+	
 	-- grid
 	label_grid				: gtk_label;
 	box_grid				: gtk_vbox;
@@ -686,6 +694,11 @@ package pac_canvas is
 
 	--type type_command_line_status is (ON, OFF);
 	--command_line : type_command_line_status := ON;
+
+	primary_tool_default : constant type_tool := MOUSE;
+	primary_tool : type_tool := primary_tool_default;
+
+	procedure change_primary_tool;
 	
 private
 

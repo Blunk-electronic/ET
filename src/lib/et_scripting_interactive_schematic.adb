@@ -67,8 +67,13 @@ package body et_scripting_interactive_schematic is
 
 		unit_add.name := to_name (name);
 
+		-- use the current primary tool for moving the unit:
+		unit_add.tool := primary_tool;
+
 		-- Allow drawing the unit:
 		unit_add.via_invoke := true;
+
+		--canvas.grab_focus;
 		
 		redraw;
 	end unit_selected;
@@ -116,6 +121,9 @@ package body et_scripting_interactive_schematic is
 				
 				unit_add.name := unit_name;
 
+				-- use the current primary tool for moving the unit:
+				unit_add.tool := primary_tool;
+				
 				-- Allow drawing the unit:
 				unit_add.via_invoke := true;
 				redraw;

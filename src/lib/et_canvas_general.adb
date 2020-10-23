@@ -170,6 +170,14 @@ package body pac_canvas is
 		--put_line ("top level key pressed");
 		
 		case key is
+
+			-- If the operator presses F2 then set the focus to the console:
+			when GDK_F2 =>
+				console.grab_focus;
+				set_status ("enter command");
+
+				result := true; -- event handled
+				
 			-- If the operator presses F3 then set the focus to the canvas:
 			when GDK_F3 =>
 				canvas.grab_focus;
@@ -177,6 +185,13 @@ package body pac_canvas is
 				
 				result := true; -- event handled
 
+			-- If the operator presses F4 then change the primary tool:
+			when GDK_F4 =>
+				change_primary_tool;
+				
+				result := true; -- event handled
+
+				
 			-- Other keys are propagated to the canvas:
 			when others =>
 				result := propagate_key_event (current_window, event);
@@ -262,7 +277,30 @@ package body pac_canvas is
 
 		
 	end build_toolbars;
-	
+
+	procedure update_primary_tool_display is begin
+		gtk_entry (cbox_primary_tool.get_child).set_text (to_string (primary_tool));
+	end update_primary_tool_display;
+
+	procedure build_primary_tool_display is
+		spacing : gint;
+	begin
+		spacing := 10;
+		
+		-- The box for the primary tool:
+		gtk_new_vbox (box_primary_tool);
+		set_spacing (box_primary_tool, spacing);
+		pack_start (box_left, box_primary_tool, expand => false);
+		
+		gtk_new (label_primary_tool, "primary tool");
+		pack_start (box_primary_tool, label_primary_tool, expand => false);
+		gtk_new_with_entry (cbox_primary_tool);
+		pack_start (box_primary_tool, cbox_primary_tool);
+
+		update_primary_tool_display;
+	end build_primary_tool_display;
+
+		
 	procedure build_coordinates_display is 
 		spacing : gint;
 	begin
@@ -274,6 +312,14 @@ package body pac_canvas is
 		set_border_width (box_positions, 10);
 		pack_start (box_left, box_positions, expand => false);
 		-------------------------------------------------------------------------
+
+		---- The box for the primary tool:
+		--gtk_new_vbox (box_primary_tool);
+		--pack_start (box_positions, box_primary_tool, expand => false);
+		--gtk_new (label_primary_tool, "primary tool");
+		--pack_start (box_primary_tool, label_primary_tool, expand => false);
+		--gtk_new_with_entry (cbox_primary_tool);
+		--pack_start (box_primary_tool, cbox_primary_tool);
 		
 		-- The box for grid:
 		gtk_new_vbox (box_grid);
@@ -1309,10 +1355,6 @@ package body pac_canvas is
 -- 				when GDK_Control_L | GDK_Control_R =>
 -- 					put_line ("ctrl pressed");
 
-				when GDK_F2 =>
-					set_status ("enter command");
-					console.grab_focus;
-					
 				when GDK_Right =>
 					canvas.move_cursor (RIGHT, cursor_main);
 					self.queue_draw; -- without frame and grid initialization
@@ -1749,6 +1791,16 @@ package body pac_canvas is
 	procedure increment_activate_counter is begin
 		activate_counter := activate_counter + 1;
 	end increment_activate_counter;
+
+	procedure change_primary_tool is begin
+		if primary_tool = MOUSE then
+			primary_tool := KEYBOARD;
+		else
+			primary_tool := MOUSE;
+		end if;
+
+		update_primary_tool_display;
+	end change_primary_tool;
 	
 end pac_canvas;
 	
