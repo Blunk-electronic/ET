@@ -1618,85 +1618,102 @@ package body et_canvas_schematic is
 			
 			reset_placeholder; -- after moving a placeholder
 
+			reset_single_cmd_status;
+			
 			reset_activate_counter;
 			status_enter_verb;
-		else	
-			case expect_entry is
-				when EXP_VERB =>
-					--put_line ("VERB entered");
+			
+		else
+			-- If the command is waiting for finalization, usually by pressing
+			-- the space key, AND the primary tool is the keyboard, then
+			-- we call the corresponding subprogram right away here:
+			if single_cmd_status.finalization_pending and primary_tool = KEYBOARD then
+				case verb is
+					when VERB_INVOKE	=> invoke;
+					when others			=> null;
+				end case;
+				
+			else
+			-- Evaluate the verb and noun (as typed on the keyboard):
+				
+				case expect_entry is
+					when EXP_VERB =>
+						--put_line ("VERB entered");
 
-					-- Next we expect an entry to select a noun.
-					-- If the verb entry is invalid then expect_entry
-					-- will be overwritten by EXP_VERB so that the
-					-- operator is required to re-enter a valid verb.
-					expect_entry := EXP_NOUN;
+						-- Next we expect an entry to select a noun.
+						-- If the verb entry is invalid then expect_entry
+						-- will be overwritten by EXP_VERB so that the
+						-- operator is required to re-enter a valid verb.
+						expect_entry := EXP_NOUN;
 
-					-- As long as no valid noun has been entered
-					-- display the default noun:
-					noun := noun_default;
+						-- As long as no valid noun has been entered
+						-- display the default noun:
+						noun := noun_default;
 
-					-- EVALUATE KEY FOR VERB:
-					case key is
-						when GDK_Delete =>
-							verb := VERB_DELETE;
-							status_enter_noun;
+						-- EVALUATE KEY FOR VERB:
+						case key is
+							when GDK_Delete =>
+								verb := VERB_DELETE;
+								status_enter_noun;
 
-						when GDK_LC_a =>
-							verb := VERB_ADD;
-							status_enter_noun;
-							
-						when GDK_LC_g =>
-							verb := VERB_DRAG;
-							status_enter_noun;
+							when GDK_LC_a =>
+								verb := VERB_ADD;
+								status_enter_noun;
+								
+							when GDK_LC_g =>
+								verb := VERB_DRAG;
+								status_enter_noun;
 
-						when GDK_LC_d =>
-							verb := VERB_DRAW;
-							status_enter_noun;
+							when GDK_LC_d =>
+								verb := VERB_DRAW;
+								status_enter_noun;
 
-						when GDK_LC_i =>
-							verb := VERB_INVOKE;
-							status_enter_noun;
-							
-						when GDK_LC_m =>
-							verb := VERB_MOVE;
-							status_enter_noun;
+							when GDK_LC_i =>
+								verb := VERB_INVOKE;
+								status_enter_noun;
+								
+							when GDK_LC_m =>
+								verb := VERB_MOVE;
+								status_enter_noun;
 
-						when GDK_LC_p =>
-							verb := VERB_PLACE;
-							status_enter_noun;
-							
-						when GDK_LC_r =>
-							verb := VERB_ROTATE;
-							status_enter_noun;
-							
-						when others =>
-							--put_line ("other key pressed " & gdk_key_type'image (key));
-							
-							-- If invalid verb entered, overwrite expect_entry by EXP_VERB
-							-- and show error in status bar:
-							expect_entry := EXP_VERB;
-							status_verb_invalid;
-					end case;
+							when GDK_LC_p =>
+								verb := VERB_PLACE;
+								status_enter_noun;
+								
+							when GDK_LC_r =>
+								verb := VERB_ROTATE;
+								status_enter_noun;
+								
+							when others =>
+								--put_line ("other key pressed " & gdk_key_type'image (key));
+								
+								-- If invalid verb entered, overwrite expect_entry by EXP_VERB
+								-- and show error in status bar:
+								expect_entry := EXP_VERB;
+								status_verb_invalid;
+						end case;
 
 
-				when EXP_NOUN =>
-					--put_line ("NOUN entered");
+					when EXP_NOUN =>
+						--put_line ("NOUN entered");
 
-					case verb is
-						when VERB_ADD		=> add;
-						when VERB_DELETE	=> delete;
-						when VERB_DRAG		=> drag;
-						when VERB_DRAW		=> draw;
-						when VERB_INVOKE	=> invoke;
-						when VERB_MOVE		=> move;
-						when VERB_PLACE		=> place;
-						when VERB_ROTATE	=> rotate;
+						case verb is
+							when VERB_ADD		=> add;
+							when VERB_DELETE	=> delete;
+							when VERB_DRAG		=> drag;
+							when VERB_DRAW		=> draw;
+							when VERB_INVOKE	=> invoke;
+							when VERB_MOVE		=> move;
+							when VERB_PLACE		=> place;
+							when VERB_ROTATE	=> rotate;
 
-						when others => null; -- CS
-					end case;
-					
-			end case;
+							when others => null; -- CS
+						end case;
+						
+				end case;
 
+			end if;
+		
 		end if;
 
 		redraw;

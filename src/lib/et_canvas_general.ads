@@ -98,6 +98,32 @@ package et_canvas_general is
 		"For next object click RIGHT or press page-down.";
 		--& " Confirm selection with LEFT click or SPACE key.";
 
+
+	-- In graphical mode (other than runmode headless) and 
+	-- single command entry mode (cmd_entry_mode) a command may be
+	-- incomplete. It will then be completed via an interactive
+	-- graphical completition process.
+	-- If the command is waiting for finalization (like pressing space key
+	-- to place a unit) then the flag finalization_pending goes true.
+	type type_single_cmd_status is record
+
+		-- the command to be executed like "schematic blood_sample_analyzer set value C1 100n"
+		cmd			: type_fields_of_line;
+
+		-- Goes false if too less arguments given via console:
+		complete	: boolean := true;
+
+		-- Indicates that the command is in progress,
+		-- but not finalized yet:
+		finalization_pending : boolean := false;
+	end record;	
+
+
+	
+	primary_tool_default : constant type_tool := MOUSE;
+
+
+---------------------------------------------------------------------------
 	
 generic
 
@@ -692,10 +718,14 @@ package pac_canvas is
 	procedure increment_activate_counter;
 
 
-	--type type_command_line_status is (ON, OFF);
-	--command_line : type_command_line_status := ON;
 
-	primary_tool_default : constant type_tool := MOUSE;
+	-- The status of the single command entered on the console:
+	single_cmd_status : type_single_cmd_status;
+
+	procedure reset_single_cmd_status;
+
+
+	-- The primary tool used for drawing and navigating within the canvas:
 	primary_tool : type_tool := primary_tool_default;
 
 	procedure change_primary_tool;

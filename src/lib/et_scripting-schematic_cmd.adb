@@ -79,6 +79,14 @@ is
 		command_too_long (single_cmd_status.cmd, fields - 1);
 	end;
 
+	procedure command_incomplete is begin
+		if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
+			single_cmd_status.complete := false;
+		else
+			raise exception_command_incomplete with "command not complete";
+		end if;
+	end command_incomplete;
+	
 	procedure zoom_center is -- GUI related
 		-- Build the center point:
 		c : type_point := type_point (set (
@@ -1879,7 +1887,7 @@ begin -- schematic_cmd
 		 level => log_threshold);
 
 	-- Make a copy of the given command. In case the given command is incomplete
-	-- and we are in graphical mode (non-headless) then
+	-- AND we are in graphical mode (non-headless) then
 	-- this procedure interactively proposes arguments and completes the command.
 	single_cmd_status := (cmd => cmd_in, others => <>);
 

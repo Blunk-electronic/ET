@@ -73,7 +73,7 @@ package body et_scripting_interactive_schematic is
 		-- Allow drawing the unit:
 		unit_add.via_invoke := true;
 
-		--canvas.grab_focus;
+		single_cmd_status.finalization_pending := true;
 		
 		redraw;
 	end unit_selected;
@@ -126,6 +126,9 @@ package body et_scripting_interactive_schematic is
 				
 				-- Allow drawing the unit:
 				unit_add.via_invoke := true;
+
+				single_cmd_status.finalization_pending := true;
+				
 				redraw;
 
 			when others =>

@@ -992,7 +992,7 @@ package body et_canvas_schematic_units is
 		else
 			log (text => "nothing to do", level => log_threshold + 1);
 		end if;
-		
+
 		reset_unit_add;
 		reset_request_clarification;
 		set_status (status_invoke);

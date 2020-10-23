@@ -1792,6 +1792,12 @@ package body pac_canvas is
 		activate_counter := activate_counter + 1;
 	end increment_activate_counter;
 
+
+	procedure reset_single_cmd_status is begin
+		single_cmd_status := (others => <>);
+	end reset_single_cmd_status;
+
+	
 	procedure change_primary_tool is begin
 		if primary_tool = MOUSE then
 			primary_tool := KEYBOARD;
