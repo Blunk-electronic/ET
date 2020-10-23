@@ -289,6 +289,7 @@ is
 		-- CS exception handler if status is invalid
 	end display;
 
+	-- Parses the single_cmd_status.cmd:
 	procedure parse is begin
 		log (text => "parsing command: " 
 			& enclose_in_quotes (to_string (single_cmd_status.cmd)),
@@ -1738,7 +1739,7 @@ is
 		end case;
 
 		case runmode is
-			when MODE_MODULE =>
+			when MODE_MODULE => -- CS better if runmode /= MODE_HEADLESS ?
 				canvas.update_mode_display;
 				status_clear;
 				
@@ -1808,7 +1809,6 @@ is
 		device_name			: et_devices.type_name;
 		device_model		: type_device_model_file.bounded_string;
 		--device_cursor_lib	: et_devices.type_devices.cursor;
-
 	begin
 		log (text => incomplete 
 			& "Only" & count_type'image (fields) & " arguments provided. "
@@ -1923,6 +1923,7 @@ begin -- schematic_cmd
 
 	-- After every command (regardless if it is complete or not)
 	-- set the focus to the canvas:
+	-- CS: remove ?
 	if runmode /= MODE_HEADLESS then
 		canvas.grab_focus;
 	end if;

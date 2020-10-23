@@ -43,14 +43,6 @@ procedure board_cmd (
 	cmd_in			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
 	log_threshold	: in type_log_level)
 is
-	-- Make a copy of the given command. In case the given command is incomplete
-	-- and we are in graphical mode (non-headless) then
-	-- this procedure interactively proposes arguments and completes the command.
-	cmd : type_fields_of_line := cmd_in;
-
-	-- cmd will now be processed and interactively completed
-
-	
 	use et_board_ops;
 	use et_packages;
 	use et_terminals.pac_shapes;
@@ -66,15 +58,15 @@ is
 	module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	
 	function f (place : in positive) return string is begin
-		return et_string_processing.field (cmd, place);
+		return et_string_processing.field (single_cmd_status.cmd, place);
 	end;
 
 	function fields return count_type is begin
-		return et_string_processing.field_count (cmd);
+		return et_string_processing.field_count (single_cmd_status.cmd);
 	end;
 
 	procedure too_long is begin -- CS use it more often
-		command_too_long (cmd, fields - 1);
+		command_too_long (single_cmd_status.cmd, fields - 1);
 	end;
 
 	procedure command_incomplete is begin
@@ -314,7 +306,7 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 11 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -340,7 +332,7 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 14 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 14 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -391,7 +383,7 @@ is
 							expect_keyword_filled (7);
 						end if;
 							
-					when 12 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -431,7 +423,7 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 11 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -458,7 +450,7 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 14 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 14 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -510,7 +502,7 @@ is
 							expect_keyword_filled (7);
 						end if;
 
-					when 11 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 					
 					when others => command_incomplete;
 				end case;
@@ -541,7 +533,7 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 11 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -568,7 +560,7 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 14 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 14 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -620,7 +612,7 @@ is
 							expect_keyword_filled (7);
 						end if;
 
-					when 11 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 					
 					when others => command_incomplete;
 				end case;
@@ -652,7 +644,7 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 12 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -679,7 +671,7 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 15 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 15 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -781,7 +773,7 @@ is
 							end case;
 						end if;
 
-					when 13 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 13 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -814,7 +806,7 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 12 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -841,7 +833,7 @@ is
 
 							log_threshold	=> log_threshold + 1);
 
-					when 15 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 15 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -943,7 +935,7 @@ is
 							end case;
 						end if;
 
-					when 13 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 13 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others => command_incomplete;
 				end case;
@@ -986,7 +978,7 @@ is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when 13 .. count_type'last => command_too_long (cmd, fields - 1);
+						when 13 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 							
 						when others => command_incomplete;
 					end case;
@@ -1019,7 +1011,7 @@ is
 										);
 									
 								when 14 .. count_type'last =>
-									command_too_long (cmd, fields - 1);
+									command_too_long (single_cmd_status.cmd, fields - 1);
 									
 								when others =>
 									command_incomplete;
@@ -1046,7 +1038,7 @@ is
 											);
 										
 									when 14 .. count_type'last =>
-										command_too_long (cmd, fields - 1);
+										command_too_long (single_cmd_status.cmd, fields - 1);
 										
 									when others =>
 										command_incomplete;
@@ -1082,7 +1074,7 @@ is
 										);
 
 								when 14 .. count_type'last =>
-									command_too_long (cmd, fields - 1);
+									command_too_long (single_cmd_status.cmd, fields - 1);
 									
 								when others =>
 									command_incomplete;
@@ -1110,7 +1102,7 @@ is
 											log_threshold	=> log_threshold + 1
 											);
 
-									when 15 .. count_type'last => command_too_long (cmd, fields - 1);
+									when 15 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 										
 									when others => 
 										command_incomplete;
@@ -1151,7 +1143,7 @@ is
 							log_threshold	=> log_threshold + 1
 							);
 						
-					when 16 .. count_type'last => command_too_long (cmd, fields - 1);
+					when 16 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
 						
 					when others =>
 						command_incomplete;
@@ -1307,6 +1299,1133 @@ is
 
 	end rename_device;
 
+	-- Parses the single_cmd_status.cmd:
+	procedure parse is begin
+		log (text => "parsing command: " 
+			& enclose_in_quotes (to_string (single_cmd_status.cmd)),
+			level => log_threshold);
+
+		case verb is
+			when VERB_ADD =>
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 8..10 => add_device;
+							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5
+							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0
+							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0 top
+
+							when 11 .. count_type'last => too_long;
+							
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_LAYER =>
+						case fields is
+							when 6 =>
+								-- board tree_1 add layer 0.12 0.2
+								add_layer;
+
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_DELETE =>
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 5 => delete_device; -- board led_driver delete device FD1
+
+							when 6 .. count_type'last => too_long;
+							
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_LAYER =>
+						case fields is
+							when 5 =>
+								-- board tree_1 delete layer 2
+								delete_layer (
+									module_name 	=> module,
+									layer			=> to_signal_layer (f (5)),
+									
+									log_threshold	=> log_threshold + 1);
+
+							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others => command_incomplete;
+
+						end case;
+
+					when NOUN_OUTLINE =>
+						case fields is
+							when 7 =>
+								-- delete a segment of board outline
+								delete_outline (
+									module_name 	=> module,
+									point			=> type_point (set (
+											x => to_distance (f (5)),
+											y => to_distance (f (6)))),
+									accuracy		=> to_distance (f (7)),
+									
+									log_threshold	=> log_threshold + 1);
+
+							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_SILKSCREEN =>
+						-- board led_driver delete silkscreen top 40 50 1
+						case fields is
+							when 8 =>
+								-- delete a segment of silk screen
+								delete_silk_screen (
+									module_name 	=> module,
+									face			=> to_face (f (5)),
+									point			=> type_point (set (
+											x => to_distance (f (6)),
+											y => to_distance (f (7)))),
+									accuracy		=> to_distance (f (8)),
+									
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last =>
+								command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others =>
+								command_incomplete;
+						end case;
+
+					when NOUN_ASSY =>
+						-- board led_driver delete assy top 40 50 1
+						case fields is
+							when 8 =>
+								-- delete a segment of assembly documentation
+								delete_assy_doc (
+									module_name 	=> module,
+									face			=> to_face (f (5)),
+									point			=> type_point (set (
+											x => to_distance (f (6)),
+											y => to_distance (f (7)))),
+									accuracy		=> to_distance (f (8)),
+									
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_KEEPOUT =>
+						-- board led_driver delete keepout top 40 50 1
+						case fields is
+							when 8 =>
+								-- delete a segment of keepout
+								delete_keepout (
+									module_name 	=> module,
+									face			=> to_face (f (5)),
+									point			=> type_point (set (
+											x => to_distance (f (6)),
+											y => to_distance (f (7)))),
+									accuracy		=> to_distance (f (8)),
+									
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_STENCIL =>
+						-- board led_driver delete stencil top 40 50 1
+						case fields is
+							when 8 =>
+								-- delete a segment of stencil
+								delete_stencil (
+									module_name 	=> module,
+									face			=> to_face (f (5)),
+									point			=> type_point (set (
+											x => to_distance (f (6)),
+											y => to_distance (f (7)))),
+									accuracy		=> to_distance (f (8)),
+									
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_STOP =>
+						-- board led_driver delete stop top 40 50 1
+						case fields is
+							when 8 =>
+								-- delete a segment of stop mask
+								delete_stop (
+									module_name 	=> module,
+									face			=> to_face (f (5)),
+									point			=> type_point (set (
+											x => to_distance (f (6)),
+											y => to_distance (f (7)))),
+									accuracy		=> to_distance (f (8)),
+									
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_ROUTE_RESTRICT =>
+						-- board led_driver delete route_restrict 40 50 1
+						case fields is
+							when 7 =>
+								-- delete a segment of route restrict
+								delete_route_restrict (
+									module_name 	=> module,
+									point			=> type_point (set (
+											x => to_distance (f (5)),
+											y => to_distance (f (6)))),
+									accuracy		=> to_distance (f (7)),
+									
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_VIA_RESTRICT =>
+						-- board led_driver delete via_restrict 40 50 1
+						case fields is
+							when 7 =>
+								-- delete a segment of via restrict
+								delete_via_restrict (
+									module_name 	=> module,
+									point			=> type_point (set (
+											x => to_distance (f (5)),
+											y => to_distance (f (6)))),
+									accuracy		=> to_distance (f (7)),
+									
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+
+				end case;
+
+			when VERB_DISPLAY => -- GUI related
+				case noun is
+					when NOUN_GRID => -- like "board led_driver display grid [on/off]"
+						case fields is
+							when 4 => display_grid; -- if status is omitted
+							when 5 => display_grid (f (5));
+							when 6 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_SILKSCREEN -- like "board led_driver display silkscreen top [on/off]"
+						| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOP | NOUN_STENCIL | NOUN_ORIGINS =>
+						case fields is
+							when 5 => display_non_conductor_layer (noun, f (5)); -- if status is omitted
+							when 6 => display_non_conductor_layer (noun, f (5), f (6));
+							when 7 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_CONDUCTORS => -- like "board led_driver display conductors 2 [on/off]"
+						case fields is
+							when 5 => display_conductor_layer (f (5)); -- if status is omitted
+							when 6 => display_conductor_layer (f (5), f (6));
+							when 7 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_OUTLINE => -- like "board led_driver display outline [on/off]"
+						case fields is
+							when 4 => display_outline; -- if status is omitted
+							when 5 => display_outline (f (5));
+							when 6 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_RESTRICT => -- like "board led_driver display restrict route/via 2 [on/off]"
+						case fields is
+							when 6 => display_restrict_layer (f (5), f (6)); -- if status is omitted
+							when 7 => display_restrict_layer (f (5), f (6), f (7));
+							when 8 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_VIAS => -- like "board led_driver display vias [on/off]"
+						case fields is
+							--when 5 => display_vias (f (5)); -- if status is omitted
+							--when 6 => display_vias (f (5), f (6));
+							--when 7 .. count_type'last => too_long;
+							when 4 => display_vias; -- if status is omitted
+							when 5 => display_vias (f (5));
+							when 6 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_DRAW =>
+				case noun is
+					when NOUN_OUTLINE =>
+						declare
+							shape : type_shape := to_shape (f (5));
+						begin
+							case shape is
+								when LINE =>
+									case fields is
+										when 9 =>
+											draw_outline_line (
+												module_name 	=> module,
+												line			=> (
+													start_point	=> type_point (set (
+														x => to_distance (f (6)),
+														y => to_distance (f (7)))),
+													end_point	=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+													locked		=> lock_status_default
+													),
+												log_threshold	=> log_threshold + 1
+												);
+
+										when 10 .. count_type'last =>
+											command_too_long (single_cmd_status.cmd, fields - 1);
+											
+										when others =>
+											command_incomplete;
+									end case;
+									
+								when ARC =>
+									case fields is
+										when 12 =>
+											draw_outline_arc (
+												module_name 	=> module,
+												arc				=> (
+													center		=> type_point (set (
+														x => to_distance (f (6)),
+														y => to_distance (f (7)))),
+													start_point	=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+													end_point	=> type_point (set (
+														x => to_distance (f (10)),
+														y => to_distance (f (11)))),
+													direction	=> to_direction (f (12)),
+													locked	=> lock_status_default
+													),
+
+												log_threshold	=> log_threshold + 1
+												);
+
+										when 13 .. count_type'last =>
+											command_too_long (single_cmd_status.cmd, fields - 1);
+											
+										when others =>
+											command_incomplete;
+									end case;
+
+								when CIRCLE =>
+									case fields is
+										when 8 =>
+											draw_outline_circle (
+												module_name 	=> module,
+												circle			=> (
+													center	=> type_point (set (
+														x => to_distance (f (6)),
+														y => to_distance (f (7)))),
+													radius	=> to_distance (f (8)),
+													locked	=> lock_status_default
+													),
+
+												log_threshold	=> log_threshold + 1
+												);
+
+										when 9 .. count_type'last =>
+											command_too_long (single_cmd_status.cmd, fields - 1);
+											
+										when others =>
+											command_incomplete;
+									end case;
+
+							end case;
+						end;
+
+					when NOUN_SILKSCREEN =>
+						declare
+							use et_terminals.pac_shapes;
+							shape : type_shape := to_shape (f (6));
+						begin
+							case shape is
+								when LINE =>
+									case fields is
+										when 11 =>
+											draw_silk_screen_line (
+												module_name 	=> module,
+												face			=> to_face (f (5)),
+												line			=> (
+															width		=> to_distance (f (7)),
+															start_point	=> type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+															end_point	=> type_point (set (
+																x => to_distance (f (10)),
+																y => to_distance (f (11))))
+															),
+
+												log_threshold	=> log_threshold + 1
+												);
+
+										when 12 .. count_type'last =>
+											command_too_long (single_cmd_status.cmd, fields - 1);
+											
+										when others =>
+											command_incomplete;
+									end case;
+									
+								when ARC =>
+									case fields is
+										when 14 =>
+											draw_silk_screen_arc (
+												module_name 	=> module,
+												face			=> to_face (f (5)),
+												arc				=> (
+															width	=> to_distance (f (7)),
+															center	=> type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+															start_point	=> type_point (set (
+																x => to_distance (f (10)),
+																y => to_distance (f (11)))),
+															end_point	=> type_point (set (
+																x => to_distance (f (12)),
+																y => to_distance (f (13)))),
+															direction	=> to_direction (f (14))
+															),
+
+												log_threshold	=> log_threshold + 1
+												);
+
+										when 15 .. count_type'last =>
+											command_too_long (single_cmd_status.cmd, fields - 1);
+											
+										when others =>
+											command_incomplete;
+									end case;
+
+								when CIRCLE =>
+									case fields is
+										when 10 =>
+
+										-- The 7th field can either be a line width like 2.5 or a 
+										-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
+											if is_number (f (7)) then
+
+												-- Circle is not filled and has a circumfence line width
+												-- specified in field 7.
+												draw_silk_screen_circle (
+													module_name 	=> module,
+													face			=> to_face (f (5)),
+													circle			=> 
+															(
+															filled			=> NO,
+															fill_style		=> fill_style_default, -- don't care here
+															border_width	=> to_distance (f (7)),
+															center			=> type_point (set (
+																		x => to_distance (f (8)),
+																		y => to_distance (f (9)))),
+															radius			=> to_distance (f (10))
+															),
+													log_threshold	=> log_threshold + 1);
+											else
+												
+												-- Circle is filled with the fill style specified in field 7:
+												case to_fill_style (f (7)) is
+	-- CS
+	-- 														when CUTOUT =>
+	-- 													
+	-- 															draw_silk_screen_circle (
+	-- 																module_name 	=> module,
+	-- 																face			=> to_face (f (5)),
+	-- 																circle			=> 
+	-- 																			(
+	-- 																			filled		=> YES,
+	-- 																			fill_style	=> CUTOUT,
+	-- 																			center	=> type_point (set (
+	-- 																						x => to_distance (f (8)),
+	-- 																						y => to_distance (f (9)))),
+	-- 																			radius	=> to_distance (f (10))
+	-- 																			),
+	-- 																log_threshold	=> log_threshold + 1
+	-- 																);
+
+													when SOLID =>
+												
+														draw_silk_screen_circle (
+															module_name 	=> module,
+															face			=> to_face (f (5)),
+															circle			=> 
+																		(
+																		filled		=> YES,
+																		fill_style	=> SOLID,
+																		center	=> type_point (set (
+																					x => to_distance (f (8)),
+																					y => to_distance (f (9)))),
+																		radius	=> to_distance (f (10))
+																		),
+															log_threshold	=> log_threshold + 1
+															);
+
+													when HATCHED =>
+														command_incomplete;
+
+												end case;
+											end if;
+												
+										when 12 =>
+											-- This is going to be a hatched circle.
+											-- In this case the 7th field MUST be fill style HATCHED.
+											if is_number (f (7)) then
+												expect_fill_style (HATCHED, 7); -- error
+											else
+												case to_fill_style (f (7)) is
+													when HATCHED =>
+														draw_silk_screen_circle (
+															module_name 	=> module,
+															face			=> to_face (f (5)),
+															circle			=> 
+																	(
+																	filled		=> YES,
+																	fill_style	=> HATCHED,
+																	center		=> type_point (set (
+																				x => to_distance (f (8)),
+																				y => to_distance (f (9)))),
+																	radius		=> to_distance (f (10)),
+																	hatching	=> (
+																				line_width	=> to_distance (f (11)),
+																				spacing		=> to_distance (f (12)),
+																				others		=> <>
+																				)
+																	),
+															log_threshold	=> log_threshold + 1);
+
+													when others =>
+														expect_fill_style (HATCHED, 7);
+												end case;
+											end if;
+
+										when 13 .. count_type'last =>
+											command_too_long (single_cmd_status.cmd, fields - 1);
+											
+										when others =>
+											command_incomplete;
+									end case;
+
+											
+								when others => null;
+							end case;
+						end;
+
+					when NOUN_ASSY =>
+						declare
+							use et_terminals.pac_shapes;
+							shape : type_shape := to_shape (f (6));
+						begin
+							case shape is
+								when LINE =>
+									case fields is
+										when 11 =>
+											draw_assy_doc_line (
+												module_name 	=> module,
+												face			=> to_face (f (5)),
+												line			=> (
+															width		=> to_distance (f (7)),
+															start_point	=> type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+															end_point	=> type_point (set (
+																x => to_distance (f (10)),
+																y => to_distance (f (11))))
+															),
+
+												log_threshold	=> log_threshold + 1
+												);
+
+										when 12 .. count_type'last =>
+											command_too_long (single_cmd_status.cmd, fields - 1);
+											
+										when others =>
+											command_incomplete;
+									end case;
+									
+								when ARC =>
+									case fields is
+										when 14 =>
+											draw_assy_doc_arc (
+												module_name 	=> module,
+												face			=> to_face (f (5)),
+												arc				=> (
+															width	=> to_distance (f (7)),
+															center	=> type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+															start_point	=> type_point (set (
+																x => to_distance (f (10)),
+																y => to_distance (f (11)))),
+															end_point	=> type_point (set (
+																x => to_distance (f (12)),
+																y => to_distance (f (13)))),
+															direction	=> to_direction (f (14))
+															),
+
+												log_threshold	=> log_threshold + 1
+												);
+
+										when 15 .. count_type'last =>
+											command_too_long (single_cmd_status.cmd, fields - 1);
+											
+										when others =>
+											command_incomplete;
+									end case;
+
+								when CIRCLE =>
+									case fields is
+										when 10 =>
+
+										-- The 7th field can either be a line width like 2.5 or a 
+										-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
+											if is_number (f (7)) then
+
+												-- Circle is not filled and has a circumfence line width
+												-- specified in field 7.
+												draw_assy_doc_circle (
+													module_name 	=> module,
+													face			=> to_face (f (5)),
+													circle			=> 
+															(
+															filled			=> NO,
+															fill_style		=> fill_style_default, -- don't care here
+															border_width	=> to_distance (f (7)),
+															center			=> type_point (set (
+																		x => to_distance (f (8)),
+																		y => to_distance (f (9)))),
+															radius			=> to_distance (f (10))
+															),
+													log_threshold	=> log_threshold + 1);
+											else
+												
+												-- Circle is filled with the fill style specified in field 7:
+												case to_fill_style (f (7)) is
+	-- CS
+	-- 														when CUTOUT =>
+	-- 													
+	-- 															draw_assy_doc_circle (
+	-- 																module_name 	=> module,
+	-- 																face			=> to_face (f (5)),
+	-- 																circle			=> 
+	-- 																			(
+	-- 																			filled		=> YES,
+	-- 																			fill_style	=> CUTOUT,
+	-- 																			center	=> type_point (set (
+	-- 																						x => to_distance (f (8)),
+	-- 																						y => to_distance (f (9)))),
+	-- 																			radius	=> to_distance (f (10))
+	-- 																			),
+	-- 																log_threshold	=> log_threshold + 1
+	-- 																);
+
+													when SOLID =>
+												
+														draw_assy_doc_circle (
+															module_name 	=> module,
+															face			=> to_face (f (5)),
+															circle			=> 
+																		(
+																		filled		=> YES,
+																		fill_style	=> SOLID,
+																		center	=> type_point (set (
+																					x => to_distance (f (8)),
+																					y => to_distance (f (9)))),
+																		radius	=> to_distance (f (10))
+																		),
+															log_threshold	=> log_threshold + 1
+															);
+
+													when HATCHED =>
+														command_incomplete;
+
+												end case;
+											end if;
+												
+										when 12 =>
+											-- This is going to be a hatched circle.
+											-- In this case the 7th field MUST be fill style HATCHED.
+											if is_number (f (7)) then
+												expect_fill_style (HATCHED, 7); -- error
+											else
+												case to_fill_style (f (7)) is
+													when HATCHED =>
+														draw_assy_doc_circle (
+															module_name 	=> module,
+															face			=> to_face (f (5)),
+															circle			=> 
+																	(
+																	filled		=> YES,
+																	fill_style	=> HATCHED,
+																	center		=> type_point (set (
+																				x => to_distance (f (8)),
+																				y => to_distance (f (9)))),
+																	radius		=> to_distance (f (10)),
+
+																	hatching	=> (
+																				line_width	=> to_distance (f (11)),
+																				spacing		=> to_distance (f (12)),
+																				others		=> <>
+																				)
+																	),
+															log_threshold	=> log_threshold + 1);
+
+													when others =>
+														expect_fill_style (HATCHED, 7);
+												end case;
+											end if;
+
+										when 13 .. count_type'last =>
+											command_too_long (single_cmd_status.cmd, fields - 1);
+											
+										when others =>
+											command_incomplete;
+									end case;
+
+											
+								when others => null;
+							end case;
+						end;
+
+					when NOUN_KEEPOUT =>
+						draw_keepout;
+						
+					when NOUN_ROUTE_RESTRICT =>
+						draw_route_restrict;
+
+					when NOUN_STENCIL =>
+						draw_stencil;
+						
+					when NOUN_STOP =>
+						draw_stop_mask;
+
+					when NOUN_VIA_RESTRICT =>
+						draw_via_restrict;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_EXECUTE =>
+				case noun is
+					when NOUN_SCRIPT =>
+						case fields is
+							when 5 => 
+								execute_nested_script (
+									file			=> f (5),
+									log_threshold	=> log_threshold + 1);
+
+							when 6 .. count_type'last => too_long;								
+							when others => command_incomplete;
+						end case;
+							
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_EXIT | VERB_QUIT => terminate_main;
+				
+			when VERB_FLIP =>
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 6 =>
+								flip_device (
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									face			=> to_face  (f (6)),  -- top/bottom
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_POSITION => -- GUI related
+				case noun is 
+					when NOUN_CURSOR =>
+						case fields is
+							when 7 => position_cursor; -- position cursor absolute/relative 25 30
+							when 8 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_RENAME =>
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 6 => rename_device; -- board led_driver renames device FD1 FD3
+
+							when 7 .. count_type'last => too_long;
+							
+							when others => command_incomplete;
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_ROUTE =>
+				case noun is
+					when NOUN_FREETRACK =>
+						declare
+							shape : type_track_shape := to_shape (f (6));
+						begin
+							case shape is
+								when LINE =>
+									case fields is
+										when 11 =>
+											-- draw a freetrack
+											draw_track_line (
+												module_name 	=> module,
+												net_name		=> to_net_name (""),
+												line	=> (
+													width		=> to_distance (f (7)),
+													start_point	=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+													end_point	=> type_point (set (
+														x => to_distance (f (10)),
+														y => to_distance (f (11)))),
+													layer		=> to_signal_layer (f (5))
+													),
+												log_threshold	=> log_threshold + 1
+												);
+
+										when 12 .. count_type'last =>
+											command_too_long (single_cmd_status.cmd, fields - 1);
+											
+										when others =>
+											command_incomplete;
+									end case;
+									
+								when ARC =>
+									case fields is
+										when 14 =>
+											-- draw a freetrack
+											draw_track_arc (
+												module_name 	=> module,
+												arc			=> (
+													layer			=> to_signal_layer (f (5)),
+													width			=> to_distance (f (7)),
+													center			=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+													start_point		=> type_point (set (
+														x => to_distance (f (10)),
+														y => to_distance (f (11)))),
+													end_point		=> type_point (set (
+														x => to_distance (f (12)),
+														y => to_distance (f (13)))),
+													direction	=> to_direction (f (14))
+														),
+												net_name		=> to_net_name (""),
+
+												log_threshold	=> log_threshold + 1
+												);
+											
+										when 15 .. count_type'last =>
+											command_too_long (single_cmd_status.cmd, fields - 1);
+											
+										when others =>
+											command_incomplete;
+									end case;
+
+							end case;
+						end;
+
+					when NOUN_NET =>
+						route_net;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_RIPUP =>
+				case noun is
+					when NOUN_FREETRACK =>
+						case fields is
+							when 8 =>
+								-- ripup a segment of a freetrack
+								ripup_track_segment (
+									module_name 	=> module,
+									net_name		=> to_net_name (""),
+									layer			=> to_signal_layer (f (5)),
+									point			=> type_point (set (
+											x => to_distance (f (6)),
+											y => to_distance (f (7)))),
+									accuracy		=> to_distance (f (8)),
+									
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last =>
+								command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others =>
+								command_incomplete;
+						end case;
+
+					when NOUN_NET =>
+						case fields is
+							when 9 =>
+								-- ripup a segment of a named track
+								ripup_track_segment (
+									module_name 	=> module,
+									net_name		=> to_net_name (f (5)),
+									layer			=> to_signal_layer (f (6)),
+									point			=> type_point (set (
+											x => to_distance (f (7)),
+											y => to_distance (f (8)))),
+									accuracy		=> to_distance (f (9)),
+									
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last =>
+								command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others =>
+								command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+
+				end case;
+				
+			when VERB_ROTATE =>
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 7 =>
+								rotate_device (
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+									rotation		=> to_rotation (f (7)),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 8 .. count_type'last =>
+								command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others =>
+								command_incomplete;
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_MAKE =>
+				case noun is
+					when NOUN_PNP =>
+						case fields is
+							when 4 =>
+								make_pick_and_place 
+									(
+									module_name 	=> module,
+									log_threshold	=> log_threshold + 1);
+
+							when 5 .. count_type'last =>
+								command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others =>
+								command_incomplete;
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_MOVE =>
+				case noun is
+					when NOUN_BOARD =>
+						case fields is
+							when 7 => -- board led_driver move board absolute 20 50
+								move_board (
+									module_name 	=> module,
+									coordinates		=> to_coordinates (f (5)),  -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (6)),
+														y => to_distance (f (7)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 8 .. count_type'last =>
+								command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others =>
+								command_incomplete;
+						end case;
+						
+					when NOUN_DEVICE =>
+						case fields is
+							when 8 =>
+								move_device (
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (7)),
+														y => to_distance (f (8)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last =>
+								command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others =>
+								command_incomplete;
+						end case;
+
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 8 =>
+								move_submodule (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)), -- OSC1
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (7)),
+														y => to_distance (f (8)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last =>
+								command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others =>
+								command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_SET =>
+				case noun is
+					when NOUN_GRID =>
+						case fields is
+							-- board led_driver set grid 0.5 0.5
+							when 6 =>
+								set_grid (
+									module_name 	=> module,
+									grid			=> (
+											x => to_distance (f (5)),
+											y => to_distance (f (6))),
+									log_threshold	=> log_threshold + 1);
+
+							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+
+				end case;
+
+	-- 			when VERB_SHOW => -- GUI related
+	-- 				case noun is
+	-- 					when NOUN_DEVICE =>
+	-- 						case fields is
+	-- 							when 5 => null; -- CS
+	-- 							when 6 .. count_type'last => too_long;
+	-- 							when others => command_incomplete;
+	-- 						end case;
+	-- 						
+	-- 					when others => invalid_noun (to_string (noun));
+	-- 				end case;
+
+			when VERB_ZOOM => -- GUI related
+				case noun is
+					when NOUN_FIT => -- zoom fit
+						case fields is
+							when 4 => 
+								log (text => "zoom to fit", level => log_threshold + 1);
+								scale_to_fit (canvas);
+
+							when 5 .. count_type'last => too_long;
+
+							when others => command_incomplete;
+						end case;
+
+					when NOUN_LEVEL => -- zoom level 3
+						case fields is
+							when 4 => 
+								set_scale (f (5));
+
+							when 6 .. count_type'last => too_long;
+
+							when others => command_incomplete;
+						end case;
+						
+					when NOUN_CENTER => -- zoom center 10 10
+						case fields is
+							when 6 =>  -- zoom center 10 10
+								zoom_center;
+
+							when 7 =>  -- zoom center 10 10 0.5
+								zoom_center;
+								set_scale (f (7));
+
+							when 8 .. count_type'last => too_long;
+
+							when others => command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+		end case;
+
+		case runmode is  -- CS better if runmode /= MODE_HEADLESS ?
+			when MODE_MODULE =>
+				canvas.update_mode_display;
+				status_clear;
+				
+			when others => null;
+		end case;
+		
+	end parse;
+	
 	procedure evaluate_exception (
 		name	: in string; -- exception name
 		message : in string) -- exception message
@@ -1318,7 +2437,7 @@ is
 			 level => log_threshold);
 
 		if runmode = MODE_HEADLESS then
-			log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
+			log (ERROR, "command " & enclose_in_quotes (to_string (single_cmd_status.cmd)) &
 				" : " & message, console => true);
 			
 		else -- GUI mode
@@ -1360,8 +2479,20 @@ is
 	end propose_arguments;
 	
 begin -- board_cmd
-	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
+	log (text => "given command: " 
+		 & enclose_in_quotes (to_string (cmd_in)),
+		 level => log_threshold);
 
+	-- Make a copy of the given command. In case the given command is incomplete
+	-- and we are in graphical mode (non-headless) then
+	-- this procedure interactively proposes arguments and completes the command.
+	single_cmd_status := (cmd => cmd_in, others => <>);
+
+	-- single_cmd_status.cmd will now be processed and interactively completed
+
+
+	
+	
 	domain := to_domain (f (1)); -- DOM_BOARD
 	module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
 
@@ -1376,1124 +2507,24 @@ begin -- board_cmd
 	end case;
 
 	-- parse the command:
-	case verb is
-		when VERB_ADD =>
-			case noun is
-				when NOUN_DEVICE =>
-					case fields is
-						when 8..10 => add_device;
-						-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5
-						-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0
-						-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0 top
-
-						when 11 .. count_type'last => too_long;
-						
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_LAYER =>
-					case fields is
-						when 6 =>
-							-- board tree_1 add layer 0.12 0.2
-							add_layer;
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-		when VERB_DELETE =>
-			case noun is
-				when NOUN_DEVICE =>
-					case fields is
-						when 5 => delete_device; -- board led_driver delete device FD1
-
-						when 6 .. count_type'last => too_long;
-						
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_LAYER =>
-					case fields is
-						when 5 =>
-							-- board tree_1 delete layer 2
-							delete_layer (
-								module_name 	=> module,
-								layer			=> to_signal_layer (f (5)),
-								
-								log_threshold	=> log_threshold + 1);
-
-						when 6 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-
-					end case;
-
-				when NOUN_OUTLINE =>
-					case fields is
-						when 7 =>
-							-- delete a segment of board outline
-							delete_outline (
-								module_name 	=> module,
-								point			=> type_point (set (
-										x => to_distance (f (5)),
-										y => to_distance (f (6)))),
-								accuracy		=> to_distance (f (7)),
-								
-								log_threshold	=> log_threshold + 1);
-
-						when 8 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_SILKSCREEN =>
-					-- board led_driver delete silkscreen top 40 50 1
-					case fields is
-						when 8 =>
-							-- delete a segment of silk screen
-							delete_silk_screen (
-								module_name 	=> module,
-								face			=> to_face (f (5)),
-								point			=> type_point (set (
-										x => to_distance (f (6)),
-										y => to_distance (f (7)))),
-								accuracy		=> to_distance (f (8)),
-								
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 9 .. count_type'last =>
-							command_too_long (cmd, fields - 1);
-							
-						when others =>
-							command_incomplete;
-					end case;
-
-				when NOUN_ASSY =>
-					-- board led_driver delete assy top 40 50 1
-					case fields is
-						when 8 =>
-							-- delete a segment of assembly documentation
-							delete_assy_doc (
-								module_name 	=> module,
-								face			=> to_face (f (5)),
-								point			=> type_point (set (
-										x => to_distance (f (6)),
-										y => to_distance (f (7)))),
-								accuracy		=> to_distance (f (8)),
-								
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_KEEPOUT =>
-					-- board led_driver delete keepout top 40 50 1
-					case fields is
-						when 8 =>
-							-- delete a segment of keepout
-							delete_keepout (
-								module_name 	=> module,
-								face			=> to_face (f (5)),
-								point			=> type_point (set (
-										x => to_distance (f (6)),
-										y => to_distance (f (7)))),
-								accuracy		=> to_distance (f (8)),
-								
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_STENCIL =>
-					-- board led_driver delete stencil top 40 50 1
-					case fields is
-						when 8 =>
-							-- delete a segment of stencil
-							delete_stencil (
-								module_name 	=> module,
-								face			=> to_face (f (5)),
-								point			=> type_point (set (
-										x => to_distance (f (6)),
-										y => to_distance (f (7)))),
-								accuracy		=> to_distance (f (8)),
-								
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_STOP =>
-					-- board led_driver delete stop top 40 50 1
-					case fields is
-						when 8 =>
-							-- delete a segment of stop mask
-							delete_stop (
-								module_name 	=> module,
-								face			=> to_face (f (5)),
-								point			=> type_point (set (
-										x => to_distance (f (6)),
-										y => to_distance (f (7)))),
-								accuracy		=> to_distance (f (8)),
-								
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_ROUTE_RESTRICT =>
-					-- board led_driver delete route_restrict 40 50 1
-					case fields is
-						when 7 =>
-							-- delete a segment of route restrict
-							delete_route_restrict (
-								module_name 	=> module,
-								point			=> type_point (set (
-										x => to_distance (f (5)),
-										y => to_distance (f (6)))),
-								accuracy		=> to_distance (f (7)),
-								
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 8 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_VIA_RESTRICT =>
-					-- board led_driver delete via_restrict 40 50 1
-					case fields is
-						when 7 =>
-							-- delete a segment of via restrict
-							delete_via_restrict (
-								module_name 	=> module,
-								point			=> type_point (set (
-										x => to_distance (f (5)),
-										y => to_distance (f (6)))),
-								accuracy		=> to_distance (f (7)),
-								
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 8 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-
-			end case;
-
-		when VERB_DISPLAY => -- GUI related
-			case noun is
-				when NOUN_GRID => -- like "board led_driver display grid [on/off]"
-					case fields is
-						when 4 => display_grid; -- if status is omitted
-						when 5 => display_grid (f (5));
-						when 6 .. count_type'last => too_long;
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_SILKSCREEN -- like "board led_driver display silkscreen top [on/off]"
-					| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOP | NOUN_STENCIL | NOUN_ORIGINS =>
-					case fields is
-						when 5 => display_non_conductor_layer (noun, f (5)); -- if status is omitted
-						when 6 => display_non_conductor_layer (noun, f (5), f (6));
-						when 7 .. count_type'last => too_long;
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_CONDUCTORS => -- like "board led_driver display conductors 2 [on/off]"
-					case fields is
-						when 5 => display_conductor_layer (f (5)); -- if status is omitted
-						when 6 => display_conductor_layer (f (5), f (6));
-						when 7 .. count_type'last => too_long;
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_OUTLINE => -- like "board led_driver display outline [on/off]"
-					case fields is
-						when 4 => display_outline; -- if status is omitted
-						when 5 => display_outline (f (5));
-						when 6 .. count_type'last => too_long;
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_RESTRICT => -- like "board led_driver display restrict route/via 2 [on/off]"
-					case fields is
-						when 6 => display_restrict_layer (f (5), f (6)); -- if status is omitted
-						when 7 => display_restrict_layer (f (5), f (6), f (7));
-						when 8 .. count_type'last => too_long;
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_VIAS => -- like "board led_driver display vias [on/off]"
-					case fields is
-						--when 5 => display_vias (f (5)); -- if status is omitted
-						--when 6 => display_vias (f (5), f (6));
-						--when 7 .. count_type'last => too_long;
-						when 4 => display_vias; -- if status is omitted
-						when 5 => display_vias (f (5));
-						when 6 .. count_type'last => too_long;
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-		when VERB_DRAW =>
-			case noun is
-				when NOUN_OUTLINE =>
-					declare
-						shape : type_shape := to_shape (f (5));
-					begin
-						case shape is
-							when LINE =>
-								case fields is
-									when 9 =>
-										draw_outline_line (
-											module_name 	=> module,
-											line			=> (
-												start_point	=> type_point (set (
-													x => to_distance (f (6)),
-													y => to_distance (f (7)))),
-												end_point	=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
-												locked		=> lock_status_default
-												),
-											log_threshold	=> log_threshold + 1
-											);
-
-									when 10 .. count_type'last =>
-										command_too_long (cmd, fields - 1);
-										
-									when others =>
-										command_incomplete;
-								end case;
-								
-							when ARC =>
-								case fields is
-									when 12 =>
-										draw_outline_arc (
-											module_name 	=> module,
-											arc				=> (
-												center		=> type_point (set (
-													x => to_distance (f (6)),
-													y => to_distance (f (7)))),
-												start_point	=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
-												end_point	=> type_point (set (
-													x => to_distance (f (10)),
-													y => to_distance (f (11)))),
-												direction	=> to_direction (f (12)),
-												locked	=> lock_status_default
-												),
-
-											log_threshold	=> log_threshold + 1
-											);
-
-									when 13 .. count_type'last =>
-										command_too_long (cmd, fields - 1);
-										
-									when others =>
-										command_incomplete;
-								end case;
-
-							when CIRCLE =>
-								case fields is
-									when 8 =>
-										draw_outline_circle (
-											module_name 	=> module,
-											circle			=> (
-												center	=> type_point (set (
-													x => to_distance (f (6)),
-													y => to_distance (f (7)))),
-												radius	=> to_distance (f (8)),
-												locked	=> lock_status_default
-												),
-
-											log_threshold	=> log_threshold + 1
-											);
-
-									when 9 .. count_type'last =>
-										command_too_long (cmd, fields - 1);
-										
-									when others =>
-										command_incomplete;
-								end case;
-
-						end case;
-					end;
-
-				when NOUN_SILKSCREEN =>
-					declare
-						use et_terminals.pac_shapes;
-						shape : type_shape := to_shape (f (6));
-					begin
-						case shape is
-							when LINE =>
-								case fields is
-									when 11 =>
-										draw_silk_screen_line (
-											module_name 	=> module,
-											face			=> to_face (f (5)),
-											line			=> (
-														width		=> to_distance (f (7)),
-														start_point	=> type_point (set (
-															x => to_distance (f (8)),
-															y => to_distance (f (9)))),
-														end_point	=> type_point (set (
-															x => to_distance (f (10)),
-															y => to_distance (f (11))))
-														),
-
-											log_threshold	=> log_threshold + 1
-											);
-
-									when 12 .. count_type'last =>
-										command_too_long (cmd, fields - 1);
-										
-									when others =>
-										command_incomplete;
-								end case;
-								
-							when ARC =>
-								case fields is
-									when 14 =>
-										draw_silk_screen_arc (
-											module_name 	=> module,
-											face			=> to_face (f (5)),
-											arc				=> (
-														width	=> to_distance (f (7)),
-														center	=> type_point (set (
-															x => to_distance (f (8)),
-															y => to_distance (f (9)))),
-														start_point	=> type_point (set (
-															x => to_distance (f (10)),
-															y => to_distance (f (11)))),
-														end_point	=> type_point (set (
-															x => to_distance (f (12)),
-															y => to_distance (f (13)))),
-														direction	=> to_direction (f (14))
-														),
-
-											log_threshold	=> log_threshold + 1
-											);
-
-									when 15 .. count_type'last =>
-										command_too_long (cmd, fields - 1);
-										
-									when others =>
-										command_incomplete;
-								end case;
-
-							when CIRCLE =>
-								case fields is
-									when 10 =>
-
-									-- The 7th field can either be a line width like 2.5 or a 
-									-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
-										if is_number (f (7)) then
-
-											-- Circle is not filled and has a circumfence line width
-											-- specified in field 7.
-											draw_silk_screen_circle (
-												module_name 	=> module,
-												face			=> to_face (f (5)),
-												circle			=> 
-														(
-														filled			=> NO,
-														fill_style		=> fill_style_default, -- don't care here
-														border_width	=> to_distance (f (7)),
-														center			=> type_point (set (
-																	x => to_distance (f (8)),
-																	y => to_distance (f (9)))),
-														radius			=> to_distance (f (10))
-														),
-												log_threshold	=> log_threshold + 1);
-										else
-											
-											-- Circle is filled with the fill style specified in field 7:
-											case to_fill_style (f (7)) is
--- CS
--- 														when CUTOUT =>
--- 													
--- 															draw_silk_screen_circle (
--- 																module_name 	=> module,
--- 																face			=> to_face (f (5)),
--- 																circle			=> 
--- 																			(
--- 																			filled		=> YES,
--- 																			fill_style	=> CUTOUT,
--- 																			center	=> type_point (set (
--- 																						x => to_distance (f (8)),
--- 																						y => to_distance (f (9)))),
--- 																			radius	=> to_distance (f (10))
--- 																			),
--- 																log_threshold	=> log_threshold + 1
--- 																);
-
-												when SOLID =>
-											
-													draw_silk_screen_circle (
-														module_name 	=> module,
-														face			=> to_face (f (5)),
-														circle			=> 
-																	(
-																	filled		=> YES,
-																	fill_style	=> SOLID,
-																	center	=> type_point (set (
-																				x => to_distance (f (8)),
-																				y => to_distance (f (9)))),
-																	radius	=> to_distance (f (10))
-																	),
-														log_threshold	=> log_threshold + 1
-														);
-
-												when HATCHED =>
-													command_incomplete;
-
-											end case;
-										end if;
-											
-									when 12 =>
-										-- This is going to be a hatched circle.
-										-- In this case the 7th field MUST be fill style HATCHED.
-										if is_number (f (7)) then
-											expect_fill_style (HATCHED, 7); -- error
-										else
-											case to_fill_style (f (7)) is
-												when HATCHED =>
-													draw_silk_screen_circle (
-														module_name 	=> module,
-														face			=> to_face (f (5)),
-														circle			=> 
-																(
-																filled		=> YES,
-																fill_style	=> HATCHED,
-																center		=> type_point (set (
-																			x => to_distance (f (8)),
-																			y => to_distance (f (9)))),
-																radius		=> to_distance (f (10)),
-																hatching	=> (
-																			line_width	=> to_distance (f (11)),
-																			spacing		=> to_distance (f (12)),
-																			others		=> <>
-																			)
-																),
-														log_threshold	=> log_threshold + 1);
-
-												when others =>
-													expect_fill_style (HATCHED, 7);
-											end case;
-										end if;
-
-									when 13 .. count_type'last =>
-										command_too_long (cmd, fields - 1);
-										
-									when others =>
-										command_incomplete;
-								end case;
-
-										
-							when others => null;
-						end case;
-					end;
-
-				when NOUN_ASSY =>
-					declare
-						use et_terminals.pac_shapes;
-						shape : type_shape := to_shape (f (6));
-					begin
-						case shape is
-							when LINE =>
-								case fields is
-									when 11 =>
-										draw_assy_doc_line (
-											module_name 	=> module,
-											face			=> to_face (f (5)),
-											line			=> (
-														width		=> to_distance (f (7)),
-														start_point	=> type_point (set (
-															x => to_distance (f (8)),
-															y => to_distance (f (9)))),
-														end_point	=> type_point (set (
-															x => to_distance (f (10)),
-															y => to_distance (f (11))))
-														),
-
-											log_threshold	=> log_threshold + 1
-											);
-
-									when 12 .. count_type'last =>
-										command_too_long (cmd, fields - 1);
-										
-									when others =>
-										command_incomplete;
-								end case;
-								
-							when ARC =>
-								case fields is
-									when 14 =>
-										draw_assy_doc_arc (
-											module_name 	=> module,
-											face			=> to_face (f (5)),
-											arc				=> (
-														width	=> to_distance (f (7)),
-														center	=> type_point (set (
-															x => to_distance (f (8)),
-															y => to_distance (f (9)))),
-														start_point	=> type_point (set (
-															x => to_distance (f (10)),
-															y => to_distance (f (11)))),
-														end_point	=> type_point (set (
-															x => to_distance (f (12)),
-															y => to_distance (f (13)))),
-														direction	=> to_direction (f (14))
-														),
-
-											log_threshold	=> log_threshold + 1
-											);
-
-									when 15 .. count_type'last =>
-										command_too_long (cmd, fields - 1);
-										
-									when others =>
-										command_incomplete;
-								end case;
-
-							when CIRCLE =>
-								case fields is
-									when 10 =>
-
-									-- The 7th field can either be a line width like 2.5 or a 
-									-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
-										if is_number (f (7)) then
-
-											-- Circle is not filled and has a circumfence line width
-											-- specified in field 7.
-											draw_assy_doc_circle (
-												module_name 	=> module,
-												face			=> to_face (f (5)),
-												circle			=> 
-														(
-														filled			=> NO,
-														fill_style		=> fill_style_default, -- don't care here
-														border_width	=> to_distance (f (7)),
-														center			=> type_point (set (
-																	x => to_distance (f (8)),
-																	y => to_distance (f (9)))),
-														radius			=> to_distance (f (10))
-														),
-												log_threshold	=> log_threshold + 1);
-										else
-											
-											-- Circle is filled with the fill style specified in field 7:
-											case to_fill_style (f (7)) is
--- CS
--- 														when CUTOUT =>
--- 													
--- 															draw_assy_doc_circle (
--- 																module_name 	=> module,
--- 																face			=> to_face (f (5)),
--- 																circle			=> 
--- 																			(
--- 																			filled		=> YES,
--- 																			fill_style	=> CUTOUT,
--- 																			center	=> type_point (set (
--- 																						x => to_distance (f (8)),
--- 																						y => to_distance (f (9)))),
--- 																			radius	=> to_distance (f (10))
--- 																			),
--- 																log_threshold	=> log_threshold + 1
--- 																);
-
-												when SOLID =>
-											
-													draw_assy_doc_circle (
-														module_name 	=> module,
-														face			=> to_face (f (5)),
-														circle			=> 
-																	(
-																	filled		=> YES,
-																	fill_style	=> SOLID,
-																	center	=> type_point (set (
-																				x => to_distance (f (8)),
-																				y => to_distance (f (9)))),
-																	radius	=> to_distance (f (10))
-																	),
-														log_threshold	=> log_threshold + 1
-														);
-
-												when HATCHED =>
-													command_incomplete;
-
-											end case;
-										end if;
-											
-									when 12 =>
-										-- This is going to be a hatched circle.
-										-- In this case the 7th field MUST be fill style HATCHED.
-										if is_number (f (7)) then
-											expect_fill_style (HATCHED, 7); -- error
-										else
-											case to_fill_style (f (7)) is
-												when HATCHED =>
-													draw_assy_doc_circle (
-														module_name 	=> module,
-														face			=> to_face (f (5)),
-														circle			=> 
-																(
-																filled		=> YES,
-																fill_style	=> HATCHED,
-																center		=> type_point (set (
-																			x => to_distance (f (8)),
-																			y => to_distance (f (9)))),
-																radius		=> to_distance (f (10)),
-
-																hatching	=> (
-																			line_width	=> to_distance (f (11)),
-																			spacing		=> to_distance (f (12)),
-																			others		=> <>
-																			)
-																),
-														log_threshold	=> log_threshold + 1);
-
-												when others =>
-													expect_fill_style (HATCHED, 7);
-											end case;
-										end if;
-
-									when 13 .. count_type'last =>
-										command_too_long (cmd, fields - 1);
-										
-									when others =>
-										command_incomplete;
-								end case;
-
-										
-							when others => null;
-						end case;
-					end;
-
-				when NOUN_KEEPOUT =>
-					draw_keepout;
-					
-				when NOUN_ROUTE_RESTRICT =>
-					draw_route_restrict;
-
-				when NOUN_STENCIL =>
-					draw_stencil;
-					
-				when NOUN_STOP =>
-					draw_stop_mask;
-
-				when NOUN_VIA_RESTRICT =>
-					draw_via_restrict;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_EXECUTE =>
-			case noun is
-				when NOUN_SCRIPT =>
-					case fields is
-						when 5 => 
-							execute_nested_script (
-								file			=> f (5),
-								log_threshold	=> log_threshold + 1);
-
-						when 6 .. count_type'last => too_long;								
-						when others => command_incomplete;
-					end case;
-						
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_EXIT | VERB_QUIT => terminate_main;
-			
-		when VERB_FLIP =>
-			case noun is
-				when NOUN_DEVICE =>
-					case fields is
-						when 6 =>
-							flip_device (
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- IC1
-								face			=> to_face  (f (6)),  -- top/bottom
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_POSITION => -- GUI related
-			case noun is 
-				when NOUN_CURSOR =>
-					case fields is
-						when 7 => position_cursor; -- position cursor absolute/relative 25 30
-						when 8 .. count_type'last => too_long;
-						when others => command_incomplete;
-					end case;
-
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_RENAME =>
-			case noun is
-				when NOUN_DEVICE =>
-					case fields is
-						when 6 => rename_device; -- board led_driver renames device FD1 FD3
-
-						when 7 .. count_type'last => too_long;
-						
-						when others => command_incomplete;
-					end case;
-
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-		when VERB_ROUTE =>
-			case noun is
-				when NOUN_FREETRACK =>
-					declare
-						shape : type_track_shape := to_shape (f (6));
-					begin
-						case shape is
-							when LINE =>
-								case fields is
-									when 11 =>
-										-- draw a freetrack
-										draw_track_line (
-											module_name 	=> module,
-											net_name		=> to_net_name (""),
-											line	=> (
-												width		=> to_distance (f (7)),
-												start_point	=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
-												end_point	=> type_point (set (
-													x => to_distance (f (10)),
-													y => to_distance (f (11)))),
-												layer		=> to_signal_layer (f (5))
-												),
-											log_threshold	=> log_threshold + 1
-											);
-
-									when 12 .. count_type'last =>
-										command_too_long (cmd, fields - 1);
-										
-									when others =>
-										command_incomplete;
-								end case;
-								
-							when ARC =>
-								case fields is
-									when 14 =>
-										-- draw a freetrack
-										draw_track_arc (
-											module_name 	=> module,
-											arc			=> (
-												layer			=> to_signal_layer (f (5)),
-												width			=> to_distance (f (7)),
-												center			=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
-												start_point		=> type_point (set (
-													x => to_distance (f (10)),
-													y => to_distance (f (11)))),
-												end_point		=> type_point (set (
-													x => to_distance (f (12)),
-													y => to_distance (f (13)))),
-												direction	=> to_direction (f (14))
-													),
-											net_name		=> to_net_name (""),
-
-											log_threshold	=> log_threshold + 1
-											);
-										
-									when 15 .. count_type'last =>
-										command_too_long (cmd, fields - 1);
-										
-									when others =>
-										command_incomplete;
-								end case;
-
-						end case;
-					end;
-
-				when NOUN_NET =>
-					route_net;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_RIPUP =>
-			case noun is
-				when NOUN_FREETRACK =>
-					case fields is
-						when 8 =>
-							-- ripup a segment of a freetrack
-							ripup_track_segment (
-								module_name 	=> module,
-								net_name		=> to_net_name (""),
-								layer			=> to_signal_layer (f (5)),
-								point			=> type_point (set (
-										x => to_distance (f (6)),
-										y => to_distance (f (7)))),
-								accuracy		=> to_distance (f (8)),
-								
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 9 .. count_type'last =>
-							command_too_long (cmd, fields - 1);
-							
-						when others =>
-							command_incomplete;
-					end case;
-
-				when NOUN_NET =>
-					case fields is
-						when 9 =>
-							-- ripup a segment of a named track
-							ripup_track_segment (
-								module_name 	=> module,
-								net_name		=> to_net_name (f (5)),
-								layer			=> to_signal_layer (f (6)),
-								point			=> type_point (set (
-										x => to_distance (f (7)),
-										y => to_distance (f (8)))),
-								accuracy		=> to_distance (f (9)),
-								
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 10 .. count_type'last =>
-							command_too_long (cmd, fields - 1);
-							
-						when others =>
-							command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-
-			end case;
-			
-		when VERB_ROTATE =>
-			case noun is
-				when NOUN_DEVICE =>
-					case fields is
-						when 7 =>
-							rotate_device (
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- IC1
-								coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-								rotation		=> to_rotation (f (7)),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 8 .. count_type'last =>
-							command_too_long (cmd, fields - 1);
-							
-						when others =>
-							command_incomplete;
-					end case;
-
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_MAKE =>
-			case noun is
-				when NOUN_PNP =>
-					case fields is
-						when 4 =>
-							make_pick_and_place 
-								(
-								module_name 	=> module,
-								log_threshold	=> log_threshold + 1);
-
-						when 5 .. count_type'last =>
-							command_too_long (cmd, fields - 1);
-							
-						when others =>
-							command_incomplete;
-					end case;
-
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-		when VERB_MOVE =>
-			case noun is
-				when NOUN_BOARD =>
-					case fields is
-						when 7 => -- board led_driver move board absolute 20 50
-							move_board (
-								module_name 	=> module,
-								coordinates		=> to_coordinates (f (5)),  -- relative/absolute
-								point			=> type_point (set (
-													x => to_distance (f (6)),
-													y => to_distance (f (7)))),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 8 .. count_type'last =>
-							command_too_long (cmd, fields - 1);
-							
-						when others =>
-							command_incomplete;
-					end case;
-					
-				when NOUN_DEVICE =>
-					case fields is
-						when 8 =>
-							move_device (
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- IC1
-								coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-								point			=> type_point (set (
-													x => to_distance (f (7)),
-													y => to_distance (f (8)))),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 9 .. count_type'last =>
-							command_too_long (cmd, fields - 1);
-							
-						when others =>
-							command_incomplete;
-					end case;
-
-				when NOUN_SUBMODULE =>
-					case fields is
-						when 8 =>
-							move_submodule (
-								module_name 	=> module,
-								instance		=> et_general.to_instance_name (f (5)), -- OSC1
-								coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-								point			=> type_point (set (
-													x => to_distance (f (7)),
-													y => to_distance (f (8)))),
-								log_threshold	=> log_threshold + 1
-								);
-
-						when 9 .. count_type'last =>
-							command_too_long (cmd, fields - 1);
-							
-						when others =>
-							command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-
-		when VERB_SET =>
-			case noun is
-				when NOUN_GRID =>
-					case fields is
-						-- board led_driver set grid 0.5 0.5
-						when 6 =>
-							set_grid (
-								module_name 	=> module,
-								grid			=> (
-										x => to_distance (f (5)),
-										y => to_distance (f (6))),
-								log_threshold	=> log_threshold + 1);
-
-						when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-							
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-
-			end case;
-
--- 			when VERB_SHOW => -- GUI related
--- 				case noun is
--- 					when NOUN_DEVICE =>
--- 						case fields is
--- 							when 5 => null; -- CS
--- 							when 6 .. count_type'last => too_long;
--- 							when others => command_incomplete;
--- 						end case;
--- 						
--- 					when others => invalid_noun (to_string (noun));
--- 				end case;
-
-		when VERB_ZOOM => -- GUI related
-			case noun is
-				when NOUN_FIT => -- zoom fit
-					case fields is
-						when 4 => 
-							log (text => "zoom to fit", level => log_threshold + 1);
-							scale_to_fit (canvas);
-
-						when 5 .. count_type'last => too_long;
-
-						when others => command_incomplete;
-					end case;
-
-				when NOUN_LEVEL => -- zoom level 3
-					case fields is
-						when 4 => 
-							set_scale (f (5));
-
-						when 6 .. count_type'last => too_long;
-
-						when others => command_incomplete;
-					end case;
-					
-				when NOUN_CENTER => -- zoom center 10 10
-					case fields is
-						when 6 =>  -- zoom center 10 10
-							zoom_center;
-
-						when 7 =>  -- zoom center 10 10 0.5
-							zoom_center;
-							set_scale (f (7));
-
-						when 8 .. count_type'last => too_long;
-
-						when others => command_incomplete;
-					end case;
-					
-				when others => invalid_noun (to_string (noun));
-			end case;
-			
-	end case;
-
-	case runmode is
-		when MODE_MODULE =>
-			canvas.update_mode_display;
-			status_clear;
-			
-		when others => null;
-	end case;
+	parse;
+	
+	-- In case parse throws an exception, then the follwing statements 
+	-- will be skipped.
+	
+	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
+	-- single_cmd_status.complete can change to false. In that case
+	-- the interactive completiton starts here. 
+	if not single_cmd_status.complete then
+		propose_arguments;
+	end if;
+
+	-- After every command (regardless if it is complete or not)
+	-- set the focus to the canvas:
+	-- CS: remove ?
+	if runmode /= MODE_HEADLESS then
+		canvas.grab_focus;
+	end if;
 
 
 	exception 
@@ -2522,11 +2553,7 @@ begin -- board_cmd
 				name	=> exception_name (event),
 				message	=> exception_message (event));
 
-			if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
-				propose_arguments;
-			else
-				raise;
-			end if;
+			raise;
 
 			
 		when event: others =>
