@@ -1805,8 +1805,38 @@ is
 		
 		incomplete : constant string := "Command incomplete ! ";
 
-		device_name			: et_devices.type_name;
-	begin
+		device_name		: et_devices.type_name;
+		unit_name		: type_unit_name.bounded_string;
+
+		procedure device_name_missing is begin
+			log (text => "Device name missing !", level => log_threshold);
+			set_status (incomplete & "Device name missing !");
+			-- No menu required and not reasonable.
+			-- It might become very long if there were hundreds of devices.
+		end device_name_missing;
+
+		procedure unit_name_missing is begin
+			log (text => "Unit name missing !", level => log_threshold);
+		end unit_name_missing;
+		
+		procedure device_not_found is begin
+			set_status ("ERROR. Device " & to_string (device_name) & " not found !");
+		end device_not_found;
+
+		procedure unit_not_found is begin
+			set_status ("ERROR. Device " & to_string (device_name) 
+				& " does not provide unit " & to_string (unit_name) & " !");
+		end unit_not_found;
+
+		procedure unit_in_use is begin
+			set_status ("ERROR. Unit " & to_string (unit_name) 
+				& " of device " & to_string (device_name) 
+				& " already in use !");
+			-- CS output coordinates of used unit
+		end unit_in_use;
+						
+		
+	begin -- proposes
 		log (text => incomplete 
 			& "Only" & count_type'image (fields) & " arguments provided. "
 			& "Proposing arguments ...", level => log_threshold);
@@ -1815,14 +1845,10 @@ is
 			when VERB_INVOKE =>
 				case fields is
 					when 4 =>
-						log (text => "Device name missing !", level => log_threshold);
-						set_status (incomplete & "Device name missing !");
-						-- No menu required and not reasonable.
-						-- It might become very long if there are hundreds of devices.
+						device_name_missing;
 						
 					when 5 => -- like "invoke unit IC1"
-						log (text => "Unit name missing !", level => log_threshold);
-						set_status (incomplete & "Unit name missing");
+						unit_name_missing;
 
 						device_name := et_devices.to_name (f (5));
 
@@ -1844,7 +1870,7 @@ is
 								log_threshold	=> log_threshold + 1);
 
 						else
-							set_status ("ERROR. Device " & to_string (device_name) & " not found !");
+							device_not_found;
 						end if;
 						
 					when 6 => -- like "invoke unit IC1 B"
@@ -1860,31 +1886,88 @@ is
 							unit_add.total		:= units_total (unit_add.device);
 							unit_add.device_pre	:= device_name;
 							
-							unit_add.name := to_name (f (6));
+							unit_name := to_name (f (6));
 
 							-- test existence AND availability of unit:
-							if provides_unit (unit_add.device, unit_add.name) then
+							if provides_unit (unit_add.device, unit_name) then
 
-								if unit_available (current_active_module, device_name, unit_add.name) then
+								if unit_available (current_active_module, device_name, unit_name) then
+
+									unit_add.name := unit_name;
 									
 									-- Allow drawing the unit:
 									unit_add.via_invoke := true;
 								
 									redraw;
 								else
-									set_status ("ERROR. Unit " & to_string (unit_add.name) & " already in use !");
+									unit_in_use;
 								end if;
 							else
-								set_status ("ERROR. Unit " & to_string (unit_add.name) & " not defined in device model !");
+								unit_not_found;
 							end if; 
 						else
-							set_status ("ERROR. Device " & to_string (device_name) & " not found !");
+							device_not_found;
 						end if;
 											
 					when others =>  -- like "invoke unit IC1 2 100 80 0"
 						set_status ("WARNING: Arguments after unit name are ignored.");
 						
 				end case;
+
+			when VERB_MOVE =>
+				case fields is
+					when 4 =>
+						device_name_missing;
+						
+					when 5 => -- like "move unit IC1"
+						unit_name_missing;
+
+						device_name := et_devices.to_name (f (5));
+
+						if exists (current_active_module, device_name) then
+
+							menu_propose_units (
+								units			=> available_units (
+													current_active_module,
+													device_name,
+													log_threshold + 1),
+								log_threshold	=> log_threshold + 1);
+
+						else
+							device_not_found;
+						end if;
+						
+					when 6 => -- like "move unit IC1 B"
+						device_name := et_devices.to_name (f (5));
+
+						if exists (current_active_module, device_name) then
+
+							unit_name := to_name (f (6));
+
+							-- test existence AND whether the unit is on the current_active_sheet:
+							if provides_unit (unit_add.device, unit_name) then
+
+								--if unit_available (current_active_module, device_name, unit_name) then
+
+									-- Allow drawing the unit:
+									unit.being_moved := true;
+								
+									redraw;
+								--else
+									--unit_in_use;
+								--end if;
+							else
+								unit_not_found;
+							end if; 
+						else
+							device_not_found;
+						end if;
+											
+					when others =>  -- like "invoke unit IC1 2 100 80 0"
+						set_status ("WARNING: Arguments after unit name are ignored.");
+						
+				end case;
+
 				
 			when others => null;
 		

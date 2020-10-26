@@ -123,7 +123,7 @@ package et_canvas_schematic_units is
 		original_position	: type_point;
 	end record;
 
-	unit : type_unit;
+	unit : type_unit; -- CS rename to unit_move
 
 	
 	-- to be output in the status bar:
