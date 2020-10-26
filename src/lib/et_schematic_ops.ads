@@ -320,13 +320,22 @@ package et_schematic_ops is
 
 	-- Returns the names of available units of the given device in the 
 	-- given generic module. "Available" means the unit exists and is
-	-- not already in use:
+	-- not already placed somewhere in the schematic:
 	function available_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_name; -- IC1
 		log_threshold	: in type_log_level)
 		return et_devices.pac_unit_names.list;
-								 
+
+	-- Returns true if the given unit is available.
+	-- Raises constraint error if device does not exist or
+	-- unit is not defined in device model of given device:
+	function unit_available (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_name; -- IC1
+		unit_name		: in type_unit_name.bounded_string)
+		return boolean;
+	
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

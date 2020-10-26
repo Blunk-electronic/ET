@@ -237,7 +237,8 @@ package et_canvas_schematic_units is
 		-- The total number of units provided by the device model:
 		total		: type_unit_count := type_unit_count'first;
 		
-		-- The prospective device name once the add operation is complete.
+		-- The prospective device name (like IC4) once the 
+		-- add operation is complete.
 		-- This is relevant for the preview only:
 		device_pre	: et_devices.type_name := (others => <>);
 

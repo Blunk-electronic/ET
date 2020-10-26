@@ -702,6 +702,43 @@ package body et_devices is
 	end rotate_placeholders;
 
 
+	function provides_unit (
+		device_cursor	: in type_devices.cursor;
+		unit_name		: in type_unit_name.bounded_string)
+		return boolean
+	is
+		found : boolean := false;
+		
+		procedure query_internal (
+			model	: in type_device_model_file.bounded_string;
+			device	: in type_device)
+		is begin
+			if device.units_internal.contains (unit_name) then
+				found := true;
+			end if;
+		end query_internal;
+
+		procedure query_external (
+			model	: in type_device_model_file.bounded_string;
+			device	: in type_device)
+		is begin
+			if device.units_external.contains (unit_name) then
+				found := true;
+			end if;
+		end query_external;
+		
+	begin -- provided_unit
+		-- First search among internal units.
+		-- If not found there, search among external units.
+		
+		type_devices.query_element (device_cursor, query_internal'access);
+
+		if not found then
+			type_devices.query_element (device_cursor, query_external'access);
+		end if;
+		
+		return found;
+	end provides_unit;
 
 	
 

@@ -464,6 +464,13 @@ package et_devices is
 		int : pac_units_internal.cursor;
 		ext : pac_units_external.cursor;
 	end record;
+
+	-- Returns true if the given device (via a cursor) 
+	-- does provide the given unit.
+	function provides_unit (
+		device_cursor	: in type_devices.cursor;
+		unit_name		: in type_unit_name.bounded_string)
+		return boolean;
 	
 	-- Returns the cursor of the first internal or external unit.
 	-- Searches first in internal and then in external units. 

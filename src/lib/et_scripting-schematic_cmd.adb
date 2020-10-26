@@ -1805,10 +1805,7 @@ is
 		
 		incomplete : constant string := "Command incomplete ! ";
 
-		device_cursor_sch	: et_schematic.type_devices.cursor;
 		device_name			: et_devices.type_name;
-		device_model		: type_device_model_file.bounded_string;
-		--device_cursor_lib	: et_devices.type_devices.cursor;
 	begin
 		log (text => incomplete 
 			& "Only" & count_type'image (fields) & " arguments provided. "
@@ -1831,12 +1828,13 @@ is
 
 						if exists (current_active_module, device_name) then
 
-							device_cursor_sch := locate_device (current_active_module, device_name);
-							device_model := et_schematic.type_devices.element (device_cursor_sch).model;
-							unit_add.device := locate_device (device_model);
-							unit_add.variant := et_schematic.type_devices.element (device_cursor_sch).variant;
-							unit_add.total := units_total (unit_add.device);
-							unit_add.device_pre := et_schematic.type_devices.key (device_cursor_sch);
+							unit_add.device		:= device_model_cursor (current_active_module, device_name);
+							
+							--unit_add.variant	:= device_variant_name (current_active_module, device_name);
+							-- CS: really required ? requires test whether the device is real
+							
+							unit_add.total		:= units_total (unit_add.device);
+							unit_add.device_pre	:= device_name;
 						
 							menu_propose_units (
 								units			=> available_units (
@@ -1854,19 +1852,31 @@ is
 
 						if exists (current_active_module, device_name) then
 
-							device_cursor_sch := locate_device (current_active_module, device_name);
-							device_model := et_schematic.type_devices.element (device_cursor_sch).model;
-							unit_add.device := locate_device (device_model);
-							unit_add.variant := et_schematic.type_devices.element (device_cursor_sch).variant;
-							unit_add.total := units_total (unit_add.device);
-							unit_add.device_pre := et_schematic.type_devices.key (device_cursor_sch);
-							
-							unit_add.name := to_name (f (6)); -- CS test existence and availability of unit
+							unit_add.device		:= device_model_cursor (current_active_module, device_name);
 
-							-- Allow drawing the unit:
-							unit_add.via_invoke := true;
+							--unit_add.variant	:= device_variant_name (current_active_module, device_name);
+							-- CS: really required ? requires test whether the device is real
+
+							unit_add.total		:= units_total (unit_add.device);
+							unit_add.device_pre	:= device_name;
 							
-							redraw;							
+							unit_add.name := to_name (f (6));
+
+							-- test existence AND availability of unit:
+							if provides_unit (unit_add.device, unit_add.name) then
+
+								if unit_available (current_active_module, device_name, unit_add.name) then
+									
+									-- Allow drawing the unit:
+									unit_add.via_invoke := true;
+								
+									redraw;
+								else
+									set_status ("ERROR. Unit " & to_string (unit_add.name) & " already in use !");
+								end if;
+							else
+								set_status ("ERROR. Unit " & to_string (unit_add.name) & " not defined in device model !");
+							end if; 
 						else
 							set_status ("ERROR. Device " & to_string (device_name) & " not found !");
 						end if;

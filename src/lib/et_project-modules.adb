@@ -618,6 +618,40 @@ package body et_project.modules is
 		return result;
 	end locate_device;
 
+	function device_model_name (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return type_device_model_file.bounded_string
+	is 
+		use et_schematic.type_devices;
+	begin
+		return element (locate_device (module, device)).model;
+	end device_model_name;
+
+	function device_variant_name (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return et_devices.type_variant_name.bounded_string -- D, N
+	is
+		cursor_sch : et_schematic.type_devices.cursor;
+	begin
+		cursor_sch := locate_device (module, device);
+		return et_schematic.type_devices.element (cursor_sch).variant;
+	end device_variant_name;
+	
+	function device_model_cursor (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return et_devices.type_devices.cursor
+	is
+		cursor_sch : et_schematic.type_devices.cursor;
+		device_model : type_device_model_file.bounded_string;
+	begin
+		cursor_sch := locate_device (module, device);
+		device_model := et_schematic.type_devices.element (cursor_sch).model;
+		return locate_device (device_model);
+	end device_model_cursor;
+
 	
 	function exists (
 	-- Returns true if the given module provides the given submodule instance.

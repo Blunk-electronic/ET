@@ -3403,7 +3403,7 @@ package body et_schematic_ops is
 
 		log_indentation_up;
 		
-		-- get the names of all names of the device
+		-- get the names of all units of the device
 		all_unit_names := all_units (device_cursor_lib);
 
 		-- extract available units
@@ -3419,6 +3419,59 @@ package body et_schematic_ops is
 
 			--return names_of_available_units;
 	end available_units;
+
+	function unit_available (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_name; -- IC1
+		unit_name		: in type_unit_name.bounded_string)
+		return boolean
+	is
+		available : boolean := true; -- to be returned
+
+		use et_schematic.type_devices;
+		device_cursor_sch : et_schematic.type_devices.cursor;
+		
+		device_cursor_lib : et_devices.type_devices.cursor;
+		
+		use pac_unit_names;
+		all_unit_names : pac_unit_names.list;
+
+		-- Clears the "available" flag if given unit is already in use:
+		procedure query_in_use (
+			device_name	: in type_name;
+			device		: in et_schematic.type_device) 
+		is
+			use et_schematic.type_units;
+		begin
+			if contains (device.units, unit_name) then
+				available := false;
+			end if;
+		end query_in_use;
+		
+	begin -- unit_available
+		device_cursor_lib := device_model_cursor (module_cursor, device_name);
+
+		-- get the names of all units of the device
+		all_unit_names := all_units (device_cursor_lib);
+
+		-- test whether the given unit is defined in the model:
+		if contains (all_unit_names, unit_name) then
+			
+			-- locate the device in the schematic:
+			device_cursor_sch := locate_device (module_cursor, device_name);
+
+			-- Test whether the unit is already in use.
+			-- If device does not exist, a constraint_error will arise here.
+			query_element (
+				position	=> device_cursor_sch,
+				process		=> query_in_use'access);
+			
+		else
+			raise constraint_error;
+		end if;
+		
+		return available;
+	end unit_available;
 
 	
 	procedure invoke_unit (
