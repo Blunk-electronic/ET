@@ -306,6 +306,26 @@ package et_project.modules is
 		device	: in type_name) -- R2
 		return et_schematic.type_devices.cursor;
 
+	-- Locates the given unit of the given device in the 
+	-- given module and returns the cursor to the unit.
+	-- If the unit does not exist, returns no_element.
+	-- Raises exception if device does not exist.
+	function locate_unit (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name; -- R2
+		unit	: in type_unit_name.bounded_string)
+		return et_schematic.type_units.cursor;
+
+	-- Returns true if the unit of the given device in the 
+	-- given module exists.
+	-- If the unit does not exist, returns false.
+	-- Raises exception if device does not exist.
+	function exists (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name; -- R2
+		unit	: in type_unit_name.bounded_string)
+		return boolean;
+	
 	-- Locates the given device in the given module and returns
 	-- the name of the device model (like 7400.dev).
 	-- Raises constraint error if the device does not exist.

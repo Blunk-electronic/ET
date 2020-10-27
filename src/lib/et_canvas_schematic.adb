@@ -1630,6 +1630,7 @@ package body et_canvas_schematic is
 			if single_cmd_status.finalization_pending and primary_tool = KEYBOARD then
 				case verb is
 					when VERB_INVOKE	=> invoke;
+					when VERB_MOVE		=> move;
 					when others			=> null;
 				end case;
 				

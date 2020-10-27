@@ -61,7 +61,10 @@ package et_canvas_schematic_units is
 
 	-- Whenever a unit or a placeholder thereof is selected
 	-- via the GUI, we store cursors of its
-	-- parent device and the unit itself via this type:
+	-- parent device and the unit itself via this type.
+	-- This type is to be used for a device and a unit that
+	-- is already placed in the schematic. So we use it
+	-- for example for moving or dragging of a unit.
 	type type_selected_unit is record
 		device	: et_schematic.type_devices.cursor;
 		unit	: et_schematic.type_units.cursor;
@@ -121,6 +124,8 @@ package et_canvas_schematic_units is
 		being_moved			: boolean := false;
 		tool				: type_tool := MOUSE;
 		original_position	: type_point;
+		device				: type_name;
+		unit				: type_unit_name.bounded_string;
 	end record;
 
 	unit_move : type_unit_being_moved;

@@ -618,6 +618,53 @@ package body et_project.modules is
 		return result;
 	end locate_device;
 
+	function locate_unit (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name; -- R2
+		unit	: in type_unit_name.bounded_string)
+		return et_schematic.type_units.cursor
+	is
+		use et_schematic.type_devices;
+		use et_schematic.type_units;
+		
+		device_cursor : et_schematic.type_devices.cursor;
+		unit_cursor : et_schematic.type_units.cursor; -- to be returned
+
+		procedure query_units (
+			device_name	: in et_devices.type_name; -- R2
+			device		: in et_schematic.type_device)
+		is begin
+			unit_cursor := find (device.units, unit);
+		end query_units;
+	
+	begin -- locate_unit
+		device_cursor := locate_device (module, device);
+
+		-- locate the unit
+		query_element (device_cursor, query_units'access);
+
+		return unit_cursor;
+	end locate_unit;
+
+	function exists (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name; -- R2
+		unit	: in type_unit_name.bounded_string)
+		return boolean
+	is
+		use et_schematic.type_units;
+		unit_cursor : et_schematic.type_units.cursor;
+	begin
+		unit_cursor := locate_unit (module, device, unit);
+
+		if unit_cursor = et_schematic.type_units.no_element then
+			return false;
+		else
+			return true;
+		end if;
+	end exists;
+
+	
 	function device_model_name (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name) -- R2

@@ -1807,7 +1807,9 @@ is
 
 		device_name		: et_devices.type_name;
 		unit_name		: type_unit_name.bounded_string;
-
+		
+		--device_cursor	: et_schematic.type_devices.cursor;
+		
 		procedure device_name_missing is begin
 			log (text => "Device name missing !", level => log_threshold);
 			set_status (incomplete & "Device name missing !");
@@ -1862,7 +1864,8 @@ is
 							unit_add.total		:= units_total (unit_add.device);
 							unit_add.device_pre	:= device_name;
 						
-							menu_propose_units (
+							menu_propose_units_on_invoke (
+								device			=> device_name,
 								units			=> available_units (
 													current_active_module,
 													device_name,
@@ -1924,9 +1927,10 @@ is
 
 						device_name := et_devices.to_name (f (5));
 
-						if exists (current_active_module, device_name) then
-
-							menu_propose_units (
+						if exists (current_active_module, unit_move.device) then
+							unit_move.device := device_name;
+							
+							menu_propose_units_on_move (
 								units			=> units_on_sheet (
 													current_active_module,
 													device_name,
@@ -1940,24 +1944,49 @@ is
 						
 					when 6 => -- like "move unit IC1 B"
 						device_name := et_devices.to_name (f (5));
-
+						
 						if exists (current_active_module, device_name) then
+							
+							unit_move.device := device_name;
 
 							unit_name := to_name (f (6));
 
+							if exists (current_active_module, unit_move.device, unit_name) then
+							--device_cursor := locate_device (current_active_module, unit_move.device);
+							
 							-- test existence AND whether the unit is on the current_active_sheet:
-							if provides_unit (unit_add.device, unit_name) then
+							--if provides_unit (device_cursor, unit_name) then
 
+								put_line ("test A");
+								
 								--if unit_available (current_active_module, device_name, unit_name) then
+									unit_move.unit := unit_name;
 
+									-- Append the cursors of the device and unit to the list of proposed units.
+									-- There will be only one single item in that list.
+									proposed_units.append (new_item => (
+										device	=> locate_device (current_active_module, unit_move.device),
+										unit	=> locate_unit (current_active_module, unit_move.device, unit_move.unit)));
+
+									-- Set the selected unit. This signals the GUI which unit is to be
+									-- drawn at the cursor or mouse position:
+									selected_unit := proposed_units.first;
+									
+									-- use the current primary tool for moving the unit:
+									unit_move.tool := primary_tool;
+								
 									-- Allow drawing the unit:
 									unit_move.being_moved := true;
-								
+
+									single_cmd_status.finalization_pending := true;
+									
 									redraw;
 								--else
 									--unit_in_use;
 								--end if;
 							else
+								put_line ("test B");
+								
 								unit_not_found;
 							end if; 
 						else
