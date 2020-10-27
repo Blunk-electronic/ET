@@ -3473,6 +3473,63 @@ package body et_schematic_ops is
 		return available;
 	end unit_available;
 
+	function units_on_sheet (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_name; -- IC1
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return et_devices.pac_unit_names.list
+	is
+		use et_schematic.type_devices;
+		device_cursor_sch : et_schematic.type_devices.cursor;
+
+		names_of_units : pac_unit_names.list;
+
+		procedure query_units (
+			device_name	: in type_name;
+			device		: in et_schematic.type_device)
+		is 
+			procedure query_unit (c : in type_units.cursor) is 
+				use et_devices.type_unit_name;
+				use et_schematic.type_units;
+				use pac_unit_names;
+			begin
+				-- If the unit is on the given sheet then append it to the result:
+				if et_coordinates.sheet (element (c).position) = sheet then
+					log (text => "unit " & et_devices.to_string (key (c)) & " on sheet.",
+						level => log_threshold + 2);
+					
+					names_of_units.append (key (c));
+				end if;
+			end query_unit;
+		begin
+			device.units.iterate (query_unit'access);
+		end query_units;
+			
+	begin -- units_on_sheet
+		log (text => "looking up units of " 
+			 & to_string (device_name) 
+			 & " on sheet " & to_sheet (sheet) & " ...",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		-- locate the device in the schematic:
+		device_cursor_sch := locate_device (module_cursor, device_name);
+
+		-- Test whether the unit is already in use.
+		-- If device does not exist, a constraint_error will arise here.
+		query_element (
+			position	=> device_cursor_sch,
+			process		=> query_units'access);
+
+
+		log_indentation_down;
+		
+		return names_of_units;
+
+	end units_on_sheet;
+
 	
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.

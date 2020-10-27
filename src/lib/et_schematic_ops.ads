@@ -335,6 +335,16 @@ package et_schematic_ops is
 		device_name		: in type_name; -- IC1
 		unit_name		: in type_unit_name.bounded_string)
 		return boolean;
+
+	-- Returns the names of units of the given device in the 
+	-- given generic module on the given sheet.
+	function units_on_sheet (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_name; -- IC1
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return et_devices.pac_unit_names.list;
+
 	
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.

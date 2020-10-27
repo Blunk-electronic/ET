@@ -1927,9 +1927,10 @@ is
 						if exists (current_active_module, device_name) then
 
 							menu_propose_units (
-								units			=> available_units (
+								units			=> units_on_sheet (
 													current_active_module,
 													device_name,
+													current_active_sheet,
 													log_threshold + 1),
 								log_threshold	=> log_threshold + 1);
 
