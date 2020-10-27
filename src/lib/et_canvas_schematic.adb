@@ -922,20 +922,20 @@ package body et_canvas_schematic is
 							end if;
 
 						when NOUN_UNIT =>
-							if not unit.being_moved then
+							if not unit_move.being_moved then
 
 								-- When dragging units, we enforce the default grid
 								-- and snap the cursor position to the default grid:
 								self.reset_grid_and_cursor;
 								
 								-- Set the tool being used for moving the unit:
-								unit.tool := KEYBOARD;
+								unit_move.tool := KEYBOARD;
 								
 								if not clarification_pending then
 									find_units (cursor_main.position);
 								else
 									find_attached_segments;
-									unit.being_moved := true;
+									unit_move.being_moved := true;
 									reset_request_clarification;
 								end if;
 								
@@ -1233,19 +1233,19 @@ package body et_canvas_schematic is
 
 								
 						when NOUN_UNIT =>
-							if not unit.being_moved then
+							if not unit_move.being_moved then
 
 								-- When moving units, we enforce the default grid
 								-- and snap the cursor position to the default grid:
 								self.reset_grid_and_cursor;
 								
 								-- Set the tool being used for moving the unit:
-								unit.tool := KEYBOARD;
+								unit_move.tool := KEYBOARD;
 								
 								if not clarification_pending then
 									find_units (cursor_main.position);
 								else
-									unit.being_moved := true;
+									unit_move.being_moved := true;
 									reset_request_clarification;
 								end if;
 								
@@ -1767,7 +1767,7 @@ package body et_canvas_schematic is
 						end if;
 
 					when NOUN_UNIT =>
-						if unit.being_moved then
+						if unit_move.being_moved then
 							redraw;
 						end if;
 
@@ -1867,20 +1867,20 @@ package body et_canvas_schematic is
 
 					case noun is
 						when NOUN_UNIT =>
-							if not unit.being_moved then
+							if not unit_move.being_moved then
 
 								-- When dragging units, we enforce the default grid
 								-- and snap the cursor position to the default grid:
 								self.reset_grid_and_cursor;
 								
 								-- Set the tool being used for moving the unit:
-								unit.tool := MOUSE;
+								unit_move.tool := MOUSE;
 								
 								if not clarification_pending then
 									find_units (point);
 								else
 									find_attached_segments;
-									unit.being_moved := true;
+									unit_move.being_moved := true;
 									reset_request_clarification;
 								end if;
 
@@ -2113,19 +2113,19 @@ package body et_canvas_schematic is
 							end if;
 						
 						when NOUN_UNIT =>
-							if not unit.being_moved then
+							if not unit_move.being_moved then
 
 								-- When moving units, we enforce the default grid
 								-- and snap the cursor position to the default grid:
 								self.reset_grid_and_cursor;
 								
 								-- Set the tool being used for moving the unit:
-								unit.tool := MOUSE;
+								unit_move.tool := MOUSE;
 								
 								if not clarification_pending then
 									find_units (point);
 								else
-									unit.being_moved := true;
+									unit_move.being_moved := true;
 									reset_request_clarification;
 								end if;
 

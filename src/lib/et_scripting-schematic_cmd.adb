@@ -1951,7 +1951,7 @@ is
 								--if unit_available (current_active_module, device_name, unit_name) then
 
 									-- Allow drawing the unit:
-									unit.being_moved := true;
+									unit_move.being_moved := true;
 								
 									redraw;
 								--else

@@ -342,7 +342,7 @@ package body et_canvas_schematic_units is
 -- MOVE/DRAG/ROTATE UNIT
 
 	procedure reset_unit is begin
-		unit := (others => <>);
+		unit_move := (others => <>);
 		clear_proposed_units;
 	end reset_unit;
 
@@ -447,7 +447,7 @@ package body et_canvas_schematic_units is
 				reset_unit;
 				
 			when 1 =>
-				unit.being_moved := true;
+				unit_move.being_moved := true;
 				selected_unit := proposed_units.first;
 
 				case verb is

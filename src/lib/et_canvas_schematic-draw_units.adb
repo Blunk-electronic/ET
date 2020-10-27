@@ -266,14 +266,14 @@ procedure draw_units (
 					brightness := BRIGHT;
 
 					-- overwrite position
-					if unit.being_moved then
+					if unit_move.being_moved then
 					
 						-- In case the unit is being dragged, backup original position
 						-- in global variable "unit". Procedure draw_nets requires that
 						-- to calculate the displacement of attached net segments:
-						unit.original_position := unit_position;
+						unit_move.original_position := unit_position;
 
-						case unit.tool is
+						case unit_move.tool is
 							when MOUSE =>
 								unit_position := self.snap_to_grid (self.mouse_position);
 								

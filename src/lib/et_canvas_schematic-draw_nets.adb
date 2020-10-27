@@ -729,7 +729,7 @@ procedure draw_nets (
 
 			-- Calculate the displacement of segments according to the
 			-- current drawing tool and the current displacement of the unit:
-			case unit.tool is
+			case unit_move.tool is
 				when MOUSE =>
 					tool_position := self.snap_to_grid (self.mouse_position);
 
@@ -738,7 +738,7 @@ procedure draw_nets (
 			end case;
 
 			-- This is the displacement of the attached segments:
-			displacement := type_point (distance_relative (unit.original_position, tool_position));
+			displacement := type_point (distance_relative (unit_move.original_position, tool_position));
 
 -- 			log (text => "original    " & to_string (unit.original_position), console => true);
 -- 			log (text => "displacement" & to_string (displacement), console => true);

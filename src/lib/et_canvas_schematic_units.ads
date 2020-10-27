@@ -117,13 +117,13 @@ package et_canvas_schematic_units is
 
 	-- Global information for the GUI when a unit is 
 	-- being moved, dragged or rotated:
-	type type_unit is record
+	type type_unit_being_moved is record
 		being_moved			: boolean := false;
 		tool				: type_tool := MOUSE;
 		original_position	: type_point;
 	end record;
 
-	unit : type_unit; -- CS rename to unit_move
+	unit_move : type_unit_being_moved;
 
 	
 	-- to be output in the status bar:
