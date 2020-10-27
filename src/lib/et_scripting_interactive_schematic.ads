@@ -57,6 +57,8 @@ package et_scripting_interactive_schematic is
 		units			: in pac_unit_names.list;
 		log_threshold	: in type_log_level);
 
+	-- Makes the unit_move a selected unit.
+	procedure select_unit_for_move;
 	
 	procedure unit_selected_on_move (
 		self : access gtk_menu_item_record'class);

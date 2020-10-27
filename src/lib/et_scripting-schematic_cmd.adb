@@ -1830,6 +1830,12 @@ is
 				& " does not provide unit " & to_string (unit_name) & " !");
 		end unit_not_found;
 
+		procedure unit_not_deployed is begin
+			set_status ("ERROR. Unit " & to_string (unit_name) 
+				& " of device " & to_string (device_name) 
+				& " not deployed !");
+		end unit_not_deployed;
+		
 		procedure unit_in_use is begin
 			set_status ("ERROR. Unit " & to_string (unit_name) 
 				& " of device " & to_string (device_name) 
@@ -1927,7 +1933,7 @@ is
 
 						device_name := et_devices.to_name (f (5));
 
-						if exists (current_active_module, unit_move.device) then
+						if exists (current_active_module, device_name) then
 							unit_move.device := device_name;
 							
 							menu_propose_units_on_move (
@@ -1951,43 +1957,26 @@ is
 
 							unit_name := to_name (f (6));
 
+							-- Test whether the unit is deployed.
+							-- If it is deployed somewhere (whatever sheet) then it will be 
+							-- attache to the cursor or mouse pointer.
 							if exists (current_active_module, unit_move.device, unit_name) then
-							--device_cursor := locate_device (current_active_module, unit_move.device);
+								
+								unit_move.unit := unit_name;
+
+								select_unit_for_move;
+								
+								-- use the current primary tool for moving the unit:
+								unit_move.tool := primary_tool;
 							
-							-- test existence AND whether the unit is on the current_active_sheet:
-							--if provides_unit (device_cursor, unit_name) then
+								-- Allow drawing the unit:
+								unit_move.being_moved := true;
 
-								put_line ("test A");
+								single_cmd_status.finalization_pending := true;
 								
-								--if unit_available (current_active_module, device_name, unit_name) then
-									unit_move.unit := unit_name;
-
-									-- Append the cursors of the device and unit to the list of proposed units.
-									-- There will be only one single item in that list.
-									proposed_units.append (new_item => (
-										device	=> locate_device (current_active_module, unit_move.device),
-										unit	=> locate_unit (current_active_module, unit_move.device, unit_move.unit)));
-
-									-- Set the selected unit. This signals the GUI which unit is to be
-									-- drawn at the cursor or mouse position:
-									selected_unit := proposed_units.first;
-									
-									-- use the current primary tool for moving the unit:
-									unit_move.tool := primary_tool;
-								
-									-- Allow drawing the unit:
-									unit_move.being_moved := true;
-
-									single_cmd_status.finalization_pending := true;
-									
-									redraw;
-								--else
-									--unit_in_use;
-								--end if;
+								redraw;
 							else
-								put_line ("test B");
-								
-								unit_not_found;
+								unit_not_deployed;
 							end if; 
 						else
 							device_not_found;

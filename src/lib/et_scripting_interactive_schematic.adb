@@ -167,6 +167,18 @@ package body et_scripting_interactive_schematic is
 	end menu_propose_units_on_invoke;
 
 
+	procedure select_unit_for_move is begin
+		-- Append the cursors of the device and unit to the list of proposed units.
+		-- There will be only one single item in that list.
+		proposed_units.append (new_item => (
+			device	=> locate_device (current_active_module, unit_move.device),
+			unit	=> locate_unit (current_active_module, unit_move.device, unit_move.unit)));
+
+		-- Set the selected unit. This signals the GUI which unit is to be
+		-- drawn at the cursor or mouse position:
+		selected_unit := proposed_units.first;
+	end select_unit_for_move;
+	
 	-- Called when the operator selects a unit from the menu.
 	procedure unit_selected_on_move (self : access gtk_menu_item_record'class) is
 		
@@ -180,15 +192,7 @@ package body et_scripting_interactive_schematic is
 		-- Now we know the unit name:
 		unit_move.unit := to_name (name);
 
-		-- Append the cursors of the device and unit to the list of proposed units.
-		-- There will be only one single item in that list.
-		proposed_units.append (new_item => (
-			device	=> locate_device (current_active_module, unit_move.device),
-			unit	=> locate_unit (current_active_module, unit_move.device, unit_move.unit)));
-
-		-- Set the selected unit. This signals the GUI which unit is to be
-		-- drawn at the cursor or mouse position:
-		selected_unit := proposed_units.first;
+		select_unit_for_move;
 		
 		-- use the current primary tool for moving the unit:
 		unit_move.tool := primary_tool;
@@ -244,15 +248,7 @@ package body et_scripting_interactive_schematic is
 					& to_string (unit_move.unit)
 					& " of " & to_string (unit_move.device));
 
-				-- Append the cursors of the device and unit to the list of proposed units.
-				-- There will be only one single item in that list.
-				proposed_units.append (new_item => (
-					device	=> locate_device (current_active_module, unit_move.device),
-					unit	=> locate_unit (current_active_module, unit_move.device, unit_move.unit)));
-
-				-- Set the selected unit. This signals the GUI which unit is to be
-				-- drawn at the cursor or mouse position:
-				selected_unit := proposed_units.first;
+				select_unit_for_move;
 				
 				-- use the current primary tool for moving the unit:
 				unit_move.tool := primary_tool;
