@@ -55,11 +55,13 @@ package et_scripting is
 
 
 	
-	-- Scripts can be nested.
+	-- In graphical mode, scripts can be nested.
 	-- In script mode we register only the first
 	-- exception regardless of the nesting depth.
 	-- Because the operator needs to know which script
 	-- has actually failed at which line.
+	-- The failed script will then be output in the status bar.
+	-- IN HEADLESS MODE THIS STUFF HAS NO MEANING !
 	-- For this reason this type is provided:
 	type type_script_cmd_status is record
 		-- the name of the script file like "rename_power_nets.scr":
@@ -73,7 +75,8 @@ package et_scripting is
 	end record;
 
 	-- The global variable that stores the status of the latest
-	-- script command:
+	-- script command.
+	-- IN HEADLESS MODE THIS STUFF HAS NO MEANING !
 	script_cmd_status : type_script_cmd_status;
 
 

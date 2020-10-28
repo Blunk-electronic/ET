@@ -40,12 +40,6 @@ with et_project.modules;
 with et_canvas_schematic_units;
 with et_scripting_interactive_schematic;
 
---with gtk.menu;
---with gtk.menu_item;
---with gtk.menu_shell;
---with gtk.gentry;				use gtk.gentry;
-
-
 separate (et_scripting)
 	
 procedure schematic_cmd (
@@ -1758,10 +1752,9 @@ is
 			 & " cmd_entry_mode: " & to_string (cmd_entry_mode),
 			 level => log_threshold);
 		
-
 		if runmode = MODE_HEADLESS then
 
-			log (ERROR, affected_line (script_cmd_status.cmd)
+			log (ERROR, affected_line (single_cmd_status.cmd)
 				& "Command " & enclose_in_quotes (to_string (single_cmd_status.cmd))
 				& " : " 
 				& message,
@@ -1774,7 +1767,7 @@ is
 				when SINGLE_CMD =>
 					set_status (message);
 
-				-- Scripts can be nested.
+				-- Even in graphical mode, scripts can be nested.
 				-- In script mode we register only the first
 				-- error regardless of the nesting depth.
 				-- Because the operator needs to know which script
@@ -1998,7 +1991,6 @@ is
 						set_status ("WARNING: Arguments after unit name are ignored.");
 						
 				end case;
-
 				
 			when others => null;
 		
@@ -2016,7 +2008,7 @@ begin -- schematic_cmd
 	single_cmd_status := (cmd => cmd_in, others => <>);
 
 	-- single_cmd_status.cmd will now be processed and interactively completed
-
+	
 
 	domain := to_domain (f (1)); -- DOM_SCHEMATIC
 	module := to_module_name (f (2)); -- motor_driver (without extension *.mod)

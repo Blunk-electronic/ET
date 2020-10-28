@@ -267,7 +267,7 @@ package body et_scripting is
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if field_count (cmd) > 0 then
 
-					-- Load the command to be executed in the script command status
+					-- Backup the command to be executed in the script command status
 					-- in case the command fails:
 					script_cmd_status.cmd := cmd;
 					

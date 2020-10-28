@@ -2430,15 +2430,19 @@ is
 		name	: in string; -- exception name
 		message : in string) -- exception message
 	is begin
-		log (text => name & " : " & message, level => log_threshold); -- CS output runmode, cmd_entry_mode ?
+		log (text => name & " : " & message, level => log_threshold);
 
 		log (text => "runmode: " & to_string (runmode) 
 			 & " cmd_entry_mode: " & to_string (cmd_entry_mode),
 			 level => log_threshold);
 
 		if runmode = MODE_HEADLESS then
-			log (ERROR, "command " & enclose_in_quotes (to_string (single_cmd_status.cmd)) &
-				" : " & message, console => true);
+			
+			log (ERROR, affected_line (single_cmd_status.cmd)
+				& "Command " & enclose_in_quotes (to_string (single_cmd_status.cmd))
+				& " : " 
+				& message,
+				console => true);
 			
 		else -- GUI mode
 			canvas.update_mode_display;
@@ -2447,7 +2451,7 @@ is
 				when SINGLE_CMD =>
 					set_status (message);
 
-				-- Scripts can be nested.
+				-- Even in graphical mode, scripts can be nested.
 				-- In script mode we register only the first
 				-- error regardless of the nesting depth.
 				-- Because the operator needs to know which script
