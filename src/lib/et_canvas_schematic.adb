@@ -1618,124 +1618,139 @@ package body et_canvas_schematic is
 -- 		put_line ("schematic: evaluating other key ...");
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
 
-		if key = GDK_Escape then
-			--put_line ("ESC");
-			
-			expect_entry := expect_entry_default;
-
-			-- Verb and noun emain as they are
-			-- so that the mode is unchanged.
-			
-			reset_request_clarification;
-			
-			reset_net_route; -- after drawing a net route
-			reset_segment; -- after move/drag
-			reset_segments_being_dragged; -- after dragging a unit
-			reset_unit_move; -- after moving/dragging a unit
-			reset_unit_add; -- after adding a device
-			
-			reset_label; -- after placing a label
-			
-			reset_placeholder; -- after moving a placeholder
-
-			reset_single_cmd_status;
-			
-			reset_activate_counter;
-			status_enter_verb;
-			
-		else
-			-- If the command is waiting for finalization, usually by pressing
-			-- the space key, AND the primary tool is the keyboard, then
-			-- we call the corresponding subprogram right away here:
-			if single_cmd_status.finalization_pending and primary_tool = KEYBOARD then
-				case verb is
-					when VERB_INVOKE	=> invoke;
-					when VERB_MOVE		=> move;
-					when others			=> null;
-				end case;
+		case key is
+			when GDK_Escape =>
+				--put_line ("ESC");
 				
-			else
-			-- Evaluate the verb and noun (as typed on the keyboard):
+				expect_entry := expect_entry_default;
+
+				-- Verb and noun remain as they are
+				-- so that the mode is unchanged.
 				
-				case expect_entry is
-					when EXP_VERB =>
-						--put_line ("VERB entered");
+				reset_request_clarification;
+				
+				reset_net_route; -- after drawing a net route
+				reset_segment; -- after move/drag
+				reset_segments_being_dragged; -- after dragging a unit
+				reset_unit_move; -- after moving/dragging a unit
+				reset_unit_add; -- after adding a device
+				
+				reset_label; -- after placing a label
+				
+				reset_placeholder; -- after moving a placeholder
 
-						-- Next we expect an entry to select a noun.
-						-- If the verb entry is invalid then expect_entry
-						-- will be overwritten by EXP_VERB so that the
-						-- operator is required to re-enter a valid verb.
-						expect_entry := EXP_NOUN;
+				reset_single_cmd_status;
+				
+				reset_activate_counter;
+				status_enter_verb;
 
-						-- As long as no valid noun has been entered
-						-- display the default noun:
-						noun := noun_default;
+			-- Advance to next sheet:
+			when GDK_KP_Add =>
+				current_active_sheet := current_active_sheet + 1;
+				update_sheet_number_display;
 
-						-- EVALUATE KEY FOR VERB:
-						case key is
-							when GDK_Delete =>
-								verb := VERB_DELETE;
-								status_enter_noun;
-
-							when GDK_LC_a =>
-								verb := VERB_ADD;
-								status_enter_noun;
-								
-							when GDK_LC_g =>
-								verb := VERB_DRAG;
-								status_enter_noun;
-
-							when GDK_LC_d =>
-								verb := VERB_DRAW;
-								status_enter_noun;
-
-							when GDK_LC_i =>
-								verb := VERB_INVOKE;
-								status_enter_noun;
-								
-							when GDK_LC_m =>
-								verb := VERB_MOVE;
-								status_enter_noun;
-
-							when GDK_LC_p =>
-								verb := VERB_PLACE;
-								status_enter_noun;
-								
-							when GDK_LC_r =>
-								verb := VERB_ROTATE;
-								status_enter_noun;
-								
-							when others =>
-								--put_line ("other key pressed " & gdk_key_type'image (key));
-								
-								-- If invalid verb entered, overwrite expect_entry by EXP_VERB
-								-- and show error in status bar:
-								expect_entry := EXP_VERB;
-								status_verb_invalid;
-						end case;
+			-- Advance to previous sheet:
+			when GDK_KP_Subtract =>
+				if current_active_sheet > sheet_default then
+					current_active_sheet := current_active_sheet - 1;
+					update_sheet_number_display;
+				end if;
 
 
-					when EXP_NOUN =>
-						--put_line ("NOUN entered");
+				
+			when others =>
 
-						case verb is
-							when VERB_ADD		=> add;
-							when VERB_DELETE	=> delete;
-							when VERB_DRAG		=> drag;
-							when VERB_DRAW		=> draw;
-							when VERB_INVOKE	=> invoke;
-							when VERB_MOVE		=> move;
-							when VERB_PLACE		=> place;
-							when VERB_ROTATE	=> rotate;
+				-- If the command is waiting for finalization, usually by pressing
+				-- the space key, AND the primary tool is the keyboard, then
+				-- we call the corresponding subprogram right away here:
+				if single_cmd_status.finalization_pending and primary_tool = KEYBOARD then
+					case verb is
+						when VERB_INVOKE	=> invoke;
+						when VERB_MOVE		=> move;
+						when others			=> null;
+					end case;
+					
+				else
+				-- Evaluate the verb and noun (as typed on the keyboard):
+					
+					case expect_entry is
+						when EXP_VERB =>
+							--put_line ("VERB entered");
 
-							when others => null; -- CS
-						end case;
-						
-				end case;
+							-- Next we expect an entry to select a noun.
+							-- If the verb entry is invalid then expect_entry
+							-- will be overwritten by EXP_VERB so that the
+							-- operator is required to re-enter a valid verb.
+							expect_entry := EXP_NOUN;
 
-			end if;
-		
-		end if;
+							-- As long as no valid noun has been entered
+							-- display the default noun:
+							noun := noun_default;
+
+							-- EVALUATE KEY FOR VERB:
+							case key is
+								when GDK_Delete =>
+									verb := VERB_DELETE;
+									status_enter_noun;
+
+								when GDK_LC_a =>
+									verb := VERB_ADD;
+									status_enter_noun;
+									
+								when GDK_LC_g =>
+									verb := VERB_DRAG;
+									status_enter_noun;
+
+								when GDK_LC_d =>
+									verb := VERB_DRAW;
+									status_enter_noun;
+
+								when GDK_LC_i =>
+									verb := VERB_INVOKE;
+									status_enter_noun;
+									
+								when GDK_LC_m =>
+									verb := VERB_MOVE;
+									status_enter_noun;
+
+								when GDK_LC_p =>
+									verb := VERB_PLACE;
+									status_enter_noun;
+									
+								when GDK_LC_r =>
+									verb := VERB_ROTATE;
+									status_enter_noun;
+									
+								when others =>
+									--put_line ("other key pressed " & gdk_key_type'image (key));
+									
+									-- If invalid verb entered, overwrite expect_entry by EXP_VERB
+									-- and show error in status bar:
+									expect_entry := EXP_VERB;
+									status_verb_invalid;
+							end case;
+
+
+						when EXP_NOUN =>
+							--put_line ("NOUN entered");
+
+							case verb is
+								when VERB_ADD		=> add;
+								when VERB_DELETE	=> delete;
+								when VERB_DRAG		=> drag;
+								when VERB_DRAW		=> draw;
+								when VERB_INVOKE	=> invoke;
+								when VERB_MOVE		=> move;
+								when VERB_PLACE		=> place;
+								when VERB_ROTATE	=> rotate;
+
+								when others => null; -- CS
+							end case;
+							
+					end case;
+
+				end if;		
+		end case;
 
 		redraw;
 		update_mode_display (canvas);
