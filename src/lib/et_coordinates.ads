@@ -102,6 +102,8 @@ package et_coordinates is
 	sheet_count_max : constant positive := 100;
 	type type_sheet_relative is new integer range -(sheet_count_max) .. sheet_count_max;
 	subtype type_sheet is type_sheet_relative range 1 .. type_sheet_relative'last;
+
+	sheet_default : constant type_sheet := type_sheet'first;
 	
 	function to_sheet (sheet : in type_sheet) return string;
 	function to_sheet (sheet : in string) return type_sheet;

@@ -646,7 +646,7 @@ package body et_project.modules is
 		return unit_cursor;
 	end locate_unit;
 
-	function exists (
+	function deployed (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name; -- R2
 		unit	: in type_unit_name.bounded_string)
@@ -662,7 +662,7 @@ package body et_project.modules is
 		else
 			return true;
 		end if;
-	end exists;
+	end deployed;
 
 	
 	function device_model_name (

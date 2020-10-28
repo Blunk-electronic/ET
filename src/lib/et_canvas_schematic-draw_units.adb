@@ -243,17 +243,21 @@ procedure draw_units (
 			
 			device_cursor_lib : type_devices.cursor;
 		begin
-			-- we want to draw only those units which are on the active sheet:
+			-- get the name of the unit
+			unit_name := key (unit_cursor);
+			--put_line (to_string (unit_name));
+
+			-- Get the position of the unit (as it is according to the module database).
+			-- If the unit is selected and being moved the the x/y position
+			-- will be overwritten by the position of the mouse or the cursor.
+			unit_position := type_point (element (unit_cursor).position);
+
+			-- There are two cases when a unit is to be drawn:
+			-- 1. The unit is on the current active sheet.
+			-- 2. The unit is being moved from one sheet to another sheet.
+			
+			-- CASE 1: We draw units which are on the active sheet:
 			if element (unit_cursor).position.sheet = current_active_sheet then
-
-				-- get the name of the unit
-				unit_name := key (unit_cursor);
-				--put_line (to_string (unit_name));
-
-				-- Get the position of the unit (as it is according to the module database).
-				-- If the unit is selected and being moved the the position
-				-- will be overwritten by the position of the mouse or the cursor.
-				unit_position := type_point (element (unit_cursor).position);
 				
 				-- The default brightness is NORMAL. If the unit is selected then
 				-- the brightness will be increased:
@@ -269,7 +273,7 @@ procedure draw_units (
 					if unit_move.being_moved then
 					
 						-- In case the unit is being dragged, backup original position
-						-- in global variable "unit". Procedure draw_nets requires that
+						-- in global variable "unit_move". Procedure draw_nets requires that
 						-- to calculate the displacement of attached net segments:
 						unit_move.original_position := unit_position;
 
@@ -300,7 +304,6 @@ procedure draw_units (
 				-- Which one is determined by the selector placeholder.category.
 				
 				if element (unit_cursor).appearance = PCB then
-
 					sch_placeholder_name := element (unit_cursor).name;
 					sch_placeholder_value := element (unit_cursor).value;
 					sch_placeholder_purpose := element (unit_cursor).purpose;
@@ -392,6 +395,52 @@ procedure draw_units (
 				-- locate and draw the symbol:
 				locate_symbol (locate_unit (device_cursor_lib, unit_name));
 			end if;
+
+			
+			-- CASE 2: The unit being moved changes the sheet:
+			if unit_move.sheet_changes then
+				
+				-- CS test verb and noun ?
+				if unit_is_selected (device_cursor, unit_cursor) then
+
+					-- increase brightness
+					brightness := BRIGHT;
+
+					-- overwrite position
+					if unit_move.being_moved then
+					
+						case unit_move.tool is
+							when MOUSE =>
+								unit_position := self.snap_to_grid (self.mouse_position);
+								
+							when KEYBOARD =>
+								unit_position := cursor_main.position;
+						end case;
+					end if;
+
+
+					-- get the rotation of the unit
+					unit_rotation := rot (element (unit_cursor).position);
+
+					
+					-- If this is a real device, then get a copy of the 
+					-- placeholders of the unit.
+					-- NOTE: The position of the placeholders is relative to
+					-- the unit position !
+					if element (unit_cursor).appearance = PCB then
+						sch_placeholder_name := element (unit_cursor).name;
+						sch_placeholder_value := element (unit_cursor).value;
+						sch_placeholder_purpose := element (unit_cursor).purpose;		
+					end if;
+
+					device_cursor_lib := locate_device (device_model);
+					unit_count := units_total (device_cursor_lib);
+
+					-- locate and draw the symbol:
+					locate_symbol (locate_unit (device_cursor_lib, unit_name));
+				end if;
+			end if;
+
 		end query_units;
 
 		use et_symbols;

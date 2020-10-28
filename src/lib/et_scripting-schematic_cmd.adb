@@ -1935,7 +1935,8 @@ is
 
 						if exists (current_active_module, device_name) then
 							unit_move.device := device_name;
-							
+
+							-- Propose units that are on the current active sheet:
 							menu_propose_units_on_move (
 								units			=> units_on_sheet (
 													current_active_module,
@@ -1959,10 +1960,20 @@ is
 
 							-- Test whether the unit is deployed.
 							-- If it is deployed somewhere (whatever sheet) then it will be 
-							-- attache to the cursor or mouse pointer.
-							if exists (current_active_module, unit_move.device, unit_name) then
-								
+							-- attached to the cursor or mouse pointer.
+							if deployed (current_active_module, unit_move.device, unit_name) then
+
 								unit_move.unit := unit_name;
+								
+								-- If the unit is not on the current_active_sheet then notify the
+								-- GUI that the sheet changes. This way the unit is drawn
+								-- on the current visible sheet independed of its original sheet number.
+								-- See et_canvas_schematic.draw_units.
+								if sheet (current_active_module, unit_move.device, unit_move.unit) /= current_active_sheet then
+									unit_move.sheet_changes := true;
+
+									--set_status ("Moving unit from another sheet");
+								end if;
 
 								select_unit_for_move;
 								
@@ -1973,8 +1984,8 @@ is
 								unit_move.being_moved := true;
 
 								single_cmd_status.finalization_pending := true;
-								
 								redraw;
+								
 							else
 								unit_not_deployed;
 							end if; 

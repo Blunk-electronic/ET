@@ -341,10 +341,10 @@ package body et_canvas_schematic_units is
 
 -- MOVE/DRAG/ROTATE UNIT
 
-	procedure reset_unit is begin
+	procedure reset_unit_move is begin
 		unit_move := (others => <>);
 		clear_proposed_units;
-	end reset_unit;
+	end reset_unit_move;
 
 	procedure finalize_move (
 		destination		: in type_point;
@@ -382,7 +382,7 @@ package body et_canvas_schematic_units is
 
 		set_status (status_move);
 		
-		reset_unit;
+		reset_unit_move;
 	end finalize_move;
 
 	procedure reset_segments_being_dragged is begin
@@ -423,7 +423,7 @@ package body et_canvas_schematic_units is
 
 		reset_segments_being_dragged;
 		
-		reset_unit;
+		reset_unit_move;
 	end finalize_drag;
 	
 	
@@ -444,7 +444,7 @@ package body et_canvas_schematic_units is
 		case length (proposed_units) is
 			when 0 =>
 				reset_request_clarification;
-				reset_unit;
+				reset_unit_move;
 				
 			when 1 =>
 				unit_move.being_moved := true;

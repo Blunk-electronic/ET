@@ -345,6 +345,21 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level)
 		return et_devices.pac_unit_names.list;
 
+	-- Returns the position (x/y/sheet) of the given unit.
+	-- Raises constraint error if device or unit does not exist.
+	function position (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name; -- R2
+		unit	: in type_unit_name.bounded_string)
+		return et_coordinates.type_position;
+
+	-- Returns the sheet number of the given unit.
+	-- Raises constraint error if device or unit does not exist.
+	function sheet (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name; -- R2
+		unit	: in type_unit_name.bounded_string)
+		return et_coordinates.type_sheet;
 	
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.

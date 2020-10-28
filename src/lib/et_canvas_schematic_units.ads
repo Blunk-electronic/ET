@@ -123,9 +123,15 @@ package et_canvas_schematic_units is
 	type type_unit_being_moved is record
 		being_moved			: boolean := false;
 		tool				: type_tool := MOUSE;
-		original_position	: type_point;
-		device				: type_name;
+		original_position	: type_point := origin;
+		device				: type_name := (others => <>);
 		unit				: type_unit_name.bounded_string;
+
+		-- A unit can be moved from one sheet to another.
+		-- This flag notifies the GUI that the unit is to be
+		-- drawn on the current visible sheet. This way the
+		-- original sheet number is ignored. See et_canvas_schematic.draw_units.
+		sheet_changes		: boolean := false;
 	end record;
 
 	unit_move : type_unit_being_moved;
@@ -159,8 +165,8 @@ package et_canvas_schematic_units is
 	-- This procedure:
 	-- - Clears list of proposed units.
 	-- - Sets global variable selected_unit to no_element.
-	-- - resets global variable "unit" to its default values
-	procedure reset_unit;
+	-- - resets global variable "unit_move" to its default values
+	procedure reset_unit_move;
 
 	-- Assigns the final position after the move to the selected unit.
 	-- Resets the global variable "unit".

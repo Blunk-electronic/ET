@@ -297,7 +297,8 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name)
 		return boolean;
-
+	-- CS move to et_schematic_ops ?
+	
 	-- Locates the given device in the given module and returns
 	-- the cursor to the device.
 	-- If the device does not exist, returns no_element.
@@ -305,7 +306,8 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name) -- R2
 		return et_schematic.type_devices.cursor;
-
+	-- CS move to et_schematic_ops ?
+	
 	-- Locates the given unit of the given device in the 
 	-- given module and returns the cursor to the unit.
 	-- If the unit does not exist, returns no_element.
@@ -315,16 +317,18 @@ package et_project.modules is
 		device	: in type_name; -- R2
 		unit	: in type_unit_name.bounded_string)
 		return et_schematic.type_units.cursor;
-
+	-- CS move to et_schematic_ops ?
+	
 	-- Returns true if the unit of the given device in the 
-	-- given module exists.
-	-- If the unit does not exist, returns false.
+	-- given module has been deployed somewhere.
+	-- If the unit has not been deployed yet, returns false.
 	-- Raises exception if device does not exist.
-	function exists (
+	function deployed (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name; -- R2
 		unit	: in type_unit_name.bounded_string)
 		return boolean;
+	-- CS move to et_schematic_ops ?
 	
 	-- Locates the given device in the given module and returns
 	-- the name of the device model (like 7400.dev).
@@ -333,7 +337,8 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name) -- R2
 		return type_device_model_file.bounded_string; -- 7400.dev
-
+	-- CS move to et_schematic_ops ?
+	
 	-- Locates the given device in the given module and returns
 	-- the name of the package variant name of the device.
 	-- Raises constraint error if the device does not exist.
@@ -342,6 +347,7 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name) -- R2
 		return et_devices.type_variant_name.bounded_string; -- D, N
+	-- CS move to et_schematic_ops ?
 	
 	-- Locates the given device in the given module and returns
 	-- the cursor to the device model.
@@ -350,7 +356,7 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name) -- R2
 		return et_devices.type_devices.cursor;
-
+	-- CS move to et_schematic_ops ?
 	
 	function exists (
 	-- Returns true if the given module provides the given submodule instance.

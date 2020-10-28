@@ -3530,6 +3530,51 @@ package body et_schematic_ops is
 
 	end units_on_sheet;
 
+	function position (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name; -- R2
+		unit	: in type_unit_name.bounded_string)
+		return et_coordinates.type_position
+	is
+		use et_schematic.type_devices;
+		device_cursor_sch : et_schematic.type_devices.cursor;
+
+		unit_position : et_coordinates.type_position;
+		
+		procedure query_unit (
+			device_name	: in type_name;
+			device		: in et_schematic.type_device)
+		is 
+			use et_schematic.type_units;
+			unit_cursor : type_units.cursor;
+		begin
+			-- locate the given unit in the given device
+			unit_cursor := find (device.units, unit);
+
+			-- get the coordinates of the unit
+			unit_position := element (unit_cursor).position;
+		end query_unit;
+
+	begin
+		-- locate the device in the schematic:
+		device_cursor_sch := locate_device (module, device);
+
+		query_element (
+			position	=> device_cursor_sch,
+			process		=> query_unit'access);
+
+		return unit_position;
+	end position;
+
+	function sheet (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name; -- R2
+		unit	: in type_unit_name.bounded_string)
+		return et_coordinates.type_sheet
+	is begin		
+		return et_coordinates.sheet (position (module, device, unit));
+	end sheet;
+		
 	
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.

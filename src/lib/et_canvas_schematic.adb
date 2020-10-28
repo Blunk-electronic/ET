@@ -1611,7 +1611,7 @@ package body et_canvas_schematic is
 			reset_net_route; -- after drawing a net route
 			reset_segment; -- after move/drag
 			reset_segments_being_dragged; -- after dragging a unit
-			reset_unit; -- after moving a unit
+			reset_unit_move; -- after moving/dragging a unit
 			reset_unit_add; -- after adding a device
 			
 			reset_label; -- after placing a label
