@@ -304,7 +304,7 @@ package body et_schematic_ops.units is
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " by " & to_sheet_relative (sheet) & " sheet(s)" &
+					to_string (unit_name) & " by" & to_sheet_relative (sheet) & " sheet(s)" &
 					to_string (point), level => log_threshold);
 		end case;
 		

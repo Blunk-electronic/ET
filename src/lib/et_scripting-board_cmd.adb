@@ -2527,37 +2527,12 @@ begin -- board_cmd
 	end if;
 
 
-	exception 
-
-		when event: semantic_error_1 =>
+	exception when event: others =>
 
 			evaluate_exception (
 				name	=> exception_name (event),
 				message	=> exception_message (event));
 
-			raise;
-			
-
-		when event: syntax_error_1 =>
-			
-			evaluate_exception (
-				name	=> exception_name (event),
-				message	=> exception_message (event));
-
-			raise;
-
-
-		when event: exception_command_incomplete =>
-			
-			evaluate_exception (
-				name	=> exception_name (event),
-				message	=> exception_message (event));
-
-			raise;
-
-			
-		when event: others =>
-			log (text => "other error", console => true); -- CS
 			raise;
 	
 end board_cmd;

@@ -1761,8 +1761,11 @@ is
 
 		if runmode = MODE_HEADLESS then
 
-			log (ERROR, "command " & enclose_in_quotes (to_string (single_cmd_status.cmd)) &
-				" : " & message, console => true);
+			log (ERROR, affected_line (script_cmd_status.cmd)
+				& "Command " & enclose_in_quotes (to_string (single_cmd_status.cmd))
+				& " : " 
+				& message,
+				console => true);
 			
 		else -- GUI mode
 			canvas.update_mode_display;
@@ -1807,8 +1810,6 @@ is
 
 		device_name		: et_devices.type_name;
 		unit_name		: type_unit_name.bounded_string;
-		
-		--device_cursor	: et_schematic.type_devices.cursor;
 		
 		procedure device_name_missing is begin
 			log (text => "Device name missing !", level => log_threshold);
@@ -2016,8 +2017,7 @@ begin -- schematic_cmd
 
 	-- single_cmd_status.cmd will now be processed and interactively completed
 
-	
-	
+
 	domain := to_domain (f (1)); -- DOM_SCHEMATIC
 	module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
 
@@ -2051,36 +2051,12 @@ begin -- schematic_cmd
 		canvas.grab_focus;
 	end if;
 	
-	exception 
-
-		when event: semantic_error_1 =>
-			
+	exception when event: others =>
+		
 			evaluate_exception (
 				name	=> exception_name (event),
 				message	=> exception_message (event));
 
-			raise;
-
-			
-		when event: syntax_error_1 =>
-			
-			evaluate_exception (
-				name	=> exception_name (event),
-				message	=> exception_message (event));
-			
-			raise;
-
-			
-		when event: exception_command_incomplete =>
-			
-			evaluate_exception (
-				name	=> exception_name (event),
-				message	=> exception_message (event));
-
-			raise;
-			
-		when event: others =>
-			log (text => "other error", console => true); -- CS
 			raise;
 			
 end schematic_cmd;

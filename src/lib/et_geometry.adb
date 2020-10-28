@@ -46,6 +46,7 @@ with ada.characters.handling;	use ada.characters.handling;
 with ada.numerics.generic_elementary_functions;
 
 with et_string_processing;		use et_string_processing;
+with et_exceptions;				use et_exceptions;
 
 package body et_geometry is
 
@@ -96,7 +97,12 @@ package body et_geometry is
 		
 		function to_distance (distance : in string) return type_distance is begin
 			return type_distance'value (distance);
-		end;
+
+			exception when event: others =>
+				raise syntax_error_2 with 
+					"ERROR: Expect a distance instead of " 
+					& enclose_in_quotes (distance) & " !";
+		end to_distance;
 		
 		function to_string (distance : in type_distance) return string is begin
 			if distance < zero then

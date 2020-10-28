@@ -77,7 +77,6 @@ package et_scripting is
 	script_cmd_status : type_script_cmd_status;
 
 
-	subtype type_retries is natural range 0 .. 20;
 
 
 

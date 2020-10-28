@@ -40,7 +40,7 @@ with ada.strings.unbounded;			use ada.strings.unbounded;
 with ada.directories;
 with ada.exceptions;				use ada.exceptions;
 
-with et_scripting_exceptions;		use et_scripting_exceptions;
+with et_exceptions;					use et_exceptions;
 
 with et_modes;						use et_modes;
 with et_conventions;
@@ -58,16 +58,7 @@ package body et_schematic_ops is
 	
 	procedure device_not_found (name : in type_name) is begin
 		raise semantic_error_1 
-			with "device " & to_string (name) & " not found !";
-		
-		--if runmode = MODE_HEADLESS then
-			--log (ERROR, "device " & to_string (name) & " not found !", console => true);				
-			--raise semantic_error_1;
-
-		--else
-			--set_status ("ERROR device " & to_string (name) & " not found !");
-			--raise semantic_error_2;
-		--end if;
+			with "ERROR: Device " & to_string (name) & " not found !";
 	end device_not_found;
 
 	procedure device_already_exists (name : in type_name) is begin
@@ -90,9 +81,9 @@ package body et_schematic_ops is
 	end;
 	
 	procedure unit_not_found (name : in type_unit_name.bounded_string) is begin
-		log (ERROR, "unit " & to_string (name) & " not found !", console => true);
-		raise constraint_error;
-	end;
+		raise semantic_error_1 with
+			"ERROR: Unit " & to_string (name) & " not found !";
+	end unit_not_found;
 
 	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string) is begin
 		log (ERROR, "submodule instance " & enclose_in_quotes (et_general.to_string (name)) &
@@ -1132,160 +1123,6 @@ package body et_schematic_ops is
 		log_indentation_down;
 	end insert_ports;
 	
--- 	procedure move_unit (
--- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
--- 		device_name		: in type_name; -- IC45
--- 		unit_name		: in type_unit_name.bounded_string; -- A
--- 		coordinates		: in type_coordinates; -- relative/absolute
--- 		sheet			: in type_sheet_relative; -- -3/0/2
--- 		point			: in type_point; -- x/y
--- 		log_threshold	: in type_log_level) is
--- 
--- 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
--- 
--- 		procedure query_devices (
--- 			module_name	: in type_module_name.bounded_string;
--- 			module		: in out type_module) is
--- 			use et_schematic.type_devices;
--- 			device_cursor : et_schematic.type_devices.cursor;
--- 
--- 			-- temporarily storage of unit coordinates.
--- 			-- There will be only one unit in this container.
--- 			position_of_unit_old : type_unit_positions.map;
--- 
--- 			position_of_unit_new : et_coordinates.type_position;
--- 
--- 			ports : et_symbols.type_ports.map;
--- 
--- 			procedure query_units (
--- 				device_name	: in type_name;
--- 				device		: in out et_schematic.type_device) is
--- 				use et_schematic.type_units;
--- 				unit_cursor : et_schematic.type_units.cursor;
--- 
--- 				procedure move_unit (
--- 					unit_name	: in type_unit_name.bounded_string;
--- 					unit		: in out et_schematic.type_unit) is
--- 					use et_coordinates;
--- 				begin
--- 					case coordinates is
--- 						when ABSOLUTE =>
--- 							unit.position := to_position (point, type_sheet (sheet));
--- 
--- 						when RELATIVE =>
--- 							move (
--- 								position	=> unit.position,
--- 								offset		=> to_position_relative (point, sheet)
--- 								);
--- 					end case;
--- 
--- 					-- store new unit position
--- 					position_of_unit_new := unit.position;
--- 					
--- 					exception
--- 						when event: others =>
--- 							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
--- 							log (text => ada.exceptions.exception_information (event), console => true);
--- 							raise;
--- 					
--- 				end move_unit;
--- 				
--- 			begin -- query_units
--- 				if contains (device.units, unit_name) then
--- 					-- locate unit by its name
--- 					unit_cursor := find (device.units, unit_name);
--- 
--- 					-- load unit position and insert in container "position_of_unit_old"
--- 					type_unit_positions.insert (
--- 						container	=> position_of_unit_old, 
--- 						key			=> unit_name,
--- 						new_item	=> element (unit_cursor).position);
--- 
--- 					-- log old unit position
--- 					log_unit_positions (position_of_unit_old, log_threshold + 1); -- there is only one unit
--- -- 					log (text => "position before " & 
--- -- 						 et_coordinates.to_string (
--- -- 							type_ports.first_element (positions)), level => log_threshold + 1);
--- 
--- 					update_element (
--- 						container	=> device.units,
--- 						position	=> unit_cursor,
--- 						process		=> move_unit'access);
--- 					
--- 				else
--- 					unit_not_found (unit_name);
--- 				end if;
--- 			end query_units;
--- 
--- 		begin -- query_devices
--- 			if contains (module.devices, device_name) then
--- 
--- 				-- Before the actual move, the coordinates of the
--- 				-- unit must be fetched. These coordinates will later assist
--- 				-- in deleting the port names from connected net segments.
--- 				device_cursor := find (module.devices, device_name); -- the device should be there
--- 
--- 				-- locate the unit, load current position, set new position
--- 				update_element (
--- 					container	=> module.devices,
--- 					position	=> device_cursor,
--- 					process		=> query_units'access);
--- 				
--- 				log_indentation_up;
--- 
--- 				-- Fetch the ports of the unit to be moved.
--- 				ports := ports_of_unit (device_cursor, unit_name);
--- 				
--- 				-- Delete the old ports of the targeted unit from module.nets
--- 				delete_ports (
--- 					module			=> module_cursor,
--- 					device			=> device_name,
--- 					ports			=> ports,
--- 					sheets			=> position_of_unit_old,
--- 					log_threshold	=> log_threshold + 1);
--- 
--- 				-- Calculate the new positions of the unit ports:
--- 				move_ports (ports, position_of_unit_new);
--- 
--- 				-- Insert the new unit ports in the nets (type_module.nets):
--- 				insert_ports (
--- 					module			=> module_cursor,
--- 					device			=> device_name,
--- 					unit			=> unit_name,
--- 					ports			=> ports,
--- 					sheet			=> et_coordinates.sheet (position_of_unit_new),
--- 					log_threshold	=> log_threshold + 1);
--- 				
--- 				log_indentation_down;				
--- 			else
--- 				device_not_found (device_name);
--- 			end if;
--- 		end query_devices;
--- 		
--- 	begin -- move_unit
--- 		case coordinates is
--- 			when ABSOLUTE =>
--- 				log (text => "module " & to_string (module_name) &
--- 					" moving " & to_string (device_name) & " unit " & 
--- 					to_string (unit_name) & " to sheet" & to_sheet (sheet) &
--- 					to_string (point), level => log_threshold);
--- 
--- 			when RELATIVE =>
--- 				log (text => "module " & to_string (module_name) &
--- 					" moving " & to_string (device_name) & " unit " & 
--- 					to_string (unit_name) & " by " & to_sheet_relative (sheet) & " sheet(s)" &
--- 					to_string (point), level => log_threshold);
--- 		end case;
--- 		
--- 		-- locate module
--- 		module_cursor := locate_module (module_name);
--- 		
--- 		update_element (
--- 			container	=> generic_modules,
--- 			position	=> module_cursor,
--- 			process		=> query_devices'access);
--- 
--- 	end move_unit;
 
 	procedure move_unit_placeholder (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

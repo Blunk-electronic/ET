@@ -44,7 +44,7 @@ with ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
 
-with et_scripting_exceptions;	use et_scripting_exceptions;
+with et_exceptions;				use et_exceptions;
 
 with et_project;
 with et_project.modules;

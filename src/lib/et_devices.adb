@@ -39,6 +39,8 @@ with ada.strings; 				use ada.strings;
 with ada.strings.maps.constants;
 with ada.strings.fixed; 		use ada.strings.fixed;
 
+with et_exceptions;				use et_exceptions;
+
 package body et_devices is
 	
 	use et_terminals;
@@ -930,9 +932,12 @@ package body et_devices is
 				
 				-- if no suitable external unit found, we have a problem:
 				if cursors.ext = pac_units_external.no_element then
-					log (ERROR, "unit " & et_devices.to_string (unit_name) &
-						 " not found in device model !", console => true);
-					raise constraint_error;
+					log (ERROR, "Unit " & to_string (unit_name) &
+						 " not defined in device model !", console => true);
+					
+					raise semantic_error_1 with
+						"ERROR: Unit " & to_string (unit_name) &
+						 " not defined in device model !";
 				end if;
 
 			end if;

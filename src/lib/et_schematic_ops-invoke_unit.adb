@@ -64,11 +64,15 @@ procedure invoke_unit (
 			use et_schematic.type_units;
 		begin
 			if contains (device.units, unit_name) then
-				log (ERROR, 
-						to_string (device_name) &
+				log (ERROR, to_string (device_name) &
 						" unit " & to_string (unit_name) &
-						" already in use !", console => true);
-				raise constraint_error;
+						" already deployed !", console => true);
+				
+				raise semantic_error_1 with
+					"ERROR: " & to_string (device_name) &
+					" unit " & to_string (unit_name) &
+					" already deployed !";
+				
 			end if;
 		end query_units_in_use;
 

@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                        SCRIPTING EXCEPTIONS                              --
+--                            EXCEPTIONS                                    --
 --                                                                          --
---                               S p e c                                    --
+--                              S p e c                                     --
 --                                                                          --
 --         Copyright (C) 2017- 2020 Mario Blunk, Blunk electronic           --
 --                                                                          --
@@ -38,17 +38,18 @@
 
 with ada.exceptions;			use ada.exceptions;
 
-package et_scripting_exceptions is
+package et_exceptions is
 
 
 	syntax_error_1		: exception;
+	syntax_error_2		: exception;
 
 	exception_command_incomplete	: exception;
 	
 
 	semantic_error_1	: exception;
 	
-end et_scripting_exceptions;
+end et_exceptions;
 
 -- Soli Deo Gloria
 
