@@ -1601,10 +1601,9 @@ package body et_canvas_schematic is
 			--put_line ("ESC");
 			
 			expect_entry := expect_entry_default;
-			
-			verb := verb_default; -- CS ?
-			noun := noun_default; -- CS ?
-			-- if left off, verb and noun would remain as they are
+
+			-- Verb and noun emain as they are
+			-- so that the mode is unchanged.
 			
 			reset_request_clarification;
 			

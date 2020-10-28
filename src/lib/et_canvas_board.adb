@@ -862,9 +862,10 @@ package body et_canvas_board is
 
 		if key = GDK_Escape then
 			expect_entry := expect_entry_default;
-			verb := verb_default;
-			noun := noun_default;
-
+			
+			-- Verb and noun emain as they are
+			-- so that the mode is unchanged.
+			
 			reset_request_clarification;
 			status_enter_verb;
 		else
