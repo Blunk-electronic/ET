@@ -205,8 +205,10 @@ is
 		
 		current_active_sheet := sheet;
 
-		-- Update module name and sheet number in the schematic window title bar:
-		set_title_bar (active_module, current_active_sheet);
+		-- Update module name in title bar of main window:
+		set_title_bar (active_module);
+
+		update_sheet_number_display;
 	end show_sheet;
 
 	-- Sets the active module and first sheet.
@@ -221,8 +223,10 @@ is
 		set_module (module);
 		current_active_sheet := 1;
 
-		-- Update module name and sheet number in the schematic window title bar:
-		set_title_bar (module, current_active_sheet);
+		-- Update module name in the schematic window title bar:
+		set_title_bar (module);
+		
+		update_sheet_number_display;
 		
 		-- Update the board window title bar:
 		et_canvas_board.set_title_bar (module);
@@ -241,8 +245,10 @@ is
 		set_module (module);
 		current_active_sheet := sheet;
 
-		-- Update module name and sheet number in the schematic window title bar:
-		set_title_bar (module, current_active_sheet);
+		-- Update module name in the schematic window title bar:
+		set_title_bar (module);
+
+		update_sheet_number_display;
 		
 		-- Update the board window title bar:
 		et_canvas_board.set_title_bar (module);

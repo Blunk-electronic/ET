@@ -59,14 +59,35 @@ package body et_canvas_schematic is
 
 	procedure set_title_bar (
 		-- CS project name
-		module		: in et_general.type_module_name.bounded_string;
-		sheet		: in type_sheet) is
+		module		: in et_general.type_module_name.bounded_string)
+	is
 		use et_general;
 	begin
-		window.set_title (title & to_string (module) &
-			" sheet " & to_sheet (sheet));
+		window.set_title (title & to_string (module));
 	end set_title_bar;
 
+
+	
+	procedure update_sheet_number_display is begin
+		gtk_entry (cbox_sheet.get_child).set_text (to_sheet (current_active_sheet));
+	end update_sheet_number_display;
+	
+	procedure build_sheet_number_display is
+		spacing : gint;
+	begin
+		spacing := 10;
+
+		gtk_new_vbox (box_sheet);
+		set_spacing (box_sheet, spacing);
+		pack_start (box_left, box_sheet, expand => false);
+		
+		gtk_new (label_sheet, "sheet");
+		pack_start (box_sheet, label_sheet, expand => false);
+		gtk_new_with_entry (cbox_sheet);
+		pack_start (box_sheet, cbox_sheet);
+	end build_sheet_number_display;
+
+	
 	
 	procedure redraw_board is begin
 		et_canvas_board.redraw_board;

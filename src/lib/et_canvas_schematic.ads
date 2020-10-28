@@ -50,6 +50,9 @@ with gdk.types.keysyms;				use gdk.types.keysyms;
 
 with gtk;
 with gtk.gentry;					use gtk.gentry;
+with gtk.box;						use gtk.box;
+with gtk.label;						use gtk.label;
+with gtk.combo_box_text;			use gtk.combo_box_text;
 
 with glib;							use glib;
 with cairo;							use cairo;
@@ -86,9 +89,7 @@ package et_canvas_schematic is
 
 	procedure set_title_bar (
 		-- CS project name								
-		module		: in et_general.type_module_name.bounded_string;
-		sheet		: in type_sheet);
-	
+		module		: in et_general.type_module_name.bounded_string);
 	
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
@@ -96,6 +97,17 @@ package et_canvas_schematic is
 		geometry		=> et_coordinates.pac_geometry_sch);
 
 	use pac_canvas;
+
+
+	
+	box_sheet		: gtk_vbox;
+	label_sheet		: gtk_label;
+	cbox_sheet		: gtk_combo_box_text;
+
+	procedure update_sheet_number_display;
+	procedure build_sheet_number_display;
+
+
 	
 	-- Objects that neither belong to frames or symbols like:
 	--  - net segments

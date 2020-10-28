@@ -61,8 +61,8 @@ package body et_gui is
 		
 		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
 
-		-- Show the module name and sheet number in the title bar:
-		set_title_bar (pac_generic_modules.key (module), sheet);
+		-- Show the module name in the title bar:
+		set_title_bar (pac_generic_modules.key (module));
 		
 		window.set_default_size (1024, 768);
 
@@ -80,6 +80,8 @@ package body et_gui is
 
 		build_primary_tool_display;
 
+		build_sheet_number_display;
+		
 		build_coordinates_display;
 
 		build_mode_display;
@@ -127,6 +129,7 @@ package body et_gui is
 		-- display the schematic:
 		window.show_all;
 
+		update_sheet_number_display;
 		canvas.update_mode_display;
 		
 	end init_schematic;
