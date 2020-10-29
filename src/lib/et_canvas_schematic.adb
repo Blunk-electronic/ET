@@ -1665,6 +1665,7 @@ package body et_canvas_schematic is
 				-- we call the corresponding subprogram right away here:
 				if single_cmd_status.finalization_pending and primary_tool = KEYBOARD then
 					case verb is
+						when VERB_DRAG		=> drag;
 						when VERB_INVOKE	=> invoke;
 						when VERB_MOVE		=> move;
 						when others			=> null;

@@ -123,11 +123,17 @@ package et_canvas_schematic_units is
 	type type_unit_being_moved is record
 		being_moved			: boolean := false;
 		tool				: type_tool := MOUSE;
+
+		-- In case the unit is being dragged, then we backup 
+		-- here the original position.
+		-- Procedure draw_nets requires that in order
+		-- to calculate the displacement of attached net segments:
 		original_position	: type_point := origin;
+		
 		device				: type_name := (others => <>);
 		unit				: type_unit_name.bounded_string;
 
-		-- A unit can be moved from one sheet to another.
+		-- In case a unit is being moved from one sheet to another.
 		-- This flag notifies the GUI that the unit is to be
 		-- drawn on the current visible sheet. This way the
 		-- original sheet number is ignored. See et_canvas_schematic.draw_units.
@@ -210,7 +216,8 @@ package et_canvas_schematic_units is
 	procedure find_units (point : in type_point);
 
 	-- Locates net segments attached to the unit indicated by
-	-- cursor selected_unit:
+	-- cursor selected_unit. Collects the segments in list
+	-- segments_being_dragged (see above):
 	procedure find_attached_segments;
 
 

@@ -1844,160 +1844,247 @@ is
 		end unit_in_use;
 						
 		
-	begin -- proposes
+	begin -- propose_arguments
 		log (text => incomplete 
 			& "Only" & count_type'image (fields) & " arguments provided. "
 			& "Proposing arguments ...", level => log_threshold);
 
 		case verb is
-			when VERB_INVOKE =>
-				case fields is
-					when 4 =>
-						device_name_missing;
-						
-					when 5 => -- like "invoke unit IC1"
-						unit_name_missing;
-
-						device_name := et_devices.to_name (f (5));
-
-						if exists (current_active_module, device_name) then
-
-							unit_add.device		:= device_model_cursor (current_active_module, device_name);
-							
-							--unit_add.variant	:= device_variant_name (current_active_module, device_name);
-							-- CS: really required ? requires test whether the device is real
-							
-							unit_add.total		:= units_total (unit_add.device);
-							unit_add.device_pre	:= device_name;
-						
-							menu_propose_units_on_invoke (
-								device			=> device_name,
-								units			=> available_units (
-													current_active_module,
-													device_name,
-													log_threshold + 1),
-								log_threshold	=> log_threshold + 1);
-
-						else
-							device_not_found;
-						end if;
-						
-					when 6 => -- like "invoke unit IC1 B"
-						device_name := et_devices.to_name (f (5));
-
-						if exists (current_active_module, device_name) then
-
-							unit_add.device		:= device_model_cursor (current_active_module, device_name);
-
-							--unit_add.variant	:= device_variant_name (current_active_module, device_name);
-							-- CS: really required ? requires test whether the device is real
-
-							unit_add.total		:= units_total (unit_add.device);
-							unit_add.device_pre	:= device_name;
-							
-							unit_name := to_name (f (6));
-
-							-- test existence AND availability of unit:
-							if provides_unit (unit_add.device, unit_name) then
-
-								if unit_available (current_active_module, device_name, unit_name) then
-
-									unit_add.name := unit_name;
-									
-									-- Allow drawing the unit:
-									unit_add.via_invoke := true;
+			when VERB_DRAG =>
+				case noun is
+					when NOUN_UNIT =>
+						case fields is
+							when 4 =>
+								device_name_missing;
 								
-									redraw;
+							when 5 => -- like "drag unit IC1"
+								unit_name_missing;
+
+								device_name := et_devices.to_name (f (5));
+
+								if exists (current_active_module, device_name) then
+									unit_move.device := device_name;
+
+									-- Propose units that are on the current active sheet:
+									menu_propose_units_on_drag (
+										units			=> units_on_sheet (
+															current_active_module,
+															device_name,
+															current_active_sheet,
+															log_threshold + 1),
+										log_threshold	=> log_threshold + 1);
+
 								else
-									unit_in_use;
+									device_not_found;
 								end if;
-							else
-								unit_not_found;
-							end if; 
-						else
-							device_not_found;
-						end if;
+								
+							when 6 => -- like "drag unit IC1 B"
+								device_name := et_devices.to_name (f (5));
+								
+								if exists (current_active_module, device_name) then
+									
+									unit_move.device := device_name;
+
+									unit_name := to_name (f (6));
+
+									-- Test whether the unit is deployed on the current active sheet.
+									-- Dragging is possible if it is deployed and if it is on the current sheet.
+									-- It will then be attached to the cursor or mouse pointer.
+									if deployed (current_active_module, unit_move.device, unit_name) then
+
+										unit_move.unit := unit_name;
+										
+										if sheet (current_active_module, unit_move.device, unit_move.unit) = current_active_sheet then
+											select_unit_for_move;
 											
-					when others =>  -- like "invoke unit IC1 2 100 80 0"
-						set_status ("WARNING: Arguments after unit name are ignored.");
-						
+											-- use the current primary tool for moving the unit:
+											unit_move.tool := primary_tool;
+
+											find_attached_segments;
+											
+											-- Allow drawing the unit:
+											unit_move.being_moved := true;
+
+											single_cmd_status.finalization_pending := true;
+											redraw;
+
+										else
+											set_status ("ERROR: Unit is not on this sheet !");
+										end if;
+									else
+										unit_not_deployed;
+									end if; 
+								else
+									device_not_found;
+								end if;
+													
+							when others =>  -- like "invoke unit IC1 2 100 80 0"
+								set_status ("WARNING: Arguments after unit name are ignored.");
+								
+						end case;
+
+					when others => null; -- CS
 				end case;
 
+
+			when VERB_INVOKE =>
+				case noun is
+					when NOUN_UNIT =>
+						case fields is
+							when 4 =>
+								device_name_missing;
+								
+							when 5 => -- like "invoke unit IC1"
+								unit_name_missing;
+
+								device_name := et_devices.to_name (f (5));
+
+								if exists (current_active_module, device_name) then
+
+									unit_add.device		:= device_model_cursor (current_active_module, device_name);
+									
+									--unit_add.variant	:= device_variant_name (current_active_module, device_name);
+									-- CS: really required ? requires test whether the device is real
+									
+									unit_add.total		:= units_total (unit_add.device);
+									unit_add.device_pre	:= device_name;
+								
+									menu_propose_units_on_invoke (
+										device			=> device_name,
+										units			=> available_units (
+															current_active_module,
+															device_name,
+															log_threshold + 1),
+										log_threshold	=> log_threshold + 1);
+
+								else
+									device_not_found;
+								end if;
+								
+							when 6 => -- like "invoke unit IC1 B"
+								device_name := et_devices.to_name (f (5));
+
+								if exists (current_active_module, device_name) then
+
+									unit_add.device		:= device_model_cursor (current_active_module, device_name);
+
+									--unit_add.variant	:= device_variant_name (current_active_module, device_name);
+									-- CS: really required ? requires test whether the device is real
+
+									unit_add.total		:= units_total (unit_add.device);
+									unit_add.device_pre	:= device_name;
+									
+									unit_name := to_name (f (6));
+
+									-- test existence AND availability of unit:
+									if provides_unit (unit_add.device, unit_name) then
+
+										if unit_available (current_active_module, device_name, unit_name) then
+
+											unit_add.name := unit_name;
+											
+											-- Allow drawing the unit:
+											unit_add.via_invoke := true;
+										
+											redraw;
+										else
+											unit_in_use;
+										end if;
+									else
+										unit_not_found;
+									end if; 
+								else
+									device_not_found;
+								end if;
+													
+							when others =>  -- like "invoke unit IC1 2 100 80 0"
+								set_status ("WARNING: Arguments after unit name are ignored.");
+								
+						end case;
+
+					when others => null; -- CS
+				end case;
+						
 			when VERB_MOVE =>
-				case fields is
-					when 4 =>
-						device_name_missing;
-						
-					when 5 => -- like "move unit IC1"
-						unit_name_missing;
-
-						device_name := et_devices.to_name (f (5));
-
-						if exists (current_active_module, device_name) then
-							unit_move.device := device_name;
-
-							-- Propose units that are on the current active sheet:
-							menu_propose_units_on_move (
-								units			=> units_on_sheet (
-													current_active_module,
-													device_name,
-													current_active_sheet,
-													log_threshold + 1),
-								log_threshold	=> log_threshold + 1);
-
-						else
-							device_not_found;
-						end if;
-						
-					when 6 => -- like "move unit IC1 B"
-						device_name := et_devices.to_name (f (5));
-						
-						if exists (current_active_module, device_name) then
-							
-							unit_move.device := device_name;
-
-							unit_name := to_name (f (6));
-
-							-- Test whether the unit is deployed.
-							-- If it is deployed somewhere (whatever sheet) then it will be 
-							-- attached to the cursor or mouse pointer.
-							if deployed (current_active_module, unit_move.device, unit_name) then
-
-								unit_move.unit := unit_name;
+				case noun is
+					when NOUN_UNIT =>
+						case fields is
+							when 4 =>
+								device_name_missing;
 								
-								-- If the unit is not on the current_active_sheet then notify the
-								-- GUI that the sheet changes. This way the unit is drawn
-								-- on the current visible sheet independed of its original sheet number.
-								-- See et_canvas_schematic.draw_units.
-								if sheet (current_active_module, unit_move.device, unit_move.unit) /= current_active_sheet then
-									unit_move.sheet_changes := true;
+							when 5 => -- like "move unit IC1"
+								unit_name_missing;
 
-									--set_status ("Moving unit from another sheet");
+								device_name := et_devices.to_name (f (5));
+
+								if exists (current_active_module, device_name) then
+									unit_move.device := device_name;
+
+									-- Propose units that are on the current active sheet:
+									menu_propose_units_on_move (
+										units			=> units_on_sheet (
+															current_active_module,
+															device_name,
+															current_active_sheet,
+															log_threshold + 1),
+										log_threshold	=> log_threshold + 1);
+
+								else
+									device_not_found;
 								end if;
-
-								select_unit_for_move;
 								
-								-- use the current primary tool for moving the unit:
-								unit_move.tool := primary_tool;
-							
-								-- Allow drawing the unit:
-								unit_move.being_moved := true;
-
-								single_cmd_status.finalization_pending := true;
-								redraw;
+							when 6 => -- like "move unit IC1 B"
+								device_name := et_devices.to_name (f (5));
 								
-							else
-								unit_not_deployed;
-							end if; 
-						else
-							device_not_found;
-						end if;
-											
-					when others =>  -- like "invoke unit IC1 2 100 80 0"
-						set_status ("WARNING: Arguments after unit name are ignored.");
-						
+								if exists (current_active_module, device_name) then
+									
+									unit_move.device := device_name;
+
+									unit_name := to_name (f (6));
+
+									-- Test whether the unit is deployed.
+									-- If it is deployed somewhere (whatever sheet) then it will be 
+									-- attached to the cursor or mouse pointer.
+									if deployed (current_active_module, unit_move.device, unit_name) then
+
+										unit_move.unit := unit_name;
+										
+										-- If the unit is not on the current_active_sheet then notify the
+										-- GUI that the sheet changes. This way the unit is drawn
+										-- on the current visible sheet independed of its original sheet number.
+										-- See et_canvas_schematic.draw_units.
+										if sheet (current_active_module, unit_move.device, unit_move.unit) /= current_active_sheet then
+											unit_move.sheet_changes := true;
+
+											--set_status ("Moving unit from another sheet");
+										end if;
+
+										select_unit_for_move;
+										
+										-- use the current primary tool for moving the unit:
+										unit_move.tool := primary_tool;
+									
+										-- Allow drawing the unit:
+										unit_move.being_moved := true;
+
+										single_cmd_status.finalization_pending := true;
+										redraw;
+										
+									else
+										unit_not_deployed;
+									end if; 
+								else
+									device_not_found;
+								end if;
+													
+							when others =>  -- like "invoke unit IC1 2 100 80 0"
+								set_status ("WARNING: Arguments after unit name are ignored.");
+								
+						end case;
+
+					when others => null; -- CS
 				end case;
-				
+						
 			when others => null;
 		
 		end case;

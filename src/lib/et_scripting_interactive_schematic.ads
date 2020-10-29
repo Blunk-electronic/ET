@@ -67,6 +67,13 @@ package et_scripting_interactive_schematic is
 		units			: in pac_unit_names.list;
 		log_threshold	: in type_log_level);
 
+	procedure unit_selected_on_drag (
+		self : access gtk_menu_item_record'class);
+	
+	procedure menu_propose_units_on_drag (
+		units			: in pac_unit_names.list;
+		log_threshold	: in type_log_level);
+
 	
 end et_scripting_interactive_schematic;
 
