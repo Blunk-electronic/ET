@@ -318,14 +318,14 @@ package body et_schematic_ops.units is
 
 	end move_unit;
 
-	procedure drag_net_segments (
 	-- Drags the net segments according to the given drag_list of a unit.
 	-- Changes the position of start or end points of segments.
 	-- Does NOT create new connections with segments if a port
 	-- lands on the start or end point of another segment.
 	-- Does NOT create a new connection with a segments if a port
 	-- lands between start and end point.
-		module			: in pac_generic_modules.cursor;		-- the module
+	procedure drag_net_segments (
+		module			: in pac_generic_modules.cursor;-- the module
 		drag_list		: in type_drags_of_ports.map;	-- the old and new port positions
 		sheet			: in type_sheet;				-- the sheet to look at
 		log_threshold	: in type_log_level) is
@@ -350,15 +350,20 @@ package body et_schematic_ops.units is
 					drag_cursor : type_drags_of_ports.cursor := drag_list.first;
 
 					drag_processed : boolean;
+
+					-- We must keep record of segments that have been dragged already.
+					-- Each time a segment has been dragged, it will be appended to
+					-- this list:
+					already_dragged_segments : type_net_segments.list;
 					
 					procedure query_segments (strand : in out type_strand) is
 						use type_net_segments;
 
 						procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
 
-							procedure change_segment (segment : in out type_net_segment) is 
-							-- Changes the position of start or end point of a segment according to the drag point.
-							begin -- change_segment
+							-- Changes the position of start or end point of a segment 
+							-- according to the drag point:
+							procedure change_segment (segment : in out type_net_segment) is begin
 								
 								-- if port sits on a start point of a segment -> move start point
 								if segment.start_point = element (drag_cursor).before then
@@ -372,6 +377,10 @@ package body et_schematic_ops.units is
 										to_string (segment.start_point),
 										level => log_threshold + 3);
 
+									-- Now the segment has been dragged. Store it
+									-- in list of already dragged segments:
+									already_dragged_segments.append (segment);
+									
 									drag_processed := true;
 								end if;
 
@@ -387,33 +396,43 @@ package body et_schematic_ops.units is
 										to_string (segment.end_point),
 										level => log_threshold + 3);
 
+									-- Now the segment has been dragged. Store it
+									-- in list of already dragged segments:
+									already_dragged_segments.append (segment);
+									
 									drag_processed := true;
 								end if;
 
 							end change_segment;
 
 						begin -- query_segment
-							log_indentation_up;
-							log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
-							log_indentation_up;
-							
-							update_element (
-								container	=> strand.segments,
-								position	=> segment_cursor,
-								process		=> change_segment'access);
-											
-							log_indentation_down;
-							log_indentation_down;
+							-- Probe only those segments which have not been dragged already:
+							if not already_dragged_segments.contains (element (segment_cursor)) then
+								
+								log_indentation_up;
+								log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
+								log_indentation_up;
+								
+								update_element (
+									container	=> strand.segments,
+									position	=> segment_cursor,
+									process		=> change_segment'access);
+												
+								log_indentation_down;
+								log_indentation_down;
+								
+							end if;
 						end query_segment;
 						
 					begin -- query_segments
+						-- Probe segments of this strand. Skip segments that have been
+						-- dragged already:
 						iterate (strand.segments, query_segment'access);
 
 						-- Update strand position if any movement took place.
 						if drag_processed then
 							set_strand_position (strand); 
-						end if;
-						
+						end if;						
 					end query_segments;
 						
 				begin -- query_strands
