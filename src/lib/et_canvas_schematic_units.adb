@@ -482,7 +482,7 @@ package body et_canvas_schematic_units is
 		device_name : constant type_name := key (su.device);
 		unit_name : constant type_unit_name.bounded_string := key (su.unit);
 
-		-- The ports with their positions the selected unit:
+		-- The ports with their positions of the selected unit:
 		ports : et_symbols.type_ports.map;
 
 		-- The initial position of the selected unit before 
@@ -517,6 +517,8 @@ package body et_canvas_schematic_units is
 					procedure query_segment (g : in type_net_segments.cursor) is
 						use et_schematic.pac_shapes;
 					begin
+						log (text => to_string (element (g)));
+						
 						if element (g).start_point = element (p).position then
 							segments_being_dragged.append ((
 -- 								net		=> n,
@@ -524,7 +526,7 @@ package body et_canvas_schematic_units is
 								segment	=> element (g),
 								zone	=> START_POINT));
 
-							--log (text => "dg1" & to_string (element (g)), console => true);
+							--log (text => "dg S" & to_string (element (g)), console => true);
 						end if;
 
 						if element (g).end_point = element (p).position then
@@ -534,7 +536,7 @@ package body et_canvas_schematic_units is
 								segment	=> element (g),
 								zone	=> END_POINT));
 
-							--log (text => "dg1" & to_string (element (g)), console => true);
+							--log (text => "dg1 E" & to_string (element (g)), console => true);
 						end if;
 					end query_segment;
 					
@@ -545,10 +547,12 @@ package body et_canvas_schematic_units is
 				end query_strand;
 				
 			begin
+				--log (text => "iterate strands", console => true);
 				iterate (element (n).strands, query_strand'access);
 			end query_net;
 			
 		begin
+			--log (text => "iterate nets", console => true);
 			iterate (element (current_active_module).nets, query_net'access);
 		end query_port;
 		
@@ -557,17 +561,10 @@ package body et_canvas_schematic_units is
 		
 		query_element (selected_unit, get_ports'access);
 		-- now the ports of the selected unit are in "ports"
+
+		--log (text => count_type'image (ports.length), console => true);
 		
-		-- Test whether the ports of the unit can be dragged.
-		-- CS: Might become obsolete once ports at the same x/y position are prevented.
-		if movable (current_active_module, device_name, unit_name, 
-			unit_position, ports, log_threshold + 10)
-			-- CS: level 10 avoids excessive log information. find a more elegant way.
-		then
-			et_symbols.type_ports.iterate (ports, query_port'access);
-		else
-			null;
-		end if;
+		et_symbols.type_ports.iterate (ports, query_port'access);
 		
 	end find_attached_segments;
 	
