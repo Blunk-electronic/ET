@@ -1822,22 +1822,22 @@ is
 		end unit_name_missing;
 		
 		procedure device_not_found is begin
-			set_status ("ERROR. Device " & to_string (device_name) & " not found !");
+			set_status ("ERROR: Device " & to_string (device_name) & " not found !");
 		end device_not_found;
 
 		procedure unit_not_found is begin
-			set_status ("ERROR. Device " & to_string (device_name) 
+			set_status ("ERROR: Device " & to_string (device_name) 
 				& " does not provide unit " & to_string (unit_name) & " !");
 		end unit_not_found;
 
 		procedure unit_not_deployed is begin
-			set_status ("ERROR. Unit " & to_string (unit_name) 
+			set_status ("ERROR: Unit " & to_string (unit_name) 
 				& " of device " & to_string (device_name) 
 				& " not deployed !");
 		end unit_not_deployed;
 		
 		procedure unit_in_use is begin
-			set_status ("ERROR. Unit " & to_string (unit_name) 
+			set_status ("ERROR: Unit " & to_string (unit_name) 
 				& " of device " & to_string (device_name) 
 				& " already in use !");
 			-- CS output coordinates of used unit
