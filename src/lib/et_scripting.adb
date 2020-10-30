@@ -200,12 +200,6 @@ package body et_scripting is
 
 
 
-	procedure terminate_main is begin
-		log_indentation_reset;
-		log (text => "exiting ...", console => true);
-		gtk.main.main_quit;
-	end;
-
 
 	-- Used when executing a script from inside a script
 	-- or

@@ -136,6 +136,12 @@ package body pac_canvas is
 -- 		
 -- 		return true;
 -- 	end;
+
+	procedure terminate_main is begin
+		log_indentation_reset;
+		log (text => "exiting ...", console => true);
+		gtk.main.main_quit;
+	end;
 	
 	procedure terminate_main (self : access gtk_widget_record'class) is begin
 		put_line ("exiting ...");
