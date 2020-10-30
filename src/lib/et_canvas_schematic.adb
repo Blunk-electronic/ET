@@ -81,7 +81,7 @@ package body et_canvas_schematic is
 		set_spacing (box_sheet, spacing);
 		pack_start (box_left, box_sheet, expand => false);
 		
-		gtk_new (label_sheet, "sheet");
+		gtk_new (label_sheet, "SHEET (KEYPAD +/-)");
 		pack_start (box_sheet, label_sheet, expand => false);
 		gtk_new_with_entry (cbox_sheet);
 		pack_start (box_sheet, cbox_sheet);
@@ -1668,7 +1668,6 @@ package body et_canvas_schematic is
 						when VERB_DRAG		=> drag;
 						when VERB_INVOKE	=> invoke;
 						when VERB_MOVE		=> move;
-						--when VERB_ROTATE	=> rotate;
 						when others			=> null;
 					end case;
 					

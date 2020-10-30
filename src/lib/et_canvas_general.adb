@@ -280,10 +280,7 @@ package body pac_canvas is
 
 		-- Create a button and place it in the toolbar:
 		gtk_new (button_demo, label => "DEMO");
-		insert (toolbar_right, button_demo);
-		
-
-		
+		insert (toolbar_right, button_demo);		
 	end build_toolbars;
 
 	procedure update_primary_tool_display is begin
@@ -300,7 +297,7 @@ package body pac_canvas is
 		set_spacing (box_primary_tool, spacing);
 		pack_start (box_left, box_primary_tool, expand => false);
 		
-		gtk_new (label_primary_tool, "primary tool");
+		gtk_new (label_primary_tool, "PRIMARY TOOL (F4)");
 		pack_start (box_primary_tool, label_primary_tool, expand => false);
 		gtk_new_with_entry (cbox_primary_tool);
 		pack_start (box_primary_tool, cbox_primary_tool);
@@ -332,14 +329,14 @@ package body pac_canvas is
 		-- The box for grid:
 		gtk_new_vbox (box_grid);
 		pack_start (box_positions, box_grid, expand => false);
-		gtk_new (label_grid, "grid");
+		gtk_new (label_grid, "GRID (CTRL-SHIFT)");
 		pack_start (box_grid, label_grid, expand => false);
 
 		-- density
 		gtk_new_hbox (box_grid_density);
 		set_spacing (box_grid_density, spacing);
 		pack_start (box_grid, box_grid_density, expand => false);
-		gtk_new (label_grid_density, "density");
+		gtk_new (label_grid_density, "dsty");
 		pack_start (box_grid_density, label_grid_density, expand => false);
 		gtk_new_with_entry (cbox_grid_density);
 		pack_start (box_grid_density, cbox_grid_density, expand => false);
@@ -367,7 +364,7 @@ package body pac_canvas is
 		-- The box for mouse pointer:
 		gtk_new_vbox (box_mouse_position);
 		pack_start (box_positions, box_mouse_position, expand => false);
-		gtk_new (label_mouse_position, "pointer");
+		gtk_new (label_mouse_position, "POINTER");
 		pack_start (box_mouse_position, label_mouse_position, expand => false);
 
 		-- X
@@ -393,7 +390,7 @@ package body pac_canvas is
 		-- The box for cursor position:
 		gtk_new_vbox (box_cursor_position);
 		pack_start (box_positions, box_cursor_position, expand => false);
-		gtk_new (label_cursor_position, "cursor");
+		gtk_new (label_cursor_position, "CURSOR");
 		pack_start (box_cursor_position, label_cursor_position, expand => false);
 
 		-- X
@@ -419,7 +416,7 @@ package body pac_canvas is
 		-- The box for distances:
 		gtk_new_vbox (distances.box);
 		pack_start (box_positions, distances.box, expand => false);
-		gtk_new (distances.label, "cursor to pointer");
+		gtk_new (distances.label, "DISTANCE CURSOR TO POINTER");
 		pack_start (distances.box, distances.label, expand => false);
 
 		-- dX
@@ -577,11 +574,18 @@ package body pac_canvas is
 		gtk_entry (console.get_child).set_text (to_string (cmd));
 	end append_argument_to_command;
 	
-	procedure build_console is begin
+	procedure build_console is 
+		spacing : gint;
+	begin
+		spacing := 10;
+		
 		-- box for console on the right top
 		gtk_new_vbox (box_console);
-		set_spacing (box_console, 10);
+		set_spacing (box_console, spacing);
 		pack_start (box_right, box_console, expand => false);
+
+		gtk_new (label_console, "CONSOLE (F2 to enter command / F3 to focus canvas)");
+		pack_start (box_console, label_console, expand => false);
 
 		-- the command line
 		gtk_new_with_entry (console);

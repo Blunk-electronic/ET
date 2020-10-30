@@ -268,8 +268,9 @@ package pac_canvas is
 	procedure build_coordinates_display;
 
 	
-	box_console	: gtk_box;
-	console		: gtk_combo_box_text;
+	box_console		: gtk_vbox;
+	label_console	: gtk_label;
+	console			: gtk_combo_box_text;
 
 	-- Builds the console and places it in box_right.
 	procedure build_console;
@@ -284,7 +285,7 @@ package pac_canvas is
 		trim	: in boolean := true);
 
 	
-	box_drawing	: gtk_box;
+	box_drawing	: gtk_hbox;
 	frame		: gtk_frame;
 	scrolled	: gtk_scrolled_window;
 	
