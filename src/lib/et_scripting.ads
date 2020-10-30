@@ -82,6 +82,8 @@ package et_scripting is
 
 
 
+	
+
 
 	
 	procedure invalid_noun (noun : in string);

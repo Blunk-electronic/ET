@@ -729,6 +729,13 @@ package pac_canvas is
 	primary_tool : type_tool := primary_tool_default;
 
 	procedure change_primary_tool;
+
+	
+
+	procedure evaluate_exception (
+		name	: in string; -- exception name
+		message : in string); -- exception message
+
 	
 private
 

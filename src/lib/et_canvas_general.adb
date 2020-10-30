@@ -60,6 +60,8 @@ with gdk.window_attr;			use gdk.window_attr;
 with gdk.types.keysyms;
 
 with et_project;
+with et_modes;
+with et_scripting;
 
 package body et_canvas_general is
 
@@ -1807,6 +1809,60 @@ package body pac_canvas is
 
 		update_primary_tool_display;
 	end change_primary_tool;
+
+
+	procedure evaluate_exception (
+		name	: in string; -- exception name
+		message : in string) -- exception message
+	is 
+		use et_modes;
+		use et_scripting;
+	begin
+		log (text => name & " : " & message, level => log_threshold);
+
+		log (text => "runmode: " & to_string (runmode) 
+			 & " cmd_entry_mode: " & to_string (cmd_entry_mode),
+			 level => log_threshold);
+
+		if runmode = MODE_HEADLESS then
+			
+			log (ERROR, affected_line (single_cmd_status.cmd)
+				& "Command " & enclose_in_quotes (to_string (single_cmd_status.cmd))
+				& " : " 
+				& message,
+				console => true);
+			
+		else -- GUI mode
+			canvas.update_mode_display;
+			
+			case cmd_entry_mode is
+				when SINGLE_CMD =>
+					set_status (message);
+
+				-- Even in graphical mode, scripts can be nested.
+				-- In script mode we register only the first
+				-- error regardless of the nesting depth.
+				-- Because the operator needs to know which script
+				-- has actually failed at which line.
+				-- We MUST register the FIRST error because otherwise
+				-- the script name and command of the top level
+				-- script would instead be displayed in the GUI.
+				when VIA_SCRIPT =>
+
+					if not script_cmd_status.failed then
+						script_cmd_status.failed := true;
+						
+						set_status (
+							to_string (script_cmd_status.script_name) & " : "
+							& affected_line (script_cmd_status.cmd) 
+							& space & message);
+						
+						log (text => affected_line (script_cmd_status.cmd));
+					end if;
+
+			end case;
+		end if;
+	end evaluate_exception;
 	
 end pac_canvas;
 	
