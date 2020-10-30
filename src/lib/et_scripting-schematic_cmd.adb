@@ -2027,7 +2027,80 @@ is
 
 					when others => null; -- CS
 				end case;
-						
+
+			when VERB_ROTATE =>
+				case noun is
+					when NOUN_UNIT =>
+						case fields is
+							when 4 =>
+								device_name_missing;
+								
+							when 5 => -- like "rotate unit IC1"
+								unit_name_missing;
+
+								device_name := et_devices.to_name (f (5));
+
+								if exists (current_active_module, device_name) then
+									unit_move.device := device_name;
+
+									-- Propose units that are on the current active sheet:
+									menu_propose_units_on_move (
+										units			=> units_on_sheet (
+															current_active_module,
+															device_name,
+															current_active_sheet,
+															log_threshold + 1),
+										log_threshold	=> log_threshold + 1);
+
+								else
+									device_not_found;
+								end if;
+								
+							when 6 => -- like "rotate unit IC1 B"
+								device_name := et_devices.to_name (f (5));
+								
+								if exists (current_active_module, device_name) then
+									
+									unit_move.device := device_name;
+
+									unit_name := to_name (f (6));
+
+									-- Test whether the unit is deployed on the current active sheet.
+									-- Rotating is possible if it is deployed and if it is on the current sheet.
+									-- It will then be attached to the cursor or mouse pointer.
+									if deployed (current_active_module, unit_move.device, unit_name) then
+
+										unit_move.unit := unit_name;
+										
+										if sheet (current_active_module, unit_move.device, unit_move.unit) = current_active_sheet then
+											select_unit_for_move;
+											
+											-- use the current primary tool for moving the unit:
+											unit_move.tool := primary_tool;
+
+											-- Allow drawing the unit:
+											unit_move.being_moved := true;
+
+											single_cmd_status.finalization_pending := true;
+											redraw;
+
+										else
+											unit_not_on_this_sheet;
+										end if;
+									else
+										unit_not_deployed;
+									end if; 
+								else
+									device_not_found;
+								end if;
+													
+							when others => null;								
+						end case;
+
+					when others => null; -- CS
+				end case;
+
+				
 			when others => null;
 		
 		end case;

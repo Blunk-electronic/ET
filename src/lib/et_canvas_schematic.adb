@@ -1668,6 +1668,7 @@ package body et_canvas_schematic is
 						when VERB_DRAG		=> drag;
 						when VERB_INVOKE	=> invoke;
 						when VERB_MOVE		=> move;
+						when VERB_ROTATE	=> rotate;
 						when others			=> null;
 					end case;
 					

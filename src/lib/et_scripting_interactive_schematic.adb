@@ -179,7 +179,7 @@ package body et_scripting_interactive_schematic is
 
 	
 
--- MOVE / DRAG
+-- MOVE / DRAG / ROTATE
 	
 	procedure select_unit_for_move is begin
 		-- Append the cursors of the device and unit to the list of proposed units.
@@ -249,8 +249,7 @@ package body et_scripting_interactive_schematic is
 		end query_name;
 		
 	begin -- menu_propose_units_on_move
-		log (text => "proposing units of " & to_string (unit_move.device) 
-			 & " ... ",
+		log (text => "proposing units of " & to_string (unit_move.device) & " ... ",
 			 level => log_threshold);
 
 		case length (units) is
@@ -266,7 +265,6 @@ package body et_scripting_interactive_schematic is
 					& to_string (unit_move.unit)
 					& " of " & to_string (unit_move.device));
 
-				select_unit_for_move;
 				
 				-- use the current primary tool for moving the unit:
 				unit_move.tool := primary_tool;
@@ -275,8 +273,13 @@ package body et_scripting_interactive_schematic is
 					-- If we are about to drag a unit, then the connected
 					-- net segments must be identified:
 					when VERB_DRAG => 
+						select_unit_for_move;
 						find_attached_segments;
 
+					when VERB_MOVE => 
+						select_unit_for_move;
+
+					--when VERB_ROTATE =>
 					when others => null;
 				end case;
 				
