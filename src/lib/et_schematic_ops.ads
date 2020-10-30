@@ -193,6 +193,14 @@ package et_schematic_ops is
 		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
 
+	-- Returns a cursor to the requested net in the given module. If the net could
+	-- not be found, returns no_element.
+	function locate_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in type_net_name.bounded_string)
+		return et_schematic.type_nets.cursor;
+
+	
 	-- CS move to et_schematic ?
 	type type_drag is record
 		before		: type_point;
@@ -258,6 +266,66 @@ package et_schematic_ops is
 		device_name			: in type_name; -- R2
 		partcode			: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level);
+
+	-- Returns true if the given module provides the given device.
+	-- The module being searched in must be in the rig already.						
+	function exists (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name)
+		return boolean;
+
+	-- Locates the given device in the given module and returns
+	-- the cursor to the device.
+	-- If the device does not exist, returns no_element.
+	function locate_device (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return et_schematic.type_devices.cursor;
+
+	-- Locates the given unit of the given device in the 
+	-- given module and returns the cursor to the unit.
+	-- If the unit does not exist, returns no_element.
+	-- Raises exception if device does not exist.
+	function locate_unit (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name; -- R2
+		unit	: in type_unit_name.bounded_string)
+		return et_schematic.type_units.cursor;
+
+	-- Returns true if the unit of the given device in the 
+	-- given module has been deployed somewhere.
+	-- If the unit has not been deployed yet, returns false.
+	-- Raises exception if device does not exist.
+	function deployed (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name; -- R2
+		unit	: in type_unit_name.bounded_string)
+		return boolean;
+
+	-- Locates the given device in the given module and returns
+	-- the name of the device model (like 7400.dev).
+	-- Raises constraint error if the device does not exist.
+	function device_model_name (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return type_device_model_file.bounded_string; -- 7400.dev
+
+	-- Locates the given device in the given module and returns
+	-- the name of the package variant name of the device.
+	-- Raises constraint error if the device does not exist.
+	-- Raises constraint error if the device is virtual.
+	function device_variant_name (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return et_devices.type_variant_name.bounded_string; -- D, N
+	
+	-- Locates the given device in the given module and returns
+	-- the cursor to the device model.
+	-- Raises constraint error if the device does not exist.
+	function device_model_cursor (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return et_devices.type_devices.cursor;
 	
 	function exists_device_port (
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.

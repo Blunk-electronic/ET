@@ -1541,6 +1541,28 @@ package body et_schematic_ops is
 			process		=> query_devices'access);
 
 	end rotate_unit_placeholder;
+
+	function locate_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in type_net_name.bounded_string)		
+		return et_schematic.type_nets.cursor is
+		
+		cursor : et_schematic.type_nets.cursor;
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+		begin
+			cursor := et_schematic.type_nets.find (module.nets, net_name);
+		end query_nets;
+		
+	begin -- locate_net
+		query_element (
+			position	=> module_cursor,
+			process		=> query_nets'access);
+		
+		return cursor;
+	end locate_net;
 	
 -- 	procedure drag_net_segments (
 -- 	-- Drags the net segments according to the given drag_list of a unit.
@@ -2444,6 +2466,136 @@ package body et_schematic_ops is
 		log_indentation_down;
 	end set_partcode;
 
+	function exists (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name)
+		return boolean is
+
+		device_found : boolean := false; -- to be returned
+		
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use et_schematic.type_devices;
+		begin
+			if contains (module.devices, device) then
+				device_found := true;
+			end if;
+		end query_devices;
+		
+	begin -- exists
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		return device_found;
+	end exists;
+
+	function locate_device (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return et_schematic.type_devices.cursor 
+	is
+		result : et_schematic.type_devices.cursor;
+		
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use et_schematic.type_devices;
+		begin
+			result := find (module.devices, device);
+		end;
+
+	begin
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		return result;
+	end locate_device;
+
+	function locate_unit (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name; -- R2
+		unit	: in type_unit_name.bounded_string)
+		return et_schematic.type_units.cursor
+	is
+		use et_schematic.type_devices;
+		use et_schematic.type_units;
+		
+		device_cursor : et_schematic.type_devices.cursor;
+		unit_cursor : et_schematic.type_units.cursor; -- to be returned
+
+		procedure query_units (
+			device_name	: in et_devices.type_name; -- R2
+			device		: in et_schematic.type_device)
+		is begin
+			unit_cursor := find (device.units, unit);
+		end query_units;
+	
+	begin -- locate_unit
+		device_cursor := locate_device (module, device);
+
+		-- locate the unit
+		query_element (device_cursor, query_units'access);
+
+		return unit_cursor;
+	end locate_unit;
+
+	function deployed (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name; -- R2
+		unit	: in type_unit_name.bounded_string)
+		return boolean
+	is
+		use et_schematic.type_units;
+		unit_cursor : et_schematic.type_units.cursor;
+	begin
+		unit_cursor := locate_unit (module, device, unit);
+
+		if unit_cursor = et_schematic.type_units.no_element then
+			return false;
+		else
+			return true;
+		end if;
+	end deployed;
+
+	function device_model_name (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return type_device_model_file.bounded_string
+	is 
+		use et_schematic.type_devices;
+	begin
+		return element (locate_device (module, device)).model;
+	end device_model_name;
+
+	function device_variant_name (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return et_devices.type_variant_name.bounded_string -- D, N
+	is
+		cursor_sch : et_schematic.type_devices.cursor;
+	begin
+		cursor_sch := locate_device (module, device);
+		return et_schematic.type_devices.element (cursor_sch).variant;
+	end device_variant_name;
+	
+	function device_model_cursor (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return et_devices.type_devices.cursor
+	is
+		cursor_sch : et_schematic.type_devices.cursor;
+		device_model : type_device_model_file.bounded_string;
+	begin
+		cursor_sch := locate_device (module, device);
+		device_model := et_schematic.type_devices.element (cursor_sch).model;
+		return locate_device (device_model);
+	end device_model_cursor;
+
+
+	
 	function exists_device_port (
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver

@@ -44,6 +44,7 @@ with ada.containers;				use ada.containers;
 
 with et_coordinates;				use et_coordinates;
 with et_scripting;					use et_scripting;
+with et_schematic_ops;				use et_schematic_ops;
 with et_project.modules;			use et_project.modules;
 with et_canvas_schematic;			use et_canvas_schematic;
 use et_canvas_schematic.pac_canvas;

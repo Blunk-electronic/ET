@@ -55,13 +55,6 @@ with et_design_rules;
 
 package et_project.modules is
 
-	-- The module file name: -- CS move to et_general
-	module_file_name_length_max : constant positive := 100;
-	package pac_module_file_name is new generic_bounded_length (module_file_name_length_max);
-
-	function to_module_file_name (name : in string) return pac_module_file_name.bounded_string;
-	function to_string (name : in pac_module_file_name.bounded_string) return string;
-	
 	-- Generic modules and submodules (which contain schematic and layout stuff)
 	-- are collected here.
 	-- Module names are things like "motor_driver" or "temperature_controller".
@@ -96,13 +89,6 @@ package et_project.modules is
 		port	: in et_netlists.type_port_netchanger)
 		return boolean;
 
-	-- Returns a cursor to the requested net in the given module. If the net could
-	-- not be found, returns no_element.
-	function locate_net (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in type_net_name.bounded_string)
-		return et_schematic.type_nets.cursor;
-	
 	-- Returns true if the given net provides a netchanger that may serve as port
 	-- to a parent module.
 	function netchanger_as_port_available (
@@ -292,73 +278,6 @@ package et_project.modules is
 		return boolean;
 
 	function exists (
-	-- Returns true if the given module provides the given device.
-	-- The module being searched in must be in the rig already.						
-		module	: in pac_generic_modules.cursor;
-		device	: in type_name)
-		return boolean;
-	-- CS move to et_schematic_ops ?
-	
-	-- Locates the given device in the given module and returns
-	-- the cursor to the device.
-	-- If the device does not exist, returns no_element.
-	function locate_device (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_name) -- R2
-		return et_schematic.type_devices.cursor;
-	-- CS move to et_schematic_ops ?
-	
-	-- Locates the given unit of the given device in the 
-	-- given module and returns the cursor to the unit.
-	-- If the unit does not exist, returns no_element.
-	-- Raises exception if device does not exist.
-	function locate_unit (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_name; -- R2
-		unit	: in type_unit_name.bounded_string)
-		return et_schematic.type_units.cursor;
-	-- CS move to et_schematic_ops ?
-	
-	-- Returns true if the unit of the given device in the 
-	-- given module has been deployed somewhere.
-	-- If the unit has not been deployed yet, returns false.
-	-- Raises exception if device does not exist.
-	function deployed (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_name; -- R2
-		unit	: in type_unit_name.bounded_string)
-		return boolean;
-	-- CS move to et_schematic_ops ?
-	
-	-- Locates the given device in the given module and returns
-	-- the name of the device model (like 7400.dev).
-	-- Raises constraint error if the device does not exist.
-	function device_model_name (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_name) -- R2
-		return type_device_model_file.bounded_string; -- 7400.dev
-	-- CS move to et_schematic_ops ?
-	
-	-- Locates the given device in the given module and returns
-	-- the name of the package variant name of the device.
-	-- Raises constraint error if the device does not exist.
-	-- Raises constraint error if the device is virtual.
-	function device_variant_name (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_name) -- R2
-		return et_devices.type_variant_name.bounded_string; -- D, N
-	-- CS move to et_schematic_ops ?
-	
-	-- Locates the given device in the given module and returns
-	-- the cursor to the device model.
-	-- Raises constraint error if the device does not exist.
-	function device_model_cursor (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_name) -- R2
-		return et_devices.type_devices.cursor;
-	-- CS move to et_schematic_ops ?
-	
-	function exists (
 	-- Returns true if the given module provides the given submodule instance.
 	-- The module being searched in must be in the rig already.						
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
@@ -423,11 +342,6 @@ package et_project.modules is
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
 		return et_assembly_variants.type_submodules.cursor;
-
--- 	function package_model (
--- 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
--- 		device	: in et_libraries.type_name; -- IC40
--- 		return et_libraries.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 
 	-- Returns the index of the deepest conductor layer of the given module:
 	function deepest_conductor_layer (

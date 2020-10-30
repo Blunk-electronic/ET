@@ -87,7 +87,7 @@ procedure et is
 	project_name_open 		: et_project.pac_project_name.bounded_string; -- the project to be opened
 	project_name_save_as	: et_project.pac_project_name.bounded_string; -- the "save as" name of the project
 
-	module_file_name		: et_project.modules.pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
+	module_file_name		: pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 	
 	package_name_create		: et_packages.type_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
@@ -207,7 +207,7 @@ procedure et is
 
 					elsif full_switch = switch_native_project_module then
 						log (text => arg & full_switch & space & parameter);
-						module_file_name := et_project.modules.to_module_file_name (parameter);
+						module_file_name := to_module_file_name (parameter);
 						
 					elsif full_switch = switch_native_project_sheet then
 						log (text => arg & full_switch & space & parameter);

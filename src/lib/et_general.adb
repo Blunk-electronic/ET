@@ -89,6 +89,16 @@ package body et_general is
 
 	end expand;
 
+
+	function to_module_file_name (name : in string) return pac_module_file_name.bounded_string is begin
+		return pac_module_file_name.to_bounded_string (name);
+	end;
+
+	function to_string (name : in pac_module_file_name.bounded_string) return string is begin
+		return pac_module_file_name.to_string (name);
+	end;
+
+
 	
 	function remove_extension (file_name : in string) return string is
 	-- Removes from a string like templates/clock_generator.mod the extension so that
