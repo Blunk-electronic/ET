@@ -73,6 +73,8 @@ with et_display;				use et_display;
 with et_display.schematic;
 with et_display.board;
 
+with et_canvas_general;
+
 with glib;
 with gtk.main;
 
@@ -214,6 +216,7 @@ package body et_scripting is
 		
 		use et_string_processing;
 		use ada.directories;
+		use et_canvas_general;
 		use et_canvas_schematic;
 
 		-- Backup previous input:

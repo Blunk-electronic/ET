@@ -99,6 +99,10 @@ package et_canvas_general is
 		--& " Confirm selection with LEFT click or SPACE key.";
 
 
+	
+	primary_tool_default : constant type_tool := MOUSE;
+	
+
 	-- In graphical mode (other than runmode headless) and 
 	-- single command entry mode (cmd_entry_mode) a command may be
 	-- incomplete. It will then be completed via an interactive
@@ -119,8 +123,34 @@ package et_canvas_general is
 	end record;	
 
 
+	-- In graphical mode, scripts can be nested.
+	-- In script mode we register only the first
+	-- exception regardless of the nesting depth.
+	-- Because the operator needs to know which script
+	-- has actually failed at which line.
+	-- The failed script will then be output in the status bar.
+	-- IN HEADLESS MODE THIS STUFF HAS NO MEANING !
+	-- For this reason this type is provided:
+	type type_script_cmd_status is record
+		-- the name of the script file like "rename_power_nets.scr":
+		script_name	: pac_script_name.bounded_string;
+
+		-- the command to be executed like "schematic blood_sample_analyzer set value C1 100n"
+		cmd			: type_fields_of_line;
+
+		-- the flag that indicates whether the command failed
+		failed		: boolean := false;
+	end record;
+
+	-- The global variable that stores the status of the latest
+	-- script command.
+	-- IN HEADLESS MODE THIS STUFF HAS NO MEANING !
+	script_cmd_status : type_script_cmd_status;
+
+
+
 	
-	primary_tool_default : constant type_tool := MOUSE;
+	
 
 
 ---------------------------------------------------------------------------
