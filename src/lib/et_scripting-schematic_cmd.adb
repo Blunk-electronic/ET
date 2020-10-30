@@ -1788,7 +1788,10 @@ is
 				& " already in use !");
 			-- CS output coordinates of used unit
 		end unit_in_use;
-						
+
+		procedure unit_not_on_this_sheet is begin
+			set_status ("ERROR: Unit " & to_string (unit_name) & " is not on this sheet !");
+		end unit_not_on_this_sheet;
 		
 	begin -- propose_arguments
 		log (text => incomplete 
@@ -1812,7 +1815,7 @@ is
 									unit_move.device := device_name;
 
 									-- Propose units that are on the current active sheet:
-									menu_propose_units_on_drag (
+									menu_propose_units_on_move (
 										units			=> units_on_sheet (
 															current_active_module,
 															device_name,
@@ -1855,7 +1858,7 @@ is
 											redraw;
 
 										else
-											set_status ("ERROR: Unit is not on this sheet !");
+											unit_not_on_this_sheet;
 										end if;
 									else
 										unit_not_deployed;
@@ -1864,9 +1867,7 @@ is
 									device_not_found;
 								end if;
 													
-							when others =>  -- like "invoke unit IC1 2 100 80 0"
-								set_status ("WARNING: Arguments after unit name are ignored.");
-								
+							when others => null;								
 						end case;
 
 					when others => null; -- CS
@@ -1943,9 +1944,7 @@ is
 									device_not_found;
 								end if;
 													
-							when others =>  -- like "invoke unit IC1 2 100 80 0"
-								set_status ("WARNING: Arguments after unit name are ignored.");
-								
+							when others => null;								
 						end case;
 
 					when others => null; -- CS
@@ -2023,9 +2022,7 @@ is
 									device_not_found;
 								end if;
 													
-							when others =>  -- like "invoke unit IC1 2 100 80 0"
-								set_status ("WARNING: Arguments after unit name are ignored.");
-								
+							when others => null;								
 						end case;
 
 					when others => null; -- CS

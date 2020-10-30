@@ -49,30 +49,50 @@ package et_scripting_interactive_schematic is
 	procedure unit_selection_cancelled (
 		self : access gtk_menu_shell_record'class);
 
-	procedure unit_selected ( -- CS rename to unit_selected_on_invoke
+	-- If the operator selects a unit from the menu, 
+	-- then this procedure is called:
+	procedure unit_selected_on_invoke (
 		self : access gtk_menu_item_record'class);
 
+	-- Proposes units on a menu if list "units" has
+	-- more than one item. 
+	-- If "units" contains only one item, then
+	-- this single unit will be granted to be drawn.
+	-- If "units" is empty, nothing happens.
 	procedure menu_propose_units_on_invoke (
 		device			: in type_name; -- R2
 		units			: in pac_unit_names.list;
 		log_threshold	: in type_log_level);
 
 	-- Makes the unit_move a selected unit.
+	-- Append the cursors of the device and unit to the list
+	-- proposed_units. Afterwards there will be only one single 
+	-- item in that list.
+	-- Sets the selected_unit. This signals the GUI which unit is to be
+	-- drawn at the cursor or mouse position:
 	procedure select_unit_for_move;
-	
+
+	-- If the operator selects a unit from the menu, 
+	-- then this procedure is called.
+	-- The connected net segments are identified and collected in 
+	-- container segments_being_dragged.
 	procedure unit_selected_on_move (
 		self : access gtk_menu_item_record'class);
-	
+
+	-- Proposes units on a menu if list "units" has
+	-- more than one item. 
+	-- If "units" contains only one item, then
+	-- this single unit will be selected and 
+	-- granted to be drawn.
+	-- If we are about to drag a single unit, then the connected
+	-- net segments are identified and collected in 
+	-- container segments_being_dragged.	
+	-- If "units" is empty, nothing happens.
 	procedure menu_propose_units_on_move (
 		units			: in pac_unit_names.list;
 		log_threshold	: in type_log_level);
 
-	procedure unit_selected_on_drag (
-		self : access gtk_menu_item_record'class);
-	
-	procedure menu_propose_units_on_drag (
-		units			: in pac_unit_names.list;
-		log_threshold	: in type_log_level);
+
 
 	
 end et_scripting_interactive_schematic;

@@ -44,12 +44,13 @@ with ada.containers;				use ada.containers;
 
 with et_coordinates;				use et_coordinates;
 with et_scripting;					use et_scripting;
+with et_modes.schematic;			use et_modes.schematic;
 with et_schematic_ops;				use et_schematic_ops;
-with et_project.modules;			use et_project.modules;
 with et_canvas_schematic;			use et_canvas_schematic;
 use et_canvas_schematic.pac_canvas;
 
 with et_canvas_schematic_units;		use et_canvas_schematic_units;
+
 
 package body et_scripting_interactive_schematic is
 
@@ -58,15 +59,24 @@ package body et_scripting_interactive_schematic is
 		set_status ("Unit selection cancelled");
 	end unit_selection_cancelled;
 
-	procedure unit_selected (self : access gtk_menu_item_record'class) is
-		
-		-- Extract the unit name from field 2 of the menu item:
-		name : constant string := get_field_from_line (
-			text_in		=> self.get_label,
+	-- If unit names are proposed in a menu, then a single
+	-- item on the menu is "unit C", "unit D", ...
+	-- This function extracts the 2nd field from that entry
+	-- and returns something like "C" or "D":
+	function extract_unit_name (menu_item : in string) return string is begin
+		return get_field_from_line (
+			text_in		=> menu_item,
 			position	=> 2);
+	end extract_unit_name;
+
+
+	
+-- INVOKE
+
+	procedure unit_selected_on_invoke (self : access gtk_menu_item_record'class) is
+		name : constant string := extract_unit_name (self.get_label);
 	begin
 		set_status ("selected unit " & name);
-
 		unit_add.name := to_name (name);
 
 		-- use the current primary tool for moving the unit:
@@ -78,8 +88,7 @@ package body et_scripting_interactive_schematic is
 		single_cmd_status.finalization_pending := true;
 		
 		redraw;
-	end unit_selected;
-
+	end unit_selected_on_invoke;
 
 	procedure menu_propose_units_on_invoke (
 		device			: in type_name;
@@ -102,7 +111,7 @@ package body et_scripting_interactive_schematic is
 				"unit " & to_string (element (c)));
 
 			-- Connect the item with the "activate" signal:
-			i.on_activate (unit_selected'access);
+			i.on_activate (unit_selected_on_invoke'access);
 
 			m.append (i);
 			i.show;
@@ -168,6 +177,10 @@ package body et_scripting_interactive_schematic is
 	end menu_propose_units_on_invoke;
 
 
+	
+
+-- MOVE / DRAG
+	
 	procedure select_unit_for_move is begin
 		-- Append the cursors of the device and unit to the list of proposed units.
 		-- There will be only one single item in that list.
@@ -180,13 +193,8 @@ package body et_scripting_interactive_schematic is
 		selected_unit := proposed_units.first;
 	end select_unit_for_move;
 	
-	-- Called when the operator selects a unit from the menu.
 	procedure unit_selected_on_move (self : access gtk_menu_item_record'class) is
-		
-		-- Extract the unit name from field 2 of the menu item:
-		name : constant string := get_field_from_line (
-			text_in		=> self.get_label,
-			position	=> 2);
+		name : constant string := extract_unit_name (self.get_label);
 	begin
 		set_status ("selected unit " & name);
 
@@ -198,6 +206,15 @@ package body et_scripting_interactive_schematic is
 		-- use the current primary tool for moving the unit:
 		unit_move.tool := primary_tool;
 
+		case verb is
+			-- If we are about to drag a unit, then the connected
+			-- net segments must be identified:
+			when VERB_DRAG => 
+				find_attached_segments;
+
+			when others => null;
+		end case;
+		
 		-- Allow drawing the unit:
 		unit_move.being_moved := true;
 
@@ -233,7 +250,7 @@ package body et_scripting_interactive_schematic is
 		
 	begin -- menu_propose_units_on_move
 		log (text => "proposing units of " & to_string (unit_move.device) 
-			 & " for move ... ",
+			 & " ... ",
 			 level => log_threshold);
 
 		case length (units) is
@@ -253,6 +270,15 @@ package body et_scripting_interactive_schematic is
 				
 				-- use the current primary tool for moving the unit:
 				unit_move.tool := primary_tool;
+
+				case verb is
+					-- If we are about to drag a unit, then the connected
+					-- net segments must be identified:
+					when VERB_DRAG => 
+						find_attached_segments;
+
+					when others => null;
+				end case;
 				
 				-- Allow drawing the unit:
 				unit_move.being_moved := true;
@@ -293,124 +319,7 @@ package body et_scripting_interactive_schematic is
 		end case;
 		
 	end menu_propose_units_on_move;
-
-	-- Called when the operator selects a unit from the menu.
-	procedure unit_selected_on_drag (self : access gtk_menu_item_record'class) is
-		
-		-- Extract the unit name from field 2 of the menu item:
-		name : constant string := get_field_from_line (
-			text_in		=> self.get_label,
-			position	=> 2);
-	begin
-		set_status ("selected unit " & name);
-
-		-- Now we know the unit name:
-		unit_move.unit := to_name (name);
-
-		select_unit_for_move;
-		
-		-- use the current primary tool for moving the unit:
-		unit_move.tool := primary_tool;
-
-		find_attached_segments;
-		
-		-- Allow drawing the unit:
-		unit_move.being_moved := true;
-
-		single_cmd_status.finalization_pending := true;
-		
-		redraw;
-	end unit_selected_on_drag;
 	
-	procedure menu_propose_units_on_drag (
-		units			: in pac_unit_names.list;
-		log_threshold	: in type_log_level)
-	is
-		use gtk.menu;
-		use gtk.menu_item;
-		use pac_unit_names;
-		use pac_proposed_units;
-		
-		m : gtk_menu; -- the menu
-		i : gtk_menu_item; -- an item on the menu
-
-		procedure query_name (c : in pac_unit_names.cursor) is begin
-			-- Build the menu item. NOTE: The actual unit name must be
-			-- the 2nd string of the entry.
-			i := gtk_menu_item_new_with_label (
-				"unit " & to_string (element (c)));
-
-			-- Connect the item with the "activate" signal:
-			i.on_activate (unit_selected_on_drag'access);
-
-			m.append (i);
-			i.show;
-		end query_name;
-		
-	begin -- menu_propose_units_on_drag
-		log (text => "proposing units of " & to_string (unit_move.device) 
-			 & " for drag ... ",
-			 level => log_threshold);
-
-		case length (units) is
-			when 0 =>
-				-- no menu required
-				set_status ("No units of " & to_string (unit_move.device) & " on this sheet !");
-				
-			when 1 =>
-				-- No menu required. We know the device and unit name:
-				unit_move.unit := element (units.first);
-
-				set_status ("selected single available unit " 
-					& to_string (unit_move.unit)
-					& " of " & to_string (unit_move.device));
-
-				select_unit_for_move;
-				
-				-- use the current primary tool for moving the unit:
-				unit_move.tool := primary_tool;
-
-				find_attached_segments;
-				
-				-- Allow drawing the unit:
-				unit_move.being_moved := true;
-
-				single_cmd_status.finalization_pending := true;
-				
-				redraw;
-
-			when others =>
-				-- At the moment we know only the device name. 
-				-- The unit name will be made known when the operator 
-				-- selects a unit from the menu.
-				
-				-- show available units in a menu
-				m := gtk_menu_new;
-
-				-- In case the operator closes the menu (via ESC for example)
-				m.on_cancel (unit_selection_cancelled'access);
-				
-				units.iterate (query_name'access);
-
-				m.show;
-
-				m.popup
-					(
-					-- CS func => set_position'access,
-							
-					-- button 0 means: this is not triggered by a key press
-					-- or a button click:
-					button => 0,
-							
-					-- get_current_event_time causes the menu to remain
-					-- until a 2nd click.
-					activate_time => gtk.main.get_current_event_time);
-
-				set_status ("Please select unit via menu !");
-			
-		end case;
-		
-	end menu_propose_units_on_drag;
 
 	
 end et_scripting_interactive_schematic;
