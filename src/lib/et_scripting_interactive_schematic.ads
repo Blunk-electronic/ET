@@ -72,6 +72,11 @@ package et_scripting_interactive_schematic is
 	-- drawn at the cursor or mouse position:
 	procedure select_unit_for_move;
 
+	-- The interactive completition process of 
+	-- moving, dragging or rotating 
+	-- a unit comes to an end here.
+	procedure finish_unit_move;
+	
 	-- If the operator selects a unit from the menu, 
 	-- then this procedure is called.
 	-- The connected net segments are identified and collected in 

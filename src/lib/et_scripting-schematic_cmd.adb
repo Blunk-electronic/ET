@@ -2073,17 +2073,7 @@ is
 										unit_move.unit := unit_name;
 										
 										if sheet (current_active_module, unit_move.device, unit_move.unit) = current_active_sheet then
-											select_unit_for_move;
-											
-											-- use the current primary tool for moving the unit:
-											unit_move.tool := primary_tool;
-
-											-- Allow drawing the unit:
-											unit_move.being_moved := true;
-
-											single_cmd_status.finalization_pending := true;
-											redraw;
-
+											finish_unit_move;
 										else
 											unit_not_on_this_sheet;
 										end if;

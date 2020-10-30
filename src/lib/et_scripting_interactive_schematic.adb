@@ -192,6 +192,40 @@ package body et_scripting_interactive_schematic is
 		-- drawn at the cursor or mouse position:
 		selected_unit := proposed_units.first;
 	end select_unit_for_move;
+
+	-- The interactive completition process of moving, dragging or rotating 
+	-- a unit comes to an end here.
+	procedure finish_unit_move is begin
+		select_unit_for_move;
+		
+		-- use the current primary tool for moving the unit:
+		unit_move.tool := primary_tool;
+
+		case verb is
+			when VERB_DRAG => 
+				-- If we are about to drag a unit, then the connected
+				-- net segments must be identified:
+				find_attached_segments;
+
+				-- Allow drawing the unit:
+				unit_move.being_moved := true;
+
+				single_cmd_status.finalization_pending := true;
+				
+			when VERB_MOVE => 
+				-- Allow drawing the unit:
+				unit_move.being_moved := true;
+
+				single_cmd_status.finalization_pending := true;
+				
+			when VERB_ROTATE =>
+				rotate_selected_unit;
+				
+			when others => null;
+		end case;
+		
+		redraw;
+	end finish_unit_move;
 	
 	procedure unit_selected_on_move (self : access gtk_menu_item_record'class) is
 		name : constant string := extract_unit_name (self.get_label);
@@ -201,26 +235,7 @@ package body et_scripting_interactive_schematic is
 		-- Now we know the unit name:
 		unit_move.unit := to_name (name);
 
-		select_unit_for_move;
-		
-		-- use the current primary tool for moving the unit:
-		unit_move.tool := primary_tool;
-
-		case verb is
-			-- If we are about to drag a unit, then the connected
-			-- net segments must be identified:
-			when VERB_DRAG => 
-				find_attached_segments;
-
-			when others => null;
-		end case;
-		
-		-- Allow drawing the unit:
-		unit_move.being_moved := true;
-
-		single_cmd_status.finalization_pending := true;
-		
-		redraw;
+		finish_unit_move;
 	end unit_selected_on_move;
 	
 	procedure menu_propose_units_on_move (
@@ -264,31 +279,8 @@ package body et_scripting_interactive_schematic is
 				set_status ("selected single available unit " 
 					& to_string (unit_move.unit)
 					& " of " & to_string (unit_move.device));
-
 				
-				-- use the current primary tool for moving the unit:
-				unit_move.tool := primary_tool;
-
-				case verb is
-					-- If we are about to drag a unit, then the connected
-					-- net segments must be identified:
-					when VERB_DRAG => 
-						select_unit_for_move;
-						find_attached_segments;
-
-					when VERB_MOVE => 
-						select_unit_for_move;
-
-					--when VERB_ROTATE =>
-					when others => null;
-				end case;
-				
-				-- Allow drawing the unit:
-				unit_move.being_moved := true;
-
-				single_cmd_status.finalization_pending := true;
-				
-				redraw;
+				finish_unit_move;
 
 			when others =>
 				-- At the moment we know only the device name. 
