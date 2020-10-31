@@ -1200,18 +1200,18 @@ package body et_canvas_schematic is
 							end if;
 						
 						when NOUN_NAME =>
-							if not placeholder.being_moved then
+							if not placeholder_move.being_moved then
 
 								-- Set the tool being used for moving the placeholder:
-								placeholder.tool := KEYBOARD;
-								placeholder.category := et_symbols.NAME;
+								placeholder_move.tool := KEYBOARD;
+								placeholder_move.category := et_symbols.NAME;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> cursor_main.position,
 										category	=> et_symbols.NAME);
 								else
-									placeholder.being_moved := true;
+									placeholder_move.being_moved := true;
 									reset_request_clarification;
 								end if;
 								
@@ -1227,18 +1227,18 @@ package body et_canvas_schematic is
 
 							
 						when NOUN_PURPOSE =>
-							if not placeholder.being_moved then
+							if not placeholder_move.being_moved then
 
 								-- Set the tool being used for moving the placeholder:
-								placeholder.tool := KEYBOARD;
-								placeholder.category := et_symbols.PURPOSE;
+								placeholder_move.tool := KEYBOARD;
+								placeholder_move.category := et_symbols.PURPOSE;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> cursor_main.position,
 										category	=> et_symbols.PURPOSE);
 								else
-									placeholder.being_moved := true;
+									placeholder_move.being_moved := true;
 									reset_request_clarification;
 								end if;
 								
@@ -1281,18 +1281,18 @@ package body et_canvas_schematic is
 
 
 						when NOUN_VALUE =>
-							if not placeholder.being_moved then
+							if not placeholder_move.being_moved then
 
 								-- Set the tool being used for moving the placeholder:
-								placeholder.tool := KEYBOARD;
-								placeholder.category := et_symbols.VALUE;
+								placeholder_move.tool := KEYBOARD;
+								placeholder_move.category := et_symbols.VALUE;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> cursor_main.position,
 										category	=> et_symbols.VALUE);
 								else
-									placeholder.being_moved := true;
+									placeholder_move.being_moved := true;
 									reset_request_clarification;
 								end if;
 								
@@ -1794,7 +1794,7 @@ package body et_canvas_schematic is
 						end if;
 						
 					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
-						if placeholder.being_moved then
+						if placeholder_move.being_moved then
 							redraw;
 						end if;
 
@@ -2098,18 +2098,18 @@ package body et_canvas_schematic is
 							end if;
 							
 						when NOUN_NAME =>
-							if not placeholder.being_moved then
+							if not placeholder_move.being_moved then
 
 								-- Set the tool being used for moving the placeholder:
-								placeholder.tool := MOUSE;
-								placeholder.category := et_symbols.NAME;
+								placeholder_move.tool := MOUSE;
+								placeholder_move.category := et_symbols.NAME;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> point,
 										category	=> et_symbols.NAME);
 								else
-									placeholder.being_moved := true;
+									placeholder_move.being_moved := true;
 									reset_request_clarification;
 								end if;
 								
@@ -2124,18 +2124,18 @@ package body et_canvas_schematic is
 							end if;
 
 						when NOUN_PURPOSE =>
-							if not placeholder.being_moved then
+							if not placeholder_move.being_moved then
 
 								-- Set the tool being used for moving the placeholder:
-								placeholder.tool := MOUSE;
-								placeholder.category := et_symbols.PURPOSE;
+								placeholder_move.tool := MOUSE;
+								placeholder_move.category := et_symbols.PURPOSE;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> point,
 										category	=> et_symbols.PURPOSE);
 								else
-									placeholder.being_moved := true;
+									placeholder_move.being_moved := true;
 									reset_request_clarification;
 								end if;
 								
@@ -2176,18 +2176,18 @@ package body et_canvas_schematic is
 							end if;
 							
 						when NOUN_VALUE =>
-							if not placeholder.being_moved then
+							if not placeholder_move.being_moved then
 
 								-- Set the tool being used for moving the placeholder:
-								placeholder.tool := MOUSE;
-								placeholder.category := et_symbols.VALUE;
+								placeholder_move.tool := MOUSE;
+								placeholder_move.category := et_symbols.VALUE;
 
 								if not clarification_pending then
 									find_placeholders (
 										point		=> point,
 										category	=> et_symbols.VALUE);
 								else
-									placeholder.being_moved := true;
+									placeholder_move.being_moved := true;
 									reset_request_clarification;
 								end if;
 								

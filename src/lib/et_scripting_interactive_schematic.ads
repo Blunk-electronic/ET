@@ -40,6 +40,7 @@ with gtk.menu;					use gtk.menu;
 with gtk.menu_item;				use gtk.menu_item;
 with gtk.menu_shell;			use gtk.menu_shell;
 
+with et_symbols;				use et_symbols;
 with et_devices;				use et_devices;
 with et_string_processing;		use et_string_processing;
 
@@ -98,6 +99,17 @@ package et_scripting_interactive_schematic is
 		log_threshold	: in type_log_level);
 
 
+	-- Makes the placeholder_move a selected placeholder.
+	-- Append the cursors of the device and unit to the list
+	-- proposed_placeholders. Afterwards there will be only one single 
+	-- item in that list.
+	-- Sets the selected_placeholder. This signals the GUI which unit is to be
+	-- drawn at the cursor or mouse position:
+	procedure select_placeholder_for_move;
+
+
+	procedure finish_placeholder_move (
+		category : in type_placeholder_meaning);
 
 	
 end et_scripting_interactive_schematic;

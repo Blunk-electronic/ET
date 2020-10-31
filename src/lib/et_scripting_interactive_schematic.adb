@@ -226,6 +226,24 @@ package body et_scripting_interactive_schematic is
 		
 		redraw;
 	end finish_unit_move;
+
+	procedure finish_placeholder_move (
+		category : in type_placeholder_meaning)
+	is begin
+		select_placeholder_for_move;
+
+		-- use the current primary tool for moving the unit:
+		placeholder_move.tool := primary_tool;
+		
+		placeholder_move.category := category;
+
+		-- Allow drawing the placeholder:
+		placeholder_move.being_moved := true;
+
+		single_cmd_status.finalization_pending := true;
+		redraw;
+	end finish_placeholder_move;
+
 	
 	procedure unit_selected_on_move (self : access gtk_menu_item_record'class) is
 		name : constant string := extract_unit_name (self.get_label);
@@ -233,10 +251,22 @@ package body et_scripting_interactive_schematic is
 		set_status ("selected unit " & name);
 
 		-- Now we know the unit name:
-		unit_move.unit := to_name (name);
+		case noun is
+			when NOUN_UNIT =>
+				unit_move.unit := to_name (name);
 
-		finish_unit_move;
+				finish_unit_move;
+				
+			when NOUN_NAME =>
+				placeholder_move.unit := to_name (name);
+
+				finish_placeholder_move (et_symbols.NAME);
+				
+			when others => null;
+		end case;
+				
 	end unit_selected_on_move;
+	
 	
 	procedure menu_propose_units_on_move (
 		units			: in pac_unit_names.list;
@@ -264,23 +294,55 @@ package body et_scripting_interactive_schematic is
 		end query_name;
 		
 	begin -- menu_propose_units_on_move
-		log (text => "proposing units of " & to_string (unit_move.device) & " ... ",
-			 level => log_threshold);
+		case noun is
+			when NOUN_UNIT =>
+				log (text => "proposing units of " & to_string (unit_move.device) & " ... ",
+					level => log_threshold);
 
+			when NOUN_NAME =>
+				log (text => "proposing units of " & to_string (placeholder_move.device) & " ... ",
+					 level => log_threshold);
+
+			when others => null;
+		end case;
+
+				
 		case length (units) is
-			when 0 =>
-				-- no menu required
-				set_status ("No units of " & to_string (unit_move.device) & " on this sheet !");
-				
-			when 1 =>
-				-- No menu required. We know the device and unit name:
-				unit_move.unit := element (units.first);
+			when 0 => -- no menu required
+				case noun is
+					when NOUN_UNIT =>
+						set_status ("No units of " & to_string (unit_move.device) & " on this sheet !");
 
-				set_status ("selected single available unit " 
-					& to_string (unit_move.unit)
-					& " of " & to_string (unit_move.device));
+					when NOUN_NAME =>
+						set_status ("No units of " & to_string (placeholder_move.device) & " on this sheet !");
+
+					when others => null;
+				end case;
 				
-				finish_unit_move;
+			when 1 => -- No menu required. We know the device and unit name:
+				case noun is
+					when NOUN_UNIT =>
+						unit_move.unit := element (units.first);
+
+						set_status ("selected single available unit " 
+							& to_string (unit_move.unit)
+							& " of " & to_string (unit_move.device));
+						
+						finish_unit_move;
+
+						
+					when NOUN_NAME =>
+						placeholder_move.unit := element (units.first);
+
+						set_status ("selected single available unit " 
+							& to_string (placeholder_move.unit)
+							& " of " & to_string (placeholder_move.device));
+						
+						finish_placeholder_move (et_symbols.NAME);
+						
+					when others => null;
+				end case;
+				
 
 			when others =>
 				-- At the moment we know only the device name. 
@@ -315,6 +377,19 @@ package body et_scripting_interactive_schematic is
 		
 	end menu_propose_units_on_move;
 	
+
+
+	procedure select_placeholder_for_move is begin
+		-- Append the cursors of the device and unit to the list of proposed placeholders.
+		-- There will be only one single item in that list.
+		proposed_placeholders.append (new_item => (
+			device	=> locate_device (current_active_module, placeholder_move.device),
+			unit	=> locate_unit (current_active_module, placeholder_move.device, placeholder_move.unit)));
+
+		-- Set the selected placeholder. This signals the GUI which placeholder is to be
+		-- drawn at the cursor or mouse position:
+		selected_placeholder := proposed_placeholders.first;
+	end select_placeholder_for_move;
 
 	
 end et_scripting_interactive_schematic;

@@ -314,28 +314,28 @@ procedure draw_units (
 						-- increase brightness
 						brightness := BRIGHT;
 
-						if placeholder.being_moved then
+						if placeholder_move.being_moved then
 
-							case placeholder.category is
+							case placeholder_move.category is
 								when NAME =>
 									
 									-- Calculate the absolute position of the NAME placeholder 
 									-- as it was according to database BEFORE the move:
-									placeholder.absolute_position := sch_placeholder_name.position;
-									move_by (placeholder.absolute_position, unit_position);
+									placeholder_move.absolute_position := sch_placeholder_name.position;
+									move_by (placeholder_move.absolute_position, unit_position);
 
 									-- Depending on the tool used, calculate the new position of the 
 									-- placeholder relative to the unit position:
-									case placeholder.tool is
+									case placeholder_move.tool is
 										when MOUSE =>
 											move_by (
 												point	=> sch_placeholder_name.position,
-												offset	=> distance_relative (placeholder.absolute_position, self.snap_to_grid (self.mouse_position)));
+												offset	=> distance_relative (placeholder_move.absolute_position, self.snap_to_grid (self.mouse_position)));
 
 										when KEYBOARD =>
 											move_by (
 												point	=> sch_placeholder_name.position,
-												offset	=> distance_relative (placeholder.absolute_position, cursor_main.position));
+												offset	=> distance_relative (placeholder_move.absolute_position, cursor_main.position));
 
 									end case;
 
@@ -343,21 +343,21 @@ procedure draw_units (
 
 									-- Calculate the absolute position of the PURPOSE placeholder 
 									-- as it was according to database BEFORE the move:
-									placeholder.absolute_position := sch_placeholder_purpose.position;
-									move_by (placeholder.absolute_position, unit_position);
+									placeholder_move.absolute_position := sch_placeholder_purpose.position;
+									move_by (placeholder_move.absolute_position, unit_position);
 
 									-- Depending on the tool used, calculate the new position of the 
 									-- placeholder relative to the unit position:
-									case placeholder.tool is
+									case placeholder_move.tool is
 										when MOUSE =>
 											move_by (
 												point	=> sch_placeholder_purpose.position,
-												offset	=> distance_relative (placeholder.absolute_position, self.snap_to_grid (self.mouse_position)));
+												offset	=> distance_relative (placeholder_move.absolute_position, self.snap_to_grid (self.mouse_position)));
 
 										when KEYBOARD =>
 											move_by (
 												point	=> sch_placeholder_purpose.position,
-												offset	=> distance_relative (placeholder.absolute_position, cursor_main.position));
+												offset	=> distance_relative (placeholder_move.absolute_position, cursor_main.position));
 
 									end case;
 
@@ -365,21 +365,21 @@ procedure draw_units (
 
 									-- Calculate the absolute position of the VALUE placeholder 
 									-- as it was according to database BEFORE the move:
-									placeholder.absolute_position := sch_placeholder_value.position;
-									move_by (placeholder.absolute_position, unit_position);
+									placeholder_move.absolute_position := sch_placeholder_value.position;
+									move_by (placeholder_move.absolute_position, unit_position);
 
 									-- Depending on the tool used, calculate the new position of the 
 									-- placeholder relative to the unit position:
-									case placeholder.tool is
+									case placeholder_move.tool is
 										when MOUSE =>
 											move_by (
 												point	=> sch_placeholder_value.position,
-												offset	=> distance_relative (placeholder.absolute_position, self.snap_to_grid (self.mouse_position)));
+												offset	=> distance_relative (placeholder_move.absolute_position, self.snap_to_grid (self.mouse_position)));
 
 										when KEYBOARD =>
 											move_by (
 												point	=> sch_placeholder_value.position,
-												offset	=> distance_relative (placeholder.absolute_position, cursor_main.position));
+												offset	=> distance_relative (placeholder_move.absolute_position, cursor_main.position));
 
 									end case;
 

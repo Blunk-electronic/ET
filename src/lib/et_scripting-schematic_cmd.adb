@@ -933,6 +933,7 @@ is
 			when VERB_MOVE =>
 				case noun is
 					when NOUN_NAME =>
+						-- schematic led_driver move name R1 1 absolute 10 15
 						case fields is
 							when 9 =>
 								move_unit_placeholder
@@ -1873,7 +1874,6 @@ is
 					when others => null; -- CS
 				end case;
 
-
 			when VERB_INVOKE =>
 				case noun is
 					when NOUN_UNIT =>
@@ -2025,6 +2025,67 @@ is
 							when others => null;								
 						end case;
 
+					when NOUN_NAME =>
+						case fields is
+							when 4 => -- like "move name"
+								device_name_missing;
+								
+							when 5 => -- like "move name R1"
+								unit_name_missing;
+
+								device_name := et_devices.to_name (f (5));
+
+								if exists (current_active_module, device_name) then
+
+									placeholder_move.device := device_name;
+
+									-- Propose units that are on the current active sheet:
+									menu_propose_units_on_move (
+										units			=> units_on_sheet (
+															current_active_module,
+															device_name,
+															current_active_sheet,
+															log_threshold + 1),
+										log_threshold	=> log_threshold + 1);
+
+								else
+									device_not_found;
+								end if;
+
+							when 6 => -- like "move name IC1 B"
+								device_name := et_devices.to_name (f (5));
+								
+								if exists (current_active_module, device_name) then
+
+									placeholder_move.device := device_name;
+									
+									unit_name := to_name (f (6));
+
+									-- Test whether the unit is deployed on the current active sheet.
+									-- Moving the placeholder is possible if the unit it is deployed 
+									-- and if it is on the current sheet.
+									-- The placeholder will then be attached to the cursor or mouse pointer.
+									if deployed (current_active_module, placeholder_move.device, unit_name) then
+
+										placeholder_move.unit := unit_name;
+										
+										if sheet (current_active_module, placeholder_move.device, placeholder_move.unit) = current_active_sheet then
+											finish_placeholder_move (et_symbols.NAME);
+										else
+											unit_not_on_this_sheet;
+										end if;
+									else
+										unit_not_deployed;
+									end if; 
+								else
+									device_not_found;
+								end if;
+													
+							when others => null;								
+
+								
+						end case;
+						
 					when others => null; -- CS
 				end case;
 
@@ -2032,8 +2093,7 @@ is
 				case noun is
 					when NOUN_UNIT =>
 						case fields is
-							when 4 =>
-								device_name_missing;
+							when 4 => device_name_missing;
 								
 							when 5 => -- like "rotate unit IC1"
 								unit_name_missing;
@@ -2089,7 +2149,6 @@ is
 
 					when others => null; -- CS
 				end case;
-
 				
 			when others => null;
 		

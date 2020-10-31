@@ -130,8 +130,8 @@ package et_canvas_schematic_units is
 		-- to calculate the displacement of attached net segments:
 		original_position	: type_point := origin;
 		
-		device				: type_name := (others => <>);
-		unit				: type_unit_name.bounded_string;
+		device				: type_name := (others => <>); -- IC45
+		unit				: type_unit_name.bounded_string; -- A
 
 		-- In case a unit is being moved from one sheet to another.
 		-- This flag notifies the GUI that the unit is to be
@@ -324,9 +324,12 @@ package et_canvas_schematic_units is
 		being_moved			: boolean := false;
 		tool				: type_tool := MOUSE;
 		absolute_position	: type_point; -- before the move
+
+		device				: type_name := (others => <>); -- IC45
+		unit				: type_unit_name.bounded_string; -- A
 	end record;
 
-	placeholder : type_placeholder;
+	placeholder_move : type_placeholder;
 
 	
 	

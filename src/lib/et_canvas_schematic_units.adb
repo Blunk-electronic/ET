@@ -1272,7 +1272,7 @@ package body et_canvas_schematic_units is
 	end clear_proposed_placeholders;
 	
 	procedure reset_placeholder is begin
-		placeholder := (others => <>);
+		placeholder_move := (others => <>);
 		clear_proposed_placeholders;
 	end reset_placeholder;
 	
@@ -1462,7 +1462,7 @@ package body et_canvas_schematic_units is
 				reset_placeholder;
 				
 			when 1 =>
-				placeholder.being_moved := true;
+				placeholder_move.being_moved := true;
 				selected_placeholder := proposed_placeholders.first;
 
 				set_status (status_move_placeholder);
