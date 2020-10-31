@@ -179,22 +179,22 @@ package body pac_canvas is
 		
 		case key is
 
-			-- If the operator presses F2 then set the focus to the console:
-			when GDK_F2 =>
+			-- If the operator presses F3 then set the focus to the console:
+			when GDK_F3 =>
 				console.grab_focus;
 				set_status ("enter command");
 
 				result := true; -- event handled
 				
-			-- If the operator presses F3 then set the focus to the canvas:
-			when GDK_F3 =>
+			-- If the operator presses F4 then set the focus to the canvas:
+			when GDK_F4 =>
 				canvas.grab_focus;
 				status_clear;
 				
 				result := true; -- event handled
 
-			-- If the operator presses F4 then change the primary tool:
-			when GDK_F4 =>
+			-- If the operator presses F2 then change the primary tool:
+			when GDK_F2 =>
 				change_primary_tool;
 				
 				result := true; -- event handled
@@ -297,7 +297,7 @@ package body pac_canvas is
 		set_spacing (box_primary_tool, spacing);
 		pack_start (box_left, box_primary_tool, expand => false);
 		
-		gtk_new (label_primary_tool, "PRIMARY TOOL (F4)");
+		gtk_new (label_primary_tool, "PRIMARY TOOL (F2)");
 		pack_start (box_primary_tool, label_primary_tool, expand => false);
 		gtk_new_with_entry (cbox_primary_tool);
 		pack_start (box_primary_tool, cbox_primary_tool);
@@ -336,7 +336,7 @@ package body pac_canvas is
 		gtk_new_hbox (box_grid_density);
 		set_spacing (box_grid_density, spacing);
 		pack_start (box_grid, box_grid_density, expand => false);
-		gtk_new (label_grid_density, "dsty");
+		gtk_new (label_grid_density, "dnsty");
 		pack_start (box_grid_density, label_grid_density, expand => false);
 		gtk_new_with_entry (cbox_grid_density);
 		pack_start (box_grid_density, cbox_grid_density, expand => false);
@@ -584,7 +584,7 @@ package body pac_canvas is
 		set_spacing (box_console, spacing);
 		pack_start (box_right, box_console, expand => false);
 
-		gtk_new (label_console, "CONSOLE (F2 to enter command / F3 to focus canvas)");
+		gtk_new (label_console, "CONSOLE (F3 to enter command / F4 to focus on canvas)");
 		pack_start (box_console, label_console, expand => false);
 
 		-- the command line
