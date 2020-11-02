@@ -300,7 +300,9 @@ package et_canvas_schematic_units is
 	
 -- PLACEHOLDERS
 
-	package pac_proposed_placeholders is new doubly_linked_lists (type_selected_unit);
+	subtype type_selected_placeholder is type_selected_unit;
+	
+	package pac_proposed_placeholders is new doubly_linked_lists (type_selected_placeholder);
 	use pac_proposed_placeholders;
 
 	-- These variables are used by the GUI when the operator selects a placeholder:

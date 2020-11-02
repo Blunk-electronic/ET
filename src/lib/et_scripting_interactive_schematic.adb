@@ -213,6 +213,16 @@ package body et_scripting_interactive_schematic is
 		
 	end select_unit_for_move;
 
+	-- Maps from the current noun to the category of the placeholder:
+	function to_category return type_placeholder_meaning is begin
+		case noun is
+			when NOUN_NAME		=> return NAME;
+			when NOUN_PURPOSE	=> return PURPOSE;
+			when NOUN_VALUE		=> return VALUE;
+			when others			=> raise constraint_error; -- CS should never happen
+		end case;
+	end to_category;							 
+	
 	-- The interactive completition process of moving, dragging or rotating 
 	-- a unit comes to an end here.
 	procedure finish_unit_move is begin
@@ -253,19 +263,8 @@ package body et_scripting_interactive_schematic is
 		-- use the current primary tool for moving the unit:
 		placeholder_move.tool := primary_tool;
 
-		-- Map from the curren noun to the category of the placeholder:
-		case noun is
-			when NOUN_NAME =>
-				placeholder_move.category := NAME;
-
-			when NOUN_PURPOSE =>
-				placeholder_move.category := PURPOSE;
-
-			when NOUN_VALUE =>
-				placeholder_move.category := VALUE;
-
-			when others => raise constraint_error; -- CS should never happen
-		end case;
+		-- Map from the current noun to the category of the placeholder:
+		placeholder_move.category := to_category;
 
 		case verb is
 			when VERB_MOVE =>
@@ -422,12 +421,11 @@ package body et_scripting_interactive_schematic is
 
 	procedure select_placeholder_for_move is
 		use pac_proposed_placeholders;
-		sp : type_selected_unit;
+		sp : type_selected_placeholder;
 		
 		pos : pac_geometry_sch.type_point;
 		use et_geometry;
 
-		category : type_placeholder_meaning;
 	begin
 		-- Append the cursors of the device and unit to the list of proposed placeholders.
 		-- There will be only one single item in that list.
@@ -444,20 +442,12 @@ package body et_scripting_interactive_schematic is
 		
 		-- Move the cursor to the placeholder:
 		sp := element (selected_placeholder);
-
-		-- map from noun to placeholder category:
-		case noun is
-			when NOUN_NAME		=> category := NAME;
-			when NOUN_PURPOSE	=> category := PURPOSE;
-			when NOUN_VALUE		=> category := VALUE;
-			when others			=> raise constraint_error;
-		end case;
 			
 		-- Get the x/y position of the placeholder:
 		pos := position (
 				device		=> sp.device,
 				unit		=> sp.unit,
-				category	=> category);
+				category	=> to_category); -- maps from noun to placeholder category
 
 		canvas.move_cursor (ABSOLUTE, cursor_main, pos);
 	
