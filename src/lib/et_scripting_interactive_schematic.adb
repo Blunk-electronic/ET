@@ -221,7 +221,7 @@ package body et_scripting_interactive_schematic is
 			when VERB_ROTATE =>
 				rotate_selected_unit;
 				
-			when others => null;
+			when others => raise constraint_error; -- CS should never happen
 		end case;
 		
 		redraw;
@@ -246,11 +246,21 @@ package body et_scripting_interactive_schematic is
 
 			when others => raise constraint_error; -- CS should never happen
 		end case;
-				
-		-- Allow drawing the placeholder:
-		placeholder_move.being_moved := true;
 
-		single_cmd_status.finalization_pending := true;
+		case verb is
+			when VERB_MOVE =>
+				
+				-- Allow drawing the placeholder:
+				placeholder_move.being_moved := true;
+
+				single_cmd_status.finalization_pending := true;
+
+			when VERB_ROTATE =>
+				rotate_selected_placeholder (placeholder_move.category);
+				reset_placeholder;
+
+			when others => raise constraint_error; -- CS should never happen
+		end case;
 		redraw;
 	end finish_placeholder_move;
 
@@ -316,7 +326,8 @@ package body et_scripting_interactive_schematic is
 			when others => null;
 		end case;
 
-				
+		-- The number of given units determines the
+		-- next actions:
 		case length (units) is
 			when 0 => -- no menu required
 				case noun is
