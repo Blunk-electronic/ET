@@ -107,9 +107,10 @@ package et_scripting_interactive_schematic is
 	-- drawn at the cursor or mouse position:
 	procedure select_placeholder_for_move;
 
-
-	procedure finish_placeholder_move (
-		category : in type_placeholder_meaning);
+	-- The interactive completition process of 
+	-- moving, dragging or rotating 
+	-- a placeholder comes to an end here.
+	procedure finish_placeholder_move;
 
 	
 end et_scripting_interactive_schematic;

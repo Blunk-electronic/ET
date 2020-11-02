@@ -227,16 +227,26 @@ package body et_scripting_interactive_schematic is
 		redraw;
 	end finish_unit_move;
 
-	procedure finish_placeholder_move (
-		category : in type_placeholder_meaning)
-	is begin
+	procedure finish_placeholder_move is begin
 		select_placeholder_for_move;
 
 		-- use the current primary tool for moving the unit:
 		placeholder_move.tool := primary_tool;
-		
-		placeholder_move.category := category;
 
+		-- Map from the curren noun to the category of the placeholder:
+		case noun is
+			when NOUN_NAME =>
+				placeholder_move.category := NAME;
+
+			when NOUN_PURPOSE =>
+				placeholder_move.category := PURPOSE;
+
+			when NOUN_VALUE =>
+				placeholder_move.category := VALUE;
+
+			when others => raise constraint_error; -- CS should never happen
+		end case;
+				
 		-- Allow drawing the placeholder:
 		placeholder_move.being_moved := true;
 
@@ -257,12 +267,12 @@ package body et_scripting_interactive_schematic is
 
 				finish_unit_move;
 				
-			when NOUN_NAME =>
+			when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
 				placeholder_move.unit := to_name (name);
 
-				finish_placeholder_move (et_symbols.NAME);
+				finish_placeholder_move;
 				
-			when others => null;
+			when others => raise constraint_error; -- CS should never happen
 		end case;
 				
 	end unit_selected_on_move;
@@ -313,10 +323,10 @@ package body et_scripting_interactive_schematic is
 					when NOUN_UNIT =>
 						set_status ("No units of " & to_string (unit_move.device) & " on this sheet !");
 
-					when NOUN_NAME =>
+					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
 						set_status ("No units of " & to_string (placeholder_move.device) & " on this sheet !");
 
-					when others => null;
+					when others => raise constraint_error; -- CS should never happen
 				end case;
 				
 			when 1 => -- No menu required. We know the device and unit name:
@@ -331,16 +341,16 @@ package body et_scripting_interactive_schematic is
 						finish_unit_move;
 
 						
-					when NOUN_NAME =>
+					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
 						placeholder_move.unit := element (units.first);
 
 						set_status ("selected single available unit " 
 							& to_string (placeholder_move.unit)
 							& " of " & to_string (placeholder_move.device));
 						
-						finish_placeholder_move (et_symbols.NAME);
+						finish_placeholder_move;
 						
-					when others => null;
+					when others => raise constraint_error; -- CS should never happen
 				end case;
 				
 

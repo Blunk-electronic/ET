@@ -333,7 +333,7 @@ package et_canvas_schematic_units is
 
 	
 	
-	-- Resets placeholder and clears
+	-- Resets placeholder_move and clears
 	-- the list of proposed placeholders:
 	procedure reset_placeholder;
 

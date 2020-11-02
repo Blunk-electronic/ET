@@ -2025,7 +2025,8 @@ is
 							when others => null;								
 						end case;
 
-					when NOUN_NAME =>
+					-- moving placeholders for unit name, purpose and value:
+					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
 						case fields is
 							when 4 => -- like "move name"
 								device_name_missing;
@@ -2070,7 +2071,7 @@ is
 										placeholder_move.unit := unit_name;
 										
 										if sheet (current_active_module, placeholder_move.device, placeholder_move.unit) = current_active_sheet then
-											finish_placeholder_move (et_symbols.NAME);
+											finish_placeholder_move;
 										else
 											unit_not_on_this_sheet;
 										end if;
