@@ -421,6 +421,21 @@ package et_schematic_ops is
 		unit	: in type_unit_name.bounded_string)
 		return et_coordinates.type_position;
 
+	-- Returns the position (x/y/sheet) of the given unit.
+	-- Raises constraint error if device or unit does not exist.
+	function position (
+		device	: in et_schematic.type_devices.cursor; -- R2
+		unit	: in et_schematic.type_units.cursor)
+		return et_coordinates.type_position;
+
+	-- Returns the position (x/y) of the given placeholder.
+	-- Raises constraint error if device or unit does not exist.
+	function position (
+		device		: in et_schematic.type_devices.cursor; -- R2
+		unit		: in et_schematic.type_units.cursor;
+		category	: in et_symbols.type_placeholder_meaning)
+		return pac_geometry_sch.type_point;
+	
 	-- Returns the sheet number of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function sheet (

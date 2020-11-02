@@ -42,7 +42,9 @@ with gtk.gentry;					use gtk.gentry;
 with ada.text_io;					use ada.text_io;
 with ada.containers;				use ada.containers;
 
+with et_geometry;
 with et_coordinates;				use et_coordinates;
+with et_schematic;					use et_schematic;
 with et_scripting;					use et_scripting;
 with et_modes.schematic;			use et_modes.schematic;
 with et_schematic_ops;				use et_schematic_ops;
@@ -181,7 +183,13 @@ package body et_scripting_interactive_schematic is
 
 -- MOVE / DRAG / ROTATE
 	
-	procedure select_unit_for_move is begin
+	procedure select_unit_for_move is
+		use pac_proposed_units;
+		su : type_selected_unit;
+
+		pos : pac_geometry_sch.type_point;
+		use et_geometry;
+	begin
 		-- Append the cursors of the device and unit to the list of proposed units.
 		-- There will be only one single item in that list.
 		proposed_units.append (new_item => (
@@ -191,6 +199,18 @@ package body et_scripting_interactive_schematic is
 		-- Set the selected unit. This signals the GUI which unit is to be
 		-- drawn at the cursor or mouse position:
 		selected_unit := proposed_units.first;
+
+
+		-- Move the cursor to the unit:
+		su := element (selected_unit);
+
+		-- Get the x/y position of the unit:
+		pos := pac_geometry_sch.type_point (position (
+				device	=> su.device,
+				unit	=> su.unit));
+
+		canvas.move_cursor (ABSOLUTE, cursor_main, pos);
+		
 	end select_unit_for_move;
 
 	-- The interactive completition process of moving, dragging or rotating 
@@ -400,7 +420,15 @@ package body et_scripting_interactive_schematic is
 	
 
 
-	procedure select_placeholder_for_move is begin
+	procedure select_placeholder_for_move is
+		use pac_proposed_placeholders;
+		sp : type_selected_unit;
+		
+		pos : pac_geometry_sch.type_point;
+		use et_geometry;
+
+		category : type_placeholder_meaning;
+	begin
 		-- Append the cursors of the device and unit to the list of proposed placeholders.
 		-- There will be only one single item in that list.
 		proposed_placeholders.append (new_item => (
@@ -410,6 +438,29 @@ package body et_scripting_interactive_schematic is
 		-- Set the selected placeholder. This signals the GUI which placeholder is to be
 		-- drawn at the cursor or mouse position:
 		selected_placeholder := proposed_placeholders.first;
+
+
+
+		
+		-- Move the cursor to the placeholder:
+		sp := element (selected_placeholder);
+
+		-- map from noun to placeholder category:
+		case noun is
+			when NOUN_NAME		=> category := NAME;
+			when NOUN_PURPOSE	=> category := PURPOSE;
+			when NOUN_VALUE		=> category := VALUE;
+			when others			=> raise constraint_error;
+		end case;
+			
+		-- Get the x/y position of the placeholder:
+		pos := position (
+				device		=> sp.device,
+				unit		=> sp.unit,
+				category	=> category);
+
+		canvas.move_cursor (ABSOLUTE, cursor_main, pos);
+	
 	end select_placeholder_for_move;
 
 	

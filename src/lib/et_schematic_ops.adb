@@ -3259,6 +3259,77 @@ package body et_schematic_ops is
 		return unit_position;
 	end position;
 
+	function position (
+		device	: in et_schematic.type_devices.cursor; -- R2
+		unit	: in et_schematic.type_units.cursor)
+		return et_coordinates.type_position
+	is
+		use et_schematic.type_devices;
+		unit_position : et_coordinates.type_position;
+		
+		procedure query_unit (
+			device_name	: in type_name;
+			device		: in et_schematic.type_device)
+		is 
+			use et_schematic.type_units;
+		begin
+			-- get the coordinates of the unit
+			unit_position := element (unit).position;
+		end query_unit;
+	begin
+		query_element (
+			position	=> device,
+			process		=> query_unit'access);
+
+		return unit_position;
+	end position;
+
+	function position (
+		device		: in et_schematic.type_devices.cursor; -- R2
+		unit		: in et_schematic.type_units.cursor;
+		category	: in et_symbols.type_placeholder_meaning)
+		return pac_geometry_sch.type_point
+	is
+		placeholder_position : pac_geometry_sch.type_point; -- to be returned
+
+		use et_schematic.type_devices;
+		unit_position : et_coordinates.type_position;
+		
+		procedure query_unit (
+			device_name	: in type_name;
+			device		: in et_schematic.type_device)
+		is 
+			use et_schematic.type_units;
+			use et_symbols;
+		begin
+			-- get the coordinates of the unit
+			unit_position := element (unit).position;
+
+			-- get the coordinates of the placeholder:
+			case category is
+				when NAME =>
+					placeholder_position := element (unit).name.position;
+
+				when PURPOSE =>
+					placeholder_position := element (unit).purpose.position;
+
+				when VALUE =>
+					placeholder_position := element (unit).value.position;
+			end case;
+
+			move_by (placeholder_position, unit_position);
+			
+		end query_unit;
+	begin
+		query_element (
+			position	=> device,
+			process		=> query_unit'access);
+
+		return placeholder_position;
+	end position;
+
+
+	
 	function sheet (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name; -- R2
