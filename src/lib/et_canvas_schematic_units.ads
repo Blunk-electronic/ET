@@ -59,12 +59,12 @@ package et_canvas_schematic_units is
 
 	use et_project.modules.pac_generic_modules;
 
-	-- Whenever a unit or a placeholder thereof is selected
+	-- Whenever a unit is selected
 	-- via the GUI, we store cursors of its
 	-- parent device and the unit itself via this type.
 	-- This type is to be used for a device and a unit that
 	-- is already placed in the schematic. So we use it
-	-- for example for moving or dragging of a unit.
+	-- for example for moving, dragging or rotating of a unit.
 	type type_selected_unit is record
 		device	: et_schematic.type_devices.cursor;
 		unit	: et_schematic.type_units.cursor;
@@ -300,6 +300,9 @@ package et_canvas_schematic_units is
 	
 -- PLACEHOLDERS
 
+	-- Whenever a placeholder (for value, purpose or name) is selected
+	-- via the GUI, we store cursors of its
+	-- parent device and unit via this type.
 	subtype type_selected_placeholder is type_selected_unit;
 	
 	package pac_proposed_placeholders is new doubly_linked_lists (type_selected_placeholder);

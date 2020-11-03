@@ -213,7 +213,9 @@ package body et_scripting_interactive_schematic is
 		
 	end select_unit_for_move;
 
-	-- Maps from the current noun to the category of the placeholder:
+	-- Maps from the current noun to the category of the placeholder.
+	-- May be called when the noun is NOUN_NAME, NOUN_PURPOSE or NOUN_VALUE.
+	-- If the noun is something different, then a constraint_error is raised.
 	function to_category return type_placeholder_meaning is begin
 		case noun is
 			when NOUN_NAME		=> return NAME;
