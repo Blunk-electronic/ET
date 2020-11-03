@@ -1881,6 +1881,9 @@ package body pac_canvas is
 	end close_window_properties;
 	
 	procedure build_window_properties is begin
+		--properties_aborted := false;
+		properties_confirmed := false;
+		
 		gtk_new (window_properties);
 		window_properties.set_title ("Properties");
 	end build_window_properties;

@@ -1630,18 +1630,40 @@ package body et_canvas_schematic_units is
 -- SET VALUE AND PURPOSE
 
 
-	procedure value_entered (self : access gtk.gentry.gtk_entry_record'class) is begin
+	procedure value_entered (self : access gtk.gentry.gtk_entry_record'class) is 
+		su : type_selected_unit := element (selected_unit);
+		value : type_value.bounded_string;
+
+		use et_schematic.type_devices;
+	begin
+		value := to_value_with_check (self.get_text);
+		
 		put_line ("value" & self.get_text);
 		-- CS evaluate value. 
 		-- set flag "value valid"
+
+		set_value (
+			module_name		=> key (current_active_module),
+			device_name		=> key (su.device),
+			value			=> value,
+			log_threshold	=> log_threshold + 1);
+
+		-- CS use set_value that takes a module cursor and a device cursor
+		
+		properties_confirmed := true;
 		window_properties.close;
+
+		reset_request_clarification;
+		
+		status_clear;
+		
+		clear_proposed_units;
+
+		redraw;
 	end value_entered;
 
 	
-	procedure finalize_set_value (
-		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		unit			: in type_selected_unit; -- device/unit
-		log_threshold	: in type_log_level)
+	procedure window_set_value
 	is
 		use gtk.window;
 		use gtk.box;
@@ -1652,7 +1674,7 @@ package body et_canvas_schematic_units is
 		label : gtk_label;
 		gentry : gtk_gentry;
 		
-		su : type_selected_unit := unit;
+		su : type_selected_unit := element (selected_unit);
 
 		use et_schematic.type_devices;
 		device_name : type_name := key (su.device); -- IC2
@@ -1671,26 +1693,13 @@ package body et_canvas_schematic_units is
 
 		gtk_new (gentry);
 		pack_start (box, gentry);
-		--gtk_entry (gentry.get_child).on_activate (value_entered'access);
 		gentry.on_activate (value_entered'access);
 		
 		window_properties.show_all;
-		
-		--delete_unit (module_cursor, su, log_threshold);
-		-- NOTE: su has been modified !
-
-		reset_request_clarification;
-		
-		--set_status (status_delete);
-		
-		clear_proposed_units;
-	end finalize_set_value;
+	end window_set_value;
 
 	
-	procedure set_value (point : in type_point) is 
-		use et_schematic_ops.units;
-		unit_cursor : pac_proposed_units.cursor;
-	begin
+	procedure set_value (point : in type_point) is begin
 		log (text => "setting value ...", level => log_threshold);
 		log_indentation_up;
 		
@@ -1707,12 +1716,8 @@ package body et_canvas_schematic_units is
 				reset_request_clarification;
 				
 			when 1 =>
-				unit_cursor := proposed_units.first;
-			
-				finalize_set_value (
-					module_cursor	=> current_active_module,
-					unit			=> element (unit_cursor),
-					log_threshold	=> log_threshold + 1);
+				selected_unit := proposed_units.first;
+				window_set_value;
 
 			when others =>
 				set_request_clarification;
@@ -1730,10 +1735,7 @@ package body et_canvas_schematic_units is
 		log (text => "setting value of unit after clarification ...", level => log_threshold);
 		log_indentation_up;
 
-		finalize_set_value (
-			module_cursor	=> current_active_module,
-			unit			=> element (selected_unit),
-			log_threshold	=> log_threshold + 1);
+		window_set_value;
 		
 		log_indentation_down;
 	end set_value_selected_unit;

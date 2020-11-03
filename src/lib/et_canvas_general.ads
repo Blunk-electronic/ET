@@ -772,7 +772,9 @@ package pac_canvas is
 
 
 	window_properties : gtk.window.gtk_window;
-
+	--properties_aborted : boolean := false;
+	properties_confirmed : boolean := false;
+	
 	procedure close_window_properties (self : access gtk_widget_record'class);
 	procedure build_window_properties;
 	

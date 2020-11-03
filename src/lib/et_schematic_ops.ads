@@ -253,6 +253,8 @@ package et_schematic_ops is
 		value				: in type_value.bounded_string; -- 470R
 		log_threshold		: in type_log_level);
 
+	-- CS procedure set_value that takes a module cursor and a device cursor.
+	
 	procedure set_purpose (
 	-- Sets the purpose of a device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -260,6 +262,8 @@ package et_schematic_ops is
 		purpose				: in type_purpose.bounded_string; -- brightness_control
 		log_threshold		: in type_log_level);
 
+	-- CS procedure set_purpose that takes a module cursor and a device cursor.
+	
 	procedure set_partcode (
 	-- Sets the partcode of a device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -267,6 +271,8 @@ package et_schematic_ops is
 		partcode			: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level);
 
+	-- CS procedure set_partcode that takes a module cursor and a device cursor.
+	
 	-- Returns true if the given module provides the given device.
 	-- The module being searched in must be in the rig already.						
 	function exists (
