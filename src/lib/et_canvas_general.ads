@@ -769,8 +769,19 @@ package pac_canvas is
 		name	: in string; -- exception name
 		message : in string); -- exception message
 
+
+
+	window_properties : gtk.window.gtk_window;
+
+	procedure close_window_properties (self : access gtk_widget_record'class);
+	procedure build_window_properties;
+	
 	
 private
+	--procedure close_window_properties (self : access gtk_widget_record'class);
+
+	--access_on_window_properties_closed : constant 
+	
 
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);
 	-- Called when one of the scrollbars has changed value.

@@ -1873,6 +1873,17 @@ package body pac_canvas is
 			end case;
 		end if;
 	end evaluate_exception;
+
+
+	
+	procedure close_window_properties (self : access gtk_widget_record'class) is begin
+		put_line ("properties closed");
+	end close_window_properties;
+	
+	procedure build_window_properties is begin
+		gtk_new (window_properties);
+		window_properties.set_title ("Properties");
+	end build_window_properties;
 	
 end pac_canvas;
 	

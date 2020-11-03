@@ -41,7 +41,11 @@ with glib;
 
 with gtkada.file_selection;
 with gtk.main;
-with gtk.widget;
+with gtk.widget;					use gtk.widget;
+with gtk.window;
+with gtk.box;
+with gtk.label;
+with gtk.gentry;
 with gtk.menu;
 with gtk.menu_item;
 with gtk.menu_shell;
@@ -1621,6 +1625,118 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;
 	end rotate_placeholder;
+
+
+-- SET VALUE AND PURPOSE
+
+
+	procedure value_entered (self : access gtk.gentry.gtk_entry_record'class) is begin
+		put_line ("value" & self.get_text);
+		-- CS evaluate value. 
+		-- set flag "value valid"
+		window_properties.close;
+	end value_entered;
+
+	
+	procedure finalize_set_value (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		unit			: in type_selected_unit; -- device/unit
+		log_threshold	: in type_log_level)
+	is
+		use gtk.window;
+		use gtk.box;
+		use gtk.label;
+		use gtk.gentry;
+		
+		box : gtk_vbox;
+		label : gtk_label;
+		gentry : gtk_gentry;
+		
+		su : type_selected_unit := unit;
+
+		use et_schematic.type_devices;
+		device_name : type_name := key (su.device); -- IC2
+	begin
+		build_window_properties;
+		window_properties.on_destroy (close_window_properties'access);
+		
+		window_properties.set_default_size (200, 100);
+		window_properties.set_resizable (false);
+		
+		gtk_new_vbox (box);
+		add (window_properties, box);
+
+		gtk_new (label, "Value of " & to_string (device_name));
+		pack_start (box, label);
+
+		gtk_new (gentry);
+		pack_start (box, gentry);
+		--gtk_entry (gentry.get_child).on_activate (value_entered'access);
+		gentry.on_activate (value_entered'access);
+		
+		window_properties.show_all;
+		
+		--delete_unit (module_cursor, su, log_threshold);
+		-- NOTE: su has been modified !
+
+		reset_request_clarification;
+		
+		--set_status (status_delete);
+		
+		clear_proposed_units;
+	end finalize_set_value;
+
+	
+	procedure set_value (point : in type_point) is 
+		use et_schematic_ops.units;
+		unit_cursor : pac_proposed_units.cursor;
+	begin
+		log (text => "setting value ...", level => log_threshold);
+		log_indentation_up;
+		
+		-- Collect all units in the vicinity of the given point:
+		proposed_units := collect_units (
+			module			=> current_active_module,
+			place			=> to_position (point, current_active_sheet),
+			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			log_threshold	=> log_threshold + 1);
+
+		-- evaluate the number of units found here:
+		case length (proposed_units) is
+			when 0 =>
+				reset_request_clarification;
+				
+			when 1 =>
+				unit_cursor := proposed_units.first;
+			
+				finalize_set_value (
+					module_cursor	=> current_active_module,
+					unit			=> element (unit_cursor),
+					log_threshold	=> log_threshold + 1);
+
+			when others =>
+				set_request_clarification;
+
+				-- preselect the first unit
+				selected_unit := proposed_units.first;
+		end case;
+		
+		log_indentation_down;
+	end set_value;
+
+	procedure set_value_selected_unit is
+		use et_schematic_ops.units;
+	begin
+		log (text => "setting value of unit after clarification ...", level => log_threshold);
+		log_indentation_up;
+
+		finalize_set_value (
+			module_cursor	=> current_active_module,
+			unit			=> element (selected_unit),
+			log_threshold	=> log_threshold + 1);
+		
+		log_indentation_down;
+	end set_value_selected_unit;
 	
 end et_canvas_schematic_units;
 

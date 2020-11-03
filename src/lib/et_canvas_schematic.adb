@@ -1612,6 +1612,52 @@ package body et_canvas_schematic is
 			end case;
 		end invoke;
 
+		procedure set is begin
+			case key is
+				-- EVALUATE KEY FOR NOUN:
+				when GDK_LC_p =>
+					noun := NOUN_PURPOSE;
+					set_status (et_canvas_schematic_units.status_set_purpose);
+				
+				when GDK_LC_v =>
+					noun := NOUN_VALUE;					
+					set_status (et_canvas_schematic_units.status_set_value);
+					
+				-- If space pressed, then the operator wishes to operate via keyboard:	
+				when GDK_Space =>
+					case noun is
+						when NOUN_PURPOSE =>
+							if not clarification_pending then
+								null;
+							else
+								null;
+							end if;
+						
+						when NOUN_VALUE =>
+							if not clarification_pending then
+								set_value (cursor_main.position);
+							else
+								set_value_selected_unit;
+							end if;
+							
+						when others => null;
+					end case;
+
+				-- If page down pressed, then the operator is clarifying:
+				when GDK_page_down =>
+					case noun is
+						when NOUN_PURPOSE | NOUN_VALUE =>
+							if clarification_pending then
+								clarify_unit;
+							end if;
+
+						when others => null;							
+					end case;
+					
+				when others => status_noun_invalid;
+			end case;
+			
+		end set;
 		
 	begin -- evaluate_key
 		
@@ -1721,6 +1767,10 @@ package body et_canvas_schematic is
 								when GDK_LC_r =>
 									verb := VERB_ROTATE;
 									status_enter_noun;
+
+								when GDK_LC_s =>
+									verb := VERB_SET;
+									status_enter_noun;
 									
 								when others =>
 									--put_line ("other key pressed " & gdk_key_type'image (key));
@@ -1744,7 +1794,7 @@ package body et_canvas_schematic is
 								when VERB_MOVE		=> move;
 								when VERB_PLACE		=> place;
 								when VERB_ROTATE	=> rotate;
-
+								when VERB_SET		=> set;
 								when others => null; -- CS
 							end case;
 							

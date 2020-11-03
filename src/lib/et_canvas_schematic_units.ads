@@ -40,6 +40,8 @@
 with ada.containers;            use ada.containers;
 with ada.containers.doubly_linked_lists;
 
+with gtk.window;
+
 with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_sch;
 
@@ -166,7 +168,6 @@ package et_canvas_schematic_units is
 		& status_press_space
 		& "to rotate unit." 
 		& status_hint_for_abort;
-
 	
 	-- This procedure:
 	-- - Clears list of proposed units.
@@ -387,6 +388,40 @@ package et_canvas_schematic_units is
 	procedure rotate_placeholder (
 		point 		: in type_point;
 		category	: in type_placeholder_meaning);
+
+
+
+-- SET VALUE AND PURPOSE
+
+	-- to be output in the status bar:
+	status_set_value : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to set value of device." 
+		& status_hint_for_abort;
+
+	status_set_purpose : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to set purpose of device." 
+		& status_hint_for_abort;
+
+	-- Sets the value of a unit in the vicinity of given point.
+	-- Since a unit is a subset of a device, the value will be 
+	-- set for the whole device.
+	-- If more than one unit near point found, then it sets the
+	-- cursor selected_unit to the first unit and requests
+	-- for clarification.
+	procedure set_value (point : in type_point);
+
+	-- Sets the value of the selected unit (and the whole
+	-- device) of the unit being pointed at by cursor selected_unit.
+	-- Call this procedure after a clarification.
+	procedure set_value_selected_unit;
+
+
 
 	
 end et_canvas_schematic_units;
