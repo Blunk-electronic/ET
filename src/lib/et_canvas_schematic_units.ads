@@ -408,18 +408,27 @@ package et_canvas_schematic_units is
 		& "to set purpose of device." 
 		& status_hint_for_abort;
 
-	-- Sets the value of a unit in the vicinity of given point.
-	-- Since a unit is a subset of a device, the value will be 
+	status_set_partcode : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to set partcode of device." 
+		& status_hint_for_abort;
+	
+	-- Sets a property a unit in the vicinity of given point.
+	-- Since a unit is a subset of a device, the property will be 
 	-- set for the whole device.
+	-- A property is for example the value, the purpose or
+	-- the partcode.
 	-- If more than one unit near point found, then it sets the
 	-- cursor selected_unit to the first unit and requests
 	-- for clarification.
-	procedure set_value (point : in type_point);
+	procedure set_property (point : in type_point);
 
-	-- Sets the value of the selected unit (and the whole
+	-- Sets the property of the selected unit (and the whole
 	-- device) of the unit being pointed at by cursor selected_unit.
 	-- Call this procedure after a clarification.
-	procedure set_value_selected_unit;
+	procedure set_property_selected_unit;
 
 
 

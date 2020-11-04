@@ -56,7 +56,8 @@ with et_devices;					use et_devices;
 with et_device_rw;
 with et_packages;
 with et_schematic;					use et_schematic;
-with et_modes.schematic;
+with et_material;
+with et_modes.schematic;			use et_modes.schematic;
 
 with et_canvas_schematic;			use et_canvas_schematic;
 
@@ -1627,28 +1628,58 @@ package body et_canvas_schematic_units is
 	end rotate_placeholder;
 
 
--- SET VALUE AND PURPOSE
+-- SET PROPERTIES SUCH AS VALUE, PURPOSE, PARCODE
 
 
-	procedure value_entered (self : access gtk.gentry.gtk_entry_record'class) is 
+	procedure property_entered (self : access gtk.gentry.gtk_entry_record'class) is 
 		su : type_selected_unit := element (selected_unit);
+		
 		value : type_value.bounded_string;
+		purpose : type_purpose.bounded_string;
 
+		use et_material;
+		partcode : type_partcode.bounded_string;
+		
 		use et_schematic.type_devices;
 	begin
-		value := to_value_with_check (self.get_text);
+		case noun is
+			when NOUN_PARTCODE =>
+				partcode := to_partcode (self.get_text);
+
+				set_partcode (
+					module_name		=> key (current_active_module),
+					device_name		=> key (su.device),
+					partcode		=> partcode,
+					log_threshold	=> log_threshold + 1);
+
+				-- CS use set_partcode that takes a module cursor and a device cursor
+
+			when NOUN_PURPOSE =>
+				purpose := to_purpose (self.get_text);
+				
+				set_purpose (
+					module_name		=> key (current_active_module),
+					device_name		=> key (su.device),
+					purpose			=> purpose,
+					log_threshold	=> log_threshold + 1);
+
+				-- CS use set_purpose that takes a module cursor and a device cursor
+			
+				
+			when NOUN_VALUE =>
+				value := to_value_with_check (self.get_text);
+				
+				set_value (
+					module_name		=> key (current_active_module),
+					device_name		=> key (su.device),
+					value			=> value,
+					log_threshold	=> log_threshold + 1);
+
+				-- CS use set_value that takes a module cursor and a device cursor
+				
+			when others => raise constraint_error;
+		end case;
 		
-		put_line ("value" & self.get_text);
-		-- CS evaluate value. 
-		-- set flag "value valid"
-
-		set_value (
-			module_name		=> key (current_active_module),
-			device_name		=> key (su.device),
-			value			=> value,
-			log_threshold	=> log_threshold + 1);
-
-		-- CS use set_value that takes a module cursor and a device cursor
 		
 		properties_confirmed := true;
 		window_properties.close;
@@ -1660,11 +1691,10 @@ package body et_canvas_schematic_units is
 		clear_proposed_units;
 
 		redraw;
-	end value_entered;
+	end property_entered;
 
 	
-	procedure window_set_value
-	is
+	procedure window_set_property is
 		use gtk.window;
 		use gtk.box;
 		use gtk.label;
@@ -1677,7 +1707,7 @@ package body et_canvas_schematic_units is
 		su : type_selected_unit := element (selected_unit);
 
 		use et_schematic.type_devices;
-		device_name : type_name := key (su.device); -- IC2
+		device_name : constant string := to_string (key (su.device)); -- IC2
 	begin
 		build_window_properties;
 		window_properties.on_destroy (close_window_properties'access);
@@ -1688,19 +1718,31 @@ package body et_canvas_schematic_units is
 		gtk_new_vbox (box);
 		add (window_properties, box);
 
-		gtk_new (label, "Value of " & to_string (device_name));
+		case noun is
+			when NOUN_PARTCODE =>
+				gtk_new (label, "Partcode of " & device_name);
+
+			when NOUN_PURPOSE =>
+				gtk_new (label, "Purpose of " & device_name);
+
+			when NOUN_VALUE =>
+				gtk_new (label, "Value of " & device_name);
+
+			when others => raise constraint_error;
+		end case;				
+				
 		pack_start (box, label);
 
 		gtk_new (gentry);
 		pack_start (box, gentry);
-		gentry.on_activate (value_entered'access);
+		gentry.on_activate (property_entered'access);
 		
 		window_properties.show_all;
-	end window_set_value;
+	end window_set_property;
 
 	
-	procedure set_value (point : in type_point) is begin
-		log (text => "setting value ...", level => log_threshold);
+	procedure set_property (point : in type_point) is begin
+		log (text => "setting property ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- Collect all units in the vicinity of the given point:
@@ -1717,7 +1759,8 @@ package body et_canvas_schematic_units is
 				
 			when 1 =>
 				selected_unit := proposed_units.first;
-				window_set_value;
+
+				window_set_property;
 
 			when others =>
 				set_request_clarification;
@@ -1727,18 +1770,18 @@ package body et_canvas_schematic_units is
 		end case;
 		
 		log_indentation_down;
-	end set_value;
+	end set_property;
 
-	procedure set_value_selected_unit is
+	procedure set_property_selected_unit is
 		use et_schematic_ops.units;
 	begin
-		log (text => "setting value of unit after clarification ...", level => log_threshold);
+		log (text => "setting property of unit/device after clarification ...", level => log_threshold);
 		log_indentation_up;
 
-		window_set_value;
+		window_set_property;
 		
 		log_indentation_down;
-	end set_value_selected_unit;
+	end set_property_selected_unit;
 	
 end et_canvas_schematic_units;
 

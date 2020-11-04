@@ -1616,6 +1616,10 @@ package body et_canvas_schematic is
 			case key is
 				-- EVALUATE KEY FOR NOUN:
 				when GDK_LC_p =>
+					noun := NOUN_PARTCODE;
+					set_status (et_canvas_schematic_units.status_set_partcode);
+
+				when GDK_LC_u =>
 					noun := NOUN_PURPOSE;
 					set_status (et_canvas_schematic_units.status_set_purpose);
 				
@@ -1626,18 +1630,12 @@ package body et_canvas_schematic is
 				-- If space pressed, then the operator wishes to operate via keyboard:	
 				when GDK_Space =>
 					case noun is
-						when NOUN_PURPOSE =>
-							if not clarification_pending then
-								null;
-							else
-								null;
-							end if;
 						
-						when NOUN_VALUE =>
+						when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
 							if not clarification_pending then
-								set_value (cursor_main.position);
+								set_property (cursor_main.position);
 							else
-								set_value_selected_unit;
+								set_property_selected_unit;
 							end if;
 							
 						when others => null;
@@ -1646,7 +1644,7 @@ package body et_canvas_schematic is
 				-- If page down pressed, then the operator is clarifying:
 				when GDK_page_down =>
 					case noun is
-						when NOUN_PURPOSE | NOUN_VALUE =>
+						when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
 							if clarification_pending then
 								clarify_unit;
 							end if;
@@ -2325,6 +2323,18 @@ package body et_canvas_schematic is
 						when others => null;
 					end case;
 
+				when VERB_SET =>
+
+					case noun is
+						when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
+							if not clarification_pending then
+								set_property (point);
+							else
+								set_property_selected_unit;
+							end if;
+							
+						when others => null;
+					end case;
 					
 				when others => null; -- CS
 			end case;
@@ -2448,6 +2458,16 @@ package body et_canvas_schematic is
 								clarify_unit;
 							end if;
 
+						when others => null;							
+					end case;
+
+				when VERB_SET =>
+					case noun is
+						when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
+							if clarification_pending then
+								clarify_unit;
+							end if;
+							
 						when others => null;							
 					end case;
 					
