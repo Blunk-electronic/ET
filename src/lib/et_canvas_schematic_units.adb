@@ -1661,9 +1661,9 @@ package body et_canvas_schematic_units is
 	begin -- property_entered
 		case noun is
 			when NOUN_PARTCODE =>
-				set_property_before ("test");
+				--set_property_before ("test");
 				--label_property_before_content.show;
-				window_properties.show_all;
+				--window_properties.show_all;
 				
 				partcode := to_partcode (self.get_text);
 
@@ -1741,16 +1741,21 @@ package body et_canvas_schematic_units is
 		gtk_new_vbox (box);
 		add (window_properties, box);
 
+		gtk_new (entry_properties_before);
+		
 		case noun is
 			when NOUN_PARTCODE =>
 				gtk_new (label, "Partcode of " & device_name);
+				set_property_before ("partcode");
 
 			when NOUN_PURPOSE =>
 				gtk_new (label, "Purpose of " & device_name);
-
+				set_property_before ("purpose");
+				
 			when NOUN_VALUE =>
 				gtk_new (label, "Value of " & device_name);
-
+				set_property_before ("value");
+				
 			when others => raise constraint_error;
 		end case;				
 				
@@ -1759,13 +1764,12 @@ package body et_canvas_schematic_units is
 		gtk_new (label_property_before_header, "old");
 		pack_start (box, label_property_before_header);
 
-		gtk_new (label_property_before_content);
-		--set_property_before ("test");
-		pack_start (box, label_property_before_content);
+		pack_start (box, entry_properties_before);
 		
 		gtk_new (gentry);
 		pack_start (box, gentry);
 		gentry.on_activate (property_entered'access);
+		gentry.grab_focus;
 
 		gtk_new (label_properties_status);
 		pack_start (box, label_properties_status);

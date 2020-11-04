@@ -774,6 +774,7 @@ package pac_canvas is
 	window_properties		: gtk.window.gtk_window;
 	label_property_before_header	: gtk.label.gtk_label;
 	label_property_before_content	: gtk.label.gtk_label;
+	entry_properties_before	: gtk_gentry;
 	label_properties_status	: gtk.label.gtk_label;
 	
 	properties_confirmed : boolean := false;
