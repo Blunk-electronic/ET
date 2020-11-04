@@ -2290,7 +2290,7 @@ package body et_schematic_ops is
 						log_indentation_down;
 						
 						raise semantic_error_1 with 
-							"value " & enclose_in_quotes (to_string (value)) 
+							"ERROR: Value " & enclose_in_quotes (to_string (value)) 
 							& " invalid for this kind of device !";
 							-- CS more details ?
 							
@@ -2300,7 +2300,7 @@ package body et_schematic_ops is
 					log_indentation_down;
 						
 					raise semantic_error_1 with -- CS semantic_error_2 for warning ?
-						"device " & to_string (device_name) 
+						"ERROR: Device " & to_string (device_name) 
 						& " is virtual and has no value !";
 				end if;
 

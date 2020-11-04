@@ -62,7 +62,7 @@ with et_export;
 with et_csv;					use et_csv;
 with et_packages;
 with et_devices;				use et_devices;
-
+with et_exceptions;				use et_exceptions;
 
 package body et_material is
 
@@ -108,13 +108,14 @@ package body et_material is
 	end;
 
 	procedure partcode_invalid (partcode : in string) is 
-	-- Issues error message and raises constraint error.
 		use et_string_processing;
 	begin
-		log (ERROR, "partcode " & enclose_in_quotes (partcode) &
-			 " invalid !", console => true);
-		raise constraint_error;
-	end;
+		--log (ERROR, "partcode " & enclose_in_quotes (partcode) &
+			 --" invalid !", console => true);
+		--raise constraint_error;
+		raise syntax_error_1 with
+			"ERROR: Partcode " & enclose_in_quotes (partcode) & " invalid !";
+	end partcode_invalid;
 
 	function is_empty (partcode : in type_partcode.bounded_string) return boolean is begin
 		if type_partcode.length (partcode) = 0 then

@@ -36,6 +36,7 @@
 --
 
 with ada.text_io;					use ada.text_io;
+with ada.exceptions;				use ada.exceptions;
 
 with glib;
 
@@ -60,6 +61,8 @@ with et_material;
 with et_modes.schematic;			use et_modes.schematic;
 
 with et_canvas_schematic;			use et_canvas_schematic;
+
+
 
 package body et_canvas_schematic_units is
 
@@ -1630,20 +1633,38 @@ package body et_canvas_schematic_units is
 
 -- SET PROPERTIES SUCH AS VALUE, PURPOSE, PARCODE
 
-
+	-- Called when the operator presses ENTER after typing a property in
+	-- the properties window.
+	-- The properties window will remain open until the operator enters 
+	-- a correct property. The status bar of the window shows the error message:	
 	procedure property_entered (self : access gtk.gentry.gtk_entry_record'class) is 
 		su : type_selected_unit := element (selected_unit);
+
+		use et_schematic.type_devices;
+		--device_name : constant string := to_string (key (su.device)); -- IC2
 		
 		value : type_value.bounded_string;
 		purpose : type_purpose.bounded_string;
 
 		use et_material;
 		partcode : type_partcode.bounded_string;
+
+		procedure clean_up is begin
+			properties_confirmed := true;
+			window_properties.close;
+			reset_request_clarification;
+			status_clear;
+			clear_proposed_units;
+			redraw;
+		end clean_up;
 		
-		use et_schematic.type_devices;
-	begin
+	begin -- property_entered
 		case noun is
 			when NOUN_PARTCODE =>
+				set_property_before ("test");
+				--label_property_before_content.show;
+				window_properties.show_all;
+				
 				partcode := to_partcode (self.get_text);
 
 				set_partcode (
@@ -1653,7 +1674,7 @@ package body et_canvas_schematic_units is
 					log_threshold	=> log_threshold + 1);
 
 				-- CS use set_partcode that takes a module cursor and a device cursor
-
+				
 			when NOUN_PURPOSE =>
 				purpose := to_purpose (self.get_text);
 				
@@ -1664,11 +1685,10 @@ package body et_canvas_schematic_units is
 					log_threshold	=> log_threshold + 1);
 
 				-- CS use set_purpose that takes a module cursor and a device cursor
-			
 				
 			when NOUN_VALUE =>
 				value := to_value_with_check (self.get_text);
-				
+
 				set_value (
 					module_name		=> key (current_active_module),
 					device_name		=> key (su.device),
@@ -1679,18 +1699,18 @@ package body et_canvas_schematic_units is
 				
 			when others => raise constraint_error;
 		end case;
-		
-		
-		properties_confirmed := true;
-		window_properties.close;
 
-		reset_request_clarification;
+		-- If everything was fine, close the window and clean up.
+		-- If one of the operations above has raised an exception then
+		-- nothing will be cleaned up and the window will remain until the
+		-- operator enters a correct property.
+		clean_up;
 		
-		status_clear;
-		
-		clear_proposed_units;
-
-		redraw;
+		-- Whatever goes wrong, output the message in the status bar
+		-- of the properties window:
+		exception when event: others =>
+			set_status_properties (exception_message (event));
+			
 	end property_entered;
 
 	
@@ -1703,6 +1723,7 @@ package body et_canvas_schematic_units is
 		box : gtk_vbox;
 		label : gtk_label;
 		gentry : gtk_gentry;
+		--status : gtk_label;
 		
 		su : type_selected_unit := element (selected_unit);
 
@@ -1710,6 +1731,8 @@ package body et_canvas_schematic_units is
 		device_name : constant string := to_string (key (su.device)); -- IC2
 	begin
 		build_window_properties;
+
+		-- If the operator closes the properties window:
 		window_properties.on_destroy (close_window_properties'access);
 		
 		window_properties.set_default_size (200, 100);
@@ -1733,9 +1756,19 @@ package body et_canvas_schematic_units is
 				
 		pack_start (box, label);
 
+		gtk_new (label_property_before_header, "old");
+		pack_start (box, label_property_before_header);
+
+		gtk_new (label_property_before_content);
+		--set_property_before ("test");
+		pack_start (box, label_property_before_content);
+		
 		gtk_new (gentry);
 		pack_start (box, gentry);
 		gentry.on_activate (property_entered'access);
+
+		gtk_new (label_properties_status);
+		pack_start (box, label_properties_status);
 		
 		window_properties.show_all;
 	end window_set_property;

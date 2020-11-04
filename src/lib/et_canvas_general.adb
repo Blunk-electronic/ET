@@ -1867,7 +1867,8 @@ package body pac_canvas is
 							& affected_line (script_cmd_status.cmd) 
 							& space & message);
 						
-						log (text => affected_line (script_cmd_status.cmd));
+						log (ERROR, affected_line (script_cmd_status.cmd)
+							& to_string (script_cmd_status.cmd));
 					end if;
 
 			end case;
@@ -1881,12 +1882,20 @@ package body pac_canvas is
 	end close_window_properties;
 	
 	procedure build_window_properties is begin
-		--properties_aborted := false;
 		properties_confirmed := false;
 		
 		gtk_new (window_properties);
 		window_properties.set_title ("Properties");
 	end build_window_properties;
+
+	procedure set_status_properties (text : in string) is begin
+		label_properties_status.set_text (text);
+	end set_status_properties;
+
+	procedure set_property_before (text : in string) is begin
+		label_property_before_content.set_text (text);
+	end set_property_before;
+
 	
 end pac_canvas;
 	

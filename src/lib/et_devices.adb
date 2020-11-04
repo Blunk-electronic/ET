@@ -90,13 +90,14 @@ package body et_devices is
 	end purpose_characters_valid;
 
 	procedure purpose_invalid (purpose : in string) is 
-	-- Issues error message and raises constraint error.
 		use et_string_processing;
 	begin
-		log (ERROR, "purpose " & enclose_in_quotes (purpose) &
-			 " invalid !", console => true);
-		raise constraint_error;
-	end;
+		--log (ERROR, "purpose " & enclose_in_quotes (purpose) &
+			 --" invalid !", console => true);
+		--raise constraint_error;
+		raise syntax_error_1 with
+			"ERROR: Purpose " & enclose_in_quotes (purpose) & " invalid !";
+	end purpose_invalid;
 
 	function to_purpose (
 	-- Tests the given purpose for length and invalid characters.
@@ -199,8 +200,7 @@ package body et_devices is
 			log (WARNING, "value " &
 				 enclose_in_quotes (type_value.to_string (value))
 				 & " has invalid character at position"
-				 & natural'image (invalid_character_position)
-				);
+				 & natural'image (invalid_character_position) & " !");
 			return false;
 		else
 			return true;
@@ -210,10 +210,12 @@ package body et_devices is
 	procedure value_invalid (value : in string) is 
 		use et_string_processing;
 	begin
-		log (ERROR, "value " & enclose_in_quotes (value) &
-			 " invalid !", console => true);
-		raise constraint_error;
-	end;
+		--log (ERROR, "value " & enclose_in_quotes (value) &
+			 --" invalid !", console => true);
+		--raise constraint_error;
+		raise syntax_error_1 with
+			"ERROR: Value " & enclose_in_quotes (value) & " invalid !";
+	end value_invalid;
 
 	function to_value_with_check (
 	-- Tests the given value for length and invalid characters.
