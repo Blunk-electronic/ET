@@ -2837,7 +2837,7 @@ is
 					device_name			=> key (d), -- R1, IC12
 					device_value		=> element (d).value, -- 7400, 100R
 					device_purpose		=> element (d).purpose, -- brightness control
-					model				=> package_model (d), -- libraries/packages/smd/SOT23.pac
+					model				=> get_package_model (d), -- libraries/packages/smd/SOT23.pac
 					package_position	=> element (d).position, -- x/y/rotation/face
 					flip				=> element (d).flipped,
 

@@ -8018,8 +8018,9 @@ package body et_schematic_ops is
 						use et_symbols;
 					begin -- query_properties_default
 
-						-- the device must be real (appearance SCH_PCB)
-						if element (cursor_schematic).appearance = PCB then -- skip virtual devices
+						-- the device must be real
+						--if element (cursor_schematic).appearance = PCB then -- skip virtual devices
+						if is_real (cursor_schematic) then -- skip virtual devices
 
 							-- the package must be real
 							if has_real_package (cursor_schematic) then
@@ -8040,7 +8041,7 @@ package body et_schematic_ops is
 										value		=> element (cursor_schematic).VALUE,
 										partcode	=> element (cursor_schematic).PARTCODE,
 										purpose		=> element (cursor_schematic).PURPOSE,
-										packge		=> et_schematic.package_model (cursor_schematic)),
+										packge		=> get_package_model (cursor_schematic)),
 									position	=> cursor_bom,
 									inserted	=> inserted);
 								
@@ -8085,7 +8086,7 @@ package body et_schematic_ops is
 											value		=> element (cursor_schematic).value,
 											partcode	=> element (cursor_schematic).partcode,	
 											purpose		=> element (cursor_schematic).purpose,
-											packge		=> et_schematic.package_model (cursor_schematic)),
+											packge		=> get_package_model (cursor_schematic)),
 										position	=> cursor_bom,
 										inserted	=> inserted);
 
@@ -8115,7 +8116,7 @@ package body et_schematic_ops is
 													value		=> element (alt_dev_cursor).value,
 													partcode	=> element (alt_dev_cursor).partcode,
 													purpose		=> element (alt_dev_cursor).purpose,
-													packge		=> et_schematic.package_model (cursor_schematic)),
+													packge		=> get_package_model (cursor_schematic)),
 												position	=> cursor_bom,
 												inserted	=> inserted);
 

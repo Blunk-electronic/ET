@@ -1434,7 +1434,7 @@ package body et_board_ops is
 		use et_schematic.type_devices;
 	begin
 		-- get the package model of the given device:
-		model := package_model (device_cursor);
+		model := get_package_model (device_cursor);
 
 		-- get the position of the package as it is in the layout
 		package_position := et_schematic.type_devices.element (device_cursor).position;

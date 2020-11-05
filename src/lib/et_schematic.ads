@@ -173,15 +173,31 @@ package et_schematic is
 
 	-- This is a device as it appears in the schematic.
 	type type_device (appearance : type_appearance_schematic) is record
-		model	: et_devices.type_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
-		units	: type_units.map; -- PWR, A, B, ...
+
+		-- The link to the device model like ../libraries/devices/transistor/pnp.dev
+		model	: et_devices.type_device_model_file.bounded_string;
+
+		-- The units like PWR, A, B, ...
+		-- Virtual devices have only one unit (like the GND symbol).
+		-- Real devices like a single resistor have one unit.
+		-- Real devices like FPGAs have many units (like PWR1, PWR2, GPIO1, GPIO2, ...):
+		units	: type_units.map;
 		
 		case appearance is
 			-- If a device appears in both schematic and layout it has got:
 			when et_symbols.PCB =>
 				value		: et_devices.type_value.bounded_string; -- 470R
+				
 				partcode	: et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+				-- For virtual packages (test points, edge connectors, ...)
+				-- usually no partcode is required.
+
+				-- The purpose indicates what the device is doing.
+				-- It is usually required for devices that require interaction
+				-- with the user of a PCBA:
 				purpose		: et_devices.type_purpose.bounded_string; -- brightness_control
+
+				-- The package variant:
 				variant		: et_devices.type_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
@@ -433,14 +449,48 @@ package et_schematic is
 		"<"				=> et_devices."<",
  		element_type	=> type_device);
 
-	function package_model (device : in type_devices.cursor)
-		return et_packages.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+	-- Returns true if the given device is real.
+	function is_real (device : in type_devices.cursor) return boolean;
+
+	-- Returns the value of the given device.
+	-- The device must be real. Otherwise constraint error is raised.
+	function get_value (device : in type_devices.cursor)
+		return et_devices.type_value.bounded_string;
+
+	-- CS procedure set_value (
+		--device	: in type_devices.cursor;
+	--value	: in et_devices.type_value.bounded_string);
+	-- use it in schematic_ops
+	
+	-- Returns the purpose of the given device.
+	-- The device must be real. Otherwise constraint error is raised.
+	function get_purpose (device : in type_devices.cursor)
+		return et_devices.type_purpose.bounded_string;
+
+	-- CS procedure set_purpose (
+		--device	: in type_devices.cursor;
+		--purpose	: in et_devices.type_purpose.bounded_string);
+	-- use it in schematic_ops
+	
+	-- Returns the partcode of the given device.
+	-- The device must be real. Otherwise constraint error is raised.
+	function get_partcode (device : in type_devices.cursor)
+		return et_material.type_partcode.bounded_string;
+
+	-- CS procedure set_partcode (
+		--device	: in type_devices.cursor;
+		--partcode	: in et_material.type_partcode.bounded_string);
+	-- use it in schematic_ops
+	
 	-- Returns the name of the package model of the given device.
-	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.	
+	-- The given device must be real. Otherwise constraint error arises here.	
+	function get_package_model (device : in type_devices.cursor)
+		return et_packages.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 
 	function has_real_package (device : in type_devices.cursor) return boolean;
 	-- Returns true if the given device has a real package.
 	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.	
+
 	
 	-- For designs which have only a schematic, this flag goes false.
 	type type_board_available is new boolean;

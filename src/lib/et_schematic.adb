@@ -289,11 +289,42 @@ package body et_schematic is
 		iterate (element (net).strands, query_strands'access);
 		return result;
 	end ports;
+
+	function is_real (device : in type_devices.cursor) return boolean is 
+		use et_symbols;
+	begin
+		case type_devices.element (device).appearance is
+			when PCB		=> return true;
+			when VIRTUAL	=> return false;
+		end case;
+	end is_real;
+
+	function get_value (device : in type_devices.cursor)
+		return et_devices.type_value.bounded_string 
+	is
+		use et_devices;
+	begin
+		return type_devices.element (device).value;
+	end get_value;
+
+	function get_purpose (device : in type_devices.cursor)
+		return et_devices.type_purpose.bounded_string
+	is
+		use et_devices;
+	begin
+		return type_devices.element (device).purpose;
+	end get_purpose;
+
+	function get_partcode (device : in type_devices.cursor)
+		return et_material.type_partcode.bounded_string
+	is
+		use et_devices;
+	begin
+		return type_devices.element (device).partcode;
+	end get_partcode;
 	
-	function package_model (device : in type_devices.cursor)
+	function get_package_model (device : in type_devices.cursor)
 		return et_packages.type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
-	-- Returns the name of the package model of the given device.
-	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.
 		device_model		: et_devices.type_device_model_file.bounded_string;
 		device_cursor_lib	: et_devices.type_devices.cursor;
 		device_variant		: et_devices.type_variant_name.bounded_string; -- N, D
@@ -306,26 +337,23 @@ package body et_schematic is
 		
 		-- load the name of the generic device model
 		device_model := type_devices.element (device).model;
-
-
 		
 		-- locate the generic device model in the device library
 		device_cursor_lib := et_devices.locate_device (device_model);
 		
 		return et_devices.package_model (device_cursor_lib, device_variant);
-	end package_model;
+	end get_package_model;
 
 	function has_real_package (device : in type_devices.cursor) return boolean is
-	-- Returns true if the given device has a real package.
-	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.
 		package_name : et_packages.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 	begin
 		-- get the package name of the given device:
-		package_name := package_model (device);
+		package_name := get_package_model (device);
 
 		-- ask for the package status (real or virtual) and return the result right away:
 		return et_packages.is_real (package_name);
 	end has_real_package;
+
 	
 	function to_string (
 		mirror	: in type_mirror;

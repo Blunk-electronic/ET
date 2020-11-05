@@ -1893,9 +1893,7 @@ package body pac_canvas is
 	end set_status_properties;
 
 	procedure set_property_before (text : in string) is begin
-		--label_property_before_content.set_text (text);
-		--gtk_entry (entry_properties_before.set_text (text));
-		entry_properties_before.set_text (text);
+		entry_property_old.set_text (text);
 	end set_property_before;
 
 	

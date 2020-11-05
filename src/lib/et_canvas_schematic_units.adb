@@ -1723,58 +1723,68 @@ package body et_canvas_schematic_units is
 		box : gtk_vbox;
 		label : gtk_label;
 		gentry : gtk_gentry;
-		--status : gtk_label;
 		
 		su : type_selected_unit := element (selected_unit);
 
 		use et_schematic.type_devices;
 		device_name : constant string := to_string (key (su.device)); -- IC2
 	begin
-		build_window_properties;
+		-- Properties of real devices can be changed.
+		-- Virtual devices (like GND symbols) can not be changed.
+		if is_real (su.device) then
+			build_window_properties;
 
-		-- If the operator closes the properties window:
-		window_properties.on_destroy (close_window_properties'access);
-		
-		window_properties.set_default_size (200, 100);
-		window_properties.set_resizable (false);
-		
-		gtk_new_vbox (box);
-		add (window_properties, box);
+			-- If the operator closes the properties window:
+			window_properties.on_destroy (close_window_properties'access);
+			
+			window_properties.set_default_size (200, 100);
+			window_properties.set_resizable (false);
+			
+			gtk_new_vbox (box);
+			add (window_properties, box);
 
-		gtk_new (entry_properties_before);
-		
-		case noun is
-			when NOUN_PARTCODE =>
-				gtk_new (label, "Partcode of " & device_name);
-				set_property_before ("partcode");
+			-- Prepare displaying the old state of the property:
+			gtk_new (entry_property_old);
+			
+			case noun is
+				when NOUN_PARTCODE =>
+					gtk_new (label, "Partcode of " & device_name);
+					set_property_before (et_material.to_string (get_partcode (su.device)));
 
-			when NOUN_PURPOSE =>
-				gtk_new (label, "Purpose of " & device_name);
-				set_property_before ("purpose");
-				
-			when NOUN_VALUE =>
-				gtk_new (label, "Value of " & device_name);
-				set_property_before ("value");
-				
-			when others => raise constraint_error;
-		end case;				
-				
-		pack_start (box, label);
+				when NOUN_PURPOSE =>
+					gtk_new (label, "Purpose of " & device_name);
+					set_property_before (et_devices.to_string (get_purpose (su.device)));
+					
+				when NOUN_VALUE =>
+					gtk_new (label, "Value of " & device_name);
+					set_property_before (et_devices.to_string (get_value (su.device)));
+					
+				when others => raise constraint_error;
+			end case;				
+					
+			pack_start (box, label);
 
-		gtk_new (label_property_before_header, "old");
-		pack_start (box, label_property_before_header);
+			-- show the old property:
+			gtk_new (label_property_old, "old:");
+			pack_start (box, label_property_old);
+			pack_start (box, entry_property_old);
 
-		pack_start (box, entry_properties_before);
-		
-		gtk_new (gentry);
-		pack_start (box, gentry);
-		gentry.on_activate (property_entered'access);
-		gentry.grab_focus;
+			-- show the new property (will be entered by the operator later):
+			gtk_new (label_property_new, "new:");
+			pack_start (box, label_property_new);
+			
+			gtk_new (gentry);
+			pack_start (box, gentry);
+			gentry.on_activate (property_entered'access);
+			gentry.grab_focus;
 
-		gtk_new (label_properties_status);
-		pack_start (box, label_properties_status);
-		
-		window_properties.show_all;
+			gtk_new (label_properties_status);
+			pack_start (box, label_properties_status);
+			
+			window_properties.show_all;
+		else
+			set_status ("ERROR: Device " & device_name & " is virtual !");
+		end if;
 	end window_set_property;
 
 	

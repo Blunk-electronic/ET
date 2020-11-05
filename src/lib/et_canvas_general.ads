@@ -771,10 +771,14 @@ package pac_canvas is
 
 
 
-	window_properties		: gtk.window.gtk_window;
-	label_property_before_header	: gtk.label.gtk_label;
-	label_property_before_content	: gtk.label.gtk_label;
-	entry_properties_before	: gtk_gentry;
+	window_properties	: gtk.window.gtk_window;
+
+	-- Here we display the property in its old state before changing it:
+	label_property_old	: gtk.label.gtk_label;
+	entry_property_old	: gtk_gentry;
+
+	label_property_new	: gtk.label.gtk_label;
+	
 	label_properties_status	: gtk.label.gtk_label;
 	
 	properties_confirmed : boolean := false;

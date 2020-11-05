@@ -423,11 +423,19 @@ package et_canvas_schematic_units is
 	-- If more than one unit near point found, then it sets the
 	-- cursor selected_unit to the first unit and requests
 	-- for clarification.
+	-- If the selected unit belongs to a virtual device, then
+	-- an error message will be output in the status bar.
+	--  Virtual units have no value, partcode or purpose because
+	--  they do not exist in reality.
 	procedure set_property (point : in type_point);
 
 	-- Sets the property of the selected unit (and the whole
 	-- device) of the unit being pointed at by cursor selected_unit.
 	-- Call this procedure after a clarification.
+	-- If the selected unit belongs to a virtual device, then
+	-- an error message will be output in the status bar.
+	--  Virtual units have no value, partcode or purpose because
+	--  they do not exist in reality.
 	procedure set_property_selected_unit;
 
 
