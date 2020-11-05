@@ -571,14 +571,11 @@ procedure draw_units (
 						
 						symbol		=> element (unit_cursor.internal).symbol,
 
+						device_name		=> unit_add.device_pre,
 						unit_name		=> unit_add.name,
 						unit_count		=> unit_add.total,
 						
 						unit_position	=> destination,
-
-						--sch_placeholder_name	=> element (symbol_cursor).name,
-						--sch_placeholder_value	=> element (symbol_cursor).value,
-						--sch_placeholder_purpose => element (symbol_cursor).purpose,
 
 						sch_placeholder_name	=> sch_placeholder_name,
 						sch_placeholder_value	=> sch_placeholder_value,

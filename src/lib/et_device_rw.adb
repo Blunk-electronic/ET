@@ -943,7 +943,7 @@ package body et_device_rw is
 								
 								log (text => "value " & to_string (value), level => log_threshold + 1);
 
-							elsif kw = keyword_appearance then -- appearance sch_pcb
+							elsif kw = keyword_appearance then -- appearance virtual/pcb
 								expect_field_count (line, 2);
 								appearance := to_appearance (f (line,2));
 								log (text => "appearance " & to_string (appearance), level => log_threshold + 1);								
