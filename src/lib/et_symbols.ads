@@ -552,6 +552,8 @@ package et_symbols is
 		"<"				=> type_symbol_model_file."<",
 		element_type	=> type_symbol);
 
+	use type_symbols;
+	
 	symbol_library_file_extension : constant string := "sym";
 
 	-- HERE RIG WIDE EXTERNAL SYMBOLS ARE KEPT:	
@@ -568,7 +570,11 @@ package et_symbols is
 	function locate (symbol : in type_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
 		return type_symbols.cursor;
 
-
+	-- Returns true if the given symbol will be part of a real device:
+	function is_real (symbol : in type_symbols.cursor)
+		return boolean;
+	
+	
 	-- When placing, copying, invoking units their placeholders must be
 	-- changed according to the rotation of the affected unit. We basically
 	-- deal with only those placeholders:

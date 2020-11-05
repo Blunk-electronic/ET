@@ -336,7 +336,17 @@ package body et_symbols is
 		return type_symbols.find (symbols, symbol);
 	end locate;
 
+	function is_real (symbol : in type_symbols.cursor)
+		return boolean
+	is begin
+		case element (symbol).appearance is
+			when PCB		=> return true;
+			when VIRTUAL	=> return false;
+		end case;
+	end is_real;
 
+	
+	
 	procedure rotate (
 		phs			: in out type_rotated_placeholders;
 		rotation	: in type_rotation)

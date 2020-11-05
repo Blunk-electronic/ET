@@ -481,7 +481,43 @@ procedure draw_units (
 			symbol_model : type_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
 			symbol_cursor : et_symbols.type_symbols.cursor;
 
-		begin
+			procedure fetch_placeholders_ext is begin
+			-- Drawing the symbol of a real device requires placeholders
+			-- for name, value an purpose. We fetch them from the symbol model
+			-- in this case.
+			-- If the symbol is virtual, then the placeholders are meaningless
+			-- and assume default values.
+				if is_real (symbol_cursor) then
+					sch_placeholder_name	:= element (symbol_cursor).name;
+					sch_placeholder_value	:= element (symbol_cursor).value;
+					sch_placeholder_purpose := element (symbol_cursor).purpose;
+				else
+					sch_placeholder_name	:= (meaning => NAME, others => <>);
+					sch_placeholder_value	:= (meaning => VALUE, others => <>);
+					sch_placeholder_purpose := (meaning => PURPOSE, others => <>);
+				end if;
+			end fetch_placeholders_ext;
+
+			procedure fetch_placeholders_int is begin
+			-- Drawing the symbol of a real device requires placeholders
+			-- for name, value an purpose. We fetch them from the symbol model
+			-- in this case.
+			-- If the symbol is virtual, then the placeholders are meaningless
+			-- and assume default values.
+				case element (unit_cursor.internal).appearance is
+					when PCB =>
+						sch_placeholder_name	:= element (unit_cursor.internal).symbol.name;
+						sch_placeholder_value	:= element (unit_cursor.internal).symbol.value;
+						sch_placeholder_purpose := element (unit_cursor.internal).symbol.purpose;
+					when VIRTUAL =>
+						sch_placeholder_name	:= (meaning => NAME, others => <>);
+						sch_placeholder_value	:= (meaning => VALUE, others => <>);
+						sch_placeholder_purpose := (meaning => PURPOSE, others => <>);
+				end case;
+			end fetch_placeholders_int;
+
+			
+		begin -- locate_symbol
 			-- Set the destination coordinates according to current tool:
 			case unit_add.tool is
 				when KEYBOARD	=> destination := cursor_main.position;
@@ -492,11 +528,13 @@ procedure draw_units (
 				when EXT =>
 					--put_line ("external unit");
 					
-					-- If the unit is external, we must fetch the symbol 
+					-- If the unit is external, we must fetch the symbol and the placeholders
 					-- via its model file:
 					symbol_model := element (unit_cursor.external).file;
 					symbol_cursor := locate (symbol_model);
-					
+
+					fetch_placeholders_ext;
+						
 					draw_symbol (
 						self		=> self,
 						in_area		=> in_area,
@@ -510,9 +548,9 @@ procedure draw_units (
 						
 						unit_position	=> destination,
 
-						sch_placeholder_name	=> element (symbol_cursor).name,
-						sch_placeholder_value	=> element (symbol_cursor).value,
-						sch_placeholder_purpose => element (symbol_cursor).purpose,
+						sch_placeholder_name	=> sch_placeholder_name,
+						sch_placeholder_value	=> sch_placeholder_value,
+						sch_placeholder_purpose => sch_placeholder_purpose,
 
 						brightness		=> brightness,
 						preview			=> true);
@@ -521,8 +559,11 @@ procedure draw_units (
 				when INT =>
 					--put_line ("internal unit");						
 					
-					-- If the unit is internal, we can fetch it the symbol 
+					-- If the unit is internal, we fetch it the symbol and the placeholders 
 					-- directly from the unit:
+					
+					fetch_placeholders_int;
+					
 					draw_symbol (
 						self		=> self,
 						in_area		=> in_area,
@@ -535,10 +576,14 @@ procedure draw_units (
 						
 						unit_position	=> destination,
 
-						sch_placeholder_name	=> element (symbol_cursor).name,
-						sch_placeholder_value	=> element (symbol_cursor).value,
-						sch_placeholder_purpose => element (symbol_cursor).purpose,
+						--sch_placeholder_name	=> element (symbol_cursor).name,
+						--sch_placeholder_value	=> element (symbol_cursor).value,
+						--sch_placeholder_purpose => element (symbol_cursor).purpose,
 
+						sch_placeholder_name	=> sch_placeholder_name,
+						sch_placeholder_value	=> sch_placeholder_value,
+						sch_placeholder_purpose => sch_placeholder_purpose,
+						
 						brightness		=> brightness,
 						preview			=> true);
 			end case;
