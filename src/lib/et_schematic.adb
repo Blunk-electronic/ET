@@ -322,6 +322,14 @@ package body et_schematic is
 	begin
 		return type_devices.element (device).partcode;
 	end get_partcode;
+
+	function get_variant (device : in type_devices.cursor)
+		return et_devices.type_variant_name.bounded_string
+	is
+		use et_devices;
+	begin
+		return type_devices.element (device).variant;
+	end get_variant;
 	
 	function get_package_model (device : in type_devices.cursor)
 		return et_packages.type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac

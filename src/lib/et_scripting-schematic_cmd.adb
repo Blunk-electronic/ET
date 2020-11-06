@@ -1634,7 +1634,34 @@ is
 								
 							when others => command_incomplete;
 						end case;
+
+					when NOUN_VARIANT =>
+						case fields is
+							when 6 =>
+								declare
+									variant : et_devices.type_variant_name.bounded_string; -- N, D
+								begin
+									-- validate variant
+									check_variant_name_length (f (6));
+									variant := to_name (f (6));
+									check_variant_name_characters (variant);
+									
+									-- set the variant
+									set_variant
+										(
+										module			=> module,
+										device			=> to_name (f (5)), -- IC1
+										variant			=> variant, -- N, D
+										log_threshold	=> log_threshold + 1
+										);
+								end;
+
+							when 7 .. count_type'last => too_long; 
 								
+							when others => command_incomplete;
+						end case;
+
+						
 					when NOUN_TEXT_SIZE =>
 						NULL; -- CS
 						

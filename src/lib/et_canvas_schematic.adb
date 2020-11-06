@@ -1626,12 +1626,16 @@ package body et_canvas_schematic is
 				when GDK_LC_v =>
 					noun := NOUN_VALUE;					
 					set_status (et_canvas_schematic_units.status_set_value);
+
+				when GDK_LC_a =>
+					noun := NOUN_VARIANT;
+					set_status (et_canvas_schematic_units.status_set_variant);
 					
 				-- If space pressed, then the operator wishes to operate via keyboard:	
 				when GDK_Space =>
 					case noun is
 						
-						when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
+						when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
 							if not clarification_pending then
 								set_property (cursor_main.position);
 							else
@@ -1644,7 +1648,7 @@ package body et_canvas_schematic is
 				-- If page down pressed, then the operator is clarifying:
 				when GDK_page_down =>
 					case noun is
-						when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
+						when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
 							if clarification_pending then
 								clarify_unit;
 							end if;
@@ -2326,7 +2330,7 @@ package body et_canvas_schematic is
 				when VERB_SET =>
 
 					case noun is
-						when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
+						when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
 							if not clarification_pending then
 								set_property (point);
 							else

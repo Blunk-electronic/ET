@@ -316,14 +316,34 @@ package et_schematic_ops is
 		device	: in type_name) -- R2
 		return type_device_model_file.bounded_string; -- 7400.dev
 
-	-- Locates the given device in the given module and returns
-	-- the name of the package variant name of the device.
+	-- Returns the name of the package variant name of the device.
 	-- Raises constraint error if the device does not exist.
-	-- Raises constraint error if the device is virtual.
-	function device_variant_name (
+	-- Raises semantic error if the device is virtual.
+	function get_variant (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name) -- R2
 		return et_devices.type_variant_name.bounded_string; -- D, N
+
+	-- Sets the package variant of a device.
+	-- Raises constraint error if the device does not exist.
+	-- Raises semantic error if the device is virtual.
+	-- Raises semantic error if the variant is not defined
+	-- in the according device model:
+	procedure set_variant (
+		module	: in pac_generic_modules.cursor;
+		device	: in et_schematic.type_devices.cursor;
+		variant	: in et_devices.type_variant_name.bounded_string);
+
+	-- Sets the package variant of a device.
+	-- Raises semantic error if the device does not exist.
+	-- Raises semantic error if the device is virtual.
+	-- Raises semantic error if the variant is not defined
+	-- in the according device model:
+	procedure set_variant (
+		module			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device			: in et_devices.type_name; -- R2
+		variant			: in et_devices.type_variant_name.bounded_string; -- N, D
+		log_threshold	: in type_log_level);
 	
 	-- Locates the given device in the given module and returns
 	-- the cursor to the device model.

@@ -481,6 +481,11 @@ package et_schematic is
 		--device	: in type_devices.cursor;
 		--partcode	: in et_material.type_partcode.bounded_string);
 	-- use it in schematic_ops
+
+	-- Returns the package variant of the given device.
+	-- The device must be real. Otherwise constraint error is raised.
+	function get_variant (device : in type_devices.cursor)
+		return et_devices.type_variant_name.bounded_string;
 	
 	-- Returns the name of the package model of the given device.
 	-- The given device must be real. Otherwise constraint error arises here.	

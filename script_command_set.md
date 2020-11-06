@@ -327,7 +327,7 @@ schematic led_driver renumber devices 100
 ```
 
 
-#### SETTING VALUE, PURPOSE, PARTCODE
+#### SETTING VALUE, PURPOSE, PARTCODE, PACKAGE VARIANT
 ```
 schematic led_driver set value R1 2k2
 ```
@@ -336,6 +336,9 @@ schematic led_driver set purpose R1 "brightnesss_control"
 ```
 ```
 schematic led_driver set partcode R1 R_PAC_S_0805_VAL_100R
+```
+```
+schematic led_driver set variant IC1 D
 ```
 
 #### DELETING

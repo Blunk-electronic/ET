@@ -1645,6 +1645,7 @@ package body et_canvas_schematic_units is
 		
 		value : type_value.bounded_string;
 		purpose : type_purpose.bounded_string;
+		variant : et_devices.type_variant_name.bounded_string;
 
 		use et_material;
 		partcode : type_partcode.bounded_string;
@@ -1661,10 +1662,6 @@ package body et_canvas_schematic_units is
 	begin -- property_entered
 		case noun is
 			when NOUN_PARTCODE =>
-				--set_property_before ("test");
-				--label_property_before_content.show;
-				--window_properties.show_all;
-				
 				partcode := to_partcode (self.get_text);
 
 				set_partcode (
@@ -1696,6 +1693,16 @@ package body et_canvas_schematic_units is
 					log_threshold	=> log_threshold + 1);
 
 				-- CS use set_value that takes a module cursor and a device cursor
+
+			when NOUN_VARIANT =>
+				check_variant_name_length (self.get_text);
+				variant := to_name (self.get_text);
+				check_variant_name_characters (variant);
+
+				set_variant (
+					module			=> current_active_module,
+					device			=> su.device,
+					variant			=> variant);
 				
 			when others => raise constraint_error;
 		end case;
@@ -1758,6 +1765,10 @@ package body et_canvas_schematic_units is
 				when NOUN_VALUE =>
 					gtk_new (label, "Value of " & device_name);
 					set_property_before (et_devices.to_string (get_value (su.device)));
+
+				when NOUN_VARIANT =>
+					gtk_new (label, "Package variant of " & device_name);
+					set_property_before (et_devices.to_string (get_variant (su.device)));
 					
 				when others => raise constraint_error;
 			end case;				
@@ -1773,7 +1784,7 @@ package body et_canvas_schematic_units is
 			gtk_new (label_property_new, "new:");
 			pack_start (box, label_property_new);
 			
-			gtk_new (gentry);
+			gtk_new (gentry); -- CS if NOUN_VARIANT propose available variants here
 			pack_start (box, gentry);
 			gentry.on_activate (property_entered'access);
 			gentry.grab_focus;

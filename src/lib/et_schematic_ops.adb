@@ -2570,7 +2570,7 @@ package body et_schematic_ops is
 		return element (locate_device (module, device)).model;
 	end device_model_name;
 
-	function device_variant_name (
+	function get_variant (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name) -- R2
 		return et_devices.type_variant_name.bounded_string -- D, N
@@ -2579,7 +2579,83 @@ package body et_schematic_ops is
 	begin
 		cursor_sch := locate_device (module, device);
 		return et_schematic.type_devices.element (cursor_sch).variant;
-	end device_variant_name;
+	end get_variant;
+
+	procedure set_variant (
+		module	: in pac_generic_modules.cursor;
+		device	: in et_schematic.type_devices.cursor;
+		variant	: in et_devices.type_variant_name.bounded_string)
+	is
+		use et_schematic.type_devices;
+
+		procedure query_device (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure do_it (
+				name	: in et_devices.type_name;
+				dev		: in out et_schematic.type_device)
+			is 
+				cursor_lib : et_devices.type_devices.cursor;
+			begin
+				cursor_lib := locate_device (dev.model);
+
+				if variant_available (cursor_lib, variant) then
+					dev.variant := variant;
+				else
+					raise semantic_error_1 with
+						"ERROR: Variant " & to_string (variant) 
+						& " not defined in device model !"; -- CS output file name ?
+				end if;
+			end do_it;
+
+		begin
+			update_element (
+				container	=> module.devices,
+				position	=> device,
+				process		=> do_it'access);
+		end query_device;
+		
+	begin
+		if is_real (device) then
+			
+			update_element (
+				container	=> generic_modules,
+				position	=> module,
+				process		=> query_device'access);
+
+		else
+			raise semantic_error_1 with
+			 "ERROR: Device is virtual and does not have a package !";
+		end if;
+	end set_variant;
+
+	procedure set_variant (
+		module			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device			: in et_devices.type_name; -- R2
+		variant			: in et_devices.type_variant_name.bounded_string; -- N, D
+		log_threshold	: in type_log_level)
+	is
+		use pac_generic_modules;
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
+		device_cursor : et_schematic.type_devices.cursor;
+	begin
+		log (text => "module " & enclose_in_quotes (to_string (module))
+			 & " setting package variant of " & to_string (device)
+			 & " to " & to_string (variant) & " ...",
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module);
+
+		if exists (module_cursor, device) then
+			device_cursor := locate_device (module_cursor, device);			
+			set_variant (module_cursor, device_cursor, variant);
+		else
+			device_not_found (device);
+		end if;
+		
+	end set_variant;
 	
 	function device_model_cursor (
 		module	: in pac_generic_modules.cursor;

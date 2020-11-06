@@ -414,10 +414,18 @@ package et_canvas_schematic_units is
 		& status_press_space
 		& "to set partcode of device." 
 		& status_hint_for_abort;
+
+	status_set_variant : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to set package variant of device." 
+		& status_hint_for_abort;
+
 	
 	-- Sets a property a unit in the vicinity of given point.
 	-- Since a unit is a subset of a device, the property will be 
-	-- set for the whole device.
+	-- applied for the whole device.
 	-- A property is for example the value, the purpose or
 	-- the partcode.
 	-- If more than one unit near point found, then it sets the
