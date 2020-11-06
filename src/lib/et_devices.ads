@@ -172,6 +172,12 @@ package et_devices is
 	-- Tests if the given prefix contains only valid characters.
 	-- Raises exception if invalid character found.
 
+	-- Predefined prefixes:
+	-- - for power symbols:
+	prefix_pwr : constant string := "PWR";
+	-- CS distinguish between power symbols with prefixes 
+	-- like PWR_POS, PWR_GND, PWR_NEG ? Probably already solved by
+	-- the signal direction of the port ?
 
 
 -- DEVICE NAMES

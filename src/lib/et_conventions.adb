@@ -3202,14 +3202,17 @@ package body et_conventions is
 
 	
 	function prefix_valid (prefix : in et_devices.type_prefix.bounded_string) return boolean is
-	-- Tests if the given prefix is valid as specified in the configuration file.
-	-- Raises warning if not and returns false. 
-	-- Returns true if no prefixes specified or if prefix is valid.
 		use et_devices.type_prefix;
 		use type_component_prefixes;
 		result : boolean := true;
 	begin
-		-- if there are prefixes specified, test if the given particular prefix is among them
+		-- The given prefix could be a predefined prefix of a
+		-- power symbol (like GND):
+		if prefix = to_prefix (prefix_pwr) then
+			return true;
+		end if;
+		
+		-- If there are prefixes specified, test if the given prefix is among them:
 		if component_prefixes_specified then
 			if component_prefixes.find (prefix) = type_component_prefixes.no_element then
 				log (WARNING, "invalid prefix " & et_devices.to_string (prefix) & " !");
@@ -3220,19 +3223,16 @@ package body et_conventions is
 		return result;
 	end prefix_valid;
 	
-	function prefix_valid (reference : in type_name) return boolean is
-	-- Tests if the given device name has a valid prefix as specified in the configuration file.
-	-- Raises warning if not and returns false. 
-	-- Returns true if no prefixes specified or if prefix is valid.
+	function prefix_valid (device_name : in type_name) return boolean is
 		use type_prefix;
 		use type_component_prefixes;
 		result : boolean := true;
 	begin
 		-- if there are prefixes specified, test if the given particular prefix is among them
 		if component_prefixes_specified then
-			if component_prefixes.find (reference.prefix) = type_component_prefixes.no_element then
+			if component_prefixes.find (device_name.prefix) = type_component_prefixes.no_element then
 				log (WARNING, "invalid prefix in device name "
-					 & et_devices.to_string (reference) & " !");
+					 & et_devices.to_string (device_name) & " !");
 				result := false;
 			end if;
 		end if;

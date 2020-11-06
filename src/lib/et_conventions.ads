@@ -510,15 +510,15 @@ package et_conventions is
 		prefix	: in et_devices.type_prefix.bounded_string)
 		return boolean;
 	
+	-- Tests if the given reference has a valid prefix as specified in the conventions file.
+	-- Raises warning if not and returns false. 
+	-- Returns true if no prefixes specified or if prefix is valid.
 	function prefix_valid (prefix : in et_devices.type_prefix.bounded_string) return boolean;
-	-- Tests if the given reference has a valid prefix as specified in the conventions file.
-	-- Raises warning if not and returns false. 
-	-- Returns true if no prefixes specified or if prefix is valid.
 	
-	function prefix_valid (reference : in type_name) return boolean;
-	-- Tests if the given reference has a valid prefix as specified in the conventions file.
+	-- Tests if the given device name has a valid prefix as specified in the conventions file.
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
+	function prefix_valid (device_name : in type_name) return boolean;
 
 end et_conventions;
 
