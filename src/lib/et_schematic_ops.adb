@@ -2438,7 +2438,7 @@ package body et_schematic_ops is
 						process		=> set_partcode'access);
 
 				else
-					log (WARNING, "device " & to_string (device_name) &
+					log (WARNING, "Device " & to_string (device_name) &
 						 " is virtual and has no partcode !");
 				end if;
 
@@ -2514,6 +2514,21 @@ package body et_schematic_ops is
 		return result;
 	end locate_device;
 
+	function locate_device (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return et_devices.type_devices.cursor
+	is
+		cursor_sch : et_schematic.type_devices.cursor;
+	begin
+		-- find the device in the module
+		cursor_sch := locate_device (module, device);
+
+		-- find the device in the library
+		return get_device (cursor_sch);
+	end locate_device;
+
+	
 	function locate_unit (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name; -- R2
@@ -2570,6 +2585,17 @@ package body et_schematic_ops is
 		return element (locate_device (module, device)).model;
 	end device_model_name;
 
+	function get_available_variants (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return pac_variants.map
+	is
+		cursor_lib : et_devices.type_devices.cursor;	
+	begin
+		cursor_lib := locate_device (module, device);
+		return available_variants (cursor_lib);
+	end get_available_variants;
+	
 	function get_variant (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_name) -- R2
@@ -2578,6 +2604,7 @@ package body et_schematic_ops is
 		cursor_sch : et_schematic.type_devices.cursor;
 	begin
 		cursor_sch := locate_device (module, device);
+		
 		return et_schematic.type_devices.element (cursor_sch).variant;
 	end get_variant;
 

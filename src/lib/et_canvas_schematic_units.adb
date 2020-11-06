@@ -838,6 +838,35 @@ package body et_canvas_schematic_units is
 
 -- ADD UNIT/DEVICE
 
+	function extract_variant_name (menu_item : in string) 
+		return et_devices.type_variant_name.bounded_string 
+	is
+		var_name : constant string := get_field_from_line (
+			text_in		=> menu_item,
+			position	=> 3);
+
+		use et_devices;
+	begin
+		return to_name (var_name);
+	end extract_variant_name;
+	
+	-- In order to place a package variant and the associated model
+	-- on a menu, use this function:
+	function to_package_variant_item (variant : in pac_variants.cursor) 
+		return string 
+	is
+		use pac_variants;
+		variant_name : constant string := to_string (key (variant));
+
+		use et_packages;
+		package_model : constant string := to_string (element (variant).package_model);
+	begin
+		-- Build the menu item. NOTE: The actual variant name must be
+		-- the 3rd string of the entry. Procedures that evaluate
+		-- the item expect it at this place:
+		return "package variant: " & variant_name & " model " & package_model;
+	end to_package_variant_item;
+
 	procedure reset_unit_add is begin
 		unit_add := (others => <>);
 	end reset_unit_add;
@@ -851,7 +880,7 @@ package body et_canvas_schematic_units is
 	begin
 		unit_add.variant := to_name (var_name);
 		
-		set_status ("Variant " & var_name & " selected."
+		set_status ("Variant " & enclose_in_quotes (var_name) & " selected."
 			& " Left click to continue with mouse."
 			& " Space to continue with keyboard");
 
@@ -878,21 +907,12 @@ package body et_canvas_schematic_units is
 			m : gtk_menu;
 			i : gtk_menu_item;
 			
-			procedure query_variant (c : in pac_variants.cursor) is
-				package_model : constant string := to_string (element (c).package_model);
-			begin
-				-- Build the menu item. NOTE: The actual variant name must be
-				-- the 3rd string of the entry. Procedure variant_selected expects
-				-- it at this place:
-				i := gtk_menu_item_new_with_label (
-					"package variant: " & to_string (key (c))
-					& " model " & package_model);
-				
+			procedure query_variant (c : in pac_variants.cursor) is begin
+				-- Build the menu item:
+				i := gtk_menu_item_new_with_label (to_package_variant_item (c));
 				i.on_activate (variant_selected'access);
 				m.append (i);
 				i.show;
-
-				-- https://www.cc.gatech.edu/data_files/public/doc/gtk/tutorial/gtk_tut-14.html
 			end query_variant;
 			
 		begin
@@ -1794,7 +1814,8 @@ package body et_canvas_schematic_units is
 			
 			window_properties.show_all;
 		else
-			set_status ("ERROR: Device " & device_name & " is virtual !");
+			set_status ("ERROR: Device " & device_name 
+				& " is virtual and does not have this property !");
 		end if;
 	end window_set_property;
 

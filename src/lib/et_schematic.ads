@@ -452,6 +452,10 @@ package et_schematic is
 	-- Returns true if the given device is real.
 	function is_real (device : in type_devices.cursor) return boolean;
 
+	-- Maps from schematic device to library device:
+	function get_device (device : in type_devices.cursor)
+		return et_devices.type_devices.cursor;
+	
 	-- Returns the value of the given device.
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_value (device : in type_devices.cursor)

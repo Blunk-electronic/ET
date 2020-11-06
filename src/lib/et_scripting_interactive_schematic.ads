@@ -42,6 +42,7 @@ with gtk.menu_shell;			use gtk.menu_shell;
 
 with et_symbols;				use et_symbols;
 with et_devices;				use et_devices;
+with et_schematic;				use et_schematic;
 with et_string_processing;		use et_string_processing;
 
 
@@ -112,6 +113,18 @@ package et_scripting_interactive_schematic is
 	-- a placeholder comes to an end here.
 	procedure finish_placeholder_move;
 
+
+-- SET VARIANT
+	
+	-- When setting the package variant, the cursor to
+	-- the targeted device is stored here temporarily:
+	set_variant_device : et_schematic.type_devices.cursor;
+	
+	-- Sets the package variant of the given device.
+	-- The device must exist in the current active module.
+	-- Otherwise constraint error rises.
+	procedure set_variant (device : in et_devices.type_name);
+	
 	
 end et_scripting_interactive_schematic;
 

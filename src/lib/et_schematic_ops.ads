@@ -288,6 +288,14 @@ package et_schematic_ops is
 		device	: in type_name) -- R2
 		return et_schematic.type_devices.cursor;
 
+	-- Returns the cursor of the device model
+	-- for the given device in the module.
+	-- Raises exception if device does not exist.
+	function locate_device (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return et_devices.type_devices.cursor;
+	
 	-- Locates the given unit of the given device in the 
 	-- given module and returns the cursor to the unit.
 	-- If the unit does not exist, returns no_element.
@@ -316,6 +324,14 @@ package et_schematic_ops is
 		device	: in type_name) -- R2
 		return type_device_model_file.bounded_string; -- 7400.dev
 
+	-- Returns the package variants available for the
+	-- given device.
+	-- The device must be real. Otherwise constraint error rises.
+	function get_available_variants (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_name) -- R2
+		return pac_variants.map;
+	
 	-- Returns the name of the package variant name of the device.
 	-- Raises constraint error if the device does not exist.
 	-- Raises semantic error if the device is virtual.

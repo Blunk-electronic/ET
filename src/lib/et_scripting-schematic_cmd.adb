@@ -2236,11 +2236,31 @@ is
 
 								
 						end case;
-
 						
 					when others => null; -- CS
 				end case;
-				
+
+			when VERB_SET =>
+				case noun is
+					when NOUN_VARIANT =>
+						case fields is
+							when 4 => device_name_missing;
+								
+							when 5 => -- like "set variant IC1"
+								device_name := et_devices.to_name (f (5));
+
+								if exists (current_active_module, device_name) then
+									set_variant (device_name);
+								else
+									device_not_found;
+								end if;
+
+							when others => null;
+						end case;
+
+					when others => null; -- CS
+				end case;
+
 			when others => null;
 		
 		end case;

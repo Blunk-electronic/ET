@@ -299,6 +299,17 @@ package body et_schematic is
 		end case;
 	end is_real;
 
+	function get_device (device : in type_devices.cursor)
+		return et_devices.type_devices.cursor
+	is
+		model_file : type_device_model_file.bounded_string;
+	begin
+		-- The name of the device model file is THE link
+		-- from device in schematic to device in library:
+		model_file := type_devices.element (device).model;
+		return locate_device (model_file);
+	end get_device;
+	
 	function get_value (device : in type_devices.cursor)
 		return et_devices.type_value.bounded_string 
 	is

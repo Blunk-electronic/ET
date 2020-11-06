@@ -44,6 +44,7 @@ with ada.containers;				use ada.containers;
 
 with et_geometry;
 with et_coordinates;				use et_coordinates;
+with et_packages;
 with et_schematic;					use et_schematic;
 with et_scripting;					use et_scripting;
 with et_modes.schematic;			use et_modes.schematic;
@@ -455,6 +456,77 @@ package body et_scripting_interactive_schematic is
 	
 	end select_placeholder_for_move;
 
+
+
+	-- Once the operator selects a package variant from the menu, then
+	-- this procedure is called. The variant will be applied immediately
+	-- after selection:
+	procedure variant_selected (self : access gtk.menu_item.gtk_menu_item_record'class) is
+
+		-- Extract the variant name from field 3 of the menu item:
+		var_name : constant string := get_field_from_line (
+			text_in		=> self.get_label,
+			position	=> 3);
+	begin
+		-- Apply the variant to the device. The device is indicated by the
+		-- global variable set_variant_device. It has been set by 
+		-- the other procedure set_variant (see below):
+		set_variant (
+			module	=> current_active_module,
+			device	=> set_variant_device,
+			variant	=> to_name (var_name));
+
+		redraw;
+	end variant_selected;
+	
+	procedure set_variant (device : in et_devices.type_name) is
+		use pac_variants;
+		variants : pac_variants.map;
+		device_cursor_sch : et_schematic.type_devices.cursor;
+
+		procedure show_variants_menu is
+			m : gtk_menu;
+			i : gtk_menu_item;
+			
+			procedure query_variant (c : in pac_variants.cursor) is begin
+				-- Build the menu item:
+				i := gtk_menu_item_new_with_label (to_package_variant_item (c));
+				i.on_activate (variant_selected'access);
+				m.append (i);
+				i.show;
+			end query_variant;
+			
+		begin
+			m := gtk_menu_new;
+			variants.iterate (query_variant'access);
+
+			m.show;
+			m.popup;
+
+		end show_variants_menu;
+		
+	begin -- set_variant
+		device_cursor_sch := locate_device (current_active_module, device);
+
+		-- Setting a package variant is possible for real devices only:
+		if is_real (device_cursor_sch) then		
+			variants := get_available_variants (current_active_module, device);
+
+			if length (variants) > 1 then
+
+				-- Store device cursor temporarily here.
+				-- Required by procedure variant_selected. See above.
+				set_variant_device := device_cursor_sch;
+				
+				show_variants_menu;
+			else
+				set_status ("Device has only one package variant !");
+			end if;
+		else
+			set_status ("ERROR : Device is virtual and does not have a package !");
+		end if;
+
+	end set_variant;
 	
 end et_scripting_interactive_schematic;
 
