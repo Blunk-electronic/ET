@@ -175,9 +175,12 @@ package et_devices is
 	-- Predefined prefixes:
 	-- - for power symbols:
 	prefix_pwr : constant string := "PWR";
+	-- NOTE: When adding more predefined prefixes here, mind
+	-- to update function prefix_valid in et_conventions.
 	-- CS distinguish between power symbols with prefixes 
 	-- like PWR_POS, PWR_GND, PWR_NEG ? Probably already solved by
 	-- the signal direction of the port ?
+	
 
 
 -- DEVICE NAMES
