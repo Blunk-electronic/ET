@@ -40,7 +40,13 @@ with ada.exceptions;				use ada.exceptions;
 
 with glib;
 
+with gtk.window;
 with gtkada.file_selection;
+with gtk.file_chooser_dialog;
+with gtk.file_chooser;
+with gtk.file_chooser_button;
+with gtk.file_filter;
+
 with gtk.main;
 with gtk.widget;					use gtk.widget;
 with gtk.window;
@@ -886,9 +892,33 @@ package body et_canvas_schematic_units is
 			& " Space to continue with keyboard");
 
 	end variant_selected;
+
+	procedure device_directory_selected (self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) is
+	begin
+		put_line (self.get_current_folder);
+	end device_directory_selected;
+	
+	procedure device_model_selected (self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) is
+	begin
+		put_line (self.get_filename);
+	end device_model_selected;
 	
 	procedure add_device is
 		use gtkada.file_selection;
+		use gtk.window;
+		use gtk.box;
+		use gtk.file_chooser_dialog;
+		use gtk.file_chooser;
+		use gtk.file_chooser_button;
+		use gtk.file_filter;
+
+		w : gtk_window;
+		vbox : gtk_vbox;
+		hbox : gtk_hbox;
+		
+		directory, file : gtk_file_chooser_button;
+		filter : gtk_file_filter;
+		
 		use gtk.menu;
 		use gtk.menu_item;
 		use et_device_rw;
@@ -926,7 +956,43 @@ package body et_canvas_schematic_units is
 		end show_variants_menu;
 		
 	begin -- add_device
-		device_model := to_file_name (file_selection_dialog (title => "Select a device model"));
+		put_line ("device selection");
+
+		gtk_new (w);
+		w.set_title ("Select a device model");
+		
+		gtk_new_hbox (hbox, homogeneous => false);
+		add (w, hbox);
+
+		--pack_start (vbox, hbox, fill => false, expand => false);		
+		gtk_new (
+			button		=> directory,
+			title		=> "Select a device model",
+			action		=> ACTION_SELECT_FOLDER);
+
+		directory.on_file_set (device_directory_selected'access);
+		pack_start (hbox, directory);
+
+
+		gtk_new (filter);
+		add_pattern (filter, "*.dev");
+		set_name (filter, "Device Models");
+
+		
+		gtk_new (
+			button		=> file,
+			title		=> "Select a device model",
+			action		=> ACTION_OPEN);
+
+		file.add_filter (filter);
+		file.on_file_set (device_model_selected'access);
+		pack_start (hbox, file);
+
+		
+		w.show_all;
+
+		
+		--device_model := to_file_name (file_selection_dialog (title => "Select a device model"));
 
 		if type_device_model_file.length (device_model) > 0 then
 			set_status ("selected device model: " & to_string (device_model));
