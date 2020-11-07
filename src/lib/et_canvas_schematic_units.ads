@@ -236,12 +236,14 @@ package et_canvas_schematic_units is
 -- ADD UNIT/DEVICE
 
 	-- In order to place a package variant and the associated model
-	-- on a menu, use this function:
+	-- on a menu, use this function.
+	-- Field separator is space:
 	function to_package_variant_item (variant : in pac_variants.cursor)
 		return string;
 
 	-- In order to extract the actual variant name from a the 
-	-- menu of package variants, use this function:
+	-- menu of package variants, use this function.
+	-- Field separator is space.
 	function extract_variant_name (menu_item : in string) 
 		return et_devices.type_variant_name.bounded_string;
 

@@ -462,11 +462,6 @@ package body et_scripting_interactive_schematic is
 	-- this procedure is called. The variant will be applied immediately
 	-- after selection:
 	procedure variant_selected (self : access gtk.menu_item.gtk_menu_item_record'class) is
-
-		-- Extract the variant name from field 3 of the menu item:
-		var_name : constant string := get_field_from_line (
-			text_in		=> self.get_label,
-			position	=> 3);
 	begin
 		-- Apply the variant to the device. The device is indicated by the
 		-- global variable set_variant_device. It has been set by 
@@ -474,7 +469,7 @@ package body et_scripting_interactive_schematic is
 		set_variant (
 			module	=> current_active_module,
 			device	=> set_variant_device,
-			variant	=> to_name (var_name));
+			variant	=> extract_variant_name (self.get_label));
 
 		redraw;
 	end variant_selected;

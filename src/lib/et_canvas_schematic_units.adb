@@ -838,9 +838,13 @@ package body et_canvas_schematic_units is
 
 -- ADD UNIT/DEVICE
 
+	
+
 	function extract_variant_name (menu_item : in string) 
 		return et_devices.type_variant_name.bounded_string 
 	is
+		-- Extract the variant name from field 3 of the menu item.
+		-- Field separator is space:
 		var_name : constant string := get_field_from_line (
 			text_in		=> menu_item,
 			position	=> 3);
@@ -862,9 +866,9 @@ package body et_canvas_schematic_units is
 		package_model : constant string := to_string (element (variant).package_model);
 	begin
 		-- Build the menu item. NOTE: The actual variant name must be
-		-- the 3rd string of the entry. Procedures that evaluate
-		-- the item expect it at this place:
-		return "package variant: " & variant_name & " model " & package_model;
+		-- the 3rd string of the entry. Field separator is space.
+		-- Procedures that evaluate the item expect it at this place:
+		return "package variant: " & variant_name & " model: " & package_model;
 	end to_package_variant_item;
 
 	procedure reset_unit_add is begin
@@ -872,15 +876,12 @@ package body et_canvas_schematic_units is
 	end reset_unit_add;
 	
 	procedure variant_selected (self : access gtk.menu_item.gtk_menu_item_record'class) is
-
-		-- Extract the variant name from field 3 of the menu item:
-		var_name : constant string := get_field_from_line (
-			text_in		=> self.get_label,
-			position	=> 3);
 	begin
-		unit_add.variant := to_name (var_name);
+		unit_add.variant := extract_variant_name (self.get_label);
 		
-		set_status ("Variant " & enclose_in_quotes (var_name) & " selected."
+		set_status ("Variant " 
+			& enclose_in_quotes (to_string (unit_add.variant))
+			& " selected."
 			& " Left click to continue with mouse."
 			& " Space to continue with keyboard");
 
