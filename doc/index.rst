@@ -12,7 +12,8 @@ System ET Documentation
 
    preface.rst
    features.rst  
-
+   schematic.rst
+   
 Index
 =====
 
