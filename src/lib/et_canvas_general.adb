@@ -164,7 +164,7 @@ package body pac_canvas is
 		event	: in gdk_event_key) 
 		return boolean is
 
-		-- This is required in order to propagate the key-pressed events to sub-windows.
+		-- This is required in order to propagate the key-pressed event further.
 		result : boolean; -- to be returned. Indicates that the event has been handled.
 
 		-- Make a pointer to the main window:

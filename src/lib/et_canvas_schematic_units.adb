@@ -40,6 +40,10 @@ with ada.exceptions;				use ada.exceptions;
 
 with glib;
 
+with gdk.types;						use gdk.types;
+with gdk.event;						use gdk.event;
+with gdk.types.keysyms;				use gdk.types.keysyms;
+
 with gtk.window;
 with gtkada.file_selection;
 with gtk.file_chooser_dialog;
@@ -892,18 +896,17 @@ package body et_canvas_schematic_units is
 		
 		set_status ("Variant " 
 			& enclose_in_quotes (to_string (unit_add.variant))
-			& " selected."
-			& " Left click to continue with mouse."
-			& " Space to continue with keyboard");
+			& " selected. "
+			& status_add);
 
 		-- The device selection window is no longer needed:
 		window_device_selection.destroy;
 	end variant_selected;
 
-	procedure device_directory_selected (self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) is
-	begin
-		put_line (self.get_current_folder);
-	end device_directory_selected;
+	--procedure device_directory_selected (self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) is
+	--begin
+		--put_line (self.get_current_folder);
+	--end device_directory_selected;
 	
 	procedure device_model_selected (self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) is
 
@@ -948,7 +951,7 @@ package body et_canvas_schematic_units is
 		
 		device_model := to_file_name (self.get_filename);
 
-		set_status ("selected device model: " & to_string (device_model));
+		--set_status ("selected device model: " & to_string (device_model));
 
 		-- Read the device file and store it in the rig wide device 
 		-- library et_devices.devices.
@@ -988,71 +991,117 @@ package body et_canvas_schematic_units is
 
 					-- The device selection window is no longer needed:
 					window_device_selection.destroy;
+
+					set_status (status_add);
 				end if;
 				
 			when VIRTUAL => null;
 		end case;
 			
 		-- CS exception handler in case read_device fails ?
-
 	end device_model_selected;
+
+	
+	function device_model_seletion_key_event (
+		self	: access gtk_widget_record'class;
+		event	: in gdk_event_key) 
+		return boolean 
+	is
+		key : gdk_key_type := event.keyval;
+
+		-- This is required in order to propagate the key-pressed event further.
+		result : boolean; -- to be returned. Indicates that the event has been handled.
+	begin
+		case key is
+			when GDK_ESCAPE =>
+				--put_line ("key A");
+
+				-- Close the device selection if operator hits ESC:
+				window_device_selection.destroy;
+				result := true;
+
+			when others =>
+				--put_line ("key B");
+				result := false;
+		end case;
+		
+		return result;
+	end device_model_seletion_key_event;
+
 	
 	procedure add_device is
 		use gtk.window;
 		use gtk.box;
+		use gtk.label;
 		use gtk.file_chooser_dialog;
 		use gtk.file_chooser;
 		use gtk.file_chooser_button;
 		use gtk.file_filter;
 
-		--w : gtk_window;
-		--vbox : gtk_vbox;
-		hbox : gtk_hbox;
+		box_main : gtk_hbox;
+		box_directory, box_model : gtk_vbox;
+		label_directory, label_model : gtk_label;
 		
-		directory, file : gtk_file_chooser_button;
+		use glib;
+		spacing : constant natural := 10;
+		
+		button_directory, button_model : gtk_file_chooser_button;
 		filter : gtk_file_filter;
 		
 	begin -- add_device
-		put_line ("device selection");
+		--put_line ("device selection");
 
 		gtk_new (window_device_selection);
 		window_device_selection.set_title ("Select a device model");
+		window_device_selection.on_key_press_event (device_model_seletion_key_event'access);
 		
-		gtk_new_hbox (hbox, homogeneous => false);
-		add (window_device_selection, hbox);
+		gtk_new_hbox (box_main, homogeneous => false, spacing => gint (spacing));
+		add (window_device_selection, box_main);
 
-		--pack_start (vbox, hbox, fill => false, expand => false);		
+		-- directory selection on the LEFT:
+		gtk_new_vbox (box_directory, homogeneous => false);
+		pack_start (box_main, box_directory, padding => guint (spacing));
+
+		gtk_new (label_directory, "directory");
+		
 		gtk_new (
-			button		=> directory,
+			button		=> button_directory,
 			title		=> "Select a device model",
 			action		=> ACTION_SELECT_FOLDER);
 
-		if directory.set_current_folder_uri (get_devices_directory) then
-			null;
+		if button_directory.set_current_folder_uri (get_devices_directory) then
+			null; -- CS
 		end if;
 		
-		directory.on_file_set (device_directory_selected'access);
-		pack_start (hbox, directory);
+		--button_directory.on_file_set (device_directory_selected'access);
+		pack_start (box_directory, label_directory, padding => guint (spacing));
+		pack_start (box_directory, button_directory, padding => guint (spacing));
 
+		
+		-- device model selection on the RIGHT:		
+		gtk_new_vbox (box_model, homogeneous => false);
+		pack_start (box_main, box_model, padding => guint (spacing));
 
+		gtk_new (label_model, "model");
+		
 		gtk_new (filter);
 		add_pattern (filter, make_filter_pattern (device_model_file_extension));
 		set_name (filter, "Device Models");
-
 		
 		gtk_new (
-			button		=> file,
+			button		=> button_model,
 			title		=> "Select a device model",
 			action		=> ACTION_OPEN);
 
-		file.add_filter (filter);
+		button_model.add_filter (filter);
 
-		if file.set_current_folder (directory.get_current_folder_uri) then
-			null;
+		if button_model.set_current_folder (button_directory.get_current_folder_uri) then
+			null; -- CS
 		end if;
 		
-		file.on_file_set (device_model_selected'access);
-		pack_start (hbox, file);
+		button_model.on_file_set (device_model_selected'access);
+		pack_start (box_model, label_model, padding => guint (spacing));
+		pack_start (box_model, button_model, padding => guint (spacing));
 		
 		window_device_selection.show_all;
 	end add_device;
