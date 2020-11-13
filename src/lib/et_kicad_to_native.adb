@@ -2481,7 +2481,7 @@ package body et_kicad_to_native is
 			name := et_devices.to_file_name (compose (
 					containing_directory	=> et_devices.to_string (prefix_devices_dir),
 					name					=> et_devices.to_string (name),
-					extension				=> et_devices.device_library_file_extension));
+					extension				=> et_devices.device_model_file_extension));
 
 			--log (text => "name " & et_libraries.to_string (name));
 			

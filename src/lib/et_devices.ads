@@ -461,7 +461,7 @@ package et_devices is
 		"<"				=> type_device_model_file."<",
 		element_type	=> type_device);
 
-	device_library_file_extension : constant string := "dev";
+	device_model_file_extension : constant string := "dev";
 
 	-- HERE RIG WIDE DEVICES ARE KEPT:
 	devices : type_devices.map;

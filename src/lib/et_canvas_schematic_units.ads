@@ -40,7 +40,7 @@
 with ada.containers;            use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with gtk.window;
+with gtk.window;					use gtk.window;
 
 with et_coordinates;				use et_coordinates;
 use et_coordinates.pac_geometry_sch;
@@ -235,6 +235,10 @@ package et_canvas_schematic_units is
 
 -- ADD UNIT/DEVICE
 
+	function get_devices_directory return string;
+	
+	window_device_selection : gtk_window;
+	
 	-- In order to place a package variant and the associated model
 	-- on a menu, use this function.
 	-- Field separator is space:

@@ -844,6 +844,11 @@ package body et_canvas_schematic_units is
 
 -- ADD UNIT/DEVICE
 
+	function get_devices_directory return string
+	is
+	begin
+		return expand ("$HOME/git/BEL/ET_component_library/devices");
+	end get_devices_directory;
 	
 
 	function extract_variant_name (menu_item : in string) 
@@ -891,6 +896,8 @@ package body et_canvas_schematic_units is
 			& " Left click to continue with mouse."
 			& " Space to continue with keyboard");
 
+		-- The device selection window is no longer needed:
+		window_device_selection.destroy;
 	end variant_selected;
 
 	procedure device_directory_selected (self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) is
@@ -899,31 +906,12 @@ package body et_canvas_schematic_units is
 	end device_directory_selected;
 	
 	procedure device_model_selected (self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) is
-	begin
-		put_line (self.get_filename);
-	end device_model_selected;
-	
-	procedure add_device is
-		use gtkada.file_selection;
-		use gtk.window;
-		use gtk.box;
-		use gtk.file_chooser_dialog;
-		use gtk.file_chooser;
-		use gtk.file_chooser_button;
-		use gtk.file_filter;
 
-		w : gtk_window;
-		vbox : gtk_vbox;
-		hbox : gtk_hbox;
-		
-		directory, file : gtk_file_chooser_button;
-		filter : gtk_file_filter;
-		
 		use gtk.menu;
 		use gtk.menu_item;
 		use et_device_rw;
 		use et_packages;
-
+		
 		device_model : type_device_model_file.bounded_string;
 
 		use et_devices.type_devices;
@@ -954,15 +942,84 @@ package body et_canvas_schematic_units is
 			m.popup;
 
 		end show_variants_menu;
+
+	begin -- device_model_selected
+		put_line (self.get_filename);
+		
+		device_model := to_file_name (self.get_filename);
+
+		set_status ("selected device model: " & to_string (device_model));
+
+		-- Read the device file and store it in the rig wide device 
+		-- library et_devices.devices.
+		-- If the device is already in the library, nothing happpens.
+		read_device (
+			file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
+			log_threshold	=> log_threshold + 1);
+
+		-- locate the device in the library
+		device_cursor_lib := find (et_devices.devices, device_model);
+
+		-- assign the cursor to the device model:
+		unit_add.device := device_cursor_lib;
+
+		-- Assign the name of the first unit.
+		-- NOTE: When adding a device, the first unit within the device
+		-- will be placed first. Further units are to be placed via
+		-- invoke operations:
+		unit_add.name := first_unit (device_cursor_lib);
+
+		-- For a nice preview we also need the total of units provided
+		-- the the device:
+		unit_add.total := units_total (unit_add.device);
+		
+		-- assign the prospective device name:
+		unit_add.device_pre := next_device_name (current_active_module, element (device_cursor_lib).prefix);
+		
+		-- get the available package variants:
+		variants := available_variants (device_cursor_lib);
+
+		case element (device_cursor_lib).appearance is
+			when PCB =>
+				if length (variants) > 1 then
+					show_variants_menu;
+				else
+					unit_add.variant := key (variants.first);
+
+					-- The device selection window is no longer needed:
+					window_device_selection.destroy;
+				end if;
+				
+			when VIRTUAL => null;
+		end case;
+			
+		-- CS exception handler in case read_device fails ?
+
+	end device_model_selected;
+	
+	procedure add_device is
+		use gtk.window;
+		use gtk.box;
+		use gtk.file_chooser_dialog;
+		use gtk.file_chooser;
+		use gtk.file_chooser_button;
+		use gtk.file_filter;
+
+		--w : gtk_window;
+		--vbox : gtk_vbox;
+		hbox : gtk_hbox;
+		
+		directory, file : gtk_file_chooser_button;
+		filter : gtk_file_filter;
 		
 	begin -- add_device
 		put_line ("device selection");
 
-		gtk_new (w);
-		w.set_title ("Select a device model");
+		gtk_new (window_device_selection);
+		window_device_selection.set_title ("Select a device model");
 		
 		gtk_new_hbox (hbox, homogeneous => false);
-		add (w, hbox);
+		add (window_device_selection, hbox);
 
 		--pack_start (vbox, hbox, fill => false, expand => false);		
 		gtk_new (
@@ -970,12 +1027,16 @@ package body et_canvas_schematic_units is
 			title		=> "Select a device model",
 			action		=> ACTION_SELECT_FOLDER);
 
+		if directory.set_current_folder_uri (get_devices_directory) then
+			null;
+		end if;
+		
 		directory.on_file_set (device_directory_selected'access);
 		pack_start (hbox, directory);
 
 
 		gtk_new (filter);
-		add_pattern (filter, "*.dev");
+		add_pattern (filter, make_filter_pattern (device_model_file_extension));
 		set_name (filter, "Device Models");
 
 		
@@ -985,59 +1046,15 @@ package body et_canvas_schematic_units is
 			action		=> ACTION_OPEN);
 
 		file.add_filter (filter);
+
+		if file.set_current_folder (directory.get_current_folder_uri) then
+			null;
+		end if;
+		
 		file.on_file_set (device_model_selected'access);
 		pack_start (hbox, file);
-
 		
-		w.show_all;
-
-		
-		--device_model := to_file_name (file_selection_dialog (title => "Select a device model"));
-
-		if type_device_model_file.length (device_model) > 0 then
-			set_status ("selected device model: " & to_string (device_model));
-
-			-- Read the device file and store it in the rig wide device 
-			-- library et_devices.devices.
-			-- If the device is already in the library, nothing happpens.
-			read_device (
-				file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
-				log_threshold	=> log_threshold + 1);
-
-			-- locate the device in the library
-			device_cursor_lib := find (et_devices.devices, device_model);
-
-			-- assign the cursor to the device model:
-			unit_add.device := device_cursor_lib;
-
-			-- Assign the name of the first unit.
-			-- NOTE: When adding a device, the first unit within the device
-			-- will be placed first. Further units are to be placed via
-			-- invoke operations:
-			unit_add.name := first_unit (device_cursor_lib);
-
-			-- For a nice preview we also need the total of units provided
-			-- the the device:
-			unit_add.total := units_total (unit_add.device);
-			
-			-- assign the prospective device name:
-			unit_add.device_pre := next_device_name (current_active_module, element (device_cursor_lib).prefix);
-			
-			-- get the available package variants:
-			variants := available_variants (device_cursor_lib);
-
-			case element (device_cursor_lib).appearance is
-				when PCB =>
-					if length (variants) > 1 then
-						show_variants_menu;
-					else
-						unit_add.variant := key (variants.first);
-					end if;
-					
-				when VIRTUAL => null;
-			end case;
-
-		end if;
+		window_device_selection.show_all;
 	end add_device;
 
 

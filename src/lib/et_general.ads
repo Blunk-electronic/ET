@@ -58,6 +58,11 @@ package et_general is
 		name_in			: in string) -- $HOME/libraries/devices/7400.dev
 		--log_threshold	: et_string_processing.type_log_level)
 		return string;
+
+	-- Builds from a string like "dev" or "mod" a string like
+	-- "*.dev" or "*.mod":
+	function make_filter_pattern (extension : in string) return string;
+
 	
 -- FILES, EXTENSIONS AND DIRECTORY NAMES
 	

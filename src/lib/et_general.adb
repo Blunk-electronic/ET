@@ -89,7 +89,13 @@ package body et_general is
 
 	end expand;
 
+	function make_filter_pattern (extension : in string) return string is 
+		use ada.directories;
+	begin
+		return compose (name => "*", extension => extension);
+	end make_filter_pattern;
 
+	
 	function to_module_file_name (name : in string) return pac_module_file_name.bounded_string is begin
 		return pac_module_file_name.to_bounded_string (name);
 	end;
