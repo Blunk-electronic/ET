@@ -47,6 +47,9 @@ package et_schematic_ops.units is
 		unit_name		: in type_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level);
 
+	-- Deletes a unit of a device. 
+	-- In case the last unit has been deleted, then the device is 
+	-- deleted entirely from the module.
 	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
