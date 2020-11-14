@@ -1827,6 +1827,17 @@ is
 			& "Proposing arguments ...", level => log_threshold);
 
 		case verb is
+			when VERB_ADD =>
+				case noun is
+					when NOUN_DEVICE =>
+						set_status (et_canvas_schematic_units.status_add);
+
+						-- open device model selection
+						add_device; 
+
+					when others => null; -- CS
+				end case;
+				
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_UNIT =>

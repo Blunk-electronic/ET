@@ -21,7 +21,24 @@ Devices and Units
 	Verb-Noun key sequence: a d
 
 	
+#. Delete unit
+
+	.. code-block::
+
+		delete unit IC1 [B]
+
+	Verb-Noun key sequence: del u
 	
+
+#. Drag unit
+
+	.. code-block::
+
+		drag unit IC1 [A]
+
+	Verb-Noun key sequence: d u
+
+
 #. Invoke unit
 
 	.. code-block::
@@ -29,17 +46,6 @@ Devices and Units
 		invoke unit IC1 [B]
 
 	Verb-Noun key sequence: i u
-
-	
-	
-#. Delete unit
-
-	.. code-block::
-
-		delete unit IC1 B
-
-	Verb-Noun key sequence: del u
-
 
 	
 #. Move unit
@@ -50,15 +56,26 @@ Devices and Units
 
 	Verb-Noun key sequence: m u
 	
-	
-	
 
-#. Drag unit
+#. Rotate unit
 
 	.. code-block::
 
-		drag unit IC1 [A]
+		rotate unit IC1 [A]
 
-	Verb-Noun key sequence: d u
+	Verb-Noun key sequence: r u
+
+
+#. Set package variant
+
+	.. code-block::
+
+		set variant IC1
+
+	Verb-Noun key sequence: s a
+	
+	
+
+
 		
 

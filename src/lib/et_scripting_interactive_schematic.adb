@@ -58,6 +58,10 @@ with et_canvas_schematic_units;		use et_canvas_schematic_units;
 
 package body et_scripting_interactive_schematic is
 
+	procedure status_select_unit is begin
+		set_status ("Please select unit via menu !");
+	end status_select_unit;
+	
 	procedure unit_selection_cancelled (self : access gtk_menu_shell_record'class) is
 	begin
 		set_status ("Unit selection cancelled");
@@ -168,8 +172,7 @@ package body et_scripting_interactive_schematic is
 					-- until a 2nd click.
 					activate_time => gtk.main.get_current_event_time);
 
-				set_status ("Please select unit via menu !");
-			
+				status_select_unit;
 		end case;
 		
 	end menu_propose_units_on_delete;
@@ -275,7 +278,7 @@ package body et_scripting_interactive_schematic is
 					-- until a 2nd click.
 					activate_time => gtk.main.get_current_event_time);
 
-				set_status ("Please select unit via menu !");
+				status_select_unit;
 			
 		end case;
 		
@@ -516,7 +519,7 @@ package body et_scripting_interactive_schematic is
 					-- until a 2nd click.
 					activate_time => gtk.main.get_current_event_time);
 
-				set_status ("Please select unit via menu !");
+				status_select_unit;
 			
 		end case;
 		
