@@ -56,6 +56,11 @@ package et_scripting_interactive_schematic is
 	procedure unit_selected_on_invoke (
 		self : access gtk_menu_item_record'class);
 
+	procedure menu_propose_units_on_delete (
+		device			: in type_name;
+		units			: in pac_unit_names.list;
+		log_threshold	: in type_log_level);
+	
 	-- Proposes units on a menu if list "units" has
 	-- more than one item. 
 	-- If "units" contains only one item, then

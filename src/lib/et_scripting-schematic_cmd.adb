@@ -1827,6 +1827,77 @@ is
 			& "Proposing arguments ...", level => log_threshold);
 
 		case verb is
+			when VERB_DELETE =>
+				case noun is
+					when NOUN_UNIT =>
+						case fields is
+							when 4 =>
+								device_name_missing;
+								
+							when 5 => -- like "delete unit IC1"
+								unit_name_missing;
+
+								device_name := to_device_name (f (5));
+
+								if exists (current_active_module, device_name) then
+
+									unit_delete.device := device_name;
+
+									-- Propose units that are on the current active sheet:
+									menu_propose_units_on_delete (
+										device			=> unit_delete.device,
+										units			=> units_on_sheet (
+															current_active_module,
+															device_name,
+															current_active_sheet,
+															log_threshold + 1),
+										log_threshold	=> log_threshold + 1);
+
+								else
+									device_not_found;
+								end if;
+								
+							when 6 => -- like "delete unit IC1 B"
+								device_name := to_device_name (f (5));
+								
+								if exists (current_active_module, device_name) then
+									
+									unit_delete.device := device_name;
+
+									unit_name := to_name (f (6));
+
+									-- Test whether the unit is deployed on the current active sheet.
+									-- Deleting is possible if it is deployed and if it is on the current sheet.
+									if deployed (current_active_module, unit_delete.device, unit_name) then
+
+										unit_delete.unit := unit_name;
+										
+										if sheet (current_active_module, unit_delete.device, unit_delete.unit) = current_active_sheet then
+
+											delete_unit (
+												module_cursor	=> current_active_module,
+												device_name		=> unit_delete.device,
+												unit_name		=> unit_delete.unit,
+												log_threshold	=> log_threshold + 1);
+											
+											redraw;
+
+										else
+											unit_not_on_this_sheet;
+										end if;
+									else
+										unit_not_deployed;
+									end if; 
+								else
+									device_not_found;
+								end if;
+													
+							when others => null;								
+						end case;
+
+					when others => null; -- CS
+				end case;
+				
 			when VERB_DRAG =>
 				case noun is
 					when NOUN_UNIT =>
@@ -1837,7 +1908,7 @@ is
 							when 5 => -- like "drag unit IC1"
 								unit_name_missing;
 
-								device_name := et_devices.to_device_name (f (5));
+								device_name := to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 									unit_move.device := device_name;
@@ -1856,7 +1927,7 @@ is
 								end if;
 								
 							when 6 => -- like "drag unit IC1 B"
-								device_name := et_devices.to_device_name (f (5));
+								device_name := to_device_name (f (5));
 								
 								if exists (current_active_module, device_name) then
 									
@@ -1911,7 +1982,7 @@ is
 							when 5 => -- like "invoke unit IC1"
 								unit_name_missing;
 
-								device_name := et_devices.to_device_name (f (5));
+								device_name := to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 
@@ -1936,7 +2007,7 @@ is
 								end if;
 								
 							when 6 => -- like "invoke unit IC1 B"
-								device_name := et_devices.to_device_name (f (5));
+								device_name := to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 
@@ -1987,7 +2058,7 @@ is
 							when 5 => -- like "move unit IC1"
 								unit_name_missing;
 
-								device_name := et_devices.to_device_name (f (5));
+								device_name := to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 									unit_move.device := device_name;
@@ -2006,7 +2077,7 @@ is
 								end if;
 								
 							when 6 => -- like "move unit IC1 B"
-								device_name := et_devices.to_device_name (f (5));
+								device_name := to_device_name (f (5));
 								
 								if exists (current_active_module, device_name) then
 									
@@ -2061,7 +2132,7 @@ is
 							when 5 => -- like "move name R1"
 								unit_name_missing;
 
-								device_name := et_devices.to_device_name (f (5));
+								device_name := to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 
@@ -2081,7 +2152,7 @@ is
 								end if;
 
 							when 6 => -- like "move name IC1 B"
-								device_name := et_devices.to_device_name (f (5));
+								device_name := to_device_name (f (5));
 								
 								if exists (current_active_module, device_name) then
 
@@ -2126,7 +2197,7 @@ is
 							when 5 => -- like "rotate unit IC1"
 								unit_name_missing;
 
-								device_name := et_devices.to_device_name (f (5));
+								device_name := to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 									unit_move.device := device_name;
@@ -2145,7 +2216,7 @@ is
 								end if;
 								
 							when 6 => -- like "rotate unit IC1 B"
-								device_name := et_devices.to_device_name (f (5));
+								device_name := to_device_name (f (5));
 								
 								if exists (current_active_module, device_name) then
 									
@@ -2184,7 +2255,7 @@ is
 							when 5 => -- like "rotate name R1"
 								unit_name_missing;
 
-								device_name := et_devices.to_device_name (f (5));
+								device_name := to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 
@@ -2204,7 +2275,7 @@ is
 								end if;
 
 							when 6 => -- like "rotate name IC1 B"
-								device_name := et_devices.to_device_name (f (5));
+								device_name := to_device_name (f (5));
 								
 								if exists (current_active_module, device_name) then
 
@@ -2247,7 +2318,7 @@ is
 							when 4 => device_name_missing;
 								
 							when 5 => -- like "set variant IC1"
-								device_name := et_devices.to_device_name (f (5));
+								device_name := to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 									set_variant (device_name);

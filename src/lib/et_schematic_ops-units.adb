@@ -41,6 +41,118 @@ with ada.exceptions;
 package body et_schematic_ops.units is
 
 	use pac_generic_modules;
+
+	procedure delete_unit (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A
+		log_threshold	: in type_log_level) is
+		
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			-- temporarily storage of unit coordinates.
+			-- There will be only one unit in this container.
+			position_of_unit : type_unit_positions.map;
+
+			ports : et_symbols.type_ports.map;
+
+			procedure query_units (
+				device_name	: in type_name;
+				device		: in out et_schematic.type_device) is
+				use et_schematic.type_units;
+				unit_cursor : et_schematic.type_units.cursor;
+			begin
+				if contains (device.units, unit_name) then
+					-- locate unit by its name
+					unit_cursor := find (device.units, unit_name);
+
+					-- Load the single unit position and insert in container "position_of_unit"
+					type_unit_positions.insert (
+						container	=> position_of_unit, 
+						key			=> unit_name,
+						new_item	=> element (unit_cursor).position);
+
+					log_unit_positions (position_of_unit, log_threshold + 1);
+					
+					-- delete the unit
+					delete (device.units, unit_name);
+				else
+					unit_not_found (unit_name);
+				end if;
+			end query_units;
+			
+			units_invoked : boolean := true; -- goes false if no unit used anymore
+
+			procedure query_number_of_invoked_units (
+				device_name	: in type_name;
+				device		: in et_schematic.type_device) is
+				use et_schematic.type_units;
+			begin
+				if length (device.units) = 0 then
+					units_invoked := false;
+				end if;
+			end query_number_of_invoked_units;
+
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+
+				-- Before the actual deletion, the coordinates of the
+				-- unit must be fetched. These coordinates will later assist
+				-- in deleting the port names from connected net segments.
+				device_cursor := find (module.devices, device_name); -- the device should be there
+
+				-- locate the unit, load position and then delete the targeted unit
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor,
+					process		=> query_units'access);
+				
+				log_indentation_up;
+
+				-- Fetch the ports of the unit to be deleted.
+				ports := ports_of_unit (device_cursor, unit_name);
+				
+				-- Delete the ports of the targeted unit from module.nets
+				delete_ports (
+					module			=> module_cursor,
+					device			=> device_name,
+					ports			=> ports,
+					sheets			=> position_of_unit, -- there is only one unit -> only one sheet to look at
+					log_threshold	=> log_threshold + 1);
+
+				-- In case no more units are invoked then the device must be
+				-- deleted entirely from module.devices.
+				-- First we query the number of still invoked units. If none invoked,
+				-- the flag units_invoked goes false.
+				query_element (
+					position	=> device_cursor,
+					process		=> query_number_of_invoked_units'access);
+
+				if not units_invoked then
+					delete (module.devices, device_cursor);
+				end if;
+				
+				log_indentation_down;				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- delete_unit
+		log (text => "module " & to_string (key (module_cursor)) &
+			 " deleting " & to_string (device_name) & " unit " & 
+			 to_string (unit_name) & " ...", level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+	end delete_unit;
 	
 	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

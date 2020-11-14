@@ -42,10 +42,17 @@ package et_schematic_ops.units is
 	-- In case the last unit has been deleted, then the device is 
 	-- deleted entirely from the module.
 	procedure delete_unit (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A
+		log_threshold	: in type_log_level);
+
+	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level);
+
 
 	procedure move_unit (
 	-- Moves the given unit within the schematic. Disconnects the unit from

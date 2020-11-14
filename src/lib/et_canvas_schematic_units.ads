@@ -116,7 +116,15 @@ package et_canvas_schematic_units is
 	-- Call this procedure after a clarification.
 	procedure delete_selected_unit;
 
+	type type_unit_being_deleted is record
+		device	: type_name := (others => <>); -- IC45
+		unit	: type_unit_name.bounded_string; -- A
+	end record;
 
+	unit_delete : type_unit_being_deleted;
+
+
+	
 
 -- MOVE/DRAG/ROTATE UNIT
 
