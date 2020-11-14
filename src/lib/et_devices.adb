@@ -335,14 +335,17 @@ package body et_devices is
 		c : character;
 		p : type_prefix.bounded_string;
 	
-		procedure invalid_reference is
+		procedure invalid_device_name is
 			use et_string_processing;
 		begin
-			log (ERROR, latin_1.lf & "invalid device name '" 
-				 & text_in_justified & "'", console => true);
+			--log (ERROR, latin_1.lf & "invalid device name '" 
+				 --& text_in_justified & "'", console => true);
+
 			-- CS show position of affected character ?
-			raise constraint_error;
-		end invalid_reference;
+			raise syntax_error_1 with 
+				"ERROR: Device name " & enclose_in_quotes (text_in_justified) & " invalid !";
+
+		end invalid_device_name;
 
 		d : positive;
 		digit : natural := 0;
@@ -360,7 +363,7 @@ package body et_devices is
 					if is_in (c, prefix_characters) then
 						r.prefix := r.prefix & c;
 					else 
-						invalid_reference;
+						invalid_device_name;
 					end if;
 					
 				-- Further characters are appended to prefix if they are valid prefix characters.
@@ -387,7 +390,7 @@ package body et_devices is
 			if is_digit(c) then
 				r.id := r.id + 10**digit * natural'value(1 * c);
 			else
-				invalid_reference;
+				invalid_device_name;
 			end if;
 
 			digit := digit + 1; -- increase digit significance (10**0, 10**1, ...)
