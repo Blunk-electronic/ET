@@ -1001,7 +1001,7 @@ is
 										net_name	=> to_net_name (f (5)),
 										layer		=> to_signal_layer (f (6)),
 										width		=> to_distance (f (8)),
-										device		=> to_name (f (9)),
+										device		=> to_device_name (f (9)),
 										terminal	=> to_terminal_name (f (10)),
 										end_point	=> type_point (set (
 												x => to_distance (f (12)),	 -- 35
@@ -1029,7 +1029,7 @@ is
 											net_name	=> to_net_name (f (5)),
 											layer		=> to_signal_layer (f (6)),
 											width		=> to_distance (f (8)),
-											device		=> to_name (f (9)),
+											device		=> to_device_name (f (9)),
 											terminal	=> to_terminal_name (f (10)),
 											axis		=> to_axis (f (12)),
 											notches		=> to_notches (f (13)), -- 5
@@ -1065,7 +1065,7 @@ is
 										net_name	=> to_net_name (f (5)),
 										layer		=> to_signal_layer (f (6)),
 										width		=> to_distance (f (8)),
-										device		=> to_name (f (9)),
+										device		=> to_device_name (f (9)),
 										terminal	=> to_terminal_name (f (10)),
 										direction	=> to_rotation (f (12)), -- 45 degree
 										length		=> to_distance (f (13)), -- 50mm
@@ -1093,7 +1093,7 @@ is
 											net_name	=> to_net_name (f (5)),
 											layer		=> to_signal_layer (f (6)),
 											width		=> to_distance (f (8)),
-											device		=> to_name (f (9)),
+											device		=> to_device_name (f (9)),
 											terminal	=> to_terminal_name (f (10)),
 											direction	=> to_rotation (f (12)), -- 45 degree
 											axis		=> to_axis (f (13)),
@@ -1283,7 +1283,7 @@ is
 	begin
 		delete_device (
 			module_name		=> module,
-			device_name		=> to_name (f (5)),
+			device_name		=> to_device_name (f (5)),
 			log_threshold	=> log_threshold + 1);
 
 	end delete_device;
@@ -1293,8 +1293,8 @@ is
 	begin
 		rename_device (
 			module_name			=> module,
-			device_name_before	=> to_name (f (5)),
-			device_name_after	=> to_name (f (6)),
+			device_name_before	=> to_device_name (f (5)),
+			device_name_after	=> to_device_name (f (6)),
 			log_threshold		=> log_threshold + 1);
 
 	end rename_device;
@@ -2067,7 +2067,7 @@ is
 							when 6 =>
 								flip_device (
 									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
+									device_name		=> to_device_name (f (5)), -- IC1
 									face			=> to_face  (f (6)),  -- top/bottom
 									log_threshold	=> log_threshold + 1
 									);
@@ -2240,7 +2240,7 @@ is
 							when 7 =>
 								rotate_device (
 									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
+									device_name		=> to_device_name (f (5)), -- IC1
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									rotation		=> to_rotation (f (7)),
 									log_threshold	=> log_threshold + 1
@@ -2302,7 +2302,7 @@ is
 							when 8 =>
 								move_device (
 									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
+									device_name		=> to_device_name (f (5)), -- IC1
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									point			=> type_point (set (
 														x => to_distance (f (7)),

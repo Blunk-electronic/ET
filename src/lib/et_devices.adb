@@ -316,13 +316,7 @@ package body et_devices is
 		return type_name_index'value (index);
 	end;
 
-	function to_name (
-	-- Converts a string like "IC303" to a composite type_name.
-	-- Raises constraint error if prefix contains invalid characters.
-	-- Raises constraint error if id contains non-digit characters.
-	-- Leading zeroes in the id are removed. R002 becomes R2.
-		text_in : in string)
-		return type_name is
+	function to_device_name (text_in : in string) return type_name is
 
 		-- justify given text_in on the left
 		text_in_justified : string (1 .. text_in'length) := text_in;
@@ -352,7 +346,7 @@ package body et_devices is
 
 		use type_prefix;
 
-	begin -- to_name
+	begin -- to_device_name
 		-- assemble prefix
 		for i in text_in_justified'first .. text_in_justified'last loop
 			c := text_in_justified(i);
@@ -402,7 +396,7 @@ package body et_devices is
 		r.id_width := digit;
 		
 		return r;
-	end to_name;
+	end to_device_name;
 
 	function "<" (left, right : in type_name) return boolean is
 	-- Returns true if left comes before right.
@@ -490,10 +484,7 @@ package body et_devices is
 		return name.id;
 	end;
 
-	function to_name (
-	-- Builds a device name by given prefix (like R) and index (like 23) to a device name (like R23).
-	-- If width is not provided, then the width of the index is calculated automatically. In case of R23 the width is 2.
-	-- If width is provided, then it is set accordingly.
+	function to_device_name (
 		prefix	: in type_prefix.bounded_string; 	-- R, C, L
 		index	: in type_name_index;				-- 1, 20, ..
 		width	: in type_index_width := type_index_width'first) -- the number of digits
@@ -526,15 +517,13 @@ package body et_devices is
 	end;
 
 	procedure offset_index (
-	-- Adds to the device index the given offset. 
-	-- Example: given name is R4, given offset is 100. Result R104.
 		name	: in out type_name;
 		offset	: in type_name_index) is
 	begin
-		name := to_name (
+		name := to_device_name (
 			prefix	=> prefix (name),
 			index	=> name.id + offset);
-		-- the width of the index is calculated automatically by to_name.
+		-- the width of the index is calculated automatically by to_device_name.
 	end;
 
 	

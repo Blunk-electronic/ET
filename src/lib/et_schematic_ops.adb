@@ -2945,14 +2945,14 @@ package body et_schematic_ops is
 			index_expected : type_name_index := type_name_index'first + 1;
 
 			gap_found : boolean := false; -- goes true once a gap has been found
-		begin -- search_gap
+		begin
 			while device_cursor /= et_schematic.type_devices.no_element loop
 				if et_devices.prefix (key (device_cursor)) = prefix then -- prefix match
 					
 					if index (key (device_cursor)) /= index_expected then -- we have a gap
 
 						-- build the next available device name (like IC12)
-						next_name := to_name (prefix, index_expected);
+						next_name := to_device_name (prefix, index_expected);
 
 						-- The proposed next_name must not be occupied by a non-electrical device.
 						-- Look up the list of non-electrical devices. If the name
@@ -2972,7 +2972,7 @@ package body et_schematic_ops is
 			-- If no gap has been found, then the device name must be assembled
 			-- using the latest index_expected.
 			if not gap_found then
-				next_name := to_name (prefix, index_expected);
+				next_name := to_device_name (prefix, index_expected);
 
 				-- The proposed next_name must not be occupied by a non-electrical device.
 				-- Increment index and propose a new next_name until it can not be
@@ -2981,7 +2981,7 @@ package body et_schematic_ops is
 					index_expected := index_expected + 1;
 
 					-- propose a new next_name
-					next_name := to_name (prefix, index_expected);
+					next_name := to_device_name (prefix, index_expected);
 				end loop;
 			end if;
 			
@@ -3008,7 +3008,7 @@ package body et_schematic_ops is
 					if index (key (device_cursor)) /= index_expected then -- we have a gap
 
 						-- build the next available device name and exit
-						next_name := to_name (prefix, index_expected);
+						next_name := to_device_name (prefix, index_expected);
 
 						-- The proposed next_name must not be occupied by an electrical device.
 						-- Look up the list of electrical devices. If the name
@@ -3028,7 +3028,7 @@ package body et_schematic_ops is
 			-- If no gap has been found, then the device name must be assembled
 			-- using the latest index_expected.
 			if not gap_found then
-				next_name := to_name (prefix, index_expected);
+				next_name := to_device_name (prefix, index_expected);
 
 				-- The proposed next_name must not be occupied by an electrical device.
 				-- Increment index and propose a new next_name until it can not be
@@ -3037,7 +3037,7 @@ package body et_schematic_ops is
 					index_expected := index_expected + 1;
 
 					-- propose a new next_name
-					next_name := to_name (prefix, index_expected);
+					next_name := to_device_name (prefix, index_expected);
 				end loop;
 			end if;
 			
@@ -7500,7 +7500,7 @@ package body et_schematic_ops is
 						device_index := device_index + index_on_sheet;
 
 						-- build the new device name
-						name_after := to_name (
+						name_after := to_device_name (
 								prefix	=> prefix (name_before), -- R, C, IC
 								index 	=> device_index); -- 407
 

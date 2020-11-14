@@ -204,13 +204,11 @@ package et_devices is
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
 
-	function to_name (
 	-- Converts a string like "IC303" to a composite type_name.
 	-- Raises constraint error if prefix contains invalid characters.
 	-- Raises constraint error if id contains non-digit characters.
 	-- Leading zeroes in the index are removed. R002 becomes R2.
-		text_in : in string) -- CS rename to device_name
-		return type_name;
+	function to_device_name (text_in : in string) return type_name;
 
 	function "<" (left, right : in type_name) return boolean;
 	-- Returns true if left comes before right.
@@ -229,7 +227,10 @@ package et_devices is
 	function index (name : in type_name) return type_name_index;
 	-- Returns the index of the given device name.
 
-	function to_name (
+	-- Builds a device name by given prefix (like R) and index (like 23) to a device name (like R23).
+	-- If width is not provided, then the width of the index is calculated automatically. In case of R23 the width is 2.
+	-- If width is provided, then it is set accordingly.
+	function to_device_name (
 		prefix	: in type_prefix.bounded_string; 	-- R, C, L
 		index	: in type_name_index;				-- 1, 20, ..
 		width	: in type_index_width := type_index_width'first) -- the number of digits

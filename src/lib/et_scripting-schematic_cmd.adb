@@ -144,7 +144,7 @@ is
 		use et_devices;
 		use et_canvas_schematic;
 		
-		device_name : et_devices.type_name := to_name (f (5)); -- IC45
+		device_name : et_devices.type_name := to_device_name (f (5)); -- IC45
 		unit_name	: et_devices.type_unit_name.bounded_string := to_name (f (6)); -- C
 		
 		-- Locate the requested device and unit.
@@ -171,7 +171,7 @@ is
 		use et_devices;
 		use et_canvas_schematic;
 		
-		device_name : et_devices.type_name := to_name (f (5)); -- IC45
+		device_name : et_devices.type_name := to_device_name (f (5)); -- IC45
 
 		-- The assumption is that the device has only one unit:
 		unit_name	: et_devices.type_unit_name.bounded_string := to_name ("");
@@ -460,7 +460,7 @@ is
 							when 9 =>
 								copy_device (
 									module_name 	=> module,
-									device_name		=> to_name (f (5)),
+									device_name		=> to_device_name (f (5)),
 									destination		=> to_position 
 										(
 										sheet => to_sheet (f (6)),
@@ -532,7 +532,7 @@ is
 							when 5 =>
 								delete_device (
 									module_name 	=> module,
-									device_name		=> to_name (f (5)),
+									device_name		=> to_device_name (f (5)),
 									log_threshold	=> log_threshold + 1);
 
 							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
@@ -684,7 +684,7 @@ is
 							when 6 =>
 								delete_unit (
 									module_name 	=> module,
-									device_name		=> to_name (f (5)),
+									device_name		=> to_device_name (f (5)),
 									unit_name		=> to_name (f (6)),
 									log_threshold	=> log_threshold + 1);
 
@@ -755,7 +755,7 @@ is
 								drag_unit
 									(
 									module_name 	=> module,
-									device_name		=> to_name (f (5)),
+									device_name		=> to_device_name (f (5)),
 									unit_name		=> to_name (f (6)),
 									coordinates		=> to_coordinates (f (7)), -- relative/absolute
 									point			=> type_point (set (
@@ -907,7 +907,7 @@ is
 							when 10 =>
 								invoke_unit (
 									module_name		=> module,
-									device_name		=> to_name (f (5)),
+									device_name		=> to_device_name (f (5)),
 									unit_name		=> to_name (f (6)),
 									destination		=> to_position 
 										(
@@ -939,7 +939,7 @@ is
 								move_unit_placeholder
 									(
 									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
+									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									point			=> type_point (set (
@@ -960,7 +960,7 @@ is
 								move_unit_placeholder
 									(
 									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
+									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									point			=> type_point (set (
@@ -1000,7 +1000,7 @@ is
 								move_unit_placeholder
 									(
 									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
+									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									point			=> type_point (set (
@@ -1064,7 +1064,7 @@ is
 								move_unit
 									(
 									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
+									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									sheet			=> to_sheet_relative (f (8)),
@@ -1135,7 +1135,7 @@ is
 										(
 										module_name		=> module,
 										variant_name	=> to_variant (f (5)), -- low_cost
-										device			=> to_name (f (6)), -- R1
+										device			=> to_device_name (f (6)), -- R1
 										value			=> value, -- 220R
 										partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
 										log_threshold	=> log_threshold + 1);
@@ -1148,7 +1148,7 @@ is
 										(
 										module_name		=> module,
 										variant_name	=> to_variant (f (5)), -- low_cost
-										device			=> to_name (f (6)), -- R1
+										device			=> to_device_name (f (6)), -- R1
 										value			=> value, -- 220R
 										partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
 										purpose			=> purpose, -- brightness_control
@@ -1283,7 +1283,7 @@ is
 									(
 									module_name		=> module,
 									variant_name	=> to_variant (f (5)), -- low_cost
-									device			=> to_name (f (6)), -- R1
+									device			=> to_device_name (f (6)), -- R1
 									log_threshold	=> log_threshold + 1);
 
 							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
@@ -1317,8 +1317,8 @@ is
 								rename_device
 									(
 									module_name 		=> module,
-									device_name_before	=> to_name (f (5)), -- IC1
-									device_name_after	=> to_name (f (6)), -- IC23
+									device_name_before	=> to_device_name (f (5)), -- IC1
+									device_name_after	=> to_device_name (f (6)), -- IC23
 									log_threshold		=> log_threshold + 1
 									);
 
@@ -1431,7 +1431,7 @@ is
 								rotate_unit
 									(
 									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
+									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									rotation		=> to_rotation (f (8)), -- 90
@@ -1449,7 +1449,7 @@ is
 								rotate_unit_placeholder
 									(
 									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
+									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_name (f (6)), -- A
 									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
 									meaning			=> et_symbols.NAME,
@@ -1467,7 +1467,7 @@ is
 								rotate_unit_placeholder
 									(
 									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
+									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_name (f (6)), -- A
 									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
 									meaning			=> et_symbols.VALUE,
@@ -1485,7 +1485,7 @@ is
 								rotate_unit_placeholder
 									(
 									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
+									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_name (f (6)), -- A
 									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
 									meaning			=> et_symbols.PURPOSE,
@@ -1546,7 +1546,7 @@ is
 									set_partcode
 										(
 										module_name 	=> module,
-										device_name		=> to_name (f (5)), -- R1
+										device_name		=> to_device_name (f (5)), -- R1
 										partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
 										log_threshold	=> log_threshold + 1
 										);
@@ -1570,7 +1570,7 @@ is
 									set_purpose
 										(
 										module_name 	=> module,
-										device_name		=> to_name (f (5)), -- R1
+										device_name		=> to_device_name (f (5)), -- R1
 										purpose			=> purpose, -- brightness_control
 										log_threshold	=> log_threshold + 1
 										);
@@ -1624,7 +1624,7 @@ is
 									set_value
 										(
 										module_name 	=> module,
-										device_name		=> to_name (f (5)), -- R1
+										device_name		=> to_device_name (f (5)), -- R1
 										value			=> value, -- 470R
 										log_threshold	=> log_threshold + 1
 										);
@@ -1650,7 +1650,7 @@ is
 									set_variant
 										(
 										module			=> module,
-										device			=> to_name (f (5)), -- IC1
+										device			=> to_device_name (f (5)), -- IC1
 										variant			=> variant, -- N, D
 										log_threshold	=> log_threshold + 1
 										);
@@ -1705,7 +1705,7 @@ is
 									(
 									module_name		=> module,
 									variant_name	=> to_variant (f (5)), -- low_cost
-									device			=> to_name (f (6)), -- R1
+									device			=> to_device_name (f (6)), -- R1
 									log_threshold	=> log_threshold + 1);
 
 							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
@@ -1837,7 +1837,7 @@ is
 							when 5 => -- like "drag unit IC1"
 								unit_name_missing;
 
-								device_name := et_devices.to_name (f (5));
+								device_name := et_devices.to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 									unit_move.device := device_name;
@@ -1856,7 +1856,7 @@ is
 								end if;
 								
 							when 6 => -- like "drag unit IC1 B"
-								device_name := et_devices.to_name (f (5));
+								device_name := et_devices.to_device_name (f (5));
 								
 								if exists (current_active_module, device_name) then
 									
@@ -1911,7 +1911,7 @@ is
 							when 5 => -- like "invoke unit IC1"
 								unit_name_missing;
 
-								device_name := et_devices.to_name (f (5));
+								device_name := et_devices.to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 
@@ -1936,7 +1936,7 @@ is
 								end if;
 								
 							when 6 => -- like "invoke unit IC1 B"
-								device_name := et_devices.to_name (f (5));
+								device_name := et_devices.to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 
@@ -1987,7 +1987,7 @@ is
 							when 5 => -- like "move unit IC1"
 								unit_name_missing;
 
-								device_name := et_devices.to_name (f (5));
+								device_name := et_devices.to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 									unit_move.device := device_name;
@@ -2006,7 +2006,7 @@ is
 								end if;
 								
 							when 6 => -- like "move unit IC1 B"
-								device_name := et_devices.to_name (f (5));
+								device_name := et_devices.to_device_name (f (5));
 								
 								if exists (current_active_module, device_name) then
 									
@@ -2061,7 +2061,7 @@ is
 							when 5 => -- like "move name R1"
 								unit_name_missing;
 
-								device_name := et_devices.to_name (f (5));
+								device_name := et_devices.to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 
@@ -2081,7 +2081,7 @@ is
 								end if;
 
 							when 6 => -- like "move name IC1 B"
-								device_name := et_devices.to_name (f (5));
+								device_name := et_devices.to_device_name (f (5));
 								
 								if exists (current_active_module, device_name) then
 
@@ -2126,7 +2126,7 @@ is
 							when 5 => -- like "rotate unit IC1"
 								unit_name_missing;
 
-								device_name := et_devices.to_name (f (5));
+								device_name := et_devices.to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 									unit_move.device := device_name;
@@ -2145,7 +2145,7 @@ is
 								end if;
 								
 							when 6 => -- like "rotate unit IC1 B"
-								device_name := et_devices.to_name (f (5));
+								device_name := et_devices.to_device_name (f (5));
 								
 								if exists (current_active_module, device_name) then
 									
@@ -2184,7 +2184,7 @@ is
 							when 5 => -- like "rotate name R1"
 								unit_name_missing;
 
-								device_name := et_devices.to_name (f (5));
+								device_name := et_devices.to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 
@@ -2204,7 +2204,7 @@ is
 								end if;
 
 							when 6 => -- like "rotate name IC1 B"
-								device_name := et_devices.to_name (f (5));
+								device_name := et_devices.to_device_name (f (5));
 								
 								if exists (current_active_module, device_name) then
 
@@ -2247,7 +2247,7 @@ is
 							when 4 => device_name_missing;
 								
 							when 5 => -- like "set variant IC1"
-								device_name := et_devices.to_name (f (5));
+								device_name := et_devices.to_device_name (f (5));
 
 								if exists (current_active_module, device_name) then
 									set_variant (device_name);
