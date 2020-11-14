@@ -38,26 +38,28 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings;				use ada.strings;
-with ada.strings.fixed;			use ada.strings.fixed;
+with ada.text_io;					use ada.text_io;
+with ada.characters.handling;		use ada.characters.handling;
+with ada.strings;					use ada.strings;
+with ada.strings.fixed;				use ada.strings.fixed;
 
-with interfaces.c.strings;		use interfaces.c.strings;
-with gnat.strings;				use gnat.strings;
+with interfaces.c.strings;			use interfaces.c.strings;
+with gnat.strings;					use gnat.strings;
 
-with gtk.bin;					use gtk.bin;
-with gtk.scrollable;			use gtk.scrollable;
-with gtk.style_context;			use gtk.style_context;
+with gtk.bin;						use gtk.bin;
+with gtk.scrollable;				use gtk.scrollable;
+with gtk.style_context;				use gtk.style_context;
 with gtk.accel_group;
 
--- with gtkada.types;				use gtkada.types;
-with gtkada.handlers;			use gtkada.handlers;
-with gtkada.bindings;			use gtkada.bindings;
+with gtkada.handlers;				use gtkada.handlers;
+with gtkada.bindings;				use gtkada.bindings;
 
-with gdk.window;				use gdk.window;
-with gdk.window_attr;			use gdk.window_attr;
-with gdk.types.keysyms;
+with gdk.window;					use gdk.window;
+with gdk.window_attr;				use gdk.window_attr;
+
+with gdk.event;						use gdk.event;
+with gdk.types;						use gdk.types;
+with gdk.types.keysyms;				use gdk.types.keysyms;
 
 with et_project;
 with et_modes;
@@ -1876,10 +1878,35 @@ package body pac_canvas is
 	end evaluate_exception;
 
 
+	function window_properties_key_event (
+		self	: access gtk_widget_record'class;
+		event	: gdk.event.gdk_event_key) 
+		return boolean 
+	is
+		key : gdk_key_type := event.keyval;
+
+		-- This is required in order to propagate the key-pressed event further.
+		result : boolean; -- to be returned. Indicates that the event has been handled.
+	begin
+		case key is
+			when GDK_ESCAPE =>
+				--put_line ("key A");
+
+				-- Close the properties window if operator hits ESC:
+				self.destroy;
+				result := true;
+
+			when others =>
+				--put_line ("key B");
+				result := false;
+		end case;
+		
+		return result;		
+	end window_properties_key_event;
 	
-	procedure close_window_properties (self : access gtk_widget_record'class) is begin
-		put_line ("properties closed");
-	end close_window_properties;
+	--procedure close_window_properties (self : access gtk_widget_record'class) is begin
+		--put_line ("properties closed");
+	--end close_window_properties;
 	
 	procedure build_window_properties is begin
 		properties_confirmed := false;

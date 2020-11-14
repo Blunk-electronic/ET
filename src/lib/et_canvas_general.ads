@@ -782,8 +782,13 @@ package pac_canvas is
 	label_properties_status	: gtk.label.gtk_label;
 	
 	properties_confirmed : boolean := false;
+
+	function window_properties_key_event (
+		self	: access gtk_widget_record'class;
+		event	: gdk.event.gdk_event_key) 
+		return boolean;
 	
-	procedure close_window_properties (self : access gtk_widget_record'class);
+	--procedure close_window_properties (self : access gtk_widget_record'class);
 	procedure build_window_properties;
 
 	procedure set_status_properties (text : in string);

@@ -1912,7 +1912,9 @@ package body et_canvas_schematic_units is
 			build_window_properties;
 
 			-- If the operator closes the properties window:
-			window_properties.on_destroy (close_window_properties'access);
+			--window_properties.on_destroy (close_window_properties'access);
+			
+			window_properties.on_key_press_event (window_properties_key_event'access);
 			
 			window_properties.set_default_size (200, 100);
 			window_properties.set_resizable (false);
