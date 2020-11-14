@@ -1822,7 +1822,7 @@ package body et_canvas_schematic_units is
 
 		procedure clean_up is begin
 			properties_confirmed := true;
-			window_properties.close;
+			window_properties.window.close; -- CS window.destroy ?
 			reset_request_clarification;
 			status_clear;
 			clear_proposed_units;
@@ -1912,15 +1912,15 @@ package body et_canvas_schematic_units is
 			build_window_properties;
 
 			-- If the operator closes the properties window:
-			--window_properties.on_destroy (close_window_properties'access);
+			window_properties.window.on_destroy (close_window_properties'access);
 			
-			window_properties.on_key_press_event (window_properties_key_event'access);
+			window_properties.window.on_key_press_event (window_properties_key_event'access);
 			
-			window_properties.set_default_size (200, 100);
-			window_properties.set_resizable (false);
+			window_properties.window.set_default_size (200, 100);
+			window_properties.window.set_resizable (false);
 			
 			gtk_new_vbox (box);
-			add (window_properties, box);
+			add (window_properties.window, box);
 
 			-- Prepare displaying the old state of the property:
 			gtk_new (entry_property_old);
@@ -1964,7 +1964,7 @@ package body et_canvas_schematic_units is
 			gtk_new (label_properties_status);
 			pack_start (box, label_properties_status);
 			
-			window_properties.show_all;
+			window_properties.window.show_all;
 		else
 			set_status ("ERROR: Device " & device_name 
 				& " is virtual and does not have this property !");

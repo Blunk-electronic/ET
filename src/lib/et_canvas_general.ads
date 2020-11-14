@@ -771,7 +771,13 @@ package pac_canvas is
 
 
 
-	window_properties	: gtk.window.gtk_window;
+
+	type type_properties_window is record
+		window	: gtk.window.gtk_window;
+		open	: boolean := false;
+	end record;
+	
+	window_properties : type_properties_window;
 
 	-- Here we display the property in its old state before changing it:
 	label_property_old	: gtk.label.gtk_label;
@@ -788,7 +794,8 @@ package pac_canvas is
 		event	: gdk.event.gdk_event_key) 
 		return boolean;
 	
-	--procedure close_window_properties (self : access gtk_widget_record'class);
+	procedure close_window_properties (self : access gtk_widget_record'class);
+	
 	procedure build_window_properties;
 
 	procedure set_status_properties (text : in string);

@@ -1893,7 +1893,7 @@ package body pac_canvas is
 				--put_line ("key A");
 
 				-- Close the properties window if operator hits ESC:
-				self.destroy;
+				self.destroy; -- CS self.close ?
 				result := true;
 
 			when others =>
@@ -1904,15 +1904,17 @@ package body pac_canvas is
 		return result;		
 	end window_properties_key_event;
 	
-	--procedure close_window_properties (self : access gtk_widget_record'class) is begin
-		--put_line ("properties closed");
-	--end close_window_properties;
+	procedure close_window_properties (self : access gtk_widget_record'class) is begin
+		put_line ("properties closed");
+		window_properties.open := false;
+	end close_window_properties;
 	
 	procedure build_window_properties is begin
 		properties_confirmed := false;
 		
-		gtk_new (window_properties);
-		window_properties.set_title ("Properties");
+		gtk_new (window_properties.window);
+		window_properties.open := true;
+		window_properties.window.set_title ("Properties");
 	end build_window_properties;
 
 	procedure set_status_properties (text : in string) is begin
