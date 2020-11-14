@@ -848,12 +848,20 @@ package body et_canvas_schematic_units is
 
 -- ADD UNIT/DEVICE
 
-	function get_devices_directory return string
+	function get_devices_directory return string 
 	is
 	begin
 		return expand ("$HOME/git/BEL/ET_component_library/devices");
 	end get_devices_directory;
+
+	function device_selection_is_open return boolean is begin
+		return device_selection.open;
+	end device_selection_is_open;
 	
+	procedure close_device_selection is begin
+		device_selection.window.destroy;
+		device_selection.open := false;
+	end close_device_selection;	
 
 	function extract_variant_name (menu_item : in string) 
 		return et_devices.type_variant_name.bounded_string 
@@ -900,7 +908,7 @@ package body et_canvas_schematic_units is
 			& status_add);
 
 		-- The device selection window is no longer needed:
-		window_device_selection.destroy;
+		close_device_selection;
 	end variant_selected;
 
 	--procedure device_directory_selected (self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) is
@@ -990,8 +998,8 @@ package body et_canvas_schematic_units is
 					unit_add.variant := key (variants.first);
 
 					-- The device selection window is no longer needed:
-					window_device_selection.destroy;
-
+					close_device_selection;
+					
 					set_status (status_add);
 				end if;
 				
@@ -1017,7 +1025,7 @@ package body et_canvas_schematic_units is
 				--put_line ("key A");
 
 				-- Close the device selection if operator hits ESC:
-				window_device_selection.destroy;
+				close_device_selection;
 				result := true;
 
 			when others =>
@@ -1051,59 +1059,68 @@ package body et_canvas_schematic_units is
 	begin -- add_device
 		--put_line ("device selection");
 
-		gtk_new (window_device_selection);
-		window_device_selection.set_title ("Select a device model");
-		window_device_selection.on_key_press_event (device_model_seletion_key_event'access);
-		
-		gtk_new_hbox (box_main, homogeneous => false, spacing => gint (spacing));
-		add (window_device_selection, box_main);
+		-- BUILD THE DEVICE SELECTION WINDOW:
 
-		-- directory selection on the LEFT:
-		gtk_new_vbox (box_directory, homogeneous => false);
-		pack_start (box_main, box_directory, padding => guint (spacing));
+		-- Build it if it is not already up:
+		if not device_selection_is_open then
 
-		gtk_new (label_directory, "directory");
-		
-		gtk_new (
-			button		=> button_directory,
-			title		=> "Select a device model",
-			action		=> ACTION_SELECT_FOLDER);
+			-- Mark the window as "open" so that it can not be opened anew:
+			device_selection.open := true;
+			
+			gtk_new (device_selection.window);
+			device_selection.window.set_title ("Select a device model");
+			device_selection.window.on_key_press_event (device_model_seletion_key_event'access);
+			
+			gtk_new_hbox (box_main, homogeneous => false, spacing => gint (spacing));
+			add (device_selection.window, box_main);
 
-		if button_directory.set_current_folder_uri (get_devices_directory) then
-			null; -- CS
+			-- directory selection on the LEFT:
+			gtk_new_vbox (box_directory, homogeneous => false);
+			pack_start (box_main, box_directory, padding => guint (spacing));
+
+			gtk_new (label_directory, "directory");
+			
+			gtk_new (
+				button		=> button_directory,
+				title		=> "Select a device model",
+				action		=> ACTION_SELECT_FOLDER);
+
+			if button_directory.set_current_folder_uri (get_devices_directory) then
+				null; -- CS
+			end if;
+			
+			--button_directory.on_file_set (device_directory_selected'access);
+			pack_start (box_directory, label_directory, padding => guint (spacing));
+			pack_start (box_directory, button_directory, padding => guint (spacing));
+
+			
+			-- device model selection on the RIGHT:		
+			gtk_new_vbox (box_model, homogeneous => false);
+			pack_start (box_main, box_model, padding => guint (spacing));
+
+			gtk_new (label_model, "model");
+			
+			gtk_new (filter);
+			add_pattern (filter, make_filter_pattern (device_model_file_extension));
+			set_name (filter, "Device Models");
+			
+			gtk_new (
+				button		=> button_model,
+				title		=> "Select a device model",
+				action		=> ACTION_OPEN);
+
+			button_model.add_filter (filter);
+
+			if button_model.set_current_folder (button_directory.get_current_folder_uri) then
+				null; -- CS
+			end if;
+			
+			button_model.on_file_set (device_model_selected'access);
+			pack_start (box_model, label_model, padding => guint (spacing));
+			pack_start (box_model, button_model, padding => guint (spacing));
+			
+			device_selection.window.show_all;
 		end if;
-		
-		--button_directory.on_file_set (device_directory_selected'access);
-		pack_start (box_directory, label_directory, padding => guint (spacing));
-		pack_start (box_directory, button_directory, padding => guint (spacing));
-
-		
-		-- device model selection on the RIGHT:		
-		gtk_new_vbox (box_model, homogeneous => false);
-		pack_start (box_main, box_model, padding => guint (spacing));
-
-		gtk_new (label_model, "model");
-		
-		gtk_new (filter);
-		add_pattern (filter, make_filter_pattern (device_model_file_extension));
-		set_name (filter, "Device Models");
-		
-		gtk_new (
-			button		=> button_model,
-			title		=> "Select a device model",
-			action		=> ACTION_OPEN);
-
-		button_model.add_filter (filter);
-
-		if button_model.set_current_folder (button_directory.get_current_folder_uri) then
-			null; -- CS
-		end if;
-		
-		button_model.on_file_set (device_model_selected'access);
-		pack_start (box_model, label_model, padding => guint (spacing));
-		pack_start (box_model, button_model, padding => guint (spacing));
-		
-		window_device_selection.show_all;
 	end add_device;
 
 

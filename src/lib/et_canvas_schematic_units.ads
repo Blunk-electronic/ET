@@ -236,8 +236,27 @@ package et_canvas_schematic_units is
 -- ADD UNIT/DEVICE
 
 	function get_devices_directory return string;
+
+	type type_device_selection is record
+		window	: gtk_window;
+
+		-- This flag indicates that the device selection
+		-- window is open. The purpose of this flag is
+		-- to prevent the selection from opening multiple
+		-- times:
+		open	: boolean := false;
+	end record;
 	
-	window_device_selection : gtk_window;
+	device_selection : type_device_selection;
+
+	-- Returns the status of the "open" flag.
+	-- True if the device selection is open.
+	-- False if the selection is not open.
+	function device_selection_is_open return boolean;
+	
+	-- Closes the device selection window.
+	-- Resets the status flag "open".
+	procedure close_device_selection;
 	
 	-- In order to place a package variant and the associated model
 	-- on a menu, use this function.
@@ -285,7 +304,10 @@ package et_canvas_schematic_units is
 	unit_add : type_unit_being_added;
 
 	procedure reset_unit_add;
-	
+
+	-- Builds the device selection window which lets the operator
+	-- select the directory and the actual device model.
+	-- The window is already up, then nothing happens here:
 	procedure add_device;
 
 	procedure finalize_add_device (
