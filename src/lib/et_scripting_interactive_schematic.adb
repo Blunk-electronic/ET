@@ -36,7 +36,13 @@
 --
 --   ToDo: 
 
+with gdk;
+with gdk.event;						use gdk.event;
+with gdk.types;						use gdk.types;
+with gdk.types.keysyms;				use gdk.types.keysyms;
+
 with gtk.main;
+with gtk.widget;					use gtk.widget;
 with gtk.gentry;					use gtk.gentry;
 
 with ada.text_io;					use ada.text_io;
@@ -578,6 +584,32 @@ package body et_scripting_interactive_schematic is
 
 		redraw;
 	end variant_selected;
+
+	--function variant_selection_key_event (
+		--self	: access gtk_widget_record'class;
+		--event	: gdk.event.gdk_event_key) 
+		--return boolean 
+	--is
+		--key : gdk_key_type := event.keyval;
+
+		---- This is required in order to propagate the key-pressed event further.
+		--result : boolean; -- to be returned. Indicates that the event has been handled.
+	--begin
+		--case key is
+			--when GDK_ESCAPE =>
+				----put_line ("key A");
+
+				---- Close the device selection if operator hits ESC:
+				--package_variants_menu.destroy;
+				--result := true;
+
+			--when others =>
+				----put_line ("key B");
+				--result := false;
+		--end case;
+		
+		--return result;		
+	--end variant_selection_key_event;
 	
 	procedure set_variant (device : in et_devices.type_name) is
 		use pac_variants;
@@ -598,6 +630,8 @@ package body et_scripting_interactive_schematic is
 			
 		begin
 			m := gtk_menu_new;
+			--m.on_key_press_event (variant_selection_key_event'access);
+			
 			variants.iterate (query_variant'access);
 
 			m.show;

@@ -120,6 +120,8 @@ package et_scripting_interactive_schematic is
 
 
 -- SET VARIANT
+
+	--package_variants_menu : gtk_menu;
 	
 	-- When setting the package variant, the cursor to
 	-- the targeted device is stored here temporarily:
