@@ -116,12 +116,28 @@ package et_meta is
 	person_default : constant pac_person.bounded_string := pac_person.to_bounded_string (not_assigned);
 	
 
+	-- PATHS FOR PREFERRED LIBRARIES:
+
+	-- NOTE: System ET does not follow the classical approach of
+	-- search paths for libraries. A library here is just a directory where
+	-- device models (*.dev) or non-electrical packages (*.pac) live.
+	-- Device models and non-electrical packages can be everywhere.
+	-- In graphical mode, when adding a device in the schematic or a non-electrical package in
+	-- the board/layout there is a window where the operator selects
+	-- a model. This window just proposes the paths of preferred libraries.
+	-- The operator is not restricted to those library paths and is
+	-- free to store models wherever it suits her/him.
+	
 	-- A preferred directory that contains devices (*.dev)
 	-- like "$HOME/git/BEL/ET_component_library/devices":
 	prf_lib_sch_length_max : constant positive := 100;
 	package pac_preferred_library_schematic is new generic_bounded_length (prf_lib_sch_length_max);
 	use pac_preferred_library_schematic;
 
+	-- Returns true if the given path exists:
+	function exists (lib : in pac_preferred_library_schematic.bounded_string)
+		return boolean;
+	
 	function to_preferred_library_schematic (lib : in string)
 		return pac_preferred_library_schematic.bounded_string;
 
@@ -138,6 +154,10 @@ package et_meta is
 	package pac_preferred_library_board is new generic_bounded_length (prf_lib_brd_length_max);
 	use pac_preferred_library_board;
 
+	-- Returns true if the given path exists:
+	function exists (lib : in pac_preferred_library_board.bounded_string)
+		return boolean;
+	
 	function to_preferred_library_board (lib : in string)
 		return pac_preferred_library_board.bounded_string;
 

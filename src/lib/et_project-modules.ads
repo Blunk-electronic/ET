@@ -52,6 +52,7 @@ with et_pcb_stack;
 with et_devices;				use et_devices;
 with et_frames;
 with et_design_rules;
+with et_meta;
 
 package et_project.modules is
 
@@ -75,6 +76,16 @@ package et_project.modules is
 	function locate_module (name : in type_module_name.bounded_string) -- motor_driver (without extension *.mod)
 		return pac_generic_modules.cursor;
 
+	
+	-- Returns the list of preferred schematic libraries:
+	function get_preferred_libraries_schematic (module : in pac_generic_modules.cursor)
+		return et_meta.pac_preferred_libraries_schematic.list;
+
+	-- Returns the list of preferred board libraries (non-electrical packages):
+	function get_preferred_libraries_board (module : in pac_generic_modules.cursor)
+		return et_meta.pac_preferred_libraries_board.list;
+
+	
 	-- Returns the description of a sheet of a generic module:
 	function sheet_description (
 		module	: in pac_generic_modules.cursor;

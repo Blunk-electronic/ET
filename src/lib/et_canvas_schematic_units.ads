@@ -243,7 +243,9 @@ package et_canvas_schematic_units is
 
 -- ADD UNIT/DEVICE
 
-	function get_devices_directory return string;
+	-- This function returns the top most important path
+	-- of the preferred schematic libraries.
+	function get_top_most_important_library return string;
 
 	type type_device_selection is record
 		window	: gtk_window;

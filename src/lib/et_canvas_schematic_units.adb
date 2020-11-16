@@ -68,6 +68,7 @@ with et_device_rw;
 with et_packages;
 with et_schematic;					use et_schematic;
 with et_material;
+with et_meta;
 with et_modes.schematic;			use et_modes.schematic;
 
 with et_canvas_schematic;			use et_canvas_schematic;
@@ -848,11 +849,18 @@ package body et_canvas_schematic_units is
 
 -- ADD UNIT/DEVICE
 
-	function get_devices_directory return string 
-	is
+	function get_top_most_important_library return string is
+		use et_meta;
+		use et_meta.pac_preferred_libraries_schematic;
+		all_lib_dirs : pac_preferred_libraries_schematic.list;
+		top_lib_dir : pac_preferred_library_schematic.bounded_string;
 	begin
-		return expand ("$HOME/git/BEL/ET_component_library/devices");
-	end get_devices_directory;
+		all_lib_dirs := get_preferred_libraries_schematic (current_active_module);
+		top_lib_dir := element (all_lib_dirs.first);
+		
+		--return expand ("$HOME/git/BEL/ET_component_library/devices");
+		return expand (to_string (top_lib_dir));
+	end get_top_most_important_library;
 
 	function device_selection_is_open return boolean is begin
 		return device_selection.open;
@@ -1085,8 +1093,11 @@ package body et_canvas_schematic_units is
 				title		=> "Select a device model",
 				action		=> ACTION_SELECT_FOLDER);
 
-			if button_directory.set_current_folder_uri (get_devices_directory) then
-				null; -- CS
+			-- CS: Currently the button_directory shows only the most important
+			-- library path. It would be convenient if the operator would be shown
+			-- all preferred library paths sorted by their rank.
+			if button_directory.set_current_folder_uri (get_top_most_important_library) then
+				null; -- Testing the existence of the folder is not required.
 			end if;
 			
 			--button_directory.on_file_set (device_directory_selected'access);
@@ -1112,7 +1123,7 @@ package body et_canvas_schematic_units is
 			button_model.add_filter (filter);
 
 			if button_model.set_current_folder (button_directory.get_current_folder_uri) then
-				null; -- CS
+				null; -- Testing the existence of the device model is not required.
 			end if;
 			
 			button_model.on_file_set (device_model_selected'access);

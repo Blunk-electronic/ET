@@ -238,7 +238,14 @@ procedure read_module (
 	begin
 		if kw = keyword_path then
 			expect_field_count (line, 2);
+
 			lib := to_preferred_library_schematic (f (line, 2));
+			
+			if not exists (lib) then
+				log (WARNING, "Preferred library path for devices " 
+					 & enclose_in_quotes (to_string (lib))
+					 & " does not exist !");
+			end if;
 
 			-- Collect the library path in temporarily list:
 			prf_libs_sch.append (lib);
@@ -256,6 +263,12 @@ procedure read_module (
 			expect_field_count (line, 2);
 			lib := to_preferred_library_board (f (line, 2));
 
+			if not exists (lib) then
+				log (WARNING, "Preferred library path for non-electrical packages " 
+					 & enclose_in_quotes (to_string (lib))
+					 & " does not exist !");
+			end if;
+			
 			-- Collect the library path in temporarily list:
 			prf_libs_brd.append (lib);
 		else

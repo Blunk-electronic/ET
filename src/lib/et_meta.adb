@@ -36,6 +36,7 @@
 --
 --   ToDo: 
 
+with ada.directories;
 with et_string_processing;		use et_string_processing;
 
 package body et_meta is
@@ -112,19 +113,43 @@ package body et_meta is
 				raise;
 	end;
 
+
+	function exists (lib : in pac_preferred_library_schematic.bounded_string)
+		return boolean 
+	is
+		use ada.directories;
+	begin
+		if exists (expand (to_string (lib))) then
+			return true;
+		else
+			return false;
+		end if;
+	end exists;
 	
 	function to_preferred_library_schematic (lib : in string)
 		return pac_preferred_library_schematic.bounded_string
 	is begin
 		return to_bounded_string (lib);
 	end to_preferred_library_schematic;
-
+	
 	function to_string (lib : in pac_preferred_library_schematic.bounded_string)
 		return string
 	is begin
 		return pac_preferred_library_schematic.to_string (lib);
 	end to_string;
 
+	function exists (lib : in pac_preferred_library_board.bounded_string)
+		return boolean 
+	is
+		use ada.directories;
+	begin
+		if exists (expand (to_string (lib))) then
+			return true;
+		else
+			return false;
+		end if;
+	end exists;
+	
 	function to_preferred_library_board (lib : in string)
 		return pac_preferred_library_board.bounded_string
 	is begin

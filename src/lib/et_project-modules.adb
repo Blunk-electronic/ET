@@ -103,6 +103,25 @@ package body et_project.modules is
 		return find (generic_modules, name);
 	end;
 
+
+	
+	-- Returns the list of preferred schematic libraries:
+	function get_preferred_libraries_schematic (module : in pac_generic_modules.cursor)
+		return et_meta.pac_preferred_libraries_schematic.list
+	is begin
+		return element (module).meta.schematic.preferred_libs;
+	end get_preferred_libraries_schematic;
+
+	-- Returns the list of preferred board libraries (non-electrical packages):
+	function get_preferred_libraries_board (module : in pac_generic_modules.cursor)
+		return et_meta.pac_preferred_libraries_board.list
+	is begin
+		return element (module).meta.board.preferred_libs;
+	end get_preferred_libraries_board;
+
+
+	
+
 	function sheet_description (
 		module	: in pac_generic_modules.cursor;
 		sheet	: in type_sheet)
