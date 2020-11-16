@@ -1911,11 +1911,6 @@ package body et_canvas_schematic_units is
 		if is_real (su.device) then
 			build_window_properties;
 
-			-- If the operator closes the properties window:
-			window_properties.window.on_destroy (close_window_properties'access);
-			
-			window_properties.window.on_key_press_event (window_properties_key_event'access);
-			
 			window_properties.window.set_default_size (200, 100);
 			window_properties.window.set_resizable (false);
 			

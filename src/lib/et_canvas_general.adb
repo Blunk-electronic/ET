@@ -1012,7 +1012,10 @@ package body pac_canvas is
 		end case;
 	end view_get_property;
 	
-	procedure on_size_allocate (view : system.address; alloc : gtk_allocation) is
+	procedure on_size_allocate (
+		view	: system.address;
+		alloc	: gtk_allocation)
+	is
 		self : constant type_view_ptr := type_view_ptr (glib.object.convert (view));
 		salloc : gtk_allocation := alloc;
 	begin
@@ -1909,15 +1912,21 @@ package body pac_canvas is
 	end window_properties_key_event;
 	
 	procedure close_window_properties (self : access gtk_widget_record'class) is begin
-		put_line ("properties closed");
+		--put_line ("properties closed");
 		window_properties.open := false;
 	end close_window_properties;
 	
 	procedure build_window_properties is begin
 		properties_confirmed := false;
-		
+			
 		gtk_new (window_properties.window);
 
+		-- If the operator closes the properties window:
+		window_properties.window.on_destroy (access_on_window_properties_closed);
+
+		-- If the operator presses a key in the properties window:
+		window_properties.window.on_key_press_event (access_on_window_properties_key_event);
+		
 		-- Mark window as open. This prevents the window
 		-- from opening multiple times:
 		window_properties.open := true;

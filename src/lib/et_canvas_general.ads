@@ -799,12 +799,7 @@ package pac_canvas is
 	
 	properties_confirmed : boolean := false;
 
-	function window_properties_key_event (
-		self	: access gtk_widget_record'class;
-		event	: gdk.event.gdk_event_key) 
-		return boolean;
 	
-	procedure close_window_properties (self : access gtk_widget_record'class);
 	
 	procedure build_window_properties;
 
@@ -812,15 +807,31 @@ package pac_canvas is
 	procedure set_property_before (text : in string);
 	
 private
-	--procedure close_window_properties (self : access gtk_widget_record'class);
 
-	--access_on_window_properties_closed : constant 
+	-- Called when the operator closes the properties window:
+	procedure close_window_properties (
+		self : access gtk_widget_record'class);
 	
+	access_on_window_properties_closed : constant 
+		cb_gtk_widget_void := close_window_properties'access;
+	-------
+	
+	-- Called when a key is pressed in the properties window:
+	function window_properties_key_event (
+		self	: access gtk_widget_record'class;
+		event	: gdk.event.gdk_event_key) 
+		return boolean;
 
-	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);
+	access_on_window_properties_key_event : constant
+		cb_gtk_widget_gdk_event_key_boolean := window_properties_key_event'access;
+	-------
+
 	-- Called when one of the scrollbars has changed value.
+	procedure on_adj_value_changed (
+		view : access glib.object.gobject_record'class);
 
-	access_on_adj_value_changed : constant gtk.adjustment.cb_gobject_void := on_adj_value_changed'access;
+	access_on_adj_value_changed : constant
+		gtk.adjustment.cb_gobject_void := on_adj_value_changed'access;
 	-------
 	
 	procedure view_set_property (
@@ -829,7 +840,8 @@ private
 		value         : glib.values.gvalue;
 		property_spec : param_spec);
 
-	access_view_set_property : constant set_property_handler := view_set_property'access;
+	access_view_set_property : constant
+		set_property_handler := view_set_property'access;
 	-------
 	
 	procedure view_get_property (
@@ -838,7 +850,8 @@ private
 		value         : out glib.values.gvalue;
 		property_spec : param_spec);
 
-	access_view_get_property : constant get_property_handler := view_get_property'access;
+	access_view_get_property : constant
+		get_property_handler := view_get_property'access;
 	-------
 	
 	function on_view_draw (
@@ -851,12 +864,15 @@ private
 	access_on_view_draw : constant draw_handler := on_view_draw'access;
 	-------
 
-	procedure on_size_allocate (view : system.address; alloc : gtk_allocation);
+	procedure on_size_allocate (
+		view	: system.address;
+		alloc	: gtk_allocation);
 
 	pragma convention (c, on_size_allocate);
 	--  default handler for "size_allocate" on views.
 	
-	access_on_size_allocate : constant size_allocate_handler := on_size_allocate'access;
+	access_on_size_allocate : constant
+		size_allocate_handler := on_size_allocate'access;
 	-------
 
 	procedure on_view_realize (widget : system.address);
@@ -864,14 +880,16 @@ private
 	pragma convention (c, on_view_realize);
 	--  called when the view is realized
 
-	access_on_view_realize : constant realize_handler := on_view_realize'access;
+	access_on_view_realize : constant
+		realize_handler := on_view_realize'access;
 	-------
 
 	procedure view_class_init (self : gobject_class);
 
 	pragma convention (c, view_class_init);
 
-	access_view_class_init : constant ada_class_init := view_class_init'access;
+	access_view_class_init : constant
+		ada_class_init := view_class_init'access;
 	-------
 
 	-- Updates the mouse position display.
@@ -880,14 +898,16 @@ private
 		view  : access gtk_widget_record'class;
 		event : gdk_event_motion) return boolean;
 
-	access_on_mouse_movement : constant cb_gtk_widget_gdk_event_motion_boolean := on_mouse_movement'access;
+	access_on_mouse_movement : constant
+		cb_gtk_widget_gdk_event_motion_boolean := on_mouse_movement'access;
 	-------
 
 	function on_scroll_event (
 		view	: access gtk_widget_record'class;
 		event	: gdk_event_scroll) return boolean;
 	
-	access_on_scroll_event : constant cb_gtk_widget_gdk_event_scroll_boolean := on_scroll_event'access;
+	access_on_scroll_event : constant
+		cb_gtk_widget_gdk_event_scroll_boolean := on_scroll_event'access;
 	-------
 
 	function on_button_event (
@@ -895,14 +915,16 @@ private
 		event : gdk_event_button)
 		return boolean;
 
-	access_on_button_event : constant cb_gtk_widget_gdk_event_button_boolean := on_button_event'access;
+	access_on_button_event : constant
+		cb_gtk_widget_gdk_event_button_boolean := on_button_event'access;
 	------
 
 	function on_key_pressed_event (
 		view  : access gtk_widget_record'class;
 		event : gdk_event_key) return boolean;
 
-	access_on_key_pressed_event : constant cb_gtk_widget_gdk_event_key_boolean := on_key_pressed_event'access;
+	access_on_key_pressed_event : constant
+		cb_gtk_widget_gdk_event_key_boolean := on_key_pressed_event'access;
 	------
 	
 end pac_canvas;
