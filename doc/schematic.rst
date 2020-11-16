@@ -75,7 +75,91 @@ Devices and Units
 	Verb-Noun key sequence: s a
 	
 	
+#. Set value
 
+	.. code-block::
 
+		set value R1 [100R]
+		
+.. 	CS: set value R1
+
+	Verb-Noun key sequence: s v
+
+	
+#. Set partcode
+
+	.. code-block::
+
+		set partcode R1 [R_PAC_S_0805_VAL_100R}
+
+.. 	CS: set partcode R1		
+		
+	Verb-Noun key sequence: s p
+
+	
+#. Set purpose
+
+	.. code-block::
+
+		set purpose R1 [brightness]
+
+.. 	CS: set purpose R1
+		
+	Verb-Noun key sequence: s p
+
+	
+#. Move name
+
+	.. code-block::
+
+		move name IC1 [A]
+
+	Verb-Noun key sequence: m n
 		
 
+#. Move value
+
+	.. code-block::
+
+		move value IC1 [A]
+
+	Verb-Noun key sequence: m v
+		
+
+#. Move purpose
+
+	.. code-block::
+
+		move purpose RN1 [A]
+
+	Verb-Noun key sequence: m p
+	
+	
+#. Rotate name
+
+	.. code-block::
+
+		rotate name IC1 [A]
+
+	Verb-Noun key sequence: r n
+		
+
+#. Rotate value
+
+	.. code-block::
+
+		rotate value IC1 [A]
+
+	Verb-Noun key sequence: r v
+		
+
+#. Rotate purpose
+
+	.. code-block::
+
+		rotate purpose RN1 [A]
+
+	Verb-Noun key sequence: r p
+	
+
+		
