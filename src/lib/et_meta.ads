@@ -115,6 +115,39 @@ package et_meta is
 
 	person_default : constant pac_person.bounded_string := pac_person.to_bounded_string (not_assigned);
 	
+
+	-- A preferred directory that contains devices (*.dev)
+	-- like "$HOME/git/BEL/ET_component_library/devices":
+	prf_lib_sch_length_max : constant positive := 100;
+	package pac_preferred_library_schematic is new generic_bounded_length (prf_lib_sch_length_max);
+	use pac_preferred_library_schematic;
+
+	function to_preferred_library_schematic (lib : in string)
+		return pac_preferred_library_schematic.bounded_string;
+
+	function to_string (lib : in pac_preferred_library_schematic.bounded_string)
+		return string;
+	
+	package pac_preferred_libraries_schematic is new 
+		doubly_linked_lists (pac_preferred_library_schematic.bounded_string);
+
+
+	-- A preferred directory that contains non-electrical packages (*.pac)
+	-- like "$HOME/git/BEL/ET_component_library/packages":
+	prf_lib_brd_length_max : constant positive := 100;
+	package pac_preferred_library_board is new generic_bounded_length (prf_lib_brd_length_max);
+	use pac_preferred_library_board;
+
+	function to_preferred_library_board (lib : in string)
+		return pac_preferred_library_board.bounded_string;
+
+	function to_string (lib : in pac_preferred_library_board.bounded_string)
+		return string;
+	
+	package pac_preferred_libraries_board is new 
+		doubly_linked_lists (pac_preferred_library_board.bounded_string);
+
+	
 	
 	type type_basic is tagged record
 		company			: pac_company.bounded_string := company_default;
@@ -130,9 +163,13 @@ package et_meta is
 		approved_date	: time := et_string_processing.date_first; -- default 1901-01-01
 	end record;
 
-	type type_schematic is new type_basic with null record; -- CS extend here if required
+	type type_schematic is new type_basic with record
+		preferred_libs	: pac_preferred_libraries_schematic.list;
+	end record;
 	
-	type type_board is new type_basic with null record;  -- CS extend here if required
+	type type_board is new type_basic with record
+		preferred_libs	: pac_preferred_libraries_board.list;
+	end record;
 
 	
 	type type_meta is record
@@ -155,7 +192,7 @@ package et_meta is
 	keyword_checked_date	: constant string := "checked_date";	
 	keyword_approved_by		: constant string := "approved_by";
 	keyword_approved_date	: constant string := "approved_date";	
-
+	keyword_path			: constant string := "path";
 	
 end et_meta;
 

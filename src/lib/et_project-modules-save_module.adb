@@ -124,8 +124,35 @@ is
 
 			write (keyword => keyword_approved_by, parameters => to_string (basic.approved_by), wrap => true);
 			write (keyword => keyword_approved_date, parameters => to_string (basic.approved_date));
-		end;
+		end write_basic;
+
+		procedure write_schematic (sch : in type_schematic) is 
+			use pac_preferred_libraries_schematic;
+			
+			procedure query_lib (c : in pac_preferred_libraries_schematic.cursor) is begin
+				write (keyword => keyword_path, parameters => to_string (element (c)));
+			end query_lib;
 	
+		begin -- write_schematic
+			section_mark (section_preferred_libraries, HEADER);
+			sch.preferred_libs.iterate (query_lib'access);
+			section_mark (section_preferred_libraries, FOOTER);
+		end write_schematic;
+
+		procedure write_board (brd : in type_board) is
+			use pac_preferred_libraries_board;
+			
+			procedure query_lib (c : in pac_preferred_libraries_board.cursor) is begin
+				write (keyword => keyword_path, parameters => to_string (element (c)));
+			end query_lib;
+
+		begin -- write_board
+			section_mark (section_preferred_libraries, HEADER);
+			brd.preferred_libs.iterate (query_lib'access);
+			section_mark (section_preferred_libraries, FOOTER);
+		end write_board;
+
+		
 	begin -- query_meta
 		log_indentation_up;
 		log (text => "meta data ...", level => log_threshold + 1);
@@ -135,13 +162,15 @@ is
 		-- schematic related
 		section_mark (section_schematic, HEADER);
 		write_basic (meta.schematic);
-		-- CS write schematic specific meta stuff here
+		write_schematic (meta.schematic);
+		
 		section_mark (section_schematic, FOOTER);
+
 		
 		-- board related
 		section_mark (section_board, HEADER);
 		write_basic (meta.board);
-		-- CS write schematic specific meta stuff here
+		write_board (meta.board);
 		section_mark (section_board, FOOTER);
 		
 		section_mark (section_meta, FOOTER);

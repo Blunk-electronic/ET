@@ -172,7 +172,9 @@ package et_project.modules is
 	section_units				: constant string := "[UNITS";
 
 	section_port_begin			: constant string := "[PORT";
-	
+
+	section_preferred_libraries	: constant string := "[PREFERRED_LIBRARIES";
+
 	
 	type type_section is ( -- CS: sort aphabetically
 		SEC_DEVICES_NON_ELECTRIC,
@@ -218,7 +220,8 @@ package et_project.modules is
 		SEC_UNIT,
 		SEC_PACKAGE,
 		SEC_PLACEHOLDER,
-		SEC_PLACEHOLDERS,		
+		SEC_PLACEHOLDERS,
+		SEC_PREFERRED_LIBRARIES,
 		SEC_SILK_SCREEN,
 		SEC_CIRCLE,
 		SEC_ASSEMBLY_DOCUMENTATION,

@@ -111,6 +111,32 @@ package body et_meta is
 			others => log (ERROR, text => "date invalid !", console => true);
 				raise;
 	end;
+
+	
+	function to_preferred_library_schematic (lib : in string)
+		return pac_preferred_library_schematic.bounded_string
+	is begin
+		return to_bounded_string (lib);
+	end to_preferred_library_schematic;
+
+	function to_string (lib : in pac_preferred_library_schematic.bounded_string)
+		return string
+	is begin
+		return pac_preferred_library_schematic.to_string (lib);
+	end to_string;
+
+	function to_preferred_library_board (lib : in string)
+		return pac_preferred_library_board.bounded_string
+	is begin
+		return to_bounded_string (lib);
+	end to_preferred_library_board;
+
+	function to_string (lib : in pac_preferred_library_board.bounded_string)
+		return string
+	is begin
+		return pac_preferred_library_board.to_string (lib);
+	end to_string;
+
 	
 end et_meta;
 
