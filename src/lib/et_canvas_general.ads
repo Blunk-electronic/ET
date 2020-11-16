@@ -774,11 +774,21 @@ package pac_canvas is
 
 	type type_properties_window is record
 		window	: gtk.window.gtk_window;
+
+		-- This flag indicates that the properties
+		-- window is open. The purpose of this flag is
+		-- to prevent the window from opening multiple
+		-- times:
 		open	: boolean := false;
 	end record;
 	
 	window_properties : type_properties_window;
 
+	-- Returns the status of the "open" flag.
+	-- True if the properties window is open.
+	-- False if the window is not open.
+	function window_properties_is_open return boolean;
+	
 	-- Here we display the property in its old state before changing it:
 	label_property_old	: gtk.label.gtk_label;
 	entry_property_old	: gtk_gentry;

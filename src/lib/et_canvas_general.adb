@@ -1878,6 +1878,10 @@ package body pac_canvas is
 	end evaluate_exception;
 
 
+	function window_properties_is_open return boolean is begin
+		return window_properties.open;
+	end window_properties_is_open;
+	
 	function window_properties_key_event (
 		self	: access gtk_widget_record'class;
 		event	: gdk.event.gdk_event_key) 
@@ -1893,7 +1897,7 @@ package body pac_canvas is
 				--put_line ("key A");
 
 				-- Close the properties window if operator hits ESC:
-				self.destroy; -- CS self.close ?
+				self.destroy;
 				result := true;
 
 			when others =>
@@ -1913,7 +1917,11 @@ package body pac_canvas is
 		properties_confirmed := false;
 		
 		gtk_new (window_properties.window);
+
+		-- Mark window as open. This prevents the window
+		-- from opening multiple times:
 		window_properties.open := true;
+		
 		window_properties.window.set_title ("Properties");
 	end build_window_properties;
 

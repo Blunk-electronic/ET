@@ -1822,7 +1822,7 @@ package body et_canvas_schematic_units is
 
 		procedure clean_up is begin
 			properties_confirmed := true;
-			window_properties.window.close; -- CS window.destroy ?
+			window_properties.window.destroy;
 			reset_request_clarification;
 			status_clear;
 			clear_proposed_units;
@@ -1973,34 +1973,44 @@ package body et_canvas_schematic_units is
 
 	
 	procedure set_property (point : in type_point) is begin
-		log (text => "setting property ...", level => log_threshold);
-		log_indentation_up;
-		
-		-- Collect all units in the vicinity of the given point:
-		proposed_units := collect_units (
-			module			=> current_active_module,
-			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
-			log_threshold	=> log_threshold + 1);
+		-- If the properties window is already open, then
+		-- nothing happens here.
+		if not window_properties_is_open then
+			log (text => "setting property ...", level => log_threshold);
+			log_indentation_up;
+			
+			-- Collect all units in the vicinity of the given point:
+			proposed_units := collect_units (
+				module			=> current_active_module,
+				place			=> to_position (point, current_active_sheet),
+				catch_zone		=> catch_zone_default, -- CS should depend on current scale
+				log_threshold	=> log_threshold + 1);
 
-		-- evaluate the number of units found here:
-		case length (proposed_units) is
-			when 0 =>
-				reset_request_clarification;
-				
-			when 1 =>
-				selected_unit := proposed_units.first;
+			-- evaluate the number of units found here:
+			case length (proposed_units) is
+				when 0 =>
+					reset_request_clarification;
+					
+				when 1 =>
+					selected_unit := proposed_units.first;
 
-				window_set_property;
+					window_set_property;
 
-			when others =>
-				set_request_clarification;
+				when others =>
+					set_request_clarification;
 
-				-- preselect the first unit
-				selected_unit := proposed_units.first;
-		end case;
-		
-		log_indentation_down;
+					-- preselect the first unit
+					selected_unit := proposed_units.first;
+			end case;
+
+			log_indentation_down;
+		else
+			log (text => "Window to set properties already open !", level => log_threshold);
+
+			-- Move the properties window to the foreground so that the operator
+			-- is notified about the already open properties window:
+			window_properties.window.present;
+		end if;
 	end set_property;
 
 	procedure set_property_selected_unit is
