@@ -49,6 +49,7 @@ with gdk.types;						use gdk.types;
 with gdk.types.keysyms;				use gdk.types.keysyms;
 
 with gtk;
+with gtk.window;
 with gtk.gentry;					use gtk.gentry;
 with gtk.box;						use gtk.box;
 with gtk.label;						use gtk.label;
@@ -293,6 +294,9 @@ package et_canvas_schematic is
 		self	: not null access type_view;
 		button	: in type_mouse_button;
 		point	: in type_point);
+
+	overriding procedure reset_properties_selection (
+		self : not null access type_view);
 	
 end et_canvas_schematic;
 

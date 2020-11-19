@@ -1884,7 +1884,7 @@ package body pac_canvas is
 	function window_properties_is_open return boolean is begin
 		return window_properties.open;
 	end window_properties_is_open;
-	
+
 	function window_properties_key_event (
 		self	: access gtk_widget_record'class;
 		event	: gdk.event.gdk_event_key) 
@@ -1901,6 +1901,11 @@ package body pac_canvas is
 
 				-- Close the properties window if operator hits ESC:
 				self.destroy;
+
+				-- Call the schematic specific subprogram to
+				-- reset things used for the selection:
+				canvas.reset_properties_selection;
+				
 				result := true;
 
 			when others =>
@@ -1912,7 +1917,11 @@ package body pac_canvas is
 	end window_properties_key_event;
 	
 	procedure close_window_properties (self : access gtk_widget_record'class) is begin
-		--put_line ("properties closed");
+		-- Call the schematic specific subprogram to
+		-- reset things used for the selection:
+		canvas.reset_properties_selection;
+
+		-- Mark the window as closed:
 		window_properties.open := false;
 	end close_window_properties;
 	

@@ -99,11 +99,17 @@ procedure draw_units (
 -- 		return result;
 -- 	end moved_by_operator;
 
-	-- Returns true if the given unit is selected.
+	-- Returns true if the given device matches the device indicated by "selected_unit"
+	-- AND if "selected_unit" does not point to particular unit. This way the whole
+	-- device is regarded as selected.
+	-- Returns true if the given device and unit match the device and unit indicated 
+	-- by variable "selected_unit". This way a single unit of a device is regarded as
+	-- selected:
 	function unit_is_selected (
 		d : in et_schematic.type_devices.cursor;
 		u : in et_schematic.type_units.cursor)
-		return boolean is
+		return boolean
+	is
 		use pac_proposed_units;
 		use et_devices;
 		use type_unit_name;
@@ -113,12 +119,24 @@ procedure draw_units (
 			return false;
 		else
 			if selected_unit /= pac_proposed_units.no_element then
-				-- Compare given device and unit name with selected unit:
-				if key (d) = key (element (selected_unit).device) and then
-					key (u) = key (element (selected_unit).unit) then
-					-- CS: Improvement: compare cursors directly ?
+				
+				-- Compare given device and device name of "selected_unit":
+				if key (d) = key (element (selected_unit).device) then
+
+					-- If "selected_unit" does not point to a specific unit
+					-- then we regard the whole device as selected:
+					if element (selected_unit).unit = et_schematic.type_units.no_element then
+						return true;
+
+					-- If "selected_unit" points to the given unit then the
+					-- unit is regarded as selected:
+					elsif key (u) = key (element (selected_unit).unit) then
+						return true;
+						
+					else 
+						return false;
+					end if;
 					
-					return true;
 				else
 					return false;
 				end if;
@@ -126,6 +144,12 @@ procedure draw_units (
 				return false;
 			end if;
 		end if;
+
+		--exception
+		--when event: others =>
+			--put_line ("invalid selected unit");
+			--return false;
+			
 	end unit_is_selected;
 
 	-- Returns true if the given placeholder is selected.

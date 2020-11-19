@@ -2491,6 +2491,16 @@ package body et_canvas_schematic is
 
 		redraw;
 	end button_pressed;
+
+	procedure reset_properties_selection (
+		self : not null access type_view)
+	is 
+	begin
+		--put_line ("reset selection");
+		clear_proposed_units;
+
+		-- CS reset other stuff ?
+	end reset_properties_selection;
 	
 end et_canvas_schematic;
 

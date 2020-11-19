@@ -132,6 +132,15 @@ package et_scripting_interactive_schematic is
 	-- Otherwise constraint error rises.
 	procedure set_variant (device : in et_devices.type_name);
 	
+
+-- SET PROPERTIES (partcode, purpose, value)
+
+	-- Opens a window to set properties.
+	-- Chooses the actual the property of the given device
+	-- according to the current verb and noun.
+	-- The device must exist in the current active module.
+	-- Otherwise constraint error rises.
+	procedure set_property (device : in et_devices.type_name);
 	
 end et_scripting_interactive_schematic;
 

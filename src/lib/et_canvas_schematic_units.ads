@@ -61,14 +61,17 @@ package et_canvas_schematic_units is
 
 	use et_project.modules.pac_generic_modules;
 
-	-- Whenever a unit is selected
-	-- via the GUI, we store cursors of its
+	-- Whenever a unit (or the whole device with all its units)
+	-- is selected via the GUI, we store cursors of its
 	-- parent device and the unit itself via this type.
 	-- This type is to be used for a device and a unit that
 	-- is already placed in the schematic. So we use it
 	-- for example for moving, dragging or rotating of a unit.
 	type type_selected_unit is record
 		device	: et_schematic.type_devices.cursor;
+
+		-- If the cursor to the actual unit is no_element then
+		-- the whole device is regarded as selected:
 		unit	: et_schematic.type_units.cursor;
 	end record;
 
@@ -471,6 +474,15 @@ package et_canvas_schematic_units is
 		& "to set package variant of device." 
 		& status_hint_for_abort;
 
+	-- Opens a window to enter the properties of the
+	-- device indicated by variable "selected_unit".
+	-- The actual property is determined by the current
+	-- verb and noun.
+	-- If the indicated unit belongs to a virtual device, then
+	-- an error message will be output in the status bar.
+	--  Virtual units have no value, partcode or purpose because
+	--  they do not exist in reality.
+	procedure window_set_property;
 	
 	-- Sets a property a unit in the vicinity of given point.
 	-- Since a unit is a subset of a device, the property will be 

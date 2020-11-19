@@ -661,6 +661,36 @@ package body et_scripting_interactive_schematic is
 		end if;
 
 	end set_variant;
+
+
+	procedure set_property (device : in et_devices.type_name) is
+		su : type_selected_unit;
+	begin
+		-- If the properties window is already open, then the window
+		-- is moved to the foreground.
+		if not window_properties_is_open then
+		
+			-- Mark the whoe device as selected:
+			
+			su.device := locate_device (current_active_module, device);
+			-- su.unit does not matter here because we care about the device name only.
+			-- It is left as it is: no_element.
+			-- The drawing operation for units regards the whole device as
+			-- selected, thus highlighting all units.
+
+			-- We use the container for proposed units althrough there will be
+			-- only one element it it:
+			proposed_units.append (su);
+			selected_unit := proposed_units.first;
+
+			-- Open the properties window:
+			window_set_property;
+		else
+			-- Move the properties window to the foreground so that the operator
+			-- is notified about the already open properties window:
+			window_properties.window.present;
+		end if;
+	end set_property;
 	
 end et_scripting_interactive_schematic;
 

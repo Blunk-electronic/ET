@@ -1917,6 +1917,7 @@ package body et_canvas_schematic_units is
 		use et_schematic.type_devices;
 		device_name : constant string := to_string (key (su.device)); -- IC2
 	begin
+		
 		-- Properties of real devices can be changed.
 		-- Virtual devices (like GND symbols) can not be changed.
 		if is_real (su.device) then
@@ -1950,7 +1951,7 @@ package body et_canvas_schematic_units is
 					
 				when others => raise constraint_error;
 			end case;				
-					
+
 			pack_start (box, label);
 
 			-- show the old property:
@@ -1979,8 +1980,8 @@ package body et_canvas_schematic_units is
 
 	
 	procedure set_property (point : in type_point) is begin
-		-- If the properties window is already open, then
-		-- nothing happens here.
+		-- If the properties window is already open, then it
+		-- is moved to the foreground.
 		if not window_properties_is_open then
 			log (text => "setting property ...", level => log_threshold);
 			log_indentation_up;

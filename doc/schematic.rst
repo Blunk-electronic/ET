@@ -70,7 +70,7 @@ Devices and Units
 
 	.. code-block::
 
-		set variant IC1
+		set variant IC1 [S_0805]
 
 	Verb-Noun key sequence: s a
 	
@@ -81,8 +81,6 @@ Devices and Units
 
 		set value R1 [100R]
 		
-.. 	CS: set value R1
-
 	Verb-Noun key sequence: s v
 
 	
@@ -92,8 +90,6 @@ Devices and Units
 
 		set partcode R1 [R_PAC_S_0805_VAL_100R}
 
-.. 	CS: set partcode R1		
-		
 	Verb-Noun key sequence: s p
 
 	
@@ -103,8 +99,6 @@ Devices and Units
 
 		set purpose R1 [brightness]
 
-.. 	CS: set purpose R1
-		
 	Verb-Noun key sequence: s p
 
 	

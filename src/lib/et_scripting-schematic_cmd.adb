@@ -2324,6 +2324,22 @@ is
 
 			when VERB_SET =>
 				case noun is
+					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
+						case fields is
+							when 4 => device_name_missing;
+								
+							when 5 => -- like "set value/partcode/purpose IC1"
+								device_name := to_device_name (f (5));
+
+								if exists (current_active_module, device_name) then
+									set_property (device_name);
+								else
+									device_not_found;
+								end if;
+
+							when others => null;
+						end case;
+
 					when NOUN_VARIANT =>
 						case fields is
 							when 4 => device_name_missing;

@@ -783,11 +783,18 @@ package pac_canvas is
 	end record;
 	
 	window_properties : type_properties_window;
-
+	
 	-- Returns the status of the "open" flag.
 	-- True if the properties window is open.
 	-- False if the window is not open.
 	function window_properties_is_open return boolean;
+
+	-- This procedure must be called when the operator closes
+	-- the properties window. This is a null procedure, means
+	-- in schematic and layout are different things to do
+	-- in order to reset variables related to any properties.
+	procedure reset_properties_selection (
+		self : not null access type_view) is null;
 	
 	-- Here we display the property in its old state before changing it:
 	label_property_old	: gtk.label.gtk_label;
@@ -808,7 +815,8 @@ package pac_canvas is
 	
 private
 
-	-- Called when the operator closes the properties window:
+	-- Called when the operator closes the properties window
+	-- (for example with Alt-F4):
 	procedure close_window_properties (
 		self : access gtk_widget_record'class);
 	
@@ -816,7 +824,8 @@ private
 		cb_gtk_widget_void := close_window_properties'access;
 	-------
 	
-	-- Called when a key is pressed in the properties window:
+	-- Called when a key is pressed in the properties window.
+	-- Closes the window if the operator presses ESC.
 	function window_properties_key_event (
 		self	: access gtk_widget_record'class;
 		event	: gdk.event.gdk_event_key) 
