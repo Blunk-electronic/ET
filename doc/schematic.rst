@@ -4,13 +4,16 @@
 Schematic Editor
 ****************
 
-####################################
-Commands and Verb-Noun key sequences
-####################################
+
+.. |VNS| replace:: Verb-Noun key sequence:
 
 +++++++++++++++++
 Devices and Units
 +++++++++++++++++
+
+Commands and Verb-Noun key sequences
+------------------------------------
+
 
 #. Add device
 
@@ -18,8 +21,15 @@ Devices and Units
 
 		add device
 
-	Verb-Noun key sequence: a d
+	|VNS| a d
 
+	
+.. #. Rename device
+
+.. 	.. code-block::
+
+.. 		rename device R1 R9
+	
 	
 #. Delete unit
 
@@ -27,7 +37,7 @@ Devices and Units
 
 		delete unit IC1 [B]
 
-	Verb-Noun key sequence: del u
+	|VNS| del u
 	
 
 #. Drag unit
@@ -36,7 +46,7 @@ Devices and Units
 
 		drag unit IC1 [A]
 
-	Verb-Noun key sequence: d u
+	|VNS| d u
 
 
 #. Invoke unit
@@ -45,7 +55,7 @@ Devices and Units
 
 		invoke unit IC1 [B]
 
-	Verb-Noun key sequence: i u
+	|VNS| i u
 
 	
 #. Move unit
@@ -54,7 +64,7 @@ Devices and Units
 
 		move unit IC1 [A]
 
-	Verb-Noun key sequence: m u
+	|VNS| m u
 	
 
 #. Rotate unit
@@ -63,7 +73,7 @@ Devices and Units
 
 		rotate unit IC1 [A]
 
-	Verb-Noun key sequence: r u
+	|VNS| r u
 
 
 #. Set package variant
@@ -72,7 +82,7 @@ Devices and Units
 
 		set variant IC1 [S_0805]
 
-	Verb-Noun key sequence: s a
+	|VNS| s a
 	
 	
 #. Set value
@@ -81,7 +91,7 @@ Devices and Units
 
 		set value R1 [100R]
 		
-	Verb-Noun key sequence: s v
+	|VNS| s v
 
 	
 #. Set partcode
@@ -90,7 +100,7 @@ Devices and Units
 
 		set partcode R1 [R_PAC_S_0805_VAL_100R}
 
-	Verb-Noun key sequence: s p
+	|VNS| s p
 
 	
 #. Set purpose
@@ -99,7 +109,11 @@ Devices and Units
 
 		set purpose R1 [brightness]
 
-	Verb-Noun key sequence: s p
+	|VNS| s p
+
+	
+Placeholders for Name, Value, Partcode and Purpose
+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 	
 #. Move name
@@ -108,7 +122,7 @@ Devices and Units
 
 		move name IC1 [A]
 
-	Verb-Noun key sequence: m n
+	|VNS| m n
 		
 
 #. Move value
@@ -117,7 +131,7 @@ Devices and Units
 
 		move value IC1 [A]
 
-	Verb-Noun key sequence: m v
+	|VNS| m v
 		
 
 #. Move purpose
@@ -126,7 +140,7 @@ Devices and Units
 
 		move purpose RN1 [A]
 
-	Verb-Noun key sequence: m p
+	|VNS| m p
 	
 	
 #. Rotate name
@@ -135,7 +149,7 @@ Devices and Units
 
 		rotate name IC1 [A]
 
-	Verb-Noun key sequence: r n
+	|VNS| r n
 		
 
 #. Rotate value
@@ -144,7 +158,7 @@ Devices and Units
 
 		rotate value IC1 [A]
 
-	Verb-Noun key sequence: r v
+	|VNS| r v
 		
 
 #. Rotate purpose
@@ -153,7 +167,73 @@ Devices and Units
 
 		rotate purpose RN1 [A]
 
-	Verb-Noun key sequence: r p
+	|VNS| r p
 	
 
 		
++++++++++++++++++++
+Nets and Net Labels
++++++++++++++++++++
+
+Commands and Verb-Noun key sequences
+------------------------------------
+
+#. Draw net
+
+	|VNS| d n
+
+	change bend style: left mouse click or key b
+
+	
+#. Rename net
+
+	On all sheets:
+	
+	.. code-block::
+
+		rename net RESET_N RST_N
+
+.. 	On the current active sheet
+
+.. 	Where left click or space happens
+
+
+#. Drag net segment
+
+	|VNS| g n
+
+	
+#. Delete net segment
+
+	|VNS| del n
+
+	
+#. Delete whole net
+
+	.. code-block::
+
+		delete net RESET_N
+	
+	
+#. Place simple label
+
+	|VNS| p l
+
+	Rotate: right mouse click or key r
+	
+	
+#. Place tag label
+
+	|VNS| p L
+	
+	
+#. Move label
+
+	|VNS| m l
+
+	
+#. Delete label
+
+	|VNS| del l
+
+	
