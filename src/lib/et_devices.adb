@@ -319,7 +319,7 @@ package body et_devices is
 	function to_device_name (text_in : in string) return type_name is
 
 		-- justify given text_in on the left
-		text_in_justified : string (1 .. text_in'length) := text_in;
+		text_in_justified : string (1 .. text_in'length) := to_upper (text_in);
 	
 		r : type_name := (
 				prefix		=> type_prefix.to_bounded_string(""),

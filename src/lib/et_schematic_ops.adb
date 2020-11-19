@@ -96,9 +96,9 @@ package body et_schematic_ops is
 		raise constraint_error;
 	end;
 
-	procedure net_not_found (name : in et_general.type_net_name.bounded_string) is begin
-		log (ERROR, "net " & enclose_in_quotes (to_string (name)) & " not found !", console => true);
-		raise constraint_error;
+	procedure net_not_found (name : in type_net_name.bounded_string) is begin
+		raise semantic_error_1 with
+			"ERROR ! Net " & enclose_in_quotes (to_string (name)) & " not found !";
 	end;
 
 	procedure submodule_port_not_found (name : in et_general.type_net_name.bounded_string) is begin

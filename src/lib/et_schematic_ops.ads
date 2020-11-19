@@ -73,7 +73,7 @@ package et_schematic_ops is
 	procedure relative_rotation_invalid;
 	procedure netchanger_not_found (index : in et_submodules.type_netchanger_id);
 	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string);	
-	procedure net_not_found (name : in et_general.type_net_name.bounded_string);
+	procedure net_not_found (name : in type_net_name.bounded_string);
 	procedure assembly_variant_not_found (variant : in et_general.type_variant_name.bounded_string);
 
 	procedure unit_not_found (name : in type_unit_name.bounded_string);

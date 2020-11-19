@@ -278,7 +278,7 @@ package body et_general is
 	end check_net_name_characters;
 	
 	function to_net_name (net_name : in string) return type_net_name.bounded_string is begin
-		return type_net_name.to_bounded_string (net_name);
+		return type_net_name.to_bounded_string (to_upper (net_name));
 	end to_net_name;
 	
 	function to_string (net_name : in type_net_name.bounded_string) return string is begin
