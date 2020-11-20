@@ -2232,20 +2232,26 @@ package body et_schematic_ops is
 
 		log_indentation_up;
 
-		-- Do nothing if old and new name are the same:
+		-- The old and new name must not be the same:
 		if device_name_after /= device_name_before then
-		
-			-- locate module
-			module_cursor := locate_module (module_name);
 
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> query_devices'access);
+			-- The old and new prefix must be the same in order to
+			-- prevent an inadvertently category change:
+			if same_prefix (device_name_after, device_name_before) then
+			
+				-- locate module
+				module_cursor := locate_module (module_name);
 
+				update_element (
+					container	=> generic_modules,
+					position	=> module_cursor,
+					process		=> query_devices'access);
+
+			else
+				raise semantic_error_1 with "ERROR: Changing the prefix is not allowed !";
+			end if;
 		else
-			raise semantic_error_1 with
-				"ERROR: Old and new device name are equal !";
+			raise semantic_error_1 with "ERROR: Old and new device name are equal !";
 		end if;
 		
 		log_indentation_down;

@@ -238,13 +238,20 @@ package et_schematic_ops is
 	procedure dragging_not_possible (
 		port 		: in string;
 		position	: in et_coordinates.type_position);
-	
+
+	-- Renames a device.
+	-- Raises exception if name before equals name after.
+	-- Raises exception if prefix changes. For example renaming from
+	-- R1 to C1 is forbidden as this would change the device category.
 	procedure rename_device (
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name_before	: in type_name; -- IC1
 		device_name_after	: in type_name; -- IC23
 		log_threshold		: in type_log_level);
 
+	-- CS procedure rename_device that takes a module cursor and a device 
+	-- cursor for device_name_before.
+	
 	procedure set_value (
 	-- Sets the value of a device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

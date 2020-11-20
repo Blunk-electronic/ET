@@ -1812,7 +1812,7 @@ package body et_canvas_schematic_units is
 	end rotate_placeholder;
 
 
--- SET PROPERTIES SUCH AS VALUE, PURPOSE, PARCODE
+-- SET PROPERTIES SUCH AS NAME, VALUE, PURPOSE, PARCODE
 
 	-- Called when the operator presses ENTER after typing a property in
 	-- the properties window.
@@ -1822,11 +1822,10 @@ package body et_canvas_schematic_units is
 		su : type_selected_unit := element (selected_unit);
 
 		use et_schematic.type_devices;
-		--device_name : constant string := to_string (key (su.device)); -- IC2
-		
-		value : type_value.bounded_string;
-		purpose : type_purpose.bounded_string;
-		variant : et_devices.type_variant_name.bounded_string;
+
+		value	: type_value.bounded_string;
+		purpose	: type_purpose.bounded_string;
+		variant	: et_devices.type_variant_name.bounded_string;
 
 		use et_material;
 		partcode : type_partcode.bounded_string;
@@ -1842,6 +1841,16 @@ package body et_canvas_schematic_units is
 		
 	begin -- property_entered
 		case noun is
+			when NOUN_DEVICE =>
+				rename_device (
+					module_name 		=> key (current_active_module),
+					device_name_before	=> key (su.device), -- IC2
+					device_name_after	=> to_device_name (self.get_text), -- IC3
+					log_threshold		=> log_threshold + 1);
+
+				-- CS use rename_device that takes a module cursor and a device cursor
+				-- for device_name_before
+				
 			when NOUN_PARTCODE =>
 				partcode := to_partcode (self.get_text);
 
@@ -1933,6 +1942,10 @@ package body et_canvas_schematic_units is
 			gtk_new (entry_property_old);
 			
 			case noun is
+				when NOUN_DEVICE =>
+					gtk_new (label, "Name of " & device_name);
+					set_property_before (device_name); -- IC2
+
 				when NOUN_PARTCODE =>
 					gtk_new (label, "Partcode of " & device_name);
 					set_property_before (et_material.to_string (get_partcode (su.device)));
@@ -1973,8 +1986,7 @@ package body et_canvas_schematic_units is
 			
 			window_properties.window.show_all;
 		else
-			set_status ("ERROR: Device " & device_name 
-				& " is virtual and does not have this property !");
+			set_status ("ERROR: Device " & device_name & " is virtual !");
 		end if;
 	end window_set_property;
 

@@ -1660,6 +1660,56 @@ package body et_canvas_schematic is
 			end case;
 			
 		end set;
+
+		procedure rename is begin
+			case key is
+				-- EVALUATE KEY FOR NOUN:
+				when GDK_LC_d =>
+					noun := NOUN_DEVICE;
+					set_status (et_canvas_schematic_units.status_rename);
+
+				when GDK_LC_s => -- rename strand
+					noun := NOUN_NET;
+					--noun := NOUN_PURPOSE;
+					--set_status (et_canvas_schematic_units.status_set_purpose);
+				
+				when GDK_LC_n => -- rename all strands on current sheet
+					noun := NOUN_NET;
+					--set_status (et_canvas_schematic_units.status_set_value);
+
+				when GDK_N => -- rename everywhere: all strands on all sheets
+					noun := NOUN_NET;
+					--noun := NOUN_VARIANT;
+					--set_status (et_canvas_schematic_units.status_set_variant);
+					
+				-- If space pressed, then the operator wishes to operate via keyboard:	
+				when GDK_Space =>
+					case noun is
+						when NOUN_DEVICE =>
+							if not clarification_pending then
+								set_property (cursor_main.position);
+							else
+								set_property_selected_unit;
+							end if;
+							
+						when others => null;
+					end case;
+
+				-- If page down pressed, then the operator is clarifying:
+				when GDK_page_down =>
+					case noun is
+						when NOUN_DEVICE =>
+							if clarification_pending then
+								clarify_unit;
+							end if;
+
+						when others => null;							
+					end case;
+					
+				when others => status_noun_invalid;
+			end case;
+
+		end rename;
 		
 	begin -- evaluate_key
 		
@@ -1762,6 +1812,10 @@ package body et_canvas_schematic is
 									verb := VERB_MOVE;
 									status_enter_noun;
 
+								when GDK_LC_n =>
+									verb := VERB_RENAME;
+									status_enter_noun;
+									
 								when GDK_LC_p =>
 									verb := VERB_PLACE;
 									status_enter_noun;
@@ -1795,6 +1849,7 @@ package body et_canvas_schematic is
 								when VERB_INVOKE	=> invoke;
 								when VERB_MOVE		=> move;
 								when VERB_PLACE		=> place;
+								when VERB_RENAME	=> rename;
 								when VERB_ROTATE	=> rotate;
 								when VERB_SET		=> set;
 								when others => null; -- CS
@@ -1889,7 +1944,6 @@ package body et_canvas_schematic is
 
 			case verb is
 				when VERB_ADD =>
-
 					case noun is
 						when NOUN_DEVICE =>
 
@@ -1926,7 +1980,6 @@ package body et_canvas_schematic is
 					end case;
 				
 				when VERB_DELETE =>
-
 					case noun is
 						when NOUN_LABEL =>
 							if not clarification_pending then
@@ -1953,7 +2006,6 @@ package body et_canvas_schematic is
 					end case;
 
 				when VERB_DRAG =>
-
 					case noun is
 						when NOUN_UNIT =>
 							if not unit_move.being_moved then
@@ -2012,7 +2064,6 @@ package body et_canvas_schematic is
 					end case;
 					
 				when VERB_DRAW =>
-
 					case noun is
 						when NOUN_NET =>
 
@@ -2097,7 +2148,6 @@ package body et_canvas_schematic is
 					end case;
 
 				when VERB_INVOKE =>
-
 					case noun is
 
 						when NOUN_UNIT =>
@@ -2122,7 +2172,6 @@ package body et_canvas_schematic is
 					end case;
 					
 				when VERB_MOVE =>
-					
 					case noun is
 						when NOUN_LABEL =>
 							if not label.being_moved then
@@ -2258,7 +2307,6 @@ package body et_canvas_schematic is
 					end case;
 
 				when VERB_PLACE =>
-
 					case noun is
 
 						when NOUN_LABEL =>
@@ -2283,11 +2331,21 @@ package body et_canvas_schematic is
 							end if;
 							
 						when others => null;
-							
+					end case;
+
+				when VERB_RENAME =>
+					case noun is
+						when NOUN_DEVICE =>
+							if not clarification_pending then
+								set_property (point);
+							else
+								set_property_selected_unit;
+							end if;
+
+						when others => null;
 					end case;
 					
 				when VERB_ROTATE =>
-
 					case noun is
 						when NOUN_NAME =>
 							if not clarification_pending then
@@ -2328,7 +2386,6 @@ package body et_canvas_schematic is
 					end case;
 
 				when VERB_SET =>
-
 					case noun is
 						when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
 							if not clarification_pending then
@@ -2449,7 +2506,17 @@ package body et_canvas_schematic is
 							
 						when others => null;
 					end case;
-					
+
+				when VERB_RENAME =>
+					case noun is
+						when NOUN_DEVICE =>
+							if clarification_pending then
+								clarify_unit;
+							end if;
+
+						when others => null;							
+					end case;
+							
 				when VERB_ROTATE =>
 					case noun is
 						when NOUN_NAME | NOUN_VALUE | NOUN_PURPOSE => 

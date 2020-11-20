@@ -30,6 +30,8 @@ Commands and Verb-Noun key sequences
 
 		rename device R1 R9
 	
+	|VNS| n d
+	
 	
 #. Delete unit
 

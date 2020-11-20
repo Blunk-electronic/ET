@@ -161,7 +161,7 @@ package et_devices is
 	prefix_length_max : constant natural := 10; -- CS: there is no reason for longer prefixes.
 	package type_prefix is new generic_bounded_length (prefix_length_max);
 	use type_prefix;
-
+	
 	function to_string (prefix : in type_prefix.bounded_string) return string;
 	function to_prefix (prefix : in string) return type_prefix.bounded_string;
 
@@ -204,6 +204,9 @@ package et_devices is
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
 
+	-- Returns true if the prefixes of left and right are equal:
+	function same_prefix (left, right : in type_name) return boolean;
+	
 	-- Converts a string like "IC303" to a composite type_name.
 	-- Raises constraint error if prefix contains invalid characters.
 	-- Raises constraint error if id contains non-digit characters.

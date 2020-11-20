@@ -443,9 +443,16 @@ package et_canvas_schematic_units is
 
 
 
--- SET VALUE AND PURPOSE
+-- SET PROPERTIES (value, partcode, purpose, name)
 
 	-- to be output in the status bar:
+	status_rename : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to rename device." 
+		& status_hint_for_abort;
+
 	status_set_value : constant string := 
 		status_click_left 
 		& "or "

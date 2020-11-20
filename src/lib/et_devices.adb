@@ -259,10 +259,9 @@ package body et_devices is
 
 
 
-	
-	
+
+
 	function to_string (prefix : in type_prefix.bounded_string) return string is
-	-- returns the given prefix as string
 	begin
 		return type_prefix.to_string (prefix); -- leading space not allowd !
 	end to_string;
@@ -316,6 +315,14 @@ package body et_devices is
 		return type_name_index'value (index);
 	end;
 
+	function same_prefix (left, right : in type_name) return boolean is begin
+		if prefix (left) = prefix (right) then
+			return true;
+		else
+			return false;
+		end if;
+	end same_prefix;
+	
 	function to_device_name (text_in : in string) return type_name is
 
 		-- justify given text_in on the left
