@@ -663,61 +663,95 @@ package body et_canvas_schematic_nets is
 			log_threshold	=> log_threshold + 1);
 
 		-- Since this procedure is called by several schematic operations,
-		-- we must test the current noun.
-		-- CS: It might be important in the future to test the current verb too.
-		
-		case noun is
-			when NOUN_NET =>
-				
-				-- evaluate the number of segments found here:
-				case length (proposed_segments) is
-					when 0 =>
-						reset_request_clarification;
-						reset_segment;
+		-- we must test the current verb and noun:
+
+		case verb is
+			when VERB_DRAG =>
+				case noun is
+					when NOUN_NET =>
 						
-					when 1 =>
-						segment.being_moved := true;
-						selected_segment := proposed_segments.first;
+						-- evaluate the number of segments found here:
+						case length (proposed_segments) is
+							when 0 =>
+								reset_request_clarification;
+								reset_segment;
+								
+							when 1 =>
+								segment.being_moved := true;
+								selected_segment := proposed_segments.first;
 
-						reset_request_clarification;
+								reset_request_clarification;
 
-						set_status (status_move);
-						
-					when others =>
-						set_request_clarification;
+								set_status (status_move);
+								
+							when others =>
+								set_request_clarification;
 
-						-- preselect the first segment
-						selected_segment := proposed_segments.first;
+								-- preselect the first segment
+								selected_segment := proposed_segments.first;
+						end case;
+
+					when others => null;
 				end case;
 
-				
-			when NOUN_LABEL =>
+			when VERB_PLACE =>
+				case noun is
+					when NOUN_LABEL =>
 
-				-- evaluate the number of segments found here:
-				case length (proposed_segments) is
-					when 0 =>
-						reset_request_clarification;
-						reset_label;
-						
-					when 1 =>
-						label.being_moved := true;
-						selected_segment := proposed_segments.first;
+						-- evaluate the number of segments found here:
+						case length (proposed_segments) is
+							when 0 =>
+								reset_request_clarification;
+								reset_label;
+								
+							when 1 =>
+								label.being_moved := true;
+								selected_segment := proposed_segments.first;
 
-						reset_request_clarification;
+								reset_request_clarification;
 
-						case label.appearance is
-							when SIMPLE	=> set_status (status_place_label_simple);
-							when TAG	=> set_status (status_place_label_tag);
+								case label.appearance is
+									when SIMPLE	=> set_status (status_place_label_simple);
+									when TAG	=> set_status (status_place_label_tag);
+								end case;
+								
+							when others =>
+								set_request_clarification;
+
+								-- preselect the first segment
+								selected_segment := proposed_segments.first;
+						end case;
+
+					when others => null;
+				end case;
+
+			when VERB_RENAME =>
+				case noun is
+					when NOUN_NET => 
+
+						-- evaluate the number of segments found here:
+						case length (proposed_segments) is
+							when 0 =>
+								reset_request_clarification;
+								reset_segment;
+								
+							when 1 =>
+								selected_segment := proposed_segments.first;
+
+								reset_request_clarification;
+
+								--set_status (status_move);
+								
+							when others =>
+								set_request_clarification;
+
+								-- preselect the first segment
+								selected_segment := proposed_segments.first;
 						end case;
 						
-					when others =>
-						set_request_clarification;
-
-						-- preselect the first segment
-						selected_segment := proposed_segments.first;
+					when others => null;
 				end case;
-
-
+				
 			when others => null;
 		end case;
 		

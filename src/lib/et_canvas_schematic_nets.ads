@@ -324,7 +324,33 @@ package et_canvas_schematic_nets is
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
 
+
 	
+-- RENAME NET
+
+	status_rename_net_strand : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to rename a single strand." 
+		& status_hint_for_abort;	
+
+	status_rename_net_sheet : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to rename all strands on this sheet." 
+		& status_hint_for_abort;	
+
+	status_rename_net_everywhere : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to rename all strands on all sheets." 
+		& status_hint_for_abort;	
+
+	
+	rename_net_scope : type_net_scope; -- strand, sheet, everywhere
 	
 end et_canvas_schematic_nets;
 

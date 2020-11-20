@@ -1661,7 +1661,9 @@ package body et_canvas_schematic is
 			
 		end set;
 
-		procedure rename is begin
+		procedure rename is 
+			use et_schematic_ops.nets;
+		begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
 				when GDK_LC_d =>
@@ -1670,17 +1672,18 @@ package body et_canvas_schematic is
 
 				when GDK_LC_s => -- rename strand
 					noun := NOUN_NET;
-					--noun := NOUN_PURPOSE;
-					--set_status (et_canvas_schematic_units.status_set_purpose);
+					rename_net_scope := STRAND;
+					set_status (et_canvas_schematic_nets.status_rename_net_strand);
 				
 				when GDK_LC_n => -- rename all strands on current sheet
 					noun := NOUN_NET;
-					--set_status (et_canvas_schematic_units.status_set_value);
+					rename_net_scope := SHEET;
+					set_status (et_canvas_schematic_nets.status_rename_net_sheet);
 
 				when GDK_N => -- rename everywhere: all strands on all sheets
 					noun := NOUN_NET;
-					--noun := NOUN_VARIANT;
-					--set_status (et_canvas_schematic_units.status_set_variant);
+					rename_net_scope := EVERYWHERE;
+					set_status (et_canvas_schematic_nets.status_rename_net_everywhere);
 					
 				-- If space pressed, then the operator wishes to operate via keyboard:	
 				when GDK_Space =>
@@ -1690,6 +1693,13 @@ package body et_canvas_schematic is
 								set_property (cursor_main.position);
 							else
 								set_property_selected_unit;
+							end if;
+
+						when NOUN_NET =>
+							if not clarification_pending then
+								find_segments (cursor_main.position);
+							else
+								reset_request_clarification;
 							end if;
 							
 						when others => null;
@@ -1703,6 +1713,11 @@ package body et_canvas_schematic is
 								clarify_unit;
 							end if;
 
+						when NOUN_NET =>
+							if clarification_pending then
+								clarify_net_segment;
+							end if;
+							
 						when others => null;							
 					end case;
 					
