@@ -85,6 +85,10 @@ package et_canvas_schematic_nets is
 
 	-- Returns the name of the net of the selected_segment:
 	function selected_net return type_net_name.bounded_string;
+	-- CS rename to get_selected_net
+
+	-- Returns the position of the strand of the selected segment:
+	function get_strand_position return et_coordinates.type_position;
 	
 	procedure clear_proposed_segments;
 	
@@ -236,9 +240,14 @@ package et_canvas_schematic_nets is
 		& status_press_space
 		& "to rename all strands on all sheets." 
 		& status_hint_for_abort;	
-	
-	rename_net_scope : type_net_scope; -- strand, sheet, everywhere
 
+	type type_net_rename is record
+		scope		: type_net_scope := SHEET; -- strand, sheet, everywhere
+		-- position	: type_point; -- x/y where net segment was selected
+	end record;
+
+	net_rename : type_net_rename;
+		
 	procedure window_set_property;
 	--procedure rename_selected_net;
 

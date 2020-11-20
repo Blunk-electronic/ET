@@ -69,8 +69,8 @@ package et_schematic_ops.nets is
 	-- Renames a net. The scope determines whether to rename a certain strand,
 	-- all strands on a certain sheet or on all sheets.
 	-- CS If a particular strand on a sheet is to be renamed, the argument "place"
-	-- must provide sheet and x/y start position of strand. In the future x/y can be
-	-- any point on any segment of the strand.
+	-- must provide sheet and x/y start position of strand. 
+	-- CS: In the future x/y can be any point on any segment of the strand.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name_before	: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_name_after	: in et_general.type_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	

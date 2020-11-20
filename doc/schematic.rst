@@ -189,15 +189,30 @@ Commands and Verb-Noun key sequences
 	
 #. Rename net
 
-	On all sheets:
+	- A strand on the current sheet:
 	
+	|VNS| n s
+
+
+	- All strands on the current sheet:
+	
+	|VNS| n n
+
+
+	- All strands on a specific sheet:
+
+	.. code-block::
+
+		rename net RESET_N RST_N 5
+
+	
+	- All strands on all sheets:
+
 	.. code-block::
 
 		rename net RESET_N RST_N
-
-.. 	On the current active sheet
-
-.. 	Where left click or space happens
+	
+	|VNS| n N
 
 
 #. Drag net segment

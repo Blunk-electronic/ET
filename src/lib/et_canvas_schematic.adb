@@ -1669,17 +1669,17 @@ package body et_canvas_schematic is
 
 				when GDK_LC_s => -- rename strand
 					noun := NOUN_NET;
-					rename_net_scope := STRAND;
+					net_rename.scope := STRAND;
 					set_status (et_canvas_schematic_nets.status_rename_net_strand);
 				
 				when GDK_LC_n => -- rename all strands on current sheet
 					noun := NOUN_NET;
-					rename_net_scope := SHEET;
+					net_rename.scope := SHEET;
 					set_status (et_canvas_schematic_nets.status_rename_net_sheet);
 
 				when GDK_N => -- rename everywhere: all strands on all sheets
 					noun := NOUN_NET;
-					rename_net_scope := EVERYWHERE;
+					net_rename.scope := EVERYWHERE;
 					set_status (et_canvas_schematic_nets.status_rename_net_everywhere);
 					
 				-- If space pressed, then the operator wishes to operate via keyboard:	
@@ -1696,7 +1696,6 @@ package body et_canvas_schematic is
 							if not clarification_pending then
 								find_segments (cursor_main.position);
 							else
-								--rename_selected_net;
 								et_canvas_schematic_nets.window_set_property;
 							end if;
 							

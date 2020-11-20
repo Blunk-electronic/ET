@@ -130,7 +130,13 @@ package body et_canvas_schematic_nets is
 	begin
 		return key (ss.net);
 	end selected_net;
-	
+
+	function get_strand_position return et_coordinates.type_position is
+		ss : constant type_selected_segment := element (selected_segment);
+	begin
+		return element (ss.strand).position;
+	end get_strand_position;
+		
 	procedure clear_proposed_segments is begin
 		clear (proposed_segments);
 		selected_segment := pac_proposed_segments.no_element;
@@ -616,10 +622,35 @@ package body et_canvas_schematic_nets is
 			clear_proposed_segments;
 			redraw;
 		end clean_up;
+
+		position : et_coordinates.type_position;
 		
 	begin -- property_entered
 		case noun is
-			when NOUN_NET => null;
+			when NOUN_NET =>
+				case net_rename.scope is
+					when STRAND =>
+						position := get_strand_position;
+							
+					when SHEET =>
+						position := to_position (
+										point => origin, -- don't care
+										sheet => current_active_sheet); -- sheet number
+
+					when EVERYWHERE =>
+						position := to_position (
+										point => origin, -- don't care
+										sheet => 1); -- don't care
+				end case;
+
+				rename_net (
+					module_name		=> key (current_active_module),
+					net_name_before	=> selected_net, -- RESET_N
+					net_name_after	=> to_net_name (self.get_text), -- RST_N
+					scope			=> net_rename.scope,
+					place			=> position,
+					log_threshold	=> log_threshold + 1);
+
 				
 			when others => raise constraint_error;
 		end case;
@@ -677,7 +708,7 @@ package body et_canvas_schematic_nets is
 		pack_start (box, entry_property_old);
 
 		-- show the new property (will be entered by the operator later):
-		gtk_new (label_property_new, "new:");
+		gtk_new (label_property_new, "new:"); -- CS some info or warning about the scope ?
 		pack_start (box, label_property_new);
 		
 		gtk_new (gentry);
@@ -866,9 +897,8 @@ package body et_canvas_schematic_nets is
 								selected_segment := proposed_segments.first;
 
 								reset_request_clarification;
-
+								
 								window_set_property;
-								--rename_selected_net;
 								
 							when others =>
 								set_request_clarification;

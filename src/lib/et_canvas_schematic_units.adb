@@ -1925,8 +1925,7 @@ package body et_canvas_schematic_units is
 
 		use et_schematic.type_devices;
 		device_name : constant string := to_string (key (su.device)); -- IC2
-	begin
-		
+	begin		
 		-- Properties of real devices can be changed.
 		-- Virtual devices (like GND symbols) can not be changed.
 		if is_real (su.device) then

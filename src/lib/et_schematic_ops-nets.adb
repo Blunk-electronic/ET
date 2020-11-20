@@ -100,11 +100,6 @@ package body et_schematic_ops.nets is
 	end on_segment;
 	
 	procedure rename_net (
-	-- Renames a net. The scope determines whether to rename a certain strand,
-	-- all strands on a certain sheet or on all sheets.
-	-- CS If a particular strand on a sheet is to be renamed, the argument "place"
-	-- must provide sheet and x/y start position of strand. In the future x/y can be
-	-- any point on any segment of the strand. See comment in procedure locate_strand.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name_before	: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_name_after	: in et_general.type_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
@@ -184,6 +179,9 @@ package body et_schematic_ops.nets is
 				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
 				strand : et_schematic.type_strand;
 			begin
+				log (text => "collecting strands ...", level => log_threshold + 1);
+				log_indentation_up;
+				
 				-- Look at the strands that are on the targeted sheet.
 				while strand_cursor /= type_strands.no_element loop
 					if sheet (element (strand_cursor).position) = sheet (place) then
@@ -191,12 +189,17 @@ package body et_schematic_ops.nets is
 						-- append strand to temporarily collection of strands on this sheet
 						append (strands_on_sheet, element (strand_cursor));
 
+						log (text => "strand at" & to_string (element (strand_cursor).position),
+							 level => log_threshold + 2);
+
 						-- delete strand in old net
 						delete (net.strands, strand_cursor);
 					end if;
+					
 					next (strand_cursor);
 				end loop;
 
+				log_indentation_down;
 			end collect_strands_of_sheet;
 
 			procedure move_strands (
@@ -317,7 +320,7 @@ package body et_schematic_ops.nets is
 					
 	begin -- rename_net
 		
-		log (text => "module " & to_string (module_name) &
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 			 " renaming net " & to_string (net_name_before) &
 			 " to " & to_string (net_name_after),
 			level => log_threshold);
