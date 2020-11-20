@@ -62,9 +62,9 @@ package body et_schematic_ops is
 	end device_not_found;
 
 	procedure device_already_exists (name : in type_name) is begin
-		log (ERROR, "device " & to_string (name) & " already exists !", console => true);
-		raise constraint_error;
-	end;
+		raise semantic_error_1
+			with "ERROR: Device " & to_string (name) & " already exists !";
+	end device_already_exists;
 
 -- 	procedure device_prefix_invalid (name : in type_name) is begin
 -- 		log (message_warning & "prefix of device name " & to_string (name) & " invalid !");
@@ -2042,7 +2042,7 @@ package body et_schematic_ops is
 	end ports_at_place;
 	
 
-	-- Renames the device ports of the net segements affected by a rename operation.
+	-- Renames the device ports of the net segments affected by a rename operation.
 	-- Leaves the unit and port names as they are because this is solely about device names.
 	procedure rename_ports (
 		module			: in pac_generic_modules.cursor;		-- the module
@@ -2075,8 +2075,12 @@ package body et_schematic_ops is
 								procedure query_ports (segment : in out type_net_segment) is
 								-- Tests device ports of given segment if their device name matches the given device name.
 								-- On match replace the old device name by the new device name.
+
+									port_cursor : type_ports_device.cursor := segment.ports_devices.first;
 									
-									procedure query_port (port_cursor : in type_ports_device.cursor) is begin
+								begin -- query_ports
+									while port_cursor /= type_ports_device.no_element loop
+
 										if element (port_cursor).device_name = device_before then -- IC1
 
 											replace_element (
@@ -2088,10 +2092,9 @@ package body et_schematic_ops is
 													port_name 	=> element (port_cursor).port_name) -- unchanged
 												);
 										end if;
-									end query_port;
-									
-								begin -- query_ports
-									iterate (segment.ports_devices, query_port'access); -- loop in portlist of given segment
+										
+										next (port_cursor);
+									end loop;
 								end query_ports;
 								
 							begin -- query_segment
@@ -2155,7 +2158,6 @@ package body et_schematic_ops is
 	end rename_ports;
 	
 	procedure rename_device (
-	-- Renames the given device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name_before	: in type_name; -- IC1
 		device_name_after	: in type_name; -- IC23
@@ -2223,21 +2225,29 @@ package body et_schematic_ops is
 		end query_devices;
 
 	begin -- rename_device
-		log (text => "module " & to_string (module_name) &
-			" renaming " & to_string (device_name_before) & " to " & 
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+			" renaming device " & to_string (device_name_before) & " to " & 
 			to_string (device_name_after),
 			level => log_threshold);
 
 		log_indentation_up;
+
+		-- Do nothing if old and new name are the same:
+		if device_name_after /= device_name_before then
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
+			-- locate module
+			module_cursor := locate_module (module_name);
 
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> query_devices'access);
 
+		else
+			raise semantic_error_1 with
+				"ERROR: Old and new device name are equal !";
+		end if;
+		
 		log_indentation_down;
 	end rename_device;
 

@@ -240,7 +240,6 @@ package et_schematic_ops is
 		position	: in et_coordinates.type_position);
 	
 	procedure rename_device (
-	-- Renames the given device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name_before	: in type_name; -- IC1
 		device_name_after	: in type_name; -- IC23

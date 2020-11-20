@@ -24,11 +24,11 @@ Commands and Verb-Noun key sequences
 	|VNS| a d
 
 	
-.. #. Rename device
+#. Rename device
 
-.. 	.. code-block::
+	.. code-block::
 
-.. 		rename device R1 R9
+		rename device R1 R9
 	
 	
 #. Delete unit
