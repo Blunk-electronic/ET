@@ -791,7 +791,7 @@ package pac_canvas is
 
 	-- This procedure must be called when the operator closes
 	-- the properties window. This is a null procedure, means
-	-- in schematic and layout are different things to do
+	-- in schematic, layout and other canvas are different things to do
 	-- in order to reset variables related to any properties.
 	procedure reset_properties_selection (
 		self : not null access type_view) is null;

@@ -857,11 +857,8 @@ package body et_canvas_schematic is
 							else
 								delete_selected_unit;
 							end if;
-
 							
-						when others =>
-							null;
-							
+						when others => null;							
 					end case;
 
 				-- If page down pressed, then the operator is clarifying:
@@ -1699,7 +1696,8 @@ package body et_canvas_schematic is
 							if not clarification_pending then
 								find_segments (cursor_main.position);
 							else
-								reset_request_clarification;
+								--rename_selected_net;
+								et_canvas_schematic_nets.window_set_property;
 							end if;
 							
 						when others => null;
@@ -2580,7 +2578,8 @@ package body et_canvas_schematic is
 	begin
 		--put_line ("reset selection");
 		clear_proposed_units;
-
+		clear_proposed_segments;
+		
 		-- CS reset other stuff ?
 	end reset_properties_selection;
 	

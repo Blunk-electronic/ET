@@ -38,9 +38,16 @@
 with ada.text_io;					use ada.text_io;
 with ada.strings;					use ada.strings;
 with ada.characters.handling;
+with ada.exceptions;				use ada.exceptions;
+
+with gtk.window;
+with gtk.box;
+with gtk.label;
+with gtk.gentry;
+
 with et_geometry;					use et_geometry;
 with et_canvas_schematic;			use et_canvas_schematic;
-with et_modes.schematic;
+with et_modes.schematic;			use et_modes.schematic;
 
 package body et_canvas_schematic_nets is
 
@@ -595,6 +602,126 @@ package body et_canvas_schematic_nets is
 	end valid_for_net_segment;
 
 
+	-- Called when the operator presses ENTER after typing a property in
+	-- the properties window.
+	-- The properties window will remain open until the operator enters 
+	-- a correct property. The status bar of the window shows the error message:	
+	procedure property_entered (self : access gtk.gentry.gtk_entry_record'class) is 
+
+		procedure clean_up is begin
+			properties_confirmed := true;
+			window_properties.window.destroy;
+			reset_request_clarification;
+			status_clear;
+			clear_proposed_segments;
+			redraw;
+		end clean_up;
+		
+	begin -- property_entered
+		case noun is
+			when NOUN_NET => null;
+				
+			when others => raise constraint_error;
+		end case;
+
+		-- If everything was fine, close the window and clean up.
+		-- If one of the operations above has raised an exception then
+		-- nothing will be cleaned up and the window will remain until the
+		-- operator enters a correct property.
+		clean_up;
+		
+		-- Whatever goes wrong, output the message in the status bar
+		-- of the properties window:
+		exception when event: others =>
+			set_status_properties (exception_message (event));
+			
+	end property_entered;
+	
+
+	procedure window_set_property is
+		use gtk.window;
+		use gtk.box;
+		use gtk.label;
+		use gtk.gentry;
+		
+		box : gtk_vbox;
+		label : gtk_label;
+		gentry : gtk_gentry;
+		
+		net_name : constant string := to_string (selected_net); -- RESET_N
+	begin
+		build_window_properties;
+
+		window_properties.window.set_default_size (200, 100);
+		window_properties.window.set_resizable (false);
+		
+		gtk_new_vbox (box);
+		add (window_properties.window, box);
+
+		-- Prepare displaying the old state of the property:
+		gtk_new (entry_property_old);
+		
+		case noun is
+			when NOUN_NET =>
+				gtk_new (label, "Net name");
+				set_property_before (net_name);
+				
+			when others => raise constraint_error;
+		end case;				
+
+		pack_start (box, label);
+
+		-- show the old property:
+		gtk_new (label_property_old, "old:");
+		pack_start (box, label_property_old);
+		pack_start (box, entry_property_old);
+
+		-- show the new property (will be entered by the operator later):
+		gtk_new (label_property_new, "new:");
+		pack_start (box, label_property_new);
+		
+		gtk_new (gentry);
+		pack_start (box, gentry);
+		gentry.on_activate (property_entered'access);
+		gentry.grab_focus;
+
+		gtk_new (label_properties_status);
+		pack_start (box, label_properties_status);
+		
+		window_properties.window.show_all;
+
+	end window_set_property;
+
+	
+	--procedure rename_selected_net is
+		--use et_schematic_ops.nets;
+	--begin
+		--case rename_net_scope is
+			--when STRAND =>
+				--log (text => "renaming single strand after clarification ...", level => log_threshold);
+				--log_indentation_up;
+
+				--window_set_property;
+				----rename_net (
+					----module_name		=> key (current_active_module),
+					----net_name_before	=> selected_net,
+					
+			--when SHEET =>
+				--log (text => "renaming all strands on current sheet after clarification ...", level => log_threshold);
+				--log_indentation_up;
+				
+			--when EVERYWHERE =>
+				--log (text => "renaming all strands on current sheet after clarification ...", level => log_threshold);
+				--log_indentation_up;
+				
+		--end case;
+			
+		
+		--log_indentation_down;
+	--end rename_selected_net;
+
+
+	
 -- DRAG/MOVE NET SEGMENT
 
 	procedure reset_segment is begin
@@ -740,7 +867,8 @@ package body et_canvas_schematic_nets is
 
 								reset_request_clarification;
 
-								--set_status (status_move);
+								window_set_property;
+								--rename_selected_net;
 								
 							when others =>
 								set_request_clarification;
@@ -1372,7 +1500,6 @@ package body et_canvas_schematic_nets is
 		
 		reset_label;
 	end finalize_move_label;
-
 	
 end et_canvas_schematic_nets;
 

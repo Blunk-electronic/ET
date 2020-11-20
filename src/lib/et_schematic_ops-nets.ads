@@ -78,6 +78,8 @@ package et_schematic_ops.nets is
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+	-- CS procedure rename_net that takes a module cursor
+	
 	procedure delete_net (
 	-- Deletes a net. The scope determines whether to delete a certain strand,
 	-- all strands on a certain sheet or on all sheets.
