@@ -1783,6 +1783,7 @@ is
 
 		device_name		: et_devices.type_name;
 		unit_name		: type_unit_name.bounded_string;
+		net_name		: type_net_name.bounded_string;
 		
 		procedure device_name_missing is begin
 			log (text => "Device name missing !", level => log_threshold);
@@ -1820,6 +1821,10 @@ is
 		procedure unit_not_on_this_sheet is begin
 			set_status ("ERROR: Unit " & to_string (unit_name) & " is not on this sheet !");
 		end unit_not_on_this_sheet;
+
+		procedure net_name_missing is begin
+			set_status (incomplete & "Net name missing !");
+		end net_name_missing;
 		
 	begin -- propose_arguments
 		log (text => incomplete 
@@ -1983,6 +1988,22 @@ is
 					when others => null; -- CS
 				end case;
 
+			when VERB_DRAW =>
+				case noun is
+					when NOUN_NET =>
+						case fields is
+							when 4 =>
+								net_name_missing;
+								
+							when 5 => -- like "draw net RESET_N"
+								net_name := to_net_name (f (5));
+								
+							when others => null;								
+						end case;
+						
+					when others => null;
+				end case;
+				
 			when VERB_INVOKE =>
 				case noun is
 					when NOUN_UNIT =>
