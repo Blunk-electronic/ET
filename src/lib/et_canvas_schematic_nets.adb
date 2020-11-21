@@ -618,7 +618,7 @@ package body et_canvas_schematic_nets is
 			properties_confirmed := true;
 			window_properties.window.destroy;
 			reset_request_clarification;
-			status_clear;
+			--status_clear;
 			clear_proposed_segments;
 			redraw;
 		end clean_up;
@@ -722,35 +722,6 @@ package body et_canvas_schematic_nets is
 		window_properties.window.show_all;
 
 	end window_set_property;
-
-	
-	--procedure rename_selected_net is
-		--use et_schematic_ops.nets;
-	--begin
-		--case rename_net_scope is
-			--when STRAND =>
-				--log (text => "renaming single strand after clarification ...", level => log_threshold);
-				--log_indentation_up;
-
-				--window_set_property;
-				----rename_net (
-					----module_name		=> key (current_active_module),
-					----net_name_before	=> selected_net,
-					
-			--when SHEET =>
-				--log (text => "renaming all strands on current sheet after clarification ...", level => log_threshold);
-				--log_indentation_up;
-				
-			--when EVERYWHERE =>
-				--log (text => "renaming all strands on current sheet after clarification ...", level => log_threshold);
-				--log_indentation_up;
-				
-		--end case;
-			
-		
-		--log_indentation_down;
-	--end rename_selected_net;
-
 
 	
 -- DRAG/MOVE NET SEGMENT

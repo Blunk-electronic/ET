@@ -1834,7 +1834,7 @@ package body et_canvas_schematic_units is
 			properties_confirmed := true;
 			window_properties.window.destroy;
 			reset_request_clarification;
-			status_clear;
+			--status_clear;
 			clear_proposed_units;
 			redraw;
 		end clean_up;

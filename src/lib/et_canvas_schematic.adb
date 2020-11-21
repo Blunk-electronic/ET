@@ -2354,6 +2354,13 @@ package body et_canvas_schematic is
 								set_property_selected_unit;
 							end if;
 
+						when NOUN_NET =>
+							if not clarification_pending then
+								find_segments (point);
+							else
+								et_canvas_schematic_nets.window_set_property;
+							end if;
+							
 						when others => null;
 					end case;
 					
@@ -2524,6 +2531,11 @@ package body et_canvas_schematic is
 						when NOUN_DEVICE =>
 							if clarification_pending then
 								clarify_unit;
+							end if;
+
+						when NOUN_NET =>
+							if clarification_pending then
+								clarify_net_segment;
 							end if;
 
 						when others => null;							
