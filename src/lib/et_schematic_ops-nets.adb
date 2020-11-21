@@ -170,7 +170,7 @@ package body et_schematic_ops.nets is
 			use et_schematic.type_strands;
 			strands_on_sheet : et_schematic.type_strands.list;
 			
-			procedure collect_strands_of_sheet (
+			procedure collect_strands (
 			-- Collects all strands on the targeted sheet in container strands_on_sheet.
 			-- Deletes the affected strands from the old net.
 				net_name	: in et_general.type_net_name.bounded_string;
@@ -179,11 +179,14 @@ package body et_schematic_ops.nets is
 				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
 				strand : et_schematic.type_strand;
 			begin
-				log (text => "collecting strands ...", level => log_threshold + 1);
+				log (text => "collecting strands of net " 
+					 & to_string (net_name) & " ...", level => log_threshold + 1);
+				
 				log_indentation_up;
 				
 				-- Look at the strands that are on the targeted sheet.
 				while strand_cursor /= type_strands.no_element loop
+					
 					if sheet (element (strand_cursor).position) = sheet (place) then
 
 						-- append strand to temporarily collection of strands on this sheet
@@ -194,21 +197,30 @@ package body et_schematic_ops.nets is
 
 						-- delete strand in old net
 						delete (net.strands, strand_cursor);
+						
+						-- strand_cursor points no to no_element.
+						-- So we must reset it to the first strand in the net.
+						-- This causes this loop to start anew.
+						strand_cursor := net.strands.first;
+					else
+						next (strand_cursor);
 					end if;
 					
-					next (strand_cursor);
 				end loop;
 
 				log_indentation_down;
-			end collect_strands_of_sheet;
+			end collect_strands;
 
 			procedure move_strands (
-			-- Moves the temporarily collection of strands strands_on_sheet 
+			-- Adds the collection of strands strands_on_sheet 
 			-- to the targeted net.
 				net_name	: in et_general.type_net_name.bounded_string;
 				net			: in out et_schematic.type_net) is
 			begin
-				move (target => net.strands, source => strands_on_sheet);
+				splice (
+					target => net.strands,
+					source => strands_on_sheet,
+					before => type_strands.no_element);
 			end;
 			
 		begin -- rename_on_sheet
@@ -217,7 +229,7 @@ package body et_schematic_ops.nets is
 			update_element (
 				container	=> module.nets,
 				position	=> net_cursor_old,
-				process		=> collect_strands_of_sheet'access);
+				process		=> collect_strands'access);
 
 			-- Issue warning if no strands have been collected. This can result:
 			-- - from an attempt to rename on a sheet that does not exist 
