@@ -38,6 +38,7 @@
 with et_modes.schematic;
 with et_project.modules;
 with et_canvas_schematic_units;
+with et_canvas_schematic_nets;
 with et_scripting_interactive_schematic;
 
 separate (et_scripting)
@@ -1783,7 +1784,7 @@ is
 
 		device_name		: et_devices.type_name;
 		unit_name		: type_unit_name.bounded_string;
-		net_name		: type_net_name.bounded_string;
+		--net_name		: type_net_name.bounded_string;
 		
 		procedure device_name_missing is begin
 			log (text => "Device name missing !", level => log_threshold);
@@ -1996,7 +1997,9 @@ is
 								net_name_missing;
 								
 							when 5 => -- like "draw net RESET_N"
-								net_name := to_net_name (f (5));
+								check_net_name_length (f (5));
+								check_net_name_characters (to_net_name (f (5)));
+								et_canvas_schematic_nets.route.name := to_net_name (f (5));
 								
 							when others => null;								
 						end case;

@@ -405,7 +405,7 @@ package body et_canvas_schematic is
 			use pac_shapes;
 
 			-- Do the actual route calculation.
-			r : type_route := to_route (s, e, net_route.bend_style);
+			r : type_route := to_route (s, e, route.path.bend_style);
 
 			procedure draw is begin
 				-- draw the net segment:
@@ -420,7 +420,7 @@ package body et_canvas_schematic is
 
 			-- The calculated route may required a bend point.
 			-- Set/clear the "bended" flag of the net_segment being drawn.
-			net_route.bended := r.bended;
+			route.path.bended := r.bended;
 
 			-- set color and line width for net segments:
 			set_color_nets (context.cr);
@@ -439,7 +439,7 @@ package body et_canvas_schematic is
 			-- from start point to bend point. Then draw a second line from
 			-- bend point end point:
 			else
-				net_route.bend_point := r.bend_point;
+				route.path.bend_point := r.bend_point;
 
 				line.start_point := r.start_point;
 				line.end_point := r.bend_point;
@@ -455,24 +455,24 @@ package body et_canvas_schematic is
 		end compute_route;
 		
 	begin -- draw_net_route_being_drawn
-		if verb = VERB_DRAW and noun = NOUN_NET and net_route.being_drawn = true then
+		if verb = VERB_DRAW and noun = NOUN_NET and route.path.being_drawn = true then
 
 			-- The route start point has been set eariler by procedures
 			-- evaluate_key or button_pressed.
 			-- For drawing here, the route end point is to be taken from
 			-- either the mouse pointer or the cursor position:
-			case net_route.tool is
+			case route.path.tool is
 				
 				when MOUSE => 
 					
 					compute_route (
-						s	=> net_route.start_point,				-- start of route
+						s	=> route.path.start_point,				-- start of route
 						e	=> snap_to_grid (self, mouse_position (self)));	-- end of route
 
 				when KEYBOARD =>
 
 					compute_route (
-						s	=> net_route.start_point,	-- start of route
+						s	=> route.path.start_point,	-- start of route
 						e	=> cursor_main.position);	-- end of route
 
 			end case;
@@ -823,36 +823,37 @@ package body et_canvas_schematic is
 
 		-- Set the tool being used for this net so that procedure
 		-- draw_net_segment_being_drawn knows where to get the end point from.
-		net_route.tool := tool;
+		route.path.tool := tool;
 
-		if not net_route.being_drawn then
+		if not route.path.being_drawn then
 
-			net_route.start_point := point;
+			route.path.start_point := point;
 					
 			-- Before processing the start point further, it must be validated:
-			if valid_for_net_segment (net_route.start_point, log_threshold + 3) then
+			if valid_for_net_segment (route.path.start_point, log_threshold + 3) then
 
-				net_route.being_drawn := true;
+				route.path.being_drawn := true;
 				
-				set_status (status_start_point & to_string (net_route.start_point) & ". " &
+				set_status (status_start_point & to_string (route.path.start_point) & ". " &
 					status_press_space & status_set_end_point & status_hint_for_abort);
 			end if;
 
 		else
 			-- set end point
-			if net_route.bended = NO then
+			if route.path.bended = NO then
 				
-				net_route.end_point := point;
+				route.path.end_point := point;
 
 				-- Before processing the end point further, it must be validated:
-				if valid_for_net_segment (net_route.end_point, log_threshold + 3) then
+				if valid_for_net_segment (route.path.end_point, log_threshold + 3) then
 
 					insert_net_segment (
 						module			=> current_active_module,
 						sheet			=> current_active_sheet,
+						net_name		=> route.name, -- RESET_N
 						segment			=> (
-								start_point	=> net_route.start_point,
-								end_point	=> net_route.end_point,
+								start_point	=> route.path.start_point,
+								end_point	=> route.path.end_point,
 								others		=> <>), -- no labels and no ports, just a bare segment
 						log_threshold	=>	log_threshold + 1);
 
@@ -861,29 +862,31 @@ package body et_canvas_schematic is
 
 			else
 				-- Before processing the BEND point further, it must be validated:
-				if valid_for_net_segment (net_route.bend_point, log_threshold + 3) then
+				if valid_for_net_segment (route.path.bend_point, log_threshold + 3) then
 
 					insert_net_segment (
 						module			=> current_active_module,
 						sheet			=> current_active_sheet,
+						net_name		=> route.name, -- RESET_N
 						segment			=> (
-								start_point	=> net_route.start_point,
-								end_point	=> net_route.bend_point,
+								start_point	=> route.path.start_point,
+								end_point	=> route.path.bend_point,
 								others		=> <>), -- no labels and no ports, just a bare segment
 						log_threshold	=>	log_threshold + 1);
 
 					-- END POINT:
-					net_route.end_point := point;
+					route.path.end_point := point;
 
 					-- Before processing the END point further, it must be validated:
-					if valid_for_net_segment (net_route.end_point, log_threshold + 3) then
+					if valid_for_net_segment (route.path.end_point, log_threshold + 3) then
 					
 						insert_net_segment (
 							module			=> current_active_module,
 							sheet			=> current_active_sheet,
+							net_name		=> route.name, -- RESET_N
 							segment			=> (
-									start_point	=> net_route.bend_point,
-									end_point	=> net_route.end_point,
+									start_point	=> route.path.bend_point,
+									end_point	=> route.path.end_point,
 									others		=> <>), -- no labels and no ports, just a bare segment
 							log_threshold	=>	log_threshold + 1);
 					
@@ -1108,7 +1111,7 @@ package body et_canvas_schematic is
 				when GDK_LC_b =>
 					case noun is
 						when NOUN_NET =>
-							et_schematic.pac_shapes.next_bend_style (net_route);
+							et_schematic.pac_shapes.next_bend_style (route.path);
 							
 						when others => null;
 							
@@ -1906,7 +1909,7 @@ package body et_canvas_schematic is
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_NET =>
-						if net_route.being_drawn then
+						if route.path.being_drawn then
 							redraw;
 						end if;
 
@@ -2395,7 +2398,7 @@ package body et_canvas_schematic is
 				when VERB_DRAW =>
 					case noun is
 						when NOUN_NET =>
-							et_schematic.pac_shapes.next_bend_style (net_route);
+							et_schematic.pac_shapes.next_bend_style (route.path);
 							
 						when others => null;							
 					end case;

@@ -437,14 +437,17 @@ package body et_canvas_schematic_nets is
 
 
 	procedure reset_net_route is begin
-		net_route := (
-			bend_style	=> net_route.bend_style,
+		route.path := (
+			bend_style	=> route.path.bend_style, -- no change
 			others 		=> <>);
+
+		route.name := to_net_name ("");
 	end reset_net_route;
 
 
 	procedure insert_net_segment (
 		module			: in pac_generic_modules.cursor;
+		net_name		: in type_net_name.bounded_string; -- RESET_N
 		sheet			: in type_sheet;
 		segment			: in et_schematic.type_net_segment;
 		log_threshold	: in type_log_level)
@@ -459,18 +462,9 @@ package body et_canvas_schematic_nets is
 
 		use et_schematic.type_nets;
 		net_cursor	: et_schematic.type_nets.cursor;
-		net_name	: type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name_auto_generated	: type_net_name.bounded_string; -- N$234
 
 		net_name_start, net_name_end : type_net_name.bounded_string;
-		empty_name : constant type_net_name.bounded_string := to_net_name ("");
-
-		function is_empty (n : in type_net_name.bounded_string) return boolean is 
-			use type_net_name;
-		begin
-			if n = empty_name then return true;
-			else return false;
-			end if;
-		end is_empty;
 	
 	begin -- insert_net_segment
 		log (text => "adding net segment on sheet" & to_sheet (sheet) & to_string (segment), 
@@ -478,6 +472,7 @@ package body et_canvas_schematic_nets is
 
 		log_indentation_up;
 
+		-- Look for already existing nets at the start of the route:
 		segments_at_start_point := collect_segments (
 			module			=> module,
 			place			=> start_point,
@@ -486,6 +481,7 @@ package body et_canvas_schematic_nets is
 
 		net_name_start := first_net (segments_at_start_point);
 		
+		-- Look for already existing nets at the end of the route:
 		segments_at_end_point := collect_segments (
 			module			=> module,
 			place			=> end_point,
@@ -498,14 +494,14 @@ package body et_canvas_schematic_nets is
 		-- anonymous net with a name like N$234:
 		if is_empty (net_name_start) and is_empty (net_name_end) then
 
-			net_name := lowest_available_anonymous_net (module); -- N$234
+			net_name_auto_generated := lowest_available_anonymous_net (module); -- N$234
 			
-			log (text => "creating new anonymous net " & to_string (net_name), level => log_threshold + 1);
+			log (text => "creating new anonymous net " & to_string (net_name_auto_generated), level => log_threshold + 1);
 			log_indentation_up;
 
 			-- Insert the new net with this single segment in the module:
 			et_schematic_ops.nets.insert_segment (
-				module, net_cursor, sheet, net_name, segment, log_threshold + 2);
+				module, net_cursor, sheet, net_name_auto_generated, segment, log_threshold + 2);
 
 			log_indentation_down;
 		end if;
@@ -514,7 +510,7 @@ package body et_canvas_schematic_nets is
 		-- the net at the start point is extended by the new segment:
 		if not is_empty (net_name_start) and is_empty (net_name_end) then
 						
-			log (text => "attaching start point of segment to net " & to_string (net_name_start),
+			log (text => "attaching start point of new segment to net " & to_string (net_name_start),
 				 level => log_threshold + 1);
 			log_indentation_up;
 
@@ -531,7 +527,7 @@ package body et_canvas_schematic_nets is
 		-- the net at the end point is extended by the new segment:
 		if not is_empty (net_name_end) and is_empty (net_name_start) then
 						
-			log (text => "attaching end point of segment to net " & to_string (net_name_end),
+			log (text => "attaching end point of new segment to net " & to_string (net_name_end),
 				 level => log_threshold + 1);
 			log_indentation_up;
 

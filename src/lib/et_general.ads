@@ -189,6 +189,10 @@ package et_general is
 	-- Tests if the given net name contains only valid characters as specified
 	-- by given character set.
 
+	-- Returns true if given net name is empty:
+	function is_empty (net : in type_net_name.bounded_string)
+		return boolean;
+	
 	function to_net_name (net_name : in string) return type_net_name.bounded_string;
 	function to_string (net_name : in type_net_name.bounded_string) return string;
 

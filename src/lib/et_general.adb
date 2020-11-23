@@ -276,6 +276,16 @@ package body et_general is
 		end if;
 		
 	end check_net_name_characters;
+
+	function is_empty (net : in type_net_name.bounded_string)
+		return boolean
+	is begin
+		if length (net) = 0 then
+			return true;
+		else
+			return false;
+		end if;
+	end is_empty;
 	
 	function to_net_name (net_name : in string) return type_net_name.bounded_string is begin
 		return type_net_name.to_bounded_string (to_upper (net_name));

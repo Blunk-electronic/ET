@@ -162,7 +162,13 @@ package et_canvas_schematic_nets is
 	
 	-- When a net route is being drawn, then this global variable
 	-- shall be used:
-	net_route : et_schematic.pac_shapes.type_route_live;
+	type type_net_route is record
+		path	: et_schematic.pac_shapes.type_route_live;
+		name	: type_net_name.bounded_string := to_net_name ("");
+	end record;
+
+	route : type_net_route;
+	
 	
 	-- Resets the components of the net route.
 	-- Exception: Leaves the bend style as it is.
@@ -171,6 +177,7 @@ package et_canvas_schematic_nets is
 	-- Inserts a net segment in the module.
 	procedure insert_net_segment (
 		module			: in pac_generic_modules.cursor;
+		net_name		: in type_net_name.bounded_string; -- RESET_N
 		sheet			: in type_sheet;
 		segment			: in et_schematic.type_net_segment;
 		log_threshold	: in type_log_level);
