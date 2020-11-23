@@ -175,9 +175,15 @@ package et_canvas_schematic_nets is
 	procedure reset_net_route;
 
 	-- Inserts a net segment in the module.
+	-- If an explicit net name is provided via 
+	-- net_name_given, then:
+	-- - the segment will be attached to that net, if the net 
+	--   already exists, or
+	-- - an new net will be created named after net_name_given if 
+	--   a net named net_name_given does not exist yet.
 	procedure insert_net_segment (
 		module			: in pac_generic_modules.cursor;
-		net_name		: in type_net_name.bounded_string; -- RESET_N
+		net_name_given	: in type_net_name.bounded_string; -- RESET_N
 		sheet			: in type_sheet;
 		segment			: in et_schematic.type_net_segment;
 		log_threshold	: in type_log_level);

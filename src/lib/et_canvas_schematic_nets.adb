@@ -447,7 +447,7 @@ package body et_canvas_schematic_nets is
 
 	procedure insert_net_segment (
 		module			: in pac_generic_modules.cursor;
-		net_name		: in type_net_name.bounded_string; -- RESET_N
+		net_name_given	: in type_net_name.bounded_string; -- RESET_N
 		sheet			: in type_sheet;
 		segment			: in et_schematic.type_net_segment;
 		log_threshold	: in type_log_level)
@@ -462,8 +462,9 @@ package body et_canvas_schematic_nets is
 
 		use et_schematic.type_nets;
 		net_cursor	: et_schematic.type_nets.cursor;
-		net_name_auto_generated	: type_net_name.bounded_string; -- N$234
 
+		use et_general.type_net_name;
+		net_name_auto_generated	: type_net_name.bounded_string; -- N$234
 		net_name_start, net_name_end : type_net_name.bounded_string;
 	
 	begin -- insert_net_segment
@@ -490,68 +491,164 @@ package body et_canvas_schematic_nets is
 
 		net_name_end := first_net (segments_at_end_point);
 		
-		-- If no nets at BOTH start AND end point, create a new 
-		-- anonymous net with a name like N$234:
+		-- If no nets at BOTH start AND end point:
 		if is_empty (net_name_start) and is_empty (net_name_end) then
 
-			net_name_auto_generated := lowest_available_anonymous_net (module); -- N$234
-			
-			log (text => "creating new anonymous net " & to_string (net_name_auto_generated), level => log_threshold + 1);
-			log_indentation_up;
+			if is_empty (net_name_given) then -- no explicit net name provided
 
-			-- Insert the new net with this single segment in the module:
-			et_schematic_ops.nets.insert_segment (
-				module, net_cursor, sheet, net_name_auto_generated, segment, log_threshold + 2);
+				-- Create a new anonymous net with a name like N$234:
+				net_name_auto_generated := lowest_available_anonymous_net (module); -- N$234
+				
+				log (text => "creating new anonymous net " 
+					 & et_general.to_string (net_name_auto_generated),
+					 level => log_threshold + 1);
+				
+				log_indentation_up;
 
-			log_indentation_down;
+				-- Create the new net with this single segment in the module:
+				et_schematic_ops.nets.insert_segment (
+					module, net_cursor, sheet, net_name_auto_generated, segment, log_threshold + 2);
+
+				status_clear;
+				
+				log_indentation_down;
+				
+			else -- explicit net name provided
+				log (text => "explicit net name is " 
+					& et_general.to_string (net_name_given),
+					level => log_threshold + 1);
+				
+				log_indentation_up;
+
+				net_cursor := locate_net (module, net_name_given);
+
+				-- Insert the new segment:
+				et_schematic_ops.nets.insert_segment (
+					module, net_cursor, sheet, net_name_given, segment, log_threshold + 2);
+
+				status_clear;
+				
+				log_indentation_down;
+			end if;
 		end if;
 
 		-- If net at start point AND no net at end point then
 		-- the net at the start point is extended by the new segment:
 		if not is_empty (net_name_start) and is_empty (net_name_end) then
-						
-			log (text => "attaching start point of new segment to net " & to_string (net_name_start),
-				 level => log_threshold + 1);
-			log_indentation_up;
 
-			net_cursor := locate_net (module, net_name_start);
+			if is_empty (net_name_given) then
+				log (text => "attaching start point of new segment to net "
+					& et_general.to_string (net_name_start),
+					level => log_threshold + 1);
+				
+				log_indentation_up;
+
+				net_cursor := locate_net (module, net_name_start);
+				
+				-- Extend the existing net net_name_start by the given segment:
+				et_schematic_ops.nets.insert_segment (
+					module, net_cursor, sheet, net_name_start, segment, log_threshold + 2);
+
+				status_clear;
+				
+				log_indentation_down;
+				
+			else -- explicit net name given
+				log_indentation_up;
+
+				net_cursor := locate_net (module, net_name_start);
+
+				-- The net to be extended must have the same name as the explicit
+				-- given net name:
+				if key (net_cursor) = net_name_given then
+					
+					-- Extend the existing net net_name_start by the given segment:
+					et_schematic_ops.nets.insert_segment (
+						module, net_cursor, sheet, net_name_start, segment, log_threshold + 2);
+
+					status_clear;
+				else
+					set_status ("Attempt to connect net " 
+						& et_general.to_string (net_name_given)
+						& " with net " & et_general.to_string (net_name_start) & " rejected !");
+				end if;
 			
-			-- Insert the new segment:
-			et_schematic_ops.nets.insert_segment (
-				module, net_cursor, sheet, net_name_start, segment, log_threshold + 2);
-
-			log_indentation_down;
+				log_indentation_down;
+			end if;
 		end if;
 
 		-- If net at end point AND no net at start_point point then
 		-- the net at the end point is extended by the new segment:
 		if not is_empty (net_name_end) and is_empty (net_name_start) then
-						
-			log (text => "attaching end point of new segment to net " & to_string (net_name_end),
-				 level => log_threshold + 1);
-			log_indentation_up;
 
-			net_cursor := locate_net (module, net_name_end);
+			if is_empty (net_name_given) then
+				log (text => "attaching end point of new segment to net " 
+					& et_general.to_string (net_name_end),
+					level => log_threshold + 1);
+				
+				log_indentation_up;
+
+				net_cursor := locate_net (module, net_name_end);
 			
-			-- Insert the new segment:
-			et_schematic_ops.nets.insert_segment (
-				module, net_cursor, sheet, net_name_end, segment, log_threshold + 2);
+				-- Extend the existing net net_name_end by the given segment:
+				et_schematic_ops.nets.insert_segment (
+					module, net_cursor, sheet, net_name_end, segment, log_threshold + 2);
 
-			log_indentation_down;
+				status_clear;
+
+				log_indentation_down;
+				
+			else -- explicit net name given
+				log_indentation_up;
+
+				net_cursor := locate_net (module, net_name_end);
+
+				-- The net to be extended must have the same name as the explicit
+				-- given net name:
+				if key (net_cursor) = net_name_given then
+					
+					-- Extend the existing net net_name_end by the given segment:
+					et_schematic_ops.nets.insert_segment (
+						module, net_cursor, sheet, net_name_end, segment, log_threshold + 2);
+
+					status_clear;
+				else
+					set_status ("Attempt to connect net " 
+						& et_general.to_string (net_name_given) &
+						" with net " & et_general.to_string (net_name_end) & " rejected !");
+				end if;
+			
+				log_indentation_down;
+			end if;
 		end if;
 
-		status_clear;
 		
-		-- If net at start point AND at end point then
+		-- If net at start point AND at end point have the same name then
 		-- the net at the end point is extended by the new segment:
 		if not is_empty (net_name_end) and not is_empty (net_name_start) then
-			
-			log (WARNING, "Attempt to connect net " & to_string (net_name_start) &
-				 " with net " & to_string (net_name_end) & " rejected !");
 
-			set_status ("Attempt to connect net " & to_string (net_name_start) &
-						" with net " & to_string (net_name_end) & " rejected !" &
-					   " Solution: Rename one of them !");
+			if net_name_end = net_name_start then -- same names
+				log_indentation_up;
+
+				net_cursor := locate_net (module, net_name_end);
+
+				-- Extend the existing net net_name_end by the given segment:
+				et_schematic_ops.nets.insert_segment (
+					module, net_cursor, sheet, net_name_end, segment, log_threshold + 2);
+				
+				status_clear;
+				
+				log_indentation_down;			
+			else
+			
+				--log (WARNING, "Attempt to connect net " & to_string (net_name_start) &
+					--" with net " & to_string (net_name_end) & " rejected !");
+
+				set_status ("Attempt to connect net " & et_general.to_string (net_name_start)
+					& " with net " & et_general.to_string (net_name_end) & " rejected !" 
+					& " Solution: Rename one of them !");
+
+			end if;
 		end if;
 		
 		log_indentation_down;

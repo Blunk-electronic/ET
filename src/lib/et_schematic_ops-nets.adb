@@ -1617,11 +1617,11 @@ package body et_schematic_ops.nets is
 
 			procedure evaluate_net_names (point : in et_coordinates.type_position) is 
 			-- Issues error message and raises constraint_error if net_names contains
-			-- any net names but the give net_name.
+			-- any net names but the given net_name.
 			-- If net_names contains the given net_name, then the flag attach_to_strand
 			-- is set. The strand will be extended later by the segment specified by 
 			-- start_point and end_point.
-			begin -- evaluate_net_names
+			begin
 				if is_empty (net_names) then -- no nets here
 					null;
 					
@@ -1639,7 +1639,7 @@ package body et_schematic_ops.nets is
 					end if;
 						
 				end if;
-			end;
+			end evaluate_net_names;
 
 			use type_strands;
 			
