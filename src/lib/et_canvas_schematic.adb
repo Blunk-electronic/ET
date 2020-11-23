@@ -809,6 +809,91 @@ package body et_canvas_schematic is
 	end get_noun;
 	
 
+	-- Builds a live net route. This procedure requires to be called twice:
+	-- first time for the start and the second time for the end point of the route.
+	-- The current bend style in global variable "net_route" is taken into account.
+	procedure make_net_route (
+		self	: not null access type_view;
+		tool	: in type_tool;
+		point	: in type_point)
+	is begin
+		-- When drawing net segments, we enforce the default grid
+		-- and snap the cursor position to the default grid:
+		self.reset_grid_and_cursor;
+
+		-- Set the tool being used for this net so that procedure
+		-- draw_net_segment_being_drawn knows where to get the end point from.
+		net_route.tool := tool;
+
+		if not net_route.being_drawn then
+
+			net_route.start_point := point;
+					
+			-- Before processing the start point further, it must be validated:
+			if valid_for_net_segment (net_route.start_point, log_threshold + 3) then
+
+				net_route.being_drawn := true;
+				
+				set_status (status_start_point & to_string (net_route.start_point) & ". " &
+					status_press_space & status_set_end_point & status_hint_for_abort);
+			end if;
+
+		else
+			-- set end point
+			if net_route.bended = NO then
+				
+				net_route.end_point := point;
+
+				-- Before processing the end point further, it must be validated:
+				if valid_for_net_segment (net_route.end_point, log_threshold + 3) then
+
+					insert_net_segment (
+						module			=> current_active_module,
+						sheet			=> current_active_sheet,
+						segment			=> (
+								start_point	=> net_route.start_point,
+								end_point	=> net_route.end_point,
+								others		=> <>), -- no labels and no ports, just a bare segment
+						log_threshold	=>	log_threshold + 1);
+
+					reset_net_route;
+				end if;
+
+			else
+				-- Before processing the BEND point further, it must be validated:
+				if valid_for_net_segment (net_route.bend_point, log_threshold + 3) then
+
+					insert_net_segment (
+						module			=> current_active_module,
+						sheet			=> current_active_sheet,
+						segment			=> (
+								start_point	=> net_route.start_point,
+								end_point	=> net_route.bend_point,
+								others		=> <>), -- no labels and no ports, just a bare segment
+						log_threshold	=>	log_threshold + 1);
+
+					-- END POINT:
+					net_route.end_point := point;
+
+					-- Before processing the END point further, it must be validated:
+					if valid_for_net_segment (net_route.end_point, log_threshold + 3) then
+					
+						insert_net_segment (
+							module			=> current_active_module,
+							sheet			=> current_active_sheet,
+							segment			=> (
+									start_point	=> net_route.bend_point,
+									end_point	=> net_route.end_point,
+									others		=> <>), -- no labels and no ports, just a bare segment
+							log_threshold	=>	log_threshold + 1);
+					
+						reset_net_route;
+					end if;
+				end if;
+
+			end if;
+		end if;
+	end make_net_route;
 	
 	procedure evaluate_key (
 		self	: not null access type_view;
@@ -1013,83 +1098,7 @@ package body et_canvas_schematic is
 				when GDK_Space =>
 					case noun is
 						when NOUN_NET =>
-
-							-- When drawing net segments, we enforce the default grid
-							-- and snap the cursor position to the default grid:
-							self.reset_grid_and_cursor;
-
-							-- Set the tool being used for this net so that procedure
-							-- draw_net_segment_being_drawn knows where to get the end point from.
-							net_route.tool := KEYBOARD;
-
-							if not net_route.being_drawn then
-
-								net_route.start_point := cursor_main.position;
-								
-								-- Before processing the start point further, it must be validated:
-								if valid_for_net_segment (net_route.start_point, log_threshold + 3) then
-
-									net_route.being_drawn := true;
-									
-									set_status (status_start_point & to_string (net_route.start_point) & ". " &
-										status_press_space & status_set_end_point & status_hint_for_abort);
-								end if;
-
-							else
-								-- set end point
-								if net_route.bended = NO then
-									
-									net_route.end_point := cursor_main.position;
-
-									-- Before processing the end point further, it must be validated:
-									if valid_for_net_segment (net_route.end_point, log_threshold + 3) then
-
-										insert_net_segment (
-											module			=> current_active_module,
-											sheet			=> current_active_sheet,
-											segment			=> (
-													start_point	=> net_route.start_point,
-													end_point	=> net_route.end_point,
-													others		=> <>), -- no labels and no ports, just a bare segment
-											log_threshold	=>	log_threshold + 1);
-
-										reset_net_route;
-									end if;
-
-								else
-									-- Before processing the BEND point further, it must be validated:
-									if valid_for_net_segment (net_route.bend_point, log_threshold + 3) then
-
-										insert_net_segment (
-											module			=> current_active_module,
-											sheet			=> current_active_sheet,
-											segment			=> (
-													start_point	=> net_route.start_point,
-													end_point	=> net_route.bend_point,
-													others		=> <>), -- no labels and no ports, just a bare segment
-											log_threshold	=>	log_threshold + 1);
-
-										-- END POINT:
-										net_route.end_point := cursor_main.position;
-
-										-- Before processing the END point further, it must be validated:
-										if valid_for_net_segment (net_route.end_point, log_threshold + 3) then
-										
-											insert_net_segment (
-												module			=> current_active_module,
-												sheet			=> current_active_sheet,
-												segment			=> (
-														start_point	=> net_route.bend_point,
-														end_point	=> net_route.end_point,
-														others		=> <>), -- no labels and no ports, just a bare segment
-												log_threshold	=>	log_threshold + 1);
-										
-											reset_net_route;
-										end if;
-									end if;
-
-								end if;
-							end if;
+							self.make_net_route (KEYBOARD, cursor_main.position);	
 							
 						when others => null;
 					end case;
@@ -2078,83 +2087,7 @@ package body et_canvas_schematic is
 				when VERB_DRAW =>
 					case noun is
 						when NOUN_NET =>
-
-							-- When drawing net segments, we enforce the default grid
-							-- and snap the cursor position to the default grid:
-							self.reset_grid_and_cursor;
-							
-							-- Set the tool being used for this net so that procedure
-							-- draw_net_segment_being_drawn knows where to get the end point from.
-							net_route.tool := MOUSE;
-							
-							if not net_route.being_drawn then
-
-								net_route.start_point := snap_to_grid (self, point);
-
-								-- Before processing the start point further, it must be validated:
-								if valid_for_net_segment (net_route.start_point, log_threshold + 3) then
-
-									net_route.being_drawn := true;
-									
-									set_status (status_start_point & to_string (net_route.start_point) & ". " &
-										status_click_left & status_set_end_point & status_hint_for_abort);
-								end if;
-
-							else
-								-- set end point
-								if net_route.bended = NO then
-									
-									net_route.end_point := snap_to_grid (self, point);
-
-									-- Before processing the end point further, it must be validated:
-									if valid_for_net_segment (net_route.end_point, log_threshold + 3) then
-
-										insert_net_segment (
-											module			=> current_active_module,
-											sheet			=> current_active_sheet,
-											segment			=> (
-													start_point	=> net_route.start_point,
-													end_point	=> net_route.end_point,
-													others		=> <>), -- no labels and no ports, just a bare segment
-											log_threshold	=>	log_threshold + 1);
-
-										reset_net_route;
-									end if;
-
-								else
-									-- Before processing the BEND point further, it must be validated:
-									if valid_for_net_segment (net_route.bend_point, log_threshold + 3) then
-
-										insert_net_segment (
-											module			=> current_active_module,
-											sheet			=> current_active_sheet,
-											segment			=> (
-													start_point	=> net_route.start_point,
-													end_point	=> net_route.bend_point,
-													others		=> <>), -- no labels and no ports, just a bare segment
-											log_threshold	=>	log_threshold + 1);
-
-										-- END POINT:
-										net_route.end_point := snap_to_grid (self, point);
-
-										-- Before processing the END point further, it must be validated:
-										if valid_for_net_segment (net_route.end_point, log_threshold + 3) then
-										
-											insert_net_segment (
-												module			=> current_active_module,
-												sheet			=> current_active_sheet,
-												segment			=> (
-														start_point	=> net_route.bend_point,
-														end_point	=> net_route.end_point,
-														others		=> <>), -- no labels and no ports, just a bare segment
-												log_threshold	=>	log_threshold + 1);
-										
-											reset_net_route;
-										end if;
-									end if;
-
-								end if;
-							end if;
+							self.make_net_route (MOUSE, snap_to_grid (self, point));
 							
 						when others => null;							
 					end case;
