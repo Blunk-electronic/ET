@@ -39,6 +39,8 @@ with ada.strings;					use ada.strings;
 with ada.strings.unbounded;			use ada.strings.unbounded;
 with ada.exceptions;
 
+with et_exceptions;					use et_exceptions;
+
 package body et_schematic_ops.nets is
 	
 	procedure junction_in_sloping_segment (point : in et_coordinates.type_position) is begin
@@ -1651,6 +1653,8 @@ package body et_schematic_ops.nets is
 			strand_at_start : type_which_strand;
 			strand_at_end   : type_which_strand;
 
+			-- Required to test whether the new segment will be a dead end
+			-- at its start or end point:
 			function dead_end (strand : in type_which_strand) return boolean is begin
 				if strand.cursor = type_strands.no_element then
 					return true;
@@ -1745,39 +1749,34 @@ package body et_schematic_ops.nets is
 				return result;
 			end which_strand;
 
-			procedure locate_strand (
-			-- Locates the strand (indicated by strand_at_start or strand_at_end)
+			procedure append_segment (strand : in out type_strand) is begin
+				type_net_segments.append (strand.segments, segment);
+				set_strand_position (strand);
+			end append_segment;
+			
+			procedure extend_strand_start (
+			-- Locates the strand (indicated by strand_at_start)
 			-- and appends the new segment to it. 
 				net_name	: in type_net_name.bounded_string;
 				net			: in out type_net) is
+			begin
+				type_strands.update_element (
+					container	=> net.strands,
+					position	=> strand_at_start.cursor,
+					process		=> append_segment'access);
+			end extend_strand_start;
 
-				procedure append_segment (strand : in out type_strand) is
-				begin
-					type_net_segments.append (strand.segments, segment);
-					set_strand_position (strand);
-				end append_segment;
-				
-			begin -- locate_strand
-				-- There must be a strand either at the start or the end point
-				-- of the segment.
-				if not dead_end (strand_at_start) then
-					
-					type_strands.update_element (
-						container	=> net.strands,
-						position	=> strand_at_start.cursor,
-						process		=> append_segment'access);
-
-				elsif not dead_end (strand_at_end) then
-					
-					type_strands.update_element (
-						container	=> net.strands,
-						position	=> strand_at_end.cursor,
-						process		=> append_segment'access);
-					
-				else
-					raise constraint_error; -- CS should never happen
-				end if;
-			end locate_strand;
+			procedure extend_strand_end (
+			-- Locates the strand (indicated by strand_at_end)
+			-- and appends the new segment to it. 
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+			begin
+				type_strands.update_element (
+					container	=> net.strands,
+					position	=> strand_at_end.cursor,
+					process		=> append_segment'access);
+			end extend_strand_end;
 			
 			procedure create_strand (
 			-- Creates a new strand that contains the segment.
@@ -1806,7 +1805,7 @@ package body et_schematic_ops.nets is
 			procedure merge_strands (
 			-- Merges two strands indicated by strand_at_start and strand_at_end.
 			-- The strand_at_start will merge into strand_at_end.
-			-- strand_at_start will be gone finally. All its segments will move to 
+			-- strand_at_start will be gone in the end. All its segments will move to 
 			-- strand_at_end.
 				net_name	: in type_net_name.bounded_string;
 				net			: in out type_net) is
@@ -1842,10 +1841,34 @@ package body et_schematic_ops.nets is
 					position	=> strand_at_start.cursor);
 				
 			end merge_strands;	
+
+			-- Returns true when strand at start and strand at end are equal.
+			-- This is the case when the operator tries to draw multiple/redundant
+			-- connections in a strand:
+			function redundant_connection return boolean is begin
+
+				-- 1st condition: Both ends of the new segment must connect
+				-- with a strand.
+				if strand_at_start.cursor /= type_strands.no_element and
+					strand_at_end.cursor /= type_strands.no_element then
+
+					-- 2nd condition: Both ends of the new segment must connect
+					-- with the same strand:
+					if element (strand_at_start.cursor) = element (strand_at_end.cursor) then
+						return true;
+					else
+						return false;
+					end if;
+
+				else
+					return false;
+				end if;
+			end redundant_connection;
+			
 			
 		begin -- extend_net
 			------------
-			-- Obtain the names of nets that cross the start point of the segment:
+			-- Obtain the names of nets that cross the START point of the segment:
 			point := to_position (
 					sheet => sheet,
 					point => segment_new.start_point);
@@ -1857,7 +1880,7 @@ package body et_schematic_ops.nets is
 
 			evaluate_net_names (point); -- modifies the attach_to_strand flag
 			
-			-- Obtain the names of nets that cross the end point of the segment:
+			-- Obtain the names of nets that cross the END point of the segment:
 			point := to_position (
 					sheet => sheet,
 					point => segment_new.end_point);
@@ -1870,7 +1893,7 @@ package body et_schematic_ops.nets is
 			evaluate_net_names (point); -- modifies the attach_to_strand flag
 			-------------
 
-			-- 1. Now we know the new segment position is acceptable and valid. Means the start
+			-- 1. Now we know the segment_new is acceptable and valid. Means the start
 			--    and end points do not collide with foreign nets.
 			-- 2. We also know whether to attach the segment to an existing strand
 			--    or whether the segment is going to start a new strand.
@@ -1878,105 +1901,137 @@ package body et_schematic_ops.nets is
 			if attach_to_strand then
 				log (text => "attaching segment to strand ...", level => log_threshold + 1);
 				log_indentation_up;
-				
-				-- Obtain the cursor to the strand that crosses the start point:
+
+				-- The START point of the new segment could join a strand.				
+				-- Obtain the cursor to the strand that crosses the START point:
 				strand_at_start := which_strand (to_position (
-													sheet	=> sheet,
-													point	=> segment_new.start_point));
-				
-				if not dead_end (strand_at_start) then
-					-- The start point will be connected with a strand:
-					log (text => "with its start point at " & 
-						 to_string (position => to_position (
-													sheet	=> sheet,
-													point	=> segment_new.start_point)),
-						 level => log_threshold + 2);
+									sheet	=> sheet,
+									point	=> segment_new.start_point));
 
-					-- If required, prepare placing a junction at start point of segment.
-					-- The junction will be placed later.
-					if strand_at_start.junction_required then
-						junction_at_start_point.required := true;
-						junction_at_start_point.place := to_position (
-														sheet	=> sheet,
-														point	=> segment_new.start_point);
-					end if;
-				end if;
-
-				-- collect ports at dead end or where a junction is to be placed:
-				if dead_end (strand_at_start) or junction_at_start_point.required then
-					-- look for any ports at start point of the new net segment
-					ports := ports_at_place (
-							module_name		=> module_name,
-							place			=> to_position (
-												sheet	=> sheet,
-												point	=> segment_new.start_point),
-							log_threshold	=> log_threshold + 2);
-
-					assign_ports_to_segment;
-				end if;
-				----------
-				
-				-- Alternatively the strand could be crossing the end point:
+				-- The END point of the new segment could join a strand.
+				-- Obtain the cursor to the strand that crosses the END point:
 				strand_at_end := which_strand (to_position (
 									sheet => sheet,
 									point => segment_new.end_point));
 
-				if not dead_end (strand_at_end) then
-					-- The end point will be connected with a strand:
-					log (text => "with its end point at " & to_string (
-								position => to_position (
-									sheet => sheet,
-									point => segment_new.end_point)
-									),
-						 level => log_threshold + 2);
+				-- The new segment must not be a redundant connection inside a strand:
+				if not redundant_connection then
+				
+					-- Determine whether a junction will be placed here later:
+					if not dead_end (strand_at_start) then
+						-- The start point will be connected with a strand:
+						log (text => "with its start point at " & 
+							to_string (position => to_position (
+														sheet	=> sheet,
+														point	=> segment_new.start_point)),
+							level => log_threshold + 2);
 
-					-- If required, prepare placing a junction at end point of segment.
-					-- The junction will be placed later.
-					if strand_at_end.junction_required then
-						junction_at_end_point.required := true;
-						junction_at_end_point.place := to_position (
-									sheet => sheet,
-									point => segment_new.end_point);
+						-- If required, prepare placing a junction at start point of segment.
+						-- The junction will be placed later.
+						if strand_at_start.junction_required then
+							junction_at_start_point.required := true;
+							junction_at_start_point.place := to_position (
+															sheet	=> sheet,
+															point	=> segment_new.start_point);
+						end if;
 					end if;
+
+					-- collect ports at dead end or where a junction is to be placed:
+					if dead_end (strand_at_start) or junction_at_start_point.required then
+						-- look for any ports at start point of the new net segment
+						ports := ports_at_place (
+								module_name		=> module_name,
+								place			=> to_position (
+													sheet	=> sheet,
+													point	=> segment_new.start_point),
+								log_threshold	=> log_threshold + 2);
+
+						assign_ports_to_segment;
+					end if;
+					----------
+					
+
+					-- Determine whether a junction will be placed here later:
+					if not dead_end (strand_at_end) then
+						-- The end point will be connected with a strand:
+						log (text => "with its end point at " & to_string (
+									position => to_position (
+										sheet => sheet,
+										point => segment_new.end_point)
+										),
+							level => log_threshold + 2);
+
+						-- If required, prepare placing a junction at end point of segment.
+						-- The junction will be placed later.
+						if strand_at_end.junction_required then
+							junction_at_end_point.required := true;
+							junction_at_end_point.place := to_position (
+										sheet => sheet,
+										point => segment_new.end_point);
+						end if;
+					end if;
+					
+					-- collect ports at dead end or where a junction is to be placed:
+					if dead_end (strand_at_end) or junction_at_end_point.required then
+						-- look for any ports at end point of the new net segment
+						-- The end point is just x/y. The sheet must be derived from the start point.
+						ports := ports_at_place (
+								module_name		=> module_name,
+								place			=> to_position (
+													sheet => sheet,
+													point => segment_new.end_point),
+								log_threshold	=> log_threshold);
+
+						assign_ports_to_segment;
+					end if;
+
+					-- If segment_new is to extend a strand
+					-- then the strands at start or/and end point must be extended
+					-- by segment_new.
+					if not dead_end (strand_at_start) xor not dead_end (strand_at_end) then
+						if not dead_end (strand_at_start) then
+							type_nets.update_element (
+								container	=> module.nets,
+								position	=> net_cursor,
+								process		=> extend_strand_start'access);
+						end if;
+
+						if not dead_end (strand_at_end) then
+							type_nets.update_element (
+								container	=> module.nets,
+								position	=> net_cursor,
+								process		=> extend_strand_end'access);
+						end if;
+					end if;
+					-----------
+
+					-- If both ends are to be connected with a strand,
+					-- we have to merge both strands:
+					if not dead_end (strand_at_start) and not dead_end (strand_at_end) then
+						log_indentation_up;
+
+						-- The new segment must first be attached to one of the
+						-- two strands.
+						type_nets.update_element (
+							container	=> module.nets,
+							position	=> net_cursor,
+							process		=> extend_strand_start'access);
+						
+						-- Merge the two strands indicated by 
+						-- strand_at_start and strand_at_end:
+						type_nets.update_element (
+							container	=> module.nets,
+							position	=> net_cursor,
+							process		=> merge_strands'access);
+
+						log_indentation_down;
+					end if;
+
+				else
+					raise semantic_error_1 with
+						"ERROR: Attempt to draw redundant connection rejected !";
 				end if;
 				
-				-- collect ports at dead end or where a junction is to be placed:
-				if dead_end (strand_at_end) or junction_at_end_point.required then
-					-- look for any ports at end point of the new net segment
-					-- The end point is just x/y. The sheet must be derived from the start point.
-					ports := ports_at_place (
-							module_name		=> module_name,
-							place			=> to_position (
-												sheet => sheet,
-												point => segment_new.end_point),
-							log_threshold	=> log_threshold);
-
-					assign_ports_to_segment;
-				end if;
-
-				-- Append the segment to one of the possible strands.
-				if not dead_end (strand_at_start) xor not dead_end (strand_at_end) then -- CS: correct term ??
-					type_nets.update_element (
-						container	=> module.nets,
-						position	=> net_cursor,
-						process		=> locate_strand'access);
-				end if;
-
-				-----------
-
-				-- If both ends are to be connected with a strand, we have to union both strands.
-				if not dead_end (strand_at_start) and not dead_end (strand_at_end) then
-					log_indentation_up;
-					
-					-- The segment will be connecting two strands.
-					type_nets.update_element (
-						container	=> module.nets,
-						position	=> net_cursor,
-						process		=> merge_strands'access);
-
-					log_indentation_down;
-				end if;
-								
 				log_indentation_down;
 				
 			else
@@ -1995,7 +2050,7 @@ package body et_schematic_ops.nets is
 
 		-- If no net named after net_name exists yet, notify operator that a 
 		-- new net will be created.
-		-- If the net already exists, extend it by a net segment.
+		-- If the net already exists, extend it by the given net segment segment_new.
 		if net_cursor = type_nets.no_element then
 
 			-- net does not exist yet
