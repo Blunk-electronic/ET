@@ -40,6 +40,7 @@ with ada.characters.handling;		use ada.characters.handling;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed;				use ada.strings.fixed;
 with ada.directories;
+with ada.exceptions;				use ada.exceptions;
 
 with et_pcb_coordinates;
 with et_terminals;
@@ -897,6 +898,32 @@ package body et_canvas_schematic is
 			end if;
 		end if;
 	end make_net_route;
+
+	-- Resets global variables required for selections, clarifications, ...
+	-- Should be called when exception rises in order to clean up.
+	-- Should also be called when the operator hits ESC.
+	procedure reset is begin
+
+		-- Verb and noun remain as they are
+		-- so that the mode is unchanged.
+		
+		reset_request_clarification;
+		
+		reset_net_route; -- after drawing a net route
+		reset_segment; -- after move/drag
+		reset_segments_being_dragged; -- after dragging a unit
+		reset_unit_move; -- after moving/dragging a unit
+		reset_unit_add; -- after adding a device
+		
+		reset_label; -- after placing a label
+		
+		reset_placeholder; -- after moving a placeholder
+
+		reset_single_cmd_status;
+		
+		reset_activate_counter;
+	end reset;
+
 	
 	procedure evaluate_key (
 		self	: not null access type_view;
@@ -1742,29 +1769,9 @@ package body et_canvas_schematic is
 
 		case key is
 			when GDK_Escape =>
-				--put_line ("ESC");
-				
 				expect_entry := expect_entry_default;
-
-				-- Verb and noun remain as they are
-				-- so that the mode is unchanged.
-				
-				reset_request_clarification;
-				
-				reset_net_route; -- after drawing a net route
-				reset_segment; -- after move/drag
-				reset_segments_being_dragged; -- after dragging a unit
-				reset_unit_move; -- after moving/dragging a unit
-				reset_unit_add; -- after adding a device
-				
-				reset_label; -- after placing a label
-				
-				reset_placeholder; -- after moving a placeholder
-
-				reset_single_cmd_status;
-				
-				reset_activate_counter;
-				status_enter_verb;
+				reset;
+				status_enter_verb;			
 
 			-- Advance to next sheet:
 			when GDK_KP_Add =>
@@ -1777,7 +1784,6 @@ package body et_canvas_schematic is
 					current_active_sheet := current_active_sheet - 1;
 					update_sheet_number_display;
 				end if;
-
 
 				
 			when others =>
@@ -1886,6 +1892,15 @@ package body et_canvas_schematic is
 
 		redraw;
 		update_mode_display (canvas);
+
+		
+		exception when event: others =>
+			set_status (exception_message (event));
+
+			reset;
+		
+			redraw;
+			update_mode_display (canvas);
 		
 	end evaluate_key;
 
@@ -2517,6 +2532,13 @@ package body et_canvas_schematic is
 		end case;
 
 		redraw;
+
+		exception when event: others =>
+			set_status (exception_message (event));
+
+			reset;
+			redraw;
+		
 	end button_pressed;
 
 	procedure reset_properties_selection (
