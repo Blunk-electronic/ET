@@ -1503,6 +1503,12 @@ package body et_schematic_ops.nets is
 			return to_string (names);
 		end;
 
+		procedure collision (point : in et_coordinates.type_position) is begin
+			raise semantic_error_1 with
+				"ERROR: Net segment collides at" & to_string (position => point) 
+				& " with net(s): " & list_nets & " !";
+		end collision;
+		
 		ports : type_ports;
 		
 		procedure assign_ports_to_segment is begin
@@ -1521,11 +1527,9 @@ package body et_schematic_ops.nets is
 			procedure evaluate_net_names (point : in et_coordinates.type_position) is 
 			-- Issues error message and raises constraint_error if net_names contains
 			-- any foreign net names.
-			begin -- evaluate_net_names
+			begin
 				if not is_empty (net_names) then
-					log (ERROR, "net segment collides at" & to_string (position => point) &
-						 " with net(s): " & list_nets & " !", console => true);
-					raise constraint_error;
+					collision (point);
 				end if;
 			end;
 			
@@ -1628,18 +1632,14 @@ package body et_schematic_ops.nets is
 					null;
 					
 				else -- there are nets
-
 					if contains (net_names, net_name) then
 						-- segment will be attached to an already existing strand
 						attach_to_strand := true; 
 						
 					else
 						-- Segment collides with foreign nets.
-						log (ERROR, "net segment collides at" & to_string (position => point) &
-						 " with net(s): " & list_nets & " !", console => true);
-						raise constraint_error;
+						collision (point);
 					end if;
-						
 				end if;
 			end evaluate_net_names;
 

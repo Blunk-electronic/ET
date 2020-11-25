@@ -2105,6 +2105,10 @@ package body et_canvas_schematic is
 				when VERB_DRAW =>
 					case noun is
 						when NOUN_NET =>
+							-- When drawing net segments, we enforce the default grid
+							-- and snap the cursor position to the default grid:
+							self.reset_grid_and_cursor;
+
 							self.make_net_route (MOUSE, snap_to_grid (self, point));
 							
 						when others => null;							
