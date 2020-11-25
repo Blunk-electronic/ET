@@ -175,12 +175,19 @@ package et_canvas_schematic_nets is
 	procedure reset_net_route;
 
 	-- Inserts a net segment in the module.
-	-- If an explicit net name is provided via 
-	-- net_name_given, then:
-	-- - the segment will be attached to that net, if the net 
-	--   already exists, or
-	-- - an new net will be created named after net_name_given if 
-	--   a net named net_name_given does not exist yet.
+	-- Deduces the name of the net to be extended by the
+	-- start or end point of the segment. 
+	-- 1. If the segment does not touch any other net, then an anonymous
+	--    net name like N$2 will be generated for the new segment. This
+	--    would then create a the first strand of net N$2.
+	-- 2. If an explicit net name is provided via net_name_given, then:
+	--    the new segment will be named after net_name_given.
+	-- 3. If an explicit net name is provided via net_name_given and the
+	--    net net_name_given already exists, then the new segment will 
+	--    extend that net.
+	-- 4. The start and end points of the segment to be inserted must
+	--    have been validated beforehand  
+	--    (via function valid_for_net_segment. see below.).
 	procedure insert_net_segment (
 		module			: in pac_generic_modules.cursor;
 		net_name_given	: in type_net_name.bounded_string; -- RESET_N
@@ -190,6 +197,10 @@ package et_canvas_schematic_nets is
 
 	-- Returns true if the given point qualifies as start or end point
 	-- of a net segment.
+	-- The point is considered as suitable if:
+	-- - there are no segments at all or
+	-- - if all segments there belong to the same net.
+	-- If a sloping segment exists there, the return is false.
 	function valid_for_net_segment (
 		point			: in type_point;
 		log_threshold	: in type_log_level)

@@ -2001,11 +2001,6 @@ is
 								check_net_name_characters (to_net_name (f (5)));
 								et_canvas_schematic_nets.route.name := to_net_name (f (5));
 
-								-- When drawing net segments, we enforce the default grid
-								-- and snap the cursor position to the default grid:
-								--canvas.reset_grid_and_cursor;
-
-								
 							when others => null;								
 						end case;
 						

@@ -147,7 +147,8 @@ package et_schematic_ops.nets is
 	--    meets a port then the port will be connected with the segment.
 	-- 2. If the segment_new collides with a foreign net, an error is raised.
 	-- 3. If the net_name is a name of an already existing net, then the
-	--    given net segment_new will be added to the existing net. 
+	--    given net segment_new will be added to the existing net.
+	--    net_cursor must point to the existing net.
 	--    A junction will automatically be placed where the new segment 
 	--    meets the existing net.
 	-- 4. If net_cursor equals no_element then a new net named after 

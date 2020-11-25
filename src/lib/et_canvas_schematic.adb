@@ -851,7 +851,7 @@ package body et_canvas_schematic is
 					insert_net_segment (
 						module			=> current_active_module,
 						sheet			=> current_active_sheet,
-						net_name_given	=> route.name, -- RESET_N
+						net_name_given	=> route.name, -- RESET_N, or empty
 						segment			=> (
 								start_point	=> route.path.start_point,
 								end_point	=> route.path.end_point,
@@ -868,7 +868,7 @@ package body et_canvas_schematic is
 					insert_net_segment (
 						module			=> current_active_module,
 						sheet			=> current_active_sheet,
-						net_name_given	=> route.name, -- RESET_N
+						net_name_given	=> route.name, -- RESET_N, or empty
 						segment			=> (
 								start_point	=> route.path.start_point,
 								end_point	=> route.path.bend_point,
@@ -884,7 +884,7 @@ package body et_canvas_schematic is
 						insert_net_segment (
 							module			=> current_active_module,
 							sheet			=> current_active_sheet,
-							net_name_given	=> route.name, -- RESET_N
+							net_name_given	=> route.name, -- RESET_N, or empty
 							segment			=> (
 									start_point	=> route.path.bend_point,
 									end_point	=> route.path.end_point,

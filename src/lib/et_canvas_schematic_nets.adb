@@ -452,8 +452,8 @@ package body et_canvas_schematic_nets is
 		segment			: in et_schematic.type_net_segment;
 		log_threshold	: in type_log_level)
 	is 
-		start_point : et_coordinates.type_position := to_position (segment.start_point, sheet);
-		end_point	: et_coordinates.type_position := to_position (segment.end_point, sheet);
+		start_point : constant et_coordinates.type_position := to_position (segment.start_point, sheet);
+		end_point	: constant et_coordinates.type_position := to_position (segment.end_point, sheet);
 
 		use et_schematic;
 		use et_schematic_ops.nets;
@@ -473,25 +473,30 @@ package body et_canvas_schematic_nets is
 
 		log_indentation_up;
 
-		-- Look for already existing nets at the start of the route:
+		-- Look for already existing nets at the start of the segment:
 		segments_at_start_point := collect_segments (
 			module			=> module,
 			place			=> start_point,
 			catch_zone		=> zero,
 			log_threshold	=> log_threshold + 2);
 
+		-- We assume there are either no segments at all or 
+		-- segments belonging to the same net at the start point:
 		net_name_start := first_net (segments_at_start_point);
 		
-		-- Look for already existing nets at the end of the route:
+		-- Look for already existing nets at the end of the segment:
 		segments_at_end_point := collect_segments (
 			module			=> module,
 			place			=> end_point,
 			catch_zone		=> zero,
 			log_threshold	=> log_threshold + 2);
 
+		-- We assume there are either no segments at all or 
+		-- segments belonging to the same net at the end point:
 		net_name_end := first_net (segments_at_end_point);
 		
-		-- If no nets at BOTH start AND end point:
+		-- If no nets at BOTH start AND end point, then
+		-- an anonymous net or an explicit named net will be generated:
 		if is_empty (net_name_start) and is_empty (net_name_end) then
 
 			if is_empty (net_name_given) then -- no explicit net name provided
@@ -522,7 +527,9 @@ package body et_canvas_schematic_nets is
 
 				net_cursor := locate_net (module, net_name_given);
 
-				-- Insert the new segment:
+				-- If net_cursor is no_element then a new explicit named net will be generated.
+				-- If net_cursor points to an existing net, then the existing net will be
+				-- extended by the segment:
 				et_schematic_ops.nets.insert_segment (
 					module, net_cursor, sheet, net_name_given, segment, log_threshold + 2);
 
@@ -536,44 +543,31 @@ package body et_canvas_schematic_nets is
 		-- the net at the start point is extended by the new segment:
 		if not is_empty (net_name_start) and is_empty (net_name_end) then
 
-			if is_empty (net_name_given) then
-				log (text => "attaching start point of new segment to net "
-					& et_general.to_string (net_name_start),
-					level => log_threshold + 1);
-				
-				log_indentation_up;
-
-				net_cursor := locate_net (module, net_name_start);
-				
-				-- Extend the existing net net_name_start by the given segment:
-				et_schematic_ops.nets.insert_segment (
-					module, net_cursor, sheet, net_name_start, segment, log_threshold + 2);
-
-				status_clear;
-				
-				log_indentation_down;
-				
-			else -- explicit net name given
-				log_indentation_up;
-
-				net_cursor := locate_net (module, net_name_start);
-
-				-- The net to be extended must have the same name as the explicit
-				-- given net name:
-				if key (net_cursor) = net_name_given then
-					
-					-- Extend the existing net net_name_start by the given segment:
-					et_schematic_ops.nets.insert_segment (
-						module, net_cursor, sheet, net_name_start, segment, log_threshold + 2);
-
-					status_clear;
-				else
-					set_status ("Attempt to connect net " 
-						& et_general.to_string (net_name_given)
-						& " with net " & et_general.to_string (net_name_start) & " rejected !");
-				end if;
+			log (text => "attaching start point of new segment to net "
+				& et_general.to_string (net_name_start),
+				level => log_threshold + 1);
 			
-				log_indentation_down;
+			log_indentation_up;
+
+			net_cursor := locate_net (module, net_name_start);
+			
+			-- Extend the existing net net_name_start by the given segment:
+			et_schematic_ops.nets.insert_segment (
+				module, net_cursor, sheet, net_name_start, segment, log_threshold + 2);
+
+			status_clear;
+			
+			log_indentation_down;
+				
+			-- The net to be extended must have the same name as the explicit
+			-- given net name:
+			if not is_empty (net_name_given) then
+
+				set_status ("Net name " 
+					& et_general.to_string (net_name_given)
+					& " ignored on attempt to extend net " 
+					& et_general.to_string (net_name_start) & " !");
+
 			end if;
 		end if;
 
@@ -581,74 +575,60 @@ package body et_canvas_schematic_nets is
 		-- the net at the end point is extended by the new segment:
 		if not is_empty (net_name_end) and is_empty (net_name_start) then
 
-			if is_empty (net_name_given) then
-				log (text => "attaching end point of new segment to net " 
-					& et_general.to_string (net_name_end),
-					level => log_threshold + 1);
-				
-				log_indentation_up;
-
-				net_cursor := locate_net (module, net_name_end);
+			log (text => "attaching end point of new segment to net " 
+				& et_general.to_string (net_name_end),
+				level => log_threshold + 1);
 			
-				-- Extend the existing net net_name_end by the given segment:
-				et_schematic_ops.nets.insert_segment (
-					module, net_cursor, sheet, net_name_end, segment, log_threshold + 2);
+			log_indentation_up;
 
-				status_clear;
-
-				log_indentation_down;
-				
-			else -- explicit net name given
-				log_indentation_up;
-
-				net_cursor := locate_net (module, net_name_end);
-
-				-- The net to be extended must have the same name as the explicit
-				-- given net name:
-				if key (net_cursor) = net_name_given then
-					
-					-- Extend the existing net net_name_end by the given segment:
-					et_schematic_ops.nets.insert_segment (
-						module, net_cursor, sheet, net_name_end, segment, log_threshold + 2);
-
-					status_clear;
-				else
-					set_status ("Attempt to connect net " 
-						& et_general.to_string (net_name_given) &
-						" with net " & et_general.to_string (net_name_end) & " rejected !");
-				end if;
-			
-				log_indentation_down;
-			end if;
-		end if;
-
+			net_cursor := locate_net (module, net_name_end);
 		
-		-- If net at start point AND at end point have the same name then
-		-- the net at the end point is extended by the new segment:
+			-- Extend the existing net net_name_end by the given segment:
+			et_schematic_ops.nets.insert_segment (
+				module, net_cursor, sheet, net_name_end, segment, log_threshold + 2);
+
+			status_clear;
+
+			log_indentation_down;
+
+			-- The net to be extended must have the same name as the explicit
+			-- given net name:
+			if not is_empty (net_name_given) then
+				
+				set_status ("Net name " 
+					& et_general.to_string (net_name_given)
+					& " ignored on attempt to extend net " 
+					& et_general.to_string (net_name_end) & " !");
+
+			end if;
+
+		end if;
+		
+		-- If net at start point AND at end point then extend the
+		-- net at the start point by the segment:
 		if not is_empty (net_name_end) and not is_empty (net_name_start) then
 
-			if net_name_end = net_name_start then -- same names
-				log_indentation_up;
+			log_indentation_up;
 
-				net_cursor := locate_net (module, net_name_end);
+			net_cursor := locate_net (module, net_name_start);
 
-				-- Extend the existing net net_name_end by the given segment:
-				et_schematic_ops.nets.insert_segment (
-					module, net_cursor, sheet, net_name_end, segment, log_threshold + 2);
-				
-				status_clear;
-				
-				log_indentation_down;			
-			else
+			-- Extend the existing net net_name_start by the given segment:
+			et_schematic_ops.nets.insert_segment (
+				module, net_cursor, sheet, net_name_start, segment, log_threshold + 2);
 			
-				--log (WARNING, "Attempt to connect net " & to_string (net_name_start) &
-					--" with net " & to_string (net_name_end) & " rejected !");
+			status_clear;
+			
+			log_indentation_down;			
 
-				set_status ("Attempt to connect net " & et_general.to_string (net_name_start)
-					& " with net " & et_general.to_string (net_name_end) & " rejected !" 
-					& " Solution: Rename one of them !");
+			if not is_empty (net_name_given) then
+
+				set_status ("Net name " 
+					& et_general.to_string (net_name_given)
+					& " ignored on attempt to connect strands " 
+					& et_general.to_string (net_name_end) & " !");
 
 			end if;
+			
 		end if;
 		
 		log_indentation_down;
