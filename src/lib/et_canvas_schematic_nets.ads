@@ -188,6 +188,8 @@ package et_canvas_schematic_nets is
 	-- 4. The start and end points of the segment to be inserted must
 	--    have been validated beforehand  
 	--    (via function valid_for_net_segment. see below.).
+	-- 5. Calls et_schematic_ops.nets.insert_segment for the final
+	--    insertion of the segment in the targeted net.
 	procedure insert_net_segment (
 		module			: in pac_generic_modules.cursor;
 		net_name_given	: in type_net_name.bounded_string; -- RESET_N
