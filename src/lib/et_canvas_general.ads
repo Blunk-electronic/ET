@@ -108,7 +108,8 @@ package et_canvas_general is
 	-- incomplete. It will then be completed via an interactive
 	-- graphical completition process.
 	-- If the command is waiting for finalization (like pressing space key
-	-- to place a unit) then the flag finalization_pending goes true.
+	-- to place a unit or to draw a net) then the flag 
+	-- finalization_pending goes true.
 	type type_single_cmd_status is record
 
 		-- the command to be executed like "schematic blood_sample_analyzer set value C1 100n"

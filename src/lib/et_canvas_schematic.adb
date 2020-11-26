@@ -631,6 +631,15 @@ package body et_canvas_schematic is
 		self.update_coordinates_display;
 	end reset_grid_and_cursor;
 
+	procedure set_grid (
+		self	: not null access type_view;
+		density	: in type_grid_density)
+	is begin
+		grid_density := density;
+		cursor_main.position := self.snap_to_grid (cursor_main.position);
+		self.update_coordinates_display;
+	end set_grid;
+
 	
 	procedure move_cursor (
 		self		: not null access type_view;
@@ -818,10 +827,6 @@ package body et_canvas_schematic is
 		tool	: in type_tool;
 		point	: in type_point)
 	is begin
-		-- When drawing net segments, we enforce the default grid
-		-- and snap the cursor position to the default grid:
-		self.reset_grid_and_cursor;
-
 		-- Set the tool being used for this net so that procedure
 		-- draw_net_segment_being_drawn knows where to get the end point from.
 		route.path.tool := tool;
@@ -1113,21 +1118,23 @@ package body et_canvas_schematic is
 				when GDK_LC_n =>
 					noun := NOUN_NET;
 					
-					set_status (status_click_left & "or " 
-						& status_press_space 
-						& status_set_start_point 
-						& status_hint_for_abort);
-					
+					set_status (status_draw_net);
+
+					-- we start a new route:
 					reset_net_route;
 
 					-- When drawing net segments, we enforce the default grid
 					-- and snap the cursor position to the default grid:
 					self.reset_grid_and_cursor;
-					
+				
 				-- If space pressed, then the operator wishes to operate via keyboard:
 				when GDK_Space =>
 					case noun is
 						when NOUN_NET =>
+							-- When drawing net segments, we enforce the default grid
+							-- and snap the cursor position to the default grid:
+							self.reset_grid_and_cursor;
+
 							self.make_net_route (KEYBOARD, cursor_main.position);	
 							
 						when others => null;
@@ -1396,6 +1403,9 @@ package body et_canvas_schematic is
 					label.appearance := SIMPLE;
 					set_status (et_canvas_schematic_nets.status_place_label_simple);
 
+					-- For placing simple net labels, the fine grid is required:
+					self.set_grid (FINE);
+					
 				when GDK_L =>
 					noun := NOUN_LABEL;
 					label.appearance := TAG;
@@ -1551,14 +1561,22 @@ package body et_canvas_schematic is
 					noun := NOUN_DEVICE;					
 					set_status (et_canvas_schematic_units.status_add);
 
+					-- When adding units, we enforce the default grid
+					-- and snap the cursor position to the default grid:
+					self.reset_grid_and_cursor;
+					
 					-- open device model selection
 					add_device; 
-
+					
 				-- If space pressed, then the operator wishes to operate via keyboard:	
 				when GDK_Space =>
 					case noun is
 
 						when NOUN_DEVICE =>
+							-- When adding units, we enforce the default grid
+							-- and snap the cursor position to the default grid:
+							self.reset_grid_and_cursor;
+
 							-- If a unit has been selected already, then
 							-- the number of "activate" actions must be counted.
 							-- The "activate" action in this case is pressing the
@@ -1794,6 +1812,7 @@ package body et_canvas_schematic is
 				if single_cmd_status.finalization_pending and primary_tool = KEYBOARD then
 					case verb is
 						when VERB_DRAG		=> drag;
+						when VERB_DRAW		=> draw;
 						when VERB_INVOKE	=> invoke;
 						when VERB_MOVE		=> move;
 						when others			=> null;
@@ -1986,6 +2005,10 @@ package body et_canvas_schematic is
 					case noun is
 						when NOUN_DEVICE =>
 
+							-- When adding units, we enforce the default grid
+							-- and snap the cursor position to the default grid:
+							self.reset_grid_and_cursor;
+							
 							-- If a unit has been selected already, then
 							-- the number of "activate" actions must be counted.
 							-- The "activate" action in this case is a left click.

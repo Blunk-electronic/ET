@@ -224,12 +224,21 @@ package et_canvas_schematic is
 	-- Multiplier for grid densities:
 	grid_density_multiplier_coarse	: constant type_distance_positive := 10.0;
 	grid_density_multiplier_normal	: constant type_distance_positive := 1.0;
-	grid_density_multiplier_fine	: constant type_distance_positive := 0.1;	
+	grid_density_multiplier_fine	: constant type_distance_positive := 0.1;
 
 	-- Resets the grid density to default and snaps the cursor
-	-- to the nearest grid point:
+	-- to the nearest grid point.
+	-- Updates the coordinates display.
 	procedure reset_grid_and_cursor (
 		self : not null access type_view);
+
+	-- Sets the grid density and snaps the cursor
+	-- to the nearest grid point.
+	-- Updates the coordinates display.
+	procedure set_grid (
+		self	: not null access type_view;
+		density	: in type_grid_density); -- COARSE, NORMAL, FINE
+
 	
 	overriding procedure move_cursor (
 		self		: not null access type_view;

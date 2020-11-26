@@ -159,6 +159,14 @@ package et_canvas_schematic_nets is
 
 
 -- DRAW NET SEGMENT
+
+	status_draw_net : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& status_set_start_point 
+		& status_hint_for_abort;
+
 	
 	-- When a net route is being drawn, then this global variable
 	-- shall be used:

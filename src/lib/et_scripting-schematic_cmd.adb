@@ -2001,6 +2001,10 @@ is
 								check_net_name_characters (to_net_name (f (5)));
 								et_canvas_schematic_nets.route.name := to_net_name (f (5));
 
+								set_status (et_canvas_schematic_nets.status_draw_net);
+
+								single_cmd_status.finalization_pending := true;
+
 							when others => null;								
 						end case;
 						

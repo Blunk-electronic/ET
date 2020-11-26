@@ -1044,6 +1044,11 @@ package body et_canvas_schematic_units is
 		return result;
 	end device_model_selection_key_event;
 
+	procedure device_model_selection_close (
+		self	: access gtk_widget_record'class) 
+	is begin
+		device_selection.open := false;
+	end device_model_selection_close;
 	
 	procedure add_device is
 		use gtk.window;
@@ -1077,7 +1082,9 @@ package body et_canvas_schematic_units is
 			
 			gtk_new (device_selection.window);
 			device_selection.window.set_title ("Select a device model");
+			device_selection.window.on_destroy (device_model_selection_close'access);
 			device_selection.window.on_key_press_event (device_model_selection_key_event'access);
+
 			
 			gtk_new_hbox (box_main, homogeneous => false, spacing => gint (spacing));
 			add (device_selection.window, box_main);
