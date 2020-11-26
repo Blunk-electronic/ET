@@ -1994,15 +1994,17 @@ is
 					when NOUN_NET =>
 						case fields is
 							when 4 =>
-								net_name_missing;
+								-- no net name given -> anonymous net will be drawn
+								set_status (et_canvas_schematic_nets.status_draw_net);
+								single_cmd_status.finalization_pending := true;
 								
 							when 5 => -- like "draw net RESET_N"
+								-- explicit net name given
 								check_net_name_length (f (5));
 								check_net_name_characters (to_net_name (f (5)));
 								et_canvas_schematic_nets.route.name := to_net_name (f (5));
 
 								set_status (et_canvas_schematic_nets.status_draw_net);
-
 								single_cmd_status.finalization_pending := true;
 
 							when others => null;								

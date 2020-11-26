@@ -182,6 +182,10 @@ Commands and Verb-Noun key sequences
 
 #. Draw net
 
+	.. code-block::
+
+	draw net [RESET_N]
+
 	|VNS| d n
 
 	change bend style: left mouse click or key b
