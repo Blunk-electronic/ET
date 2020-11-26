@@ -105,7 +105,7 @@ schematic led_driver zoom center 10 10 # x/y
 ```
 
 ```
-schematic led_driver zoom center 10 10 2 # x/y scale
+schematic led_driver zoom center 10 10 2 # x/y level
 ```
 
 To zoom at the current cursor position keep CTRL pressed and press + or -.

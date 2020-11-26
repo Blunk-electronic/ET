@@ -7,6 +7,12 @@ Schematic Editor
 
 .. |VNS| replace:: Verb-Noun key sequence:
 
+.. |NI| replace:: Not intended
+
+.. |SC| replace:: Short Cut:
+
+.. |CS| replace:: Under Construction
+
 +++++++++++++++++
 Devices and Units
 +++++++++++++++++
@@ -22,6 +28,18 @@ Commands and Verb-Noun key sequences
 		add device
 
 	|VNS| a d
+
+#. Show device
+
+	.. code-block::
+
+		show device R1
+
+	.. code-block::
+
+		show device IC1 IO-BANK2
+		
+	|VNS| |NI|
 
 	
 #. Rename device
@@ -257,4 +275,137 @@ Commands and Verb-Noun key sequences
 
 	|VNS| del l
 
+
+++++++++++++++++++
+Displaying Objects
+++++++++++++++++++
+
+Commands and Verb-Noun key sequences
+------------------------------------
+
+#. Display nets
+
+	.. code-block::
+
+		display nets [on/off]
+
+	|VNS| |NI|
+
 	
+#. Display ports
+
+	.. code-block::
+
+		display ports [on/off]
+
+	|VNS| |NI|
+	
+	
+#. Display device names
+
+	.. code-block::
+
+		display names [on/off]
+
+	|VNS| |NI|
+
+	
+#. Display device values
+
+	.. code-block::
+
+		display values [on/off]
+
+	|VNS| |NI|
+
+	
+#. Display device purposes
+
+	.. code-block::
+
+		display purposes [on/off]
+
+	|VNS| |NI|
+
+
+++++++++++++++++++
+Zooming and Cursor
+++++++++++++++++++
+
+Commands and Verb-Noun key sequences
+------------------------------------
+
+#. Zoom to fit
+
+	.. code-block::
+
+		zoom fit
+
+	|VNS| |CS|
+
+	
+#. Zoom by level
+
+	.. code-block::
+
+		zoom level 10
+	
+	|VNS| |NI|
+
+	
+#. Zoom at
+
+	.. code-block::
+
+		zoom center 140 78 [level]
+
+	|VNS| |NI|
+	
+
+#. Positioning the Cursor
+
+	.. code-block::
+
+		position cursor absolute 25 30
+	
+	|VNS| |NI|
+
+	.. code-block::
+
+		position cursor relative -5 0
+	
+	|VNS| |NI|
+
+	
+	
+++++++
+Sheets
+++++++
+
+Commands and Verb-Noun key sequences
+------------------------------------
+
+#. Show a sheet
+
+	.. code-block::
+
+		show sheet 2
+
+	|VNS| |NI|
+
++++++++
+Modules
++++++++
+
+Commands and Verb-Noun key sequences
+------------------------------------
+
+#. Show (or open) a module
+
+	.. code-block::
+
+		show module LED-driver [sheet]
+
+	|VNS| |NI|
+		
+		
