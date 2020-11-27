@@ -66,6 +66,7 @@ with et_material;
 
 with et_conventions;
 with et_project.rigs;
+with et_exceptions;				use et_exceptions;
 
 package body et_project.modules is
 

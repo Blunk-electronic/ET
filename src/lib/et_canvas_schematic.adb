@@ -560,16 +560,20 @@ package body et_canvas_schematic is
 		use et_project.modules.pac_generic_modules;
 		cursor : et_project.modules.pac_generic_modules.cursor := find (generic_modules, module);
 	begin
-		if cursor /= pac_generic_modules.no_element then -- module exists in project
+		-- If module already loaded in collection of generic modules, set the current_active_module:
+		if cursor /= pac_generic_modules.no_element then 
 			current_active_module := cursor;
 		else
-			log (WARNING, "Generic module " & enclose_in_quotes (to_string (module)) 
-				 & " does not exist !",
-				 console => true);
+			-- If module not loaded yet, read it and store it in collection of generic modules:
+			read_module (
+				file_name		=> append_extension (to_string (module)),
+				log_threshold	=> log_threshold + 1);
 
-			
-			-- CS list available modules
 		end if;
+
+		-- CS exception handler could catch semantic_error_1 and show
+		-- a list of available modules (which are inside the project directory)
+		-- in the status bar.
 	end set_module;
 
 	procedure init_drawing (

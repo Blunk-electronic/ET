@@ -41,12 +41,9 @@ with et_pcb_rw.device_packages;	use et_pcb_rw.device_packages;
 separate (et_project.modules)
 
 procedure read_module (
--- Reads a module file and stores its content as generic module in container modules.
--- The file name may contain environment variables.
--- The file must exist, must be visible from the current working directory.
 	file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 	log_threshold	: in et_string_processing.type_log_level) 
-	is
+is
 
 	previous_input : ada.text_io.file_type renames current_input;
 
@@ -6296,7 +6293,7 @@ procedure read_module (
 	use ada.directories;
 	
 begin -- read_module
-	log (text => "opening file " & enclose_in_quotes (file_name) & " ...", level => log_threshold);
+	log (text => "opening module file " & enclose_in_quotes (file_name) & " ...", level => log_threshold);
 	--log (text => "full name " & enclose_in_quotes (file_name_expanded), level => log_threshold + 1);
 	log_indentation_up;
 	
@@ -6320,7 +6317,8 @@ begin -- read_module
 			position	=> module_cursor,
 			inserted	=> module_inserted);
 
-		-- If the module is new, then open the file and read it. 
+		-- If the module is new to the collection of generic modules,
+		-- then open the module file file and read it. 
 		-- Otherwise notify operator that module has already been loaded.			 
 		if module_inserted then
 			
@@ -6373,9 +6371,8 @@ begin -- read_module
 		end if;
 		
 	else -- module file not found
-		log (ERROR, "module file " & enclose_in_quotes (file_name) &
-				" not found !", console => true);
-		raise constraint_error;
+		raise semantic_error_1 with
+			"ERROR: Module file " & enclose_in_quotes (file_name) & " not found !";
 	end if;
 
 	log_indentation_down;

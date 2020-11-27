@@ -201,7 +201,8 @@ package et_canvas_schematic is
 		area    : type_rectangle);
 
 
-	-- Sets the active module to be displayed in the canvas:
+	-- Sets the active module to be displayed in the canvas.
+	-- The module must exist inside the current project directory.
 	procedure set_module (
 		module	: in et_general.type_module_name.bounded_string); -- motor_driver
 
