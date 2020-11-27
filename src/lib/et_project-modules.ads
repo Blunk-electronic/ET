@@ -278,9 +278,8 @@ package et_project.modules is
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure delete_module (
-	-- Deletes a generic module (from container generic_modules).
-	-- The module must be inside the current project. If it is outside
-	-- the project, a warning will be issued and it will NOT be deleted.
+	-- Deletes a generic module (from container generic_modules) and
+	-- the module file (*.mod) itself.
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level);
 	

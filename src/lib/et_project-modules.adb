@@ -428,8 +428,6 @@ package body et_project.modules is
 	end save_module;
 	
 	procedure delete_module (
-	-- Deletes a generic module in container generic_modules. 
-	-- Deletes the module file of the generic module.
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
 
@@ -438,40 +436,48 @@ package body et_project.modules is
 		use et_string_processing;
 		use ada.directories;
 
-		file_name : constant string := to_string (module_name) &
-			latin_1.full_stop & module_file_name_extension;
+		file_name : constant string := append_extension (to_string (module_name));
 		-- motor_driver.mod or templates/clock_generator.mod
+
+		file_found : boolean := true;
+		module_found : boolean := true;
 	begin
 		log (
 			text	=> "deleting module " & enclose_in_quotes (to_string (module_name)) & " ...",
 			level	=> log_threshold);
 
-		-- We delete the module only if it exists:
+		-- Delete the module file in case it exists already:
+		if exists (file_name) then
+			delete_file (file_name);
+		else
+			file_found := false;
+		end if;
+		
+		-- Remove the module from collection of generic modules:
 		if module_cursor /= pac_generic_modules.no_element then
 	
-			-- Make sure the module file is inside the current project directory.
-			-- If the file is outside the project, issue a warning and do not delete.
-			if inside_project_directory (to_string (module_name)) then
+			---- Make sure the module file is inside the current project directory.
+			---- If the file is outside the project, issue a warning and do not delete.
+			--if inside_project_directory (to_string (module_name)) then
 				
-				pac_generic_modules.delete (
-					container	=> generic_modules,
-					position	=> module_cursor);
+			pac_generic_modules.delete (
+				container	=> generic_modules,
+				position	=> module_cursor);
 
-				-- Delete the module file in case it exists already:
-				if exists (file_name) then
-					delete_file (file_name);
-				end if;
-				
-			else
-				log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
-					 " is outside the project and will not be deleted !");
-			end if;
-				
+			--else
+				--log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
+					 --" is outside the project and will not be deleted !");
+			--end if;
 		else
-			log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
-					" does not exist !");
+			module_found := false;
 		end if;
-	
+
+		-- If neither the module nor the module file have been found, raise error:
+		if not file_found and not module_found then
+			raise semantic_error_1 with
+				"ERROR: Neither module " & enclose_in_quotes (to_string (module_name)) 
+				& " nor the file " & enclose_in_quotes (file_name) & " exist !";
+		end if;
 	end delete_module;
 
 

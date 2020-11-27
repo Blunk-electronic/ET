@@ -562,6 +562,31 @@ is
 								
 							when others => command_incomplete;
 						end case;
+
+					when NOUN_MODULE =>
+						case fields is
+							when 4 =>
+								-- Delete the current active module:
+								delete_module (
+									module_name		=> active_module,
+									log_threshold	=> log_threshold + 1);
+
+								current_active_module := pac_generic_modules.no_element;
+								current_active_sheet := 1;
+								
+							when 5 =>
+								-- Delete the module specified in field 5:
+								delete_module (
+									module_name		=> to_module_name (f (5)), -- led_driver_test
+									log_threshold	=> log_threshold + 1);
+
+								--current_active_module := pac_generic_modules.no_element;
+								-- if delete module was active
+								
+							when 6 .. count_type'last => too_long;
+								
+							when others => command_incomplete;
+						end case;
 						
 					when NOUN_NET =>
 						case fields is
