@@ -62,6 +62,7 @@ package et_modes.schematic is
 		VERB_RENAME,
 		VERB_RENUMBER,
 		VERB_ROTATE,
+		VERB_SAVE,
 		VERB_SET,
 		VERB_SHOW,
 		VERB_UNMOUNT,

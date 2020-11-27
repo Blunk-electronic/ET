@@ -38,8 +38,9 @@
 separate (et_project.modules)
 
 procedure save_module (
-	module_cursor		: in pac_generic_modules.cursor;
-	log_threshold		: in et_string_processing.type_log_level) 
+	module_cursor	: in pac_generic_modules.cursor;
+	save_as_name	: in type_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
+	log_threshold	: in et_string_processing.type_log_level)
 is
 	use et_string_processing;
 	use pac_generic_modules;
@@ -56,20 +57,41 @@ is
 		use pac_project_name;
 		use type_et_project_path;
 		use et_general;
-
-		-- compose the full file name
-		file_name : constant string := ( -- motor_driver.mod, templates/clock_generator.mod
-			to_string (key (module_cursor)) &
-			latin_1.full_stop &
-			module_file_name_extension);
-													  
 	begin
-		-- create module file and write in it a nice header
-		create (
-			file => module_file_handle,
-			mode => out_file, 
-			name => file_name);
-			
+		-- Compose the target full file name and create the module file:
+		
+		if type_module_name.length (save_as_name) = 0 then
+			-- The module is to be saved with its own name:
+
+			log (text => "Saving module as " 
+				 & enclose_in_quotes (to_string (key (module_cursor))) & " ...",
+				 level => log_threshold + 1);
+				 
+			create (
+				file => module_file_handle,
+				mode => out_file, 
+				name => to_string (key (module_cursor))
+						& latin_1.full_stop
+						& module_file_name_extension
+				);
+		else
+			-- The module is to be saved with a different name:
+
+			log (text => "Saving module as " 
+				 & enclose_in_quotes (to_string (save_as_name)) & " ...",
+				 level => log_threshold + 1);
+
+			create (
+				file => module_file_handle,
+				mode => out_file, 
+				name => to_string (save_as_name)
+						& latin_1.full_stop
+						& module_file_name_extension
+				);
+
+		end if;
+		
+		-- write in a nice header
 		set_output (module_file_handle);
 		put_line (comment_mark & " " & system_name & " module");
 		put_line (comment_mark & " " & date);
@@ -93,7 +115,9 @@ is
 		close (module_file_handle);
 	end write_footer;
 	
-	function rotation (pos : in et_pcb_coordinates.pac_geometry_brd.type_position'class) return string is -- CS make generic ?
+	function rotation (pos : in et_pcb_coordinates.pac_geometry_brd.type_position'class)  -- CS make generic ?
+		return string
+	is
 		use et_pcb_coordinates.pac_geometry_brd;
 	begin
 		return to_string (rot (pos));

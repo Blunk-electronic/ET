@@ -39,6 +39,7 @@ The concept is most easily to understand by examples. The module to be designed 
 
 
 ## MODULES
+In the project domain:
 ```
 project create module led_driver
 ```
@@ -50,6 +51,11 @@ project save module led_driver
 ```
 ```
 project delete module led_driver
+```
+
+In the schematic domain:
+```
+schematic save module [led_driver]
 ```
 
 

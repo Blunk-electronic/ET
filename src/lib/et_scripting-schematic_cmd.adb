@@ -291,7 +291,9 @@ is
 	end display;
 
 	-- Parses the single_cmd_status.cmd:
-	procedure parse is begin
+	procedure parse is 
+		use et_project.modules;
+	begin
 		log (text => "parsing command: " 
 			& enclose_in_quotes (to_string (single_cmd_status.cmd)),
 			level => log_threshold);
@@ -1517,6 +1519,31 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+			when VERB_SAVE =>
+				case noun is
+					when NOUN_MODULE =>
+						case fields is
+							when 4 =>
+								-- Save the module with its own name:
+								save_module (
+									module_cursor	=> current_active_module,
+									log_threshold	=> log_threshold + 1);
+
+							when 5 =>
+								-- Save the module with a different name:
+								save_module (
+									module_cursor	=> current_active_module,
+									save_as_name	=> to_module_name (f (5)), -- led_driver_test
+									log_threshold	=> log_threshold + 1);
+								
+							when 6 .. count_type'last => too_long;
+								
+							when others => command_incomplete;
+						end case;			
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
 			when VERB_SET =>
 				case noun is
 					when NOUN_GRID =>
@@ -2389,7 +2416,8 @@ is
 					when others => null; -- CS
 				end case;
 
-			when others => null;
+			when others => null; -- CS error message in status bar for other 
+								-- incomplete commands such as zoom, position, ...
 		
 		end case;
 	end propose_arguments;

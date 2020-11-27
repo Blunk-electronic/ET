@@ -108,11 +108,14 @@ package et_project.modules is
 		direction	: in et_submodules.type_netchanger_port_name) -- master/slave 		
 		return boolean;
 	
-	-- Saves the given generic module. The path and file name is specified
-	-- by the name of the module (key (module_cursor)) like "templates/clock_generator.mod"
+	-- Saves the given generic module. 
+	-- Saves the module with its own name if save_as_name is empty.
+	-- If save_as_name contains something, then the module is saved
+	-- with that name. 
 	procedure save_module (
-		module_cursor		: in pac_generic_modules.cursor;
-		log_threshold		: in et_string_processing.type_log_level);
+		module_cursor	: in pac_generic_modules.cursor;
+		save_as_name	: in type_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
+		log_threshold	: in et_string_processing.type_log_level);
 	
 	
 

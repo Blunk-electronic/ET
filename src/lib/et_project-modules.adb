@@ -331,9 +331,10 @@ package body et_project.modules is
 	end netchanger_as_port_available;
 
 	procedure save_module (
-		module_cursor		: in pac_generic_modules.cursor;
-		log_threshold		: in et_string_processing.type_log_level) 
-		is separate;
+		module_cursor	: in pac_generic_modules.cursor;
+		save_as_name	: in type_module_name.bounded_string := to_module_name (""); -- motor_driver, templates/clock_generator							  
+		log_threshold	: in et_string_processing.type_log_level) 
+	is separate;
 
 	function to_string (section : in type_section) return string is
 	-- Converts a section like SEC_NET to a string "net".

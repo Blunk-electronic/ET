@@ -20,7 +20,6 @@ Devices and Units
 Commands and Verb-Noun key sequences
 ------------------------------------
 
-
 #. Add device
 
 	.. code-block::
@@ -283,6 +282,15 @@ Displaying Objects
 Commands and Verb-Noun key sequences
 ------------------------------------
 
+#. Display grid
+
+	.. code-block::
+
+		display grid [on/off]
+
+	|VNS| |NI|
+
+
 #. Display nets
 
 	.. code-block::
@@ -328,9 +336,9 @@ Commands and Verb-Noun key sequences
 	|VNS| |NI|
 
 
-++++++++++++++++++
-Zooming and Cursor
-++++++++++++++++++
+++++++++++++++++++++++++
+Zooming, Cursor and Grid
+++++++++++++++++++++++++
 
 Commands and Verb-Noun key sequences
 ------------------------------------
@@ -376,7 +384,19 @@ Commands and Verb-Noun key sequences
 	
 	|VNS| |NI|
 
+
+#. Grid
+
+	.. code-block::
+
+		set grid 2 2
+
+	.. code-block::
+
+		set grid 10 5
 	
+	|VNS| |NI|
+
 	
 ++++++
 Sheets
@@ -406,6 +426,49 @@ Commands and Verb-Noun key sequences
 
 		show module LED-driver [sheet]
 
-	|VNS| |NI|
+	|VNS| |CS|
+	
+	
+.. #. Create a module
+.. 
+.. 	.. code-block::
+.. 
+.. 		create module LED-driver
+.. 
+.. 	.. code-block::
+.. 
+.. 		create module templates/clock-generator
+.. 		
+.. 	|VNS| |CS|
 		
+
+#. Save a module
+
+	- save with its own name
+	
+	.. code-block::
+
+		save module
+
+	|VNS| |CS|
+
+	- save with a different name
+	
+	.. code-block::
+
+		save module LED-driver_test
+
+	|VNS| |NI|
+
+	
+	
+.. #. Delete a module
+.. 
+.. 	.. code-block::
+.. 
+.. 		delete module LED-driver
+.. 
+.. 	|VNS| |CS|
+
+
 		
