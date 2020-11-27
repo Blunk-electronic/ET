@@ -462,13 +462,13 @@ Commands and Verb-Noun key sequences
 
 	
 	
-.. #. Delete a module
-.. 
-.. 	.. code-block::
-.. 
-.. 		delete module LED-driver
-.. 
-.. 	|VNS| |CS|
+#. Delete a module
+
+	.. code-block::
+
+		delete module [LED-driver]
+
+	|VNS| |CS|
 
 
 		

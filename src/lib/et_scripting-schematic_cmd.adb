@@ -290,6 +290,71 @@ is
 		-- CS exception handler if status is invalid
 	end display;
 
+
+	procedure delete_active_module is 
+		use et_project.modules;
+		use pac_generic_modules;
+	begin
+		-- Delete the current active module:
+		delete_module (
+			module_name		=> active_module,
+			log_threshold	=> log_threshold + 1);
+
+		-- As long as there are other modules, open the 
+		-- first of the generic modules.
+		-- If no modules available any more, close the schematic
+		-- and board editor:
+		if length (generic_modules) > 0 then
+			
+			current_active_module := generic_modules.first;
+			current_active_sheet := 1;
+
+			--log (text => "set module " & enclose_in_quotes (to_string (active_module)), level => log_threshold + 1);
+
+			-- Update module name in the schematic window title bar:
+			set_title_bar (active_module);
+			
+			update_sheet_number_display;
+			
+			-- Update the board window title bar:
+			et_canvas_board.set_title_bar (active_module);
+		else
+			terminate_main;
+		end if;
+	end delete_active_module;
+	
+	procedure delete_explicit_module (
+		module_name : in type_module_name.bounded_string) 
+	is
+		use et_project.modules;
+		use pac_generic_modules;
+	begin
+		delete_module (
+			module_name		=> module_name, -- led_driver_test
+			log_threshold	=> log_threshold + 1);
+
+		-- As long as there are other modules, open the 
+		-- first of the generic modules.
+		-- If no modules available any more, close the schematic
+		-- and board editor:
+		if length (generic_modules) > 0 then
+		
+			current_active_module := generic_modules.first;
+			current_active_sheet := 1;
+
+			-- Update module name in the schematic window title bar:
+			set_title_bar (active_module);
+			
+			update_sheet_number_display;
+			
+			-- Update the board window title bar:
+			et_canvas_board.set_title_bar (active_module);
+		else
+			terminate_main;
+		end if;
+	end delete_explicit_module;
+	
+
 	-- Parses the single_cmd_status.cmd:
 	procedure parse is 
 		use et_project.modules;
@@ -565,26 +630,9 @@ is
 
 					when NOUN_MODULE =>
 						case fields is
-							when 4 =>
-								-- Delete the current active module:
-								delete_module (
-									module_name		=> active_module,
-									log_threshold	=> log_threshold + 1);
-
-								current_active_module := pac_generic_modules.no_element;
-								current_active_sheet := 1;
-								
-							when 5 =>
-								-- Delete the module specified in field 5:
-								delete_module (
-									module_name		=> to_module_name (f (5)), -- led_driver_test
-									log_threshold	=> log_threshold + 1);
-
-								--current_active_module := pac_generic_modules.no_element;
-								-- if delete module was active
-								
-							when 6 .. count_type'last => too_long;
-								
+							when 4 => delete_active_module;								
+							when 5 => delete_explicit_module (to_module_name (f (5)));								
+							when 6 .. count_type'last => too_long;								
 							when others => command_incomplete;
 						end case;
 						

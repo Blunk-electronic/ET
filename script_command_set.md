@@ -57,6 +57,9 @@ In the schematic domain:
 ```
 schematic save module [led_driver]
 ```
+```
+schematic delete module [led_driver]
+```
 
 
 ## EXIT
