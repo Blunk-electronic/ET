@@ -3,7 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-System ET Documentation
+.. include:: placeholders.rst
+
+   
+|SysName| Documentation
 =======================
 
 .. toctree::
@@ -11,7 +14,8 @@ System ET Documentation
    :caption: Content:
 
    preface.rst
-   features.rst  
+   features.rst 
+   project.rst
    schematic.rst
    
 Index

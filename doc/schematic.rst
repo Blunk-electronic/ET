@@ -1,17 +1,12 @@
 .. _schematic:
 
+.. include:: placeholders.rst
+
 ****************
 Schematic Editor
 ****************
 
 
-.. |VNS| replace:: Verb-Noun key sequence:
-
-.. |NI| replace:: Not intended
-
-.. |SC| replace:: Short Cut:
-
-.. |CS| replace:: Under Construction
 
 +++++++++++++++++
 Devices and Units
@@ -439,7 +434,7 @@ Commands and Verb-Noun key sequences
 .. 
 .. 		create module templates/clock-generator
 .. 		
-.. 	|VNS| |CS|
+
 		
 
 #. Save a module
@@ -468,7 +463,7 @@ Commands and Verb-Noun key sequences
 
 		delete module [LED-driver]
 
-	|VNS| |CS|
+	|VNS| |NI| (and pretty dangerous ...)
 
 
 		
