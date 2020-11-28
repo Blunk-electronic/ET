@@ -153,7 +153,7 @@ package body et_frames is
 	function to_domain (domain : in string) return type_domain is begin
 		return type_domain'value (domain);
 	end;
-
+	
 	procedure apply_defaults (frame : in out type_frame) is
 
 		-- LINES OF TITLE BLOCK
@@ -324,7 +324,15 @@ package body et_frames is
 		end case;
 	end apply_defaults;
 	
-
+	function make_default_frame (domain : in type_domain) 
+		return type_frame
+	is
+		f : type_frame (domain);
+	begin
+		apply_defaults (f);
+		return f;
+	end make_default_frame;
+	
 	function to_string (cat : in type_schematic_sheet_category) return string is begin
 		return type_schematic_sheet_category'image (cat);
 	end;

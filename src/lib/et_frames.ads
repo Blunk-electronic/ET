@@ -333,15 +333,19 @@ package et_frames is
 	-- Applies defaults to given frame:
 	procedure apply_defaults (frame : in out type_frame);
 
+	-- Generates a default frame for the given domain:
+	function make_default_frame (domain : in type_domain) 
+		return type_frame;
+
 	
 -- THE FINAL FRAME IN A PCB DRAWING
 	
 	-- This is the drawing frame used in a pcb layout:
 	type type_frame_pcb is record
 		template	: pac_template_name.bounded_string := template_pcb_default;
-			-- like $ET_FRAMES/drawing_frame_A3_landscape.frm
+			-- like $ET_FRAMES/drawing_frame_A3_landscape.frb
 
-		frame		: type_frame (PCB);
+		frame		: type_frame (PCB) := make_default_frame (PCB);
 	end record;
 
 	
@@ -377,7 +381,7 @@ package et_frames is
 		template		: pac_template_name.bounded_string := template_schematic_default;
 			-- like $ET_FRAMES/drawing_frame_A4_landscape.frs
 
-		frame			: type_frame (SCHEMATIC);
+		frame			: type_frame (SCHEMATIC) := make_default_frame (SCHEMATIC);
 		
 		descriptions	: pac_schematic_descriptions.map;
 	end record;
