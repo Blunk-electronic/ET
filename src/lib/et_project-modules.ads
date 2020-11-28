@@ -262,8 +262,9 @@ package et_project.modules is
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 		log_threshold	: in et_string_processing.type_log_level);
 
+	-- Creates an empty generic module in container modules.
+	-- Does not create the actual module file !
 	procedure create_module (
-	-- Creates an empty generic module in container modules.								   
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level);
 

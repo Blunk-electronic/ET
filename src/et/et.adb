@@ -38,7 +38,7 @@
 with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
-
+with ada.containers;
 with ada.exceptions; 			use ada.exceptions;
  
 with ada.command_line;			use ada.command_line;
@@ -452,32 +452,43 @@ procedure et is
 		end if;
 	end;
 
-	procedure launch_gui is 
+	procedure launch_schematic_and_board_editor is 
+		use ada.containers;
 		use et_gui;
 		use et_project.modules;
 		use et_project.modules.pac_generic_modules;
 		use pac_module_file_name;
 		use type_module_name;
 
-		-- If no module name was given via command line, then the first
-		-- available module will be opened.
-		-- Note: This is about a generic module.
 		generic_module_name : et_general.type_module_name.bounded_string;
-		
 		module_cursor : pac_generic_modules.cursor;
-
 		script_name_tmp : pac_script_name.bounded_string;
 	begin
-		if length (module_file_name) = 0 then -- module name not specified via cmd line
-			module_cursor := generic_modules.first; -- select first available generic module
-		else
-			-- Convert the optionally given module file name to a module name.
-			generic_module_name := to_module_name (remove_extension (
-				simple_name (pac_module_file_name.to_string (module_file_name))));
+		-- If no generic modules available at all, create an untitled module:
+		if length (generic_modules) = 0 then
 			
-			module_cursor := find (generic_modules, generic_module_name);
+			create_module (
+				module_name		=> to_module_name (untitled),
+				log_threshold	=> 0);
+			-- NOTE: does not create the actual module file (*.mod)
+			
+			module_cursor := generic_modules.first; -- select the untitled generic module
+		else
+		-- Generic module are available:
+			
+			-- If no module name was given via command line, then the first
+			-- available generic module will be opened.
+			if length (module_file_name) = 0 then
+				module_cursor := generic_modules.first; -- select first available generic module
+			else
+				-- Convert the optionally given module file name to a module name.
+				generic_module_name := to_module_name (remove_extension (
+					simple_name (pac_module_file_name.to_string (module_file_name))));
+				
+				module_cursor := find (generic_modules, generic_module_name);
+			end if;
 		end if;
-
+			
 		-- The script name must be passed to gui.single_module as simple name like rename_nets.scr.
 		-- So we render something like motor_driver/rename_nets.scr to just rename_nets.scr:
 		if pac_script_name.length (script_name) > 0 then
@@ -494,7 +505,7 @@ procedure et is
 			script			=> script_name_tmp,
 			log_threshold	=> 0);
 		
-	end launch_gui;
+	end launch_schematic_and_board_editor;
 
 	procedure process_commandline_arguments is
 		use et_project.pac_project_name;
@@ -697,7 +708,7 @@ begin -- main
 
 		case runmode is
 			when MODE_HEADLESS => null;
-			when MODE_MODULE => launch_gui;
+			when MODE_MODULE => launch_schematic_and_board_editor;
 			when others => null;
 		end case;
 		

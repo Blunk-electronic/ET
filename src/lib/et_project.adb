@@ -401,7 +401,7 @@ package body et_project is
 		-- read project configuration file
 		configuration.read_configuration (project_name, log_threshold + 1);
 		
-		-- read the rig configurations (and associated generic module):
+		-- read the rig configurations and generic modules:
 		rigs.read_rigs (log_threshold + 1);
 		
 		-- Restore working directory.

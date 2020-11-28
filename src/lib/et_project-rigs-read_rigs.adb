@@ -459,13 +459,18 @@ procedure read_rigs (
 begin -- read_rigs
 	log (text => "reading rigs ...", level => log_threshold);
 	log_indentation_up;
-		
+
+	-- Load all modules that are inside the project directory.
+	
 	-- CS: It requires discussion whether loading all modules files at this time is reasonable.
-	-- Even if a module will not be used it is going to be loaded. This causes more log information than required.
-	-- A solution could be to load a module on reading the rig configuration file. The drawback is that the user
-	-- would be required to setup a rig configuration even if she wants to design only one board.
+	-- Currentyl, even if a module is not, it is going to be loaded. 
+	-- This causes more log information than required.
+	-- A solution could be to load a module on reading the rig configuration file.
+	-- The drawback is that the user would be required to setup a rig configuration, even 
+	-- if she wants to design only one board.
 	log (text => "looking for module files ...", level => log_threshold + 1);
 	log_indentation_up;
+	
 	start_search (module_file_search, current_directory, module_file_name_extension_asterisk, module_file_filter);
 	if more_entries (module_file_search) then
 		search (current_directory, module_file_name_extension_asterisk, module_file_filter, read_module_file_pre'access);
@@ -473,6 +478,7 @@ begin -- read_rigs
 		log (WARNING, "No modules found !"); -- CS: write implications !
 	end if;
 	end_search (module_file_search);
+	
 	log_indentation_down;
 	
 	log (text => "looking for rig configuration files ...", level => log_threshold + 1);

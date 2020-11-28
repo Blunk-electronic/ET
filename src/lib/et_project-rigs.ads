@@ -150,9 +150,10 @@ package et_project.rigs is
 	section_module				: constant string := "[MODULE";
 
 	-- Assumes the current working directory is a project.
-	-- Searches for rig configuration files (*.rig), reads them and stores 
-	-- them in et_project.rigs.rigs.
-	-- Searches for module files (*.mod), reads them and stores then
+	-- Searches for rig configuration files (*.rig), reads them and 
+	-- stores them in et_project.rigs.rigs.
+	-- Searches for module files (*.mod) in the current directory,
+	-- reads them and stores then
 	-- in et_project.modules.generic_modules.
 	-- Use this procedure when opening a project.
 	procedure read_rigs (

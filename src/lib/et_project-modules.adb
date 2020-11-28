@@ -353,7 +353,6 @@ package body et_project.modules is
 		is separate;
 
 	procedure create_module (
-	-- Creates an empty generic module in container modules.								   
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
 
