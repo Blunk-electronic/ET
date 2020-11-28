@@ -470,7 +470,7 @@ procedure et is
 			create_module (
 				module_name		=> to_module_name (untitled),
 				log_threshold	=> 0);
-			-- NOTE: does not create the actual module file (*.mod)
+			-- NOTE: does not create a module file as this module is still untitled.
 			
 			module_cursor := generic_modules.first; -- select the untitled generic module
 		else
