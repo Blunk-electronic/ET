@@ -185,9 +185,6 @@ package pac_canvas is
 	box_toolbars				: gtk_hbox;
 	toolbar_left, toolbar_right	: gtk_toolbar;
 	
-	button_zoom_to_fit		: gtk_tool_button;
-	button_demo				: gtk_tool_button; -- CS for testing only
-	
 	-- Builds the background boxes box_back, box_left, and box_right:
 	procedure build_background_boxes;
 	
@@ -303,7 +300,7 @@ package pac_canvas is
 	procedure terminate_main;
 	
 	procedure terminate_main (self : access gtk_widget_record'class);
-	procedure zoom_to_fit (self : access glib.object.gobject_record'class);
+	--procedure zoom_to_fit (self : access glib.object.gobject_record'class);
 
 	
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class);

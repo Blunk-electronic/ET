@@ -64,14 +64,10 @@ package body et_gui is
 		-- Show the module name in the title bar:
 		set_title_bar (pac_generic_modules.key (module));
 		
-		window.set_default_size (1024, 768);
+		window.set_default_size (1200, 600);
 
 		-- If the operator wishes to terminate the program (by clicking X)
-		-- the procedure terminate_main (in gui_cb) is to be called.
 		window.on_destroy (terminate_main'access);
-
-		-- If the operator minimizes, maximizes or changes the size in some way:
-		--window.on_configure_event (window_resized'access);
 
 		-- For reaction to keys pressed on the keyboard:
 		window.on_key_press_event (on_key_event'access);
@@ -95,20 +91,6 @@ package body et_gui is
 		gtk_entry (grid_y.get_child).on_activate (set_grid_y'access);
 		
 		build_toolbars;
-		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar_left);
-
-
-		
--- 		-- Create a button and place it in the toolbar:
--- 		gtk.tool_button.gtk_new (button_zoom_in, label => "IN");
--- 		insert (toolbar, button_zoom_in);
--- 
--- 		-- If the operator clicks the button
--- 		-- call the procedure zoom_in in package callbacks_4:
--- 		button_zoom_in.on_clicked (zoom_in'access, toolbar);
-
-
-
 		
 		build_console;
 		
@@ -153,14 +135,10 @@ package body et_gui is
 		-- Show the module name in the title bar:
 		set_title_bar (pac_generic_modules.key (module));
 		
-		window.set_default_size (1024, 768);
+		window.set_default_size (1200, 600);
 
 		-- If the operator wishes to terminate the program (by clicking X)
-		-- the procedure terminate_main (in gui_cb) is to be called.
 		window.on_destroy (terminate_main'access);
-
-		-- If the operator minimizes, maximizes or changes the size in some way:
-		--window.on_configure_event (window_resized'access);
 
 		-- For reaction to keys pressed on the keyboard:
 		window.on_key_press_event (on_key_event'access);
@@ -181,18 +159,8 @@ package body et_gui is
 		gtk_entry (grid_x.get_child).on_activate (set_grid_x'access);
 		gtk_entry (grid_y.get_child).on_activate (set_grid_y'access);
 
-
 		
 		build_toolbars;
-		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar_left);
-
--- 		gtk.tool_button.gtk_new (button_zoom_in, label => "IN");
--- 		insert (toolbar, button_zoom_in);
--- 
--- 		-- If the operator clicks the button
--- 		-- call the procedure zoom_in in package callbacks_4:
--- 		button_zoom_in.on_clicked (zoom_in'access, toolbar);
-
 
 		build_console;
 
@@ -202,8 +170,6 @@ package body et_gui is
 		build_canvas;
 		gtk_new (canvas);
 
-		--init_drawing;
-		
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 		
 		scale_to_fit (canvas);

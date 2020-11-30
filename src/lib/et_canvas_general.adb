@@ -150,12 +150,12 @@ package body pac_canvas is
 		gtk.main.main_quit;
 	end;
 	
-	procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
-	begin
-		put_line ("zoom to fit ...");
-		scale_to_fit (canvas);
--- 		put_line (to_string (get_scale (canvas)));
-	end;
+	--procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
+	--begin
+		--put_line ("zoom to fit ...");
+		--scale_to_fit (canvas);
+---- 		put_line (to_string (get_scale (canvas)));
+	--end;
 
 	procedure redraw (view : in type_view_ptr) is begin
 		queue_draw (view);
@@ -270,9 +270,9 @@ package body pac_canvas is
 		set_orientation (toolbar_left, orientation_vertical);
 		pack_start (box_toolbars, toolbar_left, expand => false);
 
-		-- Create a button and place it in the toolbar:
-		gtk_new (button_zoom_to_fit, label => "FIT");
-		insert (toolbar_left, button_zoom_to_fit);
+		---- Create a button and place it in the toolbar:
+		--gtk_new (button_zoom_to_fit, label => "FIT");
+		--insert (toolbar_left, button_zoom_to_fit);
 
 		----------------------------------------------------------
 		-- TOOLBAR ON THE RIGHT
@@ -280,9 +280,9 @@ package body pac_canvas is
 		set_orientation (toolbar_right, orientation_vertical);
 		pack_start (box_toolbars, toolbar_right, expand => false);
 
-		-- Create a button and place it in the toolbar:
-		gtk_new (button_demo, label => "DEMO");
-		insert (toolbar_right, button_demo);		
+		---- Create a button and place it in the toolbar:
+		--gtk_new (button_demo, label => "DEMO");
+		--insert (toolbar_right, button_demo);		
 	end build_toolbars;
 
 	procedure update_primary_tool_display is begin
