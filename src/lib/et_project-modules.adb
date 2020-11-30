@@ -381,8 +381,9 @@ package body et_project.modules is
 			if inserted then
 				save_module (module_name, log_threshold + 1);
 			else
-				log (text => "module " & enclose_in_quotes (to_string (module_name)) &
-					" already exists -> not created.", level => log_threshold + 1);
+				raise semantic_error_1 with
+					"ERROR: Module " & enclose_in_quotes (to_string (module_name)) 
+					& " already exists -> not created.";
 			end if;
 		end if;
 		

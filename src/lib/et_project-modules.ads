@@ -264,7 +264,8 @@ package et_project.modules is
 
 	-- Creates an empty generic module in container modules.
 	-- Does not create the actual module file if the module
-	-- name is "untitled":
+	-- name is "untitled". If the module name is something other
+	-- than "untitled" then the module file will also be created.
 	procedure create_module (
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level);

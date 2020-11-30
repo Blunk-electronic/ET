@@ -421,23 +421,29 @@ Commands and Verb-Noun key sequences
 
 		show module LED-driver [sheet]
 
-	|VNS| |CS|
+	|VNS| |NI|
 
 	|SC| Previous/Next module: F11/F12
 	
-.. #. Create a module
-.. 
-.. 	.. code-block::
-.. 
-.. 		create module LED-driver
-.. 
-.. 	.. code-block::
-.. 
-.. 		create module templates/clock-generator
-.. 		
+	
+#. Create a module
 
-		
+	.. code-block::
 
+		create module MOTOR-driver
+
+	.. code-block::
+
+		create module templates/clock-generator
+
+	.. note:: If the module already exists, nothing happens. The existing module
+			will NOT be touched..
+			
+	.. note:: The module to be created must be in the current project
+			directory or in a subdirectory thereof. Creating a module across several 
+			directory levels like ../other_project/MOTOR-driver is not possible.
+				
+				
 #. Save a module
 
 	- save with its own name

@@ -353,8 +353,31 @@ is
 			terminate_main;
 		end if;
 	end delete_explicit_module;
-	
 
+	procedure create_module (
+		module_name : in type_module_name.bounded_string) 
+	is
+		use et_project.modules;
+		use pac_generic_modules;
+	begin
+		create_module (
+			module_name		=> module_name, -- led_driver_test
+			log_threshold	=> log_threshold + 1);
+
+		-- Show the module in schematic and board editor:
+		
+		current_active_module := locate_module (module_name);
+		current_active_sheet := 1;
+
+		-- Update module name in the schematic window title bar:
+		set_title_bar (active_module);
+		
+		update_sheet_number_display;
+		
+		-- Update the board window title bar:
+		et_canvas_board.set_title_bar (active_module);
+	end create_module;
+	
 	-- Parses the single_cmd_status.cmd:
 	procedure parse is 
 		use et_project.modules;
@@ -590,6 +613,13 @@ is
 							when others => command_incomplete;
 						end case;
 
+					when NOUN_MODULE =>
+						case fields is
+							when 5 => create_module (to_module_name (f (5)));
+							when 6 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
+						
 					when others => invalid_noun (to_string (noun));
 				end case;
 																	
@@ -631,7 +661,7 @@ is
 					when NOUN_MODULE =>
 						case fields is
 							when 4 => delete_active_module;								
-							when 5 => delete_explicit_module (to_module_name (f (5)));								
+							when 5 => delete_explicit_module (to_module_name (f (5)));
 							when 6 .. count_type'last => too_long;								
 							when others => command_incomplete;
 						end case;
@@ -1885,9 +1915,13 @@ is
 		device_name		: et_devices.type_name;
 		unit_name		: type_unit_name.bounded_string;
 		--net_name		: type_net_name.bounded_string;
+
+		procedure module_name_missing is begin
+			set_status (incomplete & "Module name missing !");
+		end module_name_missing;
 		
 		procedure device_name_missing is begin
-			log (text => "Device name missing !", level => log_threshold);
+			--log (text => "Device name missing !", level => log_threshold);
 			set_status (incomplete & "Device name missing !");
 			-- No menu required and not reasonable.
 			-- It might become very long if there were hundreds of devices.
@@ -1941,6 +1975,12 @@ is
 						-- open device model selection
 						add_device; 
 
+					when others => null; -- CS
+				end case;
+
+			when VERB_CREATE =>
+				case noun is
+					when NOUN_MODULE => module_name_missing;
 					when others => null; -- CS
 				end case;
 				
