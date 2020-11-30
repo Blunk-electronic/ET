@@ -353,7 +353,7 @@ package pac_canvas is
 
 	
 -- VIEW
-	
+
 	type type_view is abstract new gtk.widget.gtk_widget_record with record
 
 		-- The upper left corner of the visible area has its initial value at 0/0.
@@ -382,12 +382,29 @@ package pac_canvas is
 
 	-- The pointer to the canvas/view:
 	type type_view_ptr is access all type_view'class;
-
+	
 	canvas	: type_view_ptr;
 
 	
 	-- redraws the canvas:
 	procedure redraw (view : in type_view_ptr);
+
+	
+	-- Advances no next generic module. If there is no
+	-- next module, selects the first module of 
+	-- collection of generic modules.
+	procedure next_module (
+		self	: not null access type_view)
+	is null;
+
+	-- Advances no previous generic module. If there is no
+	-- previous module, selects the last module of 
+	-- collection of generic modules.
+	procedure previous_module (
+		self	: not null access type_view)
+	is null;
+
+
 
 	function on_key_event (
 		self	: access gtk_widget_record'class;

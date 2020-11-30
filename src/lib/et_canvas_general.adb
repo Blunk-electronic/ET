@@ -150,17 +150,10 @@ package body pac_canvas is
 		gtk.main.main_quit;
 	end;
 	
-	--procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
-	--begin
-		--put_line ("zoom to fit ...");
-		--scale_to_fit (canvas);
----- 		put_line (to_string (get_scale (canvas)));
-	--end;
-
 	procedure redraw (view : in type_view_ptr) is begin
 		queue_draw (view);
 	end;
-
+	
 	function on_key_event (
 		self	: access gtk_widget_record'class;
 		event	: in gdk_event_key) 
@@ -201,6 +194,15 @@ package body pac_canvas is
 				
 				result := true; -- event handled
 
+			when GDK_F11 =>
+				canvas.previous_module;
+				
+				result := true; -- event handled
+
+			when GDK_F12 =>
+				canvas.next_module;
+				
+				result := true; -- event handled
 				
 			-- Other keys are propagated to the canvas:
 			when others =>
@@ -586,7 +588,9 @@ package body pac_canvas is
 		set_spacing (box_console, spacing);
 		pack_start (box_right, box_console, expand => false);
 
-		gtk_new (label_console, "CONSOLE (F3 to enter command / F4 to focus on canvas)");
+		gtk_new (label_console, 
+			"CONSOLE (F3 to enter command / F4 to focus on canvas)"
+			& "         switch module: F11 / F12");
 		pack_start (box_console, label_console, expand => false);
 
 		-- the command line

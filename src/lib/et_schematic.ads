@@ -599,6 +599,7 @@ package et_schematic is
 		devices_non_electric : pac_devices_non_electric.map; -- fiducials, mounting holes, ...
 
 		-- CS: images
+		-- CS: latest view: sheet number, displayed objects, zoom, cursor position, ...
 	end record;
 
 

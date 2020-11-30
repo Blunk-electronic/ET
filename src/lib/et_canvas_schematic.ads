@@ -170,6 +170,23 @@ package et_canvas_schematic is
 	procedure redraw_board;
 	procedure redraw_schematic;
 	procedure redraw;
+
+	
+	-- Called by the overriding procedure next_module (see below)
+	-- to do the acutal switching from one module to the next:
+	procedure next_module;
+
+	overriding procedure next_module (
+		self	: not null access type_view);
+
+	-- Called by the overriding procedure previous_module (see below)
+	-- to do the acutal switching from one module to the previous one:
+	procedure previous_module;
+
+	overriding procedure previous_module (
+		self	: not null access type_view);
+
+	
 	
 	-- Returns the name of the currently active module:
 	function active_module return et_general.type_module_name.bounded_string;

@@ -80,6 +80,24 @@ package body et_canvas_board is
 		redraw_schematic;
 		redraw_board;
 	end redraw;
+
+	
+	procedure next_module (
+		self	: not null access type_view)
+	is 
+		use et_canvas_schematic;
+	begin
+		next_module;
+	end next_module;
+
+	procedure previous_module (
+		self	: not null access type_view)
+	is 
+		use et_canvas_schematic;
+	begin
+		previous_module;
+	end previous_module;
+
 	
 	function model_to_drawing (
 		self		: not null access type_view;

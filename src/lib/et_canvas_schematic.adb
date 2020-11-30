@@ -102,7 +102,67 @@ package body et_canvas_schematic is
 		redraw_schematic;
 		redraw_board;
 	end redraw;
-	
+
+	procedure next_module is
+		use pac_generic_modules;
+	begin
+		-- Advance to next module:
+		current_active_module := pac_generic_modules.next (current_active_module);
+
+		-- If there is no next module, select first module:
+		if current_active_module = pac_generic_modules.no_element then
+			current_active_module := generic_modules.first;
+		end if;
+
+		-- CS: save sheet number, cursor, zoom, displayed objects ...
+		
+		-- Show the module name in the title bars of 
+		-- both schematic and layout editor:
+		set_title_bar (active_module);
+		et_canvas_board.set_title_bar (active_module);
+
+		-- Redraw both schematic and board:
+		redraw;
+	end next_module;
+
+	procedure next_module (
+		self	: not null access type_view)
+	is
+		use pac_generic_modules;
+	begin
+		next_module;
+	end next_module;
+
+	procedure previous_module is
+		use pac_generic_modules;
+	begin
+		-- Advance to previous module:
+		current_active_module := pac_generic_modules.previous (current_active_module);
+
+		-- If there is no previous module, select last module:
+		if current_active_module = pac_generic_modules.no_element then
+			current_active_module := generic_modules.last;
+		end if;
+
+		-- CS: save sheet number, cursor, zoom, displayed objects ...
+		
+		-- Show the module name in the title bars of 
+		-- both schematic and layout editor:
+		set_title_bar (active_module);
+		et_canvas_board.set_title_bar (active_module);
+
+		-- Redraw both schematic and board:
+		redraw;
+	end previous_module;
+
+	procedure previous_module (
+		self	: not null access type_view)
+	is
+		use pac_generic_modules;
+	begin
+		previous_module;
+	end previous_module;
+
 
 	
 	function model_to_drawing (
@@ -333,6 +393,7 @@ package body et_canvas_schematic is
 		self := new type_view;
 		init (self);
 	end;
+
 
 
 	procedure draw_grid (
@@ -803,9 +864,6 @@ package body et_canvas_schematic is
 	begin
 		return self.get_frame.title_block_schematic.position;
 	end title_block_position;
-
-
-
 	
 	
 	function get_verb (

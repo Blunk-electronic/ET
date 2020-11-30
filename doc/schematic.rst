@@ -422,7 +422,8 @@ Commands and Verb-Noun key sequences
 		show module LED-driver [sheet]
 
 	|VNS| |CS|
-	
+
+	|SC| Previous/Next module: F11/F12
 	
 .. #. Create a module
 .. 

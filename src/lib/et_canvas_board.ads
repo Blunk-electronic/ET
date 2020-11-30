@@ -132,6 +132,14 @@ package et_canvas_board is
 	procedure redraw_board;
 	procedure redraw_schematic;
 	procedure redraw;
+
+	
+	overriding procedure next_module (
+		self	: not null access type_view);
+	
+	overriding procedure previous_module (
+		self	: not null access type_view);
+
 	
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;
