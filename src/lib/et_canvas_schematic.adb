@@ -1778,6 +1778,11 @@ package body et_canvas_schematic is
 			
 		end set;
 
+		procedure show is begin
+			null;
+			-- CS
+		end show;
+		
 		procedure rename is 
 			use et_schematic_ops.nets;
 		begin
@@ -1916,6 +1921,10 @@ package body et_canvas_schematic is
 									verb := VERB_DRAW;
 									status_enter_noun;
 
+								when GDK_LC_h =>
+									verb := VERB_SHOW;
+									status_enter_noun;
+									
 								when GDK_LC_i =>
 									verb := VERB_INVOKE;
 									status_enter_noun;
@@ -1964,6 +1973,7 @@ package body et_canvas_schematic is
 								when VERB_RENAME	=> rename;
 								when VERB_ROTATE	=> rotate;
 								when VERB_SET		=> set;
+								when VERB_SHOW		=> show;
 								when others => null; -- CS
 							end case;
 							

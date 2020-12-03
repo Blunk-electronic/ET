@@ -142,7 +142,7 @@ is
 	end position_cursor;		
 
 
-	
+	-- For showing and finding devices and units:
 	type type_show_device is (
 		FIRST_UNIT,
 		BY_UNIT_NAME,
@@ -290,6 +290,25 @@ is
 		end case;
 	end show_device;
 
+	-- For showing and finding nets:
+	type type_show_net is (
+		FIRST_NET,
+		NET_ON_CURRENT_SHEET);
+	
+	procedure show_net (
+		net		: in type_net_name.bounded_string; -- RESET_N
+		mode	: in type_show_net)
+	is
+	begin
+		case mode is
+			when FIRST_NET =>
+				null;
+
+			when NET_ON_CURRENT_SHEET =>
+				null;	
+				
+		end case;
+	end show_net;
 	
 	procedure show_sheet is -- GUI related
 		use et_canvas_schematic;
@@ -1934,7 +1953,28 @@ is
 							when others => command_incomplete;
 						end case;
 
-					-- CS when NOUN_NET =>
+					when NOUN_NET =>
+						case fields is
+							when 5 => show_net ( -- show net RESET_N
+									net		=> to_net_name (f (5)), -- RESET_N
+									mode	=> FIRST_NET);
+							
+							when 6 =>
+								-- The 6th field may be a period, which means
+								-- the net is to be shown on the current active sheet.
+								-- If the 6th field is not a period, then we
+								-- threat this field as excessive argument.
+								if f (6) = here then
+									show_net ( -- show net RESET_N
+										net		=> to_net_name (f (5)), -- RESET_N
+										mode	=> NET_ON_CURRENT_SHEET);
+								else
+									too_long;
+								end if;
+								
+							when 7 .. count_type'last => too_long;
+							when others => command_incomplete;
+						end case;
 						
 					when NOUN_SHEET =>
 						case fields is
@@ -2661,16 +2701,23 @@ is
 					when NOUN_DEVICE =>
 						case fields is
 							when 4 => device_name_missing;
+							-- CS request operator to click on the unit.
 							when others => null;
 						end case;
 
 					when NOUN_MODULE =>
 						case fields is
 							when 4 => module_name_missing;
+							-- CS request operator to click on the module.
 							when others => null;
 						end case;
 
-					-- CS when NOUN_NET =>
+					when NOUN_NET =>
+						case fields is
+							when 4 => net_name_missing;
+							-- CS request operator to click on the net.
+							when others => null;
+						end case;
 						
 					when NOUN_SHEET =>
 						case fields is

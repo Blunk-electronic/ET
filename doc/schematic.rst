@@ -23,8 +23,13 @@ Commands and Verb-Noun key sequences
 
 	|VNS| a d
 
+	
 #. Showing and finding devices and units
 
+.. 	- To show a device:
+.. 	
+.. 	|VNS| h d
+	
 	- To find the first unit of device, use this command:
 
 	.. code-block::
@@ -217,6 +222,29 @@ Commands and Verb-Noun key sequences
 	|VNS| d n
 
 	change bend style: left mouse click or key b
+
+
+.. #. Showing and finding nets
+.. 
+.. 	- To show a net:
+.. 
+.. 	|VNS| h n
+.. 	
+.. 	- To find a net use this command:
+.. 	
+.. 	.. code-block::
+.. 
+.. 		show net RESET_N
+.. 
+.. 	|VNS| |NI|
+.. 	
+.. 	- To find a net on the current sheet:
+.. 	
+.. 	.. code-block::
+.. 
+.. 		show net RESET_N .
+.. 
+.. 	|VNS| |NI|
 
 	
 #. Rename net
