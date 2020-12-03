@@ -139,6 +139,11 @@ is
 
 	-- CS unify procedures show_unit and show_first_unit. They differ only in 
 	-- the way the unit_name is assigned.
+
+	type type_show_device is (
+		FIRST_UNIT,
+		FIRST_UNIT_ON_CURRENT_SHEET,
+		BY_UNIT_NAME);
 	
 	-- Locates the unit of the given device.
 	procedure show_unit is -- GUI related
@@ -167,33 +172,49 @@ is
 		log (text => to_string (device_name, unit_name, location), console => true);
 	end show_unit;
 
-	-- Locates the one and only unit of the given device.
+	-- Locates the first unit of the given device.
+	-- Selects the device so that all its units become highlighted in the canvas.
+	-- Sets the sheet where the first unit is.
+	-- Pans the canvas so that the first unit is in the center of the view.
 	procedure show_first_unit is -- GUI related
 		use et_devices;
 		use et_canvas_schematic;
 		
 		device_name : et_devices.type_name := to_device_name (f (5)); -- IC45
 
-		-- The assumption is that the device has only one unit:
+		-- The unit name is empty because we will show just the
+		-- first unit (regardless of the name):
 		unit_name	: et_devices.type_unit_name.bounded_string := to_name ("");
 		
-		-- Locate the requested device and unit.
+		-- Locate the requested device and its first unit.
 		location : type_unit_query := unit_position (
 				module_cursor	=> current_active_module,
 				device_name		=> device_name,
-				unit_name		=> unit_name);
-	begin
-		-- CS log message ?
+				unit_name		=> unit_name); -- empty
+
+		use et_canvas_schematic_units;
+		use pac_proposed_units;
 		
+	begin
 		if location.exists then
 			-- show the sheet where the unit is:
 			current_active_sheet := sheet (location.position);
 
 			-- center on the unit
 			center_on (canvas, type_point (location.position));
-		end if;
 
-		log (text => to_string (device_name, unit_name, location), console => true);
+			-- Clear old list of proposed units:
+			clear_proposed_units;
+
+			-- Make the whole device (with all its units) selected:
+			proposed_units.append (new_item =>
+				(
+				device	=> locate_device (current_active_module, device_name),
+				unit	=> et_schematic.type_units.no_element)
+				);
+
+			selected_unit := proposed_units.first;
+		end if;
 	end show_first_unit;
 
 	procedure show_sheet is -- GUI related
