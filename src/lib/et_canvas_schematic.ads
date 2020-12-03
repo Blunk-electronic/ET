@@ -308,6 +308,15 @@ package et_canvas_schematic is
 		self	: not null access type_view)
 		return string;
 
+	-- Resets global variables required for selections, clarifications, ...
+	-- Verb and noun remain as they are
+	-- so that the mode is unchanged.
+	-- Should be called when exception rises in order to clean up.
+	-- Should also be called when the operator hits ESC.
+	procedure reset_selections;
+
+	-- Clears list of proposed objects such as net segments, units, ...
+	procedure clear_proposed_objects;
 	
 	overriding procedure evaluate_key (
 		self	: not null access type_view;

@@ -966,10 +966,7 @@ package body et_canvas_schematic is
 		end if;
 	end make_net_route;
 
-	-- Resets global variables required for selections, clarifications, ...
-	-- Should be called when exception rises in order to clean up.
-	-- Should also be called when the operator hits ESC.
-	procedure reset is begin
+	procedure reset_selections is begin
 
 		-- Verb and noun remain as they are
 		-- so that the mode is unchanged.
@@ -989,8 +986,12 @@ package body et_canvas_schematic is
 		reset_single_cmd_status;
 		
 		reset_activate_counter;
-	end reset;
+	end reset_selections;
 
+	procedure clear_proposed_objects is begin
+		clear_proposed_units;
+		clear_proposed_segments;
+	end clear_proposed_objects;
 	
 	procedure evaluate_key (
 		self	: not null access type_view;
@@ -1850,7 +1851,7 @@ package body et_canvas_schematic is
 		case key is
 			when GDK_Escape =>
 				expect_entry := expect_entry_default;
-				reset;
+				reset_selections;
 				status_enter_verb;			
 
 			-- Advance to next sheet:
@@ -1978,7 +1979,7 @@ package body et_canvas_schematic is
 		exception when event: others =>
 			set_status (exception_message (event));
 
-			reset;
+			reset_selections;
 		
 			redraw;
 			update_mode_display (canvas);
@@ -2625,7 +2626,7 @@ package body et_canvas_schematic is
 		exception when event: others =>
 			set_status (exception_message (event));
 
-			reset;
+			reset_selections;
 			redraw;
 		
 	end button_pressed;

@@ -160,10 +160,9 @@ package body et_scripting is
 	end;
 
 	procedure invalid_noun (noun : in string) is begin
-		log (ERROR, "invalid noun " & enclose_in_quotes (noun) & " for this operation !",
-			console => true);
-		raise constraint_error;
-	end;
+		raise semantic_error_1 with
+			"ERROR: Noun " & enclose_in_quotes (noun) & " invalid for this operation !";
+	end invalid_noun;
 
 	procedure command_incomplete is begin
 		--if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then

@@ -89,7 +89,9 @@ package et_canvas_schematic_nets is
 
 	-- Returns the position of the strand of the selected segment:
 	function get_strand_position return et_coordinates.type_position;
-	
+
+	-- Clears the list of proposed segments.
+	-- Resets selected_segment to no_element.
 	procedure clear_proposed_segments;
 	
 	-- Searches the module for an anonymous net with the lowest index available.

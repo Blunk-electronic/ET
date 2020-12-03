@@ -82,7 +82,8 @@ package et_canvas_schematic_units is
 	proposed_units	: pac_proposed_units.list;
 	selected_unit	: pac_proposed_units.cursor;
 
-	-- Clears the list proposed_units:
+	-- Clears the list proposed_units.
+	-- Resets selected_unit to no_element.
 	procedure clear_proposed_units;
 	
 	-- Collects all units in the vicinity of the given point:

@@ -196,9 +196,6 @@ is
 		end unit_not_found;
 		
 	begin -- show_device
-		-- Clear old list of proposed units:
-		clear_proposed_units;
-
 		case mode is
 			when FIRST_UNIT =>
 				declare
@@ -282,7 +279,7 @@ is
 							selected_unit := proposed_units.first;
 						else
 							raise semantic_error_1 with
-								"No Unit of " & to_string (device) & " on this sheet !";
+								"Device " & to_string (device) & " is not on this sheet !";
 						end if;
 
 					else
@@ -1898,6 +1895,10 @@ is
 				end case;
 
 			when VERB_SHOW => -- GUI related
+				-- There might be objects such as net segments or units selected.
+				-- They must be de-selected first:
+				clear_proposed_objects;
+				
 				case noun is
 					when NOUN_DEVICE =>
 						case fields is
@@ -1932,6 +1933,8 @@ is
 							when 7 .. count_type'last => too_long;
 							when others => command_incomplete;
 						end case;
+
+					-- CS when NOUN_NET =>
 						
 					when NOUN_SHEET =>
 						case fields is
@@ -2024,6 +2027,7 @@ is
 	procedure propose_arguments is
 		use et_scripting_interactive_schematic;
 		use et_canvas_schematic_units;
+		use et_canvas_schematic_nets;
 		use et_project.modules;
 		
 		incomplete : constant string := "Command incomplete ! ";
@@ -2037,15 +2041,18 @@ is
 		end module_name_missing;
 		
 		procedure device_name_missing is begin
-			--log (text => "Device name missing !", level => log_threshold);
 			set_status (incomplete & "Device name missing !");
 			-- No menu required and not reasonable.
 			-- It might become very long if there were hundreds of devices.
 		end device_name_missing;
 
 		procedure unit_name_missing is begin
-			log (text => "Unit name missing !", level => log_threshold);
+			set_status (incomplete & "Unit name missing !");
 		end unit_name_missing;
+
+		procedure sheet_number_missing is begin
+			set_status (incomplete & "Sheet number missing !");
+		end sheet_number_missing;
 		
 		procedure device_not_found is begin
 			set_status ("ERROR: Device " & to_string (device_name) & " not found !");
@@ -2082,6 +2089,10 @@ is
 			& "Only" & count_type'image (fields) & " arguments provided. "
 			& "Proposing arguments ...", level => log_threshold);
 
+		-- There might be objects such as net segments or units selected.
+		-- They must be de-selected:
+		clear_proposed_objects;
+		
 		case verb is
 			when VERB_ADD =>
 				case noun is
@@ -2165,7 +2176,7 @@ is
 									device_not_found;
 								end if;
 													
-							when others => null;								
+							when others => null;
 						end case;
 
 					when others => null; -- CS
@@ -2645,6 +2656,31 @@ is
 					when others => null; -- CS
 				end case;
 
+			when VERB_SHOW =>
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 4 => device_name_missing;
+							when others => null;
+						end case;
+
+					when NOUN_MODULE =>
+						case fields is
+							when 4 => module_name_missing;
+							when others => null;
+						end case;
+
+					-- CS when NOUN_NET =>
+						
+					when NOUN_SHEET =>
+						case fields is
+							when 4 => sheet_number_missing;
+							when others => null;
+						end case;
+
+					when others => null;
+				end case;
+				
 			when others => null; -- CS error message in status bar for other 
 								-- incomplete commands such as zoom, position, ...
 		
