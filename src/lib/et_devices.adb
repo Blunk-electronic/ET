@@ -356,7 +356,7 @@ package body et_devices is
 	begin -- to_device_name
 		-- assemble prefix
 		for i in text_in_justified'first .. text_in_justified'last loop
-			c := text_in_justified(i);
+			c := text_in_justified (i);
 			
 			case i is 
 				-- The first character MUST be a valid prefix character.
@@ -386,21 +386,28 @@ package body et_devices is
 		-- All the characters within this range must be digits.
 		-- The significance of the digit is increased after each pass.
 		for i in reverse d .. text_in_justified'last loop
-			c := text_in_justified(i);
+			c := text_in_justified (i);
 			
-			if is_digit(c) then
-				r.id := r.id + 10**digit * natural'value(1 * c);
+			if is_digit (c) then
+				r.id := r.id + 10**digit * natural'value (1 * c);
 			else
 				invalid_device_name;
 			end if;
 
 			digit := digit + 1; -- increase digit significance (10**0, 10**1, ...)
 		end loop;
-
-		-- Set the id width.
-		-- It is the number of digits processed when the id was assembled (see above).
-		-- Example: if the given string was IC002 then digit is 3.
-		r.id_width := digit;
+		
+		-- There must be at least one digit. If no digit found, then the given
+		-- device name has no index.
+		if digit > 0 then
+		
+			-- Set the id width.
+			-- It is the number of digits processed when the id was assembled (see above).
+			-- Example: if the given string was IC002 then digit is 3.
+			r.id_width := digit;
+		else
+			raise syntax_error_1 with "ERROR: Device name invalid. Missing index !";
+		end if;
 		
 		return r;
 	end to_device_name;
