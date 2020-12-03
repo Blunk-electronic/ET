@@ -814,6 +814,7 @@ package et_schematic_ops is
 	-- Returns the position of given unit. If the unit_name is emtpty ("")
 	-- then the position of the first unit is returned.
 	-- This is useful when a device has only one unit.
+	-- If the given device or unit does not exist, then the return is false.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string) -- C

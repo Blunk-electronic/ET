@@ -555,7 +555,7 @@ package body et_devices is
 
 	function to_name (unit_name : in string) return type_unit_name.bounded_string is begin
 		-- CS do character and length checks
-		return type_unit_name.to_bounded_string (unit_name);
+		return type_unit_name.to_bounded_string (to_upper (unit_name));
 	end;
 
 	function to_full_name (

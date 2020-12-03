@@ -23,12 +23,28 @@ Commands and Verb-Noun key sequences
 
 	|VNS| a d
 
-#. Show device
+#. Showing and finding devices and units
+
+	- To find the first unit of device, use this command:
 
 	.. code-block::
 
 		show device R1
 
+	|VNS| |NI|
+	
+		
+	- To find the first unit of a device on the current sheet:
+		
+	.. code-block::
+
+		show device IC1 IO-BANK2 .
+
+	|VNS| |NI|
+	
+		
+	- To find an explicit unit of a device:
+		
 	.. code-block::
 
 		show device IC1 IO-BANK2
