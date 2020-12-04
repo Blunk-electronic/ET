@@ -225,12 +225,12 @@ Commands and Verb-Noun key sequences
 	change bend style: left mouse click or key b
 
 
-.. #. Showing and finding nets
-.. 
-.. 	- To show a net:
-.. 
-.. 	|VNS| h n
-.. 	
+#. Showing and finding nets
+
+	- To show a net:
+
+	|VNS| h n
+	
 .. 	- To find a net use this command:
 .. 	
 .. 	.. code-block::

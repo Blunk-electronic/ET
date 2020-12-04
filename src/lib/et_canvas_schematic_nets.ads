@@ -412,6 +412,10 @@ package et_canvas_schematic_nets is
 		& "to select net." 
 		& status_hint_for_abort;
 
+	-- Outputs in the status bar some helpful properties
+	-- of the selected net:
+	procedure show_properties_of_selected_net;
+
 	
 end et_canvas_schematic_nets;
 

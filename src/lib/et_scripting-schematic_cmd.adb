@@ -300,9 +300,11 @@ is
 		case mode is
 			when FIRST_NET =>
 				null;
-
+				--show_properties_of_selected_net
+				
 			when NET_ON_CURRENT_SHEET =>
 				null;	
+				--show_properties_of_selected_net
 				
 		end case;
 	end show_net;

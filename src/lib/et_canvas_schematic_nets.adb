@@ -48,6 +48,8 @@ with gtk.gentry;
 with et_geometry;					use et_geometry;
 with et_canvas_schematic;			use et_canvas_schematic;
 with et_modes.schematic;			use et_modes.schematic;
+with et_pcb;
+with et_netlists;
 
 package body et_canvas_schematic_nets is
 
@@ -918,6 +920,29 @@ package body et_canvas_schematic_nets is
 						
 					when others => null;
 				end case;
+
+			when VERB_SHOW =>
+				case noun is
+					when NOUN_NET => 
+
+						-- evaluate the number of segments found here:
+						case length (proposed_segments) is
+							when 0 =>
+								reset_request_clarification;
+								
+							when 1 =>
+								selected_segment := proposed_segments.first;
+								show_properties_of_selected_net;
+								
+							when others =>
+								set_request_clarification;
+
+								-- preselect the first segment
+								selected_segment := proposed_segments.first;
+						end case;
+						
+					when others => null;
+				end case;
 				
 			when others => null;
 		end case;
@@ -1539,6 +1564,22 @@ package body et_canvas_schematic_nets is
 		
 		reset_label;
 	end finalize_move_label;
+
+
+	procedure show_properties_of_selected_net is
+		ss	: constant type_selected_segment := element (selected_segment);
+		use et_pcb;
+		use et_netlists;
+	begin
+		reset_request_clarification;
+		
+		set_status ("Properties:"
+			& " name " & to_string (key (ss.net))
+			& ", class " & to_string (element (ss.net).class)
+			& ", scope " & to_string (element (ss.net).scope)
+			);
+		
+	end show_properties_of_selected_net;
 	
 end et_canvas_schematic_nets;
 

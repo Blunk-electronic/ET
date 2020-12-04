@@ -1801,9 +1801,9 @@ package body et_canvas_schematic is
 							
 						when NOUN_NET =>
 							if not clarification_pending then
-								null;
+								find_segments (cursor_main.position);
 							else
-								null;
+								show_properties_of_selected_net;
 							end if;
 							
 						when others => null;
@@ -2525,9 +2525,9 @@ package body et_canvas_schematic is
 							
 						when NOUN_NET =>
 							if not clarification_pending then
-								null;
+								find_segments (point);
 							else
-								null;
+								show_properties_of_selected_net;
 							end if;
 							
 						when others => null;
