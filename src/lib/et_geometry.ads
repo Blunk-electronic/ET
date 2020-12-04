@@ -121,6 +121,7 @@ package et_geometry is
 		type type_point is tagged private;
 
 		origin : constant type_point;
+		far_upper_right : constant type_point;
 
 		function to_string (point : in type_point) return string;
 		
@@ -350,6 +351,10 @@ package et_geometry is
 			return type_direction_of_rotation;
 		
 		origin_zero_rotation : constant type_position;
+
+		-- A position at the greatest distance in
+		-- x and y from the origin:
+		far_upper_right_zero_rotation : constant type_position;
 		
 		units_per_cycle : constant float := 360.0;
 
@@ -438,11 +443,18 @@ package et_geometry is
 		
 		origin : constant type_point := (others => zero);
 		
+		far_upper_right : constant type_point :=
+			(x => type_distance'last,
+			 y => type_distance'last);
+		
 		type type_position is new type_point with record
 			rotation : type_rotation := zero_rotation;
 		end record;
 
 		origin_zero_rotation : constant type_position := (others => <>);
+
+		far_upper_right_zero_rotation : constant type_position :=
+			((far_upper_right with zero_rotation));
 		
 		boundaries_default : constant type_boundaries := (others => <>);
 		

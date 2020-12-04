@@ -296,17 +296,48 @@ is
 		net		: in type_net_name.bounded_string; -- RESET_N
 		mode	: in type_show_net)
 	is
+		use et_schematic;
+		use type_nets;
+		use type_strands;
+		
+		use et_canvas_schematic_nets;
+		use pac_proposed_segments;
+		
+		net_cursor : et_schematic.type_nets.cursor := 
+			locate_net (current_active_module, net);
+
+		strand_cursor : type_strands.cursor;
+		
+		pos : et_coordinates.type_position;
 	begin
-		case mode is
-			when FIRST_NET =>
-				null;
-				--show_properties_of_selected_net
-				
-			when NET_ON_CURRENT_SHEET =>
-				null;	
-				--show_properties_of_selected_net
-				
-		end case;
+		if net_cursor /= type_nets.no_element then
+			
+			case mode is
+				when FIRST_NET =>
+
+					strand_cursor := get_first_strand (net_cursor);
+
+					-- show the sheet where the first net is:
+					current_active_sheet := sheet (element (strand_cursor).position);
+					
+					proposed_segments.append (new_item => (
+						net		=> net_cursor,
+						strand	=> strand_cursor,
+						segment	=> get_first_segment (strand_cursor)));
+
+					selected_segment := proposed_segments.first;
+					
+					show_properties_of_selected_net;
+					
+				when NET_ON_CURRENT_SHEET =>
+					null;	
+					--show_properties_of_selected_net
+					
+			end case;
+		else
+			raise semantic_error_1 with
+				"ERROR: Net " & enclose_in_quotes (to_string (net)) & " does not exist !";
+		end if;
 	end show_net;
 	
 	procedure show_sheet is -- GUI related

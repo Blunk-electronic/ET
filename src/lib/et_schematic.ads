@@ -370,14 +370,20 @@ package et_schematic is
 	-- As a strand is part of a net, there is no need for individual strand names.
 		position	: et_coordinates.type_position; -- sheet and lowest x/y, rotation doesn't matter -> always zero
 		segments	: type_net_segments.list;
-	end record;
-
+	end record;		
+	
 	procedure set_strand_position (strand : in out type_strand);
 	-- Calculates and sets the lowest x/y position of the given strand.	
 	-- Leaves the sheet number of the strand as it is.	
 
 	package type_strands is new doubly_linked_lists (type_strand);
 
+	-- Returns a cursor to the segment that is
+	-- on the lowest x/y position of the given strand:
+	function get_first_segment (
+		strand_cursor	: in type_strands.cursor)
+		return type_net_segments.cursor;
+								   
 	type type_net is new type_net_base with record
 		strands		: type_strands.list;
 		scope		: et_netlists.type_net_scope := et_netlists.LOCAL;
@@ -387,8 +393,20 @@ package et_schematic is
 		key_type		=> type_net_name.bounded_string,
 		element_type	=> type_net);
 
-
+	-- Returns a cursor to the strand that is
+	-- on the given sheet and has the lowest x/y position:
+	function get_first_strand_on_sheet (
+		sheet		: in et_coordinates.type_sheet;
+		net_cursor	: in type_nets.cursor)
+		return type_strands.cursor;
 	
+	-- Returns a cursor to the strand that is
+	-- on the lowest sheet and lowest x/y position:
+	function get_first_strand (
+		net_cursor	: in type_nets.cursor)
+		return type_strands.cursor;
+	
+
 	
 	-- A stub of a net is modelled this way:
 	type type_stub_direction is (

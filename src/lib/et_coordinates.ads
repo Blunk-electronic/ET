@@ -119,6 +119,8 @@ package et_coordinates is
 	type type_position is new pac_geometry_sch.type_position with private;
 	type type_position_relative is new pac_geometry_sch.type_position with private;
 
+	greatest_position : constant type_position;
+		
 	function "<" (left, right : in type_position) return boolean;
 	
 	procedure move (
@@ -161,6 +163,13 @@ package et_coordinates is
 
 		zero_position : constant type_position := (
 			origin_zero_rotation with sheet => type_sheet'first);
+
+		-- A position in a schematic which is on the
+		-- last possible sheet and the greatest distance in
+		-- x and y from the origin:
+		greatest_position : constant type_position := (
+			far_upper_right_zero_rotation with sheet => type_sheet'last);
+
 		
 end et_coordinates;
 

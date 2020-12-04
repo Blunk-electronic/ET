@@ -127,6 +127,42 @@ package body et_schematic is
 		--put_line (type_net_segment_orientation'image (result));
 		return result;
 	end segment_orientation;
+
+	function get_first_segment (
+		strand_cursor	: in type_strands.cursor)
+		return type_net_segments.cursor
+	is
+		use type_strands;
+		segment_cursor : type_net_segments.cursor; -- to be returned
+
+		procedure query_segments (strand : in type_strand) is
+			use type_net_segments;
+
+			segment_position : type_point := far_upper_right;
+			
+			procedure query_segment (c : in type_net_segments.cursor) is begin
+				if element (c).start_point < segment_position then
+					segment_position := element (c).start_point;
+					segment_cursor := c;
+				end if;
+
+				if element (c).end_point < segment_position then
+					segment_position := element (c).end_point;
+					segment_cursor := c;
+				end if;
+			end query_segment;
+			
+		begin
+			iterate (strand.segments, query_segment'access);
+		end query_segments;
+		
+	begin
+		query_element (
+			position	=> strand_cursor,
+			process		=> query_segments'access);
+		
+		return segment_cursor;
+	end get_first_segment;
 	
 	procedure set_strand_position (strand : in out type_strand) is
 	-- Calculates and sets the lowest x/y position of the given strand.
@@ -173,6 +209,53 @@ package body et_schematic is
 
 	end set_strand_position;
 
+	function get_first_strand_on_sheet (
+		sheet		: in et_coordinates.type_sheet;
+		net_cursor	: in type_nets.cursor)
+		return type_strands.cursor
+	is
+		strand_cursor : type_strands.cursor;
+	begin
+
+		return strand_cursor;
+	end get_first_strand_on_sheet;
+	
+	function get_first_strand (
+		net_cursor	: in type_nets.cursor)
+		return type_strands.cursor
+	is
+		use type_nets;
+		strand_cursor : type_strands.cursor; -- to be returned
+
+		use et_coordinates;
+		strand_position : et_coordinates.type_position := greatest_position;
+		
+		procedure query_strands (
+			net_name	: in type_net_name.bounded_string;
+			net			: in type_net)
+		is
+			use type_strands;
+
+			procedure query_strand (c : in type_strands.cursor) is
+			begin
+				if element (c).position < strand_position then
+					strand_position := element (c).position;
+					strand_cursor := c;
+				end if;
+			end query_strand;
+			
+		begin			
+			iterate (net.strands, query_strand'access);
+		end query_strands;
+			
+	begin -- get_first_strand
+		query_element (
+			position	=> net_cursor,
+			process		=> query_strands'access);
+	
+		return strand_cursor;
+	end get_first_strand;
+				
 	function to_label_rotation (direction : in type_stub_direction) 
 		return et_coordinates.type_rotation is
 		use et_coordinates;
