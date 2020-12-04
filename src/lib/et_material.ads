@@ -62,10 +62,10 @@ package et_material is
 	keyword_partcode : constant string := "partcode";	
 
 	partcode_characters : character_set := to_set
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ('_'); 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_/"); 
 	partcode_length_max : constant positive := 100;
 	package type_partcode is new generic_bounded_length (partcode_length_max);
-	partcode_default : constant string := "dummy";
+	partcode_default : constant string := "N/A"; -- means not assigned
 	
 	function to_string (partcode : in type_partcode.bounded_string) return string;
 

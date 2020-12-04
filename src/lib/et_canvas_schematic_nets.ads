@@ -403,6 +403,15 @@ package et_canvas_schematic_nets is
 	procedure finalize_move_label (
 		destination		: in type_point;
 		log_threshold	: in type_log_level);
+
+
+	status_show_net : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to select net." 
+		& status_hint_for_abort;
+
 	
 end et_canvas_schematic_nets;
 

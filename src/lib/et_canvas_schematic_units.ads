@@ -226,7 +226,7 @@ package et_canvas_schematic_units is
 	-- for clarification.
 	-- If there is only one unite, sets global variable selected_unit accordingly.
 	-- If there is no unit, then selected_unit is set to no_element.
-	procedure find_units (point : in type_point);
+	procedure find_units_for_move (point : in type_point);
 
 	-- Locates net segments attached to the unit indicated by
 	-- cursor selected_unit. Collects the segments in list
@@ -516,6 +516,24 @@ package et_canvas_schematic_units is
 	procedure set_property_selected_unit;
 
 
+	status_show_device : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to select device." 
+		& status_hint_for_abort;
+
+	-- Outputs in the status bar some helpful properties
+	-- of the selected device:
+	procedure show_properties_of_selected_device; 
+	
+	-- Locates all units in the vicinity of given point.
+	-- If more than one unit near point found, then it sets the
+	-- cursor selected_unit to the first unit and requests
+	-- for clarification.
+	-- If there is only one unite, sets global variable selected_unit accordingly.
+	-- If there is no unit, then selected_unit is set to no_element.
+	procedure find_units_for_show (point : in type_point);
 
 	
 end et_canvas_schematic_units;

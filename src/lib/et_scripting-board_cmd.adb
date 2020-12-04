@@ -1305,6 +1305,11 @@ is
 			& enclose_in_quotes (to_string (single_cmd_status.cmd)),
 			level => log_threshold);
 
+		-- Clear the status bar if we are in graphical mode:
+		if runmode /= MODE_HEADLESS then
+			status_clear;
+		end if;
+		
 		case verb is
 			when VERB_ADD =>
 				case noun is
@@ -2419,7 +2424,6 @@ is
 		-- Update GUI if we are in graphical mode:
 		if runmode /= MODE_HEADLESS then
 			canvas.update_mode_display;
-			status_clear;
 		end if;
 			
 	end parse;

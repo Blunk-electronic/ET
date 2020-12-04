@@ -219,9 +219,7 @@ is
 
 						selected_unit := proposed_units.first;
 
-						--set_status ("First unit of " 
-							--& to_string (device) 
-							--& " at " & to_string (location.position));
+						show_properties_of_selected_device;
 					else
 						device_not_found;
 					end if;
@@ -248,10 +246,7 @@ is
 
 						selected_unit := proposed_units.first;
 
-						--set_status ("Unit " & to_string (unit) & " of " 
-							--& to_string (device) 
-							--& " at " & to_string (location.position));
-
+						show_properties_of_selected_device;
 					else
 						unit_not_found;
 					end if;
@@ -277,6 +272,8 @@ is
 								));
 
 							selected_unit := proposed_units.first;
+							
+							show_properties_of_selected_device;
 						else
 							raise semantic_error_1 with
 								"Device " & to_string (device) & " is not on this sheet !";
@@ -499,6 +496,11 @@ is
 		log (text => "parsing command: " 
 			& enclose_in_quotes (to_string (single_cmd_status.cmd)),
 			level => log_threshold);
+
+		-- Clear the status bar if we are in graphical mode:
+		if runmode /= MODE_HEADLESS then
+			status_clear;
+		end if;
 		
 		case verb is
 			when VERB_ADD =>
@@ -2059,7 +2061,6 @@ is
 		-- Update GUI if we are in graphical mode:
 		if runmode /= MODE_HEADLESS then
 			canvas.update_mode_display;
-			status_clear;
 		end if;
 		
 	end parse;		
@@ -2700,8 +2701,10 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						case fields is
-							when 4 => device_name_missing;
-							-- CS request operator to click on the unit.
+							when 4 =>
+								-- request operator to click on a unit:
+								set_status (status_show_device);
+								
 							when others => null;
 						end case;
 
@@ -2714,8 +2717,10 @@ is
 
 					when NOUN_NET =>
 						case fields is
-							when 4 => net_name_missing;
-							-- CS request operator to click on the net.
+							when 4 =>
+								-- request operator to click on a net:
+								set_status (status_show_net);
+
 							when others => null;
 						end case;
 						

@@ -446,10 +446,10 @@ package body et_canvas_schematic_units is
 	end finalize_drag;
 	
 	
-	procedure find_units (point : in type_point) is 
+	procedure find_units_for_move (point : in type_point) is 
 		use et_modes.schematic;
 	begin
-		log (text => "locating units ...", level => log_threshold);
+		log (text => "locating units for move/drag ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- Collect all units in the vicinity of the given point:
@@ -491,7 +491,7 @@ package body et_canvas_schematic_units is
 		end case;
 		
 		log_indentation_down;
-	end find_units;
+	end find_units_for_move;
 
 	procedure find_attached_segments is
 		-- Device and unit name of the selected unit:
@@ -2048,6 +2048,78 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;
 	end set_property_selected_unit;
+
+
+	procedure show_properties_of_selected_device
+	is
+		use et_schematic.type_devices;
+		use et_schematic.type_units;
+		
+		su		: constant type_selected_unit := element (selected_unit);
+
+		--device	: constant et_devices.type_name := key (su.device);
+		
+		-- NOTE: In case the unit name is required for some reason,
+		-- mind the cursor su.unit can be no_element if all units are selected.
+		--unit	: constant type_unit_name.bounded_string := key (su.unit);
+
+		model	: constant type_device_model_file.bounded_string := element (su.device).model;
+
+		function further_properties return string is 
+			use et_material;
+			var	: constant string := ", variant ";
+			pc	: constant string := ", partcode ";
+		begin
+			case element (su.device).appearance is
+				when PCB =>
+					return var & to_string (element (su.device).variant)
+						& pc & to_string (element (su.device).partcode);
+
+				when others => return "";
+			end case;
+		end further_properties;
+	
+	begin
+		reset_request_clarification;
+		
+		set_status ("Properties:"
+			& " Model " & to_string (model)
+			& further_properties); -- variant, partcode, ...	
+		
+	end show_properties_of_selected_device;
+	
+	procedure find_units_for_show (point : in type_point) is 
+		use et_modes.schematic;
+	begin
+		log (text => "locating units for show ...", level => log_threshold);
+		log_indentation_up;
+		
+		-- Collect all units in the vicinity of the given point:
+		proposed_units := collect_units (
+			module			=> current_active_module,
+			place			=> to_position (point, current_active_sheet),
+			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			log_threshold	=> log_threshold + 1);
+
+		-- evaluate the number of units found here:
+		case length (proposed_units) is
+			when 0 =>
+				reset_request_clarification;
+				
+			when 1 =>
+				selected_unit := proposed_units.first;
+				show_properties_of_selected_device;
+				
+			when others =>
+				set_request_clarification;
+
+				-- preselect the first unit
+				selected_unit := proposed_units.first;
+		end case;
+		
+		log_indentation_down;
+	end find_units_for_show;
+
 	
 end et_canvas_schematic_units;
 

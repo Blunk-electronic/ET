@@ -24,11 +24,12 @@ Commands and Verb-Noun key sequences
 	|VNS| a d
 
 	
-#. Showing and finding devices and units
+#. Showing and finding devices and units:
 
-.. 	- To show a device:
-.. 	
-.. 	|VNS| h d
+	- To show a device:
+	
+	|VNS| h d
+
 	
 	- To find the first unit of device, use this command:
 

@@ -1133,7 +1133,7 @@ package body et_canvas_schematic is
 								unit_move.tool := KEYBOARD;
 								
 								if not clarification_pending then
-									find_units (cursor_main.position);
+									find_units_for_move (cursor_main.position);
 								else
 									find_attached_segments;
 									unit_move.being_moved := true;
@@ -1370,7 +1370,7 @@ package body et_canvas_schematic is
 								unit_move.tool := KEYBOARD;
 								
 								if not clarification_pending then
-									find_units (cursor_main.position);
+									find_units_for_move (cursor_main.position);
 								else
 									unit_move.being_moved := true;
 									reset_request_clarification;
@@ -1779,8 +1779,55 @@ package body et_canvas_schematic is
 		end set;
 
 		procedure show is begin
-			null;
-			-- CS
+			case key is
+				-- EVALUATE KEY FOR NOUN:
+				when GDK_LC_d =>
+					noun := NOUN_DEVICE;
+					set_status (et_canvas_schematic_units.status_show_device);
+
+				when GDK_LC_n =>
+					noun := NOUN_NET;
+					set_status (et_canvas_schematic_nets.status_show_net);
+					
+				-- If space pressed, then the operator wishes to operate via keyboard:	
+				when GDK_Space =>
+					case noun is
+						when NOUN_DEVICE =>
+							if not clarification_pending then
+								find_units_for_show (cursor_main.position);
+							else
+								show_properties_of_selected_device;
+							end if;
+							
+						when NOUN_NET =>
+							if not clarification_pending then
+								null;
+							else
+								null;
+							end if;
+							
+						when others => null;
+					end case;
+
+				-- If page down pressed, then the operator is clarifying:
+				when GDK_page_down =>
+					case noun is
+						when NOUN_DEVICE => 
+							if clarification_pending then
+								clarify_unit;
+							end if;
+
+						when NOUN_NET =>
+							if clarification_pending then
+								clarify_net_segment;
+							end if;
+
+						when others => null;
+							
+					end case;
+					
+				when others => status_noun_invalid;
+			end case;
 		end show;
 		
 		procedure rename is 
@@ -2153,7 +2200,7 @@ package body et_canvas_schematic is
 								unit_move.tool := MOUSE;
 								
 								if not clarification_pending then
-									find_units (point);
+									find_units_for_move (point);
 								else
 									find_attached_segments;
 									unit_move.being_moved := true;
@@ -2324,7 +2371,7 @@ package body et_canvas_schematic is
 								unit_move.tool := MOUSE;
 								
 								if not clarification_pending then
-									find_units (point);
+									find_units_for_move (point);
 								else
 									unit_move.being_moved := true;
 									reset_request_clarification;
@@ -2462,6 +2509,25 @@ package body et_canvas_schematic is
 								set_property (point);
 							else
 								set_property_selected_unit;
+							end if;
+							
+						when others => null;
+					end case;
+
+				when VERB_SHOW =>
+					case noun is
+						when NOUN_DEVICE =>
+							if not clarification_pending then
+								find_units_for_show (point);
+							else
+								show_properties_of_selected_device;
+							end if;
+							
+						when NOUN_NET =>
+							if not clarification_pending then
+								null;
+							else
+								null;
 							end if;
 							
 						when others => null;
@@ -2612,6 +2678,21 @@ package body et_canvas_schematic is
 						when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
 							if clarification_pending then
 								clarify_unit;
+							end if;
+							
+						when others => null;							
+					end case;
+
+				when VERB_SHOW =>
+					case noun is
+						when NOUN_DEVICE =>
+							if clarification_pending then
+								clarify_unit;
+							end if;
+
+						when NOUN_NET =>
+							if clarification_pending then
+								clarify_net_segment;
 							end if;
 							
 						when others => null;							
