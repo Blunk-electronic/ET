@@ -752,9 +752,13 @@ procedure draw_nets (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
 
+		-- This cursor points to the current net being drawn:
 		net_cursor : type_nets.cursor := module.nets.first;
 
-		procedure query_strands (
+		-- Draws the strands of the given net in "normal" mode.
+		-- "Normal" mode means, the whole net is not to be drawn highlighted.
+		-- This is the case when the verb VERB_SHOW is not active.
+		procedure query_strands_normal (
 			net_name	: in et_general.type_net_name.bounded_string;
 			net			: in type_net) is
 			strand_cursor : type_strands.cursor := net.strands.first;
@@ -826,7 +830,7 @@ procedure draw_nets (
 				end if;
 			end query_segments;
 			
-		begin -- query_strands
+		begin -- query_strands_normal
 			while strand_cursor /= type_strands.no_element loop
 
 				query_element (
@@ -835,7 +839,90 @@ procedure draw_nets (
 				
 				next (strand_cursor);
 			end loop;
-		end query_strands;
+		end query_strands_normal;
+
+		-- Draws the whole net inclusive net labesl highlighted. 
+		-- This is the case when the verb VERB_SHOW is active.
+		procedure query_strands_show (
+			net_name	: in et_general.type_net_name.bounded_string;
+			net			: in type_net) is
+			strand_cursor : type_strands.cursor := net.strands.first;
+
+			procedure query_segments (strand : in type_strand) is
+				segment_cursor : type_net_segments.cursor := strand.segments.first;
+			begin
+				-- draw nets of the active sheet only:
+				if strand.position.sheet = current_active_sheet then
+
+					-- set line width for net segments:
+					set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
+
+					set_color_nets (context.cr, BRIGHT);
+					
+					while segment_cursor /= type_net_segments.no_element loop
+
+						-- Draw the net segment as it is according to module database:
+						draw_fixed_segment (segment_cursor);
+
+						draw_labels (net_cursor, strand_cursor, element (segment_cursor));
+						
+						next (segment_cursor);
+					end loop;
+
+				end if;
+			end query_segments;
+			
+		begin -- query_strands_show
+			while strand_cursor /= type_strands.no_element loop
+
+				query_element (
+					position	=> strand_cursor,
+					process		=> query_segments'access);
+				
+				next (strand_cursor);
+			end loop;
+		end query_strands_show;
+
+		-- A net can be drawn in "normal" mode or highlighted. This flag indicates
+		-- that a net has alredy been drawn highlighted so that it won't be drawn
+		-- again in "normal" mode.
+		net_already_drawn : boolean := false;
+
+		-- This procedure calls query_strands_show if the current net (indicated by net_cursor)
+		-- is selected for highlighting. It sets the flag net_already_drawn in that case.
+		procedure highlight_net is
+			use type_net_name;
+			ss : type_selected_segment;
+		begin
+			-- The net selected for highlighting is to be found in the list proposed_segments.
+			-- The last element of the proposed_segments points to the net that is to 
+			-- be drawn highlighted.
+			-- So the list of proposed_segments must contain something:
+			if not is_empty (proposed_segments) then
+
+				-- There must be a selected segment (indicated by cursor selected_segment):
+				if selected_segment /= pac_proposed_segments.no_element then
+					ss := element (selected_segment);
+
+					-- The selected_segment must provide a cursor to a net:
+					if ss.net /= type_nets.no_element then
+						
+						-- The net name of the selected segment must match the name of the
+						-- current net (indicated by net_cursor):
+						if key (ss.net) = key (net_cursor) then
+
+							-- Draw the whole net on the current sheet highlighted:
+							type_nets.query_element (
+								position	=> net_cursor,
+								process		=> query_strands_show'access);
+
+							-- The net (indicated by net_cursor) must not be drawn again:
+							net_already_drawn := true;
+						end if;
+					end if;
+				end if;
+			end if;
+		end highlight_net;
 		
 	begin -- query_nets
 		set_color_nets (context.cr);
@@ -843,11 +930,33 @@ procedure draw_nets (
 		-- iterate nets
 		while net_cursor /= type_nets.no_element loop
 
-			type_nets.query_element (
-				position	=> net_cursor,
-				process		=> query_strands'access);
+			net_already_drawn := false;
 
-			next (net_cursor);
+			-- If the show mode is active AND the net is selected for highlighting,
+			-- then highlight the net and set the flag net_already_drawn:
+			case verb is
+				when VERB_SHOW => 
+					case noun is
+						when NOUN_NET => highlight_net;
+
+						when others => null;
+					end case;
+		
+				when others => null;
+			end case;
+
+			-- If the net (indicated by net_cursor) has been drawn already,
+			-- don't draw it again. Otherwise draw it in "normal" mode:
+			if not net_already_drawn then
+
+				-- Draw the net in "normal" mode:
+				type_nets.query_element (
+					position	=> net_cursor,
+					process		=> query_strands_normal'access);
+
+			end if;
+			
+			next (net_cursor); -- advance to next net
 		end loop;
 
 	end query_nets;
