@@ -231,21 +231,21 @@ Commands and Verb-Noun key sequences
 
 	|VNS| h n
 	
-.. 	- To find a net use this command:
-.. 	
-.. 	.. code-block::
-.. 
-.. 		show net RESET_N
-.. 
-.. 	|VNS| |NI|
-.. 	
-.. 	- To find a net on the current sheet:
-.. 	
-.. 	.. code-block::
-.. 
-.. 		show net RESET_N .
-.. 
-.. 	|VNS| |NI|
+	- To find a net use this command:
+	
+	.. code-block::
+
+		show net RESET_N
+
+	|VNS| |NI|
+	
+	- To find a net on the current sheet:
+	
+	.. code-block::
+
+		show net RESET_N .
+
+	|VNS| |NI|
 
 	
 #. Rename net

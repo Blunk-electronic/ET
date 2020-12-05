@@ -394,7 +394,9 @@ package et_schematic is
 		element_type	=> type_net);
 
 	-- Returns a cursor to the strand that is
-	-- on the given sheet and has the lowest x/y position:
+	-- on the given sheet and has the lowest x/y position.
+	-- Returns no_element if the given sheet does not
+	-- contain a strand of the given net.
 	function get_first_strand_on_sheet (
 		sheet		: in et_coordinates.type_sheet;
 		net_cursor	: in type_nets.cursor)

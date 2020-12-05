@@ -314,11 +314,14 @@ is
 			
 			case mode is
 				when FIRST_NET =>
-
+					-- Get the cursor of the first strand:
 					strand_cursor := get_first_strand (net_cursor);
 
 					-- show the sheet where the first net is:
 					current_active_sheet := sheet (element (strand_cursor).position);
+
+					-- center drawing where the strand starts:
+					center_on (canvas, type_point (element (strand_cursor).position));
 					
 					proposed_segments.append (new_item => (
 						net		=> net_cursor,
@@ -330,9 +333,31 @@ is
 					show_properties_of_selected_net;
 					
 				when NET_ON_CURRENT_SHEET =>
-					null;	
-					--show_properties_of_selected_net
-					
+					-- Get the cursor of the first strand on the current
+					-- active sheet:
+					strand_cursor := get_first_strand_on_sheet (
+										current_active_sheet, net_cursor);
+
+					-- If the net does have a strand on the given sheet,
+					-- select it and show properties in status bar.
+					if strand_cursor /= type_strands.no_element then
+
+						-- center drawing where the strand starts:
+						center_on (canvas, type_point (element (strand_cursor).position));
+
+						proposed_segments.append (new_item => (
+							net		=> net_cursor,
+							strand	=> strand_cursor,
+							segment	=> get_first_segment (strand_cursor)));
+
+						selected_segment := proposed_segments.first;
+						
+						show_properties_of_selected_net;
+					else
+						raise semantic_error_1 with
+							"ERROR: Net " & enclose_in_quotes (to_string (net))
+							& " is not on this sheet !";
+					end if;
 			end case;
 		else
 			raise semantic_error_1 with

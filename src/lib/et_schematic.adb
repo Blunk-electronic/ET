@@ -214,8 +214,40 @@ package body et_schematic is
 		net_cursor	: in type_nets.cursor)
 		return type_strands.cursor
 	is
-		strand_cursor : type_strands.cursor;
+		use type_nets;
+		strand_cursor : type_strands.cursor; -- to be returned
+
+		use et_coordinates;
+		strand_position : et_coordinates.type_position := greatest_position;
+		
+		procedure query_strands (
+			net_name	: in type_net_name.bounded_string;
+			net			: in type_net)
+		is
+			use type_strands;
+
+			c : type_strands.cursor := net.strands.first;
+		begin			
+			while c /= type_strands.no_element loop
+
+				-- Probe strands on the given sheet only:
+				if et_coordinates.sheet (element (c).position) = sheet then
+
+					if element (c).position < strand_position then
+						strand_position := element (c).position;
+						strand_cursor := c;
+					end if;
+
+				end if;
+				
+				next (c); -- advance to next strand
+			end loop;
+		end query_strands;
+
 	begin
+		query_element (
+			position	=> net_cursor,
+			process		=> query_strands'access);
 
 		return strand_cursor;
 	end get_first_strand_on_sheet;
@@ -236,8 +268,7 @@ package body et_schematic is
 		is
 			use type_strands;
 
-			procedure query_strand (c : in type_strands.cursor) is
-			begin
+			procedure query_strand (c : in type_strands.cursor) is begin
 				if element (c).position < strand_position then
 					strand_position := element (c).position;
 					strand_cursor := c;
