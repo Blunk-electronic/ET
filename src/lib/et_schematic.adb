@@ -449,7 +449,7 @@ package body et_schematic is
 	end get_partcode;
 
 	function get_variant (device : in type_devices.cursor)
-		return et_devices.pac_package_variant_name.bounded_string
+		return pac_package_variant_name.bounded_string
 	is
 		use et_devices;
 	begin
@@ -460,7 +460,7 @@ package body et_schematic is
 		return et_packages.type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
 		device_model		: pac_device_model_file.bounded_string;
 		device_cursor_lib	: pac_devices_lib.cursor;
-		device_variant		: et_devices.pac_package_variant_name.bounded_string; -- N, D
+		device_variant		: pac_package_variant_name.bounded_string; -- N, D
 	begin
 		-- CS: The device is located twice here. Consumes too much time.
 		-- The issue may dissolve once devices are stored in a hashed map:
@@ -472,9 +472,9 @@ package body et_schematic is
 		device_model := type_devices.element (device).model;
 		
 		-- locate the generic device model in the device library
-		device_cursor_lib := et_devices.locate_device (device_model);
+		device_cursor_lib := locate_device (device_model);
 		
-		return et_devices.package_model (device_cursor_lib, device_variant);
+		return package_model (device_cursor_lib, device_variant);
 	end get_package_model;
 
 	function has_real_package (device : in type_devices.cursor) return boolean is

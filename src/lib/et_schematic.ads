@@ -198,7 +198,7 @@ package et_schematic is
 				purpose		: pac_device_purpose.bounded_string; -- brightness_control
 
 				-- The package variant:
-				variant		: et_devices.pac_package_variant_name.bounded_string; -- D, N
+				variant		: pac_package_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for name, value and purpose.
@@ -225,7 +225,7 @@ package et_schematic is
 	-- This is the port of a device as it appears in a net segment:
 	type type_port_device is record
 		device_name	: type_device_name;
-		unit_name	: et_devices.pac_unit_name.bounded_string;
+		unit_name	: pac_unit_name.bounded_string;
 		port_name	: et_symbols.type_port_name.bounded_string;
 	end record;
 
@@ -466,7 +466,6 @@ package et_schematic is
 	-- CS: This must be a hashed map:
  	package type_devices is new indefinite_ordered_maps (
 		key_type		=> type_device_name, -- something like "IC43"
-		"<"				=> et_devices."<",
  		element_type	=> type_device);
 
 	-- Returns true if the given device is real.
@@ -509,7 +508,7 @@ package et_schematic is
 	-- Returns the package variant of the given device.
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_variant (device : in type_devices.cursor)
-		return et_devices.pac_package_variant_name.bounded_string;
+		return pac_package_variant_name.bounded_string;
 	
 	-- Returns the name of the package model of the given device.
 	-- The given device must be real. Otherwise constraint error arises here.	
@@ -556,7 +555,6 @@ package et_schematic is
 	-- CS: this should be a hashed map:
 	package pac_devices_non_electric is new ordered_maps (
 		key_type		=> type_device_name, -- H1, FD2, ...
-		"<"				=> et_devices."<",
 		element_type	=> type_device_non_electric);
 
 	procedure device_name_in_use (
