@@ -938,7 +938,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_assembly_variants;
-		use et_assembly_variants.pac_variants;
+		use et_assembly_variants.pac_assembly_variants;
 		use pac_assembly_variant_name;
 
 		procedure make_for_variant (variant_name : in pac_assembly_variant_name.bounded_string) is
@@ -1343,7 +1343,7 @@ package body et_board_ops is
 			log_indentation_down;
 		end make_for_variant;
 		
-		procedure query_variant (variant_cursor : in et_assembly_variants.pac_variants.cursor) is
+		procedure query_variant (variant_cursor : in et_assembly_variants.pac_assembly_variants.cursor) is
 			use pac_assembly_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));

@@ -813,7 +813,7 @@ is
 	procedure query_assembly_variants is
 	-- writes the assembly variants in the module file
 		use et_assembly_variants;
-		use et_assembly_variants.pac_variants;
+		use et_assembly_variants.pac_assembly_variants;
 
 		procedure query_devices (
 			variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
@@ -881,7 +881,7 @@ is
 			end loop;
 		end query_submodules;
 
-		procedure write (variant_cursor : in et_assembly_variants.pac_variants.cursor) is begin
+		procedure write (variant_cursor : in et_assembly_variants.pac_assembly_variants.cursor) is begin
 			section_mark (section_assembly_variant, HEADER);
 			write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)));
 			write (keyword => keyword_description, wrap => true, parameters => to_string (element (variant_cursor).description));

@@ -615,7 +615,7 @@ package body et_project.modules is
 				submodule		: in et_schematic.type_module) is
 				use et_assembly_variants;
 			begin
-				if et_assembly_variants.pac_variants.contains (submodule.variants, variant) then
+				if et_assembly_variants.pac_assembly_variants.contains (submodule.variants, variant) then
 					variant_found := true;
 				end if;
 			end query_variants;
@@ -659,7 +659,7 @@ package body et_project.modules is
 		variant		: in et_general.pac_assembly_variant_name.bounded_string) -- low_cost
 		return boolean is
 
-		use et_assembly_variants.pac_variants;
+		use et_assembly_variants.pac_assembly_variants;
 
 		result : boolean := false; -- to be returned
 
@@ -700,8 +700,8 @@ package body et_project.modules is
 		procedure query_variants (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use et_assembly_variants.pac_variants;
-			variant_cursor : et_assembly_variants.pac_variants.cursor;
+			use et_assembly_variants.pac_assembly_variants;
+			variant_cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
 			procedure query_devices (
 				variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
@@ -765,9 +765,9 @@ package body et_project.modules is
 		procedure query_variants (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use et_assembly_variants.pac_variants;
+			use et_assembly_variants.pac_assembly_variants;
 			
-			variant_cursor : et_assembly_variants.pac_variants.cursor;
+			variant_cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
 			procedure query_devices (
 				variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
@@ -815,9 +815,9 @@ package body et_project.modules is
 		procedure query_variants (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use et_assembly_variants.pac_variants;
+			use et_assembly_variants.pac_assembly_variants;
 
-			variant_cursor : et_assembly_variants.pac_variants.cursor;
+			variant_cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
 			procedure query_submodules (
 				variant_name	: in et_general.pac_assembly_variant_name.bounded_string;

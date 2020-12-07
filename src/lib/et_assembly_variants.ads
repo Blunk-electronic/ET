@@ -46,13 +46,15 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
-with et_general;
+with et_general;				use et_general;
 with et_material;
 with et_string_processing;		use et_string_processing;
 with et_devices;				use et_devices;
 
 package et_assembly_variants is
 
+	use pac_assembly_variant_name;
+	
 	keyword_active	: constant string := "active";	
 	
 	-- An assembly variant should be described more or less detailled by the operator:
@@ -89,7 +91,7 @@ package et_assembly_variants is
 	-- NOTE: In contrast to type_device there is no option to not mount a submodule.
 	-- There might be furhter extensions in the future, so we use a record:
 	type type_submodule is record
-		variant : et_general.pac_assembly_variant_name.bounded_string; -- low_cost, fixed_frequency
+		variant : pac_assembly_variant_name.bounded_string; -- low_cost, fixed_frequency
 	end record;
 
 	-- Variants of submodules are collected in a map.	
@@ -107,14 +109,13 @@ package et_assembly_variants is
 
 	-- Since a board may have lots of variants, we keep them in a map.
 	-- NOTE: The default variant ("") is never inserted here.
-	package pac_variants is new ordered_maps (
-		key_type		=> et_general.pac_assembly_variant_name.bounded_string, -- "low_cost"
-		"<"				=> et_general.pac_assembly_variant_name."<",
+	package pac_assembly_variants is new ordered_maps (
+		key_type		=> pac_assembly_variant_name.bounded_string, -- "low_cost"
 		element_type	=> type_assembly_variant);
 
 	function is_mounted (
 		device	: in type_device_name; -- IC1
-		variant	: in pac_variants.cursor)
+		variant	: in pac_assembly_variants.cursor)
 		return boolean;
 	-- Returns true if the given device is to be mounted according to given assembly variant.
 	-- If variant points to no element the default variant is assumed and the device regarded as mounted.

@@ -2844,14 +2844,14 @@ is
 				module		: in out et_schematic.type_module) is
 				inserted : boolean;
 				use et_assembly_variants;
-				use et_assembly_variants.pac_variants;
-				cursor : et_assembly_variants.pac_variants.cursor;
+				use et_assembly_variants.pac_assembly_variants;
+				cursor : et_assembly_variants.pac_assembly_variants.cursor;
 			begin
 				log (text => "assembly variant " & 
 						enclose_in_quotes (to_variant (assembly_variant_name)), level => log_threshold + 2);
 
 				-- insert variant in container variants
-				et_assembly_variants.pac_variants.insert (
+				et_assembly_variants.pac_assembly_variants.insert (
 					container	=> module.variants,
 					key			=> assembly_variant_name,
 					inserted	=> inserted,
@@ -6209,9 +6209,9 @@ is
 			module		: in et_schematic.type_module) is
 
 			use et_assembly_variants;
-			use et_assembly_variants.pac_variants;
+			use et_assembly_variants.pac_assembly_variants;
 			
-			variant_cursor : et_assembly_variants.pac_variants.cursor := module.variants.first;
+			variant_cursor : et_assembly_variants.pac_assembly_variants.cursor := module.variants.first;
 			variant_name : et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 
 			procedure query_submodules (
@@ -6255,11 +6255,11 @@ is
 			end query_submodules;
 			
 		begin -- query_variants
-			if variant_cursor = et_assembly_variants.pac_variants.no_element then
+			if variant_cursor = et_assembly_variants.pac_assembly_variants.no_element then
 				log (text => "no variants specified", level => log_threshold);
 			else
 				-- iterate assembly variants of parent module
-				while variant_cursor /= et_assembly_variants.pac_variants.no_element loop
+				while variant_cursor /= et_assembly_variants.pac_assembly_variants.no_element loop
 					variant_name := key (variant_cursor);
 
 					-- show assembly variant of parent module
