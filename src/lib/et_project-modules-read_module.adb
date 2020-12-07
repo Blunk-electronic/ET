@@ -88,7 +88,7 @@ is
 -- 	rules_layout	: et_design_rules.pac_file_name.bounded_string;
 	-- CS ERC rules ?
 	
-	active_assembly_variant : et_general.type_variant_name.bounded_string; -- "low_cost"
+	active_assembly_variant : et_general.pac_assembly_variant_name.bounded_string; -- "low_cost"
 	
 	-- Assigns to the module the active assembly variant.
 	procedure set_active_assembly_variant is
@@ -606,7 +606,7 @@ is
 	device_non_electric_model		: et_packages.type_package_model_file.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
 	
 	-- assembly variants
-	assembly_variant_name			: et_general.type_variant_name.bounded_string; -- low_cost
+	assembly_variant_name			: et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 	assembly_variant_description	: et_assembly_variants.type_description; -- "variant without temp. sensor"
 	assembly_variant_devices		: et_assembly_variants.type_devices.map;
 	assembly_variant_submodules		: et_assembly_variants.type_submodules.map;
@@ -4335,7 +4335,7 @@ is
 								device_cursor	: et_assembly_variants.type_devices.cursor;
 								
 								submod_name		: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-								submod_var		: et_general.type_variant_name.bounded_string; -- low_cost
+								submod_var		: et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 								submod_cursor	: et_assembly_variants.type_submodules.cursor;
 								inserted		: boolean;
 							begin
@@ -6212,15 +6212,15 @@ is
 			use et_assembly_variants.pac_variants;
 			
 			variant_cursor : et_assembly_variants.pac_variants.cursor := module.variants.first;
-			variant_name : et_general.type_variant_name.bounded_string; -- low_cost
+			variant_name : et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 
 			procedure query_submodules (
-				variant_name	: in et_general.type_variant_name.bounded_string;
-				variant			: in et_assembly_variants.type_variant) is
+				variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
+				variant			: in et_assembly_variants.type_assembly_variant) is
 				use type_submodules;
 				submod_cursor : type_submodules.cursor := variant.submodules.first;
 				submod_name : type_module_instance_name.bounded_string; -- CLK_GENERATOR
-				submod_variant : et_general.type_variant_name.bounded_string; -- fixed_frequency
+				submod_variant : et_general.pac_assembly_variant_name.bounded_string; -- fixed_frequency
 			begin -- query_submodules
 				if submod_cursor = type_submodules.no_element then
 					log (text => "no submodule variants specified", level => log_threshold + 1);

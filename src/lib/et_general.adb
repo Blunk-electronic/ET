@@ -360,22 +360,22 @@ package body et_general is
 
 
 	
-	function is_default (variant : in type_variant_name.bounded_string) return boolean is begin
+	function is_default (variant : in pac_assembly_variant_name.bounded_string) return boolean is begin
 	-- Returns true if the given variant name is empty.
-		if type_variant_name.length (variant) = 0 then -- CS better compare with constant "default"
+		if pac_assembly_variant_name.length (variant) = 0 then -- CS better compare with constant "default"
 			return true;
 		else
 			return false;
 		end if;
 	end;
 
-	function to_variant (variant : in type_variant_name.bounded_string) return string is begin
-		return type_variant_name.to_string (variant);
+	function to_variant (variant : in pac_assembly_variant_name.bounded_string) return string is begin
+		return pac_assembly_variant_name.to_string (variant);
 	end;
 
-	function to_variant (variant : in string) return type_variant_name.bounded_string is begin
+	function to_variant (variant : in string) return pac_assembly_variant_name.bounded_string is begin
 		-- CS lenght and character check
-		return type_variant_name.to_bounded_string (variant);
+		return pac_assembly_variant_name.to_bounded_string (variant);
 	end;
 
 

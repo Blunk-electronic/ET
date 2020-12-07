@@ -816,8 +816,8 @@ is
 		use et_assembly_variants.pac_variants;
 
 		procedure query_devices (
-			variant_name	: in et_general.type_variant_name.bounded_string;
-			variant			: in et_assembly_variants.type_variant) is
+			variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
+			variant			: in et_assembly_variants.type_assembly_variant) is
 			use et_assembly_variants.type_devices;
 			device_cursor : et_assembly_variants.type_devices.cursor := variant.devices.first;
 
@@ -864,8 +864,8 @@ is
 		end query_devices;
 
 		procedure query_submodules (
-			variant_name	: in et_general.type_variant_name.bounded_string;
-			variant			: in et_assembly_variants.type_variant) is
+			variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
+			variant			: in et_assembly_variants.type_assembly_variant) is
 			use et_assembly_variants;
 			use et_assembly_variants.type_submodules;
 			submodule_cursor : et_assembly_variants.type_submodules.cursor := variant.submodules.first;

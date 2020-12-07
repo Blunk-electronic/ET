@@ -525,8 +525,8 @@ package et_schematic is
 
 	-- As there are assembly variants, for each of them a dedicated netlist must be generated.
 	package type_netlists is new ordered_maps (
-		key_type		=> et_general.type_variant_name.bounded_string, -- low_cost, empty if default variant
-		"<"				=> et_general.type_variant_name."<",
+		key_type		=> et_general.pac_assembly_variant_name.bounded_string, -- low_cost, empty if default variant
+		"<"				=> et_general.pac_assembly_variant_name."<",
 		element_type	=> et_netlists.type_netlist.tree, -- provides info on primary and secondary net dependencies
 		"="				=> et_netlists.type_netlist."=");
 
@@ -598,7 +598,7 @@ package et_schematic is
 
 		-- the assembly variants of the module
 		variants		: et_assembly_variants.pac_variants.map;
-		active_variant	: et_general.type_variant_name.bounded_string; -- "premium"
+		active_variant	: et_general.pac_assembly_variant_name.bounded_string; -- "premium"
 		
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;

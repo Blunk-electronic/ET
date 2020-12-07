@@ -66,7 +66,7 @@ package body et_pick_and_place is
 	-- - Exports the P&P data of the given module to the export/CAM/pick_and_place directory.
 		pnp				: in type_devices.map;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
-		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level) is		
 
@@ -79,7 +79,7 @@ package body et_pick_and_place is
 			use ada.directories;
 			use gnat.directory_operations;
 			use type_module_name;
-			use et_general.type_variant_name;
+			use et_general.pac_assembly_variant_name;
 			use et_export;
 		begin
 			if is_default (variant_name) then

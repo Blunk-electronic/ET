@@ -593,7 +593,7 @@ package body et_project.modules is
 	-- The module being searched in must be in the rig already.												
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		variant		: in et_general.type_variant_name.bounded_string) -- low_cost				
+		variant		: in et_general.pac_assembly_variant_name.bounded_string) -- low_cost				
 		return boolean is
 
 		variant_found : boolean := false; -- to be returned
@@ -656,7 +656,7 @@ package body et_project.modules is
 	-- If the variant is an empty string then it is about the default variant
 	-- which is always provided. The return is true in that case.
 		module		: in pac_generic_modules.cursor;
-		variant		: in et_general.type_variant_name.bounded_string) -- low_cost
+		variant		: in et_general.pac_assembly_variant_name.bounded_string) -- low_cost
 		return boolean is
 
 		use et_assembly_variants.pac_variants;
@@ -671,7 +671,7 @@ package body et_project.modules is
 		end;
 		
 	begin -- exists
-		if et_general.type_variant_name.length (variant) = 0 then
+		if et_general.pac_assembly_variant_name.length (variant) = 0 then
 			result := true;
 		else
 			
@@ -691,7 +691,7 @@ package body et_project.modules is
 	-- - The assembly variant must exist in the module.
 	-- - The device must exist in the module.
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
+		variant	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost				
 		device	: in type_device_name)
 		return boolean is
 
@@ -704,8 +704,8 @@ package body et_project.modules is
 			variant_cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure query_devices (
-				variant_name	: in et_general.type_variant_name.bounded_string;
-				variant			: in et_assembly_variants.type_variant) is
+				variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
+				variant			: in et_assembly_variants.type_assembly_variant) is
 				use et_assembly_variants;
 				use et_assembly_variants.type_devices;
 				device_cursor : et_assembly_variants.type_devices.cursor;
@@ -756,7 +756,7 @@ package body et_project.modules is
 	-- - The device must have an entry in the given assembly variant,
 	--   otherwise the return is no_element.
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
+		variant	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost				
 		device	: in type_device_name)
 		return et_assembly_variants.type_devices.cursor is
 
@@ -770,8 +770,8 @@ package body et_project.modules is
 			variant_cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure query_devices (
-				variant_name	: in et_general.type_variant_name.bounded_string;
-				variant			: in et_assembly_variants.type_variant) is
+				variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
+				variant			: in et_assembly_variants.type_assembly_variant) is
 				use et_assembly_variants.type_devices;
 			begin
 				cursor := find (variant.devices, device);
@@ -806,7 +806,7 @@ package body et_project.modules is
 	-- If the given variant is an emtpy string (means default variant) the return
 	-- is no_element.
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
+		variant	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost				
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
 		return et_assembly_variants.type_submodules.cursor is
 
@@ -820,8 +820,8 @@ package body et_project.modules is
 			variant_cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure query_submodules (
-				variant_name	: in et_general.type_variant_name.bounded_string;
-				variant			: in et_assembly_variants.type_variant) is
+				variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
+				variant			: in et_assembly_variants.type_assembly_variant) is
 				use et_assembly_variants.type_submodules;
 			begin
 				cursor := find (variant.submodules, submod);

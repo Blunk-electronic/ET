@@ -89,7 +89,7 @@ package et_assembly_variants is
 	-- NOTE: In contrast to type_device there is no option to not mount a submodule.
 	-- There might be furhter extensions in the future, so we use a record:
 	type type_submodule is record
-		variant : et_general.type_variant_name.bounded_string; -- low_cost, fixed_frequency
+		variant : et_general.pac_assembly_variant_name.bounded_string; -- low_cost, fixed_frequency
 	end record;
 
 	-- Variants of submodules are collected in a map.	
@@ -99,7 +99,7 @@ package et_assembly_variants is
 		element_type	=> type_submodule);
 
 	-- The final assembly variant is composed of a description and the affected devices:
-	type type_variant is record
+	type type_assembly_variant is record
 		description	: type_description;
 		devices		: type_devices.map;
 		submodules	: type_submodules.map;
@@ -108,9 +108,9 @@ package et_assembly_variants is
 	-- Since a board may have lots of variants, we keep them in a map.
 	-- NOTE: The default variant ("") is never inserted here.
 	package pac_variants is new ordered_maps (
-		key_type		=> et_general.type_variant_name.bounded_string, -- "low_cost"
-		"<"				=> et_general.type_variant_name."<",
-		element_type	=> type_variant);
+		key_type		=> et_general.pac_assembly_variant_name.bounded_string, -- "low_cost"
+		"<"				=> et_general.pac_assembly_variant_name."<",
+		element_type	=> type_assembly_variant);
 
 	function is_mounted (
 		device	: in type_device_name; -- IC1

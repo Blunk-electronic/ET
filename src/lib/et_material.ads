@@ -126,7 +126,7 @@ package et_material is
 	-- - Exports the BOM of the given module to the export/CAM directory.
 		bom				: in type_devices.map;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
-		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		format			: in type_bom_format;
 		log_threshold	: in type_log_level);
 	

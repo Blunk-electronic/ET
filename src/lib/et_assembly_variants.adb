@@ -61,8 +61,8 @@ package body et_assembly_variants is
 		cursor : type_devices.cursor;
 		
 		procedure query_devices (
-			variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
-			variant			: in type_variant) is
+			variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
+			variant			: in type_assembly_variant) is
 		begin
 			cursor := find (variant.devices, device);
 		end query_devices;

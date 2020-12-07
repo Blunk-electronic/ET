@@ -83,7 +83,7 @@ procedure read_rigs (
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		generic_name : type_module_name.bounded_string; -- motor_driver
 		instance_name : type_module_instance_name.bounded_string; -- DRV_1
-		assembly_variant : et_general.type_variant_name.bounded_string; -- low_cost
+		assembly_variant : et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 
 		procedure clear_module_instance is begin
 			generic_name := to_module_name ("");

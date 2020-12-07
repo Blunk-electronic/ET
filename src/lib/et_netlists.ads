@@ -283,7 +283,7 @@ package et_netlists is
 	-- - Exports the netlist of the given module to the export/CAM directory.
 		modules			: in type_modules.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
-		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)
 		return type_netlist.tree;

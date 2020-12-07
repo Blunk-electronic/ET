@@ -310,7 +310,7 @@ package et_project.modules is
 	-- The module being searched in must be in the rig already.						
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		variant		: in et_general.type_variant_name.bounded_string) -- low_cost				
+		variant		: in et_general.pac_assembly_variant_name.bounded_string) -- low_cost				
 		return boolean;
 
 	function exists (
@@ -318,7 +318,7 @@ package et_project.modules is
 	-- If the variant is an empty string then it is about the default variant
 	-- which is always provided. The return is true in that case.
 		module		: in pac_generic_modules.cursor;
-		variant		: in et_general.type_variant_name.bounded_string) -- low_cost
+		variant		: in et_general.pac_assembly_variant_name.bounded_string) -- low_cost
 		return boolean;	
 
 	function exists (
@@ -328,7 +328,7 @@ package et_project.modules is
 	-- - The assembly variant must exist in the module.
 	-- - The device must exist in the module.
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
+		variant	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost				
 		device	: in type_device_name)
 		return boolean;
 
@@ -342,7 +342,7 @@ package et_project.modules is
 	-- - The device must have an entry in the given assembly variant,
 	--   otherwise the return is no_element.
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
+		variant	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost				
 		device	: in type_device_name)
 		return et_assembly_variants.type_devices.cursor;
 
@@ -358,7 +358,7 @@ package et_project.modules is
 	-- If the given variant is an emtpy string (means default variant) the return
 	-- is no_element.
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		variant	: in et_general.type_variant_name.bounded_string; -- low_cost
+		variant	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
 		return et_assembly_variants.type_submodules.cursor;
 

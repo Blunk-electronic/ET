@@ -166,7 +166,7 @@ package body et_material is
 	-- - Exports the BOM of the given module to the export/CAM/BOM directory.
 		bom				: in type_devices.map;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
-		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		format			: in type_bom_format;
 		log_threshold	: in type_log_level) is		
 
@@ -176,7 +176,7 @@ package body et_material is
 			use ada.directories;
 			use gnat.directory_operations;
 			use type_module_name;
-			use et_general.type_variant_name;
+			use et_general.pac_assembly_variant_name;
 			use et_export;
 		begin
 			if is_default (variant_name) then

@@ -107,7 +107,7 @@ package body et_schematic_ops is
 		raise constraint_error;
 	end;
 
-	procedure assembly_variant_not_found (variant : in et_general.type_variant_name.bounded_string) is 
+	procedure assembly_variant_not_found (variant : in et_general.pac_assembly_variant_name.bounded_string) is 
 	begin
 		log (ERROR, "assembly variant " &
 			 enclose_in_quotes (to_variant (variant)) & " not found !", console => true);
@@ -6639,7 +6639,7 @@ package body et_schematic_ops is
 	procedure create_assembly_variant (
 	-- Creates a new assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -6684,7 +6684,7 @@ package body et_schematic_ops is
 	procedure delete_assembly_variant (
 	-- Deletes an assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -6729,7 +6729,7 @@ package body et_schematic_ops is
 	procedure describe_assembly_variant (
 	-- Describes an assembly variant. Overwrites the previous description.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost											
+		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost											
 		description		: in et_assembly_variants.type_description; -- "this is the low budget variant"
 		log_threshold	: in type_log_level) is
 
@@ -6744,8 +6744,8 @@ package body et_schematic_ops is
 			cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure assign_description (
-				name		: in et_general.type_variant_name.bounded_string;
-				variant		: in out et_assembly_variants.type_variant) is
+				name		: in et_general.pac_assembly_variant_name.bounded_string;
+				variant		: in out et_assembly_variants.type_assembly_variant) is
 			begin
 				variant.description := description;
 			end assign_description;
@@ -6785,7 +6785,7 @@ package body et_schematic_ops is
 
 	procedure mount_device (
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		value			: in pac_device_value.bounded_string; -- 220R
 		partcode		: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
@@ -6813,8 +6813,8 @@ package body et_schematic_ops is
 			cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure insert_device (
-				name		: in et_general.type_variant_name.bounded_string;
-				variant		: in out et_assembly_variants.type_variant) is
+				name		: in et_general.pac_assembly_variant_name.bounded_string;
+				variant		: in out et_assembly_variants.type_assembly_variant) is
 				use et_assembly_variants.type_devices;
 				cursor : et_assembly_variants.type_devices.cursor;
 				inserted : boolean;
@@ -6889,7 +6889,7 @@ package body et_schematic_ops is
 	-- the given assembly variant. An already existing device will be overwritten
 	-- without warning.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		log_threshold	: in type_log_level) is
 
@@ -6904,8 +6904,8 @@ package body et_schematic_ops is
 			cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure insert_device (
-				name		: in et_general.type_variant_name.bounded_string;
-				variant		: in out et_assembly_variants.type_variant) is
+				name		: in et_general.pac_assembly_variant_name.bounded_string;
+				variant		: in out et_assembly_variants.type_assembly_variant) is
 				use et_assembly_variants.type_devices;
 				cursor : et_assembly_variants.type_devices.cursor;
 				inserted : boolean;
@@ -6972,7 +6972,7 @@ package body et_schematic_ops is
 	procedure remove_device (
 	-- Removes the gvien device from the given assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		log_threshold	: in type_log_level) is
 
@@ -6987,8 +6987,8 @@ package body et_schematic_ops is
 			cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure delete_device (
-				name		: in et_general.type_variant_name.bounded_string;
-				variant		: in out et_assembly_variants.type_variant) is
+				name		: in et_general.pac_assembly_variant_name.bounded_string;
+				variant		: in out et_assembly_variants.type_assembly_variant) is
 				use et_assembly_variants.type_devices;
 				cursor : et_assembly_variants.type_devices.cursor;
 			begin
@@ -7052,9 +7052,9 @@ package body et_schematic_ops is
 	-- Sets the assembly variant of a submodule instance. An already existing submodule
 	-- will be overwritten without warning.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in et_general.type_variant_name.bounded_string; -- low_cost								  
+		variant_parent	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost								  
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		variant_submod	: in et_general.type_variant_name.bounded_string; -- fixed_frequency
+		variant_submod	: in et_general.pac_assembly_variant_name.bounded_string; -- fixed_frequency
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -7069,8 +7069,8 @@ package body et_schematic_ops is
 			cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure mount (
-				name		: in et_general.type_variant_name.bounded_string; -- low_cost (parent module)
-				variant		: in out et_assembly_variants.type_variant) is
+				name		: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost (parent module)
+				variant		: in out et_assembly_variants.type_assembly_variant) is
 				use et_assembly_variants.type_submodules;
 				cursor : type_submodules.cursor;
 			begin
@@ -7148,7 +7148,7 @@ package body et_schematic_ops is
 	-- Removes the assembly variant of a submodule. This results in all devices
 	-- of the submodule being mounted.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in et_general.type_variant_name.bounded_string; -- low_cost
+		variant_parent	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level) is
 
@@ -7164,8 +7164,8 @@ package body et_schematic_ops is
 			cursor : et_assembly_variants.pac_variants.cursor;
 
 			procedure remove (
-				name		: in et_general.type_variant_name.bounded_string; -- low_cost (parent module)
-				variant		: in out et_assembly_variants.type_variant) is
+				name		: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost (parent module)
+				variant		: in out et_assembly_variants.type_assembly_variant) is
 				use et_assembly_variants.type_submodules;
 				cursor : type_submodules.cursor;
 			begin
@@ -8088,9 +8088,9 @@ package body et_schematic_ops is
 
 		use et_assembly_variants;
 		use et_assembly_variants.pac_variants;
-		use et_general.type_variant_name;
+		use et_general.pac_assembly_variant_name;
 
-		procedure make_for_variant (variant_name : in et_general.type_variant_name.bounded_string) is
+		procedure make_for_variant (variant_name : in et_general.pac_assembly_variant_name.bounded_string) is
 
 			use et_material;
 			bill_of_material : et_material.type_devices.map;
@@ -8100,7 +8100,7 @@ package body et_schematic_ops is
 			-- Adds to the device index the given offset.
 			-- If offset is zero, we are dealing with the top module.
 				module_cursor	: in pac_generic_modules.cursor;
-				variant			: in et_general.type_variant_name.bounded_string;
+				variant			: in et_general.pac_assembly_variant_name.bounded_string;
 				offset			: in type_name_index) is
 				
 				procedure query_devices (
@@ -8307,10 +8307,10 @@ package body et_schematic_ops is
 
 			-- Another stack keeps record of the assembly variant on submodule levels.
 			package stack_variant is new et_general.stack_lifo (
-				item	=> et_general.type_variant_name.bounded_string,
+				item	=> et_general.pac_assembly_variant_name.bounded_string,
 				max 	=> et_submodules.nesting_depth_max);
 			
-			variant : et_general.type_variant_name.bounded_string; -- low_cost
+			variant : et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 			
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
@@ -8454,7 +8454,7 @@ package body et_schematic_ops is
 		end make_for_variant;
 		
 		procedure query_variant (variant_cursor : in et_assembly_variants.pac_variants.cursor) is
-			use et_general.type_variant_name;
+			use et_general.pac_assembly_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
 		end query_variant;
@@ -8725,9 +8725,9 @@ package body et_schematic_ops is
 		use et_general.type_net_name;
 		use et_assembly_variants;
 		use et_assembly_variants.pac_variants;
-		use et_general.type_variant_name;
+		use et_general.pac_assembly_variant_name;
 
-		procedure make_for_variant (variant_name : in et_general.type_variant_name.bounded_string) is
+		procedure make_for_variant (variant_name : in et_general.pac_assembly_variant_name.bounded_string) is
 
 			-- Since we are dealing with hierarchic designs, a tree of modules (each of them having its
 			-- own netlist) is required. In the course of this procedure the netlist_tree is built
@@ -8747,7 +8747,7 @@ package body et_schematic_ops is
 			-- Adds to the device index the given offset.
 			-- If offset is zero, we are dealing with the top module.
 				module_cursor	: in et_project.modules.pac_generic_modules.cursor;
-				variant			: in et_general.type_variant_name.bounded_string;
+				variant			: in et_general.pac_assembly_variant_name.bounded_string;
 				prefix			: in et_general.type_net_name.bounded_string; -- DRV3/OSC1/
 				offset			: in type_name_index) is
 
@@ -8898,10 +8898,10 @@ package body et_schematic_ops is
 
 			-- Another stack keeps record of the assembly variant at the submodule level.
 			package stack_variant is new et_general.stack_lifo (
-				item	=> et_general.type_variant_name.bounded_string,
+				item	=> et_general.pac_assembly_variant_name.bounded_string,
 				max 	=> et_submodules.nesting_depth_max);
 			
-			variant : et_general.type_variant_name.bounded_string; -- low_cost
+			variant : et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 			
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
@@ -9044,7 +9044,7 @@ package body et_schematic_ops is
 				module			: in out et_schematic.type_module) is
 
 				procedure assign_netlist (
-					variant		: in et_general.type_variant_name.bounded_string;
+					variant		: in et_general.pac_assembly_variant_name.bounded_string;
 					netlist		: in out et_netlists.type_netlist.tree) is
 				begin
 					-- overwrite the current netlist by the new netlist:
@@ -9150,7 +9150,7 @@ package body et_schematic_ops is
 		end make_for_variant;
 		
 		procedure query_variant (variant_cursor : in et_assembly_variants.pac_variants.cursor) is
-			use et_general.type_variant_name;
+			use et_general.pac_assembly_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
 		end query_variant;

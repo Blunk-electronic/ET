@@ -440,8 +440,8 @@ package body et_canvas_board is
 	
 		meta : constant type_board := element (current_active_module).meta.board;
 
-		use type_variant_name;
-		variant : constant type_variant_name.bounded_string := element (current_active_module).active_variant;
+		use pac_assembly_variant_name;
+		variant : constant pac_assembly_variant_name.bounded_string := element (current_active_module).active_variant;
 
 		result : type_text_content.bounded_string;
 
