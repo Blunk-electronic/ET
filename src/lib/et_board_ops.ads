@@ -105,7 +105,7 @@ package et_board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		package_model	: in et_packages.type_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
-		prefix			: in type_prefix.bounded_string; -- FD
+		prefix			: in pac_device_prefix.bounded_string; -- FD
 		log_threshold	: in type_log_level);
 
 	-- CS procedure add_device with explicit device name like MH1

@@ -408,7 +408,7 @@ package et_schematic_ops is
 	-- Returns for the given device prefix the next available device name in the module.
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
 		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in type_prefix.bounded_string; -- C
+		prefix			: in pac_device_prefix.bounded_string; -- C
 		category		: in type_device_category := ELECTRICAL)
 		return type_device_name; -- C2
 

@@ -2939,13 +2939,13 @@ package body et_schematic_ops is
 	-- CS: look up non-electric devices
 
 		module_cursor	: in pac_generic_modules.cursor;
-		prefix			: in type_prefix.bounded_string; -- R, L, C, IC, FD, H, ...
+		prefix			: in pac_device_prefix.bounded_string; -- R, L, C, IC, FD, H, ...
 		category		: in type_device_category := ELECTRICAL)
 		return type_device_name is -- C2
 		
 		next_name : type_device_name; -- to be returned
 
-		use type_prefix;
+		use pac_device_prefix;
 		
 		procedure search_gap_electric (
 		-- Searches for the lowest available device name. Looks at devices

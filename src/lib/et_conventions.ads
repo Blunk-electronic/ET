@@ -199,9 +199,9 @@ package et_conventions is
 	
 	-- Device prefixes and their category are stored in a map:
 	package type_component_prefixes is new ordered_maps (
-		key_type 		=> et_devices.type_prefix.bounded_string, -- IC
+		key_type 		=> pac_device_prefix.bounded_string, -- IC
 		element_type 	=> type_device_category, -- INTEGRATED_CIRCUIT
-		"<" 			=> et_devices.type_prefix."<");
+		"<" 			=> pac_device_prefix."<");
 
 	-- After reading the conventions, we store the device prefixes for the design here:
 	component_prefixes : type_component_prefixes.map;
@@ -209,7 +209,7 @@ package et_conventions is
 	function component_prefixes_specified return boolean;
 	-- Returns true if any component prefixes are specified via conventions file.
 	
-	function category (prefix : in et_devices.type_prefix.bounded_string) return
+	function category (prefix : in pac_device_prefix.bounded_string) return
 		type_device_category;
 	-- Returns the category of the given device prefix. If no category could be
 	-- found, returns category UNKNOWN.
@@ -353,7 +353,7 @@ package et_conventions is
 	type type_component_requires_operator_interaction is (YES, NO);
 	
 	function requires_operator_interaction (
-		prefix : in et_devices.type_prefix.bounded_string) 
+		prefix : in pac_device_prefix.bounded_string) 
 		return type_component_requires_operator_interaction;
 	-- Returns YES is given prefix requires operator interaction.
 	-- Returns NO if prefixs does not require interaction or if no prefixes
@@ -507,13 +507,13 @@ package et_conventions is
 	-- in the conventions file, this test does nothing.
 	-- Returns false if any violation has been detected.
 		value 	: in et_devices.pac_device_value.bounded_string;
-		prefix	: in et_devices.type_prefix.bounded_string)
+		prefix	: in pac_device_prefix.bounded_string)
 		return boolean;
 	
 	-- Tests if the given reference has a valid prefix as specified in the conventions file.
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
-	function prefix_valid (prefix : in et_devices.type_prefix.bounded_string) return boolean;
+	function prefix_valid (prefix : in pac_device_prefix.bounded_string) return boolean;
 	
 	-- Tests if the given device name has a valid prefix as specified in the conventions file.
 	-- Raises warning if not and returns false. 

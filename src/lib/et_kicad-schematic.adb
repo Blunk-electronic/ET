@@ -240,12 +240,12 @@ package body et_kicad.schematic is
 	end units_of_component;
 
 	procedure check_prefix_characters (
-		prefix 		: in type_prefix.bounded_string;
+		prefix 		: in pac_device_prefix.bounded_string;
 		characters	: in character_set) is
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
 		use et_string_processing;
-		use et_devices.type_prefix;
+		use pac_device_prefix;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -280,12 +280,12 @@ package body et_kicad.schematic is
 		text_in_justified : string (1 .. text_in'length) := text_in;
 	
 		r : type_device_name := (
-				prefix 		=> type_prefix.to_bounded_string(""),
+				prefix 		=> pac_device_prefix.to_bounded_string(""),
 				id 			=> 0,
 				id_width	=> 1);
 	
 		c : character;
-		p : type_prefix.bounded_string;
+		p : pac_device_prefix.bounded_string;
 	
 		procedure invalid_reference is
 			use et_string_processing;
@@ -299,7 +299,7 @@ package body et_kicad.schematic is
 		d : positive;
 		digit : natural := 0;
 
-		use et_devices.type_prefix;
+		use pac_device_prefix;
 	begin
 		-- assemble prefix
 		for i in text_in_justified'first .. text_in_justified'last loop
@@ -483,11 +483,11 @@ package body et_kicad.schematic is
 		raise constraint_error;
 	end invalid_field;
 
-	procedure validate_prefix (prefix : in type_prefix.bounded_string) is
+	procedure validate_prefix (prefix : in pac_device_prefix.bounded_string) is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
 		use et_string_processing;
-		use type_prefix;
+		use pac_device_prefix;
 	begin
 		if et_devices.to_string (prefix) = power_flag_prefix 
 			or et_devices.to_string (prefix) = power_symbol_prefix then
@@ -507,7 +507,7 @@ package body et_kicad.schematic is
 	procedure validate_prefix (reference : in type_device_name) is
 	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
-		use type_prefix;
+		use pac_device_prefix;
 	begin
 		if et_devices.to_string (reference.prefix) = power_flag_prefix 
 			or et_devices.to_string (reference.prefix) = power_symbol_prefix then
@@ -897,7 +897,7 @@ package body et_kicad.schematic is
 	function to_power_flag (reference : in type_device_name) 
 		return type_power_flag is
 	-- If the given component reference is one that belongs to a "power flag" returns YES.
-		use type_prefix;
+		use pac_device_prefix;
 	begin
 		--log (text => et_schematic.to_string (reference));
 		if prefix (reference) = power_flag_prefix then

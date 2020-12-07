@@ -159,16 +159,16 @@ package et_devices is
 	-- and a consecutive number. Both form something like "IC702"
 	prefix_characters : character_set := to_set (span => ('A','Z'));
 	prefix_length_max : constant natural := 10; -- CS: there is no reason for longer prefixes.
-	package type_prefix is new generic_bounded_length (prefix_length_max);
-	use type_prefix;
+	package pac_device_prefix is new generic_bounded_length (prefix_length_max);
+	use pac_device_prefix;
 	
-	function to_string (prefix : in type_prefix.bounded_string) return string;
-	function to_prefix (prefix : in string) return type_prefix.bounded_string;
+	function to_string (prefix : in pac_device_prefix.bounded_string) return string;
+	function to_prefix (prefix : in string) return pac_device_prefix.bounded_string;
 
 	procedure check_prefix_length (prefix : in string);
 	-- Tests if the given prefix is longer than allowed.
 	
-	procedure check_prefix_characters (prefix : in type_prefix.bounded_string);
+	procedure check_prefix_characters (prefix : in pac_device_prefix.bounded_string);
 	-- Tests if the given prefix contains only valid characters.
 	-- Raises exception if invalid character found.
 
@@ -186,7 +186,7 @@ package et_devices is
 -- DEVICE NAMES
 	keyword_device : constant string := "device";
 	
-	prefix_default : constant type_prefix.bounded_string := type_prefix.to_bounded_string ("?");
+	prefix_default : constant pac_device_prefix.bounded_string := pac_device_prefix.to_bounded_string ("?");
 
 	subtype type_name_index is natural range natural'first .. 99_999; -- R1..R99999, IC1..IC99999 should be enough
 	name_index_default : constant type_name_index := 0;
@@ -197,7 +197,7 @@ package et_devices is
 	subtype type_index_width is positive range positive'first .. 5; -- see number of digits of type_device_name_index
 	
 	type type_device_name is record -- CS: should be private
-		prefix		: type_prefix.bounded_string := prefix_default; -- like "IC"
+		prefix		: pac_device_prefix.bounded_string := prefix_default; -- like "IC"
 		id			: type_name_index := name_index_default; -- like "303"
 		id_width	: type_index_width := type_index_width'first; -- the number of digits of the id. 
 		-- Example: id_width is 3 in case of an id like of 937
@@ -224,7 +224,7 @@ package et_devices is
 	-- Returns the given device name as string.
 	-- Prepends leading zeros according to name.id_width.
 	
-	function prefix (name : in type_device_name) return type_prefix.bounded_string;
+	function prefix (name : in type_device_name) return pac_device_prefix.bounded_string;
 	-- Returns the prefix of the given device name.
 
 	function index (name : in type_device_name) return type_name_index;
@@ -234,7 +234,7 @@ package et_devices is
 	-- If width is not provided, then the width of the index is calculated automatically. In case of R23 the width is 2.
 	-- If width is provided, then it is set accordingly.
 	function to_device_name (
-		prefix	: in type_prefix.bounded_string; 	-- R, C, L
+		prefix	: in pac_device_prefix.bounded_string; 	-- R, C, L
 		index	: in type_name_index;				-- 1, 20, ..
 		width	: in type_index_width := type_index_width'first) -- the number of digits
 		return type_device_name;
@@ -418,7 +418,7 @@ package et_devices is
 
 -- DEVICES
 	type type_device (appearance : type_appearance) is record
-		prefix			: type_prefix.bounded_string; -- R, C, IC, ...
+		prefix			: pac_device_prefix.bounded_string; -- R, C, IC, ...
 		units_internal	: pac_units_internal.map := pac_units_internal.empty_map;
 		units_external	: pac_units_external.map := pac_units_external.empty_map;
 

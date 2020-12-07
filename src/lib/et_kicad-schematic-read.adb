@@ -2379,13 +2379,13 @@ function read (
 		-- CS: This function should be applied on virtual components (such as power flags or power symbols) only.
 		-- The assumption is that their prefix always starts with a hash character.
 			type_device_name is
-			use type_prefix;
+			use pac_device_prefix;
 			reference_out : type_device_name := reference; -- to be returned -- like PWR04
 		begin
 			--log (text => "renaming " & to_string (reference_out));
 			--log (text => "length" & positive'image (length (reference_out.prefix)));
 			reference_out.prefix := to_bounded_string (slice (reference_out.prefix, 2, length (reference_out.prefix)));
-			--log (text => "prefix new '" & type_prefix.to_string (reference_out.prefix) & "'");
+			--log (text => "prefix new '" & pac_device_prefix.to_string (reference_out.prefix) & "'");
 			--log (text => " to " & to_string (reference_out));
 			return reference_out;
 		end remove_leading_hash;

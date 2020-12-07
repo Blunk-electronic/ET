@@ -1230,7 +1230,7 @@ is
 		-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0 top
 
 		model : constant type_package_model_file.bounded_string := to_file_name (f (5));
-		prefix : constant type_prefix.bounded_string := to_prefix (f (6));
+		prefix : constant pac_device_prefix.bounded_string := to_prefix (f (6));
 
 		xy : constant type_point := type_point (set (
 				x => to_distance (f (7)),

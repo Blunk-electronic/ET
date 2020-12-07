@@ -802,10 +802,10 @@ package body et_conventions is
 		end if;
 	end component_prefixes_specified;
 	
-	function category (prefix : in et_devices.type_prefix.bounded_string) return
+	function category (prefix : in pac_device_prefix.bounded_string) return
 		type_device_category is
 		use et_devices;
-		use et_devices.type_prefix;
+		use pac_device_prefix;
 		use type_component_prefixes;
 
 		prefix_cursor : type_component_prefixes.cursor;
@@ -831,7 +831,7 @@ package body et_conventions is
 		type_device_category is
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
-		use type_prefix;
+		use pac_device_prefix;
 		use type_component_prefixes;
 
 		prefix_cursor : type_component_prefixes.cursor;
@@ -1879,7 +1879,7 @@ package body et_conventions is
 	end;
 	
 	function requires_operator_interaction (
-		prefix : in et_devices.type_prefix.bounded_string) 
+		prefix : in pac_device_prefix.bounded_string) 
 		return type_component_requires_operator_interaction is
 	-- Returns YES is given prefix requires operator interaction.
 	-- Returns NO if prefixs does not require interaction or if no prefixes
@@ -2117,14 +2117,14 @@ package body et_conventions is
 	-- The root of a partcode in general is something like R_PAC_S_0805_VAL_ .
 	-- If optionally the value is provided, it gets appended which would result
 	-- in something like R_PAC_S_0805_VAL_100R.
-		prefix		: in et_devices.type_prefix.bounded_string;			-- R
+		prefix		: in pac_device_prefix.bounded_string;			-- R
 		packge		: in et_packages.type_component_package_name.bounded_string;	-- S_0805
 		value 		: in pac_device_value.bounded_string := to_value ("")) -- 100R
 		return et_material.type_partcode.bounded_string is
 
 		use et_devices;
 		use et_packages;
-		use type_prefix;
+		use pac_device_prefix;
 		use type_component_package_name;
 		use pac_device_value;
 		use et_material.type_partcode;
@@ -2665,7 +2665,7 @@ package body et_conventions is
 				return " Design check coverage reduced !";
 			end reduced_check_coverage;
 			
-			prefix 		: type_prefix.bounded_string;
+			prefix 		: pac_device_prefix.bounded_string;
 			cat 		: type_device_category;
 			
 			abbrevation	: type_unit_abbrevation.bounded_string;
@@ -2696,7 +2696,7 @@ package body et_conventions is
 						-- Test if prefix is not too long, if it contains only allowed characters.
 						-- We test against the default character set as specified in et_libraries.
 						check_prefix_length (et_string_processing.field (element (line_cursor), 1));
-						prefix := type_prefix.to_bounded_string (et_string_processing.field (element (line_cursor), 1));
+						prefix := pac_device_prefix.to_bounded_string (et_string_processing.field (element (line_cursor), 1));
 						check_prefix_characters (prefix);
 
 						-- build the component category from field #2:
@@ -2994,7 +2994,7 @@ package body et_conventions is
 	-- Returns false if any violation has been detected.							 
 	-- CS: If value is 10,0R outputs the same warning multiple times. Rework required.
 		value 	: in pac_device_value.bounded_string; -- 100R, 1A5
-		prefix	: in et_devices.type_prefix.bounded_string) -- R, F
+		prefix	: in pac_device_prefix.bounded_string) -- R, F
 		return boolean is
 
 		-- This flag goes false once an error has been detected.
@@ -3201,8 +3201,8 @@ package body et_conventions is
 	end value_valid;
 
 	
-	function prefix_valid (prefix : in et_devices.type_prefix.bounded_string) return boolean is
-		use et_devices.type_prefix;
+	function prefix_valid (prefix : in pac_device_prefix.bounded_string) return boolean is
+		use pac_device_prefix;
 		use type_component_prefixes;
 		result : boolean := true;
 	begin
@@ -3224,7 +3224,7 @@ package body et_conventions is
 	end prefix_valid;
 	
 	function prefix_valid (device_name : in type_device_name) return boolean is
-		use type_prefix;
+		use pac_device_prefix;
 		use type_component_prefixes;
 		result : boolean := true;
 	begin
