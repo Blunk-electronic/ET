@@ -167,7 +167,7 @@ package body et_device_rw is
 			write (keyword => keyword_position, parameters => position (unit.position));
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
 			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
-			write (keyword => keyword_symbol_file, parameters => to_string (unit.file));
+			write (keyword => keyword_symbol_file, parameters => to_string (unit.model));
 		end query_external_unit;
 		
 	begin -- save_device
@@ -505,7 +505,7 @@ package body et_device_rw is
 			end if;
 
 			-- read the symbol model (like ../libraries/symbols/power_gnd.sym)
-			read_symbol (unit_external.file, log_threshold + 1);
+			read_symbol (unit_external.model, log_threshold + 1);
 
 			-- clean up for next unit
 			unit_name := to_unit_name ("");
@@ -1085,7 +1085,7 @@ package body et_device_rw is
 
 									elsif kw = keyword_symbol_file then -- symbol_model libraries/symbols/nand.sym
 										expect_field_count (line, 2);
-										unit_external.file := to_file_name (f (line, 2));
+										unit_external.model := to_file_name (f (line, 2));
 										
 									else
 										invalid_keyword (kw);

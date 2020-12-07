@@ -493,7 +493,7 @@ package body et_schematic_ops is
 			-- Fetch the symbol model file of the external unit.
 			-- If unit could not be located, nothing happens -> ports remains empty.
 			if unit_cursor /= pac_units_external.no_element then
-				sym_model := element (unit_cursor).file;
+				sym_model := element (unit_cursor).model;
 
 				-- Fetch the ports of the external unit.
 				-- CS: constraint_error arises here if symbol model could not be located.
@@ -1392,7 +1392,7 @@ package body et_schematic_ops is
 			if unit_cursor /= pac_units_external.no_element then
 				unit_status := EXT;
 				
-				sym_model := element (unit_cursor).file;
+				sym_model := element (unit_cursor).model;
 
 				-- Fetch the ports of the external unit.
 				-- CS: constraint_error arises here if symbol model could not be located.

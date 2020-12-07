@@ -205,7 +205,7 @@ procedure draw_units (
 					--put_line ("external unit");
 					-- If the unit is external, we must fetch the symbol 
 					-- via its model file:
-					symbol_model := element (unit_cursor.external).file;
+					symbol_model := element (unit_cursor.external).model;
 					symbol_cursor := locate (symbol_model);
 					draw_symbol (
 						self		=> self,
@@ -554,7 +554,7 @@ procedure draw_units (
 					
 					-- If the unit is external, we must fetch the symbol and the placeholders
 					-- via its model file:
-					symbol_model := element (unit_cursor.external).file;
+					symbol_model := element (unit_cursor.external).model;
 					symbol_cursor := locate (symbol_model);
 
 					fetch_placeholders_ext;

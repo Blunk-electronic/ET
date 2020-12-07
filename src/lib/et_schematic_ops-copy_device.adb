@@ -139,7 +139,7 @@ procedure copy_device (
 					
 				when PCB =>
 					-- The symbol file name is provided by unit_cursors.ext.
-					symbol_file := element (unit_cursors.ext).file; -- *.sym
+					symbol_file := element (unit_cursors.ext).model; -- *.sym
 					
 					-- Locate the external symbol in container "symbols".
 					-- The key into symbols is the file name (*.sym).

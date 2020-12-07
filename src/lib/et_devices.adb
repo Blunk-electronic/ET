@@ -1158,7 +1158,7 @@ package body et_devices is
 				unit_name	: in pac_unit_name.bounded_string;
 				unit		: in type_unit_external) is
 				use type_symbols;
-				symbol_cursor : type_symbols.cursor := locate (unit.file);
+				symbol_cursor : type_symbols.cursor := locate (unit.model);
 
 				procedure query_ports (
 					file	: in type_symbol_model_file.bounded_string; -- ../libraries/symbols/NAND.sym
