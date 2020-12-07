@@ -56,9 +56,9 @@ package body et_assembly_variants is
 	-- If variant points to no element the default variant is assumed and the device regarded as mounted.
 		
 		use pac_assembly_variants;
-		use type_devices;
+		use pac_device_variants;
 		
-		cursor : type_devices.cursor;
+		cursor : pac_device_variants.cursor;
 		
 		procedure query_devices (
 			variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
@@ -76,7 +76,7 @@ package body et_assembly_variants is
 				position	=> variant,
 				process		=> query_devices'access);
 
-			if cursor = type_devices.no_element then
+			if cursor = pac_device_variants.no_element then
 				-- Device has no entry in assembly variant and thus is to be mounted
 				-- as it is in the default variant:
 				return true;

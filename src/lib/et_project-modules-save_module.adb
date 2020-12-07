@@ -818,8 +818,8 @@ is
 		procedure query_devices (
 			variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
 			variant			: in et_assembly_variants.type_assembly_variant) is
-			use et_assembly_variants.type_devices;
-			device_cursor : et_assembly_variants.type_devices.cursor := variant.devices.first;
+			use et_assembly_variants.pac_device_variants;
+			device_cursor : et_assembly_variants.pac_device_variants.cursor := variant.devices.first;
 
 			function purpose return string is 
 				use et_devices;
@@ -838,7 +838,7 @@ is
 			use et_devices;
 			
 		begin -- query_devices
-			while device_cursor /= et_assembly_variants.type_devices.no_element loop
+			while device_cursor /= et_assembly_variants.pac_device_variants.no_element loop
 				case element (device_cursor).mounted is
 					when NO =>
 						write (

@@ -81,11 +81,11 @@ package et_assembly_variants is
 	end record;
 
 	-- Variants of devices are collected in a map.
-	package type_devices is new indefinite_ordered_maps (
+	package pac_device_variants is new indefinite_ordered_maps (
 		key_type		=> type_device_name, -- something like "IC43"
  		element_type	=> type_device);
 
-	use type_devices;
+	use pac_device_variants;
 
 	-- Submodules may come with their own assembly variants. 
 	-- NOTE: In contrast to type_device there is no option to not mount a submodule.
@@ -103,7 +103,7 @@ package et_assembly_variants is
 	-- The final assembly variant is composed of a description and the affected devices:
 	type type_assembly_variant is record
 		description	: type_description;
-		devices		: type_devices.map;
+		devices		: pac_device_variants.map;
 		submodules	: type_submodules.map;
 	end record;
 

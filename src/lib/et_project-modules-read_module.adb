@@ -608,7 +608,7 @@ is
 	-- assembly variants
 	assembly_variant_name			: et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 	assembly_variant_description	: et_assembly_variants.type_description; -- "variant without temp. sensor"
-	assembly_variant_devices		: et_assembly_variants.type_devices.map;
+	assembly_variant_devices		: et_assembly_variants.pac_device_variants.map;
 	assembly_variant_submodules		: et_assembly_variants.type_submodules.map;
 	
 	-- temporarily collection of units:
@@ -2872,7 +2872,7 @@ is
 				-- clean up for next assembly variant
 				assembly_variant_name := to_variant ("");
 				assembly_variant_description := to_unbounded_string ("");
-				assembly_variant_devices := et_assembly_variants.type_devices.empty_map;
+				assembly_variant_devices := et_assembly_variants.pac_device_variants.empty_map;
 				assembly_variant_submodules := type_submodules.empty_map;
 				
 			end insert_assembly_variant;
@@ -4332,7 +4332,7 @@ is
 								kw : string 	:= f (line, 1);
 								device_name		: type_device_name; -- R1
 								device			: access et_assembly_variants.type_device;
-								device_cursor	: et_assembly_variants.type_devices.cursor;
+								device_cursor	: et_assembly_variants.pac_device_variants.cursor;
 								
 								submod_name		: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 								submod_var		: et_general.pac_assembly_variant_name.bounded_string; -- low_cost
@@ -4422,7 +4422,7 @@ is
 									end if;											
 
 									-- Insert the device in the current assembly variant:
-									et_assembly_variants.type_devices.insert (
+									et_assembly_variants.pac_device_variants.insert (
 										container	=> assembly_variant_devices,
 										key			=> device_name, -- R1
 										new_item	=> device.all,

@@ -707,13 +707,13 @@ package body et_project.modules is
 				variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
 				variant			: in et_assembly_variants.type_assembly_variant) is
 				use et_assembly_variants;
-				use et_assembly_variants.type_devices;
-				device_cursor : et_assembly_variants.type_devices.cursor;
+				use et_assembly_variants.pac_device_variants;
+				device_cursor : et_assembly_variants.pac_device_variants.cursor;
 			begin
 				device_cursor := find (variant.devices, device);
 
 				-- The device may be listed in the assembly variant:
-				if device_cursor /= et_assembly_variants.type_devices.no_element then
+				if device_cursor /= et_assembly_variants.pac_device_variants.no_element then
 					case element (device_cursor).mounted is
 						when YES => result := true; -- mounted with alternative value, partcode or purpose
 						when NO  => result := false; -- not mounted
@@ -758,9 +758,9 @@ package body et_project.modules is
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost				
 		device	: in type_device_name)
-		return et_assembly_variants.type_devices.cursor is
+		return et_assembly_variants.pac_device_variants.cursor is
 
-		cursor : et_assembly_variants.type_devices.cursor; -- to be returned;
+		cursor : et_assembly_variants.pac_device_variants.cursor; -- to be returned;
 		
 		procedure query_variants (
 			module_name	: in type_module_name.bounded_string;
@@ -772,7 +772,7 @@ package body et_project.modules is
 			procedure query_devices (
 				variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
 				variant			: in et_assembly_variants.type_assembly_variant) is
-				use et_assembly_variants.type_devices;
+				use et_assembly_variants.pac_device_variants;
 			begin
 				cursor := find (variant.devices, device);
 			end query_devices;

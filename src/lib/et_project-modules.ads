@@ -344,7 +344,7 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost				
 		device	: in type_device_name)
-		return et_assembly_variants.type_devices.cursor;
+		return et_assembly_variants.pac_device_variants.cursor;
 
 	function alternative_submodule (
 	-- Returns a cursor to the alternative submodule variant in the given module

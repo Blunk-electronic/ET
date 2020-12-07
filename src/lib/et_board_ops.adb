@@ -1001,7 +1001,7 @@ package body et_board_ops is
 						cursor_pnp : et_pick_and_place.type_devices.cursor;
 
 						use et_schematic.type_devices;
-						use et_assembly_variants.type_devices;
+						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
 
 					begin -- query_properties_default
@@ -1039,8 +1039,8 @@ package body et_board_ops is
 						cursor_pnp : et_pick_and_place.type_devices.cursor;
 
 						use et_schematic.type_devices;
-						alt_dev_cursor : et_assembly_variants.type_devices.cursor;
-						use et_assembly_variants.type_devices;
+						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
+						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
 						
 					begin -- query_properties_variants
@@ -1056,7 +1056,7 @@ package body et_board_ops is
 								-- Get a cursor to the alternative device as specified in the assembly variant:
 								alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
 								
-								if alt_dev_cursor = et_assembly_variants.type_devices.no_element then
+								if alt_dev_cursor = et_assembly_variants.pac_device_variants.no_element then
 								-- Device has no entry in the assembly variant. -> It is to be stored in pnp list as it is:
 								
 									apply_offset (device_name, offset, log_threshold + 2);

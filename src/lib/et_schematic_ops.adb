@@ -6815,8 +6815,8 @@ package body et_schematic_ops is
 			procedure insert_device (
 				name		: in et_general.pac_assembly_variant_name.bounded_string;
 				variant		: in out et_assembly_variants.type_assembly_variant) is
-				use et_assembly_variants.type_devices;
-				cursor : et_assembly_variants.type_devices.cursor;
+				use et_assembly_variants.pac_device_variants;
+				cursor : et_assembly_variants.pac_device_variants.cursor;
 				inserted : boolean;
 			begin
 				-- Locate the device in the variant.
@@ -6824,7 +6824,7 @@ package body et_schematic_ops is
 				-- as specified by the operator.
 				cursor := find (variant.devices, device);
 
-				if cursor /= et_assembly_variants.type_devices.no_element then -- device already there
+				if cursor /= et_assembly_variants.pac_device_variants.no_element then -- device already there
 					delete (variant.devices, cursor);
 				end if;
 					
@@ -6906,15 +6906,15 @@ package body et_schematic_ops is
 			procedure insert_device (
 				name		: in et_general.pac_assembly_variant_name.bounded_string;
 				variant		: in out et_assembly_variants.type_assembly_variant) is
-				use et_assembly_variants.type_devices;
-				cursor : et_assembly_variants.type_devices.cursor;
+				use et_assembly_variants.pac_device_variants;
+				cursor : et_assembly_variants.pac_device_variants.cursor;
 				inserted : boolean;
 			begin
 				-- Locate the device in the variant.
 				-- If already there, delete it and insert it anew.
 				cursor := find (variant.devices, device);
 
-				if cursor /= et_assembly_variants.type_devices.no_element then -- device already there
+				if cursor /= et_assembly_variants.pac_device_variants.no_element then -- device already there
 					delete (variant.devices, cursor);
 				end if;
 					
@@ -6989,14 +6989,14 @@ package body et_schematic_ops is
 			procedure delete_device (
 				name		: in et_general.pac_assembly_variant_name.bounded_string;
 				variant		: in out et_assembly_variants.type_assembly_variant) is
-				use et_assembly_variants.type_devices;
-				cursor : et_assembly_variants.type_devices.cursor;
+				use et_assembly_variants.pac_device_variants;
+				cursor : et_assembly_variants.pac_device_variants.cursor;
 			begin
 				-- Locate the device in the variant. Issue error message
 				-- if not found.
 				cursor := find (variant.devices, device);
 
-				if cursor /= et_assembly_variants.type_devices.no_element then  -- device in assembly variant
+				if cursor /= et_assembly_variants.pac_device_variants.no_element then  -- device in assembly variant
 					delete (variant.devices, cursor); -- delete device
 				else
 					log (ERROR, "device " & to_string (device) &
@@ -8130,7 +8130,7 @@ package body et_schematic_ops is
 						cursor_bom : et_material.type_devices.cursor;
 
 						use et_schematic.type_devices;
-						use et_assembly_variants.type_devices;
+						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
 					begin -- query_properties_default
 
@@ -8171,8 +8171,8 @@ package body et_schematic_ops is
 						cursor_bom : et_material.type_devices.cursor;
 
 						use et_schematic.type_devices;
-						alt_dev_cursor : et_assembly_variants.type_devices.cursor;
-						use et_assembly_variants.type_devices;
+						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
+						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
 					begin -- query_properties_variants
 
@@ -8187,7 +8187,7 @@ package body et_schematic_ops is
 								-- Get a cursor to the alternative device as specified in the assembly variant:
 								alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
 								
-								if alt_dev_cursor = et_assembly_variants.type_devices.no_element then
+								if alt_dev_cursor = et_assembly_variants.pac_device_variants.no_element then
 								-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
 
 									-- issue warning if device has no partcode
