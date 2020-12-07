@@ -76,7 +76,7 @@ procedure invoke_unit (
 			end if;
 		end query_units_in_use;
 
-		device_model : type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
+		device_model : pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		device_cursor_lib : pac_devices_lib.cursor;
 		unit_cursors : type_device_units;
 

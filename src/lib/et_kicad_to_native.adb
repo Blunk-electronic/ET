@@ -2455,11 +2455,11 @@ package body et_kicad_to_native is
 			-- The return is a composition of prefix_devices_dir, library containing directory,
 			-- generic component name and device model extension 
 			-- like: libraries/devices/__-__-lbr-bel_logic_7400.dev
-			return et_devices.type_device_model_file.bounded_string is
+			return pac_device_model_file.bounded_string is
 
 			use et_kicad_general.type_device_library_name;
 			dir : et_kicad_general.type_device_library_name.bounded_string; -- ../../lbr
-			name : et_devices.type_device_model_file.bounded_string; -- to be returned -- libraries/devices/__-__-lbr-bel_logic_7400.dev
+			name : pac_device_model_file.bounded_string; -- to be returned -- libraries/devices/__-__-lbr-bel_logic_7400.dev
 
 			-- In the containing directory . and / must be replaced by _ and -:
 			characters : character_mapping := to_mapping ("./","_-");
@@ -3141,14 +3141,14 @@ package body et_kicad_to_native is
 
 				use et_kicad_libraries.type_component_generic_name;
 				generic_name : et_kicad_libraries.type_component_generic_name.bounded_string; -- 7400
-				device_model : et_devices.type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
+				device_model : pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 
 				device_cursor : pac_devices_lib.cursor;
 				inserted : boolean;
 
 				procedure copy_units (
 				-- Transfers the kicad units to native units in the current native ET device.
-					device_name	: in et_devices.type_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
+					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
 					device		: in out et_devices.type_device) is
 
 					use et_kicad_libraries;
@@ -3501,7 +3501,7 @@ package body et_kicad_to_native is
 				procedure rename_package_model_in_variants (
 				-- The package associated with a variant must be changed so that it becomes 
 				-- something like libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac
-					device_name	: in et_devices.type_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
+					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
 					device		: in out et_devices.type_device) is
 
 					use et_devices.pac_variants;

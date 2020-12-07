@@ -96,10 +96,10 @@ package et_kicad_general is
 
 	
 -- LIBRARIES
-	-- To handle library paths we (mis)use type_device_model_file 
+	-- To handle library paths we (mis)use pac_device_model_file 
 	-- and type_package_model_file under different names:
 	package type_package_library_name renames et_packages.type_package_model_file;
-	package type_device_library_name renames et_devices.type_device_model_file;
+	package type_device_library_name renames et_devices.pac_device_model_file;
 
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
 	

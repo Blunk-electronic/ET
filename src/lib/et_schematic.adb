@@ -416,7 +416,7 @@ package body et_schematic is
 	function get_device (device : in type_devices.cursor)
 		return pac_devices_lib.cursor
 	is
-		model_file : type_device_model_file.bounded_string;
+		model_file : pac_device_model_file.bounded_string;
 	begin
 		-- The name of the device model file is THE link
 		-- from device in schematic to device in library:
@@ -458,7 +458,7 @@ package body et_schematic is
 	
 	function get_package_model (device : in type_devices.cursor)
 		return et_packages.type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
-		device_model		: et_devices.type_device_model_file.bounded_string;
+		device_model		: pac_device_model_file.bounded_string;
 		device_cursor_lib	: pac_devices_lib.cursor;
 		device_variant		: et_devices.pac_package_variant_name.bounded_string; -- N, D
 	begin

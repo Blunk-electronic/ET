@@ -931,7 +931,7 @@ package body et_canvas_schematic_units is
 		use et_device_rw;
 		use et_packages;
 		
-		device_model : type_device_model_file.bounded_string;
+		device_model : pac_device_model_file.bounded_string;
 
 		use pac_devices_lib;
 		device_cursor_lib : pac_devices_lib.cursor; -- points to the device in the library
@@ -1269,7 +1269,7 @@ package body et_canvas_schematic_units is
 		
 		su : constant type_selected_unit := element (selected_unit);
 		
-		device_model : type_device_model_file.bounded_string;
+		device_model : pac_device_model_file.bounded_string;
 		device_cursor_lib : pac_devices_lib.cursor;
 		
 		unit_names : pac_unit_names.list;
@@ -2063,7 +2063,7 @@ package body et_canvas_schematic_units is
 		-- mind the cursor su.unit can be no_element if all units are selected.
 		--unit	: constant pac_unit_name.bounded_string := key (su.unit);
 
-		model	: constant type_device_model_file.bounded_string := element (su.device).model;
+		model	: constant pac_device_model_file.bounded_string := element (su.device).model;
 
 		function further_properties return string is 
 			use et_material;

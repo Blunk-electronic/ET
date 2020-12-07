@@ -104,9 +104,9 @@ package et_devices is
 	keyword_package_model : constant string := "package_model";
 
 	device_model_file_name_length_max : constant positive := 200;
-	package type_device_model_file is new generic_bounded_length (device_model_file_name_length_max); -- ../lbr/logic_ttl/7400.dev
-	function to_string (name : in type_device_model_file.bounded_string) return string;
-	function to_file_name (name : in string) return type_device_model_file.bounded_string;
+	package pac_device_model_file is new generic_bounded_length (device_model_file_name_length_max); -- ../lbr/logic_ttl/7400.dev
+	function to_string (name : in pac_device_model_file.bounded_string) return string;
+	function to_file_name (name : in string) return pac_device_model_file.bounded_string;
 
 
 
@@ -459,8 +459,8 @@ package et_devices is
 	
 	
 	package pac_devices_lib is new indefinite_ordered_maps (
-		key_type 		=> type_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
-		"<"				=> type_device_model_file."<",
+		key_type 		=> pac_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
+		"<"				=> pac_device_model_file."<",
 		element_type	=> type_device);
 
 	device_model_file_extension : constant string := "dev";
@@ -538,7 +538,7 @@ package et_devices is
 
 	
 	-- Locates the given generic device in container "devices".
-	function locate_device (model : in type_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
+	function locate_device (model : in pac_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
 		return pac_devices_lib.cursor;
 
 	-- For locating units this type is required by function locate_unit.

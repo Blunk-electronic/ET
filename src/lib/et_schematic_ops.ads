@@ -328,7 +328,7 @@ package et_schematic_ops is
 	function device_model_name (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return type_device_model_file.bounded_string; -- 7400.dev
+		return pac_device_model_file.bounded_string; -- 7400.dev
 
 	-- Returns the package variants available for the
 	-- given device.
@@ -417,7 +417,7 @@ package et_schematic_ops is
 	-- Adds a device to the schematic. The unit is determined by the unit add levels.
 	-- If the given variant is empty (zero length) the the device is assumed to be virtual.							 
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
+		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
 		destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level);

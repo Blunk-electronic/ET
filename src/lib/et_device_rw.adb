@@ -72,7 +72,7 @@ package body et_device_rw is
 	
 	procedure create_device (
 	-- Creates a device and stores it in container et_devices.devices.
-		device_name		: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
+		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		appearance		: in et_symbols.type_appearance;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
@@ -110,7 +110,7 @@ package body et_device_rw is
 	
 	procedure save_device (
 	-- Saves the given device model in a file specified by name.
-		file_name		: in type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
+		file_name		: in pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		device			: in type_device; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
@@ -260,7 +260,7 @@ package body et_device_rw is
 
 	procedure read_device (
 	-- Opens the device and stores it in container devices.
-		file_name 		: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
+		file_name 		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;

@@ -590,7 +590,7 @@ is
 	device					: access et_schematic.type_device;
 	
 	device_name					: type_device_name; -- C12
-	device_model				: type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
+	device_model				: pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 	
 	
 	device_value			: type_value.bounded_string; -- 470R
@@ -1257,7 +1257,7 @@ is
 					device_cursor : pac_devices_lib.cursor;
 
 					procedure query_variants (
-						model	: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
+						model	: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 						dev_lib	: in et_devices.type_device) -- a device in the library 
 						is
 						use pac_variants;

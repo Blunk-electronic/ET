@@ -67,7 +67,7 @@ with et_pcb_rw.device_packages;
 with et_symbols;
 with et_symbol_rw;
 
-with et_devices;
+with et_devices;				use et_devices;
 with et_device_rw;
 
 with et_frames;
@@ -101,9 +101,9 @@ procedure et is
 	symbol_name_save_as		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be saved as
 	symbol_appearance		: et_symbols.type_appearance := et_symbols.PCB; -- virtual/pcb. mostly pcb.
 	
-	device_name_create		: et_devices.type_device_model_file.bounded_string; -- the device to be created like libraries/devices/TL084.dev
-	device_name_open		: et_devices.type_device_model_file.bounded_string; -- the device to be opened
-	device_name_save_as		: et_devices.type_device_model_file.bounded_string; -- the device to be saved as
+	device_name_create		: pac_device_model_file.bounded_string; -- the device to be created like libraries/devices/TL084.dev
+	device_name_open		: pac_device_model_file.bounded_string; -- the device to be opened
+	device_name_save_as		: pac_device_model_file.bounded_string; -- the device to be saved as
 	device_appearance		: et_symbols.type_appearance := et_symbols.PCB; -- virtual/pcb. mostly pcb.
 
 	frame_name_create		: et_frames.pac_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frs
@@ -440,7 +440,7 @@ procedure et is
 	end;
 
 	procedure save_device_as is 
-		use et_devices.type_device_model_file;
+		use pac_device_model_file;
 	begin
 		-- If device_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only device in et_devices.devices is saved.
@@ -513,7 +513,7 @@ procedure et is
 		use et_conventions.pac_file_name;
 		use et_packages.type_package_model_file;
 		use et_symbols.type_symbol_model_file;
-		use et_devices.type_device_model_file;
+		use pac_device_model_file;
 		use et_frames.pac_template_name;
 
 		exit_code_script : et_scripting.type_exit_code;

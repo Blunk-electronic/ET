@@ -153,8 +153,8 @@ package et_schematic is
 	-- Units of a device are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
 	package type_units is new indefinite_ordered_maps ( -- CS rename to pac_units
-		key_type		=> et_devices.pac_unit_name.bounded_string,
-		"<" 			=> et_devices.pac_unit_name."<",
+		key_type		=> pac_unit_name.bounded_string,
+		"<" 			=> pac_unit_name."<",
 		element_type 	=> type_unit);
 
 	-- Returns a string that tells the name and position of given unit.
@@ -162,8 +162,8 @@ package et_schematic is
 
 	
 	package type_unit_positions is new ordered_maps (
-		key_type		=> et_devices.pac_unit_name.bounded_string, -- A, B, IO_BANK_1
-		"<" 			=> et_devices.pac_unit_name."<",
+		key_type		=> pac_unit_name.bounded_string, -- A, B, IO_BANK_1
+		"<" 			=> pac_unit_name."<",
 		element_type	=> et_coordinates.type_position, -- sheet, x, y
 		"="				=> et_coordinates."=");
 
@@ -175,7 +175,7 @@ package et_schematic is
 	type type_device (appearance : type_appearance_schematic) is record
 
 		-- The link to the device model like ../libraries/devices/transistor/pnp.dev
-		model	: et_devices.type_device_model_file.bounded_string;
+		model	: pac_device_model_file.bounded_string;
 
 		-- The units like PWR, A, B, ...
 		-- Virtual devices have only one unit (like the GND symbol).

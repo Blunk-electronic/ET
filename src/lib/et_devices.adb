@@ -134,16 +134,16 @@ package body et_devices is
 
 
 	
-	function to_string (name : in type_device_model_file.bounded_string) 
+	function to_string (name : in pac_device_model_file.bounded_string) 
 		return string is
 	begin
-		return type_device_model_file.to_string (name);
+		return pac_device_model_file.to_string (name);
 	end;
 
 	function to_file_name (name : in string) 
-		return type_device_model_file.bounded_string is
+		return pac_device_model_file.bounded_string is
 	begin
-		return type_device_model_file.to_bounded_string (name);
+		return pac_device_model_file.to_bounded_string (name);
 	end;
 	
 
@@ -722,7 +722,7 @@ package body et_devices is
 		found : boolean := false;
 		
 		procedure query_internal (
-			model	: in type_device_model_file.bounded_string;
+			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device)
 		is begin
 			if device.units_internal.contains (unit_name) then
@@ -731,7 +731,7 @@ package body et_devices is
 		end query_internal;
 
 		procedure query_external (
-			model	: in type_device_model_file.bounded_string;
+			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device)
 		is begin
 			if device.units_external.contains (unit_name) then
@@ -767,7 +767,7 @@ package body et_devices is
 		use et_string_processing;
 
 		procedure query_units (
-			device_name	: in type_device_model_file.bounded_string;
+			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device) is
 
 			function first_internal (add_level : in type_add_level) 
@@ -914,7 +914,7 @@ package body et_devices is
 		use et_string_processing;
 		
 		procedure query_units (
-			device_name	: in type_device_model_file.bounded_string;
+			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device) is
 		begin -- query_units
 			-- First search among the internal units:
@@ -1011,7 +1011,7 @@ package body et_devices is
 		result : boolean := false; -- to be returned
 		
 		procedure query_variants (
-			device_name	: in type_device_model_file.bounded_string;
+			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device) is
 		begin
 			if pac_variants.contains (device.variants, variant) then
@@ -1043,7 +1043,7 @@ package body et_devices is
 	end available_variants;
 
 	
-	function locate_device (model : in type_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
+	function locate_device (model : in pac_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
 	-- Locates the given generic device in container "devices".
 		return pac_devices_lib.cursor is
 		use pac_devices_lib;
@@ -1067,7 +1067,7 @@ package body et_devices is
 		cursor_internal : pac_units_internal.cursor;
 
 		procedure query_units (
-			model	: in type_device_model_file.bounded_string;
+			model	: in pac_device_model_file.bounded_string;
 			device	: in type_device) is
 		begin
 			-- Most likely the requested unit is external. So we search first in 
@@ -1104,7 +1104,7 @@ package body et_devices is
 		package_model : type_package_model_file.bounded_string; -- to be returned (packages/smd/SOT23.pac)
 
 		procedure query_variants (
-			device_name	: in type_device_model_file.bounded_string;
+			device_name	: in pac_device_model_file.bounded_string;
 			device		: in type_device) is
 			use pac_variants;
 			variant_cursor : pac_variants.cursor;
@@ -1134,7 +1134,7 @@ package body et_devices is
 		use pac_devices_lib;
 
 		procedure query_units (
-			model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
+			model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 			device	: in type_device) is
 
 			use pac_units_internal;

@@ -184,7 +184,7 @@ procedure draw_units (
 	procedure query_devices (device_cursor : in et_schematic.type_devices.cursor) is
 		
 		-- get the model of the current device
-		device_model : et_devices.type_device_model_file.bounded_string :=
+		device_model : pac_device_model_file.bounded_string :=
 			element (device_cursor).model;	-- ../libraries/devices/transistor/pnp.dev
 
 		unit_position : type_point; -- only x and y relevant

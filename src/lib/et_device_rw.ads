@@ -80,12 +80,12 @@ package et_device_rw is
 
 	procedure create_device (
 	-- Creates a device and stores it in container et_devices.devices.
-		device_name		: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
+		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		appearance		: in et_symbols.type_appearance;
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure save_device (
-		file_name		: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
+		file_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		device			: in type_device; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 
@@ -94,7 +94,7 @@ package et_device_rw is
 	-- If check_layers.check is YES, then a check will be done that tests
 	-- whether all conductor layers are are in 
 	-- range type_signal_layer'first .. deepest conductor layer.
-		file_name 		: in type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
+		file_name 		: in pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in et_string_processing.type_log_level);
 

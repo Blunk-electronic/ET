@@ -452,11 +452,11 @@ package body et_schematic_ops is
 		use et_symbols;
 		ports : et_symbols.type_ports.map; -- to be returned
 		
-		model : type_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
+		model : pac_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
 		device_cursor_lib : pac_devices_lib.cursor;
 
 		procedure query_internal_units (
-			model	: in type_device_model_file.bounded_string;
+			model	: in pac_device_model_file.bounded_string;
 			device	: in et_devices.type_device) is
 			use pac_units_internal;
 			unit_cursor : pac_units_internal.cursor;
@@ -471,7 +471,7 @@ package body et_schematic_ops is
 		end query_internal_units;
 
 		procedure query_external_units (
-			model	: in type_device_model_file.bounded_string;
+			model	: in pac_device_model_file.bounded_string;
 			device	: in et_devices.type_device) is
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
@@ -1309,7 +1309,7 @@ package body et_schematic_ops is
 		-- The positions to be returned depend on the appearance of the requested device:
 		result : type_default_text_positions (element (device_cursor).appearance); -- to be returned
 		
-		model : type_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
+		model : pac_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
 		device_cursor_lib : pac_devices_lib.cursor;
 		
 		use et_symbols.type_texts;
@@ -1325,7 +1325,7 @@ package body et_schematic_ops is
 		unit_status : type_unit_ext_int := EXT;
 		
 		procedure query_internal_units (
-			model	: in type_device_model_file.bounded_string;
+			model	: in pac_device_model_file.bounded_string;
 			device	: in et_devices.type_device) is
 			use pac_units_internal;
 			unit_cursor : pac_units_internal.cursor;
@@ -1358,7 +1358,7 @@ package body et_schematic_ops is
 		end query_internal_units;
 
 		procedure query_external_units (
-			model	: in type_device_model_file.bounded_string;
+			model	: in pac_device_model_file.bounded_string;
 			device	: in et_devices.type_device) is
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
@@ -2594,7 +2594,7 @@ package body et_schematic_ops is
 	function device_model_name (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return type_device_model_file.bounded_string
+		return pac_device_model_file.bounded_string
 	is 
 		use et_schematic.type_devices;
 	begin
@@ -2706,7 +2706,7 @@ package body et_schematic_ops is
 		return pac_devices_lib.cursor
 	is
 		cursor_sch : et_schematic.type_devices.cursor;
-		device_model : type_device_model_file.bounded_string;
+		device_model : pac_device_model_file.bounded_string;
 	begin
 		cursor_sch := locate_device (module, device);
 		device_model := et_schematic.type_devices.element (cursor_sch).model;
@@ -3127,7 +3127,7 @@ package body et_schematic_ops is
 	-- Adds a device to the schematic. The unit is determined by the unit add levels.
 	-- If the given variant is empty (zero length) the the device is assumed to be virtual.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
+		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
 		destination		: in et_coordinates.type_position; -- sheet/x/y,rotation
 		log_threshold	: in type_log_level) is separate;
@@ -3149,7 +3149,7 @@ package body et_schematic_ops is
 		use et_schematic.type_devices;
 		device_cursor_sch : et_schematic.type_devices.cursor;
 
-		device_model : type_device_model_file.bounded_string;
+		device_model : pac_device_model_file.bounded_string;
 		device_cursor_lib : pac_devices_lib.cursor;
 
 		use pac_unit_names;
@@ -8514,7 +8514,7 @@ package body et_schematic_ops is
 			device_cursor_lib	: pac_devices_lib.cursor;
 
 			procedure query_variants (
-				model	: in type_device_model_file.bounded_string;
+				model	: in pac_device_model_file.bounded_string;
 				device	: in et_devices.type_device) is
 				variant_cursor : pac_variants.cursor;
 
