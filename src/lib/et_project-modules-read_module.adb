@@ -827,7 +827,7 @@ is
 		elsif kw = keyword_variant then -- variant S_0805, N, D
 			expect_field_count (line, 2);
 			check_variant_name_length (f (line, 2));
-			device_variant := to_name (f (line, 2));
+			device_variant := to_variant_name (f (line, 2));
 
 		elsif kw = et_material.keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
 			expect_field_count (line, 2);
@@ -1401,7 +1401,7 @@ is
 				device_value	:= type_value.to_bounded_string ("");
 				device_purpose	:= type_purpose.to_bounded_string ("");
 				device_partcode := et_material.type_partcode.to_bounded_string ("");
-				device_variant	:= to_name ("");
+				device_variant	:= to_variant_name ("");
 
 				log_indentation_down;
 			end insert_device;						

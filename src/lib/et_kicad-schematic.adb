@@ -1045,13 +1045,13 @@ package body et_kicad.schematic is
 						-- insert the new package variant in the component (in library)
 						pac_variants.insert (
 							container	=> component.variants,
-							key			=> to_name (to_string (packge => package_name)),
+							key			=> to_variant_name (to_string (packge => package_name)),
 							new_item	=> new_variant);
 
 						--log (text => count_type'image (pac_variants.length (component.variants)));
 						
 						-- Set the variant name to be returned:
-						variant := to_name (to_string (packge => package_name));
+						variant := to_variant_name (to_string (packge => package_name));
 						
 					else
 						log (ERROR, "Terminal-port-map does not fit !", console => true); -- CS: more details

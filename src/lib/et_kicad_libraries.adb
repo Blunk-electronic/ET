@@ -2844,7 +2844,7 @@ package body et_kicad_libraries is
 								-- The name of the default variant is the package
 								-- name itself (instead of an empty string or a string like "default"):
 								check_variant_name_length (to_string (package_name (content (field_package)))); -- S_SO14
-								tmp_variant_name := to_name (to_string (package_name (content (field_package)))); -- S_SO14
+								tmp_variant_name := to_variant_name (to_string (package_name (content (field_package)))); -- S_SO14
 								check_variant_name_characters (tmp_variant_name);
 
 								-- Find the library where the given package is stored in.
@@ -3366,13 +3366,13 @@ package body et_kicad_libraries is
 						-- insert the new package variant in the component (in library)
 						pac_variants.insert (
 							container	=> component.variants,
-							key			=> to_name (to_string (packge => package_name)),
+							key			=> to_variant_name (to_string (packge => package_name)),
 							new_item	=> new_variant);
 
 						--log (text => count_type'image (pac_variants.length (component.variants)));
 						
 						-- Set the variant name to be returned:
-						variant := to_name (to_string (packge => package_name));
+						variant := to_variant_name (to_string (packge => package_name));
 						
 					else
 						log (ERROR, "Terminal-port-map does not fit !", console => true); -- CS: more details

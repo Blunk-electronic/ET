@@ -609,7 +609,9 @@ package body et_devices is
 		return type_variant_name.to_string (package_variant);
 	end;
 
-	function to_name (variant_name : in string) return type_variant_name.bounded_string is begin
+	function to_variant_name (variant_name : in string) 
+		return type_variant_name.bounded_string
+	is begin
 		return type_variant_name.to_bounded_string (variant_name);
 	end;
 

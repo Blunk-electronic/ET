@@ -976,7 +976,7 @@ package body et_device_rw is
 									if kw = keyword_name then -- name D
 										expect_field_count (line, 2);
 										check_variant_name_length (f (line, 2));
-										variant_name := to_name (f (line,2));
+										variant_name := to_variant_name (f (line,2));
 										log (text => "variant " & to_string (variant_name), level => log_threshold + 1);
 										
 									elsif kw = keyword_package_model then -- package_model libraries/packages/S_SO14.pac

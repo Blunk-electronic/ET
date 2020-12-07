@@ -580,7 +580,7 @@ is
 													)),
 										rotation => to_rotation (f (9))
 										),
-									variant			=> to_name (""),
+									variant			=> to_variant_name (""),
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -599,7 +599,7 @@ is
 													)),
 										rotation		=> to_rotation (f (9))
 										),
-									variant			=> to_name (f (10)),
+									variant			=> to_variant_name (f (10)),
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -1948,7 +1948,7 @@ is
 								begin
 									-- validate variant
 									check_variant_name_length (f (6));
-									variant := to_name (f (6));
+									variant := to_variant_name (f (6));
 									check_variant_name_characters (variant);
 									
 									-- set the variant

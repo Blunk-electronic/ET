@@ -882,7 +882,7 @@ package body et_canvas_schematic_units is
 
 		use et_devices;
 	begin
-		return to_name (var_name);
+		return to_variant_name (var_name);
 	end extract_variant_name;
 	
 	-- In order to place a package variant and the associated model
@@ -1893,7 +1893,7 @@ package body et_canvas_schematic_units is
 
 			when NOUN_VARIANT =>
 				check_variant_name_length (self.get_text);
-				variant := to_name (self.get_text);
+				variant := to_variant_name (self.get_text);
 				check_variant_name_characters (variant);
 
 				set_variant (
