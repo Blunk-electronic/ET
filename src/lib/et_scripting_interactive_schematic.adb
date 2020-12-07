@@ -89,7 +89,7 @@ package body et_scripting_interactive_schematic is
 	procedure unit_selected_on_delete (self : access gtk_menu_item_record'class) is
 		name : constant string := extract_unit_name (self.get_label);
 	begin
-		unit_delete.unit := to_name (name);
+		unit_delete.unit := to_unit_name (name);
 
 		et_schematic_ops.units.delete_unit (
 			module_cursor	=> current_active_module,
@@ -191,7 +191,7 @@ package body et_scripting_interactive_schematic is
 		name : constant string := extract_unit_name (self.get_label);
 	begin
 		set_status ("selected unit " & name);
-		unit_add.name := to_name (name);
+		unit_add.name := to_unit_name (name);
 
 		-- use the current primary tool for moving the unit:
 		unit_add.tool := primary_tool;
@@ -406,12 +406,12 @@ package body et_scripting_interactive_schematic is
 		-- Now we know the unit name:
 		case noun is
 			when NOUN_UNIT =>
-				unit_move.unit := to_name (name);
+				unit_move.unit := to_unit_name (name);
 
 				finish_unit_move;
 				
 			when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
-				placeholder_move.unit := to_name (name);
+				placeholder_move.unit := to_unit_name (name);
 
 				finish_placeholder_move;
 				

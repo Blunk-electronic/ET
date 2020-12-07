@@ -165,7 +165,7 @@ is
 	--    The given unit name will be ignored.
 	procedure show_device ( -- GUI related
 		device	: in et_devices.type_device_name; -- IC45
-		unit	: in et_devices.pac_unit_name.bounded_string := to_name (""); -- A, B, ..
+		unit	: in et_devices.pac_unit_name.bounded_string := to_unit_name (""); -- A, B, ..
 		mode	: in type_show_device := FIRST_UNIT)
 	is
 		use et_devices;
@@ -201,7 +201,7 @@ is
 				declare
 					-- The unit name is empty because we will center just 
 					-- on the first unit:
-					location : type_unit_query := locate (to_name (""));
+					location : type_unit_query := locate (to_unit_name (""));
 				begin
 					if location.exists then
 						-- show the sheet where the unit is:
@@ -256,7 +256,7 @@ is
 				declare
 					-- The unit name is empty because we will center just 
 					-- on the first unit on the current sheet:
-					location : type_unit_query := locate (to_name (""));
+					location : type_unit_query := locate (to_unit_name (""));
 				begin
 					if location.exists then
 						if sheet (location.position) = current_active_sheet then
@@ -965,7 +965,7 @@ is
 								delete_unit (
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)),
-									unit_name		=> to_name (f (6)),
+									unit_name		=> to_unit_name (f (6)),
 									log_threshold	=> log_threshold + 1);
 
 							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
@@ -1036,7 +1036,7 @@ is
 									(
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)),
-									unit_name		=> to_name (f (6)),
+									unit_name		=> to_unit_name (f (6)),
 									coordinates		=> to_coordinates (f (7)), -- relative/absolute
 									point			=> type_point (set (
 														x => to_distance (f (8)),
@@ -1188,7 +1188,7 @@ is
 								invoke_unit (
 									module_name		=> module,
 									device_name		=> to_device_name (f (5)),
-									unit_name		=> to_name (f (6)),
+									unit_name		=> to_unit_name (f (6)),
 									destination		=> to_position 
 										(
 										sheet => to_sheet (f (7)),
@@ -1220,7 +1220,7 @@ is
 									(
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
+									unit_name		=> to_unit_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									point			=> type_point (set (
 														x => to_distance (f (8)),
@@ -1241,7 +1241,7 @@ is
 									(
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
+									unit_name		=> to_unit_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									point			=> type_point (set (
 														x => to_distance (f (8)),
@@ -1281,7 +1281,7 @@ is
 									(
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
+									unit_name		=> to_unit_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									point			=> type_point (set (
 														x => to_distance (f (8)),
@@ -1345,7 +1345,7 @@ is
 									(
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
+									unit_name		=> to_unit_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									sheet			=> to_sheet_relative (f (8)),
 									point			=> type_point (set (
@@ -1712,7 +1712,7 @@ is
 									(
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
+									unit_name		=> to_unit_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									rotation		=> to_rotation (f (8)), -- 90
 									log_threshold	=> log_threshold + 1
@@ -1730,7 +1730,7 @@ is
 									(
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
+									unit_name		=> to_unit_name (f (6)), -- A
 									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
 									meaning			=> et_symbols.NAME,
 									log_threshold	=> log_threshold + 1
@@ -1748,7 +1748,7 @@ is
 									(
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
+									unit_name		=> to_unit_name (f (6)), -- A
 									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
 									meaning			=> et_symbols.VALUE,
 									log_threshold	=> log_threshold + 1
@@ -1766,7 +1766,7 @@ is
 									(
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
+									unit_name		=> to_unit_name (f (6)), -- A
 									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
 									meaning			=> et_symbols.PURPOSE,
 									log_threshold	=> log_threshold + 1
@@ -1997,7 +1997,7 @@ is
 								else
 									show_device ( -- show device IC1 A
 										device	=> to_device_name (f (5)), -- IC1
-										unit	=> to_name (f (6)), -- A
+										unit	=> to_unit_name (f (6)), -- A
 										mode	=> BY_UNIT_NAME);
 								end if;
 								
@@ -2247,7 +2247,7 @@ is
 									
 									unit_delete.device := device_name;
 
-									unit_name := to_name (f (6));
+									unit_name := to_unit_name (f (6));
 
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Deleting is possible if it is deployed and if it is on the current sheet.
@@ -2316,7 +2316,7 @@ is
 									
 									unit_move.device := device_name;
 
-									unit_name := to_name (f (6));
+									unit_name := to_unit_name (f (6));
 
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Dragging is possible if it is deployed and if it is on the current sheet.
@@ -2426,7 +2426,7 @@ is
 									unit_add.total		:= units_total (unit_add.device);
 									unit_add.device_pre	:= device_name;
 									
-									unit_name := to_name (f (6));
+									unit_name := to_unit_name (f (6));
 
 									-- test existence AND availability of unit:
 									if provides_unit (unit_add.device, unit_name) then
@@ -2490,7 +2490,7 @@ is
 									
 									unit_move.device := device_name;
 
-									unit_name := to_name (f (6));
+									unit_name := to_unit_name (f (6));
 
 									-- Test whether the unit is deployed.
 									-- If it is deployed somewhere (whatever sheet) then it will be 
@@ -2565,7 +2565,7 @@ is
 
 									placeholder_move.device := device_name;
 									
-									unit_name := to_name (f (6));
+									unit_name := to_unit_name (f (6));
 
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Moving the placeholder is possible if the unit it is deployed 
@@ -2629,7 +2629,7 @@ is
 									
 									unit_move.device := device_name;
 
-									unit_name := to_name (f (6));
+									unit_name := to_unit_name (f (6));
 
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Rotating is possible if it is deployed and if it is on the current sheet.
@@ -2688,7 +2688,7 @@ is
 
 									placeholder_move.device := device_name;
 									
-									unit_name := to_name (f (6));
+									unit_name := to_unit_name (f (6));
 
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Rotating the placeholder is possible if the unit it is deployed 

@@ -2836,7 +2836,7 @@ function read (
 			
 			-- extract the part name (CS unit name ?) from field 4: example Part="1
 			-- NOTE: the trailing double quote is already gone.
-			unit := to_name (f (line, 4) (7 .. (f (line, 4)'last)));
+			unit := to_unit_name (f (line, 4) (7 .. (f (line, 4)'last)));
 
 			-- Now all components of the alternative reference are ready.
 			-- Append the new alternative reference to list alternative_references:

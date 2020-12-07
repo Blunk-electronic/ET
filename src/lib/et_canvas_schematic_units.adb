@@ -1206,7 +1206,7 @@ package body et_canvas_schematic_units is
 		--put_line ("selected");
 		
 		-- assign the unit to be drawn:
-		unit_add.name := to_name (unit_name);
+		unit_add.name := to_unit_name (unit_name);
 
 		-- Signal procedure draw_units to draw this unit as a preview:
 		unit_add.via_invoke := true;

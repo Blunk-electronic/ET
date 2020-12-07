@@ -6051,7 +6051,7 @@ is
 								-- CS: In the following: set a corresponding parameter-found-flag
 								if kw = keyword_name then -- name 1, GPIO_BANK_1, ...
 									expect_field_count (line, 2);
-									device_unit_name := to_name (f (line, 2));
+									device_unit_name := to_unit_name (f (line, 2));
 									
 								elsif kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
 									expect_field_count (line, 7);

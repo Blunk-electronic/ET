@@ -275,8 +275,7 @@ package et_devices is
 	unit_name_default : constant pac_unit_name.bounded_string := pac_unit_name.to_bounded_string ("");
 	
 	function to_string (unit_name : in pac_unit_name.bounded_string) return string;
-	function to_name (unit_name : in string) return pac_unit_name.bounded_string; 
-	-- CS rename to to_unit_name
+	function to_unit_name (unit_name : in string) return pac_unit_name.bounded_string; 
 	
 	device_unit_separator : constant character := '.';
 
