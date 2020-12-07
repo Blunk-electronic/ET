@@ -429,7 +429,7 @@ package body et_canvas_schematic is
 		in_area			: in type_rectangle := no_rectangle;
 		context 		: in type_draw_context;
 		symbol			: in et_symbols.type_symbol;
-		device_name		: in et_devices.type_name := (others => <>);
+		device_name		: in et_devices.type_device_name := (others => <>);
 		device_value	: in et_devices.type_value.bounded_string := to_value (""); -- like 100R or TL084
 		device_purpose	: in et_devices.type_purpose.bounded_string := to_purpose (""); -- like "brightness control"
 		unit_name		: in et_devices.type_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...

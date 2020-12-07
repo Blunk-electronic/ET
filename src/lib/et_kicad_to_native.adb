@@ -391,7 +391,7 @@ package body et_kicad_to_native is
 			component_cursor : et_kicad.schematic.type_components_schematic.cursor := module.components.first;
 
 			procedure query_units (
-				reference	: in type_name;
+				reference	: in type_device_name;
 				component	: in out et_kicad.schematic.type_component_schematic) is
 				use et_coordinates;
 				use et_kicad.schematic.type_units_schematic;
@@ -2526,7 +2526,7 @@ package body et_kicad_to_native is
 
 			procedure copy_units (
 			-- Copies the kicad units to the native component.
-				reference	: in type_name;
+				reference	: in type_device_name;
 				component	: in out et_schematic.type_device) is
 
 				use et_kicad.schematic.type_units_schematic;

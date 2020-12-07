@@ -60,7 +60,7 @@ procedure add_device (
 		inserted : boolean;
 
 		-- build the next available device name:
-		next_name : type_name := 
+		next_name : type_device_name := 
 			next_device_name (module_cursor, element (device_cursor_lib).prefix);
 
 		placeholders : type_rotated_placeholders;
@@ -73,7 +73,7 @@ procedure add_device (
 		procedure add_unit_internal (
 		-- Add an internal unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.int.
-			device_name	: in type_name;
+			device_name	: in type_device_name;
 			device		: in out et_schematic.type_device) is
 		begin
 			log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
@@ -114,7 +114,7 @@ procedure add_device (
 		procedure add_unit_external (
 		-- Add an external unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.ext.
-			device_name	: in type_name;
+			device_name	: in type_device_name;
 			device		: in out et_schematic.type_device) is
 			use type_symbols;
 			symbol_cursor : type_symbols.cursor;

@@ -2269,7 +2269,7 @@ package body et_schematic_ops.nets is
 							use et_symbols;
 
 							procedure query_ports (cursor : in type_ports_device.cursor) is
-								device_name 	: type_name; -- IC23
+								device_name 	: type_device_name; -- IC23
 								port_name		: type_port_name.bounded_string; -- CE
 								port_position 	: type_point; -- the xy-position of the port
 							begin

@@ -57,7 +57,7 @@ package et_scripting_interactive_schematic is
 		self : access gtk_menu_item_record'class);
 
 	procedure menu_propose_units_on_delete (
-		device			: in type_name;
+		device			: in type_device_name;
 		units			: in pac_unit_names.list;
 		log_threshold	: in type_log_level);
 	
@@ -67,7 +67,7 @@ package et_scripting_interactive_schematic is
 	-- this single unit will be granted to be drawn.
 	-- If "units" is empty, nothing happens.
 	procedure menu_propose_units_on_invoke (
-		device			: in type_name; -- R2
+		device			: in type_device_name; -- R2
 		units			: in pac_unit_names.list;
 		log_threshold	: in type_log_level);
 
@@ -130,7 +130,7 @@ package et_scripting_interactive_schematic is
 	-- Sets the package variant of the given device.
 	-- The device must exist in the current active module.
 	-- Otherwise constraint error rises.
-	procedure set_variant (device : in et_devices.type_name);
+	procedure set_variant (device : in et_devices.type_device_name);
 	
 
 -- SET PROPERTIES (partcode, purpose, value)
@@ -140,7 +140,7 @@ package et_scripting_interactive_schematic is
 	-- according to the current verb and noun.
 	-- The device must exist in the current active module.
 	-- Otherwise constraint error rises.
-	procedure set_property (device : in et_devices.type_name);
+	procedure set_property (device : in et_devices.type_device_name);
 	
 end et_scripting_interactive_schematic;
 

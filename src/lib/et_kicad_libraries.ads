@@ -402,7 +402,7 @@ package et_kicad_libraries is
 
 	
 	procedure no_generic_model_found (
-		reference		: in et_devices.type_name; -- IC303
+		reference		: in et_devices.type_device_name; -- IC303
 		library			: in type_device_library_name.bounded_string; -- ../lib/xilinx/spartan.lib
 		generic_name	: in type_component_generic_name.bounded_string);
 	
@@ -425,7 +425,7 @@ package et_kicad_libraries is
 	
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
-		reference	: et_devices.type_name; -- R452
+		reference	: et_devices.type_device_name; -- R452
 		part		: et_devices.type_unit_name.bounded_string; -- CS is this about a unit name ? currently written but never read
 	end record;
 
@@ -433,7 +433,7 @@ package et_kicad_libraries is
 	
 
 	function to_component_reference (	
-	-- Converts a string like "IC303" to a composite type_name.
+	-- Converts a string like "IC303" to a composite type_device_name.
 	-- If allow_special_character_in_prefix is given true, the first character
 	-- is allowed to be a special character (like in #FLG01).
 	-- Raises constraint error if prefix contains invalid characters.
@@ -441,7 +441,7 @@ package et_kicad_libraries is
 	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in			: in string;
 		leading_hash	: in boolean := false)
-		return type_name;
+		return type_device_name;
 
 
 	-- No-connection-flags indicate that a component port is intentionally left unconnected.
@@ -479,7 +479,7 @@ package et_kicad_libraries is
 
 	-- The components with their ports are collected in a map with the component reference as key:
 	package type_portlists is new ordered_maps (
-		key_type		=> et_devices.type_name,
+		key_type		=> et_devices.type_device_name,
 		element_type	=> type_ports.list,
 		"<"				=> et_devices."<",
 		"="				=> type_ports."=");
@@ -487,7 +487,7 @@ package et_kicad_libraries is
 	-- If component ports are to be listed, 
 	-- we need additionally the component reference like R102 or IC7
 	type type_port_with_reference is new type_port with record
-		reference : et_devices.type_name;
+		reference : et_devices.type_device_name;
 	end record;
 
 	function to_string (port : in type_port_with_reference) return string;

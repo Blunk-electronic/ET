@@ -121,7 +121,7 @@ package body et_kicad_libraries is
 	end check_prefix_characters;
 	
 	function to_component_reference (	
-	-- Converts a string like "IC303" to a composite type_name.
+	-- Converts a string like "IC303" to a composite type_device_name.
 	-- If allow_special_character_in_prefix is given true, the first character
 	-- is allowed to be a special character (like in #FLG01).
 	-- Raises constraint error if prefix contains invalid characters.
@@ -129,14 +129,14 @@ package body et_kicad_libraries is
 	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in			: in string;
 		leading_hash	: in boolean := false
-		) return type_name is
+		) return type_device_name is
 		
 		use et_devices;
 
 		-- justify given text_in on the left
 		text_in_justified : string (1 .. text_in'length) := text_in;
 	
-		r : type_name := (
+		r : type_device_name := (
 				prefix 		=> type_prefix.to_bounded_string(""),
 				id 			=> 0,
 				id_width	=> 1);
@@ -279,7 +279,7 @@ package body et_kicad_libraries is
 	end compare_ports;
 
 	procedure no_generic_model_found (
-		reference		: in type_name; -- IC303
+		reference		: in type_device_name; -- IC303
 		library			: in et_kicad_general.type_device_library_name.bounded_string; -- ../lib/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
 		is
@@ -440,7 +440,7 @@ package body et_kicad_libraries is
 		end if;
 	end validate_prefix;
 
-	procedure validate_prefix (reference : in type_name) is
+	procedure validate_prefix (reference : in type_device_name) is
 	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
 		use type_prefix;
@@ -828,7 +828,7 @@ package body et_kicad_libraries is
 		-- CS: exception handler
 	end to_degrees;
 
-	function to_power_flag (reference : in type_name) 
+	function to_power_flag (reference : in type_device_name) 
 		return type_power_flag is
 	-- If the given component reference is one that belongs to a "power flag" returns YES.
 		use type_prefix;
@@ -3485,7 +3485,7 @@ package body et_kicad_libraries is
 		port_cursor : type_ports.cursor;
 	
 		procedure set_cursor (
-			name 	: in type_name;
+			name 	: in type_device_name;
 			ports	: in type_ports.list) is
 		begin
 			port_cursor := type_ports.first (ports);

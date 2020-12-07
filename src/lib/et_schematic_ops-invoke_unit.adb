@@ -40,7 +40,7 @@ separate (et_schematic_ops)
 procedure invoke_unit (
 -- Invokes a unit of a device into the schematic.
 	module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-	device_name		: in type_name; -- IC1
+	device_name		: in type_device_name; -- IC1
 	unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
 	destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
 	log_threshold	: in type_log_level) is
@@ -58,7 +58,7 @@ procedure invoke_unit (
 		device_cursor_sch : et_schematic.type_devices.cursor;
 
 		procedure query_units_in_use (
-			device_name	: in type_name;
+			device_name	: in type_device_name;
 			device		: in et_schematic.type_device)
 		is
 			use et_schematic.type_units;
@@ -89,7 +89,7 @@ procedure invoke_unit (
 		procedure add_unit_internal (
 		-- Add an internal unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.int.
-			device_name	: in type_name;
+			device_name	: in type_device_name;
 			device		: in out et_schematic.type_device) is
 			use et_symbols;
 		begin
@@ -130,7 +130,7 @@ procedure invoke_unit (
 		procedure add_unit_external (
 		-- Add an external unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.ext.
-			device_name	: in type_name;
+			device_name	: in type_device_name;
 			device		: in out et_schematic.type_device) is
 			use et_symbols;
 			use et_symbols.type_symbols;

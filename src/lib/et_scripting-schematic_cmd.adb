@@ -164,7 +164,7 @@ is
 	--    All units of the device selected and highlighted.
 	--    The given unit name will be ignored.
 	procedure show_device ( -- GUI related
-		device	: in et_devices.type_name; -- IC45
+		device	: in et_devices.type_device_name; -- IC45
 		unit	: in et_devices.type_unit_name.bounded_string := to_name (""); -- A, B, ..
 		mode	: in type_show_device := FIRST_UNIT)
 	is
@@ -2131,7 +2131,7 @@ is
 		
 		incomplete : constant string := "Command incomplete ! ";
 
-		device_name		: et_devices.type_name;
+		device_name		: et_devices.type_device_name;
 		unit_name		: type_unit_name.bounded_string;
 		--net_name		: type_net_name.bounded_string;
 

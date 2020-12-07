@@ -329,7 +329,7 @@ package et_project.modules is
 	-- - The device must exist in the module.
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
-		device	: in type_name)
+		device	: in type_device_name)
 		return boolean;
 
 	function alternative_device (
@@ -343,7 +343,7 @@ package et_project.modules is
 	--   otherwise the return is no_element.
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
-		device	: in type_name)
+		device	: in type_device_name)
 		return et_assembly_variants.type_devices.cursor;
 
 	function alternative_submodule (

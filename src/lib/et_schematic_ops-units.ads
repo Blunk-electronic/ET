@@ -43,7 +43,7 @@ package et_schematic_ops.units is
 	-- deleted entirely from the module.
 	procedure delete_unit (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_name; -- IC45
+		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level);
 
@@ -52,7 +52,7 @@ package et_schematic_ops.units is
 	-- deleted entirely from the module.
 	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
+		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level);
 
@@ -62,7 +62,7 @@ package et_schematic_ops.units is
 	-- start or end points of net segments BEFORE the move. 
 	-- Connects unit ports with segment end or strart points AFTER the move.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
+		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
@@ -75,7 +75,7 @@ package et_schematic_ops.units is
 	-- CS: Might become obsolete once ports at the same x/y position are prevented.
 	function movable (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_name;
+		device_name		: in type_device_name;
 		unit_name		: in type_unit_name.bounded_string;
 		location 		: in et_coordinates.type_position; -- only sheet number matters
 		unit_ports		: in et_symbols.type_ports.map;
@@ -93,7 +93,7 @@ package et_schematic_ops.units is
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
+		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y -- CS rename to destination
@@ -105,7 +105,7 @@ package et_schematic_ops.units is
 	-- Rotates the placeholders about the unit center.
 	procedure rotate_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
+		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_coordinates.type_rotation; -- 90

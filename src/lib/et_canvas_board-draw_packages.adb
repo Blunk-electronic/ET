@@ -68,7 +68,7 @@ is
 		deepest_conductor_layer (et_canvas_schematic.current_active_module);
 	
 	procedure draw_package (
-		device_name		: in et_devices.type_name; -- IC13, C4
+		device_name		: in et_devices.type_device_name; -- IC13, C4
 		device_value	: in et_devices.type_value.bounded_string; -- SN7400
 		device_purpose	: in et_devices.type_purpose.bounded_string; -- brightness control
 		model			: in et_packages.type_package_model_file.bounded_string;

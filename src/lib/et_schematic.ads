@@ -69,7 +69,7 @@ with et_netlists;
 with et_geometry;
 with et_text;
 with et_symbols;
-with et_devices;
+with et_devices;				use et_devices;
 with et_frames;
 with et_meta;
 with et_design_rules;
@@ -224,7 +224,7 @@ package et_schematic is
 	
 	-- This is the port of a device as it appears in a net segment:
 	type type_port_device is record
-		device_name	: et_devices.type_name;
+		device_name	: type_device_name;
 		unit_name	: et_devices.type_unit_name.bounded_string;
 		port_name	: et_symbols.type_port_name.bounded_string;
 	end record;
@@ -465,7 +465,7 @@ package et_schematic is
 	-- The devices of a module are collected in a map.
 	-- CS: This must be a hashed map:
  	package type_devices is new indefinite_ordered_maps (
-		key_type		=> et_devices.type_name, -- something like "IC43"
+		key_type		=> type_device_name, -- something like "IC43"
 		"<"				=> et_devices."<",
  		element_type	=> type_device);
 
@@ -555,12 +555,12 @@ package et_schematic is
 
 	-- CS: this should be a hashed map:
 	package pac_devices_non_electric is new ordered_maps (
-		key_type		=> et_devices.type_name, -- H1, FD2, ...
+		key_type		=> type_device_name, -- H1, FD2, ...
 		"<"				=> et_devices."<",
 		element_type	=> type_device_non_electric);
 
 	procedure device_name_in_use (
-		name	: in et_devices.type_name;	-- IC1, MH1, ...
+		name	: in type_device_name;	-- IC1, MH1, ...
 		by_cat	: in type_device_category);	-- electrical/non-electrical
 
 	-- For the design rules we simply refer to the file where the rules are

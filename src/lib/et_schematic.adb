@@ -528,7 +528,7 @@ package body et_schematic is
 
 
 	procedure device_name_in_use (
-		name	: in et_devices.type_name;	-- IC1, MH1, ...
+		name	: in type_device_name;	-- IC1, MH1, ...
 		by_cat	: in type_device_category)	-- electrical/non-electrical
 	is 
 		use et_string_processing;
@@ -548,14 +548,7 @@ package body et_schematic is
 		raise constraint_error;
 	end device_name_in_use;
 
-	
--- 	function position (device : in et_libraries.type_device_name) return type_device_position is
--- 		dev_pos : type_device_position; -- to be returned
--- 		use type_devices;
--- 	begin
--- 		return dev_pos;
--- 	end position;
-	
+		
 	function show_danger (danger : in type_danger) return string is
 		preamble : constant string (1..9) := " RISK OF ";
 	begin

@@ -278,7 +278,7 @@ package body et_board_ops is
 			inserted : boolean;
 
 			-- build the next available device name:
-			next_name : type_name := next_device_name (module_cursor, prefix, NON_ELECTRICAL);
+			next_name : type_device_name := next_device_name (module_cursor, prefix, NON_ELECTRICAL);
 		begin -- add
 			log (text => "adding device " & to_string (next_name), level => log_threshold + 1);
 			log_indentation_up;
@@ -341,7 +341,7 @@ package body et_board_ops is
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
+		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
@@ -358,7 +358,7 @@ package body et_board_ops is
 			device_non_electric	: et_schematic.pac_devices_non_electric.cursor;			
 
 			procedure set_position ( -- of an electric device
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
 			begin
 				case coordinates is
@@ -372,7 +372,7 @@ package body et_board_ops is
 			end;
 
 			procedure set_position ( -- of a non-electric device
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in out type_device_non_electric) is
 			begin
 				case coordinates is
@@ -445,7 +445,7 @@ package body et_board_ops is
 	-- Rotates a device in the board layout.
 	-- Leaves x/y and face (top/bottom) as it is.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
+		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_pcb_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level) is
@@ -462,7 +462,7 @@ package body et_board_ops is
 			device_non_electric	: et_schematic.pac_devices_non_electric.cursor;			
 
 			procedure set_rotation ( -- of an electric device
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
 			begin
 				case coordinates is
@@ -475,7 +475,7 @@ package body et_board_ops is
 			end;
 
 			procedure set_rotation ( -- of a non-electric device
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in out type_device_non_electric) is
 			begin
 				case coordinates is
@@ -546,7 +546,7 @@ package body et_board_ops is
 
 	procedure delete_device (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- FD1
+		device_name		: in type_device_name; -- FD1
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -583,8 +583,8 @@ package body et_board_ops is
 
 	procedure rename_device (
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name_before	: in type_name; -- FD1
-		device_name_after	: in type_name; -- FD3
+		device_name_before	: in type_device_name; -- FD1
+		device_name_after	: in type_device_name; -- FD3
 		log_threshold		: in type_log_level) is
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -652,7 +652,7 @@ package body et_board_ops is
 	-- Leaves x/y and rotation as it is.
 	-- Warns operator if device already on desired face of board.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
+		device_name		: in type_device_name; -- IC45
 		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level) is
 
@@ -688,7 +688,7 @@ package body et_board_ops is
 			end mirror_placeholders;
 			
 			procedure flip ( -- electric device
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
 				
 				face_before : constant type_face := get_face (device.position);
@@ -729,7 +729,7 @@ package body et_board_ops is
 			end flip;
 
 			procedure flip ( -- non-electric device
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device_non_electric) is
 				
 				face_before : constant type_face := get_face (device.position);
@@ -970,7 +970,7 @@ package body et_board_ops is
 					module_name	: in type_module_name.bounded_string;
 					module		: in et_schematic.type_module) is
 
-					device_name : type_name;
+					device_name : type_device_name;
 					inserted : boolean;
 
 					function apply_position_in_board (position_generic : in type_package_position) return
@@ -1381,7 +1381,7 @@ package body et_board_ops is
 	function locate_device (
 	-- Returns a cursor to the requested device in the given module.
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
-		device_name		: in type_name)
+		device_name		: in type_device_name)
 		return et_schematic.type_devices.cursor is
 
 		use et_schematic.type_devices;
@@ -1760,7 +1760,7 @@ package body et_board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
-		device			: in type_name;
+		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
 		direction		: in type_rotation;
 		length			: in type_distance_positive;
@@ -1829,7 +1829,7 @@ package body et_board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
-		device			: in type_name;
+		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
 		direction		: in type_rotation;
 		axis			: in type_axis_2d;
@@ -1897,7 +1897,7 @@ package body et_board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
-		device			: in type_name;
+		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
 		end_point		: in type_point;
 		log_threshold	: in type_log_level) is
@@ -1959,7 +1959,7 @@ package body et_board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
-		device			: in type_name;
+		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;

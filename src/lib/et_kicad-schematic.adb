@@ -224,7 +224,7 @@ package body et_kicad.schematic is
 		u : type_units_schematic.map;
 
 		procedure locate (
-			name		: in type_name;
+			name		: in type_device_name;
 			component	: in type_component_schematic) is
 		begin
 			-- copy the units of the component to the return value
@@ -264,7 +264,7 @@ package body et_kicad.schematic is
 	end check_prefix_characters;
 	
 	function to_component_reference (	
-	-- Converts a string like "IC303" to a composite type_name.
+	-- Converts a string like "IC303" to a composite type_device_name.
 	-- If allow_special_character_in_prefix is given true, the first character
 	-- is allowed to be a special character (like in #FLG01).
 	-- Raises constraint error if prefix contains invalid characters.
@@ -272,14 +272,14 @@ package body et_kicad.schematic is
 	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in			: in string;
 		leading_hash	: in boolean := false
-		) return type_name is
+		) return type_device_name is
 		
 		use et_devices;
 
 		-- justify given text_in on the left
 		text_in_justified : string (1 .. text_in'length) := text_in;
 	
-		r : type_name := (
+		r : type_device_name := (
 				prefix 		=> type_prefix.to_bounded_string(""),
 				id 			=> 0,
 				id_width	=> 1);
@@ -370,7 +370,7 @@ package body et_kicad.schematic is
 
 	
 	function component_reference (cursor : in type_components_schematic.cursor) 
-		return type_name is
+		return type_device_name is
 	-- Returns the component reference where cursor points to.
 	begin
 		return type_components_schematic.key (cursor);
@@ -504,7 +504,7 @@ package body et_kicad.schematic is
 		end if;
 	end validate_prefix;
 
-	procedure validate_prefix (reference : in type_name) is
+	procedure validate_prefix (reference : in type_device_name) is
 	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
 		use type_prefix;
@@ -894,7 +894,7 @@ package body et_kicad.schematic is
 		-- CS: exception handler
 	end to_degrees;
 
-	function to_power_flag (reference : in type_name) 
+	function to_power_flag (reference : in type_device_name) 
 		return type_power_flag is
 	-- If the given component reference is one that belongs to a "power flag" returns YES.
 		use type_prefix;
@@ -3394,7 +3394,7 @@ package body et_kicad.schematic is
 -- 	-- Returns the purpose of the given component in the given module.
 -- 	-- If no purpose specified for the component, an empty string is returned.
 -- 		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
--- 		reference		: in type_name; -- X701
+-- 		reference		: in type_device_name; -- X701
 -- 		log_threshold	: in et_string_processing.type_log_level)
 -- 		return et_libraries.type_component_purpose.bounded_string is
 -- 
@@ -3506,7 +3506,7 @@ package body et_kicad.schematic is
 		port_cursor : type_ports.cursor;
 	
 		procedure set_cursor (
-			name 	: in type_name;
+			name 	: in type_device_name;
 			ports	: in type_ports.list) is
 		begin
 			port_cursor := type_ports.first (ports);
@@ -4097,7 +4097,7 @@ package body et_kicad.schematic is
 
 		-- The component reference in the schematic (like R44 or IC34)
 		-- is tempoarily held here:
-		component_reference	: type_name;
+		component_reference	: type_device_name;
 	
 		-- This component cursor points to the library component being processed.
 		use type_components_library;
@@ -4139,7 +4139,7 @@ package body et_kicad.schematic is
 			-- NOTE: It is important first to rotate, then mirror (if required) and finally to move/offset it.
 
 				procedure add (
-					component	: in type_name;
+					component	: in type_device_name;
 					ports		: in out type_ports.list) is
 					use type_modules;
 					
@@ -4563,7 +4563,7 @@ package body et_kicad.schematic is
 			portlist_cursor : type_portlists.cursor := module.portlists.first;
 
 			procedure query_ports (
-				component	: in type_name;
+				component	: in type_device_name;
 				ports 		: in type_ports.list) is
 				port_cursor : type_ports.cursor := ports.first;
 				use type_ports;
@@ -4798,7 +4798,7 @@ package body et_kicad.schematic is
 					unit : type_units_library.cursor := component.units.first;
 
 					procedure query_units_sch (
-						component_name	: in type_name;
+						component_name	: in type_device_name;
 						component 		: in type_component_schematic) is
 						use type_units_schematic;
 						unit_cursor : type_units_schematic.cursor := component.units.first;
@@ -5201,7 +5201,7 @@ package body et_kicad.schematic is
 	-- CS: This assumption may not apply for all CAE systems. Currently we
 	-- consider only kicad. In other cases the "inserted" check (see below) 
 	-- must be enabled via an argument.
-		reference		: in type_name;
+		reference		: in type_device_name;
 		component		: in type_component_schematic;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		
@@ -5237,13 +5237,13 @@ package body et_kicad.schematic is
 	
 	procedure add_unit (
 	-- Adds a unit to the given commponent.
-		reference		: in type_name;
+		reference		: in type_device_name;
 		unit_name		: in et_devices.type_unit_name.bounded_string;
 		unit 			: in type_unit_schematic;
 		log_threshold	: in et_string_processing.type_log_level) is
 
 		procedure add (
-			reference	: in type_name;
+			reference	: in type_device_name;
 			component	: in out type_component_schematic) is
 
 			inserted	: boolean := false;
@@ -5732,7 +5732,7 @@ package body et_kicad.schematic is
 					
 					procedure query_ports (
 					-- Query ports. Exit prematurely once a port was found.
-						component	: in type_name;
+						component	: in type_device_name;
 						ports 		: in type_ports.list) is
 						port_cursor : type_ports.cursor := ports.first;
 						use type_ports;
@@ -5983,7 +5983,7 @@ package body et_kicad.schematic is
 				flag_orphaned : boolean := true;
 				
 				procedure query_ports (
-					component 	: in type_name;
+					component 	: in type_device_name;
 					ports 		: in type_ports.list) is
 					port_cursor : type_ports.cursor := ports.first;
 					use type_ports;
@@ -6610,7 +6610,7 @@ package body et_kicad.schematic is
 
 						procedure query_ports (
 						-- Tests the ports of the given component if they sit on the current net segment.
-							component	: in type_name;
+							component	: in type_device_name;
 							ports		: in type_ports.list) is
 							use type_ports;
 							port_cursor : type_ports.cursor := ports.first; -- points to the first port of the component
@@ -6625,7 +6625,7 @@ package body et_kicad.schematic is
 	
 									procedure locate_port (
 									-- Locates the port of the component
-										component	: in type_name;
+										component	: in type_device_name;
 										ports		: in out type_ports.list) is
 
 										procedure mark_it (port : in out type_port) is
@@ -6853,7 +6853,7 @@ package body et_kicad.schematic is
 
 	
 	function terminal_count (
-		reference		: in type_name;
+		reference		: in type_device_name;
 		log_threshold	: in et_string_processing.type_log_level)
 		return et_devices.type_terminal_count is
 	-- Returns the number of terminals of the given component reference.
@@ -7163,7 +7163,7 @@ package body et_kicad.schematic is
 	function connected_net (
 	-- Returns the name of the net connected with the given component and terminal.
 		module			: in type_submodule_name.bounded_string; -- nucleo_core
-		reference		: in type_name;	-- IC45
+		reference		: in type_device_name;	-- IC45
 		terminal		: in et_terminals.type_terminal_name.bounded_string; -- E14
 		log_threshold	: in et_string_processing.type_log_level)		
 		return type_net_name.bounded_string is
@@ -7773,7 +7773,7 @@ package body et_kicad.schematic is
 -- 			portlist : type_portlists.cursor := module.portlists.first;
 -- 
 -- 			procedure count (
--- 				component	: in type_name;
+-- 				component	: in type_device_name;
 -- 				ports		: in type_ports.list) is
 -- 				port : type_ports.cursor := ports.first;
 -- 				use type_ports;

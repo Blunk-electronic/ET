@@ -103,7 +103,7 @@ package body et_scripting_interactive_schematic is
 	end unit_selected_on_delete;
 	
 	procedure menu_propose_units_on_delete (
-		device			: in type_name;
+		device			: in type_device_name;
 		units			: in pac_unit_names.list;
 		log_threshold	: in type_log_level)
 	is
@@ -205,7 +205,7 @@ package body et_scripting_interactive_schematic is
 	end unit_selected_on_invoke;
 
 	procedure menu_propose_units_on_invoke (
-		device			: in type_name;
+		device			: in type_device_name;
 		units			: in pac_unit_names.list;
 		log_threshold	: in type_log_level)
 	is
@@ -611,7 +611,7 @@ package body et_scripting_interactive_schematic is
 		--return result;		
 	--end variant_selection_key_event;
 	
-	procedure set_variant (device : in et_devices.type_name) is
+	procedure set_variant (device : in et_devices.type_device_name) is
 		use pac_variants;
 		variants : pac_variants.map;
 		device_cursor_sch : et_schematic.type_devices.cursor;
@@ -663,7 +663,7 @@ package body et_scripting_interactive_schematic is
 	end set_variant;
 
 
-	procedure set_property (device : in et_devices.type_name) is
+	procedure set_property (device : in et_devices.type_device_name) is
 		su : type_selected_unit;
 	begin
 		-- If the properties window is already open, then the window

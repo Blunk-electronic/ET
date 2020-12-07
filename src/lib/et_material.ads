@@ -109,7 +109,7 @@ package et_material is
 	end record;
 
 	package type_devices is new ordered_maps (
-		key_type		=> type_name, -- IC4
+		key_type		=> type_device_name, -- IC4
 		element_type	=> type_device);
 
 	type type_bom_format is (

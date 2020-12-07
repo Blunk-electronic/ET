@@ -589,7 +589,7 @@ is
 	-- The temporarily device will exist where "device" points at:
 	device					: access et_schematic.type_device;
 	
-	device_name					: type_name; -- C12
+	device_name					: type_device_name; -- C12
 	device_model				: type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 	
 	
@@ -4330,7 +4330,7 @@ is
 							declare
 								use et_devices;
 								kw : string 	:= f (line, 1);
-								device_name		: type_name; -- R1
+								device_name		: type_device_name; -- R1
 								device			: access et_assembly_variants.type_device;
 								device_cursor	: et_assembly_variants.type_devices.cursor;
 								

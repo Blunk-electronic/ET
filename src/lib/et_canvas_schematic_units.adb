@@ -101,7 +101,7 @@ package body et_canvas_schematic_units is
 			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
 
 			procedure query_units (
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in et_schematic.type_device)
 			is
 				use et_schematic.type_units;
@@ -214,7 +214,7 @@ package body et_canvas_schematic_units is
 			ports : et_symbols.type_ports.map;
 
 			procedure query_units (
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
 			begin
 				-- Load the single unit position and insert in container "position_of_unit"
@@ -233,7 +233,7 @@ package body et_canvas_schematic_units is
 			units_invoked : boolean := true; -- goes false if no unit used anymore
 
 			procedure query_number_of_invoked_units (
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in et_schematic.type_device) is
 			begin
 				if length (device.units) = 0 then
@@ -498,7 +498,7 @@ package body et_canvas_schematic_units is
 		use et_schematic.type_devices;
 		use et_schematic.type_units;
 		su : type_selected_unit := element (selected_unit);
-		device_name : constant type_name := key (su.device);
+		device_name : constant type_device_name := key (su.device);
 		unit_name : constant type_unit_name.bounded_string := key (su.unit);
 
 		-- The ports with their positions of the selected unit:
@@ -614,7 +614,7 @@ package body et_canvas_schematic_units is
 			ports_lib, ports_scratch : et_symbols.type_ports.map;
 
 			procedure query_units (
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device)
 			is
 				use et_schematic.type_units;
@@ -1296,7 +1296,7 @@ package body et_canvas_schematic_units is
 
 				-- Sets the in_use flag if given unit is already in use:
 				procedure query_in_use (
-					device_name	: in type_name;
+					device_name	: in type_device_name;
 					device		: in et_schematic.type_device) 
 				is
 					use et_schematic.type_units;
@@ -1529,7 +1529,7 @@ package body et_canvas_schematic_units is
 			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
 
 			procedure query_units (
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in et_schematic.type_device)
 			is
 				use et_schematic.type_units;
@@ -1692,7 +1692,7 @@ package body et_canvas_schematic_units is
 			device_cursor : et_schematic.type_devices.cursor;
 
 			procedure query_units (
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) 
 			is 
 				unit_cursor : et_schematic.type_units.cursor;
@@ -2057,7 +2057,7 @@ package body et_canvas_schematic_units is
 		
 		su		: constant type_selected_unit := element (selected_unit);
 
-		--device	: constant et_devices.type_name := key (su.device);
+		--device	: constant et_devices.type_device_name := key (su.device);
 		
 		-- NOTE: In case the unit name is required for some reason,
 		-- mind the cursor su.unit can be no_element if all units are selected.

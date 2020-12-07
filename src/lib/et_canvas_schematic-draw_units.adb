@@ -46,7 +46,7 @@ procedure draw_units (
 	use et_schematic.type_units;
 	
 	-- The name, value and purpose of the current device:
-	device_name	: et_devices.type_name; -- like R1, IC100	
+	device_name	: et_devices.type_device_name; -- like R1, IC100	
 	device_value : et_devices.type_value.bounded_string; -- like 100R or TL084
 	device_purpose : et_devices.type_purpose.bounded_string; -- like "brightness control"
 

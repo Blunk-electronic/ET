@@ -121,7 +121,7 @@ package et_canvas_schematic_units is
 	procedure delete_selected_unit;
 
 	type type_unit_being_deleted is record
-		device	: type_name := (others => <>); -- IC45
+		device	: type_device_name := (others => <>); -- IC45
 		unit	: type_unit_name.bounded_string; -- A
 	end record;
 
@@ -144,7 +144,7 @@ package et_canvas_schematic_units is
 		-- to calculate the displacement of attached net segments:
 		original_position	: type_point := origin;
 		
-		device				: type_name := (others => <>); -- IC45
+		device				: type_device_name := (others => <>); -- IC45
 		unit				: type_unit_name.bounded_string; -- A
 
 		-- In case a unit is being moved from one sheet to another.
@@ -309,7 +309,7 @@ package et_canvas_schematic_units is
 		-- The prospective device name (like IC4) once the 
 		-- add operation is complete.
 		-- This is relevant for the preview only:
-		device_pre	: et_devices.type_name := (others => <>);
+		device_pre	: et_devices.type_device_name := (others => <>);
 
 		-- When drawing a unit being added via invoke:
 		via_invoke	: boolean := false;
@@ -384,7 +384,7 @@ package et_canvas_schematic_units is
 		tool				: type_tool := MOUSE;
 		absolute_position	: type_point; -- before the move
 
-		device				: type_name := (others => <>); -- IC45
+		device				: type_device_name := (others => <>); -- IC45
 		unit				: type_unit_name.bounded_string; -- A
 	end record;
 

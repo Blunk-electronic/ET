@@ -46,7 +46,7 @@ separate (et_schematic_ops)
 
 procedure copy_device (
 	module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-	device_name		: in type_name; -- IC45
+	device_name		: in type_device_name; -- IC45
 	destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
 	log_threshold	: in type_log_level) is
 
@@ -63,7 +63,7 @@ procedure copy_device (
 		device_cursor_lib : et_devices.type_devices.cursor; -- points to the device in the library
 		
 		-- the next available device name:
-		next_name : type_name;
+		next_name : type_device_name;
 		inserted : boolean;
 
 		placeholders : type_rotated_placeholders;
@@ -78,7 +78,7 @@ procedure copy_device (
 		procedure add_unit_internal (
 		-- Add an internal unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.int.
-			device_name	: in type_name;
+			device_name	: in type_device_name;
 			device		: in out et_schematic.type_device) is
 		begin
 			log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
@@ -118,7 +118,7 @@ procedure copy_device (
 		procedure add_unit_external (
 		-- Add an external unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.ext.
-			device_name	: in type_name;
+			device_name	: in type_device_name;
 			device		: in out et_schematic.type_device) is
 			use type_symbols;
 			symbol_cursor : type_symbols.cursor;

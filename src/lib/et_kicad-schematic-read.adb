@@ -1976,7 +1976,7 @@ function read (
 
 		use et_schematic;
 
-		reference					: type_name;	-- like IC5	
+		reference					: type_device_name;	-- like IC5	
 		appearance					: et_symbols.type_appearance := et_symbols.VIRTUAL; -- CS: why this default ?
 		generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
 
@@ -2220,7 +2220,7 @@ function read (
 		-- The given reference serves to provide a helpful error message on the affected 
 		-- component in the schematic.
 			component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
-			reference 		: in type_name; -- the reference in the schematic like "R4"
+			reference 		: in type_device_name; -- the reference in the schematic like "R4"
 			log_threshold	: in et_string_processing.type_log_level)
 			return type_device_library_name.bounded_string is -- the full library name like "../libraries/resistors.lib"
 
@@ -2304,7 +2304,7 @@ function read (
 		-- The given reference serves to provide a helpful error message on the affected 
 		-- component in the schematic.
 			component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
-			reference 		: in type_name; -- the reference in the schematic like "R4"
+			reference 		: in type_device_name; -- the reference in the schematic like "R4"
 			log_threshold 	: in type_log_level) 
 			return type_device_library_name.bounded_string is
 
@@ -2374,13 +2374,13 @@ function read (
 
 		end full_name_of_component_library;
 
-		function remove_leading_hash (reference : in type_name) return
+		function remove_leading_hash (reference : in type_device_name) return
 		-- Removes from a reference like #PWR04 the leading hash character.
 		-- CS: This function should be applied on virtual components (such as power flags or power symbols) only.
 		-- The assumption is that their prefix always starts with a hash character.
-			type_name is
+			type_device_name is
 			use type_prefix;
-			reference_out : type_name := reference; -- to be returned -- like PWR04
+			reference_out : type_device_name := reference; -- to be returned -- like PWR04
 		begin
 			--log (text => "renaming " & to_string (reference_out));
 			--log (text => "length" & positive'image (length (reference_out.prefix)));
@@ -2790,7 +2790,7 @@ function read (
 		-- to the list alternative_references.
 		
 			path	: et_string_processing.type_fields_of_line; -- 59F17F77 5A991798
-			ref		: type_name; -- #PWR03
+			ref		: type_device_name; -- #PWR03
 			unit	: type_unit_name.bounded_string; -- 1 -- CS is this really about unit names ?
 
 			path_segment : type_timestamp;

@@ -44,7 +44,7 @@ package body et_schematic_ops.units is
 
 	procedure delete_unit (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_name; -- IC45
+		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level) is
 		
@@ -61,7 +61,7 @@ package body et_schematic_ops.units is
 			ports : et_symbols.type_ports.map;
 
 			procedure query_units (
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
 				use et_schematic.type_units;
 				unit_cursor : et_schematic.type_units.cursor;
@@ -88,7 +88,7 @@ package body et_schematic_ops.units is
 			units_invoked : boolean := true; -- goes false if no unit used anymore
 
 			procedure query_number_of_invoked_units (
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in et_schematic.type_device) is
 				use et_schematic.type_units;
 			begin
@@ -153,7 +153,7 @@ package body et_schematic_ops.units is
 	
 	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
+		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level) is
 
@@ -177,7 +177,7 @@ package body et_schematic_ops.units is
 	
 	procedure move_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
+		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
@@ -201,7 +201,7 @@ package body et_schematic_ops.units is
 			ports : et_symbols.type_ports.map;
 
 			procedure query_units (
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
 				use et_schematic.type_units;
 				unit_cursor : et_schematic.type_units.cursor;
@@ -526,7 +526,7 @@ package body et_schematic_ops.units is
 	-- CS: Becomes obsolete once ports at the same x/y position are prevented.
 	procedure movable_test (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_name;
+		device_name		: in type_device_name;
 		unit_name		: in type_unit_name.bounded_string;
 		location 		: in et_coordinates.type_position; -- only sheet number matters
 		unit_ports		: in et_symbols.type_ports.map;
@@ -603,7 +603,7 @@ package body et_schematic_ops.units is
 
 	function movable (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_name;
+		device_name		: in type_device_name;
 		unit_name		: in type_unit_name.bounded_string;
 		location 		: in et_coordinates.type_position; -- only sheet number matters
 		unit_ports		: in et_symbols.type_ports.map;
@@ -691,7 +691,7 @@ package body et_schematic_ops.units is
 	
 	procedure drag_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
+		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
@@ -748,7 +748,7 @@ package body et_schematic_ops.units is
 			ports, ports_old, ports_new : et_symbols.type_ports.map;
 
 			procedure query_unit_location (
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in et_schematic.type_device) is
 				use et_schematic.type_units;
 				unit_cursor : et_schematic.type_units.cursor;
@@ -765,7 +765,7 @@ package body et_schematic_ops.units is
 			end query_unit_location;
 			
 			procedure query_units (
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
 				use et_schematic.type_units;
 				unit_cursor : et_schematic.type_units.cursor;
@@ -916,7 +916,7 @@ package body et_schematic_ops.units is
 	
 	procedure rotate_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_name; -- IC45
+		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in et_coordinates.type_rotation; -- 90
@@ -937,7 +937,7 @@ package body et_schematic_ops.units is
 			ports_lib, ports_scratch : et_symbols.type_ports.map;
 
 			procedure query_units (
-				device_name	: in type_name;
+				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device)
 			is
 				use et_schematic.type_units;

@@ -65,7 +65,7 @@ package et_pick_and_place is
 	end record;
 
 	package type_devices is new ordered_maps (
-		key_type		=> type_name, -- IC4
+		key_type		=> type_device_name, -- IC4
 		element_type	=> type_device);
 
 	type type_pnp_format is (

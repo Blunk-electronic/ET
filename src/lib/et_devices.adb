@@ -315,7 +315,7 @@ package body et_devices is
 		return type_name_index'value (index);
 	end;
 
-	function same_prefix (left, right : in type_name) return boolean is begin
+	function same_prefix (left, right : in type_device_name) return boolean is begin
 		if prefix (left) = prefix (right) then
 			return true;
 		else
@@ -323,12 +323,12 @@ package body et_devices is
 		end if;
 	end same_prefix;
 	
-	function to_device_name (text_in : in string) return type_name is
+	function to_device_name (text_in : in string) return type_device_name is
 
 		-- justify given text_in on the left
 		text_in_justified : string (1 .. text_in'length) := to_upper (text_in);
 	
-		r : type_name := (
+		r : type_device_name := (
 				prefix		=> type_prefix.to_bounded_string(""),
 				id 			=> 0,
 				id_width	=> 1);
@@ -412,7 +412,7 @@ package body et_devices is
 		return r;
 	end to_device_name;
 
-	function "<" (left, right : in type_name) return boolean is
+	function "<" (left, right : in type_device_name) return boolean is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.
 	-- CS: needs verification !
@@ -441,7 +441,7 @@ package body et_devices is
 		return result;
 	end;	
 
-	function "=" (left, right : in type_name) return boolean is
+	function "=" (left, right : in type_device_name) return boolean is
 	-- Returns true if left equals right.
 	-- Example: if IC4 = IC4 then return true.
 		result : boolean := false;
@@ -464,7 +464,7 @@ package body et_devices is
 		return result;
 	end;
 
-	function to_string (name : in type_name) return string is
+	function to_string (name : in type_device_name) return string is
 	-- Returns the given device name as string.
 	-- Prepends leading zeros according to name.id_width.
 		id_width_wanted	: natural := name.id_width;
@@ -488,12 +488,12 @@ package body et_devices is
 		end case;
 	end to_string;
 	
-	function prefix (name : in type_name) return type_prefix.bounded_string is begin
+	function prefix (name : in type_device_name) return type_prefix.bounded_string is begin
 	-- Returns the prefix of the given device name.
 		return name.prefix;
 	end;
 
-	function index (name : in type_name) return type_name_index is begin
+	function index (name : in type_device_name) return type_name_index is begin
 	-- Returns the index of the given device name.
 		return name.id;
 	end;
@@ -502,8 +502,8 @@ package body et_devices is
 		prefix	: in type_prefix.bounded_string; 	-- R, C, L
 		index	: in type_name_index;				-- 1, 20, ..
 		width	: in type_index_width := type_index_width'first) -- the number of digits
-		return type_name is
-		device_name : type_name; -- to be returned
+		return type_device_name is
+		device_name : type_device_name; -- to be returned
 	begin
 		-- assign prefix and index as requested:
 		device_name.prefix := prefix;
@@ -531,7 +531,7 @@ package body et_devices is
 	end;
 
 	procedure offset_index (
-		name	: in out type_name;
+		name	: in out type_device_name;
 		offset	: in type_name_index) is
 	begin
 		name := to_device_name (
@@ -566,7 +566,7 @@ package body et_devices is
 	end;
 
 	function to_full_name (
-		device_name	: in type_name; -- IC34
+		device_name	: in type_device_name; -- IC34
 		symbol_name	: in type_unit_name.bounded_string; -- PWR
 		unit_count	: in type_unit_count) -- the total number of units
 		return string is -- IC34.PWR
