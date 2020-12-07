@@ -360,7 +360,7 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
-		return et_assembly_variants.type_submodules.cursor;
+		return et_assembly_variants.pac_submodule_variants.cursor;
 
 	-- Returns the index of the deepest conductor layer of the given module:
 	function deepest_conductor_layer (

@@ -808,9 +808,9 @@ package body et_project.modules is
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost				
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
-		return et_assembly_variants.type_submodules.cursor is
+		return et_assembly_variants.pac_submodule_variants.cursor is
 
-		cursor : et_assembly_variants.type_submodules.cursor; -- to be returned;
+		cursor : et_assembly_variants.pac_submodule_variants.cursor; -- to be returned;
 		
 		procedure query_variants (
 			module_name	: in type_module_name.bounded_string;
@@ -822,7 +822,7 @@ package body et_project.modules is
 			procedure query_submodules (
 				variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
 				variant			: in et_assembly_variants.type_assembly_variant) is
-				use et_assembly_variants.type_submodules;
+				use et_assembly_variants.pac_submodule_variants;
 			begin
 				cursor := find (variant.submodules, submod);
 			end query_submodules;
@@ -837,7 +837,7 @@ package body et_project.modules is
 		
 	begin -- alternative_submodule
 		if et_general.is_default (variant) then
-			cursor := et_assembly_variants.type_submodules.no_element;
+			cursor := et_assembly_variants.pac_submodule_variants.no_element;
 		else
 			pac_generic_modules.query_element (
 				position	=> module,

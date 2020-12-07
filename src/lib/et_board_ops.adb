@@ -1189,8 +1189,8 @@ package body et_board_ops is
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 				offset			: et_devices.type_name_index;
 
-				use et_assembly_variants.type_submodules;
-				alt_submod : et_assembly_variants.type_submodules.cursor;
+				use et_assembly_variants.pac_submodule_variants;
+				alt_submod : et_assembly_variants.pac_submodule_variants.cursor;
 			begin
 				log_indentation_up;
 
@@ -1228,7 +1228,7 @@ package body et_board_ops is
 									variant	=> variant,
 									submod	=> module_instance);
 
-						if alt_submod = et_assembly_variants.type_submodules.no_element then
+						if alt_submod = et_assembly_variants.pac_submodule_variants.no_element then
 						-- no variant specified for this submodule -> collect devices of default variant
 
 							variant := default;

@@ -7071,15 +7071,15 @@ package body et_schematic_ops is
 			procedure mount (
 				name		: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost (parent module)
 				variant		: in out et_assembly_variants.type_assembly_variant) is
-				use et_assembly_variants.type_submodules;
-				cursor : type_submodules.cursor;
+				use et_assembly_variants.pac_submodule_variants;
+				cursor : pac_submodule_variants.cursor;
 			begin
 				-- Locate the submodule instance in the variant of the parent module.
 				-- If already there, delete it and insert it anew
 				-- as specified by the operator.
 				cursor := find (variant.submodules, instance);
 
-				if cursor /= type_submodules.no_element then -- submodule already in assembly variant
+				if cursor /= pac_submodule_variants.no_element then -- submodule already in assembly variant
 					delete (variant.submodules, cursor); -- delete submodule instance
 				end if;
 
@@ -7166,14 +7166,14 @@ package body et_schematic_ops is
 			procedure remove (
 				name		: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost (parent module)
 				variant		: in out et_assembly_variants.type_assembly_variant) is
-				use et_assembly_variants.type_submodules;
-				cursor : type_submodules.cursor;
+				use et_assembly_variants.pac_submodule_variants;
+				cursor : pac_submodule_variants.cursor;
 			begin
 				-- Locate the submodule instance in the variant of the parent module.
 				-- Issue error message if not found.
 				cursor := find (variant.submodules, instance);
 
-				if cursor /= type_submodules.no_element then -- submodule in assembly variant
+				if cursor /= pac_submodule_variants.no_element then -- submodule in assembly variant
 					delete (variant.submodules, cursor); -- delete submodule instance
 				else
 					log (ERROR, "submodule " & to_string (instance) &
@@ -8321,8 +8321,8 @@ package body et_schematic_ops is
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 				offset			: type_name_index;
 
-				use et_assembly_variants.type_submodules;
-				alt_submod : et_assembly_variants.type_submodules.cursor;
+				use et_assembly_variants.pac_submodule_variants;
+				alt_submod : et_assembly_variants.pac_submodule_variants.cursor;
 			begin
 				log_indentation_up;
 
@@ -8360,7 +8360,7 @@ package body et_schematic_ops is
 									variant	=> variant,
 									submod	=> module_instance);
 
-						if alt_submod = et_assembly_variants.type_submodules.no_element then
+						if alt_submod = et_assembly_variants.pac_submodule_variants.no_element then
 						-- no variant specified for this submodule -> collect devices of default variant
 
 							variant := default;
@@ -8912,8 +8912,8 @@ package body et_schematic_ops is
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 				offset			: type_name_index;
 
-				use et_assembly_variants.type_submodules;
-				alt_submod : et_assembly_variants.type_submodules.cursor;
+				use et_assembly_variants.pac_submodule_variants;
+				alt_submod : et_assembly_variants.pac_submodule_variants.cursor;
 
 				procedure insert_submodule is begin
 				-- Insert a submodule in netlist_tree. Wherever procedure query_submodules is
@@ -8983,7 +8983,7 @@ package body et_schematic_ops is
 									variant	=> variant,
 									submod	=> module_instance);
 
-						if alt_submod = et_assembly_variants.type_submodules.no_element then
+						if alt_submod = et_assembly_variants.pac_submodule_variants.no_element then
 						-- no variant specified for this submodule -> collect devices of default variant
 
 							variant := default;

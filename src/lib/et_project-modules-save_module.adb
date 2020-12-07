@@ -867,10 +867,10 @@ is
 			variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
 			variant			: in et_assembly_variants.type_assembly_variant) is
 			use et_assembly_variants;
-			use et_assembly_variants.type_submodules;
-			submodule_cursor : et_assembly_variants.type_submodules.cursor := variant.submodules.first;
+			use et_assembly_variants.pac_submodule_variants;
+			submodule_cursor : et_assembly_variants.pac_submodule_variants.cursor := variant.submodules.first;
 		begin
-			while submodule_cursor /= type_submodules.no_element loop
+			while submodule_cursor /= pac_submodule_variants.no_element loop
 				write (
 					keyword		=> keyword_submodule,
 					parameters	=> et_general.to_string (key (submodule_cursor)) &
