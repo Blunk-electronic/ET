@@ -425,7 +425,7 @@ package body et_schematic is
 	end get_device;
 	
 	function get_value (device : in type_devices.cursor)
-		return et_devices.type_value.bounded_string 
+		return pac_device_value.bounded_string 
 	is
 		use et_devices;
 	begin

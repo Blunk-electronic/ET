@@ -2261,7 +2261,7 @@ package body et_schematic_ops is
 	-- Sets the value of a device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
-		value				: in type_value.bounded_string; -- 470R
+		value				: in pac_device_value.bounded_string; -- 470R
 		log_threshold		: in type_log_level) is
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -6787,7 +6787,7 @@ package body et_schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
-		value			: in type_value.bounded_string; -- 220R
+		value			: in pac_device_value.bounded_string; -- 220R
 		partcode		: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
 		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
 		log_threshold	: in type_log_level) is

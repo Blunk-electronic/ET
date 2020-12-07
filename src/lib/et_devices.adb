@@ -147,12 +147,12 @@ package body et_devices is
 	end;
 	
 
-	function to_string (value : in type_value.bounded_string) return string is begin
-		return type_value.to_string (value);
+	function to_string (value : in pac_device_value.bounded_string) return string is begin
+		return pac_device_value.to_string (value);
 	end;
 
-	function to_value (value : in string) return type_value.bounded_string is begin
-		return type_value.to_bounded_string (value);
+	function to_value (value : in string) return pac_device_value.bounded_string is begin
+		return pac_device_value.to_bounded_string (value);
 	end;
 
 	
@@ -170,25 +170,25 @@ package body et_devices is
 		end if;
 	end value_length_valid;
 
-	function truncate (value : in string) return type_value.bounded_string is
+	function truncate (value : in string) return pac_device_value.bounded_string is
 		value_out : string (1 .. value_length_max);
 		use et_string_processing;
 	begin
 		value_out := value ((value'first) .. value'first - 1 + value_length_max);
 
 		log (WARNING, "value will be truncated to " & enclose_in_quotes (value_out));
-		return type_value.to_bounded_string (value_out);
+		return pac_device_value.to_bounded_string (value_out);
 	end truncate;
 	
 	function value_characters_valid (
-		value		: in type_value.bounded_string;
+		value		: in pac_device_value.bounded_string;
 		characters	: in character_set := value_characters) 
 		return boolean is
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
 	-- Issues warning.
 		use et_string_processing;
-		use type_value;
+		use pac_device_value;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -198,7 +198,7 @@ package body et_devices is
 
 		if invalid_character_position > 0 then
 			log (WARNING, "value " &
-				 enclose_in_quotes (type_value.to_string (value))
+				 enclose_in_quotes (pac_device_value.to_string (value))
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position) & " !");
 			return false;
@@ -221,13 +221,13 @@ package body et_devices is
 	-- Tests the given value for length and invalid characters.
 		value						: in string;
 		error_on_invalid_character	: in boolean := true)
-		return type_value.bounded_string is
+		return pac_device_value.bounded_string is
 		
-		value_out : type_value.bounded_string; -- to be returned		
+		value_out : pac_device_value.bounded_string; -- to be returned		
 	begin
 		-- Test length of given value. truncate if too long:
 		if value_length_valid (value) then
-			value_out := type_value.to_bounded_string (value);
+			value_out := pac_device_value.to_bounded_string (value);
 		else
 			value_out := truncate (value);
 		end if;
@@ -238,7 +238,7 @@ package body et_devices is
 			null;
 		else
 			if error_on_invalid_character then
-				value_invalid (type_value.to_string (value_out));
+				value_invalid (pac_device_value.to_string (value_out));
 			end if;
 		end if;
 			
@@ -246,8 +246,8 @@ package body et_devices is
 	end to_value_with_check;
 
 	-- Returns true if value is empty ("").
-	function is_empty (value : in type_value.bounded_string) return boolean is 
-		use type_value;
+	function is_empty (value : in pac_device_value.bounded_string) return boolean is 
+		use pac_device_value;
 	begin
 		if length (value) = 0 then return true;
 		else return false;

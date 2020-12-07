@@ -1398,7 +1398,7 @@ is
 				case noun is
 					when NOUN_DEVICE => 
 						declare
-							value : type_value.bounded_string; -- 470R
+							value : pac_device_value.bounded_string; -- 470R
 							partcode : et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 							purpose : pac_device_purpose.bounded_string; -- brightness_control
 						begin
@@ -1920,7 +1920,7 @@ is
 						case fields is
 							when 6 =>
 								declare
-									value : type_value.bounded_string; -- 470R
+									value : pac_device_value.bounded_string; -- 470R
 								begin
 									-- validate value
 									value := to_value_with_check (f (6));

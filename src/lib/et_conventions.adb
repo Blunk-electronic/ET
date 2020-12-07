@@ -2119,14 +2119,14 @@ package body et_conventions is
 	-- in something like R_PAC_S_0805_VAL_100R.
 		prefix		: in et_devices.type_prefix.bounded_string;			-- R
 		packge		: in et_packages.type_component_package_name.bounded_string;	-- S_0805
-		value 		: in et_devices.type_value.bounded_string := et_devices.type_value.to_bounded_string ("")) -- 100R
+		value 		: in pac_device_value.bounded_string := to_value ("")) -- 100R
 		return et_material.type_partcode.bounded_string is
 
 		use et_devices;
 		use et_packages;
 		use type_prefix;
 		use type_component_package_name;
-		use type_value;
+		use pac_device_value;
 		use et_material.type_partcode;
 
 		base : constant et_material.type_partcode.bounded_string :=
@@ -2282,7 +2282,7 @@ package body et_conventions is
 		partcode		: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		device_name		: in type_device_name;						-- R45
 		packge			: in et_packages.type_component_package_name.bounded_string;	-- S_0805
-		value 			: in type_value.bounded_string;			-- 100R
+		value 			: in pac_device_value.bounded_string; -- 100R
 		log_threshold	: in et_string_processing.type_log_level)
 		is
 
@@ -2993,7 +2993,7 @@ package body et_conventions is
 	-- in the configuration file, this test does nothing.
 	-- Returns false if any violation has been detected.							 
 	-- CS: If value is 10,0R outputs the same warning multiple times. Rework required.
-		value 	: in et_devices.type_value.bounded_string; -- 100R, 1A5
+		value 	: in pac_device_value.bounded_string; -- 100R, 1A5
 		prefix	: in et_devices.type_prefix.bounded_string) -- R, F
 		return boolean is
 
@@ -3002,10 +3002,10 @@ package body et_conventions is
 		
 		use et_string_processing;
 		use et_devices;
-		use type_value;
+		use pac_device_value;
 		
 		component_category : type_device_category;
-		value_length : natural := type_value.length (value);
+		value_length : natural := pac_device_value.length (value);
 
 		procedure value_invalid is begin
 			log (WARNING, "value " & enclose_in_quotes (et_devices.to_string (value)) &

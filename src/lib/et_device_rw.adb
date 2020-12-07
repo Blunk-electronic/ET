@@ -287,7 +287,7 @@ package body et_device_rw is
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		prefix				: type_prefix.bounded_string; -- T, IC
-		value				: type_value.bounded_string; -- BC548
+		value				: pac_device_value.bounded_string; -- BC548
 		appearance			: type_appearance; -- virtual/pcb
 		partcode			: et_material.type_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
 		variant				: type_variant;
@@ -1480,7 +1480,7 @@ package body et_device_rw is
 					-- If a value was specified (via an entry like "value 100R),
 					-- check if it meets certain conventions regarding its prefix.
 					-- The prefix gives information about the category of the device:
-					if type_value.length (value) > 0 then
+					if pac_device_value.length (value) > 0 then
 						if not et_conventions.value_valid (value, prefix) then
 							log (WARNING, "default value of device model " &
 								to_string (file_name) & 

@@ -122,19 +122,19 @@ package et_devices is
 		or to_set ('_')
 		or to_set ('-');
 	
-	package type_value is new generic_bounded_length (value_length_max);
+	package pac_device_value is new generic_bounded_length (value_length_max);
 
-	function to_string (value : in type_value.bounded_string) return string;
-	function to_value (value : in string) return type_value.bounded_string;
+	function to_string (value : in pac_device_value.bounded_string) return string;
+	function to_value (value : in string) return pac_device_value.bounded_string;
 	
 	function value_length_valid (value : in string) return boolean;
 	-- Tests if the given value is longer than allowed. Returns false if too long.
 	-- Returns true if length is in allowed range.
 
-	function truncate (value : in string) return type_value.bounded_string;
+	function truncate (value : in string) return pac_device_value.bounded_string;
 	
 	function value_characters_valid (
-		value		: in type_value.bounded_string;
+		value		: in pac_device_value.bounded_string;
 		characters	: in character_set := value_characters)
 		return boolean;
 	-- Tests if the given value contains only valid characters as specified
@@ -148,10 +148,10 @@ package et_devices is
 	-- Tests the given value for length and invalid characters.
 		value						: in string;
 		error_on_invalid_character	: in boolean := true)
-		return type_value.bounded_string;
+		return pac_device_value.bounded_string;
 
 	-- Returns true if value is empty ("").
-	function is_empty (value : in type_value.bounded_string) return boolean;
+	function is_empty (value : in pac_device_value.bounded_string) return boolean;
 
 
 
@@ -434,7 +434,7 @@ package et_devices is
 			-- If a device appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
 			when PCB => 
-				value		: type_value.bounded_string; -- 74LS00
+				value		: pac_device_value.bounded_string; -- 74LS00
 				--partcode	: type_component_partcode.bounded_string;
 				variants	: pac_variants.map;
 				

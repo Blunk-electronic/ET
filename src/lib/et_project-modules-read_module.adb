@@ -593,7 +593,7 @@ is
 	device_model				: pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 	
 	
-	device_value			: type_value.bounded_string; -- 470R
+	device_value			: pac_device_value.bounded_string; -- 470R
 	device_appearance		: et_schematic.type_appearance_schematic;
 	--device_unit				: et_schematic.type_unit;
 	--device_unit_rotation	: et_coordinates.type_rotation := geometry.zero_rotation;
@@ -1398,7 +1398,7 @@ is
 				-- clean up temporarily variables for next device
 				-- CS ? device_name		:= (others => <>);
 				device_model	:= to_file_name ("");
-				device_value	:= type_value.to_bounded_string ("");
+				device_value	:= pac_device_value.to_bounded_string ("");
 				device_purpose	:= pac_device_purpose.to_bounded_string ("");
 				device_partcode := et_material.type_partcode.to_bounded_string ("");
 				device_variant	:= to_variant_name ("");

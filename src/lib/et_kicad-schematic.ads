@@ -230,7 +230,7 @@ package et_kicad.schematic is
 		library_name	: type_device_library_name.bounded_string; -- lib name like ../libraries/transistors.lib
 		generic_name	: type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		alt_references	: type_alternative_references.list;
-		value			: et_devices.type_value.bounded_string; -- 470R
+		value			: pac_device_value.bounded_string; -- 470R
 		units			: type_units_schematic.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:

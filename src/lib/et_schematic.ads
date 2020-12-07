@@ -186,7 +186,7 @@ package et_schematic is
 		case appearance is
 			-- If a device appears in both schematic and layout it has got:
 			when et_symbols.PCB =>
-				value		: et_devices.type_value.bounded_string; -- 470R
+				value		: pac_device_value.bounded_string; -- 470R
 				
 				partcode	: et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 				-- For virtual packages (test points, edge connectors, ...)
@@ -479,11 +479,11 @@ package et_schematic is
 	-- Returns the value of the given device.
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_value (device : in type_devices.cursor)
-		return et_devices.type_value.bounded_string;
+		return pac_device_value.bounded_string;
 
 	-- CS procedure set_value (
 		--device	: in type_devices.cursor;
-	--value	: in et_devices.type_value.bounded_string);
+	--value	: in pac_device_value.bounded_string);
 	-- use it in schematic_ops
 	
 	-- Returns the purpose of the given device.

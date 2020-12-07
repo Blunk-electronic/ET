@@ -1943,7 +1943,7 @@ package body et_kicad_libraries is
 					
 					when VALUE =>
 						declare
-							value : type_value.bounded_string;
+							value : pac_device_value.bounded_string;
 						begin
 							value := to_value_with_check (
 								value 						=> content (text),

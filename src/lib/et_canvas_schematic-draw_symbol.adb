@@ -43,7 +43,7 @@ procedure draw_symbol (
 	context 		: in type_draw_context;
 	symbol			: in et_symbols.type_symbol;
 	device_name		: in et_devices.type_device_name := (others => <>);
-	device_value	: in et_devices.type_value.bounded_string := to_value (""); -- like 100R or TL084
+	device_value	: in pac_device_value.bounded_string := to_value (""); -- like 100R or TL084
 	device_purpose	: in pac_device_purpose.bounded_string := to_purpose (""); -- like "brightness control"
 	unit_name		: in et_devices.pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 	unit_count		: in et_devices.type_unit_count;

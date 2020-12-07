@@ -69,7 +69,7 @@ package et_assembly_variants is
 	type type_device (mounted : type_mounted) is record
 		case mounted is
 			when YES =>
-				value		: type_value.bounded_string; -- 470R
+				value		: pac_device_value.bounded_string; -- 470R
 				partcode	: et_material.type_partcode.bounded_string;
 				purpose		: pac_device_purpose.bounded_string;
 

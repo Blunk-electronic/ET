@@ -3008,7 +3008,7 @@ function read (
 						field_value := to_field;
 
 						declare
-							value : et_devices.type_value.bounded_string;
+							value : pac_device_value.bounded_string;
 						begin
 							value := et_devices.to_value_with_check (
 									value 						=> content (field_value),

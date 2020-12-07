@@ -476,7 +476,7 @@ package et_conventions is
 		partcode		: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		device_name		: in type_device_name; -- R45
 		packge			: in et_packages.type_component_package_name.bounded_string;	-- S_0805
-		value 			: in et_devices.type_value.bounded_string; 			-- 100R
+		value 			: in pac_device_value.bounded_string; -- 100R
 		log_threshold	: in et_string_processing.type_log_level);
 
 	
@@ -506,7 +506,7 @@ package et_conventions is
 	-- This test depends on the category of the device. If no prefixes specified
 	-- in the conventions file, this test does nothing.
 	-- Returns false if any violation has been detected.
-		value 	: in et_devices.type_value.bounded_string;
+		value 	: in et_devices.pac_device_value.bounded_string;
 		prefix	: in et_devices.type_prefix.bounded_string)
 		return boolean;
 	
