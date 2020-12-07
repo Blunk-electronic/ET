@@ -615,7 +615,7 @@ is
 	device_units	: et_schematic.type_units.map; -- PWR, A, B, ...
 	
 	device_partcode	: et_material.type_partcode.bounded_string;
-	device_purpose	: et_devices.type_purpose.bounded_string;
+	device_purpose	: pac_device_purpose.bounded_string;
 	device_variant	: pac_package_variant_name.bounded_string; -- D, N
 	device_position	: et_pcb_coordinates.type_package_position; -- in the layout ! incl. angle and face
 	device_flipped	: et_pcb.type_flipped := et_pcb.flipped_default;
@@ -1399,7 +1399,7 @@ is
 				-- CS ? device_name		:= (others => <>);
 				device_model	:= to_file_name ("");
 				device_value	:= type_value.to_bounded_string ("");
-				device_purpose	:= type_purpose.to_bounded_string ("");
+				device_purpose	:= pac_device_purpose.to_bounded_string ("");
 				device_partcode := et_material.type_partcode.to_bounded_string ("");
 				device_variant	:= to_variant_name ("");
 

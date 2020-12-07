@@ -433,7 +433,7 @@ package body et_schematic is
 	end get_value;
 
 	function get_purpose (device : in type_devices.cursor)
-		return et_devices.type_purpose.bounded_string
+		return pac_device_purpose.bounded_string
 	is
 		use et_devices;
 	begin

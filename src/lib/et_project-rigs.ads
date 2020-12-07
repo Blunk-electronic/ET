@@ -39,7 +39,7 @@
 with ada.containers;            	use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
-with et_devices;
+with et_devices;					use et_devices;
 with et_conventions;
 
 
@@ -68,9 +68,9 @@ package et_project.rigs is
 	-- module connection (or board-to-board connector). NOTE: This could be a cable as well.
 	type type_connector is record
 		instance_A	: et_general.type_module_instance_name.bounded_string; -- LMX_2
-		purpose_A	: et_devices.type_purpose.bounded_string; -- pwr_in
+		purpose_A	: pac_device_purpose.bounded_string; -- pwr_in
 		instance_B	: et_general.type_module_instance_name.bounded_string; -- PWR
-		purpose_B	: et_devices.type_purpose.bounded_string; -- pwr_out
+		purpose_B	: pac_device_purpose.bounded_string; -- pwr_out
 
 		-- CS
 		-- net_comparator : on/off 

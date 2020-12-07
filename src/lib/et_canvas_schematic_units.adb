@@ -1831,7 +1831,7 @@ package body et_canvas_schematic_units is
 		use et_schematic.type_devices;
 
 		value	: type_value.bounded_string;
-		purpose	: type_purpose.bounded_string;
+		purpose	: pac_device_purpose.bounded_string;
 		variant	: pac_package_variant_name.bounded_string;
 
 		use et_material;

@@ -45,8 +45,8 @@ package body et_devices is
 	
 	use et_terminals;
 	
-	function to_string (purpose : in type_purpose.bounded_string) return string is begin
-		return type_purpose.to_string (purpose);
+	function to_string (purpose : in pac_device_purpose.bounded_string) return string is begin
+		return pac_device_purpose.to_string (purpose);
 	end to_string;
 
 	function purpose_length_valid (purpose : in string) return boolean is 
@@ -66,11 +66,11 @@ package body et_devices is
 	function purpose_characters_valid (
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
-		purpose		: in type_purpose.bounded_string;
+		purpose		: in pac_device_purpose.bounded_string;
 		characters	: in character_set := purpose_characters) 
 		return boolean is
 		use et_string_processing;
-		use type_purpose;
+		use pac_device_purpose;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -103,13 +103,13 @@ package body et_devices is
 	-- Tests the given purpose for length and invalid characters.
 		purpose 					: in string;
 		error_on_invalid_character	: in boolean := true)
-		return type_purpose.bounded_string is
+		return pac_device_purpose.bounded_string is
 
-		purpose_out : type_purpose.bounded_string; -- to be returned
+		purpose_out : pac_device_purpose.bounded_string; -- to be returned
 	begin
 		-- Test length of given purpose:
 		if purpose_length_valid (purpose) then
-			purpose_out := type_purpose.to_bounded_string (purpose);
+			purpose_out := pac_device_purpose.to_bounded_string (purpose);
 		else
 			purpose_invalid (purpose);
 		end if;
@@ -124,8 +124,8 @@ package body et_devices is
 		return purpose_out;
 	end to_purpose;
 
-	function is_empty (purpose : in type_purpose.bounded_string) return boolean is 
-		use type_purpose;
+	function is_empty (purpose : in pac_device_purpose.bounded_string) return boolean is 
+		use pac_device_purpose;
 	begin
 		if length (purpose) = 0 then return true;
 		else return false;

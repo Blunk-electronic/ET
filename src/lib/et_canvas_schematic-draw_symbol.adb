@@ -44,7 +44,7 @@ procedure draw_symbol (
 	symbol			: in et_symbols.type_symbol;
 	device_name		: in et_devices.type_device_name := (others => <>);
 	device_value	: in et_devices.type_value.bounded_string := to_value (""); -- like 100R or TL084
-	device_purpose	: in et_devices.type_purpose.bounded_string := to_purpose (""); -- like "brightness control"
+	device_purpose	: in pac_device_purpose.bounded_string := to_purpose (""); -- like "brightness control"
 	unit_name		: in et_devices.pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 	unit_count		: in et_devices.type_unit_count;
 	unit_position	: in type_point; -- x/y on the schematic sheet

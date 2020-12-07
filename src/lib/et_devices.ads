@@ -72,16 +72,16 @@ package et_devices is
 
 	purpose_length_max : constant positive := 50;
 
-	package type_purpose is new generic_bounded_length (purpose_length_max);
+	package pac_device_purpose is new generic_bounded_length (purpose_length_max);
 	purpose_default : constant string := "dummy";
 
-	function to_string (purpose : in type_purpose.bounded_string) return string;
+	function to_string (purpose : in pac_device_purpose.bounded_string) return string;
 	
 	function purpose_length_valid (purpose : in string) return boolean;
 	-- Returns true if given purpose is too long. Issues warning.	
 	
 	function purpose_characters_valid (
-		purpose		: in type_purpose.bounded_string;
+		purpose		: in pac_device_purpose.bounded_string;
 		characters	: in character_set := purpose_characters) 
 		return boolean;
 	-- Tests if the given value contains only valid characters as specified
@@ -94,10 +94,10 @@ package et_devices is
 	-- Tests the given purpose for length and invalid characters.
 		purpose 					: in string;
 		error_on_invalid_character	: in boolean := true)
-		return type_purpose.bounded_string;
+		return pac_device_purpose.bounded_string;
 
 	-- Returns true if purpose is empty ("").
-	function is_empty (purpose : in type_purpose.bounded_string) return boolean;
+	function is_empty (purpose : in pac_device_purpose.bounded_string) return boolean;
 
 	
 	-- To handle names of package models like libraries/packages/smd/SOT23.pac use this:

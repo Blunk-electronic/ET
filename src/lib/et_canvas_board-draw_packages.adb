@@ -70,7 +70,7 @@ is
 	procedure draw_package (
 		device_name		: in et_devices.type_device_name; -- IC13, C4
 		device_value	: in et_devices.type_value.bounded_string; -- SN7400
-		device_purpose	: in et_devices.type_purpose.bounded_string; -- brightness control
+		device_purpose	: in et_devices.pac_device_purpose.bounded_string; -- brightness control
 		model			: in et_packages.type_package_model_file.bounded_string;
 		package_position: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flip			: in et_pcb.type_flipped;

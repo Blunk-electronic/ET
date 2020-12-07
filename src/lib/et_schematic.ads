@@ -195,7 +195,7 @@ package et_schematic is
 				-- The purpose indicates what the device is doing.
 				-- It is usually required for devices that require interaction
 				-- with the user of a PCBA:
-				purpose		: et_devices.type_purpose.bounded_string; -- brightness_control
+				purpose		: pac_device_purpose.bounded_string; -- brightness_control
 
 				-- The package variant:
 				variant		: et_devices.pac_package_variant_name.bounded_string; -- D, N
@@ -489,11 +489,11 @@ package et_schematic is
 	-- Returns the purpose of the given device.
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_purpose (device : in type_devices.cursor)
-		return et_devices.type_purpose.bounded_string;
+		return pac_device_purpose.bounded_string;
 
 	-- CS procedure set_purpose (
 		--device	: in type_devices.cursor;
-		--purpose	: in et_devices.type_purpose.bounded_string);
+		--purpose	: in pac_device_purpose.bounded_string);
 	-- use it in schematic_ops
 	
 	-- Returns the partcode of the given device.

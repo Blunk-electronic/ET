@@ -823,7 +823,7 @@ is
 
 			function purpose return string is 
 				use et_devices;
-				use type_purpose;
+				use pac_device_purpose;
 			begin
 				if length (element (device_cursor).purpose) > 0 then
 					return space & keyword_purpose & space &

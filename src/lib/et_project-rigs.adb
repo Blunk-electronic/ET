@@ -59,7 +59,7 @@ package body et_project.rigs is
 	function compare_connectors (left, right : in type_connector) return boolean is
 	-- Returns true if left connector comes before right connector.
 	-- Returns false if connectors are equal.
-		use et_devices.type_purpose;
+		use pac_device_purpose;
 		use type_module_instance_name;
 		r : boolean := false; -- to be returned
 	begin

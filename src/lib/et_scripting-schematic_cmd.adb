@@ -1400,7 +1400,7 @@ is
 						declare
 							value : type_value.bounded_string; -- 470R
 							partcode : et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-							purpose : type_purpose.bounded_string; -- brightness_control
+							purpose : pac_device_purpose.bounded_string; -- brightness_control
 						begin
 							-- validate value
 							value := to_value_with_check (f (7));
@@ -1867,7 +1867,7 @@ is
 							when 6 =>
 								declare
 									use et_schematic;
-									purpose : type_purpose.bounded_string; -- brightness_control
+									purpose : pac_device_purpose.bounded_string; -- brightness_control
 								begin
 									purpose := to_purpose (f (6));
 									
