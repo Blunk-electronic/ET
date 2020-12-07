@@ -1616,7 +1616,7 @@ package body et_canvas_schematic is
 		end rotate;
 
 		procedure add is 
-			use et_devices.type_devices;
+			use pac_devices_lib;
 		begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
@@ -1648,7 +1648,7 @@ package body et_canvas_schematic is
 							-- the unit is placed at the current cursor position.
 							-- If no unit has been selected yet, then the device
 							-- model selection dialog opens.
-							if unit_add.device /= type_devices.no_element then -- unit selected
+							if unit_add.device /= pac_devices_lib.no_element then -- unit selected
 
 								-- Set the tool being used for placing the unit:
 								increment_activate_counter;
@@ -1679,7 +1679,7 @@ package body et_canvas_schematic is
 		end add;
 
 		procedure invoke is 
-			use et_devices.type_devices;
+			use pac_devices_lib;
 		begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
@@ -1694,7 +1694,7 @@ package body et_canvas_schematic is
 						when NOUN_UNIT =>
 							-- If no device has been selected already, then
 							-- set the tool used for invoking.
-							if unit_add.device = type_devices.no_element then
+							if unit_add.device = pac_devices_lib.no_element then
 
 								unit_add.tool := KEYBOARD;
 
@@ -2047,13 +2047,13 @@ package body et_canvas_schematic is
 		self	: not null access type_view;
 		point	: in type_point) 
 	is
-		use et_devices.type_devices;
+		use pac_devices_lib;
 	begin
 		case verb is
 			when VERB_ADD =>
 				case noun is
 					when NOUN_DEVICE =>
-						if unit_add.device /= et_devices.type_devices.no_element then
+						if unit_add.device /= pac_devices_lib.no_element then
 							redraw;
 						end if;
 
@@ -2099,7 +2099,7 @@ package body et_canvas_schematic is
 			when VERB_INVOKE =>
 				case noun is
 					when NOUN_UNIT =>
-						if unit_add.device /= et_devices.type_devices.no_element then
+						if unit_add.device /= pac_devices_lib.no_element then
 							redraw;
 						end if;
 
@@ -2116,7 +2116,7 @@ package body et_canvas_schematic is
 		point	: in type_point) 
 	is
 		procedure left_button is 
-			use et_devices.type_devices;
+			use pac_devices_lib;
 		begin
 			self.move_cursor (ABSOLUTE, cursor_main, point);
 
@@ -2137,7 +2137,7 @@ package body et_canvas_schematic is
 							-- the unit is placed at the current mouse position.
 							-- If no unit has been selected yet, then the device
 							-- model selection dialog opens.
-							if unit_add.device /= type_devices.no_element then
+							if unit_add.device /= pac_devices_lib.no_element then
 
 								increment_activate_counter;
 								
@@ -2263,7 +2263,7 @@ package body et_canvas_schematic is
 						when NOUN_UNIT =>
 							-- If no device has been selected already, then
 							-- set the tool used for invoking.
-							if unit_add.device = type_devices.no_element then
+							if unit_add.device = pac_devices_lib.no_element then
 
 								unit_add.tool := MOUSE;
 

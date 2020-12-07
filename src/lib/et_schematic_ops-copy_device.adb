@@ -59,8 +59,8 @@ procedure copy_device (
 		device_cursor_sch : et_schematic.type_devices.cursor;
 
 		use et_symbols;
-		use et_devices.type_devices;
-		device_cursor_lib : et_devices.type_devices.cursor; -- points to the device in the library
+		use pac_devices_lib;
+		device_cursor_lib : pac_devices_lib.cursor; -- points to the device in the library
 		
 		-- the next available device name:
 		next_name : type_device_name;

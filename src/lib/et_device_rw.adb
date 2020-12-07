@@ -76,7 +76,7 @@ package body et_device_rw is
 		appearance		: in et_symbols.type_appearance;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
-		use type_devices;
+		use pac_devices_lib;
 		use et_symbols;
 	begin
 		log (text => "creating device " & to_string (device_name) & " ...", level => log_threshold);
@@ -1422,7 +1422,7 @@ package body et_device_rw is
 		
 		-- test if container devices already contains a model
 		-- named "file_name". If so, there would be no need to read the file_name again.
-		if type_devices.contains (devices, file_name) then
+		if pac_devices_lib.contains (devices, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			-- If the model file is to be read, first check if the file exists.
@@ -1488,7 +1488,7 @@ package body et_device_rw is
 						end if;
 					end if;
 
-					type_devices.insert (
+					pac_devices_lib.insert (
 						container	=> devices, 
 						key			=> file_name, -- libraries/devices/7400.dev
 						new_item	=> (
@@ -1501,7 +1501,7 @@ package body et_device_rw is
 								variants		=> variants));
 
 				when VIRTUAL =>
-					type_devices.insert (
+					pac_devices_lib.insert (
 						container	=> devices, 
 						key			=> file_name, -- libraries/devices/power_gnd.dev
 						new_item	=> (

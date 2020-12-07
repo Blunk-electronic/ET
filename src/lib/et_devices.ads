@@ -460,7 +460,7 @@ package et_devices is
 
 	
 	
-	package type_devices is new indefinite_ordered_maps ( -- CS rename to pac_devices
+	package pac_devices_lib is new indefinite_ordered_maps ( -- CS rename to pac_devices
 		key_type 		=> type_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
 		"<"				=> type_device_model_file."<",
 		element_type	=> type_device);
@@ -468,7 +468,7 @@ package et_devices is
 	device_model_file_extension : constant string := "dev";
 
 	-- HERE RIG WIDE DEVICES ARE KEPT:
-	devices : type_devices.map;
+	devices : pac_devices_lib.map;
 
 
 	
@@ -481,7 +481,7 @@ package et_devices is
 	-- Returns true if the given device (via a cursor) 
 	-- does provide the given unit.
 	function provides_unit (
-		device_cursor	: in type_devices.cursor;
+		device_cursor	: in pac_devices_lib.cursor;
 		unit_name		: in type_unit_name.bounded_string)
 		return boolean;
 	
@@ -495,19 +495,19 @@ package et_devices is
 	--  If no suitable external unit found, the cursor of external
 	-- units in the return is no_element.
 	function first_unit (
-		device_cursor : in type_devices.cursor) 
+		device_cursor : in pac_devices_lib.cursor) 
 		return type_device_units;
 
 	-- Returns the name of the first unit.
 	-- It can be an internal or an external unit.
 	function first_unit (
-		device_cursor : in et_devices.type_devices.cursor) 
+		device_cursor : in pac_devices_lib.cursor) 
 		return type_unit_name.bounded_string;
 
 							
 	-- Returns the cursor of the desired internal or external unit.
 	function any_unit (
-		device_cursor	: in type_devices.cursor;
+		device_cursor	: in pac_devices_lib.cursor;
 		unit_name		: in type_unit_name.bounded_string)
 		return type_device_units;
 
@@ -515,33 +515,33 @@ package et_devices is
 
 	-- Returns a list of all unit names of the given device:
 	function all_units (
-		device_cursor	: in type_devices.cursor)
+		device_cursor	: in pac_devices_lib.cursor)
 		return pac_unit_names.list;
 
 	
 	-- Returns the total number of units the given device provides:
 	function units_total (
-		device_cursor	: in type_devices.cursor)
+		device_cursor	: in pac_devices_lib.cursor)
 		return type_unit_count;
 
 	
 	function variant_available (
 	-- Returns true if given device provides the given package variant.								   
 	-- The given device must be real. Means appearance SCH_PCB.
-		device_cursor	: in type_devices.cursor;
+		device_cursor	: in pac_devices_lib.cursor;
 		variant			: in type_variant_name.bounded_string)  -- D, N
 		return boolean;
 
 	-- Returns a list of available variants of the given device.
 	-- If the device is virtual, then an empty list will be returned.
 	function available_variants (
-		device_cursor	: in type_devices.cursor)
+		device_cursor	: in pac_devices_lib.cursor)
 		return pac_variants.map;
 
 	
 	-- Locates the given generic device in container "devices".
 	function locate_device (model : in type_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
-		return type_devices.cursor;
+		return pac_devices_lib.cursor;
 
 	-- For locating units this type is required by function locate_unit.
 	-- A unit can either be external (most likely) or internal to the device:
@@ -558,21 +558,21 @@ package et_devices is
 	-- Searches the given unit in the given device. Returns a cursor to 
 	-- either the internal or external unit.
 	function locate_unit (
-		device_cursor	: in type_devices.cursor;
+		device_cursor	: in pac_devices_lib.cursor;
 		unit_name		: in type_unit_name.bounded_string) -- like "I/O-Bank 3"
 		return type_unit_cursors;
 	
 	function package_model (
 	-- Returns the name of the package model of the given device according to the given variant.
 	-- The given device must be real. Means appearance SCH_PCB.							  
-		device_cursor	: in type_devices.cursor;
+		device_cursor	: in pac_devices_lib.cursor;
 		variant			: in type_variant_name.bounded_string) -- D, N
 		return type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		
 -- 	function terminal_name (
 -- 	-- Returns the name of the terminal name of the given device according to the given variant.
 -- 	-- The given device must be real. Means appearance SCH_PCB.							  
--- 		device_cursor	: in type_devices.cursor;
+-- 		device_cursor	: in pac_devices_lib.cursor;
 -- 		port_name		: in type_port_name.bounded_string;
 -- 		variant			: in type_variant_name.bounded_string) -- D, N
 -- 		return type_terminal_name.bounded_string; -- 14, H4
@@ -585,7 +585,7 @@ package et_devices is
 
 	function properties (
 	-- Returns the poperties of the given port of the given device.
-		device_cursor	: in type_devices.cursor;
+		device_cursor	: in pac_devices_lib.cursor;
 		port_name		: in type_port_name.bounded_string)
 		return type_ports.cursor;
 

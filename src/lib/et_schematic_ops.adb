@@ -453,7 +453,7 @@ package body et_schematic_ops is
 		ports : et_symbols.type_ports.map; -- to be returned
 		
 		model : type_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
-		device_cursor_lib : et_devices.type_devices.cursor;
+		device_cursor_lib : pac_devices_lib.cursor;
 
 		procedure query_internal_units (
 			model	: in type_device_model_file.bounded_string;
@@ -511,11 +511,11 @@ package body et_schematic_ops is
 
 		-- Get cursor to device in device library (the model name is the key into the device library).
 		-- CS: constraint_error will arise here if no associated device exists.
-		device_cursor_lib := et_devices.type_devices.find (devices, model);
+		device_cursor_lib := pac_devices_lib.find (devices, model);
 
 		-- Query external units of device (in library). It is most likely that
 		-- the unit is among the external units:
-		et_devices.type_devices.query_element (
+		pac_devices_lib.query_element (
 			position	=> device_cursor_lib,
 			process		=> query_external_units'access);
 
@@ -523,7 +523,7 @@ package body et_schematic_ops is
 		if et_symbols.type_ports.length (ports) = 0 then
 
 			-- Query internal units of device (in library):
-			et_devices.type_devices.query_element (
+			pac_devices_lib.query_element (
 				position	=> device_cursor_lib,
 				process		=> query_internal_units'access);
 		end if;
@@ -1310,7 +1310,7 @@ package body et_schematic_ops is
 		result : type_default_text_positions (element (device_cursor).appearance); -- to be returned
 		
 		model : type_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
-		device_cursor_lib : et_devices.type_devices.cursor;
+		device_cursor_lib : pac_devices_lib.cursor;
 		
 		use et_symbols.type_texts;
 
@@ -1412,11 +1412,11 @@ package body et_schematic_ops is
 
 		-- Get cursor to device in device library (the model name is the key into the device library).
 		-- CS: constraint_error will arise here if no associated device exists.
-		device_cursor_lib := et_devices.type_devices.find (devices, model);
+		device_cursor_lib := pac_devices_lib.find (devices, model);
 
 		-- Query external units of device (in library). It is most likely that
 		-- the unit is among the external units:
-		et_devices.type_devices.query_element (
+		pac_devices_lib.query_element (
 			position	=> device_cursor_lib,
 			process		=> query_external_units'access);
 
@@ -1424,7 +1424,7 @@ package body et_schematic_ops is
 		if unit_status = INT then
 
 			-- Query internal units of device (in library):
-			et_devices.type_devices.query_element (
+			pac_devices_lib.query_element (
 				position	=> device_cursor_lib,
 				process		=> query_internal_units'access);
 		end if;
@@ -2533,7 +2533,7 @@ package body et_schematic_ops is
 	function locate_device (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return et_devices.type_devices.cursor
+		return pac_devices_lib.cursor
 	is
 		cursor_sch : et_schematic.type_devices.cursor;
 	begin
@@ -2606,7 +2606,7 @@ package body et_schematic_ops is
 		device	: in type_device_name) -- R2
 		return pac_variants.map
 	is
-		cursor_lib : et_devices.type_devices.cursor;	
+		cursor_lib : pac_devices_lib.cursor;	
 	begin
 		cursor_lib := locate_device (module, device);
 		return available_variants (cursor_lib);
@@ -2639,7 +2639,7 @@ package body et_schematic_ops is
 				name	: in et_devices.type_device_name;
 				dev		: in out et_schematic.type_device)
 			is 
-				cursor_lib : et_devices.type_devices.cursor;
+				cursor_lib : pac_devices_lib.cursor;
 			begin
 				cursor_lib := locate_device (dev.model);
 
@@ -2703,7 +2703,7 @@ package body et_schematic_ops is
 	function device_model_cursor (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return et_devices.type_devices.cursor
+		return pac_devices_lib.cursor
 	is
 		cursor_sch : et_schematic.type_devices.cursor;
 		device_model : type_device_model_file.bounded_string;
@@ -3083,11 +3083,11 @@ package body et_schematic_ops is
 	function placeholders_of_package (
 	-- Returns the placeholders of the package of a device. The package is indirectly selected
 	-- by the given variant name. The given device is accessed by the given device cursor.
-		device	: in et_devices.type_devices.cursor;
+		device	: in pac_devices_lib.cursor;
 		variant	: in et_devices.type_variant_name.bounded_string) -- N, D, S_0805
 		return et_packages.type_text_placeholders is
 		use et_packages;
-		use et_devices.type_devices;
+		use pac_devices_lib;
 		use pac_variants;
 		placeholders		: et_packages.type_text_placeholders; -- to be returned
 
@@ -3150,7 +3150,7 @@ package body et_schematic_ops is
 		device_cursor_sch : et_schematic.type_devices.cursor;
 
 		device_model : type_device_model_file.bounded_string;
-		device_cursor_lib : et_devices.type_devices.cursor;
+		device_cursor_lib : pac_devices_lib.cursor;
 
 		use pac_unit_names;
 		all_unit_names : pac_unit_names.list;
@@ -3243,7 +3243,7 @@ package body et_schematic_ops is
 		use et_schematic.type_devices;
 		device_cursor_sch : et_schematic.type_devices.cursor;
 		
-		device_cursor_lib : et_devices.type_devices.cursor;
+		device_cursor_lib : pac_devices_lib.cursor;
 		
 		use pac_unit_names;
 		all_unit_names : pac_unit_names.list;
@@ -8511,7 +8511,7 @@ package body et_schematic_ops is
 			use et_schematic.type_devices;
 			device_cursor_sch	: et_schematic.type_devices.cursor;
 			variant 			: et_devices.type_variant_name.bounded_string; -- D, N
-			device_cursor_lib	: et_devices.type_devices.cursor;
+			device_cursor_lib	: pac_devices_lib.cursor;
 
 			procedure query_variants (
 				model	: in type_device_model_file.bounded_string;
@@ -8561,7 +8561,7 @@ package body et_schematic_ops is
 
 				-- Get the name of the terminal (the pin or pad) according to the device variant.
 				-- Store it in variable terminal_name:
-				et_devices.type_devices.query_element (
+				pac_devices_lib.query_element (
 					position	=> device_cursor_lib,
 					process		=> query_variants'access);
 

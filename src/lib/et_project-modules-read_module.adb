@@ -1254,7 +1254,7 @@ is
 				-- Derives package name from device.model and device.variant.
 				-- Checks if variant exits in device.model.
 					name : type_component_package_name.bounded_string; -- S_SO14 -- to be returned
-					device_cursor : et_devices.type_devices.cursor;
+					device_cursor : pac_devices_lib.cursor;
 
 					procedure query_variants (
 						model	: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
@@ -1286,12 +1286,12 @@ is
 							" in device model " & to_string (device.model) & " ... ", level => log_threshold + 2);
 
 					-- Locate the device in the library. CS: It should be there, otherwise exception arises here:
-					device_cursor := et_devices.type_devices.find (
+					device_cursor := pac_devices_lib.find (
 						container	=> et_devices.devices,
 						key			=> device.model); -- libraries/devices/7400.dev
 
 					-- Query package variants
-					et_devices.type_devices.query_element (
+					pac_devices_lib.query_element (
 						position	=> device_cursor,
 						process		=> query_variants'access);
 					

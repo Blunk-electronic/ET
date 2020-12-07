@@ -300,7 +300,7 @@ package et_schematic_ops is
 	function locate_device (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return et_devices.type_devices.cursor;
+		return pac_devices_lib.cursor;
 	
 	-- Locates the given unit of the given device in the 
 	-- given module and returns the cursor to the unit.
@@ -373,7 +373,7 @@ package et_schematic_ops is
 	function device_model_cursor (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return et_devices.type_devices.cursor;
+		return pac_devices_lib.cursor;
 	
 	function exists_device_port (
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.

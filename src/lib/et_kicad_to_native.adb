@@ -3143,7 +3143,7 @@ package body et_kicad_to_native is
 				generic_name : et_kicad_libraries.type_component_generic_name.bounded_string; -- 7400
 				device_model : et_devices.type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 
-				device_cursor : et_devices.type_devices.cursor;
+				device_cursor : pac_devices_lib.cursor;
 				inserted : boolean;
 
 				procedure copy_units (
@@ -3554,7 +3554,7 @@ package body et_kicad_to_native is
 
 					case element (component_cursor).appearance is
 						when VIRTUAL =>
-							et_devices.type_devices.insert (
+							pac_devices_lib.insert (
 								container	=> et_devices.devices,
 								position	=> device_cursor,
 								inserted	=> inserted,
@@ -3571,7 +3571,7 @@ package body et_kicad_to_native is
 						when PCB =>
 							--log (text => "variant count " & count_type'image (pac_variants.length (element (component_cursor).variants)));
 							
-							et_devices.type_devices.insert (
+							pac_devices_lib.insert (
 								container	=> et_devices.devices,
 								position	=> device_cursor,
 								inserted	=> inserted,
@@ -3596,7 +3596,7 @@ package body et_kicad_to_native is
 								-- again because it had been done in ealier project conversions:
 								if inserted then
 									-- rename package model file name in variants
-									et_devices.type_devices.update_element (
+									pac_devices_lib.update_element (
 										container	=> et_devices.devices,
 										position	=> device_cursor,
 										process		=> rename_package_model_in_variants'access);
@@ -3609,7 +3609,7 @@ package body et_kicad_to_native is
 					-- in this case. Copying units must not take place again:
 					if inserted then
 						-- Copy units.
-						et_devices.type_devices.update_element (
+						pac_devices_lib.update_element (
 							container	=> et_devices.devices,
 							position	=> device_cursor,
 							process		=> copy_units'access);
@@ -3743,9 +3743,9 @@ package body et_kicad_to_native is
 		-- Saves the library containers in the current working directory.
 			log_threshold	: in et_string_processing.type_log_level) is
 			use et_string_processing;
-			use et_devices.type_devices;
+			use pac_devices_lib;
 
-			procedure save_device (device_cursor : in et_devices.type_devices.cursor) is
+			procedure save_device (device_cursor : in pac_devices_lib.cursor) is
 			begin
 				et_device_rw.save_device (
 					-- library name like: 

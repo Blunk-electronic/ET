@@ -265,7 +265,7 @@ procedure draw_units (
 			use et_devices;
 			use et_symbols;
 			
-			device_cursor_lib : type_devices.cursor;
+			device_cursor_lib : pac_devices_lib.cursor;
 		begin
 			-- get the name of the unit
 			unit_name := key (unit_cursor);
@@ -490,7 +490,7 @@ procedure draw_units (
 		brightness : type_brightness := BRIGHT;
 		
 		use et_devices;
-		use et_devices.type_devices;
+		use pac_devices_lib;
 
 		procedure locate_symbol (unit_cursor : in et_devices.type_unit_cursors) is
 			use pac_units_external;
@@ -621,7 +621,7 @@ procedure draw_units (
 		-- 2. When invoking a unit. 
 		-- The assignment was via procedure et_canvas_schematic_units.unit_selected.
 		
-		if unit_add.device /= type_devices.no_element then
+		if unit_add.device /= pac_devices_lib.no_element then
 
 			if activate_counter = 1 -- case #2
 			or unit_add.via_invoke then -- case #1

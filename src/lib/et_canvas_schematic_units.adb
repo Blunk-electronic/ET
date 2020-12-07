@@ -933,8 +933,8 @@ package body et_canvas_schematic_units is
 		
 		device_model : type_device_model_file.bounded_string;
 
-		use et_devices.type_devices;
-		device_cursor_lib : et_devices.type_devices.cursor; -- points to the device in the library
+		use pac_devices_lib;
+		device_cursor_lib : pac_devices_lib.cursor; -- points to the device in the library
 
 		unit_name : et_devices.type_unit_name.bounded_string;
 		
@@ -1148,12 +1148,12 @@ package body et_canvas_schematic_units is
 		position	: in type_point)
 	is 
 		use et_devices;
-		use et_devices.type_devices;
+		use pac_devices_lib;
 	begin
 
 		add_device (
 			module_name		=> key (current_active_module),
-			device_model	=> et_devices.type_devices.key (unit_add.device),
+			device_model	=> pac_devices_lib.key (unit_add.device),
 			variant			=> unit_add.variant,
 			destination		=> to_position (position, current_active_sheet),
 			log_threshold	=> log_threshold + 1);
@@ -1270,7 +1270,7 @@ package body et_canvas_schematic_units is
 		su : constant type_selected_unit := element (selected_unit);
 		
 		device_model : type_device_model_file.bounded_string;
-		device_cursor_lib : et_devices.type_devices.cursor;
+		device_cursor_lib : pac_devices_lib.cursor;
 		
 		unit_names : pac_unit_names.list;
 		

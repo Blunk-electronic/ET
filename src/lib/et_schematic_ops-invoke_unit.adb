@@ -77,14 +77,14 @@ procedure invoke_unit (
 		end query_units_in_use;
 
 		device_model : type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
-		device_cursor_lib : et_devices.type_devices.cursor;
+		device_cursor_lib : pac_devices_lib.cursor;
 		unit_cursors : type_device_units;
 
 		placeholders : type_rotated_placeholders;
 		
 		use pac_units_external;
 		use pac_units_internal;
-		use et_devices.type_devices;
+		use pac_devices_lib;
 		
 		procedure add_unit_internal (
 		-- Add an internal unit to the schematic device.
@@ -195,7 +195,7 @@ procedure invoke_unit (
 
 			-- Locate the device model in the library:
 			device_model := element (device_cursor_sch).model;
-			--device_cursor_lib := et_devices.type_devices.find (et_devices.devices, device_model);
+			--device_cursor_lib := pac_devices_lib.find (et_devices.devices, device_model);
 			device_cursor_lib := locate_device (device_model);
 
 			-- Get cursor to the desired unit in device model.

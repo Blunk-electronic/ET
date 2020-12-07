@@ -474,7 +474,7 @@ package et_schematic is
 
 	-- Maps from schematic device to library device:
 	function get_device (device : in type_devices.cursor)
-		return et_devices.type_devices.cursor;
+		return pac_devices_lib.cursor;
 	
 	-- Returns the value of the given device.
 	-- The device must be real. Otherwise constraint error is raised.

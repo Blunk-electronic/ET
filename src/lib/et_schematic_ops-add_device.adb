@@ -48,8 +48,8 @@ procedure add_device (
 	
 	module_cursor : pac_generic_modules.cursor; -- points to the targeted module
 
-	use et_devices.type_devices;
-	device_cursor_lib : et_devices.type_devices.cursor; -- points to the device in the library
+	use pac_devices_lib;
+	device_cursor_lib : pac_devices_lib.cursor; -- points to the device in the library
 
 	
 	procedure add (

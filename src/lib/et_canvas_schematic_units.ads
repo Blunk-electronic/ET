@@ -298,7 +298,7 @@ package et_canvas_schematic_units is
 		tool		: type_tool := MOUSE;
 
 		-- The cursor to the device model:
-		device		: type_devices.cursor;
+		device		: pac_devices_lib.cursor;
 		
 		variant		: et_devices.type_variant_name.bounded_string; -- N, D, S_0805
 		name		: type_unit_name.bounded_string; -- A, B, PWR_IO3
