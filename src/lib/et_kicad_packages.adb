@@ -2541,7 +2541,7 @@ package body et_kicad_packages is
 
 		use ada.directories;
 		use et_general;
-		use et_general.type_directory_entries;
+		use et_general.pac_directory_entries;
 		use et_packages;
 
 		-- V4 RELATED ------------------------------------------------------------------------------------------
@@ -2556,8 +2556,8 @@ package body et_kicad_packages is
 	
 		-- After fetching the names of the package libraries, their names
 		-- are stored here. When processing the list we use the library_name_cursor.
-		library_names : type_directory_entries.list;
-		library_name_cursor : type_directory_entries.cursor;
+		library_names : pac_directory_entries.list;
+		library_name_cursor : pac_directory_entries.cursor;
 		
 		-- While inserting the libraries the flag library_inserted goes true once
 		-- inserting was successuful. The flag goes false if a library already exist.
@@ -2575,8 +2575,8 @@ package body et_kicad_packages is
 			library_name	: in type_package_library_name.bounded_string;
 			packages		: in out type_packages_library.map) is
 
-			package_names : type_directory_entries.list;
-			package_name_cursor : type_directory_entries.cursor;
+			package_names : pac_directory_entries.list;
+			package_name_cursor : pac_directory_entries.cursor;
 			
 			library_handle : ada.text_io.file_type;
 			line : type_fields_of_line; -- a line of a package model
@@ -2603,7 +2603,7 @@ package body et_kicad_packages is
 			log_indentation_up;
 
 			package_name_cursor := package_names.first;
-			while package_name_cursor /= type_directory_entries.no_element loop
+			while package_name_cursor /= pac_directory_entries.no_element loop
 				log (text => element (package_name_cursor), level => log_threshold + 5);
 				log_indentation_up;
 				
@@ -2696,7 +2696,7 @@ package body et_kicad_packages is
 						-- Loop through library_names and create the same-named empty libraries 
 						-- in container package_libraries:
 						library_name_cursor := library_names.first;
-						while library_name_cursor /= type_directory_entries.no_element loop
+						while library_name_cursor /= pac_directory_entries.no_element loop
 							log (text => "reading " & element (library_name_cursor) & " ...", level => log_threshold + 2);
 
 							-- create the (empty) library in container package_libraries

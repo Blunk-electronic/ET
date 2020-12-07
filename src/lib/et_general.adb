@@ -129,16 +129,16 @@ package body et_general is
 		target_directory	: in string;						-- ../lbr
 		category			: in ada.directories.file_kind;		-- directory, ordinary_file, special_file
 		pattern				: in string) 						-- *.txt
-		return type_directory_entries.list is
+		return pac_directory_entries.list is
 
 		use ada.directories;
 		filter : filter_type;
-		entries : type_directory_entries.list; -- to be returned
+		entries : pac_directory_entries.list; -- to be returned
 		
 		procedure do_it (item : in directory_entry_type) is
 		-- appends items to the container "entries"
 		begin
-			type_directory_entries.append (
+			pac_directory_entries.append (
 				container => entries,
 				new_item => simple_name (item));
 		end do_it;

@@ -95,7 +95,7 @@ package et_general is
 	
 	-- When directories content is searched, the entries (files, directories) are collected
 	-- in a simple list.
-	package type_directory_entries is new indefinite_doubly_linked_lists (element_type => string);
+	package pac_directory_entries is new indefinite_doubly_linked_lists (element_type => string);
 	
 	function directory_entries (
 	-- Returns the entries of the given directory. Parameter category determines whether to
@@ -103,7 +103,7 @@ package et_general is
 		target_directory	: in string;						-- ../lbr
 		category			: in ada.directories.file_kind;		-- directory, ordinary_file, special_file
 		pattern				: in string) 						-- *.txt
-		return type_directory_entries.list;
+		return pac_directory_entries.list;
 		
 
 
