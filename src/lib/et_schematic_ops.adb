@@ -8521,12 +8521,12 @@ package body et_schematic_ops is
 				procedure query_ports (
 					variant_name	: in pac_package_variant_name.bounded_string;
 					variant			: in et_devices.type_variant) is
-					use type_terminal_port_map;
-					terminal_cursor : type_terminal_port_map.cursor := variant.terminal_port_map.first;
+					use pac_terminal_port_map;
+					terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
 					use type_port_name;
 					use et_devices.pac_unit_name;
 				begin
-					while terminal_cursor /= type_terminal_port_map.no_element loop
+					while terminal_cursor /= pac_terminal_port_map.no_element loop
 						if	element (terminal_cursor).unit = unit_name and then
 							element (terminal_cursor).name = port_name then
 								terminal_name := key (terminal_cursor);

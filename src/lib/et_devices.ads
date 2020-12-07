@@ -383,7 +383,7 @@ package et_devices is
 		unit	: pac_unit_name.bounded_string; -- GPIO_BANK_3
 	end record;
 	
-	package type_terminal_port_map is new ordered_maps (
+	package pac_terminal_port_map is new ordered_maps (
 		key_type 		=> et_terminals.type_terminal_name.bounded_string, -- H7, 14
 		"<"				=> et_terminals.type_terminal_name."<",
 		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
@@ -392,7 +392,7 @@ package et_devices is
 	
 	type type_variant is record
 		package_model		: type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
-		terminal_port_map	: type_terminal_port_map.map; -- which port is connected with with terminal
+		terminal_port_map	: pac_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 
 	package pac_variants is new ordered_maps (

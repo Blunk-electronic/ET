@@ -7047,15 +7047,15 @@ package body et_kicad.schematic is
 					procedure locate_terminal (
 						variant_name 	: in pac_package_variant_name.bounded_string;
 						variant 		: in et_devices.type_variant) is
-						use et_devices.type_terminal_port_map;
+						use pac_terminal_port_map;
 						use type_port_name;
-						terminal_cursor : et_devices.type_terminal_port_map.cursor := variant.terminal_port_map.first;
+						terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
 						terminal_found : boolean := false;
 					begin
 						-- Search in terminal_port_map for the given port name.
 						-- On first match load the terminal which is a composite of
 						-- terminal name and unit name (see spec of type_port_in_port_terminal_map)
-						while terminal_cursor /= et_devices.type_terminal_port_map.no_element loop
+						while terminal_cursor /= pac_terminal_port_map.no_element loop
 							if element (terminal_cursor).name = port.name then
 								terminal.name := key (terminal_cursor); -- to be returned
 								terminal.unit := element (terminal_cursor).unit; -- to be returned
@@ -7216,12 +7216,12 @@ package body et_kicad.schematic is
 					-- Locates the given terminal in the package variant.
 						variant_name 	: in pac_package_variant_name.bounded_string;
 						variant 		: in et_devices.type_variant) is
-						use type_terminal_port_map;
+						use pac_terminal_port_map;
 						use type_port_name;
-						terminal_cursor : type_terminal_port_map.cursor;
+						terminal_cursor : pac_terminal_port_map.cursor;
 					begin -- locate_terminal
 						terminal_cursor := variant.terminal_port_map.find (terminal);
-						if terminal_cursor /= type_terminal_port_map.no_element then -- given terminal found
+						if terminal_cursor /= pac_terminal_port_map.no_element then -- given terminal found
 
 							-- set the intermediate variable "port". see declarations above.
 							port.module := connected_net.module; -- the name of the given module

@@ -796,7 +796,7 @@ package et_kicad_libraries is
 	function terminal_port_map_fits (
 		library_name		: in type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
 		package_name 		: in et_packages.type_component_package_name.bounded_string;	-- S_SO14
-		terminal_port_map	: in et_devices.type_terminal_port_map.map) 
+		terminal_port_map	: in pac_terminal_port_map.map) 
 		return boolean;
 	
 	-- Reads component libraries.

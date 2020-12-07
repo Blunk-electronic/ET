@@ -123,9 +123,9 @@ package body et_device_rw is
 		procedure write_variant (
 			packge	: in pac_package_variant_name.bounded_string;
 			variant	: in type_variant) is
-			use type_terminal_port_map;	
+			use pac_terminal_port_map;	
 
-			procedure write_terminal (terminal_cursor : in type_terminal_port_map.cursor) is begin
+			procedure write_terminal (terminal_cursor : in pac_terminal_port_map.cursor) is begin
 				write (keyword => keyword_terminal, parameters => 
 					space & to_string (key (terminal_cursor)) & space -- terminal name like G14 or 16
 					& keyword_unit & space & to_string (element (terminal_cursor).unit) -- unit name like A,B or GPIO_BANK_1
@@ -293,12 +293,12 @@ package body et_device_rw is
 		variant				: type_variant;
 		variant_name		: pac_package_variant_name.bounded_string; -- N, D
 		variants			: pac_variants.map;
-		terminal_port_map	: type_terminal_port_map.map;
+		terminal_port_map	: pac_terminal_port_map.map;
 
 		procedure insert_terminal (line : in type_fields_of_line) is -- terminal 14 unit 5 VCC
-			use type_terminal_port_map;
+			use pac_terminal_port_map;
 			inserted	: boolean;
-			position	: type_terminal_port_map.cursor;
+			position	: pac_terminal_port_map.cursor;
 
 			terminal	: type_terminal_name.bounded_string; -- H5, 14
 			unit		: pac_unit_name.bounded_string; -- PWR, IO_BANK_2
@@ -672,7 +672,7 @@ package body et_device_rw is
 								variant.terminal_port_map := terminal_port_map;
 
 								-- clean up temporarily terminal_port_map for next variant
-								type_terminal_port_map.clear (terminal_port_map);
+								pac_terminal_port_map.clear (terminal_port_map);
 							when others => invalid_section;
 						end case;
 

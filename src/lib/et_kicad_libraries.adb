@@ -1081,7 +1081,7 @@ package body et_kicad_libraries is
 	-- Returns true if the terminal_port_map fits on the given package.
 		library_name		: in type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
 		package_name 		: in et_packages.type_component_package_name.bounded_string;	-- S_SO14
-		terminal_port_map	: in et_devices.type_terminal_port_map.map) 
+		terminal_port_map	: in pac_terminal_port_map.map) 
 		return boolean is
 
 		use type_libraries;
@@ -1091,10 +1091,10 @@ package body et_kicad_libraries is
 		-- Test if the terminals of the terminal_port_map are also in the given package.
 		-- Raises constraint_error if a terminal could not be found in the package.
 			use et_terminals.type_terminals; -- the terminals of the package
-			use et_devices.type_terminal_port_map;
+			use pac_terminal_port_map;
 		
 			-- This cursor points to the terminal in the terminal_port_map
-			terminal_cursor : et_devices.type_terminal_port_map.cursor; 
+			terminal_cursor : pac_terminal_port_map.cursor; 
 
 			-- For temporarily storage of a terminal name:
 			terminal_name_in_map : et_terminals.type_terminal_name.bounded_string;
@@ -1102,7 +1102,7 @@ package body et_kicad_libraries is
 			-- Loop in terminal_port_map. Test each terminal whether it occurs
 			-- in the package_terminals.
 			terminal_cursor := terminal_port_map.first;
-			while terminal_cursor /= et_devices.type_terminal_port_map.no_element loop
+			while terminal_cursor /= pac_terminal_port_map.no_element loop
 				terminal_name_in_map := key (terminal_cursor);
 
 				if package_terminals.find (terminal_name_in_map) = et_terminals.type_terminals.no_element then
@@ -1125,7 +1125,7 @@ package body et_kicad_libraries is
 
 			use type_packages_library;
 			use et_terminals.type_terminals;
-			use et_devices.type_terminal_port_map;
+			use pac_terminal_port_map;
 			terminals : et_devices.type_terminal_count;
 		begin
 			if is_empty (packages) then
@@ -1270,7 +1270,7 @@ package body et_kicad_libraries is
 			-- The terminal-port map of the current component is stored here temporarily.
 			-- When building the package variant (there will be only the default variant)
 			-- this map is used by procedure build_package_variant.
-			tmp_terminal_port_map : type_terminal_port_map.map;
+			tmp_terminal_port_map : pac_terminal_port_map.map;
 			
 			procedure init_temp_variables is
 			-- Resets "field found flags".
@@ -1286,7 +1286,7 @@ package body et_kicad_libraries is
 				field_datasheet_found		:= false;
 
 				-- clear terminal-port map for the new component
-				type_terminal_port_map.clear (tmp_terminal_port_map);
+				pac_terminal_port_map.clear (tmp_terminal_port_map);
 			end init_temp_variables;
 
 			function to_swap_level (swap_in : in string)
@@ -2334,7 +2334,7 @@ package body et_kicad_libraries is
 							pos := 190;
 							unit.symbol.ports.append (tmp_draw_port);
 
-							type_terminal_port_map.insert (
+							pac_terminal_port_map.insert (
 								container	=> tmp_terminal_port_map,
 								key			=> tmp_terminal_name, -- terminal name
 								new_item 	=> (
@@ -2831,7 +2831,7 @@ package body et_kicad_libraries is
 						component	: in out type_component_library) is
 
 						use pac_variants;
-						use type_terminal_port_map;
+						use pac_terminal_port_map;
 
 						tmp_variant_name : pac_package_variant_name.bounded_string; -- temporarily used for building the variant name
 						tmp_variants : pac_variants.map; -- temporarily used for building the variant
