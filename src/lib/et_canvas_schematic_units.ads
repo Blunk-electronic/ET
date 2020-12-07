@@ -282,7 +282,7 @@ package et_canvas_schematic_units is
 	-- menu of package variants, use this function.
 	-- Field separator is space.
 	function extract_variant_name (menu_item : in string) 
-		return et_devices.type_variant_name.bounded_string;
+		return pac_package_variant_name.bounded_string;
 
 	
 	-- to be output in the status bar:
@@ -300,7 +300,7 @@ package et_canvas_schematic_units is
 		-- The cursor to the device model:
 		device		: pac_devices_lib.cursor;
 		
-		variant		: et_devices.type_variant_name.bounded_string; -- N, D, S_0805
+		variant		: pac_package_variant_name.bounded_string; -- N, D, S_0805
 		name		: pac_unit_name.bounded_string; -- A, B, PWR_IO3
 
 		-- The total number of units provided by the device model:

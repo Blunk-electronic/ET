@@ -227,7 +227,7 @@ package body et_kicad_libraries is
 	function to_package_name (
 		library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
-		package_variant	: in et_devices.type_variant_name.bounded_string) -- N, D
+		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
 		return et_packages.type_component_package_name.bounded_string is
 	-- Returns the package name for of the given component.
 		package_name : et_packages.type_component_package_name.bounded_string; -- to be returned
@@ -2833,7 +2833,7 @@ package body et_kicad_libraries is
 						use pac_variants;
 						use type_terminal_port_map;
 
-						tmp_variant_name : et_devices.type_variant_name.bounded_string; -- temporarily used for building the variant name
+						tmp_variant_name : pac_package_variant_name.bounded_string; -- temporarily used for building the variant name
 						tmp_variants : pac_variants.map; -- temporarily used for building the variant
 
 						full_package_library_name : type_package_library_name.bounded_string;
@@ -3260,14 +3260,14 @@ package body et_kicad_libraries is
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
 		package_name 		: in et_packages.type_component_package_name.bounded_string;	-- S_SO14
 		log_threshold		: in et_string_processing.type_log_level)
-		return et_devices.type_variant_name.bounded_string is 					-- D
+		return pac_package_variant_name.bounded_string is 					-- D
 
 		library_cursor : type_device_libraries.cursor; -- points to the component library
 		
 		use et_string_processing;
 
 		use et_devices;
-		variant : et_devices.type_variant_name.bounded_string; -- variant name to be returned
+		variant : pac_package_variant_name.bounded_string; -- variant name to be returned
 		
 		-- temporarily here the name of the package library is stored:
 		use type_package_library_name;
@@ -3290,7 +3290,7 @@ package body et_kicad_libraries is
 
 				use type_component_package_name;
 				use pac_variants;
-				use et_devices.type_variant_name;
+				use pac_package_variant_name;
 
 				-- This cursor points to the package variant being queryied.
 				variant_cursor : pac_variants.cursor := component.variants.first;

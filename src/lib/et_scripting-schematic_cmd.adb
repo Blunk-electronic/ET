@@ -1944,7 +1944,7 @@ is
 						case fields is
 							when 6 =>
 								declare
-									variant : et_devices.type_variant_name.bounded_string; -- N, D
+									variant : pac_package_variant_name.bounded_string; -- N, D
 								begin
 									-- validate variant
 									check_variant_name_length (f (6));

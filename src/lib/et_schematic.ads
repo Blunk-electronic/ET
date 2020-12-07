@@ -198,7 +198,7 @@ package et_schematic is
 				purpose		: et_devices.type_purpose.bounded_string; -- brightness_control
 
 				-- The package variant:
-				variant		: et_devices.type_variant_name.bounded_string; -- D, N
+				variant		: et_devices.pac_package_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for name, value and purpose.
@@ -509,7 +509,7 @@ package et_schematic is
 	-- Returns the package variant of the given device.
 	-- The device must be real. Otherwise constraint error is raised.
 	function get_variant (device : in type_devices.cursor)
-		return et_devices.type_variant_name.bounded_string;
+		return et_devices.pac_package_variant_name.bounded_string;
 	
 	-- Returns the name of the package model of the given device.
 	-- The given device must be real. Otherwise constraint error arises here.	

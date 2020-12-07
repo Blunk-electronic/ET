@@ -605,14 +605,14 @@ package body et_devices is
 
 	
 	
-	function to_string (package_variant : in type_variant_name.bounded_string) return string is begin
-		return type_variant_name.to_string (package_variant);
+	function to_string (package_variant : in pac_package_variant_name.bounded_string) return string is begin
+		return pac_package_variant_name.to_string (package_variant);
 	end;
 
 	function to_variant_name (variant_name : in string) 
-		return type_variant_name.bounded_string
+		return pac_package_variant_name.bounded_string
 	is begin
-		return type_variant_name.to_bounded_string (variant_name);
+		return pac_package_variant_name.to_bounded_string (variant_name);
 	end;
 
 	procedure check_variant_name_length (variant_name : in string) is
@@ -626,7 +626,7 @@ package body et_devices is
 	end check_variant_name_length;
 	
 	procedure check_variant_name_characters (
-		variant		: in type_variant_name.bounded_string;
+		variant		: in pac_package_variant_name.bounded_string;
 		characters	: in character_set := variant_name_characters) is
 	-- Tests if the given variant name contains only valid characters as specified
 	-- by given character set.
@@ -1005,7 +1005,7 @@ package body et_devices is
 	
 	function variant_available (
 		device_cursor	: in pac_devices_lib.cursor;
-		variant			: in type_variant_name.bounded_string)  -- D, N
+		variant			: in pac_package_variant_name.bounded_string)  -- D, N
 		return boolean is
 		
 		result : boolean := false; -- to be returned
@@ -1098,10 +1098,8 @@ package body et_devices is
 	end locate_unit;
 	
 	function package_model (
-	-- Returns the name of the package model of the given device according to the given variant.
-	-- The given device must be real. Means appearance SCH_PCB.
 		device_cursor	: in pac_devices_lib.cursor;
-		variant			: in type_variant_name.bounded_string) -- D, N
+		variant			: in pac_package_variant_name.bounded_string) -- D, N
 		return type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
 		package_model : type_package_model_file.bounded_string; -- to be returned (packages/smd/SOT23.pac)
 

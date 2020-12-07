@@ -3508,7 +3508,7 @@ package body et_kicad_to_native is
 					variant_cursor : et_devices.pac_variants.cursor := device.variants.first;
 
 					procedure rename (
-						variant_name	: in et_devices.type_variant_name.bounded_string; -- N, D, ...
+						variant_name	: in pac_package_variant_name.bounded_string; -- N, D, ...
 						variant			: in out et_devices.type_variant) is
 					begin -- rename
 						variant.package_model := (rename_package_model (variant.package_model)); -- ../../lbr/transistors.pretty/S_0805

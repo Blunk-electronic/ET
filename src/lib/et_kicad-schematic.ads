@@ -236,7 +236,7 @@ package et_kicad.schematic is
 			-- If a component appears in both schematic and layout it has got:
 			when et_symbols.PCB => 
 				datasheet			: type_component_datasheet.bounded_string;
-				variant				: et_devices.type_variant_name.bounded_string; -- D, N
+				variant				: pac_package_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for reference and value.

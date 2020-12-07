@@ -360,19 +360,19 @@ package et_devices is
 		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set ("_-");
 	
 	variant_name_length_max : constant positive := 50;
-	package type_variant_name is new generic_bounded_length (variant_name_length_max);
-	use type_variant_name;
+	package pac_package_variant_name is new generic_bounded_length (variant_name_length_max);
+	use pac_package_variant_name;
 
-	function to_string (package_variant : in type_variant_name.bounded_string) return string;
-	-- converts a type_variant_name to a string.
+	function to_string (package_variant : in pac_package_variant_name.bounded_string) return string;
+	-- converts a pac_package_variant_name to a string.
 	
-	function to_variant_name (variant_name : in string) return type_variant_name.bounded_string;
+	function to_variant_name (variant_name : in string) return pac_package_variant_name.bounded_string;
 
 	procedure check_variant_name_length (variant_name : in string);
 	-- tests if the given variant name is not longer than allowed
 	
 	procedure check_variant_name_characters (
-		variant		: in type_variant_name.bounded_string;
+		variant		: in pac_package_variant_name.bounded_string;
 		characters	: in character_set := variant_name_characters);
 	-- Tests if the given variant name contains only valid characters as specified
 	-- by given character set.
@@ -396,7 +396,7 @@ package et_devices is
 	end record;
 
 	package pac_variants is new ordered_maps (
-		key_type 		=> type_variant_name.bounded_string, -- D, N
+		key_type 		=> pac_package_variant_name.bounded_string, -- D, N
 		element_type 	=> type_variant);
 
 	type type_terminal is record
@@ -527,7 +527,7 @@ package et_devices is
 	-- Returns true if given device provides the given package variant.								   
 	-- The given device must be real. Means appearance SCH_PCB.
 		device_cursor	: in pac_devices_lib.cursor;
-		variant			: in type_variant_name.bounded_string)  -- D, N
+		variant			: in pac_package_variant_name.bounded_string)  -- D, N
 		return boolean;
 
 	-- Returns a list of available variants of the given device.
@@ -564,7 +564,7 @@ package et_devices is
 	-- Returns the name of the package model of the given device according to the given variant.
 	-- The given device must be real. Means appearance SCH_PCB.							  
 		device_cursor	: in pac_devices_lib.cursor;
-		variant			: in type_variant_name.bounded_string) -- D, N
+		variant			: in pac_package_variant_name.bounded_string) -- D, N
 		return type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		
 -- 	function terminal_name (
@@ -572,7 +572,7 @@ package et_devices is
 -- 	-- The given device must be real. Means appearance SCH_PCB.							  
 -- 		device_cursor	: in pac_devices_lib.cursor;
 -- 		port_name		: in type_port_name.bounded_string;
--- 		variant			: in type_variant_name.bounded_string) -- D, N
+-- 		variant			: in pac_package_variant_name.bounded_string) -- D, N
 -- 		return type_terminal_name.bounded_string; -- 14, H4
 
 	-- Used for netlists:

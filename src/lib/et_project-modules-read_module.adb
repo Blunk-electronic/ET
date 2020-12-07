@@ -616,7 +616,7 @@ is
 	
 	device_partcode	: et_material.type_partcode.bounded_string;
 	device_purpose	: et_devices.type_purpose.bounded_string;
-	device_variant	: et_devices.type_variant_name.bounded_string; -- D, N
+	device_variant	: pac_package_variant_name.bounded_string; -- D, N
 	device_position	: et_pcb_coordinates.type_package_position; -- in the layout ! incl. angle and face
 	device_flipped	: et_pcb.type_flipped := et_pcb.flipped_default;
 

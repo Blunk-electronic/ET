@@ -872,7 +872,7 @@ package body et_canvas_schematic_units is
 	end close_device_selection;	
 
 	function extract_variant_name (menu_item : in string) 
-		return et_devices.type_variant_name.bounded_string 
+		return pac_package_variant_name.bounded_string 
 	is
 		-- Extract the variant name from field 3 of the menu item.
 		-- Field separator is space:
@@ -1832,7 +1832,7 @@ package body et_canvas_schematic_units is
 
 		value	: type_value.bounded_string;
 		purpose	: type_purpose.bounded_string;
-		variant	: et_devices.type_variant_name.bounded_string;
+		variant	: pac_package_variant_name.bounded_string;
 
 		use et_material;
 		partcode : type_partcode.bounded_string;

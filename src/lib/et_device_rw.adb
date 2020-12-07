@@ -121,7 +121,7 @@ package body et_device_rw is
 		variant_cursor : pac_variants.cursor;
 		
 		procedure write_variant (
-			packge	: in type_variant_name.bounded_string;
+			packge	: in pac_package_variant_name.bounded_string;
 			variant	: in type_variant) is
 			use type_terminal_port_map;	
 
@@ -291,7 +291,7 @@ package body et_device_rw is
 		appearance			: type_appearance; -- virtual/pcb
 		partcode			: et_material.type_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
 		variant				: type_variant;
-		variant_name		: type_variant_name.bounded_string; -- N, D
+		variant_name		: pac_package_variant_name.bounded_string; -- N, D
 		variants			: pac_variants.map;
 		terminal_port_map	: type_terminal_port_map.map;
 

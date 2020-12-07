@@ -40,7 +40,7 @@ separate (et_schematic_ops)
 procedure add_device (
 	module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
-	variant			: in et_devices.type_variant_name.bounded_string; -- N, D, S_0805
+	variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
 	destination		: in et_coordinates.type_position; -- sheet/x/y,rotation
 	log_threshold	: in type_log_level) is
 	
@@ -189,7 +189,7 @@ procedure add_device (
 				
 			when PCB =>
 				-- A real device requires a package variant.
-				if et_devices.type_variant_name.length (variant) > 0 then
+				if pac_package_variant_name.length (variant) > 0 then
 
 					if variant_available (device_cursor_lib, variant) then
 						et_schematic.type_devices.insert (
@@ -298,7 +298,7 @@ procedure add_device (
 	end add;
 		
 begin -- add_device
-	if et_devices.type_variant_name.length (variant) > 0 then -- real device
+	if pac_package_variant_name.length (variant) > 0 then -- real device
 		log (text => "module " & to_string (module_name) &
 			" adding device " & to_string (device_model) &
 			" package variant " & to_string (variant) &

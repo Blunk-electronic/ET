@@ -2615,7 +2615,7 @@ package body et_schematic_ops is
 	function get_variant (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return et_devices.type_variant_name.bounded_string -- D, N
+		return pac_package_variant_name.bounded_string -- D, N
 	is
 		cursor_sch : et_schematic.type_devices.cursor;
 	begin
@@ -2627,7 +2627,7 @@ package body et_schematic_ops is
 	procedure set_variant (
 		module	: in pac_generic_modules.cursor;
 		device	: in et_schematic.type_devices.cursor;
-		variant	: in et_devices.type_variant_name.bounded_string)
+		variant	: in pac_package_variant_name.bounded_string)
 	is
 		use et_schematic.type_devices;
 
@@ -2676,7 +2676,7 @@ package body et_schematic_ops is
 	procedure set_variant (
 		module			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device			: in et_devices.type_device_name; -- R2
-		variant			: in et_devices.type_variant_name.bounded_string; -- N, D
+		variant			: in pac_package_variant_name.bounded_string; -- N, D
 		log_threshold	: in type_log_level)
 	is
 		use pac_generic_modules;
@@ -3084,7 +3084,7 @@ package body et_schematic_ops is
 	-- Returns the placeholders of the package of a device. The package is indirectly selected
 	-- by the given variant name. The given device is accessed by the given device cursor.
 		device	: in pac_devices_lib.cursor;
-		variant	: in et_devices.type_variant_name.bounded_string) -- N, D, S_0805
+		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
 		return et_packages.type_text_placeholders is
 		use et_packages;
 		use pac_devices_lib;
@@ -3128,7 +3128,7 @@ package body et_schematic_ops is
 	-- If the given variant is empty (zero length) the the device is assumed to be virtual.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
-		variant			: in et_devices.type_variant_name.bounded_string; -- N, D, S_0805
+		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
 		destination		: in et_coordinates.type_position; -- sheet/x/y,rotation
 		log_threshold	: in type_log_level) is separate;
 
@@ -8510,7 +8510,7 @@ package body et_schematic_ops is
 			module		: in type_module) is
 			use et_schematic.type_devices;
 			device_cursor_sch	: et_schematic.type_devices.cursor;
-			variant 			: et_devices.type_variant_name.bounded_string; -- D, N
+			variant 			: pac_package_variant_name.bounded_string; -- D, N
 			device_cursor_lib	: pac_devices_lib.cursor;
 
 			procedure query_variants (
@@ -8519,7 +8519,7 @@ package body et_schematic_ops is
 				variant_cursor : pac_variants.cursor;
 
 				procedure query_ports (
-					variant_name	: in et_devices.type_variant_name.bounded_string;
+					variant_name	: in pac_package_variant_name.bounded_string;
 					variant			: in et_devices.type_variant) is
 					use type_terminal_port_map;
 					terminal_cursor : type_terminal_port_map.cursor := variant.terminal_port_map.first;
