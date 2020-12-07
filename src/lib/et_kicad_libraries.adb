@@ -343,7 +343,7 @@ package body et_kicad_libraries is
 		port_cursor : type_ports_library.cursor; -- to be returned
 
 		procedure locate (
-			name : in et_devices.type_unit_name.bounded_string;
+			name : in et_devices.pac_unit_name.bounded_string;
 			unit : in type_unit_library) is
 
 			use type_ports_library;
@@ -1382,10 +1382,10 @@ package body et_kicad_libraries is
 				return v_out;
 			end to_port_visibile;
 
-			function to_unit_name (id : in type_unit_id) return type_unit_name.bounded_string is
-			-- returns the given unit id as type_unit_name
+			function to_unit_name (id : in type_unit_id) return pac_unit_name.bounded_string is
+			-- returns the given unit id as pac_unit_name
 			begin
-				return type_unit_name.to_bounded_string (trim (type_unit_id'image (id), left));
+				return pac_unit_name.to_bounded_string (trim (type_unit_id'image (id), left));
 			end to_unit_name;
 
 			function to_fill (fill_style : in string) return type_fill is
@@ -2306,7 +2306,7 @@ package body et_kicad_libraries is
 				procedure insert (
 				-- Inserts the given element in the unit.
 				-- If a port is to be inserted: Aborts on multiple usage of port or pin names.
-					key		: in type_unit_name.bounded_string;
+					key		: in pac_unit_name.bounded_string;
 					unit	: in out type_unit_library) is
 					pos		: natural := 0; -- helps to trace the program position where an exception occured
 				begin
@@ -2420,7 +2420,7 @@ package body et_kicad_libraries is
 			
 				procedure set (
 				-- Sets the properties of the placeholders in the current unit.
-					key		: in type_unit_name.bounded_string;
+					key		: in pac_unit_name.bounded_string;
 					unit	: in out type_unit_library) is
 				begin
 					-- For the unit we are interested in the properties of the component text fields.

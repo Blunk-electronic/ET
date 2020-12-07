@@ -153,8 +153,8 @@ package et_schematic is
 	-- Units of a device are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
 	package type_units is new indefinite_ordered_maps ( -- CS rename to pac_units
-		key_type		=> et_devices.type_unit_name.bounded_string,
-		"<" 			=> et_devices.type_unit_name."<",
+		key_type		=> et_devices.pac_unit_name.bounded_string,
+		"<" 			=> et_devices.pac_unit_name."<",
 		element_type 	=> type_unit);
 
 	-- Returns a string that tells the name and position of given unit.
@@ -162,8 +162,8 @@ package et_schematic is
 
 	
 	package type_unit_positions is new ordered_maps (
-		key_type		=> et_devices.type_unit_name.bounded_string, -- A, B, IO_BANK_1
-		"<" 			=> et_devices.type_unit_name."<",
+		key_type		=> et_devices.pac_unit_name.bounded_string, -- A, B, IO_BANK_1
+		"<" 			=> et_devices.pac_unit_name."<",
 		element_type	=> et_coordinates.type_position, -- sheet, x, y
 		"="				=> et_coordinates."=");
 
@@ -225,7 +225,7 @@ package et_schematic is
 	-- This is the port of a device as it appears in a net segment:
 	type type_port_device is record
 		device_name	: type_device_name;
-		unit_name	: et_devices.type_unit_name.bounded_string;
+		unit_name	: et_devices.pac_unit_name.bounded_string;
 		port_name	: et_symbols.type_port_name.bounded_string;
 	end record;
 

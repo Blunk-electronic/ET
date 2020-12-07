@@ -111,7 +111,7 @@ package body et_scripting_interactive_schematic is
 		use gtk.menu_item;
 		use pac_unit_names;
 
-		unit_name : type_unit_name.bounded_string;
+		unit_name : pac_unit_name.bounded_string;
 
 		m : gtk_menu; -- the menu
 		i : gtk_menu_item; -- an item on the menu
@@ -213,7 +213,7 @@ package body et_scripting_interactive_schematic is
 		use gtk.menu_item;
 		use pac_unit_names;
 
-		unit_name : type_unit_name.bounded_string;
+		unit_name : pac_unit_name.bounded_string;
 
 		m : gtk_menu; -- the menu
 		i : gtk_menu_item; -- an item on the menu

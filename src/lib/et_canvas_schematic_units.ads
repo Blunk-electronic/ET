@@ -122,7 +122,7 @@ package et_canvas_schematic_units is
 
 	type type_unit_being_deleted is record
 		device	: type_device_name := (others => <>); -- IC45
-		unit	: type_unit_name.bounded_string; -- A
+		unit	: pac_unit_name.bounded_string; -- A
 	end record;
 
 	unit_delete : type_unit_being_deleted;
@@ -145,7 +145,7 @@ package et_canvas_schematic_units is
 		original_position	: type_point := origin;
 		
 		device				: type_device_name := (others => <>); -- IC45
-		unit				: type_unit_name.bounded_string; -- A
+		unit				: pac_unit_name.bounded_string; -- A
 
 		-- In case a unit is being moved from one sheet to another.
 		-- This flag notifies the GUI that the unit is to be
@@ -301,7 +301,7 @@ package et_canvas_schematic_units is
 		device		: pac_devices_lib.cursor;
 		
 		variant		: et_devices.type_variant_name.bounded_string; -- N, D, S_0805
-		name		: type_unit_name.bounded_string; -- A, B, PWR_IO3
+		name		: pac_unit_name.bounded_string; -- A, B, PWR_IO3
 
 		-- The total number of units provided by the device model:
 		total		: type_unit_count := type_unit_count'first;
@@ -385,7 +385,7 @@ package et_canvas_schematic_units is
 		absolute_position	: type_point; -- before the move
 
 		device				: type_device_name := (others => <>); -- IC45
-		unit				: type_unit_name.bounded_string; -- A
+		unit				: pac_unit_name.bounded_string; -- A
 	end record;
 
 	placeholder_move : type_placeholder;

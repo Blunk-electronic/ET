@@ -44,7 +44,7 @@ package et_schematic_ops.units is
 	procedure delete_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level);
 
 	-- Deletes a unit of a device. 
@@ -53,7 +53,7 @@ package et_schematic_ops.units is
 	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level);
 
 
@@ -63,7 +63,7 @@ package et_schematic_ops.units is
 	-- Connects unit ports with segment end or strart points AFTER the move.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in type_point; -- x/y -- CS rename to destination
@@ -76,7 +76,7 @@ package et_schematic_ops.units is
 	function movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
-		unit_name		: in type_unit_name.bounded_string;
+		unit_name		: in pac_unit_name.bounded_string;
 		location 		: in et_coordinates.type_position; -- only sheet number matters
 		unit_ports		: in et_symbols.type_ports.map;
 		log_threshold	: in type_log_level)
@@ -94,7 +94,7 @@ package et_schematic_ops.units is
 	-- to another is not possible.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y -- CS rename to destination
 		log_threshold	: in type_log_level);
@@ -106,7 +106,7 @@ package et_schematic_ops.units is
 	procedure rotate_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level);

@@ -70,7 +70,7 @@ procedure copy_device (
 		
 		unit_cursors : type_device_units;
 		ports : et_symbols.type_ports.map;
-		unit_name : et_devices.type_unit_name.bounded_string;
+		unit_name : et_devices.pac_unit_name.bounded_string;
 
 		use pac_units_internal;
 		use pac_units_external;

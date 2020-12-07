@@ -196,7 +196,7 @@ package et_devices is
 
 	subtype type_index_width is positive range positive'first .. 5; -- see number of digits of type_device_name_index
 	
-	type type_device_name is record -- CS: should be private, rename to type_device_name
+	type type_device_name is record -- CS: should be private
 		prefix		: type_prefix.bounded_string := prefix_default; -- like "IC"
 		id			: type_name_index := name_index_default; -- like "303"
 		id_width	: type_index_width := type_index_width'first; -- the number of digits of the id. 
@@ -269,13 +269,13 @@ package et_devices is
 
 	unit_name_length_max : constant natural := 50;	
 	-- CS unit_name_characters, length check, character check
-	package type_unit_name is new generic_bounded_length (unit_name_length_max); -- CS rename to pac_unit_name
-	use type_unit_name;
+	package pac_unit_name is new generic_bounded_length (unit_name_length_max);
+	use pac_unit_name;
 
-	unit_name_default : constant type_unit_name.bounded_string := type_unit_name.to_bounded_string ("");
+	unit_name_default : constant pac_unit_name.bounded_string := pac_unit_name.to_bounded_string ("");
 	
-	function to_string (unit_name : in type_unit_name.bounded_string) return string;
-	function to_name (unit_name : in string) return type_unit_name.bounded_string; 
+	function to_string (unit_name : in pac_unit_name.bounded_string) return string;
+	function to_name (unit_name : in string) return pac_unit_name.bounded_string; 
 	-- CS rename to to_unit_name
 	
 	device_unit_separator : constant character := '.';
@@ -288,7 +288,7 @@ package et_devices is
 	-- the device name will be returned as string.
 	function to_full_name (
 		device_name	: in type_device_name; -- IC34
-		symbol_name	: in type_unit_name.bounded_string; -- PWR
+		symbol_name	: in pac_unit_name.bounded_string; -- PWR
 		unit_count	: in type_unit_count) -- the total number of units
 		return string; -- IC34.PWR
 
@@ -324,7 +324,7 @@ package et_devices is
 
 	-- Internal units are collected in a map:
 	package pac_units_internal is new indefinite_ordered_maps (
-		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
+		key_type		=> pac_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
 		element_type	=> type_unit_internal);
 
 	-- An external unit has a reference and a swap level.
@@ -338,7 +338,7 @@ package et_devices is
 
 	-- External units are collected in a map;
 	package pac_units_external is new ordered_maps (
-		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3"
+		key_type		=> pac_unit_name.bounded_string, -- like "I/O-Bank 3"
 		element_type	=> type_unit_external);
 
 
@@ -382,7 +382,7 @@ package et_devices is
 
 	type type_port_in_terminal_port_map is record
 		name	: type_port_name.bounded_string; -- CLK, CE, VSS
-		unit	: type_unit_name.bounded_string; -- GPIO_BANK_3
+		unit	: pac_unit_name.bounded_string; -- GPIO_BANK_3
 	end record;
 	
 	package type_terminal_port_map is new ordered_maps (
@@ -403,7 +403,7 @@ package et_devices is
 
 	type type_terminal is record
 		name	: et_terminals.type_terminal_name.bounded_string; -- H7
-		unit	: type_unit_name.bounded_string; -- IO-BANK1
+		unit	: pac_unit_name.bounded_string; -- IO-BANK1
 		port	: type_port_name.bounded_string; -- GPIO3
 	end record;
 
@@ -460,7 +460,7 @@ package et_devices is
 
 	
 	
-	package pac_devices_lib is new indefinite_ordered_maps ( -- CS rename to pac_devices
+	package pac_devices_lib is new indefinite_ordered_maps (
 		key_type 		=> type_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
 		"<"				=> type_device_model_file."<",
 		element_type	=> type_device);
@@ -482,7 +482,7 @@ package et_devices is
 	-- does provide the given unit.
 	function provides_unit (
 		device_cursor	: in pac_devices_lib.cursor;
-		unit_name		: in type_unit_name.bounded_string)
+		unit_name		: in pac_unit_name.bounded_string)
 		return boolean;
 	
 	-- Returns the cursor of the first internal or external unit.
@@ -502,16 +502,16 @@ package et_devices is
 	-- It can be an internal or an external unit.
 	function first_unit (
 		device_cursor : in pac_devices_lib.cursor) 
-		return type_unit_name.bounded_string;
+		return pac_unit_name.bounded_string;
 
 							
 	-- Returns the cursor of the desired internal or external unit.
 	function any_unit (
 		device_cursor	: in pac_devices_lib.cursor;
-		unit_name		: in type_unit_name.bounded_string)
+		unit_name		: in pac_unit_name.bounded_string)
 		return type_device_units;
 
-	package pac_unit_names is new doubly_linked_lists (type_unit_name.bounded_string);
+	package pac_unit_names is new doubly_linked_lists (pac_unit_name.bounded_string);
 
 	-- Returns a list of all unit names of the given device:
 	function all_units (
@@ -559,7 +559,7 @@ package et_devices is
 	-- either the internal or external unit.
 	function locate_unit (
 		device_cursor	: in pac_devices_lib.cursor;
-		unit_name		: in type_unit_name.bounded_string) -- like "I/O-Bank 3"
+		unit_name		: in pac_unit_name.bounded_string) -- like "I/O-Bank 3"
 		return type_unit_cursors;
 	
 	function package_model (

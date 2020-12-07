@@ -80,7 +80,7 @@ package body et_schematic_ops is
 		raise constraint_error;
 	end;
 	
-	procedure unit_not_found (name : in type_unit_name.bounded_string) is begin
+	procedure unit_not_found (name : in pac_unit_name.bounded_string) is begin
 		raise semantic_error_1 with
 			"ERROR: Unit " & to_string (name) & " not found !";
 	end unit_not_found;
@@ -446,7 +446,7 @@ package body et_schematic_ops is
 	-- The coordinates of the ports are default xy-positions relative
 	-- to the center of the unit.
 		device_cursor	: in et_schematic.type_devices.cursor;
-		unit_name		: in type_unit_name.bounded_string)
+		unit_name		: in pac_unit_name.bounded_string)
 		return et_symbols.type_ports.map is
 
 		use et_symbols;
@@ -592,7 +592,7 @@ package body et_schematic_ops is
 				
 				use et_schematic.type_units;
 				unit_cursor : type_units.cursor := device.units.first;
-				unit_name : type_unit_name.bounded_string;
+				unit_name : pac_unit_name.bounded_string;
 				
 				use et_symbols.type_ports;
 				ports : et_symbols.type_ports.map;
@@ -837,7 +837,7 @@ package body et_schematic_ops is
 -- 	procedure delete_unit (
 -- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 -- 		device_name		: in type_device_name; -- IC45
--- 		unit_name		: in type_unit_name.bounded_string; -- A
+-- 		unit_name		: in pac_unit_name.bounded_string; -- A
 -- 		log_threshold	: in type_log_level) is
 -- 
 -- 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -967,7 +967,7 @@ package body et_schematic_ops is
 	procedure insert_ports (
 		module			: in pac_generic_modules.cursor;		-- the module
 		device			: in type_device_name;					-- the device
-		unit			: in type_unit_name.bounded_string;	-- the unit name like A, C, PWR
+		unit			: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
 		ports			: in et_symbols.type_ports.map; -- the ports to be inserted
 		sheet			: in type_sheet;				-- the sheet to look at
 		log_threshold	: in type_log_level)
@@ -1127,7 +1127,7 @@ package body et_schematic_ops is
 	procedure move_unit_placeholder (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
 		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose
@@ -1150,7 +1150,7 @@ package body et_schematic_ops is
 				unit_cursor : et_schematic.type_units.cursor;
 
 				procedure move_placeholder (
-					unit_name	: in type_unit_name.bounded_string;
+					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out et_schematic.type_unit) is
 					use et_coordinates;
 
@@ -1300,7 +1300,7 @@ package body et_schematic_ops is
 	-- Returns the default positions of placeholders and texts of a unit
 	-- as they are defined in the symbol model.
 		device_cursor	: in et_schematic.type_devices.cursor;
-		unit_name		: in type_unit_name.bounded_string)
+		unit_name		: in pac_unit_name.bounded_string)
 		return et_symbols.type_default_text_positions is
 		
 		use et_symbols;
@@ -1447,7 +1447,7 @@ package body et_schematic_ops is
 -- 	procedure rotate_unit (
 -- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 -- 		device_name		: in type_device_name; -- IC45
--- 		unit_name		: in type_unit_name.bounded_string; -- A
+-- 		unit_name		: in pac_unit_name.bounded_string; -- A
 -- 		coordinates		: in type_coordinates; -- relative/absolute
 -- 		rotation		: in et_coordinates.type_rotation; -- 90
 -- 		log_threshold	: in type_log_level) is separate;	
@@ -1457,7 +1457,7 @@ package body et_schematic_ops is
 	-- The rotation is absolute.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		rotation		: in et_text.type_rotation_documentation; -- absolute ! -- 90
 		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level) is
@@ -1479,7 +1479,7 @@ package body et_schematic_ops is
 				unit_cursor : et_schematic.type_units.cursor;
 
 				procedure rotate_placeholder (
-					name	: in type_unit_name.bounded_string; -- A
+					name	: in pac_unit_name.bounded_string; -- A
 					unit	: in out type_unit) is
 				begin
 					case meaning is
@@ -1840,7 +1840,7 @@ package body et_schematic_ops is
 
 				procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
 					use et_schematic.type_units;
-					use type_unit_name;
+					use pac_unit_name;
 					unit_position : et_coordinates.type_position;
 					ports : et_symbols.type_ports.map;
 
@@ -1878,7 +1878,7 @@ package body et_schematic_ops is
 					-- Look at units on the given sheet of place:
 					if sheet (unit_position) = sheet (place) then
 						log (text => "device " & to_string (key (device_cursor)) & " unit " &
-							 type_unit_name.to_string (key (unit_cursor)), level => log_threshold + 1);
+							 pac_unit_name.to_string (key (unit_cursor)), level => log_threshold + 1);
 						log_indentation_up;
 
 						ports := ports_of_unit (
@@ -2548,7 +2548,7 @@ package body et_schematic_ops is
 	function locate_unit (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
-		unit	: in type_unit_name.bounded_string)
+		unit	: in pac_unit_name.bounded_string)
 		return et_schematic.type_units.cursor
 	is
 		use et_schematic.type_devices;
@@ -2576,7 +2576,7 @@ package body et_schematic_ops is
 	function deployed (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
-		unit	: in type_unit_name.bounded_string)
+		unit	: in pac_unit_name.bounded_string)
 		return boolean
 	is
 		use et_schematic.type_units;
@@ -2727,7 +2727,7 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
-			use type_unit_name;
+			use pac_unit_name;
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
 
@@ -2743,7 +2743,7 @@ package body et_schematic_ops is
 				use type_port_name;
 			begin
 				while unit_cursor /= type_units.no_element loop
-					--log (text => "unit " & type_unit_name.to_string (key (unit_cursor)));
+					--log (text => "unit " & pac_unit_name.to_string (key (unit_cursor)));
 					--log (text => "port " & type_port_name.to_string (port_name));
 					
 					-- fetch the unit ports from the library model
@@ -2785,7 +2785,7 @@ package body et_schematic_ops is
 	-- The unit and port names are optionally.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string := to_name (""); -- A
+		unit_name		: in pac_unit_name.bounded_string := to_name (""); -- A
 		port_name		: in et_symbols.type_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE
 		return boolean is
 
@@ -2794,7 +2794,7 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
-			use type_unit_name;
+			use pac_unit_name;
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
 
@@ -3235,7 +3235,7 @@ package body et_schematic_ops is
 	function unit_available (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
-		unit_name		: in type_unit_name.bounded_string)
+		unit_name		: in pac_unit_name.bounded_string)
 		return boolean
 	is
 		available : boolean := true; -- to be returned
@@ -3302,7 +3302,7 @@ package body et_schematic_ops is
 			device		: in et_schematic.type_device)
 		is 
 			procedure query_unit (c : in type_units.cursor) is 
-				use et_devices.type_unit_name;
+				use et_devices.pac_unit_name;
 				use et_schematic.type_units;
 				use pac_unit_names;
 			begin
@@ -3345,7 +3345,7 @@ package body et_schematic_ops is
 	function position (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
-		unit	: in type_unit_name.bounded_string)
+		unit	: in pac_unit_name.bounded_string)
 		return et_coordinates.type_position
 	is
 		use et_schematic.type_devices;
@@ -3452,7 +3452,7 @@ package body et_schematic_ops is
 	function sheet (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
-		unit	: in type_unit_name.bounded_string)
+		unit	: in pac_unit_name.bounded_string)
 		return et_coordinates.type_sheet
 	is begin		
 		return et_coordinates.sheet (position (module, device, unit));
@@ -3463,7 +3463,7 @@ package body et_schematic_ops is
 	-- Invokes a unit of a device into the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC1
-		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
+		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 		destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level) is separate;
 
@@ -7328,7 +7328,7 @@ package body et_schematic_ops is
 				device_name : type_device_name := et_schematic.type_devices.key (device_cursor); -- R1
 
 				procedure sort (unit_cursor : in et_schematic.type_units.cursor) is 
-					unit_name : type_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
+					unit_name : pac_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
 					unit_position : et_coordinates.type_position := element (unit_cursor).position;
 					inserted : boolean := false;
 					cursor_sort : et_numbering.type_devices.cursor;
@@ -8491,7 +8491,7 @@ package body et_schematic_ops is
 	-- in case exception occurs here.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
+		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
 		return type_port_properties_access is
 
@@ -8524,7 +8524,7 @@ package body et_schematic_ops is
 					use type_terminal_port_map;
 					terminal_cursor : type_terminal_port_map.cursor := variant.terminal_port_map.first;
 					use type_port_name;
-					use et_devices.type_unit_name;
+					use et_devices.pac_unit_name;
 				begin
 					while terminal_cursor /= type_terminal_port_map.no_element loop
 						if	element (terminal_cursor).unit = unit_name and then
@@ -9493,12 +9493,12 @@ package body et_schematic_ops is
 
 	function to_string (
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- C
+		unit_name		: in pac_unit_name.bounded_string; -- C
 		query_result	: in type_unit_query)
 		return string is 
 	begin
 		if query_result.exists then
-			if type_unit_name.length (unit_name) > 0 then
+			if pac_unit_name.length (unit_name) > 0 then
 				return "Location of device " & to_string (device_name)
 					& " unit " & to_string (unit_name)
 					& " :" & to_string (query_result.position);
@@ -9516,7 +9516,7 @@ package body et_schematic_ops is
 	function unit_position (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string) -- C
+		unit_name		: in pac_unit_name.bounded_string) -- C
 		return type_unit_query is
 
 		exists : boolean := false;
@@ -9539,7 +9539,7 @@ package body et_schematic_ops is
 			begin
 				-- If the given unit_name contains something, locate the unit
 				-- by its name. If unit_name is empty, locate the first unit.
-				if type_unit_name.length (unit_name) > 0 then -- locate by name
+				if pac_unit_name.length (unit_name) > 0 then -- locate by name
 					
 					unit_cursor := type_units.find (device.units, unit_name);
 

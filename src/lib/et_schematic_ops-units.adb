@@ -45,7 +45,7 @@ package body et_schematic_ops.units is
 	procedure delete_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level) is
 		
 		procedure query_devices (
@@ -154,7 +154,7 @@ package body et_schematic_ops.units is
 	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -178,7 +178,7 @@ package body et_schematic_ops.units is
 	procedure move_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in type_point; -- x/y
@@ -207,7 +207,7 @@ package body et_schematic_ops.units is
 				unit_cursor : et_schematic.type_units.cursor;
 
 				procedure move_unit (
-					unit_name	: in type_unit_name.bounded_string;
+					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out et_schematic.type_unit) is
 					use et_coordinates;
 				begin
@@ -527,7 +527,7 @@ package body et_schematic_ops.units is
 	procedure movable_test (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
-		unit_name		: in type_unit_name.bounded_string;
+		unit_name		: in pac_unit_name.bounded_string;
 		location 		: in et_coordinates.type_position; -- only sheet number matters
 		unit_ports		: in et_symbols.type_ports.map;
 		log_threshold	: in type_log_level)
@@ -604,7 +604,7 @@ package body et_schematic_ops.units is
 	function movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
-		unit_name		: in type_unit_name.bounded_string;
+		unit_name		: in pac_unit_name.bounded_string;
 		location 		: in et_coordinates.type_position; -- only sheet number matters
 		unit_ports		: in et_symbols.type_ports.map;
 		log_threshold	: in type_log_level)
@@ -692,7 +692,7 @@ package body et_schematic_ops.units is
 	procedure drag_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
@@ -771,7 +771,7 @@ package body et_schematic_ops.units is
 				unit_cursor : et_schematic.type_units.cursor;
 
 				procedure move_unit (
-					unit_name	: in type_unit_name.bounded_string;
+					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out et_schematic.type_unit) is
 					use et_coordinates;
 
@@ -917,7 +917,7 @@ package body et_schematic_ops.units is
 	procedure rotate_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in et_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level) 
@@ -944,7 +944,7 @@ package body et_schematic_ops.units is
 				unit_cursor : et_schematic.type_units.cursor;
 
 				procedure rotate_unit (
-					name	: in type_unit_name.bounded_string; -- A
+					name	: in pac_unit_name.bounded_string; -- A
 					unit	: in out type_unit) is
 
 					preamble : constant string := " placeholder now at";

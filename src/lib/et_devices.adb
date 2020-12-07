@@ -556,18 +556,18 @@ package body et_devices is
 
 
 
-	function to_string (unit_name : in type_unit_name.bounded_string) return string is begin
-		return type_unit_name.to_string (unit_name);
+	function to_string (unit_name : in pac_unit_name.bounded_string) return string is begin
+		return pac_unit_name.to_string (unit_name);
 	end;
 
-	function to_name (unit_name : in string) return type_unit_name.bounded_string is begin
+	function to_name (unit_name : in string) return pac_unit_name.bounded_string is begin
 		-- CS do character and length checks
-		return type_unit_name.to_bounded_string (to_upper (unit_name));
+		return pac_unit_name.to_bounded_string (to_upper (unit_name));
 	end;
 
 	function to_full_name (
 		device_name	: in type_device_name; -- IC34
-		symbol_name	: in type_unit_name.bounded_string; -- PWR
+		symbol_name	: in pac_unit_name.bounded_string; -- PWR
 		unit_count	: in type_unit_count) -- the total number of units
 		return string is -- IC34.PWR
 	begin
@@ -714,7 +714,7 @@ package body et_devices is
 
 	function provides_unit (
 		device_cursor	: in pac_devices_lib.cursor;
-		unit_name		: in type_unit_name.bounded_string)
+		unit_name		: in pac_unit_name.bounded_string)
 		return boolean
 	is
 		found : boolean := false;
@@ -870,14 +870,14 @@ package body et_devices is
 
 	function first_unit (
 		device_cursor : in pac_devices_lib.cursor) 
-		return type_unit_name.bounded_string
+		return pac_unit_name.bounded_string
 	is
 		fu : constant type_device_units := first_unit (device_cursor);
 
 		use pac_units_internal;
 		use pac_units_external;
 		
-		unit_name : type_unit_name.bounded_string; -- to be returned
+		unit_name : pac_unit_name.bounded_string; -- to be returned
 	begin
 		-- The first unit is either internal or external.
 		
@@ -900,13 +900,12 @@ package body et_devices is
 	
 	function any_unit (
 		device_cursor	: in pac_devices_lib.cursor;
-		unit_name		: in type_unit_name.bounded_string)
+		unit_name		: in pac_unit_name.bounded_string)
 		return type_device_units is
 
 		cursors : type_device_units; -- to be returned
 		
 		use pac_devices_lib;
-		use type_unit_name;
 		use pac_units_internal;
 		use pac_units_external;
 
@@ -1053,7 +1052,7 @@ package body et_devices is
 
 	function locate_unit (
 		device_cursor	: in pac_devices_lib.cursor;
-		unit_name		: in type_unit_name.bounded_string) -- like "I/O-Bank 3"
+		unit_name		: in pac_unit_name.bounded_string) -- like "I/O-Bank 3"
 		return type_unit_cursors is
 
 		use pac_devices_lib;
@@ -1148,7 +1147,7 @@ package body et_devices is
 
 			procedure query_ports (
 			-- Query ports of internal unit.
-				unit_name	: in type_unit_name.bounded_string;
+				unit_name	: in pac_unit_name.bounded_string;
 				unit		: in type_unit_internal) is
 			begin				
 				port_cursor := find (unit.symbol.ports, port_name);
@@ -1156,7 +1155,7 @@ package body et_devices is
 
 			procedure query_symbols (
 			-- Query ports of external unit.
-				unit_name	: in type_unit_name.bounded_string;
+				unit_name	: in pac_unit_name.bounded_string;
 				unit		: in type_unit_external) is
 				use type_symbols;
 				symbol_cursor : type_symbols.cursor := locate (unit.file);

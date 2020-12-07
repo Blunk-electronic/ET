@@ -398,7 +398,7 @@ package body et_kicad_to_native is
 				unit_cursor : et_kicad.schematic.type_units_schematic.cursor := component.units.first;
 
 				procedure change_path (
-					unit_name	: in et_devices.type_unit_name.bounded_string;
+					unit_name	: in et_devices.pac_unit_name.bounded_string;
 					unit		: in out et_kicad.schematic.type_unit_schematic) is
 					use et_coordinates;
 				begin
@@ -3168,7 +3168,7 @@ package body et_kicad_to_native is
 					inserted	: boolean;
 					
 					procedure copy_ports (
-						unit_name	: in et_devices.type_unit_name.bounded_string;
+						unit_name	: in et_devices.pac_unit_name.bounded_string;
 						unit		: in out et_devices.type_unit_internal) is
 
 						function to_level (style : in type_port_style) 

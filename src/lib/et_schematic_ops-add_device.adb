@@ -166,7 +166,7 @@ procedure add_device (
 		end add_unit_external;
 
 		ports : et_symbols.type_ports.map;
-		unit_name : et_devices.type_unit_name.bounded_string;
+		unit_name : et_devices.pac_unit_name.bounded_string;
 		
 	begin -- add
 		log (text => "adding device " & to_string (next_name), level => log_threshold + 1);

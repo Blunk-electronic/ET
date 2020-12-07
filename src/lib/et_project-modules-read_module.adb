@@ -598,7 +598,7 @@ is
 	--device_unit				: et_schematic.type_unit;
 	--device_unit_rotation	: et_coordinates.type_rotation := geometry.zero_rotation;
 	device_unit_mirror		: et_schematic.type_mirror := et_schematic.NO;
-	device_unit_name		: type_unit_name.bounded_string; -- GPIO_BANK_1
+	device_unit_name		: pac_unit_name.bounded_string; -- GPIO_BANK_1
 	device_unit_position	: et_coordinates.type_position; -- x,y,sheet,rotation
 
 

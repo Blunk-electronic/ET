@@ -54,7 +54,7 @@ procedure draw_units (
 	unit_count	: et_devices.type_unit_count; -- the total number of units
 
 	-- The name of the current unit:
-	unit_name	: et_devices.type_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
+	unit_name	: et_devices.pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 
 	-- The placeholders as given by the schematic:
 	sch_placeholder_name	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
@@ -112,7 +112,7 @@ procedure draw_units (
 	is
 		use pac_proposed_units;
 		use et_devices;
-		use type_unit_name;
+		use pac_unit_name;
 	begin
 		-- If there are no selected units at all, then there is nothing to do:
 		if is_empty (proposed_units) then
@@ -159,7 +159,7 @@ procedure draw_units (
 		return boolean is
 		use pac_proposed_placeholders;
 		use et_devices;
-		use type_unit_name;
+		use pac_unit_name;
 	begin
 		-- If there are no selected placeholders at all, then there is nothing to do:
 		if is_empty (proposed_placeholders) then

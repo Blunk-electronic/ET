@@ -147,7 +147,7 @@ package body et_device_rw is
 		unit_external_cursor : pac_units_external.cursor := device.units_external.first;
 
 		procedure query_internal_unit (
-			name	: in type_unit_name.bounded_string;
+			name	: in pac_unit_name.bounded_string;
 			unit	: in type_unit_internal) is
 		begin -- query_internal_unit
 			write (keyword => keyword_name, parameters => to_string (name));
@@ -160,7 +160,7 @@ package body et_device_rw is
 		end query_internal_unit;
 
 		procedure query_external_unit (
-			name	: in type_unit_name.bounded_string;
+			name	: in pac_unit_name.bounded_string;
 			unit	: in type_unit_external) is
 		begin -- query_external_unit
 			write (keyword => keyword_name, parameters => to_string (name));
@@ -301,7 +301,7 @@ package body et_device_rw is
 			position	: type_terminal_port_map.cursor;
 
 			terminal	: type_terminal_name.bounded_string; -- H5, 14
-			unit		: type_unit_name.bounded_string; -- PWR, IO_BANK_2
+			unit		: pac_unit_name.bounded_string; -- PWR, IO_BANK_2
 			port		: type_port_name.bounded_string; -- VCC
 
 			place : positive := 1; -- the field being read from given line
@@ -382,7 +382,7 @@ package body et_device_rw is
 			variant := (others => <>);
 		end insert_variant;
 
-		unit_name			: type_unit_name.bounded_string; -- IO_BANK_2
+		unit_name			: pac_unit_name.bounded_string; -- IO_BANK_2
 		unit_position		: type_point := origin; -- the position of the unit inside the device editor
 		unit_swap_level		: type_swap_level := swap_level_default;
 		unit_add_level		: type_add_level := add_level_default;

@@ -499,7 +499,7 @@ package body et_canvas_schematic_units is
 		use et_schematic.type_units;
 		su : type_selected_unit := element (selected_unit);
 		device_name : constant type_device_name := key (su.device);
-		unit_name : constant type_unit_name.bounded_string := key (su.unit);
+		unit_name : constant pac_unit_name.bounded_string := key (su.unit);
 
 		-- The ports with their positions of the selected unit:
 		ports : et_symbols.type_ports.map;
@@ -621,7 +621,7 @@ package body et_canvas_schematic_units is
 				unit_cursor : et_schematic.type_units.cursor;
 
 				procedure rotate_unit (
-					name	: in type_unit_name.bounded_string; -- A
+					name	: in pac_unit_name.bounded_string; -- A
 					unit	: in out et_schematic.type_unit) is
 
 					preamble : constant string := " placeholder now at";
@@ -936,7 +936,7 @@ package body et_canvas_schematic_units is
 		use pac_devices_lib;
 		device_cursor_lib : pac_devices_lib.cursor; -- points to the device in the library
 
-		unit_name : et_devices.type_unit_name.bounded_string;
+		unit_name : et_devices.pac_unit_name.bounded_string;
 		
 		use pac_variants;
 		variants : pac_variants.map;
@@ -1169,7 +1169,7 @@ package body et_canvas_schematic_units is
 		position		: in type_point;
 		log_threshold	: in type_log_level)
 	is 
-		use type_unit_name;
+		use pac_unit_name;
 	begin
 		log (text => "finalizing invoke ...", level => log_threshold);
 		log_indentation_up;
@@ -1702,7 +1702,7 @@ package body et_canvas_schematic_units is
 				-- is documentational, the rotation is always converted
 				-- to HORIZONTAL or VERTICAL via function "snap":
 				procedure rotate_placeholder (
-					name	: in type_unit_name.bounded_string; -- A
+					name	: in pac_unit_name.bounded_string; -- A
 					unit	: in out et_schematic.type_unit) 
 				is
 					r : type_rotation;
@@ -2061,7 +2061,7 @@ package body et_canvas_schematic_units is
 		
 		-- NOTE: In case the unit name is required for some reason,
 		-- mind the cursor su.unit can be no_element if all units are selected.
-		--unit	: constant type_unit_name.bounded_string := key (su.unit);
+		--unit	: constant pac_unit_name.bounded_string := key (su.unit);
 
 		model	: constant type_device_model_file.bounded_string := element (su.device).model;
 

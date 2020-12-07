@@ -96,7 +96,7 @@ package body et_kicad.schematic is
 	
 	function unit_exists (
 	-- Returns true if the unit with the given name exists in the given list of units.
-		name	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
+		name	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return boolean is
 		use type_units_schematic;
@@ -112,7 +112,7 @@ package body et_kicad.schematic is
 	-- Returns the coordinates of the unit with the given name.
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
-		name 	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
+		name 	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
 		return et_kicad_coordinates.type_position is
 		unit_cursor : type_units_schematic.cursor;
@@ -125,7 +125,7 @@ package body et_kicad.schematic is
 	-- Returns the mirror style of the given unit.
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
-		name 	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
+		name 	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
 		return et_schematic.type_mirror is
 		unit_cursor : type_units_schematic.cursor;
@@ -138,7 +138,7 @@ package body et_kicad.schematic is
 	-- Returns the orientation of the given unit.
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
-		name	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
+		name	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return et_coordinates.type_rotation is
 		unit_cursor : type_units_schematic.cursor;
@@ -4122,7 +4122,7 @@ package body et_kicad.schematic is
 			-- The port cursor of the unit indicates the port of a unit.
 			port_cursor : type_ports_library.cursor; 
 
-			unit_name_lib : type_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
+			unit_name_lib : pac_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
 			unit_position : et_kicad_coordinates.type_position; -- the coordinates of the current unit
 			-- CS: external units
 
@@ -4803,7 +4803,7 @@ package body et_kicad.schematic is
 						use type_units_schematic;
 						unit_cursor : type_units_schematic.cursor := component.units.first;
 						unit_deployed : boolean := false;
-						use type_unit_name;
+						use pac_unit_name;
 						use et_import;
 
 						function unit_not_deployed return string is begin
@@ -5238,7 +5238,7 @@ package body et_kicad.schematic is
 	procedure add_unit (
 	-- Adds a unit to the given commponent.
 		reference		: in type_device_name;
-		unit_name		: in et_devices.type_unit_name.bounded_string;
+		unit_name		: in et_devices.pac_unit_name.bounded_string;
 		unit 			: in type_unit_schematic;
 		log_threshold	: in et_string_processing.type_log_level) is
 

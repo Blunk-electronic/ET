@@ -76,7 +76,7 @@ package et_schematic_ops is
 	procedure net_not_found (name : in type_net_name.bounded_string);
 	procedure assembly_variant_not_found (variant : in et_general.type_variant_name.bounded_string);
 
-	procedure unit_not_found (name : in type_unit_name.bounded_string);
+	procedure unit_not_found (name : in pac_unit_name.bounded_string);
 	
 	-- Writes the positions of the device units in the log file.
 	procedure log_unit_positions (
@@ -88,7 +88,7 @@ package et_schematic_ops is
 	-- to the center of the unit.
 	function ports_of_unit (
 		device_cursor	: in et_schematic.type_devices.cursor;
-		unit_name		: in type_unit_name.bounded_string)
+		unit_name		: in pac_unit_name.bounded_string)
 		return et_symbols.type_ports.map;
 
 	-- Deletes ports of the given device in nets.
@@ -114,7 +114,7 @@ package et_schematic_ops is
 	procedure insert_ports (
 		module			: in pac_generic_modules.cursor;		-- the module
 		device			: in type_device_name;					-- the device
-		unit			: in type_unit_name.bounded_string;	-- the unit name like A, C, PWR
+		unit			: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
 		ports			: in et_symbols.type_ports.map; -- the ports to be inserted
 		sheet			: in type_sheet;				-- the sheet to look at
 		log_threshold	: in type_log_level);
@@ -170,7 +170,7 @@ package et_schematic_ops is
 	procedure move_unit_placeholder (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
 		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose
@@ -180,7 +180,7 @@ package et_schematic_ops is
 	-- Returns the default positions of placeholders and texts of a unit
 	-- as they are defined in the symbol model.
 		device_cursor	: in et_schematic.type_devices.cursor;
-		unit_name		: in type_unit_name.bounded_string)
+		unit_name		: in pac_unit_name.bounded_string)
 		return et_symbols.type_default_text_positions;
 
 	procedure rotate_unit_placeholder (
@@ -188,7 +188,7 @@ package et_schematic_ops is
 	-- The rotation is absolute.										  
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A
+		unit_name		: in pac_unit_name.bounded_string; -- A
 		rotation		: in et_text.type_rotation_documentation; -- absolute ! -- 90
 		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
@@ -309,7 +309,7 @@ package et_schematic_ops is
 	function locate_unit (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
-		unit	: in type_unit_name.bounded_string)
+		unit	: in pac_unit_name.bounded_string)
 		return et_schematic.type_units.cursor;
 
 	-- Returns true if the unit of the given device in the 
@@ -319,7 +319,7 @@ package et_schematic_ops is
 	function deployed (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
-		unit	: in type_unit_name.bounded_string)
+		unit	: in pac_unit_name.bounded_string)
 		return boolean;
 
 	-- Locates the given device in the given module and returns
@@ -387,7 +387,7 @@ package et_schematic_ops is
 	-- The unit and port names are optionally.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string := to_name (""); -- A
+		unit_name		: in pac_unit_name.bounded_string := to_name (""); -- A
 		port_name		: in et_symbols.type_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE		
 		return boolean;						
 
@@ -449,7 +449,7 @@ package et_schematic_ops is
 	function unit_available (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
-		unit_name		: in type_unit_name.bounded_string)
+		unit_name		: in pac_unit_name.bounded_string)
 		return boolean;
 
 	-- Returns the names of units of the given device in the 
@@ -466,7 +466,7 @@ package et_schematic_ops is
 	function position (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
-		unit	: in type_unit_name.bounded_string)
+		unit	: in pac_unit_name.bounded_string)
 		return et_coordinates.type_position;
 
 	-- Returns the position (x/y/sheet) of the given unit.
@@ -489,14 +489,14 @@ package et_schematic_ops is
 	function sheet (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
-		unit	: in type_unit_name.bounded_string)
+		unit	: in pac_unit_name.bounded_string)
 		return et_coordinates.type_sheet;
 	
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC1
-		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
+		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 		destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level);
 
@@ -765,7 +765,7 @@ package et_schematic_ops is
 	-- in case exception occurs here.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
+		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
 		return type_port_properties_access;
 	
@@ -806,7 +806,7 @@ package et_schematic_ops is
 	-- any reference to a unit. This is useful when a device has only one unit.
 	function to_string (
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string; -- C
+		unit_name		: in pac_unit_name.bounded_string; -- C
 		query_result	: in type_unit_query)
 		return string;
 	
@@ -817,7 +817,7 @@ package et_schematic_ops is
 	-- If the given device or unit does not exist, then the return is false.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string) -- C
+		unit_name		: in pac_unit_name.bounded_string) -- C
 -- 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
 		return type_unit_query;
 
