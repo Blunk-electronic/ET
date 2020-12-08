@@ -96,11 +96,11 @@ package body et_submodules is
 	end;
 
 	function to_module_name (path : in pac_submodule_path.bounded_string) 
-		return et_general.pac_module_name.bounded_string 
+		return pac_module_name.bounded_string 
 	is
 		use et_general;
 		use pac_module_name;
-		name : et_general.pac_module_name.bounded_string;
+		name : pac_module_name.bounded_string;
 	begin
 		name := to_module_name (remove_extension (to_string (path)));
 		return name;
@@ -120,7 +120,7 @@ package body et_submodules is
 		is
 
 		procedure move (
-			name	: in et_general.pac_net_name.bounded_string;
+			name	: in pac_net_name.bounded_string;
 			port	: in out type_submodule_port) is
 		begin
 			move_by (port.position, offset);

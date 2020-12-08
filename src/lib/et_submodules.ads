@@ -51,7 +51,7 @@ with ada.containers.ordered_sets;
 
 with cairo;
 
-with et_general;
+with et_general;			use et_general;
 with et_text;
 with et_coordinates;		use et_coordinates;
 with et_pcb;
@@ -100,7 +100,7 @@ package et_submodules is
 	function to_string (path : in pac_submodule_path.bounded_string) return string;
 
 	function to_module_name (path : in pac_submodule_path.bounded_string) 
-		return et_general.pac_module_name.bounded_string;
+		return pac_module_name.bounded_string;
 	-- Removes the file extension from given path and returns the module name.
 
 
@@ -173,12 +173,12 @@ package et_submodules is
 		-- net in the submodule:
 		direction	: type_netchanger_port_name;
 	end record;
-	
+
+	use pac_net_name;
 	package type_submodule_ports is new ordered_maps (
 		element_type	=> type_submodule_port,
 		-- The net inside the submodule is here the port name:
-		"<"				=> et_general.pac_net_name."<",
-		key_type		=> et_general.pac_net_name.bounded_string); -- CLOCK_GENERATOR_OUT
+		key_type		=> pac_net_name.bounded_string); -- CLOCK_GENERATOR_OUT
 
 	procedure move_ports (
 	-- Moves the given submodule ports by the given offset.
@@ -238,10 +238,10 @@ package et_submodules is
 
 
 	
+	use pac_module_instance_name;
 	
 	package pac_submodules is new ordered_maps (
-		key_type		=> et_general.pac_module_instance_name.bounded_string, -- MOT_DRV_3
-		"<" 			=> et_general.pac_module_instance_name."<",
+		key_type		=> pac_module_instance_name.bounded_string, -- MOT_DRV_3
 		element_type	=> type_submodule);
 
 	netchanger_id_max : constant positive := 10000; -- CS  increase if necessary
