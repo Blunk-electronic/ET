@@ -498,7 +498,7 @@ package body et_project.modules is
 		use et_submodules;
 		use et_schematic;
 		
-		submodule_file : type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
+		submodule_file : pac_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
 		module_name : pac_module_name.bounded_string; 
 		module_cursor : pac_generic_modules.cursor;
 
@@ -604,7 +604,7 @@ package body et_project.modules is
 			use et_submodules;
 			use et_submodules.type_submodules;
 			submod_instance_cursor : et_submodules.type_submodules.cursor;
-			submod_path : type_submodule_path.bounded_string;
+			submod_path : pac_submodule_path.bounded_string;
 			submod_name	: pac_module_name.bounded_string;
 			submod_cursor : pac_generic_modules.cursor;
 

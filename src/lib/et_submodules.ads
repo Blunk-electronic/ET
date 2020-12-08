@@ -95,11 +95,11 @@ package et_submodules is
 	submodule_path_length_max : constant positive := 300;
 
 	-- The full name of a submodule like $ET_TEMPLATES/motor_driver.mod
-	package type_submodule_path is new generic_bounded_length (submodule_path_length_max);
-	function to_submodule_path (path : in string) return type_submodule_path.bounded_string;
-	function to_string (path : in type_submodule_path.bounded_string) return string;
+	package pac_submodule_path is new generic_bounded_length (submodule_path_length_max);
+	function to_submodule_path (path : in string) return pac_submodule_path.bounded_string;
+	function to_string (path : in pac_submodule_path.bounded_string) return string;
 
-	function to_module_name (path : in type_submodule_path.bounded_string) 
+	function to_module_name (path : in pac_submodule_path.bounded_string) 
 		return et_general.pac_module_name.bounded_string;
 	-- Removes the file extension from given path and returns the module name.
 
@@ -188,7 +188,7 @@ package et_submodules is
 	-- THIS IS THE GRAPHICAL REPRESENTATION OF A SUBMODULE ->
 	-- THE RECTANGULAR BOX AT THE SHEET WHERE THE SUBMODULE IS INSTANTIATED.
 	type type_submodule is record
-		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
+		file				: pac_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
 		position		    : et_coordinates.type_position; -- the lower left corner
 		size				: type_submodule_size; -- CS default ?
 		position_in_board	: et_pcb_coordinates.pac_geometry_brd.type_position := et_pcb_coordinates.pac_geometry_brd.origin_zero_rotation;

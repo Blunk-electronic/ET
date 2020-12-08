@@ -548,7 +548,7 @@ package et_schematic_ops is
 	procedure add_submodule (
 	-- Adds a submodule instance to the schematic.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		file			: in et_submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
+		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC1
 		position		: in et_coordinates.type_position; -- sheet, lower left corner x/y 
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
@@ -645,7 +645,7 @@ package et_schematic_ops is
 	procedure set_submodule_file (
 	-- Sets the file name of a submodule instance.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		file			: in et_submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
+		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level);
 

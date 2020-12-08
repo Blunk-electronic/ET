@@ -87,15 +87,15 @@ package body et_submodules is
 		return result;
 	end at_edge;
 	
-	function to_submodule_path (path : in string) return type_submodule_path.bounded_string is begin
-		return type_submodule_path.to_bounded_string (path);
+	function to_submodule_path (path : in string) return pac_submodule_path.bounded_string is begin
+		return pac_submodule_path.to_bounded_string (path);
 	end;
 
-	function to_string (path : in type_submodule_path.bounded_string) return string is begin
-		return type_submodule_path.to_string (path);
+	function to_string (path : in pac_submodule_path.bounded_string) return string is begin
+		return pac_submodule_path.to_string (path);
 	end;
 
-	function to_module_name (path : in type_submodule_path.bounded_string) 
+	function to_module_name (path : in pac_submodule_path.bounded_string) 
 		return et_general.pac_module_name.bounded_string 
 	is
 		use et_general;

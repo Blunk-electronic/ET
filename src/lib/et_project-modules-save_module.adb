@@ -1026,7 +1026,7 @@ is
 		begin
 			section_mark (section_submodule, HEADER);
 			write (keyword => keyword_name, parameters => et_general.to_string (key (submodule_cursor))); -- name stepper_driver_1
-			write (keyword => keyword_file, parameters => type_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
+			write (keyword => keyword_file, parameters => pac_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
 			write (keyword => keyword_position, parameters => position (element (submodule_cursor).position));
 			write (keyword => et_submodules.keyword_size, parameters => 
