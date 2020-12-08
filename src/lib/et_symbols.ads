@@ -455,13 +455,13 @@ package et_symbols is
 	type type_circle is new type_circle_base with record
 		filled		: type_circle_filled := NO;
 	end record;
-	package type_circles is new doubly_linked_lists (type_circle);
+	package pac_circles is new doubly_linked_lists (type_circle);
 
 	-- Shapes are wrapped in a the type_shapes:
 	type type_shapes is record
-		lines		: pac_lines.list 		:= pac_lines.empty_list;
+		lines		: pac_lines.list 	:= pac_lines.empty_list;
 		arcs 		: pac_arcs.list		:= pac_arcs.empty_list;
-		circles		: type_circles.list		:= type_circles.empty_list;
+		circles		: pac_circles.list	:= pac_circles.empty_list;
 	end record;
 
 

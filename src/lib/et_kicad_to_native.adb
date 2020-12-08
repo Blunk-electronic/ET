@@ -2211,7 +2211,7 @@ package body et_kicad_to_native is
 		end;
 
 		procedure copy_circle (cursor : in et_kicad_libraries.type_symbol_circles.cursor) is begin
-			type_circles.append (
+			pac_circles.append (
 				container	=> native_shapes.circles,
 				new_item	=> (
 					type_circle_base (et_kicad_libraries.type_symbol_circles.element (cursor))

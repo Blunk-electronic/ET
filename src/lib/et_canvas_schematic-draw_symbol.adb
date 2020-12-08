@@ -61,7 +61,7 @@ is
 	
 	use pac_lines;
 	use pac_arcs;
-	use type_circles;
+	use pac_circles;
 	use pac_ports;
 	use pac_texts;
 
@@ -89,7 +89,7 @@ is
 		draw_arc (in_area, context, arc, self.frame_height);
 	end draw_arc;
 
-	procedure draw_circle (c : in type_circles.cursor) is 
+	procedure draw_circle (c : in pac_circles.cursor) is 
 		circle : type_circle := (pac_shapes.type_circle (element (c)) with null record);
 	begin
 		rotate_by (circle, unit_rotation);

@@ -734,7 +734,7 @@ package body et_device_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_circle to unit_symbol
-								et_symbols.type_circles.append (
+								et_symbols.pac_circles.append (
 									container	=> unit_symbol.shapes.circles,
 									new_item	=> symbol_circle);
 

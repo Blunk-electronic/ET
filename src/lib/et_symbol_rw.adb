@@ -189,7 +189,7 @@ package body et_symbol_rw is
 
 		use pac_lines;
 		use pac_arcs;
-		use type_circles;
+		use pac_circles;
 		use pac_texts;
 		use pac_ports;
 
@@ -212,7 +212,7 @@ package body et_symbol_rw is
 			section_mark (section_arc, FOOTER);
 		end write_arc;
 
-		procedure write_circle (cursor : in type_circles.cursor) is begin
+		procedure write_circle (cursor : in pac_circles.cursor) is begin
 			section_mark (section_circle, HEADER);
 			write (keyword => keyword_center, parameters => position (element (cursor).center));
 			write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
@@ -612,7 +612,7 @@ package body et_symbol_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_circle to unit_symbol
-								type_circles.append (
+								pac_circles.append (
 									container	=> symbol.shapes.circles,
 									new_item	=> symbol_circle);
 
