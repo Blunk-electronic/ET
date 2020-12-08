@@ -1009,7 +1009,7 @@ is
 	procedure query_submodules is		
 		use et_schematic;
 		use et_submodules;
-		use type_submodules;
+		use pac_submodules;
 
 		procedure query_ports (port_cursor : in et_submodules.type_submodule_ports.cursor) is
 			use type_submodule_ports;
@@ -1021,7 +1021,7 @@ is
 			section_mark (section_port, FOOTER);
 		end;
 
-		procedure write (submodule_cursor : in type_submodules.cursor) is 
+		procedure write (submodule_cursor : in pac_submodules.cursor) is 
 			use et_coordinates.pac_geometry_sch;
 		begin
 			section_mark (section_submodule, HEADER);

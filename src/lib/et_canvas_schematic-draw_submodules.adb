@@ -51,9 +51,9 @@ procedure draw_submodules (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
-	use type_submodules;
+	use pac_submodules;
 	
-	procedure query_submods (cursor : in type_submodules.cursor) is
+	procedure query_submods (cursor : in pac_submodules.cursor) is
 
 		-- The lower left corner of the submodule box in the schematic:
 		submod_position : constant type_point := type_point (element (cursor).position);

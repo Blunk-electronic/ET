@@ -239,7 +239,7 @@ package et_submodules is
 
 	
 	
-	package type_submodules is new ordered_maps (
+	package pac_submodules is new ordered_maps (
 		key_type		=> et_general.pac_module_instance_name.bounded_string, -- MOT_DRV_3
 		"<" 			=> et_general.pac_module_instance_name."<",
 		element_type	=> type_submodule);

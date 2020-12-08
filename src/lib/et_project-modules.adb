@@ -487,7 +487,7 @@ package body et_project.modules is
 	function exists (
 	-- Returns true if the given module provides the given port.
 	-- The module being searched in must be in the rig already.
-		module			: in et_submodules.type_submodules.cursor;
+		module			: in et_submodules.pac_submodules.cursor;
 		port			: in et_general.pac_net_name.bounded_string; -- clock_output
 		direction		: in et_submodules.type_netchanger_port_name) -- master/slave
 		return boolean is
@@ -538,7 +538,7 @@ package body et_project.modules is
 		end query_nets;
 		
 	begin -- exists
-		submodule_file := type_submodules.element (module).file;
+		submodule_file := pac_submodules.element (module).file;
 
 		module_name := to_module_name (remove_extension (to_string (submodule_file)));
 		module_cursor := locate_module (module_name);
@@ -570,7 +570,7 @@ package body et_project.modules is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use et_submodules.type_submodules;
+			use et_submodules.pac_submodules;
 		begin
 			if contains (module.submods, instance) then
 				instance_found := true;
@@ -602,8 +602,8 @@ package body et_project.modules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
 			use et_submodules;
-			use et_submodules.type_submodules;
-			submod_instance_cursor : et_submodules.type_submodules.cursor;
+			use et_submodules.pac_submodules;
+			submod_instance_cursor : et_submodules.pac_submodules.cursor;
 			submod_path : pac_submodule_path.bounded_string;
 			submod_name	: pac_module_name.bounded_string;
 			submod_cursor : pac_generic_modules.cursor;

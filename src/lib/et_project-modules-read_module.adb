@@ -1006,15 +1006,15 @@ is
 				use et_schematic;
 				inserted : boolean;
 				use et_submodules;
-				use et_submodules.type_submodules;
-				cursor : et_submodules.type_submodules.cursor;
+				use et_submodules.pac_submodules;
+				cursor : et_submodules.pac_submodules.cursor;
 			begin
 				log (text => "submodule " & et_general.to_string (submodule_name), level => log_threshold + 1);
 
 				-- CS: notify about missing parameters (by reading the parameter-found-flags)
 				-- If a parameter is missing, the default is assumed. See type_submodule spec.
 				
-				type_submodules.insert (
+				pac_submodules.insert (
 					container	=> module.submods,
 					key			=> submodule_name,	-- the instance name like MOT_DRV_3
 					new_item	=> submodule,
@@ -6165,10 +6165,10 @@ is
 	-- NOTE: The parent procedure "read_module_file" calls itself here !
 
 		use et_submodules;
-		use type_submodules;
+		use pac_submodules;
 
 		-- Here the copy of submodules lives:
-		submods : et_submodules.type_submodules.map;
+		submods : et_submodules.pac_submodules.map;
 		
 		procedure get_submodules (
 		-- Copies the submodules in submods.
@@ -6178,7 +6178,7 @@ is
 			submods := module.submods;
 		end;
 
-		procedure query_module (cursor : in type_submodules.cursor) is begin
+		procedure query_module (cursor : in pac_submodules.cursor) is begin
 			-- Read the template file:
 			read_module (to_string (element (cursor).file), log_threshold + 1);
 		end;

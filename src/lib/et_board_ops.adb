@@ -828,8 +828,8 @@ package body et_board_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
-			use et_submodules.type_submodules;
-			submod_cursor : et_submodules.type_submodules.cursor;
+			use et_submodules.pac_submodules;
+			submod_cursor : et_submodules.pac_submodules.cursor;
 		begin
 			submod_cursor := find (module.submods, instance);
 			position := element (submod_cursor).position_in_board;
@@ -860,8 +860,8 @@ package body et_board_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_submodules.type_submodules;
-			submod_cursor : et_submodules.type_submodules.cursor;
+			use et_submodules.pac_submodules;
+			submod_cursor : et_submodules.pac_submodules.cursor;
 
 			procedure move (
 				instance	: in et_general.pac_module_instance_name.bounded_string;

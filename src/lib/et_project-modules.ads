@@ -291,7 +291,7 @@ package et_project.modules is
 	function exists (
 	-- Returns true if the given module provides the given port.
 	-- The module being searched in must be in the rig already.						
-		module			: in et_submodules.type_submodules.cursor;
+		module			: in et_submodules.pac_submodules.cursor;
 		port			: in et_general.pac_net_name.bounded_string;
 		direction		: in et_submodules.type_netchanger_port_name) -- master/slave		
 		return boolean;

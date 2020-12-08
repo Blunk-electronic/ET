@@ -687,8 +687,8 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
 			use et_submodules;			
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 			submod_position : et_coordinates.type_position;
 
 			procedure query_ports (
@@ -1829,7 +1829,7 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
 			use pac_devices_sch;
-			use et_submodules.type_submodules;
+			use et_submodules.pac_submodules;
 			use et_submodules.pac_netchangers;			
 			
 			procedure query_devices (device_cursor : in pac_devices_sch.cursor) is
@@ -1905,7 +1905,7 @@ package body et_schematic_ops is
 				--log_indentation_down;
 			end query_devices;
 
-			procedure query_submodules (submodule_cursor : in et_submodules.type_submodules.cursor) is
+			procedure query_submodules (submodule_cursor : in et_submodules.pac_submodules.cursor) is
 				submodule_position : et_coordinates.type_position;
 				ports : et_submodules.type_submodule_ports.map;
 
@@ -2858,8 +2858,8 @@ package body et_schematic_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 
 			procedure query_ports (
 			-- Searches the portlist of the submodule for a port having the port_name.
@@ -4593,8 +4593,8 @@ package body et_schematic_ops is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 			inserted : boolean;
 			submodule : type_submodule;
 		begin -- add
@@ -4829,8 +4829,8 @@ package body et_schematic_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
@@ -5088,8 +5088,8 @@ package body et_schematic_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
@@ -5181,8 +5181,8 @@ package body et_schematic_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
@@ -5576,8 +5576,8 @@ package body et_schematic_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
@@ -5853,8 +5853,8 @@ package body et_schematic_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 		begin -- query_submodules
 			if contains (module.submods, instance) then
 
@@ -5916,8 +5916,8 @@ package body et_schematic_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 
 			-- the submodule ports to be moved
 			ports : type_submodule_ports.map; -- port names and relative x/y positions
@@ -6074,8 +6074,8 @@ package body et_schematic_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 
 			-- the submodule ports to be moved
 			use type_submodule_ports;
@@ -6269,8 +6269,8 @@ package body et_schematic_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 			inserted : boolean;
 			submodule : type_submodule;
 
@@ -6387,8 +6387,8 @@ package body et_schematic_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 			submodule_old : type_submodule;
 
 			-- the submodule ports to be inserted in the nets
@@ -6501,8 +6501,8 @@ package body et_schematic_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 
 			procedure set_file (
 				submod_name	: in pac_module_instance_name.bounded_string;
@@ -6514,9 +6514,9 @@ package body et_schematic_ops is
 				-- The test module is a copy of the targeted submodule except that it
 				-- get the given file assigned. The test submodule will then be stored in a
 				-- map and will be the only item in the map:
-				test_mods : type_submodules.map;
+				test_mods : pac_submodules.map;
 				test_mod : type_submodule := submodule;
-				test_mod_cursor : type_submodules.cursor;
+				test_mod_cursor : pac_submodules.cursor;
 
 				-- For iterating the ports of the submodule box, we need a cursor:
 				use type_submodule_ports;
@@ -7939,12 +7939,12 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
 			use et_submodules;
-			use et_submodules.type_submodules;
-			submod_cursor	: et_submodules.type_submodules.cursor := module.submods.first;
+			use et_submodules.pac_submodules;
+			submod_cursor	: et_submodules.pac_submodules.cursor := module.submods.first;
 			submod_name		: pac_module_name.bounded_string; -- $ET_TEMPLATES/motor_driver
 			submod_instance	: pac_module_instance_name.bounded_string; -- OSC1
 		begin -- query_submodules in given top module
-			while submod_cursor /= et_submodules.type_submodules.no_element loop
+			while submod_cursor /= et_submodules.pac_submodules.no_element loop
 				submod_name := to_module_name (remove_extension (to_string (element (submod_cursor).file)));
 				submod_instance := key (submod_cursor);
 				log (text => "submodule " & enclose_in_quotes (to_string (submod_name)) &
@@ -8579,7 +8579,7 @@ package body et_schematic_ops is
 	
 	function extend_ports (
 	-- Adds further properties to the given device ports.
-	-- Additional properties are electrical characteristics (see et_libraries.type_port)
+	-- Additional properties are electrical characteristics
 	-- and the terminal name).
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_device_ports.set)
@@ -8633,8 +8633,8 @@ package body et_schematic_ops is
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
+			use pac_submodules;
+			submod_cursor : pac_submodules.cursor;
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
