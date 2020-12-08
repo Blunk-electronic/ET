@@ -417,7 +417,7 @@ package et_devices is
 
 
 -- DEVICES
-	type type_device (appearance : type_appearance) is record -- CS rename to type_device_lib
+	type type_device_lib (appearance : type_appearance) is record
 		prefix			: pac_device_prefix.bounded_string; -- R, C, IC, ...
 		units_internal	: pac_units_internal.map := pac_units_internal.empty_map;
 		units_external	: pac_units_external.map := pac_units_external.empty_map;
@@ -461,7 +461,7 @@ package et_devices is
 	package pac_devices_lib is new indefinite_ordered_maps (
 		key_type 		=> pac_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
 		"<"				=> pac_device_model_file."<",
-		element_type	=> type_device);
+		element_type	=> type_device_lib);
 
 	device_model_file_extension : constant string := "dev";
 

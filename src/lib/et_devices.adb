@@ -723,7 +723,7 @@ package body et_devices is
 		
 		procedure query_internal (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device)
+			device	: in type_device_lib)
 		is begin
 			if device.units_internal.contains (unit_name) then
 				found := true;
@@ -732,7 +732,7 @@ package body et_devices is
 
 		procedure query_external (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device)
+			device	: in type_device_lib)
 		is begin
 			if device.units_external.contains (unit_name) then
 				found := true;
@@ -768,7 +768,7 @@ package body et_devices is
 
 		procedure query_units (
 			device_name	: in pac_device_model_file.bounded_string;
-			device		: in type_device) is
+			device		: in type_device_lib) is
 
 			function first_internal (add_level : in type_add_level) 
 				return pac_units_internal.cursor is
@@ -915,7 +915,7 @@ package body et_devices is
 		
 		procedure query_units (
 			device_name	: in pac_device_model_file.bounded_string;
-			device		: in type_device) is
+			device		: in type_device_lib) is
 		begin -- query_units
 			-- First search among the internal units:
 			cursors.int := device.units_internal.first;
@@ -1012,7 +1012,7 @@ package body et_devices is
 		
 		procedure query_variants (
 			device_name	: in pac_device_model_file.bounded_string;
-			device		: in type_device) is
+			device		: in type_device_lib) is
 		begin
 			if pac_variants.contains (device.variants, variant) then
 				result := true;
@@ -1068,7 +1068,7 @@ package body et_devices is
 
 		procedure query_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device) is
+			device	: in type_device_lib) is
 		begin
 			-- Most likely the requested unit is external. So we search first in 
 			-- the list of external units of the given device:
@@ -1105,7 +1105,7 @@ package body et_devices is
 
 		procedure query_variants (
 			device_name	: in pac_device_model_file.bounded_string;
-			device		: in type_device) is
+			device		: in type_device_lib) is
 			use pac_variants;
 			variant_cursor : pac_variants.cursor;
 		begin
@@ -1135,7 +1135,7 @@ package body et_devices is
 
 		procedure query_units (
 			model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
-			device	: in type_device) is
+			device	: in type_device_lib) is
 
 			use pac_units_internal;
 			unit_internal_cursor : pac_units_internal.cursor := device.units_internal.first;

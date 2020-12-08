@@ -3149,7 +3149,7 @@ package body et_kicad_to_native is
 				procedure copy_units (
 				-- Transfers the kicad units to native units in the current native ET device.
 					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
-					device		: in out et_devices.type_device) is
+					device		: in out et_devices.type_device_lib) is
 
 					use et_kicad_libraries;
 					
@@ -3502,7 +3502,7 @@ package body et_kicad_to_native is
 				-- The package associated with a variant must be changed so that it becomes 
 				-- something like libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac
 					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
-					device		: in out et_devices.type_device) is
+					device		: in out et_devices.type_device_lib) is
 
 					use et_devices.pac_variants;
 					variant_cursor : et_devices.pac_variants.cursor := device.variants.first;

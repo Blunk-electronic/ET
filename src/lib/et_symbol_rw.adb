@@ -132,7 +132,7 @@ package body et_symbol_rw is
 	end to_position;
 	
 	procedure write_text_properties (t : in type_text_basic'class) is
-		use et_symbols.pac_text;
+		use pac_text;
 		use et_text;
 	begin
 		write (keyword => keyword_size, parameters => to_string (t.size));
@@ -182,9 +182,9 @@ package body et_symbol_rw is
 	
 	procedure write_symbol ( 
 		symbol			: in type_symbol;
-		log_threshold	: in et_string_processing.type_log_level) is
-
-		use et_symbols.pac_shapes;
+		log_threshold	: in et_string_processing.type_log_level)
+	is
+		use pac_shapes;
 		use et_text;
 
 		use pac_lines;

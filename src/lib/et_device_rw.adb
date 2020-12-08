@@ -63,7 +63,7 @@ with et_pcb_rw.device_packages;
 with et_conventions;
 with et_geometry;				use et_geometry;
 with et_text;
-with et_symbols;
+with et_symbols;				use et_symbols;
 with et_packages;				use et_packages;
 
 package body et_device_rw is
@@ -74,10 +74,10 @@ package body et_device_rw is
 	-- Creates a device and stores it in container et_devices.devices.
 		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		appearance		: in et_symbols.type_appearance;
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in et_string_processing.type_log_level) 
+	is
 		use et_string_processing;
 		use pac_devices_lib;
-		use et_symbols;
 	begin
 		log (text => "creating device " & to_string (device_name) & " ...", level => log_threshold);
 		log_indentation_up;
@@ -111,10 +111,10 @@ package body et_device_rw is
 	procedure save_device (
 	-- Saves the given device model in a file specified by name.
 		file_name		: in pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
-		device			: in type_device; -- the actual device model
-		log_threshold	: in et_string_processing.type_log_level) is
+		device			: in type_device_lib; -- the actual device model
+		log_threshold	: in et_string_processing.type_log_level)
+	is
 		use et_string_processing;
-		use et_symbols;
 		file_handle : ada.text_io.file_type;
 
 		use pac_variants;
@@ -262,9 +262,9 @@ package body et_device_rw is
 	-- Opens the device and stores it in container devices.
 		file_name 		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in et_string_processing.type_log_level) 
+	is
 		use et_string_processing;
-		use et_symbols;
 		use et_text;
 		file_handle : ada.text_io.file_type;
 
@@ -398,7 +398,7 @@ package body et_device_rw is
 		
 		symbol_text_position		: type_point;
 		symbol_text_content			: et_text.type_text_content.bounded_string;
-		symbol_placeholder_meaning	: et_symbols.type_placeholder_meaning := placeholder_meaning_default;
+		symbol_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
 		
 		port					: type_port_base;
 		port_name				: pac_port_name.bounded_string;
@@ -704,7 +704,7 @@ package body et_device_rw is
 							when SEC_DRAW => 
 
 								-- append symbol_line to unit_symbol
-								et_symbols.pac_lines.append (
+								pac_lines.append (
 									container	=> unit_symbol.shapes.lines,
 									new_item	=> symbol_line);
 
@@ -719,7 +719,7 @@ package body et_device_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_arc to unit_symbol
-								et_symbols.pac_arcs.append (
+								pac_arcs.append (
 									container	=> unit_symbol.shapes.arcs,
 									new_item	=> symbol_arc);
 
@@ -734,7 +734,7 @@ package body et_device_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_circle to unit_symbol
-								et_symbols.pac_circles.append (
+								pac_circles.append (
 									container	=> unit_symbol.shapes.circles,
 									new_item	=> symbol_circle);
 

@@ -457,7 +457,7 @@ package body et_schematic_ops is
 
 		procedure query_internal_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in et_devices.type_device) is
+			device	: in et_devices.type_device_lib) is
 			use pac_units_internal;
 			unit_cursor : pac_units_internal.cursor;
 		begin -- query_internal_units
@@ -472,7 +472,7 @@ package body et_schematic_ops is
 
 		procedure query_external_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in et_devices.type_device) is
+			device	: in et_devices.type_device_lib) is
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
 			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
@@ -1326,7 +1326,7 @@ package body et_schematic_ops is
 		
 		procedure query_internal_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in et_devices.type_device) is
+			device	: in et_devices.type_device_lib) is
 			use pac_units_internal;
 			unit_cursor : pac_units_internal.cursor;
 		begin
@@ -1359,7 +1359,7 @@ package body et_schematic_ops is
 
 		procedure query_external_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in et_devices.type_device) is
+			device	: in et_devices.type_device_lib) is
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
 			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
@@ -8515,7 +8515,7 @@ package body et_schematic_ops is
 
 			procedure query_variants (
 				model	: in pac_device_model_file.bounded_string;
-				device	: in et_devices.type_device) is
+				device	: in et_devices.type_device_lib) is
 				variant_cursor : pac_variants.cursor;
 
 				procedure query_ports (
