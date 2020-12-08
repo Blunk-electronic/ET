@@ -719,7 +719,7 @@ package body et_device_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_arc to unit_symbol
-								et_symbols.type_arcs.append (
+								et_symbols.pac_arcs.append (
 									container	=> unit_symbol.shapes.arcs,
 									new_item	=> symbol_arc);
 

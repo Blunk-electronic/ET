@@ -60,7 +60,7 @@ is
 	use pac_draw_symbols;
 	
 	use pac_lines;
-	use type_arcs;
+	use pac_arcs;
 	use type_circles;
 	use pac_ports;
 	use pac_texts;
@@ -79,7 +79,7 @@ is
 		draw_line (in_area, context, line, self.frame_height);
 	end draw_line;
 
-	procedure draw_arc (c : in type_arcs.cursor) is 
+	procedure draw_arc (c : in pac_arcs.cursor) is 
 		-- Take a copy of the given arc:
 		arc : type_arc := (pac_shapes.type_arc (element (c)) with null record);
 	begin

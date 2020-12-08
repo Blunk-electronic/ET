@@ -441,7 +441,7 @@ package et_symbols is
 		radius		: type_distance_positive; -- CS really required ?
 		width		: type_line_width := line_width_default;
 	end record;
-	package type_arcs is new doubly_linked_lists (type_arc);
+	package pac_arcs is new doubly_linked_lists (type_arc);
 
 	type type_circle_filled is (NO, YES);
 	function to_string (filled : in type_circle_filled) return string;
@@ -460,7 +460,7 @@ package et_symbols is
 	-- Shapes are wrapped in a the type_shapes:
 	type type_shapes is record
 		lines		: pac_lines.list 		:= pac_lines.empty_list;
-		arcs 		: type_arcs.list		:= type_arcs.empty_list;
+		arcs 		: pac_arcs.list		:= pac_arcs.empty_list;
 		circles		: type_circles.list		:= type_circles.empty_list;
 	end record;
 

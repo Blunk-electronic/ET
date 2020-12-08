@@ -2205,7 +2205,7 @@ package body et_kicad_to_native is
 		end;
 
 		procedure copy_arc (cursor : in et_kicad_libraries.type_symbol_arcs.cursor) is begin
-			type_arcs.append (
+			pac_arcs.append (
 				container	=> native_shapes.arcs,
 				new_item	=> type_arc (et_kicad_libraries.type_symbol_arcs.element (cursor)));
 		end;
