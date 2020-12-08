@@ -291,7 +291,7 @@ package et_submodules is
 		layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 	end record;
 
-	package type_netchangers is new ordered_maps (
+	package pac_netchangers is new ordered_maps (
 		key_type		=> type_netchanger_id,
 		element_type	=> type_netchanger);
 
@@ -302,7 +302,7 @@ package et_submodules is
 	
 	function netchanger_ports (
 	-- Returns the absolute x/y positions of the given netchanger.
-		netchanger_cursor	: in type_netchangers.cursor)
+		netchanger_cursor	: in pac_netchangers.cursor)
 		return type_netchanger_ports;
 	
 	-- A module connector connects the parent module with the submodule.

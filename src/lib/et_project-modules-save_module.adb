@@ -923,9 +923,9 @@ is
 	procedure query_netchangers is
 	-- writes the netchangers in the module file
 		use et_submodules;
-		use type_netchangers;
+		use pac_netchangers;
 
-		procedure query_netchanger (cursor : type_netchangers.cursor) is
+		procedure query_netchanger (cursor : pac_netchangers.cursor) is
 		begin
 			section_mark (section_netchanger, HEADER);
 			write (keyword => keyword_name,	parameters => to_string (key (cursor))); -- 1, 2, 201, ...

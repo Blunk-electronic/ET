@@ -55,6 +55,9 @@ package body et_schematic_ops is
 
 	use pac_generic_modules;
 	use et_canvas_schematic.pac_canvas;
+
+	use et_submodules.pac_netchangers;
+	use pac_strands;
 	
 	procedure device_not_found (name : in type_device_name) is begin
 		raise semantic_error_1 
@@ -267,12 +270,9 @@ package body et_schematic_ops is
 
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
-					net			: in out type_net) is
-					use pac_strands;
-
+					net			: in out type_net) 
+				is
 					procedure query_strand (strand_cursor : in pac_strands.cursor) is
-						use et_coordinates;
-
 						procedure query_segments (strand : in out type_strand) is
 							use pac_net_segments;
 
@@ -771,9 +771,9 @@ package body et_schematic_ops is
 
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
-			use type_netchangers;
-			nc_cursor : type_netchangers.cursor;
+			module		: in type_module) 
+		is
+			nc_cursor : pac_netchangers.cursor;
 			nc_position : et_coordinates.type_position;
 			port_xy : type_point;
 		begin -- query_netchangers
@@ -982,10 +982,8 @@ package body et_schematic_ops is
 
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
-					net			: in out type_net) is
-					use et_coordinates;
-					
-					use pac_strands;
+					net			: in out type_net) 
+				is
 					strand_cursor : pac_strands.cursor;
 
 					use et_symbols;
@@ -1151,9 +1149,8 @@ package body et_schematic_ops is
 
 				procedure move_placeholder (
 					unit_name	: in pac_unit_name.bounded_string;
-					unit		: in out type_unit) is
-					use et_coordinates;
-
+					unit		: in out type_unit)
+				is
 					-- In case absolute movement is required, calculate the
 					-- new position of the placeholder relative to the unit origin:
 					pos_abs : constant type_point := 
@@ -1749,9 +1746,8 @@ package body et_schematic_ops is
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in type_net) is
-				use et_coordinates;
-				use pac_strands;
+				net			: in type_net)
+			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in type_strand) is
@@ -1834,7 +1830,7 @@ package body et_schematic_ops is
 			module		: in type_module) is
 			use pac_devices_sch;
 			use et_submodules.type_submodules;
-			use et_submodules.type_netchangers;			
+			use et_submodules.pac_netchangers;			
 			
 			procedure query_devices (device_cursor : in pac_devices_sch.cursor) is
 
@@ -1957,7 +1953,7 @@ package body et_schematic_ops is
 				
 			end query_submodules;
 
-			procedure query_netchangers (netchanger_cursor : in et_submodules.type_netchangers.cursor) is
+			procedure query_netchangers (netchanger_cursor : in et_submodules.pac_netchangers.cursor) is
 				netchanger_position : et_coordinates.type_position;
 				ports : et_submodules.type_netchanger_ports;
 				use et_netlists;
@@ -2060,12 +2056,9 @@ package body et_schematic_ops is
 
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
-					net			: in out type_net) is
-					use pac_strands;
-
+					net			: in out type_net) 
+				is
 					procedure query_strand (strand_cursor : in pac_strands.cursor) is
-						use et_coordinates;
-
 						procedure query_segments (strand : in out type_strand) is
 							use pac_net_segments;
 
@@ -2917,7 +2910,7 @@ package body et_schematic_ops is
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
-			use et_submodules.type_netchangers;
+			use et_submodules.pac_netchangers;
 		begin -- query_netchangers
 			if contains (module.netchangers, index) then
 				result := true;
@@ -3478,9 +3471,9 @@ package body et_schematic_ops is
 		procedure search_gap (
 		-- Searches for the lowest available index.
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
-			use type_netchangers;
-			cursor : type_netchangers.cursor := module.netchangers.first;
+			module		: in type_module)
+		is
+			cursor : pac_netchangers.cursor := module.netchangers.first;
 
 			-- We start the search with index 1.
 			index_expected : type_netchanger_id := type_netchanger_id'first;
@@ -3488,7 +3481,7 @@ package body et_schematic_ops is
 			gap_found : boolean := false; -- goes true once a gap has been found
 			
 		begin -- search_gap
-			while cursor /= type_netchangers.no_element loop
+			while cursor /= pac_netchangers.no_element loop
 					
 				if key (cursor) /= index_expected then -- we have a gap
 					next_idx := index_expected;
@@ -3549,9 +3542,8 @@ package body et_schematic_ops is
 				
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
-					net			: in out type_net) is
-					use et_coordinates;
-					use pac_strands;
+					net			: in out type_net) 
+				is
 					strand_cursor : pac_strands.cursor := net.strands.first;
 
 					procedure query_segments (strand : in out type_strand) is
@@ -3682,10 +3674,10 @@ package body et_schematic_ops is
 
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module)
+		is
 			use et_submodules;
-			use type_netchangers;
-			cursor : type_netchangers.cursor;
+			cursor : pac_netchangers.cursor;
 			index : type_netchanger_id;
 			netchanger : type_netchanger;
 			inserted : boolean;
@@ -3771,9 +3763,8 @@ package body et_schematic_ops is
 			
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-				use et_coordinates;
-				use pac_strands;
+				net			: in out type_net) 
+			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out type_strand) is
@@ -3880,17 +3871,16 @@ package body et_schematic_ops is
 
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-			use et_coordinates;
-			use type_netchangers;
-			cursor : type_netchangers.cursor;
+			module		: in out type_module)
+		is
+			cursor : pac_netchangers.cursor;
 			location : et_coordinates.type_position;
 		begin -- query_netchangers
 
 			-- locate given netchanger
 			cursor := find (module.netchangers, index);
 
-			if cursor /= type_netchangers.no_element then 
+			if cursor /= pac_netchangers.no_element then 
 				-- netchanger exists
 
 				-- Get coordinates of netchanger master port.
@@ -3959,10 +3949,9 @@ package body et_schematic_ops is
 
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-			use et_coordinates;
-			use type_netchangers;
-			cursor : type_netchangers.cursor;
+			module		: in out type_module) 
+		is
+			cursor : pac_netchangers.cursor;
 			location : et_coordinates.type_position;
 			ports : type_netchanger_ports;
 			
@@ -3978,7 +3967,7 @@ package body et_schematic_ops is
 			-- locate given netchanger
 			cursor := find (module.netchangers, index);
 
-			if cursor /= type_netchangers.no_element then 
+			if cursor /= pac_netchangers.no_element then 
 				-- netchanger exists
 
 				-- Get coordinates of netchanger master port.
@@ -4098,9 +4087,8 @@ package body et_schematic_ops is
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-				use et_coordinates;
-				use pac_strands;
+				net			: in out type_net) 
+			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				-- This flag goes true once port_before has been found the first time
@@ -4357,10 +4345,9 @@ package body et_schematic_ops is
 		
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-			use et_coordinates;
-			use type_netchangers;
-			cursor : type_netchangers.cursor;
+			module		: in out type_module) 
+		is
+			cursor : pac_netchangers.cursor;
 			location : et_coordinates.type_position;
 			ports_old : type_netchanger_ports;
 			ports_new : type_netchanger_ports;
@@ -4377,7 +4364,7 @@ package body et_schematic_ops is
 			-- locate given netchanger
 			cursor := find (module.netchangers, index);
 
-			if cursor /= type_netchangers.no_element then 
+			if cursor /= pac_netchangers.no_element then 
 				-- netchanger exists
 
 				-- Before the actual drag, the coordinates of the
@@ -4483,10 +4470,9 @@ package body et_schematic_ops is
 
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-			use et_coordinates;
-			use type_netchangers;
-			cursor : type_netchangers.cursor;
+			module		: in out type_module) 
+		is
+			cursor : pac_netchangers.cursor;
 			location : et_coordinates.type_position;
 			rotation : et_coordinates.type_rotation;
 			ports_old : type_netchanger_ports;
@@ -4504,7 +4490,7 @@ package body et_schematic_ops is
 			-- locate given netchanger
 			cursor := find (module.netchangers, index);
 
-			if cursor /= type_netchangers.no_element then 
+			if cursor /= pac_netchangers.no_element then 
 				-- netchanger exists
 
 				log_indentation_up;
@@ -4708,9 +4694,8 @@ package body et_schematic_ops is
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-				use et_coordinates;
-				use pac_strands;
+				net			: in out type_net) 
+			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out type_strand) is
@@ -4989,9 +4974,8 @@ package body et_schematic_ops is
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-				use et_coordinates;
-				use pac_strands;
+				net			: in out type_net) 
+			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out type_strand) is
@@ -5364,9 +5348,8 @@ package body et_schematic_ops is
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-				use et_coordinates;
-				use pac_strands;
+				net			: in out type_net) 
+			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				-- This flag goes true once the port has been found the first time
@@ -5767,9 +5750,8 @@ package body et_schematic_ops is
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-				use et_coordinates;
-				use pac_strands;
+				net			: in out type_net) 
+			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out type_strand) is
@@ -7441,7 +7423,6 @@ package body et_schematic_ops is
 			use et_numbering.type_devices;
 			cursor : et_numbering.type_devices.cursor := devices.first;
 			name_before, name_after : type_device_name; -- R1
-			use et_coordinates;
 			sheet_before, sheet_now : type_sheet := type_sheet'first;
 
 			index_on_sheet : type_name_index := type_name_index'first;
@@ -9310,9 +9291,8 @@ package body et_schematic_ops is
 
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
-					net			: in type_net) is
-					use pac_strands;
-
+					net			: in type_net) 
+				is
 					procedure query_strand (strand_cursor : in pac_strands.cursor) is
 
 						procedure query_segments (strand : in type_strand) is

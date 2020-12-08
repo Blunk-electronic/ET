@@ -2815,8 +2815,8 @@ is
 				module		: in out et_schematic.type_module) is
 				inserted : boolean;
 				use et_submodules;
-				use type_netchangers;
-				cursor : type_netchangers.cursor;
+				use pac_netchangers;
+				cursor : pac_netchangers.cursor;
 			begin
 				log (text => "netchanger " & to_string (netchanger_id), level => log_threshold + 2);
 

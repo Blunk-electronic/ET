@@ -595,7 +595,7 @@ package et_schematic is
 		devices			: pac_devices_sch.map;						-- the devices of the module
 		net_classes		: et_pcb.type_net_classes.map;			-- the net classes
 		submods			: et_submodules.type_submodules.map;		-- instances of submodules (boxes)
-		netchangers		: et_submodules.type_netchangers.map;		-- netchangers
+		netchangers		: et_submodules.pac_netchangers.map;		-- netchangers
 		
 		texts       	: pac_texts.list; -- general notes in schematic, not related to drawing frames !
 

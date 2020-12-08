@@ -170,9 +170,9 @@ package body et_submodules is
 
 	function netchanger_ports (
 	-- Returns the absolute x/y positions of the given netchanger.
-		netchanger_cursor	: in type_netchangers.cursor)
+		netchanger_cursor	: in pac_netchangers.cursor)
 		return type_netchanger_ports is
-		use type_netchangers;
+		use pac_netchangers;
 		ports : type_netchanger_ports;
 	begin
 		-- rotate the ports according to rotation in schematic
