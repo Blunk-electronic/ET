@@ -268,9 +268,9 @@ package body et_schematic_ops is
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net) is
-					use type_strands;
+					use pac_strands;
 
-					procedure query_strand (strand_cursor : in type_strands.cursor) is
+					procedure query_strand (strand_cursor : in pac_strands.cursor) is
 						use et_coordinates;
 
 						procedure query_segments (strand : in out type_strand) is
@@ -985,8 +985,8 @@ package body et_schematic_ops is
 					net			: in out type_net) is
 					use et_coordinates;
 					
-					use type_strands;
-					strand_cursor : type_strands.cursor;
+					use pac_strands;
+					strand_cursor : pac_strands.cursor;
 
 					use et_symbols;
 					use et_symbols.type_ports;
@@ -1068,7 +1068,7 @@ package body et_schematic_ops is
 						port_processed := false;
 						
 						strand_cursor := net.strands.first;
-						while strand_cursor /= type_strands.no_element loop
+						while strand_cursor /= pac_strands.no_element loop
 
 							-- We pick out only the strands on the targeted sheet:
 							if et_coordinates.sheet (element (strand_cursor).position) = sheet then
@@ -1589,8 +1589,8 @@ package body et_schematic_ops is
 -- 					net			: in out type_net) is
 -- 					use et_coordinates;
 -- 					
--- 					use type_strands;
--- 					strand_cursor : type_strands.cursor;
+-- 					use pac_strands;
+-- 					strand_cursor : pac_strands.cursor;
 -- 					
 -- 					use type_drags_of_ports;
 -- 					drag_cursor : type_drags_of_ports.cursor := drag_list.first;
@@ -1674,7 +1674,7 @@ package body et_schematic_ops is
 -- 						drag_processed := false;
 -- 						
 -- 						strand_cursor := net.strands.first;
--- 						while strand_cursor /= type_strands.no_element loop
+-- 						while strand_cursor /= pac_strands.no_element loop
 -- 							
 -- 							-- We pick out only the strands on the targeted sheet:
 -- 							if et_coordinates.sheet (element (strand_cursor).position) = sheet then
@@ -1751,8 +1751,8 @@ package body et_schematic_ops is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net) is
 				use et_coordinates;
-				use type_strands;
-				strand_cursor : type_strands.cursor := net.strands.first;
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in type_strand) is
 					use pac_net_segments;
@@ -1784,7 +1784,7 @@ package body et_schematic_ops is
 				end query_segments;
 				
 			begin -- query_strands
-				while not segment_found and strand_cursor /= type_strands.no_element loop
+				while not segment_found and strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet (place) then
@@ -2061,9 +2061,9 @@ package body et_schematic_ops is
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net) is
-					use type_strands;
+					use pac_strands;
 
-					procedure query_strand (strand_cursor : in type_strands.cursor) is
+					procedure query_strand (strand_cursor : in pac_strands.cursor) is
 						use et_coordinates;
 
 						procedure query_segments (strand : in out type_strand) is
@@ -3551,8 +3551,8 @@ package body et_schematic_ops is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net) is
 					use et_coordinates;
-					use type_strands;
-					strand_cursor : type_strands.cursor := net.strands.first;
+					use pac_strands;
+					strand_cursor : pac_strands.cursor := net.strands.first;
 
 					procedure query_segments (strand : in out type_strand) is
 						use pac_net_segments;
@@ -3610,7 +3610,7 @@ package body et_schematic_ops is
 				begin -- query_strands
 					log_indentation_up;
 					
-					while not port_processed and strand_cursor /= type_strands.no_element loop
+					while not port_processed and strand_cursor /= pac_strands.no_element loop
 
 						-- We pick out only the strands on the targeted sheet:
 						if et_coordinates.sheet (element (strand_cursor).position) = sheet then
@@ -3773,8 +3773,8 @@ package body et_schematic_ops is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
-				use type_strands;
-				strand_cursor : type_strands.cursor := net.strands.first;
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out type_strand) is
 					use pac_net_segments;
@@ -3827,7 +3827,7 @@ package body et_schematic_ops is
 				end query_segments;
 				
 			begin -- query_strands
-				while not all_ports_deleted and strand_cursor /= type_strands.no_element loop
+				while not all_ports_deleted and strand_cursor /= pac_strands.no_element loop
 
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet then
 
@@ -4100,8 +4100,8 @@ package body et_schematic_ops is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
-				use type_strands;
-				strand_cursor : type_strands.cursor := net.strands.first;
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				-- This flag goes true once port_before has been found the first time
 				-- and affected end points of segments have been moved to port_after.
@@ -4180,7 +4180,7 @@ package body et_schematic_ops is
 				
 			begin -- query_strands
 				log_indentation_up;
-				while strand_cursor /= type_strands.no_element loop
+				while strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet then
@@ -4710,8 +4710,8 @@ package body et_schematic_ops is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
-				use type_strands;
-				strand_cursor : type_strands.cursor := net.strands.first;
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out type_strand) is
 					use pac_net_segments;
@@ -4768,7 +4768,7 @@ package body et_schematic_ops is
 			begin -- query_strands
 				log_indentation_up;
 				
-				while not port_processed and strand_cursor /= type_strands.no_element loop
+				while not port_processed and strand_cursor /= pac_strands.no_element loop
 
 					-- We pick out only the strands on the targeted sheet:
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
@@ -4991,8 +4991,8 @@ package body et_schematic_ops is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
-				use type_strands;
-				strand_cursor : type_strands.cursor := net.strands.first;
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out type_strand) is
 					use pac_net_segments;
@@ -5035,7 +5035,7 @@ package body et_schematic_ops is
 			begin -- query_strands
 				log_indentation_up;
 				
-				while not port_processed and strand_cursor /= type_strands.no_element loop
+				while not port_processed and strand_cursor /= pac_strands.no_element loop
 
 					-- We pick out only the strands on the targeted sheet:
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
@@ -5366,8 +5366,8 @@ package body et_schematic_ops is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
-				use type_strands;
-				strand_cursor : type_strands.cursor := net.strands.first;
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				-- This flag goes true once the port has been found the first time
 				-- and affected end points of segments have been moved.
@@ -5446,7 +5446,7 @@ package body et_schematic_ops is
 				
 			begin -- query_strands
 				log_indentation_up;
-				while strand_cursor /= type_strands.no_element loop
+				while strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet (pos_before) then
@@ -5769,8 +5769,8 @@ package body et_schematic_ops is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
-				use type_strands;
-				strand_cursor : type_strands.cursor := net.strands.first;
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out type_strand) is
 					use pac_net_segments;
@@ -5809,7 +5809,7 @@ package body et_schematic_ops is
 			begin -- query_strands
 				log_indentation_up;
 				
-				while strand_cursor /= type_strands.no_element loop
+				while strand_cursor /= pac_strands.no_element loop
 
 					-- We pick out only the strands on the targeted sheet:
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
@@ -9308,9 +9308,9 @@ package body et_schematic_ops is
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in type_net) is
-					use type_strands;
+					use pac_strands;
 
-					procedure query_strand (strand_cursor : in type_strands.cursor) is
+					procedure query_strand (strand_cursor : in pac_strands.cursor) is
 
 						procedure query_segments (strand : in type_strand) is
 							use pac_net_segments;

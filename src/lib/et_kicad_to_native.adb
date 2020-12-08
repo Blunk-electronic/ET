@@ -2719,8 +2719,8 @@ package body et_kicad_to_native is
 				kicad_segments : et_kicad.schematic.type_net_segments.list;
 				kicad_segment_cursor : et_kicad.schematic.type_net_segments.cursor;
 
-				use et_schematic.type_strands;
-				strands_native : et_schematic.type_strands.list;
+				use et_schematic.pac_strands;
+				strands_native : et_schematic.pac_strands.list;
 				strand_native : et_schematic.type_strand;
 			
 				use et_schematic.pac_net_segments;
@@ -3040,7 +3040,7 @@ package body et_kicad_to_native is
 					clear (net_segments_native);
 					
 					-- collect native strand (incl. segments) in list strands_native
-					et_schematic.type_strands.append (
+					et_schematic.pac_strands.append (
 						container	=> strands_native,
 						new_item	=> strand_native);
 					

@@ -335,9 +335,9 @@ is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in et_schematic.type_net) is
 			use et_schematic;
-			use type_strands;
+			use pac_strands;
 			use et_coordinates.pac_geometry_sch;
-			strand_cursor : type_strands.cursor := net.strands.first;
+			strand_cursor : pac_strands.cursor := net.strands.first;
 
 			procedure query_segments (strand : in type_strand) is
 				use pac_net_segments;
@@ -478,7 +478,7 @@ is
 			
 		begin -- query_strands
 			section_mark (section_strands, HEADER);
-			while strand_cursor /= type_strands.no_element loop
+			while strand_cursor /= pac_strands.no_element loop
 				section_mark (section_strand, HEADER);
 
 				write (keyword => keyword_position, parameters => et_schematic_rw.position (element (strand_cursor).position));

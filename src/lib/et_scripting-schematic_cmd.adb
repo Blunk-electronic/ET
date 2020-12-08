@@ -298,7 +298,7 @@ is
 	is
 		use et_schematic;
 		use type_nets;
-		use type_strands;
+		use pac_strands;
 		
 		use et_canvas_schematic_nets;
 		use pac_proposed_segments;
@@ -306,7 +306,7 @@ is
 		net_cursor : et_schematic.type_nets.cursor := 
 			locate_net (current_active_module, net);
 
-		strand_cursor : type_strands.cursor;
+		strand_cursor : pac_strands.cursor;
 		
 		pos : et_coordinates.type_position;
 	begin
@@ -340,7 +340,7 @@ is
 
 					-- If the net does have a strand on the given sheet,
 					-- select it and show properties in status bar.
-					if strand_cursor /= type_strands.no_element then
+					if strand_cursor /= pac_strands.no_element then
 
 						-- center drawing where the strand starts:
 						center_on (canvas, type_point (element (strand_cursor).position));

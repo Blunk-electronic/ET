@@ -376,16 +376,16 @@ package et_schematic is
 	-- Calculates and sets the lowest x/y position of the given strand.	
 	-- Leaves the sheet number of the strand as it is.	
 
-	package type_strands is new doubly_linked_lists (type_strand);
+	package pac_strands is new doubly_linked_lists (type_strand);
 
 	-- Returns a cursor to the segment that is
 	-- on the lowest x/y position of the given strand:
 	function get_first_segment (
-		strand_cursor	: in type_strands.cursor)
+		strand_cursor	: in pac_strands.cursor)
 		return pac_net_segments.cursor;
 								   
 	type type_net is new type_net_base with record
-		strands		: type_strands.list;
+		strands		: pac_strands.list;
 		scope		: et_netlists.type_net_scope := et_netlists.LOCAL;
 	end record;
 	
@@ -400,13 +400,13 @@ package et_schematic is
 	function get_first_strand_on_sheet (
 		sheet		: in et_coordinates.type_sheet;
 		net_cursor	: in type_nets.cursor)
-		return type_strands.cursor;
+		return pac_strands.cursor;
 	
 	-- Returns a cursor to the strand that is
 	-- on the lowest sheet and lowest x/y position:
 	function get_first_strand (
 		net_cursor	: in type_nets.cursor)
-		return type_strands.cursor;
+		return pac_strands.cursor;
 	
 
 	

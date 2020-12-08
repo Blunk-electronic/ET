@@ -283,7 +283,7 @@ package body et_canvas_schematic_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is
-				strand_cursor : type_strands.cursor := net.strands.first;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in type_strand) is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
@@ -319,7 +319,7 @@ package body et_canvas_schematic_nets is
 				end query_segments;
 				
 			begin -- query_strands
-				while strand_cursor /= type_strands.no_element loop
+				while strand_cursor /= pac_strands.no_element loop
 
 					-- We are interested in strands on the given sheet only:
 					if sheet (element (strand_cursor).position) = sheet (place) then
@@ -990,7 +990,7 @@ package body et_canvas_schematic_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is
-				strand_cursor : type_strands.cursor := net.strands.first;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in type_strand) is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
@@ -1065,7 +1065,7 @@ package body et_canvas_schematic_nets is
 				end query_segments;
 				
 			begin -- query_strands
-				while strand_cursor /= type_strands.no_element loop
+				while strand_cursor /= pac_strands.no_element loop
 
 					-- We are interested in strands on the given sheet only:
 					if sheet (element (strand_cursor).position) = sheet (place) then
@@ -1127,7 +1127,7 @@ package body et_canvas_schematic_nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 
-				strand_cursor : type_strands.cursor := net.strands.first;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in out type_strand) is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
@@ -1163,7 +1163,7 @@ package body et_canvas_schematic_nets is
 				end query_segments;
 				
 			begin -- query_strands
-				while not label_found and strand_cursor /= type_strands.no_element loop
+				while not label_found and strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
 					if sheet (element (strand_cursor).position) = label_position_sheet then

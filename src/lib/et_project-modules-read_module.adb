@@ -485,7 +485,7 @@ is
 	net_name	: pac_net_name.bounded_string; -- motor_on_off
 	net			: et_schematic.type_net;
 
-	strands : et_schematic.type_strands.list;
+	strands : et_schematic.pac_strands.list;
 	strand	: et_schematic.type_strand;
 	net_segments : et_schematic.pac_net_segments.list;
 	net_segment	: et_schematic.type_net_segment;
@@ -3080,7 +3080,7 @@ is
 
 							-- insert strand collection in net
 							net.strands := strands;
-							et_schematic.type_strands.clear (strands); -- clean up for next strand collection
+							et_schematic.pac_strands.clear (strands); -- clean up for next strand collection
 
 						when others => invalid_section;
 					end case;
@@ -3123,7 +3123,7 @@ is
 							end;
 							
 							-- insert strand in collection of strands
-							et_schematic.type_strands.append (
+							et_schematic.pac_strands.append (
 								container	=> strands,
 								new_item	=> strand);
 

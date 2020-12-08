@@ -51,7 +51,7 @@ procedure draw_nets (
 
 	use et_schematic;
 	use et_schematic.type_nets;
-	use et_schematic.type_strands;
+	use et_schematic.pac_strands;
 	use et_schematic.pac_net_segments;
 	use et_schematic.pac_net_labels;
 	use et_schematic.pac_shapes;
@@ -127,7 +127,7 @@ procedure draw_nets (
 	-- if the given label is not selected.
 	function is_selected (
 		net		: in type_nets.cursor;
-		strand	: in type_strands.cursor;
+		strand	: in pac_strands.cursor;
 		segment	: in type_net_segment;
 		label	: in pac_net_labels.cursor)
 		return boolean is
@@ -226,7 +226,7 @@ procedure draw_nets (
 	-- Draws labels that are NOT selected:
 	procedure draw_labels (
 		net		: in type_nets.cursor;
-		strand	: in type_strands.cursor;
+		strand	: in pac_strands.cursor;
 		segment	: in type_net_segment)
 	is 
 		procedure draw_fixed (label : in pac_net_labels.cursor) is begin
@@ -321,7 +321,7 @@ procedure draw_nets (
 	-- Draws the net label as indicated by variable selected_label:
 	procedure draw_selected_label (
 		net		: in type_nets.cursor;
-		strand	: in type_strands.cursor;
+		strand	: in pac_strands.cursor;
 		segment	: in pac_net_segments.cursor)
 	is
 		procedure query_label (s : in type_net_segment) is
@@ -371,7 +371,7 @@ procedure draw_nets (
 	-- if the given segment is not selected.
 	function is_selected (
 		net		: in type_nets.cursor;
-		strand	: in type_strands.cursor;
+		strand	: in pac_strands.cursor;
 		segment	: in pac_net_segments.cursor)
 		return boolean
 	is
@@ -431,7 +431,7 @@ procedure draw_nets (
 	-- of the segment.
 	procedure draw_preliminary_segment (
 		net		: in type_nets.cursor;
-		strand	: in type_strands.cursor;
+		strand	: in pac_strands.cursor;
 		segment : in type_net_segment) 
 	is begin
 		draw_line (
@@ -448,7 +448,7 @@ procedure draw_nets (
 	-- Draws secondary nets which are attached to the primary net.
 	procedure draw_secondary_segments (
 		net_cursor			: in type_nets.cursor;
-		strand_cursor		: in type_strands.cursor;
+		strand_cursor		: in pac_strands.cursor;
 
 		-- The segment as it is according to database (before the drag)										  
 		original_segment	: in pac_net_segments.cursor;
@@ -549,7 +549,7 @@ procedure draw_nets (
 	-- as given by the module database.
 	procedure draw_moving_segments (
 		net_cursor			: in type_nets.cursor;
-		strand_cursor		: in type_strands.cursor;
+		strand_cursor		: in pac_strands.cursor;
 		original_segment	: in pac_net_segments.cursor) 
 	is
 		use et_schematic_ops.nets;
@@ -761,7 +761,7 @@ procedure draw_nets (
 		procedure query_strands_normal (
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net) is
-			strand_cursor : type_strands.cursor := net.strands.first;
+			strand_cursor : pac_strands.cursor := net.strands.first;
 
 			procedure query_segments (strand : in type_strand) is
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
@@ -831,7 +831,7 @@ procedure draw_nets (
 			end query_segments;
 			
 		begin -- query_strands_normal
-			while strand_cursor /= type_strands.no_element loop
+			while strand_cursor /= pac_strands.no_element loop
 
 				query_element (
 					position	=> strand_cursor,
@@ -846,7 +846,7 @@ procedure draw_nets (
 		procedure query_strands_show (
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net) is
-			strand_cursor : type_strands.cursor := net.strands.first;
+			strand_cursor : pac_strands.cursor := net.strands.first;
 
 			procedure query_segments (strand : in type_strand) is
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
@@ -873,7 +873,7 @@ procedure draw_nets (
 			end query_segments;
 			
 		begin -- query_strands_show
-			while strand_cursor /= type_strands.no_element loop
+			while strand_cursor /= pac_strands.no_element loop
 
 				query_element (
 					position	=> strand_cursor,

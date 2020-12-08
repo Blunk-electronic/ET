@@ -359,8 +359,8 @@ package body et_schematic_ops.units is
 					net			: in out type_net) is
 					use et_coordinates;
 					
-					use type_strands;
-					strand_cursor : type_strands.cursor;
+					use pac_strands;
+					strand_cursor : pac_strands.cursor;
 					
 					use type_drags_of_ports;
 					drag_cursor : type_drags_of_ports.cursor := drag_list.first;
@@ -463,7 +463,7 @@ package body et_schematic_ops.units is
 						drag_processed := false;
 						
 						strand_cursor := net.strands.first;
-						while strand_cursor /= type_strands.no_element loop
+						while strand_cursor /= pac_strands.no_element loop
 							
 							-- We pick out only the strands on the targeted sheet:
 							if et_coordinates.sheet (element (strand_cursor).position) = sheet then

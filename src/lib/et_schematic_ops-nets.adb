@@ -169,8 +169,8 @@ package body et_schematic_ops.nets is
 			module		: in out type_module) is
 
 			-- temporarily collection of strands
-			use et_schematic.type_strands;
-			strands_on_sheet : et_schematic.type_strands.list;
+			use et_schematic.pac_strands;
+			strands_on_sheet : et_schematic.pac_strands.list;
 			
 			procedure collect_strands (
 			-- Collects all strands on the targeted sheet in container strands_on_sheet.
@@ -178,7 +178,7 @@ package body et_schematic_ops.nets is
 				net_name	: in et_general.pac_net_name.bounded_string;
 				net			: in out et_schematic.type_net) is
 
-				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
+				strand_cursor : et_schematic.pac_strands.cursor := net.strands.first;
 				strand : et_schematic.type_strand;
 			begin
 				log (text => "collecting strands of net " 
@@ -187,7 +187,7 @@ package body et_schematic_ops.nets is
 				log_indentation_up;
 				
 				-- Look at the strands that are on the targeted sheet.
-				while strand_cursor /= type_strands.no_element loop
+				while strand_cursor /= pac_strands.no_element loop
 					
 					if sheet (element (strand_cursor).position) = sheet (place) then
 
@@ -222,7 +222,7 @@ package body et_schematic_ops.nets is
 				splice (
 					target => net.strands,
 					source => strands_on_sheet,
-					before => type_strands.no_element);
+					before => pac_strands.no_element);
 			end;
 			
 		begin -- rename_on_sheet
@@ -263,7 +263,7 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use et_schematic.type_strands;			
+			use et_schematic.pac_strands;			
 			strand_temp : et_schematic.type_strand;
 			strand_found : boolean := false;
 
@@ -271,10 +271,10 @@ package body et_schematic_ops.nets is
 			-- Locates the strand that starts at place and stores it in strand_temp.
 				net_name	: in et_general.pac_net_name.bounded_string;
 				net			: in out et_schematic.type_net) is
-				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
+				strand_cursor : et_schematic.pac_strands.cursor := net.strands.first;
 			begin
 				-- Find the strand that starts at the given position.
-				while strand_cursor /= type_strands.no_element loop
+				while strand_cursor /= pac_strands.no_element loop
 					if element (strand_cursor).position = place then
 						-- CS: if place is not exactly the start position of the strand,
 						-- search for any other point on the strand instead.
@@ -413,7 +413,7 @@ package body et_schematic_ops.nets is
 		use et_schematic.type_nets;
 		net_cursor : type_nets.cursor; -- points to the net
 
-		use et_schematic.type_strands;
+		use et_schematic.pac_strands;
 		
 		procedure delete_everywhere (
 			module_name	: in pac_module_name.bounded_string;
@@ -432,11 +432,11 @@ package body et_schematic_ops.nets is
 			-- Removes the affected strands from the net.
 				net_name	: in et_general.pac_net_name.bounded_string;
 				net			: in out et_schematic.type_net) is
-				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
+				strand_cursor : et_schematic.pac_strands.cursor := net.strands.first;
 				strand_count_before : count_type := length (net.strands);
 			begin
 				-- Look at the strands that are on the targeted sheet.
-				while strand_cursor /= type_strands.no_element loop
+				while strand_cursor /= pac_strands.no_element loop
 					if sheet (element (strand_cursor).position) = sheet (place) then
 						delete (net.strands, strand_cursor);
 					end if;
@@ -473,7 +473,7 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use et_schematic.type_strands;			
+			use et_schematic.pac_strands;			
 
 			strand_found : boolean := false;
 
@@ -481,10 +481,10 @@ package body et_schematic_ops.nets is
 			-- Locates the strand that starts at place.
 				net_name	: in et_general.pac_net_name.bounded_string;
 				net			: in out et_schematic.type_net) is
-				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
+				strand_cursor : et_schematic.pac_strands.cursor := net.strands.first;
 			begin
 				-- Find the strand that starts at the given position.
-				while strand_cursor /= type_strands.no_element loop
+				while strand_cursor /= pac_strands.no_element loop
 					if element (strand_cursor).position = place then
 						-- CS: if place is not exactly the start position of the strand,
 						-- search for any other point on the strand instead.
@@ -582,7 +582,7 @@ package body et_schematic_ops.nets is
 		use et_schematic.type_nets;
 		net_cursor : type_nets.cursor; -- points to the net
 
-		use et_schematic.type_strands;
+		use et_schematic.pac_strands;
 
 		procedure no_segment is begin
 			log (WARNING, "segment not found at" & to_string (position => place) &
@@ -597,7 +597,7 @@ package body et_schematic_ops.nets is
 			-- Searches the strands of the net for a segment that sits on given place.
 				net_name	: in et_general.pac_net_name.bounded_string;
 				net			: in out et_schematic.type_net) is
-				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
+				strand_cursor : et_schematic.pac_strands.cursor := net.strands.first;
 				segment_found, strand_found : boolean := false;
 
 				use pac_net_segments;				
@@ -635,7 +635,7 @@ package body et_schematic_ops.nets is
 				
 				-- Look at strands that are on the given sheet. This loop ends prematurely
 				-- as soon as a segment has been found.
-				while not segment_found and strand_cursor /= type_strands.no_element loop
+				while not segment_found and strand_cursor /= pac_strands.no_element loop
 					
 					if sheet (element (strand_cursor).position) = sheet (place) then
 
@@ -950,7 +950,7 @@ package body et_schematic_ops.nets is
 		use et_schematic.type_nets;
 		net_cursor : type_nets.cursor; -- points to the net
 
-		use et_schematic.type_strands;
+		use et_schematic.pac_strands;
 
 		procedure no_segment is begin
 			log (WARNING, "No segment found at" & to_string (position => point_of_attack) &
@@ -965,7 +965,7 @@ package body et_schematic_ops.nets is
 			-- Searches the strands of the net for a segment that sits on given point_of_attack.
 				net_name	: in et_general.pac_net_name.bounded_string;
 				net			: in out et_schematic.type_net) is
-				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
+				strand_cursor : et_schematic.pac_strands.cursor := net.strands.first;
 				segment_found, strand_found : boolean := false;
 
 				use pac_net_segments;				
@@ -1300,7 +1300,7 @@ package body et_schematic_ops.nets is
 				
 				-- Look at strands that are on the given sheet. This loop ends prematurely
 				-- as soon as a segment has been found.
-				while not segment_found and strand_cursor /= type_strands.no_element loop
+				while not segment_found and strand_cursor /= pac_strands.no_element loop
 					
 					if sheet (element (strand_cursor).position) = sheet (point_of_attack) then
 
@@ -1391,13 +1391,13 @@ package body et_schematic_ops.nets is
 			module		: in type_module) is
 
 			procedure query_nets (net_cursor : in type_nets.cursor) is
-				use type_strands;
+				use pac_strands;
 				net : type_net := element (net_cursor);
 
 				-- once a segment has been found at place, this flag goes true:
 				match : boolean := false;
 				
-				strand_cursor : type_strands.cursor := net.strands.first;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in type_strand) is
 					use pac_net_segments;
@@ -1426,7 +1426,7 @@ package body et_schematic_ops.nets is
 				
 			begin -- query_nets
 				-- Search in strands of net. Cancel search after the first matching segment.
-				while not match and strand_cursor /= type_strands.no_element loop
+				while not match and strand_cursor /= pac_strands.no_element loop
 
 					-- Look at strands on the given sheet only:
 					if sheet (element (strand_cursor).position) = sheet (place) then
@@ -1434,7 +1434,7 @@ package body et_schematic_ops.nets is
 						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 						log_indentation_up;
 						
-						type_strands.query_element (
+						pac_strands.query_element (
 							position	=> strand_cursor,
 							process 	=> query_segments'access);
 
@@ -1601,7 +1601,7 @@ package body et_schematic_ops.nets is
 			set_strand_position (strand);
 
 			-- insert the strand in the net
-			type_strands.append (
+			pac_strands.append (
 				container	=> net.strands,
 				new_item	=> strand);
 			
@@ -1643,10 +1643,10 @@ package body et_schematic_ops.nets is
 				end if;
 			end evaluate_net_names;
 
-			use type_strands;
+			use pac_strands;
 			
 			type type_which_strand is record
-				cursor				: type_strands.cursor;
+				cursor				: pac_strands.cursor;
 				junction_required	: boolean := false;
 			end record;
 
@@ -1656,7 +1656,7 @@ package body et_schematic_ops.nets is
 			-- Required to test whether the new segment will be a dead end
 			-- at its start or end point:
 			function dead_end (strand : in type_which_strand) return boolean is begin
-				if strand.cursor = type_strands.no_element then
+				if strand.cursor = pac_strands.no_element then
 					return true;
 				else 
 					return false;
@@ -1727,10 +1727,10 @@ package body et_schematic_ops.nets is
 
 					-- Iterate strands. Cancel prematurely once a segment has been found.
 					-- Look at strands on the relevant sheet only.
-					while result.cursor /= type_strands.no_element loop
+					while result.cursor /= pac_strands.no_element loop
 						if et_coordinates.sheet (element (result.cursor).position) = et_coordinates.sheet (place) then
 
-							type_strands.query_element (
+							pac_strands.query_element (
 								position	=> result.cursor,
 								process		=> query_segments'access);
 
@@ -1760,7 +1760,7 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 			begin
-				type_strands.update_element (
+				pac_strands.update_element (
 					container	=> net.strands,
 					position	=> strand_at_start.cursor,
 					process		=> append_segment'access);
@@ -1772,7 +1772,7 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 			begin
-				type_strands.update_element (
+				pac_strands.update_element (
 					container	=> net.strands,
 					position	=> strand_at_end.cursor,
 					process		=> append_segment'access);
@@ -1796,7 +1796,7 @@ package body et_schematic_ops.nets is
 				set_strand_position (strand);
 
 				-- insert the strand in the net
-				type_strands.append (
+				pac_strands.append (
 					container	=> net.strands,
 					new_item	=> strand);
 				
@@ -1830,13 +1830,13 @@ package body et_schematic_ops.nets is
 				log (text => "merging strands ...", level => log_threshold + 2);
 				
 				-- Append segments_source to the strand indicated by strand_at_end:
-				type_strands.update_element (
+				pac_strands.update_element (
 					container	=> net.strands,
 					position	=> strand_at_end.cursor,
 					process		=> merge'access);
 
 				-- Delete the "source" strand. Its segments are already part of strand_at_end.
-				type_strands.delete (
+				pac_strands.delete (
 					container	=> net.strands,
 					position	=> strand_at_start.cursor);
 				
@@ -1849,8 +1849,8 @@ package body et_schematic_ops.nets is
 
 				-- 1st condition: Both ends of the new segment must connect
 				-- with a strand.
-				if strand_at_start.cursor /= type_strands.no_element and
-					strand_at_end.cursor /= type_strands.no_element then
+				if strand_at_start.cursor /= pac_strands.no_element and
+					strand_at_end.cursor /= pac_strands.no_element then
 
 					-- 2nd condition: Both ends of the new segment must connect
 					-- with the same strand:
@@ -2211,8 +2211,8 @@ package body et_schematic_ops.nets is
 				net			: in out type_net) is
 				use et_coordinates;
 				
-				use type_strands;
-				strand_cursor : type_strands.cursor := net.strands.first;
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in out type_strand) is
 					use pac_net_segments;
@@ -2517,7 +2517,7 @@ package body et_schematic_ops.nets is
 				end query_segments;
 					
 			begin -- query_strands
-				while (not segment_found) and strand_cursor /= type_strands.no_element loop
+				while (not segment_found) and strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
 					if sheet (element (strand_cursor).position) = sheet (place) then
@@ -2606,8 +2606,8 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
-				use type_strands;
-				strand_cursor : type_strands.cursor := net.strands.first;
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in out type_strand) is
 					use pac_net_segments;
@@ -2683,7 +2683,7 @@ package body et_schematic_ops.nets is
 				end query_segments;
 				
 			begin -- query_strands
-				while not segment_found and strand_cursor /= type_strands.no_element loop
+				while not segment_found and strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet (segment_position) then
@@ -2776,8 +2776,8 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
-				use type_strands;
-				strand_cursor : type_strands.cursor := net.strands.first;
+				use pac_strands;
+				strand_cursor : pac_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in out type_strand) is
 					use pac_net_segments;
@@ -2815,7 +2815,7 @@ package body et_schematic_ops.nets is
 				end query_segments;
 				
 			begin -- query_strands
-				while not label_found and strand_cursor /= type_strands.no_element loop
+				while not label_found and strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
@@ -2879,7 +2879,7 @@ package body et_schematic_ops.nets is
 		
 		use et_coordinates;
 		use type_nets;
-		use type_strands;
+		use pac_strands;
 
 		ports : type_ports;
 		
@@ -2890,7 +2890,7 @@ package body et_schematic_ops.nets is
 			net_name	: in et_general.pac_net_name.bounded_string;
 			net			: in type_net) is
 			
-			strand_cursor : type_strands.cursor := net.strands.first;
+			strand_cursor : pac_strands.cursor := net.strands.first;
 
 			procedure query_segments (strand : in type_strand) is
 				use pac_net_segments;
@@ -2940,7 +2940,7 @@ package body et_schematic_ops.nets is
 			end query_segments;
 			
 		begin -- query_strands
-			while strand_cursor /= type_strands.no_element loop
+			while strand_cursor /= pac_strands.no_element loop
 				
 				-- We are interested in strands on the given sheet only:
 				if element (strand_cursor).position.sheet = sheet (position) then

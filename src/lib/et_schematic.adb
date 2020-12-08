@@ -129,10 +129,10 @@ package body et_schematic is
 	end segment_orientation;
 
 	function get_first_segment (
-		strand_cursor	: in type_strands.cursor)
+		strand_cursor	: in pac_strands.cursor)
 		return pac_net_segments.cursor
 	is
-		use type_strands;
+		use pac_strands;
 		segment_cursor : pac_net_segments.cursor; -- to be returned
 
 		procedure query_segments (strand : in type_strand) is
@@ -212,10 +212,10 @@ package body et_schematic is
 	function get_first_strand_on_sheet (
 		sheet		: in et_coordinates.type_sheet;
 		net_cursor	: in type_nets.cursor)
-		return type_strands.cursor
+		return pac_strands.cursor
 	is
 		use type_nets;
-		strand_cursor : type_strands.cursor; -- to be returned
+		strand_cursor : pac_strands.cursor; -- to be returned
 
 		use et_coordinates;
 		strand_position : et_coordinates.type_position := greatest_position;
@@ -224,11 +224,11 @@ package body et_schematic is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net)
 		is
-			use type_strands;
+			use pac_strands;
 
-			c : type_strands.cursor := net.strands.first;
+			c : pac_strands.cursor := net.strands.first;
 		begin			
-			while c /= type_strands.no_element loop
+			while c /= pac_strands.no_element loop
 
 				-- Probe strands on the given sheet only:
 				if et_coordinates.sheet (element (c).position) = sheet then
@@ -254,10 +254,10 @@ package body et_schematic is
 	
 	function get_first_strand (
 		net_cursor	: in type_nets.cursor)
-		return type_strands.cursor
+		return pac_strands.cursor
 	is
 		use type_nets;
-		strand_cursor : type_strands.cursor; -- to be returned
+		strand_cursor : pac_strands.cursor; -- to be returned
 
 		use et_coordinates;
 		strand_position : et_coordinates.type_position := greatest_position;
@@ -266,9 +266,9 @@ package body et_schematic is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net)
 		is
-			use type_strands;
+			use pac_strands;
 
-			procedure query_strand (c : in type_strands.cursor) is begin
+			procedure query_strand (c : in pac_strands.cursor) is begin
 				if element (c).position < strand_position then
 					strand_position := element (c).position;
 					strand_cursor := c;
@@ -358,7 +358,7 @@ package body et_schematic is
 		result : type_ports; -- to be returned
 
 		use type_nets;
-		use type_strands;
+		use pac_strands;
 		use pac_net_segments;
 		use et_string_processing;
 
@@ -394,7 +394,7 @@ package body et_schematic is
 			union (result.submodules, element (segment_cursor).ports_submodules);
 		end query_segments;
 		
-		procedure query_strands (strand_cursor : in type_strands.cursor) is 
+		procedure query_strands (strand_cursor : in pac_strands.cursor) is 
 		begin
 			iterate (element (strand_cursor).segments, query_segments'access);
 		end query_strands;
