@@ -310,7 +310,7 @@ package et_schematic_ops is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
-		return et_schematic.type_units.cursor;
+		return et_schematic.pac_units.cursor;
 
 	-- Returns true if the unit of the given device in the 
 	-- given module has been deployed somewhere.
@@ -473,14 +473,14 @@ package et_schematic_ops is
 	-- Raises constraint error if device or unit does not exist.
 	function position (
 		device	: in pac_devices_sch.cursor; -- R2
-		unit	: in et_schematic.type_units.cursor)
+		unit	: in et_schematic.pac_units.cursor)
 		return et_coordinates.type_position;
 
 	-- Returns the position (x/y) of the given placeholder.
 	-- Raises constraint error if device or unit does not exist.
 	function position (
 		device		: in pac_devices_sch.cursor; -- R2
-		unit		: in et_schematic.type_units.cursor;
+		unit		: in et_schematic.pac_units.cursor;
 		category	: in et_symbols.type_placeholder_meaning)
 		return pac_geometry_sch.type_point;
 	

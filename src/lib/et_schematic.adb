@@ -505,19 +505,19 @@ package body et_schematic is
 		return type_mirror'value (style);
 	end to_mirror_style;
 
-	function to_string (unit : in type_units.cursor) return string is
-		use type_units;
+	function to_string (unit : in pac_units.cursor) return string is
+		use pac_units;
 	begin
 		return to_string (key (unit)) & to_string (type_point (element (unit).position));
 	end to_string;
 	
-	function unit_positions (units : in type_units.map) return type_unit_positions.map is
+	function unit_positions (units : in pac_units.map) return type_unit_positions.map is
 	-- Returns a list of units and their coordinates in the schematic.
 		list : type_unit_positions.map; -- to be returned
-		use type_units;
+		use pac_units;
 		use type_unit_positions;
 		
-		procedure query_unit (cursor : type_units.cursor) is begin
+		procedure query_unit (cursor : pac_units.cursor) is begin
 			list.insert (key (cursor), element (cursor).position);
 		end;
 		

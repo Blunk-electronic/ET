@@ -61,7 +61,7 @@ procedure invoke_unit (
 			device_name	: in type_device_name;
 			device		: in et_schematic.type_device)
 		is
-			use et_schematic.type_units;
+			use et_schematic.pac_units;
 		begin
 			if contains (device.units, unit_name) then
 				log (ERROR, to_string (device_name) &
@@ -97,7 +97,7 @@ procedure invoke_unit (
 			
 			case element (device_cursor_lib).appearance is
 				when VIRTUAL =>
-					type_units.insert (
+					pac_units.insert (
 						container	=> device.units,
 						key			=> key (unit_cursors.int), -- the unit name like A, B
 						new_item	=> (
@@ -112,7 +112,7 @@ procedure invoke_unit (
 					-- their own origin according to rotation given by caller:
 					placeholders := rotate_placeholders (unit_cursors.int, destination);
 					
-					type_units.insert (
+					pac_units.insert (
 						container	=> device.units,
 						key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
 						new_item	=> (
@@ -141,7 +141,7 @@ procedure invoke_unit (
 			
 			case element (device_cursor_lib).appearance is
 				when VIRTUAL =>
-					type_units.insert (
+					pac_units.insert (
 						container	=> device.units,
 						key			=> key (unit_cursors.ext), -- the unit name like A, B
 						new_item	=> (
@@ -165,7 +165,7 @@ procedure invoke_unit (
 					-- their own origin according to rotation given by caller:
 					placeholders := rotate_placeholders (symbol_cursor, destination);
 					
-					type_units.insert (
+					pac_units.insert (
 						container	=> device.units,
 						key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
 						new_item	=> (

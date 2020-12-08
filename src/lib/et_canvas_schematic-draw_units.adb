@@ -44,7 +44,7 @@ procedure draw_units (
 
 	use et_schematic;
 	use pac_devices_sch;
-	use et_schematic.type_units;
+	use et_schematic.pac_units;
 	
 	-- The name, value and purpose of the current device:
 	device_name	: et_devices.type_device_name; -- like R1, IC100	
@@ -108,7 +108,7 @@ procedure draw_units (
 	-- selected:
 	function unit_is_selected (
 		d : in pac_devices_sch.cursor;
-		u : in et_schematic.type_units.cursor)
+		u : in et_schematic.pac_units.cursor)
 		return boolean
 	is
 		use pac_proposed_units;
@@ -126,7 +126,7 @@ procedure draw_units (
 
 					-- If "selected_unit" does not point to a specific unit
 					-- then we regard the whole device as selected:
-					if element (selected_unit).unit = et_schematic.type_units.no_element then
+					if element (selected_unit).unit = et_schematic.pac_units.no_element then
 						return true;
 
 					-- If "selected_unit" points to the given unit then the
@@ -156,7 +156,7 @@ procedure draw_units (
 	-- Returns true if the given placeholder is selected.
 	function placeholder_is_selected (
 		d : in pac_devices_sch.cursor;
-		u : in et_schematic.type_units.cursor)
+		u : in et_schematic.pac_units.cursor)
 		return boolean is
 		use pac_proposed_placeholders;
 		use et_devices;
@@ -262,7 +262,7 @@ procedure draw_units (
 			end case;
 		end locate_symbol;
 		
-		procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
+		procedure query_units (unit_cursor : in et_schematic.pac_units.cursor) is
 			use et_devices;
 			use et_symbols;
 			

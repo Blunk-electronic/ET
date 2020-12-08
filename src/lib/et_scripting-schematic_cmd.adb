@@ -214,7 +214,7 @@ is
 						proposed_units.append (new_item =>
 							(
 							device	=> locate_device (current_active_module, device),
-							unit	=> et_schematic.type_units.no_element
+							unit	=> et_schematic.pac_units.no_element
 							));
 
 						selected_unit := proposed_units.first;
@@ -268,7 +268,7 @@ is
 							proposed_units.append (new_item =>
 								(
 								device	=> locate_device (current_active_module, device),
-								unit	=> et_schematic.type_units.no_element
+								unit	=> et_schematic.pac_units.no_element
 								));
 
 							selected_unit := proposed_units.first;

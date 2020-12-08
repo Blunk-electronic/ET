@@ -104,10 +104,10 @@ package body et_canvas_schematic_units is
 				device_name	: in type_device_name;
 				device		: in et_schematic.type_device)
 			is
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor := device.units.first;
+				use et_schematic.pac_units;
+				unit_cursor : et_schematic.pac_units.cursor := device.units.first;
 			begin
-				while unit_cursor /= et_schematic.type_units.no_element loop
+				while unit_cursor /= et_schematic.pac_units.no_element loop
 					
 					-- We are interested in units on the given sheet only:
 					if sheet (element (unit_cursor).position) = sheet (place) then
@@ -167,7 +167,7 @@ package body et_canvas_schematic_units is
 	procedure clarify_unit is
 		use et_schematic;
 		use et_schematic_ops.units;
-		u : type_units.cursor;
+		u : pac_units.cursor;
 	begin
 		-- On every call of this procedure we must advance from one
 		-- unit to the next in a circular manner. So if the end 
@@ -201,7 +201,7 @@ package body et_canvas_schematic_units is
 		log_threshold	: in type_log_level)
 	is
 		use pac_devices_sch;
-		use et_schematic.type_units;
+		use et_schematic.pac_units;
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -372,7 +372,7 @@ package body et_canvas_schematic_units is
 		su : type_selected_unit;
 
 		use pac_devices_sch;
-		use et_schematic.type_units;
+		use et_schematic.pac_units;
 	begin
 		log (text => "finalizing move ...", level => log_threshold);
 		log_indentation_up;
@@ -415,7 +415,7 @@ package body et_canvas_schematic_units is
 		su : type_selected_unit;
 
 		use pac_devices_sch;
-		use et_schematic.type_units;
+		use et_schematic.pac_units;
 	begin
 		log (text => "finalizing drag ...", level => log_threshold);
 		log_indentation_up;
@@ -496,7 +496,7 @@ package body et_canvas_schematic_units is
 	procedure find_attached_segments is
 		-- Device and unit name of the selected unit:
 		use pac_devices_sch;
-		use et_schematic.type_units;
+		use et_schematic.pac_units;
 		su : type_selected_unit := element (selected_unit);
 		device_name : constant type_device_name := key (su.device);
 		unit_name : constant pac_unit_name.bounded_string := key (su.unit);
@@ -509,7 +509,7 @@ package body et_canvas_schematic_units is
 		unit_position : et_coordinates.type_position;
 		
 		procedure get_ports (su : in type_selected_unit) is 
-			use et_schematic.type_units;
+			use et_schematic.pac_units;
 		begin
 			-- Get the unit position before the drag:
 			unit_position := element (su.unit).position;
@@ -600,7 +600,7 @@ package body et_canvas_schematic_units is
 		rotation : constant et_coordinates.type_rotation := 90.0;
 
 		use pac_devices_sch;
-		use et_schematic.type_units;
+		use et_schematic.pac_units;
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -617,8 +617,8 @@ package body et_canvas_schematic_units is
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device)
 			is
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor;
+				use et_schematic.pac_units;
+				unit_cursor : et_schematic.pac_units.cursor;
 
 				procedure rotate_unit (
 					name	: in pac_unit_name.bounded_string; -- A
@@ -690,7 +690,7 @@ package body et_canvas_schematic_units is
 
 				log_indentation_up;
 				
-				type_units.update_element (
+				pac_units.update_element (
 					container	=> device.units,
 					position	=> unit.unit,
 					process		=> rotate_unit'access);
@@ -711,7 +711,7 @@ package body et_canvas_schematic_units is
 			-- Fetch the ports of the unit to be rotated.
 			-- The coordinates here are the default positions (in the library model)
 			-- relative to the center of the units.
-			ports_lib := ports_of_unit (unit.device, type_units.key (unit.unit));
+			ports_lib := ports_of_unit (unit.device, pac_units.key (unit.unit));
 			
 			ports_scratch := ports_lib;						 
 
@@ -1299,7 +1299,7 @@ package body et_canvas_schematic_units is
 					device_name	: in type_device_name;
 					device		: in et_schematic.type_device) 
 				is
-					use et_schematic.type_units;
+					use et_schematic.pac_units;
 				begin
 					if contains (device.units, element (c)) then
 						in_use := true;
@@ -1436,8 +1436,8 @@ package body et_canvas_schematic_units is
 
 	procedure clarify_placeholder is
 		use pac_devices_sch;
-		use et_schematic.type_units;
-		u : type_units.cursor;
+		use et_schematic.pac_units;
+		u : pac_units.cursor;
 		d : pac_devices_sch.cursor;
 	begin
 		-- On every call of this procedure we must advance from one
@@ -1480,7 +1480,7 @@ package body et_canvas_schematic_units is
 		su : type_selected_unit;
 
 		use pac_devices_sch;
-		use et_schematic.type_units;
+		use et_schematic.pac_units;
 	begin
 		log (text => "finalizing move placeholder ...", level => log_threshold);
 		log_indentation_up;
@@ -1532,8 +1532,8 @@ package body et_canvas_schematic_units is
 				device_name	: in type_device_name;
 				device		: in et_schematic.type_device)
 			is
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor := device.units.first;
+				use et_schematic.pac_units;
+				unit_cursor : et_schematic.pac_units.cursor := device.units.first;
 
 				placeholder_position : type_point;
 
@@ -1561,7 +1561,7 @@ package body et_canvas_schematic_units is
 				end test_placeholder_position;
 		
 			begin -- query_units
-				while unit_cursor /= et_schematic.type_units.no_element loop
+				while unit_cursor /= et_schematic.pac_units.no_element loop
 					
 					-- We are interested in units on the given sheet only:
 					if sheet (element (unit_cursor).position) = sheet (place) then
@@ -1684,7 +1684,7 @@ package body et_canvas_schematic_units is
 		rotation : constant et_coordinates.type_rotation := 90.0;
 
 		use pac_devices_sch;
-		use et_schematic.type_units;
+		use et_schematic.pac_units;
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -1695,7 +1695,7 @@ package body et_canvas_schematic_units is
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) 
 			is 
-				unit_cursor : et_schematic.type_units.cursor;
+				unit_cursor : et_schematic.pac_units.cursor;
 
 				-- Rotates the placeholder indicated by category
 				-- by 90 degree. Since the rotation of placeholders
@@ -1728,7 +1728,7 @@ package body et_canvas_schematic_units is
 				-- Locate the given unit inside the device:
 				unit_cursor := find (device.units, key (unit.unit));
 
-				type_units.update_element (
+				pac_units.update_element (
 					container	=> device.units,
 					position	=> unit_cursor,
 					process		=> rotate_placeholder'access);
@@ -2053,7 +2053,7 @@ package body et_canvas_schematic_units is
 	procedure show_properties_of_selected_device
 	is
 		use pac_devices_sch;
-		use et_schematic.type_units;
+		use et_schematic.pac_units;
 		
 		su		: constant type_selected_unit := element (selected_unit);
 

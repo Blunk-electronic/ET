@@ -590,8 +590,8 @@ package body et_schematic_ops is
 				device_name	: in type_device_name;
 				device		: in et_schematic.type_device) is
 				
-				use et_schematic.type_units;
-				unit_cursor : type_units.cursor := device.units.first;
+				use et_schematic.pac_units;
+				unit_cursor : pac_units.cursor := device.units.first;
 				unit_name : pac_unit_name.bounded_string;
 				
 				use et_symbols.type_ports;
@@ -599,7 +599,7 @@ package body et_schematic_ops is
 				port_cursor : et_symbols.type_ports.cursor;
 			begin
 				-- Locate unit in schematic device:
-				while unit_cursor /= type_units.no_element loop
+				while unit_cursor /= pac_units.no_element loop
 
 					-- Load the default xy-positions of ports relative to the center of the unit.
 					unit_name := key (unit_cursor);
@@ -857,8 +857,8 @@ package body et_schematic_ops is
 -- 			procedure query_units (
 -- 				device_name	: in type_device_name;
 -- 				device		: in out et_schematic.type_device) is
--- 				use et_schematic.type_units;
--- 				unit_cursor : et_schematic.type_units.cursor;
+-- 				use et_schematic.pac_units;
+-- 				unit_cursor : et_schematic.pac_units.cursor;
 -- 			begin
 -- 				if contains (device.units, unit_name) then
 -- 					-- locate unit by its name
@@ -884,7 +884,7 @@ package body et_schematic_ops is
 -- 			procedure query_number_of_invoked_units (
 -- 				device_name	: in type_device_name;
 -- 				device		: in et_schematic.type_device) is
--- 				use et_schematic.type_units;
+-- 				use et_schematic.pac_units;
 -- 			begin
 -- 				if length (device.units) = 0 then
 -- 					units_invoked := false;
@@ -1146,8 +1146,8 @@ package body et_schematic_ops is
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor;
+				use et_schematic.pac_units;
+				unit_cursor : et_schematic.pac_units.cursor;
 
 				procedure move_placeholder (
 					unit_name	: in pac_unit_name.bounded_string;
@@ -1475,8 +1475,8 @@ package body et_schematic_ops is
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor;
+				use et_schematic.pac_units;
+				unit_cursor : et_schematic.pac_units.cursor;
 
 				procedure rotate_placeholder (
 					name	: in pac_unit_name.bounded_string; -- A
@@ -1501,7 +1501,7 @@ package body et_schematic_ops is
 					-- locate unit by its name
 					unit_cursor := find (device.units, unit_name);
 
-					type_units.update_element (
+					pac_units.update_element (
 						container	=> device.units,
 						position	=> unit_cursor,
 						process		=> rotate_placeholder'access);
@@ -1838,8 +1838,8 @@ package body et_schematic_ops is
 			
 			procedure query_devices (device_cursor : in pac_devices_sch.cursor) is
 
-				procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
-					use et_schematic.type_units;
+				procedure query_units (unit_cursor : in et_schematic.pac_units.cursor) is
+					use et_schematic.pac_units;
 					use pac_unit_name;
 					unit_position : et_coordinates.type_position;
 					ports : et_symbols.type_ports.map;
@@ -1902,7 +1902,7 @@ package body et_schematic_ops is
 				--log (text => "device " & to_string (key (device_cursor)), level => log_threshold + 1);
 				--log_indentation_up;
 
-				et_schematic.type_units.iterate (
+				et_schematic.pac_units.iterate (
 					container	=> element (device_cursor).units,
 					process		=> query_units'access);
 				
@@ -2549,13 +2549,13 @@ package body et_schematic_ops is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
-		return et_schematic.type_units.cursor
+		return et_schematic.pac_units.cursor
 	is
 		use pac_devices_sch;
-		use et_schematic.type_units;
+		use et_schematic.pac_units;
 		
 		device_cursor : pac_devices_sch.cursor;
-		unit_cursor : et_schematic.type_units.cursor; -- to be returned
+		unit_cursor : et_schematic.pac_units.cursor; -- to be returned
 
 		procedure query_units (
 			device_name	: in et_devices.type_device_name; -- R2
@@ -2579,12 +2579,12 @@ package body et_schematic_ops is
 		unit	: in pac_unit_name.bounded_string)
 		return boolean
 	is
-		use et_schematic.type_units;
-		unit_cursor : et_schematic.type_units.cursor;
+		use et_schematic.pac_units;
+		unit_cursor : et_schematic.pac_units.cursor;
 	begin
 		unit_cursor := locate_unit (module, device, unit);
 
-		if unit_cursor = et_schematic.type_units.no_element then
+		if unit_cursor = et_schematic.pac_units.no_element then
 			return false;
 		else
 			return true;
@@ -2736,13 +2736,13 @@ package body et_schematic_ops is
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in et_schematic.type_device) is
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor := device.units.first;
+				use et_schematic.pac_units;
+				unit_cursor : et_schematic.pac_units.cursor := device.units.first;
 				use et_symbols.type_ports;
 				ports : et_symbols.type_ports.map;
 				use type_port_name;
 			begin
-				while unit_cursor /= type_units.no_element loop
+				while unit_cursor /= pac_units.no_element loop
 					--log (text => "unit " & pac_unit_name.to_string (key (unit_cursor)));
 					--log (text => "port " & type_port_name.to_string (port_name));
 					
@@ -2803,7 +2803,7 @@ package body et_schematic_ops is
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in et_schematic.type_device) is
-				use et_schematic.type_units;
+				use et_schematic.pac_units;
 				use et_symbols.type_ports;
 				ports : et_symbols.type_ports.map;
 				use type_port_name;
@@ -3165,7 +3165,7 @@ package body et_schematic_ops is
 				device_name	: in type_device_name;
 				device		: in et_schematic.type_device) 
 			is
-				use et_schematic.type_units;
+				use et_schematic.pac_units;
 			begin
 				if contains (device.units, element (c)) then
 					in_use := true;
@@ -3253,7 +3253,7 @@ package body et_schematic_ops is
 			device_name	: in type_device_name;
 			device		: in et_schematic.type_device) 
 		is
-			use et_schematic.type_units;
+			use et_schematic.pac_units;
 		begin
 			if contains (device.units, unit_name) then
 				available := false;
@@ -3301,9 +3301,9 @@ package body et_schematic_ops is
 			device_name	: in type_device_name;
 			device		: in et_schematic.type_device)
 		is 
-			procedure query_unit (c : in type_units.cursor) is 
+			procedure query_unit (c : in pac_units.cursor) is 
 				use et_devices.pac_unit_name;
-				use et_schematic.type_units;
+				use et_schematic.pac_units;
 				use pac_unit_names;
 			begin
 				-- If the unit is on the given sheet then append it to the result:
@@ -3357,8 +3357,8 @@ package body et_schematic_ops is
 			device_name	: in type_device_name;
 			device		: in et_schematic.type_device)
 		is 
-			use et_schematic.type_units;
-			unit_cursor : type_units.cursor;
+			use et_schematic.pac_units;
+			unit_cursor : pac_units.cursor;
 		begin
 			-- locate the given unit in the given device
 			unit_cursor := find (device.units, unit);
@@ -3380,7 +3380,7 @@ package body et_schematic_ops is
 
 	function position (
 		device	: in pac_devices_sch.cursor; -- R2
-		unit	: in et_schematic.type_units.cursor)
+		unit	: in et_schematic.pac_units.cursor)
 		return et_coordinates.type_position
 	is
 		use pac_devices_sch;
@@ -3390,7 +3390,7 @@ package body et_schematic_ops is
 			device_name	: in type_device_name;
 			device		: in et_schematic.type_device)
 		is 
-			use et_schematic.type_units;
+			use et_schematic.pac_units;
 		begin
 			-- get the coordinates of the unit
 			unit_position := element (unit).position;
@@ -3405,7 +3405,7 @@ package body et_schematic_ops is
 
 	function position (
 		device		: in pac_devices_sch.cursor; -- R2
-		unit		: in et_schematic.type_units.cursor;
+		unit		: in et_schematic.pac_units.cursor;
 		category	: in et_symbols.type_placeholder_meaning)
 		return pac_geometry_sch.type_point
 	is
@@ -3418,7 +3418,7 @@ package body et_schematic_ops is
 			device_name	: in type_device_name;
 			device		: in et_schematic.type_device)
 		is 
-			use et_schematic.type_units;
+			use et_schematic.pac_units;
 			use et_symbols;
 		begin
 			-- get the coordinates of the unit
@@ -7321,10 +7321,10 @@ package body et_schematic_ops is
 			module		: in et_schematic.type_module) is
 
 			procedure query_units (device_cursor : in pac_devices_sch.cursor) is
-				use et_schematic.type_units;
+				use et_schematic.pac_units;
 				device_name : type_device_name := pac_devices_sch.key (device_cursor); -- R1
 
-				procedure sort (unit_cursor : in et_schematic.type_units.cursor) is 
+				procedure sort (unit_cursor : in et_schematic.pac_units.cursor) is 
 					unit_name : pac_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
 					unit_position : et_coordinates.type_position := element (unit_cursor).position;
 					inserted : boolean := false;
@@ -7365,7 +7365,7 @@ package body et_schematic_ops is
 				
 				log_indentation_up;
 				
-				et_schematic.type_units.iterate (
+				et_schematic.pac_units.iterate (
 					container	=> pac_devices_sch.element (device_cursor).units,
 					process		=> sort'access);
 
@@ -9530,17 +9530,17 @@ package body et_schematic_ops is
 				device_name	: in type_device_name; -- IC45
 				device		: in et_schematic.type_device) is
 
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor;
+				use et_schematic.pac_units;
+				unit_cursor : et_schematic.pac_units.cursor;
 				
 			begin
 				-- If the given unit_name contains something, locate the unit
 				-- by its name. If unit_name is empty, locate the first unit.
 				if pac_unit_name.length (unit_name) > 0 then -- locate by name
 					
-					unit_cursor := type_units.find (device.units, unit_name);
+					unit_cursor := pac_units.find (device.units, unit_name);
 
-					if unit_cursor /= type_units.no_element then -- unit exists
+					if unit_cursor /= pac_units.no_element then -- unit exists
 						exists := true;
 						pos := element (unit_cursor).position;
 					else
@@ -9548,10 +9548,10 @@ package body et_schematic_ops is
 					end if;
 					
 				else -- locate the first unit:
-					unit_cursor := type_units.first (device.units);
+					unit_cursor := pac_units.first (device.units);
 					-- There should be at least one unit. Otherwise raise constraint_error.
 
-					if unit_cursor /= type_units.no_element then -- unit exists
+					if unit_cursor /= pac_units.no_element then -- unit exists
 						exists := true;
 						pos := element (unit_cursor).position;
 					else

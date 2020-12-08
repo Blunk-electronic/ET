@@ -72,7 +72,7 @@ package et_canvas_schematic_units is
 
 		-- If the cursor to the actual unit is no_element then
 		-- the whole device is regarded as selected:
-		unit	: et_schematic.type_units.cursor;
+		unit	: et_schematic.pac_units.cursor;
 	end record;
 
 	package pac_proposed_units is new doubly_linked_lists (type_selected_unit);

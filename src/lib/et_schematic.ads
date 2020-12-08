@@ -152,13 +152,13 @@ package et_schematic is
 
 	-- Units of a device are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
-	package type_units is new indefinite_ordered_maps ( -- CS rename to pac_units
+	package pac_units is new indefinite_ordered_maps ( -- CS rename to pac_units
 		key_type		=> pac_unit_name.bounded_string,
 		"<" 			=> pac_unit_name."<",
 		element_type 	=> type_unit);
 
 	-- Returns a string that tells the name and position of given unit.
-	function to_string (unit : in type_units.cursor) return string;
+	function to_string (unit : in pac_units.cursor) return string;
 
 	
 	package type_unit_positions is new ordered_maps (
@@ -167,7 +167,7 @@ package et_schematic is
 		element_type	=> et_coordinates.type_position, -- sheet, x, y
 		"="				=> et_coordinates."=");
 
-	function unit_positions (units : in type_units.map) return type_unit_positions.map;
+	function unit_positions (units : in pac_units.map) return type_unit_positions.map;
 	--Returns a list of units and their coordinates in the schematic.	
 
 
@@ -181,7 +181,7 @@ package et_schematic is
 		-- Virtual devices have only one unit (like the GND symbol).
 		-- Real devices like a single resistor have one unit.
 		-- Real devices like FPGAs have many units (like PWR1, PWR2, GPIO1, GPIO2, ...):
-		units	: type_units.map;
+		units	: pac_units.map;
 		
 		case appearance is
 			-- If a device appears in both schematic and layout it has got:

@@ -80,7 +80,7 @@ procedure add_device (
 			
 			case element (device_cursor_lib).appearance is
 				when VIRTUAL =>
-					type_units.insert (
+					pac_units.insert (
 						container	=> device.units,
 						key			=> key (unit_cursors.int), -- the unit name like A, B
 						new_item	=> (
@@ -95,7 +95,7 @@ procedure add_device (
 					-- their own origin according to rotation given by caller:
 					placeholders := rotate_placeholders (unit_cursors.int, destination);
 					
-					type_units.insert (
+					pac_units.insert (
 						container	=> device.units,
 						key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
 						new_item	=> (
@@ -125,7 +125,7 @@ procedure add_device (
 			
 			case element (device_cursor_lib).appearance is
 				when VIRTUAL =>
-					type_units.insert (
+					pac_units.insert (
 						container	=> device.units,
 						key			=> key (unit_cursors.ext), -- the unit name like A, B
 						new_item	=> (
@@ -149,7 +149,7 @@ procedure add_device (
 					-- their own origin according to rotation given by caller:
 					placeholders := rotate_placeholders (symbol_cursor, destination);
 					
-					type_units.insert (
+					pac_units.insert (
 						container	=> device.units,
 						key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
 						new_item	=> (
@@ -182,7 +182,7 @@ procedure add_device (
 					new_item	=> (
 						appearance 	=> VIRTUAL,
 						model		=> key (device_cursor_lib),
-						units		=> type_units.empty_map
+						units		=> pac_units.empty_map
 						));
 
 				-- CS check inserted flag ?
@@ -200,7 +200,7 @@ procedure add_device (
 							new_item	=> (
 								appearance 	=> PCB,
 								model		=> key (device_cursor_lib),
-								units		=> type_units.empty_map,
+								units		=> pac_units.empty_map,
 								value		=> element (device_cursor_lib).value, -- if predefined in dev. model
 								variant		=> variant,
 

@@ -63,8 +63,8 @@ package body et_schematic_ops.units is
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor;
+				use et_schematic.pac_units;
+				unit_cursor : et_schematic.pac_units.cursor;
 			begin
 				if contains (device.units, unit_name) then
 					-- locate unit by its name
@@ -90,7 +90,7 @@ package body et_schematic_ops.units is
 			procedure query_number_of_invoked_units (
 				device_name	: in type_device_name;
 				device		: in et_schematic.type_device) is
-				use et_schematic.type_units;
+				use et_schematic.pac_units;
 			begin
 				if length (device.units) = 0 then
 					units_invoked := false;
@@ -203,8 +203,8 @@ package body et_schematic_ops.units is
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor;
+				use et_schematic.pac_units;
+				unit_cursor : et_schematic.pac_units.cursor;
 
 				procedure move_unit (
 					unit_name	: in pac_unit_name.bounded_string;
@@ -750,8 +750,8 @@ package body et_schematic_ops.units is
 			procedure query_unit_location (
 				device_name	: in type_device_name;
 				device		: in et_schematic.type_device) is
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor;
+				use et_schematic.pac_units;
+				unit_cursor : et_schematic.pac_units.cursor;
 			begin
 				if contains (device.units, unit_name) then
 					unit_cursor := find (device.units, unit_name); -- the unit should be there
@@ -767,8 +767,8 @@ package body et_schematic_ops.units is
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor;
+				use et_schematic.pac_units;
+				unit_cursor : et_schematic.pac_units.cursor;
 
 				procedure move_unit (
 					unit_name	: in pac_unit_name.bounded_string;
@@ -940,8 +940,8 @@ package body et_schematic_ops.units is
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device)
 			is
-				use et_schematic.type_units;
-				unit_cursor : et_schematic.type_units.cursor;
+				use et_schematic.pac_units;
+				unit_cursor : et_schematic.pac_units.cursor;
 
 				procedure rotate_unit (
 					name	: in pac_unit_name.bounded_string; -- A
@@ -1089,7 +1089,7 @@ package body et_schematic_ops.units is
 
 					log_indentation_up;
 					
-					type_units.update_element (
+					pac_units.update_element (
 						container	=> device.units,
 						position	=> unit_cursor,
 						process		=> rotate_unit'access);

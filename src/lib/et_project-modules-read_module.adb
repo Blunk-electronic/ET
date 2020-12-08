@@ -612,7 +612,7 @@ is
 	assembly_variant_submodules		: et_assembly_variants.pac_submodule_variants.map;
 	
 	-- temporarily collection of units:
-	device_units	: et_schematic.type_units.map; -- PWR, A, B, ...
+	device_units	: et_schematic.pac_units.map; -- PWR, A, B, ...
 	
 	device_partcode	: et_material.type_partcode.bounded_string;
 	device_purpose	: pac_device_purpose.bounded_string;
@@ -1166,7 +1166,7 @@ is
 				
 				case device_appearance is
 					when VIRTUAL =>
-						et_schematic.type_units.insert (
+						et_schematic.pac_units.insert (
 							container	=> device_units,
 							key			=> device_unit_name,
 							new_item	=> (
@@ -1176,7 +1176,7 @@ is
 												
 					when PCB =>
 						-- A unit of a real device has placeholders:
-						et_schematic.type_units.insert (
+						et_schematic.pac_units.insert (
 							container	=> device_units,
 							key			=> device_unit_name,
 							new_item	=> (
@@ -4050,7 +4050,7 @@ is
 							device.units := device_units;
 
 							-- clear temporarily collection of units for next device
-							et_schematic.type_units.clear (device_units);
+							et_schematic.pac_units.clear (device_units);
 							
 						when others => invalid_section;
 					end case;

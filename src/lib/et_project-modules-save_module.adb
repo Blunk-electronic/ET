@@ -675,8 +675,8 @@ is
 		use pac_devices_sch;
 
 		procedure query_units (device_name : in type_device_name; device : in et_schematic.type_device) is
-			use et_schematic.type_units;
-			unit_cursor : type_units.cursor := device.units.first;
+			use et_schematic.pac_units;
+			unit_cursor : pac_units.cursor := device.units.first;
 
 			use et_coordinates.pac_geometry_sch;
 			
@@ -692,7 +692,7 @@ is
 			
 		begin -- query_units
 			section_mark (section_units, HEADER);
-			while unit_cursor /= type_units.no_element loop
+			while unit_cursor /= pac_units.no_element loop
 				section_mark (section_unit, HEADER);
 				write (keyword => keyword_name, parameters => to_string (key (unit_cursor)));
 				write (keyword => keyword_position, parameters => position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97

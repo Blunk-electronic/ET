@@ -2533,8 +2533,8 @@ package body et_kicad_to_native is
 				units_kicad			: et_kicad.schematic.type_units_schematic.map := element (component_cursor_kicad).units;
 				unit_cursor_kicad	: et_kicad.schematic.type_units_schematic.cursor := units_kicad.first; -- point to first unit
 
-				use et_schematic.type_units;
-				unit_cursor_native	: et_schematic.type_units.cursor;
+				use et_schematic.pac_units;
+				unit_cursor_native	: et_schematic.pac_units.cursor;
 				unit_inserted		: boolean;
 
 				unit_native_virtual	: et_schematic.type_unit (et_symbols.VIRTUAL);
@@ -2563,7 +2563,7 @@ package body et_kicad_to_native is
 												rotation 	=> element (unit_cursor_kicad).rotation),
 								appearance	=> VIRTUAL);
 							
-							et_schematic.type_units.insert (
+							et_schematic.pac_units.insert (
 								container	=> component.units,
 								key			=> key (unit_cursor_kicad),
 								position	=> unit_cursor_native,
@@ -2588,7 +2588,7 @@ package body et_kicad_to_native is
 								purpose		=> (meaning => PURPOSE, others => <>)
 								);
 							
-							et_schematic.type_units.insert (
+							et_schematic.pac_units.insert (
 								container	=> component.units,
 								key			=> key (unit_cursor_kicad),
 								position	=> unit_cursor_native,
