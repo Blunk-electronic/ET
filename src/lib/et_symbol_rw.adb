@@ -187,13 +187,13 @@ package body et_symbol_rw is
 		use et_symbols.pac_shapes;
 		use et_text;
 
-		use type_lines;
+		use pac_lines;
 		use type_arcs;
 		use type_circles;
 		use pac_texts;
 		use pac_ports;
 
-		procedure write_line (cursor : in type_lines.cursor) is begin
+		procedure write_line (cursor : in pac_lines.cursor) is begin
 			section_mark (section_line, HEADER);
 			write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 			write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
@@ -582,7 +582,7 @@ package body et_symbol_rw is
 							when SEC_DRAW => 
 
 								-- append symbol_line to unit_symbol
-								type_lines.append (
+								pac_lines.append (
 									container	=> symbol.shapes.lines,
 									new_item	=> symbol_line);
 

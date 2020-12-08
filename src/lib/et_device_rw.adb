@@ -704,7 +704,7 @@ package body et_device_rw is
 							when SEC_DRAW => 
 
 								-- append symbol_line to unit_symbol
-								et_symbols.type_lines.append (
+								et_symbols.pac_lines.append (
 									container	=> unit_symbol.shapes.lines,
 									new_item	=> symbol_line);
 

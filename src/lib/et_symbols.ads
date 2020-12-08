@@ -434,7 +434,7 @@ package et_symbols is
 	type type_line is new pac_shapes.type_line with record
 		width		: type_line_width := line_width_default;
 	end record;
-	package type_lines is new doubly_linked_lists (type_line);
+	package pac_lines is new doubly_linked_lists (type_line);
 
 	-- Arcs
 	type type_arc is new pac_shapes.type_arc with record
@@ -459,7 +459,7 @@ package et_symbols is
 
 	-- Shapes are wrapped in a the type_shapes:
 	type type_shapes is record
-		lines		: type_lines.list 		:= type_lines.empty_list;
+		lines		: pac_lines.list 		:= pac_lines.empty_list;
 		arcs 		: type_arcs.list		:= type_arcs.empty_list;
 		circles		: type_circles.list		:= type_circles.empty_list;
 	end record;

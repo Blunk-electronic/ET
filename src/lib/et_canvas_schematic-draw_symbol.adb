@@ -59,7 +59,7 @@ is
 	use et_symbols.pac_shapes;
 	use pac_draw_symbols;
 	
-	use type_lines;
+	use pac_lines;
 	use type_arcs;
 	use type_circles;
 	use pac_ports;
@@ -69,7 +69,7 @@ is
 	type type_arc is new pac_shapes.type_arc with null record;		
 	type type_circle is new pac_shapes.type_circle with null record;
 	
-	procedure draw_line (c : in type_lines.cursor) is 
+	procedure draw_line (c : in pac_lines.cursor) is 
 		-- Take a copy of the given line:
 		line : type_line := (pac_shapes.type_line (element (c)) with null record);
 	begin

@@ -2199,7 +2199,7 @@ package body et_kicad_to_native is
 		native_shapes : et_symbols.type_shapes;
 
 		procedure copy_line (cursor : in et_kicad_libraries.type_symbol_lines.cursor) is begin
-			type_lines.append (
+			pac_lines.append (
 				container	=> native_shapes.lines,
 				new_item	=> et_kicad_libraries.type_symbol_lines.element (cursor));
 		end;
@@ -2252,7 +2252,7 @@ package body et_kicad_to_native is
 						start := true; -- up next: start point
 
 						-- append line to collection of native lines
-						et_symbols.type_lines.append (
+						et_symbols.pac_lines.append (
 							container	=> native_shapes.lines,
 							new_item	=> line);
 
@@ -2283,7 +2283,7 @@ package body et_kicad_to_native is
 			corner_C, corner_D : pac_geometry_sch.type_point;
 			
 			procedure append_line is begin
-				et_symbols.type_lines.append (
+				et_symbols.pac_lines.append (
 					container	=> native_shapes.lines,
 					new_item	=> line);
 			end;
