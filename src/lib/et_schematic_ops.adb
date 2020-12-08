@@ -9054,8 +9054,8 @@ package body et_schematic_ops is
 					netlist := make_for_variant.netlist;
 				end assign_netlist;
 
-				use et_schematic.type_netlists;
-				netlist_cursor : et_schematic.type_netlists.cursor;
+				use et_schematic.pac_netlists;
+				netlist_cursor : et_schematic.pac_netlists.cursor;
 				
 			begin -- update_netlist
 				log (text => "updating netlist ...", level => log_threshold + 2);
@@ -9065,15 +9065,15 @@ package body et_schematic_ops is
 				-- If the netlist does exist, overwrite it by the new netlist.
 				netlist_cursor := find (module.netlists, variant_name);
 
-				if netlist_cursor = type_netlists.no_element then
+				if netlist_cursor = pac_netlists.no_element then
 
-					type_netlists.insert (
+					pac_netlists.insert (
 						container	=> module.netlists,
 						key			=> variant_name,
 						new_item	=> make_for_variant.netlist); -- the new netlist
 
 				else
-					type_netlists.update_element (
+					pac_netlists.update_element (
 						container	=> module.netlists,
 						position	=> netlist_cursor,
 						process		=> assign_netlist'access);

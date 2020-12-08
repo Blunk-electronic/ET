@@ -524,7 +524,7 @@ package et_schematic is
 	type type_board_available is new boolean;
 
 	-- As there are assembly variants, for each of them a dedicated netlist must be generated.
-	package type_netlists is new ordered_maps (
+	package pac_netlists is new ordered_maps (
 		key_type		=> et_general.pac_assembly_variant_name.bounded_string, -- low_cost, empty if default variant
 		"<"				=> et_general.pac_assembly_variant_name."<",
 		element_type	=> et_netlists.type_netlist.tree, -- provides info on primary and secondary net dependencies
@@ -611,7 +611,7 @@ package et_schematic is
 		-- The netlists containing nets of top module and submodule instances:
 		-- Provide information on primary nets and their subordinated secondary nets per 
 		-- assembly variant.
-		netlists		: type_netlists.map; -- variant name and netlist
+		netlists		: pac_netlists.map; -- variant name and netlist
 
 		-- Devices which do not have a counterpart in the schematic:
 		devices_non_electric : pac_devices_non_electric.map; -- fiducials, mounting holes, ...
