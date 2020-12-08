@@ -198,7 +198,7 @@ procedure draw_units (
 			use pac_units_internal;
 
 			use et_symbols;
-			symbol_model : type_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
+			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
 			symbol_cursor : et_symbols.type_symbols.cursor;
 		begin
 			case unit_cursor.ext_int is
@@ -503,7 +503,7 @@ procedure draw_units (
 			
 			use et_symbols;
 			use type_symbols;
-			symbol_model : type_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
+			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
 			symbol_cursor : et_symbols.type_symbols.cursor;
 
 			procedure fetch_placeholders_ext is begin

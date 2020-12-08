@@ -531,9 +531,9 @@ package et_symbols is
 -- FILE NAMES
 
 	symbol_file_name_length_max : constant natural := 500;
-	package type_symbol_model_file is new generic_bounded_length (symbol_file_name_length_max);
-	function to_string (name : in type_symbol_model_file.bounded_string) return string;
-	function to_file_name (name : in string) return type_symbol_model_file.bounded_string;
+	package pac_symbol_model_file is new generic_bounded_length (symbol_file_name_length_max);
+	function to_string (name : in pac_symbol_model_file.bounded_string) return string;
+	function to_file_name (name : in string) return pac_symbol_model_file.bounded_string;
 	
 
 
@@ -548,8 +548,8 @@ package et_symbols is
 -- STORAGE
 	
 	package type_symbols is new indefinite_ordered_maps (
-		key_type		=> type_symbol_model_file.bounded_string, -- ../libraries/symbols/NAND.sym
-		"<"				=> type_symbol_model_file."<",
+		key_type		=> pac_symbol_model_file.bounded_string, -- ../libraries/symbols/NAND.sym
+		"<"				=> pac_symbol_model_file."<",
 		element_type	=> type_symbol);
 
 	use type_symbols;
@@ -567,7 +567,7 @@ package et_symbols is
 	--  External symbols provide much more flexibilty as they can be used by many
 	-- devices. There is no fixed connection between device and symbol.
 	
-	function locate (symbol : in type_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
+	function locate (symbol : in pac_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
 		return type_symbols.cursor;
 
 	-- Returns true if the given symbol will be part of a real device:

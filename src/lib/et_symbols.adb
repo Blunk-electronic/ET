@@ -313,16 +313,16 @@ package body et_symbols is
 
 
 
-	function to_string (name : in type_symbol_model_file.bounded_string) 
+	function to_string (name : in pac_symbol_model_file.bounded_string) 
 		return string is
 	begin
-		return type_symbol_model_file.to_string (name);
+		return pac_symbol_model_file.to_string (name);
 	end to_string;
 
 	function to_file_name (name : in string)
-		return type_symbol_model_file.bounded_string is
+		return pac_symbol_model_file.bounded_string is
 	begin
-		return type_symbol_model_file.to_bounded_string (name);
+		return pac_symbol_model_file.to_bounded_string (name);
 	end;
 
 
@@ -330,7 +330,7 @@ package body et_symbols is
 
 
 
-	function locate (symbol : in type_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
+	function locate (symbol : in pac_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
 		return type_symbols.cursor is
 	begin
 		return type_symbols.find (symbols, symbol);

@@ -475,12 +475,12 @@ package body et_schematic_ops is
 			device	: in et_devices.type_device) is
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
-			sym_model : type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
+			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
 
 			procedure query_symbol (
 			-- Appends the ports names of the external unit to the portlist to 
 			-- be returned.
-				symbol_name	: in type_symbol_model_file.bounded_string;
+				symbol_name	: in pac_symbol_model_file.bounded_string;
 				symbol		: in type_symbol ) is
 			begin -- query_symbol
 				ports := symbol.ports;
@@ -1362,10 +1362,10 @@ package body et_schematic_ops is
 			device	: in et_devices.type_device) is
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
-			sym_model : type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
+			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
 
 			procedure query_symbol (
-				symbol_name	: in type_symbol_model_file.bounded_string;
+				symbol_name	: in pac_symbol_model_file.bounded_string;
 				symbol		: in type_symbol ) is
 			begin
 				-- Collect the positions of texts and store them in result.text

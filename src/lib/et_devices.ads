@@ -329,7 +329,7 @@ package et_devices is
 	-- An external unit has a reference and a swap level.
     type type_unit_external is record
         -- file is the link to the symbol in container "symbols":
-        model		: type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
+        model		: pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
        	position	: pac_geometry_sch.type_point := pac_geometry_sch.origin; -- the position within the device editor
 		swap_level	: type_swap_level := swap_level_default;
 		add_level	: type_add_level := type_add_level'first;

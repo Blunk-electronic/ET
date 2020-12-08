@@ -96,9 +96,9 @@ procedure et is
 	package_name_save_as	: et_packages.type_package_model_file.bounded_string; -- the package to be saved as
 	package_appearance		: et_packages.type_package_appearance := et_packages.REAL; -- virtual/real. mostly real.
 
-	symbol_name_create		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
-	symbol_name_open		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be opened
-	symbol_name_save_as		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be saved as
+	symbol_name_create		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
+	symbol_name_open		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be opened
+	symbol_name_save_as		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be saved as
 	symbol_appearance		: et_symbols.type_appearance := et_symbols.PCB; -- virtual/pcb. mostly pcb.
 	
 	device_name_create		: pac_device_model_file.bounded_string; -- the device to be created like libraries/devices/TL084.dev
@@ -427,7 +427,7 @@ procedure et is
 	end;
 
 	procedure save_symbol_as is 
-		use et_symbols.type_symbol_model_file;
+		use et_symbols.pac_symbol_model_file;
 	begin
 		-- If symbol_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only symbol in et_symbols.symbols is saved.
@@ -512,7 +512,7 @@ procedure et is
 		use pac_script_name;
 		use et_conventions.pac_file_name;
 		use et_packages.type_package_model_file;
-		use et_symbols.type_symbol_model_file;
+		use et_symbols.pac_symbol_model_file;
 		use pac_device_model_file;
 		use et_frames.pac_template_name;
 

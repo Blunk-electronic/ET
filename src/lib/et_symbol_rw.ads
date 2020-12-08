@@ -83,7 +83,7 @@ package et_symbol_rw is
 
 	procedure create_symbol (
 	-- Creates a symbol and stores it in container et_symbols.symbols.
-		symbol_name		: in type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		appearance		: in type_appearance;
 		log_threshold	: in et_string_processing.type_log_level);
 	
@@ -93,13 +93,13 @@ package et_symbol_rw is
 	
 	procedure save_symbol (
 	-- Saves the given symbol model in a file specified by file_name.
-		file_name		: in type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		file_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		symbol			: in type_symbol; -- the actual symbol model
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure read_symbol (
 	-- Opens the symbol file and stores the symbol in container et_symbols.symbols.
-		file_name 		: in type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		file_name 		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in et_string_processing.type_log_level);
 
 	
