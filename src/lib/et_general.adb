@@ -239,7 +239,7 @@ package body et_general is
 	end check_net_name_length;
 
 	procedure check_net_name_characters (
-		net			: in type_net_name.bounded_string;
+		net			: in pac_net_name.bounded_string;
 		characters	: in character_set := net_name_characters) is
 	-- Tests if the given net name contains only valid characters as specified
 	-- by given character set.
@@ -265,9 +265,9 @@ package body et_general is
 		end if;
 
 		-- If there is an inversion mark, it must be at the very end of the net name.
-		inversion_mark_position := type_net_name.index (net, net_inversion_mark);
+		inversion_mark_position := pac_net_name.index (net, net_inversion_mark);
 		if inversion_mark_position > 0 then
-			if inversion_mark_position /= type_net_name.length (net) then
+			if inversion_mark_position /= pac_net_name.length (net) then
 				log (ERROR, "net " & to_string (net) 
 					& " inversion mark must be at the end of the net name !",
 					console => true);
@@ -277,7 +277,7 @@ package body et_general is
 		
 	end check_net_name_characters;
 
-	function is_empty (net : in type_net_name.bounded_string)
+	function is_empty (net : in pac_net_name.bounded_string)
 		return boolean
 	is begin
 		if length (net) = 0 then
@@ -287,16 +287,16 @@ package body et_general is
 		end if;
 	end is_empty;
 	
-	function to_net_name (net_name : in string) return type_net_name.bounded_string is begin
-		return type_net_name.to_bounded_string (to_upper (net_name));
+	function to_net_name (net_name : in string) return pac_net_name.bounded_string is begin
+		return pac_net_name.to_bounded_string (to_upper (net_name));
 	end to_net_name;
 	
-	function to_string (net_name : in type_net_name.bounded_string) return string is begin
-		return type_net_name.to_string (net_name);
+	function to_string (net_name : in pac_net_name.bounded_string) return string is begin
+		return pac_net_name.to_string (net_name);
 	end to_string;
 
 	function to_anonymous_net_name (index : in type_anonymous_net_index) -- 56
-		return type_net_name.bounded_string -- N$56
+		return pac_net_name.bounded_string -- N$56
 	is
 		name : constant string := anonymous_net_name_prefix -- N$
 			& trim (type_anonymous_net_index'image (index), left); -- 56
@@ -305,7 +305,7 @@ package body et_general is
 	end to_anonymous_net_name;
 
 	
-	function anonymous (net_name : in type_net_name.bounded_string) -- N$456
+	function anonymous (net_name : in pac_net_name.bounded_string) -- N$456
 		return boolean 
 	is
 		result : boolean := true;

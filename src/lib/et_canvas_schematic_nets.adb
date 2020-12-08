@@ -69,7 +69,7 @@ package body et_canvas_schematic_nets is
 
 			procedure query_strands (
 			-- Searches the strands of the net for a segment that sits on given place.
-				net_name	: in et_general.type_net_name.bounded_string;
+				net_name	: in et_general.pac_net_name.bounded_string;
 				net			: in out et_schematic.type_net) is
 				
 				procedure query_segments (strand : in out type_strand) is
@@ -127,7 +127,7 @@ package body et_canvas_schematic_nets is
 	end delete_selected_segment;
 
 
-	function selected_net return type_net_name.bounded_string is
+	function selected_net return pac_net_name.bounded_string is
 		ss : constant type_selected_segment := element (selected_segment);
 	begin
 		return key (ss.net);
@@ -146,9 +146,9 @@ package body et_canvas_schematic_nets is
 	
 	function lowest_available_anonymous_net (
 		module		: in pac_generic_modules.cursor)
-		return type_net_name.bounded_string
+		return pac_net_name.bounded_string
 	is
-		net : type_net_name.bounded_string; -- like N$56
+		net : pac_net_name.bounded_string; -- like N$56
 		cursor : et_schematic.type_nets.cursor;
 
 		-- This flag goes true once a suitable net
@@ -178,11 +178,11 @@ package body et_canvas_schematic_nets is
 	end lowest_available_anonymous_net;
 	
 	function first_net (segments : in pac_proposed_segments.list) 
-		return type_net_name.bounded_string -- RESET_N, MASTER_CLOCK
+		return pac_net_name.bounded_string -- RESET_N, MASTER_CLOCK
 	is
 		seg : type_selected_segment;
 		c	: pac_proposed_segments.cursor;
-		net : type_net_name.bounded_string; -- to be returned
+		net : pac_net_name.bounded_string; -- to be returned
 	begin
 		if is_empty (segments) then
 			return net; -- empty string
@@ -213,12 +213,12 @@ package body et_canvas_schematic_nets is
 	is 
 		result : boolean := true;
 		
-		net_name : type_net_name.bounded_string;
+		net_name : pac_net_name.bounded_string;
 		net_names_differ : boolean := false;
 		
 		procedure query_segment (c : in pac_proposed_segments.cursor) is 
 			use type_nets;
-			use type_net_name;
+			use pac_net_name;
 			
 			s : type_selected_segment := element (c);
 		begin
@@ -280,7 +280,7 @@ package body et_canvas_schematic_nets is
 			net_cursor : type_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is
 				strand_cursor : type_strands.cursor := net.strands.first;
@@ -400,7 +400,7 @@ package body et_canvas_schematic_nets is
 	procedure clarify_net_segment is
 		use et_schematic;
 		s : type_net_segments.cursor;
-		n : type_net_name.bounded_string;
+		n : pac_net_name.bounded_string;
 	begin
 		-- On every call of this procedure we must advance from one
 		-- segment to the next in a circular manner. So if the end 
@@ -449,7 +449,7 @@ package body et_canvas_schematic_nets is
 
 	procedure insert_net_segment (
 		module			: in pac_generic_modules.cursor;
-		net_name_given	: in type_net_name.bounded_string; -- RESET_N
+		net_name_given	: in pac_net_name.bounded_string; -- RESET_N
 		sheet			: in type_sheet;
 		segment			: in et_schematic.type_net_segment;
 		log_threshold	: in type_log_level)
@@ -465,16 +465,16 @@ package body et_canvas_schematic_nets is
 		use et_schematic.type_nets;
 		net_cursor	: et_schematic.type_nets.cursor;
 
-		use et_general.type_net_name;
-		net_name_auto_generated	: type_net_name.bounded_string; -- N$234
-		net_name_start, net_name_end : type_net_name.bounded_string;
+		use et_general.pac_net_name;
+		net_name_auto_generated	: pac_net_name.bounded_string; -- N$234
+		net_name_start, net_name_end : pac_net_name.bounded_string;
 
 		-- Extends the given net (named after net_name) by the given segment.
 		-- Outputs a message if an explicit net_name_given was provided stating
 		-- that this net_name_given will be ignored.
 		-- Calls et_schematic_ops.nets.insert_segment to do the actual insertion
 		-- of the segment in the targeted net:
-		procedure extend_net (net_name : in type_net_name.bounded_string) is begin
+		procedure extend_net (net_name : in pac_net_name.bounded_string) is begin
 			log (text => "attaching start point of new segment to net "
 				& et_general.to_string (net_name),
 				level => log_threshold + 1);
@@ -776,7 +776,7 @@ package body et_canvas_schematic_nets is
 		destination		: in type_point;
 		log_threshold	: in type_log_level) is
 
-		net_name : type_net_name.bounded_string;
+		net_name : pac_net_name.bounded_string;
 		point_of_attack : et_coordinates.type_position := to_position (segment.point_of_attack, current_active_sheet);
 	begin
 		log (text => "finalizing drag ...", level => log_threshold);
@@ -987,7 +987,7 @@ package body et_canvas_schematic_nets is
 			net_cursor : type_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is
 				strand_cursor : type_strands.cursor := net.strands.first;
@@ -1124,7 +1124,7 @@ package body et_canvas_schematic_nets is
 			net_cursor : type_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 
 				strand_cursor : type_strands.cursor := net.strands.first;
@@ -1262,7 +1262,7 @@ package body et_canvas_schematic_nets is
 		use type_net_labels;
 
 		s : type_net_segments.cursor;
-		n : type_net_name.bounded_string;
+		n : pac_net_name.bounded_string;
 
 		function info (c : in type_net_labels.cursor) return string is 
 			l : type_net_label := element (c);
@@ -1307,7 +1307,7 @@ package body et_canvas_schematic_nets is
 			module		: in out type_module) is
 
 			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 
 				procedure query_segments (strand : in out type_strand) is
@@ -1479,7 +1479,7 @@ package body et_canvas_schematic_nets is
 			module		: in out type_module) 
 		is
 			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
 				procedure query_segments (strand : in out type_strand) is

@@ -120,7 +120,7 @@ package body et_submodules is
 		is
 
 		procedure move (
-			name	: in et_general.type_net_name.bounded_string;
+			name	: in et_general.pac_net_name.bounded_string;
 			port	: in out type_submodule_port) is
 		begin
 			move_by (port.position, offset);

@@ -340,7 +340,7 @@ package et_kicad.pcb is
 	
 	type type_netlist_net is record
 		id		: type_net_id;
-		name	: et_general.type_net_name.bounded_string;
+		name	: et_general.pac_net_name.bounded_string;
 	end record;
 
 	-- When nets are collected in an ordered set, the next two functions serve to
@@ -410,8 +410,8 @@ package et_kicad.pcb is
 	
 	-- KiCad keeps a list of net names which are in a certain net class.
 	package type_nets_of_class is new doubly_linked_lists (
-		element_type	=> et_general.type_net_name.bounded_string,
-		"="				=> et_general.type_net_name."=");
+		element_type	=> et_general.pac_net_name.bounded_string,
+		"="				=> et_general.pac_net_name."=");
 
 	-- The net class type used here extends the basic net class by the list
 	-- of net names:
@@ -490,7 +490,7 @@ package et_kicad.pcb is
 	-- In the pcb drawing, a terminal has a net attached. For this reason a
 	-- list of terminals is declared here:
 	type type_terminal is new et_terminals.type_terminal with record
-		net_name : et_general.type_net_name.bounded_string;
+		net_name : et_general.pac_net_name.bounded_string;
 	end record;
 
 	-- the list of terminals of a package:
@@ -601,7 +601,7 @@ package et_kicad.pcb is
 	function to_pad_connection (connection : in string) return type_polygon_pad_connection;
 	
 	type type_polygon is record
-		net_name			: et_general.type_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
+		net_name			: et_general.pac_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
 		net_id				: type_net_id; -- if id is 0, the polygon is not connected to any net
 		layer				: type_signal_layer_id;
 		timestamp			: type_timestamp;

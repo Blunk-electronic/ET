@@ -1552,8 +1552,8 @@ package body et_board_ops is
 	
 -- TRACKS AND FREETRACKS
 	
-	function freetrack (net_name : in type_net_name.bounded_string) return string is 
-		use type_net_name;
+	function freetrack (net_name : in pac_net_name.bounded_string) return string is 
+		use pac_net_name;
 	begin
 		if length (net_name) = 0 then
 			return " freetrack";
@@ -1562,8 +1562,8 @@ package body et_board_ops is
 		end if;
 	end freetrack;
 
-	function is_freetrack (net_name : in type_net_name.bounded_string) return boolean is 
-		use type_net_name;
+	function is_freetrack (net_name : in pac_net_name.bounded_string) return boolean is 
+		use pac_net_name;
 	begin
 		if length (net_name) = 0 then
 			return true;
@@ -1617,7 +1617,7 @@ package body et_board_ops is
 	procedure add_named_track (
 	-- Adds a line track segment to the given net in the given module.
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in type_net_name.bounded_string; -- reset_n
+		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in et_pcb.type_copper_line) is
 
 		procedure do_it (
@@ -1630,7 +1630,7 @@ package body et_board_ops is
 
 			procedure add (
 			-- Appends the track to the net.
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_pcb.pac_copper_lines;
 			begin
@@ -1664,7 +1664,7 @@ package body et_board_ops is
 	procedure draw_track_line (
 	-- Draws a track line. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in type_net_name.bounded_string; -- reset_n
+		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in et_pcb.type_copper_line;
 		log_threshold	: in type_log_level) is
 
@@ -1726,7 +1726,7 @@ package body et_board_ops is
 
 			procedure add (
 			-- Appends the track to the net.
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_pcb.pac_copper_lines;
 			begin
@@ -1757,7 +1757,7 @@ package body et_board_ops is
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in type_net_name.bounded_string; -- reset_n
+		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
@@ -1826,7 +1826,7 @@ package body et_board_ops is
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in type_net_name.bounded_string; -- reset_n
+		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
@@ -1894,7 +1894,7 @@ package body et_board_ops is
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in type_net_name.bounded_string; -- reset_n
+		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
@@ -1956,7 +1956,7 @@ package body et_board_ops is
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in type_net_name.bounded_string; -- reset_n
+		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
@@ -2019,7 +2019,7 @@ package body et_board_ops is
 	procedure draw_track_arc (
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in type_net_name.bounded_string; -- reset_n
+		net_name		: in pac_net_name.bounded_string; -- reset_n
 		arc				: in et_pcb.type_copper_arc;
 		log_threshold	: in type_log_level) is
 
@@ -2047,7 +2047,7 @@ package body et_board_ops is
 
 			procedure add (
 			-- Appends the track to the net.
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 			begin
 				append (
@@ -2102,7 +2102,7 @@ package body et_board_ops is
 	
 	procedure ripup_track_segment (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in type_net_name.bounded_string; -- reset_n
+		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
@@ -2166,7 +2166,7 @@ package body et_board_ops is
 			net_cursor : et_schematic.type_nets.cursor := find (module.nets, net_name);
 
 			procedure ripup (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				line_cursor : pac_copper_lines.cursor := net.route.lines.first;
 				arc_cursor  : pac_copper_arcs.cursor := net.route.arcs.first;

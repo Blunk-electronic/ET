@@ -70,7 +70,7 @@ with et_exceptions;				use et_exceptions;
 
 package body et_project.modules is
 
-	use et_general.type_net_name;
+	use et_general.pac_net_name;
 	use pac_generic_modules;
 	
 	function to_string (project_name : in pac_project_name.bounded_string) return string is
@@ -154,7 +154,7 @@ package body et_project.modules is
 		end if;
 	end sheet_description;
 	
-	procedure port_not_at_edge (name : in et_general.type_net_name.bounded_string) is 
+	procedure port_not_at_edge (name : in et_general.pac_net_name.bounded_string) is 
 		use et_string_processing;
 	begin
 		log (ERROR, "port " & enclose_in_quotes (et_general.to_string (name)) &
@@ -179,7 +179,7 @@ package body et_project.modules is
 			net_cursor : type_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in et_general.type_net_name.bounded_string;
+				net_name	: in et_general.pac_net_name.bounded_string;
 				net			: in type_net) is
 				use type_strands;
 				strand_cursor : type_strands.cursor := net.strands.first;
@@ -262,7 +262,7 @@ package body et_project.modules is
 		use et_schematic;
 		
 		procedure query_strands (
-			net_name	: in et_general.type_net_name.bounded_string;
+			net_name	: in et_general.pac_net_name.bounded_string;
 			net			: in type_net) is
 			use type_strands;
 			strand_cursor : type_strands.cursor := net.strands.first;
@@ -488,7 +488,7 @@ package body et_project.modules is
 	-- Returns true if the given module provides the given port.
 	-- The module being searched in must be in the rig already.
 		module			: in et_submodules.type_submodules.cursor;
-		port			: in et_general.type_net_name.bounded_string; -- clock_output
+		port			: in et_general.pac_net_name.bounded_string; -- clock_output
 		direction		: in et_submodules.type_netchanger_port_name) -- master/slave
 		return boolean is
 

@@ -482,7 +482,7 @@ is
 	end reset_net_class;
 
 	-- nets
-	net_name	: type_net_name.bounded_string; -- motor_on_off
+	net_name	: pac_net_name.bounded_string; -- motor_on_off
 	net			: et_schematic.type_net;
 
 	strands : et_schematic.type_strands.list;
@@ -579,7 +579,7 @@ is
 	
 	-- submodules
 	submodule_port			: et_submodules.type_submodule_port;
-	submodule_port_name		: et_general.type_net_name.bounded_string; -- RESET
+	submodule_port_name		: et_general.pac_net_name.bounded_string; -- RESET
 	submodule_ports			: et_submodules.type_submodule_ports.map;
 	submodule_name 			: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 	submodule				: et_submodules.type_submodule;

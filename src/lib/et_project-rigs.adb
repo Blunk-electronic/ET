@@ -47,7 +47,7 @@ with et_general_rw;				use et_general_rw;
 	
 package body et_project.rigs is
 
-	use et_general.type_net_name;
+	--use et_general.pac_net_name;
 
 	function to_string (section : in type_section_name) return string is
 	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".

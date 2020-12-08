@@ -221,7 +221,7 @@ package body et_schematic is
 		strand_position : et_coordinates.type_position := greatest_position;
 		
 		procedure query_strands (
-			net_name	: in type_net_name.bounded_string;
+			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net)
 		is
 			use type_strands;
@@ -263,7 +263,7 @@ package body et_schematic is
 		strand_position : et_coordinates.type_position := greatest_position;
 		
 		procedure query_strands (
-			net_name	: in type_net_name.bounded_string;
+			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net)
 		is
 			use type_strands;

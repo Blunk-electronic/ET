@@ -94,7 +94,7 @@ package et_netlists is
 	-- enforces its name on the net in the parent module or vice versa:
 	type type_submodule_port_extended is record
 		module		: type_module_instance_name.bounded_string; -- MOT_DRV_3
-		port		: type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+		port		: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
 		direction	: type_netchanger_port_name; -- master/slave
 	end record;
 
@@ -109,7 +109,7 @@ package et_netlists is
 
 	function to_prefix (instance : in type_module_instance_name.bounded_string) -- OSC1
 	-- Converts an instance name to a net prefix with a trailing level separator.		
-		return et_general.type_net_name.bounded_string;
+		return et_general.pac_net_name.bounded_string;
 
 
 	
@@ -145,8 +145,8 @@ package et_netlists is
 	end record;
 	
 	type type_net_name is record
-		base_name	: et_general.type_net_name.bounded_string; -- output
-		prefix		: et_general.type_net_name.bounded_string; -- CLK_GENERATOR/FLT1/
+		base_name	: et_general.pac_net_name.bounded_string; -- output
+		prefix		: et_general.pac_net_name.bounded_string; -- CLK_GENERATOR/FLT1/
 	end record;
 		
 	function "<" (left, right : in type_net_name) return boolean;

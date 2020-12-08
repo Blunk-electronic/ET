@@ -407,7 +407,7 @@ package body et_conventions is
 -- 		use et_kicad.type_rig;
 -- 
 -- 		module_cursor_right, module_cursor_left : et_kicad.type_rig.cursor;
--- 		net_right, net_left : et_schematic.type_net_name.bounded_string;	-- motor_on_off
+-- 		net_right, net_left : et_schematic.pac_net_name.bounded_string;	-- motor_on_off
 -- 		port_right, port_left : et_kicad.type_port_with_reference;	-- 4
 -- 		terminal_right, terminal_left : type_terminal;		-- 4, B3
 -- 	
@@ -429,7 +429,7 @@ package body et_conventions is
 -- 			use et_kicad.type_netlist;
 -- 			net_cursor : et_kicad.type_netlist.cursor := module.netlist.first;
 -- 
--- 			use et_schematic.type_net_name;
+-- 			use et_schematic.pac_net_name;
 -- 			net_found : boolean := false;
 -- 
 -- 			function net_or_terminal_not_found return string is
@@ -441,7 +441,7 @@ package body et_conventions is
 -- 			end net_or_terminal_not_found;
 -- 			
 -- 			procedure query_ports_left (
--- 				net_name	: in et_schematic.type_net_name.bounded_string;
+-- 				net_name	: in et_schematic.pac_net_name.bounded_string;
 -- 				ports		: in et_kicad.type_ports_with_reference.set) is
 -- 				use et_kicad.type_ports_with_reference;
 -- 				use type_port_name;
@@ -536,7 +536,7 @@ package body et_conventions is
 -- 			net_cursor : et_kicad.type_netlist.cursor := module.netlist.first;
 -- 
 -- 			procedure query_ports_right (
--- 				net_name	: in et_schematic.type_net_name.bounded_string;
+-- 				net_name	: in et_schematic.pac_net_name.bounded_string;
 -- 				ports		: in et_kicad.type_ports_with_reference.set) is
 -- 				use et_kicad.type_ports_with_reference;
 -- 				port_cursor : et_kicad.type_ports_with_reference.cursor := ports.first;
@@ -854,7 +854,7 @@ package body et_conventions is
 
 -- 	function ports_in_net (
 -- 		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
--- 		net				: in et_schematic.type_net_name.bounded_string;			-- motor_on_off
+-- 		net				: in et_schematic.pac_net_name.bounded_string;			-- motor_on_off
 -- 		category		: in type_device_category;				-- netchanger, connector
 -- 		log_threshold	: in et_string_processing.type_log_level)
 -- 		return et_kicad.type_ports_with_reference.set is
@@ -937,7 +937,7 @@ package body et_conventions is
 -- 		-- Returns the given net as string. In a form like "led_matrix.master_clock"
 -- 
 -- 		use et_coordinates.type_submodule_name;
--- 		use et_schematic.type_net_name;
+-- 		use et_schematic.pac_net_name;
 -- 	begin
 -- 		if length (net.module) = 0 or length (net.net) = 0 then
 -- 			return "";
@@ -1040,7 +1040,7 @@ package body et_conventions is
 -- 		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
 -- 		generic_name 	: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix
 -- 		instance		: in et_coordinates.type_submodule_instance;			-- 2
--- 		net				: in et_schematic.type_net_name.bounded_string;			-- motor_on_off
+-- 		net				: in et_schematic.pac_net_name.bounded_string;			-- motor_on_off
 -- 		log_threshold	: in et_string_processing.type_log_level)
 -- 		return et_kicad.type_ports_with_reference.set is
 -- 
@@ -1239,7 +1239,7 @@ package body et_conventions is
 -- 	function compare_nets (left, right : in type_net) return boolean is
 -- 	-- Returns true if left net comes before right net.
 -- 		use et_coordinates.type_submodule_name;
--- 		use et_schematic.type_net_name;
+-- 		use et_schematic.pac_net_name;
 -- 	begin
 -- 		if left.module < right.module then
 -- 			return true;
@@ -1305,11 +1305,11 @@ package body et_conventions is
 -- 		-- Locates netchanger and connector ports in the given net.
 -- 		-- Locates the nets connected with the netchangers and connectors and calls itself again.
 -- 			module_name		: in et_coordinates.type_submodule_name.bounded_string;	-- the module to search in
--- 			net_name		: in et_schematic.type_net_name.bounded_string;			-- the net name
+-- 			net_name		: in et_schematic.pac_net_name.bounded_string;			-- the net name
 -- 			log_threshold	: in type_log_level) is
 -- 
 -- 			use et_libraries;
--- 			use et_schematic.type_net_name;
+-- 			use et_schematic.pac_net_name;
 -- 			use et_kicad.type_ports_with_reference;
 -- 
 -- 			net_not_processed_yet : boolean; -- true if the given net has NOT been processed already
@@ -1318,7 +1318,7 @@ package body et_conventions is
 -- 			netchanger_port_opposide : type_port_name.bounded_string;
 -- 			connector_port_opposide : et_kicad.type_port_of_module;
 -- 			
--- 			net_name_opposide : et_schematic.type_net_name.bounded_string;
+-- 			net_name_opposide : et_schematic.pac_net_name.bounded_string;
 -- 			
 -- 			netchangers	: et_kicad.type_ports_with_reference.set; -- the netchangers connected with the net
 -- 			netchanger_cursor : et_kicad.type_ports_with_reference.cursor;
@@ -1521,7 +1521,7 @@ package body et_conventions is
 -- 			use et_kicad.type_netlist;
 -- 			netlist		: et_kicad.type_netlist.map := module.netlist;
 -- 			net_cursor	: et_kicad.type_netlist.cursor;
--- 			net_name	: et_schematic.type_net_name.bounded_string;
+-- 			net_name	: et_schematic.pac_net_name.bounded_string;
 -- 
 -- 			indentation_backup : type_indentation_level;
 -- 			

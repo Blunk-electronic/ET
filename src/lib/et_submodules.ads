@@ -177,8 +177,8 @@ package et_submodules is
 	package type_submodule_ports is new ordered_maps (
 		element_type	=> type_submodule_port,
 		-- The net inside the submodule is here the port name:
-		"<"				=> et_general.type_net_name."<",
-		key_type		=> et_general.type_net_name.bounded_string); -- CLOCK_GENERATOR_OUT
+		"<"				=> et_general.pac_net_name."<",
+		key_type		=> et_general.pac_net_name.bounded_string); -- CLOCK_GENERATOR_OUT
 
 	procedure move_ports (
 	-- Moves the given submodule ports by the given offset.

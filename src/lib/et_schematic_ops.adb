@@ -96,12 +96,12 @@ package body et_schematic_ops is
 		raise constraint_error;
 	end;
 
-	procedure net_not_found (name : in type_net_name.bounded_string) is begin
+	procedure net_not_found (name : in pac_net_name.bounded_string) is begin
 		raise semantic_error_1 with
 			"ERROR ! Net " & enclose_in_quotes (to_string (name)) & " not found !";
 	end;
 
-	procedure submodule_port_not_found (name : in et_general.type_net_name.bounded_string) is begin
+	procedure submodule_port_not_found (name : in et_general.pac_net_name.bounded_string) is begin
 		log (ERROR, "port " &
 			enclose_in_quotes (to_string (name)) & " not found !", console => true);
 		raise constraint_error;
@@ -114,7 +114,7 @@ package body et_schematic_ops is
 		raise constraint_error;
 	end;
 
-	procedure port_not_provided (port_name : in et_general.type_net_name.bounded_string) is begin
+	procedure port_not_provided (port_name : in et_general.pac_net_name.bounded_string) is begin
 		log (ERROR, "submodule does not provide a port named " &
 			 enclose_in_quotes (to_string (port_name)) & " with the desired direction (master/slave) !", console => true);
 		raise constraint_error;
@@ -266,7 +266,7 @@ package body et_schematic_ops is
 				use type_nets;
 
 				procedure query_strands (
-					net_name	: in type_net_name.bounded_string;
+					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net) is
 					use type_strands;
 
@@ -675,7 +675,7 @@ package body et_schematic_ops is
 	-- Returns the sheet/x/y position of the given submodule port.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		submod_name		: in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-		port_name		: in type_net_name.bounded_string; -- RESET
+		port_name		: in pac_net_name.bounded_string; -- RESET
 		log_threshold	: in type_log_level)
 		return et_coordinates.type_position
 	is
@@ -981,7 +981,7 @@ package body et_schematic_ops is
 				use type_nets;
 
 				procedure query_strands (
-					net_name	: in type_net_name.bounded_string;
+					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net) is
 					use et_coordinates;
 					
@@ -1544,7 +1544,7 @@ package body et_schematic_ops is
 
 	function locate_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in type_net_name.bounded_string)		
+		net_name		: in pac_net_name.bounded_string)		
 		return et_schematic.type_nets.cursor is
 		
 		cursor : et_schematic.type_nets.cursor;
@@ -1585,7 +1585,7 @@ package body et_schematic_ops is
 -- 				use et_symbols;
 -- 
 -- 				procedure query_strands (
--- 					net_name	: in type_net_name.bounded_string;
+-- 					net_name	: in pac_net_name.bounded_string;
 -- 					net			: in out type_net) is
 -- 					use et_coordinates;
 -- 					
@@ -1748,7 +1748,7 @@ package body et_schematic_ops is
 			net_cursor : type_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net) is
 				use et_coordinates;
 				use type_strands;
@@ -1915,9 +1915,9 @@ package body et_schematic_ops is
 
 				procedure query_port (port_cursor : in et_submodules.type_submodule_ports.cursor) is
 					use et_submodules.type_submodule_ports;
-					use et_general.type_net_name;
+					use et_general.pac_net_name;
 				begin
-					log (text => "port " & type_net_name.to_string (key (port_cursor)) &
+					log (text => "port " & pac_net_name.to_string (key (port_cursor)) &
 							" at" & to_string (element (port_cursor).position),
 							level => log_threshold + 2);
 
@@ -2059,7 +2059,7 @@ package body et_schematic_ops is
 				use type_nets;
 
 				procedure query_strands (
-					net_name	: in type_net_name.bounded_string;
+					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net) is
 					use type_strands;
 
@@ -2854,7 +2854,7 @@ package body et_schematic_ops is
 	-- Returns true if given submodule with the given port exists in module indicated by module_cursor.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance	: in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-		port_name		: in et_general.type_net_name.bounded_string) -- RESET
+		port_name		: in et_general.pac_net_name.bounded_string) -- RESET
 		return boolean is
 
 		use et_general.type_module_instance_name;
@@ -2873,7 +2873,7 @@ package body et_schematic_ops is
 			-- Exits prematurely on match.
 				submod_name	: in type_module_instance_name.bounded_string;
 				submodule	: in type_submodule) is
-				use type_net_name;
+				use pac_net_name;
 				use type_submodule_ports;
 				port_cursor : type_submodule_ports.cursor := submodule.ports.first;
 			begin
@@ -3548,7 +3548,7 @@ package body et_schematic_ops is
 				net_cursor : type_nets.cursor := module.nets.first;
 				
 				procedure query_strands (
-					net_name	: in type_net_name.bounded_string;
+					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net) is
 					use et_coordinates;
 					use type_strands;
@@ -3770,7 +3770,7 @@ package body et_schematic_ops is
 			end;
 			
 			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
 				use type_strands;
@@ -4097,7 +4097,7 @@ package body et_schematic_ops is
 			net_cursor : type_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
 				use type_strands;
@@ -4691,7 +4691,7 @@ package body et_schematic_ops is
 	-- jet and probably not a good idea.
 		module			: in pac_generic_modules.cursor;		-- the module
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
-		port			: in et_general.type_net_name.bounded_string; -- clock_output
+		port			: in et_general.pac_net_name.bounded_string; -- clock_output
 		position		: in et_coordinates.type_position; -- the port position
 		log_threshold	: in type_log_level) is
 
@@ -4707,7 +4707,7 @@ package body et_schematic_ops is
 			net_cursor : type_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
 				use type_strands;
@@ -4822,7 +4822,7 @@ package body et_schematic_ops is
 	-- Adds a port to a submodule instance (the box in the parent sheet).
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		port_name		: in type_net_name.bounded_string; -- clk_out
+		port_name		: in pac_net_name.bounded_string; -- clk_out
 		position		: in type_point; -- x/y along the edge of the box
 		
 		direction		: in et_submodules.type_netchanger_port_name; -- master/slave. 
@@ -4988,7 +4988,7 @@ package body et_schematic_ops is
 			net_cursor : type_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
 				use type_strands;
@@ -5091,7 +5091,7 @@ package body et_schematic_ops is
 	-- Deletes a port of a submodule instance (the box in the parent sheet).
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		port_name		: in type_net_name.bounded_string; -- clk_out
+		port_name		: in pac_net_name.bounded_string; -- clk_out
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -5179,7 +5179,7 @@ package body et_schematic_ops is
 	-- Connects submodule port with segment end or start points AFTER the move.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
-		port_name		: in et_general.type_net_name.bounded_string; -- clock_output
+		port_name		: in et_general.pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
@@ -5207,7 +5207,7 @@ package body et_schematic_ops is
 				port_cursor : type_submodule_ports.cursor;
 
 				procedure move (
-					port_name	: in et_general.type_net_name.bounded_string;
+					port_name	: in et_general.pac_net_name.bounded_string;
 					port		: in out type_submodule_port) is
 					submod_pos_tmp : type_point := type_point (submodule_position);
 					point_tmp : type_point := point;
@@ -5362,7 +5362,7 @@ package body et_schematic_ops is
 			net_cursor : type_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
 				use type_strands;
@@ -5507,7 +5507,7 @@ package body et_schematic_ops is
 	-- The ONE and ONLY port allowed here is the port-to-be-dragged itself.
 		module_cursor	: in pac_generic_modules.cursor;
 		instance		: in et_general.type_module_instance_name.bounded_string;
-		port_name		: in et_general.type_net_name.bounded_string;
+		port_name		: in et_general.pac_net_name.bounded_string;
 		point 			: in et_coordinates.type_position;
 		log_threshold	: in et_string_processing.type_log_level) is 
 		ports : type_ports;
@@ -5573,7 +5573,7 @@ package body et_schematic_ops is
 	-- to another is not possible.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
-		port_name		: in et_general.type_net_name.bounded_string; -- clock_output
+		port_name		: in et_general.pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
@@ -5602,7 +5602,7 @@ package body et_schematic_ops is
 				port_cursor : type_submodule_ports.cursor;
 
 				procedure move (
-					port_name	: in et_general.type_net_name.bounded_string;
+					port_name	: in et_general.pac_net_name.bounded_string;
 					port		: in out type_submodule_port) is
 					submod_pos_tmp : type_point := type_point (submodule_position);
 					point_tmp : type_point := point;
@@ -5764,7 +5764,7 @@ package body et_schematic_ops is
 			net_cursor : type_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
 				use et_coordinates;
 				use type_strands;
@@ -6078,7 +6078,7 @@ package body et_schematic_ops is
 
 		-- This type describes a submodule port before and after the drag operation:
 		type type_drag is record
-			name	: et_general.type_net_name.bounded_string;
+			name	: et_general.pac_net_name.bounded_string;
 			before	: et_coordinates.type_position;
 			after 	: et_coordinates.type_position;
 		end record;
@@ -6105,7 +6105,7 @@ package body et_schematic_ops is
 				port_cursor : type_submodule_ports.cursor := submodule.ports.first;
 
 				procedure build_drag_point (
-					port_name	: in et_general.type_net_name.bounded_string;
+					port_name	: in et_general.pac_net_name.bounded_string;
 					port		: in type_submodule_port) is
 					drag : type_drag;
 				begin
@@ -8639,7 +8639,7 @@ package body et_schematic_ops is
 	-- The submodule must exist in the module.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance	: in type_module_instance_name.bounded_string; -- OSC1
-		port_name		: in type_net_name.bounded_string) -- clock_out
+		port_name		: in pac_net_name.bounded_string) -- clock_out
 		return et_submodules.type_netchanger_port_name is
 
 		use et_submodules;
@@ -8722,7 +8722,7 @@ package body et_schematic_ops is
 		log_threshold	: in type_log_level) is
 
 		use et_netlists;
-		use et_general.type_net_name;
+		use et_general.pac_net_name;
 		use et_assembly_variants;
 		use et_assembly_variants.pac_assembly_variants;
 		use et_general.pac_assembly_variant_name;
@@ -8748,7 +8748,7 @@ package body et_schematic_ops is
 			-- If offset is zero, we are dealing with the top module.
 				module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 				variant			: in et_general.pac_assembly_variant_name.bounded_string;
-				prefix			: in et_general.type_net_name.bounded_string; -- DRV3/OSC1/
+				prefix			: in et_general.pac_net_name.bounded_string; -- DRV3/OSC1/
 				offset			: in type_name_index) is
 
 				use et_assembly_variants.pac_assembly_variants;
@@ -8761,7 +8761,7 @@ package body et_schematic_ops is
 					use et_schematic.type_nets;
 					net_cursor_sch : et_schematic.type_nets.cursor := module.nets.first;
 
-					net_name : et_general.type_net_name.bounded_string;
+					net_name : et_general.pac_net_name.bounded_string;
 					all_ports : et_schematic.type_ports;
 					device_ports_extended : et_netlists.type_device_ports_extended.set;
 					submodule_ports_extended : et_netlists.type_submodule_ports_extended.set;
@@ -8866,11 +8866,11 @@ package body et_schematic_ops is
 			submod_tree : et_numbering.type_modules.tree := et_numbering.type_modules.empty_tree;
 			tree_cursor : et_numbering.type_modules.cursor := et_numbering.type_modules.root (submod_tree);
 			
-			function make_prefix return et_general.type_net_name.bounded_string is
+			function make_prefix return et_general.pac_net_name.bounded_string is
 			-- Builds a string like CLK_GENERATOR/FLT1/ from the parent submodule instances.
 			-- Starts at the position of the current tree_cursor and goes up to the first submodule level.
 			-- NOTE: The nets in the top module do not have prefixes.
-				prefix : et_general.type_net_name.bounded_string;
+				prefix : et_general.pac_net_name.bounded_string;
 				use et_numbering.type_modules;
 				cursor : et_numbering.type_modules.cursor := tree_cursor;
 			begin
@@ -9232,7 +9232,7 @@ package body et_schematic_ops is
 
 			procedure collect_device_port (
 				port	: in type_port_device;
-				net		: in type_net_name.bounded_string) is 
+				net		: in pac_net_name.bounded_string) is 
 				use et_symbols;
 			begin
 			-- Collect device ports. exception will be raised of port occurs more than once.
@@ -9258,7 +9258,7 @@ package body et_schematic_ops is
 
 			procedure collect_submodule_port (
 				port	: in type_port_submodule;
-				net		: in type_net_name.bounded_string)
+				net		: in pac_net_name.bounded_string)
 			is begin
 			-- Collect submodule ports. exception will be raised of port occurs more than once.
 				insert (submodule_port_collector, port);
@@ -9283,7 +9283,7 @@ package body et_schematic_ops is
 
 			procedure collect_netchanger_port (
 				port	: in et_netlists.type_port_netchanger;
-				net		: in type_net_name.bounded_string)
+				net		: in pac_net_name.bounded_string)
 			is begin
 			-- Collect netchanger ports. exception will be raised of port occurs more than once.
 				insert (netchanger_ports_collector, port);
@@ -9300,10 +9300,10 @@ package body et_schematic_ops is
 			end collect_netchanger_port;
 			
 			procedure query_net (net_cursor : in type_nets.cursor) is
-				use et_general.type_net_name;
+				use et_general.pac_net_name;
 
 				procedure query_strands (
-					net_name	: in type_net_name.bounded_string;
+					net_name	: in pac_net_name.bounded_string;
 					net			: in type_net) is
 					use type_strands;
 

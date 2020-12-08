@@ -48,7 +48,7 @@ with et_symbols;
 
 package body et_kicad.pcb is
 
-	use et_general.type_net_name;
+	use et_general.pac_net_name;
 	
 	function to_plot_output_directory (directory : in string) return type_plot_output_directory.bounded_string is
 	begin
@@ -540,7 +540,7 @@ package body et_kicad.pcb is
 		pad_size_x : type_pad_size;
 		pad_size_y : type_pad_size;		
 
-		terminal_net_name	: type_net_name.bounded_string;
+		terminal_net_name	: pac_net_name.bounded_string;
 		terminal_net_id		: type_net_id_terminal;
 	
 -- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
@@ -4672,8 +4672,8 @@ package body et_kicad.pcb is
 			-- Example: (pad 1 smd rect (at -2.925 -3.81) (size 2 0.6) (layers F.Cu F.Paste F.Mask) (net 1 /IN))
 				reference	: in type_device_name;	-- IC45
 				terminal	: in et_terminals.type_terminal_name.bounded_string) -- G7
-				return type_net_name.bounded_string is
-				net : type_net_name.bounded_string; -- to be returned
+				return pac_net_name.bounded_string is
+				net : pac_net_name.bounded_string; -- to be returned
 
 				use type_packages_board;
 				package_cursor : type_packages_board.cursor;
@@ -4741,7 +4741,7 @@ package body et_kicad.pcb is
 
 				text_placeholders	: et_packages.type_text_placeholders;
 
-				function to_net_id (name : in type_net_name.bounded_string) return type_net_id is
+				function to_net_id (name : in pac_net_name.bounded_string) return type_net_id is
 				-- Converts the given net name to a net id.
 					use type_netlist;
 					net_cursor : type_netlist.cursor := board.netlist.first;
@@ -4751,7 +4751,7 @@ package body et_kicad.pcb is
 					portlist	: type_ports_with_reference.set;
 					port		: schematic.type_port_with_reference;
 					terminal	: et_devices.type_terminal;
-					net_name_in_board : type_net_name.bounded_string;
+					net_name_in_board : pac_net_name.bounded_string;
 				begin -- to_net_id
 
 					-- If the given net has a proper name (like MCU_CLK), then the net id
@@ -4984,7 +4984,7 @@ package body et_kicad.pcb is
 
 				procedure add_route (
 				-- adds routing information to the schematic module
-					net_name	: in type_net_name.bounded_string;
+					net_name	: in pac_net_name.bounded_string;
 					net			: in out schematic.type_net) is
 				begin
 					net.route := route (net_id);
@@ -5114,11 +5114,11 @@ package body et_kicad.pcb is
 					use schematic.type_nets;
 					net_cursor_schematic : schematic.type_nets.cursor;
 
-					function to_net_name (net_name_in : in type_net_name.bounded_string)
+					function to_net_name (net_name_in : in pac_net_name.bounded_string)
 					-- Translates from an anonymous kicad net name like "Net-(IC2-Pad11)" to an 
 					-- anonymous ET name like "N$45".
-						return type_net_name.bounded_string is
-						net_name_out : type_net_name.bounded_string; -- to be returned
+						return pac_net_name.bounded_string is
+						net_name_out : pac_net_name.bounded_string; -- to be returned
 
 						package_cursor	: type_packages_board.cursor := board.packages.first;
 						package_name	: type_device_name;
@@ -5192,7 +5192,7 @@ package body et_kicad.pcb is
 						
 					procedure set_net_class (
 					-- Sets the class of the given net in the schematic module.
-						net_name	: in type_net_name.bounded_string;
+						net_name	: in pac_net_name.bounded_string;
 						net 		: in out schematic.type_net) is
 					begin
 						net.class := key (net_class_cursor_board);

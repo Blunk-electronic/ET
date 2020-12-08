@@ -160,7 +160,7 @@ package et_general is
 	
 
 -- AXIS
-	type type_axis is (X, Y, Z);
+	type type_axis is (X, Y, Z); -- CS move to et_geometry ?
 	subtype type_axis_2d is type_axis range X .. Y;
 
 	function to_string (axis : in type_axis) return string;
@@ -181,29 +181,31 @@ package et_general is
 	net_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set ("_-#");
 	net_inversion_mark : constant string := "#"; -- CS required ?
  	net_name_length_max : constant natural := 100;
-	package type_net_name is new generic_bounded_length (net_name_length_max); use type_net_name;
+
+	package pac_net_name is new generic_bounded_length (net_name_length_max); 
+	use pac_net_name;
 
 	procedure check_net_name_length (net : in string);
 	-- Tests if the given net name is longer than allowed.
 	
 	procedure check_net_name_characters (
-		net			: in type_net_name.bounded_string;
+		net			: in pac_net_name.bounded_string;
 		characters	: in character_set := net_name_characters);
 	-- Tests if the given net name contains only valid characters as specified
 	-- by given character set.
 
 	-- Returns true if given net name is empty:
-	function is_empty (net : in type_net_name.bounded_string)
+	function is_empty (net : in pac_net_name.bounded_string)
 		return boolean;
 	
-	function to_net_name (net_name : in string) return type_net_name.bounded_string;
-	function to_string (net_name : in type_net_name.bounded_string) return string;
+	function to_net_name (net_name : in string) return pac_net_name.bounded_string;
+	function to_string (net_name : in pac_net_name.bounded_string) return string;
 
 	-- Returns a name for an anonymous net like N$56
 	function to_anonymous_net_name (index : in type_anonymous_net_index) 
-		return type_net_name.bounded_string;
+		return pac_net_name.bounded_string;
 	
-	function anonymous (net_name : in type_net_name.bounded_string) return boolean;
+	function anonymous (net_name : in pac_net_name.bounded_string) return boolean;
 	-- Returns true if the given net name is anonymous.
 
 

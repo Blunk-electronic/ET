@@ -92,7 +92,7 @@ package et_project.modules is
 		sheet	: in type_sheet)
 		return et_frames.type_schematic_description;
 								   
-	procedure port_not_at_edge (name : in et_general.type_net_name.bounded_string);
+	procedure port_not_at_edge (name : in et_general.pac_net_name.bounded_string);
 	
 	-- Returns true if given port of netchanger is connected with any net.
 	function port_connected (
@@ -292,7 +292,7 @@ package et_project.modules is
 	-- Returns true if the given module provides the given port.
 	-- The module being searched in must be in the rig already.						
 		module			: in et_submodules.type_submodules.cursor;
-		port			: in et_general.type_net_name.bounded_string;
+		port			: in et_general.pac_net_name.bounded_string;
 		direction		: in et_submodules.type_netchanger_port_name) -- master/slave		
 		return boolean;
 

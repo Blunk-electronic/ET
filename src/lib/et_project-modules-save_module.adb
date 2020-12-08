@@ -332,7 +332,7 @@ is
 		use et_pcb;
 
 		procedure query_strands (
-			net_name	: in type_net_name.bounded_string;
+			net_name	: in pac_net_name.bounded_string;
 			net			: in et_schematic.type_net) is
 			use et_schematic;
 			use type_strands;
@@ -494,7 +494,7 @@ is
 
 		procedure query_route (
 		-- This is about routed tracks/traces and zones in the board:
-			net_name	: in type_net_name.bounded_string;
+			net_name	: in pac_net_name.bounded_string;
 			net			: in et_schematic.type_net) is
 			use et_packages;
 			use et_terminals;

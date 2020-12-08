@@ -41,7 +41,7 @@ procedure draw_tag_label (
 	self	: not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context;
-	net		: in et_general.type_net_name.bounded_string;
+	net		: in pac_net_name.bounded_string;
 	label	: in et_schematic.type_net_label)
 is
 	use et_schematic;

@@ -132,7 +132,7 @@ procedure draw_nets (
 		label	: in type_net_labels.cursor)
 		return boolean is
 
-		use et_general.type_net_name;
+		use pac_net_name;
 		sl : type_selected_label;
 	begin
 		if is_empty (proposed_labels) then
@@ -159,7 +159,7 @@ procedure draw_nets (
 
 	-- Draws a single net label:
 	procedure draw_label (
-		net		: in type_net_name.bounded_string;
+		net		: in pac_net_name.bounded_string;
 		label	: in type_net_labels.cursor)
 	is
 		use et_text;
@@ -192,7 +192,7 @@ procedure draw_nets (
 
 	-- Draws a single net label that is being moved:
 	procedure draw_simple_label_being_moved (
-		net		: in type_net_name.bounded_string;
+		net		: in pac_net_name.bounded_string;
 		label	: in type_net_label)
 	is
 		use et_text;
@@ -375,7 +375,7 @@ procedure draw_nets (
 		segment	: in type_net_segments.cursor)
 		return boolean
 	is
-		use et_general.type_net_name;
+		use pac_net_name;
 		ss : type_selected_segment;
 	begin
 		if is_empty (proposed_segments) then
@@ -759,7 +759,7 @@ procedure draw_nets (
 		-- "Normal" mode means, the whole net is not to be drawn highlighted.
 		-- This is the case when the verb VERB_SHOW is not active.
 		procedure query_strands_normal (
-			net_name	: in et_general.type_net_name.bounded_string;
+			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net) is
 			strand_cursor : type_strands.cursor := net.strands.first;
 
@@ -844,7 +844,7 @@ procedure draw_nets (
 		-- Draws the whole net inclusive net labesl highlighted. 
 		-- This is the case when the verb VERB_SHOW is active.
 		procedure query_strands_show (
-			net_name	: in et_general.type_net_name.bounded_string;
+			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net) is
 			strand_cursor : type_strands.cursor := net.strands.first;
 
@@ -891,7 +891,7 @@ procedure draw_nets (
 		-- This procedure calls query_strands_show if the current net (indicated by net_cursor)
 		-- is selected for highlighting. It sets the flag net_already_drawn in that case.
 		procedure highlight_net is
-			use type_net_name;
+			use pac_net_name;
 			ss : type_selected_segment;
 		begin
 			-- The net selected for highlighting is to be found in the list proposed_segments.

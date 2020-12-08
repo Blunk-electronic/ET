@@ -293,7 +293,7 @@ is
 		NET_ON_CURRENT_SHEET);
 	
 	procedure show_net (
-		net		: in type_net_name.bounded_string; -- RESET_N
+		net		: in pac_net_name.bounded_string; -- RESET_N
 		mode	: in type_show_net)
 	is
 		use et_schematic;
@@ -2133,7 +2133,7 @@ is
 
 		device_name		: et_devices.type_device_name;
 		unit_name		: pac_unit_name.bounded_string;
-		--net_name		: type_net_name.bounded_string;
+		--net_name		: pac_net_name.bounded_string;
 
 		procedure module_name_missing is begin
 			set_status (incomplete & "Module name missing !");

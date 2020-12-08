@@ -73,7 +73,7 @@ package et_schematic_ops is
 	procedure relative_rotation_invalid;
 	procedure netchanger_not_found (index : in et_submodules.type_netchanger_id);
 	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string);	
-	procedure net_not_found (name : in type_net_name.bounded_string);
+	procedure net_not_found (name : in pac_net_name.bounded_string);
 	procedure assembly_variant_not_found (variant : in et_general.pac_assembly_variant_name.bounded_string);
 
 	procedure unit_not_found (name : in pac_unit_name.bounded_string);
@@ -154,7 +154,7 @@ package et_schematic_ops is
 	function position (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		submod_name		: in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-		port_name		: in type_net_name.bounded_string; -- RESET
+		port_name		: in pac_net_name.bounded_string; -- RESET
 		log_threshold	: in type_log_level)
 		return et_coordinates.type_position;
 
@@ -197,7 +197,7 @@ package et_schematic_ops is
 	-- not be found, returns no_element.
 	function locate_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in type_net_name.bounded_string)
+		net_name		: in pac_net_name.bounded_string)
 		return et_schematic.type_nets.cursor;
 
 	
@@ -395,7 +395,7 @@ package et_schematic_ops is
 	-- Returns true if given submodule with the given port exists in module indicated by module_cursor.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance : in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-		port_name		: in et_general.type_net_name.bounded_string) -- RESET
+		port_name		: in et_general.pac_net_name.bounded_string) -- RESET
 		return boolean;
 
 	function exists_netchanger (
@@ -558,7 +558,7 @@ package et_schematic_ops is
 	-- Adds a port to a submodule instance.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		port_name		: in et_general.type_net_name.bounded_string; -- clk_out
+		port_name		: in et_general.pac_net_name.bounded_string; -- clk_out
 		position		: in type_point; -- x/y along the edge of the box
 
 		direction		: in et_submodules.type_netchanger_port_name; -- master/slave. 
@@ -571,7 +571,7 @@ package et_schematic_ops is
 	-- Deletes a port of a submodule instance (the box in the parent sheet).
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		port_name		: in et_general.type_net_name.bounded_string; -- clk_out
+		port_name		: in et_general.pac_net_name.bounded_string; -- clk_out
 		log_threshold	: in type_log_level);
 
 	procedure move_port (
@@ -580,7 +580,7 @@ package et_schematic_ops is
 	-- Connects submodule port with segment end or start points AFTER the move.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
-		port_name		: in et_general.type_net_name.bounded_string; -- clock_output
+		port_name		: in et_general.pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
@@ -593,7 +593,7 @@ package et_schematic_ops is
 	-- to another is not possible.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
-		port_name		: in et_general.type_net_name.bounded_string; -- clock_output
+		port_name		: in et_general.pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);

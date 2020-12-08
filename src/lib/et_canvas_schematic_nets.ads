@@ -84,7 +84,7 @@ package et_canvas_schematic_nets is
 	selected_segment	: pac_proposed_segments.cursor;
 
 	-- Returns the name of the net of the selected_segment:
-	function selected_net return type_net_name.bounded_string;
+	function selected_net return pac_net_name.bounded_string;
 	-- CS rename to get_selected_net
 
 	-- Returns the position of the strand of the selected segment:
@@ -99,13 +99,13 @@ package et_canvas_schematic_nets is
 	-- the lowest available name would be N$3.
 	function lowest_available_anonymous_net (
 		module		: in pac_generic_modules.cursor)
-		return type_net_name.bounded_string; -- N$3
+		return pac_net_name.bounded_string; -- N$3
 	
 	-- Returns the net name of the first segment in 
 	-- given list of net segments.
 	-- If the given list is empty then an empty net name will be returned.
 	function first_net (segments : in pac_proposed_segments.list) 
-		return type_net_name.bounded_string; -- RESET_N, MASTER_CLOCK
+		return pac_net_name.bounded_string; -- RESET_N, MASTER_CLOCK
 	
 	-- Returns true if segments contains more than one segment:
 	function more_than_one (segments : in pac_proposed_segments.list) return boolean;
@@ -174,7 +174,7 @@ package et_canvas_schematic_nets is
 	-- shall be used:
 	type type_net_route is record
 		path	: et_schematic.pac_shapes.type_route_live;
-		name	: type_net_name.bounded_string := to_net_name ("");
+		name	: pac_net_name.bounded_string := to_net_name ("");
 	end record;
 
 	route : type_net_route;
@@ -202,7 +202,7 @@ package et_canvas_schematic_nets is
 	--    insertion of the segment in the targeted net.
 	procedure insert_net_segment (
 		module			: in pac_generic_modules.cursor;
-		net_name_given	: in type_net_name.bounded_string; -- RESET_N
+		net_name_given	: in pac_net_name.bounded_string; -- RESET_N
 		sheet			: in type_sheet;
 		segment			: in et_schematic.type_net_segment;
 		log_threshold	: in type_log_level);

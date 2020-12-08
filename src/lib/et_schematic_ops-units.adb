@@ -355,7 +355,7 @@ package body et_schematic_ops.units is
 				use et_symbols;
 
 				procedure query_strands (
-					net_name	: in type_net_name.bounded_string;
+					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net) is
 					use et_coordinates;
 					

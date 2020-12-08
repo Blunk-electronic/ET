@@ -72,7 +72,7 @@ with et_frames;
 
 package body et_kicad_to_native is
 
-	use et_general.type_net_name;
+	use et_general.pac_net_name;
 	
 	procedure transpose (log_threshold : in et_string_processing.type_log_level) is
 	-- Transposes coordinates of schematic and layout elements:
@@ -488,7 +488,7 @@ package body et_kicad_to_native is
 			net_cursor : et_kicad.schematic.type_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out et_kicad.schematic.type_net) is
 
 				use et_kicad.schematic.type_strands;
@@ -2039,7 +2039,7 @@ package body et_kicad_to_native is
 			net_cursor : et_kicad.schematic.type_netlist.cursor := module.netlist.first;
 
 			procedure query_ports (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				ports		: in out et_kicad.schematic.type_ports_with_reference.set) is
 
 				use et_kicad.schematic.type_ports_with_reference;
@@ -2708,7 +2708,7 @@ package body et_kicad_to_native is
 			-- copies the kicad strands to native strands of a net.
 			-- Strand names (from kicad) are discarded. ET does not provide a name for a strand.
 			-- As a strand is part of a net, there is no need for individual strand names.
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out et_schematic.type_net) is
 
 				use et_kicad.schematic.type_strands;
@@ -3053,7 +3053,7 @@ package body et_kicad_to_native is
 			end insert_strands;
 
 			procedure copy_layout_stuff (
-				net_name	: in type_net_name.bounded_string;
+				net_name	: in pac_net_name.bounded_string;
 				net			: in out et_schematic.type_net) is
 			begin -- copy_layout_stuff
 				log_indentation_up;

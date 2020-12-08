@@ -221,7 +221,7 @@ package et_conventions is
 
 -- 	function ports_in_net (
 -- 		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
--- 		net				: in et_schematic.type_net_name.bounded_string;			-- motor_on_off
+-- 		net				: in et_schematic.pac_net_name.bounded_string;			-- motor_on_off
 -- 		category		: in type_device_category;				-- netchanger, connector
 -- 		log_threshold	: in et_string_processing.type_log_level)
 -- 		return et_kicad.type_ports_with_reference.set;
@@ -231,7 +231,7 @@ package et_conventions is
 -- 	-- Handling routing information requires this type:
 -- 	type type_net is record
 -- 		module	: et_coordinates.type_submodule_name.bounded_string;
--- 		net		: et_schematic.type_net_name.bounded_string;
+-- 		net		: et_schematic.pac_net_name.bounded_string;
 -- 	end record;
 -- 
 -- 	function to_string (

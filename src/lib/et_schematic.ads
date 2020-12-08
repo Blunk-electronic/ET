@@ -75,7 +75,7 @@ with et_meta;
 with et_design_rules;
 
 package et_schematic is
-	use et_general.type_net_name;
+	use et_general.pac_net_name;
 	use et_coordinates.pac_geometry_sch;
 
 	package pac_shapes is new et_geometry.generic_pac_shapes (et_coordinates.pac_geometry_sch);
@@ -239,7 +239,7 @@ package et_schematic is
 		module_name	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 
 		-- The net of the submodule is here the port name:
-		port_name	: type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+		port_name	: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
 	end record;
 
 	function "<" (left, right : in type_port_submodule) return boolean;
@@ -390,7 +390,7 @@ package et_schematic is
 	end record;
 	
 	package type_nets is new ordered_maps (
-		key_type		=> type_net_name.bounded_string,
+		key_type		=> pac_net_name.bounded_string,
 		element_type	=> type_net);
 
 	-- Returns a cursor to the strand that is
