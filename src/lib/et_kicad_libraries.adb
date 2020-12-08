@@ -267,7 +267,7 @@ package body et_kicad_libraries is
 			result := true;
 
 		-- If equal pin names, compare port names -- CS: should never happen. raise alarm ?
-		elsif type_port_name.">" (left.name, right.name) then
+		elsif pac_port_name.">" (left.name, right.name) then
 			result := true;
 			
 		else
@@ -1849,7 +1849,7 @@ package body et_kicad_libraries is
 				log_indentation_up;
 
 				-- port name. to be taken from field #2 of the given line
-				port.name := type_port_name.to_bounded_string (f (line,2)); -- GND, GPIO2
+				port.name := pac_port_name.to_bounded_string (f (line,2)); -- GND, GPIO2
 				
 				-- compose terminal name. must be stored temporarily. will be inserted in default package variant
 				tmp_terminal_name := et_terminals.type_terminal_name.to_bounded_string (f (line,3)); -- H5, 14

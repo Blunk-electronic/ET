@@ -1126,7 +1126,7 @@ package body et_devices is
 	function properties (
 	-- Returns the poperties of the given port of the given device.
 		device_cursor	: in pac_devices_lib.cursor;
-		port_name		: in type_port_name.bounded_string)
+		port_name		: in pac_port_name.bounded_string)
 		return type_ports.cursor is
 
 		port_cursor : type_ports.cursor; -- to be returned

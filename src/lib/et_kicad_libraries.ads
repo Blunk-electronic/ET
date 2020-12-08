@@ -198,7 +198,7 @@ package et_kicad_libraries is
 
 	
 	type type_port_library is new et_symbols.type_port_base with record 	-- CS: set defaults
-		name		: et_symbols.type_port_name.bounded_string; -- like CLOCK or CE
+		name		: et_symbols.pac_port_name.bounded_string; -- like CLOCK or CE
 		direction 	: type_port_direction;
 		style 		: type_port_style := NONE;
 
@@ -463,7 +463,7 @@ package et_kicad_libraries is
 	
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
-		name			: et_symbols.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
+		name			: et_symbols.pac_port_name.bounded_string; -- the port name like GPIO1, GPIO2
 		coordinates 	: et_kicad_coordinates.type_position;
 		direction		: type_port_direction; -- example: "passive"
 		style			: type_port_style;

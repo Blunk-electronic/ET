@@ -551,7 +551,7 @@ package body et_schematic_ops is
 		use et_symbols.type_ports;
 
 		procedure move (
-			name	: in type_port_name.bounded_string;
+			name	: in pac_port_name.bounded_string;
 			port	: in out type_port) is
 		begin
 			move_by (port.position, offset);
@@ -571,7 +571,7 @@ package body et_schematic_ops is
 	function position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC34
-		port_name		: in et_symbols.type_port_name.bounded_string; -- CE
+		port_name		: in et_symbols.pac_port_name.bounded_string; -- CE
 		log_threshold	: in type_log_level)
 		return et_coordinates.type_position 
 	is
@@ -1279,7 +1279,7 @@ package body et_schematic_ops is
 		use et_symbols.type_ports;
 
 		procedure rotate (
-			name	: in type_port_name.bounded_string;
+			name	: in pac_port_name.bounded_string;
 			port	: in out type_port) is
 		begin
 			rotate_by (port.position, angle);
@@ -2719,7 +2719,7 @@ package body et_schematic_ops is
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
+		port_name		: in et_symbols.pac_port_name.bounded_string) -- CE
 		return boolean is
 
 		result : boolean := false; -- to be returned. goes true once the target has been found
@@ -2740,11 +2740,11 @@ package body et_schematic_ops is
 				unit_cursor : et_schematic.pac_units.cursor := device.units.first;
 				use et_symbols.type_ports;
 				ports : et_symbols.type_ports.map;
-				use type_port_name;
+				use pac_port_name;
 			begin
 				while unit_cursor /= pac_units.no_element loop
 					--log (text => "unit " & pac_unit_name.to_string (key (unit_cursor)));
-					--log (text => "port " & type_port_name.to_string (port_name));
+					--log (text => "port " & pac_port_name.to_string (port_name));
 					
 					-- fetch the unit ports from the library model
 					ports := ports_of_unit (device_cursor, key (unit_cursor));
@@ -2786,7 +2786,7 @@ package body et_schematic_ops is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string := to_unit_name (""); -- A
-		port_name		: in et_symbols.type_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE
+		port_name		: in et_symbols.pac_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE
 		return boolean is
 
 		result : boolean := false; -- to be returned, goes true once the target has been found
@@ -2806,7 +2806,7 @@ package body et_schematic_ops is
 				use et_schematic.pac_units;
 				use et_symbols.type_ports;
 				ports : et_symbols.type_ports.map;
-				use type_port_name;
+				use pac_port_name;
 			begin
 				if contains (device.units, unit_name) then
 					if length (port_name) > 0 then -- search for port in unit
@@ -8492,7 +8492,7 @@ package body et_schematic_ops is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
-		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
+		port_name		: in et_symbols.pac_port_name.bounded_string) -- CE
 		return type_port_properties_access is
 
 		properties : type_port_properties_access; -- to be returned
@@ -8523,7 +8523,7 @@ package body et_schematic_ops is
 					variant			: in et_devices.type_variant) is
 					use pac_terminal_port_map;
 					terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
-					use type_port_name;
+					use pac_port_name;
 					use et_devices.pac_unit_name;
 				begin
 					while terminal_cursor /= pac_terminal_port_map.no_element loop

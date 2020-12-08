@@ -457,7 +457,7 @@ package body et_kicad.schematic is
 			result := true;
 
 		-- If equal pin names, compare port names -- CS: should never happen. raise alarm ?
-		elsif type_port_name.">" (left.name, right.name) then
+		elsif pac_port_name.">" (left.name, right.name) then
 			result := true;
 			
 		else
@@ -3799,7 +3799,7 @@ package body et_kicad.schematic is
 		use type_portlists;
 		use type_ports;
 		
-		function to_net_name (port_name : in type_port_name.bounded_string) 
+		function to_net_name (port_name : in pac_port_name.bounded_string) 
 		-- Converts the given port name to a net name.
 			return pac_net_name.bounded_string is
 		begin
@@ -4325,7 +4325,7 @@ package body et_kicad.schematic is
 						port_cursor := first_port (unit_cursor); -- port in library
 						while port_cursor /= type_ports_library.no_element loop
 
-							--log (text => "port " & type_port_name.to_string (key (port_cursor))
+							--log (text => "port " & pac_port_name.to_string (key (port_cursor))
 							log (text => "port " & to_string (element (port_cursor).name),
 									--& " pin/pad " & to_string (element (port_cursor).pin),
 								 level => log_threshold + 2);
@@ -4381,7 +4381,7 @@ package body et_kicad.schematic is
 					-- Loop in port list of the unit:
 					while port_cursor /= type_ports_library.no_element loop
 						log_indentation_up;
-						--log (text => "port " & type_port_name.to_string (key (port_cursor))
+						--log (text => "port " & pac_port_name.to_string (key (port_cursor))
 						log (text => "port " & to_string (element (port_cursor).name),
 								--& " pin/pad " & to_string (element (port_cursor).pin),
 							 level => log_threshold + 2);
@@ -4661,7 +4661,7 @@ package body et_kicad.schematic is
 				-- prematurely with a return value "true". If no suitable port found, 
 				-- returns "false".
 					port_cursor_secondary : type_ports.cursor := ports.first;
-					use type_port_name;
+					use pac_port_name;
 					use et_schematic;
 				begin
 					-- search the portlist but skip the port of origin
@@ -6464,7 +6464,7 @@ package body et_kicad.schematic is
 				net_name	: in pac_net_name.bounded_string;
 				ports		: in type_ports_with_reference.set) is
 				port_cursor : type_ports_with_reference.cursor;
-				use type_port_name;
+				use pac_port_name;
 				use type_ports_with_reference;
 			begin -- query_ports
 				log (text => "querying ports ...", level => log_threshold + 2);
@@ -7048,7 +7048,7 @@ package body et_kicad.schematic is
 						variant_name 	: in pac_package_variant_name.bounded_string;
 						variant 		: in et_devices.type_variant) is
 						use pac_terminal_port_map;
-						use type_port_name;
+						use pac_port_name;
 						terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
 						terminal_found : boolean := false;
 					begin
@@ -7217,7 +7217,7 @@ package body et_kicad.schematic is
 						variant_name 	: in pac_package_variant_name.bounded_string;
 						variant 		: in et_devices.type_variant) is
 						use pac_terminal_port_map;
-						use type_port_name;
+						use pac_port_name;
 						terminal_cursor : pac_terminal_port_map.cursor;
 					begin -- locate_terminal
 						terminal_cursor := variant.terminal_port_map.find (terminal);

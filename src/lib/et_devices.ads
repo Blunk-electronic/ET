@@ -379,7 +379,7 @@ package et_devices is
 	-- Raises exception if invalid character found.
 
 	type type_port_in_terminal_port_map is record
-		name	: type_port_name.bounded_string; -- CLK, CE, VSS
+		name	: pac_port_name.bounded_string; -- CLK, CE, VSS
 		unit	: pac_unit_name.bounded_string; -- GPIO_BANK_3
 	end record;
 	
@@ -402,7 +402,7 @@ package et_devices is
 	type type_terminal is record
 		name	: et_terminals.type_terminal_name.bounded_string; -- H7
 		unit	: pac_unit_name.bounded_string; -- IO-BANK1
-		port	: type_port_name.bounded_string; -- GPIO3
+		port	: pac_port_name.bounded_string; -- GPIO3
 	end record;
 
 	function to_string (
@@ -571,7 +571,7 @@ package et_devices is
 -- 	-- Returns the name of the terminal name of the given device according to the given variant.
 -- 	-- The given device must be real. Means appearance SCH_PCB.							  
 -- 		device_cursor	: in pac_devices_lib.cursor;
--- 		port_name		: in type_port_name.bounded_string;
+-- 		port_name		: in pac_port_name.bounded_string;
 -- 		variant			: in pac_package_variant_name.bounded_string) -- D, N
 -- 		return type_terminal_name.bounded_string; -- 14, H4
 
@@ -584,7 +584,7 @@ package et_devices is
 	function properties (
 	-- Returns the poperties of the given port of the given device.
 		device_cursor	: in pac_devices_lib.cursor;
-		port_name		: in type_port_name.bounded_string)
+		port_name		: in pac_port_name.bounded_string)
 		return type_ports.cursor;
 
 	type type_port_properties_access is access type_port_properties;	

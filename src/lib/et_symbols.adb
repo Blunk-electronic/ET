@@ -191,12 +191,12 @@ package body et_symbols is
 
 	
 
-	function to_string (port : in type_port_name.bounded_string) return string is begin
-		return type_port_name.to_string (port);
+	function to_string (port : in pac_port_name.bounded_string) return string is begin
+		return pac_port_name.to_string (port);
 	end;
 
-	function to_port_name (name : in string) return type_port_name.bounded_string is begin
-		return type_port_name.to_bounded_string (name);
+	function to_port_name (name : in string) return pac_port_name.bounded_string is begin
+		return pac_port_name.to_bounded_string (name);
 	end;
 
 	

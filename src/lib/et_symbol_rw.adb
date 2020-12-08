@@ -426,7 +426,7 @@ package body et_symbol_rw is
 		symbol_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
 		
 		port					: type_port_base;
-		port_name				: type_port_name.bounded_string;
+		port_name				: pac_port_name.bounded_string;
 		port_direction			: type_port_direction := port_direction_default;
 		port_sensitivity_edge	: type_sensitivity_edge := sensitivity_edge_default;
 		port_sensitivity_level	: type_sensitivity_level := sensitivity_level_default;

@@ -38,13 +38,10 @@
 with ada.characters.handling;	use ada.characters.handling;
 with ada.exceptions;
 
-
 package body et_schematic is
 
-	use et_devices;
-	
 	function "<" (left, right : in type_device_port) return boolean is
-		use et_symbols.type_port_name;
+		use et_symbols.pac_port_name;
 	begin
 		if left.device_name < right.device_name then
 			return true;

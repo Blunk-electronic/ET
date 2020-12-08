@@ -302,7 +302,7 @@ package body et_device_rw is
 
 			terminal	: type_terminal_name.bounded_string; -- H5, 14
 			unit		: pac_unit_name.bounded_string; -- PWR, IO_BANK_2
-			port		: type_port_name.bounded_string; -- VCC
+			port		: pac_port_name.bounded_string; -- VCC
 
 			place : positive := 1; -- the field being read from given line
 
@@ -401,7 +401,7 @@ package body et_device_rw is
 		symbol_placeholder_meaning	: et_symbols.type_placeholder_meaning := placeholder_meaning_default;
 		
 		port					: type_port_base;
-		port_name				: type_port_name.bounded_string;
+		port_name				: pac_port_name.bounded_string;
 		port_direction			: type_port_direction := port_direction_default;
 		port_sensitivity_edge	: type_sensitivity_edge := sensitivity_edge_default;
 		port_sensitivity_level	: type_sensitivity_level := sensitivity_level_default;

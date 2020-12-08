@@ -253,11 +253,11 @@ package et_symbols is
 
 	
  	port_name_length_max : constant natural := 100;
-	package type_port_name is new generic_bounded_length (port_name_length_max);
-	use type_port_name;
+	package pac_port_name is new generic_bounded_length (port_name_length_max);
+	use pac_port_name;
 
-	function to_string (port : in type_port_name.bounded_string) return string;
-	function to_port_name (name : in string) return type_port_name.bounded_string;
+	function to_string (port : in pac_port_name.bounded_string) return string;
+	function to_port_name (name : in string) return pac_port_name.bounded_string;
 	
 	
 	-- line width
@@ -395,7 +395,7 @@ package et_symbols is
 	-- function block within a device. It does not matter how many GND terminals exist
 	-- at the package (footprint):
 	package type_ports is new indefinite_ordered_maps (
-		key_type		=> type_port_name.bounded_string, -- CLOCK, CE, VDD, GND
+		key_type		=> pac_port_name.bounded_string, -- CLOCK, CE, VDD, GND
 		element_type	=> type_port);
 
 	

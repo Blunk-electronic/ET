@@ -146,7 +146,7 @@ package et_schematic_ops is
 	function position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC34
-		port_name		: in et_symbols.type_port_name.bounded_string; -- CE
+		port_name		: in et_symbols.pac_port_name.bounded_string; -- CE
 		log_threshold	: in type_log_level)
 		return et_coordinates.type_position;
 
@@ -209,8 +209,8 @@ package et_schematic_ops is
 
 	-- CS move to et_schematic ?	
 	package type_drags_of_ports is new ada.containers.ordered_maps (
-		key_type		=> et_symbols.type_port_name.bounded_string,
-		"<"				=> et_symbols.type_port_name."<",
+		key_type		=> et_symbols.pac_port_name.bounded_string,
+		"<"				=> et_symbols.pac_port_name."<",
 		element_type	=> type_drag);
 
 	
@@ -379,7 +379,7 @@ package et_schematic_ops is
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
+		port_name		: in et_symbols.pac_port_name.bounded_string) -- CE
 		return boolean;
 	
 	function exists_device_unit_port (
@@ -388,7 +388,7 @@ package et_schematic_ops is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string := to_unit_name (""); -- A
-		port_name		: in et_symbols.type_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE		
+		port_name		: in et_symbols.pac_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE		
 		return boolean;						
 
 	function exists_submodule_port (
@@ -766,7 +766,7 @@ package et_schematic_ops is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
-		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
+		port_name		: in et_symbols.pac_port_name.bounded_string) -- CE
 		return type_port_properties_access;
 	
 	procedure make_netlists (
@@ -818,7 +818,7 @@ package et_schematic_ops is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string) -- C
--- 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
+-- 		port_name		: in et_symbols.pac_port_name.bounded_string) -- CE
 		return type_unit_query;
 
 	-- CS type_port_query

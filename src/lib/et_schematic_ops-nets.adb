@@ -2270,7 +2270,7 @@ package body et_schematic_ops.nets is
 
 							procedure query_ports (cursor : in pac_device_ports.cursor) is
 								device_name 	: type_device_name; -- IC23
-								port_name		: type_port_name.bounded_string; -- CE
+								port_name		: pac_port_name.bounded_string; -- CE
 								port_position 	: type_point; -- the xy-position of the port
 							begin
 								device_name	:= element (cursor).device_name;

@@ -230,7 +230,7 @@ package et_schematic is
 	type type_device_port is record
 		device_name	: type_device_name;
 		unit_name	: pac_unit_name.bounded_string;
-		port_name	: et_symbols.type_port_name.bounded_string;
+		port_name	: et_symbols.pac_port_name.bounded_string;
 	end record;
 
 	function "<" (left, right : in type_device_port) return boolean;
