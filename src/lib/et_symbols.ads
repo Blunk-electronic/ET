@@ -172,7 +172,7 @@ package et_symbols is
 	-- Returns the content of the given text as string.
 
 
-	package type_texts is new doubly_linked_lists (type_text);
+	package pac_texts is new doubly_linked_lists (type_text);
 	
 
 
@@ -484,7 +484,7 @@ package et_symbols is
 	origin_line_width : constant type_distance_positive := 0.05;
 	
 	type type_symbol_base is tagged record		
-		texts : type_texts.list; -- the collection of texts
+		texts : pac_texts.list; -- the collection of texts
 	end record;
 
 	

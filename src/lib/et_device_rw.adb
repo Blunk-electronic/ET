@@ -755,7 +755,7 @@ package body et_device_rw is
 							when SEC_TEXTS =>
 
 								-- append symbol text to symbol
-								type_texts.append (
+								pac_texts.append (
 									container	=> unit_symbol.texts,
 									new_item	=> (symbol_text_base with
 										content		=> symbol_text_content,

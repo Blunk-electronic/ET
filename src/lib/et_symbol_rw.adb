@@ -190,7 +190,7 @@ package body et_symbol_rw is
 		use type_lines;
 		use type_arcs;
 		use type_circles;
-		use type_texts;
+		use pac_texts;
 		use type_ports;
 
 		procedure write_line (cursor : in type_lines.cursor) is begin
@@ -221,7 +221,7 @@ package body et_symbol_rw is
 			section_mark (section_circle, FOOTER);
 		end write_circle;
 
-		procedure write_text (cursor : in type_texts.cursor) is begin
+		procedure write_text (cursor : in pac_texts.cursor) is begin
 			section_mark (section_text, HEADER);
 			write (keyword => keyword_position, parameters => position (element (cursor).position));
 			write (keyword => keyword_content , parameters => to_string (element (cursor).content));			
@@ -627,7 +627,7 @@ package body et_symbol_rw is
 							when SEC_TEXTS =>
 
 								-- append symbol text to symbol
-								type_texts.append (
+								pac_texts.append (
 									container	=> symbol.texts,
 									new_item	=> (symbol_text_base with
 										content		=> symbol_text_content,

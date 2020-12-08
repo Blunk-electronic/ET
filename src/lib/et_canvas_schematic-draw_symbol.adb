@@ -63,7 +63,7 @@ is
 	use type_arcs;
 	use type_circles;
 	use type_ports;
-	use type_texts;
+	use pac_texts;
 
 	type type_line is new pac_shapes.type_line with null record;
 	type type_arc is new pac_shapes.type_arc with null record;		
@@ -358,7 +358,7 @@ is
 	-- are frequently placed inside symbols.
 	-- Call this procedure after drawing the symbol body because it
 	-- does not change the color to symbol color.
-	procedure draw_text (c : in type_texts.cursor) is 
+	procedure draw_text (c : in pac_texts.cursor) is 
 		use pac_text;
 		p : type_point := element (c).position;
 	begin

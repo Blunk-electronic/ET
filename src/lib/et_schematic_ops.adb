@@ -1312,9 +1312,9 @@ package body et_schematic_ops is
 		model : pac_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
 		device_cursor_lib : pac_devices_lib.cursor;
 		
-		use et_symbols.type_texts;
+		use et_symbols.pac_texts;
 
-		procedure query_text (c : in et_symbols.type_texts.cursor) is 
+		procedure query_text (c : in et_symbols.pac_texts.cursor) is 
 		-- Appends a text position (x/y) the the result.
 			use pac_text_positions;
 		begin
