@@ -223,14 +223,14 @@ package et_schematic is
 
 	
 	-- This is the port of a device as it appears in a net segment:
-	type type_port_device is record
+	type type_device_port is record
 		device_name	: type_device_name;
 		unit_name	: pac_unit_name.bounded_string;
 		port_name	: et_symbols.type_port_name.bounded_string;
 	end record;
 
-	function "<" (left, right : in type_port_device) return boolean;
-	package pac_device_ports is new ordered_sets (type_port_device);
+	function "<" (left, right : in type_device_port) return boolean;
+	package pac_device_ports is new ordered_sets (type_device_port);
 
 	
 	-- This is the port of a submodule:

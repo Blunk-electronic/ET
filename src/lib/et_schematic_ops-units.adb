@@ -539,7 +539,7 @@ package body et_schematic_ops.units is
 		procedure test_point (port_cursor : in et_symbols.type_ports.cursor) is
 			point : et_coordinates.type_position; -- the point
 			ports : type_ports;
-			port : et_schematic.type_port_device;
+			port : et_schematic.type_device_port;
 			use type_ports_submodule;
 			use pac_device_ports;
 			use et_netlists.type_ports_netchanger;
@@ -619,7 +619,7 @@ package body et_schematic_ops.units is
 		procedure test_point (port_cursor : in et_symbols.type_ports.cursor) is
 			point : et_coordinates.type_position; -- the point
 			ports : type_ports;
-			port : et_schematic.type_port_device;
+			port : et_schematic.type_device_port;
 			use type_ports_submodule;
 			use pac_device_ports;
 			use et_netlists.type_ports_netchanger;

@@ -498,7 +498,7 @@ is
 	-- The net label direction is relevant if appearance is TAG:
 	net_label_direction : et_schematic.type_net_label_direction := et_schematic.type_net_label_direction'first;
 	
-	net_device_port : et_schematic.type_port_device;
+	net_device_port : et_schematic.type_device_port;
 	net_device_ports : et_schematic.pac_device_ports.set;
 
 	net_submodule_port : et_schematic.type_port_submodule;

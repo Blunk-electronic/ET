@@ -286,7 +286,7 @@ package body et_schematic_ops is
 									
 									procedure query_port (port_cursor : in pac_device_ports.cursor) is
 										use et_symbols;
-										port : type_port_device := element (port_cursor); -- take a copy of the port
+										port : type_device_port := element (port_cursor); -- take a copy of the port
 									begin -- query_port
 										if port.device_name = device then -- on match just report the port and skip it
 
@@ -8606,7 +8606,7 @@ package body et_schematic_ops is
 		use et_schematic.pac_device_ports;
 		
 		procedure query_ports (port_cursor : in et_schematic.pac_device_ports.cursor) is
-			port_sch		: et_schematic.type_port_device := element (port_cursor);
+			port_sch		: et_schematic.type_device_port := element (port_cursor);
 			more_properties	: type_port_properties_access;
 		begin
 			-- get further properties of the current port
@@ -9231,7 +9231,7 @@ package body et_schematic_ops is
 			device_port_collector : pac_device_ports.set;
 
 			procedure collect_device_port (
-				port	: in type_port_device;
+				port	: in type_device_port;
 				net		: in pac_net_name.bounded_string) is 
 				use et_symbols;
 			begin

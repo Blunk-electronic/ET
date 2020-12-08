@@ -43,7 +43,7 @@ package body et_schematic is
 
 	use et_devices;
 	
-	function "<" (left, right : in type_port_device) return boolean is
+	function "<" (left, right : in type_device_port) return boolean is
 		use et_symbols.type_port_name;
 	begin
 		if left.device_name < right.device_name then
