@@ -176,7 +176,7 @@ package et_schematic is
 
 
 	-- This is a device as it appears in the schematic.
-	type type_device (appearance : type_appearance_schematic) is record
+	type type_device_sch (appearance : type_appearance_schematic) is record
 
 		-- The link to the device model like ../libraries/devices/transistor/pnp.dev
 		model	: pac_device_model_file.bounded_string;
@@ -470,7 +470,7 @@ package et_schematic is
 	-- CS: This must be a hashed map:
  	package pac_devices_sch is new indefinite_ordered_maps (
 		key_type		=> type_device_name, -- something like "IC43"
- 		element_type	=> type_device);
+ 		element_type	=> type_device_sch);
 
 	-- Returns true if the given device is real.
 	function is_real (device : in pac_devices_sch.cursor) return boolean;

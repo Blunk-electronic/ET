@@ -674,7 +674,7 @@ is
 		use et_symbols;
 		use pac_devices_sch;
 
-		procedure query_units (device_name : in type_device_name; device : in et_schematic.type_device) is
+		procedure query_units (device_name : in type_device_name; device : in type_device_sch) is
 			use et_schematic.pac_units;
 			unit_cursor : pac_units.cursor := device.units.first;
 
@@ -719,7 +719,7 @@ is
 
 		procedure query_placeholders (
 			device_name : in type_device_name;
-			device 		: in et_schematic.type_device) is
+			device 		: in type_device_sch) is
 			use et_pcb_coordinates;
 			use et_packages;
 			use pac_text_placeholders;

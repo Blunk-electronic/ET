@@ -359,7 +359,7 @@ package body et_board_ops is
 
 			procedure set_position ( -- of an electric device
 				device_name	: in type_device_name;
-				device		: in out et_schematic.type_device) is
+				device		: in out type_device_sch) is
 			begin
 				case coordinates is
 					when ABSOLUTE =>
@@ -463,7 +463,7 @@ package body et_board_ops is
 
 			procedure set_rotation ( -- of an electric device
 				device_name	: in type_device_name;
-				device		: in out et_schematic.type_device) is
+				device		: in out type_device_sch) is
 			begin
 				case coordinates is
 					when ABSOLUTE =>
@@ -689,7 +689,7 @@ package body et_board_ops is
 			
 			procedure flip ( -- electric device
 				device_name	: in type_device_name;
-				device		: in out et_schematic.type_device) is
+				device		: in out type_device_sch) is
 				
 				face_before : constant type_face := get_face (device.position);
 			begin

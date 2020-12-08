@@ -59,7 +59,7 @@ procedure invoke_unit (
 
 		procedure query_units_in_use (
 			device_name	: in type_device_name;
-			device		: in et_schematic.type_device)
+			device		: in type_device_sch)
 		is
 			use et_schematic.pac_units;
 		begin
@@ -90,7 +90,7 @@ procedure invoke_unit (
 		-- Add an internal unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.int.
 			device_name	: in type_device_name;
-			device		: in out et_schematic.type_device) is
+			device		: in out type_device_sch) is
 			use et_symbols;
 		begin
 			log (text => "invoking internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
@@ -131,7 +131,7 @@ procedure invoke_unit (
 		-- Add an external unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.ext.
 			device_name	: in type_device_name;
-			device		: in out et_schematic.type_device) is
+			device		: in out type_device_sch) is
 			use et_symbols;
 			use et_symbols.pac_symbols;
 			symbol_cursor : pac_symbols.cursor;

@@ -587,7 +587,7 @@ is
 	note : et_schematic.type_text;
 
 	-- The temporarily device will exist where "device" points at:
-	device					: access et_schematic.type_device;
+	device					: access et_schematic.type_device_sch;
 	
 	device_name					: type_device_name; -- C12
 	device_model				: pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
@@ -789,6 +789,7 @@ is
 	procedure read_device is
 		use et_symbols;
 		use et_devices;
+		use et_schematic;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -804,12 +805,12 @@ is
 
 			case device_appearance is
 				when VIRTUAL =>
-					device := new et_schematic.type_device'(
+					device := new type_device_sch'(
 						appearance	=> VIRTUAL,
 						others		=> <>);
 
 				when PCB =>
-					device := new et_schematic.type_device'(
+					device := new type_device_sch'(
 						appearance	=> PCB,
 						others		=> <>);
 			end case;

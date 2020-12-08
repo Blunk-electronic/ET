@@ -2527,7 +2527,7 @@ package body et_kicad_to_native is
 			procedure copy_units (
 			-- Copies the kicad units to the native component.
 				reference	: in type_device_name;
-				component	: in out et_schematic.type_device) is
+				component	: in out type_device_sch) is
 
 				use et_kicad.schematic.type_units_schematic;
 				units_kicad			: et_kicad.schematic.type_units_schematic.map := element (component_cursor_kicad).units;

@@ -236,7 +236,7 @@ package body et_schematic_ops is
 		
 		procedure get_positions (
 			device_name : in type_device_name;
-			device		: in et_schematic.type_device) is
+			device		: in type_device_sch) is
 		begin
 			positions := unit_positions (device.units);
 		end;
@@ -457,7 +457,7 @@ package body et_schematic_ops is
 
 		procedure query_internal_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in et_devices.type_device_lib) is
+			device	: in type_device_lib) is
 			use pac_units_internal;
 			unit_cursor : pac_units_internal.cursor;
 		begin -- query_internal_units
@@ -472,7 +472,7 @@ package body et_schematic_ops is
 
 		procedure query_external_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in et_devices.type_device_lib) is
+			device	: in type_device_lib) is
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
 			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
@@ -588,7 +588,7 @@ package body et_schematic_ops is
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in et_schematic.type_device) is
+				device		: in type_device_sch) is
 				
 				use et_schematic.pac_units;
 				unit_cursor : pac_units.cursor := device.units.first;
@@ -856,7 +856,7 @@ package body et_schematic_ops is
 -- 
 -- 			procedure query_units (
 -- 				device_name	: in type_device_name;
--- 				device		: in out et_schematic.type_device) is
+-- 				device		: in out type_device_sch) is
 -- 				use et_schematic.pac_units;
 -- 				unit_cursor : et_schematic.pac_units.cursor;
 -- 			begin
@@ -883,7 +883,7 @@ package body et_schematic_ops is
 -- 
 -- 			procedure query_number_of_invoked_units (
 -- 				device_name	: in type_device_name;
--- 				device		: in et_schematic.type_device) is
+-- 				device		: in type_device_sch) is
 -- 				use et_schematic.pac_units;
 -- 			begin
 -- 				if length (device.units) = 0 then
@@ -1145,7 +1145,7 @@ package body et_schematic_ops is
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in out et_schematic.type_device) is
+				device		: in out type_device_sch) is
 				use et_schematic.pac_units;
 				unit_cursor : et_schematic.pac_units.cursor;
 
@@ -1326,7 +1326,7 @@ package body et_schematic_ops is
 		
 		procedure query_internal_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in et_devices.type_device_lib) is
+			device	: in type_device_lib) is
 			use pac_units_internal;
 			unit_cursor : pac_units_internal.cursor;
 		begin
@@ -1359,7 +1359,7 @@ package body et_schematic_ops is
 
 		procedure query_external_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in et_devices.type_device_lib) is
+			device	: in type_device_lib) is
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
 			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
@@ -1474,7 +1474,7 @@ package body et_schematic_ops is
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in out et_schematic.type_device) is
+				device		: in out type_device_sch) is
 				use et_schematic.pac_units;
 				unit_cursor : et_schematic.pac_units.cursor;
 
@@ -2275,7 +2275,7 @@ package body et_schematic_ops is
 
 			procedure set_value (
 				device_name	: in type_device_name;
-				device		: in out et_schematic.type_device) is
+				device		: in out type_device_sch) is
 			begin
 				device.value := value;
 			end;
@@ -2364,7 +2364,7 @@ package body et_schematic_ops is
 
 			procedure set_purpose (
 				device_name	: in type_device_name;
-				device		: in out et_schematic.type_device) is
+				device		: in out type_device_sch) is
 			begin
 				device.purpose := purpose;
 			end;
@@ -2432,7 +2432,7 @@ package body et_schematic_ops is
 
 			procedure set_partcode (
 				device_name	: in type_device_name;
-				device		: in out et_schematic.type_device) is
+				device		: in out type_device_sch) is
 			begin
 				device.partcode := partcode;
 			end;
@@ -2559,7 +2559,7 @@ package body et_schematic_ops is
 
 		procedure query_units (
 			device_name	: in et_devices.type_device_name; -- R2
-			device		: in et_schematic.type_device)
+			device		: in type_device_sch)
 		is begin
 			unit_cursor := find (device.units, unit);
 		end query_units;
@@ -2637,7 +2637,7 @@ package body et_schematic_ops is
 
 			procedure do_it (
 				name	: in et_devices.type_device_name;
-				dev		: in out et_schematic.type_device)
+				dev		: in out type_device_sch)
 			is 
 				cursor_lib : pac_devices_lib.cursor;
 			begin
@@ -2735,7 +2735,7 @@ package body et_schematic_ops is
 			
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in et_schematic.type_device) is
+				device		: in type_device_sch) is
 				use et_schematic.pac_units;
 				unit_cursor : et_schematic.pac_units.cursor := device.units.first;
 				use et_symbols.pac_ports;
@@ -2802,7 +2802,7 @@ package body et_schematic_ops is
 			
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in et_schematic.type_device) is
+				device		: in type_device_sch) is
 				use et_schematic.pac_units;
 				use et_symbols.pac_ports;
 				ports : et_symbols.pac_ports.map;
@@ -3163,7 +3163,7 @@ package body et_schematic_ops is
 			-- Sets the in_use flag if given unit is already in use:
 			procedure query_in_use (
 				device_name	: in type_device_name;
-				device		: in et_schematic.type_device) 
+				device		: in type_device_sch) 
 			is
 				use et_schematic.pac_units;
 			begin
@@ -3251,7 +3251,7 @@ package body et_schematic_ops is
 		-- Clears the "available" flag if given unit is already in use:
 		procedure query_in_use (
 			device_name	: in type_device_name;
-			device		: in et_schematic.type_device) 
+			device		: in type_device_sch) 
 		is
 			use et_schematic.pac_units;
 		begin
@@ -3299,7 +3299,7 @@ package body et_schematic_ops is
 
 		procedure query_units (
 			device_name	: in type_device_name;
-			device		: in et_schematic.type_device)
+			device		: in type_device_sch)
 		is 
 			procedure query_unit (c : in pac_units.cursor) is 
 				use et_devices.pac_unit_name;
@@ -3355,7 +3355,7 @@ package body et_schematic_ops is
 		
 		procedure query_unit (
 			device_name	: in type_device_name;
-			device		: in et_schematic.type_device)
+			device		: in type_device_sch)
 		is 
 			use et_schematic.pac_units;
 			unit_cursor : pac_units.cursor;
@@ -3388,7 +3388,7 @@ package body et_schematic_ops is
 		
 		procedure query_unit (
 			device_name	: in type_device_name;
-			device		: in et_schematic.type_device)
+			device		: in type_device_sch)
 		is 
 			use et_schematic.pac_units;
 		begin
@@ -3416,7 +3416,7 @@ package body et_schematic_ops is
 		
 		procedure query_unit (
 			device_name	: in type_device_name;
-			device		: in et_schematic.type_device)
+			device		: in type_device_sch)
 		is 
 			use et_schematic.pac_units;
 			use et_symbols;
@@ -8515,7 +8515,7 @@ package body et_schematic_ops is
 
 			procedure query_variants (
 				model	: in pac_device_model_file.bounded_string;
-				device	: in et_devices.type_device_lib) is
+				device	: in type_device_lib) is
 				variant_cursor : pac_variants.cursor;
 
 				procedure query_ports (
@@ -9531,7 +9531,7 @@ package body et_schematic_ops is
 
 			procedure query_units (
 				device_name	: in type_device_name; -- IC45
-				device		: in et_schematic.type_device) is
+				device		: in type_device_sch) is
 
 				use et_schematic.pac_units;
 				unit_cursor : et_schematic.pac_units.cursor;

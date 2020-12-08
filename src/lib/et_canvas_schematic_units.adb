@@ -102,7 +102,7 @@ package body et_canvas_schematic_units is
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in et_schematic.type_device)
+				device		: in type_device_sch)
 			is
 				use et_schematic.pac_units;
 				unit_cursor : et_schematic.pac_units.cursor := device.units.first;
@@ -215,7 +215,7 @@ package body et_canvas_schematic_units is
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in out et_schematic.type_device) is
+				device		: in out type_device_sch) is
 			begin
 				-- Load the single unit position and insert in container "position_of_unit"
 				pac_unit_positions.insert (
@@ -234,7 +234,7 @@ package body et_canvas_schematic_units is
 
 			procedure query_number_of_invoked_units (
 				device_name	: in type_device_name;
-				device		: in et_schematic.type_device) is
+				device		: in type_device_sch) is
 			begin
 				if length (device.units) = 0 then
 					units_invoked := false;
@@ -615,7 +615,7 @@ package body et_canvas_schematic_units is
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in out et_schematic.type_device)
+				device		: in out type_device_sch)
 			is
 				use et_schematic.pac_units;
 				unit_cursor : et_schematic.pac_units.cursor;
@@ -1297,7 +1297,7 @@ package body et_canvas_schematic_units is
 				-- Sets the in_use flag if given unit is already in use:
 				procedure query_in_use (
 					device_name	: in type_device_name;
-					device		: in et_schematic.type_device) 
+					device		: in type_device_sch) 
 				is
 					use et_schematic.pac_units;
 				begin
@@ -1530,7 +1530,7 @@ package body et_canvas_schematic_units is
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in et_schematic.type_device)
+				device		: in type_device_sch)
 			is
 				use et_schematic.pac_units;
 				unit_cursor : et_schematic.pac_units.cursor := device.units.first;
@@ -1693,7 +1693,7 @@ package body et_canvas_schematic_units is
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in out et_schematic.type_device) 
+				device		: in out type_device_sch) 
 			is 
 				unit_cursor : et_schematic.pac_units.cursor;
 
