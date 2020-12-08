@@ -297,20 +297,20 @@ is
 		mode	: in type_show_net)
 	is
 		use et_schematic;
-		use type_nets;
+		use pac_nets;
 		use pac_strands;
 		
 		use et_canvas_schematic_nets;
 		use pac_proposed_segments;
 		
-		net_cursor : et_schematic.type_nets.cursor := 
+		net_cursor : et_schematic.pac_nets.cursor := 
 			locate_net (current_active_module, net);
 
 		strand_cursor : pac_strands.cursor;
 		
 		pos : et_coordinates.type_position;
 	begin
-		if net_cursor /= type_nets.no_element then
+		if net_cursor /= pac_nets.no_element then
 			
 			case mode is
 				when FIRST_NET =>

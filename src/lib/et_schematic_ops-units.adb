@@ -350,8 +350,8 @@ package body et_schematic_ops.units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			procedure query_net (net_cursor : in type_nets.cursor) is
-				use type_nets;
+			procedure query_net (net_cursor : in pac_nets.cursor) is
+				use pac_nets;
 				use et_symbols;
 
 				procedure query_strands (
@@ -504,7 +504,7 @@ package body et_schematic_ops.units is
 			end query_net;				
 			
 		begin -- query_nets
-			type_nets.iterate (module.nets, query_net'access);
+			pac_nets.iterate (module.nets, query_net'access);
 		end query_nets;
 
 	begin -- drag_net_segments

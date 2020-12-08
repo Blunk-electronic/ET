@@ -2700,8 +2700,8 @@ package body et_kicad_to_native is
 			kicad_nets			: et_kicad.schematic.type_nets.map := element (module_cursor_kicad).nets;
 			kicad_net_cursor	: et_kicad.schematic.type_nets.cursor := kicad_nets.first;
 
-			use et_schematic.type_nets;
-			net_cursor_native	: et_schematic.type_nets.cursor;
+			use et_schematic.pac_nets;
+			net_cursor_native	: et_schematic.pac_nets.cursor;
 			net_inserted		: boolean;
 
 			procedure insert_strands (
@@ -3073,7 +3073,7 @@ package body et_kicad_to_native is
 			while kicad_net_cursor /= et_kicad.schematic.type_nets.no_element loop
 				log (text => "net " & et_general.to_string (key (kicad_net_cursor)), level => log_threshold + 2);
 
-				et_schematic.type_nets.insert (
+				et_schematic.pac_nets.insert (
 					container	=> module.nets,
 					position	=> net_cursor_native,
 					inserted	=> net_inserted,
@@ -3086,13 +3086,13 @@ package body et_kicad_to_native is
 					);
 
 				-- insert strands (schematic related)
-				et_schematic.type_nets.update_element (
+				et_schematic.pac_nets.update_element (
 					container	=> module.nets,
 					position	=> net_cursor_native,
 					process		=> insert_strands'access);
 
 				-- copy layout related stuff (copper segments, vias, ...)
-				et_schematic.type_nets.update_element (
+				et_schematic.pac_nets.update_element (
 					container	=> module.nets,
 					position	=> net_cursor_native,
 					process		=> copy_layout_stuff'access);

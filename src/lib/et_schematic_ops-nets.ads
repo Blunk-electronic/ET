@@ -157,7 +157,7 @@ package et_schematic_ops.nets is
 	--    been created or extended by segment_new.
 	procedure insert_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in out type_nets.cursor;
+		net_cursor		: in out pac_nets.cursor;
 		sheet			: in type_sheet;
 		net_name		: in pac_net_name.bounded_string;
 		segment_new		: in et_schematic.type_net_segment;

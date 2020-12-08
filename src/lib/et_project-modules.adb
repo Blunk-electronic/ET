@@ -175,8 +175,8 @@ package body et_project.modules is
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
-			use type_nets;
-			net_cursor : type_nets.cursor := module.nets.first;
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in et_general.pac_net_name.bounded_string;
@@ -227,9 +227,9 @@ package body et_project.modules is
 			end query_strands;
 			
 		begin -- query_nets
-			while result = false and net_cursor /= type_nets.no_element loop
+			while result = false and net_cursor /= pac_nets.no_element loop
 
-				type_nets.query_element (
+				pac_nets.query_element (
 					position	=> net_cursor,
 					process		=> query_strands'access);
 
@@ -252,7 +252,7 @@ package body et_project.modules is
 	-- Returns true if the given net provides a netchanger that may serve as port
 	-- to a parent module.
 		module		: in pac_generic_modules.cursor;
-		net			: in et_schematic.type_nets.cursor;
+		net			: in et_schematic.pac_nets.cursor;
 		direction	: in et_submodules.type_netchanger_port_name) -- master/slave 
 		return boolean is
 		
@@ -324,7 +324,7 @@ package body et_project.modules is
 		end query_strands;
 		
 	begin -- netchanger_as_port_available
-		type_nets.query_element (
+		pac_nets.query_element (
 			position	=> net,
 			process		=> query_strands'access);
 		
@@ -505,11 +505,11 @@ package body et_project.modules is
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
-			net_cursor : type_nets.cursor;
+			net_cursor : pac_nets.cursor;
 
 			-- The port being inquired is a net inside the submodule.
 			net : constant string := et_general.to_string (port);
-			use type_nets;
+			use pac_nets;
 		begin
 			-- locate the net in the submodule
 			net_cursor := find (module.nets, to_net_name (net));
@@ -517,7 +517,7 @@ package body et_project.modules is
 			-- If net found, test its scope. If it is global,
 			-- then all requirements are met -> result true.
 			-- If net is local, then a netchanger is required.
-			if net_cursor /= type_nets.no_element then -- net found
+			if net_cursor /= pac_nets.no_element then -- net found
 
 				case element (net_cursor).scope is
 					when et_netlists.GLOBAL => 

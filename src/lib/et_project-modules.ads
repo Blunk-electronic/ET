@@ -104,7 +104,7 @@ package et_project.modules is
 	-- to a parent module.
 	function netchanger_as_port_available (
 		module		: in pac_generic_modules.cursor;
-		net			: in et_schematic.type_nets.cursor;
+		net			: in et_schematic.pac_nets.cursor;
 		direction	: in et_submodules.type_netchanger_port_name) -- master/slave 		
 		return boolean;
 	

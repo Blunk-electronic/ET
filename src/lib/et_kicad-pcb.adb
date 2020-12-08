@@ -4722,7 +4722,7 @@ package body et_kicad.pcb is
 				module   : in out type_module) is
 
 				-- The nets of the module are copied here (in their present state):
-				use type_nets;
+				use pac_nets;
 				nets 		: et_kicad.schematic.type_nets.map := module.nets;
 				net_cursor	: et_kicad.schematic.type_nets.cursor := nets.first;
 				

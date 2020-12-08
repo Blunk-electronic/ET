@@ -198,7 +198,7 @@ package et_schematic_ops is
 	function locate_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string)
-		return et_schematic.type_nets.cursor;
+		return et_schematic.pac_nets.cursor;
 
 	
 	-- CS move to et_schematic ?

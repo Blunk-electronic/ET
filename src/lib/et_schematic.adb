@@ -211,10 +211,10 @@ package body et_schematic is
 
 	function get_first_strand_on_sheet (
 		sheet		: in et_coordinates.type_sheet;
-		net_cursor	: in type_nets.cursor)
+		net_cursor	: in pac_nets.cursor)
 		return pac_strands.cursor
 	is
-		use type_nets;
+		use pac_nets;
 		strand_cursor : pac_strands.cursor; -- to be returned
 
 		use et_coordinates;
@@ -253,10 +253,10 @@ package body et_schematic is
 	end get_first_strand_on_sheet;
 	
 	function get_first_strand (
-		net_cursor	: in type_nets.cursor)
+		net_cursor	: in pac_nets.cursor)
 		return pac_strands.cursor
 	is
-		use type_nets;
+		use pac_nets;
 		strand_cursor : pac_strands.cursor; -- to be returned
 
 		use et_coordinates;
@@ -347,7 +347,7 @@ package body et_schematic is
 	end stub_direction;
 	
 	function ports (
-		net		: in type_nets.cursor;
+		net		: in pac_nets.cursor;
 		variant	: in pac_assembly_variants.cursor)
 		return type_ports is
 	-- Returns the ports of devices, submodules and netchangers in
@@ -357,7 +357,7 @@ package body et_schematic is
 	-- and ALL devices are returned.
 		result : type_ports; -- to be returned
 
-		use type_nets;
+		use pac_nets;
 		use pac_strands;
 		use pac_net_segments;
 		use et_string_processing;

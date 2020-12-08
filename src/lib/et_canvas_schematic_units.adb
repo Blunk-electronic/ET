@@ -524,10 +524,10 @@ package body et_canvas_schematic_units is
 
 		
 		procedure query_port (p : in et_symbols.type_ports.cursor) is
-			use et_schematic.type_nets;
+			use et_schematic.pac_nets;
 			use et_symbols.type_ports;
 
-			procedure query_net (n : in type_nets.cursor) is
+			procedure query_net (n : in pac_nets.cursor) is
 				use et_schematic.pac_strands;
 
 				procedure query_strand (s : in pac_strands.cursor) is

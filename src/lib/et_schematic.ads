@@ -389,7 +389,7 @@ package et_schematic is
 		scope		: et_netlists.type_net_scope := et_netlists.LOCAL;
 	end record;
 	
-	package type_nets is new ordered_maps (
+	package pac_nets is new ordered_maps (
 		key_type		=> pac_net_name.bounded_string,
 		element_type	=> type_net);
 
@@ -399,13 +399,13 @@ package et_schematic is
 	-- contain a strand of the given net.
 	function get_first_strand_on_sheet (
 		sheet		: in et_coordinates.type_sheet;
-		net_cursor	: in type_nets.cursor)
+		net_cursor	: in pac_nets.cursor)
 		return pac_strands.cursor;
 	
 	-- Returns a cursor to the strand that is
 	-- on the lowest sheet and lowest x/y position:
 	function get_first_strand (
-		net_cursor	: in type_nets.cursor)
+		net_cursor	: in pac_nets.cursor)
 		return pac_strands.cursor;
 	
 
@@ -450,7 +450,7 @@ package et_schematic is
 	end record;
 	
 	function ports (
-		net		: in type_nets.cursor;
+		net		: in pac_nets.cursor;
 		variant	: in pac_assembly_variants.cursor)
 		return type_ports;
 	-- Returns the ports of devices, submodules and netchangers in
@@ -594,7 +594,7 @@ package et_schematic is
 		texts       	: pac_texts.list; -- general notes in schematic, not related to drawing frames !
 
 		-- the nets of the module (incl. routing information from the board):
-		nets 	    	: type_nets.map;
+		nets 	    	: pac_nets.map;
 
 		-- the assembly variants of the module
 		variants		: pac_assembly_variants.map;

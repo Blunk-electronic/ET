@@ -973,14 +973,14 @@ is
 				module		: in out et_schematic.type_module) is
 				use et_schematic;
 				inserted : boolean;
-				cursor : type_nets.cursor;
+				cursor : pac_nets.cursor;
 			begin -- insert_net
 				log (text => "net " & et_general.to_string (net_name), level => log_threshold + 1);
 
 				-- CS: notify about missing parameters (by reading the parameter-found-flags)
 				-- If a parameter is missing, the default is assumed. See type_net spec.
 				
-				type_nets.insert (
+				pac_nets.insert (
 					container	=> module.nets,
 					key			=> net_name,
 					new_item	=> net,

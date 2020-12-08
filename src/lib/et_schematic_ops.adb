@@ -262,8 +262,8 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			procedure query_net (net_cursor : in type_nets.cursor) is
-				use type_nets;
+			procedure query_net (net_cursor : in pac_nets.cursor) is
+				use pac_nets;
 
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
@@ -359,7 +359,7 @@ package body et_schematic_ops is
 			end query_net;				
 			
 		begin -- query_nets
-			type_nets.iterate (module.nets, query_net'access);
+			pac_nets.iterate (module.nets, query_net'access);
 		end query_nets;
 		
 	begin -- delete_ports
@@ -977,8 +977,8 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			procedure query_net (net_cursor : in type_nets.cursor) is
-				use type_nets;
+			procedure query_net (net_cursor : in pac_nets.cursor) is
+				use pac_nets;
 
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
@@ -1107,7 +1107,7 @@ package body et_schematic_ops is
 			end query_net;				
 			
 		begin -- query_nets
-			type_nets.iterate (module.nets, query_net'access);
+			pac_nets.iterate (module.nets, query_net'access);
 		end query_nets;
 
 	begin --insert_ports
@@ -1545,15 +1545,15 @@ package body et_schematic_ops is
 	function locate_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string)		
-		return et_schematic.type_nets.cursor is
+		return et_schematic.pac_nets.cursor is
 		
-		cursor : et_schematic.type_nets.cursor;
+		cursor : et_schematic.pac_nets.cursor;
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
 		begin
-			cursor := et_schematic.type_nets.find (module.nets, net_name);
+			cursor := et_schematic.pac_nets.find (module.nets, net_name);
 		end query_nets;
 		
 	begin -- locate_net
@@ -1580,8 +1580,8 @@ package body et_schematic_ops is
 -- 			module_name	: in pac_module_name.bounded_string;
 -- 			module		: in out type_module) is
 -- 
--- 			procedure query_net (net_cursor : in type_nets.cursor) is
--- 				use type_nets;
+-- 			procedure query_net (net_cursor : in pac_nets.cursor) is
+-- 				use pac_nets;
 -- 				use et_symbols;
 -- 
 -- 				procedure query_strands (
@@ -1715,7 +1715,7 @@ package body et_schematic_ops is
 -- 			end query_net;				
 -- 			
 -- 		begin -- query_nets
--- 			type_nets.iterate (module.nets, query_net'access);
+-- 			pac_nets.iterate (module.nets, query_net'access);
 -- 		end query_nets;
 -- 
 -- 	begin -- drag_net_segments
@@ -1744,8 +1744,8 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
 
-			use type_nets;			
-			net_cursor : type_nets.cursor := module.nets.first;
+			use pac_nets;			
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
@@ -1800,7 +1800,7 @@ package body et_schematic_ops is
 			end query_strands;
 			
 		begin -- query_nets
-			while not segment_found and net_cursor /= type_nets.no_element loop
+			while not segment_found and net_cursor /= pac_nets.no_element loop
 
 				query_element (
 					position	=> net_cursor,
@@ -2055,8 +2055,8 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			procedure query_net (net_cursor : in type_nets.cursor) is
-				use type_nets;
+			procedure query_net (net_cursor : in pac_nets.cursor) is
+				use pac_nets;
 
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
@@ -2141,7 +2141,7 @@ package body et_schematic_ops is
 			end query_net;				
 			
 		begin -- query_nets
-			type_nets.iterate (module.nets, query_net'access);
+			pac_nets.iterate (module.nets, query_net'access);
 		end query_nets;
 		
 	begin -- rename_ports
@@ -3544,8 +3544,8 @@ package body et_schematic_ops is
 				-- all iterations to cancel prematurely.
 				port_processed : boolean := false;
 					
-				use type_nets;
-				net_cursor : type_nets.cursor := module.nets.first;
+				use pac_nets;
+				net_cursor : pac_nets.cursor := module.nets.first;
 				
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
@@ -3638,7 +3638,7 @@ package body et_schematic_ops is
 				log_indentation_up;
 				log (text => "at" & to_string (port), level => log_threshold + 2);
 				
-				while not port_processed and net_cursor /= type_nets.no_element loop
+				while not port_processed and net_cursor /= pac_nets.no_element loop
 					
 					update_element (
 						container	=> module.nets,
@@ -3751,8 +3751,8 @@ package body et_schematic_ops is
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_nets;
-			net_cursor : type_nets.cursor := module.nets.first;
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			-- In order to speed up things we have two flags that indicate
 			-- whether the master or slave port has been deleted from the nets.
@@ -3843,7 +3843,7 @@ package body et_schematic_ops is
 			end query_strands;
 			
 		begin -- query_nets
-			while not all_ports_deleted and net_cursor /= type_nets.no_element loop
+			while not all_ports_deleted and net_cursor /= pac_nets.no_element loop
 
 				update_element (
 					container	=> module.nets,
@@ -4093,8 +4093,8 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use type_nets;			
-			net_cursor : type_nets.cursor := module.nets.first;
+			use pac_nets;			
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
@@ -4212,7 +4212,7 @@ package body et_schematic_ops is
 			end query_strands;
 			
 		begin -- query_nets
-			while net_cursor /= type_nets.no_element loop
+			while net_cursor /= pac_nets.no_element loop
 
 				update_element (
 					container	=> module.nets,
@@ -4703,8 +4703,8 @@ package body et_schematic_ops is
 			-- all iterations to cancel prematurely.
 			port_processed : boolean := false;
 			
-			use type_nets;
-			net_cursor : type_nets.cursor := module.nets.first;
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
@@ -4793,7 +4793,7 @@ package body et_schematic_ops is
 			end query_strands;
 			
 		begin -- query_nets
-			while not port_processed and net_cursor /= type_nets.no_element loop
+			while not port_processed and net_cursor /= pac_nets.no_element loop
 				
 				update_element (
 					container	=> module.nets,
@@ -4984,8 +4984,8 @@ package body et_schematic_ops is
 			-- all iterations to cancel prematurely.
 			port_processed : boolean := false;
 			
-			use type_nets;
-			net_cursor : type_nets.cursor := module.nets.first;
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
@@ -5060,7 +5060,7 @@ package body et_schematic_ops is
 			end query_strands;
 			
 		begin -- query_nets
-			while not port_processed and net_cursor /= type_nets.no_element loop
+			while not port_processed and net_cursor /= pac_nets.no_element loop
 				
 				update_element (
 					container	=> module.nets,
@@ -5359,8 +5359,8 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use type_nets;			
-			net_cursor : type_nets.cursor := module.nets.first;
+			use pac_nets;			
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
@@ -5478,7 +5478,7 @@ package body et_schematic_ops is
 			end query_strands;
 			
 		begin -- query_nets
-			while net_cursor /= type_nets.no_element loop
+			while net_cursor /= pac_nets.no_element loop
 
 				update_element (
 					container	=> module.nets,
@@ -5762,8 +5762,8 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use type_nets;
-			net_cursor : type_nets.cursor := module.nets.first;
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
@@ -5834,7 +5834,7 @@ package body et_schematic_ops is
 			end query_strands;
 			
 		begin -- query_nets
-			while net_cursor /= type_nets.no_element loop
+			while net_cursor /= pac_nets.no_element loop
 				
 				update_element (
 					container	=> module.nets,
@@ -8761,8 +8761,8 @@ package body et_schematic_ops is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in et_schematic.type_module) is
 
-					use et_schematic.type_nets;
-					net_cursor_sch : et_schematic.type_nets.cursor := module.nets.first;
+					use et_schematic.pac_nets;
+					net_cursor_sch : et_schematic.pac_nets.cursor := module.nets.first;
 
 					net_name : et_general.pac_net_name.bounded_string;
 					all_ports : et_schematic.type_ports;
@@ -8827,9 +8827,9 @@ package body et_schematic_ops is
 					-- no element then it is about the default variant.
 					
 					-- loop in nets of given module
-					while net_cursor_sch /= et_schematic.type_nets.no_element loop
+					while net_cursor_sch /= et_schematic.pac_nets.no_element loop
 
-						net_name := et_schematic.type_nets.key (net_cursor_sch);
+						net_name := et_schematic.pac_nets.key (net_cursor_sch);
 						
 						log (text => "net " & et_general.to_string (prefix) & et_general.to_string (net_name),
 							 level => log_threshold + 2);
@@ -9224,7 +9224,7 @@ package body et_schematic_ops is
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
-			use type_nets;
+			use pac_nets;
 
 			-- Here we collect all ports of devices (like IC4 CE, R2 1, ...) across all the nets.
 			-- Since device_port_collector is an ordered set, an exception will be raised if
@@ -9302,7 +9302,7 @@ package body et_schematic_ops is
 					log (text => ada.exceptions.exception_message (event), console => true);
 			end collect_netchanger_port;
 			
-			procedure query_net (net_cursor : in type_nets.cursor) is
+			procedure query_net (net_cursor : in pac_nets.cursor) is
 				use et_general.pac_net_name;
 
 				procedure query_strands (

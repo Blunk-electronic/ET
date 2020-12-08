@@ -1572,10 +1572,10 @@ package body et_board_ops is
 		end if;
 	end is_freetrack;
 
-	function net_exists (net_cursor : in type_nets.cursor) return boolean is 
-		use et_schematic.type_nets;
+	function net_exists (net_cursor : in pac_nets.cursor) return boolean is 
+		use et_schematic.pac_nets;
 	begin
-		if net_cursor = type_nets.no_element then
+		if net_cursor = pac_nets.no_element then
 			return false;
 		else 
 			return true;
@@ -1625,8 +1625,8 @@ package body et_board_ops is
 			module		: in out type_module) is
 
 			-- A track belonging to a net requires the net to be located in the given module:
-			use et_schematic.type_nets;
-			net_cursor : et_schematic.type_nets.cursor := find (module.nets, net_name);
+			use et_schematic.pac_nets;
+			net_cursor : et_schematic.pac_nets.cursor := find (module.nets, net_name);
 
 			procedure add (
 			-- Appends the track to the net.
@@ -1642,7 +1642,7 @@ package body et_board_ops is
 		begin -- add_named_track
 			if net_exists (net_cursor) then
 				
-				type_nets.update_element (
+				pac_nets.update_element (
 					container	=> module.nets,
 					position	=> net_cursor,
 					process		=> add'access);
@@ -1714,7 +1714,7 @@ package body et_board_ops is
 	-- Draws a named track line.
 	-- Assumes that module_cursor and net_cursor point to a existing objects.
 		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
+		net_cursor		: in et_schematic.pac_nets.cursor; -- reset_n
 		line			: in et_pcb.type_copper_line;
 		log_threshold	: in type_log_level) is
 
@@ -1722,7 +1722,7 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use et_schematic.type_nets;
+			use et_schematic.pac_nets;
 
 			procedure add (
 			-- Appends the track to the net.
@@ -1736,7 +1736,7 @@ package body et_board_ops is
 			end add;
 
 		begin -- add_named_track
-			type_nets.update_element (
+			pac_nets.update_element (
 				container	=> module.nets,
 				position	=> net_cursor,
 				process		=> add'access);
@@ -2042,8 +2042,8 @@ package body et_board_ops is
 			module		: in out type_module) is
 
 			-- A track belonging to a net requires the net to be located in the given module:
-			use et_schematic.type_nets;
-			net_cursor : et_schematic.type_nets.cursor := find (module.nets, net_name);
+			use et_schematic.pac_nets;
+			net_cursor : et_schematic.pac_nets.cursor := find (module.nets, net_name);
 
 			procedure add (
 			-- Appends the track to the net.
@@ -2058,7 +2058,7 @@ package body et_board_ops is
 		begin -- add_named_track
 			if net_exists (net_cursor) then
 
-				type_nets.update_element (
+				pac_nets.update_element (
 					container	=> module.nets,
 					position	=> net_cursor,
 					process		=> add'access);
@@ -2162,8 +2162,8 @@ package body et_board_ops is
 			module		: in out type_module) is
 
 			-- A net belonging to a net requires the net to be located in the given module:
-			use et_schematic.type_nets;
-			net_cursor : et_schematic.type_nets.cursor := find (module.nets, net_name);
+			use et_schematic.pac_nets;
+			net_cursor : et_schematic.pac_nets.cursor := find (module.nets, net_name);
 
 			procedure ripup (
 				net_name	: in pac_net_name.bounded_string;
@@ -2209,7 +2209,7 @@ package body et_board_ops is
 		begin -- ripup_named_track
 			if net_exists (net_cursor) then
 
-				type_nets.update_element (
+				pac_nets.update_element (
 					container	=> module.nets,
 					position	=> net_cursor,
 					process		=> ripup'access);

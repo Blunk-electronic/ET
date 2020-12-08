@@ -328,7 +328,7 @@ is
 		
 	procedure query_nets is
 		use type et_schematic.type_net;
-		use et_schematic.type_nets;
+		use et_schematic.pac_nets;
 		use et_pcb;
 
 		procedure query_strands (
@@ -644,7 +644,7 @@ is
 			section_mark (section_route, FOOTER);
 		end query_route;
 
-		procedure write (net_cursor : in et_schematic.type_nets.cursor) is begin
+		procedure write (net_cursor : in et_schematic.pac_nets.cursor) is begin
 			log (text => "net " & et_general.to_string (key (net_cursor)), level => log_threshold + 1);
 			section_mark (section_net, HEADER);
 

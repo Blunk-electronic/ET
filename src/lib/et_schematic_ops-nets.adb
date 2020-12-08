@@ -111,9 +111,9 @@ package body et_schematic_ops.nets is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use et_schematic.type_nets;
-		net_cursor_old : type_nets.cursor; -- points to the old net
-		net_cursor_new : type_nets.cursor; -- points to the new net
+		use et_schematic.pac_nets;
+		net_cursor_old : pac_nets.cursor; -- points to the old net
+		net_cursor_new : pac_nets.cursor; -- points to the new net
 
 		procedure create_net (
 		-- Creates a new empty net named net_name_after. 
@@ -347,13 +347,13 @@ package body et_schematic_ops.nets is
 		net_cursor_new := locate_net (module_cursor, net_name_after);		
 
 		-- issue error if old net does not exist:
-		if net_cursor_old = type_nets.no_element then
+		if net_cursor_old = pac_nets.no_element then
 			net_not_found (net_name_before);
 		end if;
 
 		-- if there is no net named net_name_after, notify operator about a new
 		-- net being created. 
-		if net_cursor_new = type_nets.no_element then
+		if net_cursor_new = pac_nets.no_element then
 			log (text => "creating new net " & to_string (net_name_after), level => log_threshold + 1);
 
 			update_element (
@@ -410,8 +410,8 @@ package body et_schematic_ops.nets is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use et_schematic.type_nets;
-		net_cursor : type_nets.cursor; -- points to the net
+		use et_schematic.pac_nets;
+		net_cursor : pac_nets.cursor; -- points to the net
 
 		use et_schematic.pac_strands;
 		
@@ -533,7 +533,7 @@ package body et_schematic_ops.nets is
 		net_cursor := locate_net (module_cursor, net_name);
 
 		-- issue error if net does not exist:
-		if net_cursor = type_nets.no_element then
+		if net_cursor = pac_nets.no_element then
 			net_not_found (net_name);
 		end if;
 
@@ -579,8 +579,8 @@ package body et_schematic_ops.nets is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use et_schematic.type_nets;
-		net_cursor : type_nets.cursor; -- points to the net
+		use et_schematic.pac_nets;
+		net_cursor : pac_nets.cursor; -- points to the net
 
 		use et_schematic.pac_strands;
 
@@ -694,7 +694,7 @@ package body et_schematic_ops.nets is
 		net_cursor := locate_net (module_cursor, net_name);
 
 		-- issue error if net does not exist:
-		if net_cursor = type_nets.no_element then
+		if net_cursor = pac_nets.no_element then
 			net_not_found (net_name);
 		end if;
 
@@ -947,8 +947,8 @@ package body et_schematic_ops.nets is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use et_schematic.type_nets;
-		net_cursor : type_nets.cursor; -- points to the net
+		use et_schematic.pac_nets;
+		net_cursor : pac_nets.cursor; -- points to the net
 
 		use et_schematic.pac_strands;
 
@@ -1360,7 +1360,7 @@ package body et_schematic_ops.nets is
 		net_cursor := locate_net (module_cursor, net_name);
 
 		-- issue error if net does not exist:
-		if net_cursor = type_nets.no_element then
+		if net_cursor = pac_nets.no_element then
 			net_not_found (net_name);
 		end if;
 
@@ -1383,14 +1383,14 @@ package body et_schematic_ops.nets is
 		nets : type_net_names.list; -- to be returned
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
-		use et_schematic.type_nets;
-		net_cursor : type_nets.cursor; -- points to the net
+		use et_schematic.pac_nets;
+		net_cursor : pac_nets.cursor; -- points to the net
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
 
-			procedure query_nets (net_cursor : in type_nets.cursor) is
+			procedure query_nets (net_cursor : in pac_nets.cursor) is
 				use pac_strands;
 				net : type_net := element (net_cursor);
 
@@ -1469,13 +1469,13 @@ package body et_schematic_ops.nets is
 
 	procedure insert_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in out type_nets.cursor;
+		net_cursor		: in out pac_nets.cursor;
 		sheet			: in type_sheet;
 		net_name		: in pac_net_name.bounded_string;
 		segment_new		: in et_schematic.type_net_segment;
 		log_threshold	: in type_log_level)
 	is 
-		use et_schematic.type_nets;
+		use et_schematic.pac_nets;
 		segment : type_net_segment := segment_new;
 		point : et_coordinates.type_position;
 
@@ -1990,14 +1990,14 @@ package body et_schematic_ops.nets is
 					-- by segment_new.
 					if not dead_end (strand_at_start) xor not dead_end (strand_at_end) then
 						if not dead_end (strand_at_start) then
-							type_nets.update_element (
+							pac_nets.update_element (
 								container	=> module.nets,
 								position	=> net_cursor,
 								process		=> extend_strand_start'access);
 						end if;
 
 						if not dead_end (strand_at_end) then
-							type_nets.update_element (
+							pac_nets.update_element (
 								container	=> module.nets,
 								position	=> net_cursor,
 								process		=> extend_strand_end'access);
@@ -2012,14 +2012,14 @@ package body et_schematic_ops.nets is
 
 						-- The new segment must first be attached to one of the
 						-- two strands.
-						type_nets.update_element (
+						pac_nets.update_element (
 							container	=> module.nets,
 							position	=> net_cursor,
 							process		=> extend_strand_start'access);
 						
 						-- Merge the two strands indicated by 
 						-- strand_at_start and strand_at_end:
-						type_nets.update_element (
+						pac_nets.update_element (
 							container	=> module.nets,
 							position	=> net_cursor,
 							process		=> merge_strands'access);
@@ -2037,7 +2037,7 @@ package body et_schematic_ops.nets is
 			else
 				-- A new strand must be created in the net.
 				-- The strand will contain the new segment:
-				type_nets.update_element (
+				pac_nets.update_element (
 					container	=> module.nets,
 					position	=> net_cursor,
 					process		=> create_strand'access);
@@ -2051,7 +2051,7 @@ package body et_schematic_ops.nets is
 		-- If no net named after net_name exists yet, notify operator that a 
 		-- new net will be created.
 		-- If the net already exists, extend it by the given net segment segment_new.
-		if net_cursor = type_nets.no_element then
+		if net_cursor = pac_nets.no_element then
 
 			-- net does not exist yet
 			log (text => "creating new net " & to_string (net_name), level => log_threshold);
@@ -2100,8 +2100,8 @@ package body et_schematic_ops.nets is
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use et_schematic.type_nets;
-		net_cursor : type_nets.cursor; -- points to the net
+		use et_schematic.pac_nets;
+		net_cursor : pac_nets.cursor; -- points to the net
 		segment : type_net_segment;
 
 	begin -- insert_net
@@ -2140,8 +2140,8 @@ package body et_schematic_ops.nets is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use et_schematic.type_nets;
-		net_cursor : type_nets.cursor; -- points to the net
+		use et_schematic.pac_nets;
+		net_cursor : pac_nets.cursor; -- points to the net
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
@@ -2155,7 +2155,7 @@ package body et_schematic_ops.nets is
 			end set;
 			
 		begin -- query_nets
-			type_nets.update_element (
+			pac_nets.update_element (
 				container	=> module.nets,
 				position	=> net_cursor,
 				process		=> set'access);
@@ -2174,7 +2174,7 @@ package body et_schematic_ops.nets is
 		-- locate the net
 		net_cursor := locate_net (module_cursor, net_name);
 
-		if net_cursor /= type_nets.no_element then
+		if net_cursor /= pac_nets.no_element then
 
 			update_element (
 				container	=> generic_modules,
@@ -2203,8 +2203,8 @@ package body et_schematic_ops.nets is
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_nets;
-			net_cursor : type_nets.cursor := module.nets.first;
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
@@ -2540,7 +2540,7 @@ package body et_schematic_ops.nets is
 			end query_strands;
 			
 		begin -- query_nets
-			while (not segment_found) and net_cursor /= type_nets.no_element loop
+			while (not segment_found) and net_cursor /= pac_nets.no_element loop
 
 				update_element (
 					container	=> module.nets,
@@ -2582,8 +2582,8 @@ package body et_schematic_ops.nets is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
-		use et_schematic.type_nets;
-		net_cursor : type_nets.cursor; -- points to the net
+		use et_schematic.pac_nets;
+		net_cursor : pac_nets.cursor; -- points to the net
 
 		function no_label_placed return string is begin
 			return (et_coordinates.to_string (position => segment_position) & " !" &
@@ -2769,8 +2769,8 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use type_nets;
-			net_cursor : type_nets.cursor := module.nets.first;
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
@@ -2832,7 +2832,7 @@ package body et_schematic_ops.nets is
 			end query_strands;
 			
 		begin -- query_nets
-			while not label_found and net_cursor /= type_nets.no_element loop
+			while not label_found and net_cursor /= pac_nets.no_element loop
 				update_element (
 					container	=> module.nets,
 					position	=> net_cursor,
@@ -2875,10 +2875,10 @@ package body et_schematic_ops.nets is
 		return type_stub is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
-		net_cursor : type_nets.cursor; -- points to the net
+		net_cursor : pac_nets.cursor; -- points to the net
 		
 		use et_coordinates;
-		use type_nets;
+		use pac_nets;
 		use pac_strands;
 
 		ports : type_ports;

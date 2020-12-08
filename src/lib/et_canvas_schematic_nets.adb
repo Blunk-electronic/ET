@@ -149,7 +149,7 @@ package body et_canvas_schematic_nets is
 		return pac_net_name.bounded_string
 	is
 		net : pac_net_name.bounded_string; -- like N$56
-		cursor : et_schematic.type_nets.cursor;
+		cursor : et_schematic.pac_nets.cursor;
 
 		-- This flag goes true once a suitable net
 		-- name has been found:
@@ -164,7 +164,7 @@ package body et_canvas_schematic_nets is
 			net := to_anonymous_net_name (i); -- N$1, N$2, ...
 			cursor := locate_net (module, net);
 
-			if cursor = et_schematic.type_nets.no_element then -- not located
+			if cursor = et_schematic.pac_nets.no_element then -- not located
 				candiate_found := true;
 				exit;
 			end if;
@@ -217,7 +217,7 @@ package body et_canvas_schematic_nets is
 		net_names_differ : boolean := false;
 		
 		procedure query_segment (c : in pac_proposed_segments.cursor) is 
-			use type_nets;
+			use pac_nets;
 			use pac_net_name;
 			
 			s : type_selected_segment := element (c);
@@ -277,7 +277,7 @@ package body et_canvas_schematic_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
 		is
-			net_cursor : type_nets.cursor := module.nets.first;
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
@@ -331,7 +331,7 @@ package body et_canvas_schematic_nets is
 			end query_strands;
 			
 		begin -- query_nets
-			while net_cursor /= type_nets.no_element loop
+			while net_cursor /= pac_nets.no_element loop
 
 				query_element (
 					position	=> net_cursor,
@@ -462,8 +462,8 @@ package body et_canvas_schematic_nets is
 		segments_at_start_point : pac_proposed_segments.list;
 		segments_at_end_point	: pac_proposed_segments.list;
 
-		use et_schematic.type_nets;
-		net_cursor	: et_schematic.type_nets.cursor;
+		use et_schematic.pac_nets;
+		net_cursor	: et_schematic.pac_nets.cursor;
 
 		use et_general.pac_net_name;
 		net_name_auto_generated	: pac_net_name.bounded_string; -- N$234
@@ -984,7 +984,7 @@ package body et_canvas_schematic_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
 		is
-			net_cursor : type_nets.cursor := module.nets.first;
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
@@ -1077,7 +1077,7 @@ package body et_canvas_schematic_nets is
 			end query_strands;
 			
 		begin -- query_nets
-			while net_cursor /= type_nets.no_element loop
+			while net_cursor /= pac_nets.no_element loop
 
 				query_element (
 					position	=> net_cursor,
@@ -1121,7 +1121,7 @@ package body et_canvas_schematic_nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			net_cursor : type_nets.cursor := module.nets.first;
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
@@ -1180,7 +1180,7 @@ package body et_canvas_schematic_nets is
 			end query_strands;
 			
 		begin -- query_nets
-			while not label_found and net_cursor /= type_nets.no_element loop
+			while not label_found and net_cursor /= pac_nets.no_element loop
 
 				update_element (
 					container	=> module.nets,

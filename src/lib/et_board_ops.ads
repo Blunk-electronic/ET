@@ -220,7 +220,7 @@ package et_board_ops is
 	-- Draws a named track line.
 	-- Assumes that module_cursor and net_cursor point to existing objects.
 		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
+		net_cursor		: in et_schematic.pac_nets.cursor; -- reset_n
 		line			: in et_pcb.type_copper_line;
 		log_threshold	: in type_log_level);
 

@@ -52,7 +52,7 @@ procedure draw_conductors (
 	context : in type_draw_context) is
 
 	use et_schematic;
-	use et_schematic.type_nets;
+	use et_schematic.pac_nets;
 	
 	use et_general;
 	use et_terminals.pac_shapes;	
@@ -352,7 +352,7 @@ procedure draw_conductors (
 		
 	end query_via;
 	
-	procedure query_net (n : in type_nets.cursor) is begin
+	procedure query_net (n : in pac_nets.cursor) is begin
 		is_signal := true;
 		net_name := key (n);
 		net_class := element (n).class;
