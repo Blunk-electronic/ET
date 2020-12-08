@@ -59,14 +59,14 @@ package et_canvas_schematic_nets is
 
 	use type_nets;
 	use type_strands;
-	use type_net_segments;
+	use pac_net_segments;
 
 	-- Whenever a segment is selected via the GUI, we store its
 	-- parent net, strand and the segment itself via this type:
 	type type_selected_segment is tagged record
 		net		: type_nets.cursor;
 		strand	: type_strands.cursor;
-		segment	: type_net_segments.cursor;
+		segment	: pac_net_segments.cursor;
 	end record;
 
 	-- Deletes a selected segment of a net.

@@ -274,9 +274,9 @@ package body et_schematic_ops is
 						use et_coordinates;
 
 						procedure query_segments (strand : in out type_strand) is
-							use type_net_segments;
+							use pac_net_segments;
 
-							procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
+							procedure query_segment (segment_cursor : in pac_net_segments.cursor) is 
 								use pac_device_ports;
 
 								procedure query_ports (segment : in out type_net_segment) is
@@ -995,8 +995,8 @@ package body et_schematic_ops is
 					port_processed : boolean;
 					
 					procedure query_segments (strand : in out type_strand) is
-						use type_net_segments;
-						segment_cursor : type_net_segments.cursor := strand.segments.first;
+						use pac_net_segments;
+						segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 						procedure change_segment (segment : in out type_net_segment) is
 						begin -- change_segment
@@ -1037,12 +1037,12 @@ package body et_schematic_ops is
 
 					begin -- query_segments
 						-- On the first segment, where the port sits on, this loop ends prematurely.
-						while not port_processed and segment_cursor /= type_net_segments.no_element loop
+						while not port_processed and segment_cursor /= pac_net_segments.no_element loop
 
 							log_indentation_up;
 							log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 							
-							type_net_segments.update_element (
+							pac_net_segments.update_element (
 								container	=> strand.segments,
 								position	=> segment_cursor,
 								process		=> change_segment'access);
@@ -1598,9 +1598,9 @@ package body et_schematic_ops is
 -- 					drag_processed : boolean;
 -- 					
 -- 					procedure query_segments (strand : in out type_strand) is
--- 						use type_net_segments;
+-- 						use pac_net_segments;
 -- 
--- 						procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
+-- 						procedure query_segment (segment_cursor : in pac_net_segments.cursor) is 
 -- 
 -- 							procedure change_segment (segment : in out type_net_segment) is 
 -- 							-- Changes the position of start or end point of a segment according to the drag point.
@@ -1755,9 +1755,9 @@ package body et_schematic_ops is
 				strand_cursor : type_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in type_strand) is
-					use type_net_segments;
+					use pac_net_segments;
 
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure probe_segment (segment : in type_net_segment) is begin
 						-- if place is a start point of a segment
@@ -1774,7 +1774,7 @@ package body et_schematic_ops is
 					end probe_segment;
 					
 				begin -- query_segments
-					while not segment_found and segment_cursor /= type_net_segments.no_element loop
+					while not segment_found and segment_cursor /= pac_net_segments.no_element loop
 						query_element (
 							position	=> segment_cursor,
 							process		=> probe_segment'access);
@@ -2067,9 +2067,9 @@ package body et_schematic_ops is
 						use et_coordinates;
 
 						procedure query_segments (strand : in out type_strand) is
-							use type_net_segments;
+							use pac_net_segments;
 
-							procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
+							procedure query_segment (segment_cursor : in pac_net_segments.cursor) is 
 								use pac_device_ports;
 
 								procedure query_ports (segment : in out type_net_segment) is
@@ -3555,8 +3555,8 @@ package body et_schematic_ops is
 					strand_cursor : type_strands.cursor := net.strands.first;
 
 					procedure query_segments (strand : in out type_strand) is
-						use type_net_segments;
-						segment_cursor : type_net_segments.cursor := strand.segments.first;
+						use pac_net_segments;
+						segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 						procedure change_segment (segment : in out type_net_segment) is
 							use et_netlists;
@@ -3593,10 +3593,10 @@ package body et_schematic_ops is
 						log_indentation_up;
 
 						-- On the first segment, where the port sits on, this loop ends prematurely.
-						while not port_processed and segment_cursor /= type_net_segments.no_element loop
+						while not port_processed and segment_cursor /= pac_net_segments.no_element loop
 							log (text => "probing " & to_string (segment_cursor), level => log_threshold + 4);
 							
-							type_net_segments.update_element (
+							pac_net_segments.update_element (
 								container	=> strand.segments,
 								position	=> segment_cursor,
 								process		=> change_segment'access);
@@ -3777,8 +3777,8 @@ package body et_schematic_ops is
 				strand_cursor : type_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out type_strand) is
-					use type_net_segments;
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					use pac_net_segments;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure query_ports (segment : in out type_net_segment) is
 						use et_netlists;
@@ -3815,9 +3815,9 @@ package body et_schematic_ops is
 					end query_ports;
 					
 				begin -- query_segments
-					while not all_ports_deleted and segment_cursor /= type_net_segments.no_element loop
+					while not all_ports_deleted and segment_cursor /= pac_net_segments.no_element loop
 
-						type_net_segments.update_element (
+						pac_net_segments.update_element (
 							container	=> strand.segments,
 							position	=> segment_cursor,
 							process		=> query_ports'access);
@@ -4108,9 +4108,9 @@ package body et_schematic_ops is
 				drag_processed : boolean := false;
 				
 				procedure query_segments (strand : in out type_strand) is
-					use type_net_segments;
+					use pac_net_segments;
 
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure change_segment (segment : in out type_net_segment) is 
 					-- Changes the position of start or end point of a segment according to the drag point.
@@ -4158,7 +4158,7 @@ package body et_schematic_ops is
 					-- Probe all segments of strand for port_before. This loop must not
 					-- abort even if drag_processed goes true. Reason: All segements
 					-- meeting here must be dragged.
-					while segment_cursor /= type_net_segments.no_element loop
+					while segment_cursor /= pac_net_segments.no_element loop
 
 						log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 						
@@ -4714,8 +4714,8 @@ package body et_schematic_ops is
 				strand_cursor : type_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out type_strand) is
-					use type_net_segments;
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					use pac_net_segments;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure change_segment (segment : in out type_net_segment) is
 					begin
@@ -4751,10 +4751,10 @@ package body et_schematic_ops is
 					log_indentation_up;
 
 					-- On the first segment, where the port sits on, this loop ends prematurely.
-					while not port_processed and segment_cursor /= type_net_segments.no_element loop
+					while not port_processed and segment_cursor /= pac_net_segments.no_element loop
 						log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 						
-						type_net_segments.update_element (
+						pac_net_segments.update_element (
 							container	=> strand.segments,
 							position	=> segment_cursor,
 							process		=> change_segment'access);
@@ -4995,8 +4995,8 @@ package body et_schematic_ops is
 				strand_cursor : type_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out type_strand) is
-					use type_net_segments;
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					use pac_net_segments;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure change_segment (segment : in out type_net_segment) is
 						use pac_submodule_ports;
@@ -5018,10 +5018,10 @@ package body et_schematic_ops is
 					log_indentation_up;
 
 					-- On the first segment, where the port sits on, this loop ends prematurely.
-					while not port_processed and segment_cursor /= type_net_segments.no_element loop
+					while not port_processed and segment_cursor /= pac_net_segments.no_element loop
 						log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 						
-						type_net_segments.update_element (
+						pac_net_segments.update_element (
 							container	=> strand.segments,
 							position	=> segment_cursor,
 							process		=> change_segment'access);
@@ -5374,9 +5374,9 @@ package body et_schematic_ops is
 				drag_processed : boolean := false;
 				
 				procedure query_segments (strand : in out type_strand) is
-					use type_net_segments;
+					use pac_net_segments;
 
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure change_segment (segment : in out type_net_segment) is 
 					-- Changes the position of start or end point of a segment according to the drag point.
@@ -5424,7 +5424,7 @@ package body et_schematic_ops is
 					-- Probe all segments of strand for pos_before. This loop must not
 					-- abort even if drag_processed goes true. Reason: All segements
 					-- meeting here must be dragged.
-					while segment_cursor /= type_net_segments.no_element loop
+					while segment_cursor /= pac_net_segments.no_element loop
 
 						log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 						
@@ -5773,8 +5773,8 @@ package body et_schematic_ops is
 				strand_cursor : type_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out type_strand) is
-					use type_net_segments;
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					use pac_net_segments;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure change_segment (segment : in out type_net_segment) is
 						use pac_module_instance_name;
@@ -5792,10 +5792,10 @@ package body et_schematic_ops is
 				begin -- query_segments
 					log_indentation_up;
 
-					while segment_cursor /= type_net_segments.no_element loop
+					while segment_cursor /= pac_net_segments.no_element loop
 						log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 						
-						type_net_segments.update_element (
+						pac_net_segments.update_element (
 							container	=> strand.segments,
 							position	=> segment_cursor,
 							process		=> change_segment'access);
@@ -9313,9 +9313,9 @@ package body et_schematic_ops is
 					procedure query_strand (strand_cursor : in type_strands.cursor) is
 
 						procedure query_segments (strand : in type_strand) is
-							use type_net_segments;
+							use pac_net_segments;
 
-							procedure query_segment (segment_cursor : in type_net_segments.cursor) is
+							procedure query_segment (segment_cursor : in pac_net_segments.cursor) is
 
 								procedure query_ports_devices (segment : in type_net_segment) is
 									procedure query_port (port_cursor : in pac_device_ports.cursor) is 

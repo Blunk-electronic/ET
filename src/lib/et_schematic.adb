@@ -92,10 +92,10 @@ package body et_schematic is
 		return type_net_label_direction'value (direction);
 	end;
 	
-	function to_string (segment : in type_net_segments.cursor) return string is
+	function to_string (segment : in pac_net_segments.cursor) return string is
 	-- Returns a string that tells about start and end coordinates of the net segment.
 		use et_coordinates;
-		use type_net_segments;
+		use pac_net_segments;
 	begin
 		return ("segment start" & 
 			to_string (point => element (segment).start_point) &
@@ -104,10 +104,10 @@ package body et_schematic is
 			);
 	end to_string;
 
-	function segment_orientation (segment : in type_net_segments.cursor) 
+	function segment_orientation (segment : in pac_net_segments.cursor) 
 		return type_net_segment_orientation is
 		use et_coordinates;
-		use type_net_segments;
+		use pac_net_segments;
 		
 		result : type_net_segment_orientation;
 		
@@ -130,17 +130,17 @@ package body et_schematic is
 
 	function get_first_segment (
 		strand_cursor	: in type_strands.cursor)
-		return type_net_segments.cursor
+		return pac_net_segments.cursor
 	is
 		use type_strands;
-		segment_cursor : type_net_segments.cursor; -- to be returned
+		segment_cursor : pac_net_segments.cursor; -- to be returned
 
 		procedure query_segments (strand : in type_strand) is
-			use type_net_segments;
+			use pac_net_segments;
 
 			segment_position : type_point := far_upper_right;
 			
-			procedure query_segment (c : in type_net_segments.cursor) is begin
+			procedure query_segment (c : in pac_net_segments.cursor) is begin
 				if element (c).start_point < segment_position then
 					segment_position := element (c).start_point;
 					segment_cursor := c;
@@ -169,13 +169,13 @@ package body et_schematic is
 	-- Leaves the sheet number of the strand as it is.
 		point_1, point_2 : type_point;
 	
-		use type_net_segments;
+		use pac_net_segments;
 		use et_string_processing;
 		use et_coordinates;
 
 		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
 
-		procedure query_strand (cursor : in type_net_segments.cursor) is begin
+		procedure query_strand (cursor : in pac_net_segments.cursor) is begin
 			-- Test start point of segment. 
 			-- if closer to orign than point_1 keep start point
 			point_2	:= type_point (element (cursor).start_point);
@@ -300,12 +300,12 @@ package body et_schematic is
 	end to_label_rotation;
 	
 	function stub_direction (
-		segment	: in type_net_segments.cursor;
+		segment	: in pac_net_segments.cursor;
 		point	: in et_coordinates.pac_geometry_sch.type_point)
 		return type_stub is
 
 		use et_coordinates;
-		use type_net_segments;
+		use pac_net_segments;
 
 		is_stub : boolean := true;
 		direction : type_stub_direction;
@@ -359,10 +359,10 @@ package body et_schematic is
 
 		use type_nets;
 		use type_strands;
-		use type_net_segments;
+		use pac_net_segments;
 		use et_string_processing;
 
-		procedure query_segments (segment_cursor : in type_net_segments.cursor) is
+		procedure query_segments (segment_cursor : in pac_net_segments.cursor) is
 			use pac_device_ports;
 
 			use et_netlists;

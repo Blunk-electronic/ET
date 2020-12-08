@@ -51,13 +51,13 @@ package body et_schematic_ops.nets is
 
 	function between_start_and_end_point (
 		point 		: in type_point;
-		segment 	: in type_net_segments.cursor;
+		segment 	: in pac_net_segments.cursor;
 		catch_zone	: in type_catch_zone := zero)
 		return boolean 
 	is
 		use et_schematic.pac_shapes;
 		dist : type_distance_point_line;
-		use type_net_segments;
+		use pac_net_segments;
 	begin
 		dist := distance_point_line (
 			point 		=> point,
@@ -74,13 +74,13 @@ package body et_schematic_ops.nets is
 
 	function on_segment (
 		point 		: in type_point;
-		segment 	: in type_net_segments.cursor;
+		segment 	: in pac_net_segments.cursor;
 		catch_zone	: in type_catch_zone := zero)
 		return boolean 
 	is
 		use et_schematic.pac_shapes;
 		dist : type_distance_point_line;
-		use type_net_segments;
+		use pac_net_segments;
 	begin
 		dist := distance_point_line (
 			point 		=> point,
@@ -600,12 +600,12 @@ package body et_schematic_ops.nets is
 				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
 				segment_found, strand_found : boolean := false;
 
-				use type_net_segments;				
+				use pac_net_segments;				
 				
 				procedure query_segments (strand : in out type_strand) is
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 				begin
-					while segment_cursor /= type_net_segments.no_element loop
+					while segment_cursor /= pac_net_segments.no_element loop
 
 						-- If segment crosses the given x/y position (in place),
 						-- delete the segment.
@@ -968,11 +968,11 @@ package body et_schematic_ops.nets is
 				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
 				segment_found, strand_found : boolean := false;
 
-				use type_net_segments;				
+				use pac_net_segments;				
 				
 				procedure query_segments (strand : in out type_strand) is
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
-					segment_cursor_target : type_net_segments.cursor;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+					segment_cursor_target : pac_net_segments.cursor;
 					target_segment_before : type_net_segment;
 
 					zone : type_line_zone;
@@ -1208,7 +1208,7 @@ package body et_schematic_ops.nets is
 					
 				begin -- query_segments
 					-- MOVE TARGETED SEGMENT
-					while segment_cursor /= type_net_segments.no_element loop
+					while segment_cursor /= pac_net_segments.no_element loop
 
 						-- If segment crosses the given x/y position (in point_of_attack) then
 						-- the segment has been found:
@@ -1242,7 +1242,7 @@ package body et_schematic_ops.nets is
 								target_segment_before := element (segment_cursor);
 
 								-- move the targeted segment
-								et_schematic.type_net_segments.update_element (
+								et_schematic.pac_net_segments.update_element (
 									container	=> strand.segments,
 									position	=> segment_cursor,
 									process		=> move_targeted_segment'access);
@@ -1269,10 +1269,10 @@ package body et_schematic_ops.nets is
 					-- Iterate in segments. skip targeted segment because it has been dragged
 					-- already (see above).
 					segment_cursor := strand.segments.first; -- reset segment cursor
-					while segment_cursor /= type_net_segments.no_element loop
+					while segment_cursor /= pac_net_segments.no_element loop
 						if segment_cursor /= segment_cursor_target then
 
-							et_schematic.type_net_segments.update_element (
+							et_schematic.pac_net_segments.update_element (
 								container	=> strand.segments,
 								position	=> segment_cursor,
 								process		=> move_connected_segment'access);
@@ -1400,10 +1400,10 @@ package body et_schematic_ops.nets is
 				strand_cursor : type_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in type_strand) is
-					use type_net_segments;
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					use pac_net_segments;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 				begin -- query_segments
-					while segment_cursor /= type_net_segments.no_element loop
+					while segment_cursor /= pac_net_segments.no_element loop
 						log (text => "segment " & to_string (segment_cursor), level => log_threshold + 2);
 
 						if on_line (
@@ -1590,7 +1590,7 @@ package body et_schematic_ops.nets is
 
 			
 			-- insert segment in strand
-			type_net_segments.append (
+			pac_net_segments.append (
 				container	=> strand.segments,
 				new_item	=> segment);
 
@@ -1679,10 +1679,10 @@ package body et_schematic_ops.nets is
 					
 					procedure query_segments (strand : in type_strand) is
 					-- Iterate segments until first match.
-						use type_net_segments;
-						segment_cursor : type_net_segments.cursor := strand.segments.first;
+						use pac_net_segments;
+						segment_cursor : pac_net_segments.cursor := strand.segments.first;
 					begin
-						while segment_cursor /= type_net_segments.no_element loop
+						while segment_cursor /= pac_net_segments.no_element loop
 
 							-- Test if place sits on segment.
 							if on_line (
@@ -1750,7 +1750,7 @@ package body et_schematic_ops.nets is
 			end which_strand;
 
 			procedure append_segment (strand : in out type_strand) is begin
-				type_net_segments.append (strand.segments, segment);
+				pac_net_segments.append (strand.segments, segment);
 				set_strand_position (strand);
 			end append_segment;
 			
@@ -1785,7 +1785,7 @@ package body et_schematic_ops.nets is
 				strand : type_strand;
 			begin				
 				-- insert segment in strand
-				type_net_segments.append (
+				pac_net_segments.append (
 					container	=> strand.segments,
 					new_item	=> segment);
 
@@ -1812,14 +1812,14 @@ package body et_schematic_ops.nets is
 
 				-- Get the segments of the strand that will be removed. These segments will
 				-- move into the final strand.
-				segments_source : type_net_segments.list := element (strand_at_start.cursor).segments;
+				segments_source : pac_net_segments.list := element (strand_at_start.cursor).segments;
 				
 				procedure merge (strand : in out type_strand) is begin
 				-- Appends to the segments of strand at start point
 				-- the segments_source.
-					type_net_segments.splice (
+					pac_net_segments.splice (
 						target	=> strand.segments,
-						before	=> type_net_segments.no_element, -- default, means just appending after target
+						before	=> pac_net_segments.no_element, -- default, means just appending after target
 						source	=> segments_source);
 
 					-- update strand position
@@ -2215,8 +2215,8 @@ package body et_schematic_ops.nets is
 				strand_cursor : type_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in out type_strand) is
-					use type_net_segments;
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					use pac_net_segments;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 					old_segment : type_net_segment; -- here a backup of the old segment lives
 					old_segment_orientation : type_net_segment_orientation; -- horizontal, vertical, sloped
 					
@@ -2429,12 +2429,12 @@ package body et_schematic_ops.nets is
 						update_submodule_ports;
 						update_netchanger_ports;
 						
-						type_net_segments.insert (
+						pac_net_segments.insert (
 							container	=> strand.segments,
 							before		=> segment_cursor,
 							new_item	=> segment_1);
 
-						type_net_segments.insert (
+						pac_net_segments.insert (
 							container	=> strand.segments,
 							before		=> segment_cursor,
 							new_item	=> segment_2);
@@ -2449,7 +2449,7 @@ package body et_schematic_ops.nets is
 					end;
 					
 				begin -- query_segments
-					while segment_cursor /= type_net_segments.no_element loop
+					while segment_cursor /= pac_net_segments.no_element loop
 
 						-- The junction can be placed at the start or end point of a segment OR
 						-- between start and end point of a segment. If none of these conditions
@@ -2610,9 +2610,9 @@ package body et_schematic_ops.nets is
 				strand_cursor : type_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in out type_strand) is
-					use type_net_segments;
+					use pac_net_segments;
 
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure attach_label (segment : in out type_net_segment) is 
 						use pac_net_labels;
@@ -2663,7 +2663,7 @@ package body et_schematic_ops.nets is
 					end attach_label;
 					
 				begin -- query_segments
-					while not segment_found and segment_cursor /= type_net_segments.no_element loop
+					while not segment_found and segment_cursor /= pac_net_segments.no_element loop
 
 						if on_line (
 							point 	=> type_point (segment_position),
@@ -2780,9 +2780,9 @@ package body et_schematic_ops.nets is
 				strand_cursor : type_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in out type_strand) is
-					use type_net_segments;
+					use pac_net_segments;
 
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure query_labels (segment : in out type_net_segment) is 
 						use pac_net_labels;
@@ -2803,7 +2803,7 @@ package body et_schematic_ops.nets is
 					end query_labels;
 					
 				begin -- query_segments
-					while not label_found and segment_cursor /= type_net_segments.no_element loop
+					while not label_found and segment_cursor /= pac_net_segments.no_element loop
 
 						update_element (
 							container	=> strand.segments,
@@ -2893,8 +2893,8 @@ package body et_schematic_ops.nets is
 			strand_cursor : type_strands.cursor := net.strands.first;
 
 			procedure query_segments (strand : in type_strand) is
-				use type_net_segments;
-				segment_cursor : type_net_segments.cursor := strand.segments.first;
+				use pac_net_segments;
+				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 				segment_counter : natural := 0;
 
@@ -2914,7 +2914,7 @@ package body et_schematic_ops.nets is
 				end probe_direction;
 					
 			begin -- query_segments
-				while segment_cursor /= type_net_segments.no_element loop
+				while segment_cursor /= pac_net_segments.no_element loop
 					
 					-- The given position must be a start or end point of a segment,
 					if element (segment_cursor).start_point = type_point (position) then

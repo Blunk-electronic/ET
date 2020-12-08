@@ -286,14 +286,14 @@ package body et_canvas_schematic_nets is
 				strand_cursor : type_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in type_strand) is
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 				begin
 					log (text => "probing strand at" & to_string (strand.position),
 						 level => log_threshold + 1);
 					
 					log_indentation_up;
 					
-					while segment_cursor /= type_net_segments.no_element loop
+					while segment_cursor /= pac_net_segments.no_element loop
 						log (text => "probing segment" & to_string (element (segment_cursor)),
 							level => log_threshold + 1);
 						
@@ -399,7 +399,7 @@ package body et_canvas_schematic_nets is
 	
 	procedure clarify_net_segment is
 		use et_schematic;
-		s : type_net_segments.cursor;
+		s : pac_net_segments.cursor;
 		n : pac_net_name.bounded_string;
 	begin
 		-- On every call of this procedure we must advance from one
@@ -993,7 +993,7 @@ package body et_canvas_schematic_nets is
 				strand_cursor : type_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in type_strand) is
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure query_labels (segment : in type_net_segment) is
 						use pac_net_labels;
@@ -1052,7 +1052,7 @@ package body et_canvas_schematic_nets is
 					
 					log_indentation_up;
 					
-					while segment_cursor /= type_net_segments.no_element loop
+					while segment_cursor /= pac_net_segments.no_element loop
 						log (text => "probing segment" & to_string (element (segment_cursor)),
 							level => log_threshold + 1);
 
@@ -1130,7 +1130,7 @@ package body et_canvas_schematic_nets is
 				strand_cursor : type_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in out type_strand) is
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure query_labels (segment : in out type_net_segment) is 
 						c : pac_net_labels.cursor := segment.labels.first;
@@ -1151,7 +1151,7 @@ package body et_canvas_schematic_nets is
 					end query_labels;
 					
 				begin -- query_segments
-					while not label_found and segment_cursor /= type_net_segments.no_element loop
+					while not label_found and segment_cursor /= pac_net_segments.no_element loop
 
 						update_element (
 							container	=> strand.segments,
@@ -1261,7 +1261,7 @@ package body et_canvas_schematic_nets is
 		use et_schematic;
 		use pac_net_labels;
 
-		s : type_net_segments.cursor;
+		s : pac_net_segments.cursor;
 		n : pac_net_name.bounded_string;
 
 		function info (c : in pac_net_labels.cursor) return string is 

@@ -531,9 +531,9 @@ package body et_canvas_schematic_units is
 				use et_schematic.type_strands;
 
 				procedure query_strand (s : in type_strands.cursor) is
-					use et_schematic.type_net_segments;
+					use et_schematic.pac_net_segments;
 
-					procedure query_segment (g : in type_net_segments.cursor) is
+					procedure query_segment (g : in pac_net_segments.cursor) is
 						use et_schematic.pac_shapes;
 					begin
 						log (text => to_string (element (g)));

@@ -345,9 +345,9 @@ package et_schematic is
 		ports_netchangers	: et_netlists.type_ports_netchanger.set;
 	end record;
 	
-	package type_net_segments is new doubly_linked_lists (type_net_segment);
+	package pac_net_segments is new doubly_linked_lists (type_net_segment);
 	
-	function to_string (segment : in type_net_segments.cursor) return string;
+	function to_string (segment : in pac_net_segments.cursor) return string;
 	-- Returns a string that tells about start and end coordinates of the net segment.
 
 	-- A net segment may run in those directions:
@@ -357,7 +357,7 @@ package et_schematic is
 		SLOPING);
 
 	-- Returns the orientation of a net segment.
-	function segment_orientation (segment : in type_net_segments.cursor) 
+	function segment_orientation (segment : in pac_net_segments.cursor) 
 		return type_net_segment_orientation;
 	
 	
@@ -369,7 +369,7 @@ package et_schematic is
 	-- NOTE: ET does not provide a name for a strand.
 	-- As a strand is part of a net, there is no need for individual strand names.
 		position	: et_coordinates.type_position; -- sheet and lowest x/y, rotation doesn't matter -> always zero
-		segments	: type_net_segments.list;
+		segments	: pac_net_segments.list;
 	end record;		
 	
 	procedure set_strand_position (strand : in out type_strand);
@@ -382,7 +382,7 @@ package et_schematic is
 	-- on the lowest x/y position of the given strand:
 	function get_first_segment (
 		strand_cursor	: in type_strands.cursor)
-		return type_net_segments.cursor;
+		return pac_net_segments.cursor;
 								   
 	type type_net is new type_net_base with record
 		strands		: type_strands.list;
@@ -435,7 +435,7 @@ package et_schematic is
 	-- - If point is right of a horizontal segment then then it is a stub that points to the right.
 	-- - If point is above of a vertical segment then then it is a stub that points up.
 	function stub_direction (
-		segment	: in type_net_segments.cursor;
+		segment	: in pac_net_segments.cursor;
 		point	: in et_coordinates.pac_geometry_sch.type_point)
 		return type_stub;
 		

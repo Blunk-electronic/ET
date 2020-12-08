@@ -52,7 +52,7 @@ package et_schematic_ops.nets is
 	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
 	-- the greater can be the distance of point from the segment.
 		point 		: in type_point;
-		segment 	: in type_net_segments.cursor;
+		segment 	: in pac_net_segments.cursor;
 		catch_zone	: in type_catch_zone := zero)
 		return boolean;
 
@@ -61,7 +61,7 @@ package et_schematic_ops.nets is
 	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
 	-- the greater can be the distance of point from the segment.
 		point 		: in type_point;
-		segment 	: in type_net_segments.cursor;
+		segment 	: in pac_net_segments.cursor;
 		catch_zone	: in type_catch_zone := zero)
 		return boolean;
 	

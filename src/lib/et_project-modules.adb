@@ -185,8 +185,8 @@ package body et_project.modules is
 				strand_cursor : type_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in type_strand) is
-					use type_net_segments;
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					use pac_net_segments;
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					procedure query_ports (segment : in type_net_segment) is 
 						use et_submodules;
@@ -205,7 +205,7 @@ package body et_project.modules is
 					end query_ports;
 					
 				begin -- query_segments
-					while result = false and segment_cursor /= type_net_segments.no_element loop
+					while result = false and segment_cursor /= pac_net_segments.no_element loop
 						
 						query_element (
 							position	=> segment_cursor,
@@ -268,8 +268,8 @@ package body et_project.modules is
 			strand_cursor : type_strands.cursor := net.strands.first;
 
 			procedure query_segments (strand : in type_strand) is
-				use type_net_segments;
-				segment_cursor : type_net_segments.cursor := strand.segments.first;
+				use pac_net_segments;
+				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 				procedure query_ports (segment : in type_net_segment) is 
 					use et_submodules;
@@ -302,7 +302,7 @@ package body et_project.modules is
 				end query_ports;
 				
 			begin -- query_segments
-				while result = false and segment_cursor /= type_net_segments.no_element loop
+				while result = false and segment_cursor /= pac_net_segments.no_element loop
 					
 					query_element (
 						position	=> segment_cursor,

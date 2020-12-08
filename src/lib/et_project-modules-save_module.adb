@@ -340,8 +340,8 @@ is
 			strand_cursor : type_strands.cursor := net.strands.first;
 
 			procedure query_segments (strand : in type_strand) is
-				use type_net_segments;
-				segment_cursor : type_net_segments.cursor := strand.segments.first;
+				use pac_net_segments;
+				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 				use pac_device_ports;
 				use pac_submodule_ports;
@@ -448,7 +448,7 @@ is
 
 			begin -- query_segments
 				section_mark (section_segments, HEADER);
-				while segment_cursor /= type_net_segments.no_element loop
+				while segment_cursor /= pac_net_segments.no_element loop
 					section_mark (section_segment, HEADER);
 
 					write (keyword => keyword_start, parameters => position (element (segment_cursor).start_point));

@@ -370,12 +370,12 @@ package body et_schematic_ops.units is
 					-- We must keep record of segments that have been dragged already.
 					-- Each time a segment has been dragged, it will be appended to
 					-- this list:
-					already_dragged_segments : type_net_segments.list;
+					already_dragged_segments : pac_net_segments.list;
 					
 					procedure query_segments (strand : in out type_strand) is
-						use type_net_segments;
+						use pac_net_segments;
 
-						procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
+						procedure query_segment (segment_cursor : in pac_net_segments.cursor) is 
 
 							-- Changes the position of start or end point of a segment 
 							-- according to the drag point:

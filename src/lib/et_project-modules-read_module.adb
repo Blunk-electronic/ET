@@ -487,7 +487,7 @@ is
 
 	strands : et_schematic.type_strands.list;
 	strand	: et_schematic.type_strand;
-	net_segments : et_schematic.type_net_segments.list;
+	net_segments : et_schematic.pac_net_segments.list;
 	net_segment	: et_schematic.type_net_segment;
 	
 	net_labels				: et_schematic.pac_net_labels.list;
@@ -3141,7 +3141,7 @@ is
 							strand.segments := net_segments;
 
 							-- clean up for next segment collection
-							et_schematic.type_net_segments.clear (net_segments);
+							et_schematic.pac_net_segments.clear (net_segments);
 							
 						when others => invalid_section;
 					end case;
@@ -3157,7 +3157,7 @@ is
 							net_junctions := (others => <>);
 							
 							-- insert segment in segment collection
-							et_schematic.type_net_segments.append (
+							et_schematic.pac_net_segments.append (
 								container	=> net_segments,
 								new_item	=> net_segment);
 
