@@ -38,7 +38,7 @@
 package body et_numbering is
 
 	function "<" (left, right : in type_module) return boolean is
-		use type_module_name;
+		use pac_module_name;
 		use type_module_instance_name;
 		result : boolean;
 	begin
@@ -61,7 +61,7 @@ package body et_numbering is
 			
 	function to_index_range (
 	-- Returns a string like "module 'templates/clock_generator' range 78 .. 133"
-		module_name	: in type_module_name.bounded_string;
+		module_name	: in pac_module_name.bounded_string;
 		index_range	: in type_index_range) return string is
 	begin
 		return ("module " & enclose_in_quotes (to_string (module_name)) &

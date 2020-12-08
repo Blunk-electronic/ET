@@ -96,11 +96,11 @@ package body et_submodules is
 	end;
 
 	function to_module_name (path : in type_submodule_path.bounded_string) 
-		return et_general.type_module_name.bounded_string is
-	-- Removes the file extension from given path and returns the module name.
+		return et_general.pac_module_name.bounded_string 
+	is
 		use et_general;
-		use type_module_name;
-		name : et_general.type_module_name.bounded_string;
+		use pac_module_name;
+		name : et_general.pac_module_name.bounded_string;
 	begin
 		name := to_module_name (remove_extension (to_string (path)));
 		return name;

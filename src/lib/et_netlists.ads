@@ -158,7 +158,7 @@ package et_netlists is
 	-- In the tree of modules, each module provides its
 	-- generic name, instance name and a list of its nets:
 	type type_module is record
-		generic_name	: type_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
+		generic_name	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
 		instance_name	: type_module_instance_name.bounded_string; -- OSC1
 		nets			: type_nets.map;
 	end record;
@@ -211,7 +211,7 @@ package et_netlists is
 	-- When searching global nets in submodules we need a type for a global net of a submodule
 	-- and a list thereof:
 	type type_global_net is record
-		--submodule	: type_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
+		--submodule	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
 		submodule	: type_modules.cursor;
 		net			: type_nets.cursor;
 	end record;
@@ -282,7 +282,7 @@ package et_netlists is
 	-- - The netlist file will be named after the module name and assembly variant.	
 	-- - Exports the netlist of the given module to the export/CAM directory.
 		modules			: in type_modules.tree;
-		module_name		: in type_module_name.bounded_string; -- motor_driver 
+		module_name		: in pac_module_name.bounded_string; -- motor_driver 
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)

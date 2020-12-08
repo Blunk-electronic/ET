@@ -69,7 +69,7 @@ package et_numbering is
 
 	function to_index_range (
 	-- Returns a string like "module 'templates/clock_generator' range 78 .. 133"
-		module_name	: in type_module_name.bounded_string;
+		module_name	: in pac_module_name.bounded_string;
 		index_range	: in type_index_range) return string;
 
 	function below (left, right : in type_index_range) return boolean;
@@ -79,7 +79,7 @@ package et_numbering is
 	-- Returns true if left index range is above right index range.		
 	
 	type type_module is record
-		name				: type_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
+		name				: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
 		instance			: type_module_instance_name.bounded_string; -- AMP_2, DRV1
 		device_names_offset	: type_name_index := type_name_index'first;	-- R88 turns to R1088
 	end record;

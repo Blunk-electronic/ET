@@ -749,7 +749,7 @@ procedure draw_nets (
 	end draw_segment_being_dragged_along_with_unit;
 	
 	procedure query_nets (
-		module_name	: in type_module_name.bounded_string;
+		module_name	: in pac_module_name.bounded_string;
 		module		: in type_module) is
 
 		-- This cursor points to the current net being drawn:

@@ -152,7 +152,7 @@ procedure draw_via_restrict (
 	end query_cutout;
 
 	procedure query_items (
-		module_name	: in type_module_name.bounded_string;
+		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module) is
 	begin
 		cairo.set_line_width (context.cr, type_view_coordinate (via_restrict_line_width));

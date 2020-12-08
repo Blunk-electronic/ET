@@ -62,18 +62,18 @@ package et_project.modules is
 	-- Submodule names are things like "templates/clock_generator" or
 	-- "$TEMPLATES/clock_generator" or "/home/user/templates/clock_generator":
 	package pac_generic_modules is new ordered_maps (
-		key_type		=> type_module_name.bounded_string, -- motor_driver (without extension *.mod)
-		"<"				=> type_module_name."<",
+		key_type		=> pac_module_name.bounded_string, -- motor_driver (without extension *.mod)
+		"<"				=> pac_module_name."<",
 		element_type	=> et_schematic.type_module,
 		"="				=> et_schematic."=");
 
 	generic_modules : pac_generic_modules.map;
 
 	-- Returns true if the module with the given name exists in container modules.
-	function exists (module : in type_module_name.bounded_string) return boolean;
+	function exists (module : in pac_module_name.bounded_string) return boolean;
 
 	-- Locates the given module in the global container "modules".
-	function locate_module (name : in type_module_name.bounded_string) -- motor_driver (without extension *.mod)
+	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
 		return pac_generic_modules.cursor;
 
 	
@@ -114,7 +114,7 @@ package et_project.modules is
 	-- with that name. 
 	procedure save_module (
 		module_cursor	: in pac_generic_modules.cursor;
-		save_as_name	: in type_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
+		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver_test, templates/clock_generator_test
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	
@@ -267,7 +267,7 @@ package et_project.modules is
 	-- name is "untitled". If the module name is something other
 	-- than "untitled" then the module file will also be created.
 	procedure create_module (
-		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level);
 
 	procedure save_module (
@@ -277,13 +277,13 @@ package et_project.modules is
 	-- the project, a warning will be issued and it will NOT be saved.
 	-- If the module is outside the project directory then it will not be touched.
 	-- If the module does not exist, a warning will be issued.
-		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure delete_module (
 	-- Deletes a generic module (from container generic_modules) and
 	-- the module file (*.mod) itself.
-		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	

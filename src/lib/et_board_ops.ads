@@ -71,7 +71,7 @@ package et_board_ops is
 	procedure move_board (
 	-- Moves the origin of the board to the given point (relative to the lower left 
 	-- corner of the drawing frame):
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
@@ -79,7 +79,7 @@ package et_board_ops is
 	procedure add_layer (
 	-- Adds a signal layer to the board.
 	-- Renumbers the signal layers.							
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
 		log_threshold	: in type_log_level);
 
@@ -96,13 +96,13 @@ package et_board_ops is
 	procedure delete_layer (
 	-- Deletes a signal layer in the board.
 	-- Renumbers the signal layers.							   
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_signal_layer;
 		log_threshold	: in type_log_level);
 
 	-- Adds a non-electric device to the board:
 	procedure add_device (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		package_model	: in et_packages.type_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
 		prefix			: in pac_device_prefix.bounded_string; -- FD
@@ -114,7 +114,7 @@ package et_board_ops is
 	procedure move_device (
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
@@ -123,7 +123,7 @@ package et_board_ops is
 	procedure rotate_device (
 	-- Rotates a device in the board layout.
 	-- Leaves x/y and face (top/bottom) as it is.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_pcb_coordinates.type_rotation; -- 90
@@ -131,13 +131,13 @@ package et_board_ops is
 
 	procedure delete_device (
 	-- Deletes a non-electric device in the board layout.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- FD1
 		log_threshold	: in type_log_level);
 
 	procedure rename_device (
 	-- Renames a non-electric device in the board layout.
-		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name_before	: in type_device_name; -- FD1
 		device_name_after	: in type_device_name; -- FD3
 		log_threshold		: in type_log_level);
@@ -146,7 +146,7 @@ package et_board_ops is
 	-- Flips a device in the board layout from top to bottom or vice versa.
 	-- Leaves x/y and rotation as it is.
 	-- Warns operator if device already on desired face of board.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level);
@@ -154,7 +154,7 @@ package et_board_ops is
 	procedure move_submodule (
 	-- Moves a submodule instance within the parent module layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in type_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
@@ -163,7 +163,7 @@ package et_board_ops is
 	procedure make_pick_and_place (
 	-- Exports a pick & place file from the given top module and assembly variant.
 	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 	
 	-- For laying out traces we need a type that provides for a terminal information about
@@ -191,7 +191,7 @@ package et_board_ops is
 
 	-- Sets the grid of the module.
 	procedure set_grid (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		grid			: in type_grid;
 		log_threshold	: in type_log_level);		
 
@@ -211,7 +211,7 @@ package et_board_ops is
 	
 	procedure draw_track_line (
 	-- Draws track line. If net_name is empty a freetrack will be drawn.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in et_pcb.type_copper_line;
 		log_threshold	: in type_log_level);
@@ -230,7 +230,7 @@ package et_board_ops is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
@@ -246,7 +246,7 @@ package et_board_ops is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
@@ -262,7 +262,7 @@ package et_board_ops is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.								  
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
@@ -277,7 +277,7 @@ package et_board_ops is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
@@ -289,7 +289,7 @@ package et_board_ops is
 	
 	procedure draw_track_arc (
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		arc				: in et_pcb.type_copper_arc;
 		log_threshold	: in type_log_level);
@@ -298,7 +298,7 @@ package et_board_ops is
 	-- Rips up the track segment of a net that crosses the given point in given layer.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_point; -- x/y
@@ -309,19 +309,19 @@ package et_board_ops is
 	
 	procedure draw_route_restrict_line (
 	-- Draws route restrict line.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in type_route_restrict_line;
 		log_threshold	: in type_log_level);
 
 	procedure draw_route_restrict_arc (
 	-- Draws a route restrict arc.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		arc				: in type_route_restrict_arc;
 		log_threshold	: in type_log_level);
 
 	procedure draw_route_restrict_circle (
 	-- Draws a route restrict circle.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in type_route_restrict_circle;
 		log_threshold	: in type_log_level);	
 
@@ -329,7 +329,7 @@ package et_board_ops is
 	-- Deletes the segment of route restrict that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
@@ -338,19 +338,19 @@ package et_board_ops is
 
 	procedure draw_via_restrict_line (
 	-- Draws a via restrict line.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in type_via_restrict_line;
 		log_threshold	: in type_log_level);
 
 	procedure draw_via_restrict_arc (
 	-- Draws a via restrict arc.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		arc				: in type_via_restrict_arc;
 		log_threshold	: in type_log_level);
 
 	procedure draw_via_restrict_circle (
 	-- Draws a via restrict circle.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in type_via_restrict_circle;
 		log_threshold	: in type_log_level);
 
@@ -358,7 +358,7 @@ package et_board_ops is
 	-- Deletes the segment of via restrict that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
@@ -368,19 +368,19 @@ package et_board_ops is
 
 	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in et_pcb.type_pcb_contour_line;
 		log_threshold	: in type_log_level);
 
 	procedure draw_outline_arc (
 	-- Draws an arc in the PCB outline.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		arc				: in et_pcb.type_pcb_contour_arc;
 		log_threshold	: in type_log_level);
 
 	procedure draw_outline_circle (
 	-- Draws a circle in the PCB outline.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in et_pcb.type_pcb_contour_circle;
 		log_threshold	: in type_log_level);
 
@@ -388,7 +388,7 @@ package et_board_ops is
 	-- Deletes the segment of the outline that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
@@ -397,21 +397,21 @@ package et_board_ops is
 
 	procedure draw_silk_screen_line (
 	-- Draws a line in the PCB silk_screen.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_silk_line;
 		log_threshold	: in type_log_level);
 
 	procedure draw_silk_screen_arc (
 	-- Draws an arc in the PCB silk_screen.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_silk_arc;
 		log_threshold	: in type_log_level);
 
 	procedure draw_silk_screen_circle (
 	-- Draws a circle in the PCB silk_screen.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;	
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level);
@@ -420,7 +420,7 @@ package et_board_ops is
 	-- Deletes the segment of the silk_screen that crosses the given point.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
@@ -430,21 +430,21 @@ package et_board_ops is
 -- ASSEMBLY DOCUMENTATION
 	procedure draw_assy_doc_line (
 	-- Draws a line in the assembly documentation.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_doc_line;
 		log_threshold	: in type_log_level);
 
 	procedure draw_assy_doc_arc (
 	-- Draws an arc in the assembly documentation.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_doc_arc;
 		log_threshold	: in type_log_level);
 
 	procedure draw_assy_doc_circle (
 	-- Draws a circle in the assembly documentation.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;	
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level);
@@ -453,7 +453,7 @@ package et_board_ops is
 	-- Deletes the segment of the assembly documentation that crosses the given point.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
@@ -462,21 +462,21 @@ package et_board_ops is
 -- KEEPOUT
 	procedure draw_keepout_line (
 	-- Draws a line in the keepout layer.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_keepout_line;
 		log_threshold	: in type_log_level);
 
 	procedure draw_keepout_arc (
 	-- Draws an arc in the keepout layer.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_keepout_arc;
 		log_threshold	: in type_log_level);
 
 	procedure draw_keepout_circle (
 	-- Draws a circle in the keepout layer.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;	
 		circle			: in type_fillable_circle_solid;
 		log_threshold	: in type_log_level);
@@ -485,7 +485,7 @@ package et_board_ops is
 	-- Deletes the segment in the keepout layer that crosses the given point.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
@@ -494,21 +494,21 @@ package et_board_ops is
 -- STOP MASK
 	procedure draw_stop_line (
 	-- Draws a line in the stop mask layer.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stop_line;
 		log_threshold	: in type_log_level);
 
 	procedure draw_stop_arc (
 	-- Draws an arc in the stop mask layer.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_stop_arc;		
 		log_threshold	: in type_log_level);
 
 	procedure draw_stop_circle (
 	-- Draws an circle in the stop mask layer.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level);
@@ -517,7 +517,7 @@ package et_board_ops is
 	-- Deletes the segment of the stop mask that crosses the given point.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
@@ -527,21 +527,21 @@ package et_board_ops is
 
 	procedure draw_stencil_line (
 	-- Draws a line in the stencil layer.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stencil_line;
 		log_threshold	: in type_log_level);
 
 	procedure draw_stencil_arc (
 	-- Draws an arc in the stencil layer.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_stencil_arc;		
 		log_threshold	: in type_log_level);
 
 	procedure draw_stencil_circle (
 	-- Draws an circle in the stencil layer.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level);
@@ -550,7 +550,7 @@ package et_board_ops is
 	-- Deletes the segment of the stencil that crosses the given point.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;

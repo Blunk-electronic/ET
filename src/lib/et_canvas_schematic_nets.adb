@@ -64,7 +64,7 @@ package body et_canvas_schematic_nets is
 		s : type_selected_segment := segment;
 		
 		procedure query_net (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			procedure query_strands (
@@ -274,7 +274,7 @@ package body et_canvas_schematic_nets is
 		result : pac_proposed_segments.list;
 
 		procedure query_nets (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
 		is
 			net_cursor : type_nets.cursor := module.nets.first;
@@ -981,7 +981,7 @@ package body et_canvas_schematic_nets is
 		result : pac_proposed_labels.list;
 
 		procedure query_nets (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
 		is
 			net_cursor : type_nets.cursor := module.nets.first;
@@ -1118,7 +1118,7 @@ package body et_canvas_schematic_nets is
 		label_found : boolean := false;
 		
 		procedure query_nets (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			net_cursor : type_nets.cursor := module.nets.first;
@@ -1303,7 +1303,7 @@ package body et_canvas_schematic_nets is
 		log_threshold	: in type_log_level) is
 
 		procedure query_nets (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			procedure query_strands (
@@ -1475,7 +1475,7 @@ package body et_canvas_schematic_nets is
 	is
 
 		procedure query_nets (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
 			procedure query_strands (

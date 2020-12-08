@@ -187,7 +187,7 @@ package body et_scripting is
 			& to_string (runmode), level => log_threshold);
 	end skipped_in_this_runmode;
 	
-	procedure validate_module_name (module : in type_module_name.bounded_string) is 
+	procedure validate_module_name (module : in pac_module_name.bounded_string) is 
 		use et_project.modules;
 	begin
 		if not exists (module) then
@@ -345,7 +345,7 @@ package body et_scripting is
 		use et_project.modules;
 		
 		domain	: type_domain; -- DOM_SCHEMATIC
-		module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
 		verb_project	: type_verb_project;
 		noun_project	: type_noun_project;

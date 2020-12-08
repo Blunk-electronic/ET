@@ -94,7 +94,7 @@ package body et_canvas_schematic_units is
 		result : pac_proposed_units.list;
 
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
 		is
 			use et_schematic.type_devices;
@@ -204,7 +204,7 @@ package body et_canvas_schematic_units is
 		use et_schematic.type_units;
 
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			
 			-- temporarily storage of unit coordinates.
@@ -603,7 +603,7 @@ package body et_canvas_schematic_units is
 		use et_schematic.type_units;
 
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
@@ -1522,7 +1522,7 @@ package body et_canvas_schematic_units is
 		result : pac_proposed_placeholders.list;
 
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
 		is
 			use et_schematic.type_devices;
@@ -1687,7 +1687,7 @@ package body et_canvas_schematic_units is
 		use et_schematic.type_units;
 
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			device_cursor : et_schematic.type_devices.cursor;
 

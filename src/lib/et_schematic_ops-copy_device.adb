@@ -45,7 +45,7 @@
 separate (et_schematic_ops)
 
 procedure copy_device (
-	module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	device_name		: in type_device_name; -- IC45
 	destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
 	log_threshold	: in type_log_level) is
@@ -53,7 +53,7 @@ procedure copy_device (
 	module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 	
 	procedure query_devices (
-		module_name	: in type_module_name.bounded_string;
+		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_module) is
 		use et_schematic.type_devices;
 		device_cursor_sch : et_schematic.type_devices.cursor;

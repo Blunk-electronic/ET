@@ -98,7 +98,7 @@ is
 		kw : constant string := f (line, 1);
 
 		procedure set_variant (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			module.active_variant := active_assembly_variant;
@@ -120,7 +120,7 @@ is
 		use et_schematic;
 		
 		procedure do_it (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
 			use et_meta.pac_preferred_libraries_schematic;
@@ -291,7 +291,7 @@ is
 		use et_schematic;
 		
 		procedure do_it (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use et_design_rules;
@@ -885,7 +885,7 @@ is
 			type type_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION, STENCIL, STOP_MASK, KEEPOUT);
 			
 			procedure insert_net_class (
-				module_name	: in type_module_name.bounded_string;
+				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 				use et_pcb;
 				inserted : boolean;
@@ -914,7 +914,7 @@ is
 			end insert_net_class;
 
 			procedure add_board_layer (
-				module_name	: in type_module_name.bounded_string;
+				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 				use et_pcb_stack;
 			begin
@@ -945,7 +945,7 @@ is
 			procedure set_drawing_grid is
 
 				procedure set (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 					use et_coordinates.pac_geometry_sch;
 					use et_pcb_coordinates.pac_geometry_brd;
@@ -969,7 +969,7 @@ is
 			end set_drawing_grid;
 			
 			procedure insert_net (
-				module_name	: in type_module_name.bounded_string;
+				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 				use et_schematic;
 				inserted : boolean;
@@ -1000,7 +1000,7 @@ is
 			end insert_net;
 			
 			procedure insert_submodule (
-				module_name	: in type_module_name.bounded_string;
+				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 				use et_schematic;
 				inserted : boolean;
@@ -1036,7 +1036,7 @@ is
 			end insert_submodule;
 			
 			procedure set_frame_schematic (
-				module_name	: in type_module_name.bounded_string;
+				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 				use et_frames;
 			begin
@@ -1081,7 +1081,7 @@ is
 			end add_sheet_description;
 			
 			procedure set_frame_board (
-				module_name	: in type_module_name.bounded_string;
+				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 				use et_frames;
 			begin
@@ -1101,7 +1101,7 @@ is
 			end set_frame_board;
 
 			procedure insert_note (
-				module_name	: in type_module_name.bounded_string;
+				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 			begin
 				-- append schematic note to collection of notes
@@ -1239,7 +1239,7 @@ is
 			end build_unit_placeholder;
 
 			procedure insert_device (
-				module_name	: in type_module_name.bounded_string;
+				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 				use et_schematic;
 				use et_symbols;
@@ -1407,7 +1407,7 @@ is
 			end insert_device;						
 							
 			procedure insert_device_non_electric (
-				module_name	: in type_module_name.bounded_string;
+				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 				
 				use et_pcb_coordinates;
@@ -1487,7 +1487,7 @@ is
 				use et_terminals;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 					use et_pcb_coordinates;
 				begin -- do_it
@@ -1575,7 +1575,7 @@ is
 				use et_packages;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 					use et_pcb_coordinates;
 				begin -- do_it
@@ -1660,7 +1660,7 @@ is
 				use et_packages;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 					use et_pcb_coordinates;
 				begin -- do_it
@@ -1742,7 +1742,7 @@ is
 			-- is now assigned to the board where it belongs to.
 
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 					use et_pcb_coordinates;
 					use et_terminals;
@@ -1976,7 +1976,7 @@ is
 			-- is threated as a cutout zone and assigned to the board where it belongs to.
 
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 					use et_pcb_coordinates;
 					use et_terminals;
@@ -2113,7 +2113,7 @@ is
 				use type_signal_layers;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					pac_via_restrict_cutouts.append (
@@ -2142,7 +2142,7 @@ is
 				use type_signal_layers;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					pac_route_restrict_cutouts.append (
@@ -2172,7 +2172,7 @@ is
 				use et_pcb;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					et_pcb.pac_copper_cutouts.append (
@@ -2200,7 +2200,7 @@ is
 			-- is now assigned to the board where it belongs to.
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 					use et_pcb_coordinates;
 					use et_packages;
@@ -2280,7 +2280,7 @@ is
 			-- is now assigned to the board where it belongs to.
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 					use et_pcb_coordinates;
 					use et_pcb;
@@ -2358,7 +2358,7 @@ is
 				use type_signal_layers;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					type_route_restrict_lines.append (
@@ -2385,7 +2385,7 @@ is
 				use type_signal_layers;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					type_route_restrict_arcs.append (
@@ -2412,7 +2412,7 @@ is
 				use type_signal_layers;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					type_route_restrict_circles.append (
@@ -2438,7 +2438,7 @@ is
 				use type_signal_layers;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					type_route_restrict_polygons.append (
@@ -2467,7 +2467,7 @@ is
 				use type_signal_layers;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					type_via_restrict_lines.append (
@@ -2495,7 +2495,7 @@ is
 				use type_signal_layers;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					type_via_restrict_arcs.append (
@@ -2522,7 +2522,7 @@ is
 				use type_signal_layers;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					type_via_restrict_circles.append (
@@ -2549,7 +2549,7 @@ is
 				use type_signal_layers;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					type_via_restrict_polygons.append (
@@ -2578,7 +2578,7 @@ is
 				use et_pcb;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					case board_fill_style is
@@ -2623,7 +2623,7 @@ is
 				use et_pcb;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					pac_copper_lines.append (
@@ -2649,7 +2649,7 @@ is
 				use et_pcb;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					pac_copper_arcs.append (
@@ -2675,7 +2675,7 @@ is
 				use et_pcb;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					pac_copper_circles.append (
@@ -2700,7 +2700,7 @@ is
 				use et_pcb;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					pac_texts.append (
@@ -2722,7 +2722,7 @@ is
 				use et_pcb;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					type_text_placeholders_copper.append (
@@ -2744,7 +2744,7 @@ is
 				use et_pcb;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					type_pcb_contour_lines.append (
@@ -2767,7 +2767,7 @@ is
 				use et_pcb;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					type_pcb_contour_arcs.append (
@@ -2790,7 +2790,7 @@ is
 				use et_pcb;
 				
 				procedure do_it (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
 					type_pcb_contour_circles.append (
@@ -2810,7 +2810,7 @@ is
 			end insert_circle_contour;
 
 			procedure insert_netchanger (
-				module_name	: in type_module_name.bounded_string;
+				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 				inserted : boolean;
 				use et_submodules;
@@ -2840,7 +2840,7 @@ is
 			end insert_netchanger;
 
 			procedure insert_assembly_variant (
-				module_name	: in type_module_name.bounded_string;
+				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 				inserted : boolean;
 				use et_assembly_variants;
@@ -6171,7 +6171,7 @@ is
 		
 		procedure get_submodules (
 		-- Copies the submodules in submods.
-			module_name	: type_module_name.bounded_string;
+			module_name	: pac_module_name.bounded_string;
 			module		: et_schematic.type_module) is
 		begin
 			submods := module.submods;
@@ -6205,7 +6205,7 @@ is
 	-- specified in module file section ASSEMBLY_VARIANTS.
 
 		procedure query_variants (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
 
 			use et_assembly_variants;

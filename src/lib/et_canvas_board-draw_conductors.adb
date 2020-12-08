@@ -367,7 +367,7 @@ procedure draw_conductors (
 	end query_net;
 	
 	procedure query_items (
-		module_name	: in type_module_name.bounded_string;
+		module_name	: in pac_module_name.bounded_string;
 		module		: in type_module) is
 	begin
 		-- Iterate all conductor layers starting at the bottom layer and ending

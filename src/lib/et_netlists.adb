@@ -695,7 +695,7 @@ package body et_netlists is
 	procedure write_netlist (
 	-- Exports the netlist of the given module to the export/CAM directory.
 		netlist			: in type_netlist.tree;
-		module_name		: in type_module_name.bounded_string; -- motor_driver 
+		module_name		: in pac_module_name.bounded_string; -- motor_driver 
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level) is
 
@@ -704,7 +704,7 @@ package body et_netlists is
 		procedure set_file_name is 
 			use ada.directories;
 			use gnat.directory_operations;
-			use type_module_name;
+			use pac_module_name;
 			use et_general.pac_assembly_variant_name;
 			use et_export;
 		begin
@@ -868,7 +868,7 @@ package body et_netlists is
 	-- - The netlist file will be named after the module name and the assembly variant.
 	-- - Exports the netlist of the given module to the export/CAM directory.							  
 		modules			: in type_modules.tree;
-		module_name		: in type_module_name.bounded_string; -- motor_driver 
+		module_name		: in pac_module_name.bounded_string; -- motor_driver 
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)

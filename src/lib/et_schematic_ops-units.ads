@@ -51,7 +51,7 @@ package et_schematic_ops.units is
 	-- In case the last unit has been deleted, then the device is 
 	-- deleted entirely from the module.
 	procedure delete_unit (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level);
@@ -61,7 +61,7 @@ package et_schematic_ops.units is
 	-- Moves the given unit within the schematic. Disconnects the unit from
 	-- start or end points of net segments BEFORE the move. 
 	-- Connects unit ports with segment end or strart points AFTER the move.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -92,7 +92,7 @@ package et_schematic_ops.units is
 	--     inserted between them ?
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -104,7 +104,7 @@ package et_schematic_ops.units is
 	-- Connects the unit with net segments after the rotation.
 	-- Rotates the placeholders about the unit center.
 	procedure rotate_unit (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute		

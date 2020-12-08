@@ -92,12 +92,12 @@ package body et_project.modules is
 		return type_et_project_path.to_bounded_string (path);
 	end to_project_path;
 	
-	function exists (module : in type_module_name.bounded_string) return boolean is begin
+	function exists (module : in pac_module_name.bounded_string) return boolean is begin
 	-- Returns true if the module with the given name exists in container modules.
 		return pac_generic_modules.contains (generic_modules, module);
 	end;
 
-	function locate_module (name : in type_module_name.bounded_string) -- motor_driver (without extension *.mod)
+	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
 	-- Locates the given module in the global container "generic_modules".
 		return pac_generic_modules.cursor is
 	begin
@@ -135,7 +135,7 @@ package body et_project.modules is
 		use et_schematic;
 
 		procedure query_descriptions (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
 		begin
 			cursor := find (module.frames.descriptions, sheet);
@@ -173,7 +173,7 @@ package body et_project.modules is
 		use et_schematic;
 
 		procedure query_nets (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
 			use type_nets;
 			net_cursor : type_nets.cursor := module.nets.first;
@@ -333,7 +333,7 @@ package body et_project.modules is
 
 	procedure save_module (
 		module_cursor	: in pac_generic_modules.cursor;
-		save_as_name	: in type_module_name.bounded_string := to_module_name (""); -- motor_driver, templates/clock_generator							  
+		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver, templates/clock_generator							  
 		log_threshold	: in et_string_processing.type_log_level) 
 	is separate;
 
@@ -353,7 +353,7 @@ package body et_project.modules is
 		is separate;
 
 	procedure create_module (
-		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor;
@@ -390,7 +390,7 @@ package body et_project.modules is
 	end create_module;
 
 	procedure save_module (
-		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
@@ -430,7 +430,7 @@ package body et_project.modules is
 	end save_module;
 	
 	procedure delete_module (
-		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
@@ -499,11 +499,11 @@ package body et_project.modules is
 		use et_schematic;
 		
 		submodule_file : type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
-		module_name : type_module_name.bounded_string; 
+		module_name : pac_module_name.bounded_string; 
 		module_cursor : pac_generic_modules.cursor;
 
 		procedure query_nets (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
 			net_cursor : type_nets.cursor;
 
@@ -568,7 +568,7 @@ package body et_project.modules is
 		instance_found : boolean := false; -- to be returned
 
 		procedure query_submodules (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
 			use et_submodules.type_submodules;
 		begin
@@ -599,19 +599,19 @@ package body et_project.modules is
 		variant_found : boolean := false; -- to be returned
 
 		procedure query_submodules (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
 			use et_submodules;
 			use et_submodules.type_submodules;
 			submod_instance_cursor : et_submodules.type_submodules.cursor;
 			submod_path : type_submodule_path.bounded_string;
-			submod_name	: type_module_name.bounded_string;
+			submod_name	: pac_module_name.bounded_string;
 			submod_cursor : pac_generic_modules.cursor;
 
 			procedure query_variants (
 			-- Locates the given assembly variant in the submodule.
 			-- Sets flag variant_found.
-				submodule_name	: in type_module_name.bounded_string;
+				submodule_name	: in pac_module_name.bounded_string;
 				submodule		: in et_schematic.type_module) is
 				use et_assembly_variants;
 			begin
@@ -664,7 +664,7 @@ package body et_project.modules is
 		result : boolean := false; -- to be returned
 
 		procedure query_variants (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
 		begin
 			result := contains (module.variants, variant);
@@ -698,7 +698,7 @@ package body et_project.modules is
 		result : boolean := false; -- to be returned
 
 		procedure query_variants (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
 			use et_assembly_variants.pac_assembly_variants;
 			variant_cursor : et_assembly_variants.pac_assembly_variants.cursor;
@@ -763,7 +763,7 @@ package body et_project.modules is
 		cursor : et_assembly_variants.pac_device_variants.cursor; -- to be returned;
 		
 		procedure query_variants (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
 			use et_assembly_variants.pac_assembly_variants;
 			
@@ -813,7 +813,7 @@ package body et_project.modules is
 		cursor : et_assembly_variants.pac_submodule_variants.cursor; -- to be returned;
 		
 		procedure query_variants (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
 			use et_assembly_variants.pac_assembly_variants;
 

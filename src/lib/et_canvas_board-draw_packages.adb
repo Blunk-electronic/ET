@@ -2823,7 +2823,7 @@ is
 	use et_schematic;
 	
 	procedure query_devices (
-		module_name	: in type_module_name.bounded_string;
+		module_name	: in pac_module_name.bounded_string;
 		module		: in type_module) is
 		use et_schematic.type_devices;
 
@@ -2853,7 +2853,7 @@ is
 	end query_devices;
 
 	procedure query_devices_non_electric (
-		module_name	: in type_module_name.bounded_string;
+		module_name	: in pac_module_name.bounded_string;
 		module		: in type_module) is
 
 		use et_schematic.pac_devices_non_electric;

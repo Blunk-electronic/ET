@@ -60,9 +60,8 @@ package body et_canvas_schematic is
 
 	procedure set_title_bar (
 		-- CS project name
-		module		: in et_general.type_module_name.bounded_string)
+		module		: in et_general.pac_module_name.bounded_string)
 	is
-		use et_general;
 	begin
 		window.set_title (title & to_string (module));
 	end set_title_bar;
@@ -168,8 +167,8 @@ package body et_canvas_schematic is
 	function model_to_drawing (
 		self		: not null access type_view;
 		model_point : in type_point)	
-		return type_point is 
-		use et_general;
+		return type_point 
+	is 
 		p : type_point; -- to be returned
 	begin
 		set (point	=> p,
@@ -189,7 +188,6 @@ package body et_canvas_schematic is
 		self			: not null access type_view;
 		drawing_point	: in type_point)	
 		return type_point is 
-		use et_general;
 		p : type_point; -- to be returned
 	begin
 		set (point	=> p,
@@ -368,8 +366,8 @@ package body et_canvas_schematic is
 
 
 	
-	function active_module return et_general.type_module_name.bounded_string is
-		use et_general.type_module_name;
+	function active_module return et_general.pac_module_name.bounded_string is
+		use et_general.pac_module_name;
 		use et_project.modules.pac_generic_modules;
 	begin
 		return key (current_active_module); -- motor_driver (without extension)
@@ -614,9 +612,8 @@ package body et_canvas_schematic is
 	end draw_internal;
 
 	procedure set_module (
-		module	: in et_general.type_module_name.bounded_string)  -- motor_driver
+		module	: in et_general.pac_module_name.bounded_string)  -- motor_driver
 	is
-		use et_general;
 		use et_project.modules;
 		use et_project.modules.pac_generic_modules;
 		cursor : et_project.modules.pac_generic_modules.cursor := find (generic_modules, module);
@@ -711,7 +708,6 @@ package body et_canvas_schematic is
 		coordinates	: in type_coordinates;
 		cursor		: in out type_cursor;
 		position	: in type_point) is
-		use et_general;
 		use et_project.modules.pac_generic_modules;
 	begin
 		case coordinates is

@@ -38,7 +38,7 @@
 separate (et_schematic_ops)
 
 procedure add_device (
-	module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 	variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
 	destination		: in et_coordinates.type_position; -- sheet/x/y,rotation
@@ -53,7 +53,7 @@ procedure add_device (
 
 	
 	procedure add (
-		module_name	: in type_module_name.bounded_string;
+		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_module) is
 		use et_schematic.type_devices;
 		device_cursor_sch : et_schematic.type_devices.cursor;

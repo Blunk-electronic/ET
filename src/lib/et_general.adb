@@ -340,12 +340,12 @@ package body et_general is
 	end anonymous;
 
 	
-	function to_string (name : in type_module_name.bounded_string) return string is begin
-		return type_module_name.to_string (name);
+	function to_string (name : in pac_module_name.bounded_string) return string is begin
+		return pac_module_name.to_string (name);
 	end;
 
-	function to_module_name (name : in string) return type_module_name.bounded_string is begin
-		return type_module_name.to_bounded_string (name);
+	function to_module_name (name : in string) return pac_module_name.bounded_string is begin
+		return pac_module_name.to_bounded_string (name);
 	end;
 	
 

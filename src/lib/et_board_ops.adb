@@ -79,7 +79,7 @@ package body et_board_ops is
 	procedure move_board (
 	-- Moves the origin of the board to the given point (relative to the lower left 
 	-- corner of the drawing frame):
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
@@ -87,7 +87,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure set_origin (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			case coordinates is
@@ -123,7 +123,7 @@ package body et_board_ops is
 	procedure add_layer (
 	-- Adds a signal layer to the board.
 	-- Renumbers the signal layers.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
 		log_threshold	: in type_log_level) is
 
@@ -132,7 +132,7 @@ package body et_board_ops is
 		use et_geometry;
 		
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_pcb_stack.package_layers;
 		begin
@@ -184,7 +184,7 @@ package body et_board_ops is
 	procedure delete_layer (
 	-- Deletes a signal layer in the board.
 	-- Renumbers the signal layers.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_signal_layer;
 		log_threshold	: in type_log_level) is
 
@@ -193,7 +193,7 @@ package body et_board_ops is
 		use et_geometry;
 		
 		procedure delete (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_pcb_stack;
 			use package_layers;
@@ -260,7 +260,7 @@ package body et_board_ops is
 	end get_placeholders;
 	
 	procedure add_device ( -- non-electric !
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		package_model	: in et_packages.type_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
 		prefix			: in pac_device_prefix.bounded_string; -- FD
@@ -271,7 +271,7 @@ package body et_board_ops is
 		package_cursor_lib : et_packages.type_packages.cursor;
 		
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.pac_devices_non_electric;
 			device_cursor : et_schematic.pac_devices_non_electric.cursor;
@@ -340,7 +340,7 @@ package body et_board_ops is
 	procedure move_device (
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
@@ -349,7 +349,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.type_devices;
 			use et_schematic.pac_devices_non_electric;
@@ -444,7 +444,7 @@ package body et_board_ops is
 	procedure rotate_device (
 	-- Rotates a device in the board layout.
 	-- Leaves x/y and face (top/bottom) as it is.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_pcb_coordinates.type_rotation; -- 90
@@ -453,7 +453,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.type_devices;
 			use et_schematic.pac_devices_non_electric;
@@ -545,14 +545,14 @@ package body et_board_ops is
 	end rotate_device;
 
 	procedure delete_device (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- FD1
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use et_schematic.pac_devices_non_electric;
@@ -582,7 +582,7 @@ package body et_board_ops is
 	end delete_device;
 
 	procedure rename_device (
-		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name_before	: in type_device_name; -- FD1
 		device_name_after	: in type_device_name; -- FD3
 		log_threshold		: in type_log_level) is
@@ -590,7 +590,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use et_schematic.pac_devices_non_electric;
@@ -651,7 +651,7 @@ package body et_board_ops is
 	-- Flips a device in the board layout from top to bottom or vice versa.
 	-- Leaves x/y and rotation as it is.
 	-- Warns operator if device already on desired face of board.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level) is
@@ -659,7 +659,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.type_devices;
 			use et_schematic.pac_devices_non_electric;
@@ -823,7 +823,7 @@ package body et_board_ops is
 	-- Assumptions:
 	--  - The module to be searched in must be in the rig already.
 	--  - The submodule instance must exist in the module.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string) -- OSC1
 		return type_position is
 		
@@ -832,7 +832,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		procedure query_submodules (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
 			use et_submodules.type_submodules;
 			submod_cursor : et_submodules.type_submodules.cursor;
@@ -855,7 +855,7 @@ package body et_board_ops is
 	procedure move_submodule (
 	-- Moves a submodule instance within the parent module layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in type_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
@@ -864,7 +864,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_submodules (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out et_schematic.type_module) is
 			use et_submodules.type_submodules;
 			submod_cursor : et_submodules.type_submodules.cursor;
@@ -932,7 +932,7 @@ package body et_board_ops is
 	-- Exports a pick & place file from the given top module and assembly variant.
 	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
 	--     See comment in procedure query_submodules.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -967,7 +967,7 @@ package body et_board_ops is
 				end;
 				
 				procedure query_devices (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in pac_module_name.bounded_string;
 					module		: in et_schematic.type_module) is
 
 					device_name : type_device_name;
@@ -1184,8 +1184,8 @@ package body et_board_ops is
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
 				use et_numbering.type_modules;
-				module_name 	: type_module_name.bounded_string; -- motor_driver
-				parent_name 	: type_module_name.bounded_string; -- water_pump
+				module_name 	: pac_module_name.bounded_string; -- motor_driver
+				parent_name 	: pac_module_name.bounded_string; -- water_pump
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 				offset			: et_devices.type_name_index;
 
@@ -1388,7 +1388,7 @@ package body et_board_ops is
 		device_cursor : et_schematic.type_devices.cursor;
 		
 		procedure query_devices (
-			module_name		: in type_module_name.bounded_string;
+			module_name		: in pac_module_name.bounded_string;
 			module			: in type_module) is
 		begin
 			device_cursor := find (module.devices, device_name);
@@ -1497,14 +1497,14 @@ package body et_board_ops is
 	end terminal_position;
 
 	procedure set_grid (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		grid			: in type_grid;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure do_it (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			module.board.grid := grid;
@@ -1531,7 +1531,7 @@ package body et_board_ops is
 		log_threshold	: in type_log_level) is
 
 		procedure do_it (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			module.board.grid := grid;
@@ -1621,7 +1621,7 @@ package body et_board_ops is
 		line			: in et_pcb.type_copper_line) is
 
 		procedure do_it (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			-- A track belonging to a net requires the net to be located in the given module:
@@ -1663,7 +1663,7 @@ package body et_board_ops is
 		
 	procedure draw_track_line (
 	-- Draws a track line. If net_name is empty a freetrack will be drawn.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in et_pcb.type_copper_line;
 		log_threshold	: in type_log_level) is
@@ -1674,7 +1674,7 @@ package body et_board_ops is
 		use et_pcb.pac_copper_lines;
 		
 		procedure add_freetrack (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			append (
@@ -1719,7 +1719,7 @@ package body et_board_ops is
 		log_threshold	: in type_log_level) is
 
 		procedure add_named_track (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use et_schematic.type_nets;
@@ -1756,7 +1756,7 @@ package body et_board_ops is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
@@ -1825,7 +1825,7 @@ package body et_board_ops is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
@@ -1893,7 +1893,7 @@ package body et_board_ops is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
@@ -1955,7 +1955,7 @@ package body et_board_ops is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
@@ -2018,7 +2018,7 @@ package body et_board_ops is
 	
 	procedure draw_track_arc (
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		arc				: in et_pcb.type_copper_arc;
 		log_threshold	: in type_log_level) is
@@ -2029,7 +2029,7 @@ package body et_board_ops is
 		use et_pcb.pac_copper_arcs;
 		
 		procedure add_freetrack (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			append (
@@ -2038,7 +2038,7 @@ package body et_board_ops is
 		end;
 		
 		procedure add_named_track (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			-- A track belonging to a net requires the net to be located in the given module:
@@ -2101,7 +2101,7 @@ package body et_board_ops is
 	end draw_track_arc;
 	
 	procedure ripup_track_segment (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_point; -- x/y
@@ -2117,7 +2117,7 @@ package body et_board_ops is
 		deleted : boolean := false; -- goes true if at least one segment has been ripup
 		
 		procedure ripup_freetrack (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			line_cursor : pac_copper_lines.cursor := module.board.copper.lines.first;
 			arc_cursor  : pac_copper_arcs.cursor := module.board.copper.arcs.first;
@@ -2158,7 +2158,7 @@ package body et_board_ops is
 		end ripup_freetrack;
 		
 		procedure ripup_named_track (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			-- A net belonging to a net requires the net to be located in the given module:
@@ -2274,7 +2274,7 @@ package body et_board_ops is
 	end;
 	
 	procedure draw_route_restrict_line (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in type_route_restrict_line;
 		log_threshold	: in type_log_level) is
 
@@ -2283,7 +2283,7 @@ package body et_board_ops is
 		use type_route_restrict_lines;
 
 		procedure draw (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			append (
@@ -2312,7 +2312,7 @@ package body et_board_ops is
 
 	procedure draw_route_restrict_arc (
 	-- Draws a route restrict arc.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		arc				: in type_route_restrict_arc;
 		log_threshold	: in type_log_level) is
 
@@ -2321,7 +2321,7 @@ package body et_board_ops is
 		use type_route_restrict_arcs;
 
 		procedure draw (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			append (
@@ -2349,7 +2349,7 @@ package body et_board_ops is
 	end draw_route_restrict_arc;
 
 	procedure draw_route_restrict_circle (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in type_route_restrict_circle;
 		log_threshold	: in type_log_level) is
 
@@ -2358,7 +2358,7 @@ package body et_board_ops is
 		use type_route_restrict_circles;
 
 		procedure draw (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			append (
@@ -2386,7 +2386,7 @@ package body et_board_ops is
 	end draw_route_restrict_circle;
 
 	procedure delete_route_restrict (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) is
@@ -2394,7 +2394,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_pcb;
 			use type_route_restrict_lines;
@@ -2470,7 +2470,7 @@ package body et_board_ops is
 -- VIA RESTRICT
 
 	procedure draw_via_restrict_line (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in type_via_restrict_line;
 		log_threshold	: in type_log_level) is
 
@@ -2479,7 +2479,7 @@ package body et_board_ops is
 		use type_via_restrict_lines;
 
 		procedure draw (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			append (
@@ -2507,7 +2507,7 @@ package body et_board_ops is
 	end draw_via_restrict_line;
 
 	procedure draw_via_restrict_arc (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		arc				: in type_via_restrict_arc;
 		log_threshold	: in type_log_level) is
 
@@ -2516,7 +2516,7 @@ package body et_board_ops is
 		use type_via_restrict_arcs;
 
 		procedure draw (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			append (
@@ -2544,7 +2544,7 @@ package body et_board_ops is
 	end draw_via_restrict_arc;
 
 	procedure draw_via_restrict_circle (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in type_via_restrict_circle;
 		log_threshold	: in type_log_level) is
 
@@ -2553,7 +2553,7 @@ package body et_board_ops is
 		use type_via_restrict_circles;
 
 		procedure draw (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
 			append (
@@ -2581,7 +2581,7 @@ package body et_board_ops is
 	end draw_via_restrict_circle;
 
 	procedure delete_via_restrict (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) is
@@ -2589,7 +2589,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_via_restrict_lines;
@@ -2667,14 +2667,14 @@ package body et_board_ops is
 -- BOARD OUTLINE
 
 	procedure draw_outline_line (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in et_pcb.type_pcb_contour_line;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_pcb;
 			use et_pcb.type_pcb_contour_lines;
@@ -2701,14 +2701,14 @@ package body et_board_ops is
 	end draw_outline_line;
 
 	procedure draw_outline_arc (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		arc				: in et_pcb.type_pcb_contour_arc;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_pcb;
 			use et_pcb.type_pcb_contour_arcs;
@@ -2736,14 +2736,14 @@ package body et_board_ops is
 
 	procedure draw_outline_circle (
 	-- Draws a circle in the PCB outline.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle			: in et_pcb.type_pcb_contour_circle;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_pcb;
 			use et_pcb.type_pcb_contour_circles;
@@ -2770,7 +2770,7 @@ package body et_board_ops is
 	end draw_outline_circle;
 
 	procedure delete_outline (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) is
@@ -2778,7 +2778,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use et_pcb.type_pcb_contour_lines;
@@ -2854,7 +2854,7 @@ package body et_board_ops is
 -- SILK SCREEN
 
 	procedure draw_silk_screen_line (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_silk_line;
 		log_threshold	: in type_log_level) is
@@ -2862,7 +2862,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			
 			use type_silk_lines;
@@ -2898,7 +2898,7 @@ package body et_board_ops is
 	end draw_silk_screen_line;
 
 	procedure draw_silk_screen_arc (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_silk_arc;		
 		log_threshold	: in type_log_level) is
@@ -2906,7 +2906,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_silk_arcs;
@@ -2944,7 +2944,7 @@ package body et_board_ops is
 	end draw_silk_screen_arc;
 
 	procedure draw_silk_screen_circle (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level) is
@@ -2952,7 +2952,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_silk_circles;
@@ -2989,7 +2989,7 @@ package body et_board_ops is
 	end draw_silk_screen_circle;
 
 	procedure delete_silk_screen (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
@@ -2998,7 +2998,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_silk_lines;
@@ -3094,7 +3094,7 @@ package body et_board_ops is
 -- ASSEMBLY DOCUMENTATION
 	
 	procedure draw_assy_doc_line (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_doc_line;
 		log_threshold	: in type_log_level) is
@@ -3102,7 +3102,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_doc_lines;
@@ -3138,7 +3138,7 @@ package body et_board_ops is
 	end draw_assy_doc_line;
 
 	procedure draw_assy_doc_arc (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_doc_arc;		
 		log_threshold	: in type_log_level) is
@@ -3146,7 +3146,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_doc_arcs;
@@ -3184,7 +3184,7 @@ package body et_board_ops is
 	end draw_assy_doc_arc;
 
 	procedure draw_assy_doc_circle (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level) is
@@ -3192,7 +3192,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_doc_circles;
@@ -3229,7 +3229,7 @@ package body et_board_ops is
 	end draw_assy_doc_circle;
 
 	procedure delete_assy_doc (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
@@ -3238,7 +3238,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_doc_lines;
@@ -3333,7 +3333,7 @@ package body et_board_ops is
 -- KEEPOUT
 
 	procedure draw_keepout_line (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_keepout_line;
 		log_threshold	: in type_log_level) is
@@ -3341,7 +3341,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_keepout_lines;
@@ -3377,7 +3377,7 @@ package body et_board_ops is
 	end draw_keepout_line;
 
 	procedure draw_keepout_arc (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_keepout_arc;		
 		log_threshold	: in type_log_level) is
@@ -3385,7 +3385,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_keepout_arcs;
@@ -3422,7 +3422,7 @@ package body et_board_ops is
 	end draw_keepout_arc;
 
 	procedure draw_keepout_circle (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle_solid;
 		log_threshold	: in type_log_level) is
@@ -3430,7 +3430,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_keepout_circles;
@@ -3467,7 +3467,7 @@ package body et_board_ops is
 	end draw_keepout_circle;
 
 	procedure delete_keepout (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
@@ -3476,7 +3476,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_keepout_lines;
@@ -3571,7 +3571,7 @@ package body et_board_ops is
 -- STOP MASK
 	
 	procedure draw_stop_line (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stop_line;
 		log_threshold	: in type_log_level) is
@@ -3579,7 +3579,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_stop_lines;
@@ -3615,7 +3615,7 @@ package body et_board_ops is
 	end draw_stop_line;
 
 	procedure draw_stop_arc (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_stop_arc;		
 		log_threshold	: in type_log_level) is
@@ -3623,7 +3623,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_stop_arcs;
@@ -3661,7 +3661,7 @@ package body et_board_ops is
 	end draw_stop_arc;
 
 	procedure draw_stop_circle (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level) is
@@ -3669,7 +3669,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_stop_circles;
@@ -3706,7 +3706,7 @@ package body et_board_ops is
 	end draw_stop_circle;
 
 	procedure delete_stop (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
@@ -3715,7 +3715,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_stop_lines;
@@ -3810,7 +3810,7 @@ package body et_board_ops is
 -- STENCIL
 	
 	procedure draw_stencil_line (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stencil_line;
 		log_threshold	: in type_log_level) is
@@ -3818,7 +3818,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_stencil_lines;
@@ -3854,7 +3854,7 @@ package body et_board_ops is
 	end draw_stencil_line;
 
 	procedure draw_stencil_arc (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_stencil_arc;		
 		log_threshold	: in type_log_level) is
@@ -3862,7 +3862,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_stencil_arcs;
@@ -3900,7 +3900,7 @@ package body et_board_ops is
 	end draw_stencil_arc;
 
 	procedure draw_stencil_circle (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level) is
@@ -3908,7 +3908,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_stencil_circles;
@@ -3945,7 +3945,7 @@ package body et_board_ops is
 	end draw_stencil_circle;
 
 	procedure delete_stencil (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
@@ -3954,7 +3954,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_stencil_lines;

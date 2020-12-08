@@ -60,7 +60,7 @@ package body et_canvas_board is
 	
 	procedure set_title_bar (
 		-- CS project name
-		module		: in et_general.type_module_name.bounded_string)
+		module		: in et_general.pac_module_name.bounded_string)
 	is
 		use et_general;
 	begin
@@ -308,7 +308,7 @@ package body et_canvas_board is
 	
 	function active_module (self : not null access type_view) 
 		return string is
-		use et_general.type_module_name;
+		use et_general.pac_module_name;
 		use et_canvas_schematic;
 	begin
 		return et_general.to_string (key (current_active_module)); -- motor_driver (without extension)

@@ -60,7 +60,7 @@ is
 	use et_modes.schematic;
 
 	domain	: type_domain; -- DOM_SCHEMATIC
-	module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
 	-- In order to tell the command processor that an operation is meant to 
 	-- apply to the current sheet, we use the UNIX-bash-like period character:
@@ -387,7 +387,7 @@ is
 		use et_project;
 		use et_canvas_schematic;
 		
-		module : type_module_name.bounded_string := to_module_name (f (5));
+		module : pac_module_name.bounded_string := to_module_name (f (5));
 	begin
 		log (text => "set module " & enclose_in_quotes (to_string (module)), level => log_threshold + 1);
 		set_module (module);
@@ -407,7 +407,7 @@ is
 		use et_general;
 		use et_canvas_schematic;
 		
-		module : type_module_name.bounded_string := to_module_name (f (5));
+		module : pac_module_name.bounded_string := to_module_name (f (5));
 		sheet : et_coordinates.type_sheet := to_sheet (f (6));
 	begin
 		log (text => "set module " & enclose_in_quotes (to_string (module))
@@ -493,7 +493,7 @@ is
 	end delete_active_module;
 	
 	procedure delete_explicit_module (
-		module_name : in type_module_name.bounded_string) 
+		module_name : in pac_module_name.bounded_string) 
 	is
 		use et_project.modules;
 		use pac_generic_modules;
@@ -524,7 +524,7 @@ is
 	end delete_explicit_module;
 
 	procedure create_module (
-		module_name : in type_module_name.bounded_string) 
+		module_name : in pac_module_name.bounded_string) 
 	is
 		use et_project.modules;
 		use pac_generic_modules;

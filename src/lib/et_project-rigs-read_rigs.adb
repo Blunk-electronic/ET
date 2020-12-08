@@ -81,7 +81,7 @@ procedure read_rigs (
 			max 	=> max_section_depth);
 
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-		generic_name : type_module_name.bounded_string; -- motor_driver
+		generic_name : pac_module_name.bounded_string; -- motor_driver
 		instance_name : type_module_instance_name.bounded_string; -- DRV_1
 		assembly_variant : et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 
@@ -321,7 +321,7 @@ procedure read_rigs (
 										expect_field_count (line, 2);
 
 										-- The generic name does not use the *.mod extension.
-										generic_name := type_module_name.to_bounded_string (f (line,2));
+										generic_name := pac_module_name.to_bounded_string (f (line,2));
 										
 										-- test whether a module with this generic name exists
 										if not exists (generic_name) then

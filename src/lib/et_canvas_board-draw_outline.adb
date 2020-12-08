@@ -78,7 +78,7 @@ procedure draw_outline (
 	end query_circle;
 	
 	procedure query_segments (
-		module_name	: in type_module_name.bounded_string;
+		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module) is
 	begin
 		-- All outline segments will be drawn with the same line width and color:

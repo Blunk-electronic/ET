@@ -54,7 +54,7 @@ package et_project.rigs is
 	file_extension_asterisk : constant string := "*." & file_extension;
 
 	type type_module_instance is record
-		generic_name		: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		generic_name		: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		assembly_variant	: et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		-- CS other properties ?
 	end record;

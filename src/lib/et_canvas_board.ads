@@ -75,7 +75,7 @@ package et_canvas_board is
 
 	procedure set_title_bar (
 		-- CS project name								
-		module		: in et_general.type_module_name.bounded_string);
+		module		: in et_general.pac_module_name.bounded_string);
 
 
 	

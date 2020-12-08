@@ -100,7 +100,7 @@ package et_submodules is
 	function to_string (path : in type_submodule_path.bounded_string) return string;
 
 	function to_module_name (path : in type_submodule_path.bounded_string) 
-		return et_general.type_module_name.bounded_string;
+		return et_general.pac_module_name.bounded_string;
 	-- Removes the file extension from given path and returns the module name.
 
 

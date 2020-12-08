@@ -212,10 +212,10 @@ package et_general is
 -- MODULES AND INSTANCE NAMES
 	-- Modules files are refered to by their base name (without extension):
 	module_name_length_max : constant := 100;
-	package type_module_name is new generic_bounded_length (module_name_length_max);
+	package pac_module_name is new generic_bounded_length (module_name_length_max);
 
-	function to_string (name : in type_module_name.bounded_string) return string;
-	function to_module_name (name : in string) return type_module_name.bounded_string;
+	function to_string (name : in pac_module_name.bounded_string) return string;
+	function to_module_name (name : in string) return pac_module_name.bounded_string;
 
 	-- The module instance name is something like LMX_1 or DRV_1. 
 	-- We use this type for names of rig modules and submodules (or templates):

@@ -39,7 +39,7 @@ separate (et_schematic_ops)
 
 procedure invoke_unit (
 -- Invokes a unit of a device into the schematic.
-	module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	device_name		: in type_device_name; -- IC1
 	unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 	destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
@@ -50,7 +50,7 @@ procedure invoke_unit (
 	module_cursor : pac_generic_modules.cursor; -- points to the targeted module
 
 	procedure query_devices (
-		module_name	: in type_module_name.bounded_string;
+		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_module) is
 
 		use et_symbols;

@@ -55,7 +55,7 @@ is
 	use et_modes.board;
 	
 	domain	: type_domain; -- DOM_BOARD
-	module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	
 	function f (place : in positive) return string is begin
 		return et_string_processing.field (single_cmd_status.cmd, place);

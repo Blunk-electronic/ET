@@ -198,7 +198,7 @@ procedure draw_silk_screen (
 
 	
 	procedure query_items (
-		module_name	: in type_module_name.bounded_string;
+		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module) is
 	begin
 		-- All silkscreen segments will be drawn with the same color:

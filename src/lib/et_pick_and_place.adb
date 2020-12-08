@@ -60,12 +60,8 @@ package body et_pick_and_place is
 	end;
 
 	procedure write_pnp (
-	-- Creates the P&P file (which inevitably and intentionally overwrites the previous file).
-	-- Writes the content of the given container pnp in the file.
-	-- - The P&P file will be named after the module name and the assembly variant.
-	-- - Exports the P&P data of the given module to the export/CAM/pick_and_place directory.
 		pnp				: in type_devices.map;
-		module_name		: in type_module_name.bounded_string; -- motor_driver 
+		module_name		: in pac_module_name.bounded_string; -- motor_driver 
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level) is		
@@ -78,7 +74,7 @@ package body et_pick_and_place is
 		procedure set_file_name is 
 			use ada.directories;
 			use gnat.directory_operations;
-			use type_module_name;
+			use pac_module_name;
 			use et_general.pac_assembly_variant_name;
 			use et_export;
 		begin

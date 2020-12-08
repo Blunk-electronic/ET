@@ -458,9 +458,9 @@ procedure et is
 		use et_project.modules;
 		use et_project.modules.pac_generic_modules;
 		use pac_module_file_name;
-		use type_module_name;
+		use pac_module_name;
 
-		generic_module_name : et_general.type_module_name.bounded_string;
+		generic_module_name : et_general.pac_module_name.bounded_string;
 		module_cursor : pac_generic_modules.cursor;
 		script_name_tmp : pac_script_name.bounded_string;
 	begin

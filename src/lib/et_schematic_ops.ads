@@ -127,7 +127,7 @@ package et_schematic_ops is
 	
 	-- Sets the grid of the module.
 	procedure set_grid (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		grid			: in type_grid;
 		log_threshold	: in type_log_level);		
 
@@ -138,13 +138,13 @@ package et_schematic_ops is
 
 	
 	procedure delete_device (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		log_threshold	: in type_log_level);
 
 	-- Returns the sheet/x/y position of the given device and port.
 	function position (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC34
 		port_name		: in et_symbols.type_port_name.bounded_string; -- CE
 		log_threshold	: in type_log_level)
@@ -152,7 +152,7 @@ package et_schematic_ops is
 
 	-- Returns the sheet/x/y position of the given submodule port.
 	function position (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		submod_name		: in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 		port_name		: in pac_net_name.bounded_string; -- RESET
 		log_threshold	: in type_log_level)
@@ -160,7 +160,7 @@ package et_schematic_ops is
 
 	-- Returns the sheet/x/y position of the given netchanger port.
 	function position (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		port			: in et_submodules.type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
@@ -168,7 +168,7 @@ package et_schematic_ops is
 
 	-- Moves the name placeholder of the given unit.
 	procedure move_unit_placeholder (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -186,7 +186,7 @@ package et_schematic_ops is
 	procedure rotate_unit_placeholder (
 	-- Rotates the given unit placeholder about its origin.
 	-- The rotation is absolute.										  
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		rotation		: in et_text.type_rotation_documentation; -- absolute ! -- 90
@@ -224,7 +224,7 @@ package et_schematic_ops is
 
 	function ports_at_place (
 	-- Returns lists of device, netchanger and submodule ports at the given place.
-		module_name		: in type_module_name.bounded_string;
+		module_name		: in pac_module_name.bounded_string;
 		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)		
 		return type_ports;	
@@ -244,7 +244,7 @@ package et_schematic_ops is
 	-- Raises exception if prefix changes. For example renaming from
 	-- R1 to C1 is forbidden as this would change the device category.
 	procedure rename_device (
-		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name_before	: in type_device_name; -- IC1
 		device_name_after	: in type_device_name; -- IC23
 		log_threshold		: in type_log_level);
@@ -254,7 +254,7 @@ package et_schematic_ops is
 	
 	procedure set_value (
 	-- Sets the value of a device.
-		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
 		value				: in pac_device_value.bounded_string; -- 470R
 		log_threshold		: in type_log_level);
@@ -263,7 +263,7 @@ package et_schematic_ops is
 	
 	procedure set_purpose (
 	-- Sets the purpose of a device.
-		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
 		purpose				: in pac_device_purpose.bounded_string; -- brightness_control
 		log_threshold		: in type_log_level);
@@ -272,7 +272,7 @@ package et_schematic_ops is
 	
 	procedure set_partcode (
 	-- Sets the partcode of a device.
-		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
 		partcode			: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level);
@@ -362,7 +362,7 @@ package et_schematic_ops is
 	-- Raises semantic error if the variant is not defined
 	-- in the according device model:
 	procedure set_variant (
-		module			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device			: in et_devices.type_device_name; -- R2
 		variant			: in pac_package_variant_name.bounded_string; -- N, D
 		log_threshold	: in type_log_level);
@@ -416,7 +416,7 @@ package et_schematic_ops is
 	procedure add_device (
 	-- Adds a device to the schematic. The unit is determined by the unit add levels.
 	-- If the given variant is empty (zero length) the the device is assumed to be virtual.							 
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
 		destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
@@ -429,7 +429,7 @@ package et_schematic_ops is
 	procedure copy_device (
 	-- Copies the given device. Places the first unit of the device (according to add level)
 	-- at the given destination in the schematic.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		destination		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
@@ -494,7 +494,7 @@ package et_schematic_ops is
 	
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 		destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
@@ -504,20 +504,20 @@ package et_schematic_ops is
 
 	procedure add_netchanger (
 	-- Adds a netchanger to the schematic.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 	procedure delete_netchanger (
 	-- Deletes a netchanger.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		log_threshold	: in type_log_level);
 
 	procedure move_netchanger (
 	-- Moves the given netchanger. Disconnects the netchanger from
 	-- start or end points of net segments.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
@@ -530,7 +530,7 @@ package et_schematic_ops is
 	-- Net segment positions are modified.
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
@@ -539,7 +539,7 @@ package et_schematic_ops is
 	procedure rotate_netchanger (
 	-- Rotates the given netchanger. Disconnects it from
 	-- start or end points of net segments.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in et_coordinates.type_rotation; -- 90
@@ -547,7 +547,7 @@ package et_schematic_ops is
 	
 	procedure add_submodule (
 	-- Adds a submodule instance to the schematic.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in et_submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		position		: in et_coordinates.type_position; -- sheet, lower left corner x/y 
@@ -556,7 +556,7 @@ package et_schematic_ops is
 	
 	procedure add_port (
 	-- Adds a port to a submodule instance.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		port_name		: in et_general.pac_net_name.bounded_string; -- clk_out
 		position		: in type_point; -- x/y along the edge of the box
@@ -569,7 +569,7 @@ package et_schematic_ops is
 
 	procedure delete_port (
 	-- Deletes a port of a submodule instance (the box in the parent sheet).
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		port_name		: in et_general.pac_net_name.bounded_string; -- clk_out
 		log_threshold	: in type_log_level);
@@ -578,7 +578,7 @@ package et_schematic_ops is
 	-- Moves the given submodule port. Disconnects the port from
 	-- start or end points of net segments BEFORE the move. 
 	-- Connects submodule port with segment end or start points AFTER the move.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
 		port_name		: in et_general.pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -591,7 +591,7 @@ package et_schematic_ops is
 	-- Net segment positions are modified.
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
 		port_name		: in et_general.pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -600,7 +600,7 @@ package et_schematic_ops is
 
 	procedure delete_submodule (
 	-- Removes a submodule instance from the schematic.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level);
 
@@ -608,7 +608,7 @@ package et_schematic_ops is
 	-- Moves the given submodule instance (the box). Disconnects the ports from
 	-- start or end points of net segments BEFORE the move. 
 	-- Connects submodule ports with segment end or start points AFTER the move.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
@@ -621,7 +621,7 @@ package et_schematic_ops is
 	-- Net segment positions are modified.
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
@@ -629,7 +629,7 @@ package et_schematic_ops is
 
 	procedure copy_submodule (
 	-- Copies a submodule instance.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance_origin	: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		instance_new	: in et_general.type_module_instance_name.bounded_string; -- CLOCK_GENERATOR
 		destination		: in et_coordinates.type_position; -- sheet/x/y
@@ -637,33 +637,33 @@ package et_schematic_ops is
 
 	procedure rename_submodule (
 	-- Renames a submodule instance.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance_old	: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		instance_new	: in et_general.type_module_instance_name.bounded_string; -- CLOCK_GENERATOR
 		log_threshold	: in type_log_level);
 	
 	procedure set_submodule_file (
 	-- Sets the file name of a submodule instance.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in et_submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level);
 
 	procedure create_assembly_variant (
 	-- Creates a new assembly variant.
-		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level);
 
 	procedure delete_assembly_variant (
 	-- Deletes an assembly variant.
-		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level);
 	
 	procedure describe_assembly_variant (
 	-- Describes an assembly variant. Overwrites the previous description.
-		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		description		: in et_assembly_variants.type_description; -- "this is the low budget variant"
 		log_threshold	: in type_log_level);
@@ -671,7 +671,7 @@ package et_schematic_ops is
 	procedure mount_device (
 	-- Sets the value, partcode and (optionally the purpose) of a device in 
 	-- An already existing device will be overwritten without warning.
-		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		value			: in pac_device_value.bounded_string; -- 220R
@@ -681,14 +681,14 @@ package et_schematic_ops is
 
 	procedure unmount_device (
 	-- Sets the given device as not mounted in the given assembly variant.
-		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		log_threshold	: in type_log_level);
 
 	procedure remove_device (
 	-- Removes the given device from the given assembly variant.
-		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		log_threshold	: in type_log_level);
@@ -696,7 +696,7 @@ package et_schematic_ops is
 	procedure mount_submodule (
 	-- Sets the assembly variant of a submodule instance. An already existing submodule
 	-- will be overwritten without warning.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_parent	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost								  
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		variant_submod	: in et_general.pac_assembly_variant_name.bounded_string; -- fixed_frequency
@@ -705,7 +705,7 @@ package et_schematic_ops is
 	procedure remove_submodule (
 	-- Removes the assembly variant of a submodule. This results in all devices
 	-- of the submodule being mounted.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_parent	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost								   
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level);
@@ -723,7 +723,7 @@ package et_schematic_ops is
 	
 	procedure renumber_devices (
 	-- Renumbers devices according to the sheet number.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		step_width		: in type_name_index;
 		log_threshold	: in type_log_level);
 
@@ -731,18 +731,18 @@ package et_schematic_ops is
 	-- Calculates the device index ranges of the given top module and all its submodules.
 	-- Assigns the device names offset of the instantiated submodules.
 	-- Assumes that all devices of the modules are mounted -> assembly variants ignored.
-		module_name		: in type_module_name.bounded_string; -- the top module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the top module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 
 	procedure dump_tree (
 	-- Dumps submodule names, instances and device name offsets:
-		module_name		: in type_module_name.bounded_string;
+		module_name		: in pac_module_name.bounded_string;
 		log_threshold	: in type_log_level);
 
 	
 	procedure build_submodules_tree (
 	-- Re(builds) the submodule tree of the given parent module.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 	
 	procedure apply_offset (
@@ -754,7 +754,7 @@ package et_schematic_ops is
 	procedure make_boms (
 	-- Generates the BOM files of all assembly variants from the given top module.
 	-- The files are named after the module name and the variant name.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 	
 	function port_properties (
@@ -772,7 +772,7 @@ package et_schematic_ops is
 	procedure make_netlists (
 	-- Generates the netlist files of all assembly variants from the given top module.
 	-- The netlist files are named after the module name and the variant name.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (
@@ -790,7 +790,7 @@ package et_schematic_ops is
 	-- 9. CS: check partcode (conventions.validate_partcode)								  
 	-- 10. units sitting on to of each other (same origin position)
 	-- 11. CS: warning (or error ?) if any ports sit on top of each other. This would make the movable_tests obsolete.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 
 	-- The result of a unit query is of this type:

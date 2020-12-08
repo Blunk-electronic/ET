@@ -132,7 +132,7 @@ package body et_project is
 
 	procedure create_project_directory (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		module_name		: in type_module_name.bounded_string := to_module_name (""); -- motor_driver
+		module_name		: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_general;
 		use ada.directories;
@@ -188,7 +188,7 @@ package body et_project is
 		procedure create_module_file is
 			-- backup the current working directory
 			previous_directory : constant string := current_directory;
-			use type_module_name;
+			use pac_module_name;
 		begin
 			-- change into project directory
 			set_directory (to_string (project_name));
@@ -532,7 +532,7 @@ package body et_project is
 		
 		procedure query_modules (module_cursor : in pac_generic_modules.cursor) is
 		-- Saves a project internal module or a submodule (indicated by module_cursor).
-			module_name : type_module_name.bounded_string := key (module_cursor); -- motor_driver
+			module_name : pac_module_name.bounded_string := key (module_cursor); -- motor_driver
 		begin
 			log_indentation_up;
 

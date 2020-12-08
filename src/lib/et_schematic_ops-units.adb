@@ -49,7 +49,7 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level) is
 		
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
@@ -152,7 +152,7 @@ package body et_schematic_ops.units is
 	end delete_unit;
 	
 	procedure delete_unit (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level) is
@@ -176,7 +176,7 @@ package body et_schematic_ops.units is
 	end delete_unit;
 	
 	procedure move_unit (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -187,7 +187,7 @@ package body et_schematic_ops.units is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
@@ -347,7 +347,7 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level) is
 
 		procedure query_nets (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
 			procedure query_net (net_cursor : in type_nets.cursor) is
@@ -690,7 +690,7 @@ package body et_schematic_ops.units is
 	end movable;
 	
 	procedure drag_unit (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -734,7 +734,7 @@ package body et_schematic_ops.units is
 		end make_drag_list;
 		
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
@@ -915,7 +915,7 @@ package body et_schematic_ops.units is
 	end drag_unit;
 	
 	procedure rotate_unit (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -926,7 +926,7 @@ package body et_schematic_ops.units is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
+			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
