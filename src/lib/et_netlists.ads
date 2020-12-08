@@ -93,7 +93,7 @@ package et_netlists is
 	-- energy flow. It determines whether a signal coming out of a submodule
 	-- enforces its name on the net in the parent module or vice versa:
 	type type_submodule_port_extended is record
-		module		: type_module_instance_name.bounded_string; -- MOT_DRV_3
+		module		: pac_module_instance_name.bounded_string; -- MOT_DRV_3
 		port		: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
 		direction	: type_netchanger_port_name; -- master/slave
 	end record;
@@ -107,7 +107,7 @@ package et_netlists is
 	
 	level_separator : constant character := '/';
 
-	function to_prefix (instance : in type_module_instance_name.bounded_string) -- OSC1
+	function to_prefix (instance : in pac_module_instance_name.bounded_string) -- OSC1
 	-- Converts an instance name to a net prefix with a trailing level separator.		
 		return et_general.pac_net_name.bounded_string;
 
@@ -159,7 +159,7 @@ package et_netlists is
 	-- generic name, instance name and a list of its nets:
 	type type_module is record
 		generic_name	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
-		instance_name	: type_module_instance_name.bounded_string; -- OSC1
+		instance_name	: pac_module_instance_name.bounded_string; -- OSC1
 		nets			: type_nets.map;
 	end record;
 	

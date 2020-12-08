@@ -85,7 +85,7 @@ package body et_schematic_ops is
 			"ERROR: Unit " & to_string (name) & " not found !";
 	end unit_not_found;
 
-	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string) is begin
+	procedure submodule_not_found (name : in et_general.pac_module_instance_name.bounded_string) is begin
 		log (ERROR, "submodule instance " & enclose_in_quotes (et_general.to_string (name)) &
 			 " not found !", console => true);
 		raise constraint_error;
@@ -674,7 +674,7 @@ package body et_schematic_ops is
 	function position (
 	-- Returns the sheet/x/y position of the given submodule port.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		submod_name		: in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+		submod_name		: in et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 		port_name		: in pac_net_name.bounded_string; -- RESET
 		log_threshold	: in type_log_level)
 		return et_coordinates.type_position
@@ -692,7 +692,7 @@ package body et_schematic_ops is
 			submod_position : et_coordinates.type_position;
 
 			procedure query_ports (
-				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submod_name	: in et_general.pac_module_instance_name.bounded_string;
 				submodule	: in type_submodule) is
 				use type_submodule_ports;
 				port_xy : type_point;
@@ -2853,11 +2853,11 @@ package body et_schematic_ops is
 	function exists_submodule_port (
 	-- Returns true if given submodule with the given port exists in module indicated by module_cursor.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		submod_instance	: in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+		submod_instance	: in et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 		port_name		: in et_general.pac_net_name.bounded_string) -- RESET
 		return boolean is
 
-		use et_general.type_module_instance_name;
+		use et_general.pac_module_instance_name;
 		use et_submodules;
 		
 		result : boolean := false; -- to be returned, goes true once the target has been found
@@ -2871,7 +2871,7 @@ package body et_schematic_ops is
 			procedure query_ports (
 			-- Searches the portlist of the submodule for a port having the port_name.
 			-- Exits prematurely on match.
-				submod_name	: in type_module_instance_name.bounded_string;
+				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in type_submodule) is
 				use pac_net_name;
 				use type_submodule_ports;
@@ -4593,7 +4593,7 @@ package body et_schematic_ops is
 	-- Adds a submodule instance to the schematic.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in et_submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC1
 		position		: in et_coordinates.type_position; -- sheet, lower left corner x/y 
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
 		log_threshold	: in type_log_level) is
@@ -4690,7 +4690,7 @@ package body et_schematic_ops is
 	-- CS: Automatic splitting the segment into two and placing a junction is not supported
 	-- jet and probably not a good idea.
 		module			: in pac_generic_modules.cursor;		-- the module
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
+		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC
 		port			: in et_general.pac_net_name.bounded_string; -- clock_output
 		position		: in et_coordinates.type_position; -- the port position
 		log_threshold	: in type_log_level) is
@@ -4821,7 +4821,7 @@ package body et_schematic_ops is
 	procedure add_port (
 	-- Adds a port to a submodule instance (the box in the parent sheet).
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC1
 		port_name		: in pac_net_name.bounded_string; -- clk_out
 		position		: in type_point; -- x/y along the edge of the box
 		
@@ -4848,7 +4848,7 @@ package body et_schematic_ops is
 			submod_cursor : type_submodules.cursor;
 
 			procedure query_ports (
-				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submod_name	: in et_general.pac_module_instance_name.bounded_string;
 				submodule	: in out type_submodule) is
 				use type_submodule_ports;
 				cursor : type_submodule_ports.cursor;
@@ -5090,7 +5090,7 @@ package body et_schematic_ops is
 	procedure delete_port (
 	-- Deletes a port of a submodule instance (the box in the parent sheet).
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC1
 		port_name		: in pac_net_name.bounded_string; -- clk_out
 		log_threshold	: in type_log_level) is
 
@@ -5108,7 +5108,7 @@ package body et_schematic_ops is
 			submod_cursor : type_submodules.cursor;
 
 			procedure query_ports (
-				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submod_name	: in et_general.pac_module_instance_name.bounded_string;
 				submodule	: in out type_submodule) is
 				use type_submodule_ports;
 				port_cursor : type_submodule_ports.cursor;
@@ -5178,7 +5178,7 @@ package body et_schematic_ops is
 	-- start or end points of net segments BEFORE the move. 
 	-- Connects submodule port with segment end or start points AFTER the move.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
+		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC
 		port_name		: in et_general.pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
@@ -5201,7 +5201,7 @@ package body et_schematic_ops is
 			submod_cursor : type_submodules.cursor;
 
 			procedure query_ports (
-				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submod_name	: in et_general.pac_module_instance_name.bounded_string;
 				submodule	: in out type_submodule) is
 				use type_submodule_ports;
 				port_cursor : type_submodule_ports.cursor;
@@ -5506,7 +5506,7 @@ package body et_schematic_ops is
 	-- for movement are: no device, no netchanger ports there.
 	-- The ONE and ONLY port allowed here is the port-to-be-dragged itself.
 		module_cursor	: in pac_generic_modules.cursor;
-		instance		: in et_general.type_module_instance_name.bounded_string;
+		instance		: in et_general.pac_module_instance_name.bounded_string;
 		port_name		: in et_general.pac_net_name.bounded_string;
 		point 			: in et_coordinates.type_position;
 		log_threshold	: in et_string_processing.type_log_level) is 
@@ -5572,7 +5572,7 @@ package body et_schematic_ops is
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
+		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC
 		port_name		: in et_general.pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
@@ -5596,7 +5596,7 @@ package body et_schematic_ops is
 			submod_cursor : type_submodules.cursor;
 
 			procedure query_ports (
-				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submod_name	: in et_general.pac_module_instance_name.bounded_string;
 				submodule	: in out type_submodule) is
 				use type_submodule_ports;
 				port_cursor : type_submodule_ports.cursor;
@@ -5751,7 +5751,7 @@ package body et_schematic_ops is
 	procedure delete_ports (
 	-- Deletes all references to the given submodule in the nets.
 		module_cursor	: in pac_generic_modules.cursor;					-- the module
-		instance		: in et_general.type_module_instance_name.bounded_string; -- the submodule instance
+		instance		: in et_general.pac_module_instance_name.bounded_string; -- the submodule instance
 		position		: in et_coordinates.type_position; 		-- the location in the schematic (only sheet matters)
 		log_threshold	: in type_log_level) is
 
@@ -5775,7 +5775,7 @@ package body et_schematic_ops is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 					procedure change_segment (segment : in out type_net_segment) is
-						use type_module_instance_name;
+						use pac_module_instance_name;
 						use type_ports_submodule;
 						port_cursor : type_ports_submodule.cursor := segment.ports_submodules.first;
 					begin
@@ -5856,7 +5856,7 @@ package body et_schematic_ops is
 	procedure delete_submodule (
 	-- Removes a submodule instance from the schematic.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level) is
 
 		use et_submodules;
@@ -5915,7 +5915,7 @@ package body et_schematic_ops is
 	-- start or end points of net segments BEFORE the move. 
 	-- Connects submodule ports with segment end or start points AFTER the move.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in type_point; -- x/y
@@ -5939,7 +5939,7 @@ package body et_schematic_ops is
 			ports : type_submodule_ports.map; -- port names and relative x/y positions
 
 			procedure move (
-				instance	: in et_general.type_module_instance_name.bounded_string;
+				instance	: in et_general.pac_module_instance_name.bounded_string;
 				submodule	: in out type_submodule) is
 			begin
 				case coordinates is
@@ -6067,7 +6067,7 @@ package body et_schematic_ops is
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
@@ -6099,7 +6099,7 @@ package body et_schematic_ops is
 			port_cursor : type_submodule_ports.cursor := ports.first;
 
 			procedure query_ports (
-				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submod_name	: in et_general.pac_module_instance_name.bounded_string;
 				submodule	: in type_submodule) is
 				use type_submodule_ports;
 				port_cursor : type_submodule_ports.cursor := submodule.ports.first;
@@ -6174,7 +6174,7 @@ package body et_schematic_ops is
 
 			procedure move_box (
 			-- Moves the box on the sheet according to given target position.
-				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submod_name	: in et_general.pac_module_instance_name.bounded_string;
 				submodule	: in out type_submodule) is
 			begin
 				-- NOTE: The sheet number does not change in drag operations.
@@ -6272,8 +6272,8 @@ package body et_schematic_ops is
 	procedure copy_submodule (
 	-- Copies a submodule instance.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance_origin	: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		instance_new	: in et_general.type_module_instance_name.bounded_string; -- CLOCK_GENERATOR
+		instance_origin	: in et_general.pac_module_instance_name.bounded_string; -- OSC1
+		instance_new	: in et_general.pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
 		destination		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level) is
 
@@ -6391,8 +6391,8 @@ package body et_schematic_ops is
 	procedure rename_submodule (
 	-- Renames a submodule instance.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance_old	: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		instance_new	: in et_general.type_module_instance_name.bounded_string; -- CLOCK_GENERATOR
+		instance_old	: in et_general.pac_module_instance_name.bounded_string; -- OSC1
+		instance_new	: in et_general.pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -6504,7 +6504,7 @@ package body et_schematic_ops is
 	-- Sets the file name of a submodule instance.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in et_submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -6520,7 +6520,7 @@ package body et_schematic_ops is
 			submod_cursor : type_submodules.cursor;
 
 			procedure set_file (
-				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submod_name	: in et_general.pac_module_instance_name.bounded_string;
 				submodule	: in out type_submodule) is
 
 				-- Prior to assigning the file, we create a test submodule and test
@@ -7053,7 +7053,7 @@ package body et_schematic_ops is
 	-- will be overwritten without warning.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_parent	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost								  
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC1
 		variant_submod	: in et_general.pac_assembly_variant_name.bounded_string; -- fixed_frequency
 		log_threshold	: in type_log_level) is
 
@@ -7149,7 +7149,7 @@ package body et_schematic_ops is
 	-- of the submodule being mounted.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_parent	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance		: in et_general.pac_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -7722,7 +7722,7 @@ package body et_schematic_ops is
 			module_name 	: pac_module_name.bounded_string; -- motor_driver
 			parent_name 	: pac_module_name.bounded_string; -- water_pump
 			module_range 	: type_index_range;
-			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+			module_instance	: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 
 			procedure assign_offset (module : in out et_numbering.type_module) is begin
 			-- assign the device name offset to the current submodule according to the latest index_max.
@@ -7957,7 +7957,7 @@ package body et_schematic_ops is
 			use et_submodules.type_submodules;
 			submod_cursor	: et_submodules.type_submodules.cursor := module.submods.first;
 			submod_name		: pac_module_name.bounded_string; -- $ET_TEMPLATES/motor_driver
-			submod_instance	: type_module_instance_name.bounded_string; -- OSC1
+			submod_instance	: pac_module_instance_name.bounded_string; -- OSC1
 		begin -- query_submodules in given top module
 			while submod_cursor /= et_submodules.type_submodules.no_element loop
 				submod_name := to_module_name (remove_extension (to_string (element (submod_cursor).file)));
@@ -8318,7 +8318,7 @@ package body et_schematic_ops is
 				use et_numbering.type_modules;
 				module_name 	: pac_module_name.bounded_string; -- motor_driver
 				parent_name 	: pac_module_name.bounded_string; -- water_pump
-				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+				module_instance	: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 				offset			: type_name_index;
 
 				use et_assembly_variants.pac_submodule_variants;
@@ -8638,7 +8638,7 @@ package body et_schematic_ops is
 	-- Returns the direction (master/slave) of the given submodule port in module indicated by module_cursor.
 	-- The submodule must exist in the module.
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		submod_instance	: in type_module_instance_name.bounded_string; -- OSC1
+		submod_instance	: in pac_module_instance_name.bounded_string; -- OSC1
 		port_name		: in pac_net_name.bounded_string) -- clock_out
 		return et_submodules.type_netchanger_port_name is
 
@@ -8652,7 +8652,7 @@ package body et_schematic_ops is
 			submod_cursor : type_submodules.cursor;
 
 			procedure query_ports (
-				submod_name	: in type_module_instance_name.bounded_string;
+				submod_name	: in pac_module_instance_name.bounded_string;
 				submod		: in type_submodule) is
 				use type_submodule_ports;
 				port_cursor : type_submodule_ports.cursor;
@@ -8909,7 +8909,7 @@ package body et_schematic_ops is
 				use et_numbering.type_modules;
 				module_name 	: pac_module_name.bounded_string; -- motor_driver
 				parent_name 	: pac_module_name.bounded_string; -- water_pump
-				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+				module_instance	: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 				offset			: type_name_index;
 
 				use et_assembly_variants.pac_submodule_variants;

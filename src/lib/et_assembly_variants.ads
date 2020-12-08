@@ -54,7 +54,7 @@ with et_devices;				use et_devices;
 package et_assembly_variants is
 
 	use pac_assembly_variant_name;
-	use type_module_instance_name;
+	use pac_module_instance_name;
 	
 	keyword_active	: constant string := "active";	
 	
@@ -97,7 +97,7 @@ package et_assembly_variants is
 
 	-- Variants of submodules are collected in a map.	
 	package pac_submodule_variants is new ordered_maps (
-		key_type		=> type_module_instance_name.bounded_string, -- MOT_DRV_3
+		key_type		=> pac_module_instance_name.bounded_string, -- MOT_DRV_3
 		element_type	=> type_submodule);
 
 	-- The final assembly variant is composed of a description and the affected devices:

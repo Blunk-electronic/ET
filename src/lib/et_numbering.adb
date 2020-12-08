@@ -39,7 +39,7 @@ package body et_numbering is
 
 	function "<" (left, right : in type_module) return boolean is
 		use pac_module_name;
-		use type_module_instance_name;
+		use pac_module_instance_name;
 		result : boolean;
 	begin
 		if left.name < right.name then

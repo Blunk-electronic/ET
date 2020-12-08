@@ -60,7 +60,7 @@ package body et_project.rigs is
 	-- Returns true if left connector comes before right connector.
 	-- Returns false if connectors are equal.
 		use pac_device_purpose;
-		use type_module_instance_name;
+		use pac_module_instance_name;
 		r : boolean := false; -- to be returned
 	begin
 		-- First we compare instance_A

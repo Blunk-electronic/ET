@@ -824,7 +824,7 @@ package body et_board_ops is
 	--  - The module to be searched in must be in the rig already.
 	--  - The submodule instance must exist in the module.
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in et_general.type_module_instance_name.bounded_string) -- OSC1
+		instance		: in et_general.pac_module_instance_name.bounded_string) -- OSC1
 		return type_position is
 		
 		position : type_position := origin_zero_rotation; -- to be returned
@@ -856,7 +856,7 @@ package body et_board_ops is
 	-- Moves a submodule instance within the parent module layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		instance		: in type_module_instance_name.bounded_string; -- OSC1
+		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
@@ -870,7 +870,7 @@ package body et_board_ops is
 			submod_cursor : et_submodules.type_submodules.cursor;
 
 			procedure move (
-				instance	: in et_general.type_module_instance_name.bounded_string;
+				instance	: in et_general.pac_module_instance_name.bounded_string;
 				submodule	: in out et_submodules.type_submodule) is
 			begin
 				case coordinates is
@@ -1186,7 +1186,7 @@ package body et_board_ops is
 				use et_numbering.type_modules;
 				module_name 	: pac_module_name.bounded_string; -- motor_driver
 				parent_name 	: pac_module_name.bounded_string; -- water_pump
-				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+				module_instance	: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 				offset			: et_devices.type_name_index;
 
 				use et_assembly_variants.pac_submodule_variants;

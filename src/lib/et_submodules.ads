@@ -240,8 +240,8 @@ package et_submodules is
 	
 	
 	package type_submodules is new ordered_maps (
-		key_type		=> et_general.type_module_instance_name.bounded_string, -- MOT_DRV_3
-		"<" 			=> et_general.type_module_instance_name."<",
+		key_type		=> et_general.pac_module_instance_name.bounded_string, -- MOT_DRV_3
+		"<" 			=> et_general.pac_module_instance_name."<",
 		element_type	=> type_submodule);
 
 	netchanger_id_max : constant positive := 10000; -- CS  increase if necessary

@@ -581,7 +581,7 @@ is
 	submodule_port			: et_submodules.type_submodule_port;
 	submodule_port_name		: et_general.pac_net_name.bounded_string; -- RESET
 	submodule_ports			: et_submodules.type_submodule_ports.map;
-	submodule_name 			: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+	submodule_name 			: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 	submodule				: et_submodules.type_submodule;
 
 	note : et_schematic.type_text;
@@ -4334,7 +4334,7 @@ is
 								device			: access et_assembly_variants.type_device;
 								device_cursor	: et_assembly_variants.pac_device_variants.cursor;
 								
-								submod_name		: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+								submod_name		: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 								submod_var		: et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 								submod_cursor	: et_assembly_variants.pac_submodule_variants.cursor;
 								inserted		: boolean;
@@ -6219,7 +6219,7 @@ is
 				variant			: in et_assembly_variants.type_assembly_variant) is
 				use pac_submodule_variants;
 				submod_cursor : pac_submodule_variants.cursor := variant.submodules.first;
-				submod_name : type_module_instance_name.bounded_string; -- CLK_GENERATOR
+				submod_name : pac_module_instance_name.bounded_string; -- CLK_GENERATOR
 				submod_variant : et_general.pac_assembly_variant_name.bounded_string; -- fixed_frequency
 			begin -- query_submodules
 				if submod_cursor = pac_submodule_variants.no_element then

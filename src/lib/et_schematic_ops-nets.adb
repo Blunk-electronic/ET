@@ -2317,7 +2317,7 @@ package body et_schematic_ops.nets is
 							use type_ports_submodule;
 
 							procedure query_ports (cursor : in type_ports_submodule.cursor) is
-								submod_name 	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+								submod_name 	: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 								port_name		: pac_net_name.bounded_string; -- RESET
 								port_position 	: type_point; -- the xy-position of the port
 							begin

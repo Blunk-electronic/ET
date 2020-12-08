@@ -300,7 +300,7 @@ package et_project.modules is
 	-- Returns true if the given module provides the given submodule instance.
 	-- The module being searched in must be in the rig already.						
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
-		instance	: in et_general.type_module_instance_name.bounded_string) -- OSC1
+		instance	: in et_general.pac_module_instance_name.bounded_string) -- OSC1
 		return boolean;
 
 	function exists (
@@ -309,7 +309,7 @@ package et_project.modules is
 	-- in the parent module indicated by cursor "module".
 	-- The module being searched in must be in the rig already.						
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
-		instance	: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance	: in et_general.pac_module_instance_name.bounded_string; -- OSC1
 		variant		: in et_general.pac_assembly_variant_name.bounded_string) -- low_cost				
 		return boolean;
 
@@ -359,7 +359,7 @@ package et_project.modules is
 	-- is no_element.
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
-		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
+		submod	: in et_general.pac_module_instance_name.bounded_string) -- OSC1
 		return et_assembly_variants.pac_submodule_variants.cursor;
 
 	-- Returns the index of the deepest conductor layer of the given module:

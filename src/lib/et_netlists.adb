@@ -92,7 +92,7 @@ package body et_netlists is
 	end;
 
 	function "<" (left, right : in type_submodule_port_extended) return boolean is
-		use type_module_instance_name;
+		use pac_module_instance_name;
 		use et_general.pac_net_name;
 		result : boolean := false;
 	begin
@@ -114,7 +114,7 @@ package body et_netlists is
 		return result;
 	end;
 	
-	function to_prefix (instance : in type_module_instance_name.bounded_string) -- OSC1
+	function to_prefix (instance : in pac_module_instance_name.bounded_string) -- OSC1
 	-- Converts an instance name to a net prefix with a trailing level separator.
 		return et_general.pac_net_name.bounded_string is
 	begin
@@ -321,7 +321,7 @@ package body et_netlists is
 	-- Returns true if net (indicated by net_cursor) is connected with the
 	-- given port of a submodule instance.
 		net_cursor		: in type_nets.cursor;
-		submodule		: in type_module_instance_name.bounded_string; -- OSC1
+		submodule		: in pac_module_instance_name.bounded_string; -- OSC1
 		port			: in et_general.pac_net_name.bounded_string) -- clock_out
 		return boolean is
 
@@ -335,7 +335,7 @@ package body et_netlists is
 			use type_submodule_ports_extended;
 			port_cursor : type_submodule_ports_extended.cursor := net.submodules.first;
 			use et_general.pac_net_name;
-			use et_general.type_module_instance_name;
+			use et_general.pac_module_instance_name;
 		begin
 			while port_cursor /= type_submodule_ports_extended.no_element loop
 				
@@ -370,7 +370,7 @@ package body et_netlists is
 		global_nets : type_global_nets.list; -- to be returned
 
 		procedure query_submodules (submodule_cursor : in type_modules.cursor) is
-			use et_general.type_module_instance_name;
+			use et_general.pac_module_instance_name;
 
 			procedure query_nets (module : in type_module) is
 			-- Search for a global net named after the given net (via net_cursor).
@@ -541,7 +541,7 @@ package body et_netlists is
 		net_cursor : type_nets.cursor; -- to be returned
 
 		procedure query_submodules (submodule_cursor : in type_modules.cursor) is
-			use et_general.type_module_instance_name;
+			use et_general.pac_module_instance_name;
 
 			procedure query_nets (module : in type_module) is
 			-- Search for the net specified by "port.port". The search ends

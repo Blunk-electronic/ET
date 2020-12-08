@@ -210,7 +210,9 @@ package et_general is
 
 
 -- MODULES AND INSTANCE NAMES
-	-- Modules files are refered to by their base name (without extension):
+	
+	-- Generic modules are named with this type:
+	-- (The actual file has the same name with extension *.mod.)
 	module_name_length_max : constant := 100;
 	package pac_module_name is new generic_bounded_length (module_name_length_max);
 
@@ -218,12 +220,11 @@ package et_general is
 	function to_module_name (name : in string) return pac_module_name.bounded_string;
 
 	-- The module instance name is something like LMX_1 or DRV_1. 
-	-- We use this type for names of rig modules and submodules (or templates):
 	module_instance_name_length_max : constant positive := 20;
-	package type_module_instance_name is new generic_bounded_length (module_instance_name_length_max);
+	package pac_module_instance_name is new generic_bounded_length (module_instance_name_length_max);
 
-	function to_string (name : in type_module_instance_name.bounded_string) return string;
-	function to_instance_name (name : in string) return type_module_instance_name.bounded_string;
+	function to_string (name : in pac_module_instance_name.bounded_string) return string;
+	function to_instance_name (name : in string) return pac_module_instance_name.bounded_string;
 
 
 	-- The name of an assembly variant is a text like "low_cost" or "with temperature sensor" or just a number like V345:

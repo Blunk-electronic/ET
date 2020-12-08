@@ -63,7 +63,7 @@ package body et_schematic is
 	end;
 
 	function "<" (left, right : in type_port_submodule) return boolean is
-		use et_general.type_module_instance_name;
+		use et_general.pac_module_instance_name;
 	begin
 		if left.module_name < right.module_name then
 			return true;

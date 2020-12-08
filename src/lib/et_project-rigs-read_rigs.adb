@@ -82,7 +82,7 @@ procedure read_rigs (
 
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		generic_name : pac_module_name.bounded_string; -- motor_driver
-		instance_name : type_module_instance_name.bounded_string; -- DRV_1
+		instance_name : pac_module_instance_name.bounded_string; -- DRV_1
 		assembly_variant : et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 
 		procedure clear_module_instance is begin
@@ -91,7 +91,7 @@ procedure read_rigs (
 		end clear_module_instance;
 		
 		purpose_A, purpose_B : pac_device_purpose.bounded_string; -- power_in, power_out
-		instance_A, instance_B : type_module_instance_name.bounded_string; -- DRV_1, PWR
+		instance_A, instance_B : pac_module_instance_name.bounded_string; -- DRV_1, PWR
 
 		procedure clear_connector is begin
 			purpose_A := pac_device_purpose.to_bounded_string ("");
@@ -138,7 +138,7 @@ procedure read_rigs (
 					connection_inserted : boolean;
 					connection_cursor : type_module_connectors.cursor;
 					use pac_device_purpose;
-					use et_general.type_module_instance_name;
+					use et_general.pac_module_instance_name;
 				begin
 					-- If NONE of the four elements that make a module connection is specified,
 					-- then do nothing. Otherwise ALL of them must be specified.
