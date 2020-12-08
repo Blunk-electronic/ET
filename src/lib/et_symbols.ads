@@ -394,7 +394,7 @@ package et_symbols is
 	-- like GND may exist only once in the symbol. Te symbol is an abstraction of a
 	-- function block within a device. It does not matter how many GND terminals exist
 	-- at the package (footprint):
-	package type_ports is new indefinite_ordered_maps (
+	package pac_ports is new indefinite_ordered_maps (
 		key_type		=> pac_port_name.bounded_string, -- CLOCK, CE, VDD, GND
 		element_type	=> type_port);
 
@@ -490,7 +490,7 @@ package et_symbols is
 	
 	type type_symbol (appearance : type_appearance) is new type_symbol_base with record
 		shapes			: type_shapes; -- the collection of shapes
-		ports			: type_ports.map;
+		ports			: pac_ports.map;
 		case appearance is
 			when PCB =>
 				-- Placeholders for device wide texts. To be filled with content when 

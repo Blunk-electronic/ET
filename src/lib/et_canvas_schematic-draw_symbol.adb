@@ -62,7 +62,7 @@ is
 	use type_lines;
 	use type_arcs;
 	use type_circles;
-	use type_ports;
+	use pac_ports;
 	use pac_texts;
 
 	type type_line is new pac_shapes.type_line with null record;
@@ -100,7 +100,7 @@ is
 		draw_circle (in_area, context, circle, NO, self.frame_height);
 	end draw_circle;
 
-	procedure draw_port (c : in type_ports.cursor) is
+	procedure draw_port (c : in pac_ports.cursor) is
 		start_point			: type_point := element (c).position;
 		end_point			: type_point := element (c).position;
 

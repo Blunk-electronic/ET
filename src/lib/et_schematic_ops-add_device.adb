@@ -165,7 +165,7 @@ procedure add_device (
 
 		end add_unit_external;
 
-		ports : et_symbols.type_ports.map;
+		ports : et_symbols.pac_ports.map;
 		unit_name : et_devices.pac_unit_name.bounded_string;
 		
 	begin -- add

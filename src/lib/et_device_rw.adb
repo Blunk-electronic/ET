@@ -514,11 +514,11 @@ package body et_device_rw is
 
 		procedure insert_port is 
 			inserted	: boolean;
-			cursor		: type_ports.cursor;
+			cursor		: pac_ports.cursor;
 		begin
 			case port_direction is
 				when PASSIVE =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -528,7 +528,7 @@ package body et_device_rw is
 						);
 
 				when INPUT_ANALOG =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -538,7 +538,7 @@ package body et_device_rw is
 						);
 
 				when INPUT_DIGITAL =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -550,7 +550,7 @@ package body et_device_rw is
 						);
 
 				when OUTPUT_ANALOG =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -562,7 +562,7 @@ package body et_device_rw is
 						);
 
 				when OUTPUT_DIGITAL =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -575,7 +575,7 @@ package body et_device_rw is
 						);
 
 				when BIDIR_DIGITAL =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -590,7 +590,7 @@ package body et_device_rw is
 						);
 
 				when POWER_OUT =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -601,7 +601,7 @@ package body et_device_rw is
 						);
 
 				when POWER_IN =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -612,7 +612,7 @@ package body et_device_rw is
 						);
 
 				when NOT_CONNECTED =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,

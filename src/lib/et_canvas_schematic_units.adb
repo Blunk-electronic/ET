@@ -211,7 +211,7 @@ package body et_canvas_schematic_units is
 			-- There will be only one unit in this container.
 			position_of_unit : pac_unit_positions.map;
 
-			ports : et_symbols.type_ports.map;
+			ports : et_symbols.pac_ports.map;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -502,7 +502,7 @@ package body et_canvas_schematic_units is
 		unit_name : constant pac_unit_name.bounded_string := key (su.unit);
 
 		-- The ports with their positions of the selected unit:
-		ports : et_symbols.type_ports.map;
+		ports : et_symbols.pac_ports.map;
 
 		-- The initial position of the selected unit before 
 		-- the drag:
@@ -523,9 +523,9 @@ package body et_canvas_schematic_units is
 		end get_ports;
 
 		
-		procedure query_port (p : in et_symbols.type_ports.cursor) is
+		procedure query_port (p : in et_symbols.pac_ports.cursor) is
 			use et_schematic.pac_nets;
-			use et_symbols.type_ports;
+			use et_symbols.pac_ports;
 
 			procedure query_net (n : in pac_nets.cursor) is
 				use et_schematic.pac_strands;
@@ -583,7 +583,7 @@ package body et_canvas_schematic_units is
 
 		--log (text => count_type'image (ports.length), console => true);
 		
-		et_symbols.type_ports.iterate (ports, query_port'access);
+		et_symbols.pac_ports.iterate (ports, query_port'access);
 		
 	end find_attached_segments;
 	
@@ -611,7 +611,7 @@ package body et_canvas_schematic_units is
 			position_of_unit : et_coordinates.type_position;
 			rotation_before : et_coordinates.type_rotation;
 
-			ports_lib, ports_scratch : et_symbols.type_ports.map;
+			ports_lib, ports_scratch : et_symbols.pac_ports.map;
 
 			procedure query_units (
 				device_name	: in type_device_name;

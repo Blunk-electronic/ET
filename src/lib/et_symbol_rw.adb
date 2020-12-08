@@ -191,7 +191,7 @@ package body et_symbol_rw is
 		use type_arcs;
 		use type_circles;
 		use pac_texts;
-		use type_ports;
+		use pac_ports;
 
 		procedure write_line (cursor : in type_lines.cursor) is begin
 			section_mark (section_line, HEADER);
@@ -259,7 +259,7 @@ package body et_symbol_rw is
 			end case;
 		end write_placeholders;
 
-		procedure write_port (cursor : in type_ports.cursor) is begin
+		procedure write_port (cursor : in pac_ports.cursor) is begin
 			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (cursor)));
 			write (keyword => keyword_position, parameters => position (element (cursor).position));
@@ -437,11 +437,11 @@ package body et_symbol_rw is
 
 		procedure insert_port is 
 			inserted	: boolean;
-			cursor		: type_ports.cursor;
+			cursor		: pac_ports.cursor;
 		begin
 			case port_direction is
 				when PASSIVE =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -451,7 +451,7 @@ package body et_symbol_rw is
 						);
 
 				when INPUT_ANALOG =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -461,7 +461,7 @@ package body et_symbol_rw is
 						);
 
 				when INPUT_DIGITAL =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -473,7 +473,7 @@ package body et_symbol_rw is
 						);
 
 				when OUTPUT_ANALOG =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -485,7 +485,7 @@ package body et_symbol_rw is
 						);
 
 				when OUTPUT_DIGITAL =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -498,7 +498,7 @@ package body et_symbol_rw is
 						);
 
 				when BIDIR_DIGITAL =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -513,7 +513,7 @@ package body et_symbol_rw is
 						);
 
 				when POWER_OUT =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -524,7 +524,7 @@ package body et_symbol_rw is
 						);
 
 				when POWER_IN =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,
@@ -535,7 +535,7 @@ package body et_symbol_rw is
 						);
 
 				when NOT_CONNECTED =>
-					type_ports.insert (
+					pac_ports.insert (
 						container	=> symbol.ports,
 						key			=> port_name,
 						inserted	=> inserted,

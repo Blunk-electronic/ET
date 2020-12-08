@@ -1127,9 +1127,9 @@ package body et_devices is
 	-- Returns the poperties of the given port of the given device.
 		device_cursor	: in pac_devices_lib.cursor;
 		port_name		: in pac_port_name.bounded_string)
-		return type_ports.cursor is
+		return pac_ports.cursor is
 
-		port_cursor : type_ports.cursor; -- to be returned
+		port_cursor : pac_ports.cursor; -- to be returned
 
 		use pac_devices_lib;
 
@@ -1143,7 +1143,7 @@ package body et_devices is
 			use pac_units_external;
 			unit_external_cursor : pac_units_external.cursor := device.units_external.first;
 
-			use type_ports;
+			use pac_ports;
 
 			procedure query_ports (
 			-- Query ports of internal unit.
@@ -1182,7 +1182,7 @@ package body et_devices is
 					process		=> query_ports'access);
 
 				-- The search ends when the given port has been found.
-				if port_cursor /= type_ports.no_element then
+				if port_cursor /= pac_ports.no_element then
 					exit;
 				end if;
 				
@@ -1190,7 +1190,7 @@ package body et_devices is
 			end loop;
 
 			-- if port not found among the internal units, search in external units:
-			if port_cursor = type_ports.no_element then
+			if port_cursor = pac_ports.no_element then
 				while unit_external_cursor /= pac_units_external.no_element loop
 
 					query_element (
@@ -1198,7 +1198,7 @@ package body et_devices is
 						process		=> query_symbols'access);
 
 					-- The search ends when the given port has been found.
-					if port_cursor /= type_ports.no_element then
+					if port_cursor /= pac_ports.no_element then
 						exit;
 					end if;
 										

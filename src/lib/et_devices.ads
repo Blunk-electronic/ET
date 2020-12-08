@@ -585,7 +585,7 @@ package et_devices is
 	-- Returns the poperties of the given port of the given device.
 		device_cursor	: in pac_devices_lib.cursor;
 		port_name		: in pac_port_name.bounded_string)
-		return type_ports.cursor;
+		return pac_ports.cursor;
 
 	type type_port_properties_access is access type_port_properties;	
 	

@@ -78,7 +78,7 @@ package et_schematic_ops.units is
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
 		location 		: in et_coordinates.type_position; -- only sheet number matters
-		unit_ports		: in et_symbols.type_ports.map;
+		unit_ports		: in et_symbols.pac_ports.map;
 		log_threshold	: in type_log_level)
 		return boolean;
 	

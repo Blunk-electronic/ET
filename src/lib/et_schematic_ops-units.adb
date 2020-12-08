@@ -58,7 +58,7 @@ package body et_schematic_ops.units is
 			-- There will be only one unit in this container.
 			position_of_unit : pac_unit_positions.map;
 
-			ports : et_symbols.type_ports.map;
+			ports : et_symbols.pac_ports.map;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -198,7 +198,7 @@ package body et_schematic_ops.units is
 
 			position_of_unit_new : et_coordinates.type_position;
 
-			ports : et_symbols.type_ports.map;
+			ports : et_symbols.pac_ports.map;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -529,14 +529,14 @@ package body et_schematic_ops.units is
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
 		location 		: in et_coordinates.type_position; -- only sheet number matters
-		unit_ports		: in et_symbols.type_ports.map;
+		unit_ports		: in et_symbols.pac_ports.map;
 		log_threshold	: in type_log_level)
 	is
 		use et_symbols;
-		use et_symbols.type_ports;
-		port_cursor : et_symbols.type_ports.cursor := unit_ports.first;
+		use et_symbols.pac_ports;
+		port_cursor : et_symbols.pac_ports.cursor := unit_ports.first;
 
-		procedure test_point (port_cursor : in et_symbols.type_ports.cursor) is
+		procedure test_point (port_cursor : in et_symbols.pac_ports.cursor) is
 			point : et_coordinates.type_position; -- the point
 			ports : type_ports;
 			port : et_schematic.type_device_port;
@@ -593,7 +593,7 @@ package body et_schematic_ops.units is
 		log (text => "movable test ...", level => log_threshold);
 		log_indentation_up;
 
-		while port_cursor /= et_symbols.type_ports.no_element loop
+		while port_cursor /= et_symbols.pac_ports.no_element loop
 			test_point (port_cursor);
 			next (port_cursor);
 		end loop;
@@ -606,17 +606,17 @@ package body et_schematic_ops.units is
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
 		location 		: in et_coordinates.type_position; -- only sheet number matters
-		unit_ports		: in et_symbols.type_ports.map;
+		unit_ports		: in et_symbols.pac_ports.map;
 		log_threshold	: in type_log_level)
 		return boolean
 	is
 		result : boolean := false;
 		
 		use et_symbols;
-		use et_symbols.type_ports;
-		port_cursor : et_symbols.type_ports.cursor := unit_ports.first;
+		use et_symbols.pac_ports;
+		port_cursor : et_symbols.pac_ports.cursor := unit_ports.first;
 
-		procedure test_point (port_cursor : in et_symbols.type_ports.cursor) is
+		procedure test_point (port_cursor : in et_symbols.pac_ports.cursor) is
 			point : et_coordinates.type_position; -- the point
 			ports : type_ports;
 			port : et_schematic.type_device_port;
@@ -673,7 +673,7 @@ package body et_schematic_ops.units is
 		log (text => "movable test ...", level => log_threshold);
 		log_indentation_up;
 
-		while port_cursor /= et_symbols.type_ports.no_element loop
+		while port_cursor /= et_symbols.pac_ports.no_element loop
 			test_point (port_cursor);
 
 			-- abort this loop as soon as a non-movable port has been detected:
@@ -702,8 +702,8 @@ package body et_schematic_ops.units is
 		function make_drag_list ( 
 		-- Merges the two maps ports_old and ports_new to a drag list.
 		-- The resulting drag list tells which port is to be moved from old to new position.
-			ports_old : in et_symbols.type_ports.map;
-			ports_new : in et_symbols.type_ports.map) 
+			ports_old : in et_symbols.pac_ports.map;
+			ports_new : in et_symbols.pac_ports.map) 
 			return type_drags_of_ports.map is
 			use type_drags_of_ports;
 			drag_list : type_drags_of_ports.map;
@@ -711,13 +711,13 @@ package body et_schematic_ops.units is
 			-- ports_old and ports_new are both equally long and contain 
 			-- equal keys (the port names). So we use two cursors and advance them
 			-- simultaneously in a loop (see below).
-			use et_symbols.type_ports;
-			cursor_old : et_symbols.type_ports.cursor := ports_old.first;
-			cursor_new : et_symbols.type_ports.cursor := ports_new.first;
+			use et_symbols.pac_ports;
+			cursor_old : et_symbols.pac_ports.cursor := ports_old.first;
+			cursor_new : et_symbols.pac_ports.cursor := ports_new.first;
 		begin
 			-- Loop in ports_old, copy the key to the drag list.
 			-- Take the old position from ports_old and the new position from ports_new:
-			while cursor_old /= et_symbols.type_ports.no_element loop
+			while cursor_old /= et_symbols.pac_ports.no_element loop
 				insert (
 					container	=> drag_list,
 					key			=> key (cursor_old), -- the port name
@@ -745,7 +745,7 @@ package body et_schematic_ops.units is
 			position_of_unit_old : et_coordinates.type_position;	
 			position_of_unit_new : et_coordinates.type_position;
 
-			ports, ports_old, ports_new : et_symbols.type_ports.map;
+			ports, ports_old, ports_new : et_symbols.pac_ports.map;
 
 			procedure query_unit_location (
 				device_name	: in type_device_name;
@@ -934,7 +934,7 @@ package body et_schematic_ops.units is
 			position_of_unit : et_coordinates.type_position;
 			rotation_before : et_coordinates.type_rotation;
 
-			ports_lib, ports_scratch : et_symbols.type_ports.map;
+			ports_lib, ports_scratch : et_symbols.pac_ports.map;
 
 			procedure query_units (
 				device_name	: in type_device_name;

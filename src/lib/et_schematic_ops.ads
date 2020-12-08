@@ -89,19 +89,19 @@ package et_schematic_ops is
 	function ports_of_unit (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
-		return et_symbols.type_ports.map;
+		return et_symbols.pac_ports.map;
 
 	-- Deletes ports of the given device in nets.
 	procedure delete_ports (
 		module			: in pac_generic_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
-		ports			: in et_symbols.type_ports.map := et_symbols.type_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
+		ports			: in et_symbols.pac_ports.map := et_symbols.pac_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
 		sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
 		log_threshold	: in type_log_level);
 
 	-- Moves the given unit ports by given offset.
 	procedure move_ports ( -- CS move to et_symbols ?
-		ports	: in out et_symbols.type_ports.map; -- the portlist
+		ports	: in out et_symbols.pac_ports.map; -- the portlist
 		offset	: in et_coordinates.type_position); -- the offset (only x/y matters)
 
 	-- Inserts the given device ports in the net segments.
@@ -115,13 +115,13 @@ package et_schematic_ops is
 		module			: in pac_generic_modules.cursor;		-- the module
 		device			: in type_device_name;					-- the device
 		unit			: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
-		ports			: in et_symbols.type_ports.map; -- the ports to be inserted
+		ports			: in et_symbols.pac_ports.map; -- the ports to be inserted
 		sheet			: in type_sheet;				-- the sheet to look at
 		log_threshold	: in type_log_level);
 
 	-- Rotates the given unit ports by given angle about the origin.
 	procedure rotate_ports ( -- CS move to et_symbols ?
-		ports	: in out et_symbols.type_ports.map; -- the portlist
+		ports	: in out et_symbols.pac_ports.map; -- the portlist
 		angle	: in et_coordinates.type_rotation); -- 90
 
 	
