@@ -541,7 +541,7 @@ package body et_schematic_ops.units is
 			ports : type_ports;
 			port : et_schematic.type_port_device;
 			use type_ports_submodule;
-			use type_ports_device;
+			use pac_device_ports;
 			use et_netlists.type_ports_netchanger;
 		begin
 			-- assemble the point to be probed
@@ -621,7 +621,7 @@ package body et_schematic_ops.units is
 			ports : type_ports;
 			port : et_schematic.type_port_device;
 			use type_ports_submodule;
-			use type_ports_device;
+			use pac_device_ports;
 			use et_netlists.type_ports_netchanger;
 		begin
 			-- assemble the point to be probed

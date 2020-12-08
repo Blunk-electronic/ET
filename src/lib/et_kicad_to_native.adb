@@ -2728,7 +2728,7 @@ package body et_kicad_to_native is
 				net_segment_native : et_schematic.type_net_segment;
 
 				use et_schematic.type_net_labels;
-				use et_schematic.type_ports_device;
+				use et_schematic.pac_device_ports;
 				
 				function tag_and_simple_labels (segment : in et_kicad.schematic.type_net_segment) 
 				-- Copies from the given kicad net segment all simple and tag labels and returns
@@ -2882,14 +2882,14 @@ package body et_kicad_to_native is
 				
 				function read_ports (segment : in et_kicad.schematic.type_net_segment)
 				-- Returns the component ports connected with the given net segment.
-					return et_schematic.type_ports_device.set is
+					return et_schematic.pac_device_ports.set is
 
 					use et_kicad.schematic;
 					use et_kicad.schematic.type_ports_with_reference;
 					port_cursor_kicad	: type_ports_with_reference.cursor;
 					all_ports_of_net	: type_ports_with_reference.set;
 					
-					ports_of_segment : et_schematic.type_ports_device.set; -- to be returned
+					ports_of_segment : et_schematic.pac_device_ports.set; -- to be returned
 
 					use et_coordinates;
 					use pac_geometry_sch;
@@ -2958,7 +2958,7 @@ package body et_kicad_to_native is
 											scope		=> et_kicad_coordinates.XY),
 									 level => log_threshold + 5);
 								
-								et_schematic.type_ports_device.insert (
+								et_schematic.pac_device_ports.insert (
 									container	=> ports_of_segment,
 									new_item	=> (
 										device_name	=> element (port_cursor_kicad).reference,

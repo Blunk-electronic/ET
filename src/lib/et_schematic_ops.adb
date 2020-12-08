@@ -277,14 +277,14 @@ package body et_schematic_ops is
 							use type_net_segments;
 
 							procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
-								use type_ports_device;
+								use pac_device_ports;
 
 								procedure query_ports (segment : in out type_net_segment) is
 								-- Tests device ports of given segment if their device name matches the given device name.
 								-- On match the port is skipped. All other ports are collected in ports_new.	
-									ports_new : type_ports_device.set;
+									ports_new : pac_device_ports.set;
 									
-									procedure query_port (port_cursor : in type_ports_device.cursor) is
+									procedure query_port (port_cursor : in pac_device_ports.cursor) is
 										use et_symbols;
 										port : type_port_device := element (port_cursor); -- take a copy of the port
 									begin -- query_port
@@ -1008,7 +1008,7 @@ package body et_schematic_ops is
 
 								-- If port not already in segment, append it.
 								-- Otherwise it must not be appended again. constraint_error would arise.
-								if type_ports_device.contains (
+								if pac_device_ports.contains (
 									container	=> segment.ports_devices,
 									item		=> (
 											device_name	=> device,
@@ -1018,7 +1018,7 @@ package body et_schematic_ops is
 
 									log (text => " already there -> skipped", level => log_threshold + 3);
 								else
-									type_ports_device.insert (
+									pac_device_ports.insert (
 										container	=> segment.ports_devices,
 										new_item	=> (
 											device_name	=> device,
@@ -1858,7 +1858,7 @@ package body et_schematic_ops is
 							log (text => " match", level => log_threshold + 2);
 							
 							-- Insert the port in the portlist to be returned:
-							et_schematic.type_ports_device.insert 
+							et_schematic.pac_device_ports.insert 
 								(
 								container	=> ports_at_place.ports.devices,
 								new_item	=> 
@@ -2070,16 +2070,16 @@ package body et_schematic_ops is
 							use type_net_segments;
 
 							procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
-								use type_ports_device;
+								use pac_device_ports;
 
 								procedure query_ports (segment : in out type_net_segment) is
 								-- Tests device ports of given segment if their device name matches the given device name.
 								-- On match replace the old device name by the new device name.
 
-									port_cursor : type_ports_device.cursor := segment.ports_devices.first;
+									port_cursor : pac_device_ports.cursor := segment.ports_devices.first;
 									
 								begin -- query_ports
-									while port_cursor /= type_ports_device.no_element loop
+									while port_cursor /= pac_device_ports.no_element loop
 
 										if element (port_cursor).device_name = device_before then -- IC1
 
@@ -4287,7 +4287,7 @@ package body et_schematic_ops is
 				port : type_port_netchanger;
 
 				use type_ports_submodule;
-				use type_ports_device;
+				use pac_device_ports;
 				use type_ports_netchanger;
 			begin
 				-- If no net segments start or end at given point then this test won't
@@ -5514,7 +5514,7 @@ package body et_schematic_ops is
 		port : et_schematic.type_port_submodule;
 
 		use type_ports_submodule;
-		use type_ports_device;
+		use pac_device_ports;
 
 		use et_netlists;
 		use type_ports_netchanger;
@@ -8597,15 +8597,15 @@ package body et_schematic_ops is
 	-- Additional properties are electrical characteristics (see et_libraries.type_port)
 	-- and the terminal name).
 		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in et_schematic.type_ports_device.set)
+		ports 			: in et_schematic.pac_device_ports.set)
 		return et_netlists.type_device_ports_extended.set is
 
 		use et_netlists;
 		ports_extended : et_netlists.type_device_ports_extended.set; -- to be returned
 
-		use et_schematic.type_ports_device;
+		use et_schematic.pac_device_ports;
 		
-		procedure query_ports (port_cursor : in et_schematic.type_ports_device.cursor) is
+		procedure query_ports (port_cursor : in et_schematic.pac_device_ports.cursor) is
 			port_sch		: et_schematic.type_port_device := element (port_cursor);
 			more_properties	: type_port_properties_access;
 		begin
@@ -9227,8 +9227,8 @@ package body et_schematic_ops is
 			-- Since device_port_collector is an ordered set, an exception will be raised if
 			-- a port is to be inserted more than once. Something like IC4 port CE must
 			-- occur only ONCE throughout the module.
-			use type_ports_device;
-			device_port_collector : type_ports_device.set;
+			use pac_device_ports;
+			device_port_collector : pac_device_ports.set;
 
 			procedure collect_device_port (
 				port	: in type_port_device;
@@ -9315,7 +9315,7 @@ package body et_schematic_ops is
 							procedure query_segment (segment_cursor : in type_net_segments.cursor) is
 
 								procedure query_ports_devices (segment : in type_net_segment) is
-									procedure query_port (port_cursor : in type_ports_device.cursor) is 
+									procedure query_port (port_cursor : in pac_device_ports.cursor) is 
 										use et_symbols;
 									begin
 										log (text => "device " & to_string (element (port_cursor).device_name) &

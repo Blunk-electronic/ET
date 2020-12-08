@@ -343,7 +343,7 @@ is
 				use type_net_segments;
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
 
-				use type_ports_device;
+				use pac_device_ports;
 				use type_ports_submodule;
 
 				use et_netlists;
@@ -402,9 +402,9 @@ is
 				
 				procedure query_device_ports (segment : in type_net_segment) is
 					use et_symbols;
-					port_cursor : type_ports_device.cursor := segment.ports_devices.first;
+					port_cursor : pac_device_ports.cursor := segment.ports_devices.first;
 				begin -- query_device_ports
-					while port_cursor /= type_ports_device.no_element loop
+					while port_cursor /= pac_device_ports.no_element loop
 						write (keyword => keyword_device, parameters => 
 							space & to_string (element (port_cursor).device_name)
 							& space & keyword_port & space

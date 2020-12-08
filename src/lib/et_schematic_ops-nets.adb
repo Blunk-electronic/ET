@@ -710,7 +710,7 @@ package body et_schematic_ops.nets is
 
 	function no_ports (ports : in type_ports) return boolean is
 		result : boolean := true;
-		use type_ports_device;
+		use pac_device_ports;
 		use type_ports_submodule;
 		use et_netlists.type_ports_netchanger;
 	begin
@@ -749,17 +749,17 @@ package body et_schematic_ops.nets is
 		-- the point of interest.	
 		-- On the first finding, sets result to false and finishes. If no 
 		-- finding, result remains true.	
-			use type_ports_device;
+			use pac_device_ports;
 			use type_ports_submodule;
 
 			use et_netlists;
 			use type_ports_netchanger;
 
-			device : type_ports_device.cursor := segment.ports_devices.first;
+			device : pac_device_ports.cursor := segment.ports_devices.first;
 			submodule : type_ports_submodule.cursor := segment.ports_submodules.first;
 			netchanger : type_ports_netchanger.cursor := segment.ports_netchangers.first;
 		begin -- search_ports
-			while device /= type_ports_device.no_element loop
+			while device /= pac_device_ports.no_element loop
 
 				if position ( -- CS use a similar function that takes only cursors ?
 					module_name		=> module_name,
@@ -1150,7 +1150,7 @@ package body et_schematic_ops.nets is
 						-- Currently only the integrity check (procedure check_integrity)
 						-- detects this rare case.
 						begin
-							type_ports_device.union (segment.ports_devices, ports.devices);
+							pac_device_ports.union (segment.ports_devices, ports.devices);
 							type_ports_submodule.union (segment.ports_submodules, ports.submodules);
 							et_netlists.type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
 						end append_portlists;
@@ -1512,7 +1512,7 @@ package body et_schematic_ops.nets is
 		ports : type_ports;
 		
 		procedure assign_ports_to_segment is begin
-			type_ports_device.union (segment.ports_devices, ports.devices);
+			pac_device_ports.union (segment.ports_devices, ports.devices);
 			type_ports_submodule.union (segment.ports_submodules, ports.submodules);
 			et_netlists.type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
 		end;
@@ -2265,10 +2265,10 @@ package body et_schematic_ops.nets is
 						procedure update_device_ports is 
 						-- Queries the positions of the device ports in the old_segment. 
 						-- By the position assigns the ports to the new segments. 
-							use type_ports_device;
+							use pac_device_ports;
 							use et_symbols;
 
-							procedure query_ports (cursor : in type_ports_device.cursor) is
+							procedure query_ports (cursor : in pac_device_ports.cursor) is
 								device_name 	: type_device_name; -- IC23
 								port_name		: type_port_name.bounded_string; -- CE
 								port_position 	: type_point; -- the xy-position of the port

@@ -217,7 +217,7 @@ package et_schematic_ops is
 	
 	-- If ports at a certain position in a schematic are inquired this type is required:
 	type type_ports is record
-		devices		: type_ports_device.set;
+		devices		: pac_device_ports.set;
 		submodules	: type_ports_submodule.set;
 		netchangers	: et_netlists.type_ports_netchanger.set;
 	end record;

@@ -499,7 +499,7 @@ is
 	net_label_direction : et_schematic.type_net_label_direction := et_schematic.type_net_label_direction'first;
 	
 	net_device_port : et_schematic.type_port_device;
-	net_device_ports : et_schematic.type_ports_device.set;
+	net_device_ports : et_schematic.pac_device_ports.set;
 
 	net_submodule_port : et_schematic.type_port_submodule;
 	net_submodule_ports : et_schematic.type_ports_submodule.set;
@@ -3202,7 +3202,7 @@ is
 							net_segment.ports_netchangers := net_netchanger_ports;
 							
 							-- clean up for next port collections (of another net segment)
-							et_schematic.type_ports_device.clear (net_device_ports);
+							et_schematic.pac_device_ports.clear (net_device_ports);
 							et_schematic.type_ports_submodule.clear (net_submodule_ports);
 							et_netlists.type_ports_netchanger.clear (net_netchanger_ports);
 
@@ -4739,14 +4739,14 @@ is
 
 										-- Insert port in port collection of device ports. First make sure it is
 										-- not already in the net segment.
-										if et_schematic.type_ports_device.contains (net_device_ports, net_device_port) then
+										if et_schematic.pac_device_ports.contains (net_device_ports, net_device_port) then
 											log (ERROR, "device " & to_string (net_device_port.device_name) &
 												" port " & to_string (net_device_port.port_name) & 
 												" already in net segment !", console => true);
 											raise constraint_error;
 										end if;
 
-										et_schematic.type_ports_device.insert (net_device_ports, net_device_port); 
+										et_schematic.pac_device_ports.insert (net_device_ports, net_device_port); 
 
 									else
 										invalid_keyword (f (line, 3));

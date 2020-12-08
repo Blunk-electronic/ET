@@ -363,14 +363,14 @@ package body et_schematic is
 		use et_string_processing;
 
 		procedure query_segments (segment_cursor : in type_net_segments.cursor) is
-			use type_ports_device;
+			use pac_device_ports;
 
 			use et_netlists;
 			use type_ports_netchanger;
 			
 			use type_ports_submodule;
 
-			procedure query_devices (device_cursor : in type_ports_device.cursor) is
+			procedure query_devices (device_cursor : in pac_device_ports.cursor) is
 			-- Inserts the device/port in result.devices. Skips the device/port
 			-- according to the given assembly variant.
 			begin
