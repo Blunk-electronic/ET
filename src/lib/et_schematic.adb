@@ -94,7 +94,6 @@ package body et_schematic is
 	
 	function to_string (segment : in pac_net_segments.cursor) return string is
 	-- Returns a string that tells about start and end coordinates of the net segment.
-		use et_coordinates;
 		use pac_net_segments;
 	begin
 		return ("segment start" & 
@@ -106,7 +105,6 @@ package body et_schematic is
 
 	function segment_orientation (segment : in pac_net_segments.cursor) 
 		return type_net_segment_orientation is
-		use et_coordinates;
 		use pac_net_segments;
 		
 		result : type_net_segment_orientation;
@@ -171,7 +169,6 @@ package body et_schematic is
 	
 		use pac_net_segments;
 		use et_string_processing;
-		use et_coordinates;
 
 		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
 
@@ -210,14 +207,13 @@ package body et_schematic is
 	end set_strand_position;
 
 	function get_first_strand_on_sheet (
-		sheet		: in et_coordinates.type_sheet;
+		sheet		: in type_sheet;
 		net_cursor	: in pac_nets.cursor)
 		return pac_strands.cursor
 	is
 		use pac_nets;
 		strand_cursor : pac_strands.cursor; -- to be returned
 
-		use et_coordinates;
 		strand_position : et_coordinates.type_position := greatest_position;
 		
 		procedure query_strands (
@@ -259,7 +255,6 @@ package body et_schematic is
 		use pac_nets;
 		strand_cursor : pac_strands.cursor; -- to be returned
 
-		use et_coordinates;
 		strand_position : et_coordinates.type_position := greatest_position;
 		
 		procedure query_strands (
@@ -288,8 +283,7 @@ package body et_schematic is
 	end get_first_strand;
 				
 	function to_label_rotation (direction : in type_stub_direction) 
-		return et_coordinates.type_rotation is
-		use et_coordinates;
+		return type_rotation is
 	begin
 		case direction is
 			when RIGHT	=> return zero_rotation;
@@ -301,10 +295,9 @@ package body et_schematic is
 	
 	function stub_direction (
 		segment	: in pac_net_segments.cursor;
-		point	: in et_coordinates.pac_geometry_sch.type_point)
+		point	: in pac_geometry_sch.type_point)
 		return type_stub is
 
-		use et_coordinates;
 		use pac_net_segments;
 
 		is_stub : boolean := true;
@@ -508,7 +501,8 @@ package body et_schematic is
 	function to_string (unit : in pac_units.cursor) return string is
 		use pac_units;
 	begin
-		return to_string (key (unit)) & to_string (type_point (element (unit).position));
+		return et_devices.to_string (key (unit)) 
+			& to_string (type_point (element (unit).position));
 	end to_string;
 	
 	function unit_positions (units : in pac_units.map) return pac_unit_positions.map is

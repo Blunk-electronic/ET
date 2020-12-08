@@ -56,7 +56,7 @@ with cairo;						--use cairo;
 
 with et_general;				use et_general;
 
-with et_coordinates;
+with et_coordinates;			use et_coordinates;
 with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;
 with et_packages;
@@ -75,10 +75,15 @@ with et_meta;
 with et_design_rules;
 
 package et_schematic is
-	use et_general.pac_net_name;
-	use et_coordinates.pac_geometry_sch;
 
-	package pac_shapes is new et_geometry.generic_pac_shapes (et_coordinates.pac_geometry_sch);
+	use et_general.pac_net_name;
+	use pac_unit_name;
+	
+	use et_coordinates.pac_geometry_sch;
+	
+	package pac_shapes is new 
+		et_geometry.generic_pac_shapes (et_coordinates.pac_geometry_sch);
+	
 	use pac_shapes;
 
 	package pac_text is new et_text.generic_pac_text (
@@ -103,9 +108,9 @@ package et_schematic is
 	
 	-- A text/note in the schematic:
 	type type_text is new pac_text.type_text with record
-		position	: et_coordinates.pac_geometry_sch.type_point;
+		position	: pac_geometry_sch.type_point;
 		rotation	: et_text.type_rotation_documentation;
-		sheet		: et_coordinates.type_sheet;
+		sheet		: type_sheet;
 		content		: et_text.type_text_content.bounded_string;
 		--font		: et_text.type_font;
 	end record;
@@ -154,18 +159,17 @@ package et_schematic is
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
 	package pac_units is new indefinite_ordered_maps ( -- CS rename to pac_units
 		key_type		=> pac_unit_name.bounded_string,
-		"<" 			=> pac_unit_name."<",
 		element_type 	=> type_unit);
 
 	-- Returns a string that tells the name and position of given unit.
 	function to_string (unit : in pac_units.cursor) return string;
 
+
+
 	
 	package pac_unit_positions is new ordered_maps (
 		key_type		=> pac_unit_name.bounded_string, -- A, B, IO_BANK_1
-		"<" 			=> pac_unit_name."<",
-		element_type	=> et_coordinates.type_position, -- sheet, x, y
-		"="				=> et_coordinates."=");
+		element_type	=> et_coordinates.type_position); -- sheet, x, y
 
 	function unit_positions (units : in pac_units.map) return pac_unit_positions.map;
 	--Returns a list of units and their coordinates in the schematic.	
@@ -266,7 +270,7 @@ package et_schematic is
 	
 	type type_net_label_base is tagged record
 		-- The position of the label is absolute (relative to drawing origin):
-		position	: et_coordinates.pac_geometry_sch.type_point;
+		position	: pac_geometry_sch.type_point;
 		
         size		: et_symbols.pac_text.type_text_size := et_symbols.text_size_default;
 		width		: et_symbols.type_text_line_width := et_symbols.type_text_line_width'first;
@@ -282,7 +286,7 @@ package et_schematic is
 				-- The rotation is about its own position. 
 				-- However, the shown text inside the label (net name and coordinates) is always readable
 				-- from the front or from the right.
-				rotation_tag	: et_coordinates.type_rotation_relative := et_coordinates.pac_geometry_sch.zero_rotation;
+				rotation_tag	: type_rotation_relative := pac_geometry_sch.zero_rotation;
 
 			when SIMPLE =>
 				-- The simple label can be read from the front or from the right.
@@ -398,7 +402,7 @@ package et_schematic is
 	-- Returns no_element if the given sheet does not
 	-- contain a strand of the given net.
 	function get_first_strand_on_sheet (
-		sheet		: in et_coordinates.type_sheet;
+		sheet		: in type_sheet;
 		net_cursor	: in pac_nets.cursor)
 		return pac_strands.cursor;
 	
@@ -426,7 +430,7 @@ package et_schematic is
 
 	-- Maps from stub direction to rotation:
 	function to_label_rotation (direction : in type_stub_direction)
-		return et_coordinates.type_rotation;
+		return type_rotation;
 	
 	-- Detects whether the given segment is a stub and if so
 	-- detects the direction of the stub relative to the given point.
@@ -436,7 +440,7 @@ package et_schematic is
 	-- - If point is above of a vertical segment then then it is a stub that points up.
 	function stub_direction (
 		segment	: in pac_net_segments.cursor;
-		point	: in et_coordinates.pac_geometry_sch.type_point)
+		point	: in pac_geometry_sch.type_point)
 		return type_stub;
 		
 
@@ -543,7 +547,8 @@ package et_schematic is
 
 	-- To distinguish between electrical and non-electrical devices
 	-- use this type:
-	type type_device_category is (ELECTRICAL, NON_ELECTRICAL);	
+	type type_device_category is (ELECTRICAL, NON_ELECTRICAL);
+	-- CS move to et_devices ?
 	
 	type type_device_non_electric is record
 		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
@@ -551,7 +556,8 @@ package et_schematic is
 		text_placeholders	: et_packages.type_text_placeholders;
 		package_model		: et_packages.type_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
 	end record;
-
+	-- CS move to et_devices ?
+	
 	-- CS: this should be a hashed map:
 	package pac_devices_non_electric is new ordered_maps (
 		key_type		=> type_device_name, -- H1, FD2, ...
