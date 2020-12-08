@@ -53,7 +53,7 @@ procedure draw_nets (
 	use et_schematic.type_nets;
 	use et_schematic.type_strands;
 	use et_schematic.type_net_segments;
-	use et_schematic.type_net_labels;
+	use et_schematic.pac_net_labels;
 	use et_schematic.pac_shapes;
 	
 	use pac_draw_misc;
@@ -129,7 +129,7 @@ procedure draw_nets (
 		net		: in type_nets.cursor;
 		strand	: in type_strands.cursor;
 		segment	: in type_net_segment;
-		label	: in type_net_labels.cursor)
+		label	: in pac_net_labels.cursor)
 		return boolean is
 
 		use pac_net_name;
@@ -160,7 +160,7 @@ procedure draw_nets (
 	-- Draws a single net label:
 	procedure draw_label (
 		net		: in pac_net_name.bounded_string;
-		label	: in type_net_labels.cursor)
+		label	: in pac_net_labels.cursor)
 	is
 		use et_text;
 		use pac_text;
@@ -229,7 +229,7 @@ procedure draw_nets (
 		strand	: in type_strands.cursor;
 		segment	: in type_net_segment)
 	is 
-		procedure draw_fixed (label : in type_net_labels.cursor) is begin
+		procedure draw_fixed (label : in pac_net_labels.cursor) is begin
 			if not is_selected (net, strand, segment, label) then
 				draw_label (key (net), label);
 			end if;
@@ -325,11 +325,11 @@ procedure draw_nets (
 		segment	: in type_net_segments.cursor)
 	is
 		procedure query_label (s : in type_net_segment) is
-			label_cursor : type_net_labels.cursor := s.labels.first;
+			label_cursor : pac_net_labels.cursor := s.labels.first;
 
 			sl : type_net_label (SIMPLE);
 		begin
-			while label_cursor /= type_net_labels.no_element loop
+			while label_cursor /= pac_net_labels.no_element loop
 
 				if is_selected (net, strand, element (segment), label_cursor) then
 

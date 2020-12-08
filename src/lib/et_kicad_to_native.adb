@@ -2727,7 +2727,7 @@ package body et_kicad_to_native is
 				net_segments_native : et_schematic.type_net_segments.list;
 				net_segment_native : et_schematic.type_net_segment;
 
-				use et_schematic.type_net_labels;
+				use et_schematic.pac_net_labels;
 				use et_schematic.pac_device_ports;
 				
 				function tag_and_simple_labels (segment : in et_kicad.schematic.type_net_segment) 
@@ -2735,8 +2735,8 @@ package body et_kicad_to_native is
 				-- them in a single list.
 				-- CS: Labels placed at 180 or 270 degree are rotated to 0 or 90 degree. This might
 				-- cause the labels to shift to the right or up.
-					return et_schematic.type_net_labels.list is
-					labels : et_schematic.type_net_labels.list; -- to be returned
+					return et_schematic.pac_net_labels.list is
+					labels : et_schematic.pac_net_labels.list; -- to be returned
 
 					use et_kicad.schematic.type_simple_labels;
 					simple_label_cursor : et_kicad.schematic.type_simple_labels.cursor := segment.label_list_simple.first;
@@ -2797,7 +2797,7 @@ package body et_kicad_to_native is
 						simple_label_position := element (simple_label_cursor).coordinates;
 						move_by (simple_label_position, offset);
 
-						et_schematic.type_net_labels.append (
+						et_schematic.pac_net_labels.append (
 							container	=> labels,
 							new_item	=> (
 								appearance		=> et_schematic.SIMPLE,
@@ -2817,7 +2817,7 @@ package body et_kicad_to_native is
 							label => et_kicad.schematic.type_net_label (element (tag_label_cursor))),
 							 level => log_threshold + 5);
 
-						et_schematic.type_net_labels.append (
+						et_schematic.pac_net_labels.append (
 							container	=> labels,
 							new_item	=> (
 								appearance		=> et_schematic.TAG,

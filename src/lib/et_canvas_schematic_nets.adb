@@ -996,8 +996,8 @@ package body et_canvas_schematic_nets is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 					procedure query_labels (segment : in type_net_segment) is
-						use type_net_labels;
-						label_cursor : type_net_labels.cursor := segment.labels.first;
+						use pac_net_labels;
+						label_cursor : pac_net_labels.cursor := segment.labels.first;
 
 						-- Test distance between label and given place.
 						-- Appends the label if distance less or equal catch zone:
@@ -1021,7 +1021,7 @@ package body et_canvas_schematic_nets is
 						end test_distance;
 						
 					begin -- query_labels
-						while label_cursor /= type_net_labels.no_element loop
+						while label_cursor /= pac_net_labels.no_element loop
 
 							case category is
 								when BOTH => 
@@ -1110,7 +1110,7 @@ package body et_canvas_schematic_nets is
 		label			: in type_selected_label;
 		log_threshold	: in type_log_level)
 	is 
-		use type_net_labels;
+		use pac_net_labels;
 		label_position_sheet : constant type_sheet := sheet (element (label.strand).position);
 		
 		-- This flag goes true once the first net label that equals the given label
@@ -1133,9 +1133,9 @@ package body et_canvas_schematic_nets is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 					procedure query_labels (segment : in out type_net_segment) is 
-						c : type_net_labels.cursor := segment.labels.first;
+						c : pac_net_labels.cursor := segment.labels.first;
 					begin
-						while c /= type_net_labels.no_element loop
+						while c /= pac_net_labels.no_element loop
 
 							-- If label found, delete it from the label list
 							-- of that segment:
@@ -1259,12 +1259,12 @@ package body et_canvas_schematic_nets is
 
 	procedure clarify_label is
 		use et_schematic;
-		use type_net_labels;
+		use pac_net_labels;
 
 		s : type_net_segments.cursor;
 		n : pac_net_name.bounded_string;
 
-		function info (c : in type_net_labels.cursor) return string is 
+		function info (c : in pac_net_labels.cursor) return string is 
 			l : type_net_label := element (c);
 		begin
 			return "label at" & to_string (l.position); -- CS other properties like appearance, direction ?
@@ -1313,7 +1313,7 @@ package body et_canvas_schematic_nets is
 				procedure query_segments (strand : in out type_strand) is
 
 					procedure attach_label (segment : in out type_net_segment) is 
-						use type_net_labels;
+						use pac_net_labels;
 						l : type_net_label_base;
 					begin
 						-- The label position is absolute:
@@ -1485,7 +1485,7 @@ package body et_canvas_schematic_nets is
 				procedure query_segments (strand : in out type_strand) is
 
 					procedure query_labels (segment : in out type_net_segment) is
-						use type_net_labels;
+						use pac_net_labels;
 						
 						procedure move (label : in out type_net_label) is begin
 							label.position := destination;

@@ -490,7 +490,7 @@ is
 	net_segments : et_schematic.type_net_segments.list;
 	net_segment	: et_schematic.type_net_segment;
 	
-	net_labels				: et_schematic.type_net_labels.list;
+	net_labels				: et_schematic.pac_net_labels.list;
 	net_label 				: et_schematic.type_net_label_base;
 	net_label_rotation		: et_coordinates.type_rotation := pac_geometry_sch.zero_rotation;
 	net_label_appearance	: et_schematic.type_net_label_appearance := et_schematic.type_net_label_appearance'first;
@@ -3175,7 +3175,7 @@ is
 							net_segment.labels := net_labels;
 
 							-- clean up for next label collection
-							et_schematic.type_net_labels.clear (net_labels);
+							et_schematic.pac_net_labels.clear (net_labels);
 
 						when others => invalid_section;
 					end case;
@@ -3225,7 +3225,7 @@ is
 								when et_schematic.SIMPLE =>
 
 									-- insert a simple label
-									et_schematic.type_net_labels.append (
+									et_schematic.pac_net_labels.append (
 										container	=> net_labels,
 										new_item	=> (
 											net_label with
@@ -3238,7 +3238,7 @@ is
 								when et_schematic.TAG =>
 
 									-- insert a tag label
-									et_schematic.type_net_labels.append (
+									et_schematic.pac_net_labels.append (
 										container	=> net_labels,
 										new_item	=> (
 											net_label with 

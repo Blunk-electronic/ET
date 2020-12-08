@@ -350,13 +350,13 @@ is
 				use type_ports_netchanger;
 				
 				procedure query_labels (segment : in type_net_segment) is
-					use type_net_labels;
-					label_cursor : type_net_labels.cursor := segment.labels.first;
+					use pac_net_labels;
+					label_cursor : pac_net_labels.cursor := segment.labels.first;
 					use et_symbols;
 				begin
 					if not is_empty (segment.labels) then
 						section_mark (section_labels, HEADER);
-						while label_cursor /= type_net_labels.no_element loop
+						while label_cursor /= pac_net_labels.no_element loop
 							section_mark (section_label, HEADER);
 							
 							write (keyword => keyword_position, parameters => position (element (label_cursor).position));

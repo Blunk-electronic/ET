@@ -885,8 +885,8 @@ package body et_schematic_ops.nets is
 		delta_end	: constant type_point := type_point (
 			distance_relative (segment_before.end_point, segment_after.end_point));
 															
-		use type_net_labels;
-		label_cursor : type_net_labels.cursor := segment_after.labels.first;
+		use pac_net_labels;
+		label_cursor : pac_net_labels.cursor := segment_after.labels.first;
 
 		procedure move (l : in out type_net_label) is begin
 			-- The position of a net label is absolute.
@@ -930,7 +930,7 @@ package body et_schematic_ops.nets is
 		end move;
 		
 	begin -- move_net_labels
-		while label_cursor /= type_net_labels.no_element loop
+		while label_cursor /= pac_net_labels.no_element loop
 			update_element (segment_after.labels, label_cursor, move'access);
 			next (label_cursor);
 		end loop;
@@ -2224,9 +2224,9 @@ package body et_schematic_ops.nets is
 						segment_1, segment_2 : type_net_segment;
 
 						procedure update_labels is
-							use type_net_labels;
+							use pac_net_labels;
 
-							procedure query_labels_horizontal (cursor : in type_net_labels.cursor) is begin
+							procedure query_labels_horizontal (cursor : in pac_net_labels.cursor) is begin
 								-- All labels left of place go into segment_1,
 								-- whereas labels on the right go into segment_2:
 								if x (element (cursor).position) < x (place) then
@@ -2236,7 +2236,7 @@ package body et_schematic_ops.nets is
 								end if;									  
 							end query_labels_horizontal;
 
-							procedure query_labels_vertical (cursor : in type_net_labels.cursor) is begin
+							procedure query_labels_vertical (cursor : in pac_net_labels.cursor) is begin
 								-- All labels below place go into segment_1,
 								-- whereas labels above go into segment_2:
 								if y (element (cursor).position) < y (place) then
@@ -2615,7 +2615,7 @@ package body et_schematic_ops.nets is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 					procedure attach_label (segment : in out type_net_segment) is 
-						use type_net_labels;
+						use pac_net_labels;
 						label : type_net_label_base;
 					begin
 						-- label_position is relative to segment_position
@@ -2785,10 +2785,10 @@ package body et_schematic_ops.nets is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 					procedure query_labels (segment : in out type_net_segment) is 
-						use type_net_labels;
-						label_cursor : type_net_labels.cursor := segment.labels.first;
+						use pac_net_labels;
+						label_cursor : pac_net_labels.cursor := segment.labels.first;
 					begin
-						while label_cursor /= type_net_labels.no_element loop
+						while label_cursor /= pac_net_labels.no_element loop
 
 							-- If label sits at position, delete it from the label list
 							-- of that segment:
