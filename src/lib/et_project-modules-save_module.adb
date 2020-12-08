@@ -344,7 +344,7 @@ is
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 				use pac_device_ports;
-				use type_ports_submodule;
+				use pac_submodule_ports;
 
 				use et_netlists;
 				use type_ports_netchanger;
@@ -416,9 +416,9 @@ is
 
 				procedure query_submodule_ports (segment : in type_net_segment) is
 					use et_symbols;
-					port_cursor : type_ports_submodule.cursor := segment.ports_submodules.first;
+					port_cursor : pac_submodule_ports.cursor := segment.ports_submodules.first;
 				begin
-					while port_cursor /= type_ports_submodule.no_element loop
+					while port_cursor /= pac_submodule_ports.no_element loop
 
 						write (keyword => keyword_submodule, parameters => 
 							space & to_string (element (port_cursor).module_name)

@@ -1926,7 +1926,7 @@ package body et_schematic_ops is
 						log (text => " match", level => log_threshold + 2);
 						
 						-- Insert the port in the portlist to be returned:
-						et_schematic.type_ports_submodule.insert 
+						et_schematic.pac_submodule_ports.insert 
 							(
 							container	=> ports_at_place.ports.submodules,
 							new_item	=> 
@@ -4286,7 +4286,7 @@ package body et_schematic_ops is
 				ports : type_ports;
 				port : type_port_netchanger;
 
-				use type_ports_submodule;
+				use pac_submodule_ports;
 				use pac_device_ports;
 				use type_ports_netchanger;
 			begin
@@ -4727,14 +4727,14 @@ package body et_schematic_ops is
 
 							-- If port not already in segment, append it.
 							-- Otherwise it must not be appended again. constraint_error would arise.
-							if type_ports_submodule.contains (
+							if pac_submodule_ports.contains (
 								container	=> segment.ports_submodules,
 								item		=> (instance, port) -- OSC1, clock_output
 								) then
 
 								log (text => " already there -> skipped", level => log_threshold + 3);
 							else
-								type_ports_submodule.insert (
+								pac_submodule_ports.insert (
 									container	=> segment.ports_submodules,
 									new_item	=> (instance, port)); -- OSC1, clock_output
 
@@ -4999,15 +4999,15 @@ package body et_schematic_ops is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 					procedure change_segment (segment : in out type_net_segment) is
-						use type_ports_submodule;
-						port_cursor : type_ports_submodule.cursor;
+						use pac_submodule_ports;
+						port_cursor : pac_submodule_ports.cursor;
 					begin
 						-- Search for the port and delete it if existing:
 						port_cursor := find (
 							container	=> segment.ports_submodules,
 							item		=> port); -- OSC1, clock_output
 
-						if port_cursor /= type_ports_submodule.no_element then
+						if port_cursor /= pac_submodule_ports.no_element then
 							delete (segment.ports_submodules, port_cursor);
 							port_processed := true;
 						end if;
@@ -5514,7 +5514,7 @@ package body et_schematic_ops is
 		ports : type_ports;
 		port : et_schematic.type_submodule_port;
 
-		use type_ports_submodule;
+		use pac_submodule_ports;
 		use pac_device_ports;
 
 		use et_netlists;
@@ -5778,10 +5778,10 @@ package body et_schematic_ops is
 
 					procedure change_segment (segment : in out type_net_segment) is
 						use pac_module_instance_name;
-						use type_ports_submodule;
-						port_cursor : type_ports_submodule.cursor := segment.ports_submodules.first;
+						use pac_submodule_ports;
+						port_cursor : pac_submodule_ports.cursor := segment.ports_submodules.first;
 					begin
-						while port_cursor /= type_ports_submodule.no_element loop
+						while port_cursor /= pac_submodule_ports.no_element loop
 							if element (port_cursor).module_name = instance then -- OSC1
 								delete (segment.ports_submodules, port_cursor);
 							end if;
@@ -8683,15 +8683,15 @@ package body et_schematic_ops is
 	function extend_ports (
 	-- Adds the port direction (master/slave) to the given submodule ports.
 		module_cursor	: in pac_generic_modules.cursor;
-		ports 			: in et_schematic.type_ports_submodule.set)
+		ports 			: in et_schematic.pac_submodule_ports.set)
 		return et_netlists.type_submodule_ports_extended.set is
 
 		use et_netlists;
 		ports_extended : type_submodule_ports_extended.set; -- to be returned
 
-		use et_schematic.type_ports_submodule;
+		use et_schematic.pac_submodule_ports;
 
-		procedure query_ports (port_cursor : in et_schematic.type_ports_submodule.cursor) is
+		procedure query_ports (port_cursor : in et_schematic.pac_submodule_ports.cursor) is
 			port : et_schematic.type_submodule_port := element (port_cursor);
 			direction : et_submodules.type_netchanger_port_name; -- master/slave
 		begin
@@ -9256,8 +9256,8 @@ package body et_schematic_ops is
 			-- Since submodule_port_collector is an ordered set, an exception will be raised if
 			-- a port is to be inserted more than once. Something like "MOT_DRV reset" must
 			-- occur only ONCE throughout the module.
-			use type_ports_submodule;
-			submodule_port_collector : type_ports_submodule.set;
+			use pac_submodule_ports;
+			submodule_port_collector : pac_submodule_ports.set;
 
 			procedure collect_submodule_port (
 				port	: in type_submodule_port;
@@ -9346,7 +9346,7 @@ package body et_schematic_ops is
 								end query_ports_devices;
 
 								procedure query_ports_submodules (segment : in type_net_segment) is
-									procedure query_port (port_cursor : in type_ports_submodule.cursor) is begin
+									procedure query_port (port_cursor : in pac_submodule_ports.cursor) is begin
 										log (text => "submodule " & et_general.to_string (element (port_cursor).module_name) &
 											 " port " & et_general.to_string (element (port_cursor).port_name), level => log_threshold + 4);
 

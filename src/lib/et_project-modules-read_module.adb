@@ -502,7 +502,7 @@ is
 	net_device_ports : et_schematic.pac_device_ports.set;
 
 	net_submodule_port : et_schematic.type_submodule_port;
-	net_submodule_ports : et_schematic.type_ports_submodule.set;
+	net_submodule_ports : et_schematic.pac_submodule_ports.set;
 
 	net_netchanger_port : et_netlists.type_port_netchanger;
 	net_netchanger_ports : et_netlists.type_ports_netchanger.set;
@@ -3203,7 +3203,7 @@ is
 							
 							-- clean up for next port collections (of another net segment)
 							et_schematic.pac_device_ports.clear (net_device_ports);
-							et_schematic.type_ports_submodule.clear (net_submodule_ports);
+							et_schematic.pac_submodule_ports.clear (net_submodule_ports);
 							et_netlists.type_ports_netchanger.clear (net_netchanger_ports);
 
 						when SEC_SUBMODULE =>
@@ -4762,14 +4762,14 @@ is
 
 										-- Insert submodule port in collection of submodule ports. First make sure it is
 										-- not already in the net segment.
-										if et_schematic.type_ports_submodule.contains (net_submodule_ports, net_submodule_port) then
+										if et_schematic.pac_submodule_ports.contains (net_submodule_ports, net_submodule_port) then
 											log (ERROR, "submodule " & to_string (net_submodule_port.module_name) &
 												" port " & et_general.to_string (net_submodule_port.port_name) & 
 												" already in net segment !", console => true);
 											raise constraint_error;
 										end if;
 										
-										et_schematic.type_ports_submodule.insert (net_submodule_ports, net_submodule_port);
+										et_schematic.pac_submodule_ports.insert (net_submodule_ports, net_submodule_port);
 
 										-- clean up for next submodule port
 										net_submodule_port := (others => <>);

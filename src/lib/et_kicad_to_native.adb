@@ -3012,7 +3012,7 @@ package body et_kicad_to_native is
 						net_segment_native.ports_devices := read_ports (element (kicad_segment_cursor));
 
 						-- there are no ports of submodules
-						net_segment_native.ports_submodules := type_ports_submodule.empty_set;
+						net_segment_native.ports_submodules := pac_submodule_ports.empty_set;
 						
 						-- Collect native net segment in list net_segments_native.
 						et_schematic.type_net_segments.append (

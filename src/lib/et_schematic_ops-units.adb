@@ -540,7 +540,7 @@ package body et_schematic_ops.units is
 			point : et_coordinates.type_position; -- the point
 			ports : type_ports;
 			port : et_schematic.type_device_port;
-			use type_ports_submodule;
+			use pac_submodule_ports;
 			use pac_device_ports;
 			use et_netlists.type_ports_netchanger;
 		begin
@@ -620,7 +620,7 @@ package body et_schematic_ops.units is
 			point : et_coordinates.type_position; -- the point
 			ports : type_ports;
 			port : et_schematic.type_device_port;
-			use type_ports_submodule;
+			use pac_submodule_ports;
 			use pac_device_ports;
 			use et_netlists.type_ports_netchanger;
 		begin

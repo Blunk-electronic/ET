@@ -711,7 +711,7 @@ package body et_schematic_ops.nets is
 	function no_ports (ports : in type_ports) return boolean is
 		result : boolean := true;
 		use pac_device_ports;
-		use type_ports_submodule;
+		use pac_submodule_ports;
 		use et_netlists.type_ports_netchanger;
 	begin
 		if length (ports.devices) > 0 then
@@ -750,13 +750,13 @@ package body et_schematic_ops.nets is
 		-- On the first finding, sets result to false and finishes. If no 
 		-- finding, result remains true.	
 			use pac_device_ports;
-			use type_ports_submodule;
+			use pac_submodule_ports;
 
 			use et_netlists;
 			use type_ports_netchanger;
 
 			device : pac_device_ports.cursor := segment.ports_devices.first;
-			submodule : type_ports_submodule.cursor := segment.ports_submodules.first;
+			submodule : pac_submodule_ports.cursor := segment.ports_submodules.first;
 			netchanger : type_ports_netchanger.cursor := segment.ports_netchangers.first;
 		begin -- search_ports
 			while device /= pac_device_ports.no_element loop
@@ -780,7 +780,7 @@ package body et_schematic_ops.nets is
 			-- if no device port found, search in submodule ports
 			if result = true then
 
-				while submodule /= type_ports_submodule.no_element loop
+				while submodule /= pac_submodule_ports.no_element loop
 
 					if position ( -- CS use a similar function that takes only cursors ?
 						module_name		=> module_name,
@@ -1151,7 +1151,7 @@ package body et_schematic_ops.nets is
 						-- detects this rare case.
 						begin
 							pac_device_ports.union (segment.ports_devices, ports.devices);
-							type_ports_submodule.union (segment.ports_submodules, ports.submodules);
+							pac_submodule_ports.union (segment.ports_submodules, ports.submodules);
 							et_netlists.type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
 						end append_portlists;
 						
@@ -1513,7 +1513,7 @@ package body et_schematic_ops.nets is
 		
 		procedure assign_ports_to_segment is begin
 			pac_device_ports.union (segment.ports_devices, ports.devices);
-			type_ports_submodule.union (segment.ports_submodules, ports.submodules);
+			pac_submodule_ports.union (segment.ports_submodules, ports.submodules);
 			et_netlists.type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
 		end;
 		
@@ -2314,9 +2314,9 @@ package body et_schematic_ops.nets is
 						procedure update_submodule_ports is 
 						-- Queries the positions of the submodule ports in the old_segment. 
 						-- By the position assigns the ports to the new segments. 
-							use type_ports_submodule;
+							use pac_submodule_ports;
 
-							procedure query_ports (cursor : in type_ports_submodule.cursor) is
+							procedure query_ports (cursor : in pac_submodule_ports.cursor) is
 								submod_name 	: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 								port_name		: pac_net_name.bounded_string; -- RESET
 								port_position 	: type_point; -- the xy-position of the port

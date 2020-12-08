@@ -243,7 +243,7 @@ package et_schematic is
 	end record;
 
 	function "<" (left, right : in type_submodule_port) return boolean;
-	package type_ports_submodule is new ordered_sets (type_submodule_port);
+	package pac_submodule_ports is new ordered_sets (type_submodule_port);
 	
 
 	
@@ -341,7 +341,7 @@ package et_schematic is
 		labels				: type_net_labels.list;
 		junctions			: type_junctions;
 		ports_devices		: pac_device_ports.set;
-		ports_submodules	: type_ports_submodule.set;
+		ports_submodules	: pac_submodule_ports.set;
 		ports_netchangers	: et_netlists.type_ports_netchanger.set;
 	end record;
 	
@@ -445,7 +445,7 @@ package et_schematic is
 	
 	type type_ports is record
 		devices		: pac_device_ports.set;
-		submodules	: type_ports_submodule.set;
+		submodules	: pac_submodule_ports.set;
 		netchangers	: et_netlists.type_ports_netchanger.set;
 	end record;
 	
