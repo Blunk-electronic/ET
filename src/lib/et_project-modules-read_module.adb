@@ -1247,7 +1247,7 @@ is
 				use et_packages;
 				use et_pcb_stack;
 				
-				device_cursor : et_schematic.type_devices.cursor;
+				device_cursor : pac_devices_sch.cursor;
 				inserted : boolean;
 
 				function get_package_name return type_component_package_name.bounded_string is
@@ -1352,7 +1352,7 @@ is
 					-- CS: warn operator if provided but ignored due to the fact that device is virtual
 				end if;
 
-				et_schematic.type_devices.insert (
+				pac_devices_sch.insert (
 					container	=> module.devices,
 					position	=> device_cursor,
 					inserted	=> inserted,

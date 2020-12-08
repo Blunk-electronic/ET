@@ -614,7 +614,7 @@ package body et_scripting_interactive_schematic is
 	procedure set_variant (device : in et_devices.type_device_name) is
 		use pac_variants;
 		variants : pac_variants.map;
-		device_cursor_sch : et_schematic.type_devices.cursor;
+		device_cursor_sch : pac_devices_sch.cursor;
 
 		procedure show_variants_menu is
 			m : gtk_menu;

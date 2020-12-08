@@ -351,10 +351,10 @@ package body et_board_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
+			use et_schematic.pac_devices_sch;
 			use et_schematic.pac_devices_non_electric;
 			
-			device_electric		: et_schematic.type_devices.cursor;
+			device_electric		: et_schematic.pac_devices_sch.cursor;
 			device_non_electric	: et_schematic.pac_devices_non_electric.cursor;			
 
 			procedure set_position ( -- of an electric device
@@ -455,10 +455,10 @@ package body et_board_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
+			use et_schematic.pac_devices_sch;
 			use et_schematic.pac_devices_non_electric;
 			
-			device_electric		: et_schematic.type_devices.cursor;
+			device_electric		: et_schematic.pac_devices_sch.cursor;
 			device_non_electric	: et_schematic.pac_devices_non_electric.cursor;			
 
 			procedure set_rotation ( -- of an electric device
@@ -661,10 +661,10 @@ package body et_board_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
+			use et_schematic.pac_devices_sch;
 			use et_schematic.pac_devices_non_electric;
 			
-			device_electric		: et_schematic.type_devices.cursor;
+			device_electric		: et_schematic.pac_devices_sch.cursor;
 			device_non_electric	: et_schematic.pac_devices_non_electric.cursor;			
 
 			scratch : et_packages.pac_text_placeholders.list;
@@ -997,10 +997,10 @@ package body et_board_ops is
 						end if;
 					end;
 
-					procedure query_properties_default (cursor_schematic : in et_schematic.type_devices.cursor) is 
+					procedure query_properties_default (cursor_schematic : in et_schematic.pac_devices_sch.cursor) is 
 						cursor_pnp : et_pick_and_place.type_devices.cursor;
 
-						use et_schematic.type_devices;
+						use et_schematic.pac_devices_sch;
 						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
 
@@ -1012,7 +1012,7 @@ package body et_board_ops is
 							-- the package of the device must be real
 							if has_real_package (cursor_schematic) then
 							
-								device_name := et_schematic.type_devices.key (cursor_schematic);
+								device_name := et_schematic.pac_devices_sch.key (cursor_schematic);
 
 								-- Store device in pnp list as it is:
 								apply_offset (device_name, offset, log_threshold + 2);
@@ -1035,10 +1035,10 @@ package body et_board_ops is
 						end if;
 					end query_properties_default;
 
-					procedure query_properties_variants (cursor_schematic : in et_schematic.type_devices.cursor) is 
+					procedure query_properties_variants (cursor_schematic : in et_schematic.pac_devices_sch.cursor) is 
 						cursor_pnp : et_pick_and_place.type_devices.cursor;
 
-						use et_schematic.type_devices;
+						use et_schematic.pac_devices_sch;
 						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
 						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
@@ -1051,7 +1051,7 @@ package body et_board_ops is
 							-- the package of the device must be real
 							if has_real_package (cursor_schematic) then
 													
-								device_name := et_schematic.type_devices.key (cursor_schematic);
+								device_name := et_schematic.pac_devices_sch.key (cursor_schematic);
 								
 								-- Get a cursor to the alternative device as specified in the assembly variant:
 								alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
@@ -1124,7 +1124,7 @@ package body et_board_ops is
 
 						log_indentation_up;
 						
-						et_schematic.type_devices.iterate (
+						et_schematic.pac_devices_sch.iterate (
 							container	=> module.devices,
 							process		=> query_properties_default'access);
 
@@ -1141,7 +1141,7 @@ package body et_board_ops is
 
 						log_indentation_up;
 						
-						et_schematic.type_devices.iterate (
+						et_schematic.pac_devices_sch.iterate (
 							container	=> module.devices,
 							process		=> query_properties_variants'access);
 
@@ -1382,10 +1382,10 @@ package body et_board_ops is
 	-- Returns a cursor to the requested device in the given module.
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		device_name		: in type_device_name)
-		return et_schematic.type_devices.cursor is
+		return et_schematic.pac_devices_sch.cursor is
 
-		use et_schematic.type_devices;
-		device_cursor : et_schematic.type_devices.cursor;
+		use et_schematic.pac_devices_sch;
+		device_cursor : et_schematic.pac_devices_sch.cursor;
 		
 		procedure query_devices (
 			module_name		: in pac_module_name.bounded_string;
@@ -1399,7 +1399,7 @@ package body et_board_ops is
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
-		if device_cursor = et_schematic.type_devices.no_element then
+		if device_cursor = et_schematic.pac_devices_sch.no_element then
 			device_not_found (device_name);
 		end if;
 		
@@ -1410,7 +1410,7 @@ package body et_board_ops is
 	-- Returns the position of a terminal of the given device in the board.
 	-- The device must be real (appearance SCH_PCB).
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
-		device_cursor	: in et_schematic.type_devices.cursor; -- IC45
+		device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
 		terminal_name	: in type_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position is
 		use et_pcb;
@@ -1431,13 +1431,13 @@ package body et_board_ops is
 		
 		terminal_technology : type_assembly_technology;
 		
-		use et_schematic.type_devices;
+		use et_schematic.pac_devices_sch;
 	begin
 		-- get the package model of the given device:
 		model := get_package_model (device_cursor);
 
 		-- get the position of the package as it is in the layout
-		package_position := et_schematic.type_devices.element (device_cursor).position;
+		package_position := et_schematic.pac_devices_sch.element (device_cursor).position;
 		
 		-- set the cursor to package model:
 		package_model_cursor := locate_package_model (model);
@@ -1774,8 +1774,8 @@ package body et_board_ops is
 		-- to the given net.
 		line : et_pcb.type_copper_line;
 		
-		use et_schematic.type_devices;
-		device_cursor : et_schematic.type_devices.cursor;
+		use et_schematic.pac_devices_sch;
+		device_cursor : et_schematic.pac_devices_sch.cursor;
 		
 		procedure make_line (terminal_position : in type_terminal_position) is begin
 
@@ -1844,8 +1844,8 @@ package body et_board_ops is
 		-- to the given net.
 		line : et_pcb.type_copper_line;
 		
-		use et_schematic.type_devices;
-		device_cursor : et_schematic.type_devices.cursor;
+		use et_schematic.pac_devices_sch;
+		device_cursor : et_schematic.pac_devices_sch.cursor;
 		
 		procedure make_line (terminal_position : in type_terminal_position) is begin
 
@@ -1910,8 +1910,8 @@ package body et_board_ops is
 		-- to the given net.
 		line : et_pcb.type_copper_line;
 		
-		use et_schematic.type_devices;
-		device_cursor : et_schematic.type_devices.cursor;
+		use et_schematic.pac_devices_sch;
+		device_cursor : et_schematic.pac_devices_sch.cursor;
 		
 		procedure make_line (terminal_position : in type_terminal_position) is begin
 
@@ -1973,8 +1973,8 @@ package body et_board_ops is
 		-- to the given net.
 		line : et_pcb.type_copper_line;
 		
-		use et_schematic.type_devices;
-		device_cursor : et_schematic.type_devices.cursor;
+		use et_schematic.pac_devices_sch;
+		device_cursor : et_schematic.pac_devices_sch.cursor;
 		
 		procedure make_line (terminal_position : in type_terminal_position) is begin
 

@@ -209,11 +209,11 @@ package body et_schematic_ops is
 	
 	procedure log_package_position (
 	-- Writes the position of the package in the log file. If device is virtual, nothing happens.
-		device_cursor	: in et_schematic.type_devices.cursor;
+		device_cursor	: in pac_devices_sch.cursor;
 		log_threshold	: in type_log_level) is
 		use et_pcb_coordinates;
 		use et_pcb_coordinates.pac_geometry_brd;
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		use et_symbols;
 	begin
 		if element (device_cursor).appearance = PCB then
@@ -228,7 +228,7 @@ package body et_schematic_ops is
 	function positions_of_units (
 	-- Collects the positions of all units (in schematic) of the given device and returns
 	-- them in a list.
-		device_cursor : in et_schematic.type_devices.cursor) 
+		device_cursor : in pac_devices_sch.cursor) 
 		return type_unit_positions.map is
 
 		-- temporarily storage of unit coordinates:
@@ -242,7 +242,7 @@ package body et_schematic_ops is
 		end;
 
 	begin -- positions_of_units
-		et_schematic.type_devices.query_element (
+		pac_devices_sch.query_element (
 			position	=> device_cursor,
 			process		=> get_positions'access);
 
@@ -391,8 +391,8 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor;
 
 			-- temporarily storage of unit coordinates:
 			position_of_units : type_unit_positions.map;
@@ -445,7 +445,7 @@ package body et_schematic_ops is
 	-- Returns a map of ports of the given device and unit.
 	-- The coordinates of the ports are default xy-positions relative
 	-- to the center of the unit.
-		device_cursor	: in et_schematic.type_devices.cursor;
+		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return et_symbols.type_ports.map is
 
@@ -507,7 +507,7 @@ package body et_schematic_ops is
 	begin -- ports_of_unit
 
 		-- Fetch the model name of the given device. 
-		model := et_schematic.type_devices.element (device_cursor).model;
+		model := pac_devices_sch.element (device_cursor).model;
 
 		-- Get cursor to device in device library (the model name is the key into the device library).
 		-- CS: constraint_error will arise here if no associated device exists.
@@ -582,8 +582,8 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor;
 			unit_position : et_coordinates.type_position;
 
 			procedure query_units (
@@ -644,7 +644,7 @@ package body et_schematic_ops is
 
 				log_indentation_up;
 				
-				et_schematic.type_devices.query_element (
+				pac_devices_sch.query_element (
 					position	=> device_cursor,
 					process		=> query_units'access);
 
@@ -845,8 +845,8 @@ package body et_schematic_ops is
 -- 		procedure query_devices (
 -- 			module_name	: in pac_module_name.bounded_string;
 -- 			module		: in out type_module) is
--- 			use et_schematic.type_devices;
--- 			device_cursor : et_schematic.type_devices.cursor;
+-- 			use pac_devices_sch;
+-- 			device_cursor : pac_devices_sch.cursor;
 -- 
 -- 			-- temporarily storage of unit coordinates.
 -- 			-- There will be only one unit in this container.
@@ -1140,8 +1140,8 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -1299,12 +1299,12 @@ package body et_schematic_ops is
 	function default_text_positions (
 	-- Returns the default positions of placeholders and texts of a unit
 	-- as they are defined in the symbol model.
-		device_cursor	: in et_schematic.type_devices.cursor;
+		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return et_symbols.type_default_text_positions is
 		
 		use et_symbols;
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 
 		-- The positions to be returned depend on the appearance of the requested device:
 		result : type_default_text_positions (element (device_cursor).appearance); -- to be returned
@@ -1408,7 +1408,7 @@ package body et_schematic_ops is
 	begin -- default_text_positions
 
 		-- Fetch the model name of the given device. 
-		model := et_schematic.type_devices.element (device_cursor).model;
+		model := pac_devices_sch.element (device_cursor).model;
 
 		-- Get cursor to device in device library (the model name is the key into the device library).
 		-- CS: constraint_error will arise here if no associated device exists.
@@ -1469,8 +1469,8 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -1832,11 +1832,11 @@ package body et_schematic_ops is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
-			use et_schematic.type_devices;
+			use pac_devices_sch;
 			use et_submodules.type_submodules;
 			use et_submodules.type_netchangers;			
 			
-			procedure query_devices (device_cursor : in et_schematic.type_devices.cursor) is
+			procedure query_devices (device_cursor : in pac_devices_sch.cursor) is
 
 				procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
 					use et_schematic.type_units;
@@ -2168,10 +2168,10 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
+			use pac_devices_sch;
 
-			device_cursor_before : et_schematic.type_devices.cursor;
-			device_cursor_after  : et_schematic.type_devices.cursor;
+			device_cursor_before : pac_devices_sch.cursor;
+			device_cursor_after  : pac_devices_sch.cursor;
 			inserted : boolean;
 
 			-- temporarily storage of unit coordinates:
@@ -2181,10 +2181,10 @@ package body et_schematic_ops is
 			-- locate the device by the old name
 			device_cursor_before := find (module.devices, device_name_before); -- IC1
 
-			if device_cursor_before /= et_schematic.type_devices.no_element then -- the device should be there
+			if device_cursor_before /= pac_devices_sch.no_element then -- the device should be there
 
 				-- copy elements and properties of the old device to a new one:
-				et_schematic.type_devices.insert (
+				pac_devices_sch.insert (
 					container	=> module.devices,
 					key			=> device_name_after, -- IC23
 					new_item	=> element (device_cursor_before), -- all elements and properties of IC1
@@ -2207,7 +2207,7 @@ package body et_schematic_ops is
 				position_of_units := positions_of_units (device_cursor_before);
 				
 				-- delete the old device
-				et_schematic.type_devices.delete (
+				pac_devices_sch.delete (
 					container	=> module.devices,
 					position	=> device_cursor_before);
 
@@ -2269,9 +2269,9 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
+			use pac_devices_sch;
 
-			device_cursor : et_schematic.type_devices.cursor;
+			device_cursor : pac_devices_sch.cursor;
 
 			procedure set_value (
 				device_name	: in type_device_name;
@@ -2286,7 +2286,7 @@ package body et_schematic_ops is
 			-- locate the device
 			device_cursor := find (module.devices, device_name); -- R1
 
-			if device_cursor /= et_schematic.type_devices.no_element then -- the device should be there
+			if device_cursor /= pac_devices_sch.no_element then -- the device should be there
 
 				-- Only real devices have a value.
 				if element (device_cursor).appearance = PCB then
@@ -2358,9 +2358,9 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
+			use pac_devices_sch;
 
-			device_cursor : et_schematic.type_devices.cursor;
+			device_cursor : pac_devices_sch.cursor;
 
 			procedure set_purpose (
 				device_name	: in type_device_name;
@@ -2375,7 +2375,7 @@ package body et_schematic_ops is
 			-- locate the device
 			device_cursor := find (module.devices, device_name); -- R1
 
-			if device_cursor /= et_schematic.type_devices.no_element then -- the device should be there
+			if device_cursor /= pac_devices_sch.no_element then -- the device should be there
 
 				-- Only real devices have a purpose. Issue warning if targeted device is virtual.
 				if element (device_cursor).appearance = PCB then
@@ -2426,9 +2426,9 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
+			use pac_devices_sch;
 
-			device_cursor : et_schematic.type_devices.cursor;
+			device_cursor : pac_devices_sch.cursor;
 
 			procedure set_partcode (
 				device_name	: in type_device_name;
@@ -2443,7 +2443,7 @@ package body et_schematic_ops is
 			-- locate the device
 			device_cursor := find (module.devices, device_name); -- R1
 
-			if device_cursor /= et_schematic.type_devices.no_element then -- the device should be there
+			if device_cursor /= pac_devices_sch.no_element then -- the device should be there
 
 				-- Only real devices have a purpose. Issue warning if targeted device is virtual.
 				if element (device_cursor).appearance = PCB then
@@ -2492,7 +2492,7 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use et_schematic.type_devices;
+			use pac_devices_sch;
 		begin
 			if contains (module.devices, device) then
 				device_found := true;
@@ -2510,14 +2510,14 @@ package body et_schematic_ops is
 	function locate_device (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return et_schematic.type_devices.cursor 
+		return pac_devices_sch.cursor 
 	is
-		result : et_schematic.type_devices.cursor;
+		result : pac_devices_sch.cursor;
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use et_schematic.type_devices;
+			use pac_devices_sch;
 		begin
 			result := find (module.devices, device);
 		end;
@@ -2535,7 +2535,7 @@ package body et_schematic_ops is
 		device	: in type_device_name) -- R2
 		return pac_devices_lib.cursor
 	is
-		cursor_sch : et_schematic.type_devices.cursor;
+		cursor_sch : pac_devices_sch.cursor;
 	begin
 		-- find the device in the module
 		cursor_sch := locate_device (module, device);
@@ -2551,10 +2551,10 @@ package body et_schematic_ops is
 		unit	: in pac_unit_name.bounded_string)
 		return et_schematic.type_units.cursor
 	is
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		use et_schematic.type_units;
 		
-		device_cursor : et_schematic.type_devices.cursor;
+		device_cursor : pac_devices_sch.cursor;
 		unit_cursor : et_schematic.type_units.cursor; -- to be returned
 
 		procedure query_units (
@@ -2596,7 +2596,7 @@ package body et_schematic_ops is
 		device	: in type_device_name) -- R2
 		return pac_device_model_file.bounded_string
 	is 
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 	begin
 		return element (locate_device (module, device)).model;
 	end device_model_name;
@@ -2617,19 +2617,19 @@ package body et_schematic_ops is
 		device	: in type_device_name) -- R2
 		return pac_package_variant_name.bounded_string -- D, N
 	is
-		cursor_sch : et_schematic.type_devices.cursor;
+		cursor_sch : pac_devices_sch.cursor;
 	begin
 		cursor_sch := locate_device (module, device);
 		
-		return et_schematic.type_devices.element (cursor_sch).variant;
+		return pac_devices_sch.element (cursor_sch).variant;
 	end get_variant;
 
 	procedure set_variant (
 		module	: in pac_generic_modules.cursor;
-		device	: in et_schematic.type_devices.cursor;
+		device	: in pac_devices_sch.cursor;
 		variant	: in pac_package_variant_name.bounded_string)
 	is
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 
 		procedure query_device (
 			module_name	: in pac_module_name.bounded_string;
@@ -2681,7 +2681,7 @@ package body et_schematic_ops is
 	is
 		use pac_generic_modules;
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-		device_cursor : et_schematic.type_devices.cursor;
+		device_cursor : pac_devices_sch.cursor;
 	begin
 		log (text => "module " & enclose_in_quotes (to_string (module))
 			 & " setting package variant of " & to_string (device)
@@ -2705,11 +2705,11 @@ package body et_schematic_ops is
 		device	: in type_device_name) -- R2
 		return pac_devices_lib.cursor
 	is
-		cursor_sch : et_schematic.type_devices.cursor;
+		cursor_sch : pac_devices_sch.cursor;
 		device_model : pac_device_model_file.bounded_string;
 	begin
 		cursor_sch := locate_device (module, device);
-		device_model := et_schematic.type_devices.element (cursor_sch).model;
+		device_model := pac_devices_sch.element (cursor_sch).model;
 		return locate_device (device_model);
 	end device_model_cursor;
 
@@ -2728,8 +2728,8 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
 			use pac_unit_name;
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor;
 
 			use et_symbols;
 			
@@ -2795,8 +2795,8 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
 			use pac_unit_name;
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor;
 
 			use et_symbols;
 			
@@ -2953,8 +2953,8 @@ package body et_schematic_ops is
 		-- for the lowest available resistor index.
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor := module.devices.first;
 
 			-- We start the search with index 1. Not 0 because this would result in a zero based
 			-- numbering order. Index zero is allowed but not automatically choosen.
@@ -2962,7 +2962,7 @@ package body et_schematic_ops is
 
 			gap_found : boolean := false; -- goes true once a gap has been found
 		begin
-			while device_cursor /= et_schematic.type_devices.no_element loop
+			while device_cursor /= pac_devices_sch.no_element loop
 				if et_devices.prefix (key (device_cursor)) = prefix then -- prefix match
 					
 					if index (key (device_cursor)) /= index_expected then -- we have a gap
@@ -3146,8 +3146,8 @@ package body et_schematic_ops is
 		log_threshold	: in type_log_level)
 		return et_devices.pac_unit_names.list
 	is
-		use et_schematic.type_devices;
-		device_cursor_sch : et_schematic.type_devices.cursor;
+		use pac_devices_sch;
+		device_cursor_sch : pac_devices_sch.cursor;
 
 		device_model : pac_device_model_file.bounded_string;
 		device_cursor_lib : pac_devices_lib.cursor;
@@ -3240,8 +3240,8 @@ package body et_schematic_ops is
 	is
 		available : boolean := true; -- to be returned
 
-		use et_schematic.type_devices;
-		device_cursor_sch : et_schematic.type_devices.cursor;
+		use pac_devices_sch;
+		device_cursor_sch : pac_devices_sch.cursor;
 		
 		device_cursor_lib : pac_devices_lib.cursor;
 		
@@ -3292,8 +3292,8 @@ package body et_schematic_ops is
 		log_threshold	: in type_log_level)
 		return et_devices.pac_unit_names.list
 	is
-		use et_schematic.type_devices;
-		device_cursor_sch : et_schematic.type_devices.cursor;
+		use pac_devices_sch;
+		device_cursor_sch : pac_devices_sch.cursor;
 
 		names_of_units : pac_unit_names.list;
 
@@ -3348,8 +3348,8 @@ package body et_schematic_ops is
 		unit	: in pac_unit_name.bounded_string)
 		return et_coordinates.type_position
 	is
-		use et_schematic.type_devices;
-		device_cursor_sch : et_schematic.type_devices.cursor;
+		use pac_devices_sch;
+		device_cursor_sch : pac_devices_sch.cursor;
 
 		unit_position : et_coordinates.type_position;
 		
@@ -3379,11 +3379,11 @@ package body et_schematic_ops is
 	end position;
 
 	function position (
-		device	: in et_schematic.type_devices.cursor; -- R2
+		device	: in pac_devices_sch.cursor; -- R2
 		unit	: in et_schematic.type_units.cursor)
 		return et_coordinates.type_position
 	is
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		unit_position : et_coordinates.type_position;
 		
 		procedure query_unit (
@@ -3404,14 +3404,14 @@ package body et_schematic_ops is
 	end position;
 
 	function position (
-		device		: in et_schematic.type_devices.cursor; -- R2
+		device		: in pac_devices_sch.cursor; -- R2
 		unit		: in et_schematic.type_units.cursor;
 		category	: in et_symbols.type_placeholder_meaning)
 		return pac_geometry_sch.type_point
 	is
 		placeholder_position : pac_geometry_sch.type_point; -- to be returned
 
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		unit_position : et_coordinates.type_position;
 		
 		procedure query_unit (
@@ -7240,10 +7240,10 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
+			use pac_devices_sch;
 
-			device_cursor_before : et_schematic.type_devices.cursor;
-			device_cursor_after  : et_schematic.type_devices.cursor;
+			device_cursor_before : pac_devices_sch.cursor;
+			device_cursor_after  : pac_devices_sch.cursor;
 			inserted : boolean;
 
 			-- temporarily storage of unit coordinates:
@@ -7254,7 +7254,7 @@ package body et_schematic_ops is
 			device_cursor_before := find (module.devices, device_name_before); -- IC1
 
 			-- copy elements and properties of the old device to a new one:
-			et_schematic.type_devices.insert (
+			pac_devices_sch.insert (
 				container	=> module.devices,
 				key			=> device_name_after, -- IC23
 				new_item	=> element (device_cursor_before), -- all elements and properties of IC1
@@ -7269,7 +7269,7 @@ package body et_schematic_ops is
 				position_of_units := positions_of_units (device_cursor_before);
 				
 				-- delete the old device
-				et_schematic.type_devices.delete (
+				pac_devices_sch.delete (
 					container	=> module.devices,
 					position	=> device_cursor_before);
 
@@ -7320,9 +7320,9 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
 
-			procedure query_units (device_cursor : in et_schematic.type_devices.cursor) is
+			procedure query_units (device_cursor : in pac_devices_sch.cursor) is
 				use et_schematic.type_units;
-				device_name : type_device_name := et_schematic.type_devices.key (device_cursor); -- R1
+				device_name : type_device_name := pac_devices_sch.key (device_cursor); -- R1
 
 				procedure sort (unit_cursor : in et_schematic.type_units.cursor) is 
 					unit_name : pac_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
@@ -7366,14 +7366,14 @@ package body et_schematic_ops is
 				log_indentation_up;
 				
 				et_schematic.type_units.iterate (
-					container	=> et_schematic.type_devices.element (device_cursor).units,
+					container	=> pac_devices_sch.element (device_cursor).units,
 					process		=> sort'access);
 
 				log_indentation_down;
 			end query_units;
 			
 		begin -- query_devices
-			et_schematic.type_devices.iterate (
+			pac_devices_sch.iterate (
 				container	=> module.devices,
 				process		=> query_units'access);
 		end query_devices;
@@ -7615,12 +7615,12 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
-			use et_schematic.type_devices;
+			use pac_devices_sch;
 
-			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
+			device_cursor : pac_devices_sch.cursor := module.devices.first;
 			index_current : type_name_index;
 		begin -- query_devices
-			while device_cursor /= et_schematic.type_devices.no_element loop
+			while device_cursor /= pac_devices_sch.no_element loop
 
 				index_current := index (key (device_cursor));
 				
@@ -8126,10 +8126,10 @@ package body et_schematic_ops is
 						end if;
 					end;
 					
-					procedure query_properties_default (cursor_schematic : in et_schematic.type_devices.cursor) is 
+					procedure query_properties_default (cursor_schematic : in pac_devices_sch.cursor) is 
 						cursor_bom : et_material.type_devices.cursor;
 
-						use et_schematic.type_devices;
+						use pac_devices_sch;
 						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
 					begin -- query_properties_default
@@ -8141,7 +8141,7 @@ package body et_schematic_ops is
 							-- the package must be real
 							if has_real_package (cursor_schematic) then
 
-								device_name := et_schematic.type_devices.key (cursor_schematic);
+								device_name := pac_devices_sch.key (cursor_schematic);
 
 								-- issue warning if device has no partcode
 								test_partcode (element (cursor_schematic).partcode);
@@ -8167,10 +8167,10 @@ package body et_schematic_ops is
 						end if;
 					end query_properties_default;
 
-					procedure query_properties_variants (cursor_schematic : in et_schematic.type_devices.cursor) is 
+					procedure query_properties_variants (cursor_schematic : in pac_devices_sch.cursor) is 
 						cursor_bom : et_material.type_devices.cursor;
 
-						use et_schematic.type_devices;
+						use pac_devices_sch;
 						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
 						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
@@ -8182,7 +8182,7 @@ package body et_schematic_ops is
 							-- the package must be real
 							if has_real_package (cursor_schematic) then
 							
-								device_name := et_schematic.type_devices.key (cursor_schematic);
+								device_name := pac_devices_sch.key (cursor_schematic);
 								
 								-- Get a cursor to the alternative device as specified in the assembly variant:
 								alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
@@ -8266,7 +8266,7 @@ package body et_schematic_ops is
 						
 						log_indentation_up;
 						
-						et_schematic.type_devices.iterate (
+						pac_devices_sch.iterate (
 							container	=> module.devices,
 							process		=> query_properties_default'access);
 
@@ -8281,7 +8281,7 @@ package body et_schematic_ops is
 						
 						log_indentation_up;
 					
-						et_schematic.type_devices.iterate (
+						pac_devices_sch.iterate (
 							container	=> module.devices,
 							process		=> query_properties_variants'access);
 
@@ -8505,8 +8505,8 @@ package body et_schematic_ops is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
-			use et_schematic.type_devices;
-			device_cursor_sch	: et_schematic.type_devices.cursor;
+			use pac_devices_sch;
+			device_cursor_sch	: pac_devices_sch.cursor;
 			variant 			: pac_package_variant_name.bounded_string; -- D, N
 			device_cursor_lib	: pac_devices_lib.cursor;
 
@@ -8549,7 +8549,7 @@ package body et_schematic_ops is
 			-- locate device in schematic
 			device_cursor_sch := find (module.devices, device_name);
 
--- 			if device_cursor_sch /= et_schematic.type_devices.no_element then
+-- 			if device_cursor_sch /= pac_devices_sch.no_element then
 			
 				variant := element (device_cursor_sch).variant;
 
@@ -9523,8 +9523,8 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) is
 
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor;
 
 			procedure query_units (
 				device_name	: in type_device_name; -- IC45
@@ -9564,10 +9564,10 @@ package body et_schematic_ops is
 			
 		begin -- query_devices
 			-- locate the device:
-			device_cursor := et_schematic.type_devices.find (module.devices, device_name);
+			device_cursor := pac_devices_sch.find (module.devices, device_name);
 
-			if device_cursor /= et_schematic.type_devices.no_element then -- device exists
-				et_schematic.type_devices.query_element (device_cursor, query_units'access);
+			if device_cursor /= pac_devices_sch.no_element then -- device exists
+				pac_devices_sch.query_element (device_cursor, query_units'access);
 			else
 				exists := false; -- device does not exist
 			end if;

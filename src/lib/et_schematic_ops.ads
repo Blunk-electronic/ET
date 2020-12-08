@@ -87,7 +87,7 @@ package et_schematic_ops is
 	-- The coordinates of the ports are default xy-positions relative
 	-- to the center of the unit.
 	function ports_of_unit (
-		device_cursor	: in et_schematic.type_devices.cursor;
+		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return et_symbols.type_ports.map;
 
@@ -179,7 +179,7 @@ package et_schematic_ops is
 	function default_text_positions (
 	-- Returns the default positions of placeholders and texts of a unit
 	-- as they are defined in the symbol model.
-		device_cursor	: in et_schematic.type_devices.cursor;
+		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return et_symbols.type_default_text_positions;
 
@@ -292,7 +292,7 @@ package et_schematic_ops is
 	function locate_device (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
-		return et_schematic.type_devices.cursor;
+		return pac_devices_sch.cursor;
 
 	-- Returns the cursor of the device model
 	-- for the given device in the module.
@@ -353,7 +353,7 @@ package et_schematic_ops is
 	-- in the according device model:
 	procedure set_variant (
 		module	: in pac_generic_modules.cursor;
-		device	: in et_schematic.type_devices.cursor;
+		device	: in pac_devices_sch.cursor;
 		variant	: in pac_package_variant_name.bounded_string);
 
 	-- Sets the package variant of a device.
@@ -472,14 +472,14 @@ package et_schematic_ops is
 	-- Returns the position (x/y/sheet) of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function position (
-		device	: in et_schematic.type_devices.cursor; -- R2
+		device	: in pac_devices_sch.cursor; -- R2
 		unit	: in et_schematic.type_units.cursor)
 		return et_coordinates.type_position;
 
 	-- Returns the position (x/y) of the given placeholder.
 	-- Raises constraint error if device or unit does not exist.
 	function position (
-		device		: in et_schematic.type_devices.cursor; -- R2
+		device		: in pac_devices_sch.cursor; -- R2
 		unit		: in et_schematic.type_units.cursor;
 		category	: in et_symbols.type_placeholder_meaning)
 		return pac_geometry_sch.type_point;

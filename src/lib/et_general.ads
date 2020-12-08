@@ -251,7 +251,7 @@ package et_general is
 
 	
 -- SHAPES
-	type type_shape is (LINE, ARC, CIRCLE);
+	type type_shape is (LINE, ARC, CIRCLE); -- CS move to et_geometry ?
 
 	function to_shape (shape : in string) return type_shape;
 	function to_shape (shape : in type_shape) return string;

@@ -404,59 +404,59 @@ package body et_schematic is
 		return result;
 	end ports;
 
-	function is_real (device : in type_devices.cursor) return boolean is 
+	function is_real (device : in pac_devices_sch.cursor) return boolean is 
 		use et_symbols;
 	begin
-		case type_devices.element (device).appearance is
+		case pac_devices_sch.element (device).appearance is
 			when PCB		=> return true;
 			when VIRTUAL	=> return false;
 		end case;
 	end is_real;
 
-	function get_device (device : in type_devices.cursor)
+	function get_device (device : in pac_devices_sch.cursor)
 		return pac_devices_lib.cursor
 	is
 		model_file : pac_device_model_file.bounded_string;
 	begin
 		-- The name of the device model file is THE link
 		-- from device in schematic to device in library:
-		model_file := type_devices.element (device).model;
+		model_file := pac_devices_sch.element (device).model;
 		return locate_device (model_file);
 	end get_device;
 	
-	function get_value (device : in type_devices.cursor)
+	function get_value (device : in pac_devices_sch.cursor)
 		return pac_device_value.bounded_string 
 	is
 		use et_devices;
 	begin
-		return type_devices.element (device).value;
+		return pac_devices_sch.element (device).value;
 	end get_value;
 
-	function get_purpose (device : in type_devices.cursor)
+	function get_purpose (device : in pac_devices_sch.cursor)
 		return pac_device_purpose.bounded_string
 	is
 		use et_devices;
 	begin
-		return type_devices.element (device).purpose;
+		return pac_devices_sch.element (device).purpose;
 	end get_purpose;
 
-	function get_partcode (device : in type_devices.cursor)
+	function get_partcode (device : in pac_devices_sch.cursor)
 		return et_material.type_partcode.bounded_string
 	is
 		use et_devices;
 	begin
-		return type_devices.element (device).partcode;
+		return pac_devices_sch.element (device).partcode;
 	end get_partcode;
 
-	function get_variant (device : in type_devices.cursor)
+	function get_variant (device : in pac_devices_sch.cursor)
 		return pac_package_variant_name.bounded_string
 	is
 		use et_devices;
 	begin
-		return type_devices.element (device).variant;
+		return pac_devices_sch.element (device).variant;
 	end get_variant;
 	
-	function get_package_model (device : in type_devices.cursor)
+	function get_package_model (device : in pac_devices_sch.cursor)
 		return et_packages.type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
 		device_model		: pac_device_model_file.bounded_string;
 		device_cursor_lib	: pac_devices_lib.cursor;
@@ -466,10 +466,10 @@ package body et_schematic is
 		-- The issue may dissolve once devices are stored in a hashed map:
 		
 		-- load package variant of given device
-		device_variant := type_devices.element (device).variant;
+		device_variant := pac_devices_sch.element (device).variant;
 		
 		-- load the name of the generic device model
-		device_model := type_devices.element (device).model;
+		device_model := pac_devices_sch.element (device).model;
 		
 		-- locate the generic device model in the device library
 		device_cursor_lib := locate_device (device_model);
@@ -477,7 +477,7 @@ package body et_schematic is
 		return package_model (device_cursor_lib, device_variant);
 	end get_package_model;
 
-	function has_real_package (device : in type_devices.cursor) return boolean is
+	function has_real_package (device : in pac_devices_sch.cursor) return boolean is
 		package_name : et_packages.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 	begin
 		-- get the package name of the given device:

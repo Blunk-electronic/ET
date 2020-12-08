@@ -55,8 +55,8 @@ procedure copy_device (
 	procedure query_devices (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_module) is
-		use et_schematic.type_devices;
-		device_cursor_sch : et_schematic.type_devices.cursor;
+		use et_schematic.pac_devices_sch;
+		device_cursor_sch : et_schematic.pac_devices_sch.cursor;
 
 		use et_symbols;
 		use pac_devices_lib;
@@ -183,7 +183,7 @@ procedure copy_device (
 			-- The unit list is empty for the time being:
 			case element (device_cursor_sch).appearance is
 				when VIRTUAL =>
-					et_schematic.type_devices.insert (
+					et_schematic.pac_devices_sch.insert (
 						container	=> module.devices,
 						inserted	=> inserted,
 						position	=> device_cursor_sch,
@@ -195,7 +195,7 @@ procedure copy_device (
 							));
 
 				when PCB =>
-					et_schematic.type_devices.insert (
+					et_schematic.pac_devices_sch.insert (
 						container	=> module.devices,
 						inserted	=> inserted,
 						position	=> device_cursor_sch,
@@ -225,7 +225,7 @@ procedure copy_device (
 			-- whether an internal or external unit is placed.
 			if unit_cursors.int /= pac_units_internal.no_element then
 
-				et_schematic.type_devices.update_element (
+				et_schematic.pac_devices_sch.update_element (
 					container	=> module.devices,
 					position	=> device_cursor_sch,
 					process		=> add_unit_internal'access);
@@ -244,7 +244,7 @@ procedure copy_device (
 			-- no internal unit available -> add external unit
 			elsif unit_cursors.ext /= pac_units_external.no_element then
 				
-				et_schematic.type_devices.update_element (
+				et_schematic.pac_devices_sch.update_element (
 					container	=> module.devices,
 					position	=> device_cursor_sch,
 					process		=> add_unit_external'access);

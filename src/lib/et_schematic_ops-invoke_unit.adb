@@ -54,8 +54,8 @@ procedure invoke_unit (
 		module		: in out type_module) is
 
 		use et_symbols;
-		use et_schematic.type_devices;
-		device_cursor_sch : et_schematic.type_devices.cursor;
+		use et_schematic.pac_devices_sch;
+		device_cursor_sch : et_schematic.pac_devices_sch.cursor;
 
 		procedure query_units_in_use (
 			device_name	: in type_device_name;
@@ -205,7 +205,7 @@ procedure invoke_unit (
 			-- If the unit is internal, add it to the device in the schematic:
 			if unit_cursors.int /= pac_units_internal.no_element then
 
-				et_schematic.type_devices.update_element (
+				et_schematic.pac_devices_sch.update_element (
 					container	=> module.devices,
 					position	=> device_cursor_sch,
 					process		=> add_unit_internal'access);
@@ -222,7 +222,7 @@ procedure invoke_unit (
 			-- Unit is external -> add external unit to device in schematic:
 			elsif unit_cursors.ext /= pac_units_external.no_element then
 				
-				et_schematic.type_devices.update_element (
+				et_schematic.pac_devices_sch.update_element (
 					container	=> module.devices,
 					position	=> device_cursor_sch,
 					process		=> add_unit_external'access);

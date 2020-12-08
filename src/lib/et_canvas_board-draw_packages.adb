@@ -2825,9 +2825,9 @@ is
 	procedure query_devices (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_module) is
-		use et_schematic.type_devices;
+		use et_schematic.pac_devices_sch;
 
-		procedure query_device (d : in et_schematic.type_devices.cursor) is
+		procedure query_device (d : in et_schematic.pac_devices_sch.cursor) is
 			use et_symbols;
 			use et_pcb;
 		begin

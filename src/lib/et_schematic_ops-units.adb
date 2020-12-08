@@ -51,8 +51,8 @@ package body et_schematic_ops.units is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use et_schematic.pac_devices_sch;
+			device_cursor : et_schematic.pac_devices_sch.cursor;
 
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
@@ -189,8 +189,8 @@ package body et_schematic_ops.units is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use et_schematic.pac_devices_sch;
+			device_cursor : et_schematic.pac_devices_sch.cursor;
 
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
@@ -736,8 +736,8 @@ package body et_schematic_ops.units is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use et_schematic.pac_devices_sch;
+			device_cursor : et_schematic.pac_devices_sch.cursor;
 
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
@@ -928,8 +928,8 @@ package body et_schematic_ops.units is
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use et_schematic.pac_devices_sch;
+			device_cursor : et_schematic.pac_devices_sch.cursor;
 
 			position_of_unit : et_coordinates.type_position;
 			rotation_before : et_coordinates.type_rotation;

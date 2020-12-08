@@ -42,7 +42,8 @@ procedure draw_units (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
-	use et_schematic.type_devices;
+	use et_schematic;
+	use pac_devices_sch;
 	use et_schematic.type_units;
 	
 	-- The name, value and purpose of the current device:
@@ -106,7 +107,7 @@ procedure draw_units (
 	-- by variable "selected_unit". This way a single unit of a device is regarded as
 	-- selected:
 	function unit_is_selected (
-		d : in et_schematic.type_devices.cursor;
+		d : in pac_devices_sch.cursor;
 		u : in et_schematic.type_units.cursor)
 		return boolean
 	is
@@ -154,7 +155,7 @@ procedure draw_units (
 
 	-- Returns true if the given placeholder is selected.
 	function placeholder_is_selected (
-		d : in et_schematic.type_devices.cursor;
+		d : in pac_devices_sch.cursor;
 		u : in et_schematic.type_units.cursor)
 		return boolean is
 		use pac_proposed_placeholders;
@@ -181,7 +182,7 @@ procedure draw_units (
 		end if;
 	end placeholder_is_selected;
 	
-	procedure query_devices (device_cursor : in et_schematic.type_devices.cursor) is
+	procedure query_devices (device_cursor : in pac_devices_sch.cursor) is
 		
 		-- get the model of the current device
 		device_model : pac_device_model_file.bounded_string :=

@@ -125,7 +125,7 @@ package et_scripting_interactive_schematic is
 	
 	-- When setting the package variant, the cursor to
 	-- the targeted device is stored here temporarily:
-	set_variant_device : et_schematic.type_devices.cursor;
+	set_variant_device : pac_devices_sch.cursor;
 	
 	-- Sets the package variant of the given device.
 	-- The device must exist in the current active module.

@@ -97,8 +97,8 @@ package body et_canvas_schematic_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
 		is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor := module.devices.first;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -131,7 +131,7 @@ package body et_canvas_schematic_units is
 			end query_units;
 			
 		begin -- query_devices
-			while device_cursor /= et_schematic.type_devices.no_element loop
+			while device_cursor /= pac_devices_sch.no_element loop
 
 				log (text => "probing device " & to_string (key (device_cursor)),
 					 level => log_threshold + 1);
@@ -200,7 +200,7 @@ package body et_canvas_schematic_units is
 		unit			: in out type_selected_unit;
 		log_threshold	: in type_log_level)
 	is
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		use et_schematic.type_units;
 
 		procedure query_devices (
@@ -371,7 +371,7 @@ package body et_canvas_schematic_units is
 	is
 		su : type_selected_unit;
 
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		use et_schematic.type_units;
 	begin
 		log (text => "finalizing move ...", level => log_threshold);
@@ -414,7 +414,7 @@ package body et_canvas_schematic_units is
 	is
 		su : type_selected_unit;
 
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		use et_schematic.type_units;
 	begin
 		log (text => "finalizing drag ...", level => log_threshold);
@@ -495,7 +495,7 @@ package body et_canvas_schematic_units is
 
 	procedure find_attached_segments is
 		-- Device and unit name of the selected unit:
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		use et_schematic.type_units;
 		su : type_selected_unit := element (selected_unit);
 		device_name : constant type_device_name := key (su.device);
@@ -599,14 +599,14 @@ package body et_canvas_schematic_units is
 	is
 		rotation : constant et_coordinates.type_rotation := 90.0;
 
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		use et_schematic.type_units;
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor;
 
 			position_of_unit : et_coordinates.type_position;
 			rotation_before : et_coordinates.type_rotation;
@@ -1265,7 +1265,7 @@ package body et_canvas_schematic_units is
 	end set_position;
 	
 	procedure show_units is
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		
 		su : constant type_selected_unit := element (selected_unit);
 		
@@ -1435,10 +1435,10 @@ package body et_canvas_schematic_units is
 -- PLACEHOLDERS
 
 	procedure clarify_placeholder is
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		use et_schematic.type_units;
 		u : type_units.cursor;
-		d : et_schematic.type_devices.cursor;
+		d : pac_devices_sch.cursor;
 	begin
 		-- On every call of this procedure we must advance from one
 		-- placeholder to the next in a circular manner. So if the end 
@@ -1479,7 +1479,7 @@ package body et_canvas_schematic_units is
 	is
 		su : type_selected_unit;
 
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		use et_schematic.type_units;
 	begin
 		log (text => "finalizing move placeholder ...", level => log_threshold);
@@ -1525,8 +1525,8 @@ package body et_canvas_schematic_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
 		is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor := module.devices.first;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -1594,7 +1594,7 @@ package body et_canvas_schematic_units is
 			end query_units;
 			
 		begin -- query_devices
-			while device_cursor /= et_schematic.type_devices.no_element loop
+			while device_cursor /= pac_devices_sch.no_element loop
 
 				-- Only real devices have placeholders. Virtual devices are skipped here:
 				if element (device_cursor).appearance = PCB then
@@ -1683,13 +1683,13 @@ package body et_canvas_schematic_units is
 	is
 		rotation : constant et_coordinates.type_rotation := 90.0;
 
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		use et_schematic.type_units;
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
-			device_cursor : et_schematic.type_devices.cursor;
+			device_cursor : pac_devices_sch.cursor;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -1828,7 +1828,7 @@ package body et_canvas_schematic_units is
 	procedure property_entered (self : access gtk.gentry.gtk_entry_record'class) is 
 		su : type_selected_unit := element (selected_unit);
 
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 
 		value	: pac_device_value.bounded_string;
 		purpose	: pac_device_purpose.bounded_string;
@@ -1930,7 +1930,7 @@ package body et_canvas_schematic_units is
 		
 		su : type_selected_unit := element (selected_unit);
 
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		device_name : constant string := to_string (key (su.device)); -- IC2
 	begin		
 		-- Properties of real devices can be changed.
@@ -2052,7 +2052,7 @@ package body et_canvas_schematic_units is
 
 	procedure show_properties_of_selected_device
 	is
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 		use et_schematic.type_units;
 		
 		su		: constant type_selected_unit := element (selected_unit);

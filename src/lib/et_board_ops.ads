@@ -179,13 +179,13 @@ package et_board_ops is
 	-- Returns a cursor to the requested device in the given module.
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name)
-		return et_schematic.type_devices.cursor;
+		return et_schematic.pac_devices_sch.cursor;
 	
 	function terminal_position (
 	-- Returns the position of a terminal of the given device in the board.
 	-- The device must be real (appearance SCH_PCB).
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in et_schematic.type_devices.cursor; -- IC45
+		device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
 		terminal_name	: in type_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position;
 

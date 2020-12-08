@@ -417,7 +417,7 @@ package et_devices is
 
 
 -- DEVICES
-	type type_device (appearance : type_appearance) is record
+	type type_device (appearance : type_appearance) is record -- CS rename to type_device_lib
 		prefix			: pac_device_prefix.bounded_string; -- R, C, IC, ...
 		units_internal	: pac_units_internal.map := pac_units_internal.empty_map;
 		units_external	: pac_units_external.map := pac_units_external.empty_map;

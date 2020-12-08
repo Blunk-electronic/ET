@@ -672,7 +672,7 @@ is
 	procedure query_devices is		
 		use et_schematic;
 		use et_symbols;
-		use et_schematic.type_devices;
+		use pac_devices_sch;
 
 		procedure query_units (device_name : in type_device_name; device : in et_schematic.type_device) is
 			use et_schematic.type_units;
@@ -756,7 +756,7 @@ is
 			section_mark (section_placeholders, FOOTER);				
 		end query_placeholders;
 
-		procedure write (d : in et_schematic.type_devices.cursor) is 
+		procedure write (d : in pac_devices_sch.cursor) is 
 			use et_material;
 		begin
 			section_mark (section_device, HEADER);
