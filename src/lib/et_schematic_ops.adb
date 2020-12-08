@@ -497,8 +497,8 @@ package body et_schematic_ops is
 
 				-- Fetch the ports of the external unit.
 				-- CS: constraint_error arises here if symbol model could not be located.
-				type_symbols.query_element (
-					position	=> type_symbols.find (symbols, sym_model),
+				pac_symbols.query_element (
+					position	=> pac_symbols.find (symbols, sym_model),
 					process		=> query_symbol'access);
 			end if;
 			
@@ -1396,8 +1396,8 @@ package body et_schematic_ops is
 
 				-- Fetch the ports of the external unit.
 				-- CS: constraint_error arises here if symbol model could not be located.
-				type_symbols.query_element (
-					position	=> type_symbols.find (symbols, sym_model),
+				pac_symbols.query_element (
+					position	=> pac_symbols.find (symbols, sym_model),
 					process		=> query_symbol'access);
 			else
 				unit_status := INT;

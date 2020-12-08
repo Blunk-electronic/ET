@@ -150,7 +150,7 @@ package body et_symbol_rw is
 		appearance		: in type_appearance;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
-		use type_symbols;
+		use pac_symbols;
 	begin
 		log (text => "creating symbol " & to_string (symbol_name) & " ...", level => log_threshold);
 		log_indentation_up;
@@ -418,7 +418,7 @@ package body et_symbol_rw is
 		symbol_circle		: type_circle;
 		symbol_text_base	: type_text_basic;
 
-		symbol_cursor		: type_symbols.cursor;
+		symbol_cursor		: pac_symbols.cursor;
 		symbol_inserted		: boolean;
 		
 		symbol_text_position		: type_point;
@@ -1081,7 +1081,7 @@ package body et_symbol_rw is
 		
 		-- test if container et_symbols.symbols already contains the symbol
 		-- named "file_name". If so, there would be no need to read the file_name again.
-		if type_symbols.contains (symbols, file_name) then
+		if pac_symbols.contains (symbols, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			
@@ -1121,7 +1121,7 @@ package body et_symbol_rw is
 			close (file_handle);
 
 			-- Insert the symbol (accessed by pointer symbol) in et_symbols.symbols:
-			type_symbols.insert (
+			pac_symbols.insert (
 				container	=> symbols, 
 				key			=> file_name, -- libraries/symbols/nand.sym
 				position	=> symbol_cursor,

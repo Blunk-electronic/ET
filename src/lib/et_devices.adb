@@ -1157,8 +1157,8 @@ package body et_devices is
 			-- Query ports of external unit.
 				unit_name	: in pac_unit_name.bounded_string;
 				unit		: in type_unit_external) is
-				use type_symbols;
-				symbol_cursor : type_symbols.cursor := locate (unit.model);
+				use pac_symbols;
+				symbol_cursor : pac_symbols.cursor := locate (unit.model);
 
 				procedure query_ports (
 					file	: in pac_symbol_model_file.bounded_string; -- ../libraries/symbols/NAND.sym

@@ -434,7 +434,7 @@ procedure et is
 		if length (symbol_name_save_as) > 0 then
 			et_symbol_rw.save_symbol (
 				file_name 		=> symbol_name_save_as,
-				symbol			=> et_symbols.type_symbols.last_element (et_symbols.symbols),
+				symbol			=> et_symbols.pac_symbols.last_element (et_symbols.symbols),
 				log_threshold	=> 0);
 		end if;
 	end;

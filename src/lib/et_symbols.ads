@@ -547,17 +547,17 @@ package et_symbols is
 	
 -- STORAGE
 	
-	package type_symbols is new indefinite_ordered_maps (
+	package pac_symbols is new indefinite_ordered_maps (
 		key_type		=> pac_symbol_model_file.bounded_string, -- ../libraries/symbols/NAND.sym
 		"<"				=> pac_symbol_model_file."<",
 		element_type	=> type_symbol);
 
-	use type_symbols;
+	use pac_symbols;
 	
 	symbol_library_file_extension : constant string := "sym";
 
 	-- HERE RIG WIDE EXTERNAL SYMBOLS ARE KEPT:	
-	symbols : type_symbols.map;
+	symbols : pac_symbols.map;
 
 	-- NOTE: Devices can use internal or external symbols. An internal symbol
 	-- is modelled inside the device, is fixed to the that device
@@ -568,10 +568,10 @@ package et_symbols is
 	-- devices. There is no fixed connection between device and symbol.
 	
 	function locate (symbol : in pac_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
-		return type_symbols.cursor;
+		return pac_symbols.cursor;
 
 	-- Returns true if the given symbol will be part of a real device:
-	function is_real (symbol : in type_symbols.cursor)
+	function is_real (symbol : in pac_symbols.cursor)
 		return boolean;
 	
 	
@@ -596,7 +596,7 @@ package et_symbols is
 	-- Rotates the positions of placeholders and their rotation about
 	-- their own origin according to rotation given by destination:
 	function rotate_placeholders (
-		symbol_cursor	: in type_symbols.cursor;
+		symbol_cursor	: in pac_symbols.cursor;
 		destination		: in et_coordinates.type_position) -- x/y/rotation of the unit
 		return type_rotated_placeholders;
 	

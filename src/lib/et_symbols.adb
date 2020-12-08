@@ -331,12 +331,12 @@ package body et_symbols is
 
 
 	function locate (symbol : in pac_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
-		return type_symbols.cursor is
+		return pac_symbols.cursor is
 	begin
-		return type_symbols.find (symbols, symbol);
+		return pac_symbols.find (symbols, symbol);
 	end locate;
 
-	function is_real (symbol : in type_symbols.cursor)
+	function is_real (symbol : in pac_symbols.cursor)
 		return boolean
 	is begin
 		case element (symbol).appearance is
@@ -379,12 +379,11 @@ package body et_symbols is
 	-- Rotates the positions of placeholders and their rotation about
 	-- their own origin according to rotation given by destination:
 	function rotate_placeholders (
-		symbol_cursor	: in type_symbols.cursor;
+		symbol_cursor	: in pac_symbols.cursor;
 		destination		: in et_coordinates.type_position)
 		return type_rotated_placeholders
 	is
-		use et_symbols;
-		use type_symbols;
+		use pac_symbols;
 		r : type_rotated_placeholders; -- to be returned
 	begin
 		r.name		:= element (symbol_cursor).name;

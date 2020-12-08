@@ -199,7 +199,7 @@ procedure draw_units (
 
 			use et_symbols;
 			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
-			symbol_cursor : et_symbols.type_symbols.cursor;
+			symbol_cursor : et_symbols.pac_symbols.cursor;
 		begin
 			case unit_cursor.ext_int is
 				when EXT =>
@@ -213,7 +213,7 @@ procedure draw_units (
 						in_area		=> in_area,
 						context		=> context,
 						
-						symbol		=> type_symbols.element (symbol_cursor),
+						symbol		=> pac_symbols.element (symbol_cursor),
 
 						device_name		=> device_name,
 						device_value	=> device_value,
@@ -502,9 +502,9 @@ procedure draw_units (
 			destination : type_point;
 			
 			use et_symbols;
-			use type_symbols;
+			use pac_symbols;
 			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
-			symbol_cursor : et_symbols.type_symbols.cursor;
+			symbol_cursor : et_symbols.pac_symbols.cursor;
 
 			procedure fetch_placeholders_ext is begin
 			-- Drawing the symbol of a real device requires placeholders
@@ -565,7 +565,7 @@ procedure draw_units (
 						in_area		=> in_area,
 						context		=> context,
 						
-						symbol		=> type_symbols.element (symbol_cursor),
+						symbol		=> pac_symbols.element (symbol_cursor),
 
 						device_name		=> unit_add.device_pre,
 						unit_name		=> unit_add.name,
