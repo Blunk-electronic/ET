@@ -234,7 +234,7 @@ package et_schematic is
 
 	
 	-- This is the port of a submodule:
-	type type_port_submodule is record
+	type type_submodule_port is record
 		-- The instance of a certain submodule:
 		module_name	: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 
@@ -242,8 +242,8 @@ package et_schematic is
 		port_name	: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
 	end record;
 
-	function "<" (left, right : in type_port_submodule) return boolean;
-	package type_ports_submodule is new ordered_sets (type_port_submodule);
+	function "<" (left, right : in type_submodule_port) return boolean;
+	package type_ports_submodule is new ordered_sets (type_submodule_port);
 	
 
 	

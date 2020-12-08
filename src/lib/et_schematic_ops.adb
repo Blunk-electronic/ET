@@ -4853,7 +4853,7 @@ package body et_schematic_ops is
 				use type_submodule_ports;
 				cursor : type_submodule_ports.cursor;
 				inserted : boolean;
-				port : type_submodule_port;
+				port : et_submodules.type_submodule_port;
 			begin
 				-- Test whether the submodule provides the given port.
 				if exists (
@@ -4972,7 +4972,7 @@ package body et_schematic_ops is
 	procedure delete_submodule_port (
 	-- Removes a port from the net segments.
 		module			: in pac_generic_modules.cursor;		-- the module
-		port			: in et_schematic.type_port_submodule; -- OSC1 / clock_output
+		port			: in et_schematic.type_submodule_port; -- OSC1 / clock_output
 		position		: in et_coordinates.type_position; -- the submodule position (only sheet matters)
 		log_threshold	: in type_log_level) is
 
@@ -5208,7 +5208,8 @@ package body et_schematic_ops is
 
 				procedure move (
 					port_name	: in et_general.pac_net_name.bounded_string;
-					port		: in out type_submodule_port) is
+					port		: in out et_submodules.type_submodule_port) 
+				is
 					submod_pos_tmp : type_point := type_point (submodule_position);
 					point_tmp : type_point := point;
 				begin
@@ -5349,7 +5350,7 @@ package body et_schematic_ops is
 	-- Does NOT create a new connection with segments if the port
 	-- lands between start and end point.
 		module			: in pac_generic_modules.cursor;				-- the module
-		port			: in et_schematic.type_port_submodule;	-- instance and port name
+		port			: in et_schematic.type_submodule_port;	-- instance and port name
 		pos_before		: in et_coordinates.type_position;	-- the old port position
 		pos_after		: in et_coordinates.type_position;	-- the new port position
 		log_threshold	: in type_log_level) is
@@ -5511,7 +5512,7 @@ package body et_schematic_ops is
 		point 			: in et_coordinates.type_position;
 		log_threshold	: in et_string_processing.type_log_level) is 
 		ports : type_ports;
-		port : et_schematic.type_port_submodule;
+		port : et_schematic.type_submodule_port;
 
 		use type_ports_submodule;
 		use pac_device_ports;
@@ -5603,7 +5604,8 @@ package body et_schematic_ops is
 
 				procedure move (
 					port_name	: in et_general.pac_net_name.bounded_string;
-					port		: in out type_submodule_port) is
+					port		: in out et_submodules.type_submodule_port)
+				is
 					submod_pos_tmp : type_point := type_point (submodule_position);
 					point_tmp : type_point := point;
 				begin
@@ -6106,7 +6108,8 @@ package body et_schematic_ops is
 
 				procedure build_drag_point (
 					port_name	: in et_general.pac_net_name.bounded_string;
-					port		: in type_submodule_port) is
+					port		: in et_submodules.type_submodule_port) 
+				is
 					drag : type_drag;
 				begin
 					-- Set the name of the drag according to the port name:
@@ -8689,7 +8692,7 @@ package body et_schematic_ops is
 		use et_schematic.type_ports_submodule;
 
 		procedure query_ports (port_cursor : in et_schematic.type_ports_submodule.cursor) is
-			port : et_schematic.type_port_submodule := element (port_cursor);
+			port : et_schematic.type_submodule_port := element (port_cursor);
 			direction : et_submodules.type_netchanger_port_name; -- master/slave
 		begin
  			-- get the direction of the current submodule port
@@ -9257,7 +9260,7 @@ package body et_schematic_ops is
 			submodule_port_collector : type_ports_submodule.set;
 
 			procedure collect_submodule_port (
-				port	: in type_port_submodule;
+				port	: in type_submodule_port;
 				net		: in pac_net_name.bounded_string)
 			is begin
 			-- Collect submodule ports. exception will be raised of port occurs more than once.

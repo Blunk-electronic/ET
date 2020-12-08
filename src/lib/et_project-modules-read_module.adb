@@ -501,7 +501,7 @@ is
 	net_device_port : et_schematic.type_device_port;
 	net_device_ports : et_schematic.pac_device_ports.set;
 
-	net_submodule_port : et_schematic.type_port_submodule;
+	net_submodule_port : et_schematic.type_submodule_port;
 	net_submodule_ports : et_schematic.type_ports_submodule.set;
 
 	net_netchanger_port : et_netlists.type_port_netchanger;
