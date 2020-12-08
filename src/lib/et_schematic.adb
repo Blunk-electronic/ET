@@ -511,11 +511,11 @@ package body et_schematic is
 		return to_string (key (unit)) & to_string (type_point (element (unit).position));
 	end to_string;
 	
-	function unit_positions (units : in pac_units.map) return type_unit_positions.map is
+	function unit_positions (units : in pac_units.map) return pac_unit_positions.map is
 	-- Returns a list of units and their coordinates in the schematic.
-		list : type_unit_positions.map; -- to be returned
+		list : pac_unit_positions.map; -- to be returned
 		use pac_units;
-		use type_unit_positions;
+		use pac_unit_positions;
 		
 		procedure query_unit (cursor : pac_units.cursor) is begin
 			list.insert (key (cursor), element (cursor).position);

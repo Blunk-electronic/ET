@@ -161,13 +161,13 @@ package et_schematic is
 	function to_string (unit : in pac_units.cursor) return string;
 
 	
-	package type_unit_positions is new ordered_maps (
+	package pac_unit_positions is new ordered_maps (
 		key_type		=> pac_unit_name.bounded_string, -- A, B, IO_BANK_1
 		"<" 			=> pac_unit_name."<",
 		element_type	=> et_coordinates.type_position, -- sheet, x, y
 		"="				=> et_coordinates."=");
 
-	function unit_positions (units : in pac_units.map) return type_unit_positions.map;
+	function unit_positions (units : in pac_units.map) return pac_unit_positions.map;
 	--Returns a list of units and their coordinates in the schematic.	
 
 

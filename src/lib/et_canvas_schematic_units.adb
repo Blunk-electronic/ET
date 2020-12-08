@@ -209,7 +209,7 @@ package body et_canvas_schematic_units is
 			
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
-			position_of_unit : type_unit_positions.map;
+			position_of_unit : pac_unit_positions.map;
 
 			ports : et_symbols.type_ports.map;
 
@@ -218,7 +218,7 @@ package body et_canvas_schematic_units is
 				device		: in out et_schematic.type_device) is
 			begin
 				-- Load the single unit position and insert in container "position_of_unit"
-				type_unit_positions.insert (
+				pac_unit_positions.insert (
 					container	=> position_of_unit, 
 					key			=> key (unit.unit),
 					new_item	=> element (unit.unit).position);
@@ -726,9 +726,9 @@ package body et_canvas_schematic_units is
 			-- So we create a list "sheets", put the unit name and position in it,
 			-- and pass it to procedure delete_ports:
 			declare
-				sheets : type_unit_positions.map;
+				sheets : pac_unit_positions.map;
 			begin
-				type_unit_positions.insert (
+				pac_unit_positions.insert (
 					container	=> sheets,
 					key			=> key (unit.unit),
 					new_item	=> position_of_unit);

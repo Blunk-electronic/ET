@@ -80,7 +80,7 @@ package et_schematic_ops is
 	
 	-- Writes the positions of the device units in the log file.
 	procedure log_unit_positions (
-		positions 		: in type_unit_positions.map;
+		positions 		: in pac_unit_positions.map;
 		log_threshold	: in type_log_level);
 
 	-- Returns a map of ports of the given device and unit.
@@ -96,7 +96,7 @@ package et_schematic_ops is
 		module			: in pac_generic_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
 		ports			: in et_symbols.type_ports.map := et_symbols.type_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
-		sheets			: in type_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
+		sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
 		log_threshold	: in type_log_level);
 
 	-- Moves the given unit ports by given offset.

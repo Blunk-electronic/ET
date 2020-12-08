@@ -56,7 +56,7 @@ package body et_schematic_ops.units is
 
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
-			position_of_unit : type_unit_positions.map;
+			position_of_unit : pac_unit_positions.map;
 
 			ports : et_symbols.type_ports.map;
 
@@ -71,7 +71,7 @@ package body et_schematic_ops.units is
 					unit_cursor := find (device.units, unit_name);
 
 					-- Load the single unit position and insert in container "position_of_unit"
-					type_unit_positions.insert (
+					pac_unit_positions.insert (
 						container	=> position_of_unit, 
 						key			=> unit_name,
 						new_item	=> element (unit_cursor).position);
@@ -194,7 +194,7 @@ package body et_schematic_ops.units is
 
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
-			position_of_unit_old : type_unit_positions.map;
+			position_of_unit_old : pac_unit_positions.map;
 
 			position_of_unit_new : et_coordinates.type_position;
 
@@ -243,7 +243,7 @@ package body et_schematic_ops.units is
 					unit_cursor := find (device.units, unit_name);
 
 					-- load unit position and insert in container "position_of_unit_old"
-					type_unit_positions.insert (
+					pac_unit_positions.insert (
 						container	=> position_of_unit_old, 
 						key			=> unit_name,
 						new_item	=> element (unit_cursor).position);
@@ -741,7 +741,7 @@ package body et_schematic_ops.units is
 
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
-			--position_of_unit_old : type_unit_positions.map;
+			--position_of_unit_old : pac_unit_positions.map;
 			position_of_unit_old : et_coordinates.type_position;	
 			position_of_unit_new : et_coordinates.type_position;
 
@@ -1134,9 +1134,9 @@ package body et_schematic_ops.units is
 				-- So we create a list "sheets", put the unit name and position in it,
 				-- and pass it to procedure delete_ports:
 				declare
-					sheets : type_unit_positions.map;
+					sheets : pac_unit_positions.map;
 				begin
-					type_unit_positions.insert (
+					pac_unit_positions.insert (
 						container	=> sheets,
 						key			=> unit_name,
 						new_item	=> position_of_unit);

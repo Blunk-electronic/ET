@@ -189,21 +189,21 @@ package body et_schematic_ops is
 	end set_grid;
 	
 	procedure log_unit_positions (
-		positions 		: in type_unit_positions.map;
+		positions 		: in pac_unit_positions.map;
 		log_threshold	: in type_log_level) is
 		
-		procedure write (cursor : in type_unit_positions.cursor) is begin
+		procedure write (cursor : in pac_unit_positions.cursor) is begin
 			log (text => 
 				"unit " &
-				to_string (type_unit_positions.key (cursor)) & -- unit name
-				et_coordinates.to_string (position => type_unit_positions.element (cursor)), -- sheet x y
+				to_string (pac_unit_positions.key (cursor)) & -- unit name
+				et_coordinates.to_string (position => pac_unit_positions.element (cursor)), -- sheet x y
 				level => log_threshold);
 		end;
 		
 	begin
 		log (text => "location(s) in schematic:", level => log_threshold);
 		log_indentation_up;
-		et_schematic.type_unit_positions.iterate (positions, write'access);
+		et_schematic.pac_unit_positions.iterate (positions, write'access);
 		log_indentation_down;
 	end;
 	
@@ -229,10 +229,10 @@ package body et_schematic_ops is
 	-- Collects the positions of all units (in schematic) of the given device and returns
 	-- them in a list.
 		device_cursor : in pac_devices_sch.cursor) 
-		return type_unit_positions.map is
+		return pac_unit_positions.map is
 
 		-- temporarily storage of unit coordinates:
-		positions : type_unit_positions.map;
+		positions : pac_unit_positions.map;
 		
 		procedure get_positions (
 			device_name : in type_device_name;
@@ -253,7 +253,7 @@ package body et_schematic_ops is
 		module			: in pac_generic_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
 		ports			: in et_symbols.type_ports.map := et_symbols.type_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
-		sheets			: in type_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
+		sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
 		log_threshold	: in type_log_level) is
 
 		dedicated_ports : boolean := false; -- goes true if "ports" contains something.
@@ -395,7 +395,7 @@ package body et_schematic_ops is
 			device_cursor : pac_devices_sch.cursor;
 
 			-- temporarily storage of unit coordinates:
-			position_of_units : type_unit_positions.map;
+			position_of_units : pac_unit_positions.map;
 			
 		begin -- query_devices
 			if contains (module.devices, device_name) then
@@ -850,7 +850,7 @@ package body et_schematic_ops is
 -- 
 -- 			-- temporarily storage of unit coordinates.
 -- 			-- There will be only one unit in this container.
--- 			position_of_unit : type_unit_positions.map;
+-- 			position_of_unit : pac_unit_positions.map;
 -- 
 -- 			ports : et_symbols.type_ports.map;
 -- 
@@ -865,7 +865,7 @@ package body et_schematic_ops is
 -- 					unit_cursor := find (device.units, unit_name);
 -- 
 -- 					-- Load the single unit position and insert in container "position_of_unit"
--- 					type_unit_positions.insert (
+-- 					pac_unit_positions.insert (
 -- 						container	=> position_of_unit, 
 -- 						key			=> unit_name,
 -- 						new_item	=> element (unit_cursor).position);
@@ -2048,7 +2048,7 @@ package body et_schematic_ops is
 		module			: in pac_generic_modules.cursor;		-- the module
 		device_before	: in type_device_name;					-- the device name before like IC1
 		device_after	: in type_device_name;					-- the device name after like IC23
-		sheets			: in type_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
+		sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
 		log_threshold	: in type_log_level) is
 
 		procedure query_nets (
@@ -2175,7 +2175,7 @@ package body et_schematic_ops is
 			inserted : boolean;
 
 			-- temporarily storage of unit coordinates:
-			position_of_units : type_unit_positions.map;
+			position_of_units : pac_unit_positions.map;
 
 		begin -- query_devices
 			-- locate the device by the old name
@@ -7247,7 +7247,7 @@ package body et_schematic_ops is
 			inserted : boolean;
 
 			-- temporarily storage of unit coordinates:
-			position_of_units : type_unit_positions.map;
+			position_of_units : pac_unit_positions.map;
 
 		begin -- query_devices
 			-- locate the device by the old name
