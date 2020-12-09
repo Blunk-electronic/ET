@@ -940,7 +940,7 @@ package body et_board_ops is
 			-- Here we collect the pick and place data in the first step. It will then
 			-- be passed to procedure et_pick_and_place.write_pnp.
 			use et_pick_and_place;
-			pnp : et_pick_and_place.type_devices.map;
+			pnp : et_pick_and_place.pac_devices.map;
 
 			procedure collect (
 			-- Collects devices of the given module and its variant in container pnp.
@@ -992,7 +992,7 @@ package body et_board_ops is
 					end;
 
 					procedure query_properties_default (cursor_schematic : in pac_devices_sch.cursor) is 
-						cursor_pnp : et_pick_and_place.type_devices.cursor;
+						cursor_pnp : et_pick_and_place.pac_devices.cursor;
 
 						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
@@ -1010,7 +1010,7 @@ package body et_board_ops is
 								-- Store device in pnp list as it is:
 								apply_offset (device_name, offset, log_threshold + 2);
 								
-								et_pick_and_place.type_devices.insert (
+								et_pick_and_place.pac_devices.insert (
 									container	=> pnp,
 									key			=> device_name, -- IC4, R3
 									new_item	=> (
@@ -1029,7 +1029,7 @@ package body et_board_ops is
 					end query_properties_default;
 
 					procedure query_properties_variants (cursor_schematic : in pac_devices_sch.cursor) is 
-						cursor_pnp : et_pick_and_place.type_devices.cursor;
+						cursor_pnp : et_pick_and_place.pac_devices.cursor;
 
 						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
 						use et_assembly_variants.pac_device_variants;
@@ -1053,7 +1053,7 @@ package body et_board_ops is
 								
 									apply_offset (device_name, offset, log_threshold + 2);
 
-									et_pick_and_place.type_devices.insert (
+									et_pick_and_place.pac_devices.insert (
 										container	=> pnp,
 										key			=> device_name, -- IC4, R3
 										new_item	=> (
@@ -1081,7 +1081,7 @@ package body et_board_ops is
 
 											-- Insert the device in pnp list with alternative properties as defined
 											-- in the assembly variant:
-											et_pick_and_place.type_devices.insert (
+											et_pick_and_place.pac_devices.insert (
 												container	=> pnp,
 												key			=> device_name, -- IC4, R3
 												new_item	=> (

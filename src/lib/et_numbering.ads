@@ -43,7 +43,7 @@ with ada.containers.multiway_trees;
 
 with et_general;				use et_general;
 
-with et_coordinates;
+with et_coordinates;			use et_coordinates;
 with et_string_processing;		use et_string_processing;
 
 with et_devices;				use et_devices;
@@ -58,8 +58,7 @@ package et_numbering is
 
 
 	package pac_devices is new ordered_maps (
-		key_type		=> et_coordinates.type_position, -- sheet/x/y
-		"<"				=> et_coordinates."<",
+		key_type		=> type_position, -- sheet/x/y
 		element_type	=> type_device);
 
 	type type_index_range is record

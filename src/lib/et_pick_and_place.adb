@@ -51,25 +51,25 @@ with et_csv;					use et_csv;
 
 package body et_pick_and_place is
 	
-	function to_string (name : in type_file_name.bounded_string) return string is begin
-		return type_file_name.to_string (name);
+	function to_string (name : in pac_pnp_file_name.bounded_string) return string is begin
+		return pac_pnp_file_name.to_string (name);
 	end;
 	
-	function to_file_name (name : in string) return type_file_name.bounded_string is begin
-		return type_file_name.to_bounded_string (name);
+	function to_file_name (name : in string) return pac_pnp_file_name.bounded_string is begin
+		return pac_pnp_file_name.to_bounded_string (name);
 	end;
 
 	procedure write_pnp (
-		pnp				: in type_devices.map;
+		pnp				: in pac_devices.map;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver 
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level) is		
 
-		file_name : type_file_name.bounded_string;
+		file_name : pac_pnp_file_name.bounded_string;
 		
 		pnp_handle : ada.text_io.file_type;
-		device_cursor : type_devices.cursor := pnp.first;
+		device_cursor : pac_devices.cursor := pnp.first;
 
 		procedure set_file_name is 
 			use ada.directories;
@@ -117,8 +117,8 @@ package body et_pick_and_place is
 -- 			column_partcode		: constant string := "PARTCODE";
 -- 			column_purpose		: constant string := "PURPOSE";
 
-			procedure query_device (cursor : in type_devices.cursor) is
-				use type_devices;
+			procedure query_device (cursor : in pac_devices.cursor) is
+				use pac_devices;
 				use et_pcb_coordinates.pac_geometry_brd;
 			begin
 				put_field (file => pnp_handle); -- CS item number
@@ -148,7 +148,7 @@ package body et_pick_and_place is
 			put_field (file => pnp_handle, text => column_rotation);
 			put_lf    (file => pnp_handle, field_count => et_csv.column);
 
-			type_devices.iterate (
+			pac_devices.iterate (
 				container	=> pnp,
 				process		=> query_device'access);
 			
