@@ -544,7 +544,7 @@ package et_kicad.pcb is
 
 	-- CS function to_segment_status and to_string
 	
-	type type_segment is new et_packages.type_copper_line with record
+	type type_segment is new et_packages.type_conductor_line with record
 		net_id		: type_net_id;
 		layer		: type_signal_layer_id;
 		timestamp	: type_timestamp;

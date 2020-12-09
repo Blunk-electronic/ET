@@ -395,10 +395,10 @@ package body et_packages is
 	procedure line_copper_properties (
 	-- Logs the properties of the given line of copper
 		face			: in type_face;
-		cursor			: in type_copper_lines.cursor;
+		cursor			: in pac_conductor_lines_package.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_copper_lines;
-		line : type_copper_line;
+		use pac_conductor_lines_package;
+		line : type_conductor_line;
 	begin
 		line := element (cursor);
 		log (text => "copper line face" & to_string (face) & latin_1.space 

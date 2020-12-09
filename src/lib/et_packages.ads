@@ -351,10 +351,10 @@ package et_packages is
 
 	
 
-	type type_copper_line is new type_line with record
+	type type_conductor_line is new type_line with record
 		width	: type_track_width;
 	end record;
-	package type_copper_lines is new doubly_linked_lists (type_copper_line);
+	package pac_conductor_lines_package is new doubly_linked_lists (type_conductor_line);
 
 	type type_copper_arc is new type_arc with record
 		width	: type_track_width;
@@ -420,7 +420,7 @@ package et_packages is
 		
 	
 	type type_copper is record 
-		lines 		: type_copper_lines.list;
+		lines 		: pac_conductor_lines_package.list;
 		arcs		: type_copper_arcs.list;
 		circles		: pac_copper_circles.list;
 		polygons	: type_copper_polygons;
@@ -1075,7 +1075,7 @@ package et_packages is
 	procedure line_copper_properties (
 	-- Logs the properties of the given line of copper
 		face			: in type_face;
-		cursor			: in type_copper_lines.cursor;
+		cursor			: in pac_conductor_lines_package.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure arc_copper_properties (

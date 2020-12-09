@@ -192,7 +192,7 @@ package et_pcb is
 	-- COPPER OBJECTS OF A PCB
 	-- In a pcb drawing copper objects can be placed at various copper layers.
 	-- This requires a layer id for the object.
-	type type_copper_line is new et_packages.type_copper_line with record
+	type type_copper_line is new type_conductor_line with record
 		layer	: type_signal_layer;
 	end record;
 	package pac_copper_lines is new doubly_linked_lists (type_copper_line);

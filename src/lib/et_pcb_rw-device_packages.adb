@@ -104,8 +104,8 @@ package body et_pcb_rw.device_packages is
 		-- This is about copper objects in either top or bottom.
 		-- These objects have no connection to any pad or signal.
 
-			use type_copper_lines;
-			procedure write_line (cursor : in type_copper_lines.cursor) is begin
+			use pac_conductor_lines_package;
+			procedure write_line (cursor : in pac_conductor_lines_package.cursor) is begin
 				line_begin;
 				write_line (element (cursor));
 				write_width (element (cursor).width);
@@ -1566,7 +1566,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
-										type_copper_lines.append (
+										pac_conductor_lines_package.append (
 											container	=> packge.copper.top.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1629,7 +1629,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
-										type_copper_lines.append (
+										pac_conductor_lines_package.append (
 											container	=> packge.copper.bottom.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 

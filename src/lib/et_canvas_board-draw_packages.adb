@@ -2056,8 +2056,8 @@ is
 		procedure draw_conductors is 
 			
 			-- LINES
-			use type_copper_lines;
-			line : type_copper_line;
+			use pac_conductor_lines_package;
+			line : type_conductor_line;
 
 			procedure draw_line (f : in type_face) is
 				ly : constant type_signal_layer := face_to_layer (f);
@@ -2079,13 +2079,13 @@ is
 				end if;
 			end draw_line;
 			
-			procedure query_line_top (c : in type_copper_lines.cursor) is begin
+			procedure query_line_top (c : in pac_conductor_lines_package.cursor) is begin
 				line := element (c);
 				set_destination;
 				draw_line (destination);
 			end query_line_top;
 
-			procedure query_line_bottom (c : in type_copper_lines.cursor) is begin
+			procedure query_line_bottom (c : in pac_conductor_lines_package.cursor) is begin
 				line := element (c);
 				set_destination (INVERSE);
 				draw_line (destination);
