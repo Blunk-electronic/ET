@@ -76,7 +76,7 @@ with et_design_rules;
 
 package et_schematic is
 
-	use et_general.pac_net_name;
+	use pac_net_name;
 	use pac_unit_name;
 	
 	use et_coordinates.pac_geometry_sch;
@@ -240,7 +240,7 @@ package et_schematic is
 	-- This is the port of a submodule:
 	type type_submodule_port is record
 		-- The instance of a certain submodule:
-		module_name	: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		module_name	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
 
 		-- The net of the submodule is here the port name:
 		port_name	: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
@@ -529,8 +529,8 @@ package et_schematic is
 
 	-- As there are assembly variants, for each of them a dedicated netlist must be generated.
 	package pac_netlists is new ordered_maps (
-		key_type		=> et_general.pac_assembly_variant_name.bounded_string, -- low_cost, empty if default variant
-		"<"				=> et_general.pac_assembly_variant_name."<",
+		key_type		=> pac_assembly_variant_name.bounded_string, -- low_cost, empty if default variant
+		"<"				=> pac_assembly_variant_name."<",
 		element_type	=> et_netlists.pac_netlist.tree, -- provides info on primary and secondary net dependencies
 		"="				=> et_netlists.pac_netlist."=");
 
@@ -604,7 +604,7 @@ package et_schematic is
 
 		-- the assembly variants of the module
 		variants		: pac_assembly_variants.map;
-		active_variant	: et_general.pac_assembly_variant_name.bounded_string; -- "premium"
+		active_variant	: pac_assembly_variant_name.bounded_string; -- "premium"
 		
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;
