@@ -151,7 +151,7 @@ package et_netlists is
 		
 	function "<" (left, right : in type_net_name) return boolean;
 	
-	package type_nets is new ordered_maps (
+	package pac_nets is new ordered_maps (
 		key_type		=> type_net_name, 
 		element_type	=> type_net);
 	
@@ -160,7 +160,7 @@ package et_netlists is
 	type type_module is record
 		generic_name	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
 		instance_name	: pac_module_instance_name.bounded_string; -- OSC1
-		nets			: type_nets.map;
+		nets			: pac_nets.map;
 	end record;
 	
 	package type_modules is new ada.containers.multiway_trees (type_module);
@@ -185,7 +185,7 @@ package et_netlists is
 		submodules	: type_submodule_ports;
 	end record;
 
-	function port_count (net_cursor : in type_nets.cursor)
+	function port_count (net_cursor : in pac_nets.cursor)
 		return type_port_count;
 	-- Returns the number of netchanger and submodule ports in the given net.
 
@@ -202,7 +202,7 @@ package et_netlists is
 	-- such a net may extend into numerous secondary nets.
 	-- It is ILLEGAL for a net to have more than one slave port. Reason: The net names
 	-- of primary nets would contend here.
-	function is_primary (net_cursor : in type_nets.cursor) return boolean;
+	function is_primary (net_cursor : in pac_nets.cursor) return boolean;
 	-- Returns true if given net is a primary net according to the terms above.
 	-- Performs some other important checks on slave ports of netchangers and submodules.
 
@@ -213,7 +213,7 @@ package et_netlists is
 	type type_global_net is record
 		--submodule	: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
 		submodule	: type_modules.cursor;
-		net			: type_nets.cursor;
+		net			: pac_nets.cursor;
 	end record;
 	
 	package type_global_nets is new doubly_linked_lists (
@@ -222,7 +222,7 @@ package et_netlists is
 	function global_nets_in_submodules (
 	-- Returns a list of cursors to same named nets in submodules.
 		module_cursor	: in type_modules.cursor; -- the module that contains the port
-		net_cursor		: in type_nets.cursor;
+		net_cursor		: in pac_nets.cursor;
 		log_threshold	: in type_log_level)
 		return type_global_nets.list;
 
@@ -238,7 +238,7 @@ package et_netlists is
 		module_cursor	: in type_modules.cursor; -- the module that contains the port
 		port			: in type_port_netchanger;
 		log_threshold	: in type_log_level)
-		return type_nets.cursor;
+		return pac_nets.cursor;
 
 	function net_in_submodule (
 	-- Returns a cursor to the submodule net connected with the given
@@ -247,7 +247,7 @@ package et_netlists is
 		module_cursor	: in type_modules.cursor; -- the module that contains the port
 		port			: in type_submodule_port_extended;
 		log_threshold	: in type_log_level)		
-		return type_nets.cursor;
+		return pac_nets.cursor;
 
 	function net_in_parent_module (
 	-- Returns a cursor to the net in the parent module connected with the given net.
@@ -258,9 +258,9 @@ package et_netlists is
 	-- If the net is not connected in the parent module (via the port in the box representing
 	-- the submodule instance) then the return is no_element.
 		module_cursor	: in type_modules.cursor; -- the module that contains the net
-		net_cursor		: in type_nets.cursor;
+		net_cursor		: in pac_nets.cursor;
 		log_threshold	: in type_log_level)
-		return type_nets.cursor;
+		return pac_nets.cursor;
 	
 	-- The final netlist is a tree that reflects primary nets with their subordinated
 	-- secondary nets.

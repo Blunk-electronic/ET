@@ -8750,8 +8750,8 @@ package body et_schematic_ops is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in et_schematic.type_module) is
 
-					use pac_nets;
-					net_cursor_sch : pac_nets.cursor := module.nets.first;
+					use et_schematic.pac_nets;
+					net_cursor_sch : et_schematic.pac_nets.cursor := module.nets.first;
 
 					net_name : pac_net_name.bounded_string;
 					all_ports : et_schematic.type_ports;
@@ -8789,7 +8789,7 @@ package body et_schematic_ops is
 					procedure insert_net (module : in out et_netlists.type_module) is begin
 						-- Prepend the given net prefix to the net name.
 						-- Insert the net with its ports in the netlist of the submodule.
-						et_netlists.type_nets.insert (
+						et_netlists.pac_nets.insert (
 							container	=> module.nets,
 							key			=> (prefix => prefix, base_name => net_name), -- CLK_GENERATOR/FLT1/ , clock_out
 							new_item	=> (
@@ -8816,9 +8816,9 @@ package body et_schematic_ops is
 					-- no element then it is about the default variant.
 					
 					-- loop in nets of given module
-					while net_cursor_sch /= pac_nets.no_element loop
+					while net_cursor_sch /= et_schematic.pac_nets.no_element loop
 
-						net_name := pac_nets.key (net_cursor_sch);
+						net_name := et_schematic.pac_nets.key (net_cursor_sch);
 						
 						log (text => "net " 
 							 & pac_net_name.to_string (prefix) 
