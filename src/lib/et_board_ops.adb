@@ -1149,12 +1149,12 @@ package body et_board_ops is
 				
 			end collect;
 	
-			submod_tree : et_numbering.type_modules.tree := et_numbering.type_modules.empty_tree;
-			tree_cursor : et_numbering.type_modules.cursor := et_numbering.type_modules.root (submod_tree);
+			submod_tree : et_numbering.pac_modules.tree := et_numbering.pac_modules.empty_tree;
+			tree_cursor : et_numbering.pac_modules.cursor := et_numbering.pac_modules.root (submod_tree);
 
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 			package stack_level is new et_general.stack_lifo (
-				item	=> et_numbering.type_modules.cursor,
+				item	=> et_numbering.pac_modules.cursor,
 				max 	=> et_submodules.nesting_depth_max);
 
 			-- Another stack keeps record of the assembly variant on submodule levels.
@@ -1175,7 +1175,7 @@ package body et_board_ops is
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
-				use et_numbering.type_modules;
+				use et_numbering.pac_modules;
 				module_name 	: pac_module_name.bounded_string; -- motor_driver
 				parent_name 	: pac_module_name.bounded_string; -- water_pump
 				module_instance	: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
@@ -1190,7 +1190,7 @@ package body et_board_ops is
 				tree_cursor := first_child (tree_cursor);
 
 				-- iterate through the submodules on this level
-				while tree_cursor /= et_numbering.type_modules.no_element loop
+				while tree_cursor /= et_numbering.pac_modules.no_element loop
 					module_name := element (tree_cursor).name;
 					module_instance := element (tree_cursor).instance;
 
@@ -1249,7 +1249,7 @@ package body et_board_ops is
 						position_in_board	=> position_in_board -- the position of the submodule inside the parent module
 						);
 
-					if first_child (tree_cursor) = et_numbering.type_modules.no_element then 
+					if first_child (tree_cursor) = et_numbering.pac_modules.no_element then 
 					-- No submodules on the current level. means we can't go deeper:
 						
 						log_indentation_up;
@@ -1315,7 +1315,7 @@ package body et_board_ops is
 			submod_tree := element (module_cursor).submod_tree;
 
 			-- set the cursor inside the tree at root position:
-			tree_cursor := et_numbering.type_modules.root (submod_tree);
+			tree_cursor := et_numbering.pac_modules.root (submod_tree);
 			
 			stack_level.init;
 			stack_variant.init;

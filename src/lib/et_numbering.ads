@@ -57,7 +57,7 @@ package et_numbering is
 	end record;
 
 
-	package type_devices is new ordered_maps (
+	package pac_devices is new ordered_maps (
 		key_type		=> et_coordinates.type_position, -- sheet/x/y
 		"<"				=> et_coordinates."<",
 		element_type	=> type_device);
@@ -87,7 +87,7 @@ package et_numbering is
 	function "<" (left, right : in type_module) return boolean;
 
 
-	package type_modules is new multiway_trees (type_module);
+	package pac_modules is new multiway_trees (type_module);
 
 	
 end et_numbering;

@@ -713,7 +713,7 @@ package et_schematic_ops is
 	function sort_by_coordinates (
 		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-		return et_numbering.type_devices.map;
+		return et_numbering.pac_devices.map;
 
 	function unit_positions_valid (
 	-- Returns true if no unit sits on top of another.
