@@ -8726,12 +8726,12 @@ package body et_schematic_ops is
 			-- and finally passed to netlists.write_netlist for further processing.
 			-- The netlist_tree does not provide information on dependencies between nets (such
 			-- as primary or secondary nets. see netlist specs).
-			netlist_tree : et_netlists.type_modules.tree := et_netlists.type_modules.empty_tree;
-			netlist_cursor : et_netlists.type_modules.cursor := et_netlists.type_modules.root (netlist_tree);
+			netlist_tree : et_netlists.pac_modules.tree := et_netlists.pac_modules.empty_tree;
+			netlist_cursor : et_netlists.pac_modules.cursor := et_netlists.pac_modules.root (netlist_tree);
 
 			-- This stack keeps record of the netlist_cursor as we go trough the design structure.
 			package stack_netlist is new stack_lifo (
-				item	=> et_netlists.type_modules.cursor,
+				item	=> et_netlists.pac_modules.cursor,
 				max 	=> et_submodules.nesting_depth_max);
 			
 			procedure collect_nets (
@@ -8840,7 +8840,7 @@ package body et_schematic_ops is
 						apply_offsets;
 						
 						-- insert the net with its ports in the list of nets
-						et_netlists.type_modules.update_element (
+						et_netlists.pac_modules.update_element (
 							container	=> netlist_tree,
 							position	=> netlist_cursor,
 							process		=> insert_net'access);
@@ -8917,10 +8917,10 @@ package body et_schematic_ops is
 					-- backup netlist_cursor
 					stack_netlist.push (netlist_cursor);
 					
-					et_netlists.type_modules.insert_child (
+					et_netlists.pac_modules.insert_child (
 						container	=> netlist_tree,
 						parent		=> netlist_cursor,
-						before		=> et_netlists.type_modules.no_element,
+						before		=> et_netlists.pac_modules.no_element,
 						position	=> netlist_cursor, -- points afterwards to the child that has just been inserted
 						new_item	=> (
 							generic_name	=> module_name,
@@ -9096,10 +9096,10 @@ package body et_schematic_ops is
 			-- Insert the top module in the netlist_tree. It is the only node on this level.
 			-- Submodules will be inserted as children of the top module (where netlist_cursor 
 			-- points at AFTER this statement):
-			et_netlists.type_modules.insert_child (
+			et_netlists.pac_modules.insert_child (
 				container	=> netlist_tree,
-				parent		=> et_netlists.type_modules.root (netlist_tree),
-				before		=> et_netlists.type_modules.no_element,
+				parent		=> et_netlists.pac_modules.root (netlist_tree),
+				before		=> et_netlists.pac_modules.no_element,
 				position	=> netlist_cursor,
 				new_item	=> (
 					generic_name	=> key (make_netlists.module_cursor),
