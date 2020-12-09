@@ -103,11 +103,6 @@ package body et_packages is
 
 
 	
-	function to_string (directory_name : in type_directory_name.bounded_string) return string is
-	-- Converts a directory name to a string.
-	begin
-		return type_directory_name.to_string (directory_name);
-	end to_string;
 
 
 	procedure validate_general_line_width (width : in et_pcb_coordinates.type_distance) is
@@ -221,11 +216,6 @@ package body et_packages is
 	end;
 
 	
-	function to_directory (directory_name : in string) return type_directory_name.bounded_string is
-	-- Converts a string to a type_directory_name.
-	begin
-		return type_directory_name.to_bounded_string (directory_name);
-	end to_directory;
 
 -- 	procedure log_plated_millings (
 -- 		millings 		: in type_plated_millings;

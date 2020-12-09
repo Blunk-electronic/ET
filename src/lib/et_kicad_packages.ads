@@ -228,6 +228,17 @@ package et_kicad_packages is
 		layer	: type_layer_abbrevation;
 		meaning	: type_fp_text_meaning;
 	end record;
+
+	
+	directory_name_length_max : constant positive := 200;
+	package pac_directory_name is new generic_bounded_length (directory_name_length_max);
+
+	function to_string (directory_name : in pac_directory_name.bounded_string) return string;
+	-- Converts a directory name to a string.
+
+-- 	function to_directory (directory_name : in string) return pac_directory_name.bounded_string;
+-- 	-- Converts a string to a pac_directory_name.
+
 	
 	function to_package_model (
 	-- Builds a package model from the given lines.

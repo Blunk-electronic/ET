@@ -107,16 +107,6 @@ package et_packages is
 	function to_file_name (name : in string) return pac_package_model_file_name.bounded_string;
 	
 
-	
-	directory_name_length_max : constant positive := 200;
-	package type_directory_name is new generic_bounded_length (directory_name_length_max);
-
-	function to_string (directory_name : in type_directory_name.bounded_string) return string;
-	-- Converts a directory name to a string.
-
--- 	function to_directory (directory_name : in string) return type_directory_name.bounded_string;
--- 	-- Converts a string to a type_directory_name.
-
 -- 	text_size_min : constant type_distance_positive := 0.5;
 -- 	text_size_max : constant type_distance_positive := 100.0;
 -- 	text_size_default : constant type_distance_positive := 1.5;

@@ -391,6 +391,21 @@ package body et_kicad_packages is
 		
 		return lines;
 	end to_pad_milling_contour;
+
+
+	function to_string (directory_name : in pac_directory_name.bounded_string) 
+		return string 
+	is begin
+		return pac_directory_name.to_string (directory_name);
+	end to_string;
+	
+	function to_directory (directory_name : in string) 
+		return pac_directory_name.bounded_string 
+	is begin
+		return pac_directory_name.to_bounded_string (directory_name);
+	end to_directory;
+
+
 	
 	function to_package_model (
 		file_name		: in string; -- S_0201.kicad_mod
@@ -2551,8 +2566,8 @@ package body et_kicad_packages is
 		lib_dir_cursor : type_project_lib_dirs.cursor := search_list_project_lib_dirs.first;
 	
 		-- backup the directory of origin
-		use type_directory_name;
-		origin_directory : type_directory_name.bounded_string := to_bounded_string (current_directory);
+		use pac_directory_name;
+		origin_directory : pac_directory_name.bounded_string := to_bounded_string (current_directory);
 	
 		-- After fetching the names of the package libraries, their names
 		-- are stored here. When processing the list we use the library_name_cursor.
@@ -2725,7 +2740,7 @@ package body et_kicad_packages is
 									process		=> read_packages'access);
 
 								-- change back to directory of origin
-								set_directory (et_packages.to_string (origin_directory));
+								set_directory (to_string (origin_directory));
 							else
 								log (text => " already loaded -> skipped", level => log_threshold + 2);
 							end if;
@@ -2756,7 +2771,7 @@ package body et_kicad_packages is
 						process		=> read_packages'access);
 
 					-- change back to directory of origin
-					set_directory (et_packages.to_string (origin_directory));
+					set_directory (to_string (origin_directory));
 
 					next (library_cursor);
 				end loop;
