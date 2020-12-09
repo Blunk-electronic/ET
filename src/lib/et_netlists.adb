@@ -362,12 +362,12 @@ package body et_netlists is
 		module_cursor	: in pac_modules.cursor; -- the module that contains the port
 		net_cursor		: in pac_nets.cursor;
 		log_threshold	: in type_log_level)
-		return type_global_nets.list is
+		return pac_global_nets.list is
 
 		use pac_modules;
 		use pac_nets;
 		
-		global_nets : type_global_nets.list; -- to be returned
+		global_nets : pac_global_nets.list; -- to be returned
 
 		procedure query_submodules (submodule_cursor : in pac_modules.cursor) is
 			use et_general.pac_module_instance_name;
@@ -391,7 +391,7 @@ package body et_netlists is
 						if key (cursor).base_name = key (net_cursor).base_name then
 
 							-- Append the global net to the global_nets:
-							type_global_nets.append 
+							pac_global_nets.append 
 								(
 								container	=> global_nets,
 								new_item	=> (
@@ -694,7 +694,7 @@ package body et_netlists is
 
 	procedure write_netlist (
 	-- Exports the netlist of the given module to the export/CAM directory.
-		netlist			: in type_netlist.tree;
+		netlist			: in pac_netlist.tree;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver 
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level) is
@@ -736,8 +736,8 @@ package body et_netlists is
 		netlist_handle : ada.text_io.file_type;
 
 		procedure write_header is 
-			use type_netlist;
-			netlist_cursor : type_netlist.cursor := root (netlist);
+			use pac_netlist;
+			netlist_cursor : pac_netlist.cursor := root (netlist);
 		begin
 		-- writes a nice header in the netlist file
 			put_line (netlist_handle, comment_mark & " " & et_general.system_name & " " & et_general.version & " netlist");
@@ -764,7 +764,7 @@ package body et_netlists is
 		end write_footer;
 
 		procedure write_nets is 
-			use type_netlist;
+			use pac_netlist;
 			use et_terminals;
 
 			procedure query_device (port_cursor : in pac_device_ports_extended.cursor) is
@@ -780,7 +780,7 @@ package body et_netlists is
 					-- CS .characteristics
 			end;
 
-			procedure query_secondary_net (net_cursor : in type_netlist.cursor) is begin
+			procedure query_secondary_net (net_cursor : in pac_netlist.cursor) is begin
 				-- Extract the ports of devices of the secondary net:
 
 				log_indentation_up;
@@ -800,7 +800,7 @@ package body et_netlists is
 				log_indentation_down;
 			end;
 			
-			procedure write_primary_net (net_cursor : in type_netlist.cursor) is begin
+			procedure write_primary_net (net_cursor : in pac_netlist.cursor) is begin
 				log_indentation_up;
 				log_net_name (element (net_cursor).name, true, log_threshold + 1);
 				
@@ -872,22 +872,22 @@ package body et_netlists is
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)
-		return type_netlist.tree is
-
+		return pac_netlist.tree
+	is
 		use pac_modules;
 		
-		use type_netlist;
-		netlist : type_netlist.tree; -- to be returned
+		use pac_netlist;
+		netlist : pac_netlist.tree; -- to be returned
 
 		-- While exploring the tree of modules (with their individual netlists) the
 		-- cursor in container "netlist" points to a certain net. This cursor must be 
 		-- backup on a stack (see below) each time we dive into secondary nets.
-		netlist_cursor : type_netlist.cursor := type_netlist.root (netlist);
+		netlist_cursor : pac_netlist.cursor := pac_netlist.root (netlist);
 			
 		-- When exploring secondary nets, the cursor to a net must be backup.
 		-- This must be done each time a secondary net is discovered.
 		package stack is new et_general.stack_lifo (
-			item	=> type_netlist.cursor,
+			item	=> pac_netlist.cursor,
 			max 	=> nesting_depth_max);
 
 		procedure find_dependencies ( -- prespecification only. see body below.
@@ -904,10 +904,10 @@ package body et_netlists is
 			log_threshold	: in type_log_level) is
 
 			procedure query_submodules is 
-				use type_global_nets;
-				global_nets : type_global_nets.list;
+				use pac_global_nets;
+				global_nets : pac_global_nets.list;
 				
-				procedure query_nets (cursor : in type_global_nets.cursor) is
+				procedure query_nets (cursor : in pac_global_nets.cursor) is
 					use pac_nets;
 					glob_net : type_global_net := element (cursor);
 				begin
@@ -917,10 +917,10 @@ package body et_netlists is
 					-- backup netlist cursor before diving into secondary nets
 					stack.push (netlist_cursor);
 
-					type_netlist.insert_child (
+					pac_netlist.insert_child (
 						container	=> netlist,
 						parent		=> netlist_cursor,
-						before		=> type_netlist.no_element,
+						before		=> pac_netlist.no_element,
 						position	=> netlist_cursor,
 						new_item	=> (element (glob_net.net) with key (glob_net.net)));
 					
@@ -1008,10 +1008,10 @@ package body et_netlists is
 						-- backup netlist cursor before diving into secondary nets
 						stack.push (netlist_cursor);
 						
-						type_netlist.insert_child (
+						pac_netlist.insert_child (
 							container	=> netlist,
 							parent		=> netlist_cursor,
-							before		=> type_netlist.no_element,
+							before		=> pac_netlist.no_element,
 							position	=> netlist_cursor,
 							new_item	=> (element (net_cursor) with key (net_cursor)));
 
@@ -1047,10 +1047,10 @@ package body et_netlists is
 						-- backup netlist cursor before diving into secondary nets
 						stack.push (netlist_cursor);
 						
-						type_netlist.insert_child (
+						pac_netlist.insert_child (
 							container	=> netlist,
 							parent		=> netlist_cursor,
-							before		=> type_netlist.no_element,
+							before		=> pac_netlist.no_element,
 							position	=> netlist_cursor,
 							new_item	=> (element (net_cursor) with key (net_cursor)));
 
@@ -1082,10 +1082,10 @@ package body et_netlists is
 					-- backup netlist cursor before diving into secondary nets
 					stack.push (netlist_cursor);
 
-					type_netlist.insert_child (
+					pac_netlist.insert_child (
 						container	=> netlist,
 						parent		=> netlist_cursor,
-						before		=> type_netlist.no_element,
+						before		=> pac_netlist.no_element,
 						position	=> netlist_cursor,
 						new_item	=> (element (cursor) with key (cursor)));
 					
@@ -1137,7 +1137,7 @@ package body et_netlists is
 
 				procedure query_ports (net_cursor : in pac_nets.cursor) is
 					use pac_nets;
-				begin -- query_ports
+				begin
 					-- Extract primary nets only:
 					if is_primary (net_cursor) then
 
@@ -1148,10 +1148,10 @@ package body et_netlists is
 						-- backup netlist cursor before diving into secondary nets
 						stack.push (netlist_cursor);
 						
-						type_netlist.insert_child (
+						pac_netlist.insert_child (
 							container	=> netlist,
 							parent		=> root (netlist),
-							before		=> type_netlist.no_element,
+							before		=> pac_netlist.no_element,
 							position	=> netlist_cursor,
 							new_item	=> (element (net_cursor) with key (net_cursor)));
 						

@@ -216,7 +216,7 @@ package et_netlists is
 		net			: pac_nets.cursor;
 	end record;
 	
-	package type_global_nets is new doubly_linked_lists (
+	package pac_global_nets is new doubly_linked_lists (
 		element_type	=> type_global_net);
 
 	function global_nets_in_submodules (
@@ -224,7 +224,7 @@ package et_netlists is
 		module_cursor	: in pac_modules.cursor; -- the module that contains the port
 		net_cursor		: in pac_nets.cursor;
 		log_threshold	: in type_log_level)
-		return type_global_nets.list;
+		return pac_global_nets.list;
 
 
 
@@ -272,7 +272,7 @@ package et_netlists is
 	-- lots of subordinated secondary nets. A secondary net itself may have lots 
 	-- of further secondary nets. We limit the nesting depth to a reasonable value.
 	nesting_depth_max : constant positive := 100; -- CS increase if nessecary
-	package type_netlist is new ada.containers.multiway_trees (type_netlist_net);
+	package pac_netlist is new ada.containers.multiway_trees (type_netlist_net);
 	
 	function make_netlist (
 	-- If write_file ist true, creates the netlist file (which inevitably and intentionally 
@@ -286,7 +286,7 @@ package et_netlists is
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)
-		return type_netlist.tree;
+		return pac_netlist.tree;
 	
 end et_netlists;
 

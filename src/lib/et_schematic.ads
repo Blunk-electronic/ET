@@ -531,8 +531,8 @@ package et_schematic is
 	package pac_netlists is new ordered_maps (
 		key_type		=> et_general.pac_assembly_variant_name.bounded_string, -- low_cost, empty if default variant
 		"<"				=> et_general.pac_assembly_variant_name."<",
-		element_type	=> et_netlists.type_netlist.tree, -- provides info on primary and secondary net dependencies
-		"="				=> et_netlists.type_netlist."=");
+		element_type	=> et_netlists.pac_netlist.tree, -- provides info on primary and secondary net dependencies
+		"="				=> et_netlists.pac_netlist."=");
 
 
 

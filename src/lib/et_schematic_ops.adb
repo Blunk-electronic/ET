@@ -9030,7 +9030,7 @@ package body et_schematic_ops is
 			end query_submodules;
 
 			-- before updating the netlist of the module we keep the new netlist here temporarily:
-			netlist : et_netlists.type_netlist.tree;
+			netlist : et_netlists.pac_netlist.tree;
 
 			procedure update_netlist (
 			-- Updates the netlist of the module. The netlist is indicated by the variant_name.
@@ -9039,7 +9039,7 @@ package body et_schematic_ops is
 
 				procedure assign_netlist (
 					variant		: in pac_assembly_variant_name.bounded_string;
-					netlist		: in out et_netlists.type_netlist.tree) is
+					netlist		: in out et_netlists.pac_netlist.tree) is
 				begin
 					-- overwrite the current netlist by the new netlist:
 					netlist := make_for_variant.netlist;
