@@ -197,7 +197,7 @@ package body et_netlists is
 		procedure query_ports (
 			net_name	: in type_net_name;
 			net			: in type_net) is
-			use type_submodule_ports_extended;
+			use pac_submodule_ports_extended;
 			use type_ports_netchanger;
 
 			procedure count_netchanger_ports (cursor : in type_ports_netchanger.cursor) is begin
@@ -207,7 +207,7 @@ package body et_netlists is
 				end case;
 			end;
 
-			procedure count_submodule_ports (cursor : in type_submodule_ports_extended.cursor) is begin
+			procedure count_submodule_ports (cursor : in pac_submodule_ports_extended.cursor) is begin
 				case element (cursor).direction is
 					when MASTER => port_count.submodules.masters := port_count.submodules.masters + 1;
 					when SLAVE => port_count.submodules.slaves := port_count.submodules.slaves + 1;
@@ -332,12 +332,12 @@ package body et_netlists is
 		procedure query_submod_ports (
 			net_name	: in type_net_name;
 			net			: in type_net) is
-			use type_submodule_ports_extended;
-			port_cursor : type_submodule_ports_extended.cursor := net.submodules.first;
+			use pac_submodule_ports_extended;
+			port_cursor : pac_submodule_ports_extended.cursor := net.submodules.first;
 			use et_general.pac_net_name;
 			use et_general.pac_module_instance_name;
 		begin
-			while port_cursor /= type_submodule_ports_extended.no_element loop
+			while port_cursor /= pac_submodule_ports_extended.no_element loop
 				
 				if element (port_cursor).module = submodule -- OSC1
 				and element (port_cursor).port = port then -- clock_out
@@ -628,13 +628,13 @@ package body et_netlists is
 		procedure query_submodules (
 			net_name	: in type_net_name;
 			net			: in type_net) is
-			use type_submodule_ports_extended;
-			port_cursor : type_submodule_ports_extended.cursor;
+			use pac_submodule_ports_extended;
+			port_cursor : pac_submodule_ports_extended.cursor;
 		begin
 			-- Locate the submodule port in the current net.
 			-- If found, the search ends prematurely.
 			port_cursor := find (net.submodules, port_to_search_for);
-			if port_cursor /= type_submodule_ports_extended.no_element then
+			if port_cursor /= pac_submodule_ports_extended.no_element then
 				port_found := true;
 			end if;
 		end query_submodules;
@@ -1026,8 +1026,8 @@ package body et_netlists is
 				end if;
 			end query_netchanger;
 
-			procedure query_submodule (port_cursor : in type_submodule_ports_extended.cursor) is
-				use type_submodule_ports_extended;
+			procedure query_submodule (port_cursor : in pac_submodule_ports_extended.cursor) is
+				use pac_submodule_ports_extended;
 				net_cursor : type_nets.cursor;
 			begin
 				if element (port_cursor).direction = MASTER then
@@ -1066,7 +1066,7 @@ package body et_netlists is
 			end query_submodule;
 
 			procedure query_parent is
-				use type_submodule_ports_extended;
+				use pac_submodule_ports_extended;
 				cursor : type_nets.cursor;
 			begin
 				-- Find the secondary net in the parent module.
@@ -1122,7 +1122,7 @@ package body et_netlists is
 				-- If there are submodules connected with the net, look at their ports and the nets connected.
 				-- Since we want to explore secondary nets, this step adresses submodue ports of direction "master".
 				-- This search goes DOWN in the design hierarchy towards the submodule:
-				type_submodule_ports_extended.iterate (element (net_cursor).submodules, query_submodule'access);
+				pac_submodule_ports_extended.iterate (element (net_cursor).submodules, query_submodule'access);
 			end if;
 
 			-- There may be submodules containing global nets. These nets are secondary nets of the current net.

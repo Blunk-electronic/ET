@@ -100,7 +100,7 @@ package et_netlists is
 
 	function "<" (left, right : in type_submodule_port_extended) return boolean;
 	
-	package type_submodule_ports_extended is new ordered_sets (
+	package pac_submodule_ports_extended is new ordered_sets (
 		element_type	=> type_submodule_port_extended);
 	
 	
@@ -139,7 +139,7 @@ package et_netlists is
 	
 	type type_net is tagged record
 		devices		: pac_device_ports_extended.set;
-		submodules	: type_submodule_ports_extended.set;
+		submodules	: pac_submodule_ports_extended.set;
 		netchangers	: type_ports_netchanger.set;
 		scope		: type_net_scope;
 	end record;

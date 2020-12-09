@@ -8673,10 +8673,10 @@ package body et_schematic_ops is
 	-- Adds the port direction (master/slave) to the given submodule ports.
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_submodule_ports.set)
-		return et_netlists.type_submodule_ports_extended.set 
+		return et_netlists.pac_submodule_ports_extended.set 
 	is
 		use et_netlists;
-		ports_extended : type_submodule_ports_extended.set; -- to be returned
+		ports_extended : pac_submodule_ports_extended.set; -- to be returned
 
 		use pac_submodule_ports;
 
@@ -8687,7 +8687,7 @@ package body et_schematic_ops is
  			-- get the direction of the current submodule port
 			direction := port_direction (module_cursor, port.module_name, port.port_name);
 
-			type_submodule_ports_extended.insert 
+			pac_submodule_ports_extended.insert 
 				(
 				container	=> ports_extended,
 				new_item	=> 
@@ -8756,7 +8756,7 @@ package body et_schematic_ops is
 					net_name : pac_net_name.bounded_string;
 					all_ports : et_schematic.type_ports;
 					device_ports_extended : pac_device_ports_extended.set;
-					submodule_ports_extended : type_submodule_ports_extended.set;
+					submodule_ports_extended : pac_submodule_ports_extended.set;
 
 					procedure apply_offsets is
 					-- Applies the given offset to the devices in device_ports_extended.
