@@ -3630,7 +3630,7 @@ package body et_kicad_to_native is
 
 				use et_kicad_packages.type_packages_library;
 				package_cursor_kicad	: et_kicad_packages.type_packages_library.cursor := library.first;
-				package_name			: et_packages.type_component_package_name.bounded_string;
+				package_name			: et_packages.pac_package_model_name.bounded_string;
 				package_model			: et_packages.type_package_model_file.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
 
 				use et_packages.type_packages;

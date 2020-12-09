@@ -62,7 +62,7 @@ package body et_pick_and_place is
 	procedure write_pnp (
 		pnp				: in pac_devices.map;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver 
-		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
+		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level) is		
 

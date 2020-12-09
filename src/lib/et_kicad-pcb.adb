@@ -475,7 +475,7 @@ package body et_kicad.pcb is
 		section_polygon_entered : boolean;
 		
 		-- PACKAGES
-		package_name 			: et_packages.type_component_package_name.bounded_string;
+		package_name 			: et_packages.pac_package_model_name.bounded_string;
 		package_library_name	: et_kicad_general.type_library_name.bounded_string;
 		package_position		: et_pcb_coordinates.type_package_position;
 		
@@ -5522,7 +5522,7 @@ package body et_kicad.pcb is
 		return et_devices.type_terminal_count is
 
 		library_name : type_package_library_name.bounded_string;
-		package_name : et_packages.type_component_package_name.bounded_string;
+		package_name : et_packages.pac_package_model_name.bounded_string;
 		
 		use type_libraries;
 		

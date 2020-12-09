@@ -42,35 +42,35 @@ with ada.exceptions;
 
 package body et_packages is
 
-	function to_string (packge : in type_component_package_name.bounded_string) return string is
+	function to_string (packge : in pac_package_model_name.bounded_string) return string is
 	-- Returns the given package name as string.
 	-- CS: provide a parameter that turns the preamble on/off
 	begin
-		return type_component_package_name.to_string (packge);
+		return pac_package_model_name.to_string (packge);
 	end to_string;
 
-	function to_package_name (package_name : in string) return type_component_package_name.bounded_string is
-	-- Converts a string to a type_component_package_name.	
+	function to_package_name (package_name : in string) return pac_package_model_name.bounded_string is
+	-- Converts a string to a pac_package_model_name.	
 	begin
-		return type_component_package_name.to_bounded_string (package_name);
+		return pac_package_model_name.to_bounded_string (package_name);
 	end to_package_name;
 	
 	procedure check_package_name_length (packge : in string) is
 	-- Tests if the given package is longer than allowed.
 		use et_string_processing;
 	begin
-		if packge'length > component_package_name_length_max then
+		if packge'length > package_name_length_max then
 			log (WARNING, "package name too long. Max. length is" 
-				 & positive'image (component_package_name_length_max) & " !");
+				 & positive'image (package_name_length_max) & " !");
 		end if;
 	end check_package_name_length;
 
 	procedure check_package_name_characters (
-		packge		: in type_component_package_name.bounded_string;
-		characters	: in character_set := component_package_name_characters)
+		packge		: in pac_package_model_name.bounded_string;
+		characters	: in character_set := package_name_characters)
 	is
 		use et_string_processing;
-		use type_component_package_name;
+		use pac_package_model_name;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (

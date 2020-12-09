@@ -704,7 +704,7 @@ package et_kicad.schematic is
 
 	-- Kicad combines the library and package/footprint name in a single string like bel_capacitors:S_0805
 	-- Therefore the character set used here includes the colon additionally.
-	component_package_name_characters : character_set := et_packages.component_package_name_characters or to_set (':');
+	component_package_name_characters : character_set := et_packages.package_name_characters or to_set (':');
 
 	-- In the library a component name may have a tilde. Therefore we extend the standard character set by a tilde.
 	component_generic_name_characters_lib : character_set := component_generic_name_characters or to_set ('~');
@@ -836,7 +836,7 @@ package et_kicad.schematic is
 	function library_name (text : in string) return type_library_name.bounded_string;
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
 
-	function package_name (text : in string) return et_packages.type_component_package_name.bounded_string;
+	function package_name (text : in string) return et_packages.pac_package_model_name.bounded_string;
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
 
 

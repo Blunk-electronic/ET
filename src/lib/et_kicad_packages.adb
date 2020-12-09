@@ -406,7 +406,7 @@ package body et_kicad_packages is
 		use et_pcb_coordinates.pac_geometry_brd;
 
 		-- Extract the actual package name (like S_0201) from the given file name:
-		package_name : type_component_package_name.bounded_string :=
+		package_name : pac_package_model_name.bounded_string :=
 			to_package_name (ada.directories.base_name (file_name)); 
 
 		function path_and_file_name return string is

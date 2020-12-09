@@ -2118,14 +2118,14 @@ package body et_conventions is
 	-- If optionally the value is provided, it gets appended which would result
 	-- in something like R_PAC_S_0805_VAL_100R.
 		prefix		: in pac_device_prefix.bounded_string;			-- R
-		packge		: in et_packages.type_component_package_name.bounded_string;	-- S_0805
+		packge		: in et_packages.pac_package_model_name.bounded_string;	-- S_0805
 		value 		: in pac_device_value.bounded_string := to_value ("")) -- 100R
 		return et_material.type_partcode.bounded_string is
 
 		use et_devices;
 		use et_packages;
 		use pac_device_prefix;
-		use type_component_package_name;
+		use pac_package_model_name;
 		use pac_device_value;
 		use et_material.type_partcode;
 
@@ -2281,7 +2281,7 @@ package body et_conventions is
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 		partcode		: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		device_name		: in type_device_name;						-- R45
-		packge			: in et_packages.type_component_package_name.bounded_string;	-- S_0805
+		packge			: in et_packages.pac_package_model_name.bounded_string;	-- S_0805
 		value 			: in pac_device_value.bounded_string; -- 100R
 		log_threshold	: in et_string_processing.type_log_level)
 		is
