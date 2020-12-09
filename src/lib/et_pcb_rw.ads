@@ -117,7 +117,7 @@ package et_pcb_rw is
 	procedure write_pad_technology (techno : in et_pcb.type_polygon_pad_technology);	
 	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set);
 	procedure write_circle_fillable (circle : in type_fillable_circle);
-	procedure write_circle_copper (circle : in type_copper_circle);
+	procedure write_circle_copper (circle : in type_conductor_circle);
 
 	-- Writes the properties of a circle in copper as used in a freetrack:
 	procedure write_circle_copper (circle : in et_pcb.type_copper_circle);	
@@ -280,7 +280,7 @@ package et_pcb_rw is
 
 	function board_make_fillable_circle_solid return type_fillable_circle_solid;
 
-	function board_make_copper_circle return type_copper_circle;
+	function board_make_copper_circle return type_conductor_circle;
 			
 
 	

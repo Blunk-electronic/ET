@@ -2056,7 +2056,7 @@ is
 		procedure draw_conductors is 
 			
 			-- LINES
-			use pac_conductor_lines_package;
+			use pac_conductor_lines;
 			line : type_conductor_line;
 
 			procedure draw_line (f : in type_face) is
@@ -2079,13 +2079,13 @@ is
 				end if;
 			end draw_line;
 			
-			procedure query_line_top (c : in pac_conductor_lines_package.cursor) is begin
+			procedure query_line_top (c : in pac_conductor_lines.cursor) is begin
 				line := element (c);
 				set_destination;
 				draw_line (destination);
 			end query_line_top;
 
-			procedure query_line_bottom (c : in pac_conductor_lines_package.cursor) is begin
+			procedure query_line_bottom (c : in pac_conductor_lines.cursor) is begin
 				line := element (c);
 				set_destination (INVERSE);
 				draw_line (destination);
@@ -2093,8 +2093,8 @@ is
 
 			
 			-- ARCS
-			use type_copper_arcs;
-			arc : type_copper_arc;
+			use pac_conductor_arcs;
+			arc : type_conductor_arc;
 
 			procedure draw_arc (f : in type_face) is
 				ly : constant type_signal_layer := face_to_layer (f);
@@ -2116,13 +2116,13 @@ is
 				end if;
 			end draw_arc;
 			
-			procedure query_arc_top (c : in type_copper_arcs.cursor) is begin
+			procedure query_arc_top (c : in pac_conductor_arcs.cursor) is begin
 				arc := element (c);
 				set_destination;
 				draw_arc (destination);
 			end query_arc_top;
 
-			procedure query_arc_bottom (c : in type_copper_arcs.cursor) is begin
+			procedure query_arc_bottom (c : in pac_conductor_arcs.cursor) is begin
 				arc := element (c);
 				set_destination (INVERSE);
 				draw_arc (destination);
@@ -2130,10 +2130,10 @@ is
 
 			
 			-- CIRCLES
-			use pac_copper_circles;
+			use pac_conductor_circles;
 
 			procedure draw_circle (
-				circle	: in out type_copper_circle;
+				circle	: in out type_conductor_circle;
 				f 		: in type_face) is
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
@@ -2167,15 +2167,15 @@ is
 				end if;
 			end draw_circle;
 			
-			procedure query_circle_top (c : in pac_copper_circles.cursor) is 
-				circle : type_copper_circle := element (c);
+			procedure query_circle_top (c : in pac_conductor_circles.cursor) is 
+				circle : type_conductor_circle := element (c);
 			begin
 				set_destination;
 				draw_circle (circle, destination);
 			end query_circle_top;
 
-			procedure query_circle_bottom (c : in pac_copper_circles.cursor) is 
-				circle : type_copper_circle := element (c);
+			procedure query_circle_bottom (c : in pac_conductor_circles.cursor) is 
+				circle : type_conductor_circle := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_circle (circle, destination);

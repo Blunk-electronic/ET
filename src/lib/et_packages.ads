@@ -354,14 +354,20 @@ package et_packages is
 	type type_conductor_line is new type_line with record
 		width	: type_track_width;
 	end record;
-	package pac_conductor_lines_package is new doubly_linked_lists (type_conductor_line);
+	
+	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
+	use pac_conductor_lines;
 
-	type type_copper_arc is new type_arc with record
+	
+	type type_conductor_arc is new type_arc with record
 		width	: type_track_width;
 	end record;
-	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
+	
+	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
+	use pac_conductor_arcs;
 
-	type type_copper_circle (
+	
+	type type_conductor_circle (
 		filled		: type_filled;
 		fill_style	: type_fill_style -- don't care if filled is NO
 		)
@@ -380,9 +386,11 @@ package et_packages is
 				
 		end case;
 	end record;
-	package pac_copper_circles is new indefinite_doubly_linked_lists (type_copper_circle);
 
+	package pac_conductor_circles is new indefinite_doubly_linked_lists (type_conductor_circle);
+	use pac_conductor_circles;
 
+	
 	
 	-- the space between foreign pads and the polygon outline
 	keyword_isolation : constant string := "isolation";
@@ -420,9 +428,9 @@ package et_packages is
 		
 	
 	type type_copper is record 
-		lines 		: pac_conductor_lines_package.list;
-		arcs		: type_copper_arcs.list;
-		circles		: pac_copper_circles.list;
+		lines 		: pac_conductor_lines.list;
+		arcs		: pac_conductor_arcs.list;
+		circles		: pac_conductor_circles.list;
 		polygons	: type_copper_polygons;
 		cutouts		: pac_copper_cutouts.list;
 		texts		: pac_texts_with_content.list;
@@ -1075,19 +1083,19 @@ package et_packages is
 	procedure line_copper_properties (
 	-- Logs the properties of the given line of copper
 		face			: in type_face;
-		cursor			: in pac_conductor_lines_package.cursor;
+		cursor			: in pac_conductor_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure arc_copper_properties (
 	-- Logs the properties of the given arc of copper
 		face			: in type_face;
-		cursor			: in type_copper_arcs.cursor;
+		cursor			: in pac_conductor_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure circle_copper_properties (
 	-- Logs the properties of the given circle of copper
 		face			: in type_face;
-		cursor			: in pac_copper_circles.cursor;
+		cursor			: in pac_conductor_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	

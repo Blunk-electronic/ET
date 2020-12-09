@@ -395,9 +395,9 @@ package body et_packages is
 	procedure line_copper_properties (
 	-- Logs the properties of the given line of copper
 		face			: in type_face;
-		cursor			: in pac_conductor_lines_package.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use pac_conductor_lines_package;
+		cursor			: in pac_conductor_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
 		line : type_conductor_line;
 	begin
 		line := element (cursor);
@@ -409,10 +409,10 @@ package body et_packages is
 	procedure arc_copper_properties (
 	-- Logs the properties of the given arc of copper
 		face			: in type_face;
-		cursor			: in type_copper_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_copper_arcs;
-		arc : type_copper_arc;
+		cursor			: in pac_conductor_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
+		arc : type_conductor_arc;
 	begin
 		arc := element (cursor);
 		log (text => "copper arc face" & to_string (face) & latin_1.space 
@@ -423,10 +423,9 @@ package body et_packages is
 	procedure circle_copper_properties (
 	-- Logs the properties of the given circle of copper
 		face			: in type_face;
-		cursor			: in pac_copper_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use pac_copper_circles;
-	begin
+		cursor			: in pac_conductor_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is begin
 		case element (cursor).filled is
 			when NO =>
 				log (text => "copper circle face" & to_string (face) & latin_1.space 

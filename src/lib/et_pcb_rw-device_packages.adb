@@ -51,12 +51,12 @@ with et_text;					use et_text;
 package body et_pcb_rw.device_packages is
 
 	procedure create_package (
-	-- Creates a package and stores the package in container et_packages.packages.								 								 
-		package_name 	: in et_packages.pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
-		appearance		: in et_packages.type_package_appearance;
-		log_threshold	: in et_string_processing.type_log_level) is
+	-- Creates a package and stores the package in container "packages".
+		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
+		appearance		: in type_package_appearance;
+		log_threshold	: in et_string_processing.type_log_level) 
+	is
 		use et_string_processing;
-		use et_packages;
 	begin
 		log (text => "creating package " & to_string (package_name) & " ...", level => log_threshold);
 		log_indentation_up;
@@ -89,11 +89,11 @@ package body et_pcb_rw.device_packages is
 
 	procedure save_package (
 	-- Saves the given package model in a file specified by file_name.
-		file_name 		: in et_packages.pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac							   
-		packge			: in et_packages.type_package; -- the actual package model
-		log_threshold	: in et_string_processing.type_log_level) is
+		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac							   
+		packge			: in type_package; -- the actual package model
+		log_threshold	: in et_string_processing.type_log_level) 
+	is
 		use et_string_processing;
-		use et_packages;
 		use pac_package_model_file_name;
 		
 		file_handle : ada.text_io.file_type;
@@ -104,24 +104,24 @@ package body et_pcb_rw.device_packages is
 		-- This is about copper objects in either top or bottom.
 		-- These objects have no connection to any pad or signal.
 
-			use pac_conductor_lines_package;
-			procedure write_line (cursor : in pac_conductor_lines_package.cursor) is begin
+			use pac_conductor_lines;
+			procedure write_line (cursor : in pac_conductor_lines.cursor) is begin
 				line_begin;
 				write_line (element (cursor));
 				write_width (element (cursor).width);
 				line_end;
 			end write_line;
 
-			use type_copper_arcs;
-			procedure write_arc (cursor : in type_copper_arcs.cursor) is begin
+			use pac_conductor_arcs;
+			procedure write_arc (cursor : in pac_conductor_arcs.cursor) is begin
 				arc_begin;
 				write_arc (element (cursor));
 				write_width (element (cursor).width);
 				arc_end;
 			end write_arc;
 
-			use et_packages.pac_copper_circles;
-			procedure write_circle (cursor : in et_packages.pac_copper_circles.cursor) is begin
+			use pac_conductor_circles;
+			procedure write_circle (cursor : in pac_conductor_circles.cursor) is begin
 				write_circle_copper (element (cursor));
 			end write_circle;
 
@@ -434,7 +434,6 @@ package body et_pcb_rw.device_packages is
 		end write_package_contour;
 
 		procedure write_terminals is
-			use et_packages;
 			use type_terminals;
 			terminal_cursor : type_terminals.cursor := packge.terminals.first;
 
@@ -717,11 +716,11 @@ package body et_pcb_rw.device_packages is
 
 	
 	procedure read_package (
-		file_name 		: in et_packages.pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
+		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in et_string_processing.type_log_level) 
+	is
 		use et_string_processing;
-		use et_packages;
 		use et_pcb;
 		
 		file_handle : ada.text_io.file_type;
@@ -1566,7 +1565,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
-										pac_conductor_lines_package.append (
+										pac_conductor_lines.append (
 											container	=> packge.copper.top.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1629,7 +1628,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
-										pac_conductor_lines_package.append (
+										pac_conductor_lines.append (
 											container	=> packge.copper.bottom.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1740,7 +1739,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
-										type_copper_arcs.append (
+										pac_conductor_arcs.append (
 											container	=> packge.copper.top.arcs, 
 											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
@@ -1803,7 +1802,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
-										type_copper_arcs.append (
+										pac_conductor_arcs.append (
 											container	=> packge.copper.bottom.arcs, 
 											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
@@ -1910,7 +1909,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
-										et_packages.pac_copper_circles.append (
+										et_packages.pac_conductor_circles.append (
 											container	=> packge.copper.top.circles, 
 											new_item	=> board_make_copper_circle);
 
@@ -1960,7 +1959,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
-										et_packages.pac_copper_circles.append (
+										et_packages.pac_conductor_circles.append (
 											container	=> packge.copper.bottom.circles, 
 											new_item	=> board_make_copper_circle);
 

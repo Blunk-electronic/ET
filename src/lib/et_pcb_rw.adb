@@ -233,7 +233,7 @@ package body et_pcb_rw is
 	end write_circle_fillable;
 
 	-- CS unify the follwing two procedures write_circle_copper:
-	procedure write_circle_copper (circle : in type_copper_circle) is begin
+	procedure write_circle_copper (circle : in type_conductor_circle) is begin
 		circle_begin;
 		write_circle (circle);
 		write (keyword => keyword_filled, parameters => space & to_string (circle.filled));
@@ -981,7 +981,7 @@ package body et_pcb_rw is
 		return (pac_shapes.type_circle (board_circle) with board_filled);
 	end;
 
-	function board_make_copper_circle return type_copper_circle is begin
+	function board_make_copper_circle return type_conductor_circle is begin
 		case board_filled is
 			when NO =>
 				return (pac_shapes.type_circle (board_circle) with 

@@ -37,6 +37,9 @@
 
 --   do do:
 
+with et_packages;					use et_packages;
+
+
 package et_pcb_rw.device_packages is
 
 	section_pad_contours_smt	: constant string	:= "[PAD_CONTOURS_SMT";
@@ -88,14 +91,14 @@ package et_pcb_rw.device_packages is
 
 	procedure create_package (
 	-- Creates a package and stores the package in container et_packages.packages.								 
-		package_name 	: in et_packages.pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
-		appearance		: in et_packages.type_package_appearance;
+		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
+		appearance		: in type_package_appearance;
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure save_package (
 	-- Saves the given package model in a file specified by file_name.							   
-		file_name 		: in et_packages.pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
-		packge			: in et_packages.type_package; -- the actual device model
+		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
+		packge			: in type_package; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure read_package (
@@ -103,7 +106,7 @@ package et_pcb_rw.device_packages is
 	-- If check_layers.check is YES, then a check will be done that tests
 	-- whether all conductor layers are are in 
 	-- range type_signal_layer'first .. deepest conductor layer.
-		file_name 		: in et_packages.pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
+		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in et_string_processing.type_log_level);
 
