@@ -102,9 +102,9 @@ package et_packages is
 	
 
 	package_model_file_name_length_max : constant positive := 300;
-	package type_package_model_file is new generic_bounded_length (package_model_file_name_length_max);
-	function to_string (name : in type_package_model_file.bounded_string) return string;
-	function to_file_name (name : in string) return type_package_model_file.bounded_string;
+	package pac_package_model_file_name is new generic_bounded_length (package_model_file_name_length_max);
+	function to_string (name : in pac_package_model_file_name.bounded_string) return string;
+	function to_file_name (name : in string) return pac_package_model_file_name.bounded_string;
 	
 
 	
@@ -1058,8 +1058,8 @@ package et_packages is
 	-- packages
 	-- CS: this should be a hashed map:
 	package type_packages is new indefinite_ordered_maps (
-		key_type		=> type_package_model_file.bounded_string, -- ../lbr/smd/SO15.pac
-		"<"				=> type_package_model_file."<",
+		key_type		=> pac_package_model_file_name.bounded_string, -- ../lbr/smd/SO15.pac
+		"<"				=> pac_package_model_file_name."<",
 		element_type	=> type_package);
 	
 	library_file_extension : constant string := "pac";
@@ -1067,11 +1067,11 @@ package et_packages is
 	-- HERE RIG WIDE PACKAGES ARE KEPT:
 	packages : type_packages.map; -- CS rename to pac_packages
 
-	function locate_package_model (model_name : in type_package_model_file.bounded_string) -- ../lbr/smd/SO15.pac
+	function locate_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
 	-- Returns a cursor to the given package model.
 		return type_packages.cursor;
 	
-	function is_real (package_name : in type_package_model_file.bounded_string) return boolean;
+	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean;
 	-- Returns true if the given package is real (means it has a height).
 
 	function terminal_properties (

@@ -517,7 +517,7 @@ package et_schematic is
 	-- Returns the name of the package model of the given device.
 	-- The given device must be real. Otherwise constraint error arises here.	
 	function get_package_model (device : in pac_devices_sch.cursor)
-		return et_packages.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		return et_packages.pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
 
 	function has_real_package (device : in pac_devices_sch.cursor) return boolean;
 	-- Returns true if the given device has a real package.
@@ -554,7 +554,7 @@ package et_schematic is
 		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flipped				: et_pcb.type_flipped := et_pcb.flipped_default;
 		text_placeholders	: et_packages.type_text_placeholders;
-		package_model		: et_packages.type_package_model_file.bounded_string; -- ../lbr/packages/fiducial.pac
+		package_model		: et_packages.pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 	end record;
 	-- CS move to et_devices ?
 	

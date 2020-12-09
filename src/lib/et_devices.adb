@@ -1100,8 +1100,8 @@ package body et_devices is
 	function package_model (
 		device_cursor	: in pac_devices_lib.cursor;
 		variant			: in pac_package_variant_name.bounded_string) -- D, N
-		return type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
-		package_model : type_package_model_file.bounded_string; -- to be returned (packages/smd/SOT23.pac)
+		return pac_package_model_file_name.bounded_string is -- libraries/packages/smd/SOT23.pac
+		package_model : pac_package_model_file_name.bounded_string; -- to be returned (packages/smd/SOT23.pac)
 
 		procedure query_variants (
 			device_name	: in pac_device_model_file.bounded_string;

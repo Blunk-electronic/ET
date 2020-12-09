@@ -447,7 +447,7 @@ package body et_schematic is
 	end get_variant;
 	
 	function get_package_model (device : in pac_devices_sch.cursor)
-		return et_packages.type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
+		return et_packages.pac_package_model_file_name.bounded_string is -- libraries/packages/smd/SOT23.pac
 		device_model		: pac_device_model_file.bounded_string;
 		device_cursor_lib	: pac_devices_lib.cursor;
 		device_variant		: pac_package_variant_name.bounded_string; -- N, D
@@ -468,7 +468,7 @@ package body et_schematic is
 	end get_package_model;
 
 	function has_real_package (device : in pac_devices_sch.cursor) return boolean is
-		package_name : et_packages.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		package_name : et_packages.pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
 	begin
 		-- get the package name of the given device:
 		package_name := get_package_model (device);

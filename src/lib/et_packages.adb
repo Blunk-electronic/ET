@@ -89,16 +89,16 @@ package body et_packages is
 
 
 	
-	function to_string (name : in type_package_model_file.bounded_string) 
+	function to_string (name : in pac_package_model_file_name.bounded_string) 
 		return string is
 	begin
-		return type_package_model_file.to_string (name);
+		return pac_package_model_file_name.to_string (name);
 	end;
 
 	function to_file_name (name : in string) 
-		return type_package_model_file.bounded_string is
+		return pac_package_model_file_name.bounded_string is
 	begin
-		return type_package_model_file.to_bounded_string (name);
+		return pac_package_model_file_name.to_bounded_string (name);
 	end;
 
 
@@ -357,14 +357,14 @@ package body et_packages is
 		return type_package_tags.to_bounded_string (tags);
 	end to_package_tags;
 
-	function locate_package_model (model_name : in type_package_model_file.bounded_string) -- ../lbr/smd/SO15.pac
+	function locate_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
 	-- Returns a cursor to the given package model.		
 		return type_packages.cursor is
 	begin
 		return type_packages.find (packages, model_name);
 	end;
 	
-	function is_real (package_name : in type_package_model_file.bounded_string) return boolean is
+	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean is
 	-- Returns true if the given package is real (means it has a height).
 		use type_packages;
 		cursor : type_packages.cursor;
@@ -386,7 +386,7 @@ package body et_packages is
 		terminal_cursor : type_terminals.cursor;
 
 		procedure query_terminals (
-			model_name	: in type_package_model_file.bounded_string;
+			model_name	: in pac_package_model_file_name.bounded_string;
 			model		: in type_package) is
 			use type_terminals;
 		begin

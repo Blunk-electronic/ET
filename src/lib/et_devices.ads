@@ -391,7 +391,7 @@ package et_devices is
 
 	
 	type type_variant is record
-		package_model		: type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		package_model		: pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
 		terminal_port_map	: pac_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 
@@ -565,7 +565,7 @@ package et_devices is
 	-- The given device must be real. Means appearance SCH_PCB.							  
 		device_cursor	: in pac_devices_lib.cursor;
 		variant			: in pac_package_variant_name.bounded_string) -- D, N
-		return type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		return pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
 		
 -- 	function terminal_name (
 -- 	-- Returns the name of the terminal name of the given device according to the given variant.

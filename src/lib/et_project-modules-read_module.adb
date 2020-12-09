@@ -602,8 +602,8 @@ is
 	device_unit_position	: et_coordinates.type_position; -- x,y,sheet,rotation
 
 
-	device_non_electric				: et_schematic.type_device_non_electric;
-	device_non_electric_model		: et_packages.type_package_model_file.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
+	device_non_electric			: et_schematic.type_device_non_electric;
+	device_non_electric_model	: et_packages.pac_package_model_file_name.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
 	
 	-- assembly variants
 	assembly_variant_name			: et_general.pac_assembly_variant_name.bounded_string; -- low_cost

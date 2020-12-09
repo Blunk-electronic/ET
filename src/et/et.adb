@@ -90,10 +90,10 @@ procedure et is
 	module_file_name		: pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 	
-	package_name_create		: et_packages.type_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
-	package_name_import		: et_packages.type_package_model_file.bounded_string; -- the package to be imported
-	package_name_open		: et_packages.type_package_model_file.bounded_string; -- the package to be opened
-	package_name_save_as	: et_packages.type_package_model_file.bounded_string; -- the package to be saved as
+	package_name_create		: et_packages.pac_package_model_file_name.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
+	package_name_import		: et_packages.pac_package_model_file_name.bounded_string; -- the package to be imported
+	package_name_open		: et_packages.pac_package_model_file_name.bounded_string; -- the package to be opened
+	package_name_save_as	: et_packages.pac_package_model_file_name.bounded_string; -- the package to be saved as
 	package_appearance		: et_packages.type_package_appearance := et_packages.REAL; -- virtual/real. mostly real.
 
 	symbol_name_create		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
@@ -414,7 +414,7 @@ procedure et is
 	end import_project;
 
 	procedure save_package_as is 
-		use et_packages.type_package_model_file;
+		use et_packages.pac_package_model_file_name;
 	begin
 		-- If package_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only packagein et_packages.packages is saved.
@@ -511,7 +511,7 @@ procedure et is
 		use et_project.pac_project_name;
 		use pac_script_name;
 		use et_conventions.pac_file_name;
-		use et_packages.type_package_model_file;
+		use et_packages.pac_package_model_file_name;
 		use et_symbols.pac_symbol_model_file;
 		use pac_device_model_file;
 		use et_frames.pac_template_name;

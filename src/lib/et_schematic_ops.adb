@@ -3091,7 +3091,7 @@ package body et_schematic_ops is
 		variants_available	: pac_variants.map := element (device).variants;
 		
 		variant_cursor		: pac_variants.cursor;
-		package_model		: type_package_model_file.bounded_string; -- ../lbr/smd/SO15.pac
+		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/smd/SO15.pac
 
 		use et_packages;		
 		use type_packages;

@@ -2490,7 +2490,7 @@ package body et_kicad_to_native is
 
 		function rename_package_model (
 			model_in : in et_kicad_general.type_package_library_name.bounded_string) -- ../../lbr/transistors.pretty/S_0805
-			return et_packages.type_package_model_file.bounded_string is
+			return et_packages.pac_package_model_file_name.bounded_string is
 			-- The return is something like: libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac .
 
 			use et_kicad_general.type_package_library_name;
@@ -2499,7 +2499,7 @@ package body et_kicad_to_native is
 			characters : character_mapping := to_mapping ("./","_-");
 
 			model_copy : et_kicad_general.type_package_library_name.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
-			model_return : et_packages.type_package_model_file.bounded_string;
+			model_return : et_packages.pac_package_model_file_name.bounded_string;
 		begin
 			translate (model_copy, characters);
 
@@ -3129,7 +3129,7 @@ package body et_kicad_to_native is
 			use et_kicad_packages.type_libraries;
 			package_library_cursor : et_kicad_packages.type_libraries.cursor := module.footprints.first;
 
-			use et_packages.type_package_model_file;
+			use et_packages.pac_package_model_file_name;
 			
 			procedure query_components (
 				library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- lbr/logic.lib
@@ -3631,7 +3631,7 @@ package body et_kicad_to_native is
 				use et_kicad_packages.type_packages_library;
 				package_cursor_kicad	: et_kicad_packages.type_packages_library.cursor := library.first;
 				package_name			: et_packages.pac_package_name.bounded_string;
-				package_model			: et_packages.type_package_model_file.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
+				package_model			: et_packages.pac_package_model_file_name.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
 
 				use et_packages.type_packages;
 				package_cursor			: et_packages.type_packages.cursor;
@@ -3760,7 +3760,7 @@ package body et_kicad_to_native is
 			use et_packages.type_packages;
 			
 			procedure save_package (package_cursor : in et_packages.type_packages.cursor) is
-				use et_packages.type_package_model_file;
+				use et_packages.pac_package_model_file_name;
 			begin
 				et_pcb_rw.device_packages.save_package (
 					-- package name like: 

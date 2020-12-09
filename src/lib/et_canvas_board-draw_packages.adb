@@ -71,7 +71,7 @@ is
 		device_name		: in et_devices.type_device_name; -- IC13, C4
 		device_value	: in et_devices.pac_device_value.bounded_string; -- SN7400
 		device_purpose	: in et_devices.pac_device_purpose.bounded_string; -- brightness control
-		model			: in et_packages.type_package_model_file.bounded_string;
+		model			: in et_packages.pac_package_model_file_name.bounded_string;
 		package_position: in et_pcb_coordinates.type_package_position; -- incl. rotation and face
 		flip			: in et_pcb.type_flipped;
 		placeholders	: in et_packages.type_text_placeholders) -- specified in the board. will override default positions

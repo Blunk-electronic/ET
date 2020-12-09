@@ -52,7 +52,7 @@ package body et_pcb_rw.device_packages is
 
 	procedure create_package (
 	-- Creates a package and stores the package in container et_packages.packages.								 								 
-		package_name 	: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		package_name 	: in et_packages.pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
 		appearance		: in et_packages.type_package_appearance;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
@@ -89,12 +89,12 @@ package body et_pcb_rw.device_packages is
 
 	procedure save_package (
 	-- Saves the given package model in a file specified by file_name.
-		file_name 		: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac							   
+		file_name 		: in et_packages.pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac							   
 		packge			: in et_packages.type_package; -- the actual package model
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages;
-		use type_package_model_file;
+		use pac_package_model_file_name;
 		
 		file_handle : ada.text_io.file_type;
 		
@@ -717,7 +717,7 @@ package body et_pcb_rw.device_packages is
 
 	
 	procedure read_package (
-		file_name 		: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		file_name 		: in et_packages.pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
