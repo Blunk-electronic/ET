@@ -192,10 +192,10 @@ package body et_project.modules is
 						use et_submodules;
 
 						use et_netlists;
-						use type_ports_netchanger;
-						port_cursor : type_ports_netchanger.cursor := segment.ports_netchangers.first;
+						use pac_netchanger_ports;
+						port_cursor : pac_netchanger_ports.cursor := segment.ports_netchangers.first;
 					begin
-						while port_cursor /= type_ports_netchanger.no_element loop
+						while port_cursor /= pac_netchanger_ports.no_element loop
 							if element (port_cursor) = port then
 								result := true;
 								exit; -- no more searching for netchanger ports required
@@ -275,10 +275,10 @@ package body et_project.modules is
 					use et_submodules;
 
 					use et_netlists;
-					use type_ports_netchanger;
-					port_cursor : type_ports_netchanger.cursor := segment.ports_netchangers.first;
+					use pac_netchanger_ports;
+					port_cursor : pac_netchanger_ports.cursor := segment.ports_netchangers.first;
 				begin
-					while port_cursor /= type_ports_netchanger.no_element loop
+					while port_cursor /= pac_netchanger_ports.no_element loop
 
 						-- If the given direction is MASTER, then we must look for a SLAVE netchanger
 						-- port (and vice versa) in the net segment.

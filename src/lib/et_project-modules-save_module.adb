@@ -347,7 +347,7 @@ is
 				use pac_submodule_ports;
 
 				use et_netlists;
-				use type_ports_netchanger;
+				use pac_netchanger_ports;
 				
 				procedure query_labels (segment : in type_net_segment) is
 					use pac_net_labels;
@@ -432,9 +432,9 @@ is
 				
 				procedure query_netchanger_ports (segment : in type_net_segment) is
 					use et_symbols;
-					port_cursor : type_ports_netchanger.cursor := segment.ports_netchangers.first;
+					port_cursor : pac_netchanger_ports.cursor := segment.ports_netchangers.first;
 				begin
-					while port_cursor /= type_ports_netchanger.no_element loop
+					while port_cursor /= pac_netchanger_ports.no_element loop
 
 						write (keyword => keyword_netchanger, parameters => 
 							et_submodules.to_string (element (port_cursor).index)

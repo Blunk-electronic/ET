@@ -120,7 +120,7 @@ package et_netlists is
 	end record;
 
 	function "<" (left, right : in type_port_netchanger) return boolean;	
-	package type_ports_netchanger is new ordered_sets (type_port_netchanger);
+	package pac_netchanger_ports is new ordered_sets (type_port_netchanger);
 
 	
 
@@ -140,7 +140,7 @@ package et_netlists is
 	type type_net is tagged record
 		devices		: pac_device_ports_extended.set;
 		submodules	: pac_submodule_ports_extended.set;
-		netchangers	: type_ports_netchanger.set;
+		netchangers	: pac_netchanger_ports.set;
 		scope		: type_net_scope;
 	end record;
 	

@@ -712,7 +712,7 @@ package body et_schematic_ops.nets is
 		result : boolean := true;
 		use pac_device_ports;
 		use pac_submodule_ports;
-		use et_netlists.type_ports_netchanger;
+		use et_netlists.pac_netchanger_ports;
 	begin
 		if length (ports.devices) > 0 then
 			return false;
@@ -753,11 +753,11 @@ package body et_schematic_ops.nets is
 			use pac_submodule_ports;
 
 			use et_netlists;
-			use type_ports_netchanger;
+			use pac_netchanger_ports;
 
 			device : pac_device_ports.cursor := segment.ports_devices.first;
 			submodule : pac_submodule_ports.cursor := segment.ports_submodules.first;
-			netchanger : type_ports_netchanger.cursor := segment.ports_netchangers.first;
+			netchanger : pac_netchanger_ports.cursor := segment.ports_netchangers.first;
 		begin -- search_ports
 			while device /= pac_device_ports.no_element loop
 
@@ -803,7 +803,7 @@ package body et_schematic_ops.nets is
 			-- if no submodule port found, search in netchanger ports
 			if result = true then
 
-				while netchanger /= type_ports_netchanger.no_element loop
+				while netchanger /= pac_netchanger_ports.no_element loop
 
 					if position ( -- CS use a similar function that takes only cursors ?
 						module_name		=> module_name,
@@ -1152,7 +1152,7 @@ package body et_schematic_ops.nets is
 						begin
 							pac_device_ports.union (segment.ports_devices, ports.devices);
 							pac_submodule_ports.union (segment.ports_submodules, ports.submodules);
-							et_netlists.type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
+							et_netlists.pac_netchanger_ports.union (segment.ports_netchangers, ports.netchangers);
 						end append_portlists;
 						
 					begin -- connect_ports
@@ -1514,7 +1514,7 @@ package body et_schematic_ops.nets is
 		procedure assign_ports_to_segment is begin
 			pac_device_ports.union (segment.ports_devices, ports.devices);
 			pac_submodule_ports.union (segment.ports_submodules, ports.submodules);
-			et_netlists.type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
+			et_netlists.pac_netchanger_ports.union (segment.ports_netchangers, ports.netchangers);
 		end;
 		
 		procedure create_net (
@@ -2363,10 +2363,10 @@ package body et_schematic_ops.nets is
 						-- Queries the positions of the netchanger ports in the old_segment. 
 						-- By the position assigns the ports to the new segments. 
 							use et_netlists;
-							use et_netlists.type_ports_netchanger;
+							use et_netlists.pac_netchanger_ports;
 							use et_submodules;
 
-							procedure query_ports (cursor : in type_ports_netchanger.cursor) is
+							procedure query_ports (cursor : in pac_netchanger_ports.cursor) is
 								index			: type_netchanger_id; -- 1,2,3,...
 								port			: type_netchanger_port_name; -- SLAVE/MASTER
 								port_position 	: type_point; -- the xy-position of the port

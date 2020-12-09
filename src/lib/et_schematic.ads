@@ -346,7 +346,7 @@ package et_schematic is
 		junctions			: type_junctions;
 		ports_devices		: pac_device_ports.set;
 		ports_submodules	: pac_submodule_ports.set;
-		ports_netchangers	: et_netlists.type_ports_netchanger.set;
+		ports_netchangers	: et_netlists.pac_netchanger_ports.set;
 	end record;
 	
 	package pac_net_segments is new doubly_linked_lists (type_net_segment);
@@ -450,7 +450,7 @@ package et_schematic is
 	type type_ports is record
 		devices		: pac_device_ports.set;
 		submodules	: pac_submodule_ports.set;
-		netchangers	: et_netlists.type_ports_netchanger.set;
+		netchangers	: et_netlists.pac_netchanger_ports.set;
 	end record;
 	
 	function ports (

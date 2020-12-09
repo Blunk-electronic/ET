@@ -1983,7 +1983,7 @@ package body et_schematic_ops is
 							level => log_threshold + 2);
 						
 						-- Insert the port in the portlist to be returned:
-						type_ports_netchanger.insert 
+						pac_netchanger_ports.insert 
 							(
 							container	=> ports_at_place.ports.netchangers,
 							new_item	=> 
@@ -2001,7 +2001,7 @@ package body et_schematic_ops is
 							level => log_threshold + 2);
 						
 						-- Insert the port in the portlist to be returned:
-						type_ports_netchanger.insert 
+						pac_netchanger_ports.insert 
 							(
 							container	=> ports_at_place.ports.netchangers,
 							new_item	=> 
@@ -3564,14 +3564,14 @@ package body et_schematic_ops is
 
 								-- If port not already in segment, append it.
 								-- Otherwise it must not be appended again. constraint_error would arise.
-								if type_ports_netchanger.contains (
+								if pac_netchanger_ports.contains (
 									container	=> segment.ports_netchangers,
 									item		=> (index, name)
 									) then
 
 									log (text => " already there -> skipped", level => log_threshold + 5);
 								else
-									type_ports_netchanger.insert (
+									pac_netchanger_ports.insert (
 										container	=> segment.ports_netchangers,
 										new_item	=> (index, name)); -- 1,2,3, .. / master/slave
 
@@ -3776,9 +3776,9 @@ package body et_schematic_ops is
 
 					procedure query_ports (segment : in out type_net_segment) is
 						use et_netlists;
-						use type_ports_netchanger;
+						use pac_netchanger_ports;
 						use et_submodules;
-						port_cursor : type_ports_netchanger.cursor;
+						port_cursor : pac_netchanger_ports.cursor;
 
 						procedure delete_port is begin
 							log (text => "sheet" & to_sheet (sheet) & " net " &
@@ -3792,7 +3792,7 @@ package body et_schematic_ops is
 						-- Search for the master port if it has not been deleted yet:
 						if not deleted_ports.master then
 							port_cursor := find (segment.ports_netchangers, (index, MASTER));
-							if port_cursor /= type_ports_netchanger.no_element then
+							if port_cursor /= pac_netchanger_ports.no_element then
 								delete_port;
 								deleted_ports.master := true;
 							end if;
@@ -3801,7 +3801,7 @@ package body et_schematic_ops is
 						-- Search for the slave port if it has not been deleted yet:
 						if not deleted_ports.slave then
 							port_cursor := find (segment.ports_netchangers, (index, SLAVE));
-							if port_cursor /= type_ports_netchanger.no_element then
+							if port_cursor /= pac_netchanger_ports.no_element then
 								delete_port;
 								deleted_ports.slave := true;
 							end if;
@@ -4279,7 +4279,7 @@ package body et_schematic_ops is
 
 				use et_schematic.pac_submodule_ports;
 				use pac_device_ports;
-				use type_ports_netchanger;
+				use pac_netchanger_ports;
 			begin
 				-- If no net segments start or end at given point then this test won't
 				-- complain. If segments are meeting this point, no other ports must be
@@ -5506,7 +5506,7 @@ package body et_schematic_ops is
 		use pac_device_ports;
 
 		use et_netlists;
-		use type_ports_netchanger;
+		use pac_netchanger_ports;
 		
 	begin -- movable_test
 		log (text => "movable test ...", level => log_threshold);
@@ -9272,8 +9272,8 @@ package body et_schematic_ops is
 			-- Since netchanger_ports_collector is an ordered set, an exception will be raised if
 			-- a port is to be inserted more than once. Something like "netchanger port master" must
 			-- occur only ONCE throughout the module.
-			use et_netlists.type_ports_netchanger;
-			netchanger_ports_collector : et_netlists.type_ports_netchanger.set;
+			use et_netlists.pac_netchanger_ports;
+			netchanger_ports_collector : et_netlists.pac_netchanger_ports.set;
 
 			procedure collect_netchanger_port (
 				port	: in et_netlists.type_port_netchanger;
@@ -9364,7 +9364,7 @@ package body et_schematic_ops is
 								procedure query_ports_netchangers (segment : in type_net_segment) is
 									use et_netlists;
 									
-									procedure query_port (port_cursor : in type_ports_netchanger.cursor) is begin
+									procedure query_port (port_cursor : in pac_netchanger_ports.cursor) is begin
 										log (text => "netchanger " & et_submodules.to_string (element (port_cursor).index) &
 											 " port " & et_submodules.to_string (element (port_cursor).port), level => log_threshold + 4);
 

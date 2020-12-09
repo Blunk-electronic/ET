@@ -219,7 +219,7 @@ package et_schematic_ops is
 	type type_ports is record
 		devices		: pac_device_ports.set;
 		submodules	: pac_submodule_ports.set;
-		netchangers	: et_netlists.type_ports_netchanger.set;
+		netchangers	: et_netlists.pac_netchanger_ports.set;
 	end record;
 
 	function ports_at_place (

@@ -505,7 +505,7 @@ is
 	net_submodule_ports : et_schematic.pac_submodule_ports.set;
 
 	net_netchanger_port : et_netlists.type_port_netchanger;
-	net_netchanger_ports : et_netlists.type_ports_netchanger.set;
+	net_netchanger_ports : et_netlists.pac_netchanger_ports.set;
 	
 	route		: et_pcb.type_route;
 	route_via	: et_pcb.type_via;
@@ -3205,7 +3205,7 @@ is
 							-- clean up for next port collections (of another net segment)
 							et_schematic.pac_device_ports.clear (net_device_ports);
 							et_schematic.pac_submodule_ports.clear (net_submodule_ports);
-							et_netlists.type_ports_netchanger.clear (net_netchanger_ports);
+							et_netlists.pac_netchanger_ports.clear (net_netchanger_ports);
 
 						when SEC_SUBMODULE =>
 							-- copy collection of ports to submodule
@@ -4789,14 +4789,14 @@ is
 
 										-- Insert netchanger port in collection of netchanger ports. First make sure it is
 										-- not already in the net segment.
-										if et_netlists.type_ports_netchanger.contains (net_netchanger_ports, net_netchanger_port) then
+										if et_netlists.pac_netchanger_ports.contains (net_netchanger_ports, net_netchanger_port) then
 											log (ERROR, "netchanger" & et_submodules.to_string (net_netchanger_port.index) &
 												et_submodules.to_string (net_netchanger_port.port) & " port" & 
 												" already in net segment !", console => true);
 											raise constraint_error;
 										end if;
 										
-										et_netlists.type_ports_netchanger.insert (net_netchanger_ports, net_netchanger_port);
+										et_netlists.pac_netchanger_ports.insert (net_netchanger_ports, net_netchanger_port);
 
 										-- clean up for next netchanger port
 										net_netchanger_port := (others => <>);

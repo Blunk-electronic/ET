@@ -198,9 +198,9 @@ package body et_netlists is
 			net_name	: in type_net_name;
 			net			: in type_net) is
 			use pac_submodule_ports_extended;
-			use type_ports_netchanger;
+			use pac_netchanger_ports;
 
-			procedure count_netchanger_ports (cursor : in type_ports_netchanger.cursor) is begin
+			procedure count_netchanger_ports (cursor : in pac_netchanger_ports.cursor) is begin
 				case element (cursor).port is
 					when MASTER => port_count.netchangers.masters := port_count.netchangers.masters + 1;
 					when SLAVE => port_count.netchangers.slaves := port_count.netchangers.slaves + 1;
@@ -454,8 +454,8 @@ package body et_netlists is
 
 			ports : type_port_count;
 
-			use type_ports_netchanger;
-			netchanger_cursor : type_ports_netchanger.cursor;
+			use pac_netchanger_ports;
+			netchanger_cursor : pac_netchanger_ports.cursor;
 			
 			procedure query_netchangers (
 			-- Search the net for a netchanger with given index and port
@@ -496,7 +496,7 @@ package body et_netlists is
 
 				-- The search ends once a net containing the opposide port
 				-- has been found:
-				if netchanger_cursor /= type_ports_netchanger.no_element then
+				if netchanger_cursor /= pac_netchanger_ports.no_element then
 					exit;
 				end if;
 				
@@ -987,8 +987,8 @@ package body et_netlists is
 			ports : type_port_count := port_count (net_cursor);
 			-- ports now provides the number of submodule and netchanger ports
 				
-			procedure query_netchanger (port_cursor : in type_ports_netchanger.cursor) is
-				use type_ports_netchanger;
+			procedure query_netchanger (port_cursor : in pac_netchanger_ports.cursor) is
+				use pac_netchanger_ports;
 				net_cursor : type_nets.cursor;
 			begin
 				if element (port_cursor).port = MASTER then
@@ -1108,7 +1108,7 @@ package body et_netlists is
 				-- If there are netchangers connected with the net, look at their ports and the nets connected.
 				-- Since we want to explore secondary nets, this step addresses netchanger ports of direction "master".
 				-- This search REMAINS on the CURRENT level of design hierarchy:
-				type_ports_netchanger.iterate (element (net_cursor).netchangers, query_netchanger'access);
+				pac_netchanger_ports.iterate (element (net_cursor).netchangers, query_netchanger'access);
 
 				-- The parent module must be searched for submodule instances (the boxes) where
 				-- the net surfaces as a port. Even in a parent module the name of a secondary net may be

@@ -356,7 +356,7 @@ package body et_schematic is
 			use pac_device_ports;
 
 			use et_netlists;
-			use type_ports_netchanger;
+			use pac_netchanger_ports;
 			
 			use pac_submodule_ports;
 
