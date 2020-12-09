@@ -2211,23 +2211,23 @@ is
 						when TOP =>
 							case layer is
 								when SILK_SCREEN =>
-									type_texts_with_content.append (
+									pac_texts_with_content.append (
 										container	=> module.board.silk_screen.top.texts,
 										new_item	=> board_text);
 
 								when ASSEMBLY_DOCUMENTATION =>
-									type_texts_with_content.append (
+									pac_texts_with_content.append (
 										container	=> module.board.assy_doc.top.texts,
 										new_item	=> board_text);
 
 								when STOP_MASK =>
-									type_texts_with_content.append (
+									pac_texts_with_content.append (
 										container	=> module.board.stop_mask.top.texts,
 										new_item	=> board_text);
 
 								-- CS
 								--when KEEPOUT =>
-								--	type_texts_with_content.append (
+								--	pac_texts_with_content.append (
 								--		container	=> module.board.keepout.top.texts,
 								--		new_item	=> board_text);
 
@@ -2237,23 +2237,23 @@ is
 						when BOTTOM => null;
 							case layer is
 								when SILK_SCREEN =>
-									type_texts_with_content.append (
+									pac_texts_with_content.append (
 										container	=> module.board.silk_screen.bottom.texts,
 										new_item	=> board_text);
 
 								when ASSEMBLY_DOCUMENTATION =>
-									type_texts_with_content.append (
+									pac_texts_with_content.append (
 										container	=> module.board.assy_doc.bottom.texts,
 										new_item	=> board_text);
 									
 								when STOP_MASK =>
-									type_texts_with_content.append (
+									pac_texts_with_content.append (
 										container	=> module.board.stop_mask.bottom.texts,
 										new_item	=> board_text);
 
 								-- CS
 								--when KEEPOUT =>
-								--	type_texts_with_content.append (
+								--	pac_texts_with_content.append (
 								--		container	=> module.board.keepout.bottom.texts,
 								--		new_item	=> board_text);
 

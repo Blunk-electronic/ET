@@ -248,7 +248,7 @@ package et_packages is
 		content : et_text.type_text_content.bounded_string;
 	end record;
 
-	package type_texts_with_content is new doubly_linked_lists (type_text_with_content);
+	package pac_texts_with_content is new doubly_linked_lists (type_text_with_content);
 	
 
 
@@ -425,7 +425,7 @@ package et_packages is
 		circles		: pac_copper_circles.list;
 		polygons	: type_copper_polygons;
 		cutouts		: pac_copper_cutouts.list;
-		texts		: type_texts_with_content.list;
+		texts		: pac_texts_with_content.list;
 	end record;
 	
 	-- since NON ELECTRIC copper objects of a package can be on both sides 
@@ -500,7 +500,7 @@ package et_packages is
 		circles		: type_stop_circles.list;
 		polygons	: type_stop_polygons.list;
 		cutouts		: pac_stop_cutouts.list;
-		texts		: type_texts_with_content.list; -- for texts in copper to be exposed
+		texts		: pac_texts_with_content.list; -- for texts in copper to be exposed
 	end record;
 
 	-- Stop mask of packages:
@@ -587,7 +587,7 @@ package et_packages is
 		circles		: type_silk_circles.list;
 		polygons	: pac_silk_polygons.list;
 		cutouts 	: pac_silk_cutouts.list;
-		texts		: type_texts_with_content.list;
+		texts		: pac_texts_with_content.list;
 	end record;
 
 	-- Silk screen objects of a package (in the library) include placeholders:
@@ -630,7 +630,7 @@ package et_packages is
 		circles		: type_doc_circles.list;
 		polygons	: pac_doc_polygons.list;
 		cutouts		: pac_doc_cutouts.list;
-		texts		: type_texts_with_content.list;
+		texts		: pac_texts_with_content.list;
 	end record;
 
 	-- Assembly documentation objects of a package include placeholders:
@@ -674,7 +674,7 @@ package et_packages is
 		circles		: type_keepout_circles.list;
 		polygons	: type_keepout_polygons.list;
 		cutouts 	: pac_keepout_cutouts.list;
-		-- CS texts		: type_texts_with_content.list; -- for placement notes ?
+		-- CS texts		: pac_texts_with_content.list; -- for placement notes ?
 	end record;
 
 	type type_keepout_both_sides is record
@@ -729,7 +729,7 @@ package et_packages is
 		circles		: type_route_restrict_circles.list;
 		polygons	: type_route_restrict_polygons.list;
 		cutouts		: pac_route_restrict_cutouts.list;
-		-- CS texts		: type_texts_with_content.list; -- for routing notes ? mind signal layer !
+		-- CS texts		: pac_texts_with_content.list; -- for routing notes ? mind signal layer !
 	end record;
 
 
@@ -784,7 +784,7 @@ package et_packages is
 		circles		: type_via_restrict_circles.list;
 		polygons	: type_via_restrict_polygons.list;
 		cutouts		: pac_via_restrict_cutouts.list;
-		-- CS texts		: type_texts_with_content.list; -- for via notes ?
+		-- CS texts		: pac_texts_with_content.list; -- for via notes ?
 	end record;
 
 	
@@ -1079,7 +1079,7 @@ package et_packages is
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure arc_copper_properties (
-	-- Logs the propetype_texts_with_contentrties of the given arc of copper
+	-- Logs the properties of the given arc of copper
 		face			: in type_face;
 		cursor			: in type_copper_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
@@ -1119,7 +1119,7 @@ package et_packages is
 	procedure text_silk_screen_properties (
 	-- Logs the properties of the given silk screen text
 		face			: in type_face;
-		cursor			: in type_texts_with_content.cursor;
+		cursor			: in pac_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	
@@ -1152,7 +1152,7 @@ package et_packages is
 	procedure text_assy_doc_properties (
 	-- Logs the properties of the given assembly documentation text
 		face			: in type_face;
-		cursor			: in type_texts_with_content.cursor;
+		cursor			: in pac_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	
@@ -1201,7 +1201,7 @@ package et_packages is
 	procedure text_stop_mask_properties (
 	-- Logs the properties of the given stop mask text
 		face			: in type_face;
-		cursor			: in type_texts_with_content.cursor;
+		cursor			: in pac_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	

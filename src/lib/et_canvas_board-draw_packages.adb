@@ -505,7 +505,7 @@ is
 
 			
 			-- TEXTS
-			use type_texts_with_content;
+			use pac_texts_with_content;
 			
 			procedure draw_text (
 				t	: in out type_text_with_content;
@@ -521,7 +521,7 @@ is
 				end if;
 			end draw_text;
 
-			procedure query_text_top (c : in type_texts_with_content.cursor) is
+			procedure query_text_top (c : in pac_texts_with_content.cursor) is
 				t : type_text_with_content := element (c);
 			begin
 				-- Draw the text only if it has content:
@@ -531,7 +531,7 @@ is
 				end if;
 			end query_text_top;
 
-			procedure query_text_bottom (c : in type_texts_with_content.cursor) is
+			procedure query_text_bottom (c : in pac_texts_with_content.cursor) is
 				t : type_text_with_content := element (c);
 			begin
 				-- Draw the text only if it has content:
@@ -864,7 +864,7 @@ is
 
 
 			-- TEXTS
-			use type_texts_with_content;
+			use pac_texts_with_content;
 			
 			procedure draw_text (
 				t	: in out type_text_with_content;
@@ -880,14 +880,14 @@ is
 				end if;
 			end draw_text;
 
-			procedure query_text_top (c : in type_texts_with_content.cursor) is
+			procedure query_text_top (c : in pac_texts_with_content.cursor) is
 				t : type_text_with_content := element (c);
 			begin
 				set_destination;
 				draw_text (t, destination);
 			end query_text_top;
 
-			procedure query_text_bottom (c : in type_texts_with_content.cursor) is
+			procedure query_text_bottom (c : in pac_texts_with_content.cursor) is
 				t : type_text_with_content := element (c);
 			begin
 				set_destination (INVERSE);
@@ -1358,7 +1358,7 @@ is
 
 
 			-- TEXTS
-			use type_texts_with_content;
+			use pac_texts_with_content;
 			
 			procedure draw_text (
 				t	: in out type_text_with_content;
@@ -1374,14 +1374,14 @@ is
 				end if;
 			end draw_text;
 
-			procedure query_text_top (c : in type_texts_with_content.cursor) is
+			procedure query_text_top (c : in pac_texts_with_content.cursor) is
 				t : type_text_with_content := element (c);
 			begin
 				set_destination;
 				draw_text (t, destination);
 			end query_text_top;
 
-			procedure query_text_bottom (c : in type_texts_with_content.cursor) is
+			procedure query_text_bottom (c : in pac_texts_with_content.cursor) is
 				t : type_text_with_content := element (c);
 			begin
 				set_destination (INVERSE);
@@ -2319,7 +2319,7 @@ is
 
 
 			-- TEXTS
-			use type_texts_with_content;
+			use pac_texts_with_content;
 			
 			procedure draw_text (
 				t	: in out type_text_with_content;
@@ -2336,14 +2336,14 @@ is
 				end if;
 			end draw_text;
 
-			procedure query_text_top (c : in type_texts_with_content.cursor) is
+			procedure query_text_top (c : in pac_texts_with_content.cursor) is
 				t : type_text_with_content := element (c);
 			begin
 				set_destination;
 				draw_text (t, destination);
 			end query_text_top;
 
-			procedure query_text_bottom (c : in type_texts_with_content.cursor) is
+			procedure query_text_bottom (c : in pac_texts_with_content.cursor) is
 				t : type_text_with_content := element (c);
 			begin
 				set_destination (INVERSE);

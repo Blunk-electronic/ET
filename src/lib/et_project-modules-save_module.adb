@@ -1097,7 +1097,7 @@ is
 		use et_pcb_stack;
 		use et_pcb_coordinates.pac_geometry_brd;
 
-		use type_texts_with_content;
+		use pac_texts_with_content;
 		use et_pcb.pac_text_placeholders;
 
 		use type_silk_lines;

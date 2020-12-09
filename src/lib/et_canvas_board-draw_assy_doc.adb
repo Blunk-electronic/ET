@@ -54,7 +54,7 @@ procedure draw_assy_doc (
 	use pac_doc_polygons;
 	use pac_doc_cutouts;
 	use et_pcb.pac_text_placeholders;
-	use type_texts_with_content;
+	use pac_texts_with_content;
 	
 	procedure query_line (c : in type_doc_lines.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -173,7 +173,7 @@ procedure draw_assy_doc (
 
 	end query_placeholder;
 
-	procedure query_text (c : in type_texts_with_content.cursor) is 
+	procedure query_text (c : in pac_texts_with_content.cursor) is 
 		use pac_text.pac_vector_text_lines;
 		vector_text : pac_text.pac_vector_text_lines.list;
 	begin

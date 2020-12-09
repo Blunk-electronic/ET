@@ -808,8 +808,8 @@ package body et_kicad_to_native is
 				use pac_silk_polygons;
 				polygons_cursor : pac_silk_polygons.cursor;
 
-				use type_texts_with_content;
-				texts_cursor : type_texts_with_content.cursor;
+				use pac_texts_with_content;
+				texts_cursor : pac_texts_with_content.cursor;
 				
 				board_silk_screen : constant string := "board silk screen ";
 				
@@ -969,8 +969,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS TOP
 				texts_cursor := module.board.silk_screen.top.texts.first;
-				while texts_cursor /= type_texts_with_content.no_element loop
-					type_texts_with_content.update_element (
+				while texts_cursor /= pac_texts_with_content.no_element loop
+					pac_texts_with_content.update_element (
 						container	=> module.board.silk_screen.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -980,8 +980,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.silk_screen.bottom.texts.first;
-				while texts_cursor /= type_texts_with_content.no_element loop
-					type_texts_with_content.update_element (
+				while texts_cursor /= pac_texts_with_content.no_element loop
+					pac_texts_with_content.update_element (
 						container	=> module.board.silk_screen.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1004,8 +1004,8 @@ package body et_kicad_to_native is
 				use pac_doc_polygons;
 				polygons_cursor : pac_doc_polygons.cursor;
 
-				use type_texts_with_content;
-				texts_cursor : type_texts_with_content.cursor;
+				use pac_texts_with_content;
+				texts_cursor : pac_texts_with_content.cursor;
 				
 				doc : constant string := "board assembly documentation ";
 				
@@ -1166,8 +1166,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS TOP
 				texts_cursor := module.board.assy_doc.top.texts.first;
-				while texts_cursor /= type_texts_with_content.no_element loop
-					type_texts_with_content.update_element (
+				while texts_cursor /= pac_texts_with_content.no_element loop
+					pac_texts_with_content.update_element (
 						container	=> module.board.assy_doc.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1177,8 +1177,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.assy_doc.bottom.texts.first;
-				while texts_cursor /= type_texts_with_content.no_element loop
-					type_texts_with_content.update_element (
+				while texts_cursor /= pac_texts_with_content.no_element loop
+					pac_texts_with_content.update_element (
 						container	=> module.board.assy_doc.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1362,8 +1362,8 @@ package body et_kicad_to_native is
 				use type_stop_polygons;
 				polygons_cursor : type_stop_polygons.cursor;
 
-				use type_texts_with_content;
-				texts_cursor : type_texts_with_content.cursor;
+				use pac_texts_with_content;
+				texts_cursor : pac_texts_with_content.cursor;
 				
 				stop : constant string := "board stop mask ";
 				
@@ -1528,8 +1528,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS TOP
 				texts_cursor := module.board.stop_mask.top.texts.first;
-				while texts_cursor /= type_texts_with_content.no_element loop
-					type_texts_with_content.update_element (
+				while texts_cursor /= pac_texts_with_content.no_element loop
+					pac_texts_with_content.update_element (
 						container	=> module.board.stop_mask.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1539,8 +1539,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.stop_mask.bottom.texts.first;
-				while texts_cursor /= type_texts_with_content.no_element loop
-					type_texts_with_content.update_element (
+				while texts_cursor /= pac_texts_with_content.no_element loop
+					pac_texts_with_content.update_element (
 						container	=> module.board.stop_mask.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);

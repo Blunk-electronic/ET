@@ -516,10 +516,10 @@ package body et_packages is
 	procedure text_silk_screen_properties (
 	-- Logs the properties of the given silk screen text
 		face			: in type_face;
-		cursor			: in type_texts_with_content.cursor;
+		cursor			: in pac_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use et_text.type_text_content;
-		use type_texts_with_content;
+		use pac_texts_with_content;
 		text : type_text_with_content;
 	begin
 		text := element (cursor);
@@ -594,10 +594,10 @@ package body et_packages is
 	procedure text_assy_doc_properties (
 	-- Logs the properties of the given assembly documentation text
 		face			: in type_face;
-		cursor			: in type_texts_with_content.cursor;
+		cursor			: in pac_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use et_text.type_text_content;
-		use type_texts_with_content;
+		use pac_texts_with_content;
 		text : type_text_with_content;
 	begin
 		text := element (cursor);
@@ -698,10 +698,10 @@ package body et_packages is
 	procedure text_stop_mask_properties (
 	-- Logs the properties of the given stop mask text
 		face			: in type_face;
-		cursor			: in type_texts_with_content.cursor;
+		cursor			: in pac_texts_with_content.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use et_text.type_text_content;
-		use type_texts_with_content;
+		use pac_texts_with_content;
 		text : type_text_with_content;
 	begin
 		text := element (cursor);

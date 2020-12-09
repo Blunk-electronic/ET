@@ -98,7 +98,7 @@ package body et_pcb_rw.device_packages is
 		
 		file_handle : ada.text_io.file_type;
 		
-		use type_texts_with_content;
+		use pac_texts_with_content;
 		
 		procedure write_copper is
 		-- This is about copper objects in either top or bottom.
@@ -2173,26 +2173,26 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER =>
 										
-										type_texts_with_content.append (
+										pac_texts_with_content.append (
 											container	=> packge.copper.top.texts,
 											new_item	=> pac_text);
 
 									when SEC_SILK_SCREEN =>
 
-										type_texts_with_content.append (
+										pac_texts_with_content.append (
 											container	=> packge.silk_screen.top.texts,
 											new_item	=> pac_text);
 
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 
-										type_texts_with_content.append (
+										pac_texts_with_content.append (
 											container	=> packge.assembly_documentation.top.texts,
 											new_item	=> pac_text);
 										
 									when SEC_STOP_MASK =>
 
-										type_texts_with_content.append (
+										pac_texts_with_content.append (
 											container	=> packge.stop_mask.top.texts,
 											new_item	=> pac_text);
 										
@@ -2208,26 +2208,26 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER =>
 										
-										type_texts_with_content.append (
+										pac_texts_with_content.append (
 											container	=> packge.copper.bottom.texts,
 											new_item	=> pac_text);
 
 									when SEC_SILK_SCREEN =>
 
-										type_texts_with_content.append (
+										pac_texts_with_content.append (
 											container	=> packge.silk_screen.bottom.texts,
 											new_item	=> pac_text);
 
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 
-										type_texts_with_content.append (
+										pac_texts_with_content.append (
 											container	=> packge.assembly_documentation.bottom.texts,
 											new_item	=> pac_text);
 										
 									when SEC_STOP_MASK =>
 
-										type_texts_with_content.append (
+										pac_texts_with_content.append (
 											container	=> packge.stop_mask.bottom.texts,
 											new_item	=> pac_text);
 										
