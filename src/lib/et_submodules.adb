@@ -115,7 +115,7 @@ package body et_submodules is
 	
 	procedure move_ports (
 	-- Moves the given ports by the given offset.
-		ports	: in out type_submodule_ports.map; -- the portlist
+		ports	: in out pac_submodule_ports.map; -- the portlist
 		offset	: in et_coordinates.type_position) -- the offset (only x/y matters)
 		is
 
@@ -126,15 +126,15 @@ package body et_submodules is
 			move_by (port.position, offset);
 		end;
 
-		procedure query_port (cursor : in type_submodule_ports.cursor) is begin
-			type_submodule_ports.update_element (
+		procedure query_port (cursor : in pac_submodule_ports.cursor) is begin
+			pac_submodule_ports.update_element (
 				container	=> ports,
 				position	=> cursor,
 				process		=> move'access);
 		end;
 			
 	begin -- move_ports
-		type_submodule_ports.iterate (ports, query_port'access);
+		pac_submodule_ports.iterate (ports, query_port'access);
 	end move_ports;
 	
 	function to_string (view : in type_submodule_view_mode) return string is begin

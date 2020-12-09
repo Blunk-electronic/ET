@@ -1011,8 +1011,8 @@ is
 		use et_submodules;
 		use pac_submodules;
 
-		procedure query_ports (port_cursor : in et_submodules.type_submodule_ports.cursor) is
-			use type_submodule_ports;
+		procedure query_ports (port_cursor : in et_submodules.pac_submodule_ports.cursor) is
+			use et_submodules.pac_submodule_ports;
 		begin
 			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, parameters => et_general.to_string (key (port_cursor))); -- name clk_out
@@ -1039,7 +1039,7 @@ is
 			write (keyword => keyword_view_mode, parameters => to_string (element (submodule_cursor).view_mode));
 
 			section_mark (section_ports, HEADER);
-			type_submodule_ports.iterate (element (submodule_cursor).ports, query_ports'access);
+			et_submodules.pac_submodule_ports.iterate (element (submodule_cursor).ports, query_ports'access);
 			section_mark (section_ports, FOOTER);
 			
 			section_mark (section_submodule, FOOTER);				

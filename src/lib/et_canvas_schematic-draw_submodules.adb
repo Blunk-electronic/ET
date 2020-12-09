@@ -156,9 +156,9 @@ procedure draw_submodules (
 		end draw_position_in_board;
 		
 		procedure draw_ports is 
-			use type_submodule_ports;
+			use pac_submodule_ports;
 
-			procedure draw_port (pc : in type_submodule_ports.cursor) is 
+			procedure draw_port (pc : in pac_submodule_ports.cursor) is 
 				-- First get the position of the submodule box.
 				pos : type_point := submod_position;
 

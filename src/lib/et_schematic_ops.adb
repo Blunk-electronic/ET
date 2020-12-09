@@ -695,12 +695,13 @@ package body et_schematic_ops is
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in type_submodule) is
-				use type_submodule_ports;
+				submodule	: in type_submodule) 
+			is
+				use et_submodules.pac_submodule_ports;
 				port_xy : type_point;
-				cursor : type_submodule_ports.cursor := find (submodule.ports, port_name);
+				cursor : et_submodules.pac_submodule_ports.cursor := find (submodule.ports, port_name);
 			begin
-				if cursor /= type_submodule_ports.no_element then
+				if cursor /= et_submodules.pac_submodule_ports.no_element then
 
 					-- If the port exits, get its relative x/y position (relative to submodule position).
 					port_xy := element (cursor).position;
@@ -1909,10 +1910,10 @@ package body et_schematic_ops is
 
 			procedure query_submodules (submodule_cursor : in et_submodules.pac_submodules.cursor) is
 				submodule_position : et_coordinates.type_position;
-				ports : et_submodules.type_submodule_ports.map;
+				ports : et_submodules.pac_submodule_ports.map;
 
-				procedure query_port (port_cursor : in et_submodules.type_submodule_ports.cursor) is
-					use et_submodules.type_submodule_ports;
+				procedure query_port (port_cursor : in et_submodules.pac_submodule_ports.cursor) is
+					use et_submodules.pac_submodule_ports;
 					use pac_net_name;
 				begin
 					log (text => "port " & pac_net_name.to_string (key (port_cursor)) &
@@ -1948,7 +1949,7 @@ package body et_schematic_ops is
 					
 					et_submodules.move_ports (ports, submodule_position);
 
-					et_submodules.type_submodule_ports.iterate (ports, query_port'access);
+					et_submodules.pac_submodule_ports.iterate (ports, query_port'access);
 
 					log_indentation_down;
 				end if;
@@ -2869,10 +2870,10 @@ package body et_schematic_ops is
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in type_submodule) is
 				use pac_net_name;
-				use type_submodule_ports;
-				port_cursor : type_submodule_ports.cursor := submodule.ports.first;
+				use et_submodules.pac_submodule_ports;
+				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule.ports.first;
 			begin
-				while port_cursor /= type_submodule_ports.no_element loop
+				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
 					if key (port_cursor) = port_name then
 						result := true;
 						exit;
@@ -4276,7 +4277,7 @@ package body et_schematic_ops is
 				ports : type_ports;
 				port : type_port_netchanger;
 
-				use pac_submodule_ports;
+				use et_schematic.pac_submodule_ports;
 				use pac_device_ports;
 				use type_ports_netchanger;
 			begin
@@ -4836,9 +4837,10 @@ package body et_schematic_ops is
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in out type_submodule) is
-				use type_submodule_ports;
-				cursor : type_submodule_ports.cursor;
+				submodule	: in out type_submodule) 
+			is
+				use et_submodules.pac_submodule_ports;
+				cursor : et_submodules.pac_submodule_ports.cursor;
 				inserted : boolean;
 				port : et_submodules.type_submodule_port;
 			begin
@@ -5096,15 +5098,15 @@ package body et_schematic_ops is
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in out type_submodule) is
-				use type_submodule_ports;
-				port_cursor : type_submodule_ports.cursor;
+				use et_submodules.pac_submodule_ports;
+				port_cursor : et_submodules.pac_submodule_ports.cursor;
 			begin
 				-- Test whether the submodule provides the given port.
 				port_cursor := find (submodule.ports, port_name);
 
 				-- If the port is available (at the edge of the box) then
 				-- it must be removed from the box.
-				if port_cursor /= type_submodule_ports.no_element then
+				if port_cursor /= et_submodules.pac_submodule_ports.no_element then
 					delete (submodule.ports, port_cursor);
 				else
 					submodule_port_not_found (port_name);
@@ -5188,9 +5190,10 @@ package body et_schematic_ops is
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in out type_submodule) is
-				use type_submodule_ports;
-				port_cursor : type_submodule_ports.cursor;
+				submodule	: in out type_submodule) 
+			is
+				use et_submodules.pac_submodule_ports;
+				port_cursor : et_submodules.pac_submodule_ports.cursor;
 
 				procedure move (
 					port_name	: in pac_net_name.bounded_string;
@@ -5250,7 +5253,7 @@ package body et_schematic_ops is
 
 				-- If the port is available (at the edge of the box) then
 				-- it can be moved:
-				if port_cursor /= type_submodule_ports.no_element then
+				if port_cursor /= et_submodules.pac_submodule_ports.no_element then
 
 					update_element (
 						container	=> submodule.ports,
@@ -5583,9 +5586,10 @@ package body et_schematic_ops is
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in out type_submodule) is
-				use type_submodule_ports;
-				port_cursor : type_submodule_ports.cursor;
+				submodule	: in out type_submodule) 
+			is
+				use et_submodules.pac_submodule_ports;
+				port_cursor : et_submodules.pac_submodule_ports.cursor;
 
 				procedure move (
 					port_name	: in pac_net_name.bounded_string;
@@ -5666,7 +5670,7 @@ package body et_schematic_ops is
 
 				-- If the port is available (at the edge of the box) then
 				-- it can be moved:
-				if port_cursor /= type_submodule_ports.no_element then
+				if port_cursor /= et_submodules.pac_submodule_ports.no_element then
 									
 					update_element (
 						container	=> submodule.ports,
@@ -5922,7 +5926,7 @@ package body et_schematic_ops is
 			submod_cursor : pac_submodules.cursor;
 
 			-- the submodule ports to be moved
-			ports : type_submodule_ports.map; -- port names and relative x/y positions
+			ports : et_submodules.pac_submodule_ports.map; -- port names and relative x/y positions
 
 			procedure move (
 				instance	: in pac_module_instance_name.bounded_string;
@@ -5953,11 +5957,11 @@ package body et_schematic_ops is
 			procedure insert_ports is 
 			-- Inserts the ports into the nets. The sheet number is taken
 			-- from the submodule_position_after (or submodule_position_before).
-				use type_submodule_ports;
-				port_cursor : type_submodule_ports.cursor := ports.first;
+				use et_submodules.pac_submodule_ports;
+				port_cursor : et_submodules.pac_submodule_ports.cursor := ports.first;
 				position : et_coordinates.type_position;
 			begin
-				while port_cursor /= type_submodule_ports.no_element loop
+				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
 
 					-- build the port position (sheet/x/y)
 					position := to_position 
@@ -6080,15 +6084,15 @@ package body et_schematic_ops is
 			submod_cursor : pac_submodules.cursor;
 
 			-- the submodule ports to be moved
-			use type_submodule_ports;
-			ports : type_submodule_ports.map; -- port names and relative x/y positions
-			port_cursor : type_submodule_ports.cursor := ports.first;
+			use et_submodules.pac_submodule_ports;
+			ports : et_submodules.pac_submodule_ports.map; -- port names and relative x/y positions
+			port_cursor : et_submodules.pac_submodule_ports.cursor := ports.first;
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submodule	: in type_submodule) is
-				use type_submodule_ports;
-				port_cursor : type_submodule_ports.cursor := submodule.ports.first;
+				submodule	: in type_submodule) 
+			is
+				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule.ports.first;
 
 				procedure build_drag_point (
 					port_name	: in pac_net_name.bounded_string;
@@ -6149,7 +6153,7 @@ package body et_schematic_ops is
 				end build_drag_point;
 				
 			begin -- query_ports
-				while port_cursor /= type_submodule_ports.no_element loop
+				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
 
 					query_element (
 						position	=> port_cursor,
@@ -6277,16 +6281,16 @@ package body et_schematic_ops is
 			submodule : type_submodule;
 
 			-- the submodule ports to be inserted in the nets
-			ports : type_submodule_ports.map; -- port names and relative x/y positions
+			ports : et_submodules.pac_submodule_ports.map; -- port names and relative x/y positions
 
 			procedure insert_ports is 
 			-- Inserts the ports into the nets. The sheet number is taken
 			-- from the submodule position.
-				use type_submodule_ports;
-				port_cursor : type_submodule_ports.cursor := ports.first;
+				use et_submodules.pac_submodule_ports;
+				port_cursor : et_submodules.pac_submodule_ports.cursor := ports.first;
 				position : et_coordinates.type_position;
 			begin
-				while port_cursor /= type_submodule_ports.no_element loop
+				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
 
 					-- build the port position (sheet/x/y)
 					position := to_position 
@@ -6394,16 +6398,16 @@ package body et_schematic_ops is
 			submodule_old : type_submodule;
 
 			-- the submodule ports to be inserted in the nets
-			ports : type_submodule_ports.map; -- port names and relative x/y positions
+			ports : et_submodules.pac_submodule_ports.map; -- port names and relative x/y positions
 
 			procedure insert_ports is 
 			-- Inserts the ports into the nets. The sheet number is taken
 			-- from the submodule position.
-				use type_submodule_ports;
-				port_cursor : type_submodule_ports.cursor := submodule_old.ports.first;
+				use et_submodules.pac_submodule_ports;
+				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule_old.ports.first;
 				position : et_coordinates.type_position;
 			begin
-				while port_cursor /= type_submodule_ports.no_element loop
+				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
 
 					-- build the port position (sheet/x/y)
 					position := to_position 
@@ -6521,8 +6525,8 @@ package body et_schematic_ops is
 				test_mod_cursor : pac_submodules.cursor;
 
 				-- For iterating the ports of the submodule box, we need a cursor:
-				use type_submodule_ports;
-				port_cursor : type_submodule_ports.cursor := submodule.ports.first;
+				use et_submodules.pac_submodule_ports;
+				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule.ports.first;
 
 			begin -- set_file
 				log (text => "testing ports ...", level => log_threshold + 1);
@@ -6542,7 +6546,7 @@ package body et_schematic_ops is
 				-- the test module (indicated by test_mod_cursor). If all ports
 				-- have been found in the submodule schematic, overwrite the given 
 				-- submodule with the test module.
-				while port_cursor /= type_submodule_ports.no_element loop
+				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
 					log (text => to_string (key (port_cursor)), level => log_threshold + 2);
 
 					if not exists (
@@ -8640,9 +8644,10 @@ package body et_schematic_ops is
 
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
-				submod		: in type_submodule) is
-				use type_submodule_ports;
-				port_cursor : type_submodule_ports.cursor;
+				submod		: in type_submodule) 
+			is
+				use et_submodules.pac_submodule_ports;
+				port_cursor : et_submodules.pac_submodule_ports.cursor;
 			begin
 				port_cursor := find (submod.ports, port_name);
 

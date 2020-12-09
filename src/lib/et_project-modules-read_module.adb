@@ -580,7 +580,7 @@ is
 	-- submodules
 	submodule_port			: et_submodules.type_submodule_port;
 	submodule_port_name		: et_general.pac_net_name.bounded_string; -- RESET
-	submodule_ports			: et_submodules.type_submodule_ports.map;
+	submodule_ports			: et_submodules.pac_submodule_ports.map;
 	submodule_name 			: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 	submodule				: et_submodules.type_submodule;
 
@@ -3212,7 +3212,7 @@ is
 							submodule.ports := submodule_ports;
 
 							-- clean up for next collection of ports
-							et_submodules.type_submodule_ports.clear (submodule_ports);
+							et_submodules.pac_submodule_ports.clear (submodule_ports);
 							
 						when others => invalid_section;
 					end case;
@@ -3717,14 +3717,14 @@ is
 							case stack.parent (degree => 2) is
 								when SEC_SUBMODULE =>
 									declare
-										cursor : et_submodules.type_submodule_ports.cursor;
+										cursor : et_submodules.pac_submodule_ports.cursor;
 										inserted : boolean;
 									begin
 										-- Test whether the port sits at the edge of the submodule box:
 										if et_submodules.at_edge (submodule_port.position, submodule.size) then
 											
 											-- append port to collection of submodule ports
-											et_submodules.type_submodule_ports.insert (
+											et_submodules.pac_submodule_ports.insert (
 												container	=> submodule_ports,
 												key			=> submodule_port_name, -- RESET
 												new_item	=> submodule_port,

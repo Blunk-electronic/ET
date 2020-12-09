@@ -175,14 +175,14 @@ package et_submodules is
 	end record;
 
 	use pac_net_name;
-	package type_submodule_ports is new ordered_maps (
+	package pac_submodule_ports is new ordered_maps (
 		element_type	=> type_submodule_port,
 		-- The net inside the submodule is here the port name:
 		key_type		=> pac_net_name.bounded_string); -- CLOCK_GENERATOR_OUT
 
 	procedure move_ports (
 	-- Moves the given submodule ports by the given offset.
-		ports	: in out type_submodule_ports.map; -- the portlist
+		ports	: in out pac_submodule_ports.map; -- the portlist
 		offset	: in et_coordinates.type_position); -- the offset (only x/y matters)
 
 	-- THIS IS THE GRAPHICAL REPRESENTATION OF A SUBMODULE ->
@@ -193,7 +193,7 @@ package et_submodules is
 		size				: type_submodule_size; -- CS default ?
 		position_in_board	: et_pcb_coordinates.pac_geometry_brd.type_position := et_pcb_coordinates.pac_geometry_brd.origin_zero_rotation;
 		view_mode			: type_submodule_view_mode := ORIGIN;
-		ports				: type_submodule_ports.map;
+		ports				: pac_submodule_ports.map;
 	end record;
 
 	-- GUI relevant only: The line width of the box:
