@@ -415,7 +415,7 @@ package et_kicad_libraries is
 		library_name	: in type_device_library_name.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
-		return et_packages.pac_package_model_name.bounded_string;
+		return et_packages.pac_package_name.bounded_string;
 	-- Returns the package name of the given component. 
 	
 	-- Alternative references used in instances of sheets:
@@ -752,7 +752,7 @@ package et_kicad_libraries is
 	function library_name (text : in string) return type_library_name.bounded_string;
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
 
-	function package_name (text : in string) return et_packages.pac_package_model_name.bounded_string;
+	function package_name (text : in string) return et_packages.pac_package_name.bounded_string;
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
 	
 	function component_power_flag (cursor : in type_components_library.cursor)
@@ -786,7 +786,7 @@ package et_kicad_libraries is
 	-- contains the given package library with the given package.
 	function full_library_name (
 		library_name	: in type_library_name.bounded_string; -- bel_logic
-		package_name 	: in et_packages.pac_package_model_name.bounded_string; -- S_SO14
+		package_name 	: in et_packages.pac_package_name.bounded_string; -- S_SO14
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_package_library_name.bounded_string;
 
@@ -795,7 +795,7 @@ package et_kicad_libraries is
 	-- Returns true if the terminal_port_map fits on the given package.
 	function terminal_port_map_fits (
 		library_name		: in type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
-		package_name 		: in et_packages.pac_package_model_name.bounded_string;	-- S_SO14
+		package_name 		: in et_packages.pac_package_name.bounded_string;	-- S_SO14
 		terminal_port_map	: in pac_terminal_port_map.map) 
 		return boolean;
 	

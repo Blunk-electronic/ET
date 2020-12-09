@@ -475,7 +475,7 @@ package et_conventions is
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 		partcode		: in et_material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		device_name		: in type_device_name; -- R45
-		packge			: in et_packages.pac_package_model_name.bounded_string;	-- S_0805
+		packge			: in et_packages.pac_package_name.bounded_string;	-- S_0805
 		value 			: in pac_device_value.bounded_string; -- 100R
 		log_threshold	: in et_string_processing.type_log_level);
 

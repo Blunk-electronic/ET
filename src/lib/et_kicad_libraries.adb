@@ -228,9 +228,9 @@ package body et_kicad_libraries is
 		library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
-		return et_packages.pac_package_model_name.bounded_string is
+		return et_packages.pac_package_name.bounded_string is
 	-- Returns the package name for of the given component.
-		package_name : et_packages.pac_package_model_name.bounded_string; -- to be returned
+		package_name : et_packages.pac_package_name.bounded_string; -- to be returned
 	begin -- to_package_name
 		-- CS
 		return package_name;
@@ -495,10 +495,10 @@ package body et_kicad_libraries is
 -- 		return type_library_directory.to_string (dir);
 -- 	end to_string;
 	
-	function package_name (text : in string) return et_packages.pac_package_model_name.bounded_string is
+	function package_name (text : in string) return et_packages.pac_package_name.bounded_string is
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
 	begin
-		return et_packages.pac_package_model_name.to_bounded_string (
+		return et_packages.pac_package_name.to_bounded_string (
 			f (
 				read_line (
 					line			=> text,
@@ -902,9 +902,9 @@ package body et_kicad_libraries is
 	end prepend_tilde;
 
 	procedure validate_component_package_name 
-		(name : in et_packages.pac_package_model_name.bounded_string) is
+		(name : in et_packages.pac_package_name.bounded_string) is
 	-- Tests if the given component package name meets certain conventions.
-		use et_packages.pac_package_model_name;
+		use et_packages.pac_package_name;
 		use et_string_processing;
 		
 		procedure no_package is
@@ -924,7 +924,7 @@ package body et_kicad_libraries is
 
 	function full_library_name (
 		library_name	: in type_library_name.bounded_string; -- bel_logic
-		package_name 	: in et_packages.pac_package_model_name.bounded_string; -- S_SO14
+		package_name 	: in et_packages.pac_package_name.bounded_string; -- S_SO14
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_package_library_name.bounded_string is
 	-- Returns the full library name of the library that
@@ -1080,7 +1080,7 @@ package body et_kicad_libraries is
 	-- The given package is specified by the library name and package name.
 	-- Returns true if the terminal_port_map fits on the given package.
 		library_name		: in type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
-		package_name 		: in et_packages.pac_package_model_name.bounded_string;	-- S_SO14
+		package_name 		: in et_packages.pac_package_name.bounded_string;	-- S_SO14
 		terminal_port_map	: in pac_terminal_port_map.map) 
 		return boolean is
 
@@ -1961,7 +1961,7 @@ package body et_kicad_libraries is
 					when PACKGE =>
 						check_package_name_length (content (text));
 						check_package_name_characters (
-							packge		=> pac_package_model_name.to_bounded_string (content (text)),
+							packge		=> pac_package_name.to_bounded_string (content (text)),
 							characters	=> component_package_name_characters);
 
 					when others => null; -- CS
@@ -2060,7 +2060,7 @@ package body et_kicad_libraries is
 							missing_field (field_package.meaning);
 						else
 							validate_component_package_name (
-								pac_package_model_name.to_bounded_string (f (
+								pac_package_name.to_bounded_string (f (
 									line => read_line ( -- CS use function package_name
 										line			=> content (field_package), -- bel_ic:S_SO14
 										comment_mark	=> et_kicad_general.comment_mark,
@@ -3258,7 +3258,7 @@ package body et_kicad_libraries is
 		component_library 	: in et_kicad_general.type_device_library_name.bounded_string; 	-- ../lbr/bel_logic.lib
 		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
-		package_name 		: in et_packages.pac_package_model_name.bounded_string;	-- S_SO14
+		package_name 		: in et_packages.pac_package_name.bounded_string;	-- S_SO14
 		log_threshold		: in et_string_processing.type_log_level)
 		return pac_package_variant_name.bounded_string is 					-- D
 
@@ -3288,7 +3288,7 @@ package body et_kicad_libraries is
 				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
 				component 		: in out type_component_library) is
 
-				use pac_package_model_name;
+				use pac_package_name;
 				use pac_variants;
 				use pac_package_variant_name;
 

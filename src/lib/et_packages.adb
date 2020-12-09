@@ -42,17 +42,17 @@ with ada.exceptions;
 
 package body et_packages is
 
-	function to_string (packge : in pac_package_model_name.bounded_string) return string is
+	function to_string (packge : in pac_package_name.bounded_string) return string is
 	-- Returns the given package name as string.
 	-- CS: provide a parameter that turns the preamble on/off
 	begin
-		return pac_package_model_name.to_string (packge);
+		return pac_package_name.to_string (packge);
 	end to_string;
 
-	function to_package_name (package_name : in string) return pac_package_model_name.bounded_string is
-	-- Converts a string to a pac_package_model_name.	
+	function to_package_name (package_name : in string) return pac_package_name.bounded_string is
+	-- Converts a string to a pac_package_name.	
 	begin
-		return pac_package_model_name.to_bounded_string (package_name);
+		return pac_package_name.to_bounded_string (package_name);
 	end to_package_name;
 	
 	procedure check_package_name_length (packge : in string) is
@@ -66,11 +66,11 @@ package body et_packages is
 	end check_package_name_length;
 
 	procedure check_package_name_characters (
-		packge		: in pac_package_model_name.bounded_string;
+		packge		: in pac_package_name.bounded_string;
 		characters	: in character_set := package_name_characters)
 	is
 		use et_string_processing;
-		use pac_package_model_name;
+		use pac_package_name;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (

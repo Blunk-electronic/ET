@@ -559,10 +559,10 @@ package body et_kicad.schematic is
 		return type_library_directory.to_string (dir);
 	end to_string;
 	
-	function package_name (text : in string) return et_packages.pac_package_model_name.bounded_string is
+	function package_name (text : in string) return et_packages.pac_package_name.bounded_string is
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
 	begin
-		return et_packages.pac_package_model_name.to_bounded_string (
+		return et_packages.pac_package_name.to_bounded_string (
 			f (
 				read_line (
 					line			=> text,
@@ -910,9 +910,9 @@ package body et_kicad.schematic is
 	end to_power_flag;
 
 	procedure validate_component_package_name 
-		(name : in et_packages.pac_package_model_name.bounded_string) is
+		(name : in et_packages.pac_package_name.bounded_string) is
 	-- Tests if the given component package name meets certain conventions.
-		use et_packages.pac_package_model_name;
+		use et_packages.pac_package_name;
 		use et_string_processing;
 		
 		procedure no_package is
@@ -937,7 +937,7 @@ package body et_kicad.schematic is
 		component_library 	: in et_kicad_general.type_device_library_name.bounded_string; 	-- ../lbr/bel_logic.lib
 		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
-		package_name 		: in et_packages.pac_package_model_name.bounded_string;	-- S_SO14
+		package_name 		: in et_packages.pac_package_name.bounded_string;	-- S_SO14
 		log_threshold		: in et_string_processing.type_log_level)
 		return pac_package_variant_name.bounded_string is 					-- D
 
@@ -967,7 +967,7 @@ package body et_kicad.schematic is
 				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
 				component 		: in out type_component_library) is
 
-				use pac_package_model_name;
+				use pac_package_name;
 				use pac_variants;
 				use pac_package_variant_name;
 
@@ -7188,7 +7188,7 @@ package body et_kicad.schematic is
 			use type_components_schematic;
 			component_cursor_schematic : type_components_schematic.cursor := module.components.first;
 
-			--package_name : pac_package_model_name.bounded_string;
+			--package_name : pac_package_name.bounded_string;
 
 			library_name	: et_kicad_general.type_device_library_name.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;

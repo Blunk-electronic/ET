@@ -78,20 +78,20 @@ package et_packages is
 		or to_set('_'); 
 
 	package_name_length_max : constant positive := 100;
-	package pac_package_model_name is new generic_bounded_length (package_name_length_max);
+	package pac_package_name is new generic_bounded_length (package_name_length_max);
 
-	function to_string (packge : in pac_package_model_name.bounded_string) return string;
+	function to_string (packge : in pac_package_name.bounded_string) return string;
 	-- Returns the given package name as as string.
 	-- CS: provide a parameter that turns the preamble on/off
 
-	function to_package_name (package_name : in string) return pac_package_model_name.bounded_string;
-	-- Converts a string to a pac_package_model_name.
+	function to_package_name (package_name : in string) return pac_package_name.bounded_string;
+	-- Converts a string to a pac_package_name.
 	
 	procedure check_package_name_length (packge : in string);
 	-- Tests if the given package name is longer than allowed.
 	
 	procedure check_package_name_characters (
-		packge		: in pac_package_model_name.bounded_string;
+		packge		: in pac_package_name.bounded_string;
 		characters	: in character_set := package_name_characters);
 	-- Tests if the given package name contains only valid characters as specified
 	-- by given character set.

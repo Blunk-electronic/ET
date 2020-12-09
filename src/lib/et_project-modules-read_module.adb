@@ -1251,10 +1251,10 @@ is
 				device_cursor : pac_devices_sch.cursor;
 				inserted : boolean;
 
-				function get_package_name return pac_package_model_name.bounded_string is
+				function get_package_name return pac_package_name.bounded_string is
 				-- Derives package name from device.model and device.variant.
 				-- Checks if variant exits in device.model.
-					name : pac_package_model_name.bounded_string; -- S_SO14 -- to be returned
+					name : pac_package_name.bounded_string; -- S_SO14 -- to be returned
 					device_cursor : pac_devices_lib.cursor;
 
 					procedure query_variants (
