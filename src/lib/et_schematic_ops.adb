@@ -4272,7 +4272,7 @@ package body et_schematic_ops is
 			procedure test_point (
 				point		: in et_coordinates.type_position; -- sheet/x/y -- the point to be probed
 				port_name	: in et_submodules.type_netchanger_port_name) -- master/slave
-				is 
+			is 
 				use et_netlists;
 				ports : type_ports;
 				port : type_port_netchanger;
@@ -5565,8 +5565,8 @@ package body et_schematic_ops is
 		port_name		: in pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
@@ -8589,10 +8589,10 @@ package body et_schematic_ops is
 	-- and the terminal name).
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_device_ports.set)
-		return et_netlists.type_device_ports_extended.set is
-
+		return et_netlists.pac_device_ports_extended.set 
+	is
 		use et_netlists;
-		ports_extended : et_netlists.type_device_ports_extended.set; -- to be returned
+		ports_extended : pac_device_ports_extended.set; -- to be returned
 
 		use pac_device_ports;
 		
@@ -8607,7 +8607,7 @@ package body et_schematic_ops is
 				unit_name		=> port_sch.unit_name,
 				port_name		=> port_sch.port_name);
 			
-			et_netlists.type_device_ports_extended.insert (
+			pac_device_ports_extended.insert (
 				container	=> ports_extended,
 				new_item	=> 
 					(
@@ -8673,8 +8673,8 @@ package body et_schematic_ops is
 	-- Adds the port direction (master/slave) to the given submodule ports.
 		module_cursor	: in pac_generic_modules.cursor;
 		ports 			: in pac_submodule_ports.set)
-		return et_netlists.type_submodule_ports_extended.set is
-
+		return et_netlists.type_submodule_ports_extended.set 
+	is
 		use et_netlists;
 		ports_extended : type_submodule_ports_extended.set; -- to be returned
 
@@ -8687,7 +8687,7 @@ package body et_schematic_ops is
  			-- get the direction of the current submodule port
 			direction := port_direction (module_cursor, port.module_name, port.port_name);
 
-			et_netlists.type_submodule_ports_extended.insert 
+			type_submodule_ports_extended.insert 
 				(
 				container	=> ports_extended,
 				new_item	=> 
@@ -8711,8 +8711,8 @@ package body et_schematic_ops is
 	-- The netlist files are named after the module name and the variant name.
 		module_cursor 	: in pac_generic_modules.cursor;
 		write_files		: in boolean := false;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		use et_netlists;
 		use pac_net_name;
 		use et_assembly_variants;
@@ -8755,26 +8755,26 @@ package body et_schematic_ops is
 
 					net_name : pac_net_name.bounded_string;
 					all_ports : et_schematic.type_ports;
-					device_ports_extended : et_netlists.type_device_ports_extended.set;
-					submodule_ports_extended : et_netlists.type_submodule_ports_extended.set;
+					device_ports_extended : pac_device_ports_extended.set;
+					submodule_ports_extended : type_submodule_ports_extended.set;
 
 					procedure apply_offsets is
 					-- Applies the given offset to the devices in device_ports_extended.
-						use et_netlists.type_device_ports_extended;
+						use pac_device_ports_extended;
 						-- temporarily the ports will be stored here. Once all ports of
 						-- device_ports_extended have been offset, the list
 						-- ports_with_offset overwrites device_ports_extended:
-						ports_with_offset : et_netlists.type_device_ports_extended.set;
+						ports_with_offset : pac_device_ports_extended.set;
 						
-						procedure query_ports (cursor : in et_netlists.type_device_ports_extended.cursor) is 
+						procedure query_ports (cursor : in pac_device_ports_extended.cursor) is 
 							-- take a copy of the port as it is:
-							port : et_netlists.type_device_port_extended := element (cursor);
+							port : type_device_port_extended := element (cursor);
 						begin -- query_ports
 							-- apply offset to device name of port
 							apply_offset (port.device, offset, log_threshold + 2);
 
 							-- insert the modified port in the container ports_with_offset
-							et_netlists.type_device_ports_extended.insert (
+							pac_device_ports_extended.insert (
 								container	=> ports_with_offset,
 								new_item	=> port);
 						end; -- query_ports

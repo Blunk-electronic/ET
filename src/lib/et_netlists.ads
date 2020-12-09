@@ -63,12 +63,12 @@ package et_netlists is
 	
 	-- Whenever we deal with netlist files this type should be used:
 	file_name_length_max : constant positive := 100; -- CS: should suffice for now
-	package type_file_name is new generic_bounded_length (file_name_length_max); 
+	package pac_netlist_file_name is new generic_bounded_length (file_name_length_max); 
 
 	extension_netlist : constant string := "net";
 
-	function to_string (name : in type_file_name.bounded_string) return string;
-	function to_file_name (name : in string) return type_file_name.bounded_string;
+	function to_string (name : in pac_netlist_file_name.bounded_string) return string;
+	function to_file_name (name : in string) return pac_netlist_file_name.bounded_string;
 
 
 	-- For ERC of netlists the connected devices are modelled by this type:
@@ -81,10 +81,10 @@ package et_netlists is
 	
 	function "<" (left, right : in type_device_port_extended) return boolean;
 	
-	package type_device_ports_extended is new indefinite_ordered_sets (
+	package pac_device_ports_extended is new indefinite_ordered_sets (
 		element_type	=> type_device_port_extended);
 
-	use type_device_ports_extended;
+	use pac_device_ports_extended;
 
 	
 	-- For inheriting net names from one module to another the ports
@@ -138,7 +138,7 @@ package et_netlists is
 	
 	
 	type type_net is tagged record
-		devices		: type_device_ports_extended.set;
+		devices		: pac_device_ports_extended.set;
 		submodules	: type_submodule_ports_extended.set;
 		netchangers	: type_ports_netchanger.set;
 		scope		: type_net_scope;

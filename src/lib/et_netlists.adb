@@ -61,12 +61,12 @@ with et_csv;					use et_csv;
 
 package body et_netlists is
 	
-	function to_string (name : in type_file_name.bounded_string) return string is begin
-		return type_file_name.to_string (name);
+	function to_string (name : in pac_netlist_file_name.bounded_string) return string is begin
+		return pac_netlist_file_name.to_string (name);
 	end;
 	
-	function to_file_name (name : in string) return type_file_name.bounded_string is begin
-		return type_file_name.to_bounded_string (name);
+	function to_file_name (name : in string) return pac_netlist_file_name.bounded_string is begin
+		return pac_netlist_file_name.to_bounded_string (name);
 	end;
 
 	function "<" (left, right : in type_device_port_extended) return boolean is
@@ -699,7 +699,7 @@ package body et_netlists is
 		variant_name	: in et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level) is
 
-		file_name : type_file_name.bounded_string;
+		file_name : pac_netlist_file_name.bounded_string;
 		
 		procedure set_file_name is 
 			use ada.directories;
@@ -767,9 +767,9 @@ package body et_netlists is
 			use type_netlist;
 			use et_terminals;
 
-			procedure query_device (port_cursor : in type_device_ports_extended.cursor) is
+			procedure query_device (port_cursor : in pac_device_ports_extended.cursor) is
 			-- Writes the device port in the netlist file.
-				use type_device_ports_extended;
+				use pac_device_ports_extended;
 				use et_symbols;
 			begin
 				put_line (netlist_handle, -- IC1 CE input H5
@@ -792,7 +792,7 @@ package body et_netlists is
 					to_string (element (net_cursor).name.prefix) & 
 					to_string (element (net_cursor).name.base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
 				
-				type_device_ports_extended.iterate (element (net_cursor).devices, query_device'access);
+				pac_device_ports_extended.iterate (element (net_cursor).devices, query_device'access);
 
 				-- Iterate secondary nets:
 				iterate_children (net_cursor, query_secondary_net'access);
@@ -811,7 +811,7 @@ package body et_netlists is
 					to_string (element (net_cursor).name.base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
 
 				-- Extract the ports of devices of the primary net:
-				type_device_ports_extended.iterate (element (net_cursor).devices, query_device'access);
+				pac_device_ports_extended.iterate (element (net_cursor).devices, query_device'access);
 
 				-- Iterate secondary nets:
 				iterate_children (net_cursor, query_secondary_net'access);
