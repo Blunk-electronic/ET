@@ -1350,17 +1350,17 @@ package body et_kicad_to_native is
 
 
 			procedure move_stop_mask is
-				use type_stop_lines;
-				lines_cursor : type_stop_lines.cursor;
+				use pac_stop_lines;
+				lines_cursor : pac_stop_lines.cursor;
 
-				use type_stop_arcs;
-				arcs_cursor : type_stop_arcs.cursor;
+				use pac_stop_arcs;
+				arcs_cursor : pac_stop_arcs.cursor;
 
-				use type_stop_circles;
-				circles_cursor : type_stop_circles.cursor;
+				use pac_stop_circles;
+				circles_cursor : pac_stop_circles.cursor;
 
-				use type_stop_polygons;
-				polygons_cursor : type_stop_polygons.cursor;
+				use pac_stop_polygons;
+				polygons_cursor : pac_stop_polygons.cursor;
 
 				use pac_texts_with_content;
 				texts_cursor : pac_texts_with_content.cursor;
@@ -1440,8 +1440,8 @@ package body et_kicad_to_native is
 				
 				-- LINES TOP
 				lines_cursor := module.board.stop_mask.top.lines.first;
-				while lines_cursor /= type_stop_lines.no_element loop
-					type_stop_lines.update_element (
+				while lines_cursor /= pac_stop_lines.no_element loop
+					pac_stop_lines.update_element (
 						container	=> module.board.stop_mask.top.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1451,8 +1451,8 @@ package body et_kicad_to_native is
 
 				-- LINES BOTTOM
 				lines_cursor := module.board.stop_mask.bottom.lines.first;
-				while lines_cursor /= type_stop_lines.no_element loop
-					type_stop_lines.update_element (
+				while lines_cursor /= pac_stop_lines.no_element loop
+					pac_stop_lines.update_element (
 						container	=> module.board.stop_mask.bottom.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1462,8 +1462,8 @@ package body et_kicad_to_native is
 
 				-- ARCS TOP
 				arcs_cursor := module.board.stop_mask.top.arcs.first;
-				while arcs_cursor /= type_stop_arcs.no_element loop
-					type_stop_arcs.update_element (
+				while arcs_cursor /= pac_stop_arcs.no_element loop
+					pac_stop_arcs.update_element (
 						container	=> module.board.stop_mask.top.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1473,8 +1473,8 @@ package body et_kicad_to_native is
 
 				-- ARCS BOTTOM
 				arcs_cursor := module.board.stop_mask.bottom.arcs.first;
-				while arcs_cursor /= type_stop_arcs.no_element loop
-					type_stop_arcs.update_element (
+				while arcs_cursor /= pac_stop_arcs.no_element loop
+					pac_stop_arcs.update_element (
 						container	=> module.board.stop_mask.bottom.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1484,8 +1484,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES TOP
 				circles_cursor := module.board.stop_mask.top.circles.first;
-				while circles_cursor /= type_stop_circles.no_element loop
-					type_stop_circles.update_element (
+				while circles_cursor /= pac_stop_circles.no_element loop
+					pac_stop_circles.update_element (
 						container	=> module.board.stop_mask.top.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -1495,8 +1495,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES BOTTOM
 				circles_cursor := module.board.stop_mask.bottom.circles.first;
-				while circles_cursor /= type_stop_circles.no_element loop
-					type_stop_circles.update_element (
+				while circles_cursor /= pac_stop_circles.no_element loop
+					pac_stop_circles.update_element (
 						container	=> module.board.stop_mask.bottom.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -1506,8 +1506,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS TOP
 				polygons_cursor := module.board.stop_mask.top.polygons.first;
-				while polygons_cursor /= type_stop_polygons.no_element loop
-					type_stop_polygons.update_element (
+				while polygons_cursor /= pac_stop_polygons.no_element loop
+					pac_stop_polygons.update_element (
 						container	=> module.board.stop_mask.top.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1517,8 +1517,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.stop_mask.bottom.polygons.first;
-				while polygons_cursor /= type_stop_polygons.no_element loop
-					type_stop_polygons.update_element (
+				while polygons_cursor /= pac_stop_polygons.no_element loop
+					pac_stop_polygons.update_element (
 						container	=> module.board.stop_mask.bottom.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);

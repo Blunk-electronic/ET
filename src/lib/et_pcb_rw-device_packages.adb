@@ -307,10 +307,10 @@ package body et_pcb_rw.device_packages is
 		end write_keepout;
 
 		procedure write_stop_mask is 
-			use type_stop_lines;
-			use type_stop_arcs;
-			use type_stop_circles;
-			use type_stop_polygons;
+			use pac_stop_lines;
+			use pac_stop_arcs;
+			use pac_stop_circles;
+			use pac_stop_polygons;
 			use pac_stop_cutouts;
 		begin
 			section_mark (section_stop_mask, HEADER);
@@ -1244,14 +1244,14 @@ package body et_pcb_rw.device_packages is
 				procedure append_stop_polygon_top is begin
 					case board_fill_style is
 						when SOLID =>
-							type_stop_polygons.append (
+							pac_stop_polygons.append (
 								container	=> packge.stop_mask.top.polygons, 
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
-							type_stop_polygons.append (
+							pac_stop_polygons.append (
 								container	=> packge.stop_mask.top.polygons, 
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
@@ -1266,14 +1266,14 @@ package body et_pcb_rw.device_packages is
 				procedure append_stop_polygon_bottom is begin
 					case board_fill_style is
 						when SOLID =>
-							type_stop_polygons.append (
+							pac_stop_polygons.append (
 								container	=> packge.stop_mask.bottom.polygons, 
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
-							type_stop_polygons.append (
+							pac_stop_polygons.append (
 								container	=> packge.stop_mask.bottom.polygons, 
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
@@ -1601,7 +1601,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 
 									when SEC_STOP_MASK =>
-										type_stop_lines.append (
+										pac_stop_lines.append (
 											container	=> packge.stop_mask.top.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1664,7 +1664,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 										
 									when SEC_STOP_MASK =>
-										type_stop_lines.append (
+										pac_stop_lines.append (
 											container	=> packge.stop_mask.bottom.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1775,7 +1775,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 
 									when SEC_STOP_MASK =>
-										type_stop_arcs.append (
+										pac_stop_arcs.append (
 											container	=> packge.stop_mask.top.arcs, 
 											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
@@ -1838,7 +1838,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 										
 									when SEC_STOP_MASK =>
-										type_stop_arcs.append (
+										pac_stop_arcs.append (
 											container	=> packge.stop_mask.bottom.arcs, 
 											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
@@ -1935,7 +1935,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_circle_fillable; -- clean up for next circle
 										
 									when SEC_STOP_MASK =>
-										type_stop_circles.append (
+										pac_stop_circles.append (
 											container	=> packge.stop_mask.top.circles, 
 											new_item	=> board_make_fillable_circle);
 
@@ -1985,7 +1985,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_circle_fillable; -- clean up for next circle
 
 									when SEC_STOP_MASK =>
-										type_stop_circles.append (
+										pac_stop_circles.append (
 											container	=> packge.stop_mask.bottom.circles, 
 											new_item	=> board_make_fillable_circle);
 

@@ -3559,7 +3559,7 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use type_stop_lines;
+			use pac_stop_lines;
 		begin
 			case face is
 				when TOP =>
@@ -3603,7 +3603,7 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use type_stop_arcs;
+			use pac_stop_arcs;
 		begin
 			case face is
 				when TOP =>
@@ -3649,7 +3649,7 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use type_stop_circles;
+			use pac_stop_circles;
 		begin
 			case face is
 				when TOP =>
@@ -3695,12 +3695,12 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use type_stop_lines;
-			use type_stop_arcs;
-			use type_stop_circles;
-			line_cursor   : type_stop_lines.cursor;
-			arc_cursor    : type_stop_arcs.cursor;
-			circle_cursor : type_stop_circles.cursor;
+			use pac_stop_lines;
+			use pac_stop_arcs;
+			use pac_stop_circles;
+			line_cursor   : pac_stop_lines.cursor;
+			arc_cursor    : pac_stop_arcs.cursor;
+			circle_cursor : pac_stop_circles.cursor;
 
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 		begin
@@ -3715,7 +3715,7 @@ package body et_board_ops is
 			end if;
 			
 			-- first search for a matching segment among the lines
-			while line_cursor /= type_stop_lines.no_element loop
+			while line_cursor /= pac_stop_lines.no_element loop
 				if on_line (point, element (line_cursor), accuracy) then
 					if face = TOP then
 						delete (module.board.stop_mask.top.lines, line_cursor);
@@ -3730,7 +3730,7 @@ package body et_board_ops is
 
 			-- if no line found, search among arcs
 			if not deleted then
-				while arc_cursor /= type_stop_arcs.no_element loop
+				while arc_cursor /= pac_stop_arcs.no_element loop
 					if on_arc (point, element (arc_cursor), accuracy) then
 						if face = TOP then
 							delete (module.board.stop_mask.top.arcs, arc_cursor);
@@ -3746,7 +3746,7 @@ package body et_board_ops is
 
 			-- if no arc found, search among circles
 			if not deleted then
-				while circle_cursor /= type_stop_circles.no_element loop
+				while circle_cursor /= pac_stop_circles.no_element loop
 					
 					if on_circle (point, element (circle_cursor), accuracy) then
 						if face = TOP then

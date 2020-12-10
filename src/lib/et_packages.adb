@@ -648,11 +648,11 @@ package body et_packages is
 
 -- PROPERTIES OF OBJECTS IN STOP MASK
 	procedure arc_stop_mask_properties (
-	-- Logs the properties of the given arc of stop mask
 		face			: in type_face;
-		cursor			: in type_stop_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_stop_arcs;
+		cursor			: in pac_stop_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
+		use pac_stop_arcs;
 		arc : type_stop_arc;
 	begin
 		arc := element (cursor);
@@ -663,11 +663,11 @@ package body et_packages is
 	end arc_stop_mask_properties;
 
 	procedure circle_stop_mask_properties (
-	-- Logs the properties of the given circle of stop mask
 		face			: in type_face;
-		cursor			: in type_stop_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_stop_circles;
+		cursor			: in pac_stop_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
+		use pac_stop_circles;
 	begin
 		log (text => "stop mask circle face" & to_string (face) & latin_1.space 
 			& to_string (element (cursor)),
@@ -675,11 +675,11 @@ package body et_packages is
 	end;
 
 	procedure line_stop_mask_properties (
-	-- Logs the properties of the given line of stop mask
 		face			: in type_face;
-		cursor			: in type_stop_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_stop_lines;
+		cursor			: in pac_stop_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
+		use pac_stop_lines;
 		line : type_stop_line;
 	begin
 		line := element (cursor);
@@ -693,7 +693,8 @@ package body et_packages is
 	-- Logs the properties of the given stop mask text
 		face			: in type_face;
 		cursor			: in pac_texts_with_content.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
 		use et_text.type_text_content;
 		use pac_texts_with_content;
 		text : type_text_with_content;

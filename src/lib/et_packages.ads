@@ -436,27 +436,27 @@ package et_packages is
 		width	: type_general_line_width;
 	end record;
 
-	package type_stop_lines is new doubly_linked_lists (type_stop_line);
+	package pac_stop_lines is new doubly_linked_lists (type_stop_line);
 
 
 	type type_stop_arc is new type_arc with record
 		width	: type_general_line_width;
 	end record;
 
-	package type_stop_arcs is new doubly_linked_lists (type_stop_arc);
+	package pac_stop_arcs is new doubly_linked_lists (type_stop_arc);
 
-	package type_stop_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
+	package pac_stop_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
-	package type_stop_polygons is new indefinite_doubly_linked_lists (type_polygon);
+	package pac_stop_polygons is new indefinite_doubly_linked_lists (type_polygon);
 	package pac_stop_cutouts is new doubly_linked_lists (type_cutout_zone);
 	
 	-- This is the type for stop mask objects in general.
 	-- This has nothing to do with the stop mask of pads.
 	type type_stop_mask is tagged record
-		lines 		: type_stop_lines.list;
-		arcs		: type_stop_arcs.list;
-		circles		: type_stop_circles.list;
-		polygons	: type_stop_polygons.list;
+		lines 		: pac_stop_lines.list;
+		arcs		: pac_stop_arcs.list;
+		circles		: pac_stop_circles.list;
+		polygons	: pac_stop_polygons.list;
 		cutouts		: pac_stop_cutouts.list;
 
 		-- for texts in conductor layer to be exposed:
@@ -997,19 +997,19 @@ package et_packages is
 	procedure arc_stop_mask_properties (
 	-- Logs the properties of the given arc of stop mask
 		face			: in type_face;
-		cursor			: in type_stop_arcs.cursor;
+		cursor			: in pac_stop_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure circle_stop_mask_properties (
 	-- Logs the properties of the given circle of stop mask
 		face			: in type_face;
-		cursor			: in type_stop_circles.cursor;
+		cursor			: in pac_stop_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure line_stop_mask_properties (
 	-- Logs the properties of the given line of stop mask
 		face			: in type_face;
-		cursor			: in type_stop_lines.cursor;
+		cursor			: in pac_stop_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure text_stop_mask_properties (

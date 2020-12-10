@@ -1511,7 +1511,7 @@ is
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 									
 								when STOP_MASK =>
-									type_stop_lines.append (
+									pac_stop_lines.append (
 										container	=> module.board.stop_mask.top.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1540,7 +1540,7 @@ is
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 									
 								when STOP_MASK =>
-									type_stop_lines.append (
+									pac_stop_lines.append (
 										container	=> module.board.stop_mask.bottom.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1599,7 +1599,7 @@ is
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 									
 								when STOP_MASK =>
-									type_stop_arcs.append (
+									pac_stop_arcs.append (
 										container	=> module.board.stop_mask.top.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
@@ -1627,7 +1627,7 @@ is
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 									
 								when STOP_MASK =>
-									type_stop_arcs.append (
+									pac_stop_arcs.append (
 										container	=> module.board.stop_mask.bottom.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
@@ -1684,7 +1684,7 @@ is
 										new_item	=> board_make_fillable_circle);
 									
 								when STOP_MASK =>
-									type_stop_circles.append (
+									pac_stop_circles.append (
 										container	=> module.board.stop_mask.top.circles,
 										new_item	=> board_make_fillable_circle);
 
@@ -1712,7 +1712,7 @@ is
 										new_item	=> board_make_fillable_circle);
 									
 								when STOP_MASK =>
-									type_stop_circles.append (
+									pac_stop_circles.append (
 										container	=> module.board.stop_mask.bottom.circles,
 										new_item	=> board_make_fillable_circle);
 
@@ -1881,14 +1881,14 @@ is
 					procedure append_stop_polygon_top is begin
 						case board_fill_style is
 							when SOLID =>
-								type_stop_polygons.append (
+								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.top.polygons,
 									new_item	=> (pac_shapes.type_polygon_base (polygon) with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
-								type_stop_polygons.append (
+								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.top.polygons,
 									new_item	=> (pac_shapes.type_polygon_base (polygon) with
 													fill_style	=> HATCHED,
@@ -1900,14 +1900,14 @@ is
 					procedure append_stop_polygon_bottom is begin
 						case board_fill_style is
 							when SOLID =>
-								type_stop_polygons.append (
+								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.bottom.polygons,
 									new_item	=> (pac_shapes.type_polygon_base (polygon) with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
-								type_stop_polygons.append (
+								pac_stop_polygons.append (
 									container	=> module.board.stop_mask.bottom.polygons,
 									new_item	=> (pac_shapes.type_polygon_base (polygon) with
 													fill_style	=> HATCHED,

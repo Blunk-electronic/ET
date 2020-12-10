@@ -1208,8 +1208,8 @@ package body et_pcb_rw is
 	end;
 
 -- STOP MASK
-	procedure write_line (cursor : in type_stop_lines.cursor) is 
-		use type_stop_lines;
+	procedure write_line (cursor : in pac_stop_lines.cursor) is 
+		use pac_stop_lines;
 	begin
 		line_begin;
 		write_line (element (cursor));
@@ -1217,8 +1217,8 @@ package body et_pcb_rw is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in type_stop_arcs.cursor) is 
-		use type_stop_arcs;
+	procedure write_arc (cursor : in pac_stop_arcs.cursor) is 
+		use pac_stop_arcs;
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -1226,14 +1226,14 @@ package body et_pcb_rw is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in type_stop_circles.cursor) is 
-		use type_stop_circles;
+	procedure write_circle (cursor : in pac_stop_circles.cursor) is 
+		use pac_stop_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
 	
-	procedure write_polygon (cursor : in type_stop_polygons.cursor) is 
-		use type_stop_polygons;
+	procedure write_polygon (cursor : in pac_stop_polygons.cursor) is 
+		use pac_stop_polygons;
 	begin
 		fill_zone_begin;
 		write_easing (element (cursor).easing);

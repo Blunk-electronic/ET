@@ -1115,10 +1115,10 @@ is
 		use type_stencil_circles;
 		use type_stencil_polygons;
 
-		use type_stop_lines;
-		use type_stop_arcs;
-		use type_stop_circles;
-		use type_stop_polygons;
+		use pac_stop_lines;
+		use pac_stop_arcs;
+		use pac_stop_circles;
+		use pac_stop_polygons;
 
 		use type_keepout_lines;
 		use type_keepout_arcs;
