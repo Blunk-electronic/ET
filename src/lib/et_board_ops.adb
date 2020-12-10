@@ -1618,7 +1618,7 @@ package body et_board_ops is
 			-- Appends the track to the net.
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
-				use et_pcb.pac_copper_lines;
+				use et_pcb.pac_conductor_lines;
 			begin
 				append (
 					container	=> net.route.lines,
@@ -1657,7 +1657,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_pcb;
-		use et_pcb.pac_copper_lines;
+		use et_pcb.pac_conductor_lines;
 		
 		procedure add_freetrack (
 			module_name	: in pac_module_name.bounded_string;
@@ -1712,7 +1712,7 @@ package body et_board_ops is
 			-- Appends the track to the net.
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) is
-				use et_pcb.pac_copper_lines;
+				use et_pcb.pac_conductor_lines;
 			begin
 				append (
 					container	=> net.route.lines,
@@ -2085,25 +2085,26 @@ package body et_board_ops is
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_pcb;
-		use pac_copper_lines;
-		use pac_copper_arcs;
+		use et_pcb.pac_conductor_lines;
+		use et_pcb.pac_copper_arcs;
 
 		deleted : boolean := false; -- goes true if at least one segment has been ripup
 		
 		procedure ripup_freetrack (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-			line_cursor : pac_copper_lines.cursor := module.board.copper.lines.first;
-			arc_cursor  : pac_copper_arcs.cursor := module.board.copper.arcs.first;
+			module		: in out type_module) 
+		is
+			line_cursor : et_pcb.pac_conductor_lines.cursor := module.board.copper.lines.first;
+			arc_cursor  : et_pcb.pac_copper_arcs.cursor := module.board.copper.arcs.first;
 		begin
 			-- first probe the lines. If a matching line found, delete it 
 			-- and abort iteration.
-			while line_cursor /= pac_copper_lines.no_element loop
+			while line_cursor /= et_pcb.pac_conductor_lines.no_element loop
 
 				if on_segment (point, layer, line_cursor, accuracy) then
 					delete (module.board.copper.lines, line_cursor);
@@ -2117,7 +2118,7 @@ package body et_board_ops is
 			-- probe arcs if no line found.
 			-- If a matching arc found, delete it and abort iteration.
 			if not deleted then
-				while arc_cursor /= pac_copper_arcs.no_element loop
+				while arc_cursor /= et_pcb.pac_copper_arcs.no_element loop
 
 					if on_segment (point, layer, arc_cursor, accuracy) then
 						delete (module.board.copper.arcs, arc_cursor);
@@ -2138,20 +2139,21 @@ package body et_board_ops is
 		
 		procedure ripup_named_track (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			-- A net belonging to a net requires the net to be located in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
 			procedure ripup (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
-				line_cursor : pac_copper_lines.cursor := net.route.lines.first;
-				arc_cursor  : pac_copper_arcs.cursor := net.route.arcs.first;
+				net			: in out type_net) 
+			is
+				line_cursor : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
+				arc_cursor  : et_pcb.pac_copper_arcs.cursor := net.route.arcs.first;
 			begin
 				-- first probe the lines. If a matching line found, delete it 
 				-- and abort iteration.
-				while line_cursor /= pac_copper_lines.no_element loop
+				while line_cursor /= et_pcb.pac_conductor_lines.no_element loop
 
 					if on_segment (point, layer, line_cursor, accuracy) then
 						delete (net.route.lines, line_cursor);

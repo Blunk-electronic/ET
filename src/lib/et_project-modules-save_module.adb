@@ -496,15 +496,15 @@ is
 		-- This is about routed tracks/traces and zones in the board:
 			net_name	: in pac_net_name.bounded_string;
 			net			: in et_schematic.type_net) is
-			use et_packages;
+			--use et_packages;
 			use et_terminals;
 			use et_terminals.pac_shapes;
 			use et_pcb;
 			use et_pcb_stack;
 			use et_pcb_coordinates.pac_geometry_brd;
 			
-			use pac_copper_lines;
-			line_cursor : pac_copper_lines.cursor := net.route.lines.first;
+			use pac_conductor_lines;
+			line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
 
 			use pac_copper_arcs;
 			arc_cursor : pac_copper_arcs.cursor := net.route.arcs.first;
@@ -518,11 +518,11 @@ is
 			polygon_solid_cursor : pac_signal_polygons_solid.cursor := net.route.polygons_2.solid.first;
 			polygon_hatched_cursor : pac_signal_polygons_hatched.cursor := net.route.polygons_2.hatched.first;
 			cutout_zone_cursor : et_pcb.pac_copper_cutouts.cursor := net.route.cutouts.first;
-			
+
 		begin -- query_route
 			section_mark (section_route, HEADER);
 
-			while line_cursor /= pac_copper_lines.no_element loop
+			while line_cursor /= pac_conductor_lines.no_element loop
 				section_mark (section_line, HEADER);
 				
 				write (keyword => keyword_start, parameters => position (element (line_cursor).start_point));
@@ -573,7 +573,7 @@ is
 				write_priority (element (polygon_solid_cursor).priority_level);
 				write_signal_layer (element (polygon_solid_cursor).layer);
 
-				write_fill_stlye (SOLID);
+				write_fill_stlye (et_packages.SOLID);
 
 				case element (polygon_solid_cursor).connection is
 					when et_pcb.THERMAL => 
@@ -605,7 +605,7 @@ is
 				write_priority (element (polygon_hatched_cursor).priority_level);
 				write_signal_layer (element (polygon_hatched_cursor).layer);
 
-				write_fill_stlye (HATCHED);
+				write_fill_stlye (et_packages.HATCHED);
 				
 				write_hatching (element (polygon_hatched_cursor).hatching);
 
@@ -1091,49 +1091,49 @@ is
 	end query_texts;
 
 	procedure query_board is
-		use et_packages;
+		--use et_packages;
 		use et_terminals;
 		use et_pcb;
 		use et_pcb_stack;
 		use et_pcb_coordinates.pac_geometry_brd;
 
-		use pac_texts_with_content;
+		use et_packages.pac_texts_with_content;
 		use et_pcb.pac_text_placeholders;
 
-		use pac_silk_lines;
-		use pac_silk_arcs;
-		use pac_silk_circles;
-		use pac_silk_polygons;
+		use et_packages.pac_silk_lines;
+		use et_packages.pac_silk_arcs;
+		use et_packages.pac_silk_circles;
+		use et_packages.pac_silk_polygons;
 
-		use pac_doc_lines;
-		use pac_doc_arcs;
-		use pac_doc_circles;
-		use pac_doc_polygons;
+		use et_packages.pac_doc_lines;
+		use et_packages.pac_doc_arcs;
+		use et_packages.pac_doc_circles;
+		use et_packages.pac_doc_polygons;
 
-		use pac_stencil_lines;
-		use pac_stencil_arcs;
-		use pac_stencil_circles;
-		use pac_stencil_polygons;
+		use et_packages.pac_stencil_lines;
+		use et_packages.pac_stencil_arcs;
+		use et_packages.pac_stencil_circles;
+		use et_packages.pac_stencil_polygons;
 
-		use pac_stop_lines;
-		use pac_stop_arcs;
-		use pac_stop_circles;
-		use pac_stop_polygons;
+		use et_packages.pac_stop_lines;
+		use et_packages.pac_stop_arcs;
+		use et_packages.pac_stop_circles;
+		use et_packages.pac_stop_polygons;
 
-		use pac_keepout_lines;
-		use pac_keepout_arcs;
-		use pac_keepout_circles;
-		use pac_keepout_polygons;
+		use et_packages.pac_keepout_lines;
+		use et_packages.pac_keepout_arcs;
+		use et_packages.pac_keepout_circles;
+		use et_packages.pac_keepout_polygons;
 
-		use pac_route_restrict_lines;
-		use pac_route_restrict_arcs;
-		use pac_route_restrict_circles;
-		use pac_route_restrict_polygons;
+		use et_packages.pac_route_restrict_lines;
+		use et_packages.pac_route_restrict_arcs;
+		use et_packages.pac_route_restrict_circles;
+		use et_packages.pac_route_restrict_polygons;
 
-		use pac_via_restrict_lines;
-		use pac_via_restrict_arcs;
-		use pac_via_restrict_circles;
-		use pac_via_restrict_polygons;
+		use et_packages.pac_via_restrict_lines;
+		use et_packages.pac_via_restrict_arcs;
+		use et_packages.pac_via_restrict_circles;
+		use et_packages.pac_via_restrict_polygons;
 
 		use pac_texts;
 
@@ -1152,8 +1152,8 @@ is
 		end write_placeholder;
 
 		-- COPPER (NON-ELECTRIC) in any signal layers
-		use pac_copper_lines;
-		procedure write_line (cursor : in pac_copper_lines.cursor) is begin
+		use pac_conductor_lines;
+		procedure write_line (cursor : in pac_conductor_lines.cursor) is begin
 			line_begin;
 			write_line (element (cursor));
 			write_width (element (cursor).width);
@@ -1253,16 +1253,20 @@ is
 		use et_packages.pac_via_restrict_cutouts;
 		use et_schematic.pac_devices_non_electric;
 		
-		procedure query_devices_non_electric (c : in et_schematic.pac_devices_non_electric.cursor) is
+		procedure query_devices_non_electric (
+			c : in et_schematic.pac_devices_non_electric.cursor) 
+		is
+			use et_packages;
 
 			procedure query_placeholders (
 				device_name : in type_device_name;
-				device 		: in et_schematic.type_device_non_electric) is
+				device 		: in et_schematic.type_device_non_electric) 
+			is
 				use et_pcb_coordinates;
 				use et_packages.pac_text_placeholders;
 
 				face : et_pcb_coordinates.type_face;
-				layer : type_placeholder_package_layer;
+				layer : et_packages.type_placeholder_package_layer;
 				
 				procedure write_placeholder (placeholder_cursor : in et_packages.pac_text_placeholders.cursor) is 
 				begin

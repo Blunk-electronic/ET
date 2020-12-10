@@ -56,8 +56,8 @@ procedure draw_conductors (
 	
 	use et_general;
 	use et_terminals.pac_shapes;	
-	use et_packages;
-	use pac_copper_lines;
+	--use et_packages;
+	use pac_conductor_lines;
 	use pac_copper_arcs;
 	use et_pcb.pac_copper_circles;
 	use et_pcb.pac_copper_cutouts;
@@ -84,7 +84,7 @@ procedure draw_conductors (
 	-- The layer being drawn:
 	current_layer : type_signal_layer;
 	
-	procedure query_line (c : in pac_copper_lines.cursor) is begin
+	procedure query_line (c : in pac_conductor_lines.cursor) is begin
 
 		-- Draw the line if it is in the current layer:
 		if element (c).layer = current_layer then
@@ -116,7 +116,9 @@ procedure draw_conductors (
 		end if;
 	end query_arc;
 
-	procedure query_circle (c : in et_pcb.pac_copper_circles.cursor) is begin
+	procedure query_circle (c : in et_pcb.pac_copper_circles.cursor) is 
+		use et_packages;
+	begin
 		-- Draw the circle if it is in the current layer:
 		if element (c).layer = current_layer then
 			

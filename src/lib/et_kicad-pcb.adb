@@ -4857,7 +4857,7 @@ package body et_kicad.pcb is
 					end loop;
 
 					-- Log if the net has no routed segments.
-					if et_pcb.pac_copper_lines.is_empty (route.lines) then
+					if et_pcb.pac_conductor_lines.is_empty (route.lines) then
 						log (text => "no segments", level => log_threshold + 3);
 					end if;
 					

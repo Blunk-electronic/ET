@@ -721,7 +721,7 @@ package body et_pcb_rw.device_packages is
 		log_threshold	: in et_string_processing.type_log_level) 
 	is
 		use et_string_processing;
-		use et_pcb;
+		--use et_pcb;
 		
 		file_handle : ada.text_io.file_type;
 

@@ -188,20 +188,21 @@ package et_pcb is
 		
 
 
--- COPPER OBJECTS
+-- CONDUCTOR OBJECTS
 	
-	-- In a pcb drawing copper objects can be placed at various copper layers.
+	-- In a pcb drawing objects in conductor layers can be placed 
+	-- in various layers.
 	-- This requires a layer id for the object.
 	type type_conductor_line is new et_packages.type_conductor_line with record
 		layer	: type_signal_layer;
 	end record;
-	package pac_copper_lines is new doubly_linked_lists (type_conductor_line);
+	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
 
 	function on_segment (
 	-- Returns true if the given point sits on the given line of copper.
 		point		: in type_point; -- x/y
 		layer		: in type_signal_layer;
-		line		: in pac_copper_lines.cursor;
+		line		: in pac_conductor_lines.cursor;
 		accuracy	: in type_catch_zone)
 		return boolean;
 	
@@ -275,7 +276,7 @@ package et_pcb is
 	-- Type for NON ELECTRIC !! conductor objects:
 	-- NON ELECTRIC conductor objects of a pcb may also include text placeholders:
 	type type_copper is record  -- CS rename to type_conductor
-		lines 			: pac_copper_lines.list;
+		lines 			: pac_conductor_lines.list;
 		arcs			: pac_copper_arcs.list;
 		circles			: pac_copper_circles.list;
 
@@ -397,7 +398,7 @@ package et_pcb is
 	end record;
 	
 	type type_route is record 
-		lines 		: pac_copper_lines.list;
+		lines 		: pac_conductor_lines.list;
 		arcs		: pac_copper_arcs.list;
 		-- CS: circles ?
 		vias		: pac_vias.list;
@@ -501,7 +502,7 @@ package et_pcb is
 
 	procedure route_line_properties (
 	-- Logs the properties of the given line of a route
-		cursor			: in pac_copper_lines.cursor;
+		cursor			: in pac_conductor_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure route_via_properties (

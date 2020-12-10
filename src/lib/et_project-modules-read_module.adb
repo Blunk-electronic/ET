@@ -2627,7 +2627,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					pac_copper_lines.append (
+					pac_conductor_lines.append (
 						container	=> module.board.copper.lines,
 						new_item	=> (et_terminals.pac_shapes.type_line (board_line) with
 										width	=> board_line_width,
@@ -3266,7 +3266,7 @@ is
 						when SEC_ROUTE =>
 
 							-- insert line in route.lines
-							et_pcb.pac_copper_lines.append (
+							et_pcb.pac_conductor_lines.append (
 								container	=> route.lines,
 								new_item	=> (et_terminals.pac_shapes.type_line (board_line) with
 										width	=> board_line_width,

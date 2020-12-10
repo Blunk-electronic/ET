@@ -114,11 +114,12 @@ package body et_pcb is
 	-- Returns true if the given point sits on the given line of copper.
 		point			: in type_point; -- x/y
 		layer			: in type_signal_layer;
-		line			: in pac_copper_lines.cursor;
+		line			: in pac_conductor_lines.cursor;
 		accuracy		: in type_catch_zone)
-		return boolean is
+		return boolean 
+	is
 		result : boolean := false; -- to be returned
-		use pac_copper_lines;
+		use pac_conductor_lines;
 	begin -- on_segment
 		if element (line).layer = layer then
 			if on_line (point, element (line), accuracy) then
@@ -230,10 +231,10 @@ package body et_pcb is
 
 -- PROPERTIES OF ELECTRIC OBJECTS IN SIGNAL LAYERS
 	procedure route_line_properties (
-		cursor			: in pac_copper_lines.cursor;
+		cursor			: in pac_conductor_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level)
 	is
-		use pac_copper_lines;
+		use pac_conductor_lines;
 		line : type_conductor_line;
 	begin
 		line := element (cursor);
