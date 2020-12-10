@@ -1967,10 +1967,10 @@ is
 		procedure draw_pcb_contour is 
 
 			-- LINES
-			use et_packages.type_pcb_contour_lines;
+			use et_packages.pac_pcb_contour_lines;
 			line : et_packages.type_pcb_contour_line;
 
-			procedure query_line (c : in et_packages.type_pcb_contour_lines.cursor) is
+			procedure query_line (c : in et_packages.pac_pcb_contour_lines.cursor) is
 				line : type_pcb_contour_line := element (c);
 			begin
 				if outline_enabled then
@@ -1988,10 +1988,10 @@ is
 
 			
 			-- ARCS
-			use type_pcb_contour_arcs;
+			use pac_pcb_contour_arcs;
 			arc : type_pcb_contour_arc;
 			
-			procedure query_arc (c : in type_pcb_contour_arcs.cursor) is
+			procedure query_arc (c : in pac_pcb_contour_arcs.cursor) is
 				arc : type_pcb_contour_arc := element (c);
 			begin
 				if outline_enabled then
@@ -2008,9 +2008,9 @@ is
 
 			
 			-- CIRCLES
-			use type_pcb_contour_circles;
+			use pac_pcb_contour_circles;
 			
-			procedure query_circle (c : in type_pcb_contour_circles.cursor) is 
+			procedure query_circle (c : in pac_pcb_contour_circles.cursor) is 
 				circle : type_pcb_contour_circle := element (c);
 			begin
 				if outline_enabled then

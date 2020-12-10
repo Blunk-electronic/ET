@@ -403,9 +403,9 @@ package body et_pcb_rw.device_packages is
 		end write_via_restrict;
 
 		procedure write_contour is -- about PCB contours
-			use type_pcb_contour_lines;
-			use type_pcb_contour_arcs;
-			use type_pcb_contour_circles;
+			use pac_pcb_contour_lines;
+			use pac_pcb_contour_arcs;
+			use pac_pcb_contour_circles;
 		begin
 			section_mark (section_pcb_contours, HEADER);
 
@@ -1689,7 +1689,7 @@ package body et_pcb_rw.device_packages is
 								
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								
-								et_packages.type_pcb_contour_lines.append (
+								et_packages.pac_pcb_contour_lines.append (
 									container	=> packge.pcb_contour.lines,
 									new_item	=> (pac_shapes.type_line (board_line) with null record));
 
@@ -1863,7 +1863,7 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								
-								et_packages.type_pcb_contour_arcs.append (
+								et_packages.pac_pcb_contour_arcs.append (
 									container	=> packge.pcb_contour.arcs,
 									new_item	=> (pac_shapes.type_arc (board_arc) with null record));
 
@@ -2007,7 +2007,7 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								
-								et_packages.type_pcb_contour_circles.append (
+								et_packages.pac_pcb_contour_circles.append (
 									container	=> packge.pcb_contour.circles,
 									new_item	=> (pac_shapes.type_circle (board_circle) with null record));
 

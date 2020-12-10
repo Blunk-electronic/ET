@@ -759,22 +759,24 @@ package et_packages is
 	pcb_contour_line_width : constant type_general_line_width := line_width_min;
 	
 	type type_pcb_contour_line is new type_line with null record;
-	package type_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
+	package pac_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
 	
 	type type_pcb_contour_arc is new type_arc with null record;
-	package type_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
+	package pac_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
 	
 	type type_pcb_contour_circle is new type_circle with null record;
-	package type_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
+	package pac_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
 	-- Circles in outline are never filled.
 	
 	type type_pcb_contour is record
-		lines 	: type_pcb_contour_lines.list;
-		arcs	: type_pcb_contour_arcs.list;
-		circles	: type_pcb_contour_circles.list;
+		lines 	: pac_pcb_contour_lines.list;
+		arcs	: pac_pcb_contour_arcs.list;
+		circles	: pac_pcb_contour_circles.list;
 	end record;
 
 
+	
+-- APPEARANCE
 
 	type type_package_appearance is (
 		REAL,	-- packages with x,y,z dimension
@@ -1070,17 +1072,17 @@ package et_packages is
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	procedure line_pcb_contour_properties (
 	-- Logs the properties of the given line of pcb contour
-		cursor			: in type_pcb_contour_lines.cursor;
+		cursor			: in pac_pcb_contour_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure arc_pcb_contour_properties (
 	-- Logs the properties of the given arc of pcb contour
-		cursor			: in type_pcb_contour_arcs.cursor;
+		cursor			: in pac_pcb_contour_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure circle_pcb_contour_properties (
 	-- Logs the properties of the given circle of pcb contour
-		cursor			: in type_pcb_contour_circles.cursor;
+		cursor			: in pac_pcb_contour_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 

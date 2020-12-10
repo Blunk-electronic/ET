@@ -1438,24 +1438,24 @@ package body et_pcb_rw is
 	end;
 
 -- BOARD CONTOUR
-	procedure write_line (cursor : in type_pcb_contour_lines.cursor) is 
-		use type_pcb_contour_lines;
+	procedure write_line (cursor : in pac_pcb_contour_lines.cursor) is 
+		use pac_pcb_contour_lines;
 	begin
 		line_begin;
 		write_line (element (cursor));
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in type_pcb_contour_arcs.cursor) is 
-		use type_pcb_contour_arcs;
+	procedure write_arc (cursor : in pac_pcb_contour_arcs.cursor) is 
+		use pac_pcb_contour_arcs;
 	begin
 		arc_begin;
 		write_arc (element (cursor));
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in type_pcb_contour_circles.cursor) is 
-		use type_pcb_contour_circles;
+	procedure write_circle (cursor : in pac_pcb_contour_circles.cursor) is 
+		use pac_pcb_contour_circles;
 	begin
 		circle_begin;
 		write_circle (element (cursor));

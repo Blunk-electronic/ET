@@ -221,19 +221,19 @@ package body et_packages is
 -- 		millings 		: in type_plated_millings;
 -- 		log_threshold	: in et_string_processing.type_log_level)
 -- 		is
--- -- 		use type_pcb_contour_lines;
--- -- 		use type_pcb_contour_arcs;
--- -- 		use type_pcb_contour_circles;
+-- -- 		use pac_pcb_contour_lines;
+-- -- 		use pac_pcb_contour_arcs;
+-- -- 		use pac_pcb_contour_circles;
 -- -- 		
--- -- 		procedure line (cursor : in type_pcb_contour_lines.cursor) is begin
+-- -- 		procedure line (cursor : in pac_pcb_contour_lines.cursor) is begin
 -- -- 			line_pcb_contour_properties (cursor, log_threshold);
 -- -- 		end;
 -- -- 
--- -- 		procedure arc (cursor : in type_pcb_contour_arcs.cursor) is begin
+-- -- 		procedure arc (cursor : in pac_pcb_contour_arcs.cursor) is begin
 -- -- 			arc_pcb_contour_properties (cursor, log_threshold);
 -- -- 		end;
 -- -- 
--- -- 		procedure circle (cursor : in type_pcb_contour_circles.cursor) is begin
+-- -- 		procedure circle (cursor : in pac_pcb_contour_circles.cursor) is begin
 -- -- 			circle_pcb_contour_properties (cursor, log_threshold);
 -- -- 		end;
 -- 		
@@ -818,10 +818,10 @@ package body et_packages is
 	
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	procedure line_pcb_contour_properties (
-	-- Logs the properties of the given line of pcb contour
-		cursor			: in type_pcb_contour_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_pcb_contour_lines;
+		cursor			: in pac_pcb_contour_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use pac_pcb_contour_lines;
 		line : type_pcb_contour_line;
 	begin
 		line := element (cursor);
@@ -830,10 +830,10 @@ package body et_packages is
 	end line_pcb_contour_properties;
 
 	procedure arc_pcb_contour_properties (
-	-- Logs the properties of the given arc of pcb contour
-		cursor			: in type_pcb_contour_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_pcb_contour_arcs;
+		cursor			: in pac_pcb_contour_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use pac_pcb_contour_arcs;
 		arc : type_pcb_contour_arc;
 	begin
 		arc := element (cursor);
@@ -842,10 +842,10 @@ package body et_packages is
 	end arc_pcb_contour_properties;
 
 	procedure circle_pcb_contour_properties (
-	-- Logs the properties of the given circle of pcb contour
-		cursor			: in type_pcb_contour_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_pcb_contour_circles;
+		cursor			: in pac_pcb_contour_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use pac_pcb_contour_circles;
 		circle : type_pcb_contour_circle;
 	begin
 		circle := element (cursor);
