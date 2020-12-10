@@ -2679,7 +2679,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					pac_copper_circles.append (
+					pac_conductor_circles.append (
 						container	=> module.board.copper.circles,
 						new_item	=> (board_make_copper_circle with signal_layer));
 				end;

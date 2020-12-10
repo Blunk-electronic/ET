@@ -1830,8 +1830,8 @@ package body et_kicad_to_native is
 				use et_pcb.pac_conductor_arcs;
 				arcs_cursor : et_pcb.pac_conductor_arcs.cursor;
 
-				use et_pcb.pac_copper_circles;
-				circles_cursor : et_pcb.pac_copper_circles.cursor;
+				use et_pcb.pac_conductor_circles;
+				circles_cursor : et_pcb.pac_conductor_circles.cursor;
 
 				use et_pcb.pac_copper_polygons_floating_solid;
 				polygons_solid_cursor : et_pcb.pac_copper_polygons_floating_solid.cursor;
@@ -1963,8 +1963,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES
 				circles_cursor := module.board.copper.circles.first;
-				while circles_cursor /= et_pcb.pac_copper_circles.no_element loop
-					et_pcb.pac_copper_circles.update_element (
+				while circles_cursor /= et_pcb.pac_conductor_circles.no_element loop
+					et_pcb.pac_conductor_circles.update_element (
 						container	=> module.board.copper.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);

@@ -49,8 +49,8 @@ separate (et_canvas_board)
 procedure draw_conductors (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
-	context : in type_draw_context) is
-
+	context : in type_draw_context) 
+is
 	use et_schematic;
 	use et_schematic.pac_nets;
 	
@@ -59,8 +59,8 @@ procedure draw_conductors (
 	--use et_packages;
 	use pac_conductor_lines;
 	use pac_conductor_arcs;
-	use et_pcb.pac_copper_circles;
-	use et_pcb.pac_copper_cutouts;
+	use pac_conductor_circles;
+	use pac_copper_cutouts;
 	use pac_copper_polygons_floating_solid;
 	use pac_copper_polygons_floating_hatched;
 	use et_pcb.pac_text_placeholders_conductors;
@@ -116,7 +116,7 @@ procedure draw_conductors (
 		end if;
 	end query_arc;
 
-	procedure query_circle (c : in et_pcb.pac_copper_circles.cursor) is 
+	procedure query_circle (c : in et_pcb.pac_conductor_circles.cursor) is 
 		use et_packages;
 	begin
 		-- Draw the circle if it is in the current layer:

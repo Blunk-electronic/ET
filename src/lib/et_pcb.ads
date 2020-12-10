@@ -199,7 +199,7 @@ package et_pcb is
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
 
 	function on_segment (
-	-- Returns true if the given point sits on the given line of copper.
+	-- Returns true if the given point sits on the given line.
 		point		: in type_point; -- x/y
 		layer		: in type_signal_layer;
 		line		: in pac_conductor_lines.cursor;
@@ -212,7 +212,7 @@ package et_pcb is
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
 
 	function on_segment (
-	-- Returns true if the given point sits on the given arc of copper.
+	-- Returns true if the given point sits on the given arc.
 		point			: in type_point; -- x/y
 		layer			: in type_signal_layer;
 		arc				: in pac_conductor_arcs.cursor;
@@ -222,7 +222,7 @@ package et_pcb is
 	type type_conductor_circle is new et_packages.type_conductor_circle with record
 		layer	: type_signal_layer;
 	end record;
-	package pac_copper_circles is new indefinite_doubly_linked_lists (type_conductor_circle);
+	package pac_conductor_circles is new indefinite_doubly_linked_lists (type_conductor_circle);
 	
 
 
@@ -278,7 +278,7 @@ package et_pcb is
 	type type_copper is record  -- CS rename to type_conductor
 		lines 			: pac_conductor_lines.list;
 		arcs			: pac_conductor_arcs.list;
-		circles			: pac_copper_circles.list;
+		circles			: pac_conductor_circles.list;
 
 		-- CS: It is probably no good idea to allow floating copper polygons.
 		polygons		: type_copper_polygons_floating; 

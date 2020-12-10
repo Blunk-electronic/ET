@@ -1170,8 +1170,8 @@ is
 			arc_end;
 		end;
 
-		use et_pcb.pac_copper_circles;
-		procedure write_circle (cursor : in et_pcb.pac_copper_circles.cursor) is begin
+		use et_pcb.pac_conductor_circles;
+		procedure write_circle (cursor : in et_pcb.pac_conductor_circles.cursor) is begin
 			write_circle_copper (element (cursor));
 		end;
 
