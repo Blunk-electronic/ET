@@ -2257,7 +2257,7 @@ package body et_board_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		use type_route_restrict_lines;
+		use pac_route_restrict_lines;
 
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
@@ -2295,7 +2295,7 @@ package body et_board_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		use type_route_restrict_arcs;
+		use pac_route_restrict_arcs;
 
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
@@ -2332,7 +2332,7 @@ package body et_board_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		use type_route_restrict_circles;
+		use pac_route_restrict_circles;
 
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
@@ -2374,17 +2374,17 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_pcb;
-			use type_route_restrict_lines;
-			use type_route_restrict_arcs;
-			use type_route_restrict_circles;
-			line_cursor   : type_route_restrict_lines.cursor  := module.board.route_restrict.lines.first;
-			arc_cursor    : type_route_restrict_arcs.cursor   := module.board.route_restrict.arcs.first;
-			circle_cursor : type_route_restrict_circles.cursor := module.board.route_restrict.circles.first;
+			use pac_route_restrict_lines;
+			use pac_route_restrict_arcs;
+			use pac_route_restrict_circles;
+			line_cursor   : pac_route_restrict_lines.cursor  := module.board.route_restrict.lines.first;
+			arc_cursor    : pac_route_restrict_arcs.cursor   := module.board.route_restrict.arcs.first;
+			circle_cursor : pac_route_restrict_circles.cursor := module.board.route_restrict.circles.first;
 
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 		begin
 			-- first search for a matching segment among the lines
-			while line_cursor /= type_route_restrict_lines.no_element loop
+			while line_cursor /= pac_route_restrict_lines.no_element loop
 				if on_line (point, element (line_cursor), accuracy) then
 					delete (module.board.route_restrict.lines, line_cursor);
 					deleted := true;
@@ -2395,7 +2395,7 @@ package body et_board_ops is
 
 			-- if no line found, search among arcs
 			if not deleted then
-				while arc_cursor /= type_route_restrict_arcs.no_element loop
+				while arc_cursor /= pac_route_restrict_arcs.no_element loop
 					
 					if on_arc (point, element (arc_cursor), accuracy) then
 						delete (module.board.route_restrict.arcs, arc_cursor);
@@ -2409,7 +2409,7 @@ package body et_board_ops is
 
 			-- if no arc found, search among circles
 			if not deleted then
-				while circle_cursor /= type_route_restrict_circles.no_element loop
+				while circle_cursor /= pac_route_restrict_circles.no_element loop
 					
 					if on_circle (point, element (circle_cursor), accuracy) then
 						delete (module.board.route_restrict.circles, circle_cursor);

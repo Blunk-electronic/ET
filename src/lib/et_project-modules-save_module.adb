@@ -1125,10 +1125,10 @@ is
 		use pac_keepout_circles;
 		use pac_keepout_polygons;
 
-		use type_route_restrict_lines;
-		use type_route_restrict_arcs;
-		use type_route_restrict_circles;
-		use type_route_restrict_polygons;
+		use pac_route_restrict_lines;
+		use pac_route_restrict_arcs;
+		use pac_route_restrict_circles;
+		use pac_route_restrict_polygons;
 
 		use type_via_restrict_lines;
 		use type_via_restrict_arcs;

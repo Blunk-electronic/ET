@@ -654,27 +654,27 @@ package et_packages is
 		layers 	: type_signal_layers.set;
 	end record;
 	
-	package type_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
+	package pac_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
 
 	type type_route_restrict_arc is new type_arc with record
 		layers 	: type_signal_layers.set;
 	end record;
 	
-	package type_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
+	package pac_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
 	
 	type type_route_restrict_circle is new type_fillable_circle_solid with record
 		layers 	: type_signal_layers.set;
 	end record;
 
 	
-	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
+	package pac_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
 	type type_route_restrict_polygon is new pac_shapes.type_polygon with record
 		layers 	: type_signal_layers.set;
 	end record;
 	-- A polygon in route restrict is always filled.
 
-	package type_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
+	package pac_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
 
 	type type_route_restrict_cutout is new type_cutout_zone with record
 		layers 	: type_signal_layers.set;
@@ -684,10 +684,10 @@ package et_packages is
 	
 	-- this is the base type for route restrict objects
 	type type_route_restrict is tagged record
-		lines 		: type_route_restrict_lines.list;
-		arcs		: type_route_restrict_arcs.list;
-		circles		: type_route_restrict_circles.list;
-		polygons	: type_route_restrict_polygons.list;
+		lines 		: pac_route_restrict_lines.list;
+		arcs		: pac_route_restrict_arcs.list;
+		circles		: pac_route_restrict_circles.list;
+		polygons	: pac_route_restrict_polygons.list;
 		cutouts		: pac_route_restrict_cutouts.list;
 		-- CS texts		: pac_texts_with_content.list; -- for routing notes ? mind signal layer !
 	end record;
@@ -1046,13 +1046,13 @@ package et_packages is
 	procedure line_route_restrict_properties (
 	-- Logs the properties of the given line of route restrict
 		face			: in type_face;
-		cursor			: in type_route_restrict_lines.cursor;
+		cursor			: in pac_route_restrict_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure arc_route_restrict_properties (
 	-- Logs the properties of the given arc of route restrict
 		face			: in type_face;
-		cursor			: in type_route_restrict_arcs.cursor;
+		cursor			: in pac_route_restrict_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	-- CS procedure circle_route_restrict_properties

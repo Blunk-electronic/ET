@@ -1659,9 +1659,9 @@ is
 		procedure draw_route_restrict is 
 
 			-- LINES
-			use type_route_restrict_lines;
+			use pac_route_restrict_lines;
 			
-			procedure query_line (c : in type_route_restrict_lines.cursor) is
+			procedure query_line (c : in pac_route_restrict_lines.cursor) is
 				line : type_route_restrict_line := element (c);
 			begin
 				if flipped then 
@@ -1684,9 +1684,9 @@ is
 
 			
 			-- ARCS
-			use type_route_restrict_arcs;
+			use pac_route_restrict_arcs;
 			
-			procedure query_arc (c : in type_route_restrict_arcs.cursor) is 
+			procedure query_arc (c : in pac_route_restrict_arcs.cursor) is 
 				arc : type_route_restrict_arc := element (c);
 			begin
 				if flipped then 
@@ -1709,9 +1709,9 @@ is
 
 			
 			-- CIRCLES
-			use type_route_restrict_circles;
+			use pac_route_restrict_circles;
 			
-			procedure query_circle (c : in type_route_restrict_circles.cursor) is 
+			procedure query_circle (c : in pac_route_restrict_circles.cursor) is 
 				circle : type_route_restrict_circle := element (c);
 			begin
 				if flipped then 
@@ -1735,9 +1735,9 @@ is
 
 			
 			-- POLYGONS
-			use type_route_restrict_polygons;
+			use pac_route_restrict_polygons;
 			
-			procedure query_polygon (c : in type_route_restrict_polygons.cursor) is
+			procedure query_polygon (c : in pac_route_restrict_polygons.cursor) is
 				polygon : et_packages.type_route_restrict_polygon := element (c);
 			begin
 				if flipped then 

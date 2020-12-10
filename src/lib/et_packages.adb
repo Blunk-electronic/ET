@@ -759,9 +759,9 @@ package body et_packages is
 	procedure line_route_restrict_properties (
 	-- Logs the properties of the given line of route restrict
 		face			: in type_face;
-		cursor			: in type_route_restrict_lines.cursor;
+		cursor			: in pac_route_restrict_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_route_restrict_lines;
+		use pac_route_restrict_lines;
 		line : type_route_restrict_line;
 	begin
 		line := element (cursor);
@@ -770,11 +770,11 @@ package body et_packages is
 	end line_route_restrict_properties;
 
 	procedure arc_route_restrict_properties (
-	-- Logs the properties of the given arc of route restrict
 		face			: in type_face;
-		cursor			: in type_route_restrict_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_route_restrict_arcs;
+		cursor			: in pac_route_restrict_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use pac_route_restrict_arcs;
 		arc : type_route_restrict_arc;
 	begin
 		arc := element (cursor);

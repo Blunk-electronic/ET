@@ -2362,7 +2362,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					type_route_restrict_lines.append (
+					pac_route_restrict_lines.append (
 						container	=> module.board.route_restrict.lines,
 						new_item	=> (pac_shapes.type_line (board_line) with 
 										layers	=> signal_layers));
@@ -2389,7 +2389,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					type_route_restrict_arcs.append (
+					pac_route_restrict_arcs.append (
 						container	=> module.board.route_restrict.arcs,
 						new_item	=> (pac_shapes.type_arc (board_arc) with 
 										layers	=> signal_layers));
@@ -2416,7 +2416,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					type_route_restrict_circles.append (
+					pac_route_restrict_circles.append (
 						container	=> module.board.route_restrict.circles,
 						new_item	=> (board_make_fillable_circle_solid with signal_layers));
 				end do_it;
@@ -2442,7 +2442,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					type_route_restrict_polygons.append (
+					pac_route_restrict_polygons.append (
 						container	=> module.board.route_restrict.polygons,
 						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 										filled	=> board_filled,

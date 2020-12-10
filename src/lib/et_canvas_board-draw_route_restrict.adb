@@ -50,13 +50,13 @@ procedure draw_route_restrict (
 	use et_general;
 	use et_terminals.pac_shapes;	
 	use et_packages;
-	use type_route_restrict_lines;
-	use type_route_restrict_arcs;
-	use type_route_restrict_circles;
-	use type_route_restrict_polygons;
+	use pac_route_restrict_lines;
+	use pac_route_restrict_arcs;
+	use pac_route_restrict_circles;
+	use pac_route_restrict_polygons;
 	use pac_route_restrict_cutouts;
 	
-	procedure query_line (c : in type_route_restrict_lines.cursor) is begin
+	procedure query_line (c : in pac_route_restrict_lines.cursor) is begin
 
 		-- Draw the line if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
@@ -70,7 +70,7 @@ procedure draw_route_restrict (
 		end if;
 	end query_line;
 
-	procedure query_arc (c : in type_route_restrict_arcs.cursor) is begin
+	procedure query_arc (c : in pac_route_restrict_arcs.cursor) is begin
 
 		-- Draw the arc if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
@@ -84,7 +84,7 @@ procedure draw_route_restrict (
 		end if;
 	end query_arc;
 
-	procedure query_circle (c : in type_route_restrict_circles.cursor) is begin
+	procedure query_circle (c : in pac_route_restrict_circles.cursor) is begin
 
 		-- Draw the circle if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
@@ -113,7 +113,7 @@ procedure draw_route_restrict (
 		end if;
 	end query_circle;
 
-	procedure query_polygon (c : in type_route_restrict_polygons.cursor) is begin
+	procedure query_polygon (c : in pac_route_restrict_polygons.cursor) is begin
 
 		-- Draw the polygon if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
