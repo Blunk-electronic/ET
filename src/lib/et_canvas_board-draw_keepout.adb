@@ -48,13 +48,13 @@ procedure draw_keepout (
 	use et_general;
 	use et_terminals.pac_shapes;	
 	use et_packages;
-	use type_keepout_lines;
-	use type_keepout_arcs;
-	use type_keepout_circles;
-	use type_keepout_polygons;
+	use pac_keepout_lines;
+	use pac_keepout_arcs;
+	use pac_keepout_circles;
+	use pac_keepout_polygons;
 	use pac_keepout_cutouts;
 	
-	procedure query_line (c : in type_keepout_lines.cursor) is begin
+	procedure query_line (c : in pac_keepout_lines.cursor) is begin
 		
 		pac_draw_package.draw_line (
 			area		=> in_area,
@@ -64,7 +64,7 @@ procedure draw_keepout (
 
 	end query_line;
 
-	procedure query_arc (c : in type_keepout_arcs.cursor) is begin
+	procedure query_arc (c : in pac_keepout_arcs.cursor) is begin
 		
 		pac_draw_package.draw_arc (
 			area		=> in_area,
@@ -74,7 +74,7 @@ procedure draw_keepout (
 
 	end query_arc;
 
-	procedure query_circle (c : in type_keepout_circles.cursor) is begin
+	procedure query_circle (c : in pac_keepout_circles.cursor) is begin
 		case element (c).filled is
 			when NO =>
 				-- We draw a normal non-filled circle:
@@ -98,7 +98,7 @@ procedure draw_keepout (
 
 	end query_circle;
 
-	procedure query_polygon (c : in type_keepout_polygons.cursor) is begin
+	procedure query_polygon (c : in pac_keepout_polygons.cursor) is begin
 		pac_draw_package.draw_polygon (
 			area	=> in_area,
 			context	=> context,

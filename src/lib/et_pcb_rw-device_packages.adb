@@ -277,10 +277,10 @@ package body et_pcb_rw.device_packages is
 		end write_assembly_documentation;
 		
 		procedure write_keepout is 
-			use type_keepout_lines;
-			use type_keepout_arcs;
-			use type_keepout_circles;
-			use type_keepout_polygons;
+			use pac_keepout_lines;
+			use pac_keepout_arcs;
+			use pac_keepout_circles;
+			use pac_keepout_polygons;
 			use pac_keepout_cutouts;
 		begin
 			section_mark (section_keepout, HEADER);
@@ -1178,7 +1178,7 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				procedure append_keepout_polygon_top is begin
-					type_keepout_polygons.append (
+					pac_keepout_polygons.append (
 						container	=> packge.keepout.top.polygons, 
 						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 										filled	=> board_filled));
@@ -1188,7 +1188,7 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				procedure append_keepout_polygon_bottom is begin
-					type_keepout_polygons.append (
+					pac_keepout_polygons.append (
 						container	=> packge.keepout.bottom.polygons, 
 						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										filled	=> board_filled));
@@ -1610,7 +1610,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 
 									when SEC_KEEPOUT =>
-										type_keepout_lines.append (
+										pac_keepout_lines.append (
 											container	=> packge.keepout.top.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with null record));
 
@@ -1673,7 +1673,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 
 									when SEC_KEEPOUT =>
-										type_keepout_lines.append (
+										pac_keepout_lines.append (
 											container	=> packge.keepout.bottom.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with null record));
 
@@ -1784,7 +1784,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 
 									when SEC_KEEPOUT =>
-										type_keepout_arcs.append (
+										pac_keepout_arcs.append (
 											container	=> packge.keepout.top.arcs,
 											new_item	=> (pac_shapes.type_arc (board_arc) with null record));
 
@@ -1847,7 +1847,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 
 									when SEC_KEEPOUT =>
-										type_keepout_arcs.append (
+										pac_keepout_arcs.append (
 											container	=> packge.keepout.bottom.arcs, 
 											new_item	=> (pac_shapes.type_arc (board_arc) with null record));
 
@@ -1942,7 +1942,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_circle_fillable; -- clean up for next circle
 
 									when SEC_KEEPOUT =>
-										type_keepout_circles.append (
+										pac_keepout_circles.append (
 											container	=> packge.keepout.top.circles,
 											new_item	=> board_make_fillable_circle_solid);
 
@@ -1992,7 +1992,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_circle_fillable; -- clean up for next circle
 
 									when SEC_KEEPOUT =>
-										type_keepout_circles.append (
+										pac_keepout_circles.append (
 											container	=> packge.keepout.bottom.circles,
 											new_item	=> board_make_fillable_circle_solid);
 

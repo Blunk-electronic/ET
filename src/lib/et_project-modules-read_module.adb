@@ -1516,7 +1516,7 @@ is
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 								when KEEPOUT =>
-									type_keepout_lines.append (
+									pac_keepout_lines.append (
 										container	=> module.board.keepout.top.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with null record));
 									
@@ -1545,7 +1545,7 @@ is
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 								when KEEPOUT =>
-									type_keepout_lines.append (
+									pac_keepout_lines.append (
 										container	=> module.board.keepout.bottom.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with null record));
 
@@ -1604,7 +1604,7 @@ is
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 								when KEEPOUT =>
-									type_keepout_arcs.append (
+									pac_keepout_arcs.append (
 										container	=> module.board.keepout.top.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with null record));
 							end case;
@@ -1632,7 +1632,7 @@ is
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 								when KEEPOUT =>
-									type_keepout_arcs.append (
+									pac_keepout_arcs.append (
 										container	=> module.board.keepout.bottom.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with null record));
 							end case;
@@ -1689,7 +1689,7 @@ is
 										new_item	=> board_make_fillable_circle);
 
 								when KEEPOUT =>
-									type_keepout_circles.append (
+									pac_keepout_circles.append (
 										container	=> module.board.keepout.top.circles,
 										new_item	=> board_make_fillable_circle_solid);
 							end case;
@@ -1717,7 +1717,7 @@ is
 										new_item	=> board_make_fillable_circle);
 
 								when KEEPOUT =>
-									type_keepout_circles.append (
+									pac_keepout_circles.append (
 										container	=> module.board.keepout.bottom.circles,
 										new_item	=> board_make_fillable_circle_solid);
 							end case;
@@ -1827,14 +1827,14 @@ is
 					end;
 
 					procedure append_keepout_polygon_top is begin
-						type_keepout_polygons.append (
+						pac_keepout_polygons.append (
 							container	=> module.board.keepout.top.polygons, 
 							new_item	=> (pac_shapes.type_polygon_base (polygon) with
 											filled	=> board_filled));
 					end;
 
 					procedure append_keepout_polygon_bottom is begin
-						type_keepout_polygons.append (
+						pac_keepout_polygons.append (
 							container	=> module.board.keepout.bottom.polygons, 
 							new_item	=> (pac_shapes.type_polygon_base (polygon) with
 											filled	=> board_filled));

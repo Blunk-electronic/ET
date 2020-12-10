@@ -1157,24 +1157,24 @@ package body et_pcb_rw is
 	end;
 	
 -- KEEPOUT
-	procedure write_line (cursor : in type_keepout_lines.cursor) is
-		use type_keepout_lines;
+	procedure write_line (cursor : in pac_keepout_lines.cursor) is
+		use pac_keepout_lines;
 	begin
 		line_begin;
 		write_line (element (cursor));
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in type_keepout_arcs.cursor) is 
-		use type_keepout_arcs;
+	procedure write_arc (cursor : in pac_keepout_arcs.cursor) is 
+		use pac_keepout_arcs;
 	begin
 		arc_begin;
 		write_arc (element (cursor));
 		arc_end;
 	end write_arc;
 	
-	procedure write_circle (cursor : in type_keepout_circles.cursor) is 
-		use type_keepout_circles;
+	procedure write_circle (cursor : in pac_keepout_circles.cursor) is 
+		use pac_keepout_circles;
 	begin
 		circle_begin;
 		write_circle (element (cursor));
@@ -1182,8 +1182,8 @@ package body et_pcb_rw is
 		circle_end;
 	end write_circle;
 	
-	procedure write_polygon (cursor : in type_keepout_polygons.cursor) is 
-		use type_keepout_polygons;
+	procedure write_polygon (cursor : in pac_keepout_polygons.cursor) is 
+		use pac_keepout_polygons;
 	begin
 		fill_zone_begin;
 		write_fill_status (element (cursor).filled);

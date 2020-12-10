@@ -930,7 +930,7 @@ is
 		procedure draw_keepout is 
 
 			-- LINES
-			use type_keepout_lines;
+			use pac_keepout_lines;
 			line : type_keepout_line;
 
 			procedure draw_line (f : in type_face) is begin
@@ -950,13 +950,13 @@ is
 				end if;
 			end draw_line;
 			
-			procedure query_line_top (c : in type_keepout_lines.cursor) is begin
+			procedure query_line_top (c : in pac_keepout_lines.cursor) is begin
 				line := element (c);
 				set_destination;
 				draw_line (destination);
 			end query_line_top;
 
-			procedure query_line_bottom (c : in type_keepout_lines.cursor) is begin
+			procedure query_line_bottom (c : in pac_keepout_lines.cursor) is begin
 				line := element (c);
 				set_destination (INVERSE);
 				draw_line (destination);
@@ -964,7 +964,7 @@ is
 
 			
 			-- ARCS
-			use type_keepout_arcs;
+			use pac_keepout_arcs;
 			arc : type_keepout_arc;
 
 			procedure draw_arc (f : in type_face) is begin
@@ -984,13 +984,13 @@ is
 				end if;
 			end draw_arc;
 			
-			procedure query_arc_top (c : in type_keepout_arcs.cursor) is begin
+			procedure query_arc_top (c : in pac_keepout_arcs.cursor) is begin
 				arc := element (c);
 				set_destination;
 				draw_arc (destination);
 			end query_arc_top;
 
-			procedure query_arc_bottom (c : in type_keepout_arcs.cursor) is begin
+			procedure query_arc_bottom (c : in pac_keepout_arcs.cursor) is begin
 				arc := element (c);
 				set_destination (INVERSE);
 				draw_arc (destination);
@@ -998,7 +998,7 @@ is
 
 			
 			-- CIRCLES
-			use type_keepout_circles;
+			use pac_keepout_circles;
 
 			procedure draw_circle (
 				circle	: in out type_fillable_circle_solid;
@@ -1022,14 +1022,14 @@ is
 				end if;
 			end draw_circle;
 			
-			procedure query_circle_top (c : in type_keepout_circles.cursor) is 
+			procedure query_circle_top (c : in pac_keepout_circles.cursor) is 
 				circle : type_fillable_circle_solid := element (c);
 			begin
 				set_destination;
 				draw_circle (circle, destination);
 			end query_circle_top;
 
-			procedure query_circle_bottom (c : in type_keepout_circles.cursor) is 
+			procedure query_circle_bottom (c : in pac_keepout_circles.cursor) is 
 				circle : type_fillable_circle_solid := element (c);
 			begin
 				set_destination (INVERSE);
@@ -1038,7 +1038,7 @@ is
 
 			
 			-- POLYGONS
-			use type_keepout_polygons;
+			use pac_keepout_polygons;
 
 			procedure draw_polygon (
 				polygon	: in out pac_shapes.type_polygon;
@@ -1062,14 +1062,14 @@ is
 				end if;
 			end draw_polygon;
 			
-			procedure query_polygon_top (c : in type_keepout_polygons.cursor) is
+			procedure query_polygon_top (c : in pac_keepout_polygons.cursor) is
 				polygon : pac_shapes.type_polygon := element (c);
 			begin
 				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
-			procedure query_polygon_bottom (c : in type_keepout_polygons.cursor) is
+			procedure query_polygon_bottom (c : in pac_keepout_polygons.cursor) is
 				polygon : pac_shapes.type_polygon := element (c);
 			begin
 				set_destination (INVERSE);

@@ -1552,17 +1552,17 @@ package body et_kicad_to_native is
 
 
 			procedure move_keepout is
-				use type_keepout_lines;
-				lines_cursor : type_keepout_lines.cursor;
+				use pac_keepout_lines;
+				lines_cursor : pac_keepout_lines.cursor;
 
-				use type_keepout_arcs;
-				arcs_cursor : type_keepout_arcs.cursor;
+				use pac_keepout_arcs;
+				arcs_cursor : pac_keepout_arcs.cursor;
 
-				use type_keepout_circles;
-				circles_cursor : type_keepout_circles.cursor;
+				use pac_keepout_circles;
+				circles_cursor : pac_keepout_circles.cursor;
 
-				use type_keepout_polygons;
-				polygons_cursor : type_keepout_polygons.cursor;
+				use pac_keepout_polygons;
+				polygons_cursor : pac_keepout_polygons.cursor;
 
 				keepout : constant string := "board keepout ";
 				
@@ -1638,8 +1638,8 @@ package body et_kicad_to_native is
 				
 				-- LINES TOP
 				lines_cursor := module.board.keepout.top.lines.first;
-				while lines_cursor /= type_keepout_lines.no_element loop
-					type_keepout_lines.update_element (
+				while lines_cursor /= pac_keepout_lines.no_element loop
+					pac_keepout_lines.update_element (
 						container	=> module.board.keepout.top.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1649,8 +1649,8 @@ package body et_kicad_to_native is
 
 				-- LINES BOTTOM
 				lines_cursor := module.board.keepout.bottom.lines.first;
-				while lines_cursor /= type_keepout_lines.no_element loop
-					type_keepout_lines.update_element (
+				while lines_cursor /= pac_keepout_lines.no_element loop
+					pac_keepout_lines.update_element (
 						container	=> module.board.keepout.bottom.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1660,8 +1660,8 @@ package body et_kicad_to_native is
 
 				-- ARCS TOP
 				arcs_cursor := module.board.keepout.top.arcs.first;
-				while arcs_cursor /= type_keepout_arcs.no_element loop
-					type_keepout_arcs.update_element (
+				while arcs_cursor /= pac_keepout_arcs.no_element loop
+					pac_keepout_arcs.update_element (
 						container	=> module.board.keepout.top.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1671,8 +1671,8 @@ package body et_kicad_to_native is
 
 				-- ARCS BOTTOM
 				arcs_cursor := module.board.keepout.bottom.arcs.first;
-				while arcs_cursor /= type_keepout_arcs.no_element loop
-					type_keepout_arcs.update_element (
+				while arcs_cursor /= pac_keepout_arcs.no_element loop
+					pac_keepout_arcs.update_element (
 						container	=> module.board.keepout.bottom.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1682,8 +1682,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES TOP
 				circles_cursor := module.board.keepout.top.circles.first;
-				while circles_cursor /= type_keepout_circles.no_element loop
-					type_keepout_circles.update_element (
+				while circles_cursor /= pac_keepout_circles.no_element loop
+					pac_keepout_circles.update_element (
 						container	=> module.board.keepout.top.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -1693,8 +1693,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES BOTTOM
 				circles_cursor := module.board.keepout.bottom.circles.first;
-				while circles_cursor /= type_keepout_circles.no_element loop
-					type_keepout_circles.update_element (
+				while circles_cursor /= pac_keepout_circles.no_element loop
+					pac_keepout_circles.update_element (
 						container	=> module.board.keepout.bottom.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -1704,8 +1704,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS TOP
 				polygons_cursor := module.board.keepout.top.polygons.first;
-				while polygons_cursor /= type_keepout_polygons.no_element loop
-					type_keepout_polygons.update_element (
+				while polygons_cursor /= pac_keepout_polygons.no_element loop
+					pac_keepout_polygons.update_element (
 						container	=> module.board.keepout.top.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1715,8 +1715,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.keepout.bottom.polygons.first;
-				while polygons_cursor /= type_keepout_polygons.no_element loop
-					type_keepout_polygons.update_element (
+				while polygons_cursor /= pac_keepout_polygons.no_element loop
+					pac_keepout_polygons.update_element (
 						container	=> module.board.keepout.bottom.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);

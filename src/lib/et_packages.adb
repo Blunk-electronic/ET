@@ -609,11 +609,11 @@ package body et_packages is
 	
 -- PROPERTIES OF OBJECTS IN KEEPOUT
 	procedure line_keepout_properties (
-	-- Logs the properties of the given line of keepout
 		face			: in type_face;
-		cursor			: in type_keepout_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_keepout_lines;
+		cursor			: in pac_keepout_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
+		use pac_keepout_lines;
 		line : type_keepout_line;
 	begin
 		line := element (cursor);
@@ -622,11 +622,11 @@ package body et_packages is
 	end line_keepout_properties;
 
 	procedure arc_keepout_properties (
-	-- Logs the properties of the given arc of keepout
 		face			: in type_face;
-		cursor			: in type_keepout_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_keepout_arcs;
+		cursor			: in pac_keepout_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use pac_keepout_arcs;
 		arc : type_keepout_arc;
 	begin
 		arc := element (cursor);
@@ -635,11 +635,11 @@ package body et_packages is
 	end arc_keepout_properties;
 
 	procedure circle_keepout_properties (
-	-- Logs the properties of the given circle of keepout
 		face			: in type_face;
-		cursor			: in type_keepout_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_keepout_circles;
+		cursor			: in pac_keepout_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use pac_keepout_circles;
 	begin
 		log (text => "keepout circle face" & to_string (face) & latin_1.space 
 			 & to_string (element (cursor)),

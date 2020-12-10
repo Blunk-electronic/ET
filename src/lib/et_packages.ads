@@ -615,24 +615,24 @@ package et_packages is
 
 	type type_keepout_line is new type_line with null record;
 	
-	package type_keepout_lines is new doubly_linked_lists (type_keepout_line);
+	package pac_keepout_lines is new doubly_linked_lists (type_keepout_line);
 
 	type type_keepout_arc is new type_arc with null record;
 		
-	package type_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
+	package pac_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
 	
-	package type_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
+	package pac_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
 
-	package type_keepout_polygons is new doubly_linked_lists (pac_shapes.type_polygon);
+	package pac_keepout_polygons is new doubly_linked_lists (pac_shapes.type_polygon);
 	-- Polygons in keepout are always filled.
 	
 	package pac_keepout_cutouts is new doubly_linked_lists (type_cutout_zone);	
 	
 	type type_keepout is record
-		lines 		: type_keepout_lines.list;
-		arcs		: type_keepout_arcs.list;
-		circles		: type_keepout_circles.list;
-		polygons	: type_keepout_polygons.list;
+		lines 		: pac_keepout_lines.list;
+		arcs		: pac_keepout_arcs.list;
+		circles		: pac_keepout_circles.list;
+		polygons	: pac_keepout_polygons.list;
 		cutouts 	: pac_keepout_cutouts.list;
 		-- CS texts		: pac_texts_with_content.list; -- for placement notes ?
 	end record;
@@ -976,19 +976,19 @@ package et_packages is
 	procedure line_keepout_properties (
 	-- Logs the properties of the given line of keepout
 		face			: in type_face;
-		cursor			: in type_keepout_lines.cursor;
+		cursor			: in pac_keepout_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure arc_keepout_properties (
 	-- Logs the properties of the given arc of keepout
 		face			: in type_face;
-		cursor			: in type_keepout_arcs.cursor;
+		cursor			: in pac_keepout_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure circle_keepout_properties (
 	-- Logs the properties of the given circle of keepout
 		face			: in type_face;
-		cursor			: in type_keepout_circles.cursor;
+		cursor			: in pac_keepout_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 
