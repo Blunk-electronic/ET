@@ -63,7 +63,7 @@ procedure draw_conductors (
 	use et_pcb.pac_copper_cutouts;
 	use pac_copper_polygons_floating_solid;
 	use pac_copper_polygons_floating_hatched;
-	use et_pcb.type_text_placeholders_copper;
+	use et_pcb.pac_text_placeholders_conductors;
 	use et_pcb.pac_texts;
 	
 	-- For diplaying net names and classes we need this stuff:
@@ -217,7 +217,7 @@ procedure draw_conductors (
 		end if;
 	end query_cutout;
 
-	procedure query_placeholder (c : in et_pcb.type_text_placeholders_copper.cursor) is 
+	procedure query_placeholder (c : in et_pcb.pac_text_placeholders_conductors.cursor) is 
 		use et_terminals.pac_text.pac_vector_text_lines;
 		vector_text : et_terminals.pac_text.pac_vector_text_lines.list;
 	begin

@@ -109,8 +109,8 @@ package et_pcb is
 
 
 	
-		
--- PLACEHOLDERS FOR TEXTS IN COPPER LAYERS
+-- PLACEHOLDERS FOR TEXTS IN CONDUCTOR LAYERS
+	
 	type type_text_meaning_copper is (
 		COMPANY,
 		CUSTOMER,
@@ -127,13 +127,14 @@ package et_pcb is
 	function to_string (meaning : in type_text_meaning_copper) return string;
 	function to_meaning (meaning : in string) return type_text_meaning_copper;
 	
-	type type_text_placeholder_copper is new type_text with record
+	type type_text_placeholder_conductors is new type_text with record
 		meaning : type_text_meaning_copper;
 		layer	: type_signal_layer;	-- the copper layer the placeholder is placed at
 	end record;
 
 	-- There can be lots of placeholders of this kind. So they can be are stored in a list:
-	package type_text_placeholders_copper is new doubly_linked_lists (type_text_placeholder_copper);
+	package pac_text_placeholders_conductors is new 
+		doubly_linked_lists (type_text_placeholder_conductors);
 
 
 	
@@ -283,7 +284,7 @@ package et_pcb is
 		cutouts			: pac_copper_cutouts.list;		
 		
 		texts			: pac_texts.list;
-		placeholders	: type_text_placeholders_copper.list;
+		placeholders	: pac_text_placeholders_conductors.list;
 	end record;
 
 -- Types for ELECTRIC !! conductor objects:

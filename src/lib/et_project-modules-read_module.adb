@@ -684,7 +684,7 @@ is
 	
 -- 		board_track_circle : et_pcb.type_copper_circle;
 	board_text_copper : et_pcb.type_text;
-	board_text_copper_placeholder : et_pcb.type_text_placeholder_copper;
+	board_text_copper_placeholder : et_pcb.type_text_placeholder_conductors;
 
 	net_junctions : et_schematic.type_junctions;
 	
@@ -2726,7 +2726,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					type_text_placeholders_copper.append (
+					pac_text_placeholders_conductors.append (
 						container	=> module.board.copper.placeholders,
 						new_item	=> board_text_copper_placeholder);
 				end do_it;
