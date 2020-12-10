@@ -485,26 +485,26 @@ package et_packages is
 		width	: type_general_line_width;
 	end record;
 
-	package type_stencil_lines is new doubly_linked_lists (type_stencil_line);
+	package pac_stencil_lines is new doubly_linked_lists (type_stencil_line);
 
 
 	type type_stencil_arc is new type_arc with record
 		width	: type_general_line_width;
 	end record;
 
-	package type_stencil_arcs is new doubly_linked_lists (type_stencil_arc);
+	package pac_stencil_arcs is new doubly_linked_lists (type_stencil_arc);
 
-	package type_stencil_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
+	package pac_stencil_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
-	package type_stencil_polygons is new indefinite_doubly_linked_lists (type_polygon);
+	package pac_stencil_polygons is new indefinite_doubly_linked_lists (type_polygon);
 	package pac_stencil_cutouts is new doubly_linked_lists (type_cutout_zone);	
 	
 	-- This is the type for solder paste stencil objects in general:
 	type type_stencil is record
-		lines 		: type_stencil_lines.list;
-		arcs		: type_stencil_arcs.list;
-		circles		: type_stencil_circles.list;
-		polygons	: type_stencil_polygons.list;
+		lines 		: pac_stencil_lines.list;
+		arcs		: pac_stencil_arcs.list;
+		circles		: pac_stencil_circles.list;
+		polygons	: pac_stencil_polygons.list;
 		cutouts		: pac_stencil_cutouts.list;
 		-- CS: texts ? -- not reasonable and a waste of resources
 	end record;
@@ -1024,19 +1024,19 @@ package et_packages is
 	procedure arc_stencil_properties (
 	-- Logs the properties of the given arc of stencil
 		face			: in type_face;
-		cursor			: in type_stencil_arcs.cursor;
+		cursor			: in pac_stencil_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure circle_stencil_properties (
 	-- Logs the properties of the given circle of stencil
 		face			: in type_face;
-		cursor			: in type_stencil_circles.cursor;
+		cursor			: in pac_stencil_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure line_stencil_properties (
 	-- Logs the properties of the given line of stencil
 		face			: in type_face;
-		cursor			: in type_stencil_lines.cursor;
+		cursor			: in pac_stencil_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 

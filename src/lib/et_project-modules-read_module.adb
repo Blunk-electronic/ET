@@ -1506,7 +1506,7 @@ is
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 								when STENCIL =>
-									type_stencil_lines.append (
+									pac_stencil_lines.append (
 										container	=> module.board.stencil.top.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 									
@@ -1535,7 +1535,7 @@ is
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 									
 								when STENCIL =>
-									type_stencil_lines.append (
+									pac_stencil_lines.append (
 										container	=> module.board.stencil.bottom.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 									
@@ -1594,7 +1594,7 @@ is
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 								when STENCIL =>
-									type_stencil_arcs.append (
+									pac_stencil_arcs.append (
 										container	=> module.board.stencil.top.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 									
@@ -1622,7 +1622,7 @@ is
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 									
 								when STENCIL =>
-									type_stencil_arcs.append (
+									pac_stencil_arcs.append (
 										container	=> module.board.stencil.bottom.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 									
@@ -1679,7 +1679,7 @@ is
 										new_item	=> board_make_fillable_circle);
 
 								when STENCIL =>
-									type_stencil_circles.append (
+									pac_stencil_circles.append (
 										container	=> module.board.stencil.top.circles,
 										new_item	=> board_make_fillable_circle);
 									
@@ -1707,7 +1707,7 @@ is
 										new_item	=> board_make_fillable_circle);
 									
 								when STENCIL =>
-									type_stencil_circles.append (
+									pac_stencil_circles.append (
 										container	=> module.board.stencil.bottom.circles,
 										new_item	=> board_make_fillable_circle);
 									
@@ -1843,14 +1843,14 @@ is
 					procedure append_stencil_polygon_top is begin
 						case board_fill_style is
 							when SOLID =>
-								type_stencil_polygons.append (
+								pac_stencil_polygons.append (
 									container	=> module.board.stencil.top.polygons,
 									new_item	=> (pac_shapes.type_polygon_base (polygon) with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
-								type_stencil_polygons.append (
+								pac_stencil_polygons.append (
 									container	=> module.board.stencil.top.polygons,
 									new_item	=> (pac_shapes.type_polygon_base (polygon) with
 													fill_style	=> HATCHED,
@@ -1862,14 +1862,14 @@ is
 					procedure append_stencil_polygon_bottom is begin
 						case board_fill_style is
 							when SOLID =>
-								type_stencil_polygons.append (
+								pac_stencil_polygons.append (
 									container	=> module.board.stencil.bottom.polygons,
 									new_item	=> (pac_shapes.type_polygon_base (polygon) with
 													fill_style	=> SOLID,
 													easing		=> board_easing));
 
 							when HATCHED =>
-								type_stencil_polygons.append (
+								pac_stencil_polygons.append (
 									container	=> module.board.stencil.bottom.polygons,
 									new_item	=> (pac_shapes.type_polygon_base (polygon) with
 													fill_style	=> HATCHED,

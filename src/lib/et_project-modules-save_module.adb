@@ -1110,10 +1110,10 @@ is
 		use type_doc_circles;
 		use pac_doc_polygons;
 
-		use type_stencil_lines;
-		use type_stencil_arcs;
-		use type_stencil_circles;
-		use type_stencil_polygons;
+		use pac_stencil_lines;
+		use pac_stencil_arcs;
+		use pac_stencil_circles;
+		use pac_stencil_polygons;
 
 		use pac_stop_lines;
 		use pac_stop_arcs;

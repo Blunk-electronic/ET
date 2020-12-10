@@ -49,13 +49,13 @@ procedure draw_stencil (
 	use et_general;
 	use et_terminals.pac_shapes;	
 	use et_packages;
-	use type_stencil_lines;
-	use type_stencil_arcs;
-	use type_stencil_circles;
-	use type_stencil_polygons;
+	use pac_stencil_lines;
+	use pac_stencil_arcs;
+	use pac_stencil_circles;
+	use pac_stencil_polygons;
 	use pac_stencil_cutouts;
 	
-	procedure query_line (c : in type_stencil_lines.cursor) is begin
+	procedure query_line (c : in pac_stencil_lines.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
 		pac_draw_package.draw_line (
@@ -66,7 +66,7 @@ procedure draw_stencil (
 
 	end query_line;
 
-	procedure query_arc (c : in type_stencil_arcs.cursor) is begin
+	procedure query_arc (c : in pac_stencil_arcs.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
 		pac_draw_package.draw_arc (
@@ -77,7 +77,7 @@ procedure draw_stencil (
 
 	end query_arc;
 
-	procedure query_circle (c : in type_stencil_circles.cursor) is begin
+	procedure query_circle (c : in pac_stencil_circles.cursor) is begin
 		case element (c).filled is
 			when NO =>
 				-- We draw a normal non-filled circle:
@@ -103,7 +103,7 @@ procedure draw_stencil (
 
 	end query_circle;
 
-	procedure query_polygon (c : in type_stencil_polygons.cursor) is begin
+	procedure query_polygon (c : in pac_stencil_polygons.cursor) is begin
 		case element (c).fill_style is
 			when SOLID =>
 				pac_draw_package.draw_polygon (

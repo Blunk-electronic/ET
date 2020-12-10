@@ -1264,8 +1264,8 @@ package body et_pcb_rw is
 	end;
 
 -- STENCIL (OR SOLDER PASTE MASK)
-	procedure write_line (cursor : in type_stencil_lines.cursor) is 
-		use type_stencil_lines;
+	procedure write_line (cursor : in pac_stencil_lines.cursor) is 
+		use pac_stencil_lines;
 	begin
 		line_begin;
 		write_line (element (cursor));
@@ -1273,8 +1273,8 @@ package body et_pcb_rw is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in type_stencil_arcs.cursor) is 
-		use type_stencil_arcs;
+	procedure write_arc (cursor : in pac_stencil_arcs.cursor) is 
+		use pac_stencil_arcs;
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -1282,14 +1282,14 @@ package body et_pcb_rw is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in type_stencil_circles.cursor) is 
-		use type_stencil_circles;
+	procedure write_circle (cursor : in pac_stencil_circles.cursor) is 
+		use pac_stencil_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
 	
-	procedure write_polygon (cursor : in type_stencil_polygons.cursor) is 
-		use type_stencil_polygons;
+	procedure write_polygon (cursor : in pac_stencil_polygons.cursor) is 
+		use pac_stencil_polygons;
 	begin
 		fill_zone_begin;
 		write_easing (element (cursor).easing);

@@ -711,11 +711,11 @@ package body et_packages is
 
 -- PROPERTIES OF OBJECTS IN SOLDER PASTE / STENCIL
 	procedure arc_stencil_properties (
-	-- Logs the properties of the given arc of stencil
 		face			: in type_face;
-		cursor			: in type_stencil_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_stencil_arcs;
+		cursor			: in pac_stencil_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
+		use pac_stencil_arcs;
 		arc : type_stencil_arc;
 	begin
 		arc := element (cursor);
@@ -726,11 +726,11 @@ package body et_packages is
 	end arc_stencil_properties;
 
 	procedure circle_stencil_properties (
-	-- Logs the properties of the given circle of stencil
 		face			: in type_face;
-		cursor			: in type_stencil_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_stencil_circles;
+		cursor			: in pac_stencil_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
+		use pac_stencil_circles;
 	begin
 		log (text => "solder paste (stencil) circle face" & to_string (face) & latin_1.space 
 			& to_string (element (cursor)),
@@ -738,11 +738,11 @@ package body et_packages is
 	end;
 
 	procedure line_stencil_properties (
-	-- Logs the properties of the given line of stencil
 		face			: in type_face;
-		cursor			: in type_stencil_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_stencil_lines;
+		cursor			: in pac_stencil_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
+		use pac_stencil_lines;
 		line : type_stencil_line;
 	begin
 		line := element (cursor);
