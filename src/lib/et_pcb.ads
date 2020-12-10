@@ -276,21 +276,23 @@ package et_pcb is
 	package pac_conductor_polygons_floating_hatched is new
 		indefinite_doubly_linked_lists (type_conductor_polygon_floating_hatched);
 	
-	type type_copper_polygons_floating is record
+	type type_conductor_polygons_floating is record
 		solid	: pac_conductor_polygons_floating_solid.list;
 		hatched	: pac_conductor_polygons_floating_hatched.list;
 	end record;
 	
 	
 	-- Type for NON ELECTRIC !! conductor objects:
-	-- NON ELECTRIC conductor objects of a pcb may also include text placeholders:
-	type type_copper is record  -- CS rename to type_conductor
+	-- NON ELECTRIC conductor objects of a pcb may also 
+	-- include text placeholders:
+	type type_conductor_objects is record
 		lines 			: pac_conductor_lines.list;
 		arcs			: pac_conductor_arcs.list;
 		circles			: pac_conductor_circles.list;
 
-		-- CS: It is probably no good idea to allow floating copper polygons.
-		polygons		: type_copper_polygons_floating; 
+		-- CS: It is probably no good idea to allow floating 
+		-- conductor polygons.
+		polygons		: type_conductor_polygons_floating; 
 		cutouts			: pac_conductor_cutouts.list;		
 		
 		texts			: pac_texts.list;
@@ -299,6 +301,7 @@ package et_pcb is
 
 -- Types for ELECTRIC !! conductor objects:
 
+	
 -- VIAS
 	keyword_layer_start	: constant string := "layer_start";
 	keyword_layer_end	: constant string := "layer_end";		
@@ -561,7 +564,9 @@ package et_pcb is
 		keepout			: et_packages.type_keepout_both_sides;
 		route_restrict	: type_route_restrict;
 		via_restrict	: type_via_restrict;
-		copper			: type_copper; -- non-electric copper stuff, incl. floating polygons ! CS: rename to conductors
+
+		-- non-electric stuff, incl. floating polygons !
+		copper			: type_conductor_objects; -- CS rename to conductors
 		contours		: type_pcb_contours; -- pcb outline
 	end record;
 

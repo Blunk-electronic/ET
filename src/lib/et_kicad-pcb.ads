@@ -653,7 +653,10 @@ package et_kicad.pcb is
 		stop_mask	: et_pcb.type_stop_mask_both_sides;
 		keepout		: et_packages.type_keepout_both_sides;		
 		contours	: et_pcb.type_pcb_contours;
-		copper		: et_pcb.type_copper; -- non-electric. used for texts only
+
+		 -- non-electric. used for texts only
+		copper		: et_pcb.type_conductor_objects;
+
 		-- other non-electric graphic objects in signal layers are not allowed in kicad
 
 		-- CS objects in other layers (user defined, glue, ...)
