@@ -470,7 +470,7 @@ is
 	
 	-- net class
 	net_class 		: et_pcb.type_net_class;
-	net_class_name	: et_pcb.type_net_class_name.bounded_string;
+	net_class_name	: et_pcb.pac_net_class_name.bounded_string;
 
 	procedure reset_net_class is 
 		use et_pcb;

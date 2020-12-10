@@ -323,7 +323,7 @@ package et_schematic is
 		route	: et_pcb.type_route; -- routing information -> pcb related
 
 		-- The net class of the net: default, High_Voltage, EM/SI-critical, ...
-		class 	: et_pcb.type_net_class_name.bounded_string := et_pcb.net_class_name_default;
+		class 	: et_pcb.pac_net_class_name.bounded_string := et_pcb.net_class_name_default;
 	end record;
 
 	-- A net junction is where segments and ports meet each other.	

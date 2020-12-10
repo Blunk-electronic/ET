@@ -460,7 +460,7 @@ package body et_kicad.pcb is
 		net_class_micro_via_diameter	: et_pcb_coordinates.type_distance;
 		net_class_via_restring			: et_pcb_coordinates.type_distance;		
 		
-		net_class_name 	: type_net_class_name.bounded_string;	-- PWR, HIGH_CURRENT, ...
+		net_class_name 	: pac_net_class_name.bounded_string;	-- PWR, HIGH_CURRENT, ...
 		net_class 		: type_net_class;
 
 		-- SEGMENTS, VIAS, POLYGONS
@@ -1201,7 +1201,7 @@ package body et_kicad.pcb is
 						when SEC_NET_CLASS =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => net_class_name := type_net_class_name.to_bounded_string (to_string (arg)); -- PWR, HIGH_CURRENT, ...
+								when 1 => net_class_name := pac_net_class_name.to_bounded_string (to_string (arg)); -- PWR, HIGH_CURRENT, ...
 								when 2 => net_class.description := type_net_class_description.to_bounded_string (to_string (arg));
 								when others => too_many_arguments;
 							end case;

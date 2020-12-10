@@ -75,12 +75,13 @@ package et_pcb is
 
 	-- NET CLASSES
 	net_class_name_length_max : constant positive := 50;
-	package type_net_class_name is new generic_bounded_length (net_class_name_length_max); -- hi-voltage, si-critical, ...
-
-	net_class_name_default : constant type_net_class_name.bounded_string := type_net_class_name.to_bounded_string ("default");
+	package pac_net_class_name is new generic_bounded_length (net_class_name_length_max); -- hi-voltage, si-critical, ...
+	use pac_net_class_name;
 	
-	function to_string (net_class_name : in type_net_class_name.bounded_string) return string;
-	function to_net_class_name (net_class_name : in string) return type_net_class_name.bounded_string;
+	net_class_name_default : constant pac_net_class_name.bounded_string := pac_net_class_name.to_bounded_string ("default");
+	
+	function to_string (net_class_name : in pac_net_class_name.bounded_string) return string;
+	function to_net_class_name (net_class_name : in string) return pac_net_class_name.bounded_string;
 	
 	net_class_description_length_max : constant positive := 100;
 	package type_net_class_description is new generic_bounded_length (net_class_description_length_max);
@@ -102,10 +103,8 @@ package et_pcb is
 	end record;
 
 	package type_net_classes is new ordered_maps (
-		key_type		=> type_net_class_name.bounded_string,
-		element_type	=> type_net_class,
-		"<"				=> type_net_class_name."<"
-		);
+		key_type		=> pac_net_class_name.bounded_string,
+		element_type	=> type_net_class);
 	
 
 

@@ -69,7 +69,7 @@ procedure draw_conductors (
 	-- For diplaying net names and classes we need this stuff:
 	is_signal : boolean := false;
 	net_name : pac_net_name.bounded_string;
-	net_class : type_net_class_name.bounded_string;
+	net_class : pac_net_class_name.bounded_string;
 
 	-- The conductor layers are drawn in the order bottom-to-top so that
 	-- the upper layers always obscure the layers underneath.
