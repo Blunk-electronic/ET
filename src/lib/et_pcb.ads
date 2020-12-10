@@ -111,7 +111,7 @@ package et_pcb is
 	
 -- PLACEHOLDERS FOR TEXTS IN CONDUCTOR LAYERS
 	
-	type type_text_meaning_copper is (
+	type type_text_meaning_conductor is (
 		COMPANY,
 		CUSTOMER,
 		PARTCODE,
@@ -124,12 +124,14 @@ package et_pcb is
 		SIGNAL_NAME
 		);
 
-	function to_string (meaning : in type_text_meaning_copper) return string;
-	function to_meaning (meaning : in string) return type_text_meaning_copper;
+	function to_string (meaning : in type_text_meaning_conductor) return string;
+	function to_meaning (meaning : in string) return type_text_meaning_conductor;
 	
 	type type_text_placeholder_conductors is new type_text with record
-		meaning : type_text_meaning_copper;
-		layer	: type_signal_layer;	-- the copper layer the placeholder is placed at
+		meaning : type_text_meaning_conductor;
+
+		-- the conductor layer the placeholder is placed in:
+		layer	: type_signal_layer; 
 	end record;
 
 	-- There can be lots of placeholders of this kind. So they can be are stored in a list:
@@ -139,8 +141,8 @@ package et_pcb is
 
 	
 	
--- PLACEHOLDERS FOR TEXTS IN NON-COPPER LAYERS
-	subtype type_text_meaning is type_text_meaning_copper range COMPANY .. REVISION;
+-- PLACEHOLDERS FOR TEXTS IN NON-CONDUCTOR LAYERS
+	subtype type_text_meaning is type_text_meaning_conductor range COMPANY .. REVISION;
 	
 	type type_text_placeholder is new type_text with record
 		meaning : type_text_meaning;
@@ -233,7 +235,7 @@ package et_pcb is
 
 	package pac_texts is new doubly_linked_lists (type_text);
 
-	-- Cutout-polygons in copper layers:
+	-- Cutout-polygons in conductor layers:
 	type type_conductor_cutout is new et_packages.type_cutout_zone with record
 		layer 	: type_signal_layer;
 	end record;
@@ -429,7 +431,8 @@ package et_pcb is
 
 	-- Stop mask in board (may contain placeholders):
 	type type_stop_mask is new et_packages.type_stop_mask with record
-		placeholders : pac_text_placeholders.list; -- for texts in copper to be exposed
+		-- for texts in conductor layers to be exposed
+		placeholders : pac_text_placeholders.list;
 	end record;
 
 	type type_stop_mask_both_sides is record
@@ -515,8 +518,8 @@ package et_pcb is
 	
 -- LOGGING PROPERTIES OF OBJECTS
 	
-	procedure text_copper_properties (
-	-- Logs the properties of the given text of copper
+	procedure text_conductor_properties (
+	-- Logs the properties of the given text.
 		cursor			: in pac_texts.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 

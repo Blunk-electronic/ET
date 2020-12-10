@@ -102,12 +102,12 @@ package body et_pcb is
 			& et_text.to_string (text.alignment);
 	end text_properties;
 	
-	function to_string (meaning : in type_text_meaning_copper) return string is begin
-		return to_lower (type_text_meaning_copper'image (meaning));
+	function to_string (meaning : in type_text_meaning_conductor) return string is begin
+		return to_lower (type_text_meaning_conductor'image (meaning));
 	end to_string;
 
-	function to_meaning (meaning : in string) return type_text_meaning_copper is begin
-		return type_text_meaning_copper'value (meaning);
+	function to_meaning (meaning : in string) return type_text_meaning_conductor is begin
+		return type_text_meaning_conductor'value (meaning);
 	end to_meaning;
 	
 	function on_segment (
@@ -208,10 +208,10 @@ package body et_pcb is
 
 	
 
-	procedure text_copper_properties (
-	-- Logs the properties of the given text of copper
+	procedure text_conductor_properties (
 		cursor			: in pac_texts.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
 		use pac_texts;
 		text : type_text;
 	begin
@@ -223,7 +223,7 @@ package body et_pcb is
 		log_indentation_up;
 		log (text => text_properties (type_text (text)), level => log_threshold + 1);
 		log_indentation_down;
-	end text_copper_properties;
+	end text_conductor_properties;
 
 	
 
