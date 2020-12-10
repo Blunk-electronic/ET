@@ -67,13 +67,13 @@ package et_pcb is
 	use et_pcb_coordinates.pac_geometry_brd;
 	use et_terminals.pac_shapes;
 	
-	-- VIAS
+-- VIAS
 	type type_micro_vias_allowed is (NO, YES);
 	function to_micro_vias_allowed (allowed : in string) return type_micro_vias_allowed;
 	function to_string (allowed : in type_micro_vias_allowed) return string;
 	
 
-	-- NET CLASSES
+-- NET CLASSES
 	net_class_name_length_max : constant positive := 50;
 	package pac_net_class_name is new generic_bounded_length (net_class_name_length_max); -- hi-voltage, si-critical, ...
 	use pac_net_class_name;
@@ -84,13 +84,13 @@ package et_pcb is
 	function to_net_class_name (net_class_name : in string) return pac_net_class_name.bounded_string;
 	
 	net_class_description_length_max : constant positive := 100;
-	package type_net_class_description is new generic_bounded_length (net_class_description_length_max);
+	package pac_net_class_description is new generic_bounded_length (net_class_description_length_max);
 
-	function to_string (class_description : in type_net_class_description.bounded_string) return string;
-	function to_net_class_description (class_description : in string) return type_net_class_description.bounded_string;
+	function to_string (class_description : in pac_net_class_description.bounded_string) return string;
+	function to_net_class_description (class_description : in string) return pac_net_class_description.bounded_string;
 	
 	type type_net_class is tagged record
-		description				: type_net_class_description.bounded_string;
+		description				: pac_net_class_description.bounded_string;
 
 		-- The net class parameters assume default values with the largest/greates structures allowed.
 		-- So the manufacturing costs will be at minimum if parameters had not been provided on instanciation.
@@ -102,7 +102,7 @@ package et_pcb is
 		micro_via_restring_min	: type_restring_width := type_restring_width'last;
 	end record;
 
-	package type_net_classes is new ordered_maps (
+	package pac_net_classes is new ordered_maps (
 		key_type		=> pac_net_class_name.bounded_string,
 		element_type	=> type_net_class);
 	

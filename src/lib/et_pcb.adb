@@ -81,14 +81,14 @@ package body et_pcb is
 		return pac_net_class_name.to_bounded_string (net_class_name);
 	end to_net_class_name;
 	
-	function to_string (class_description : in type_net_class_description.bounded_string) return string is
+	function to_string (class_description : in pac_net_class_description.bounded_string) return string is
 	begin
-		return type_net_class_description.to_string (class_description);
+		return pac_net_class_description.to_string (class_description);
 	end to_string;
 
-	function to_net_class_description (class_description : in string) return type_net_class_description.bounded_string is
+	function to_net_class_description (class_description : in string) return pac_net_class_description.bounded_string is
 	begin
-		return type_net_class_description.to_bounded_string (class_description);
+		return pac_net_class_description.to_bounded_string (class_description);
 	end to_net_class_description;
 	
 	function text_properties (text : in et_packages.type_text) return string is

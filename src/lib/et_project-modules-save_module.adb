@@ -225,10 +225,10 @@ is
 		
 	procedure query_net_classes is
 		use et_pcb;
-		use et_pcb.type_net_classes;
+		use et_pcb.pac_net_classes;
 		use et_pcb_coordinates.pac_geometry_brd;
 
-		procedure write (class_cursor : in type_net_classes.cursor) is begin
+		procedure write (class_cursor : in pac_net_classes.cursor) is begin
 			log (text => "net class " & to_string (key (class_cursor)), level => log_threshold + 1);
 			section_mark (section_net_class, HEADER);
 

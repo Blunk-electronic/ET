@@ -890,14 +890,14 @@ is
 				module		: in out et_schematic.type_module) is
 				use et_pcb;
 				inserted : boolean;
-				cursor : type_net_classes.cursor;
+				cursor : pac_net_classes.cursor;
 			begin -- insert_net_class
 				log (text => "net class " & to_string (net_class_name), level => log_threshold + 1);
 
 				-- CS: notify about missing parameters (by reading the parameter-found-flags)
 				-- If a parameter is missing, the default is assumed. See type_net_class spec.
 				
-				type_net_classes.insert (
+				pac_net_classes.insert (
 					container	=> module.net_classes,
 					key			=> net_class_name,
 					new_item	=> net_class,

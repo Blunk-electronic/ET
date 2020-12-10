@@ -3148,7 +3148,7 @@ package body et_kicad.schematic is
 						strands				=> schematic.type_strands.empty_list,
 						junctions			=> type_junctions.empty_list,
 						nets				=> type_nets.empty_map,
-						net_classes			=> et_pcb.type_net_classes.empty_map, -- net classes are defined in the board file
+						net_classes			=> et_pcb.pac_net_classes.empty_map, -- net classes are defined in the board file
 						components			=> type_components_schematic.empty_map,
 						no_connections		=> type_no_connection_flags.empty_list,
 						portlists			=> type_portlists.empty_map,

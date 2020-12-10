@@ -707,7 +707,7 @@ package et_kicad.pcb is
 		junctions			: et_kicad.schematic.type_junctions.list;				-- net junctions (for ERC, statistics, ...)
 
 		components			: et_kicad.schematic.type_components_schematic.map;	-- the components of the module
-		net_classes			: et_pcb.type_net_classes.map;		-- the net classes
+		net_classes			: et_pcb.pac_net_classes.map;		-- the net classes
 		no_connections		: et_kicad.schematic.type_no_connection_flags.list;	-- the list of no-connection-flags
 		portlists			: et_kicad.schematic.type_portlists.map;				-- the portlists of the module (components with their ports)
 		netlist				: et_kicad.schematic.type_netlist.map;					-- net names and connected component ports (incl. position of port)

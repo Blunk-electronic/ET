@@ -592,10 +592,10 @@ package et_schematic is
 
 		board_available	: type_board_available := FALSE;
 		
-		devices			: pac_devices_sch.map;						-- the devices of the module
-		net_classes		: et_pcb.type_net_classes.map;			-- the net classes
-		submods			: et_submodules.pac_submodules.map;		-- instances of submodules (boxes)
-		netchangers		: et_submodules.pac_netchangers.map;		-- netchangers
+		devices			: pac_devices_sch.map;				-- the devices of the module
+		net_classes		: et_pcb.pac_net_classes.map;		-- the net classes
+		submods			: et_submodules.pac_submodules.map;	-- instances of submodules (boxes)
+		netchangers		: et_submodules.pac_netchangers.map;-- netchangers
 		
 		texts       	: pac_texts.list; -- general notes in schematic, not related to drawing frames !
 

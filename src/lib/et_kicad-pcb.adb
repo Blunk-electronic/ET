@@ -1202,7 +1202,7 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => net_class_name := pac_net_class_name.to_bounded_string (to_string (arg)); -- PWR, HIGH_CURRENT, ...
-								when 2 => net_class.description := type_net_class_description.to_bounded_string (to_string (arg));
+								when 2 => net_class.description := pac_net_class_description.to_bounded_string (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
