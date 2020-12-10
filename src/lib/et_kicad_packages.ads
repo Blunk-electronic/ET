@@ -149,6 +149,15 @@ package et_kicad_packages is
 		terminals				: et_terminals.type_terminals.map;
 	end record;
 
+	
+	package_tags_length_max : constant positive := 200;
+	package type_package_tags is new generic_bounded_length (package_tags_length_max);
+
+	function to_string (tags : in type_package_tags.bounded_string) return string;
+
+	function to_package_tags (tags : in string) return type_package_tags.bounded_string;
+
+	
 	function to_assembly_technology (
 		tech : in string) 
 		return type_assembly_technology;

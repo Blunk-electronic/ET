@@ -349,7 +349,6 @@ package et_pcb_rw is
 	procedure write_circle (cursor : in pac_via_restrict_circles.cursor);	
 	procedure write_polygon (cursor : in pac_via_restrict_polygons.cursor);
 	procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor);
-	
 
 -- BOARD CONTOUR
 	procedure write_line (cursor : in pac_pcb_contour_lines.cursor);

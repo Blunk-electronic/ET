@@ -47,6 +47,17 @@ with et_conventions;
 
 package body et_kicad_packages is
 
+	function to_string (tags : in type_package_tags.bounded_string) return string is
+	begin
+		return "tags '" & type_package_tags.to_string (tags) & "'";
+	end to_string;
+
+	function to_package_tags (tags : in string) return type_package_tags.bounded_string is
+	begin
+		return type_package_tags.to_bounded_string (tags);
+	end to_package_tags;
+
+	
 	function to_assembly_technology (tech : in string) return type_assembly_technology is begin
 		if tech = "smd" then return SMT;
 		elsif tech = "thru_hole" then return THT;
@@ -542,7 +553,7 @@ package body et_kicad_packages is
 
 		
 		time_stamp	: type_timestamp; -- temporarily storage of package timestamp
-		description	: type_package_description.bounded_string; -- temp. storage of package description
+		description	: pac_package_description.bounded_string; -- temp. storage of package description
 		tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
 		-- The majority of terminals dictates the package technology. The default is THT.

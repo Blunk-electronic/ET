@@ -789,26 +789,25 @@ package et_packages is
 	function to_appearance (appearance : in string) return type_package_appearance;
 	
 
+-- DESCRIPTION
+	
 	package_description_length_max : constant positive := 200;
-	package type_package_description is new generic_bounded_length (package_description_length_max);
+	package pac_package_description is new generic_bounded_length (package_description_length_max);
 
 	function to_string (
-		description : in type_package_description.bounded_string;
+		description : in pac_package_description.bounded_string;
 		verbose		: in boolean := false) return string;
 
-	function to_package_description (description : in string) return type_package_description.bounded_string;
+	function to_package_description (description : in string) 
+		return pac_package_description.bounded_string;
+
 	
-	package_tags_length_max : constant positive := 200;
-	package type_package_tags is new generic_bounded_length (package_tags_length_max);
 
-	function to_string (tags : in type_package_tags.bounded_string) return string;
-
-	function to_package_tags (tags : in string) return type_package_tags.bounded_string;
-
+-- PACKAGE MODEL
 	
 	-- This is the base type of a package:
 	type type_package_base (appearance : type_package_appearance) is abstract tagged record
-		description		: type_package_description.bounded_string;
+		description		: pac_package_description.bounded_string;
 		conductors		: type_conductor_objects_both_sides; -- non-electric objects
 		keepout 		: type_keepout_both_sides;
 		stop_mask		: type_stop_mask_both_sides; -- not terminal related

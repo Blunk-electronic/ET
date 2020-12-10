@@ -255,38 +255,6 @@ package body et_packages is
 		return type_package_appearance'value (appearance);
 	end;
 	
--- 	function to_string (technology : in type_assembly_technology) return string is begin
--- 		return to_lower (type_assembly_technology'image (technology));
--- 	end;
--- 
--- 	function to_assembly_technology (technology : in string) return type_assembly_technology is begin
--- 		return type_assembly_technology'value (technology);
--- 	end;
-	
--- 	function to_string (solder_paste : in type_solder_paste_status) return string is begin
--- 		return to_lower (type_solder_paste_status'image (solder_paste));
--- 	end;
--- 
--- 	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status is begin
--- 		return type_solder_paste_status'value (solder_paste);
--- 	end;
--- 	
--- 	function to_string (stop_mask : in type_stop_mask_status) return string is begin
--- 		return to_lower (type_stop_mask_status'image (stop_mask));
--- 	end;
--- 
--- 	function to_stop_mask_status (stop_mask : in string) return type_stop_mask_status is begin
--- 		return type_stop_mask_status'value (stop_mask);
--- 	end;
--- 	
--- 	function to_string (tht_hole : in type_terminal_tht_hole) return string is begin
--- 		return to_lower (type_terminal_tht_hole'image (tht_hole));
--- 	end;
--- 
--- 	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole is begin
--- 		return type_terminal_tht_hole'value (tht_hole);
--- 	end;
-	
 	
 	function to_string (circle : in type_fillable_circle) return string is begin
 		case circle.filled is
@@ -311,46 +279,27 @@ package body et_packages is
 				end case;
 		end case;
 	end;
-
--- 	function to_string (terminal : in type_terminal_name.bounded_string) return string is begin
--- 		return type_terminal_name.to_string (terminal);
--- 	end;
--- 
--- 	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string is begin
--- 		return type_terminal_name.to_bounded_string (terminal);
--- 	end;
 	
 	function to_string (
-		description : in type_package_description.bounded_string;
+		description : in pac_package_description.bounded_string;
 		verbose		: in boolean := false) return string is
 	begin
 		if verbose then
-			return "description '" & type_package_description.to_string (description) & "'";
+			return "description '" & pac_package_description.to_string (description) & "'";
 		else
-			return type_package_description.to_string (description);
+			return pac_package_description.to_string (description);
 		end if;
 	end to_string;
 
-	function to_package_description (description : in string) return type_package_description.bounded_string is
-	begin
-		return type_package_description.to_bounded_string (description);
+	function to_package_description (description : in string) 
+		return pac_package_description.bounded_string 
+	is begin
+		return pac_package_description.to_bounded_string (description);
 	end to_package_description;
 
-	
-	function to_string (tags : in type_package_tags.bounded_string) return string is
-	begin
-		return "tags '" & type_package_tags.to_string (tags) & "'";
-	end to_string;
-
-	function to_package_tags (tags : in string) return type_package_tags.bounded_string is
-	begin
-		return type_package_tags.to_bounded_string (tags);
-	end to_package_tags;
-
 	function locate_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
-	-- Returns a cursor to the given package model.		
-		return type_packages.cursor is
-	begin
+		return type_packages.cursor 
+	is begin
 		return type_packages.find (packages, model_name);
 	end;
 	

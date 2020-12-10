@@ -752,7 +752,7 @@ package body et_pcb_rw.device_packages is
 
 		-- The description and technology will be assigned once the complete
 		-- model has been read. See main of this procedure.
-		pac_description			: type_package_description.bounded_string; 
+		pac_description			: pac_package_description.bounded_string; 
 		pac_technology			: type_assembly_technology := assembly_technology_default;
 		
 		signal_layers			: et_pcb_stack.type_signal_layers.set;
