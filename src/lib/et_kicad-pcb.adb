@@ -3554,7 +3554,7 @@ package body et_kicad.pcb is
 					when others =>
 
 						-- If text is placed in a kicad signal layer (copper) it is added to the list of
-						-- texts in board.copper. The kicad layer id is translated to the ET layer id.
+						-- texts in board.conductors. The kicad layer id is translated to the ET layer id.
 						-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
 
 						-- If text is placed in other (non-signal) layers -> error
@@ -4917,7 +4917,7 @@ package body et_kicad.pcb is
 								when THERMAL =>
 									declare
 										use et_packages;
-										p : et_pcb.type_copper_polygon_solid (et_pcb.THERMAL);
+										p : et_pcb.type_conductor_polygon_solid (et_pcb.THERMAL);
 									begin
 										p.width_min	:= element (polygon_cursor).min_thickness;
 										p.isolation := element (polygon_cursor).isolation_gap;
@@ -4943,7 +4943,7 @@ package body et_kicad.pcb is
 								when SOLID =>
 									declare
 										use et_packages;
-										p : et_pcb.type_copper_polygon_solid (et_pcb.SOLID);
+										p : et_pcb.type_conductor_polygon_solid (et_pcb.SOLID);
 									begin
 										p.width_min	:= element (polygon_cursor).min_thickness;
 										p.isolation := element (polygon_cursor).isolation_gap;
@@ -5244,7 +5244,7 @@ package body et_kicad.pcb is
 				end transfer_net_classes;
 
 				procedure transfer_floating_polygons is
-				-- Transfers floating polygons (their net_id is zero) to the schematic module (selector "board.copper.polygons").
+				-- Transfers floating polygons (their net_id is zero) to the schematic module (selector "board.conductors.polygons").
 					use type_polygons;
 					polygon_cursor : type_polygons.cursor := board.polygons.first;
 				begin
@@ -5256,7 +5256,7 @@ package body et_kicad.pcb is
 							-- These properites of kicad polygons are discarded as there is no need for them:
 							-- net_id, timestamp, hatch_style, hatch_width, filled, fill_mode_segment, arc_segments
 							
-							module.board.copper.polygons.solid.append (
+							module.board.conductors.polygons.solid.append (
 								new_item => (
 
 									-- convert the polygon corner point to a list of lines:
@@ -5277,7 +5277,7 @@ package body et_kicad.pcb is
 									others => <>
 								));
 
-							floating_copper_polygon_properties (module.board.copper.polygons.solid.last, log_threshold + 2);
+							floating_copper_polygon_properties (module.board.conductors.polygons.solid.last, log_threshold + 2);
 							log (WARNING, "polygon is not connected with any net !", level => log_threshold + 2);
 
 						end if;

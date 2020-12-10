@@ -251,7 +251,9 @@ package et_pcb is
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 	
 	-- A floating conductor polygon is not connected to any net:
-	type type_conductor_polygon_floating_solid is new et_packages.type_polygon (fill_style => SOLID) with record
+	type type_conductor_polygon_floating_solid is new 
+		et_packages.type_polygon (fill_style => SOLID) 
+	with record
 		width_min		: type_track_width; -- the minimum width
 
 		-- the space between foreign pads and the polygon:
@@ -316,10 +318,12 @@ package et_pcb is
 	-- vias are collected in simple lists
 	package pac_vias is new doubly_linked_lists (type_via);
 	
-	-- route (tracks/traces, vias, polgons)
 
-	-- A polygon in a signal layer is usually connected with a THT or SMD pads (or both) via thermals, solid (or not at all).
-	-- For this reason we define a controlled type here because some properties may exist (or may not exists) depending
+
+	-- A polygon in a signal layer is usually connected with 
+	-- THT or SMD pads (or both) via thermals, solid (or not at all).
+	-- For this reason we define a controlled type here because some
+	-- properties may exist (or may not exists) depending
 	-- on the kinde of pad_connection:
 
 -- THERMALS
@@ -330,13 +334,15 @@ package et_pcb is
 	polygon_thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
 	subtype type_polygon_thermal_width is et_pcb_coordinates.type_distance range polygon_thermal_width_min .. polygon_thermal_width_max;
 
-	-- If a terminal is connected/associated with a polyon, this is the space between pad and polygon:
+	-- If a terminal is connected/associated with a polyon,
+	-- this is the space between pad and polygon:
 	polygon_thermal_gap_min : constant type_track_clearance := type_track_clearance'first;
 	polygon_thermal_gap_max : constant type_track_clearance := 3.0; -- CS: adjust if nessecariy
 	subtype type_polygon_thermal_gap is type_track_clearance range polygon_thermal_gap_min .. polygon_thermal_gap_max;
 
 
-	-- Polygons may be connected with associated pads via thermals, via solid connection or not at all:
+	-- Polygons may be connected with associated pads via thermals,
+	-- via solid connection or not at all:
 	keyword_pad_connection : constant string := "pad_connection";
 	type type_polygon_pad_connection is (THERMAL, SOLID);
 
@@ -362,9 +368,9 @@ package et_pcb is
 	end record;
 	
 	
-	type type_copper_polygon_solid (connection : type_polygon_pad_connection) is new
-		et_packages.type_conductor_polygon_solid with record
-
+	type type_conductor_polygon_solid (connection : type_polygon_pad_connection) is new
+		et_packages.type_conductor_polygon_solid 
+	with record
 		layer 			: type_signal_layer;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
 				
@@ -373,16 +379,15 @@ package et_pcb is
 				thermal : type_thermal;
 
 			when SOLID =>
-				technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
+				-- whether SMT, THT or both kinds of pads connect with the polygon
+				technology	: type_polygon_pad_technology;
 				-- no need for any kind of thermal parameters
-
-		end case;
-				
+		end case;				
 	end record;
 
-	type type_copper_polygon_hatched (connection : type_polygon_pad_connection) is new
-		et_packages.type_conductor_polygon_hatched with record
-
+	type type_conductor_polygon_hatched (connection : type_polygon_pad_connection) is new
+		et_packages.type_conductor_polygon_hatched 
+	with record
 		layer 			: type_signal_layer;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
 				
@@ -391,19 +396,22 @@ package et_pcb is
 				thermal : type_thermal;
 
 			when SOLID =>
-				technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
+				-- whether SMT, THT or both kinds of pads connect with the polygon
+				technology	: type_polygon_pad_technology;
 				-- no need for any kind of thermal parameters
-
 		end case;
-				
 	end record;
 
 
 	
-	package pac_signal_polygons_solid is new indefinite_doubly_linked_lists (type_copper_polygon_solid);
-	package pac_signal_polygons_hatched is new indefinite_doubly_linked_lists (type_copper_polygon_hatched);	
+	package pac_signal_polygons_solid is new
+		indefinite_doubly_linked_lists (type_conductor_polygon_solid);
+	
+	package pac_signal_polygons_hatched is new
+		indefinite_doubly_linked_lists (type_conductor_polygon_hatched);	
 
 
+		
 	type type_signal_polygons is record
 		solid	: pac_signal_polygons_solid.list;
 		hatched	: pac_signal_polygons_hatched.list;
@@ -566,7 +574,7 @@ package et_pcb is
 		via_restrict	: type_via_restrict;
 
 		-- non-electric stuff, incl. floating polygons !
-		copper			: type_conductor_objects; -- CS rename to conductors
+		conductors		: type_conductor_objects;
 		contours		: type_pcb_contours; -- pcb outline
 	end record;
 

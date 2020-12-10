@@ -2177,7 +2177,7 @@ is
 					module		: in out et_schematic.type_module) is
 				begin
 					et_pcb.pac_conductor_cutouts.append (
-						container	=> module.board.copper.cutouts,
+						container	=> module.board.conductors.cutouts,
 						new_item	=> (type_polygon_base (polygon) with
 								easing			=> board_easing,
 								layer			=> signal_layer));
@@ -2585,7 +2585,7 @@ is
 					case board_fill_style is
 						when SOLID =>
 							pac_conductor_polygons_floating_solid.append (
-								container	=> module.board.copper.polygons.solid,
+								container	=> module.board.conductors.polygons.solid,
 								new_item	=> (type_polygon_base (polygon) with
 										fill_style 		=> SOLID,
 										easing			=> board_easing,
@@ -2597,7 +2597,7 @@ is
 
 						when HATCHED =>
 							pac_conductor_polygons_floating_hatched.append (
-								container	=> module.board.copper.polygons.hatched,
+								container	=> module.board.conductors.polygons.hatched,
 								new_item	=> (type_polygon_base (polygon) with
 										fill_style 		=> HATCHED,
 										easing			=> board_easing,
@@ -2628,7 +2628,7 @@ is
 					module		: in out et_schematic.type_module) is
 				begin
 					pac_conductor_lines.append (
-						container	=> module.board.copper.lines,
+						container	=> module.board.conductors.lines,
 						new_item	=> (et_terminals.pac_shapes.type_line (board_line) with
 										width	=> board_line_width,
 										layer	=> signal_layer));
@@ -2654,7 +2654,7 @@ is
 					module		: in out et_schematic.type_module) is
 				begin
 					pac_conductor_arcs.append (
-						container	=> module.board.copper.arcs,
+						container	=> module.board.conductors.arcs,
 						new_item	=> (et_terminals.pac_shapes.type_arc (board_arc) with
 										width	=> board_line_width,
 										layer	=> signal_layer));
@@ -2680,7 +2680,7 @@ is
 					module		: in out et_schematic.type_module) is
 				begin
 					pac_conductor_circles.append (
-						container	=> module.board.copper.circles,
+						container	=> module.board.conductors.circles,
 						new_item	=> (board_make_copper_circle with signal_layer));
 				end;
 									
@@ -2705,7 +2705,7 @@ is
 					module		: in out et_schematic.type_module) is
 				begin
 					pac_texts.append (
-						container	=> module.board.copper.texts,
+						container	=> module.board.conductors.texts,
 						new_item	=> board_text_copper);
 				end do_it;
 									
@@ -2727,7 +2727,7 @@ is
 					module		: in out et_schematic.type_module) is
 				begin
 					pac_text_placeholders_conductors.append (
-						container	=> module.board.copper.placeholders,
+						container	=> module.board.conductors.placeholders,
 						new_item	=> board_text_copper_placeholder);
 				end do_it;
 									
@@ -2886,7 +2886,7 @@ is
 					use et_packages;
 
 					procedure connection_thermal is
-						p : et_pcb.type_copper_polygon_solid (connection => et_pcb.THERMAL);
+						p : et_pcb.type_conductor_polygon_solid (connection => et_pcb.THERMAL);
 					begin
 						p.segments := polygon.segments;
 						
@@ -2905,7 +2905,7 @@ is
 					end;
 
 					procedure connection_solid is
-						p : et_pcb.type_copper_polygon_solid (connection => et_pcb.SOLID);
+						p : et_pcb.type_conductor_polygon_solid (connection => et_pcb.SOLID);
 					begin
 						p.segments := polygon.segments;
 						
@@ -2936,7 +2936,7 @@ is
 					use et_packages;
 
 					procedure connection_thermal is
-						p : et_pcb.type_copper_polygon_hatched (connection => et_pcb.THERMAL);
+						p : et_pcb.type_conductor_polygon_hatched (connection => et_pcb.THERMAL);
 					begin
 						p.segments := polygon.segments;
 						
@@ -2955,7 +2955,7 @@ is
 					end;
 
 					procedure connection_solid is
-						p : et_pcb.type_copper_polygon_hatched (connection => et_pcb.SOLID);
+						p : et_pcb.type_conductor_polygon_hatched (connection => et_pcb.SOLID);
 					begin
 						p.segments := polygon.segments;
 						

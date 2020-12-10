@@ -1664,7 +1664,7 @@ package body et_board_ops is
 			module		: in out type_module) is
 		begin
 			append (
-				container	=> module.board.copper.lines,
+				container	=> module.board.conductors.lines,
 				new_item	=> line);
 		end;
 		
@@ -2013,7 +2013,7 @@ package body et_board_ops is
 			module		: in out type_module) is
 		begin
 			append (
-				container	=> module.board.copper.arcs,
+				container	=> module.board.conductors.arcs,
 				new_item	=> arc);
 		end;
 		
@@ -2099,15 +2099,15 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			line_cursor : et_pcb.pac_conductor_lines.cursor := module.board.copper.lines.first;
-			arc_cursor  : et_pcb.pac_conductor_arcs.cursor := module.board.copper.arcs.first;
+			line_cursor : et_pcb.pac_conductor_lines.cursor := module.board.conductors.lines.first;
+			arc_cursor  : et_pcb.pac_conductor_arcs.cursor := module.board.conductors.arcs.first;
 		begin
 			-- first probe the lines. If a matching line found, delete it 
 			-- and abort iteration.
 			while line_cursor /= et_pcb.pac_conductor_lines.no_element loop
 
 				if on_segment (point, layer, line_cursor, accuracy) then
-					delete (module.board.copper.lines, line_cursor);
+					delete (module.board.conductors.lines, line_cursor);
 					deleted := true;
 					exit;
 				end if;
@@ -2121,7 +2121,7 @@ package body et_board_ops is
 				while arc_cursor /= et_pcb.pac_conductor_arcs.no_element loop
 
 					if on_segment (point, layer, arc_cursor, accuracy) then
-						delete (module.board.copper.arcs, arc_cursor);
+						delete (module.board.conductors.arcs, arc_cursor);
 						deleted := true;
 						exit;
 					end if;

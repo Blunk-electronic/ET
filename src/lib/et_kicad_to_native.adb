@@ -695,7 +695,7 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end move_via;
 
-					procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_solid) is begin
+					procedure move_polygon (polygon : in out et_pcb.type_conductor_polygon_solid) is begin
 						log (text => "polygon segments", level => log_threshold + 4);
 						move (polygon);
 					end move_polygon;
@@ -1940,10 +1940,10 @@ package body et_kicad_to_native is
 			begin -- move_copper
 				
 				-- LINES
-				lines_cursor := module.board.copper.lines.first;
+				lines_cursor := module.board.conductors.lines.first;
 				while lines_cursor /= et_pcb.pac_conductor_lines.no_element loop
 					et_pcb.pac_conductor_lines.update_element (
-						container	=> module.board.copper.lines,
+						container	=> module.board.conductors.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
 					
@@ -1951,10 +1951,10 @@ package body et_kicad_to_native is
 				end loop;
 
 				-- ARCS
-				arcs_cursor := module.board.copper.arcs.first;
+				arcs_cursor := module.board.conductors.arcs.first;
 				while arcs_cursor /= et_pcb.pac_conductor_arcs.no_element loop
 					et_pcb.pac_conductor_arcs.update_element (
-						container	=> module.board.copper.arcs,
+						container	=> module.board.conductors.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
 					
@@ -1962,10 +1962,10 @@ package body et_kicad_to_native is
 				end loop;
 
 				-- CIRCLES
-				circles_cursor := module.board.copper.circles.first;
+				circles_cursor := module.board.conductors.circles.first;
 				while circles_cursor /= et_pcb.pac_conductor_circles.no_element loop
 					et_pcb.pac_conductor_circles.update_element (
-						container	=> module.board.copper.circles,
+						container	=> module.board.conductors.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
 					
@@ -1974,10 +1974,10 @@ package body et_kicad_to_native is
 
 				-- POLYGONS
 				-- solid
-				polygons_solid_cursor := module.board.copper.polygons.solid.first;
+				polygons_solid_cursor := module.board.conductors.polygons.solid.first;
 				while polygons_solid_cursor /= et_pcb.pac_conductor_polygons_floating_solid.no_element loop
 					et_pcb.pac_conductor_polygons_floating_solid.update_element (
-						container	=> module.board.copper.polygons.solid,
+						container	=> module.board.conductors.polygons.solid,
 						position	=> polygons_solid_cursor,
 						process		=> move_polygon'access);
 					
@@ -1985,10 +1985,10 @@ package body et_kicad_to_native is
 				end loop;
 
 				-- hatched
-				polygons_hatched_cursor := module.board.copper.polygons.hatched.first;
+				polygons_hatched_cursor := module.board.conductors.polygons.hatched.first;
 				while polygons_hatched_cursor /= et_pcb.pac_conductor_polygons_floating_hatched.no_element loop
 					et_pcb.pac_conductor_polygons_floating_hatched.update_element (
-						container	=> module.board.copper.polygons.hatched,
+						container	=> module.board.conductors.polygons.hatched,
 						position	=> polygons_hatched_cursor,
 						process		=> move_polygon'access);
 					
@@ -1996,10 +1996,10 @@ package body et_kicad_to_native is
 				end loop;
 				
 				-- TEXTS
-				texts_cursor := module.board.copper.texts.first;
+				texts_cursor := module.board.conductors.texts.first;
 				while texts_cursor /= et_pcb.pac_texts.no_element loop
 					et_pcb.pac_texts.update_element (
-						container	=> module.board.copper.texts,
+						container	=> module.board.conductors.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
 
@@ -2007,10 +2007,10 @@ package body et_kicad_to_native is
 				end loop;
 
 				-- TEXT PLACEHOLDERS
-				placeholders_cursor := module.board.copper.placeholders.first;
+				placeholders_cursor := module.board.conductors.placeholders.first;
 				while placeholders_cursor /= et_pcb.pac_text_placeholders_conductors.no_element loop
 					et_pcb.pac_text_placeholders_conductors.update_element (
-						container	=> module.board.copper.placeholders,
+						container	=> module.board.conductors.placeholders,
 						position	=> placeholders_cursor,
 						process		=> move_placeholder'access);
 

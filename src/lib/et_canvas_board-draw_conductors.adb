@@ -389,16 +389,16 @@ is
 				
 				-- freetracks:
 				is_signal := false;
-				iterate (module.board.copper.lines, query_line'access);
-				iterate (module.board.copper.arcs, query_arc'access);
-				iterate (module.board.copper.circles, query_circle'access);
-				iterate (module.board.copper.polygons.solid, query_polygon'access);
-				iterate (module.board.copper.polygons.hatched, query_polygon'access);
-				iterate (module.board.copper.cutouts, query_cutout'access);
+				iterate (module.board.conductors.lines, query_line'access);
+				iterate (module.board.conductors.arcs, query_arc'access);
+				iterate (module.board.conductors.circles, query_circle'access);
+				iterate (module.board.conductors.polygons.solid, query_polygon'access);
+				iterate (module.board.conductors.polygons.hatched, query_polygon'access);
+				iterate (module.board.conductors.cutouts, query_cutout'access);
 
 				-- texts
-				iterate (module.board.copper.placeholders, query_placeholder'access);
-				iterate (module.board.copper.texts, query_text'access);
+				iterate (module.board.conductors.placeholders, query_placeholder'access);
+				iterate (module.board.conductors.texts, query_text'access);
 
 				-- tracks:
 				iterate (module.nets, query_net'access);
