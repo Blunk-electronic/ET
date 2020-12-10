@@ -3094,8 +3094,8 @@ package body et_schematic_ops is
 		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/smd/SO15.pac
 
 		use et_packages;		
-		use type_packages;
-		package_cursor		: type_packages.cursor;
+		use pac_packages_lib;
+		package_cursor		: pac_packages_lib.cursor;
 
 	begin -- placeholders_of_package
 		
@@ -3106,7 +3106,7 @@ package body et_schematic_ops is
 		package_model := element (variant_cursor).package_model; -- ../lbr/smd/SO15.pac
 
 		-- locate the package model in the package library:
-		package_cursor := type_packages.find (packages, package_model);
+		package_cursor := pac_packages_lib.find (packages, package_model);
 
 		-- fetch the placeholders of silk screen top and bottom
 		placeholders.silk_screen.top := element (package_cursor).silk_screen.top.placeholders;

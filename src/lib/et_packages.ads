@@ -103,6 +103,11 @@ package et_packages is
 
 	package_model_file_name_length_max : constant positive := 300;
 	package pac_package_model_file_name is new generic_bounded_length (package_model_file_name_length_max);
+
+	package_model_file_extension : constant string := "pac";
+	
+	use pac_package_model_file_name;
+	
 	function to_string (name : in pac_package_model_file_name.bounded_string) return string;
 	function to_file_name (name : in string) return pac_package_model_file_name.bounded_string;
 	
@@ -842,34 +847,33 @@ package et_packages is
 
 	
 	-- A package in the library extends the base package type:
-	type type_package is new type_package_base with record
+	type type_package_lib is new type_package_base with record
 		-- CS default for face ?
 		silk_screen				: type_silk_screen_both_sides; -- incl. placeholder for name and purpose
 		assembly_documentation	: type_assembly_documentation_both_sides; -- incl. placeholder for value
 		terminals				: type_terminals.map;
 	end record;
 
-	-- packages
 	-- CS: this should be a hashed map:
-	package type_packages is new indefinite_ordered_maps (
+	package pac_packages_lib is new indefinite_ordered_maps (
 		key_type		=> pac_package_model_file_name.bounded_string, -- ../lbr/smd/SO15.pac
-		"<"				=> pac_package_model_file_name."<",
-		element_type	=> type_package);
+		element_type	=> type_package_lib);
 	
-	library_file_extension : constant string := "pac";
-
 	-- HERE RIG WIDE PACKAGES ARE KEPT:
-	packages : type_packages.map; -- CS rename to pac_packages
+	packages : pac_packages_lib.map;
 
+
+
+	
 	function locate_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
 	-- Returns a cursor to the given package model.
-		return type_packages.cursor;
+		return pac_packages_lib.cursor;
 	
 	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean;
 	-- Returns true if the given package is real (means it has a height).
 
 	function terminal_properties (
-		cursor		: in type_packages.cursor;
+		cursor		: in pac_packages_lib.cursor;
 		terminal	: in type_terminal_name.bounded_string)  -- H4, 14
 		return type_terminals.cursor;
 	-- Returns a cursor to the requested terminal (with all its properties) within the given package model.

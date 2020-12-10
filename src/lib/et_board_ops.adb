@@ -244,10 +244,10 @@ package body et_board_ops is
 	end delete_layer;
 
 	function get_placeholders (
-		package_cursor : in et_packages.type_packages.cursor)
+		package_cursor : in et_packages.pac_packages_lib.cursor)
 		return et_packages.type_text_placeholders is
 		use et_packages;
-		use type_packages;
+		use pac_packages_lib;
 	begin
 		return p : type_text_placeholders do
 		
@@ -271,7 +271,7 @@ package body et_board_ops is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		package_cursor_lib : et_packages.type_packages.cursor;
+		package_cursor_lib : et_packages.pac_packages_lib.cursor;
 		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
@@ -1414,7 +1414,7 @@ package body et_board_ops is
 		terminal_position_face : type_face; -- top/bottom
 
 		model : pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
-		package_model_cursor : type_packages.cursor;
+		package_model_cursor : pac_packages_lib.cursor;
 
 		use type_terminals;
 		-- This cursor points to the terminal in the package model:

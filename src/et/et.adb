@@ -414,14 +414,18 @@ procedure et is
 	end import_project;
 
 	procedure save_package_as is 
+		use et_packages;
 		use et_packages.pac_package_model_file_name;
 	begin
 		-- If package_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only packagein et_packages.packages is saved.
+
+		-- CS: Test file extension package_model_file_extension
+		
 		if length (package_name_save_as) > 0 then
 			et_pcb_rw.device_packages.save_package (
 				file_name 		=> package_name_save_as,
-				packge			=> et_packages.type_packages.last_element (et_packages.packages),
+				packge			=> pac_packages_lib.last_element (et_packages.packages),
 				log_threshold	=> 0);
 		end if;
 	end;

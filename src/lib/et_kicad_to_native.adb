@@ -2506,7 +2506,7 @@ package body et_kicad_to_native is
 			model_return := et_packages.to_file_name (compose (
 					containing_directory	=> et_packages.to_string (prefix_packages_dir),
 					name					=> et_packages.to_string (model_copy),
-					extension				=> et_packages.library_file_extension));
+					extension				=> et_packages.package_model_file_extension));
 
 			return model_return;
 		end rename_package_model;
@@ -3633,8 +3633,8 @@ package body et_kicad_to_native is
 				package_name			: et_packages.pac_package_name.bounded_string;
 				package_model			: et_packages.pac_package_model_file_name.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
 
-				use et_packages.type_packages;
-				package_cursor			: et_packages.type_packages.cursor;
+				use et_packages.pac_packages_lib;
+				package_cursor			: et_packages.pac_packages_lib.cursor;
 				inserted				: boolean;
 			begin
 				-- Loop in kicad packages (footprints) of the current library.
@@ -3654,7 +3654,7 @@ package body et_kicad_to_native is
 					-- Insert the new package model in et_pcb.packages. In case the package is already in the 
 					-- container (due to other project imports), the flag "inserted" will go false. The package
 					-- would not be inserted again:
-					et_packages.type_packages.insert (
+					et_packages.pac_packages_lib.insert (
 						container	=> et_packages.packages,
 						key			=> package_model, -- libraries/packages/-home-user-lbr-bel_battery_pretty-S_CR3232.pac
 						position	=> package_cursor,
@@ -3757,9 +3757,9 @@ package body et_kicad_to_native is
 					log_threshold	=> log_threshold + 1); 
 			end save_device;
 
-			use et_packages.type_packages;
+			use et_packages.pac_packages_lib;
 			
-			procedure save_package (package_cursor : in et_packages.type_packages.cursor) is
+			procedure save_package (package_cursor : in et_packages.pac_packages_lib.cursor) is
 				use et_packages.pac_package_model_file_name;
 			begin
 				et_pcb_rw.device_packages.save_package (

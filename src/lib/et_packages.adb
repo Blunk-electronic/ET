@@ -298,15 +298,15 @@ package body et_packages is
 	end to_package_description;
 
 	function locate_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
-		return type_packages.cursor 
+		return pac_packages_lib.cursor 
 	is begin
-		return type_packages.find (packages, model_name);
+		return pac_packages_lib.find (packages, model_name);
 	end;
 	
 	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean is
 	-- Returns true if the given package is real (means it has a height).
-		use type_packages;
-		cursor : type_packages.cursor;
+		use pac_packages_lib;
+		cursor : pac_packages_lib.cursor;
 	begin
 		cursor := find (packages, package_name);
 
@@ -318,7 +318,7 @@ package body et_packages is
 	end is_real;
 
 	function terminal_properties (
-		cursor		: in type_packages.cursor;
+		cursor		: in pac_packages_lib.cursor;
 		terminal	: in type_terminal_name.bounded_string) -- H4, 14
 		return type_terminals.cursor is
 	-- Returns a cursor to the requested terminal (with all its properties) within the given package model.
@@ -326,14 +326,14 @@ package body et_packages is
 
 		procedure query_terminals (
 			model_name	: in pac_package_model_file_name.bounded_string;
-			model		: in type_package) is
+			model		: in type_package_lib) is
 			use type_terminals;
 		begin
 			terminal_cursor := find (model.terminals, terminal);
 		end;
 		
 	begin -- terminal_position
-		type_packages.query_element (
+		pac_packages_lib.query_element (
 			position	=> cursor,
 			process		=> query_terminals'access);
 

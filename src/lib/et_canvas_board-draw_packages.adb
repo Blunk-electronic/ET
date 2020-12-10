@@ -78,7 +78,7 @@ is
 	is
 
 		use et_terminals.pac_shapes;
-		use type_packages;
+		use pac_packages_lib;
 
 		function flipped return boolean is 
 			use et_pcb;
@@ -117,7 +117,7 @@ is
 		end set_destination;
 		
 		-- locate the package model in the package library:
-		package_cursor : constant et_packages.type_packages.cursor := locate_package_model (model);
+		package_cursor : constant et_packages.pac_packages_lib.cursor := locate_package_model (model);
 
 		-- Maps from meaning of given placeholder to text content:
 		function to_placeholder_content (ph : in type_text_placeholder)

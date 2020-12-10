@@ -98,7 +98,7 @@ package et_pcb_rw.device_packages is
 	procedure save_package (
 	-- Saves the given package model in a file specified by file_name.							   
 		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
-		packge			: in type_package; -- the actual device model
+		packge			: in type_package_lib; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure read_package (
