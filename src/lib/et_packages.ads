@@ -705,21 +705,21 @@ package et_packages is
 		layers	: type_signal_layers.set;
 	end record;
 	
-	package type_via_restrict_lines is new doubly_linked_lists (type_via_restrict_line);
+	package pac_via_restrict_lines is new doubly_linked_lists (type_via_restrict_line);
 
 	
 	type type_via_restrict_arc is new type_arc with record
 		layers	: type_signal_layers.set;
 	end record;
 	
-	package type_via_restrict_arcs is new doubly_linked_lists (type_via_restrict_arc);
+	package pac_via_restrict_arcs is new doubly_linked_lists (type_via_restrict_arc);
 
 	
 	type type_via_restrict_circle is new type_fillable_circle_solid with record
 		layers	: type_signal_layers.set;
 	end record;
 	
-	package type_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
+	package pac_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
 
 	
 	type type_via_restrict_polygon is new pac_shapes.type_polygon with record
@@ -727,7 +727,7 @@ package et_packages is
 	end record;
 	-- A polygon in via restrict is always filled.
 	
-	package type_via_restrict_polygons is new doubly_linked_lists (type_via_restrict_polygon);
+	package pac_via_restrict_polygons is new doubly_linked_lists (type_via_restrict_polygon);
 
 
 	type type_via_restrict_cutout is new type_cutout_zone with record
@@ -739,10 +739,10 @@ package et_packages is
 	
 	-- this is the base type for via restrict objects
 	type type_via_restrict is tagged record
-		lines 		: type_via_restrict_lines.list;
-		arcs		: type_via_restrict_arcs.list;
-		circles		: type_via_restrict_circles.list;
-		polygons	: type_via_restrict_polygons.list;
+		lines 		: pac_via_restrict_lines.list;
+		arcs		: pac_via_restrict_arcs.list;
+		circles		: pac_via_restrict_circles.list;
+		polygons	: pac_via_restrict_polygons.list;
 		cutouts		: pac_via_restrict_cutouts.list;
 		-- CS texts		: pac_texts_with_content.list; -- for via notes ?
 	end record;
@@ -774,15 +774,8 @@ package et_packages is
 		circles	: type_pcb_contour_circles.list;
 	end record;
 
-	
--- -- PLATED MILLINGS OF TERMINALS	
--- 	-- Plated millings as used by terminals. These structures have closed circumfence.
--- 	type type_plated_millings is new pac_shapes.type_polygon_base with null record;
--- 
--- 	procedure log_plated_millings (
--- 		millings 		: in type_plated_millings;
--- 		log_threshold	: in et_string_processing.type_log_level);
--- 
+
+
 	type type_package_appearance is (
 		REAL,	-- packages with x,y,z dimension
 		VIRTUAL -- for things that do not have a real package 
@@ -1062,13 +1055,13 @@ package et_packages is
 	procedure line_via_restrict_properties (
 	-- Logs the properties of the given line of via restrict
 		face			: in type_face;
-		cursor			: in type_via_restrict_lines.cursor;
+		cursor			: in pac_via_restrict_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure arc_via_restrict_properties (
 	-- Logs the properties of the given arc of via restrict
 		face			: in type_face;
-		cursor			: in type_via_restrict_arcs.cursor;
+		cursor			: in pac_via_restrict_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	-- CS procedure circle_via_restrict_properties

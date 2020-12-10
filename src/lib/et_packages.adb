@@ -788,11 +788,11 @@ package body et_packages is
 
 -- PROPERTIES OF OBJECTS IN VIA RESTRICT	
 	procedure line_via_restrict_properties (
-	-- Logs the properties of the given line of via restrict
 		face			: in type_face;
-		cursor			: in type_via_restrict_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_via_restrict_lines;
+		cursor			: in pac_via_restrict_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
+		use pac_via_restrict_lines;
 		line : type_via_restrict_line;
 	begin
 		line := element (cursor);
@@ -801,11 +801,11 @@ package body et_packages is
 	end line_via_restrict_properties;
 
 	procedure arc_via_restrict_properties (
-	-- Logs the properties of the given arc of via restrict
 		face			: in type_face;
-		cursor			: in type_via_restrict_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_via_restrict_arcs;
+		cursor			: in pac_via_restrict_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use pac_via_restrict_arcs;
 		arc : type_via_restrict_arc;
 	begin
 		arc := element (cursor);

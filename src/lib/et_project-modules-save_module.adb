@@ -1130,10 +1130,10 @@ is
 		use pac_route_restrict_circles;
 		use pac_route_restrict_polygons;
 
-		use type_via_restrict_lines;
-		use type_via_restrict_arcs;
-		use type_via_restrict_circles;
-		use type_via_restrict_polygons;
+		use pac_via_restrict_lines;
+		use pac_via_restrict_arcs;
+		use pac_via_restrict_circles;
+		use pac_via_restrict_polygons;
 
 		use pac_texts;
 

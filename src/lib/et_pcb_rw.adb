@@ -1378,9 +1378,9 @@ package body et_pcb_rw is
 	end;
 
 -- VIA RESTRICT
-	procedure write_line (cursor : in type_via_restrict_lines.cursor) is 
+	procedure write_line (cursor : in pac_via_restrict_lines.cursor) is 
 		use et_pcb_stack;
-		use type_via_restrict_lines;
+		use pac_via_restrict_lines;
 	begin
 		line_begin;
 		write_line (element (cursor));		
@@ -1388,9 +1388,9 @@ package body et_pcb_rw is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in type_via_restrict_arcs.cursor) is 
+	procedure write_arc (cursor : in pac_via_restrict_arcs.cursor) is 
 		use et_pcb_stack;
-		use type_via_restrict_arcs;
+		use pac_via_restrict_arcs;
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -1398,9 +1398,9 @@ package body et_pcb_rw is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in type_via_restrict_circles.cursor) is 
+	procedure write_circle (cursor : in pac_via_restrict_circles.cursor) is 
 		use et_pcb_stack;		
-		use type_via_restrict_circles;
+		use pac_via_restrict_circles;
 	begin
 		circle_begin;
 		write_circle (element (cursor));
@@ -1409,9 +1409,9 @@ package body et_pcb_rw is
 		circle_end;
 	end write_circle;
 	
-	procedure write_polygon (cursor : in type_via_restrict_polygons.cursor) is 
+	procedure write_polygon (cursor : in pac_via_restrict_polygons.cursor) is 
 		use et_pcb_stack;
-		use type_via_restrict_polygons;
+		use pac_via_restrict_polygons;
 	begin
 		fill_zone_begin;
 		write_fill_status (element (cursor).filled);

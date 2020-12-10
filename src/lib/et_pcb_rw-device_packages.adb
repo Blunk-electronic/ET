@@ -385,10 +385,10 @@ package body et_pcb_rw.device_packages is
 		end write_route_restrict;
 
 		procedure write_via_restrict is 
-			use type_via_restrict_lines;
-			use type_via_restrict_arcs;
-			use type_via_restrict_circles;
-			use type_via_restrict_polygons;
+			use pac_via_restrict_lines;
+			use pac_via_restrict_arcs;
+			use pac_via_restrict_circles;
+			use pac_via_restrict_polygons;
 			use pac_via_restrict_cutouts;
 		begin
 			section_mark (section_via_restrict, HEADER);
@@ -1351,7 +1351,7 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				procedure append_via_restrict_polygon is begin
-					type_via_restrict_polygons.append (
+					pac_via_restrict_polygons.append (
 						container	=> packge.via_restrict.polygons, 
 						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 										filled	=> board_filled,
@@ -1709,7 +1709,7 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_VIA_RESTRICT =>
 								
-								type_via_restrict_lines.append (
+								pac_via_restrict_lines.append (
 									container	=> packge.via_restrict.lines,
 									new_item	=> (pac_shapes.type_line (board_line) with
 													layers	=> signal_layers));
@@ -1882,7 +1882,7 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_VIA_RESTRICT =>
 								
-								type_via_restrict_arcs.append (
+								pac_via_restrict_arcs.append (
 									container	=> packge.via_restrict.arcs,
 									new_item	=> (pac_shapes.type_arc (board_arc) with layers => signal_layers));
 
@@ -2025,7 +2025,7 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_VIA_RESTRICT =>
 								
-								type_via_restrict_circles.append (
+								pac_via_restrict_circles.append (
 									container	=> packge.via_restrict.circles,
 									new_item	=> (board_make_fillable_circle_solid with signal_layers));
 

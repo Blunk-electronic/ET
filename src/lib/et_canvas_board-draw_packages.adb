@@ -1813,9 +1813,9 @@ is
 		procedure draw_via_restrict is 
 
 			-- LINES
-			use type_via_restrict_lines;
+			use pac_via_restrict_lines;
 			
-			procedure query_line (c : in type_via_restrict_lines.cursor) is
+			procedure query_line (c : in pac_via_restrict_lines.cursor) is
 				line : type_via_restrict_line := element (c);
 			begin
 				if flipped then 
@@ -1838,9 +1838,9 @@ is
 
 			
 			-- ARCS
-			use type_via_restrict_arcs;
+			use pac_via_restrict_arcs;
 			
-			procedure query_arc (c : in type_via_restrict_arcs.cursor) is 
+			procedure query_arc (c : in pac_via_restrict_arcs.cursor) is 
 				arc : type_via_restrict_arc := element (c);
 			begin
 				if flipped then 
@@ -1863,9 +1863,9 @@ is
 
 			
 			-- CIRCLES
-			use type_via_restrict_circles;
+			use pac_via_restrict_circles;
 			
-			procedure query_circle (c : in type_via_restrict_circles.cursor) is 
+			procedure query_circle (c : in pac_via_restrict_circles.cursor) is 
 				circle : type_via_restrict_circle := element (c);
 			begin
 				if flipped then 
@@ -1889,9 +1889,9 @@ is
 
 			
 			-- POLYGONS
-			use type_via_restrict_polygons;
+			use pac_via_restrict_polygons;
 			
-			procedure query_polygon (c : in type_via_restrict_polygons.cursor) is
+			procedure query_polygon (c : in pac_via_restrict_polygons.cursor) is
 				polygon : et_packages.type_via_restrict_polygon := element (c);
 			begin
 				if flipped then 
