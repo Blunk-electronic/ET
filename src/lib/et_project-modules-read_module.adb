@@ -2176,7 +2176,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					et_pcb.pac_copper_cutouts.append (
+					et_pcb.pac_conductor_cutouts.append (
 						container	=> module.board.copper.cutouts,
 						new_item	=> (type_polygon_base (polygon) with
 								easing			=> board_easing,
@@ -2993,7 +2993,7 @@ is
 			procedure build_route_cutout is
 				use et_terminals;
 			begin
-				et_pcb.pac_copper_cutouts.append (
+				et_pcb.pac_conductor_cutouts.append (
 					container	=> route.cutouts,
 					new_item	=> (pac_shapes.type_polygon_base (polygon) with
 									easing	=> board_easing,

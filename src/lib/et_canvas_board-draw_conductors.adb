@@ -60,7 +60,7 @@ is
 	use pac_conductor_lines;
 	use pac_conductor_arcs;
 	use pac_conductor_circles;
-	use pac_copper_cutouts;
+	use pac_conductor_cutouts;
 	use pac_copper_polygons_floating_solid;
 	use pac_copper_polygons_floating_hatched;
 	use et_pcb.pac_text_placeholders_conductors;
@@ -200,7 +200,7 @@ is
 -- 		end if;
 	end query_polygon;
 
-	procedure query_cutout (c : in et_pcb.pac_copper_cutouts.cursor) is
+	procedure query_cutout (c : in et_pcb.pac_conductor_cutouts.cursor) is
 	begin
 		-- Draw the zone if it is in the current layer:
 		if element (c).layer = current_layer then

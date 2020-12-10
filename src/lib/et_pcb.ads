@@ -234,12 +234,14 @@ package et_pcb is
 	package pac_texts is new doubly_linked_lists (type_text);
 
 	-- Cutout-polygons in copper layers:
-	type type_copper_cutout is new et_packages.type_cutout_zone with record
+	type type_conductor_cutout is new et_packages.type_cutout_zone with record
 		layer 	: type_signal_layer;
 	end record;
 
-	package pac_copper_cutouts is new doubly_linked_lists (type_copper_cutout);
+	package pac_conductor_cutouts is new doubly_linked_lists (type_conductor_cutout);
 
+
+	
 	-- Polgon priority: 0 is weakest, 100 ist strongest.
 	keyword_priority : constant string := "priority";
 	
@@ -248,7 +250,7 @@ package et_pcb is
 	function to_string (priority_level : in type_polygon_priority) return string;
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 	
-	-- A floating copper polygon is not connected to any net:
+	-- A floating conductor polygon is not connected to any net:
 	type type_copper_polygon_floating_solid is new et_packages.type_polygon (fill_style => SOLID) with record
 		width_min		: type_track_width; -- the minimum width
 		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
@@ -282,7 +284,7 @@ package et_pcb is
 
 		-- CS: It is probably no good idea to allow floating copper polygons.
 		polygons		: type_copper_polygons_floating; 
-		cutouts			: pac_copper_cutouts.list;		
+		cutouts			: pac_conductor_cutouts.list;		
 		
 		texts			: pac_texts.list;
 		placeholders	: pac_text_placeholders_conductors.list;
@@ -403,7 +405,7 @@ package et_pcb is
 		-- CS: circles ?
 		vias		: pac_vias.list;
 		polygons_2	: type_signal_polygons;
-		cutouts		: pac_copper_cutouts.list;
+		cutouts		: pac_conductor_cutouts.list;
 	end record;
 	
 
