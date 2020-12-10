@@ -512,7 +512,7 @@ package body et_kicad.pcb is
 		package_silk_screen		: et_packages.type_silk_screen_both_sides;
 		package_assy_doc		: et_packages.type_assembly_documentation_both_sides;
 		package_keepout			: et_packages.type_keepout_both_sides;
-		package_copper			: et_packages.type_copper_both_sides;
+		package_copper			: et_packages.type_conductor_objects_both_sides;
 		
 		-- countours of a package as provided by the 3d model:
 -- 		package_contour			: et_pcb.type_package_contour; -- CS not assigned yet
@@ -3071,7 +3071,7 @@ package body et_kicad.pcb is
 								value			=> package_value,
 								silk_screen		=> package_silk_screen,
 								terminals		=> terminals,
-								copper			=> package_copper,
+								conductors		=> package_copper,
 								keepout			=> package_keepout,
 								stop_mask		=> package_stop_mask,
 								stencil			=> package_stencil,
@@ -3102,7 +3102,7 @@ package body et_kicad.pcb is
 								value			=> package_value,
 								silk_screen		=> package_silk_screen,
 								terminals		=> terminals,
-								copper			=> package_copper,
+								conductors		=> package_copper,
 								keepout			=> package_keepout,
 								stop_mask		=> package_stop_mask,
 								stencil			=> package_stencil,
@@ -3632,11 +3632,11 @@ package body et_kicad.pcb is
 						
 					when TOP_COPPER => 
 						package_copper.top.arcs.append ((et_terminals.pac_shapes.type_arc (package_arc) with package_arc.width));
-						arc_copper_properties (TOP, package_copper.top.arcs.last, log_threshold + 1);
+						arc_conductor_properties (TOP, package_copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						package_copper.bottom.arcs.append ((et_terminals.pac_shapes.type_arc (package_arc) with package_arc.width));
-						arc_copper_properties (BOTTOM, package_copper.bottom.arcs.last, log_threshold + 1);
+						arc_conductor_properties (BOTTOM, package_copper.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
@@ -3715,13 +3715,13 @@ package body et_kicad.pcb is
 						package_copper.top.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width));
 
-						circle_copper_properties (TOP, package_copper.top.circles.last, log_threshold + 1);
+						circle_conductor_properties (TOP, package_copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						package_copper.bottom.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, border_width => package_circle.width));
 
-						circle_copper_properties (BOTTOM, package_copper.bottom.circles.last, log_threshold + 1);
+						circle_conductor_properties (BOTTOM, package_copper.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_STOP =>
 						package_stop_mask.top.circles.append ((et_terminals.pac_shapes.type_circle (package_circle) with
@@ -3786,11 +3786,11 @@ package body et_kicad.pcb is
 						
 					when TOP_COPPER => 
 						package_copper.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-						line_copper_properties (TOP, package_copper.top.lines.last, log_threshold + 1);
+						line_conductor_properties (TOP, package_copper.top.lines.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						package_copper.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
-						line_copper_properties (BOTTOM, package_copper.bottom.lines.last, log_threshold + 1);
+						line_conductor_properties (BOTTOM, package_copper.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>

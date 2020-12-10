@@ -617,7 +617,7 @@ package body et_kicad_packages is
 
 		-- NON ELECTRIC !!! COPPER OBJECTS (lines, arcs, circles)
 		-- NOTE: Does not include texts as kicad does not allow texts in signal layers.
-		copper : et_packages.type_copper_both_sides;
+		copper : et_packages.type_conductor_objects_both_sides;
 
 		-- STOP MASK OBJECTS
 		stop_mask : et_packages.type_stop_mask_both_sides;
@@ -1714,11 +1714,11 @@ package body et_kicad_packages is
 						
 					when TOP_COPPER => 
 						copper.top.arcs.append ((pac_shapes.type_arc (arc) with arc.width));
-						arc_copper_properties (TOP, copper.top.arcs.last, log_threshold + 1);
+						arc_conductor_properties (TOP, copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						copper.bottom.arcs.append ((pac_shapes.type_arc (arc) with arc.width));
-						arc_copper_properties (BOTTOM, copper.bottom.arcs.last, log_threshold + 1);
+						arc_conductor_properties (BOTTOM, copper.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
@@ -1797,13 +1797,13 @@ package body et_kicad_packages is
 						copper.top.circles.append ((pac_shapes.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, border_width => circle.width));
 						
-						circle_copper_properties (TOP, copper.top.circles.last, log_threshold + 1);
+						circle_conductor_properties (TOP, copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						copper.bottom.circles.append ((pac_shapes.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, border_width => circle.width));
 						
-						circle_copper_properties (BOTTOM, copper.bottom.circles.last, log_threshold + 1);
+						circle_conductor_properties (BOTTOM, copper.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_STOP =>
 						stop_mask.top.circles.append ((pac_shapes.type_circle (circle) with
@@ -1867,11 +1867,11 @@ package body et_kicad_packages is
 						
 					when TOP_COPPER => 
 						copper.top.lines.append ((line.start_point, line.end_point, line.width));
-						line_copper_properties (TOP, copper.top.lines.last, log_threshold + 1);
+						line_conductor_properties (TOP, copper.top.lines.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						copper.bottom.lines.append ((line.start_point, line.end_point, line.width));
-						line_copper_properties (BOTTOM, copper.bottom.lines.last, log_threshold + 1);
+						line_conductor_properties (BOTTOM, copper.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP => 
@@ -2505,7 +2505,7 @@ package body et_kicad_packages is
 					-- CS: currently no need
 					
 					terminals				=> terminals,
-					copper					=> copper, -- non electric !
+					conductors				=> copper, -- non electric !
 					silk_screen				=> silk_screen,
 					keepout					=> keepout,
 					stop_mask				=> stop_mask,
@@ -2527,7 +2527,7 @@ package body et_kicad_packages is
 					-- CS: currently no need
 					
 					terminals				=> terminals,
-					copper					=> copper, -- non electric !
+					conductors				=> copper, -- non electric !
 					silk_screen				=> silk_screen,
 					keepout					=> keepout,
 					stop_mask				=> stop_mask,

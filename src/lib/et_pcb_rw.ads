@@ -104,7 +104,7 @@ package et_pcb_rw is
 
 	
 	procedure write_hatching (hatching : in et_packages.type_hatching);
-	procedure write_hatching (hatching : in et_packages.type_hatching_copper);
+	procedure write_hatching (hatching : in et_packages.type_conductor_hatching);
 	procedure write_easing (easing: in et_packages.type_easing);
 	procedure write_thermal (thermal : in et_pcb.type_thermal);
 	procedure write_width_min (width : in type_track_width);
@@ -220,7 +220,7 @@ package et_pcb_rw is
 	board_filled : type_filled := filled_default;
 
 	board_hatching : et_packages.type_hatching;
-	board_hatching_copper : et_packages.type_hatching_copper;
+	board_hatching_copper : et_packages.type_conductor_hatching;
 	board_easing : et_packages.type_easing;
 
 	

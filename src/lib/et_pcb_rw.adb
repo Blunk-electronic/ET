@@ -139,7 +139,7 @@ package body et_pcb_rw is
 		write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));
 	end;
 
-	procedure write_hatching (hatching : in et_packages.type_hatching_copper) is
+	procedure write_hatching (hatching : in et_packages.type_conductor_hatching) is
 		use et_packages;
 	begin
 		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));

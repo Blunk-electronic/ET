@@ -125,8 +125,8 @@ package body et_pcb_rw.device_packages is
 				write_circle_copper (element (cursor));
 			end write_circle;
 
-			use pac_copper_polygons_solid;
-			procedure write_polygon (cursor : in pac_copper_polygons_solid.cursor) is begin
+			use pac_conductor_polygons_solid;
+			procedure write_polygon (cursor : in pac_conductor_polygons_solid.cursor) is begin
 				fill_zone_begin;
 				write_easing (element (cursor).easing);
 
@@ -142,8 +142,8 @@ package body et_pcb_rw.device_packages is
 				fill_zone_end;
 			end write_polygon;
 
-			use pac_copper_polygons_hatched;
-			procedure write_polygon (cursor : in pac_copper_polygons_hatched.cursor) is begin
+			use pac_conductor_polygons_hatched;
+			procedure write_polygon (cursor : in pac_conductor_polygons_hatched.cursor) is begin
 				fill_zone_begin;
 				write_easing (element (cursor).easing);
 
@@ -160,8 +160,8 @@ package body et_pcb_rw.device_packages is
 				fill_zone_end;
 			end write_polygon;
 
-			use pac_copper_cutouts;
-			procedure write_cutout (cursor : in pac_copper_cutouts.cursor) is begin
+			use pac_conductor_cutouts;
+			procedure write_cutout (cursor : in pac_conductor_cutouts.cursor) is begin
 				cutout_zone_begin;
 				write_easing (element (cursor).easing);
 
@@ -177,24 +177,24 @@ package body et_pcb_rw.device_packages is
 
 			-- top
 			section_mark (section_top, HEADER);			
-			iterate (packge.copper.top.lines, write_line'access);
-			iterate (packge.copper.top.arcs, write_arc'access);
-			iterate (packge.copper.top.circles, write_circle'access);
-			iterate (packge.copper.top.polygons.solid, write_polygon'access);
-			iterate (packge.copper.top.polygons.hatched, write_polygon'access);
-			iterate (packge.copper.top.cutouts, write_cutout'access);			
-			iterate (packge.copper.top.texts, write_text'access);
+			iterate (packge.conductors.top.lines, write_line'access);
+			iterate (packge.conductors.top.arcs, write_arc'access);
+			iterate (packge.conductors.top.circles, write_circle'access);
+			iterate (packge.conductors.top.polygons.solid, write_polygon'access);
+			iterate (packge.conductors.top.polygons.hatched, write_polygon'access);
+			iterate (packge.conductors.top.cutouts, write_cutout'access);			
+			iterate (packge.conductors.top.texts, write_text'access);
 			section_mark (section_top, FOOTER);
 
 			-- bottom
 			section_mark (section_bottom, HEADER);			
-			iterate (packge.copper.bottom.lines, write_line'access);
-			iterate (packge.copper.bottom.arcs, write_arc'access);
-			iterate (packge.copper.bottom.circles, write_circle'access);
-			iterate (packge.copper.bottom.polygons.solid, write_polygon'access);
-			iterate (packge.copper.bottom.polygons.hatched, write_polygon'access);
-			iterate (packge.copper.bottom.cutouts, write_cutout'access);
-			iterate (packge.copper.bottom.texts, write_text'access);			
+			iterate (packge.conductors.bottom.lines, write_line'access);
+			iterate (packge.conductors.bottom.arcs, write_arc'access);
+			iterate (packge.conductors.bottom.circles, write_circle'access);
+			iterate (packge.conductors.bottom.polygons.solid, write_polygon'access);
+			iterate (packge.conductors.bottom.polygons.hatched, write_polygon'access);
+			iterate (packge.conductors.bottom.cutouts, write_cutout'access);
+			iterate (packge.conductors.bottom.texts, write_text'access);			
 			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_copper, FOOTER);
@@ -1288,8 +1288,8 @@ package body et_pcb_rw.device_packages is
 				procedure append_copper_polygon_top is begin
 					case board_fill_style is
 						when SOLID =>
-							pac_copper_polygons_solid.append (
-								container	=> packge.copper.top.polygons.solid, 
+							pac_conductor_polygons_solid.append (
+								container	=> packge.conductors.top.polygons.solid, 
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing,
@@ -1297,8 +1297,8 @@ package body et_pcb_rw.device_packages is
 										isolation	=> polygon_isolation));
 
 						when HATCHED =>
-							pac_copper_polygons_hatched.append (
-								container	=> packge.copper.top.polygons.hatched, 
+							pac_conductor_polygons_hatched.append (
+								container	=> packge.conductors.top.polygons.hatched, 
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
@@ -1314,8 +1314,8 @@ package body et_pcb_rw.device_packages is
 				procedure append_copper_polygon_bottom is begin
 					case board_fill_style is
 						when SOLID =>
-							pac_copper_polygons_solid.append (
-								container	=> packge.copper.bottom.polygons.solid, 
+							pac_conductor_polygons_solid.append (
+								container	=> packge.conductors.bottom.polygons.solid, 
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing,
@@ -1323,8 +1323,8 @@ package body et_pcb_rw.device_packages is
 										isolation	=> polygon_isolation));
 
 						when HATCHED =>
-							pac_copper_polygons_hatched.append (
-								container	=> packge.copper.bottom.polygons.hatched, 
+							pac_conductor_polygons_hatched.append (
+								container	=> packge.conductors.bottom.polygons.hatched, 
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
@@ -1465,8 +1465,8 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				procedure append_copper_cutout_top is begin
-					et_packages.pac_copper_cutouts.append (
-						container	=> packge.copper.top.cutouts, 
+					et_packages.pac_conductor_cutouts.append (
+						container	=> packge.conductors.top.cutouts, 
 						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										easing => board_easing));
 										
@@ -1475,8 +1475,8 @@ package body et_pcb_rw.device_packages is
 				end;
 
 				procedure append_copper_cutout_bottom is begin
-					et_packages.pac_copper_cutouts.append (
-						container	=> packge.copper.bottom.cutouts, 
+					et_packages.pac_conductor_cutouts.append (
+						container	=> packge.conductors.bottom.cutouts, 
 						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										easing => board_easing));
 										
@@ -1566,7 +1566,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
 										pac_conductor_lines.append (
-											container	=> packge.copper.top.lines, 
+											container	=> packge.conductors.top.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
@@ -1629,7 +1629,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
 										pac_conductor_lines.append (
-											container	=> packge.copper.bottom.lines, 
+											container	=> packge.conductors.bottom.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
@@ -1740,7 +1740,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
 										pac_conductor_arcs.append (
-											container	=> packge.copper.top.arcs, 
+											container	=> packge.conductors.top.arcs, 
 											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
@@ -1803,7 +1803,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
 										pac_conductor_arcs.append (
-											container	=> packge.copper.bottom.arcs, 
+											container	=> packge.conductors.bottom.arcs, 
 											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
@@ -1910,7 +1910,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
 										et_packages.pac_conductor_circles.append (
-											container	=> packge.copper.top.circles, 
+											container	=> packge.conductors.top.circles, 
 											new_item	=> board_make_copper_circle);
 
 									when SEC_SILK_SCREEN => 
@@ -1960,7 +1960,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
 										et_packages.pac_conductor_circles.append (
-											container	=> packge.copper.bottom.circles, 
+											container	=> packge.conductors.bottom.circles, 
 											new_item	=> board_make_copper_circle);
 
 									when SEC_SILK_SCREEN => 
@@ -2173,7 +2173,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_COPPER =>
 										
 										pac_texts_with_content.append (
-											container	=> packge.copper.top.texts,
+											container	=> packge.conductors.top.texts,
 											new_item	=> pac_text);
 
 									when SEC_SILK_SCREEN =>
@@ -2208,7 +2208,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_COPPER =>
 										
 										pac_texts_with_content.append (
-											container	=> packge.copper.bottom.texts,
+											container	=> packge.conductors.bottom.texts,
 											new_item	=> pac_text);
 
 									when SEC_SILK_SCREEN =>

@@ -140,59 +140,9 @@ package et_packages is
 	procedure validate_general_line_width (width : in et_pcb_coordinates.type_distance);
 	-- Checks whether given line width is in range of type_general_line_width
 
-	
-
--- 	-- COPPER STRUCTURES GENERAL
--- 	copper_structure_size_min : constant et_pcb_coordinates.type_distance := 0.05;
--- 	copper_clearance_min : constant et_pcb_coordinates.type_distance := copper_structure_size_min;
--- 	
--- 
--- 	-- SIGNALS
--- 	subtype type_track_clearance is type_distance_positive range copper_clearance_min .. et_pcb_coordinates.type_distance'last;
--- 
--- 	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance);
--- 	-- Checks whether the given track clearance is in range of type_track_clearance.
--- 
--- 	track_width_max : constant type_distance_positive := 100.0;
--- 	subtype type_track_width is type_distance_positive range copper_structure_size_min .. track_width_max;
--- 
--- 	procedure validate_track_width (track_width : in type_distance_positive);
--- 	-- Checks whether the given track width is in range of type_track_width.
 
 	
-	
--- 	pad_size_min : constant type_track_width := 0.05;
--- 	pad_size_max : constant type_track_width := 10.0;
--- 	subtype type_pad_size is type_distance_positive range pad_size_min .. pad_size_max;
--- 
--- 	procedure validate_pad_size (size : in et_pcb_coordinates.type_distance);
--- 	-- Checks whether given pad size is in range of type_pad_size
--- 
--- 
--- 	pad_drill_offset_min : constant type_distance_positive := zero;
--- 	pad_drill_offset_max : constant type_distance_positive := pad_size_max * 0.5;
--- 	subtype type_pad_drill_offset is type_distance_positive range pad_drill_offset_min .. pad_drill_offset_max;
-	
-	
-	
-
-
-	
-
-
-	-- RESTRING
--- 	keyword_restring_outer_layers : constant string := "restring_outer_layers";
--- 	keyword_restring_inner_layers : constant string := "restring_inner_layers";		
--- 
--- 	restring_width_max : constant type_distance_positive := 5.0;
--- 	subtype type_restring_width is type_distance_positive range copper_structure_size_min .. restring_width_max;
--- 
--- 	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance);
--- 	-- Checks whether the given restring width is in range of type_restring_width.
-
-
-	
-	-- TEXT
+-- TEXT
 	type type_text is new pac_text.type_text with record
 		position	: type_position; -- x/y
 		line_width	: pac_text.type_text_line_width; -- CS default := line_width_default; 
@@ -203,7 +153,7 @@ package et_packages is
 	-- Returns the properties of the given text in a long single string.	
 	
 	
-	-- PLACEHOLDERS FOR TEXTS IN A PACKAGE
+-- PLACEHOLDERS FOR TEXTS
 	type type_text_meaning_package is (NAME, VALUE, PURPOSE);
 
 	function to_string (text_meaning : in type_text_meaning_package) return string;
@@ -286,7 +236,7 @@ package et_packages is
 		spacing	: type_distance_positive := hatching_spacing_default;
 	end record;
 
-	type type_hatching_copper is record
+	type type_conductor_hatching is record
 		-- the width of the border line
 		border_width : type_track_width := type_track_width'first;
 		
@@ -326,13 +276,13 @@ package et_packages is
 		end case;
 	end record;
 
-	-- Polygons in copper have a dedicated type hatching:
-	type type_polygon_copper (fill_style : type_fill_style) is new type_polygon_base with record
+	-- Polygons in conductor layers have a dedicated type for the hatching:
+	type type_conductor_polygon (fill_style : type_fill_style) is new type_polygon_base with record
 		easing : type_easing;
 		
 		case fill_style is
 			when SOLID		=> null;
-			when HATCHED	=> hatching : type_hatching_copper;
+			when HATCHED	=> hatching : type_conductor_hatching;
 		end case;
 	end record;
 
@@ -341,7 +291,7 @@ package et_packages is
 		easing : type_easing; -- CS remove
 	end record;
 
--- 	-- There are cutout zones (in copper, silk screen, assy doc) that require easing:	
+-- 	-- There are cutout zones (in conductor layers, silk screen, assy doc) that require easing:
 -- 	type type_cutout_zone is new type_polygon_base with record -- CS rename to type_cutout_zone_easing
 -- 		easing : type_easing;
 -- 	end record;
@@ -381,7 +331,7 @@ package et_packages is
 				case fill_style is
 					when SOLID => null;
 					when HATCHED =>
-						hatching : type_hatching_copper;
+						hatching : type_conductor_hatching;
 				end case;
 				
 		end case;
@@ -398,50 +348,50 @@ package et_packages is
 	-- the minimal width of a polygon
 	keyword_min_width : constant string := "min_width";
 	
-	type type_copper_polygon_solid is new type_polygon_copper (fill_style => SOLID) with record
+	type type_conductor_polygon_solid is new type_conductor_polygon (fill_style => SOLID) with record
 		width_min : type_track_width; -- the minimum width
 		isolation : type_track_clearance := type_track_clearance'first; 
 	end record;
 
-	package pac_copper_polygons_solid is new doubly_linked_lists (type_copper_polygon_solid);
+	package pac_conductor_polygons_solid is new doubly_linked_lists (type_conductor_polygon_solid);
 
-	type type_copper_polygon_hatched is new type_polygon_copper (fill_style => HATCHED) with record
+	type type_conductor_polygon_hatched is new type_conductor_polygon (fill_style => HATCHED) with record
 		width_min : type_track_width; -- the minimum width
 		isolation : type_track_clearance := type_track_clearance'first;
 	end record;
 
-	package pac_copper_polygons_hatched is new doubly_linked_lists (type_copper_polygon_hatched);
+	package pac_conductor_polygons_hatched is new doubly_linked_lists (type_conductor_polygon_hatched);
 
-	-- A cutout-polygon used in copper layers:
-	package pac_copper_cutouts is new doubly_linked_lists (type_cutout_zone);
-
-	
+	-- A cutout-polygon used in conductor layers:
+	package pac_conductor_cutouts is new doubly_linked_lists (type_cutout_zone);
 
 	
 
+	
 
-	type type_copper_polygons is record
-		solid	: pac_copper_polygons_solid.list;
-		hatched	: pac_copper_polygons_hatched.list;
+
+	type type_conductor_polygons is record
+		solid	: pac_conductor_polygons_solid.list;
+		hatched	: pac_conductor_polygons_hatched.list;
 	end record;
 
 		
 	
-	type type_copper is record 
+	type type_conductor_objects is record 
 		lines 		: pac_conductor_lines.list;
 		arcs		: pac_conductor_arcs.list;
 		circles		: pac_conductor_circles.list;
-		polygons	: type_copper_polygons;
-		cutouts		: pac_copper_cutouts.list;
+		polygons	: type_conductor_polygons;
+		cutouts		: pac_conductor_cutouts.list;
 		texts		: pac_texts_with_content.list;
 	end record;
 	
-	-- since NON ELECTRIC copper objects of a package can be on both sides 
+	-- Since NON ELECTRIC conductor objects of a package can be on both sides 
 	-- of the board we need this type. There is no reason for NON ELECTRIC 
-	-- copper objects in inner layers. So we deal with top and bottom side only:
-	type type_copper_both_sides is record
-		top		: type_copper;
-		bottom	: type_copper;
+	-- conductor objects in inner layers. So we deal with top and bottom side only:
+	type type_conductor_objects_both_sides is record
+		top		: type_conductor_objects;
+		bottom	: type_conductor_objects;
 	end record;
 
 
@@ -508,7 +458,9 @@ package et_packages is
 		circles		: type_stop_circles.list;
 		polygons	: type_stop_polygons.list;
 		cutouts		: pac_stop_cutouts.list;
-		texts		: pac_texts_with_content.list; -- for texts in copper to be exposed
+
+		-- for texts in conductor layer to be exposed:
+		texts		: pac_texts_with_content.list;
 	end record;
 
 	-- Stop mask of packages:
@@ -840,157 +792,7 @@ package et_packages is
 	package_appearance_default : constant type_package_appearance := REAL;
 	function to_string (appearance : in type_package_appearance) return string;
 	function to_appearance (appearance : in string) return type_package_appearance;
--- 	
--- 	type type_assembly_technology is (
--- 		THT,	-- Through Hole Technology
--- 		SMT		-- Surface Mount Technology
--- 		);
--- 
--- 	assembly_technology_default : constant type_assembly_technology := SMT;
--- 	function to_string (technology : in type_assembly_technology) return string;
--- 	function to_assembly_technology (technology : in string) return type_assembly_technology;
--- 	
--- 	type type_solder_paste_status is (NONE, APPLIED);
--- 	solder_paste_status_default : constant type_solder_paste_status := APPLIED;
--- 	function to_string (solder_paste : in type_solder_paste_status) return string;
--- 	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status;
--- 	
--- 	type type_stop_mask_status is (CLOSED, OPEN);  -- net-ties or netchangers have their pads covered
--- 	stop_mask_status_default : constant type_stop_mask_status := OPEN;
--- 	function to_string (stop_mask : in type_stop_mask_status) return string;
--- 	function to_stop_mask_status (stop_mask : in string) return type_stop_mask_status;
--- 	
--- 	-- A THT terminal may have a drilled or a milled hole (milled hole is also called "plated millings")
--- 	type type_terminal_tht_hole is (DRILLED, MILLED);
--- 	terminal_tht_hole_default : constant type_terminal_tht_hole := DRILLED;
--- 	function to_string (tht_hole : in type_terminal_tht_hole) return string;
--- 	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole;
-
 	
-	-- A pad outline is a polygon:
--- 	type type_pad_outline is new pac_shapes.type_polygon_base with null record;
--- 	
--- 	type type_pad_outline_tht is record
--- 		top		: type_pad_outline; -- The shape on the top side
--- 		bottom	: type_pad_outline; -- is not nessecarily the same as on the bottom side.
--- 	end record;
--- 
--- 	
--- 	type type_stop_mask_shape is (
--- 		AS_PAD,
--- 		EXPAND_PAD,
--- 		USER_SPECIFIC);
--- 
--- 	stop_mask_shape_default : constant type_stop_mask_shape := EXPAND_PAD;
--- 	type type_stop_mask_outline is new pac_shapes.type_polygon_base with null record;
--- 	
--- 	type type_pad_stop_mask (shape : type_stop_mask_shape) is record
--- 		case shape is
--- 			when USER_SPECIFIC => contour : type_stop_mask_outline;
--- 			when others => null;
--- 		end case;
--- 	end record;
--- 
--- 	type type_stop_mask_outline_tht is record
--- 		top		: type_pad_stop_mask (stop_mask_shape_default); -- The shape on the top side
--- 		bottom	: type_pad_stop_mask (stop_mask_shape_default); -- is not nessecarily the same as on the bottom side.
--- 	end record;
--- 
--- 
--- -- 	type type_stop_mask_shape
-	
--- 	
--- 	keyword_stop_mask			: constant string := "stop_mask";
--- 	keyword_solder_paste		: constant string := "solder_paste";
--- 
--- 	keyword_pad_shape			: constant string := "pad_shape";	
--- 	keyword_width_inner_layers	: constant string := "width_inner_layers";
--- 	keyword_assembly_technology	: constant string := "technology";
--- 	keyword_tht_hole			: constant string := "hole";	
--- 	keyword_drill_size			: constant string := "drill_size";
-	
--- 	type type_terminal (
--- 		technology	: type_assembly_technology; -- smt/tht
--- 		tht_hole	: type_terminal_tht_hole) -- drilled/milled, without meaning if technology is SMT
--- 		is tagged record
--- 
--- 			position : type_position; -- position (x/y) and rotation
--- 			-- For SMT pads this is the geometic center of the pad.
--- 			-- The rotation has no meaning for THT pads with round shape.
--- 			-- The rotation is useful for exotic pad contours. The operator would be drawing the 
--- 			-- contour with zero rotation first (which is easier). Then by applying an angle,
--- 			-- the countour would be rotated to its final position.
--- 			
--- 		case technology is
--- 			when THT =>
--- 				-- The shape of the pad on top and bottom side.
--- 				pad_shape_tht : type_pad_outline_tht; 
--- 
--- 				-- This is the width of the copper surrounding the hole in inner layers.
--- 				-- Since the hole can be of any shape we do not speak about restring.
--- 				-- The shape of the copper area around the hole is the same as the shape of the 
--- 				-- hole. No further extra contours possible.
--- 				width_inner_layers : type_track_width;
--- 				
--- 				case tht_hole is
--- 					when DRILLED =>
--- 						drill_size : type_drill_size;
--- 						
--- 					when MILLED =>
--- 						millings : type_plated_millings;
--- 				end case;
--- 				
--- 			when SMT =>
--- 				pad_shape		: type_pad_outline;
--- 				face			: type_face;
--- 				stop_mask 		: type_stop_mask_status;
--- 				-- CS ?? stop_mask_shape : type_stop_mask_outline;
--- 				-- If no elements in outline, apply pad_shape.
--- 				
--- 				solder_paste	: type_solder_paste_status;
--- 				-- CS ?? stencil_shape : type_stencil_outline;
--- 				-- If no elements in outline, apply pad_shape.
--- 				
--- 		end case;
--- 	end record;
-
-
--- 	-- A terminal is the physical point where electrical energy comes in or out of the device.
--- 	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
--- 	-- we further-on speak about "terminals".
--- 	-- The name of a terminal may have 10 characters which seems sufficient for now.
--- 	-- CS: character set, length check, charcter check
---  	terminal_name_length_max : constant natural := 10;
--- 	package type_terminal_name is new generic_bounded_length (terminal_name_length_max);
--- 	use type_terminal_name;
--- 
--- 	function to_string (terminal : in type_terminal_name.bounded_string) return string;
--- 	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string;
--- 
--- 
--- 	
--- 	-- GUI relevant only:
--- 	terminal_name_font : constant et_text.type_font := (
--- 		family	=> et_text.to_family ("monospace"),
--- 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
--- 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
--- 
--- 	terminal_name_size : constant pac_text.type_text_size := 0.5;
-	
-
-	
-	
--- 	procedure terminal_properties (
--- 	-- Logs the properties of the given terminal.
--- 		terminal		: in type_terminal;
--- 		name			: in type_terminal_name.bounded_string;
--- 		log_threshold 	: in et_string_processing.type_log_level);
-	
--- 	package type_terminals is new indefinite_ordered_maps (
--- 		key_type		=> type_terminal_name.bounded_string, -- H7, 14
--- 		element_type	=> type_terminal,
--- 		"<"				=> type_terminal_name."<");
--- 
 
 	package_description_length_max : constant positive := 200;
 	package type_package_description is new generic_bounded_length (package_description_length_max);
@@ -1011,14 +813,14 @@ package et_packages is
 	
 	-- This is the base type of a package:
 	type type_package_base (appearance : type_package_appearance) is abstract tagged record
-		description			: type_package_description.bounded_string;
-		copper				: type_copper_both_sides; -- non-electric objects -- CS rename to conductors
-		keepout 			: type_keepout_both_sides;
-		stop_mask			: type_stop_mask_both_sides; -- not terminal related
-		stencil				: type_stencil_both_sides; -- not terminal related
+		description		: type_package_description.bounded_string;
+		conductors		: type_conductor_objects_both_sides; -- non-electric objects
+		keepout 		: type_keepout_both_sides;
+		stop_mask		: type_stop_mask_both_sides; -- not terminal related
+		stencil			: type_stencil_both_sides; -- not terminal related
 
-		route_restrict 		: type_route_restrict;
-		via_restrict 		: type_via_restrict;
+		route_restrict 	: type_route_restrict;
+		via_restrict 	: type_via_restrict;
 		
 		-- CS holes
 		-- PCB contour or so called "non-plated millings"
@@ -1079,29 +881,33 @@ package et_packages is
 	-- Returns a cursor to the requested terminal (with all its properties) within the given package model.
 
 	
--- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)
-	procedure line_copper_properties (
-	-- Logs the properties of the given line of copper
+	
+-- PROPERTIES OF OBJECTS IN CONDUCTOR LAYERS (NON ELECTRIC OBJECTS !!)
+	
+	procedure line_conductor_properties (
+	-- Logs the properties of the given line:
 		face			: in type_face;
 		cursor			: in pac_conductor_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
-	procedure arc_copper_properties (
-	-- Logs the properties of the given arc of copper
+	procedure arc_conductor_properties (
+	-- Logs the properties of the given arc:
 		face			: in type_face;
 		cursor			: in pac_conductor_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
-	procedure circle_copper_properties (
-	-- Logs the properties of the given circle of copper
+	procedure circle_conductor_properties (
+	-- Logs the properties of the given circle:
 		face			: in type_face;
 		cursor			: in pac_conductor_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+
 	
--- PROPERTIES OF OBJECTS IN SILK SCREEN	
+-- PROPERTIES OF OBJECTS IN SILK SCREEN
+	
 	procedure line_silk_screen_properties (
-	-- Logs the properties of the given line of silk screen
+	-- Logs the properties of the given line:
 		face			: in type_face;
 		cursor			: in type_silk_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);

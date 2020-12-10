@@ -391,9 +391,7 @@ package body et_packages is
 		return terminal_cursor;
 	end terminal_properties;
 	
--- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)
-	procedure line_copper_properties (
-	-- Logs the properties of the given line of copper
+	procedure line_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) 
@@ -401,13 +399,12 @@ package body et_packages is
 		line : type_conductor_line;
 	begin
 		line := element (cursor);
-		log (text => "copper line face" & to_string (face) & latin_1.space 
+		log (text => "conductor line face" & to_string (face) & latin_1.space 
 			 & to_string (type_line (line))
 			 & " width" & to_string (line.width), level => log_threshold);
-	end line_copper_properties;
+	end line_conductor_properties;
 
-	procedure arc_copper_properties (
-	-- Logs the properties of the given arc of copper
+	procedure arc_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) 
@@ -415,20 +412,19 @@ package body et_packages is
 		arc : type_conductor_arc;
 	begin
 		arc := element (cursor);
-		log (text => "copper arc face" & to_string (face) & latin_1.space 
+		log (text => "conductor arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc (arc))
 			 & " width" & to_string (arc.width), level => log_threshold);
-	end arc_copper_properties;
+	end arc_conductor_properties;
 	
-	procedure circle_copper_properties (
-	-- Logs the properties of the given circle of copper
+	procedure circle_conductor_properties (
 		face			: in type_face;
 		cursor			: in pac_conductor_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) 
 	is begin
 		case element (cursor).filled is
 			when NO =>
-				log (text => "copper circle face" & to_string (face) & latin_1.space 
+				log (text => "conductor circle face" & to_string (face) & latin_1.space 
 					& to_string (type_circle (element (cursor)))
 					& " filled" & to_string (element (cursor).filled)
 					& " border width" & to_string (element (cursor).border_width),
@@ -437,22 +433,21 @@ package body et_packages is
 			when YES =>
 				case element (cursor).fill_style is
 					when SOLID =>
-						log (text => "copper circle face" & to_string (face) & latin_1.space 
+						log (text => "conductor circle face" & to_string (face) & latin_1.space 
 							& to_string (type_circle (element (cursor)))
 							& " fill style" & to_string (element (cursor).fill_style),
 							level => log_threshold);
 
 					when HATCHED =>
-						log (text => "copper circle face" & to_string (face) & latin_1.space 
+						log (text => "conductor circle face" & to_string (face) & latin_1.space 
 							& to_string (type_circle (element (cursor)))
 							& " fill style" & to_string (element (cursor).fill_style),
 							-- CS show hatching details
 							level => log_threshold);
 						
 				end case;
-		end case;
-		
-	end circle_copper_properties;
+		end case;		
+	end circle_conductor_properties;
 	
 -- PROPERTIES OF OBJECTS IN SILK SCREEN
 	procedure line_silk_screen_properties (

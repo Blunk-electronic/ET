@@ -2185,10 +2185,10 @@ is
 			-- POLYGONS
 
 			-- solid
-			use pac_copper_polygons_solid;
+			use pac_conductor_polygons_solid;
 
 			procedure draw_polygon_solid (
-				polygon	: in out et_packages.type_copper_polygon_solid;
+				polygon	: in out et_packages.type_conductor_polygon_solid;
 				f		: in type_face) is
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
@@ -2215,15 +2215,15 @@ is
 				
 			end draw_polygon_solid;
 			
-			procedure query_polygon_top_solid (c : in pac_copper_polygons_solid.cursor) is
-				polygon : et_packages.type_copper_polygon_solid := element (c);
+			procedure query_polygon_top_solid (c : in pac_conductor_polygons_solid.cursor) is
+				polygon : et_packages.type_conductor_polygon_solid := element (c);
 			begin
 				set_destination;
 				draw_polygon_solid (polygon, destination);
 			end query_polygon_top_solid;
 
-			procedure query_polygon_bottom_solid (c : in pac_copper_polygons_solid.cursor) is
-				polygon : et_packages.type_copper_polygon_solid := element (c);
+			procedure query_polygon_bottom_solid (c : in pac_conductor_polygons_solid.cursor) is
+				polygon : et_packages.type_conductor_polygon_solid := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon_solid (polygon, destination);
@@ -2231,10 +2231,10 @@ is
 
 
 			-- hatched
-			use pac_copper_polygons_hatched;
+			use pac_conductor_polygons_hatched;
 
 			procedure draw_polygon_hatched (
-				polygon	: in out et_packages.type_copper_polygon_hatched;
+				polygon	: in out et_packages.type_conductor_polygon_hatched;
 				f		: in type_face) is
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
@@ -2262,15 +2262,15 @@ is
 				
 			end draw_polygon_hatched;
 			
-			procedure query_polygon_top_hatched (c : in pac_copper_polygons_hatched.cursor) is
-				polygon : et_packages.type_copper_polygon_hatched := element (c);
+			procedure query_polygon_top_hatched (c : in pac_conductor_polygons_hatched.cursor) is
+				polygon : et_packages.type_conductor_polygon_hatched := element (c);
 			begin
 				set_destination;
 				draw_polygon_hatched (polygon, destination);
 			end query_polygon_top_hatched;
 
-			procedure query_polygon_bottom_hatched (c : in pac_copper_polygons_hatched.cursor) is
-				polygon : et_packages.type_copper_polygon_hatched := element (c);
+			procedure query_polygon_bottom_hatched (c : in pac_conductor_polygons_hatched.cursor) is
+				polygon : et_packages.type_conductor_polygon_hatched := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon_hatched (polygon, destination);
@@ -2278,7 +2278,7 @@ is
 
 			
 			-- CUTOUTS
-			use pac_copper_cutouts;
+			use pac_conductor_cutouts;
 
 			procedure draw_cutout (
 				cutout	: in out et_packages.type_cutout_zone;
@@ -2303,14 +2303,14 @@ is
 				end if;
 			end draw_cutout;
 			
-			procedure query_cutout_top (c : in pac_copper_cutouts.cursor) is
+			procedure query_cutout_top (c : in pac_conductor_cutouts.cursor) is
 				cutout : type_cutout_zone := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
-			procedure query_cutout_bottom (c : in pac_copper_cutouts.cursor) is
+			procedure query_cutout_bottom (c : in pac_conductor_cutouts.cursor) is
 				cutout : type_cutout_zone := element (c);
 			begin
 				set_destination (INVERSE);
@@ -2353,32 +2353,32 @@ is
 			
 		begin -- draw_conductors
 			-- lines
-			element (package_cursor).copper.top.lines.iterate (query_line_top'access);
-			element (package_cursor).copper.bottom.lines.iterate (query_line_bottom'access);
+			element (package_cursor).conductors.top.lines.iterate (query_line_top'access);
+			element (package_cursor).conductors.bottom.lines.iterate (query_line_bottom'access);
 
 			-- arcs
-			element (package_cursor).copper.top.arcs.iterate (query_arc_top'access);
-			element (package_cursor).copper.bottom.arcs.iterate (query_arc_bottom'access);
+			element (package_cursor).conductors.top.arcs.iterate (query_arc_top'access);
+			element (package_cursor).conductors.bottom.arcs.iterate (query_arc_bottom'access);
 
 			-- circles
-			element (package_cursor).copper.top.circles.iterate (query_circle_top'access);
-			element (package_cursor).copper.bottom.circles.iterate (query_circle_bottom'access);
+			element (package_cursor).conductors.top.circles.iterate (query_circle_top'access);
+			element (package_cursor).conductors.bottom.circles.iterate (query_circle_bottom'access);
 
 			-- polygons solid
-			element (package_cursor).copper.top.polygons.solid.iterate (query_polygon_top_solid'access);
-			element (package_cursor).copper.bottom.polygons.solid.iterate (query_polygon_bottom_solid'access);
+			element (package_cursor).conductors.top.polygons.solid.iterate (query_polygon_top_solid'access);
+			element (package_cursor).conductors.bottom.polygons.solid.iterate (query_polygon_bottom_solid'access);
 
 			-- polygons hatched
-			element (package_cursor).copper.top.polygons.hatched.iterate (query_polygon_top_hatched'access);
-			element (package_cursor).copper.bottom.polygons.hatched.iterate (query_polygon_bottom_hatched'access);
+			element (package_cursor).conductors.top.polygons.hatched.iterate (query_polygon_top_hatched'access);
+			element (package_cursor).conductors.bottom.polygons.hatched.iterate (query_polygon_bottom_hatched'access);
 
 			-- cutouts
-			element (package_cursor).copper.top.cutouts.iterate (query_cutout_top'access);
-			element (package_cursor).copper.bottom.cutouts.iterate (query_cutout_bottom'access);
+			element (package_cursor).conductors.top.cutouts.iterate (query_cutout_top'access);
+			element (package_cursor).conductors.bottom.cutouts.iterate (query_cutout_bottom'access);
 
 			-- texts
-			element (package_cursor).copper.top.texts.iterate (query_text_top'access);
-			element (package_cursor).copper.bottom.texts.iterate (query_text_bottom'access);
+			element (package_cursor).conductors.top.texts.iterate (query_text_top'access);
+			element (package_cursor).conductors.bottom.texts.iterate (query_text_bottom'access);
 			
 		end draw_conductors;
 
