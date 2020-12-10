@@ -61,8 +61,8 @@ is
 	use pac_conductor_arcs;
 	use pac_conductor_circles;
 	use pac_conductor_cutouts;
-	use pac_copper_polygons_floating_solid;
-	use pac_copper_polygons_floating_hatched;
+	use pac_conductor_polygons_floating_solid;
+	use pac_conductor_polygons_floating_hatched;
 	use et_pcb.pac_text_placeholders_conductors;
 	use et_pcb.pac_texts;
 	
@@ -152,7 +152,7 @@ is
 		end if;
 	end query_circle;
 
-	procedure query_polygon (c : in et_pcb.pac_copper_polygons_floating_solid.cursor) is
+	procedure query_polygon (c : in et_pcb.pac_conductor_polygons_floating_solid.cursor) is
 	begin
 		-- Draw the polygon if it is in the current layer:
 		if element (c).layer = current_layer then
@@ -175,7 +175,7 @@ is
 
 	end query_polygon;
 
-	procedure query_polygon (c : in et_pcb.pac_copper_polygons_floating_hatched.cursor) is 
+	procedure query_polygon (c : in et_pcb.pac_conductor_polygons_floating_hatched.cursor) is 
 	begin
 		null; -- CS
 		

@@ -1176,8 +1176,8 @@ is
 		end;
 
 		-- solid fill zones in copper
-		use pac_copper_polygons_floating_solid;
-		procedure write_polygon (cursor : in pac_copper_polygons_floating_solid.cursor) is begin
+		use pac_conductor_polygons_floating_solid;
+		procedure write_polygon (cursor : in pac_conductor_polygons_floating_solid.cursor) is begin
 			fill_zone_begin;
 
 			write_easing (element (cursor).easing);
@@ -1196,8 +1196,8 @@ is
 		end;
 
 		-- hatched fill zones in copper
-		use pac_copper_polygons_floating_hatched;
-		procedure write_polygon (cursor : in pac_copper_polygons_floating_hatched.cursor) is begin
+		use pac_conductor_polygons_floating_hatched;
+		procedure write_polygon (cursor : in pac_conductor_polygons_floating_hatched.cursor) is begin
 			fill_zone_begin;
 
 			write_easing (element (cursor).easing);

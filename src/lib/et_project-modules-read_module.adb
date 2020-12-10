@@ -2584,7 +2584,7 @@ is
 				begin
 					case board_fill_style is
 						when SOLID =>
-							pac_copper_polygons_floating_solid.append (
+							pac_conductor_polygons_floating_solid.append (
 								container	=> module.board.copper.polygons.solid,
 								new_item	=> (type_polygon_base (polygon) with
 										fill_style 		=> SOLID,
@@ -2596,7 +2596,7 @@ is
 										);
 
 						when HATCHED =>
-							pac_copper_polygons_floating_hatched.append (
+							pac_conductor_polygons_floating_hatched.append (
 								container	=> module.board.copper.polygons.hatched,
 								new_item	=> (type_polygon_base (polygon) with
 										fill_style 		=> HATCHED,

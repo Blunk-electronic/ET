@@ -251,27 +251,34 @@ package et_pcb is
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 	
 	-- A floating conductor polygon is not connected to any net:
-	type type_copper_polygon_floating_solid is new et_packages.type_polygon (fill_style => SOLID) with record
+	type type_conductor_polygon_floating_solid is new et_packages.type_polygon (fill_style => SOLID) with record
+		width_min		: type_track_width; -- the minimum width
+
+		-- the space between foreign pads and the polygon:
+		isolation		: type_track_clearance := type_track_clearance'first;
+		layer 			: type_signal_layer;
+		priority_level	: type_polygon_priority := type_polygon_priority'first;
+	end record;
+
+	package pac_conductor_polygons_floating_solid is new 
+		indefinite_doubly_linked_lists (type_conductor_polygon_floating_solid);
+
+		
+	type type_conductor_polygon_floating_hatched is new 
+		et_packages.type_polygon (fill_style => HATCHED) 
+	with record
 		width_min		: type_track_width; -- the minimum width
 		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 		layer 			: type_signal_layer;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
 	end record;
 
-	package pac_copper_polygons_floating_solid is new indefinite_doubly_linked_lists (type_copper_polygon_floating_solid);
-	
-	type type_copper_polygon_floating_hatched is new et_packages.type_polygon (fill_style => HATCHED) with record
-		width_min		: type_track_width; -- the minimum width
-		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
-		layer 			: type_signal_layer;
-		priority_level	: type_polygon_priority := type_polygon_priority'first;
-	end record;
-
-	package pac_copper_polygons_floating_hatched is new indefinite_doubly_linked_lists (type_copper_polygon_floating_hatched);
+	package pac_conductor_polygons_floating_hatched is new
+		indefinite_doubly_linked_lists (type_conductor_polygon_floating_hatched);
 	
 	type type_copper_polygons_floating is record
-		solid	: pac_copper_polygons_floating_solid.list;
-		hatched	: pac_copper_polygons_floating_hatched.list;
+		solid	: pac_conductor_polygons_floating_solid.list;
+		hatched	: pac_conductor_polygons_floating_hatched.list;
 	end record;
 	
 	
