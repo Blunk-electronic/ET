@@ -2653,7 +2653,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					pac_copper_arcs.append (
+					pac_conductor_arcs.append (
 						container	=> module.board.copper.arcs,
 						new_item	=> (et_terminals.pac_shapes.type_arc (board_arc) with
 										width	=> board_line_width,
@@ -3361,7 +3361,7 @@ is
 							board_check_arc (log_threshold + 1);
 							
 							-- insert arc in route.arcs
-							et_pcb.pac_copper_arcs.append (
+							et_pcb.pac_conductor_arcs.append (
 								container	=> route.arcs,
 								new_item	=> (et_terminals.pac_shapes.type_arc (board_arc) with
 										width	=> board_line_width,

@@ -111,7 +111,6 @@ package body et_pcb is
 	end to_meaning;
 	
 	function on_segment (
-	-- Returns true if the given point sits on the given line of copper.
 		point			: in type_point; -- x/y
 		layer			: in type_signal_layer;
 		line			: in pac_conductor_lines.cursor;
@@ -120,7 +119,7 @@ package body et_pcb is
 	is
 		result : boolean := false; -- to be returned
 		use pac_conductor_lines;
-	begin -- on_segment
+	begin
 		if element (line).layer = layer then
 			if on_line (point, element (line), accuracy) then
 				result := true;
@@ -135,15 +134,15 @@ package body et_pcb is
 	end on_segment;
 
 	function on_segment (
-	-- Returns true if the given point sits on the given arc of copper.
 		point			: in type_point; -- x/y
 		layer			: in type_signal_layer;
-		arc				: in pac_copper_arcs.cursor;
+		arc				: in pac_conductor_arcs.cursor;
 		accuracy		: in type_distance)
-		return boolean is
+		return boolean 
+	is
 		result : boolean := false; -- to be returned
-		use pac_copper_arcs;
-	begin -- on_segment
+		use pac_conductor_arcs;
+	begin
 		if element (arc).layer = layer then
 			result := true; -- CS
 		else

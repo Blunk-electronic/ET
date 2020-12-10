@@ -209,13 +209,13 @@ package et_pcb is
 	type type_conductor_arc is new et_packages.type_conductor_arc with record
 		layer	: type_signal_layer;		
 	end record;
-	package pac_copper_arcs is new doubly_linked_lists (type_conductor_arc);
+	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
 
 	function on_segment (
 	-- Returns true if the given point sits on the given arc of copper.
 		point			: in type_point; -- x/y
 		layer			: in type_signal_layer;
-		arc				: in pac_copper_arcs.cursor;
+		arc				: in pac_conductor_arcs.cursor;
 		accuracy		: in type_distance)
 		return boolean;
 	
@@ -277,7 +277,7 @@ package et_pcb is
 	-- NON ELECTRIC conductor objects of a pcb may also include text placeholders:
 	type type_copper is record  -- CS rename to type_conductor
 		lines 			: pac_conductor_lines.list;
-		arcs			: pac_copper_arcs.list;
+		arcs			: pac_conductor_arcs.list;
 		circles			: pac_copper_circles.list;
 
 		-- CS: It is probably no good idea to allow floating copper polygons.
@@ -399,7 +399,7 @@ package et_pcb is
 	
 	type type_route is record 
 		lines 		: pac_conductor_lines.list;
-		arcs		: pac_copper_arcs.list;
+		arcs		: pac_conductor_arcs.list;
 		-- CS: circles ?
 		vias		: pac_vias.list;
 		polygons_2	: type_signal_polygons;

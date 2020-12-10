@@ -2006,7 +2006,7 @@ package body et_board_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_pcb;
-		use et_pcb.pac_copper_arcs;
+		use et_pcb.pac_conductor_arcs;
 		
 		procedure add_freetrack (
 			module_name	: in pac_module_name.bounded_string;
@@ -2091,7 +2091,7 @@ package body et_board_ops is
 
 		use et_pcb;
 		use et_pcb.pac_conductor_lines;
-		use et_pcb.pac_copper_arcs;
+		use et_pcb.pac_conductor_arcs;
 
 		deleted : boolean := false; -- goes true if at least one segment has been ripup
 		
@@ -2100,7 +2100,7 @@ package body et_board_ops is
 			module		: in out type_module) 
 		is
 			line_cursor : et_pcb.pac_conductor_lines.cursor := module.board.copper.lines.first;
-			arc_cursor  : et_pcb.pac_copper_arcs.cursor := module.board.copper.arcs.first;
+			arc_cursor  : et_pcb.pac_conductor_arcs.cursor := module.board.copper.arcs.first;
 		begin
 			-- first probe the lines. If a matching line found, delete it 
 			-- and abort iteration.
@@ -2118,7 +2118,7 @@ package body et_board_ops is
 			-- probe arcs if no line found.
 			-- If a matching arc found, delete it and abort iteration.
 			if not deleted then
-				while arc_cursor /= et_pcb.pac_copper_arcs.no_element loop
+				while arc_cursor /= et_pcb.pac_conductor_arcs.no_element loop
 
 					if on_segment (point, layer, arc_cursor, accuracy) then
 						delete (module.board.copper.arcs, arc_cursor);
@@ -2149,7 +2149,7 @@ package body et_board_ops is
 				net			: in out type_net) 
 			is
 				line_cursor : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
-				arc_cursor  : et_pcb.pac_copper_arcs.cursor := net.route.arcs.first;
+				arc_cursor  : et_pcb.pac_conductor_arcs.cursor := net.route.arcs.first;
 			begin
 				-- first probe the lines. If a matching line found, delete it 
 				-- and abort iteration.
@@ -2167,7 +2167,7 @@ package body et_board_ops is
 				-- probe arcs if no line found.
 				-- If a matching arc found, delete it and abort iteration.
 				if not deleted then
-					while arc_cursor /= pac_copper_arcs.no_element loop
+					while arc_cursor /= et_pcb.pac_conductor_arcs.no_element loop
 
 						if on_segment (point, layer, arc_cursor, accuracy) then
 							delete (net.route.arcs, arc_cursor);

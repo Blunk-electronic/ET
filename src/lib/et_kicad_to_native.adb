@@ -636,12 +636,12 @@ package body et_kicad_to_native is
 				-- Move y position of copper objects of the net: lines, arcs, vias, polygons
 
 					use et_pcb.pac_conductor_lines;
-					use et_pcb.pac_copper_arcs;
+					use et_pcb.pac_conductor_arcs;
 					use et_pcb.pac_vias;
 					use et_pcb.pac_signal_polygons_solid;
 					
 					line_cursor : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
-					arc_cursor	: et_pcb.pac_copper_arcs.cursor := net.route.arcs.first;
+					arc_cursor	: et_pcb.pac_conductor_arcs.cursor := net.route.arcs.first;
 					via_cursor	: et_pcb.pac_vias.cursor := net.route.vias.first;
 					poly_cursor	: et_pcb.pac_signal_polygons_solid.cursor := net.route.polygons_2.solid.first;
 
@@ -713,8 +713,8 @@ package body et_kicad_to_native is
 					end loop;
 
 					-- Move arcs:
-					while arc_cursor /= et_pcb.pac_copper_arcs.no_element loop
-						et_pcb.pac_copper_arcs.update_element (
+					while arc_cursor /= et_pcb.pac_conductor_arcs.no_element loop
+						et_pcb.pac_conductor_arcs.update_element (
 							container 	=> net.route.arcs,
 							position	=> arc_cursor,
 							process		=> move_arc'access);
@@ -1827,8 +1827,8 @@ package body et_kicad_to_native is
 				use et_pcb.pac_conductor_lines;
 				lines_cursor : et_pcb.pac_conductor_lines.cursor;
 
-				use et_pcb.pac_copper_arcs;
-				arcs_cursor : et_pcb.pac_copper_arcs.cursor;
+				use et_pcb.pac_conductor_arcs;
+				arcs_cursor : et_pcb.pac_conductor_arcs.cursor;
 
 				use et_pcb.pac_copper_circles;
 				circles_cursor : et_pcb.pac_copper_circles.cursor;
@@ -1952,8 +1952,8 @@ package body et_kicad_to_native is
 
 				-- ARCS
 				arcs_cursor := module.board.copper.arcs.first;
-				while arcs_cursor /= et_pcb.pac_copper_arcs.no_element loop
-					et_pcb.pac_copper_arcs.update_element (
+				while arcs_cursor /= et_pcb.pac_conductor_arcs.no_element loop
+					et_pcb.pac_conductor_arcs.update_element (
 						container	=> module.board.copper.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);

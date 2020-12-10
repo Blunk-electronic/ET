@@ -506,8 +506,8 @@ is
 			use pac_conductor_lines;
 			line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
 
-			use pac_copper_arcs;
-			arc_cursor : pac_copper_arcs.cursor := net.route.arcs.first;
+			use pac_conductor_arcs;
+			arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
 
 			use pac_vias;
 			via_cursor : pac_vias.cursor := net.route.vias.first;
@@ -534,7 +534,7 @@ is
 				next (line_cursor);
 			end loop;
 
-			while arc_cursor /= pac_copper_arcs.no_element loop
+			while arc_cursor /= pac_conductor_arcs.no_element loop
 				section_mark (section_arc, HEADER);
 
 				write (keyword => keyword_center, parameters => position (element (arc_cursor).center));
@@ -1161,8 +1161,8 @@ is
 			line_end;
 		end;
 
-		use pac_copper_arcs;
-		procedure write_arc (cursor : in pac_copper_arcs.cursor) is begin
+		use pac_conductor_arcs;
+		procedure write_arc (cursor : in pac_conductor_arcs.cursor) is begin
 			arc_begin;
 			write_arc (element (cursor));
 			write_width (element (cursor).width);

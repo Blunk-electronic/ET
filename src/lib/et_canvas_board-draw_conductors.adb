@@ -58,7 +58,7 @@ procedure draw_conductors (
 	use et_terminals.pac_shapes;	
 	--use et_packages;
 	use pac_conductor_lines;
-	use pac_copper_arcs;
+	use pac_conductor_arcs;
 	use et_pcb.pac_copper_circles;
 	use et_pcb.pac_copper_cutouts;
 	use pac_copper_polygons_floating_solid;
@@ -100,7 +100,7 @@ procedure draw_conductors (
 		end if;
 	end query_line;
 
-	procedure query_arc (c : in pac_copper_arcs.cursor) is begin
+	procedure query_arc (c : in pac_conductor_arcs.cursor) is begin
 
 		-- Draw the arc if it is in theh current layer:
 		if element (c).layer = current_layer then
