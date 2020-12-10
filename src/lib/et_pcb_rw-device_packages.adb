@@ -243,9 +243,9 @@ package body et_pcb_rw.device_packages is
 		end write_silk_screen;
 
 		procedure write_assembly_documentation is 
-			use type_doc_lines;
-			use type_doc_arcs;
-			use type_doc_circles;
+			use pac_doc_lines;
+			use pac_doc_arcs;
+			use pac_doc_circles;
 			use pac_doc_polygons;
 			use pac_doc_cutouts;
 		begin
@@ -1583,7 +1583,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										type_doc_lines.append (
+										pac_doc_lines.append (
 											container	=> packge.assembly_documentation.top.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1646,7 +1646,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										type_doc_lines.append (
+										pac_doc_lines.append (
 											container	=> packge.assembly_documentation.bottom.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1757,7 +1757,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										type_doc_arcs.append (
+										pac_doc_arcs.append (
 											container	=> packge.assembly_documentation.top.arcs, 
 											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
@@ -1820,7 +1820,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										type_doc_arcs.append (
+										pac_doc_arcs.append (
 											container	=> packge.assembly_documentation.bottom.arcs, 
 											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
@@ -1921,7 +1921,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_circle_fillable; -- clean up for next circle
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										type_doc_circles.append (
+										pac_doc_circles.append (
 											container	=> packge.assembly_documentation.top.circles, 
 											new_item	=> board_make_fillable_circle);
 
@@ -1971,7 +1971,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_circle_fillable; -- clean up for next circle
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-										type_doc_circles.append (
+										pac_doc_circles.append (
 											container	=> packge.assembly_documentation.bottom.circles, 
 											new_item	=> board_make_fillable_circle);
 

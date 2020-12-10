@@ -1105,9 +1105,9 @@ is
 		use pac_silk_circles;
 		use pac_silk_polygons;
 
-		use type_doc_lines;
-		use type_doc_arcs;
-		use type_doc_circles;
+		use pac_doc_lines;
+		use pac_doc_arcs;
+		use pac_doc_circles;
 		use pac_doc_polygons;
 
 		use pac_stencil_lines;

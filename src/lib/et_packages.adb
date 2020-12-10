@@ -530,11 +530,11 @@ package body et_packages is
 	
 -- PROPERTIES OF OBJECTS IN ASSEMBLY DOCUMENTATION
 	procedure line_assy_doc_properties (
-	-- Logs the properties of the given line of assembly documentation
 		face			: in type_face;
-		cursor			: in type_doc_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_doc_lines;
+		cursor			: in pac_doc_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use pac_doc_lines;
 		line : type_doc_line;
 	begin
 		line := element (cursor);
@@ -544,11 +544,11 @@ package body et_packages is
 	end line_assy_doc_properties;
 
 	procedure arc_assy_doc_properties (
-	-- Logs the properties of the given arc of assembly documentation
 		face			: in type_face;
-		cursor			: in type_doc_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_doc_arcs;
+		cursor			: in pac_doc_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use pac_doc_arcs;
 		arc : type_doc_arc;
 	begin
 		arc := element (cursor);
@@ -558,11 +558,11 @@ package body et_packages is
 	end arc_assy_doc_properties;
 
 	procedure circle_assy_doc_properties (
-	-- Logs the properties of the given circle of assembly documentation
 		face			: in type_face;
-		cursor			: in type_doc_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_doc_circles;
+		cursor			: in pac_doc_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use pac_doc_circles;
 	begin
 		log (text => "assembly doc circle face" & to_string (face) & latin_1.space 
 			 & to_string (element (cursor)),

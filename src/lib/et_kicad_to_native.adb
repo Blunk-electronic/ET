@@ -992,14 +992,14 @@ package body et_kicad_to_native is
 			end move_silk_screen;
 
 			procedure move_assembly_documentation is
-				use type_doc_lines;
-				lines_cursor : type_doc_lines.cursor;
+				use pac_doc_lines;
+				lines_cursor : pac_doc_lines.cursor;
 
-				use type_doc_arcs;
-				arcs_cursor : type_doc_arcs.cursor;
+				use pac_doc_arcs;
+				arcs_cursor : pac_doc_arcs.cursor;
 
-				use type_doc_circles;
-				circles_cursor : type_doc_circles.cursor;
+				use pac_doc_circles;
+				circles_cursor : pac_doc_circles.cursor;
 
 				use pac_doc_polygons;
 				polygons_cursor : pac_doc_polygons.cursor;
@@ -1078,8 +1078,8 @@ package body et_kicad_to_native is
 				
 				-- LINES TOP
 				lines_cursor := module.board.assy_doc.top.lines.first;
-				while lines_cursor /= type_doc_lines.no_element loop
-					type_doc_lines.update_element (
+				while lines_cursor /= pac_doc_lines.no_element loop
+					pac_doc_lines.update_element (
 						container	=> module.board.assy_doc.top.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1089,8 +1089,8 @@ package body et_kicad_to_native is
 
 				-- LINES BOTTOM
 				lines_cursor := module.board.assy_doc.bottom.lines.first;
-				while lines_cursor /= type_doc_lines.no_element loop
-					type_doc_lines.update_element (
+				while lines_cursor /= pac_doc_lines.no_element loop
+					pac_doc_lines.update_element (
 						container	=> module.board.assy_doc.bottom.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1100,8 +1100,8 @@ package body et_kicad_to_native is
 
 				-- ARCS TOP
 				arcs_cursor := module.board.assy_doc.top.arcs.first;
-				while arcs_cursor /= type_doc_arcs.no_element loop
-					type_doc_arcs.update_element (
+				while arcs_cursor /= pac_doc_arcs.no_element loop
+					pac_doc_arcs.update_element (
 						container	=> module.board.assy_doc.top.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1111,8 +1111,8 @@ package body et_kicad_to_native is
 
 				-- ARCS BOTTOM
 				arcs_cursor := module.board.assy_doc.bottom.arcs.first;
-				while arcs_cursor /= type_doc_arcs.no_element loop
-					type_doc_arcs.update_element (
+				while arcs_cursor /= pac_doc_arcs.no_element loop
+					pac_doc_arcs.update_element (
 						container	=> module.board.assy_doc.bottom.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1122,8 +1122,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES TOP
 				circles_cursor := module.board.assy_doc.top.circles.first;
-				while circles_cursor /= type_doc_circles.no_element loop
-					type_doc_circles.update_element (
+				while circles_cursor /= pac_doc_circles.no_element loop
+					pac_doc_circles.update_element (
 						container	=> module.board.assy_doc.top.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -1133,8 +1133,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES BOTTOM
 				circles_cursor := module.board.assy_doc.bottom.circles.first;
-				while circles_cursor /= type_doc_circles.no_element loop
-					type_doc_circles.update_element (
+				while circles_cursor /= pac_doc_circles.no_element loop
+					pac_doc_circles.update_element (
 						container	=> module.board.assy_doc.bottom.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);

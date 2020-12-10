@@ -1501,7 +1501,7 @@ is
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 								when ASSEMBLY_DOCUMENTATION =>
-									type_doc_lines.append (
+									pac_doc_lines.append (
 										container	=> module.board.assy_doc.top.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1530,7 +1530,7 @@ is
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 								when ASSEMBLY_DOCUMENTATION =>
-									type_doc_lines.append (
+									pac_doc_lines.append (
 										container	=> module.board.assy_doc.bottom.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 									
@@ -1589,7 +1589,7 @@ is
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 								when ASSEMBLY_DOCUMENTATION =>
-									type_doc_arcs.append (
+									pac_doc_arcs.append (
 										container	=> module.board.assy_doc.top.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
@@ -1617,7 +1617,7 @@ is
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 								when ASSEMBLY_DOCUMENTATION =>
-									type_doc_arcs.append (
+									pac_doc_arcs.append (
 										container	=> module.board.assy_doc.bottom.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 									
@@ -1674,7 +1674,7 @@ is
 										new_item	=> board_make_fillable_circle);
 
 								when ASSEMBLY_DOCUMENTATION =>
-									type_doc_circles.append (
+									pac_doc_circles.append (
 										container	=> module.board.assy_doc.top.circles,
 										new_item	=> board_make_fillable_circle);
 
@@ -1702,7 +1702,7 @@ is
 										new_item	=> board_make_fillable_circle);
 
 								when ASSEMBLY_DOCUMENTATION =>
-									type_doc_circles.append (
+									pac_doc_circles.append (
 										container	=> module.board.assy_doc.bottom.circles,
 										new_item	=> board_make_fillable_circle);
 									

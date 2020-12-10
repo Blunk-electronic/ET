@@ -1097,8 +1097,8 @@ package body et_pcb_rw is
 	end;
 
 -- ASSEMBLY DOCUMENTATION
-	procedure write_line (cursor : in type_doc_lines.cursor) is 
-		use type_doc_lines;
+	procedure write_line (cursor : in pac_doc_lines.cursor) is 
+		use pac_doc_lines;
 	begin
 		line_begin;
 		write_line (element (cursor));		
@@ -1106,8 +1106,8 @@ package body et_pcb_rw is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in type_doc_arcs.cursor) is 
-		use type_doc_arcs;
+	procedure write_arc (cursor : in pac_doc_arcs.cursor) is 
+		use pac_doc_arcs;
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -1115,8 +1115,8 @@ package body et_pcb_rw is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in type_doc_circles.cursor) is
-		use type_doc_circles;
+	procedure write_circle (cursor : in pac_doc_circles.cursor) is
+		use pac_doc_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;

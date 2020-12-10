@@ -569,25 +569,25 @@ package et_packages is
 		width	: type_general_line_width;
 	end record;
 
-	package type_doc_lines is new doubly_linked_lists (type_doc_line);
+	package pac_doc_lines is new doubly_linked_lists (type_doc_line);
 
 
 	type type_doc_arc is new type_arc with record
 		width	: type_general_line_width;
 	end record;
 
-	package type_doc_arcs is new doubly_linked_lists (type_doc_arc);
+	package pac_doc_arcs is new doubly_linked_lists (type_doc_arc);
 	
-	package type_doc_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
+	package pac_doc_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 	
 	package pac_doc_polygons is new indefinite_doubly_linked_lists (type_polygon);
 	package pac_doc_cutouts is new doubly_linked_lists (type_cutout_zone);	
 	
 	-- This is the base type for assembly documentation objects in general:
 	type type_assembly_documentation_base is tagged record
-		lines 		: type_doc_lines.list;
-		arcs		: type_doc_arcs.list;
-		circles		: type_doc_circles.list;
+		lines 		: pac_doc_lines.list;
+		arcs		: pac_doc_arcs.list;
+		circles		: pac_doc_circles.list;
 		polygons	: pac_doc_polygons.list;
 		cutouts		: pac_doc_cutouts.list;
 		texts		: pac_texts_with_content.list;
@@ -942,19 +942,19 @@ package et_packages is
 	procedure line_assy_doc_properties (
 	-- Logs the properties of the given line of assembly documentation
 		face			: in type_face;
-		cursor			: in type_doc_lines.cursor;
+		cursor			: in pac_doc_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure arc_assy_doc_properties (
 	-- Logs the properties of the given arc of assembly documentation
 		face			: in type_face;
-		cursor			: in type_doc_arcs.cursor;
+		cursor			: in pac_doc_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure circle_assy_doc_properties (
 	-- Logs the properties of the given circle of assembly documentation
 		face			: in type_face;
-		cursor			: in type_doc_circles.cursor;
+		cursor			: in pac_doc_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure placeholder_assy_doc_properties (
