@@ -1496,7 +1496,7 @@ is
 						when TOP =>
 							case layer is
 								when SILK_SCREEN =>
-									type_silk_lines.append (
+									pac_silk_lines.append (
 										container	=> module.board.silk_screen.top.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1525,7 +1525,7 @@ is
 						when BOTTOM => null;
 							case layer is
 								when SILK_SCREEN =>
-									type_silk_lines.append (
+									pac_silk_lines.append (
 										container	=> module.board.silk_screen.bottom.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1584,7 +1584,7 @@ is
 						when TOP =>
 							case layer is
 								when SILK_SCREEN =>
-									type_silk_arcs.append (
+									pac_silk_arcs.append (
 										container	=> module.board.silk_screen.top.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
@@ -1612,7 +1612,7 @@ is
 						when BOTTOM => null;
 							case layer is
 								when SILK_SCREEN =>
-									type_silk_arcs.append (
+									pac_silk_arcs.append (
 										container	=> module.board.silk_screen.bottom.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
@@ -1669,7 +1669,7 @@ is
 						when TOP =>
 							case layer is
 								when SILK_SCREEN =>
-									type_silk_circles.append (
+									pac_silk_circles.append (
 										container	=> module.board.silk_screen.top.circles,
 										new_item	=> board_make_fillable_circle);
 
@@ -1697,7 +1697,7 @@ is
 						when BOTTOM => null;
 							case layer is
 								when SILK_SCREEN =>
-									type_silk_circles.append (
+									pac_silk_circles.append (
 										container	=> module.board.silk_screen.bottom.circles,
 										new_item	=> board_make_fillable_circle);
 

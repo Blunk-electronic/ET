@@ -2842,7 +2842,7 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 			
-			use type_silk_lines;
+			use pac_silk_lines;
 		begin
 			case face is
 				when TOP =>
@@ -2886,7 +2886,7 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use type_silk_arcs;
+			use pac_silk_arcs;
 		begin
 			case face is
 				when TOP =>
@@ -2932,7 +2932,7 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use type_silk_circles;
+			use pac_silk_circles;
 		begin
 			case face is
 				when TOP =>
@@ -2978,12 +2978,12 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use type_silk_lines;
-			use type_silk_arcs;
-			use type_silk_circles;
-			line_cursor   : type_silk_lines.cursor;
-			arc_cursor    : type_silk_arcs.cursor;
-			circle_cursor : type_silk_circles.cursor;
+			use pac_silk_lines;
+			use pac_silk_arcs;
+			use pac_silk_circles;
+			line_cursor   : pac_silk_lines.cursor;
+			arc_cursor    : pac_silk_arcs.cursor;
+			circle_cursor : pac_silk_circles.cursor;
 
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 		begin
@@ -2998,7 +2998,7 @@ package body et_board_ops is
 			end if;
 			
 			-- first search for a matching segment among the lines
-			while line_cursor /= type_silk_lines.no_element loop
+			while line_cursor /= pac_silk_lines.no_element loop
 				if on_line (point, element (line_cursor), accuracy) then
 					if face = TOP then
 						delete (module.board.silk_screen.top.lines, line_cursor);
@@ -3013,7 +3013,7 @@ package body et_board_ops is
 
 			-- if no line found, search among arcs
 			if not deleted then
-				while arc_cursor /= type_silk_arcs.no_element loop
+				while arc_cursor /= pac_silk_arcs.no_element loop
 					if on_arc (point, element (arc_cursor), accuracy) then
 						if face = TOP then
 							delete (module.board.silk_screen.top.arcs, arc_cursor);
@@ -3029,7 +3029,7 @@ package body et_board_ops is
 
 			-- if no arc found, search among circles
 			if not deleted then
-				while circle_cursor /= type_silk_circles.no_element loop
+				while circle_cursor /= pac_silk_circles.no_element loop
 					
 					if on_circle (point, element (circle_cursor), accuracy) then
 						if face = TOP then

@@ -525,16 +525,16 @@ package et_packages is
 		width	: type_general_line_width;
 	end record;
 
-	package type_silk_lines is new doubly_linked_lists (type_silk_line);  -- CS rename to pac_silk_lines
+	package pac_silk_lines is new doubly_linked_lists (type_silk_line);  -- CS rename to pac_silk_lines
 
 
 	type type_silk_arc is new type_arc with record
 		width	: type_general_line_width;
 	end record;
 
-	package type_silk_arcs is new doubly_linked_lists (type_silk_arc); -- CS rename to pac_silk_arcs
+	package pac_silk_arcs is new doubly_linked_lists (type_silk_arc); -- CS rename to pac_silk_arcs
 	
-	package type_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle); -- CS rename to pac_silk_circles
+	package pac_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle); -- CS rename to pac_silk_circles
 
 	package pac_silk_polygons is new indefinite_doubly_linked_lists (type_polygon);
 	package pac_silk_cutouts is new doubly_linked_lists (type_cutout_zone);	
@@ -542,9 +542,9 @@ package et_packages is
 
 	-- This is the base type for silk screen objects in general:
 	type type_silk_screen_base is tagged record
-		lines 		: type_silk_lines.list;
-		arcs		: type_silk_arcs.list;
-		circles		: type_silk_circles.list;
+		lines 		: pac_silk_lines.list;
+		arcs		: pac_silk_arcs.list;
+		circles		: pac_silk_circles.list;
 		polygons	: pac_silk_polygons.list;
 		cutouts 	: pac_silk_cutouts.list;
 		texts		: pac_texts_with_content.list;
@@ -909,19 +909,19 @@ package et_packages is
 	procedure line_silk_screen_properties (
 	-- Logs the properties of the given line:
 		face			: in type_face;
-		cursor			: in type_silk_lines.cursor;
+		cursor			: in pac_silk_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure arc_silk_screen_properties (
 	-- Logs the properties of the given arc of silk screen
 		face			: in type_face;
-		cursor			: in type_silk_arcs.cursor;
+		cursor			: in pac_silk_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure circle_silk_screen_properties (
 	-- Logs the properties of the given circle of silk screen
 		face			: in type_face;
-		cursor			: in type_silk_circles.cursor;
+		cursor			: in pac_silk_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure placeholder_silk_screen_properties (

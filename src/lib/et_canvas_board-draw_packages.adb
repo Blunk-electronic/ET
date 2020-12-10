@@ -218,7 +218,7 @@ is
 		procedure draw_silkscreen is 
 
 			-- LINES
-			use type_silk_lines;
+			use pac_silk_lines;
 			line : type_silk_line;
 
 			procedure draw_line (f : in type_face) is begin
@@ -239,13 +239,13 @@ is
 				end if;
 			end draw_line;
 			
-			procedure query_line_top (c : in type_silk_lines.cursor) is begin
+			procedure query_line_top (c : in pac_silk_lines.cursor) is begin
 				line := element (c);
 				set_destination;
 				draw_line (destination);
 			end query_line_top;
 
-			procedure query_line_bottom (c : in type_silk_lines.cursor) is begin
+			procedure query_line_bottom (c : in pac_silk_lines.cursor) is begin
 				line := element (c);
 				set_destination (INVERSE);
 				draw_line (destination);
@@ -253,7 +253,7 @@ is
 
 			
 			-- ARCS
-			use type_silk_arcs;
+			use pac_silk_arcs;
 			arc : type_silk_arc;
 
 			procedure draw_arc (f : in type_face) is begin
@@ -274,13 +274,13 @@ is
 				end if;
 			end draw_arc;
 			
-			procedure query_arc_top (c : in type_silk_arcs.cursor) is begin
+			procedure query_arc_top (c : in pac_silk_arcs.cursor) is begin
 				arc := element (c);
 				set_destination;
 				draw_arc (destination);
 			end query_arc_top;
 
-			procedure query_arc_bottom (c : in type_silk_arcs.cursor) is begin
+			procedure query_arc_bottom (c : in pac_silk_arcs.cursor) is begin
 				arc := element (c);
 				set_destination (INVERSE);
 				draw_arc (destination);
@@ -288,7 +288,7 @@ is
 
 			
 			-- CIRCLES
-			use type_silk_circles;
+			use pac_silk_circles;
 
 			procedure draw_circle (
 				circle	: in out type_fillable_circle;
@@ -324,14 +324,14 @@ is
 				end if;
 			end draw_circle;
 			
-			procedure query_circle_top (c : in type_silk_circles.cursor) is 
+			procedure query_circle_top (c : in pac_silk_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
 				set_destination;
 				draw_circle (circle, destination);
 			end query_circle_top;
 
-			procedure query_circle_bottom (c : in type_silk_circles.cursor) is 
+			procedure query_circle_bottom (c : in pac_silk_circles.cursor) is 
 				circle : type_fillable_circle := element (c);
 			begin
 				set_destination (INVERSE);

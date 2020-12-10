@@ -448,14 +448,15 @@ package body et_packages is
 				end case;
 		end case;		
 	end circle_conductor_properties;
+
 	
 -- PROPERTIES OF OBJECTS IN SILK SCREEN
 	procedure line_silk_screen_properties (
-	-- Logs the properties of the given line of silk screen
 		face			: in type_face;
-		cursor			: in type_silk_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_silk_lines;
+		cursor			: in pac_silk_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use pac_silk_lines;
 		line : type_silk_line;
 	begin
 		line := element (cursor);
@@ -465,11 +466,11 @@ package body et_packages is
 	end line_silk_screen_properties;
 
 	procedure arc_silk_screen_properties (
-	-- Logs the properties of the given arc of silk screen
 		face			: in type_face;
-		cursor			: in type_silk_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_silk_arcs;
+		cursor			: in pac_silk_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use pac_silk_arcs;
 		arc : type_silk_arc;
 	begin
 		arc := element (cursor);
@@ -479,11 +480,11 @@ package body et_packages is
 	end arc_silk_screen_properties;
 	
 	procedure circle_silk_screen_properties (
-	-- Logs the properties of the given circle of silk screen
 		face			: in type_face;
-		cursor			: in type_silk_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_silk_circles;
+		cursor			: in pac_silk_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
+		use pac_silk_circles;
 	begin
 		log (text => "silk screen circle face" & to_string (face)
 			 & to_string (element (cursor)),

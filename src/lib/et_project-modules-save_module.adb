@@ -1100,9 +1100,9 @@ is
 		use pac_texts_with_content;
 		use et_pcb.pac_text_placeholders;
 
-		use type_silk_lines;
-		use type_silk_arcs;
-		use type_silk_circles;
+		use pac_silk_lines;
+		use pac_silk_arcs;
+		use pac_silk_circles;
 		use pac_silk_polygons;
 
 		use type_doc_lines;

@@ -209,9 +209,9 @@ package body et_pcb_rw.device_packages is
 		end write_placeholder;
 
 		procedure write_silk_screen is 
-			use type_silk_lines;
-			use type_silk_arcs;
-			use type_silk_circles;
+			use pac_silk_lines;
+			use pac_silk_arcs;
+			use pac_silk_circles;
 			use pac_silk_polygons;
 			use pac_silk_cutouts;
 		begin
@@ -1574,7 +1574,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 
 									when SEC_SILK_SCREEN => 
-										type_silk_lines.append (
+										pac_silk_lines.append (
 											container	=> packge.silk_screen.top.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1637,7 +1637,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 
 									when SEC_SILK_SCREEN => 
-										type_silk_lines.append (
+										pac_silk_lines.append (
 											container	=> packge.silk_screen.bottom.lines, 
 											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
@@ -1748,7 +1748,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 
 									when SEC_SILK_SCREEN => 
-										type_silk_arcs.append (
+										pac_silk_arcs.append (
 											container	=> packge.silk_screen.top.arcs, 
 											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
@@ -1811,7 +1811,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line_width;
 
 									when SEC_SILK_SCREEN => 
-										type_silk_arcs.append (
+										pac_silk_arcs.append (
 											container	=> packge.silk_screen.bottom.arcs, 
 											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
@@ -1914,7 +1914,7 @@ package body et_pcb_rw.device_packages is
 											new_item	=> board_make_copper_circle);
 
 									when SEC_SILK_SCREEN => 
-										type_silk_circles.append (
+										pac_silk_circles.append (
 											container	=> packge.silk_screen.top.circles, 
 											new_item	=> board_make_fillable_circle);
 															
@@ -1964,7 +1964,7 @@ package body et_pcb_rw.device_packages is
 											new_item	=> board_make_copper_circle);
 
 									when SEC_SILK_SCREEN => 
-										type_silk_circles.append (
+										pac_silk_circles.append (
 											container	=> packge.silk_screen.bottom.circles, 
 											new_item	=> board_make_fillable_circle);
 

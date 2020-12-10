@@ -43,20 +43,20 @@ procedure draw_silk_screen (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context;
-	face	: in type_face) is
-
+	face	: in type_face)
+is
 	use et_general;
 	use et_terminals.pac_shapes;	
 	use et_packages;
-	use type_silk_lines;
-	use type_silk_arcs;
-	use type_silk_circles;
+	use pac_silk_lines;
+	use pac_silk_arcs;
+	use pac_silk_circles;
 	use pac_silk_polygons;
 	use pac_silk_cutouts;
 	use et_pcb.pac_text_placeholders;
 	use pac_texts_with_content;
 	
-	procedure query_line (c : in type_silk_lines.cursor) is begin
+	procedure query_line (c : in pac_silk_lines.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
 		pac_draw_package.draw_line (
@@ -67,7 +67,7 @@ procedure draw_silk_screen (
 
 	end query_line;
 
-	procedure query_arc (c : in type_silk_arcs.cursor) is begin
+	procedure query_arc (c : in pac_silk_arcs.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
 		pac_draw_package.draw_arc (
@@ -78,7 +78,7 @@ procedure draw_silk_screen (
 
 	end query_arc;
 
-	procedure query_circle (c : in type_silk_circles.cursor) is begin
+	procedure query_circle (c : in pac_silk_circles.cursor) is begin
 		case element (c).filled is
 			when NO =>
 				-- We draw a normal non-filled circle:
