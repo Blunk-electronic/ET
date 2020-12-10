@@ -647,7 +647,7 @@ package body et_kicad_to_native is
 
 					board_track : constant string (1..12) := "board track ";
 					
-					procedure move_line (line : in out et_pcb.type_copper_line) is
+					procedure move_line (line : in out et_pcb.type_conductor_line) is
 						use et_pcb;
 					begin
 						log (text => board_track & "line", level => log_threshold + 4);
@@ -663,7 +663,7 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end move_line;
 
-					procedure move_arc (arc : in out et_pcb.type_copper_arc) is
+					procedure move_arc (arc : in out et_pcb.type_conductor_arc) is
 						use et_pcb;
 					begin
 						log (text => board_track & "arc", level => log_threshold + 4);
@@ -1847,7 +1847,7 @@ package body et_kicad_to_native is
 				
 				board_copper : constant string := "board copper ";
 				
-				procedure move_line (line : in out et_pcb.type_copper_line) is
+				procedure move_line (line : in out et_pcb.type_conductor_line) is
 					use et_pcb;
 				begin
 					log (text => board_copper & "line", level => log_threshold + log_threshold_add);
@@ -1863,7 +1863,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
-				procedure move_arc (arc : in out et_pcb.type_copper_arc) is
+				procedure move_arc (arc : in out et_pcb.type_conductor_arc) is
 					use et_pcb;
 				begin
 					log (text => board_copper & "arc", level => log_threshold + log_threshold_add);
@@ -1880,7 +1880,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_copper_circle) is
+				procedure move_circle (circle : in out et_pcb.type_conductor_circle) is
 					use et_pcb_coordinates.pac_geometry_brd;
 				begin
 					log (text => board_copper & "circle", level => log_threshold + log_threshold_add);

@@ -4813,7 +4813,7 @@ package body et_kicad.pcb is
 					route : et_pcb.type_route; -- to be returned
 					use type_segments;
 					segment_cursor : type_segments.cursor := board.segments.first;
-					line : et_pcb.type_copper_line; -- an ET segment
+					line : et_pcb.type_conductor_line; -- an ET segment
 
 					use type_vias;
 					via_cursor : type_vias.cursor := board.vias.first;

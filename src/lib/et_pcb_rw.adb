@@ -255,7 +255,7 @@ package body et_pcb_rw is
 		circle_end;
 	end write_circle_copper;
 
-	procedure write_circle_copper (circle : in et_pcb.type_copper_circle) is begin
+	procedure write_circle_copper (circle : in et_pcb.type_conductor_circle) is begin
 		circle_begin;
 		write_circle (circle);
 		write_signal_layer (circle.layer);

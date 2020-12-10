@@ -120,7 +120,7 @@ package et_pcb_rw is
 	procedure write_circle_copper (circle : in type_conductor_circle);
 
 	-- Writes the properties of a circle in copper as used in a freetrack:
-	procedure write_circle_copper (circle : in et_pcb.type_copper_circle);	
+	procedure write_circle_copper (circle : in et_pcb.type_conductor_circle);	
 	
 	
 	procedure write_polygon_segments (polygon : in pac_shapes.type_polygon_base);

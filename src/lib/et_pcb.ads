@@ -192,10 +192,10 @@ package et_pcb is
 	
 	-- In a pcb drawing copper objects can be placed at various copper layers.
 	-- This requires a layer id for the object.
-	type type_copper_line is new et_packages.type_conductor_line with record
+	type type_conductor_line is new et_packages.type_conductor_line with record
 		layer	: type_signal_layer;
 	end record;
-	package pac_copper_lines is new doubly_linked_lists (type_copper_line);
+	package pac_copper_lines is new doubly_linked_lists (type_conductor_line);
 
 	function on_segment (
 	-- Returns true if the given point sits on the given line of copper.
@@ -205,10 +205,10 @@ package et_pcb is
 		accuracy	: in type_catch_zone)
 		return boolean;
 	
-	type type_copper_arc is new et_packages.type_conductor_arc with record
+	type type_conductor_arc is new et_packages.type_conductor_arc with record
 		layer	: type_signal_layer;		
 	end record;
-	package pac_copper_arcs is new doubly_linked_lists (type_copper_arc);
+	package pac_copper_arcs is new doubly_linked_lists (type_conductor_arc);
 
 	function on_segment (
 	-- Returns true if the given point sits on the given arc of copper.
@@ -218,10 +218,10 @@ package et_pcb is
 		accuracy		: in type_distance)
 		return boolean;
 	
-	type type_copper_circle is new et_packages.type_conductor_circle with record
+	type type_conductor_circle is new et_packages.type_conductor_circle with record
 		layer	: type_signal_layer;
 	end record;
-	package pac_copper_circles is new indefinite_doubly_linked_lists (type_copper_circle);
+	package pac_copper_circles is new indefinite_doubly_linked_lists (type_conductor_circle);
 	
 
 

@@ -230,11 +230,11 @@ package body et_pcb is
 
 -- PROPERTIES OF ELECTRIC OBJECTS IN SIGNAL LAYERS
 	procedure route_line_properties (
-	-- Logs the properties of the given line of a route
 		cursor			: in pac_copper_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
 		use pac_copper_lines;
-		line : type_copper_line;
+		line : type_conductor_line;
 	begin
 		line := element (cursor);
 		log (text => "segment " & to_string (type_line (line)) &
@@ -245,9 +245,9 @@ package body et_pcb is
 	end route_line_properties;
 	
 	procedure route_via_properties (
-	-- Logs the properties of the given via of a route
 		cursor			: in pac_vias.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
 		use pac_vias;
 		via : type_via;
 	begin

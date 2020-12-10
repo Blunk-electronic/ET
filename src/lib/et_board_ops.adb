@@ -1605,7 +1605,7 @@ package body et_board_ops is
 	-- Adds a line track segment to the given net in the given module.
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		line			: in et_pcb.type_copper_line) is
+		line			: in et_pcb.type_conductor_line) is
 
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
@@ -1651,7 +1651,7 @@ package body et_board_ops is
 	-- Draws a track line. If net_name is empty a freetrack will be drawn.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		line			: in et_pcb.type_copper_line;
+		line			: in et_pcb.type_conductor_line;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -1701,7 +1701,7 @@ package body et_board_ops is
 	-- Assumes that module_cursor and net_cursor point to a existing objects.
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor; -- reset_n
-		line			: in et_pcb.type_copper_line;
+		line			: in et_pcb.type_conductor_line;
 		log_threshold	: in type_log_level) is
 
 		procedure add_named_track (
@@ -1756,7 +1756,7 @@ package body et_board_ops is
 		-- will be tailored according to given terminal position, direction and length.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : et_pcb.type_copper_line;
+		line : et_pcb.type_conductor_line;
 		
 		device_cursor : pac_devices_sch.cursor;
 		
@@ -1825,7 +1825,7 @@ package body et_board_ops is
 		-- will be tailored according to given terminal position, direction, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : et_pcb.type_copper_line;
+		line : et_pcb.type_conductor_line;
 		
 		device_cursor : pac_devices_sch.cursor;
 		
@@ -1890,7 +1890,7 @@ package body et_board_ops is
 		-- will be tailored according to given terminal position and end point.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : et_pcb.type_copper_line;
+		line : et_pcb.type_conductor_line;
 		
 		device_cursor : pac_devices_sch.cursor;
 		
@@ -1952,7 +1952,7 @@ package body et_board_ops is
 		-- will be tailored according to given terminal position, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : et_pcb.type_copper_line;
+		line : et_pcb.type_conductor_line;
 		
 		device_cursor : pac_devices_sch.cursor;
 		
@@ -2000,7 +2000,7 @@ package body et_board_ops is
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		arc				: in et_pcb.type_copper_arc;
+		arc				: in et_pcb.type_conductor_arc;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified

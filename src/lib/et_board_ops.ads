@@ -207,13 +207,13 @@ package et_board_ops is
 	-- Adds a line track segment to the given net in the given module.
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		line			: in et_pcb.type_copper_line);
+		line			: in et_pcb.type_conductor_line);
 	
 	procedure draw_track_line (
 	-- Draws track line. If net_name is empty a freetrack will be drawn.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		line			: in et_pcb.type_copper_line;
+		line			: in et_pcb.type_conductor_line;
 		log_threshold	: in type_log_level);
 
 	procedure draw_track_line (
@@ -221,7 +221,7 @@ package et_board_ops is
 	-- Assumes that module_cursor and net_cursor point to existing objects.
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in et_schematic.pac_nets.cursor; -- reset_n
-		line			: in et_pcb.type_copper_line;
+		line			: in et_pcb.type_conductor_line;
 		log_threshold	: in type_log_level);
 
 	procedure draw_track_line (
@@ -291,7 +291,7 @@ package et_board_ops is
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
-		arc				: in et_pcb.type_copper_arc;
+		arc				: in et_pcb.type_conductor_arc;
 		log_threshold	: in type_log_level);
 
 	procedure ripup_track_segment (
