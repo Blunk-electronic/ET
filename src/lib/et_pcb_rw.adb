@@ -1462,9 +1462,9 @@ package body et_pcb_rw is
 		circle_end;
 	end write_circle;
 	
-	procedure write_line (cursor : in et_pcb.type_pcb_contour_lines.cursor) is 
+	procedure write_line (cursor : in et_pcb.pac_pcb_contour_lines.cursor) is 
 		use et_pcb;
-		use et_pcb.type_pcb_contour_lines;
+		use et_pcb.pac_pcb_contour_lines;
 	begin
 		line_begin;
 		write_line (element (cursor));
@@ -1472,9 +1472,9 @@ package body et_pcb_rw is
 		line_end;
 	end write_line;
 	
-	procedure write_arc (cursor : in et_pcb.type_pcb_contour_arcs.cursor) is 
+	procedure write_arc (cursor : in et_pcb.pac_pcb_contour_arcs.cursor) is 
 		use et_pcb;
-		use et_pcb.type_pcb_contour_arcs;
+		use et_pcb.pac_pcb_contour_arcs;
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -1482,9 +1482,9 @@ package body et_pcb_rw is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_pcb.type_pcb_contour_circles.cursor) is 
+	procedure write_circle (cursor : in et_pcb.pac_pcb_contour_circles.cursor) is 
 		use et_pcb;
-		use et_pcb.type_pcb_contour_circles;
+		use et_pcb.pac_pcb_contour_circles;
 	begin
 		circle_begin;
 		write_circle (element (cursor));

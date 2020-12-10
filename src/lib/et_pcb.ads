@@ -159,37 +159,37 @@ package et_pcb is
 	
 
 	
--- PCB CONTOUR/OUTLINE
+-- CONTOUR / OUTLINE / EDGE CUTS
 	type type_pcb_contour_line is new type_line with record
 		locked : type_locked := type_locked'first;
 	end record;
-
-	package type_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
+	package pac_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
 
 	
 	type type_pcb_contour_arc is new type_arc with record
 		locked : type_locked := type_locked'first;
 	end record;
-	package type_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
+	package pac_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
 
 	
 	type type_pcb_contour_circle is new type_circle with record
 		locked : type_locked := type_locked'first;
 	end record;
-	package type_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
+	package pac_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
 
 	
 	type type_pcb_contours is record -- PCB contour defined for the PCB as a whole
-		lines 	: type_pcb_contour_lines.list;
-		arcs	: type_pcb_contour_arcs.list;
-		circles	: type_pcb_contour_circles.list;
+		lines 	: pac_pcb_contour_lines.list;
+		arcs	: pac_pcb_contour_arcs.list;
+		circles	: pac_pcb_contour_circles.list;
 	end record;
 
 
 		
 
 
-	-- COPPER OBJECTS OF A PCB
+-- COPPER OBJECTS
+	
 	-- In a pcb drawing copper objects can be placed at various copper layers.
 	-- This requires a layer id for the object.
 	type type_copper_line is new et_packages.type_conductor_line with record
@@ -518,17 +518,17 @@ package et_pcb is
 	
 	procedure line_pcb_contour_properties (
 	-- Logs the properties of the given line of pcb contour
-		cursor			: in type_pcb_contour_lines.cursor;
+		cursor			: in pac_pcb_contour_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure arc_pcb_contour_properties (
 	-- Logs the properties of the given arc of pcb contour
-		cursor			: in type_pcb_contour_arcs.cursor;
+		cursor			: in pac_pcb_contour_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure circle_pcb_contour_properties (
 	-- Logs the properties of the given circle of pcb contour
-		cursor			: in type_pcb_contour_circles.cursor;
+		cursor			: in pac_pcb_contour_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 

@@ -47,11 +47,11 @@ procedure draw_outline (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 	
-	use type_pcb_contour_lines;
-	use type_pcb_contour_arcs;
-	use type_pcb_contour_circles;
+	use pac_pcb_contour_lines;
+	use pac_pcb_contour_arcs;
+	use pac_pcb_contour_circles;
 	
-	procedure query_line (c : in type_pcb_contour_lines.cursor) is begin
+	procedure query_line (c : in pac_pcb_contour_lines.cursor) is begin
 		pac_draw_package.draw_line (
 			area		=> in_area,
 			context		=> context,
@@ -60,7 +60,7 @@ procedure draw_outline (
 
 	end query_line;
 
-	procedure query_arc (c : in type_pcb_contour_arcs.cursor) is begin
+	procedure query_arc (c : in pac_pcb_contour_arcs.cursor) is begin
 		pac_draw_package.draw_arc (
 			area		=> in_area,
 			context		=> context,
@@ -68,7 +68,7 @@ procedure draw_outline (
 			height		=> self.frame_height);
 	end query_arc;
 
-	procedure query_circle (c : in type_pcb_contour_circles.cursor) is begin
+	procedure query_circle (c : in pac_pcb_contour_circles.cursor) is begin
 		pac_draw_package.draw_circle (
 			area		=> in_area,
 			context		=> context,

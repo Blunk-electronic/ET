@@ -1727,14 +1727,14 @@ package body et_kicad_to_native is
 			end move_keepout;
 
 			procedure move_contour is
-				use et_pcb.type_pcb_contour_lines;
-				lines_cursor : et_pcb.type_pcb_contour_lines.cursor;
+				use et_pcb.pac_pcb_contour_lines;
+				lines_cursor : et_pcb.pac_pcb_contour_lines.cursor;
 
-				use et_pcb.type_pcb_contour_arcs;
-				arcs_cursor : et_pcb.type_pcb_contour_arcs.cursor;
+				use et_pcb.pac_pcb_contour_arcs;
+				arcs_cursor : et_pcb.pac_pcb_contour_arcs.cursor;
 
-				use et_pcb.type_pcb_contour_circles;
-				circles_cursor : et_pcb.type_pcb_contour_circles.cursor;
+				use et_pcb.pac_pcb_contour_circles;
+				circles_cursor : et_pcb.pac_pcb_contour_circles.cursor;
 
 				contour : constant string := "board contour ";
 				
@@ -1790,8 +1790,8 @@ package body et_kicad_to_native is
 				
 				-- LINES
 				lines_cursor := module.board.contours.lines.first;
-				while lines_cursor /= et_pcb.type_pcb_contour_lines.no_element loop
-					et_pcb.type_pcb_contour_lines.update_element (
+				while lines_cursor /= et_pcb.pac_pcb_contour_lines.no_element loop
+					et_pcb.pac_pcb_contour_lines.update_element (
 						container	=> module.board.contours.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1801,8 +1801,8 @@ package body et_kicad_to_native is
 
 				-- ARCS
 				arcs_cursor := module.board.contours.arcs.first;
-				while arcs_cursor /= et_pcb.type_pcb_contour_arcs.no_element loop
-					et_pcb.type_pcb_contour_arcs.update_element (
+				while arcs_cursor /= et_pcb.pac_pcb_contour_arcs.no_element loop
+					et_pcb.pac_pcb_contour_arcs.update_element (
 						container	=> module.board.contours.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1812,8 +1812,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES TOP
 				circles_cursor := module.board.contours.circles.first;
-				while circles_cursor /= et_pcb.type_pcb_contour_circles.no_element loop
-					et_pcb.type_pcb_contour_circles.update_element (
+				while circles_cursor /= et_pcb.pac_pcb_contour_circles.no_element loop
+					et_pcb.pac_pcb_contour_circles.update_element (
 						container	=> module.board.contours.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);

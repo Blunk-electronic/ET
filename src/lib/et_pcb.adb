@@ -315,9 +315,9 @@ package body et_pcb is
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	procedure line_pcb_contour_properties (
 	-- Logs the properties of the given line of pcb contour
-		cursor			: in type_pcb_contour_lines.cursor;
+		cursor			: in pac_pcb_contour_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_pcb_contour_lines;
+		use pac_pcb_contour_lines;
 		line : type_pcb_contour_line;
 	begin
 		line := element (cursor);
@@ -328,9 +328,9 @@ package body et_pcb is
 
 	procedure arc_pcb_contour_properties (
 	-- Logs the properties of the given arc of pcb contour
-		cursor			: in type_pcb_contour_arcs.cursor;
+		cursor			: in pac_pcb_contour_arcs.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_pcb_contour_arcs;
+		use pac_pcb_contour_arcs;
 		arc : type_pcb_contour_arc;
 	begin
 		arc := element (cursor);
@@ -341,9 +341,9 @@ package body et_pcb is
 
 	procedure circle_pcb_contour_properties (
 	-- Logs the properties of the given circle of pcb contour
-		cursor			: in type_pcb_contour_circles.cursor;
+		cursor			: in pac_pcb_contour_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_pcb_contour_circles;
+		use pac_pcb_contour_circles;
 		circle : type_pcb_contour_circle;
 	begin
 		circle := element (cursor);

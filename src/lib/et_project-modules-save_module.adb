@@ -1137,9 +1137,9 @@ is
 
 		use pac_texts;
 
-		use et_pcb.type_pcb_contour_lines;
-		use et_pcb.type_pcb_contour_arcs;
-		use et_pcb.type_pcb_contour_circles;
+		use et_pcb.pac_pcb_contour_lines;
+		use et_pcb.pac_pcb_contour_arcs;
+		use et_pcb.pac_pcb_contour_circles;
 		
 		-- general stuff
 		use pac_text_placeholders_conductors;
