@@ -83,6 +83,9 @@ with et_canvas_schematic_units;		use et_canvas_schematic_units;
 
 package et_canvas_schematic is
 
+	use et_symbols.pac_shapes;
+	use et_symbols.pac_text;
+	
 	use et_project.modules.pac_generic_modules;
 	
 	
@@ -116,8 +119,8 @@ package et_canvas_schematic is
 	-- we instantiate this package:
 	package pac_draw_misc is new et_canvas_primitive_draw_ops.pac_draw ( -- CS rename to pac_draw_schematic
 		pac_canvas	=> pac_canvas,
-		pac_shapes	=> et_schematic.pac_shapes,
-		pac_text	=> et_schematic.pac_text);
+		pac_shapes	=> et_symbols.pac_shapes,
+		pac_text	=> et_symbols.pac_text);
 	
 	package pac_draw_symbols is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas	=> pac_canvas,
@@ -271,7 +274,7 @@ package et_canvas_schematic is
 
 	cursor_line_width : constant type_distance_positive := 0.8;
 	cursor_half_size : constant type_distance_positive := 50.0;
-	type type_cursor_line is new et_schematic.pac_shapes.type_line with null record;
+	type type_cursor_line is new type_line with null record;
 	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;

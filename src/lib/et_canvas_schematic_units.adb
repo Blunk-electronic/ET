@@ -79,6 +79,8 @@ package body et_canvas_schematic_units is
 
 	use et_canvas_schematic.pac_canvas;
 
+	use et_symbols.pac_shapes;
+	
 	procedure clear_proposed_units is begin
 		clear (proposed_units);
 		selected_unit := pac_proposed_units.no_element;
@@ -533,9 +535,7 @@ package body et_canvas_schematic_units is
 				procedure query_strand (s : in pac_strands.cursor) is
 					use et_schematic.pac_net_segments;
 
-					procedure query_segment (g : in pac_net_segments.cursor) is
-						use et_schematic.pac_shapes;
-					begin
+					procedure query_segment (g : in pac_net_segments.cursor) is begin
 						log (text => to_string (element (g)));
 						
 						if element (g).start_point = element (p).position then

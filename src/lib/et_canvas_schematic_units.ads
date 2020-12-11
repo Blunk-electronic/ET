@@ -60,6 +60,7 @@ with et_canvas_schematic_nets;
 
 package et_canvas_schematic_units is
 
+	use et_symbols.pac_shapes;
 	use et_project.modules.pac_generic_modules;
 
 	-- Whenever a unit (or the whole device with all its units)
@@ -198,7 +199,6 @@ package et_canvas_schematic_units is
 	-- While dragging a unit, the attached segments must be dragged along.
 	-- So we need a list of selected segments.
 	-- There must also be information about the zone of the segment being dragged at:
-	use et_schematic.pac_shapes;
 	subtype type_drag_zone is type_line_zone range START_POINT .. END_POINT;
 	
 -- 	type type_segment_being_dragged is new et_canvas_schematic_nets.type_selected_segment with record

@@ -352,7 +352,6 @@ is
 				procedure query_labels (segment : in type_net_segment) is
 					use pac_net_labels;
 					label_cursor : pac_net_labels.cursor := segment.labels.first;
-					use et_symbols;
 				begin
 					if not is_empty (segment.labels) then
 						section_mark (section_labels, HEADER);
@@ -365,7 +364,7 @@ is
 								when SIMPLE =>
 									-- The simple label can be read from the front or from the right:
 									write (keyword => keyword_rotation, parameters => 
-										et_schematic.pac_text.to_string (element (label_cursor).rotation_simple));
+										to_string (element (label_cursor).rotation_simple));
 
 								when TAG =>
 									-- The tag label ran be rotated arbitrary:
@@ -1056,7 +1055,6 @@ is
 		use et_coordinates.pac_geometry_sch;
 		use et_schematic;
 		use pac_texts;
-		use et_schematic.pac_text;
 		
 		procedure write (text_cursor : in pac_texts.cursor) is begin
 			section_mark (section_text, HEADER);

@@ -54,7 +54,6 @@ procedure draw_nets (
 	use et_schematic.pac_strands;
 	use et_schematic.pac_net_segments;
 	use et_schematic.pac_net_labels;
-	use et_schematic.pac_shapes;
 	
 	use pac_draw_misc;
 
@@ -161,10 +160,7 @@ procedure draw_nets (
 	procedure draw_label (
 		net		: in pac_net_name.bounded_string;
 		label	: in pac_net_labels.cursor)
-	is
-		use et_text;
-		use pac_text;
-	begin
+	is begin
 		case element (label).appearance is
 			when SIMPLE =>
 				draw_text (
@@ -194,10 +190,7 @@ procedure draw_nets (
 	procedure draw_simple_label_being_moved (
 		net		: in pac_net_name.bounded_string;
 		label	: in type_net_label)
-	is
-		use et_text;
-		use pac_text;
-	begin
+	is begin
 		--case element (label).appearance is
 			--when SIMPLE =>
 				draw_text (
@@ -242,9 +235,6 @@ procedure draw_nets (
 	-- Draws the net label being moved. If no net label
 	-- is being moved, nothing happens here:
 	procedure draw_label_being_moved is
-		use et_text;
-		use pac_text;
-		
 		l : type_net_label (label.appearance);
 	begin
 		case verb is

@@ -68,7 +68,7 @@ with et_material;
 with et_netlists;
 with et_geometry;
 with et_text;
-with et_symbols;
+with et_symbols;				use et_symbols;
 with et_devices;				use et_devices;
 with et_frames;
 with et_meta;
@@ -79,24 +79,8 @@ package et_schematic is
 	use pac_net_name;
 	use pac_unit_name;
 	
-	use et_coordinates.pac_geometry_sch;
-	
-	package pac_shapes is new 
-		et_geometry.generic_pac_shapes (et_coordinates.pac_geometry_sch);
-	
-	use pac_shapes;
+	use pac_geometry_sch;
 
-	package pac_text is new et_text.generic_pac_text (
-		pac_shapes			=> pac_shapes,
-		size_min			=> et_symbols.text_size_min,
-		size_max			=> et_symbols.text_size_max,
-		size_default		=> et_symbols.text_size_default,
-		line_width_min		=> et_symbols.text_line_width_min,
-		line_width_max		=> et_symbols.text_line_width_max,
-		line_width_default	=> et_symbols.text_line_width_default
-		);
-
-	use pac_text;
 	
 -- TEXT FIELD
 

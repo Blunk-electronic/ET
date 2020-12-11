@@ -107,10 +107,6 @@ package et_kicad_libraries is
 	text_line_width_max : constant type_distance_positive := 5.0;
 	text_line_width_default : constant type_distance_positive := 0.3; 
 
-	-- Instantiation of the shapes package:
-	-- Required for instantiation of text package only. See below.
-	package pac_shapes is new et_geometry.generic_pac_shapes (et_coordinates.pac_geometry_sch);
-	
 	-- Instantiation of the text package:
 	package pac_text is new et_text.generic_pac_text (
 		pac_shapes			=> pac_shapes,

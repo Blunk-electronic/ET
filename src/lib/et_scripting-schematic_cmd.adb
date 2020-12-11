@@ -40,6 +40,7 @@ with et_project.modules;
 with et_canvas_schematic_units;
 with et_canvas_schematic_nets;
 with et_scripting_interactive_schematic;
+with et_symbols;
 
 separate (et_scripting)
 	
@@ -53,6 +54,7 @@ is
 	use et_schematic_ops.units;
 	use et_coordinates;
 	use pac_geometry_sch;
+	use et_symbols.pac_text;
 	use et_devices;
 	use et_canvas_schematic;
 	use et_canvas_schematic.pac_canvas;
@@ -1731,7 +1733,7 @@ is
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_unit_name (f (6)), -- A
-									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+									rotation		=> to_rotation_doc (f (7)), -- 90
 									meaning			=> et_symbols.NAME,
 									log_threshold	=> log_threshold + 1
 									);
@@ -1749,7 +1751,7 @@ is
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_unit_name (f (6)), -- A
-									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+									rotation		=> to_rotation_doc (f (7)), -- 90
 									meaning			=> et_symbols.VALUE,
 									log_threshold	=> log_threshold + 1
 									);
@@ -1767,7 +1769,7 @@ is
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_unit_name (f (6)), -- A
-									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+									rotation		=> to_rotation_doc (f (7)), -- 90
 									meaning			=> et_symbols.PURPOSE,
 									log_threshold	=> log_threshold + 1
 									);

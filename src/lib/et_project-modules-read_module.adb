@@ -3231,7 +3231,7 @@ is
 										new_item	=> (
 											net_label with
 											appearance		=> et_schematic.SIMPLE,
-											rotation_simple	=> et_schematic.pac_text.snap (net_label_rotation)
+											rotation_simple	=> snap (net_label_rotation)
 											));
 
 									-- CS warn about parameter "direction" being ignored

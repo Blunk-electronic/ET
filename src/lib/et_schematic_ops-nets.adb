@@ -42,6 +42,9 @@ with ada.exceptions;
 with et_exceptions;					use et_exceptions;
 
 package body et_schematic_ops.nets is
+
+	use et_symbols.pac_shapes;
+	use et_symbols.pac_text;
 	
 	procedure junction_in_sloping_segment (point : in et_coordinates.type_position) is begin
 		log (ERROR, "Junction not allowed in a sloping net segment at" & to_string (point),
@@ -55,7 +58,6 @@ package body et_schematic_ops.nets is
 		catch_zone	: in type_catch_zone := zero)
 		return boolean 
 	is
-		use et_schematic.pac_shapes;
 		dist : type_distance_point_line;
 		use pac_net_segments;
 	begin
@@ -78,7 +80,6 @@ package body et_schematic_ops.nets is
 		catch_zone	: in type_catch_zone := zero)
 		return boolean 
 	is
-		use et_schematic.pac_shapes;
 		dist : type_distance_point_line;
 		use pac_net_segments;
 	begin
@@ -732,13 +733,11 @@ package body et_schematic_ops.nets is
 	function movable (
 		module_name		: in pac_module_name.bounded_string;
 		segment			: in type_net_segment;
-		zone			: in et_schematic.pac_shapes.type_line_zone;
+		zone			: in type_line_zone;
 		point_of_attack	: in et_coordinates.type_position;
 		log_threshold	: in type_log_level) 
-		return boolean is
-
-		use et_schematic.pac_shapes;
-		
+		return boolean 
+	is
 		result : boolean := true; -- to be returned. true means the zone is movable.
 		-- Goes false once a port has been found in the given zone.
 
@@ -2634,7 +2633,7 @@ package body et_schematic_ops.nets is
 										appearance		=> SIMPLE,
 
 										-- snap given rotation to either 0 or 90 degree
-										rotation_simple	=> pac_text.snap (rotation))
+										rotation_simple	=> snap (rotation))
 									   );
 								
 							when TAG =>

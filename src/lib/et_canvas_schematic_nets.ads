@@ -49,6 +49,7 @@ use et_coordinates.pac_geometry_sch;
 
 with et_text;
 with et_project.modules;			use et_project.modules;
+with et_symbols;
 with et_schematic;					use et_schematic;
 with et_schematic_ops;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
@@ -58,6 +59,7 @@ package et_canvas_schematic_nets is
 
 	use et_project.modules.pac_generic_modules;
 
+	use et_symbols.pac_shapes;
 	use pac_nets;
 	use pac_strands;
 	use pac_net_segments;
@@ -174,7 +176,7 @@ package et_canvas_schematic_nets is
 	-- When a net route is being drawn, then this global variable
 	-- shall be used:
 	type type_net_route is record
-		path	: et_schematic.pac_shapes.type_route_live;
+		path	: type_route_live;
 		name	: pac_net_name.bounded_string := to_net_name ("");
 	end record;
 

@@ -60,7 +60,7 @@ procedure draw_texts (
 				origin		=> true,
 
 				-- This is documentational text. It is readable from the front or the right.
-				rotation	=> pac_text.to_rotation (element (cursor).rotation),
+				rotation	=> to_rotation (element (cursor).rotation),
 				
 				alignment	=> element (cursor).alignment,
 				height		=> self.frame_height);

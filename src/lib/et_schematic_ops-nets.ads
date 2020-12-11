@@ -39,7 +39,7 @@
 package et_schematic_ops.nets is
 
 	use pac_generic_modules;	
-	use et_schematic.pac_shapes;
+	use et_symbols.pac_shapes;
 	
 	type type_net_scope is (
 		STRAND,
@@ -107,7 +107,7 @@ package et_schematic_ops.nets is
 	function movable (
 		module_name		: in pac_module_name.bounded_string; -- CS should be a cursor
 		segment			: in type_net_segment;
-		zone			: in et_schematic.pac_shapes.type_line_zone;
+		zone			: in et_symbols.pac_shapes.type_line_zone;
 		point_of_attack	: in et_coordinates.type_position;
 		log_threshold	: in type_log_level) 
 		return boolean;

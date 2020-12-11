@@ -458,11 +458,10 @@ package body et_canvas_schematic is
 		use et_schematic;
 		use pac_draw_misc;
 
-		type type_line is new pac_shapes.type_line with null record;
+		type type_line is new et_symbols.pac_shapes.type_line with null record;
 		line : type_line;
 
 		procedure compute_route (s, e : in type_point) is 
-			use pac_shapes;
 
 			-- Do the actual route calculation.
 			r : type_route := to_route (s, e, route.path.bend_style);
@@ -1204,7 +1203,7 @@ package body et_canvas_schematic is
 				when GDK_LC_b =>
 					case noun is
 						when NOUN_NET =>
-							et_schematic.pac_shapes.next_bend_style (route.path);
+							next_bend_style (route.path);
 							
 						when others => null;
 							
@@ -2575,7 +2574,7 @@ package body et_canvas_schematic is
 				when VERB_DRAW =>
 					case noun is
 						when NOUN_NET =>
-							et_schematic.pac_shapes.next_bend_style (route.path);
+							next_bend_style (route.path);
 							
 						when others => null;							
 					end case;

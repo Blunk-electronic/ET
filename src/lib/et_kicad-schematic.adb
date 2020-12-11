@@ -51,7 +51,7 @@ package body et_kicad.schematic is
 
 	use et_general.pac_net_name;
 
-
+	use et_symbols.pac_shapes;
 	
 	-- Returns the base name of the given schematic file name as submodule name.
 	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
@@ -1351,7 +1351,7 @@ package body et_kicad.schematic is
 		-- Returns true if given port sits on given segment.
 
 			-- CS this is a workaround in order to provide a line for function on_line:
-			type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
+			type type_line_scratch is new et_symbols.pac_shapes.type_line with null record;
 			line : type_line_scratch := (
 				start_point	=> type_point (segment.coordinates_start), 
 				end_point	=> type_point (segment.coordinates_end));
@@ -3338,15 +3338,14 @@ package body et_kicad.schematic is
 	-- Returns true if the given junction sits on the given net segment.
 		junction	: in type_net_junction;
 		segment		: in type_net_segment_base'class) 
-		return boolean is
-
+		return boolean 
+	is
 		sits_on_segment : boolean := false;
 
-		use et_schematic.pac_shapes;
 		d : type_distance_point_line;
 
 		-- CS this is a workaround in order to provide a line for function distance_point_line:
-		type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
+		type type_line_scratch is new et_symbols.pac_shapes.type_line with null record;
 		line : type_line_scratch := (
 			start_point	=> type_point (segment.coordinates_start), 
 			end_point	=> type_point (segment.coordinates_end));
@@ -3615,13 +3614,12 @@ package body et_kicad.schematic is
 		-- excluding the same segment easier in procedure query_segments. The cursor to the given segment
 		-- would be the same type as the segment being inquired, yet they do not point to the same
 		-- memory location. So forget this idea.
-		return boolean is
-
+		return boolean 
+	is
 		use et_string_processing;
 		
 		sits_on_segment : boolean := false;
 
-		use et_schematic.pac_shapes;
 		distance_port_segment : type_distance_point_line;
 
 		function junction_here return boolean is
@@ -3729,7 +3727,7 @@ package body et_kicad.schematic is
 		end test_junction;
 
 		-- CS this is a workaround in order to provide a line for function distance_point_line:
-		type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
+		type type_line_scratch is new et_symbols.pac_shapes.type_line with null record;
 		line : type_line_scratch := (
 			start_point	=> type_point (segment.coordinates_start), 
 			end_point	=> type_point (segment.coordinates_end));
@@ -5332,12 +5330,10 @@ package body et_kicad.schematic is
 					-- start strand query with the first strand of the module.
 					strand_cursor_sec : type_strands.cursor := module.strands.first;
 
-					procedure query_segments_sec (
-						strand : in type_strand) is
+					procedure query_segments_sec (strand : in type_strand) is
 						segment_cursor_sec : type_net_segments.cursor := strand.segments.first;
-						use et_schematic.pac_shapes;
 						dist : type_distance_point_line;
-					begin -- query_segments_sec
+					begin
 						log_indentation_up;
 						log (text => "quering segments ...", level => log_threshold + 4);
 						log_indentation_up;
@@ -5354,7 +5350,7 @@ package body et_kicad.schematic is
 
 								-- CS this is a workaround in order to provide a line for function distance_point_line:
 								declare
-									type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
+									type type_line_scratch is new et_symbols.pac_shapes.type_line with null record;
 									line : type_line_scratch := (
 										start_point	=> type_point (element (segment_cursor_sec).coordinates_start), 
 										end_point	=> type_point (element (segment_cursor_sec).coordinates_end));
@@ -5564,7 +5560,7 @@ package body et_kicad.schematic is
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
 								declare
-									type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
+									type type_line_scratch is new et_symbols.pac_shapes.type_line with null record;
 									line : type_line_scratch := (
 										start_point	=> type_point (element (segment_cursor).coordinates_start), 
 										end_point	=> type_point (element (segment_cursor).coordinates_end));
@@ -5680,7 +5676,7 @@ package body et_kicad.schematic is
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
 								declare
-									type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
+									type type_line_scratch is new et_symbols.pac_shapes.type_line with null record;
 									line : type_line_scratch := (
 										start_point	=> type_point (element (segment_cursor).coordinates_start), 
 										end_point	=> type_point (element (segment_cursor).coordinates_end));
@@ -5862,7 +5858,7 @@ package body et_kicad.schematic is
 								element (segment_cursor).coordinates_start) then
 
 								declare
-									type type_line_scratch is new et_schematic.pac_shapes.type_line with null record;
+									type type_line_scratch is new et_symbols.pac_shapes.type_line with null record;
 									line : type_line_scratch := (
 										start_point	=> type_point (element (segment_cursor).coordinates_start), 
 										end_point	=> type_point (element (segment_cursor).coordinates_end));

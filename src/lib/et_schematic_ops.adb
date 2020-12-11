@@ -1530,7 +1530,7 @@ package body et_schematic_ops is
 		log (text => "module " & to_string (module_name) &
 			" rotating " & to_string (device_name) & " unit " &
 			to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
-			et_schematic.pac_text.to_string (rotation), level => log_threshold);
+			to_string (rotation), level => log_threshold);
 		
 		-- locate module
 		module_cursor := locate_module (module_name);

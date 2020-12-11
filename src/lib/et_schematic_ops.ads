@@ -68,6 +68,8 @@ with et_conventions;
 
 package et_schematic_ops is
 
+	use et_symbols.pac_text;
+	
 	procedure device_not_found (name : in type_device_name);
 	procedure device_already_exists (name : in type_device_name);
 	procedure relative_rotation_invalid;

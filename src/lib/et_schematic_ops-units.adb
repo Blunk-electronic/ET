@@ -40,6 +40,9 @@ with ada.exceptions;
 
 package body et_schematic_ops.units is
 
+	use et_symbols.pac_shapes;
+	use et_symbols.pac_text;
+	
 	use pac_generic_modules;
 
 	procedure delete_unit (
@@ -962,7 +965,6 @@ package body et_schematic_ops.units is
 							return pac_geometry_sch.rotation (p) + rot;
 						end;
 
-						use pac_text;
 					begin
 						-- The current positions of the placeholders are overwritten by
 						-- the defaults as specified in the symbol mode.
@@ -1015,10 +1017,8 @@ package body et_schematic_ops.units is
 
 					end rotate_placeholders_absolute;
 					
-					procedure rotate_placeholders_relative (rot : in type_rotation) is 
-						use pac_text;
-					begin
-						-- Rotate position of placeholders around the unit origin. 
+					procedure rotate_placeholders_relative (rot : in type_rotation) is begin
+					-- Rotate position of placeholders around the unit origin. 
 					
 						-- NAME
 						-- Rotate the placeholder around its own anchor point so that it

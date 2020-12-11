@@ -74,6 +74,7 @@ with et_frames;
 package body et_kicad_to_native is
 
 	use et_general.pac_net_name;
+	use et_symbols.pac_text;
 	
 	procedure transpose (log_threshold : in et_string_processing.type_log_level) is
 	-- Transposes coordinates of schematic and layout elements:
@@ -2425,7 +2426,7 @@ package body et_kicad_to_native is
 				--text_native.position := to_native_coordinates (text_kicad.position);
 				text_native.position := et_coordinates.pac_geometry_sch.type_point (text_kicad.position);
 				text_native.sheet := et_kicad_coordinates.sheet (text_kicad.position);
-				text_native.rotation := et_schematic.pac_text.snap (text_kicad.rotation);
+				text_native.rotation := snap (text_kicad.rotation);
 				
 				-- copy the content
 				text_native.content := text_kicad.content;
@@ -2761,9 +2762,9 @@ package body et_kicad_to_native is
 					-- Kicad label can be rotated by 180 or -90 degree. This function translates 
 					-- to native label rotation:
 					function to_rotation (rk : in type_rotation_relative) 
-						return et_text.type_rotation_documentation is 
+						return et_text.type_rotation_documentation 
+					is 
 						use et_text;
-						use et_schematic.pac_text;
 					begin
 						if rk = 180.0 then
 							return HORIZONTAL;
@@ -2894,9 +2895,9 @@ package body et_kicad_to_native is
 
 					use et_coordinates;
 					use pac_geometry_sch;
-					use pac_shapes;
-
-					dist : pac_shapes.type_distance_point_line;
+					use et_symbols.pac_shapes;
+					
+					dist : et_symbols.pac_shapes.type_distance_point_line;
 
 					terminal : et_devices.type_terminal;
 				begin
@@ -2930,12 +2931,12 @@ package body et_kicad_to_native is
 
 							-- CS this is a workaround in order to provide a line for function distance_point_line:
 							declare
-								type type_line_scratch is new pac_shapes.type_line with null record;
+								type type_line_scratch is new et_symbols.pac_shapes.type_line with null record;
 								line : type_line_scratch := (
 									start_point	=> type_point (segment.coordinates_start), 
 									end_point	=> type_point (segment.coordinates_end));
 							begin
-								dist := et_schematic.pac_shapes.distance_point_line (
+								dist := et_symbols.pac_shapes.distance_point_line (
 									point 		=> type_point (element (port_cursor_kicad).coordinates),
 									line 		=> type_line (line),
 									line_range	=> WITH_END_POINTS);

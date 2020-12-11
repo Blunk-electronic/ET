@@ -492,20 +492,31 @@ is
 		
 	end draw_placeholders;
 
-	procedure draw_origin is 
+	procedure draw_origin is
+		ohz : constant type_distance_positive := et_symbols.origin_half_size;
 		
 		line_horizontal : constant type_line := ( -- from left to right
-			start_point		=> type_point (set (x => x (unit_position) - origin_half_size, y => y (unit_position))),
-			end_point		=> type_point (set (x => x (unit_position) + origin_half_size, y => y (unit_position))));
+			start_point		=> type_point (set (
+								x => x (unit_position) - ohz,
+								y => y (unit_position))),
+			
+			end_point		=> type_point (set (
+								x => x (unit_position) + ohz,
+								y => y (unit_position))));
 
 		line_vertical : constant type_line := ( -- from bottom to top
-			start_point		=> type_point (set (x => x (unit_position), y => y (unit_position) - origin_half_size)),
-			end_point		=> type_point (set (x => x (unit_position), y => y (unit_position) + origin_half_size)));
+			start_point		=> type_point (set (
+								x => x (unit_position),
+								y => y (unit_position) - ohz)),
+			
+			end_point		=> type_point (set (
+								x => x (unit_position),
+								y => y (unit_position) + ohz)));
 
 	begin
 	-- NOTE: This is about the origin of the symbol !
 		set_color_origin (context.cr, brightness);
-		set_line_width (context.cr, type_view_coordinate (origin_line_width));
+		set_line_width (context.cr, type_view_coordinate (et_symbols.origin_line_width));
 		
 		-- NOTE: The origin is never rotated.
 

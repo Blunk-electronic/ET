@@ -40,6 +40,7 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_coordinates;			use et_coordinates;
+with et_symbols;
 with et_schematic;
 with et_submodules;
 with et_netlists;
@@ -56,6 +57,8 @@ with et_meta;
 
 package et_project.modules is
 
+	use et_symbols.pac_text;
+	
 	-- Generic modules and submodules (which contain schematic and layout stuff)
 	-- are collected here.
 	-- Module names are things like "motor_driver" or "temperature_controller".
