@@ -113,21 +113,17 @@ package et_canvas_schematic is
 
 
 	
-	-- Objects that neither belong to frames or symbols like:
-	--  - net segments
-	--  - lines, arcs, circles of documentation
-	-- we instantiate this package:
-	package pac_draw_misc is new et_canvas_primitive_draw_ops.pac_draw ( -- CS rename to pac_draw_schematic
+	-- For primitve draw operations:
+	package pac_draw is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas	=> pac_canvas,
 		pac_shapes	=> et_symbols.pac_shapes,
 		pac_text	=> et_symbols.pac_text);
-	
-	package pac_draw_symbols is new et_canvas_primitive_draw_ops.pac_draw (
-		pac_canvas	=> pac_canvas,
-		pac_shapes	=> et_symbols.pac_shapes,
-		pac_text	=> et_symbols.pac_text);
+
+	use pac_draw;
 	
 
+
+	
 	-- The currently active project is stored here:
 	current_active_project : et_project.pac_project_name.bounded_string; -- blood_sample_analyzer
 	

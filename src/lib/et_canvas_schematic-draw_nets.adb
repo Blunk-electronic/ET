@@ -47,15 +47,13 @@ separate (et_canvas_schematic)
 procedure draw_nets (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
-	context : in type_draw_context) is
-
+	context : in type_draw_context) 
+is
 	use et_schematic;
 	use et_schematic.pac_nets;
 	use et_schematic.pac_strands;
 	use et_schematic.pac_net_segments;
 	use et_schematic.pac_net_labels;
-	
-	use pac_draw_misc;
 
 	use pac_proposed_segments;
 	use pac_proposed_labels;

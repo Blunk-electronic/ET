@@ -456,7 +456,6 @@ package body et_canvas_schematic is
 		context : in type_draw_context)
 	is
 		use et_schematic;
-		use pac_draw_misc;
 
 		type type_line is new et_symbols.pac_shapes.type_line with null record;
 		line : type_line;
@@ -726,8 +725,8 @@ package body et_canvas_schematic is
 	procedure move_cursor (
 		self		: not null access type_view;
 		direction	: in type_cursor_direction;
-		cursor		: in out type_cursor) is
-
+		cursor		: in out type_cursor)
+	is
 		-- Get the currently active grid:
 		use et_project.modules.pac_generic_modules;
 		--grid : constant type_grid := element (current_active_module).grid;
@@ -795,13 +794,13 @@ package body et_canvas_schematic is
 		
 		set_color_cursor (context.cr);
 
-		pac_draw_misc.draw_line (
+		draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> lh,
 			height		=> self.frame_height);
 
-		pac_draw_misc.draw_line (
+		draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> lv,
@@ -812,7 +811,8 @@ package body et_canvas_schematic is
 
 	function get_grid (
 		self : not null access type_view)
-		return type_grid is
+		return type_grid
+	is
 		-- Get the default grid as defined in the module database:
 		g : type_grid := element (current_active_module).grid;
 	begin

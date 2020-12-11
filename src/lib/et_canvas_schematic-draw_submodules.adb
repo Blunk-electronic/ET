@@ -49,8 +49,8 @@ separate (et_canvas_schematic)
 procedure draw_submodules (
 	self	: not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
-	context : in type_draw_context) is
-
+	context : in type_draw_context) 
+is
 	use pac_submodules;
 	
 	procedure query_submods (cursor : in pac_submodules.cursor) is
@@ -62,7 +62,7 @@ procedure draw_submodules (
 			cairo.set_line_width (context.cr, type_view_coordinate (submod_box_line_width));
 			set_color_submodules (context.cr);
 
-			pac_draw_misc.draw_rectangle (
+			draw_rectangle (
 				area			=> in_area,
 				context			=> context,
 				position		=> submod_position,
@@ -83,7 +83,7 @@ procedure draw_submodules (
 		begin
 			move_by (position, offset);
 			
-			pac_draw_misc.draw_text (
+			draw_text (
 				area		=> in_area,
 				context		=> context,
 				content		=> et_text.to_content ("instance: " & to_string (key (cursor))),
@@ -107,7 +107,7 @@ procedure draw_submodules (
 		begin
 			move_by (position, offset);
 			
-			pac_draw_misc.draw_text (
+			draw_text (
 				area		=> in_area,
 				context		=> context,
 				content		=> et_text.to_content ("file: " & to_string (element (cursor).file)),
@@ -141,7 +141,7 @@ procedure draw_submodules (
 		begin
 			move_by (position, offset);
 			
-			pac_draw_misc.draw_text (
+			draw_text (
 				area		=> in_area,
 				context		=> context,
 				content		=> et_text.to_content (text),
@@ -164,7 +164,7 @@ procedure draw_submodules (
 
 				procedure draw_horizontal is begin
 					-- Draw the port horizontal:
-					pac_draw_misc.draw_rectangle (
+					draw_rectangle (
 						area			=> in_area,
 						context			=> context,
 						position		=> pos,
@@ -176,7 +176,7 @@ procedure draw_submodules (
 
 				procedure draw_vertical is begin
 					-- Draw the port vertical:					
-					pac_draw_misc.draw_rectangle (
+					draw_rectangle (
 						area			=> in_area,
 						context			=> context,
 						position		=> pos,
@@ -202,7 +202,7 @@ procedure draw_submodules (
 				if x (element (pc).position) + x (submod_position) = x (submod_position) then 
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
-					pac_draw_misc.draw_text 
+					draw_text 
 						(
 						area		=> in_area,
 						context		=> context,
@@ -216,7 +216,7 @@ procedure draw_submodules (
 						height		=> self.frame_height);
 					
 					-- Draw the port name. The text is placed on the RIGHT of the port rectangle:
-					pac_draw_misc.draw_text 
+					draw_text 
 						(
 						area		=> in_area,
 						context		=> context,
@@ -239,7 +239,7 @@ procedure draw_submodules (
 				elsif x (element (pc).position) + x (submod_position) = x (submod_position) + element (cursor).size.x then 
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
-					pac_draw_misc.draw_text 
+					draw_text 
 						(
 						area		=> in_area,
 						context		=> context,
@@ -253,7 +253,7 @@ procedure draw_submodules (
 						height		=> self.frame_height);
 					
 					-- Draw the port name. The text is placed on the LEFT of the port rectangle:
-					pac_draw_misc.draw_text 
+					draw_text 
 						(
 						area		=> in_area,
 						context		=> context,
@@ -276,7 +276,7 @@ procedure draw_submodules (
 				elsif y (element (pc).position) + y (submod_position) = y (submod_position) then
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
-					pac_draw_misc.draw_text 
+					draw_text 
 						(
 						area		=> in_area,
 						context		=> context,
@@ -290,7 +290,7 @@ procedure draw_submodules (
 						height		=> self.frame_height);
 					
 					-- Draw the port name. The text is placed ABOVE the port rectangle:
-					pac_draw_misc.draw_text 
+					draw_text 
 						(
 						area		=> in_area,
 						context		=> context,
@@ -313,7 +313,7 @@ procedure draw_submodules (
 				elsif y (element (pc).position) + y (submod_position) = y (submod_position) + element (cursor).size.y then 
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
-					pac_draw_misc.draw_text 
+					draw_text 
 						(
 						area		=> in_area,
 						context		=> context,
@@ -327,7 +327,7 @@ procedure draw_submodules (
 						height		=> self.frame_height);
 					
 					-- Draw the port name. The text is placed BELOW the port rectangle:
-					pac_draw_misc.draw_text 
+					draw_text 
 						(
 						area		=> in_area,
 						context		=> context,

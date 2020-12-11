@@ -58,4 +58,8 @@ et_canvas_schematic
 - pac_canvas (instance of et_canvas_general.pac_canvas with
 				parameter et_coordinates.pac_geometry_sch)
 
+- pac_draw (instance of et_canvas_primitive_draw_ops.pac_draw with
+				parameter pac_canvas, et_symbols.pac_shapes, et_symbols.pac_text)
+
+				
 				

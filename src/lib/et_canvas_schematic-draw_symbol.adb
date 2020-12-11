@@ -56,15 +56,15 @@ procedure draw_symbol (
 	preview			: in boolean := false)
 is
 	use et_symbols;
-	use et_symbols.pac_shapes;
-	use pac_draw_symbols;
+	use pac_shapes;
+	use pac_text;
 	
 	use pac_lines;
 	use pac_arcs;
 	use pac_circles;
 	use pac_ports;
 	use pac_texts;
-
+	
 	type type_line is new pac_shapes.type_line with null record;
 	type type_arc is new pac_shapes.type_arc with null record;		
 	type type_circle is new pac_shapes.type_circle with null record;
@@ -112,8 +112,6 @@ is
 		
 		procedure draw_port_name is
 			use et_text;
-			use pac_text;
-
 			-- The vertical alignment is untouched and is always CENTER.
 			-- The horizontal alignment depends on the total rotation
 			-- which is a sum of port rotation and unit rotation.
@@ -165,8 +163,6 @@ is
 
 		procedure draw_terminal_name is
 			use et_text;
-			use pac_text;
-
 			-- The vertical alignment is untouched and is always BOTTOM.
 			-- The horizontal alignment depends on the total rotation
 			-- which is a sum of port rotation and unit rotation.
@@ -359,7 +355,6 @@ is
 	-- Call this procedure after drawing the symbol body because it
 	-- does not change the color to symbol color.
 	procedure draw_text (c : in pac_texts.cursor) is 
-		use pac_text;
 		p : type_point := element (c).position;
 	begin
 		-- Rotate the position of the text.
@@ -393,8 +388,6 @@ is
 	-- This procedure draws text placeholders for device name, value and purpose:
 	procedure draw_placeholders is 
 		use et_devices;
-		use pac_text;
-		
 		p : type_point;
 	begin
 		set_color_placeholders (context.cr, brightness);

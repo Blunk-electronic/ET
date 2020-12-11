@@ -51,7 +51,7 @@ procedure draw_frame (
 	use et_frames;
 	
 	package pac_draw_frame is new et_canvas_draw_frame.pac_draw_frame (
-		draw_ops		=> et_canvas_schematic.pac_draw_misc,
+		draw_ops		=> et_canvas_schematic.pac_draw,
 		in_area			=> in_area,
 		context			=> context,
 		frame_size		=> self.get_frame.size,

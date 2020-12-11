@@ -45,8 +45,7 @@ procedure draw_tag_label (
 	label	: in et_schematic.type_net_label)
 is
 	use et_schematic;
-	use pac_draw_misc;
-
+	
 	content : type_text_content.bounded_string := to_content (to_string (net));
 	-- CS append to content the position of the net on the next sheet (strand position)
 	
