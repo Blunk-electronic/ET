@@ -1,4 +1,5 @@
-
+DEPENDENCIES OF GENERIC PACKAGES AND THEIR INSTANCES
+====================================================
 
 et_geometry
 - generic_pac_geometry
@@ -35,3 +36,17 @@ et_packages
 
 
 
+-- GUI ------------------------------------------------------------------------
+
+et_canvas_general
+- pac_canvas (with generic parameter for generic_pac_geometry)
+
+et_canvas_board
+- pac_canvas (instance of et_canvas_general.pac_canvas with
+				parameter et_pcb_coordinates.pac_geometry_brd)
+
+et_canvas_schematic
+- pac_canvas (instance of et_canvas_general.pac_canvas with
+				parameter et_coordinates.pac_geometry_sch)
+
+				
