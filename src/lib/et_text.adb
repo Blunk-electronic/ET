@@ -42,7 +42,7 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
 with et_general;
-with et_string_processing;
+
 
 package body et_text is
 

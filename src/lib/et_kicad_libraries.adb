@@ -469,9 +469,9 @@ package body et_kicad_libraries is
 		y := mil_to_distance (y_in);
 
 		--set_x (point, x);
-		set (et_general.X, x, point);
+		set (et_geometry.X, x, point);
 		--set_y (point, y);
-		set (et_general.Y, y, point);
+		set (et_geometry.Y, y, point);
 		
 		return point;
 	end to_point;

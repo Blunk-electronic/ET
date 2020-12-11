@@ -57,11 +57,18 @@ package et_geometry is
 	keyword_filled 		: constant string := "filled";
 
 	
-	type type_axis is (X, Y, Z); -- CS move to et_geometry ?
+	type type_axis is (X, Y, Z);
 	subtype type_axis_2d is type_axis range X .. Y;
 
 	function to_string (axis : in type_axis) return string;
 	function to_axis (axis : in string) return type_axis;
+
+
+	type type_grid_notches is new positive;
+
+	function to_notches (notches : in string) return type_grid_notches;
+	function to_string (notches : in type_grid_notches) return string;
+
 
 	
 	

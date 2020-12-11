@@ -42,7 +42,7 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_ordered_maps;
 
 with cairo;
-with et_geometry;
+with et_geometry;				use et_geometry;
 with et_string_processing;
 
 package et_text is

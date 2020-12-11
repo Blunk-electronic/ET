@@ -47,7 +47,7 @@ with ada.containers.vectors;
 
 with et_general;				use et_general;
 with et_project;
-with et_geometry;
+with et_geometry;				use et_geometry;
 with et_schematic;
 with et_terminals;
 with et_packages;
