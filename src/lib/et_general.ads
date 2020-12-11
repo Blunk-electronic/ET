@@ -159,10 +159,6 @@ package et_general is
 	-- Outputs the command line switches that initiate something.
 	
 
-	--type type_grid_notches is new positive;
-
-	--function to_notches (notches : in string) return type_grid_notches;
-	--function to_string (notches : in type_grid_notches) return string;
 	
 -- NET NAMES
     -- If the name of a strand can not be identified, we default to the well proved "N$" notation:
@@ -241,12 +237,6 @@ package et_general is
 	function to_script_name (name : in string) return pac_script_name.bounded_string;
 
 
-	
--- SHAPES
-	type type_shape is (LINE, ARC, CIRCLE); -- CS move to et_geometry ?
-
-	function to_shape (shape : in string) return type_shape;
-	function to_shape (shape : in type_shape) return string;
 
 
 -- TOOLS

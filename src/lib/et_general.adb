@@ -204,17 +204,6 @@ package body et_general is
 	end show_cdl_switches;
 
 
-
-
----- GRID 
-	--function to_notches (notches : in string) return type_grid_notches is begin
-		--return type_grid_notches'value (notches);
-	--end;
-
-	--function to_string (notches : in type_grid_notches) return string is begin
-		--return type_grid_notches'image (notches);
-	--end;
-
 	
 	
 -- NET NAMES
@@ -378,19 +367,6 @@ package body et_general is
 		
 	function to_script_name (name : in string) return pac_script_name.bounded_string is begin
 		return pac_script_name.to_bounded_string (name);
-	end;
-
-
-
-
-	
-
-	function to_shape (shape : in string) return type_shape is begin
-		return type_shape'value (shape);
-	end;
-
-	function to_shape (shape : in type_shape) return string is begin
-		return to_lower (type_shape'image (shape));
 	end;
 
 

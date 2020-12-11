@@ -69,6 +69,16 @@ package body et_geometry is
 	end;
 
 
+
+	function to_shape (shape : in string) return type_shape is begin
+		return type_shape'value (shape);
+	end;
+
+	function to_shape (shape : in type_shape) return string is begin
+		return to_lower (type_shape'image (shape));
+	end;
+
+	
 	
 	
 	function to_string (coordinates : in type_coordinates) return string is begin
