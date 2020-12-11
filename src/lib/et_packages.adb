@@ -319,7 +319,7 @@ package body et_packages is
 
 	function terminal_properties (
 		cursor		: in pac_packages_lib.cursor;
-		terminal	: in type_terminal_name.bounded_string) -- H4, 14
+		terminal	: in pac_terminal_name.bounded_string) -- H4, 14
 		return type_terminals.cursor is
 	-- Returns a cursor to the requested terminal (with all its properties) within the given package model.
 		terminal_cursor : type_terminals.cursor;
@@ -811,7 +811,7 @@ package body et_packages is
 -- 	procedure terminal_properties (
 -- 	-- Logs the properties of the given terminal.
 -- 		terminal		: in type_terminal;
--- 		name			: in type_terminal_name.bounded_string;
+-- 		name			: in pac_terminal_name.bounded_string;
 -- 		log_threshold 	: in et_string_processing.type_log_level) is
 -- 		use et_pcb_coordinates;
 -- 		log_threshold_1 : type_log_level := log_threshold + 1;

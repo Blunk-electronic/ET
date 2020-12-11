@@ -384,8 +384,8 @@ package et_devices is
 	end record;
 	
 	package pac_terminal_port_map is new ordered_maps (
-		key_type 		=> et_terminals.type_terminal_name.bounded_string, -- H7, 14
-		"<"				=> et_terminals.type_terminal_name."<",
+		key_type 		=> et_terminals.pac_terminal_name.bounded_string, -- H7, 14
+		"<"				=> et_terminals.pac_terminal_name."<",
 		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
 
 
@@ -400,7 +400,7 @@ package et_devices is
 		element_type 	=> type_variant);
 
 	type type_terminal is record
-		name	: et_terminals.type_terminal_name.bounded_string; -- H7
+		name	: et_terminals.pac_terminal_name.bounded_string; -- H7
 		unit	: pac_unit_name.bounded_string; -- IO-BANK1
 		port	: pac_port_name.bounded_string; -- GPIO3
 	end record;
@@ -573,11 +573,11 @@ package et_devices is
 -- 		device_cursor	: in pac_devices_lib.cursor;
 -- 		port_name		: in pac_port_name.bounded_string;
 -- 		variant			: in pac_package_variant_name.bounded_string) -- D, N
--- 		return type_terminal_name.bounded_string; -- 14, H4
+-- 		return pac_terminal_name.bounded_string; -- 14, H4
 
 	-- Used for netlists:
 	type type_port_properties (direction : type_port_direction) is record
-		terminal	: et_terminals.type_terminal_name.bounded_string; -- H4, 1, 16
+		terminal	: et_terminals.pac_terminal_name.bounded_string; -- H4, 1, 16
 		properties	: type_port (direction);
 	end record;
 

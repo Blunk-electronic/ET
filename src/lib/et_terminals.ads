@@ -38,30 +38,23 @@
 
 
 with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
-with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
 
 with et_general;
 with et_string_processing;		use et_string_processing;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
+with et_drills;					use et_drills;
 with et_text;
 
 with cairo;
 
-with et_drills;					use et_drills;
 
 package et_terminals is
 	use pac_geometry_brd;
@@ -91,19 +84,24 @@ package et_terminals is
 		);
 
 	
-	-- COPPER STRUCTURES GENERAL
-	copper_structure_size_min : constant et_pcb_coordinates.type_distance := 0.05;
-	copper_clearance_min : constant et_pcb_coordinates.type_distance := copper_structure_size_min;
+-- CONDUCTOR STRUCTURES GENERAL
+
+	conductor_width_min : constant et_pcb_coordinates.type_distance := 0.05;
+	
+	conductor_clearance_min : constant 
+		et_pcb_coordinates.type_distance := conductor_width_min;
 	
 
-	-- SIGNALS
-	subtype type_track_clearance is type_distance_positive range copper_clearance_min .. et_pcb_coordinates.type_distance'last;
+	subtype type_track_clearance is type_distance_positive 
+		range conductor_clearance_min .. et_pcb_coordinates.type_distance'last;
 
 	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance);
 	-- Checks whether the given track clearance is in range of type_track_clearance.
 
 	track_width_max : constant type_distance_positive := 100.0;
-	subtype type_track_width is type_distance_positive range copper_structure_size_min .. track_width_max;
+	
+	subtype type_track_width is type_distance_positive 
+		range conductor_width_min .. track_width_max;
 
 	procedure validate_track_width (track_width : in type_distance_positive);
 	-- Checks whether the given track width is in range of type_track_width.
@@ -117,10 +115,13 @@ package et_terminals is
 	procedure validate_pad_size (size : in et_pcb_coordinates.type_distance);
 	-- Checks whether given pad size is in range of type_pad_size
 
+	
 
 	pad_drill_offset_min : constant type_distance_positive := zero;
 	pad_drill_offset_max : constant type_distance_positive := pad_size_max * 0.5;
-	subtype type_pad_drill_offset is type_distance_positive range pad_drill_offset_min .. pad_drill_offset_max;
+	
+	subtype type_pad_drill_offset is type_distance_positive 
+		range pad_drill_offset_min .. pad_drill_offset_max;
 	
 	
 	
@@ -129,21 +130,24 @@ package et_terminals is
 	
 
 
-	-- RESTRING
+-- RESTRING
 	keyword_restring_outer_layers : constant string := "restring_outer_layers";
 	keyword_restring_inner_layers : constant string := "restring_inner_layers";		
 
 	restring_width_max : constant type_distance_positive := 5.0;
-	subtype type_restring_width is type_distance_positive range copper_structure_size_min .. restring_width_max;
+	subtype type_restring_width is type_distance_positive 
+		range conductor_width_min .. restring_width_max;
 
-	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance);
+	procedure validate_restring_width (
+		restring_width : in et_pcb_coordinates.type_distance);
 	-- Checks whether the given restring width is in range of type_restring_width.
 
 
 	
 
 	
--- PLATED MILLINGS OF TERMINALS	
+-- PLATED MILLINGS OF TERMINALS
+	
 	-- Plated millings as used by terminals. These structures have closed circumfence.
 	type type_plated_millings is new pac_shapes.type_polygon_base with null record;
 
@@ -271,14 +275,17 @@ package et_terminals is
 	
 	type type_terminal (
 		technology	: type_assembly_technology; -- smt/tht
-		tht_hole	: type_terminal_tht_hole) -- drilled/milled, without meaning if technology is SMT
-		is tagged record
+
+		 -- drilled/milled, without meaning if technology is SMT
+		tht_hole	: type_terminal_tht_hole)
+	is tagged record
 
 			position : type_position; -- position (x/y) and rotation
 			-- For SMT pads this is the geometic center of the pad.
 			-- The rotation has no meaning for THT pads with round shape.
-			-- The rotation is useful for exotic pad contours. The operator would be drawing the 
-			-- contour with zero rotation first (which is easier). Then by applying an angle,
+			-- The rotation is useful for exotic pad contours. The operator 
+			-- would be drawing the contour with zero rotation 
+			-- first (which is easier). Then by applying an angle,
 			-- the countour would be rotated to its final position.
 			
 		case technology is
@@ -291,10 +298,11 @@ package et_terminals is
 
 				stop_mask_shape_tht		: type_stop_mask_tht;
 				
-				-- This is the width of the copper surrounding the hole in inner layers.
+				-- This is the width of the conductor surrounding the 
+				-- hole in inner layers.
 				-- Since the hole can be of any shape we do not speak about restring.
-				-- The shape of the copper area around the hole is the same as the shape of the 
-				-- hole. No further extra contours possible.
+				-- The shape of the conductor area around the hole is the same as 
+				-- the shape of the hole. No further extra contours possible.
 				width_inner_layers	: type_track_width;
 				
 				case tht_hole is
@@ -324,11 +332,11 @@ package et_terminals is
 	-- The name of a terminal may have 10 characters which seems sufficient for now.
 	-- CS: character set, length check, charcter check
  	terminal_name_length_max : constant natural := 10;
-	package type_terminal_name is new generic_bounded_length (terminal_name_length_max);
-	use type_terminal_name;
+	package pac_terminal_name is new generic_bounded_length (terminal_name_length_max);
+	use pac_terminal_name;
 
-	function to_string (terminal : in type_terminal_name.bounded_string) return string;
-	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string;
+	function to_string (terminal : in pac_terminal_name.bounded_string) return string;
+	function to_terminal_name (terminal : in string) return pac_terminal_name.bounded_string;
 
 
 	
@@ -346,13 +354,13 @@ package et_terminals is
 	procedure terminal_properties (
 	-- Logs the properties of the given terminal.
 		terminal		: in type_terminal;
-		name			: in type_terminal_name.bounded_string;
+		name			: in pac_terminal_name.bounded_string;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 	package type_terminals is new indefinite_ordered_maps (
-		key_type		=> type_terminal_name.bounded_string, -- H7, 14
+		key_type		=> pac_terminal_name.bounded_string, -- H7, 14
 		element_type	=> type_terminal,
-		"<"				=> type_terminal_name."<");
+		"<"				=> pac_terminal_name."<");
 
 	
 end et_terminals;

@@ -8481,11 +8481,11 @@ package body et_schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 		port_name		: in et_symbols.pac_port_name.bounded_string) -- CE
-		return type_port_properties_access is
-
+		return type_port_properties_access
+	is
 		properties : type_port_properties_access; -- to be returned
 		
-		terminal_name : et_terminals.type_terminal_name.bounded_string;
+		terminal_name : et_terminals.pac_terminal_name.bounded_string;
 
 		use et_symbols;
 		port_direction : type_port_direction := PASSIVE;

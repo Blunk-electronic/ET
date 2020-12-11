@@ -166,19 +166,19 @@ package body et_terminals is
 		return type_assembly_technology'value (technology);
 	end;
 	
-	function to_string (terminal : in type_terminal_name.bounded_string) return string is begin
-		return type_terminal_name.to_string (terminal);
+	function to_string (terminal : in pac_terminal_name.bounded_string) return string is begin
+		return pac_terminal_name.to_string (terminal);
 	end;
 
-	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string is begin
-		return type_terminal_name.to_bounded_string (terminal);
+	function to_terminal_name (terminal : in string) return pac_terminal_name.bounded_string is begin
+		return pac_terminal_name.to_bounded_string (terminal);
 	end;
 
 	procedure terminal_properties (
-	-- Logs the properties of the given terminal.
 		terminal		: in type_terminal;
-		name			: in type_terminal_name.bounded_string;
-		log_threshold 	: in et_string_processing.type_log_level) is
+		name			: in pac_terminal_name.bounded_string;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is
 		use et_pcb_coordinates;
 		log_threshold_1 : type_log_level := log_threshold + 1;
 
@@ -239,7 +239,7 @@ package body et_terminals is
 -- 				iterate (terminal.pad_shape_tht.bottom.circles, circle'access);
 -- 				iterate (terminal.pad_shape_tht.bottom.polygons, polygon'access);
 				
-				log (text => "copper width of inner layers" & to_string (terminal.width_inner_layers), level => log_threshold_1);
+				log (text => "conductor width in inner layers" & to_string (terminal.width_inner_layers), level => log_threshold_1);
 
 				case terminal.tht_hole is
 					when DRILLED =>

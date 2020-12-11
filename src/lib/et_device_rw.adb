@@ -300,7 +300,7 @@ package body et_device_rw is
 			inserted	: boolean;
 			position	: pac_terminal_port_map.cursor;
 
-			terminal	: type_terminal_name.bounded_string; -- H5, 14
+			terminal	: pac_terminal_name.bounded_string; -- H5, 14
 			unit		: pac_unit_name.bounded_string; -- PWR, IO_BANK_2
 			port		: pac_port_name.bounded_string; -- VCC
 

@@ -571,7 +571,7 @@ package body et_kicad_packages is
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
 		-- compose the final terminal.
-		terminal_name 			: type_terminal_name.bounded_string;
+		terminal_name 			: pac_terminal_name.bounded_string;
 		terminal_technology		: type_assembly_technology;
 		terminal_pad_shape_tht 	: type_pad_shape_tht;
 		terminal_pad_shape_smt 	: type_pad_shape_smt;

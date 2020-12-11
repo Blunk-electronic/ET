@@ -74,7 +74,7 @@ package body et_board_ops is
 			 " in vicinity of" & to_string (accuracy));
 	end;
 
-	procedure terminal_not_found (terminal_name : in type_terminal_name.bounded_string) is begin
+	procedure terminal_not_found (terminal_name : in pac_terminal_name.bounded_string) is begin
 		log (ERROR,	"terminal " & enclose_in_quotes (to_string (terminal_name)) & " not found !",
 			 console => true);
 		raise constraint_error;
@@ -1402,7 +1402,7 @@ package body et_board_ops is
 	-- The device must be real (appearance SCH_PCB).
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_sch.cursor; -- IC45
-		terminal_name	: in type_terminal_name.bounded_string) -- H7, 14
+		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position is
 		use et_pcb;
 
@@ -1745,7 +1745,7 @@ package body et_board_ops is
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
-		terminal		: in type_terminal_name.bounded_string;
+		terminal		: in pac_terminal_name.bounded_string;
 		direction		: in type_rotation;
 		length			: in type_distance_positive;
 		log_threshold	: in type_log_level) is
@@ -1813,7 +1813,7 @@ package body et_board_ops is
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
-		terminal		: in type_terminal_name.bounded_string;
+		terminal		: in pac_terminal_name.bounded_string;
 		direction		: in type_rotation;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
@@ -1880,7 +1880,7 @@ package body et_board_ops is
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
-		terminal		: in type_terminal_name.bounded_string;
+		terminal		: in pac_terminal_name.bounded_string;
 		end_point		: in type_point;
 		log_threshold	: in type_log_level) is
 		
@@ -1941,7 +1941,7 @@ package body et_board_ops is
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
-		terminal		: in type_terminal_name.bounded_string;
+		terminal		: in pac_terminal_name.bounded_string;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
 		log_threshold	: in type_log_level) is

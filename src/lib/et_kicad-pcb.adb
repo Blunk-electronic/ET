@@ -521,7 +521,7 @@ package body et_kicad.pcb is
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
 		-- compose the final terminal.
-		terminal_name 			: et_terminals.type_terminal_name.bounded_string;
+		terminal_name 			: et_terminals.pac_terminal_name.bounded_string;
 		terminal_technology		: type_assembly_technology;
 		terminal_pad_shape_tht 	: type_pad_shape_tht;
 		terminal_pad_shape_smt 	: type_pad_shape_smt;
@@ -4672,7 +4672,7 @@ package body et_kicad.pcb is
 			-- The information required is sotred in the terminals of a package.
 			-- Example: (pad 1 smd rect (at -2.925 -3.81) (size 2 0.6) (layers F.Cu F.Paste F.Mask) (net 1 /IN))
 				reference	: in type_device_name;	-- IC45
-				terminal	: in et_terminals.type_terminal_name.bounded_string) -- G7
+				terminal	: in et_terminals.pac_terminal_name.bounded_string) -- G7
 				return pac_net_name.bounded_string is
 				net : pac_net_name.bounded_string; -- to be returned
 
@@ -5124,7 +5124,7 @@ package body et_kicad.pcb is
 						package_cursor	: type_packages_board.cursor := board.packages.first;
 						package_name	: type_device_name;
 						terminal_found	: boolean := false;
-						terminal_name	: et_terminals.type_terminal_name.bounded_string;
+						terminal_name	: et_terminals.pac_terminal_name.bounded_string;
 
 						procedure query_terminals (
 							package_name	: in type_device_name;

@@ -874,7 +874,7 @@ package et_packages is
 
 	function terminal_properties (
 		cursor		: in pac_packages_lib.cursor;
-		terminal	: in type_terminal_name.bounded_string)  -- H4, 14
+		terminal	: in pac_terminal_name.bounded_string)  -- H4, 14
 		return type_terminals.cursor;
 	-- Returns a cursor to the requested terminal (with all its properties) within the given package model.
 

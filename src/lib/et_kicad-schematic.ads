@@ -985,7 +985,7 @@ package et_kicad.schematic is
 	-- Returns the name of the net connected with the given component and terminal.
 		module			: in type_submodule_name.bounded_string;	-- nucleo_core
 		reference		: in et_devices.type_device_name;	-- IC45
-		terminal		: in et_terminals.type_terminal_name.bounded_string; -- E14
+		terminal		: in et_terminals.pac_terminal_name.bounded_string; -- E14
 		log_threshold	: in et_string_processing.type_log_level)		
 		return et_general.pac_net_name.bounded_string;
 

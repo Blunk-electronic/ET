@@ -76,7 +76,7 @@ package et_netlists is
 		device			: type_device_name; -- IC4		
 		port			: et_symbols.pac_port_name.bounded_string; -- CLOCK, CE, VDD, GND
 		characteristics	: et_symbols.type_port (direction); -- direction, sensitivity, ...
-		terminal		: et_terminals.type_terminal_name.bounded_string; -- H4, 1, 16
+		terminal		: et_terminals.pac_terminal_name.bounded_string; -- H4, 1, 16
 	end record;
 	
 	function "<" (left, right : in type_device_port_extended) return boolean;
