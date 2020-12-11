@@ -1011,7 +1011,7 @@ NOTE: Whatever you draw in here affects the PCB manufacturing.
 board led_driver draw silkscreen top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
 ```
 ```
-board led_driver draw silkscreen top arc 2.5 50 50 0 50 100 0 ccw # top, arc, width 2.5mm, center 50/50 from 50/0 to 50/100, counterclockwise
+board led_driver draw silkscreen top arc 2.5 50 50 0 50 100 ccw # top, arc, width 2.5mm, center 50/50 from 50/0 to 50/100, counterclockwise
 ```
 ```
 board led_driver draw silkscreen top circle 2.5 50 50 40 # top, circle, width 2.5mm, center 50/50 radius 40
@@ -1020,9 +1020,9 @@ Fill styles are: SOLID, HATCHED, CUTOUT.
 ```
 board led_driver draw silkscreen top circle solid 50 50 40 # top, circle, solid, center 50/50 radius 40
 ```
-```
+<!--```
 board led_driver draw silkscreen top circle cutout 50 50 40 # top, circle, cutout, center 50/50 radius 40
-```
+```-->
 ```
 board led_driver draw silkscreen top circle hatched 50 50 40 0.5 1 # top, circle, hatched, center 50/50 radius 40, hatching line width 0.5, spacing 1
 ```
