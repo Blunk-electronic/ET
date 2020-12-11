@@ -61,7 +61,7 @@ procedure draw_route_restrict (
 		-- Draw the line if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
 			
-			pac_draw_package.draw_line (
+			draw_line (
 				area		=> in_area,
 				context		=> context,
 				line		=> element (c),
@@ -75,7 +75,7 @@ procedure draw_route_restrict (
 		-- Draw the arc if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
 			
-			pac_draw_package.draw_arc (
+			draw_arc (
 				area		=> in_area,
 				context		=> context,
 				arc			=> element (c),
@@ -92,7 +92,7 @@ procedure draw_route_restrict (
 			case element (c).filled is
 				when NO =>
 					-- We draw a normal non-filled circle:
-					pac_draw_package.draw_circle (
+					draw_circle (
 						area		=> in_area,
 						context		=> context,
 						circle		=> element (c),
@@ -101,7 +101,7 @@ procedure draw_route_restrict (
 					
 				when YES =>
 					-- We draw a solid filled circle:
-					pac_draw_package.draw_circle (
+					draw_circle (
 						area		=> in_area,
 						context		=> context,
 						circle		=> element (c),
@@ -118,7 +118,7 @@ procedure draw_route_restrict (
 		-- Draw the polygon if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
 			
-			pac_draw_package.draw_polygon (
+			draw_polygon (
 				area	=> in_area,
 				context	=> context,
 				polygon	=> element (c),
@@ -135,7 +135,7 @@ procedure draw_route_restrict (
 
 			set_color_background (context.cr);
 			
-			pac_draw_package.draw_polygon (
+			draw_polygon (
 				area	=> in_area,
 				context	=> context,
 				polygon	=> element (c),

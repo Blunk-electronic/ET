@@ -379,8 +379,8 @@ package body et_canvas_board is
 		self    : not null access type_view;
 		p		: in type_position; -- the position of the origin
 		in_area	: in type_rectangle;
-		context	: in type_draw_context) is
-		
+		context	: in type_draw_context) 
+	is		
 		use et_terminals;
 		type type_line is new et_terminals.pac_shapes.type_line with null record;
 		
@@ -396,8 +396,8 @@ package body et_canvas_board is
 		-- CS if text_origins_enabled then
 		
 			set_line_width (context.cr, type_view_coordinate (pac_text.origin_line_width));
-			pac_draw_package.draw_line (in_area, context, line_horizontal, self.frame_height);
-			pac_draw_package.draw_line (in_area, context, line_vertical, self.frame_height);
+			draw_line (in_area, context, line_horizontal, self.frame_height);
+			draw_line (in_area, context, line_vertical, self.frame_height);
 
 		--end if;
 	end draw_text_origin;
@@ -417,7 +417,8 @@ package body et_canvas_board is
 	-- Use it for drawing non-device related texts and placeholders.
 	function signal_layer_to_mirror (
 		current_layer, bottom_layer : in et_pcb_stack.type_signal_layer)
-		return et_text.type_vector_text_mirrored is
+		return et_text.type_vector_text_mirrored 
+	is
 		use et_text;
 		use et_pcb_stack;
 	begin
@@ -774,13 +775,13 @@ package body et_canvas_board is
 		cairo.set_line_width (context.cr, type_view_coordinate (cursor_line_width) / self.scale);
 		set_color_cursor (context.cr);
 
-		pac_draw_package.draw_line (
+		draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> lh,
 			height		=> self.frame_height);
 
-		pac_draw_package.draw_line (
+		draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> lv,

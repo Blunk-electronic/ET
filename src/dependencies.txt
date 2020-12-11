@@ -50,10 +50,18 @@ et_packages
 et_canvas_general
 - pac_canvas (with generic parameter for generic_pac_geometry)
 
+PCB
+---
 et_canvas_board
 - pac_canvas (instance of et_canvas_general.pac_canvas with
 				parameter et_pcb_coordinates.pac_geometry_brd)
 
+- pac_draw (instance of et_canvas_primitive_draw_ops.pac_draw with
+				parameter pac_canvas, et_terminals.pac_shapes, et_terminals.pac_text)
+
+
+SCHEMATIC
+---------
 et_canvas_schematic
 - pac_canvas (instance of et_canvas_general.pac_canvas with
 				parameter et_coordinates.pac_geometry_sch)

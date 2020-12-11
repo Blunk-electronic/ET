@@ -59,7 +59,7 @@ procedure draw_assy_doc (
 	procedure query_line (c : in pac_doc_lines.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
-		pac_draw_package.draw_line (
+		draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> element (c),
@@ -70,7 +70,7 @@ procedure draw_assy_doc (
 	procedure query_arc (c : in pac_doc_arcs.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
-		pac_draw_package.draw_arc (
+		draw_arc (
 			area		=> in_area,
 			context		=> context,
 			arc			=> element (c),
@@ -84,7 +84,7 @@ procedure draw_assy_doc (
 				-- We draw a normal non-filled circle:
 				cairo.set_line_width (context.cr, type_view_coordinate (element (c).border_width));
 
-				pac_draw_package.draw_circle (
+				draw_circle (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c),
@@ -95,7 +95,7 @@ procedure draw_assy_doc (
 				-- We draw a filled circle with a certain fill style:
 				case element (c).fill_style is
 					when SOLID =>
-						pac_draw_package.draw_circle (
+						draw_circle (
 							area		=> in_area,
 							context		=> context,
 							circle		=> element (c),
@@ -111,7 +111,7 @@ procedure draw_assy_doc (
 	procedure query_polygon (c : in pac_doc_polygons.cursor) is begin
 		case element (c).fill_style is
 			when SOLID =>
-				pac_draw_package.draw_polygon (
+				draw_polygon (
 					area	=> in_area,
 					context	=> context,
 					polygon	=> element (c),
@@ -121,7 +121,7 @@ procedure draw_assy_doc (
 			when HATCHED =>
 				set_line_width (context.cr, type_view_coordinate (element (c).hatching.border_width));
 
-				pac_draw_package.draw_polygon (
+				draw_polygon (
 					area	=> in_area,
 					context	=> context,
 					polygon	=> element (c),
@@ -137,7 +137,7 @@ procedure draw_assy_doc (
 		save (context.cr);
 		set_color_background (context.cr);
 		
-		pac_draw_package.draw_polygon (
+		draw_polygon (
 			area	=> in_area,
 			context	=> context,
 			polygon	=> element (c),
@@ -169,7 +169,7 @@ procedure draw_assy_doc (
 			);
 
 		-- Draw the text:
-		pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
+		draw_vector_text (in_area, context, vector_text, self.frame_height);
 
 	end query_placeholder;
 
@@ -194,7 +194,7 @@ procedure draw_assy_doc (
 			);
 
 		-- Draw the text:
-		pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
+		draw_vector_text (in_area, context, vector_text, self.frame_height);
 		
 	end query_text;
 

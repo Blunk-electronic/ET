@@ -45,14 +45,14 @@ separate (et_canvas_board)
 procedure draw_outline (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
-	context : in type_draw_context) is
-	
+	context : in type_draw_context) 
+is	
 	use pac_pcb_contour_lines;
 	use pac_pcb_contour_arcs;
 	use pac_pcb_contour_circles;
 	
 	procedure query_line (c : in pac_pcb_contour_lines.cursor) is begin
-		pac_draw_package.draw_line (
+		draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> element (c),
@@ -61,7 +61,7 @@ procedure draw_outline (
 	end query_line;
 
 	procedure query_arc (c : in pac_pcb_contour_arcs.cursor) is begin
-		pac_draw_package.draw_arc (
+		draw_arc (
 			area		=> in_area,
 			context		=> context,
 			arc			=> element (c),
@@ -69,7 +69,7 @@ procedure draw_outline (
 	end query_arc;
 
 	procedure query_circle (c : in pac_pcb_contour_circles.cursor) is begin
-		pac_draw_package.draw_circle (
+		draw_circle (
 			area		=> in_area,
 			context		=> context,
 			circle		=> element (c),

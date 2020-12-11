@@ -56,7 +56,10 @@ with cairo;						use cairo;
 
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
+
 with et_pcb_coordinates;		use et_pcb_coordinates;
+use et_pcb_coordinates.pac_geometry_brd;
+
 with et_terminals;				use et_terminals;
 with et_packages;
 with et_project.modules;		use et_project.modules;
@@ -84,18 +87,17 @@ package et_canvas_board is
 		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
 		geometry		=> et_pcb_coordinates.pac_geometry_brd);
 
+	use pac_canvas;	
 	
 	-- In order to draw objects of packages and board we instantiate this package:
-	package pac_draw_package is new et_canvas_primitive_draw_ops.pac_draw (
+	package pac_draw is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas	=> pac_canvas,
 		pac_shapes	=> et_terminals.pac_shapes,
 		pac_text	=> et_terminals.pac_text);
 	
-	use pac_canvas;	
-
+	use pac_draw;
 	
 
-	use et_pcb_coordinates.pac_geometry_brd;
 
 
 	

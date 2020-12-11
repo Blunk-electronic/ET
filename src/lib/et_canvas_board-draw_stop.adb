@@ -43,8 +43,8 @@ procedure draw_stop (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context;
-	face	: in type_face) is
-
+	face	: in type_face)
+is
 	use et_general;
 	use et_terminals.pac_shapes;	
 	use et_packages;
@@ -59,7 +59,7 @@ procedure draw_stop (
 	procedure query_line (c : in pac_stop_lines.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
-		pac_draw_package.draw_line (
+		draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> element (c),
@@ -70,7 +70,7 @@ procedure draw_stop (
 	procedure query_arc (c : in pac_stop_arcs.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
-		pac_draw_package.draw_arc (
+		draw_arc (
 			area		=> in_area,
 			context		=> context,
 			arc			=> element (c),
@@ -84,7 +84,7 @@ procedure draw_stop (
 				-- We draw a normal non-filled circle:
 				cairo.set_line_width (context.cr, type_view_coordinate (element (c).border_width));
 
-				pac_draw_package.draw_circle (
+				draw_circle (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c),
@@ -95,7 +95,7 @@ procedure draw_stop (
 				-- We draw a filled circle with a certain fill style:
 				case element (c).fill_style is
 					when SOLID =>
-						pac_draw_package.draw_circle (
+						draw_circle (
 							area		=> in_area,
 							context		=> context,
 							circle		=> element (c),
@@ -111,7 +111,7 @@ procedure draw_stop (
 	procedure query_polygon (c : in pac_stop_polygons.cursor) is begin
 		case element (c).fill_style is
 			when SOLID =>
-				pac_draw_package.draw_polygon (
+				draw_polygon (
 					area	=> in_area,
 					context	=> context,
 					polygon	=> element (c),
@@ -121,7 +121,7 @@ procedure draw_stop (
 			when HATCHED =>
 				set_line_width (context.cr, type_view_coordinate (element (c).hatching.border_width));
 
-				pac_draw_package.draw_polygon (
+				draw_polygon (
 					area	=> in_area,
 					context	=> context,
 					polygon	=> element (c),
@@ -137,7 +137,7 @@ procedure draw_stop (
 		save (context.cr);		
 		set_color_background (context.cr);
 
-		pac_draw_package.draw_polygon (
+		draw_polygon (
 			area	=> in_area,
 			context	=> context,
 			polygon	=> element (c),
@@ -168,7 +168,7 @@ procedure draw_stop (
 			);
 
 		-- Draw the text:
-		pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
+		draw_vector_text (in_area, context, vector_text, self.frame_height);
 
 	end query_placeholder;
 
@@ -193,7 +193,7 @@ procedure draw_stop (
 			);
 
 		-- Draw the text:
-		pac_draw_package.draw_vector_text (in_area, context, vector_text, self.frame_height);
+		draw_vector_text (in_area, context, vector_text, self.frame_height);
 		
 	end query_text;
 

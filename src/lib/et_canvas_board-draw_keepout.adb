@@ -56,7 +56,7 @@ procedure draw_keepout (
 	
 	procedure query_line (c : in pac_keepout_lines.cursor) is begin
 		
-		pac_draw_package.draw_line (
+		draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> element (c),
@@ -66,7 +66,7 @@ procedure draw_keepout (
 
 	procedure query_arc (c : in pac_keepout_arcs.cursor) is begin
 		
-		pac_draw_package.draw_arc (
+		draw_arc (
 			area		=> in_area,
 			context		=> context,
 			arc			=> element (c),
@@ -78,7 +78,7 @@ procedure draw_keepout (
 		case element (c).filled is
 			when NO =>
 				-- We draw a normal non-filled circle:
-				pac_draw_package.draw_circle (
+				draw_circle (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c),
@@ -87,7 +87,7 @@ procedure draw_keepout (
 				
 			when YES =>
 				-- We draw a solid filled circle:
-				pac_draw_package.draw_circle (
+				draw_circle (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c),
@@ -99,7 +99,7 @@ procedure draw_keepout (
 	end query_circle;
 
 	procedure query_polygon (c : in pac_keepout_polygons.cursor) is begin
-		pac_draw_package.draw_polygon (
+		draw_polygon (
 			area	=> in_area,
 			context	=> context,
 			polygon	=> element (c),
@@ -111,7 +111,7 @@ procedure draw_keepout (
 	procedure query_cutout (c : in pac_keepout_cutouts.cursor) is begin
 		set_color_background (context.cr);
 		
-		pac_draw_package.draw_polygon (
+		draw_polygon (
 			area	=> in_area,
 			context	=> context,
 			polygon	=> element (c),
