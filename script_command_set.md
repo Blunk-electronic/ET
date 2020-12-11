@@ -643,10 +643,10 @@ board led_driver route freetrack 1 line 0.25 10 10 16 13 # layer 1, line, width 
 board led_driver route freetrack 1 arc 0.25 50 50 50 0 50 100 cw # layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100, clockwise
 ```
 
-Changing width. CS: Not implemented yet.
+<!--Changing width. CS: Not implemented yet.
 ```
 board led_driver width freetrack 1 12 10 1.2 # layer 1, segment in layer 1, crossing 12/10, new width 1.2
-```
+```-->
 
 
 Ripping up:
@@ -670,27 +670,27 @@ Route track from IC1 pad H7 in direction 45 degrees with length of 50mm:
 board led_driver route net reset_n 1 line 0.25 IC1 H7 direction 45 50
 ```
 
-Route track from IC1 pad H7 in direction 45 degrees to the 5th grid line along x axis.
+<!--Route track from IC1 pad H7 in direction 45 degrees to the 5th grid line along x axis.
 This operation depends on the drawing grid size. CS: Not implemented yet:
 ```
 board led_driver route net reset_n 1 line 0.25 IC1 H7 direction 45 x 5
-```
+```-->
 
 Route track from IC1 pad H7 to point 35/40:
 ```
 board led_driver route net reset_n 1 line 0.25 IC1 H7 to 35 40
 ```
 
-Route track from IC1 pad H7 in x direction to the 5th grid line in along x axis:
+<!--Route track from IC1 pad H7 in x direction to the 5th grid line in along x axis:
 This operation depends on the drawing grid size.  CS: Not implemented yet:
 ```
 board led_driver route net reset_n 1 line 0.25 IC1 H7 to x 5
-```
+```-->
 
-Changing width. CS: Not implemented yet.
+<!--Changing width. CS: Not implemented yet.
 ```
 board led_driver width net reset_n 1 12 10 1.2 # layer 1, segment in layer 1, crossing 12/10, new width 1.2
-```
+```-->
 
 
 Ripping up:
