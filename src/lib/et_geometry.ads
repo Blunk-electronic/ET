@@ -56,6 +56,15 @@ package et_geometry is
 	keyword_diameter	: constant string := "diameter";
 	keyword_filled 		: constant string := "filled";
 
+	
+	type type_axis is (X, Y, Z); -- CS move to et_geometry ?
+	subtype type_axis_2d is type_axis range X .. Y;
+
+	function to_string (axis : in type_axis) return string;
+	function to_axis (axis : in string) return type_axis;
+
+	
+	
 	type type_coordinates is (RELATIVE, ABSOLUTE);
 
 	function to_string (coordinates : in type_coordinates) return string;

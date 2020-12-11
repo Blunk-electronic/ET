@@ -159,12 +159,12 @@ package et_general is
 	-- Outputs the command line switches that initiate something.
 	
 
--- AXIS
-	type type_axis is (X, Y, Z); -- CS move to et_geometry ?
-	subtype type_axis_2d is type_axis range X .. Y;
+---- AXIS
+	--type type_axis is (X, Y, Z); -- CS move to et_geometry ?
+	--subtype type_axis_2d is type_axis range X .. Y;
 
-	function to_string (axis : in type_axis) return string;
-	function to_axis (axis : in string) return type_axis;
+	--function to_string (axis : in type_axis) return string;
+	--function to_axis (axis : in string) return type_axis;
 
 -- GRID 
 	type type_grid_notches is new positive;

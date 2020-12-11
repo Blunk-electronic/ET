@@ -205,14 +205,6 @@ package body et_general is
 
 
 
--- AXIS
-	function to_string (axis : in type_axis) return string is begin
-		return to_lower (type_axis'image (axis));
-	end;
-
-	function to_axis (axis : in string) return type_axis is begin
-		return type_axis'value (axis);
-	end;
 
 -- GRID 
 	function to_notches (notches : in string) return type_grid_notches is begin
