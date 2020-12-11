@@ -60,7 +60,9 @@ package et_terminals is
 	use pac_geometry_brd;
 	
 	-- Instantiation of the shapes package:
-	package pac_shapes is new et_geometry.generic_pac_shapes (et_pcb_coordinates.pac_geometry_brd);
+	package pac_shapes is new 
+		et_geometry.generic_pac_shapes (et_pcb_coordinates.pac_geometry_brd);
+	
 	use pac_shapes;
 
 	text_size_min 		: constant type_distance_positive := 0.5;
@@ -80,8 +82,7 @@ package et_terminals is
 		size_default		=> text_size_default,
 		line_width_min		=> line_width_min,
 		line_width_max		=> line_width_max,
-		line_width_default	=> line_width_default
-		);
+		line_width_default	=> line_width_default);
 
 	
 -- CONDUCTOR STRUCTURES GENERAL

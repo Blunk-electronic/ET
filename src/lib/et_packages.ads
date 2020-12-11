@@ -65,10 +65,17 @@ with cairo;
 
 package et_packages is
 	use pac_geometry_brd;
+
+	use et_terminals.pac_shapes;
+	-- NOTE; The shapes package has been instantiated in et_terminals.
+
 	
-	-- A package (or a footprint) is something like "SOT32" or "NDIP14". It is a more or less standardized (JEDEC)
-	-- designator for the housing or the case of an electronical component. The package name is independed of
-	-- the actual purpose of a device. An LED can have an SOT23 package and a transistor can also come in an SOT23.
+	-- A package (or a footprint) is something like "SOT32" or "NDIP14". 
+	-- It is a more or less standardized (JEDEC)
+	-- designator for the housing or the case of an electronical component.
+	-- The package name is independed of
+	-- the actual purpose of a device. An LED can have an SOT23 package and
+	-- a transistor can also come in an SOT23.
 
 	-- Package names like "SOT23" or "TO220" are stored in bounded strings:
 	package_name_characters : character_set := to_set 
@@ -111,37 +118,10 @@ package et_packages is
 	function to_string (name : in pac_package_model_file_name.bounded_string) return string;
 	function to_file_name (name : in string) return pac_package_model_file_name.bounded_string;
 	
-
--- 	text_size_min : constant type_distance_positive := 0.5;
--- 	text_size_max : constant type_distance_positive := 100.0;
--- 	text_size_default : constant type_distance_positive := 1.5;
--- 	
--- 	line_width_min : constant type_distance_positive := 0.15;
--- 	line_width_max : constant type_distance_positive := 10.0;
--- 	line_width_default : constant type_distance_positive := 0.15;
-
 	
-	-- Instantiation of the shapes package:
--- 	package pac_shapes is new et_geometry.generic_pac_shapes (et_pcb_coordinates.pac_geometry_brd);
-	use et_terminals.pac_shapes;
-
+	subtype type_general_line_width is type_distance_positive
+		range line_width_min .. line_width_max;
 	
-	-- Instantiation of the text package:
--- 	package pac_text is new et_text.generic_pac_text (
--- 		pac_shapes			=> pac_shapes,
--- 		size_min			=> text_size_min,
--- 		size_max			=> text_size_max,
--- 		size_default		=> text_size_default,
--- 		line_width_min		=> line_width_min,
--- 		line_width_max		=> line_width_max,
--- 		line_width_default	=> line_width_default
--- 		);
--- 	use et_terminals.pac_text;
-	
-	subtype type_general_line_width is type_distance_positive range line_width_min .. line_width_max;
-	
-
-
 	procedure validate_general_line_width (width : in et_pcb_coordinates.type_distance);
 	-- Checks whether given line width is in range of type_general_line_width
 
@@ -157,6 +137,7 @@ package et_packages is
 	function text_properties (text : in type_text) return string;
 	-- Returns the properties of the given text in a long single string.	
 	
+
 	
 -- PLACEHOLDERS FOR TEXTS
 	type type_text_meaning_package is (NAME, VALUE, PURPOSE);

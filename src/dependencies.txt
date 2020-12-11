@@ -1,0 +1,37 @@
+
+
+et_geometry
+- generic_pac_geometry
+- generic_pac_shapes (with generic parameter for generic_pac_geometry)
+
+et_text
+- generic_pac_text (with generic parameter for instance of generic_pac_shapes)
+
+
+
+et_coordinates (for schematic and symbols)
+- pac_geometry_sch (instance of generic_pac_geometry)
+
+et_schematic
+- pac_shapes (instance of generic_pac_shapes with parameter pac_geometry_sch)
+- pac_text (isntance of generic_pac_text with parameter pac_shapes)
+
+et_symbols
+- pac_shapes (instance of generic_pac_shapes with parameter pac_geometry_sch)
+- pac_text (isntance of generic_pac_text with parameter pac_shapes)
+
+
+
+et_pcb_coordinates (for board and packages/footprints)
+- pac_geometry_brd (instance of generic_pac_geometry)
+
+et_terminals
+- pac_shapes (instance of generic_pac_shapes with parameter pac_geometry_brd)
+- pac_text (isntance of generic_pac_text with parameter pac_shapes)
+
+et_packages
+- uses et_terminals.pac_shapes
+- uses et_terminals.pac_text
+
+
+

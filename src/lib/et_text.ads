@@ -157,7 +157,6 @@ package et_text is
 		line_width_min, line_width_max, line_width_default : pac_shapes.pac_geometry.type_distance;
 		
 	package generic_pac_text is
-		--use pac_shapes.pac_geometry;
 		use pac_shapes;
 		use pac_geometry;
 

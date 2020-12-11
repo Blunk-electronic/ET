@@ -64,7 +64,8 @@ package et_symbols is
 
 
 -- Instantiation of the generic shapes package et_geometry.generic_pac_shapes:
-	package pac_shapes is new et_geometry.generic_pac_shapes (et_coordinates.pac_geometry_sch);
+	package pac_shapes is new 
+		et_geometry.generic_pac_shapes (et_coordinates.pac_geometry_sch);
 	use pac_shapes;
 
 	
