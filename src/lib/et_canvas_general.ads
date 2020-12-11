@@ -99,8 +99,11 @@ package et_canvas_general is
 		--& " Confirm selection with LEFT click or SPACE key.";
 
 
+
 	
 	primary_tool_default : constant type_tool := MOUSE;
+
+	
 	
 
 	-- In graphical mode (other than runmode headless) and 

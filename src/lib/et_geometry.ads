@@ -64,6 +64,18 @@ package et_geometry is
 	function to_axis (axis : in string) return type_axis;
 
 
+	
+	-- While drawing and editing we need information about the tool being used.
+	-- This is relevant for GUI operations only:
+	type type_tool is (MOUSE, KEYBOARD);
+
+	function to_string (tool : in type_tool) return string;
+
+	function to_tool (tool : in string) return type_tool;
+
+
+
+	
 	type type_grid_notches is new positive;
 
 	function to_notches (notches : in string) return type_grid_notches;

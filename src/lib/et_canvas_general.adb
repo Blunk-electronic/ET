@@ -67,8 +67,12 @@ with et_scripting;
 
 package body et_canvas_general is
 
+	
+	
+--GENERIC------------------------------------------------------------------
+	
 package body pac_canvas is
-
+	
 	procedure set_status (text : in string) is begin
 		label_status.set_text (text);
 	end set_status;

@@ -371,16 +371,6 @@ package body et_general is
 
 
 
-	
-	function to_string (tool : in type_tool) return string is begin
-		return type_tool'image (tool);
-	end to_string;
-
-	function to_tool (tool : in string) return type_tool is begin
-		return type_tool'value (tool);
-	end to_tool;
-	
-	
 -- GENERICS
 	
 	package body stack_lifo is

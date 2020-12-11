@@ -41,6 +41,7 @@ with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
+with et_geometry;					use et_geometry;
 with et_general;					use et_general;
 with et_canvas_general;				use et_canvas_general;
 with et_coordinates;				use et_coordinates;
