@@ -752,7 +752,20 @@ package body et_geometry is
 			return type_rotation ((units_per_cycle * 0.5 * radians) / pi);
 		end to_degrees;
 
-		
+		function to_position (
+			point		: in type_point;
+			rotation	: in type_rotation)
+			return type_position'class
+		is 
+			result : type_position;
+		begin
+			result.x := point.x;
+			result.y := point.y;
+			result.rotation := rotation;
+
+			return result;
+		end to_position;
+			
 		procedure set (
 		-- Sets the rotation of a position. (position.rotation)
 			position	: in out type_position;

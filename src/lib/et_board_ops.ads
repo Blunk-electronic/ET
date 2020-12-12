@@ -556,7 +556,15 @@ package et_board_ops is
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
-
+-- TEXT
+	
+	-- Places a text:
+	procedure place_text (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		text			: in type_text_with_content;
+		log_threshold	: in type_log_level)
+	is null;
 
 	
 end et_board_ops;

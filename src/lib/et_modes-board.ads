@@ -49,7 +49,7 @@ package et_modes.board is
 		VERB_FLIP,
 		VERB_MAKE,
 		VERB_MOVE,
-		--PLACE,
+		VERB_PLACE,
 		VERB_POSITION,
 		VERB_QUIT,
 		VERB_RIPUP,

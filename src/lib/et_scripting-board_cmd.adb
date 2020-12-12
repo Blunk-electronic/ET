@@ -1366,11 +1366,45 @@ is
 						
 					when others => command_incomplete;
 				end case;
-
 						
 			when others => null;
 		end case;
 	end draw_stencil;
+
+	procedure place_text is
+		text : type_text_with_content;
+		pos_xy : type_point;
+		rotation : type_rotation;
+		--layer : 
+		
+	begin
+		-- board demo place silkscreen top text 0.15 1 140 100 0 "SILKSCREEN"
+		case fields is
+			when 12 =>
+				text.line_width := to_distance (f (7)); -- 0.15
+				text.size := to_distance (f (8)); -- 1
+				
+				pos_xy := type_point (set (
+							x => to_distance (f (9)), -- 140
+							y => to_distance (f (10)))); -- 100
+
+				rotation := to_rotation (f (11)); -- 0
+				text.position := type_position (to_position (pos_xy, rotation));
+				
+				text.content := to_content (f (12));
+
+				place_text
+					(
+					module_name 	=> module,
+					face			=> to_face (f (6)),
+					text			=> text,
+					log_threshold	=> log_threshold + 1);
+
+			when 13 .. count_type'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end place_text;
 	
 	-- CS circular tracks are currently not supported
 	subtype type_track_shape is type_shape range LINE..ARC;
@@ -2163,6 +2197,12 @@ is
 								command_incomplete;
 						end case;
 						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when VERB_PLACE =>
+				case noun is
+					when NOUN_TEXT => place_text;
 					when others => invalid_noun (to_string (noun));
 				end case;
 				

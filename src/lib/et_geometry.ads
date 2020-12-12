@@ -406,7 +406,11 @@ package et_geometry is
 		function to_degrees (radians : in float) return type_rotation;
 		-- Converts radians to degrees.
 
-		
+
+		function to_position (
+			point		: in type_point;
+			rotation	: in type_rotation)
+			return type_position'class;
 		
 		procedure set (
 		-- Sets the rotation of a position. (position.rotation)

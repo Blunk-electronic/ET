@@ -41,6 +41,7 @@ with ada.containers;			use ada.containers;
 with ada.exceptions;			use ada.exceptions;
 
 with et_general;				use et_general;
+with et_text;					use et_text;
 with et_string_processing;		use et_string_processing;
 
 with et_canvas_schematic;
