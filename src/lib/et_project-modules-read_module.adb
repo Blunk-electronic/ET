@@ -568,7 +568,7 @@ is
 			expect_field_count (line, 2);
 			sheet_description_category := to_category (f (line, 2));
 
-		elsif kw = keyword_sheet_description then -- description "voltage regulator"
+		elsif kw = keyword_sheet_description then -- text "voltage regulator"
 			expect_field_count (line, 2);
 			sheet_description_text := to_content (f (line, 2));
 			
