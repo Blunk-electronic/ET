@@ -559,13 +559,22 @@ package et_board_ops is
 -- TEXT
 	
 	-- Places a text:
-	procedure place_text (
+	procedure place_text_in_non_conductor_layer (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		layer_category	: in type_layer_category;
 		face			: in type_face;
 		text			: in type_text_with_content;
 		log_threshold	: in type_log_level)
 	is null;
 
+	procedure place_text_in_conductor_layer (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		layer_category	: in type_layer_category;
+		text			: in type_text_with_content;
+		log_threshold	: in type_log_level)
+	is null;
+
+	
 	
 end et_board_ops;
 

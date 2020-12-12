@@ -1372,15 +1372,18 @@ is
 	end draw_stencil;
 
 	procedure place_text is
-		text : type_text_with_content;
-		pos_xy : type_point;
-		rotation : type_rotation;
-		--layer : 
+		text			: type_text_with_content;
+		pos_xy			: type_point;
+		rotation		: type_rotation;
+		layer_category	: type_layer_category;
 		
 	begin
-		-- board demo place silkscreen top text 0.15 1 140 100 0 "SILKSCREEN"
+		-- board demo place text silkscreen top 0.15 1 140 100 0 "SILKSCREEN"
+		-- board demo place text conductor  1   0.15 1 140 100 0 "L1"
 		case fields is
 			when 12 =>
+				layer_category := to_layer_category (f (5));
+				
 				text.line_width := to_distance (f (7)); -- 0.15
 				text.size := to_distance (f (8)); -- 1
 				
@@ -1393,13 +1396,28 @@ is
 				
 				text.content := to_content (f (12));
 
-				place_text
-					(
-					module_name 	=> module,
-					face			=> to_face (f (6)),
-					text			=> text,
-					log_threshold	=> log_threshold + 1);
+				case layer_category is
+					when LAYER_CAT_SILKSCREEN | LAYER_CAT_ASSY | LAYER_CAT_STOP =>
+						place_text_in_non_conductor_layer (
+							module_name 	=> module,
+							layer_category	=> layer_category,
+							face			=> to_face (f (6)),
+							text			=> text,
+							log_threshold	=> log_threshold + 1);
 
+					when LAYER_CAT_CONDUCTOR => 
+						place_text_in_conductor_layer (
+							module_name 	=> module,
+							layer_category	=> layer_category,
+							-- CS L number
+							text			=> text,
+							log_threshold	=> log_threshold + 1);
+						
+					when others =>
+						raise semantic_error_1 with
+							"ERROR: Text not allowed in this layer category !";
+				end case;
+				
 			when 13 .. count_type'last => too_long;
 				
 			when others => command_incomplete;

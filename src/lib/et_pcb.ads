@@ -66,6 +66,27 @@ with et_frames;
 package et_pcb is
 	use et_pcb_coordinates.pac_geometry_brd;
 	use et_terminals.pac_shapes;
+
+-- LAYER CATEGORY
+
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:	
+	layer_category_prefix : constant string := "LAYER_CAT_";
+
+	type type_layer_category is (
+		LAYER_CAT_ASSY,
+		LAYER_CAT_SILKSCREEN,
+		LAYER_CAT_STOP,
+		LAYER_CAT_STENCIL,
+		LAYER_CAT_KEEPOUT,
+		LAYER_CAT_OUTLINE,
+		LAYER_CAT_ROUTE_RESTRICT,
+		LAYER_CAT_VIA_RESTRICT,
+		LAYER_CAT_CONDUCTOR);
+
+	function to_layer_category (cat : in string) return type_layer_category;
+	function to_string (cat : in type_layer_category) return string;
+
 	
 -- VIAS
 	type type_micro_vias_allowed is (NO, YES);
