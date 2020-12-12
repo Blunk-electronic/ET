@@ -283,8 +283,437 @@ is
 		
 		-- CS exception handler if status is invalid
 	end display_restrict_layer;
-	
 
+	procedure draw_outline is
+		shape : type_shape := to_shape (f (5));
+	begin
+		case shape is
+			when LINE =>
+				case fields is
+					when 9 =>
+						draw_outline_line (
+							module_name 	=> module,
+							line			=> (
+								start_point	=> type_point (set (
+									x => to_distance (f (6)),
+									y => to_distance (f (7)))),
+								end_point	=> type_point (set (
+									x => to_distance (f (8)),
+									y => to_distance (f (9)))),
+								locked		=> lock_status_default
+								),
+							log_threshold	=> log_threshold + 1
+							);
+
+					when 10 .. count_type'last =>
+						command_too_long (single_cmd_status.cmd, fields - 1);
+						
+					when others =>
+						command_incomplete;
+				end case;
+				
+			when ARC =>
+				case fields is
+					when 12 =>
+						draw_outline_arc (
+							module_name 	=> module,
+							arc				=> (
+								center		=> type_point (set (
+									x => to_distance (f (6)),
+									y => to_distance (f (7)))),
+								start_point	=> type_point (set (
+									x => to_distance (f (8)),
+									y => to_distance (f (9)))),
+								end_point	=> type_point (set (
+									x => to_distance (f (10)),
+									y => to_distance (f (11)))),
+								direction	=> to_direction (f (12)),
+								locked	=> lock_status_default
+								),
+
+							log_threshold	=> log_threshold + 1
+							);
+
+					when 13 .. count_type'last =>
+						command_too_long (single_cmd_status.cmd, fields - 1);
+						
+					when others =>
+						command_incomplete;
+				end case;
+
+			when CIRCLE =>
+				case fields is
+					when 8 =>
+						draw_outline_circle (
+							module_name 	=> module,
+							circle			=> (
+								center	=> type_point (set (
+									x => to_distance (f (6)),
+									y => to_distance (f (7)))),
+								radius	=> to_distance (f (8)),
+								locked	=> lock_status_default
+								),
+
+							log_threshold	=> log_threshold + 1
+							);
+
+					when 9 .. count_type'last =>
+						command_too_long (single_cmd_status.cmd, fields - 1);
+						
+					when others =>
+						command_incomplete;
+				end case;
+
+		end case;
+	end draw_outline;
+
+	procedure draw_silkscreen is
+		shape : type_shape := to_shape (f (6));
+	begin
+		case shape is
+			when LINE =>
+				case fields is
+					when 11 =>
+						draw_silk_screen_line (
+							module_name 	=> module,
+							face			=> to_face (f (5)),
+							line			=> (
+										width		=> to_distance (f (7)),
+										start_point	=> type_point (set (
+											x => to_distance (f (8)),
+											y => to_distance (f (9)))),
+										end_point	=> type_point (set (
+											x => to_distance (f (10)),
+											y => to_distance (f (11))))
+										),
+
+							log_threshold	=> log_threshold + 1
+							);
+
+					when 12 .. count_type'last =>
+						command_too_long (single_cmd_status.cmd, fields - 1);
+						
+					when others =>
+						command_incomplete;
+				end case;
+				
+			when ARC =>
+				case fields is
+					when 14 =>
+						draw_silk_screen_arc (
+							module_name 	=> module,
+							face			=> to_face (f (5)),
+							arc				=> (
+										width	=> to_distance (f (7)),
+										center	=> type_point (set (
+											x => to_distance (f (8)),
+											y => to_distance (f (9)))),
+										start_point	=> type_point (set (
+											x => to_distance (f (10)),
+											y => to_distance (f (11)))),
+										end_point	=> type_point (set (
+											x => to_distance (f (12)),
+											y => to_distance (f (13)))),
+										direction	=> to_direction (f (14))
+										),
+
+							log_threshold	=> log_threshold + 1
+							);
+
+					when 15 .. count_type'last =>
+						command_too_long (single_cmd_status.cmd, fields - 1);
+						
+					when others =>
+						command_incomplete;
+				end case;
+
+			when CIRCLE =>
+				case fields is
+					when 10 =>
+
+					-- The 7th field can either be a line width like 2.5 or a 
+					-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
+						if is_number (f (7)) then
+
+							-- Circle is not filled and has a circumfence line width
+							-- specified in field 7.
+							draw_silk_screen_circle (
+								module_name 	=> module,
+								face			=> to_face (f (5)),
+								circle			=> 
+										(
+										filled			=> NO,
+										fill_style		=> fill_style_default, -- don't care here
+										border_width	=> to_distance (f (7)),
+										center			=> type_point (set (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+										radius			=> to_distance (f (10))
+										),
+								log_threshold	=> log_threshold + 1);
+						else
+							
+							-- Circle is filled with the fill style specified in field 7:
+							case to_fill_style (f (7)) is
+-- CS
+-- 														when CUTOUT =>
+-- 													
+-- 															draw_silk_screen_circle (
+-- 																module_name 	=> module,
+-- 																face			=> to_face (f (5)),
+-- 																circle			=> 
+-- 																			(
+-- 																			filled		=> YES,
+-- 																			fill_style	=> CUTOUT,
+-- 																			center	=> type_point (set (
+-- 																						x => to_distance (f (8)),
+-- 																						y => to_distance (f (9)))),
+-- 																			radius	=> to_distance (f (10))
+-- 																			),
+-- 																log_threshold	=> log_threshold + 1
+-- 																);
+
+								when SOLID =>
+							
+									draw_silk_screen_circle (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										circle			=> 
+													(
+													filled		=> YES,
+													fill_style	=> SOLID,
+													center	=> type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+													radius	=> to_distance (f (10))
+													),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when HATCHED =>
+									command_incomplete;
+
+							end case;
+						end if;
+							
+					when 12 =>
+						-- This is going to be a hatched circle.
+						-- In this case the 7th field MUST be fill style HATCHED.
+						if is_number (f (7)) then
+							expect_fill_style (HATCHED, 7); -- error
+						else
+							case to_fill_style (f (7)) is
+								when HATCHED =>
+									draw_silk_screen_circle (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										circle			=> 
+												(
+												filled		=> YES,
+												fill_style	=> HATCHED,
+												center		=> type_point (set (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+												radius		=> to_distance (f (10)),
+												hatching	=> (
+															line_width	=> to_distance (f (11)),
+															spacing		=> to_distance (f (12)),
+															others		=> <>
+															)
+												),
+										log_threshold	=> log_threshold + 1);
+
+								when others =>
+									expect_fill_style (HATCHED, 7);
+							end case;
+						end if;
+
+					when 13 .. count_type'last =>
+						command_too_long (single_cmd_status.cmd, fields - 1);
+						
+					when others =>
+						command_incomplete;
+				end case;
+
+						
+			when others => null;
+		end case;
+	end draw_silkscreen;
+
+	procedure draw_assy_doc is
+		shape : type_shape := to_shape (f (6));
+	begin
+		case shape is
+			when LINE =>
+				case fields is
+					when 11 =>
+						draw_assy_doc_line (
+							module_name 	=> module,
+							face			=> to_face (f (5)),
+							line			=> (
+										width		=> to_distance (f (7)),
+										start_point	=> type_point (set (
+											x => to_distance (f (8)),
+											y => to_distance (f (9)))),
+										end_point	=> type_point (set (
+											x => to_distance (f (10)),
+											y => to_distance (f (11))))
+										),
+
+							log_threshold	=> log_threshold + 1
+							);
+
+					when 12 .. count_type'last =>
+						command_too_long (single_cmd_status.cmd, fields - 1);
+						
+					when others =>
+						command_incomplete;
+				end case;
+				
+			when ARC =>
+				case fields is
+					when 14 =>
+						draw_assy_doc_arc (
+							module_name 	=> module,
+							face			=> to_face (f (5)),
+							arc				=> (
+										width	=> to_distance (f (7)),
+										center	=> type_point (set (
+											x => to_distance (f (8)),
+											y => to_distance (f (9)))),
+										start_point	=> type_point (set (
+											x => to_distance (f (10)),
+											y => to_distance (f (11)))),
+										end_point	=> type_point (set (
+											x => to_distance (f (12)),
+											y => to_distance (f (13)))),
+										direction	=> to_direction (f (14))
+										),
+
+							log_threshold	=> log_threshold + 1
+							);
+
+					when 15 .. count_type'last =>
+						command_too_long (single_cmd_status.cmd, fields - 1);
+						
+					when others =>
+						command_incomplete;
+				end case;
+
+			when CIRCLE =>
+				case fields is
+					when 10 =>
+
+					-- The 7th field can either be a line width like 2.5 or a 
+					-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
+						if is_number (f (7)) then
+
+							-- Circle is not filled and has a circumfence line width
+							-- specified in field 7.
+							draw_assy_doc_circle (
+								module_name 	=> module,
+								face			=> to_face (f (5)),
+								circle			=> 
+										(
+										filled			=> NO,
+										fill_style		=> fill_style_default, -- don't care here
+										border_width	=> to_distance (f (7)),
+										center			=> type_point (set (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+										radius			=> to_distance (f (10))
+										),
+								log_threshold	=> log_threshold + 1);
+						else
+							
+							-- Circle is filled with the fill style specified in field 7:
+							case to_fill_style (f (7)) is
+-- CS
+-- 														when CUTOUT =>
+-- 													
+-- 															draw_assy_doc_circle (
+-- 																module_name 	=> module,
+-- 																face			=> to_face (f (5)),
+-- 																circle			=> 
+-- 																			(
+-- 																			filled		=> YES,
+-- 																			fill_style	=> CUTOUT,
+-- 																			center	=> type_point (set (
+-- 																						x => to_distance (f (8)),
+-- 																						y => to_distance (f (9)))),
+-- 																			radius	=> to_distance (f (10))
+-- 																			),
+-- 																log_threshold	=> log_threshold + 1
+-- 																);
+
+								when SOLID =>
+							
+									draw_assy_doc_circle (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										circle			=> 
+													(
+													filled		=> YES,
+													fill_style	=> SOLID,
+													center	=> type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+													radius	=> to_distance (f (10))
+													),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when HATCHED =>
+									command_incomplete;
+
+							end case;
+						end if;
+							
+					when 12 =>
+						-- This is going to be a hatched circle.
+						-- In this case the 7th field MUST be fill style HATCHED.
+						if is_number (f (7)) then
+							expect_fill_style (HATCHED, 7); -- error
+						else
+							case to_fill_style (f (7)) is
+								when HATCHED =>
+									draw_assy_doc_circle (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										circle			=> 
+												(
+												filled		=> YES,
+												fill_style	=> HATCHED,
+												center		=> type_point (set (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+												radius		=> to_distance (f (10)),
+
+												hatching	=> (
+															line_width	=> to_distance (f (11)),
+															spacing		=> to_distance (f (12)),
+															others		=> <>
+															)
+												),
+										log_threshold	=> log_threshold + 1);
+
+								when others =>
+									expect_fill_style (HATCHED, 7);
+							end case;
+						end if;
+
+					when 13 .. count_type'last =>
+						command_too_long (single_cmd_status.cmd, fields - 1);
+						
+					when others =>
+						command_incomplete;
+				end case;
+
+						
+			when others => null;
+		end case;
+	end draw_assy_doc;
+	
 	procedure draw_keepout is
 		shape : type_shape := to_shape (f (6));
 	begin
@@ -622,7 +1051,6 @@ is
 	end draw_via_restrict;
 
 	procedure draw_stop_mask is
-		use et_terminals.pac_shapes;
 		shape : type_shape := to_shape (f (6));
 	begin
 		case shape is
@@ -784,7 +1212,6 @@ is
 	end draw_stop_mask;
 
 	procedure draw_stencil is
-		use et_terminals.pac_shapes;
 		shape : type_shape := to_shape (f (6));
 	begin
 		case shape is
@@ -1225,10 +1652,6 @@ is
 	end position_cursor;
 
 	procedure add_device is -- non-electric device !
-		-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5
-		-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0
-		-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0 top
-
 		model : constant pac_package_model_file_name.bounded_string := to_file_name (f (5));
 		prefix : constant pac_device_prefix.bounded_string := to_prefix (f (6));
 
@@ -1595,439 +2018,13 @@ is
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_OUTLINE =>
-						declare
-							shape : type_shape := to_shape (f (5));
-						begin
-							case shape is
-								when LINE =>
-									case fields is
-										when 9 =>
-											draw_outline_line (
-												module_name 	=> module,
-												line			=> (
-													start_point	=> type_point (set (
-														x => to_distance (f (6)),
-														y => to_distance (f (7)))),
-													end_point	=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-													locked		=> lock_status_default
-													),
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 10 .. count_type'last =>
-											command_too_long (single_cmd_status.cmd, fields - 1);
-											
-										when others =>
-											command_incomplete;
-									end case;
-									
-								when ARC =>
-									case fields is
-										when 12 =>
-											draw_outline_arc (
-												module_name 	=> module,
-												arc				=> (
-													center		=> type_point (set (
-														x => to_distance (f (6)),
-														y => to_distance (f (7)))),
-													start_point	=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-													end_point	=> type_point (set (
-														x => to_distance (f (10)),
-														y => to_distance (f (11)))),
-													direction	=> to_direction (f (12)),
-													locked	=> lock_status_default
-													),
-
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 13 .. count_type'last =>
-											command_too_long (single_cmd_status.cmd, fields - 1);
-											
-										when others =>
-											command_incomplete;
-									end case;
-
-								when CIRCLE =>
-									case fields is
-										when 8 =>
-											draw_outline_circle (
-												module_name 	=> module,
-												circle			=> (
-													center	=> type_point (set (
-														x => to_distance (f (6)),
-														y => to_distance (f (7)))),
-													radius	=> to_distance (f (8)),
-													locked	=> lock_status_default
-													),
-
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 9 .. count_type'last =>
-											command_too_long (single_cmd_status.cmd, fields - 1);
-											
-										when others =>
-											command_incomplete;
-									end case;
-
-							end case;
-						end;
+						draw_outline;
 
 					when NOUN_SILKSCREEN =>
-						declare
-							use et_terminals.pac_shapes;
-							shape : type_shape := to_shape (f (6));
-						begin
-							case shape is
-								when LINE =>
-									case fields is
-										when 11 =>
-											draw_silk_screen_line (
-												module_name 	=> module,
-												face			=> to_face (f (5)),
-												line			=> (
-															width		=> to_distance (f (7)),
-															start_point	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-															end_point	=> type_point (set (
-																x => to_distance (f (10)),
-																y => to_distance (f (11))))
-															),
-
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 12 .. count_type'last =>
-											command_too_long (single_cmd_status.cmd, fields - 1);
-											
-										when others =>
-											command_incomplete;
-									end case;
-									
-								when ARC =>
-									case fields is
-										when 14 =>
-											draw_silk_screen_arc (
-												module_name 	=> module,
-												face			=> to_face (f (5)),
-												arc				=> (
-															width	=> to_distance (f (7)),
-															center	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-															start_point	=> type_point (set (
-																x => to_distance (f (10)),
-																y => to_distance (f (11)))),
-															end_point	=> type_point (set (
-																x => to_distance (f (12)),
-																y => to_distance (f (13)))),
-															direction	=> to_direction (f (14))
-															),
-
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 15 .. count_type'last =>
-											command_too_long (single_cmd_status.cmd, fields - 1);
-											
-										when others =>
-											command_incomplete;
-									end case;
-
-								when CIRCLE =>
-									case fields is
-										when 10 =>
-
-										-- The 7th field can either be a line width like 2.5 or a 
-										-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
-											if is_number (f (7)) then
-
-												-- Circle is not filled and has a circumfence line width
-												-- specified in field 7.
-												draw_silk_screen_circle (
-													module_name 	=> module,
-													face			=> to_face (f (5)),
-													circle			=> 
-															(
-															filled			=> NO,
-															fill_style		=> fill_style_default, -- don't care here
-															border_width	=> to_distance (f (7)),
-															center			=> type_point (set (
-																		x => to_distance (f (8)),
-																		y => to_distance (f (9)))),
-															radius			=> to_distance (f (10))
-															),
-													log_threshold	=> log_threshold + 1);
-											else
-												
-												-- Circle is filled with the fill style specified in field 7:
-												case to_fill_style (f (7)) is
-	-- CS
-	-- 														when CUTOUT =>
-	-- 													
-	-- 															draw_silk_screen_circle (
-	-- 																module_name 	=> module,
-	-- 																face			=> to_face (f (5)),
-	-- 																circle			=> 
-	-- 																			(
-	-- 																			filled		=> YES,
-	-- 																			fill_style	=> CUTOUT,
-	-- 																			center	=> type_point (set (
-	-- 																						x => to_distance (f (8)),
-	-- 																						y => to_distance (f (9)))),
-	-- 																			radius	=> to_distance (f (10))
-	-- 																			),
-	-- 																log_threshold	=> log_threshold + 1
-	-- 																);
-
-													when SOLID =>
-												
-														draw_silk_screen_circle (
-															module_name 	=> module,
-															face			=> to_face (f (5)),
-															circle			=> 
-																		(
-																		filled		=> YES,
-																		fill_style	=> SOLID,
-																		center	=> type_point (set (
-																					x => to_distance (f (8)),
-																					y => to_distance (f (9)))),
-																		radius	=> to_distance (f (10))
-																		),
-															log_threshold	=> log_threshold + 1
-															);
-
-													when HATCHED =>
-														command_incomplete;
-
-												end case;
-											end if;
-												
-										when 12 =>
-											-- This is going to be a hatched circle.
-											-- In this case the 7th field MUST be fill style HATCHED.
-											if is_number (f (7)) then
-												expect_fill_style (HATCHED, 7); -- error
-											else
-												case to_fill_style (f (7)) is
-													when HATCHED =>
-														draw_silk_screen_circle (
-															module_name 	=> module,
-															face			=> to_face (f (5)),
-															circle			=> 
-																	(
-																	filled		=> YES,
-																	fill_style	=> HATCHED,
-																	center		=> type_point (set (
-																				x => to_distance (f (8)),
-																				y => to_distance (f (9)))),
-																	radius		=> to_distance (f (10)),
-																	hatching	=> (
-																				line_width	=> to_distance (f (11)),
-																				spacing		=> to_distance (f (12)),
-																				others		=> <>
-																				)
-																	),
-															log_threshold	=> log_threshold + 1);
-
-													when others =>
-														expect_fill_style (HATCHED, 7);
-												end case;
-											end if;
-
-										when 13 .. count_type'last =>
-											command_too_long (single_cmd_status.cmd, fields - 1);
-											
-										when others =>
-											command_incomplete;
-									end case;
-
-											
-								when others => null;
-							end case;
-						end;
+						draw_silkscreen;
 
 					when NOUN_ASSY =>
-						declare
-							use et_terminals.pac_shapes;
-							shape : type_shape := to_shape (f (6));
-						begin
-							case shape is
-								when LINE =>
-									case fields is
-										when 11 =>
-											draw_assy_doc_line (
-												module_name 	=> module,
-												face			=> to_face (f (5)),
-												line			=> (
-															width		=> to_distance (f (7)),
-															start_point	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-															end_point	=> type_point (set (
-																x => to_distance (f (10)),
-																y => to_distance (f (11))))
-															),
-
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 12 .. count_type'last =>
-											command_too_long (single_cmd_status.cmd, fields - 1);
-											
-										when others =>
-											command_incomplete;
-									end case;
-									
-								when ARC =>
-									case fields is
-										when 14 =>
-											draw_assy_doc_arc (
-												module_name 	=> module,
-												face			=> to_face (f (5)),
-												arc				=> (
-															width	=> to_distance (f (7)),
-															center	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-															start_point	=> type_point (set (
-																x => to_distance (f (10)),
-																y => to_distance (f (11)))),
-															end_point	=> type_point (set (
-																x => to_distance (f (12)),
-																y => to_distance (f (13)))),
-															direction	=> to_direction (f (14))
-															),
-
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 15 .. count_type'last =>
-											command_too_long (single_cmd_status.cmd, fields - 1);
-											
-										when others =>
-											command_incomplete;
-									end case;
-
-								when CIRCLE =>
-									case fields is
-										when 10 =>
-
-										-- The 7th field can either be a line width like 2.5 or a 
-										-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
-											if is_number (f (7)) then
-
-												-- Circle is not filled and has a circumfence line width
-												-- specified in field 7.
-												draw_assy_doc_circle (
-													module_name 	=> module,
-													face			=> to_face (f (5)),
-													circle			=> 
-															(
-															filled			=> NO,
-															fill_style		=> fill_style_default, -- don't care here
-															border_width	=> to_distance (f (7)),
-															center			=> type_point (set (
-																		x => to_distance (f (8)),
-																		y => to_distance (f (9)))),
-															radius			=> to_distance (f (10))
-															),
-													log_threshold	=> log_threshold + 1);
-											else
-												
-												-- Circle is filled with the fill style specified in field 7:
-												case to_fill_style (f (7)) is
-	-- CS
-	-- 														when CUTOUT =>
-	-- 													
-	-- 															draw_assy_doc_circle (
-	-- 																module_name 	=> module,
-	-- 																face			=> to_face (f (5)),
-	-- 																circle			=> 
-	-- 																			(
-	-- 																			filled		=> YES,
-	-- 																			fill_style	=> CUTOUT,
-	-- 																			center	=> type_point (set (
-	-- 																						x => to_distance (f (8)),
-	-- 																						y => to_distance (f (9)))),
-	-- 																			radius	=> to_distance (f (10))
-	-- 																			),
-	-- 																log_threshold	=> log_threshold + 1
-	-- 																);
-
-													when SOLID =>
-												
-														draw_assy_doc_circle (
-															module_name 	=> module,
-															face			=> to_face (f (5)),
-															circle			=> 
-																		(
-																		filled		=> YES,
-																		fill_style	=> SOLID,
-																		center	=> type_point (set (
-																					x => to_distance (f (8)),
-																					y => to_distance (f (9)))),
-																		radius	=> to_distance (f (10))
-																		),
-															log_threshold	=> log_threshold + 1
-															);
-
-													when HATCHED =>
-														command_incomplete;
-
-												end case;
-											end if;
-												
-										when 12 =>
-											-- This is going to be a hatched circle.
-											-- In this case the 7th field MUST be fill style HATCHED.
-											if is_number (f (7)) then
-												expect_fill_style (HATCHED, 7); -- error
-											else
-												case to_fill_style (f (7)) is
-													when HATCHED =>
-														draw_assy_doc_circle (
-															module_name 	=> module,
-															face			=> to_face (f (5)),
-															circle			=> 
-																	(
-																	filled		=> YES,
-																	fill_style	=> HATCHED,
-																	center		=> type_point (set (
-																				x => to_distance (f (8)),
-																				y => to_distance (f (9)))),
-																	radius		=> to_distance (f (10)),
-
-																	hatching	=> (
-																				line_width	=> to_distance (f (11)),
-																				spacing		=> to_distance (f (12)),
-																				others		=> <>
-																				)
-																	),
-															log_threshold	=> log_threshold + 1);
-
-													when others =>
-														expect_fill_style (HATCHED, 7);
-												end case;
-											end if;
-
-										when 13 .. count_type'last =>
-											command_too_long (single_cmd_status.cmd, fields - 1);
-											
-										when others =>
-											command_incomplete;
-									end case;
-
-											
-								when others => null;
-							end case;
-						end;
+						draw_assy_doc;
 
 					when NOUN_KEEPOUT =>
 						draw_keepout;
@@ -2085,6 +2082,90 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+			when VERB_MAKE =>
+				case noun is
+					when NOUN_PNP =>
+						case fields is
+							when 4 =>
+								make_pick_and_place 
+									(
+									module_name 	=> module,
+									log_threshold	=> log_threshold + 1);
+
+							when 5 .. count_type'last =>
+								command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others =>
+								command_incomplete;
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when VERB_MOVE =>
+				case noun is
+					when NOUN_BOARD =>
+						case fields is
+							when 7 => -- board led_driver move board absolute 20 50
+								move_board (
+									module_name 	=> module,
+									coordinates		=> to_coordinates (f (5)),  -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (6)),
+														y => to_distance (f (7)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 8 .. count_type'last =>
+								command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others =>
+								command_incomplete;
+						end case;
+						
+					when NOUN_DEVICE =>
+						case fields is
+							when 8 =>
+								move_device (
+									module_name 	=> module,
+									device_name		=> to_device_name (f (5)), -- IC1
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (7)),
+														y => to_distance (f (8)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last =>
+								command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others =>
+								command_incomplete;
+						end case;
+
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 8 =>
+								move_submodule (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)), -- OSC1
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (7)),
+														y => to_distance (f (8)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last =>
+								command_too_long (single_cmd_status.cmd, fields - 1);
+								
+							when others =>
+								command_incomplete;
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
 			when VERB_POSITION => -- GUI related
 				case noun is 
 					when NOUN_CURSOR =>
@@ -2258,90 +2339,6 @@ is
 								command_incomplete;
 						end case;
 
-					when others => invalid_noun (to_string (noun));
-				end case;
-
-			when VERB_MAKE =>
-				case noun is
-					when NOUN_PNP =>
-						case fields is
-							when 4 =>
-								make_pick_and_place 
-									(
-									module_name 	=> module,
-									log_threshold	=> log_threshold + 1);
-
-							when 5 .. count_type'last =>
-								command_too_long (single_cmd_status.cmd, fields - 1);
-								
-							when others =>
-								command_incomplete;
-						end case;
-
-					when others => invalid_noun (to_string (noun));
-				end case;
-				
-			when VERB_MOVE =>
-				case noun is
-					when NOUN_BOARD =>
-						case fields is
-							when 7 => -- board led_driver move board absolute 20 50
-								move_board (
-									module_name 	=> module,
-									coordinates		=> to_coordinates (f (5)),  -- relative/absolute
-									point			=> type_point (set (
-														x => to_distance (f (6)),
-														y => to_distance (f (7)))),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. count_type'last =>
-								command_too_long (single_cmd_status.cmd, fields - 1);
-								
-							when others =>
-								command_incomplete;
-						end case;
-						
-					when NOUN_DEVICE =>
-						case fields is
-							when 8 =>
-								move_device (
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- IC1
-									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-									point			=> type_point (set (
-														x => to_distance (f (7)),
-														y => to_distance (f (8)))),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. count_type'last =>
-								command_too_long (single_cmd_status.cmd, fields - 1);
-								
-							when others =>
-								command_incomplete;
-						end case;
-
-					when NOUN_SUBMODULE =>
-						case fields is
-							when 8 =>
-								move_submodule (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)), -- OSC1
-									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-									point			=> type_point (set (
-														x => to_distance (f (7)),
-														y => to_distance (f (8)))),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. count_type'last =>
-								command_too_long (single_cmd_status.cmd, fields - 1);
-								
-							when others =>
-								command_incomplete;
-						end case;
-						
 					when others => invalid_noun (to_string (noun));
 				end case;
 
