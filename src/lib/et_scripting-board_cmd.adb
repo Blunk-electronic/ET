@@ -56,6 +56,7 @@ is
 	
 	domain	: type_domain; -- DOM_BOARD
 	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	--module_cursor : pac_generic_modules.cursor;
 	
 	function f (place : in positive) return string is begin
 		return et_string_processing.field (single_cmd_status.cmd, place);
@@ -2507,6 +2508,10 @@ begin -- board_cmd
 	
 	domain := to_domain (f (1)); -- DOM_BOARD
 	module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
+	-- CS: May become obsolete once all board ops use a module cursor.
+	
+	-- CS: Use the module cursor for calls in et_board_ops.
+	--module_cursor := locate_module (module);
 
 	-- read the verb from field 3
 	verb := to_verb (f (3));

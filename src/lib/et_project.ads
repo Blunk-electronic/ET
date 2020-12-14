@@ -41,7 +41,7 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 
 with et_general;				use et_general;
-with et_string_processing;
+with et_string_processing;		use et_string_processing;
 
 
 package et_project is

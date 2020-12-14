@@ -73,14 +73,11 @@ package body et_project.modules is
 	use et_general.pac_net_name;
 	use pac_generic_modules;
 	
-	function to_string (project_name : in pac_project_name.bounded_string) return string is
-	begin
+	function to_string (project_name : in pac_project_name.bounded_string) return string is begin
 		return pac_project_name.to_string (project_name);
 	end to_string;
 	
-	function to_project_name (name : in string) return pac_project_name.bounded_string is
-	-- Converts the given string to pac_project_name.
-	begin
+	function to_project_name (name : in string) return pac_project_name.bounded_string is begin
 		return pac_project_name.to_bounded_string (name);
 	end to_project_name;
 
@@ -93,16 +90,22 @@ package body et_project.modules is
 	end to_project_path;
 	
 	function exists (module : in pac_module_name.bounded_string) return boolean is begin
-	-- Returns true if the module with the given name exists in container modules.
 		return pac_generic_modules.contains (generic_modules, module);
 	end;
 
 	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
-	-- Locates the given module in the global container "generic_modules".
-		return pac_generic_modules.cursor is
+		return pac_generic_modules.cursor 
+	is
+		cursor : pac_generic_modules.cursor := find (generic_modules, name);
 	begin
-		return find (generic_modules, name);
-	end;
+		if cursor = pac_generic_modules.no_element then
+			raise semantic_error_1 with
+				"ERROR: Module " & enclose_in_quotes (to_string (name)) 
+				& " does not exist !";
+		else
+			return find (generic_modules, name);
+		end if;
+	end locate_module;
 
 
 	

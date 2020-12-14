@@ -609,6 +609,10 @@ package body et_scripting is
 		exception when event: others =>
 			if is_open (file_handle) then close (file_handle); end if;
 			set_input (standard_input);
+
+			log (text => exception_name (event), console => true);
+			log (text => exception_message (event), console => true);
+			
 			return ERROR;
 		
 	end execute_script;

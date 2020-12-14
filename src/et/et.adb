@@ -578,16 +578,16 @@ procedure et is
 							-- evaluate exit code
 							case exit_code_script is
 								when et_scripting.ERROR =>
-									log (ERROR, " execution of script " & et_general.to_string (script_name) &
+									log (ERROR, "Execution of script " & et_general.to_string (script_name) &
 										" failed !", console => true);
 									raise constraint_error;
 
 								when et_scripting.WARNINGS =>
-									log (WARNING, " execution of script " & et_general.to_string (script_name) &
+									log (WARNING, "Execution of script " & et_general.to_string (script_name) &
 										" produced warnings !", console => true);
 
 								when et_scripting.SUCCESSFUL =>
-									log (text => "execution of script " & et_general.to_string (script_name) & " successful");
+									log (text => "Execution of script " & et_general.to_string (script_name) & " successful");
 									
 							end case;
 
