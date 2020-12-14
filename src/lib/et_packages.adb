@@ -42,6 +42,18 @@ with ada.exceptions;
 
 package body et_packages is
 
+	function to_layer_category (cat : in string) return type_layer_category is begin
+		return type_layer_category'value (layer_category_prefix & cat);
+	end to_layer_category;
+
+	function to_string (cat : in type_layer_category) return string is
+		s : string := type_layer_category'image (cat);
+	begin
+		return s (layer_category_prefix'length + 1 .. s'last);
+	end to_string;
+
+
+	
 	function to_string (packge : in pac_package_name.bounded_string) return string is
 	-- Returns the given package name as string.
 	-- CS: provide a parameter that turns the preamble on/off

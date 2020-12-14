@@ -59,17 +59,6 @@ with et_text;					use et_text;
 
 package body et_pcb is
 	use pac_shapes;
-
-	function to_layer_category (cat : in string) return type_layer_category is begin
-		return type_layer_category'value (layer_category_prefix & cat);
-	end to_layer_category;
-
-	function to_string (cat : in type_layer_category) return string is
-		s : string := type_layer_category'image (cat);
-	begin
-		return s (layer_category_prefix'length + 1 .. s'last);
-	end to_string;
-
 	
 
 	-- VIAS

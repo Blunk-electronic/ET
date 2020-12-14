@@ -69,6 +69,33 @@ package et_packages is
 	use et_terminals.pac_shapes;
 	-- NOTE; The shapes package has been instantiated in et_terminals.
 
+
+
+-- LAYER CATEGORY
+
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:	
+	layer_category_prefix : constant string := "LAYER_CAT_";
+
+	type type_layer_category is (
+		LAYER_CAT_ASSY,
+		LAYER_CAT_KEEPOUT,
+		LAYER_CAT_OUTLINE,
+		LAYER_CAT_SILKSCREEN,
+		LAYER_CAT_STENCIL,
+		LAYER_CAT_STOP,
+		LAYER_CAT_ROUTE_RESTRICT,
+		LAYER_CAT_VIA_RESTRICT,
+		LAYER_CAT_CONDUCTOR);
+
+	subtype type_layer_category_non_conductor is type_layer_category
+		range LAYER_CAT_ASSY .. LAYER_CAT_STOP;
+
+	function to_layer_category (cat : in string) return type_layer_category;
+	function to_string (cat : in type_layer_category) return string;
+
+
+
 	
 	-- A package (or a footprint) is something like "SOT32" or "NDIP14". 
 	-- It is a more or less standardized (JEDEC)
@@ -126,6 +153,7 @@ package et_packages is
 	-- Checks whether given line width is in range of type_general_line_width
 
 
+	
 	
 -- TEXT
 	type type_text is new pac_text.type_text with record

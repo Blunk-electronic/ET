@@ -56,7 +56,7 @@ with et_schematic_ops;			use et_schematic_ops;
 with et_terminals;				use et_terminals;
 with et_packages;				use et_packages;
 with et_pcb;					use et_pcb;
-with et_pcb_stack;
+with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_brd;
 
@@ -558,23 +558,38 @@ package et_board_ops is
 
 -- TEXT
 	
-	-- Places a text:
+	-- Places a text in a non conductor layer like
+	-- silkscreen or assembly doc:
+	procedure place_text_in_non_conductor_layer (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer_category	: in type_layer_category_non_conductor;
+		face			: in type_face; -- top/bottom
+		text			: in type_text_with_content;
+		log_threshold	: in type_log_level);
+
 	procedure place_text_in_non_conductor_layer (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		layer_category	: in type_layer_category;
-		face			: in type_face;
+		layer_category	: in type_layer_category_non_conductor;
+		face			: in type_face; -- top/bottom
 		text			: in type_text_with_content;
-		log_threshold	: in type_log_level)
-	is null;
+		log_threshold	: in type_log_level);
+
+
+	
+	-- Places a text in a conductor layer:
+	procedure place_text_in_conductor_layer (
+		module_cursor	: in pac_generic_modules.cursor;
+		signal_layer	: in type_signal_layer; -- 1, 2, ...
+		text			: in type_text_with_content;
+		log_threshold	: in type_log_level);
 
 	procedure place_text_in_conductor_layer (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		layer_category	: in type_layer_category;
+		signal_layer	: in type_signal_layer; -- 1, 2, ...
 		text			: in type_text_with_content;
-		log_threshold	: in type_log_level)
-	is null;
+		log_threshold	: in type_log_level);
 
-	
+				
 	
 end et_board_ops;
 

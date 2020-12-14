@@ -1379,7 +1379,7 @@ is
 		
 	begin
 		-- board demo place text silkscreen top 0.15 1 140 100 0 "SILKSCREEN"
-		-- board demo place text conductor  1   0.15 1 140 100 0 "L1"
+		-- board demo place text conductor  5   0.15 1 140 100 0 "L1"
 		case fields is
 			when 12 =>
 				layer_category := to_layer_category (f (5));
@@ -1398,6 +1398,7 @@ is
 
 				case layer_category is
 					when LAYER_CAT_SILKSCREEN | LAYER_CAT_ASSY | LAYER_CAT_STOP =>
+						
 						place_text_in_non_conductor_layer (
 							module_name 	=> module,
 							layer_category	=> layer_category,
@@ -1406,10 +1407,10 @@ is
 							log_threshold	=> log_threshold + 1);
 
 					when LAYER_CAT_CONDUCTOR => 
+						
 						place_text_in_conductor_layer (
 							module_name 	=> module,
-							layer_category	=> layer_category,
-							-- CS L number
+							signal_layer	=> to_signal_layer (f (6)), -- 5 
 							text			=> text,
 							log_threshold	=> log_threshold + 1);
 						
