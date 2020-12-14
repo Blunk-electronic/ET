@@ -78,19 +78,30 @@ package et_packages is
 	layer_category_prefix : constant string := "LAYER_CAT_";
 
 	type type_layer_category is (
+		-- NON CONDUCTOR LAYERS:
 		LAYER_CAT_ASSY,
 		LAYER_CAT_KEEPOUT,
 		LAYER_CAT_OUTLINE,
 		LAYER_CAT_SILKSCREEN,
 		LAYER_CAT_STENCIL,
 		LAYER_CAT_STOP,
+
+		-- CONDUCTOR LAYERS:
+		-- NOTE: Restrict layers do not contain any conducting
+		-- objects. They are irrelevant for manufacturing.
+		-- Since they are of mere supportive nature the are here
+		-- regarded as conducor layers:
 		LAYER_CAT_ROUTE_RESTRICT,
 		LAYER_CAT_VIA_RESTRICT,
+		
 		LAYER_CAT_CONDUCTOR);
 
 	subtype type_layer_category_non_conductor is type_layer_category
 		range LAYER_CAT_ASSY .. LAYER_CAT_STOP;
 
+	subtype type_layer_category_conductor is type_layer_category
+		range LAYER_CAT_ROUTE_RESTRICT .. LAYER_CAT_CONDUCTOR;
+	
 	function to_layer_category (cat : in string) return type_layer_category;
 	function to_string (cat : in type_layer_category) return string;
 

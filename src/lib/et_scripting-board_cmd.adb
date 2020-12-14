@@ -1396,28 +1396,29 @@ is
 				
 				text.content := to_content (f (12));
 
-				case layer_category is
-					when LAYER_CAT_SILKSCREEN | LAYER_CAT_ASSY | LAYER_CAT_STOP =>
-						
-						place_text_in_non_conductor_layer (
-							module_cursor 	=> module_cursor,
-							layer_category	=> layer_category,
-							face			=> to_face (f (6)),
-							text			=> text,
-							log_threshold	=> log_threshold + 1);
+				if layer_category in type_layer_category_non_conductor then
 
-					when LAYER_CAT_CONDUCTOR => 
-						
-						place_text_in_conductor_layer (
-							module_cursor 	=> module_cursor,
-							signal_layer	=> to_signal_layer (f (6)), -- 5 
-							text			=> text,
-							log_threshold	=> log_threshold + 1);
-						
-					when others =>
-						raise semantic_error_1 with
-							"ERROR: Text not allowed in this layer category !";
-				end case;
+					place_text_in_non_conductor_layer (
+						module_cursor 	=> module_cursor,
+						layer_category	=> layer_category,
+						face			=> to_face (f (6)),
+						text			=> text,
+						log_threshold	=> log_threshold + 1);
+
+				elsif layer_category in type_layer_category_conductor then
+
+					place_text_in_conductor_layer (
+						module_cursor 	=> module_cursor,
+						layer_category	=> layer_category,
+						signal_layer	=> to_signal_layer (f (6)), -- 5 
+						text			=> text,
+						log_threshold	=> log_threshold + 1);
+
+				else
+					raise semantic_error_1 with
+						"ERROR: Text not allowed in this layer category !";
+					-- CS should never happen
+				end if;
 				
 			when 13 .. count_type'last => too_long;
 				

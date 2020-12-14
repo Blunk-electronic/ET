@@ -573,6 +573,7 @@ package et_board_ops is
 	-- Places a text in a conductor layer:
 	procedure place_text_in_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
+		layer_category	: in type_layer_category_conductor;
 		signal_layer	: in type_signal_layer; -- 1, 2, ...
 		text			: in type_text_with_content;
 		log_threshold	: in type_log_level);

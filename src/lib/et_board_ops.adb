@@ -3934,8 +3934,8 @@ package body et_board_ops is
 
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			use pac_stencil_lines;
 			use pac_stencil_arcs;
 			use pac_stencil_circles;
@@ -4033,13 +4033,38 @@ package body et_board_ops is
 		text			: in type_text_with_content;
 		log_threshold	: in type_log_level)
 	is 
+		procedure place_text (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+		begin
+			case layer_category is
+				when LAYER_CAT_ASSY =>
+					null;
+
+				when LAYER_CAT_SILKSCREEN =>
+					null;
+					
+				when LAYER_CAT_STOP =>
+					null;
+
+				when others => null; -- CS add other layers of type_layer_category_non_conductor
+					--delete (module.board.stencil.top.lines, line_cursor);
+			end case;
+		end place_text;
+
 	begin
-		null;
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> place_text'access);
+
 	end place_text_in_non_conductor_layer;
 	
 	
 	procedure place_text_in_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
+		layer_category	: in type_layer_category_conductor;
 		signal_layer	: in type_signal_layer; -- 1, 2, ...
 		text			: in type_text_with_content;
 		log_threshold	: in type_log_level)
