@@ -45,6 +45,7 @@ with et_symbols;
 separate (et_scripting)
 	
 procedure schematic_cmd (
+	module_cursor	: in pac_generic_modules.cursor;
 	cmd_in			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
 	log_threshold	: in type_log_level)
 is
@@ -61,7 +62,6 @@ is
 	use et_display.schematic;
 	use et_modes.schematic;
 
-	domain	: type_domain; -- DOM_SCHEMATIC
 	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
 	-- In order to tell the command processor that an operation is meant to 
@@ -2812,9 +2812,11 @@ begin -- schematic_cmd
 	-- single_cmd_status.cmd will now be processed and interactively completed
 	
 
-	domain := to_domain (f (1)); -- DOM_SCHEMATIC
 	module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
+	-- CS: Becomes obsolete once all board ops use the
+	-- given module_cursor.
 
+	
 	-- read the verb from field 3
 	verb := to_verb (f (3));
 

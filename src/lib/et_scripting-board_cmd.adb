@@ -40,6 +40,7 @@ with et_modes.board;
 separate (et_scripting)
 	
 procedure board_cmd (
+	module_cursor	: in pac_generic_modules.cursor;
 	cmd_in			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
 	log_threshold	: in type_log_level)
 is
@@ -54,9 +55,7 @@ is
 	use et_display.board;
 	use et_modes.board;
 	
-	domain	: type_domain; -- DOM_BOARD
 	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-	--module_cursor : pac_generic_modules.cursor;
 	
 	function f (place : in positive) return string is begin
 		return et_string_processing.field (single_cmd_status.cmd, place);
@@ -1401,7 +1400,7 @@ is
 					when LAYER_CAT_SILKSCREEN | LAYER_CAT_ASSY | LAYER_CAT_STOP =>
 						
 						place_text_in_non_conductor_layer (
-							module_name 	=> module,
+							module_cursor 	=> module_cursor,
 							layer_category	=> layer_category,
 							face			=> to_face (f (6)),
 							text			=> text,
@@ -1410,7 +1409,7 @@ is
 					when LAYER_CAT_CONDUCTOR => 
 						
 						place_text_in_conductor_layer (
-							module_name 	=> module,
+							module_cursor 	=> module_cursor,
 							signal_layer	=> to_signal_layer (f (6)), -- 5 
 							text			=> text,
 							log_threshold	=> log_threshold + 1);
@@ -2505,13 +2504,10 @@ begin -- board_cmd
 
 
 	
-	
-	domain := to_domain (f (1)); -- DOM_BOARD
+
 	module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
-	-- CS: May become obsolete once all board ops use a module cursor.
-	
-	-- CS: Use the module cursor for calls in et_board_ops.
-	--module_cursor := locate_module (module);
+	-- CS: Becomes obsolete once all board ops use the
+	-- given module_cursor.
 
 	-- read the verb from field 3
 	verb := to_verb (f (3));

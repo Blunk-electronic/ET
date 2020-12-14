@@ -317,11 +317,13 @@ package body et_scripting is
 	
 	
 	procedure schematic_cmd (
+		module_cursor	: in pac_generic_modules.cursor;
 		cmd_in			: in type_fields_of_line; -- "schematic motor_driver draw net motor_on 1 150 100 150 130"
 		log_threshold	: in type_log_level)
 	is separate;
 
 	procedure board_cmd (
+		module_cursor	: in pac_generic_modules.cursor;
 		cmd_in			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
 		log_threshold	: in type_log_level)
 	is separate;
@@ -468,7 +470,10 @@ package body et_scripting is
 
 					-- The command must have at least four fields.
 					if field_count (cmd) >= 4 then
-						schematic_cmd (cmd, log_threshold + 1);
+						schematic_cmd (
+							module_cursor	=> locate_module (module),
+							cmd_in			=> cmd,
+							log_threshold	=> log_threshold + 1);
 					else
 						command_incomplete;
 					end if;
@@ -488,7 +493,10 @@ package body et_scripting is
 
 					-- The command must have at least four fields.
 					if field_count (cmd) >= 4 then
-						board_cmd (cmd, log_threshold + 1);
+						board_cmd (
+							module_cursor	=> locate_module (module),
+							cmd_in			=> cmd,
+							log_threshold	=> log_threshold + 1);
 					else
 						command_incomplete;
 					end if;

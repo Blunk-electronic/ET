@@ -4037,27 +4037,6 @@ package body et_board_ops is
 		null;
 	end place_text_in_non_conductor_layer;
 	
-	procedure place_text_in_non_conductor_layer (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		layer_category	: in type_layer_category_non_conductor;
-		face			: in type_face;
-		text			: in type_text_with_content;
-		log_threshold	: in type_log_level)
-	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-	begin
-		--log (text => "module " & to_string (module_name) &
-			--" drawing silk screen circle" &
-			--" face" & to_string (face) &
-			--to_string (circle),
-			--level => log_threshold);
-
-
-		-- locate module
-		module_cursor := locate_module (module_name);
-
-	end place_text_in_non_conductor_layer;
-
 	
 	procedure place_text_in_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -4068,20 +4047,6 @@ package body et_board_ops is
 	begin
 		null;
 	end place_text_in_conductor_layer;
-	
-	procedure place_text_in_conductor_layer (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		signal_layer	: in type_signal_layer;
-		text			: in type_text_with_content;
-		log_threshold	: in type_log_level)
-	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-	begin
-		-- locate module
-		module_cursor := locate_module (module_name);
-
-	end place_text_in_conductor_layer;
-	
 
 	
 end et_board_ops;
