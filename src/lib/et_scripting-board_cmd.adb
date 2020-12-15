@@ -1376,7 +1376,7 @@ is
 		pos_xy			: type_point;
 		rotation		: type_rotation;
 		layer_category	: type_layer_category;
-		
+		signal_layer	: type_signal_layer;
 	begin
 		-- board demo place text silkscreen top 0.15 1 140 100 0 "SILKSCREEN"
 		-- board demo place text conductor  5   0.15 1 140 100 0 "L1"
@@ -1395,31 +1395,39 @@ is
 				text.position := type_position (to_position (pos_xy, rotation));
 				
 				text.content := to_content (f (12));
+				-- CS check length
+				if characters_valid (text.content) then
 
-				if layer_category in type_layer_category_non_conductor then
+					if layer_category in type_layer_category_non_conductor then
 
-					place_text_in_non_conductor_layer (
-						module_cursor 	=> module_cursor,
-						layer_category	=> layer_category,
-						face			=> to_face (f (6)),
-						text			=> text,
-						log_threshold	=> log_threshold + 1);
+						place_text_in_non_conductor_layer (
+							module_cursor 	=> module_cursor,
+							layer_category	=> layer_category,
+							face			=> to_face (f (6)),
+							text			=> text,
+							log_threshold	=> log_threshold + 1);
 
-				elsif layer_category in type_layer_category_conductor then
+					elsif layer_category in type_layer_category_conductor then
+						signal_layer := to_signal_layer (f (6));  -- 5 
+						
+						place_text_in_conductor_layer (
+							module_cursor 	=> module_cursor,
+							layer_category	=> layer_category,
+							text			=> ((text with signal_layer)),
+							log_threshold	=> log_threshold + 1);
 
-					place_text_in_conductor_layer (
-						module_cursor 	=> module_cursor,
-						layer_category	=> layer_category,
-						signal_layer	=> to_signal_layer (f (6)), -- 5 
-						text			=> text,
-						log_threshold	=> log_threshold + 1);
+					else
+						raise semantic_error_1 with
+							"ERROR: Text not allowed in this layer category !";
+						-- CS should never happen
+					end if;
 
 				else
-					raise semantic_error_1 with
-						"ERROR: Text not allowed in this layer category !";
-					-- CS should never happen
+					raise syntax_error_1 with
+						"ERROR: Invalid character in text !";
+					-- CS show invalid character and its position
 				end if;
-				
+					
 			when 13 .. count_type'last => too_long;
 				
 			when others => command_incomplete;

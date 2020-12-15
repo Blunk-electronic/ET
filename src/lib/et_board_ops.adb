@@ -4037,19 +4037,35 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
+			use pac_texts_with_content;
 		begin
 			case layer_category is
 				when LAYER_CAT_ASSY =>
-					null;
+					case face is
+						when TOP =>
+							append (module.board.assy_doc.top.texts, text);
+						when BOTTOM =>
+							append (module.board.assy_doc.bottom.texts, text);
+					end case;
 
 				when LAYER_CAT_SILKSCREEN =>
-					null;
+					case face is
+						when TOP =>
+							append (module.board.silk_screen.top.texts, text);
+						when BOTTOM =>
+							append (module.board.silk_screen.bottom.texts, text);
+					end case;
 					
 				when LAYER_CAT_STOP =>
-					null;
+					case face is
+						when TOP =>
+							append (module.board.stop_mask.top.texts, text);
+						when BOTTOM =>
+							append (module.board.stop_mask.bottom.texts, text);
+					end case;
 
 				when others => null; -- CS add other layers of type_layer_category_non_conductor
-					--delete (module.board.stencil.top.lines, line_cursor);
+					
 			end case;
 		end place_text;
 
@@ -4065,12 +4081,34 @@ package body et_board_ops is
 	procedure place_text_in_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_category	: in type_layer_category_conductor;
-		signal_layer	: in type_signal_layer; -- 1, 2, ...
-		text			: in type_text_with_content;
+		text			: in et_pcb.type_text;
 		log_threshold	: in type_log_level)
 	is
+		procedure place_text (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			use et_pcb.pac_texts;
+		begin
+			case layer_category is
+				when LAYER_CAT_CONDUCTOR =>
+					append (module.board.conductors.texts, text);
+
+				when LAYER_CAT_ROUTE_RESTRICT =>
+					null;
+					
+				when LAYER_CAT_VIA_RESTRICT =>
+					null;
+
+			end case;
+		end place_text;
+
 	begin
-		null;
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> place_text'access);
+
 	end place_text_in_conductor_layer;
 
 	

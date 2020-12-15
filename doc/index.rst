@@ -17,6 +17,7 @@
    features.rst 
    project.rst
    schematic.rst
+   board.rst
    
 Index
 =====

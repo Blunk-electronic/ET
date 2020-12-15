@@ -42,6 +42,7 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
 with et_general;
+with et_exceptions;				use et_exceptions;
 
 
 package body et_text is
@@ -672,13 +673,14 @@ package body et_text is
 					when '+' => add (special_plus);
 					when '-' => add (special_dash);
 					when '_' => add (special_underline);
+					when '/' => add (special_forward_slash);
 					when ' ' => null;
 					
 					when others => 
-						log (ERROR, "Invalid character in " & enclose_in_quotes (text) 
-							 & " at position" & positive'image (place) & " !");
+						raise syntax_error_1 with
+						"ERROR: Invalid character in " & enclose_in_quotes (text) 
+							 & " at position" & positive'image (place) & " !";
 
-						raise constraint_error; -- CS should never happen
 				end case;
 			end loop;
 

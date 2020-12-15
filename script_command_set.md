@@ -725,6 +725,12 @@ board led_driver move via 10 10 5-9 absolute 11 10
 board led_driver delete via 10 10 5-9
 ```-->
 
+To place a text in a conductor layer:
+```
+place text conductor 1 0.15 1 14 115 0 "SOME TEXT" # layer 1 (top), line width 0.15, size 1, x/y 14/115, rotation 0
+```
+
+
 #### ROUTE RESTRICT
 Route restrict is a means to define areas in signal layers in the board where routing is not allowed.
 In the examples below the term '[1,3,5-9]' addresses signal layers 1,3 and 5 through 9. 
@@ -1006,7 +1012,10 @@ board led_driver delete outline 40 50 1 # crossing 40/50, accuracy 1
 
 ## SILK SCREEN
 This is (mostly) the white ink that the PCB house applies onto the board. 
-NOTE: Whatever you draw in here affects the PCB manufacturing.
+NOTE: Whatever you place or draw in here affects the PCB manufacturing.
+```
+place text silkscreen top 0.15 1 14 115 0 "SOME TEXT" # top, line width 0.15, size 1, x/y 14/115, rotation 0
+```
 ```
 board led_driver draw silkscreen top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
 ```

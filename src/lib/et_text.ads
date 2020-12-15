@@ -63,8 +63,8 @@ package et_text is
 	function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical;
 	
 	type type_text_alignment is record
-		horizontal	: type_text_alignment_horizontal := CENTER;
-		vertical	: type_text_alignment_vertical := CENTER;
+		horizontal	: type_text_alignment_horizontal := LEFT;
+		vertical	: type_text_alignment_vertical := BOTTOM;
 	end record;
 
 	function to_alignment (
@@ -101,7 +101,8 @@ package et_text is
 	function is_empty (content : in type_text_content.bounded_string) return boolean;
 	
 	valid_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_-+ "); 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_-+/ "); 
+	-- NOTE: Update package generic_pac_text when adding more characters here.
 
 	-- Tests if the given text contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
@@ -800,6 +801,10 @@ package et_text is
 		
 		special_underline : constant type_character (1 .. 1) := (
 			 1	=> (x0, y0, x4, y0)
+			 );
+
+		special_forward_slash : constant type_character (1 .. 1) := (
+			 1	=> (x1, y0, x3, y6)
 			 );
 
 		
