@@ -72,6 +72,9 @@ with et_canvas_general;				use et_canvas_general;
 with et_canvas_primitive_draw_ops;
 with et_string_processing;			use et_string_processing;
 
+with et_canvas_board_texts;		use et_canvas_board_texts;
+with et_canvas_board_devices;	use et_canvas_board_devices;
+
 package et_canvas_board is
 
 	title : constant string := et_general.system_name & " BOARD ";

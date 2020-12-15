@@ -36,6 +36,8 @@
 --
 
 with et_modes.board;
+with et_canvas_board_devices;
+with et_canvas_board_texts;
 
 separate (et_scripting)
 	
@@ -2494,9 +2496,52 @@ is
 	end parse;
 	
 	procedure propose_arguments is
-	begin
-		put_line ("propose arguments");
-		-- CS
+		use et_canvas_board_devices;
+		use et_canvas_board_texts;
+		
+		device_name		: et_devices.type_device_name;
+		
+		procedure module_name_missing is begin
+			set_status (incomplete & module_missing);
+		end module_name_missing;
+
+		procedure device_name_missing is begin
+			set_status (incomplete & device_missing);
+			-- No menu required and not reasonable.
+			-- It might become very long if there were hundreds of devices.
+		end device_name_missing;
+
+		procedure device_not_found is begin
+			set_status ("ERROR: Device " & to_string (device_name) & " not found !");
+		end device_not_found;
+
+		procedure net_name_missing is begin
+			set_status (incomplete & net_missing);
+		end net_name_missing;
+
+		
+	begin -- propose_arguments
+		log_command_incomplete (fields, log_threshold);
+
+		case verb is
+			when VERB_PLACE =>
+				case noun is
+					when NOUN_TEXT => null;
+						--case fields is
+							--when 4 => -- board demo place text
+								--null;
+								--set_status (et_canvas_board_texts.status_place_text);
+
+								-- CS window to enter category, face and content,
+								-- line width, size, rotation
+
+							--when 5 
+					when others => null; -- CS
+				end case;
+
+			when others => null; -- CS
+		end case;
+		
 	end propose_arguments;
 	
 begin -- board_cmd

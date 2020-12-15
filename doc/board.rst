@@ -19,6 +19,7 @@ Commands and Verb-Noun key sequences
 
 	.. code-block::
 
-		place text silkscreen top 0.15 1 14 115 0 "SILKSCREEN"
+		place text
 
 	|VNS| p t
+

@@ -2130,19 +2130,17 @@ is
 		use et_canvas_schematic_units;
 		use et_canvas_schematic_nets;
 		use et_project.modules;
-		
-		incomplete : constant string := "Command incomplete ! ";
 
 		device_name		: et_devices.type_device_name;
 		unit_name		: pac_unit_name.bounded_string;
 		--net_name		: pac_net_name.bounded_string;
 
 		procedure module_name_missing is begin
-			set_status (incomplete & "Module name missing !");
+			set_status (incomplete & module_missing);
 		end module_name_missing;
 		
 		procedure device_name_missing is begin
-			set_status (incomplete & "Device name missing !");
+			set_status (incomplete & device_missing);
 			-- No menu required and not reasonable.
 			-- It might become very long if there were hundreds of devices.
 		end device_name_missing;
@@ -2182,13 +2180,11 @@ is
 		end unit_not_on_this_sheet;
 
 		procedure net_name_missing is begin
-			set_status (incomplete & "Net name missing !");
+			set_status (incomplete & net_missing);
 		end net_name_missing;
 		
 	begin -- propose_arguments
-		log (text => incomplete 
-			& "Only" & count_type'image (fields) & " arguments provided. "
-			& "Proposing arguments ...", level => log_threshold);
+		log_command_incomplete (fields, log_threshold);
 
 		-- There might be objects such as net segments or units selected.
 		-- They must be de-selected:

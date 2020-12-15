@@ -68,6 +68,8 @@ package et_pcb_stack is
 	signal_layer_bot : constant positive := 100;
 	type type_signal_layer is range signal_layer_top .. signal_layer_bot;
 
+	signal_layer_default : constant type_signal_layer := type_signal_layer'first;
+
 	function to_string (layer : in type_signal_layer) return string;
 	function to_signal_layer (layer : in string) return type_signal_layer;
 

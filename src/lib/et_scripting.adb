@@ -164,6 +164,16 @@ package body et_scripting is
 			"ERROR: Noun " & enclose_in_quotes (noun) & " invalid for this operation !";
 	end invalid_noun;
 
+	procedure log_command_incomplete (
+		field_count		: in count_type;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => incomplete 
+			& "Only" & count_type'image (field_count) & " arguments provided. "
+			& "Proposing arguments ...", 
+			level => log_threshold);
+	end log_command_incomplete;
+	
 	procedure command_incomplete is begin
 		--if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
 			--single_cmd_status.complete := false;

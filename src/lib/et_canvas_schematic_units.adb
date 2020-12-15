@@ -44,7 +44,6 @@ with gdk.types;						use gdk.types;
 with gdk.event;						use gdk.event;
 with gdk.types.keysyms;				use gdk.types.keysyms;
 
-with gtk.window;
 with gtkada.file_selection;
 with gtk.file_chooser_dialog;
 with gtk.file_chooser;
