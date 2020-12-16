@@ -37,17 +37,19 @@
 -- DESCRIPTION:
 -- 
 
-with et_general;				use et_general;
+with gtk.window;					use gtk.window;
+
+with et_general;					use et_general;
 --with et_geometry;				use et_geometry;
 with et_canvas_general;				use et_canvas_general;
 
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates;			use et_pcb_coordinates;
 --use et_pcb_coordinates.pac_geometry_brd;
 
 --with et_terminals;				use et_terminals;
-with et_pcb_stack;				use et_pcb_stack;
-with et_packages;				use et_packages;
+with et_pcb_stack;					use et_pcb_stack;
+with et_packages;					use et_packages;
 --with et_project.modules;		use et_project.modules;
 with et_pcb;
 --with et_frames;
@@ -60,6 +62,19 @@ with et_pcb;
 
 package et_canvas_board_texts is
 
+	type type_window_place_text is record
+		window	: gtk_window;
+		
+		-- This flag indicates that the
+		-- window is open. The purpose of this flag is
+		-- to prevent the window from being opended
+		-- multiple times:
+		open	: boolean := false;
+	end record;
+
+	window_place_text : type_window_place_text;
+
+	
 	-- to be output in the status bar:
 	status_place_text : constant string := 
 		status_click_left 

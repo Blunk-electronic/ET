@@ -1073,9 +1073,11 @@ package body et_canvas_schematic_units is
 
 		-- BUILD THE DEVICE SELECTION WINDOW:
 
-		-- Build it if it is not already up:
-		if not device_selection_is_open then
-
+		-- If it is already up, move it to the foreground.
+		-- Otherwise build it:
+		if device_selection_is_open then
+			device_selection.window.present;
+		else
 			-- Mark the window as "open" so that it can not be opened anew:
 			device_selection.open := true;
 			

@@ -255,10 +255,10 @@ package et_canvas_schematic_units is
 	type type_device_selection is record
 		window	: gtk_window;
 
-		-- This flag indicates that the device selection
+		-- This flag indicates that the
 		-- window is open. The purpose of this flag is
-		-- to prevent the selection from opening multiple
-		-- times:
+		-- to prevent the window from being opended
+		-- multiple times:
 		open	: boolean := false;
 	end record;
 	
