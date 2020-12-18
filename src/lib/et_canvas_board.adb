@@ -35,11 +35,15 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings;				use ada.strings;
-with ada.strings.fixed;			use ada.strings.fixed;
+with ada.text_io;					use ada.text_io;
+with ada.characters.handling;		use ada.characters.handling;
+with ada.strings;					use ada.strings;
+with ada.strings.fixed;				use ada.strings.fixed;
 with ada.directories;
+with ada.exceptions;				use ada.exceptions;
+
+with gtk.window;					use gtk.window;
+
 
 with et_scripting;
 with et_modes;
@@ -47,8 +51,8 @@ with et_modes;
 
 with et_canvas_schematic;
 with et_display.board;
-with et_colors.board;			use et_colors.board;
-with et_modes.board;			use et_modes.board;
+with et_colors.board;				use et_colors.board;
+with et_modes.board;				use et_modes.board;
 with et_pcb;
 with et_pcb_stack;
 with et_text;
@@ -981,46 +985,54 @@ package body et_canvas_board is
 		button	: in type_mouse_button;
 		point	: in type_point) 
 	is
-	begin
-		log (text => to_string (button) & " at" & to_string (point), level => log_threshold);
+		procedure left_button is
+		begin
+			self.move_cursor (ABSOLUTE, cursor_main, point);
+
+			case verb is
+				when VERB_PLACE =>
+					case noun is
+						when NOUN_TEXT =>
+							if window_place_text.open then
+								null;
+								--gtk.window.present (window_place_text.window);
+								-- CS good idea ?
+							else
+								et_canvas_board_texts.place_text;
+							end if;
+
+						when others => null;
+					end case;
+					
+				when others => null;
+
+			end case;
+		end left_button;
+
+		procedure right_button is
+		begin
+			null;
+		end right_button;
+
+		
+	begin -- button_pressed
+		--log (text => to_string (button) & " at" & to_string (point), level => log_threshold);
 		
 		case button is
-			when 1 => -- left button
-				
-				self.move_cursor (ABSOLUTE, cursor_main, point);
-
--- 				case verb is
--- 					when VERB_DELETE =>
--- 
--- 						case noun is
--- 							when NOUN_UNIT => null;
--- 
--- 							when NOUN_NET => null;
--- 
--- 							when others =>
--- 								null;
--- 								
--- 						end case;
--- 
--- 					when VERB_DRAW =>
--- 
--- 						case noun is
--- 							when NOUN_NET => null;
--- 
--- 							when others =>
--- 								null;
--- 								
--- 						end case;
--- 
--- 					when others => null; -- CS
--- 				end case;
-				
-				self.queue_draw; -- without frame and grid initialization
-
+			when 1 => left_button;
+			when 3 => right_button;
 			when others => null;
 		end case;
 
 		redraw;
+
+		exception when event: others =>
+			set_status (exception_message (event));
+
+			-- CS reset_selections;
+			redraw;
+
+		
 	end button_pressed;
 	
 end et_canvas_board;

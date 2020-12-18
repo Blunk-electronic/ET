@@ -72,7 +72,7 @@ package body et_canvas_board_texts is
 	procedure close_window_place_text is begin
 		window_place_text.window.destroy;
 		window_place_text.open := false;
-		reset_text_place;
+		--reset_text_place;
 	end close_window_place_text;	
 	
 	function window_place_text_key_event (
@@ -210,6 +210,7 @@ package body et_canvas_board_texts is
 
 	procedure reset_text_place is begin
 		text_place.being_moved := false;
+		text_place.entry_content.destroy;
 	end reset_text_place;
 	
 	procedure place_text is
