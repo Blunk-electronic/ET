@@ -54,13 +54,14 @@ with gtk.combo_box;					use gtk.combo_box;
 with gtk.cell_renderer_text;		
 with gtk.cell_layout;        		
 with gtk.list_store;				
-with gtk.tree_model;				
+with gtk.tree_model;
 
 with gtk.combo_box_text;			use gtk.combo_box_text;
 with gtk.label;
 with gtk.gentry;					use gtk.gentry;
-with gtk.text_view;					use gtk.text_view;
 with gtk.button;					use gtk.button;
+with gtk.text_buffer;
+with gtk.text_iter;
 --with gtk.menu;
 --with gtk.menu_item;
 --with gtk.menu_shell;
@@ -71,6 +72,7 @@ package body et_canvas_board_texts is
 	procedure close_window_place_text is begin
 		window_place_text.window.destroy;
 		window_place_text.open := false;
+		reset_text_place;
 	end close_window_place_text;	
 	
 	function window_place_text_key_event (
@@ -105,6 +107,7 @@ package body et_canvas_board_texts is
 		self	: access gtk_widget_record'class) 
 	is begin
 		window_place_text.open := false;
+		reset_text_place;
 	end close_window_place_text;
 
 	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
@@ -183,6 +186,31 @@ package body et_canvas_board_texts is
 		
 	end line_width_entered;
 
+	procedure button_apply_clicked (button : access gtk_button_record'class) is
+		use gtk.text_view;
+		use gtk.text_buffer;
+		use gtk.text_iter;
+		use et_text;
+		
+		text_buffer : constant gtk_text_buffer := get_buffer (text_place.entry_content);
+		lower_bound, upper_bound : gtk_text_iter;
+	begin
+		put_line ("button apply clicked");
+
+		get_bounds (text_buffer, lower_bound, upper_bound);
+
+		--put_line ("content: " & get_text (text_buffer, lower_bound, upper_bound));
+
+		text_place.text.content := to_content (get_text (text_buffer, lower_bound, upper_bound));
+
+		put_line ("content: " & enclose_in_quotes (to_string (text_place.text.content)));
+
+		text_place.being_moved := true;
+	end button_apply_clicked;
+
+	procedure reset_text_place is begin
+		text_place.being_moved := false;
+	end reset_text_place;
 	
 	procedure place_text is
 		use gtk.window;
@@ -203,14 +231,15 @@ package body et_canvas_board_texts is
 		cbox_category, cbox_face, cbox_signal_layer : gtk_combo_box;
 		cbox_line_width, cbox_size : gtk_combo_box_text;
 		
-		entry_content : gtk_text_view;
-		button_ok : gtk_button;
+		--entry_content : gtk_text_view;
+		button_apply : gtk_button;
 		
 		use glib;
 		use gtk.cell_renderer_text;
 		use gtk.cell_layout;
 		use gtk.list_store;
 		use gtk.tree_model;
+		use gtk.text_view;
 
 		spacing : constant natural := 10;
 
@@ -388,6 +417,9 @@ package body et_canvas_board_texts is
 			gtk_new (label_signal_layer, "SIGNAL LAYER");
 			pack_start (box_signal_layer, label_signal_layer, padding => guint (spacing));
 			make_combo_for_signal_layer;
+
+			-- CS ROTATION
+
 			
 			-- SIZE
 			gtk_new_hbox (box_size, homogeneous => false);
@@ -418,15 +450,16 @@ package body et_canvas_board_texts is
 			gtk_new (label_content, "CONTENT");
 			pack_start (box_content, label_content, padding => guint (spacing));
 
-			gtk_new (entry_content);
-			pack_start (box_content, entry_content, padding => guint (spacing));
+			gtk_new (text_place.entry_content);
+			pack_start (box_content, text_place.entry_content, padding => guint (spacing));
 
 			-- OK BUTTON
 			gtk_new_hbox (box_button, homogeneous => false);
 			pack_start (box_main, box_button, padding => guint (spacing));
 
-			gtk_new (button_ok, "OK");
-			pack_start (box_button, button_ok, padding => guint (spacing));
+			gtk_new (button_apply, "Apply");
+			pack_start (box_button, button_apply, padding => guint (spacing));
+			button_apply.on_clicked (button_apply_clicked'access);
 			
 			window_place_text.window.show_all;
 		end if;

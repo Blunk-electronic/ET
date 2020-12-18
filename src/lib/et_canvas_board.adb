@@ -887,6 +887,8 @@ package body et_canvas_board is
 			
 			reset_request_clarification;
 			status_enter_verb;
+
+			reset_text_place; -- after placing a text
 		else
 				
 			case expect_entry is
@@ -953,7 +955,28 @@ package body et_canvas_board is
 		
 	end evaluate_key;
 
-	overriding procedure button_pressed (
+	procedure evaluate_mouse_position (
+		self	: not null access type_view;
+		point	: in type_point) 
+	is
+	begin
+		case verb is
+			when VERB_PLACE =>
+				case noun is
+					when NOUN_TEXT =>
+						if text_place.being_moved then
+							redraw;
+						end if;
+
+					when others => null;
+				end case;
+
+			when others => null;
+		end case;
+		
+	end evaluate_mouse_position;
+	
+	procedure button_pressed (
 		self	: not null access type_view;
 		button	: in type_mouse_button;
 		point	: in type_point) 

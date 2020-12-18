@@ -251,6 +251,10 @@ package et_canvas_board is
 		self	: not null access type_view;
 		key		: in gdk_key_type);
 
+	overriding procedure evaluate_mouse_position (
+		self	: not null access type_view;
+		point	: in type_point);
+	
 	overriding procedure button_pressed (
 		self	: not null access type_view;
 		button	: in type_mouse_button;
