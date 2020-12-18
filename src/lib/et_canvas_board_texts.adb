@@ -40,6 +40,7 @@
 with ada.text_io;					use ada.text_io;
 
 with glib;
+with glib.values;
 
 with gdk.types;						use gdk.types;
 with gdk.event;						use gdk.event;
@@ -48,10 +49,16 @@ with gdk.types.keysyms;				use gdk.types.keysyms;
 
 with gtk.widget;					use gtk.widget;
 with gtk.box;
+
 with gtk.combo_box;					use gtk.combo_box;
+with gtk.cell_renderer_text;		
+with gtk.cell_layout;        		
+with gtk.list_store;				
+with gtk.tree_model;				
+
 with gtk.combo_box_text;			use gtk.combo_box_text;
 with gtk.label;
-with gtk.gentry;
+with gtk.gentry;					use gtk.gentry;
 with gtk.text_view;					use gtk.text_view;
 with gtk.button;					use gtk.button;
 --with gtk.menu;
@@ -100,11 +107,82 @@ package body et_canvas_board_texts is
 		window_place_text.open := false;
 	end close_window_place_text;
 
-	procedure layer_category_changed (self : access gtk_combo_box_record'class) is
+	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
+		use glib;
+		use gtk.tree_model;
+		use gtk.list_store;
+
+		-- Get the model and active iter from the combo box:
+		model : constant gtk_tree_model := combo.get_model;
+		iter : constant gtk_tree_iter := combo.get_active_iter;
+
+		item_text : glib.values.gvalue;
 	begin
-		put_line ("cat");
-		null;
+		-- Get the actual text of the entry (column is 0):
+		gtk.tree_model.get_value (model, iter, 0, item_text);
+
+		text_place.category := to_layer_category (glib.values.get_string (item_text));
+		put_line ("cat " & to_string (text_place.category));
 	end layer_category_changed;
+
+	procedure face_changed (combo : access gtk_combo_box_record'class) is
+		use glib;
+		use gtk.tree_model;
+		use gtk.list_store;
+
+		-- Get the model and active iter from the combo box:
+		model : constant gtk_tree_model := combo.get_model;
+		iter : constant gtk_tree_iter := combo.get_active_iter;
+
+		item_text : glib.values.gvalue;
+	begin
+		-- Get the actual text of the entry (column is 0):
+		gtk.tree_model.get_value (model, iter, 0, item_text);
+
+		text_place.face := to_face (glib.values.get_string (item_text));
+		put_line ("face " & to_string (text_place.face));
+	end face_changed;
+
+	procedure signal_layer_changed (combo : access gtk_combo_box_record'class) is
+		use glib;
+		use gtk.tree_model;
+		use gtk.list_store;
+
+		-- Get the model and active iter from the combo box:
+		model : constant gtk_tree_model := combo.get_model;
+		iter : constant gtk_tree_iter := combo.get_active_iter;
+
+		item_text : glib.values.gvalue;
+	begin
+		-- Get the actual text of the entry (column is 0):
+		gtk.tree_model.get_value (model, iter, 0, item_text);
+
+		text_place.signal_layer := to_signal_layer (glib.values.get_string (item_text));
+		put_line ("signal layer " & to_string (text_place.signal_layer));
+	end signal_layer_changed;
+	
+	procedure size_entered (combo_entry : access gtk_entry_record'class) is 
+		text : constant string := get_text (combo_entry);
+		size : type_text_size;
+	begin
+		put_line ("size " & text);
+		-- CS validate. output error in status bar
+		size := to_distance (text);
+		text_place.text.size := size;
+		
+	end size_entered;
+
+	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
+		text : constant string := get_text (combo_entry);
+		line_width : type_text_line_width;
+	begin
+		put_line ("line width " & text);
+		-- CS validate. output error in status bar
+		line_width := to_distance (text);
+		text_place.text.line_width := line_width;
+		
+	end line_width_entered;
+
 	
 	procedure place_text is
 		use gtk.window;
@@ -114,27 +192,164 @@ package body et_canvas_board_texts is
 
 		box_main : gtk_vbox;
 		
-		box_layer_category, box_face, box_content, box_button,
+		box_layer_category, box_face, 
+		box_signal_layer, box_content, box_button,
 		box_size, box_line_width : gtk_hbox;
 		
-		label_layer_category, label_face, label_content,
+		label_layer_category, label_face, 
+		label_signal_layer, label_content,
 		label_size, label_line_width : gtk_label;
 		
-		cbox_category, cbox_face : gtk_combo_box;
+		cbox_category, cbox_face, cbox_signal_layer : gtk_combo_box;
 		cbox_line_width, cbox_size : gtk_combo_box_text;
 		
 		entry_content : gtk_text_view;
 		button_ok : gtk_button;
 		
 		use glib;
+		use gtk.cell_renderer_text;
+		use gtk.cell_layout;
+		use gtk.list_store;
+		use gtk.tree_model;
+
 		spacing : constant natural := 10;
 
-		procedure insert_categories is
+		procedure make_combo_for_categories is
+			storage_model : gtk_list_store;
+
+			-- An entry consists of just a single column:
+			column_0 : constant := 0;
+
+			-- The single column is to contain strings:
+			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+
+			iter : gtk_tree_iter;			
+			render : gtk_cell_renderer_text;
 		begin
-			cbox_category.prepend_text ("test");
-		end insert_categories;
+			-- Create the storage model:
+			gtk_new (list_store => storage_model, types => (entry_structure));
+
+			-- Insert the layer categories in the storage model:
+			for choice in 0 .. type_layer_category'pos (type_layer_category'last) loop
+				storage_model.append (iter);
+				gtk.list_store.set (storage_model, iter, column_0,
+					to_string (type_layer_category'val (choice)));
+			end loop;
+
+			-- Create the combo box:
+			gtk.combo_box.gtk_new_with_model (
+				combo_box	=> cbox_category,
+				model		=> +storage_model); -- ?
+
+			-- Set the category used last:
+			cbox_category.set_active (type_layer_category'pos (text_place.category));
+
+
+			pack_start (box_layer_category, cbox_category, padding => guint (spacing));
+			cbox_category.on_changed (layer_category_changed'access);
+
+			-- The purpose of this stuff is unclear, but it
+			-- is required to make the entries visible:
+			gtk_new (render);
+			pack_start (cbox_category, render, expand => true);
+			add_attribute (cbox_category, render, "markup", column_0);
+		end make_combo_for_categories;
+
+		procedure make_combo_for_face is
+			storage_model : gtk_list_store;
+
+			-- An entry consists of just a single column:
+			column_0 : constant := 0;
+
+			-- The single column is to contain strings:
+			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+
+			iter : gtk_tree_iter;			
+			render : gtk_cell_renderer_text;
+		begin
+			-- Create the storage model:
+			gtk_new (list_store => storage_model, types => (entry_structure));
+
+			-- Insert the "faces" in the storage model:
+			for choice in 0 .. type_face'pos (type_face'last) loop
+				storage_model.append (iter);
+				gtk.list_store.set (storage_model, iter, column_0,
+					type_face'image (type_face'val (choice)));
+			end loop;
+
+			-- Create the combo box:
+			gtk.combo_box.gtk_new_with_model (
+				combo_box	=> cbox_face,
+				model		=> +storage_model); -- ?
+
+			-- Set the face used last:
+			cbox_face.set_active (type_face'pos (text_place.face));
+
+
+			pack_start (box_face, cbox_face, padding => guint (spacing));
+			cbox_face.on_changed (face_changed'access);
+
+			-- The purpose of this stuff is unclear, but it
+			-- is required to make the entries visible:
+			gtk_new (render);
+			pack_start (cbox_face, render, expand => true);
+			add_attribute (cbox_face, render, "markup", column_0);
+
+		end make_combo_for_face;
+
+		procedure make_combo_for_signal_layer is
+			storage_model : gtk_list_store;
+
+			-- An entry consists of just a single column:
+			column_0 : constant := 0;
+
+			-- The single column is to contain strings:
+			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+
+			iter : gtk_tree_iter;			
+			render : gtk_cell_renderer_text;
+
+		begin
+			-- Create the storage model:
+			gtk_new (list_store => storage_model, types => (entry_structure));
+
+			-- Insert the available signal layers in the storage model:
+			for choice in 
+				-- The top layer is always available:
+				type_signal_layer'first .. 
+
+				-- The deepest available layer depends on the stack configuration:
+				deepest_conductor_layer (et_canvas_schematic.current_active_module) 
+			loop
+				storage_model.append (iter);
+				gtk.list_store.set (storage_model, iter, column_0,
+					type_signal_layer'image (choice));
+			end loop;
+
+			-- Create the combo box:
+			gtk.combo_box.gtk_new_with_model (
+				combo_box	=> cbox_signal_layer,
+				model		=> +storage_model); -- ?
+
+			-- Set the signal layer used last:
+			cbox_signal_layer.set_active (gint (text_place.signal_layer) - 1);
+			-- NOTE: The entries are numbered from 0 .. N.
+
+
+			pack_start (box_signal_layer, cbox_signal_layer, padding => guint (spacing));
+			cbox_signal_layer.on_changed (signal_layer_changed'access);
+
+			-- The purpose of this stuff is unclear, but it
+			-- is required to make the entries visible:
+			gtk_new (render);
+			pack_start (cbox_signal_layer, render, expand => true);
+			add_attribute (cbox_signal_layer, render, "markup", column_0);
+
+		end make_combo_for_signal_layer;
+
 		
-	begin
+	begin -- place_text
+		
 		-- If it is already up, move it to the foreground.
 		-- Otherwise build it:
 		if window_place_text.open then
@@ -153,34 +368,37 @@ package body et_canvas_board_texts is
 			-- LAYER CAT
 			gtk_new_hbox (box_layer_category, homogeneous => false);
 			pack_start (box_main, box_layer_category, padding => guint (spacing));
-			insert_categories;
 
 			gtk_new (label_layer_category, "LAYER CAT");
 			pack_start (box_layer_category, label_layer_category, padding => guint (spacing));
-
-			gtk_new (cbox_category);
-			pack_start (box_layer_category, cbox_category, padding => guint (spacing));
-			--cbox_category.on_changed (layer_category_changed'access);
+			make_combo_for_categories;
 			
 			-- FACE
 			gtk_new_hbox (box_face, homogeneous => false);
 			pack_start (box_main, box_face, padding => guint (spacing));
-
+			
 			gtk_new (label_face, "FACE");
 			pack_start (box_face, label_face, padding => guint (spacing));
+			make_combo_for_face;
 
-			gtk_new (cbox_face);
-			pack_start (box_face, cbox_face, padding => guint (spacing));
-
+			-- SIGNAL LAYER
+			gtk_new_hbox (box_signal_layer, homogeneous => false);
+			pack_start (box_main, box_signal_layer, padding => guint (spacing));
+			
+			gtk_new (label_signal_layer, "SIGNAL LAYER");
+			pack_start (box_signal_layer, label_signal_layer, padding => guint (spacing));
+			make_combo_for_signal_layer;
+			
 			-- SIZE
 			gtk_new_hbox (box_size, homogeneous => false);
 			pack_start (box_main, box_size, padding => guint (spacing));
-
+			
 			gtk_new (label_size, "SIZE");
 			pack_start (box_size, label_size, padding => guint (spacing));
 
-			gtk_new (cbox_size);
+			gtk_new_with_entry (cbox_size);
 			pack_start (box_size, cbox_size, padding => guint (spacing));
+			gtk_entry (cbox_size.get_child).on_activate (size_entered'access);
 
 			-- LINE WIDTH
 			gtk_new_hbox (box_line_width, homogeneous => false);
@@ -189,8 +407,9 @@ package body et_canvas_board_texts is
 			gtk_new (label_line_width, "LINE WIDTH");
 			pack_start (box_line_width, label_line_width, padding => guint (spacing));
 
-			gtk_new (cbox_line_width);
+			gtk_new_with_entry (cbox_line_width);
 			pack_start (box_line_width, cbox_line_width, padding => guint (spacing));
+			gtk_entry (cbox_line_width.get_child).on_activate (line_width_entered'access);
 			
 			-- CONTENT
 			gtk_new_hbox (box_content, homogeneous => false);
@@ -210,7 +429,6 @@ package body et_canvas_board_texts is
 			pack_start (box_button, button_ok, padding => guint (spacing));
 			
 			window_place_text.window.show_all;
-		null;
 		end if;
 		
 	end place_text;

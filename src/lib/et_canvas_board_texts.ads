@@ -42,15 +42,17 @@ with gtk.window;					use gtk.window;
 with et_general;					use et_general;
 --with et_geometry;				use et_geometry;
 with et_canvas_general;				use et_canvas_general;
-
+with et_canvas_schematic;
 
 with et_pcb_coordinates;			use et_pcb_coordinates;
---use et_pcb_coordinates.pac_geometry_brd;
+use et_pcb_coordinates.pac_geometry_brd;
 
---with et_terminals;				use et_terminals;
+with et_terminals;					use et_terminals;
+use et_terminals.pac_text;
+
 with et_pcb_stack;					use et_pcb_stack;
 with et_packages;					use et_packages;
---with et_project.modules;		use et_project.modules;
+with et_project.modules;			use et_project.modules;
 with et_pcb;
 --with et_frames;
 
@@ -62,6 +64,7 @@ with et_pcb;
 
 package et_canvas_board_texts is
 
+	
 	type type_window_place_text is record
 		window	: gtk_window;
 		
@@ -85,9 +88,9 @@ package et_canvas_board_texts is
 
 	type type_text_place is record
 		text			: type_text_with_content;
-		category		: type_layer_category;
+		category		: type_layer_category := type_layer_category'first;
 		signal_layer	: type_signal_layer := signal_layer_default;
-		face			: type_face := TOP;
+		face			: type_face := face_default;
 	end record;
 
 	text_place : type_text_place;
