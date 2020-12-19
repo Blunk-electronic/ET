@@ -2526,8 +2526,8 @@ is
 		case verb is
 			when VERB_PLACE =>
 				case noun is
-					when NOUN_TEXT => null;
-						et_canvas_board_texts.place_text;
+					when NOUN_TEXT =>
+						show_text_properties;
 						--case fields is
 							--when 4 => -- board demo place text
 								--null;

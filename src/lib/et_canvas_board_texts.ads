@@ -38,6 +38,7 @@
 -- 
 
 with gtk.window;					use gtk.window;
+with gtk.box;						use gtk.box;
 with gtk.text_view;					--use gtk.text_view;
 
 with et_general;					use et_general;
@@ -68,18 +69,19 @@ with et_string_processing;			use et_string_processing;
 package et_canvas_board_texts is
 
 
-	
-	type type_window_place_text is record
-		window	: gtk_window;
+	-- The text properties bar:
+	type type_box_properties is record
+		box_main	: gtk_hbox;
 		
 		-- This flag indicates that the
-		-- window is open. The purpose of this flag is
-		-- to prevent the window from being opended
+		-- box is being displayed. 
+		-- The purpose of this flag is
+		-- to prevent the box from being drawn
 		-- multiple times:
-		open	: boolean := false;
+		displayed	: boolean := false;
 	end record;
 
-	window_place_text : type_window_place_text;
+	box_properties : type_box_properties;
 
 	
 	-- to be output in the status bar:
@@ -90,6 +92,7 @@ package et_canvas_board_texts is
 		& "to place text." 
 		& status_hint_for_abort;
 
+	-- The properties of the text being placed:
 	type type_text_place is record
 		being_moved		: boolean := false;
 		
@@ -109,8 +112,11 @@ package et_canvas_board_texts is
 	text_place : type_text_place;
 
 	procedure reset_text_place;
-	
-	procedure place_text;
+
+	-- Builds the box for the text properties and
+	-- inserts it below the console.
+	-- If the box is already on display, nothing happens.
+	procedure show_text_properties;
 	
 end et_canvas_board_texts;
 

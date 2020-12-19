@@ -993,13 +993,11 @@ package body et_canvas_board is
 				when VERB_PLACE =>
 					case noun is
 						when NOUN_TEXT =>
-							if window_place_text.open then
-								null;
-								--gtk.window.present (window_place_text.window);
-								-- CS good idea ?
-							else
-								et_canvas_board_texts.place_text;
-							end if;
+							--if box_properties.displayed then
+								--null;
+							--else
+								show_text_properties;
+							--end if;
 
 						when others => null;
 					end case;

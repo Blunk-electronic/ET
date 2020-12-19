@@ -59,6 +59,7 @@ with gtk.tree_model;
 with gtk.combo_box_text;			use gtk.combo_box_text;
 with gtk.label;
 with gtk.gentry;					use gtk.gentry;
+with gtk.container;					use gtk.container;
 with gtk.button;					use gtk.button;
 with gtk.text_buffer;
 with gtk.text_iter;
@@ -66,49 +67,10 @@ with gtk.text_iter;
 --with gtk.menu_item;
 --with gtk.menu_shell;
 
+with et_canvas_board;				--use et_canvas_board;
+use et_canvas_board.pac_canvas;
 
 package body et_canvas_board_texts is
-
-	procedure close_window_place_text is begin
-		window_place_text.window.destroy;
-		window_place_text.open := false;
-		--reset_text_place;
-	end close_window_place_text;	
-	
-	function window_place_text_key_event (
-		self	: access gtk_widget_record'class;
-		event	: in gdk_event_key) 
-		return boolean 
-	is
-		key : gdk_key_type := event.keyval;
-
-		-- This is required in order to propagate the key-pressed event further.
-		result : boolean; -- to be returned. Indicates that the event has been handled.
-	begin
-		case key is
-			when GDK_ESCAPE =>
-				--put_line ("key A");
-
-				-- Close the window if operator hits ESC:
-				close_window_place_text;
-				result := true;
-
-			when others =>
-				--put_line ("key B");
-				result := false;
-		end case;
-		
-		return result;
-	end window_place_text_key_event;
-
-
-	
-	procedure close_window_place_text (
-		self	: access gtk_widget_record'class) 
-	is begin
-		window_place_text.open := false;
-		reset_text_place;
-	end close_window_place_text;
 
 	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
@@ -203,27 +165,34 @@ package body et_canvas_board_texts is
 
 		text_place.text.content := to_content (get_text (text_buffer, lower_bound, upper_bound));
 
-		put_line ("content: " & enclose_in_quotes (to_string (text_place.text.content)));
-
-		text_place.being_moved := true;
+		-- CS check length and characters
+		
+		if is_empty (text_place.text.content) then
+			put_line ("content: " & enclose_in_quotes (to_string (text_place.text.content)));
+			text_place.being_moved := true;
+			canvas.grab_focus;
+		end if;
+		
 	end button_apply_clicked;
 
 	procedure reset_text_place is begin
 		text_place.being_moved := false;
-		text_place.entry_content.destroy;
+		--text_place.entry_content.destroy;
+
+		-- Remove the text properties bar from the window:
+		remove (box_right, box_properties.box_main);
+		box_properties.displayed := false;
 	end reset_text_place;
 	
-	procedure place_text is
+	procedure show_text_properties is
 		use gtk.window;
 		use gtk.box;
 		use gtk.label;
 		use gtk.gentry;
 
-		box_main : gtk_vbox;
-		
 		box_layer_category, box_face, 
 		box_signal_layer, box_content, box_button,
-		box_size, box_line_width : gtk_hbox;
+		box_size, box_line_width : gtk_vbox;
 		
 		label_layer_category, label_face, 
 		label_signal_layer, label_content,
@@ -232,7 +201,6 @@ package body et_canvas_board_texts is
 		cbox_category, cbox_face, cbox_signal_layer : gtk_combo_box;
 		cbox_line_width, cbox_size : gtk_combo_box_text;
 		
-		--entry_content : gtk_text_view;
 		button_apply : gtk_button;
 		
 		use glib;
@@ -242,7 +210,7 @@ package body et_canvas_board_texts is
 		use gtk.tree_model;
 		use gtk.text_view;
 
-		spacing : constant natural := 10;
+		spacing : constant natural := 5;
 
 		procedure make_combo_for_categories is
 			storage_model : gtk_list_store;
@@ -376,44 +344,43 @@ package body et_canvas_board_texts is
 			add_attribute (cbox_signal_layer, render, "markup", column_0);
 
 		end make_combo_for_signal_layer;
-
 		
-	begin -- place_text
+	begin -- show_text_properties
 		
-		-- If it is already up, move it to the foreground.
+		-- If the box is already shown, do nothing.
 		-- Otherwise build it:
-		if window_place_text.open then
-			window_place_text.window.present;
-		else
-			window_place_text.open := true;
+		if not box_properties.displayed then
+			box_properties.displayed := true;
 		
-			gtk_new (window_place_text.window);
-			window_place_text.window.set_title ("Set text properties");
-			window_place_text.window.on_destroy (close_window_place_text'access);
-			window_place_text.window.on_key_press_event (window_place_text_key_event'access);
+			gtk_new_hbox (box_properties.box_main);
+			pack_start (et_canvas_board.pac_canvas.box_right, box_properties.box_main,
+						expand	=> false);
 
-			gtk_new_vbox (box_main, homogeneous => false);
-			window_place_text.window.add (box_main);
+			-- The properties bar is to be displayed in the right box
+			-- below the console:
+			reorder_child (box_right, box_properties.box_main, 1);
 
 			-- LAYER CAT
-			gtk_new_hbox (box_layer_category, homogeneous => false);
-			pack_start (box_main, box_layer_category, padding => guint (spacing));
+			gtk_new_vbox (box_layer_category, homogeneous => false);
+			pack_start (box_properties.box_main, box_layer_category, padding => guint (spacing));
 
 			gtk_new (label_layer_category, "LAYER CAT");
 			pack_start (box_layer_category, label_layer_category, padding => guint (spacing));
 			make_combo_for_categories;
 			
 			-- FACE
-			gtk_new_hbox (box_face, homogeneous => false);
-			pack_start (box_main, box_face, padding => guint (spacing));
+			gtk_new_vbox (box_face, homogeneous => false);
+			pack_start (box_properties.box_main, box_face, padding => guint (spacing));
 			
 			gtk_new (label_face, "FACE");
 			pack_start (box_face, label_face, padding => guint (spacing));
 			make_combo_for_face;
 
 			-- SIGNAL LAYER
-			gtk_new_hbox (box_signal_layer, homogeneous => false);
-			pack_start (box_main, box_signal_layer, padding => guint (spacing));
+			gtk_new_vbox (box_signal_layer, homogeneous => false);
+			pack_start (box_properties.box_main, box_signal_layer, 
+				--expand	=> false, 
+				padding => guint (spacing));
 			
 			gtk_new (label_signal_layer, "SIGNAL LAYER");
 			pack_start (box_signal_layer, label_signal_layer, padding => guint (spacing));
@@ -423,19 +390,27 @@ package body et_canvas_board_texts is
 
 			
 			-- SIZE
-			gtk_new_hbox (box_size, homogeneous => false);
-			pack_start (box_main, box_size, padding => guint (spacing));
+			gtk_new_vbox (box_size); --, homogeneous => false);
+			pack_start (box_properties.box_main, box_size, 
+				expand	=> false, 
+				padding => guint (spacing));
 			
 			gtk_new (label_size, "SIZE");
-			pack_start (box_size, label_size, padding => guint (spacing));
+			pack_start (box_size, label_size, 
+				expand	=> false, 
+				padding => guint (spacing));
 
 			gtk_new_with_entry (cbox_size);
-			pack_start (box_size, cbox_size, padding => guint (spacing));
+			pack_start (box_size, cbox_size, 
+				expand	=> false, 
+				padding => guint (spacing));
 			gtk_entry (cbox_size.get_child).on_activate (size_entered'access);
-
+			
 			-- LINE WIDTH
-			gtk_new_hbox (box_line_width, homogeneous => false);
-			pack_start (box_main, box_line_width, padding => guint (spacing));
+			gtk_new_vbox (box_line_width, homogeneous => false);
+			pack_start (box_properties.box_main, box_line_width, 
+						--expand	=> false, 
+						padding => guint (spacing));
 
 			gtk_new (label_line_width, "LINE WIDTH");
 			pack_start (box_line_width, label_line_width, padding => guint (spacing));
@@ -445,8 +420,8 @@ package body et_canvas_board_texts is
 			gtk_entry (cbox_line_width.get_child).on_activate (line_width_entered'access);
 			
 			-- CONTENT
-			gtk_new_hbox (box_content, homogeneous => false);
-			pack_start (box_main, box_content, padding => guint (spacing));
+			gtk_new_vbox (box_content, homogeneous => false);
+			pack_start (box_properties.box_main, box_content, padding => guint (spacing));
 
 			gtk_new (label_content, "CONTENT");
 			pack_start (box_content, label_content, padding => guint (spacing));
@@ -455,17 +430,18 @@ package body et_canvas_board_texts is
 			pack_start (box_content, text_place.entry_content, padding => guint (spacing));
 
 			-- OK BUTTON
-			gtk_new_hbox (box_button, homogeneous => false);
-			pack_start (box_main, box_button, padding => guint (spacing));
+			gtk_new_vbox (box_button, homogeneous => false);
+			pack_start (box_properties.box_main, box_button, padding => guint (spacing));
 
 			gtk_new (button_apply, "Apply");
 			pack_start (box_button, button_apply, padding => guint (spacing));
 			button_apply.on_clicked (button_apply_clicked'access);
-			
-			window_place_text.window.show_all;
+
+			-- Redraw the right box of the window:
+			box_right.show_all;
 		end if;
 		
-	end place_text;
+	end show_text_properties;
 	
 end et_canvas_board_texts;
 
