@@ -118,7 +118,7 @@ package et_canvas_general is
 		-- the command to be executed like "schematic blood_sample_analyzer set value C1 100n"
 		cmd			: type_fields_of_line;
 
-		-- Goes false if too less arguments given via console:
+		-- Goes false if too few arguments given via console:
 		complete	: boolean := true;
 
 		-- Indicates that the command is in progress,

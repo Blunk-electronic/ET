@@ -2528,6 +2528,8 @@ is
 				case noun is
 					when NOUN_TEXT =>
 						show_text_properties;
+
+						single_cmd_status.finalization_pending := true;
 						--case fields is
 							--when 4 => -- board demo place text
 								--null;

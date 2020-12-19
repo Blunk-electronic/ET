@@ -254,7 +254,7 @@ procedure draw_assy_doc (
 				vector_text := pac_text.vectorize (
 					content		=> text_place.text.content,
 					size		=> text_place.text.size,
-					rotation	=> text_place.rotation,
+					rotation	=> rot (text_place.text.position),
 					position	=> point,
 					mirror		=> face_to_mirror (text_place.face),
 					line_width	=> text_place.text.line_width,

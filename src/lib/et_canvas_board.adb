@@ -872,92 +872,180 @@ package body et_canvas_board is
 		return to_string (noun);
 	end get_noun;
 
+
+	procedure place_text (destination : in type_point) is
+		use et_packages;
+		use et_canvas_schematic;
+	begin
+		if text_place.being_moved then
+			move_to (text_place.text.position, destination);
+			
+			if text_place.category in type_layer_category_non_conductor then
+
+				place_text_in_non_conductor_layer (
+					module_cursor 	=> current_active_module,
+					layer_category	=> text_place.category,
+					face			=> text_place.face,
+					text			=> text_place.text,
+					log_threshold	=> log_threshold + 1);
+
+			elsif text_place.category in type_layer_category_conductor then
+				
+				place_text_in_conductor_layer (
+					module_cursor 	=> current_active_module,
+					layer_category	=> text_place.category,
+					text			=> ((text_place.text with text_place.signal_layer)),
+					log_threshold	=> log_threshold + 1);
+
+			else
+				raise semantic_error_1 with
+					"ERROR: Text not allowed in this layer category !";
+				-- CS should never happen
+			end if;
+		end if;	
+	end place_text;
+
 	
 	procedure evaluate_key (
 		self	: not null access type_view;
-		key		: in gdk_key_type) is
-
+		key		: in gdk_key_type) 
+	is
 		use gdk.types;
 		use gdk.types.keysyms;
 
 		use et_modes;
-	begin
+
+		procedure delete is
+		begin
+			case key is
+				when GDK_LC_d =>
+					noun := NOUN_DEVICE;
+					set_status (status_click_left & "delete non-electrical device."
+						& status_hint_for_abort);
+					
+				when others => status_noun_invalid;
+			end case;
+		end delete;
+		
+		procedure place is
+		begin
+			case key is
+				-- EVALUATE KEY FOR NOUN:
+				when GDK_LC_t =>
+					noun := NOUN_TEXT;
+					show_text_properties;
+					set_status (status_place_text);
+
+				-- If space pressed, then the operator wishes to operate via keyboard:	
+				when GDK_Space =>
+					case noun is
+						when NOUN_TEXT =>
+							place_text (cursor_main.position);
+							
+						when others => null;
+					end case;
+					
+				when others => status_noun_invalid;
+			end case;
+		end place;
+		
+	begin -- evaluate_key
+		
 -- 		put_line ("board: evaluating other key ...");
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
 
-		if key = GDK_Escape then
-			expect_entry := expect_entry_default;
-			
-			-- Verb and noun emain as they are
-			-- so that the mode is unchanged.
-			
-			reset_request_clarification;
-			status_enter_verb;
-
-			reset_text_place; -- after placing a text
-		else
+		case key is
+			when GDK_Escape =>
+				expect_entry := expect_entry_default;
 				
-			case expect_entry is
-				when EXP_VERB =>
-					--put_line ("VERB entered");
+				-- Verb and noun emain as they are
+				-- so that the mode is unchanged.
+				
+				reset_request_clarification;
+				status_enter_verb;
 
-					-- Next we expect an entry to select a noun.
-					-- If the verb entry is invalid then expect_entry
-					-- will be overwritten by EXP_VERB so that the
-					-- operator is required to re-enter a valid verb.
-					expect_entry := EXP_NOUN;
+				reset_text_place; -- after placing a text
 
-					-- As long as no valid noun has been entered
-					-- display the default noun:
-					noun := noun_default;
-					
-					case key is
-						when GDK_Delete =>
-							verb := VERB_DELETE;
-							status_enter_noun;
-
-						when GDK_LC_d => -- GDK_D
-							verb := VERB_DRAW;
-							status_enter_noun;
-
-						when GDK_LC_r =>
-							verb := VERB_ROUTE;
-							status_enter_noun;
-							
-						when others =>
-							--put_line ("other key pressed " & gdk_key_type'image (key));
-
-							-- If invalid verb entered, overwrite expect_entry by EXP_VERB
-							-- and show error in status bar:
-							expect_entry := EXP_VERB;
-							status_verb_invalid;
-					end case;
-
-
-				when EXP_NOUN =>
-					--put_line ("NOUN entered");
-
+			when others =>
+				
+				-- If the command is waiting for finalization, usually by pressing
+				-- the space key, AND the primary tool is the keyboard, then
+				-- we call the corresponding subprogram right away here:
+				if single_cmd_status.finalization_pending and primary_tool = KEYBOARD then
 					case verb is
-						when VERB_DELETE =>
+						when VERB_PLACE		=> place;
+						when others			=> null;
+					end case;
+			
+				else
+				-- Evaluate the verb and noun (as typed on the keyboard):
+					
+					case expect_entry is
+						when EXP_VERB =>
+							--put_line ("VERB entered");
+
+							-- Next we expect an entry to select a noun.
+							-- If the verb entry is invalid then expect_entry
+							-- will be overwritten by EXP_VERB so that the
+							-- operator is required to re-enter a valid verb.
+							expect_entry := EXP_NOUN;
+
+							-- As long as no valid noun has been entered
+							-- display the default noun:
+							noun := noun_default;
 							
 							case key is
-								when GDK_LC_d =>
-									noun := NOUN_DEVICE;
-									set_status (status_click_left & "delete non-electrical device."
-										& status_hint_for_abort);
+								when GDK_Delete =>
+									verb := VERB_DELETE;
+									status_enter_noun;
+
+								when GDK_LC_d => -- GDK_D
+									verb := VERB_DRAW;
+									status_enter_noun;
+
+								when GDK_LC_p =>
+									verb := VERB_PLACE;
+									status_enter_noun;
 									
-								when others => status_noun_invalid;
+								when GDK_LC_r =>
+									verb := VERB_ROUTE;
+									status_enter_noun;
+									
+								when others =>
+									--put_line ("other key pressed " & gdk_key_type'image (key));
+
+									-- If invalid verb entered, overwrite expect_entry by EXP_VERB
+									-- and show error in status bar:
+									expect_entry := EXP_VERB;
+									status_verb_invalid;
 							end case;
 
-						when others => null; -- CS
-					end case;
-					
-			end case;
 
-		end if;
+						when EXP_NOUN =>
+							--put_line ("NOUN entered");
+
+							case verb is
+								when VERB_DELETE	=>	delete;
+								when VERB_PLACE		=>	place;							
+								when others => null; -- CS
+							end case;
+							
+					end case;
+
+				end if;
+		end case;
 
 		redraw;		
 		update_mode_display (canvas);
+
+		
+		exception when event: others =>
+			set_status (exception_message (event));
+
+			--reset_selections;
+		
+			redraw;
+			update_mode_display (canvas);
 		
 	end evaluate_key;
 
@@ -987,35 +1075,7 @@ package body et_canvas_board is
 		button	: in type_mouse_button;
 		point	: in type_point) 
 	is
-		procedure place_text is
-			use et_packages;
-			use et_canvas_schematic;
-		begin
-			if text_place.being_moved then
-				if text_place.category in type_layer_category_non_conductor then
-
-					place_text_in_non_conductor_layer (
-						module_cursor 	=> current_active_module,
-						layer_category	=> text_place.category,
-						face			=> text_place.face,
-						text			=> text_place.text,
-						log_threshold	=> log_threshold + 1);
-
-				elsif text_place.category in type_layer_category_conductor then
-					
-					place_text_in_conductor_layer (
-						module_cursor 	=> current_active_module,
-						layer_category	=> text_place.category,
-						text			=> ((text_place.text with text_place.signal_layer)),
-						log_threshold	=> log_threshold + 1);
-
-				else
-					raise semantic_error_1 with
-						"ERROR: Text not allowed in this layer category !";
-					-- CS should never happen
-				end if;
-			end if;	
-		end place_text;
+		snap_point : constant type_point := snap_to_grid (self, point);
 
 		procedure left_button is
 		begin
@@ -1025,14 +1085,7 @@ package body et_canvas_board is
 				when VERB_PLACE =>
 					case noun is
 						when NOUN_TEXT =>
-							--if box_properties.displayed then
-								--null;
-							--else
-								show_text_properties;
-								--end if;
-
-								place_text;
-
+							place_text (snap_point);
 
 						when others => null;
 					end case;

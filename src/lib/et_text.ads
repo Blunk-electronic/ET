@@ -67,6 +67,8 @@ package et_text is
 		vertical	: type_text_alignment_vertical := BOTTOM;
 	end record;
 
+	text_alignment_default : constant type_text_alignment := (LEFT, BOTTOM);
+	
 	function to_alignment (
 		line : in et_string_processing.type_fields_of_line; -- "alignment horizontal center vertical center"
 		from : in positive)
@@ -98,6 +100,9 @@ package et_text is
 	function to_string (text_content : in type_text_content.bounded_string) return string;
 	function to_content (content : in string) return type_text_content.bounded_string;
 
+	empty_text_content : constant type_text_content.bounded_string :=
+		type_text_content.to_bounded_string ("");
+	
 	function is_empty (content : in type_text_content.bounded_string) return boolean;
 	
 	valid_characters : character_set := to_set 
