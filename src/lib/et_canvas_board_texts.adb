@@ -167,7 +167,7 @@ package body et_canvas_board_texts is
 
 		-- CS check length and characters
 		
-		if is_empty (text_place.text.content) then
+		if not is_empty (text_place.text.content) then
 			put_line ("content: " & enclose_in_quotes (to_string (text_place.text.content)));
 			text_place.being_moved := true;
 			canvas.grab_focus;

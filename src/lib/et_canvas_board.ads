@@ -66,7 +66,7 @@ with et_project.modules;		use et_project.modules;
 with et_schematic;
 with et_frames;
 
-with et_board_ops;
+--with et_board_ops;				use et_board_ops;
 
 with et_canvas_general;				use et_canvas_general;
 with et_canvas_primitive_draw_ops;

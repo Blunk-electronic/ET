@@ -53,10 +53,12 @@ with et_canvas_schematic;
 with et_display.board;
 with et_colors.board;				use et_colors.board;
 with et_modes.board;				use et_modes.board;
+with et_board_ops;					use et_board_ops;
 with et_pcb;
 with et_pcb_stack;
 with et_text;
 with et_meta;
+with et_exceptions;					use et_exceptions;
 
 package body et_canvas_board is
 
@@ -985,6 +987,36 @@ package body et_canvas_board is
 		button	: in type_mouse_button;
 		point	: in type_point) 
 	is
+		procedure place_text is
+			use et_packages;
+			use et_canvas_schematic;
+		begin
+			if text_place.being_moved then
+				if text_place.category in type_layer_category_non_conductor then
+
+					place_text_in_non_conductor_layer (
+						module_cursor 	=> current_active_module,
+						layer_category	=> text_place.category,
+						face			=> text_place.face,
+						text			=> text_place.text,
+						log_threshold	=> log_threshold + 1);
+
+				elsif text_place.category in type_layer_category_conductor then
+					
+					place_text_in_conductor_layer (
+						module_cursor 	=> current_active_module,
+						layer_category	=> text_place.category,
+						text			=> ((text_place.text with text_place.signal_layer)),
+						log_threshold	=> log_threshold + 1);
+
+				else
+					raise semantic_error_1 with
+						"ERROR: Text not allowed in this layer category !";
+					-- CS should never happen
+				end if;
+			end if;	
+		end place_text;
+
 		procedure left_button is
 		begin
 			self.move_cursor (ABSOLUTE, cursor_main, point);
@@ -997,7 +1029,10 @@ package body et_canvas_board is
 								--null;
 							--else
 								show_text_properties;
-							--end if;
+								--end if;
+
+								place_text;
+
 
 						when others => null;
 					end case;
