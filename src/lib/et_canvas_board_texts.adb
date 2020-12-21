@@ -185,10 +185,17 @@ package body et_canvas_board_texts is
 	end reset_text_place;
 	
 	procedure show_text_properties is
+		use glib;
+
 		use gtk.window;
 		use gtk.box;
 		use gtk.label;
 		use gtk.gentry;
+		use gtk.cell_renderer_text;
+		use gtk.cell_layout;
+		use gtk.list_store;
+		use gtk.tree_model;
+		use gtk.text_view;
 
 		box_layer_category, box_face, 
 		box_signal_layer, box_content, box_button,
@@ -202,14 +209,17 @@ package body et_canvas_board_texts is
 		cbox_line_width, cbox_size : gtk_combo_box_text;
 		
 		button_apply : gtk_button;
-		
-		use glib;
-		use gtk.cell_renderer_text;
-		use gtk.cell_layout;
-		use gtk.list_store;
-		use gtk.tree_model;
-		use gtk.text_view;
 
+		-- These constants define the minimum and maximum of
+		-- characters that can be entered in the fields for 
+		-- text size and line width:
+		text_size_length_max : constant gint := 3; -- CS: adjust if necessary
+		text_size_length_min : constant gint := 1;
+
+		line_width_length_max : constant gint := 4; -- CS: adjust if necessary
+		line_width_length_min : constant gint := 1;
+		
+		-- The spacing between the boxes:
 		spacing : constant natural := 5;
 
 		procedure make_combo_for_categories is
@@ -378,9 +388,7 @@ package body et_canvas_board_texts is
 
 			-- SIGNAL LAYER
 			gtk_new_vbox (box_signal_layer, homogeneous => false);
-			pack_start (box_properties.box_main, box_signal_layer, 
-				--expand	=> false, 
-				padding => guint (spacing));
+			pack_start (box_properties.box_main, box_signal_layer, padding => guint (spacing));
 			
 			gtk_new (label_signal_layer, "SIGNAL LAYER");
 			pack_start (box_signal_layer, label_signal_layer, padding => guint (spacing));
@@ -390,33 +398,29 @@ package body et_canvas_board_texts is
 
 			
 			-- SIZE
-			gtk_new_vbox (box_size); --, homogeneous => false);
-			pack_start (box_properties.box_main, box_size, 
-				expand	=> false, 
-				padding => guint (spacing));
+			gtk_new_vbox (box_size, homogeneous => false);
+			pack_start (box_properties.box_main, box_size, padding => guint (spacing));
 			
 			gtk_new (label_size, "SIZE");
-			pack_start (box_size, label_size, 
-				expand	=> false, 
-				padding => guint (spacing));
+			pack_start (box_size, label_size, padding => guint (spacing));
 
 			gtk_new_with_entry (cbox_size);
-			pack_start (box_size, cbox_size, 
-				expand	=> false, 
-				padding => guint (spacing));
+			pack_start (box_size, cbox_size, padding => guint (spacing));
+			gtk_entry (cbox_size.get_child).set_max_length (text_size_length_max);
+			gtk_entry (cbox_size.get_child).set_width_chars (text_size_length_min);
 			gtk_entry (cbox_size.get_child).on_activate (size_entered'access);
 			
 			-- LINE WIDTH
 			gtk_new_vbox (box_line_width, homogeneous => false);
-			pack_start (box_properties.box_main, box_line_width, 
-						--expand	=> false, 
-						padding => guint (spacing));
+			pack_start (box_properties.box_main, box_line_width, padding => guint (spacing));
 
 			gtk_new (label_line_width, "LINE WIDTH");
 			pack_start (box_line_width, label_line_width, padding => guint (spacing));
 
 			gtk_new_with_entry (cbox_line_width);
 			pack_start (box_line_width, cbox_line_width, padding => guint (spacing));
+			gtk_entry (cbox_line_width.get_child).set_max_length (line_width_length_max);
+			gtk_entry (cbox_line_width.get_child).set_width_chars (line_width_length_min);
 			gtk_entry (cbox_line_width.get_child).on_activate (line_width_entered'access);
 			
 			-- CONTENT
