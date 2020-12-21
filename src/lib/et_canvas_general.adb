@@ -1324,8 +1324,9 @@ package body pac_canvas is
 	
 	function on_key_pressed_event (
 		view  : access gtk_widget_record'class;
-		event : gdk_event_key) return boolean is
-
+		event : gdk_event_key) 
+		return boolean 
+	is
 		-- If this function returns false, navigating with the TAB key
 		-- through the main window is enabled.
 		event_handled : boolean := false;

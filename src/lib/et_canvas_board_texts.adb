@@ -125,27 +125,89 @@ package body et_canvas_board_texts is
 		text_place.signal_layer := to_signal_layer (glib.values.get_string (item_text));
 		put_line ("signal layer " & to_string (text_place.signal_layer));
 	end signal_layer_changed;
+
+	function text_size_key_pressed (
+		combo_entry	: access gtk_widget_record'class;
+		event		: gdk_event_key) 
+		return boolean 
+	is
+		event_handled : boolean := false;
+		
+		use gdk.types;
+		key : gdk_key_type := event.keyval;
+
+		gentry : gtk_gentry := gtk_gentry (combo_entry);
+		text : constant string := get_text (gentry);
+		size : type_distance;
+	begin
+		case key is
+			when GDK_TAB => 
+				--put_line ("tab pressed ");
+
+				put_line ("size via tab " & text);
+				
+				size := to_distance (text);
+				-- CS validate. output error in status bar
+				text_place.text.size := size;
+
+				--event_handled := true;
+				
+			when others => nulL;
+		end case;
+		
+		return event_handled;
+	end text_size_key_pressed;
 	
 	procedure size_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
-		size : type_text_size;
+		size : type_distance;
 	begin
 		put_line ("size " & text);
-		-- CS validate. output error in status bar
 		size := to_distance (text);
-		text_place.text.size := size;
-		
+		-- CS validate. output error in status bar
+		text_place.text.size := size;		
 	end size_entered;
 
+	function text_line_width_key_pressed (
+		combo_entry	: access gtk_widget_record'class;
+		event		: gdk_event_key) 
+		return boolean 
+	is
+		event_handled : boolean := false;
+		
+		use gdk.types;
+		key : gdk_key_type := event.keyval;
+
+		gentry : gtk_gentry := gtk_gentry (combo_entry);
+		text : constant string := get_text (gentry);
+		width : type_distance;
+	begin
+		case key is
+			when GDK_TAB => 
+				--put_line ("tab pressed ");
+
+				put_line ("line width via tab " & text);
+				
+				width := to_distance (text);
+				-- CS validate. output error in status bar
+				text_place.text.line_width := width;
+
+			when others => nulL;
+		end case;
+		
+		return event_handled;
+	end text_line_width_key_pressed;
+	
 	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
-		line_width : type_text_line_width;
+		width : type_distance;
 	begin
 		put_line ("line width " & text);
-		-- CS validate. output error in status bar
-		line_width := to_distance (text);
-		text_place.text.line_width := line_width;
 		
+		width := to_distance (text);
+		-- CS validate. output error in status bar
+		text_place.text.line_width := width;
+
 	end line_width_entered;
 
 	procedure button_apply_clicked (button : access gtk_button_record'class) is
@@ -234,6 +296,13 @@ package body et_canvas_board_texts is
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
 		begin
+			gtk_new_vbox (box_layer_category, homogeneous => false);
+			pack_start (box_properties.box_main, box_layer_category, padding => guint (spacing));
+
+			gtk_new (label_layer_category, "LAYER CAT");
+			pack_start (box_layer_category, label_layer_category, padding => guint (spacing));
+
+			
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
@@ -275,6 +344,13 @@ package body et_canvas_board_texts is
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
 		begin
+			gtk_new_vbox (box_face, homogeneous => false);
+			pack_start (box_properties.box_main, box_face, padding => guint (spacing));
+			
+			gtk_new (label_face, "FACE");
+			pack_start (box_face, label_face, padding => guint (spacing));
+
+			
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
@@ -316,8 +392,14 @@ package body et_canvas_board_texts is
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
-
 		begin
+			gtk_new_vbox (box_signal_layer, homogeneous => false);
+			pack_start (box_properties.box_main, box_signal_layer, padding => guint (spacing));
+			
+			gtk_new (label_signal_layer, "SIGNAL LAYER");
+			pack_start (box_signal_layer, label_signal_layer, padding => guint (spacing));
+
+			
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
@@ -354,6 +436,66 @@ package body et_canvas_board_texts is
 			add_attribute (cbox_signal_layer, render, "markup", column_0);
 
 		end make_combo_for_signal_layer;
+
+		procedure make_combo_for_size is begin
+			gtk_new_vbox (box_size, homogeneous => false);
+			pack_start (box_properties.box_main, box_size, padding => guint (spacing));
+			
+			gtk_new (label_size, "SIZE");
+			pack_start (box_size, label_size, padding => guint (spacing));
+
+			gtk_new_with_entry (cbox_size);
+			pack_start (box_size, cbox_size, padding => guint (spacing));
+			gtk_entry (cbox_size.get_child).set_max_length (text_size_length_max);
+			gtk_entry (cbox_size.get_child).set_width_chars (text_size_length_min);
+
+			-- The size is to be accepted by either pressing TAB or by pressing ENTER:
+			gtk_entry (cbox_size.get_child).on_key_press_event (text_size_key_pressed'access);
+			gtk_entry (cbox_size.get_child).on_activate (size_entered'access);
+		end make_combo_for_size;
+
+		procedure make_combo_for_line_width is begin
+			gtk_new_vbox (box_line_width, homogeneous => false);
+			pack_start (box_properties.box_main, box_line_width, padding => guint (spacing));
+
+			gtk_new (label_line_width, "LINE WIDTH");
+			pack_start (box_line_width, label_line_width, padding => guint (spacing));
+
+			gtk_new_with_entry (cbox_line_width);
+			pack_start (box_line_width, cbox_line_width, padding => guint (spacing));
+			gtk_entry (cbox_line_width.get_child).set_max_length (line_width_length_max);
+			gtk_entry (cbox_line_width.get_child).set_width_chars (line_width_length_min);
+
+			-- The width is to be accepted by either pressing TAB or by pressing ENTER:
+			gtk_entry (cbox_line_width.get_child).on_key_press_event (text_line_width_key_pressed'access);
+			gtk_entry (cbox_line_width.get_child).on_activate (line_width_entered'access);
+		end make_combo_for_line_width;
+
+		procedure make_combo_for_rotation is begin
+			null; -- CS
+
+			-- The rotation is to be accepted by either pressing TAB or by pressing ENTER:
+		end make_combo_for_rotation;
+		
+		procedure make_view_for_content is begin
+			gtk_new_vbox (box_content, homogeneous => false);
+			pack_start (box_properties.box_main, box_content, padding => guint (spacing));
+
+			gtk_new (label_content, "CONTENT");
+			pack_start (box_content, label_content, padding => guint (spacing));
+
+			gtk_new (text_place.entry_content);
+			pack_start (box_content, text_place.entry_content, padding => guint (spacing));
+		end make_view_for_content;
+
+		procedure make_apply_button is begin
+			gtk_new_vbox (box_button, homogeneous => false);
+			pack_start (box_properties.box_main, box_button, padding => guint (spacing));
+
+			gtk_new (button_apply, "Apply");
+			pack_start (box_button, button_apply, padding => guint (spacing));
+			button_apply.on_clicked (button_apply_clicked'access);
+		end make_apply_button;
 		
 	begin -- show_text_properties
 		
@@ -370,76 +512,15 @@ package body et_canvas_board_texts is
 			-- below the console:
 			reorder_child (box_right, box_properties.box_main, 1);
 
-			-- LAYER CAT
-			gtk_new_vbox (box_layer_category, homogeneous => false);
-			pack_start (box_properties.box_main, box_layer_category, padding => guint (spacing));
-
-			gtk_new (label_layer_category, "LAYER CAT");
-			pack_start (box_layer_category, label_layer_category, padding => guint (spacing));
+			-- build the elements of the properties bar:
 			make_combo_for_categories;
-			
-			-- FACE
-			gtk_new_vbox (box_face, homogeneous => false);
-			pack_start (box_properties.box_main, box_face, padding => guint (spacing));
-			
-			gtk_new (label_face, "FACE");
-			pack_start (box_face, label_face, padding => guint (spacing));
 			make_combo_for_face;
-
-			-- SIGNAL LAYER
-			gtk_new_vbox (box_signal_layer, homogeneous => false);
-			pack_start (box_properties.box_main, box_signal_layer, padding => guint (spacing));
-			
-			gtk_new (label_signal_layer, "SIGNAL LAYER");
-			pack_start (box_signal_layer, label_signal_layer, padding => guint (spacing));
 			make_combo_for_signal_layer;
-
-			-- CS ROTATION
-
-			
-			-- SIZE
-			gtk_new_vbox (box_size, homogeneous => false);
-			pack_start (box_properties.box_main, box_size, padding => guint (spacing));
-			
-			gtk_new (label_size, "SIZE");
-			pack_start (box_size, label_size, padding => guint (spacing));
-
-			gtk_new_with_entry (cbox_size);
-			pack_start (box_size, cbox_size, padding => guint (spacing));
-			gtk_entry (cbox_size.get_child).set_max_length (text_size_length_max);
-			gtk_entry (cbox_size.get_child).set_width_chars (text_size_length_min);
-			gtk_entry (cbox_size.get_child).on_activate (size_entered'access);
-			
-			-- LINE WIDTH
-			gtk_new_vbox (box_line_width, homogeneous => false);
-			pack_start (box_properties.box_main, box_line_width, padding => guint (spacing));
-
-			gtk_new (label_line_width, "LINE WIDTH");
-			pack_start (box_line_width, label_line_width, padding => guint (spacing));
-
-			gtk_new_with_entry (cbox_line_width);
-			pack_start (box_line_width, cbox_line_width, padding => guint (spacing));
-			gtk_entry (cbox_line_width.get_child).set_max_length (line_width_length_max);
-			gtk_entry (cbox_line_width.get_child).set_width_chars (line_width_length_min);
-			gtk_entry (cbox_line_width.get_child).on_activate (line_width_entered'access);
-			
-			-- CONTENT
-			gtk_new_vbox (box_content, homogeneous => false);
-			pack_start (box_properties.box_main, box_content, padding => guint (spacing));
-
-			gtk_new (label_content, "CONTENT");
-			pack_start (box_content, label_content, padding => guint (spacing));
-
-			gtk_new (text_place.entry_content);
-			pack_start (box_content, text_place.entry_content, padding => guint (spacing));
-
-			-- OK BUTTON
-			gtk_new_vbox (box_button, homogeneous => false);
-			pack_start (box_properties.box_main, box_button, padding => guint (spacing));
-
-			gtk_new (button_apply, "Apply");
-			pack_start (box_button, button_apply, padding => guint (spacing));
-			button_apply.on_clicked (button_apply_clicked'access);
+			make_combo_for_rotation;
+			make_combo_for_size;
+			make_combo_for_line_width;
+			make_view_for_content;
+			make_apply_button;
 
 			-- Redraw the right box of the window:
 			box_right.show_all;
