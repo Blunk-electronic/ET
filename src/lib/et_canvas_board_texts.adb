@@ -88,6 +88,8 @@ package body et_canvas_board_texts is
 
 		text_place.category := to_layer_category (glib.values.get_string (item_text));
 		put_line ("cat " & to_string (text_place.category));
+
+		-- CS display layer ?
 	end layer_category_changed;
 
 	procedure face_changed (combo : access gtk_combo_box_record'class) is
@@ -106,6 +108,8 @@ package body et_canvas_board_texts is
 
 		text_place.face := to_face (glib.values.get_string (item_text));
 		put_line ("face " & to_string (text_place.face));
+
+		-- CS display layer ?
 	end face_changed;
 
 	procedure signal_layer_changed (combo : access gtk_combo_box_record'class) is
@@ -124,8 +128,21 @@ package body et_canvas_board_texts is
 
 		text_place.signal_layer := to_signal_layer (glib.values.get_string (item_text));
 		put_line ("signal layer " & to_string (text_place.signal_layer));
+
+		-- CS display layer ?
 	end signal_layer_changed;
 
+	procedure apply_size (text : in string) is
+		size : type_text_size;
+	begin
+		size := to_distance (text);
+
+		-- CS validate. output error in status bar
+		text_place.text.size := size;
+
+		et_canvas_board.redraw_board;
+	end apply_size;
+	
 	function text_size_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
 		event		: gdk_event_key) 
@@ -138,18 +155,12 @@ package body et_canvas_board_texts is
 
 		gentry : gtk_gentry := gtk_gentry (combo_entry);
 		text : constant string := get_text (gentry);
-		size : type_distance;
 	begin
 		case key is
 			when GDK_TAB => 
-				--put_line ("tab pressed ");
-
 				put_line ("size via tab " & text);
+				apply_size (text);
 				
-				size := to_distance (text);
-				-- CS validate. output error in status bar
-				text_place.text.size := size;
-
 				--event_handled := true;
 				
 			when others => nulL;
@@ -160,14 +171,22 @@ package body et_canvas_board_texts is
 	
 	procedure size_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
-		size : type_distance;
 	begin
 		put_line ("size " & text);
-		size := to_distance (text);
-		-- CS validate. output error in status bar
-		text_place.text.size := size;		
+		apply_size (text);
 	end size_entered;
 
+	procedure apply_line_width (text : in string) is
+		width : type_text_line_width;
+	begin
+		width := to_distance (text);
+
+		-- CS validate. output error in status bar
+		text_place.text.line_width := width;
+
+		et_canvas_board.redraw_board;
+	end apply_line_width;
+	
 	function text_line_width_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
 		event		: gdk_event_key) 
@@ -180,17 +199,11 @@ package body et_canvas_board_texts is
 
 		gentry : gtk_gentry := gtk_gentry (combo_entry);
 		text : constant string := get_text (gentry);
-		width : type_distance;
 	begin
 		case key is
 			when GDK_TAB => 
-				--put_line ("tab pressed ");
-
 				put_line ("line width via tab " & text);
-				
-				width := to_distance (text);
-				-- CS validate. output error in status bar
-				text_place.text.line_width := width;
+				apply_line_width (text);
 
 			when others => nulL;
 		end case;
@@ -200,16 +213,54 @@ package body et_canvas_board_texts is
 	
 	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
-		width : type_distance;
 	begin
 		put_line ("line width " & text);
-		
-		width := to_distance (text);
-		-- CS validate. output error in status bar
-		text_place.text.line_width := width;
-
+		apply_line_width (text);
 	end line_width_entered;
 
+	procedure apply_rotation (text : in string) is
+		rotation : type_rotation;
+	begin
+		rotation := to_rotation (text);
+		--put_line (to_string (rotation));
+		-- CS validate. output error in status bar
+
+		set (text_place.text.position, rotation);
+		put_line (to_string (text_place.text.position));
+		et_canvas_board.redraw_board;
+	end apply_rotation;
+		
+	function rotation_key_pressed (
+		combo_entry	: access gtk_widget_record'class;
+		event		: gdk_event_key) 
+		return boolean 
+	is
+		event_handled : boolean := false;
+		
+		use gdk.types;
+		key : gdk_key_type := event.keyval;
+
+		gentry : gtk_gentry := gtk_gentry (combo_entry);
+		text : constant string := get_text (gentry);
+	begin
+		case key is
+			when GDK_TAB => 
+				put_line ("rotation via tab " & text);
+				apply_rotation (text);
+
+			when others => nulL;
+		end case;
+		
+		return event_handled;
+	end rotation_key_pressed;
+	
+	procedure rotation_entered (combo_entry : access gtk_entry_record'class) is 
+		text : constant string := get_text (combo_entry);
+	begin
+		put_line ("rotation " & text);
+		apply_rotation (text);
+	end rotation_entered;
+	
 	procedure button_apply_clicked (button : access gtk_button_record'class) is
 		use gtk.text_view;
 		use gtk.text_buffer;
@@ -242,8 +293,10 @@ package body et_canvas_board_texts is
 		--text_place.entry_content.destroy;
 
 		-- Remove the text properties bar from the window:
-		remove (box_right, box_properties.box_main);
-		box_properties.displayed := false;
+		if box_properties.displayed then
+			remove (box_right, box_properties.box_main);
+			box_properties.displayed := false;
+		end if;
 	end reset_text_place;
 	
 	procedure show_text_properties is
@@ -261,14 +314,14 @@ package body et_canvas_board_texts is
 
 		box_layer_category, box_face, 
 		box_signal_layer, box_content, box_button,
-		box_size, box_line_width : gtk_vbox;
+		box_size, box_line_width, box_rotation : gtk_vbox;
 		
 		label_layer_category, label_face, 
 		label_signal_layer, label_content,
-		label_size, label_line_width : gtk_label;
+		label_size, label_line_width, label_rotation : gtk_label;
 		
 		cbox_category, cbox_face, cbox_signal_layer : gtk_combo_box;
-		cbox_line_width, cbox_size : gtk_combo_box_text;
+		cbox_line_width, cbox_size, cbox_rotation : gtk_combo_box_text;
 		
 		button_apply : gtk_button;
 
@@ -280,6 +333,10 @@ package body et_canvas_board_texts is
 
 		line_width_length_max : constant gint := 4; -- CS: adjust if necessary
 		line_width_length_min : constant gint := 1;
+
+		rotation_length_max : constant gint := 4; -- CS: adjust if necessary
+		rotation_length_min : constant gint := 1;
+
 		
 		-- The spacing between the boxes:
 		spacing : constant natural := 5;
@@ -472,9 +529,20 @@ package body et_canvas_board_texts is
 		end make_combo_for_line_width;
 
 		procedure make_combo_for_rotation is begin
-			null; -- CS
+			gtk_new_vbox (box_rotation, homogeneous => false);
+			pack_start (box_properties.box_main, box_rotation, padding => guint (spacing));
+
+			gtk_new (label_rotation, "ROTATION");
+			pack_start (box_rotation, label_rotation, padding => guint (spacing));
+
+			gtk_new_with_entry (cbox_rotation);
+			pack_start (box_rotation, cbox_rotation, padding => guint (spacing));
+			gtk_entry (cbox_rotation.get_child).set_max_length (rotation_length_max);
+			gtk_entry (cbox_rotation.get_child).set_width_chars (rotation_length_min);
 
 			-- The rotation is to be accepted by either pressing TAB or by pressing ENTER:
+			gtk_entry (cbox_rotation.get_child).on_key_press_event (rotation_key_pressed'access);
+			gtk_entry (cbox_rotation.get_child).on_activate (rotation_entered'access);
 		end make_combo_for_rotation;
 		
 		procedure make_view_for_content is begin
@@ -485,6 +553,7 @@ package body et_canvas_board_texts is
 			pack_start (box_content, label_content, padding => guint (spacing));
 
 			gtk_new (text_place.entry_content);
+			text_place.entry_content.set_accepts_tab (false); -- TAB character not allowed
 			pack_start (box_content, text_place.entry_content, padding => guint (spacing));
 		end make_view_for_content;
 
@@ -516,9 +585,9 @@ package body et_canvas_board_texts is
 			make_combo_for_categories;
 			make_combo_for_face;
 			make_combo_for_signal_layer;
-			make_combo_for_rotation;
 			make_combo_for_size;
 			make_combo_for_line_width;
+			make_combo_for_rotation;
 			make_view_for_content;
 			make_apply_button;
 
