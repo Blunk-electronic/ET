@@ -2576,6 +2576,10 @@ begin -- board_cmd
 		when others => noun := to_noun (f (4)); -- read noun from field 4
 	end case;
 
+	-- Clean up:
+	-- Some toolbars or property bars must be removed:
+	et_canvas_board_texts.remove_text_properties; -- after placing text
+	
 	-- parse the command:
 	parse;
 	

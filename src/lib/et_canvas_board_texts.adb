@@ -38,6 +38,10 @@
 -- 
 
 with ada.text_io;					use ada.text_io;
+with ada.strings;					use ada.strings;
+with ada.strings.fixed; 			use ada.strings.fixed;
+--with ada.characters;				use ada.characters;
+--with ada.characters.handling;		use ada.characters.handling;
 
 with glib;
 with glib.values;
@@ -70,6 +74,8 @@ with gtk.text_iter;
 with et_canvas_board;				--use et_canvas_board;
 use et_canvas_board.pac_canvas;
 
+with et_modes.board;
+
 package body et_canvas_board_texts is
 
 	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
@@ -87,7 +93,7 @@ package body et_canvas_board_texts is
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
 		text_place.category := to_layer_category (glib.values.get_string (item_text));
-		put_line ("cat " & to_string (text_place.category));
+		--put_line ("cat " & to_string (text_place.category));
 
 		-- CS display layer ?
 	end layer_category_changed;
@@ -107,7 +113,7 @@ package body et_canvas_board_texts is
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
 		text_place.face := to_face (glib.values.get_string (item_text));
-		put_line ("face " & to_string (text_place.face));
+		--put_line ("face " & to_string (text_place.face));
 
 		-- CS display layer ?
 	end face_changed;
@@ -127,7 +133,7 @@ package body et_canvas_board_texts is
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
 		text_place.signal_layer := to_signal_layer (glib.values.get_string (item_text));
-		put_line ("signal layer " & to_string (text_place.signal_layer));
+		--put_line ("signal layer " & to_string (text_place.signal_layer));
 
 		-- CS display layer ?
 	end signal_layer_changed;
@@ -143,7 +149,7 @@ package body et_canvas_board_texts is
 		et_canvas_board.redraw_board;
 	end apply_size;
 	
-	function text_size_key_pressed (
+	function size_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
 		event		: gdk_event_key) 
 		return boolean 
@@ -157,22 +163,23 @@ package body et_canvas_board_texts is
 		text : constant string := get_text (gentry);
 	begin
 		case key is
+			when GDK_ESCAPE =>
+				reset_text_place;
+			
 			when GDK_TAB => 
-				put_line ("size via tab " & text);
+				--put_line ("size via tab " & text);
 				apply_size (text);
-				
-				--event_handled := true;
 				
 			when others => nulL;
 		end case;
 		
 		return event_handled;
-	end text_size_key_pressed;
+	end size_key_pressed;
 	
 	procedure size_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
 	begin
-		put_line ("size " & text);
+		--put_line ("size " & text);
 		apply_size (text);
 	end size_entered;
 
@@ -187,7 +194,7 @@ package body et_canvas_board_texts is
 		et_canvas_board.redraw_board;
 	end apply_line_width;
 	
-	function text_line_width_key_pressed (
+	function line_width_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
 		event		: gdk_event_key) 
 		return boolean 
@@ -201,20 +208,23 @@ package body et_canvas_board_texts is
 		text : constant string := get_text (gentry);
 	begin
 		case key is
+			when GDK_ESCAPE =>
+				reset_text_place;
+
 			when GDK_TAB => 
-				put_line ("line width via tab " & text);
+				--put_line ("line width via tab " & text);
 				apply_line_width (text);
 
 			when others => nulL;
 		end case;
 		
 		return event_handled;
-	end text_line_width_key_pressed;
+	end line_width_key_pressed;
 	
 	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
 	begin
-		put_line ("line width " & text);
+		--put_line ("line width " & text);
 		apply_line_width (text);
 	end line_width_entered;
 
@@ -226,7 +236,7 @@ package body et_canvas_board_texts is
 		-- CS validate. output error in status bar
 
 		set (text_place.text.position, rotation);
-		put_line (to_string (text_place.text.position));
+		--put_line (to_string (text_place.text.position));
 		et_canvas_board.redraw_board;
 	end apply_rotation;
 		
@@ -244,8 +254,11 @@ package body et_canvas_board_texts is
 		text : constant string := get_text (gentry);
 	begin
 		case key is
+			when GDK_ESCAPE =>
+				reset_text_place;
+				
 			when GDK_TAB => 
-				put_line ("rotation via tab " & text);
+				--put_line ("rotation via tab " & text);
 				apply_rotation (text);
 
 			when others => nulL;
@@ -257,7 +270,7 @@ package body et_canvas_board_texts is
 	procedure rotation_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
 	begin
-		put_line ("rotation " & text);
+		--put_line ("rotation " & text);
 		apply_rotation (text);
 	end rotation_entered;
 	
@@ -270,18 +283,15 @@ package body et_canvas_board_texts is
 		text_buffer : constant gtk_text_buffer := get_buffer (text_place.entry_content);
 		lower_bound, upper_bound : gtk_text_iter;
 	begin
-		put_line ("button apply clicked");
-
+		--put_line ("button apply clicked");
 		get_bounds (text_buffer, lower_bound, upper_bound);
-
 		--put_line ("content: " & get_text (text_buffer, lower_bound, upper_bound));
-
 		text_place.text.content := to_content (get_text (text_buffer, lower_bound, upper_bound));
 
 		-- CS check length and characters
 		
 		if not is_empty (text_place.text.content) then
-			put_line ("content: " & enclose_in_quotes (to_string (text_place.text.content)));
+			--put_line ("content: " & enclose_in_quotes (to_string (text_place.text.content)));
 			text_place.being_moved := true;
 			canvas.grab_focus;
 		end if;
@@ -290,7 +300,6 @@ package body et_canvas_board_texts is
 
 	procedure reset_text_place is begin
 		text_place.being_moved := false;
-		--text_place.entry_content.destroy;
 
 		-- Remove the text properties bar from the window:
 		if box_properties.displayed then
@@ -298,6 +307,14 @@ package body et_canvas_board_texts is
 			box_properties.displayed := false;
 		end if;
 	end reset_text_place;
+
+	procedure remove_text_properties is 
+		use et_modes.board;
+	begin
+		if verb /= VERB_PLACE then
+			reset_text_place;
+		end if;
+	end remove_text_properties;		
 	
 	procedure show_text_properties is
 		use glib;
@@ -328,15 +345,17 @@ package body et_canvas_board_texts is
 		-- These constants define the minimum and maximum of
 		-- characters that can be entered in the fields for 
 		-- text size and line width:
-		text_size_length_max : constant gint := 3; -- CS: adjust if necessary
 		text_size_length_min : constant gint := 1;
-
-		line_width_length_max : constant gint := 4; -- CS: adjust if necessary
+		text_size_length_max : constant gint := 6; 
+		-- CS: adjust if necessary. see et_terminals parameters of pac_text.
+		
 		line_width_length_min : constant gint := 1;
-
-		rotation_length_max : constant gint := 4; -- CS: adjust if necessary
+		line_width_length_max : constant gint := 5;
+		-- CS: adjust if necessary. see et_terminals parameters of pac_text.
+		
 		rotation_length_min : constant gint := 1;
-
+		rotation_length_max : constant gint := 5;
+		-- CS: adjust if necessary. see et_pcb_coordinates type_rotation.
 		
 		-- The spacing between the boxes:
 		spacing : constant natural := 5;
@@ -506,8 +525,11 @@ package body et_canvas_board_texts is
 			gtk_entry (cbox_size.get_child).set_max_length (text_size_length_max);
 			gtk_entry (cbox_size.get_child).set_width_chars (text_size_length_min);
 
+			-- Set the text size according to the value used last:
+			gtk_entry (cbox_size.get_child).set_text (trim (to_string (text_place.text.size), left));
+			
 			-- The size is to be accepted by either pressing TAB or by pressing ENTER:
-			gtk_entry (cbox_size.get_child).on_key_press_event (text_size_key_pressed'access);
+			gtk_entry (cbox_size.get_child).on_key_press_event (size_key_pressed'access);
 			gtk_entry (cbox_size.get_child).on_activate (size_entered'access);
 		end make_combo_for_size;
 
@@ -523,8 +545,11 @@ package body et_canvas_board_texts is
 			gtk_entry (cbox_line_width.get_child).set_max_length (line_width_length_max);
 			gtk_entry (cbox_line_width.get_child).set_width_chars (line_width_length_min);
 
+			-- Set the line width according to the value used last:
+			gtk_entry (cbox_line_width.get_child).set_text (trim (to_string (text_place.text.line_width), left));
+			
 			-- The width is to be accepted by either pressing TAB or by pressing ENTER:
-			gtk_entry (cbox_line_width.get_child).on_key_press_event (text_line_width_key_pressed'access);
+			gtk_entry (cbox_line_width.get_child).on_key_press_event (line_width_key_pressed'access);
 			gtk_entry (cbox_line_width.get_child).on_activate (line_width_entered'access);
 		end make_combo_for_line_width;
 
@@ -540,6 +565,9 @@ package body et_canvas_board_texts is
 			gtk_entry (cbox_rotation.get_child).set_max_length (rotation_length_max);
 			gtk_entry (cbox_rotation.get_child).set_width_chars (rotation_length_min);
 
+			-- Set the text size according to the value used last:
+			gtk_entry (cbox_rotation.get_child).set_text (trim (to_string (rot (text_place.text.position)), left));
+			
 			-- The rotation is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_rotation.get_child).on_key_press_event (rotation_key_pressed'access);
 			gtk_entry (cbox_rotation.get_child).on_activate (rotation_entered'access);

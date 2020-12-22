@@ -1020,7 +1020,11 @@ package body et_canvas_board is
 									status_verb_invalid;
 							end case;
 
+							---- Clean up: ???
+							---- Some toolbars or property bars must be removed:
+							--et_canvas_board_texts.remove_text_properties; -- after placing text
 
+							
 						when EXP_NOUN =>
 							--put_line ("NOUN entered");
 

@@ -113,8 +113,13 @@ package et_canvas_board_texts is
 
 	text_place : type_text_place;
 
+	-- Clears text_place.being_moved and text_place.displayed.
+	-- Removes the text properties bar.
 	procedure reset_text_place;
 
+	-- Calls reset_text_place if the verb is not VERB_PLACE.
+	procedure remove_text_properties;
+	
 	-- Builds the box for the text properties and
 	-- inserts it below the console.
 	-- If the box is already on display, nothing happens.
