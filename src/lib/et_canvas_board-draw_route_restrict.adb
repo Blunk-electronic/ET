@@ -56,6 +56,7 @@ procedure draw_route_restrict (
 	use pac_route_restrict_polygons;
 	use pac_route_restrict_cutouts;
 	
+	
 	procedure query_line (c : in pac_route_restrict_lines.cursor) is begin
 
 		-- Draw the line if restrict layer is enabled:
@@ -161,6 +162,36 @@ procedure draw_route_restrict (
 		iterate (module.board.route_restrict.cutouts, query_cutout'access);
 
 	end query_items;
+
+
+
+	
+	use et_pcb_stack;
+	
+	-- The top conductor layer 1 is always there:
+	top_layer		: constant type_signal_layer := type_signal_layer'first;
+
+	-- The deepest conductor layer towards bottom is defined by the layer stack:
+	bottom_layer	: constant type_signal_layer := 
+		deepest_conductor_layer (et_canvas_schematic.current_active_module);
+	
+	procedure draw_text_being_placed is 
+		use et_packages;
+	begin
+		-- Iterate all conductor layers starting at the bottom layer and ending
+		-- with the top layer:
+		for ly in reverse top_layer .. bottom_layer loop
+
+			if route_restrict_layer_enabled (ly) then
+	
+				draw_text_being_placed_in_conductors (
+					self, in_area, context, LAYER_CAT_ROUTE_RESTRICT, ly);
+				
+			end if;
+			
+		end loop;
+	end draw_text_being_placed;
+
 	
 begin -- route_restrict
 -- 	put_line ("draw route restrict ...");
@@ -168,6 +199,8 @@ begin -- route_restrict
 	pac_generic_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
+
+	draw_text_being_placed;
 	
 end draw_route_restrict;
 

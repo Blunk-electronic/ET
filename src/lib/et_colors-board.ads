@@ -72,8 +72,8 @@ package et_colors.board is
 	keepout_top			: type_color := orange;
 	keepout_bottom		: type_color := orange;	
 
-	route_restrict		: type_color := red;
-	via_restrict		: type_color := red;
+	route_restrict		: type_color := pink;
+	via_restrict		: type_color := pink;
 
 	-- The colors of signal layers:
 	type type_conductors is array (type_signal_layer'first .. type_signal_layer'last) 

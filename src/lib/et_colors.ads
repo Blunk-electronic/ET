@@ -54,7 +54,8 @@ package et_colors is
 
 	gray		: constant type_color := (0.5, 0.5, 0.5);
 	yellow		: constant type_color := (1.0, 1.0, 0.0);
-	orange		: constant type_color := (1.0, 0.5, 0.0);	
+	orange		: constant type_color := (1.0, 0.5, 0.0);
+	pink		: constant type_color := (1.0, 0.4, 0.4);	
 	mangenta	: constant type_color := (1.0, 0.0, 1.0);
 	turquise	: constant type_color := (0.0, 1.0, 1.0);
 

@@ -113,20 +113,37 @@ package et_display.board is
 
 	-- Returns true if via layer is enabled:
 	function vias_enabled return boolean;
+
+
 	
 	-- Returns true if any route restrict layer is enabled:
 	function route_restrict_enabled return boolean;
+	
+	-- Returns true if the given route restrict layer is enabled:
+	function route_restrict_layer_enabled (
+		layer : in type_signal_layer) 
+		return boolean;
+	
+	-- Returns true if at least one of the given route restrict layers is enabled.
+	function route_restrict_layer_enabled (
+		layers : in type_signal_layers.set)
+		return boolean;
 
+	
+	
 	-- Returns true if any via restrict layer is enabled:
 	function via_restrict_enabled return boolean;	
-
-	-- Returns true if at least one of the given route restrict layers is enabled.
-	function route_restrict_layer_enabled (layers : in type_signal_layers.set)
+	
+	-- Returns true if the given via restrict layer is enabled:
+	function via_restrict_layer_enabled (
+		layer : in type_signal_layer) 
 		return boolean;
-
+	
 	-- Returns true if at least one of the given via restrict layers is enabled.
-	function via_restrict_layer_enabled (layers : in type_signal_layers.set)
+	function via_restrict_layer_enabled (
+		layers : in type_signal_layers.set)
 		return boolean;
+
 	
 	-- Returns all enabled conductor layers in a string like "1..4,7,10..32"
 	function enabled_conductor_layers return string;

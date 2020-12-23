@@ -134,25 +134,6 @@ package body et_display.board is
 		end if;
 	end vias_enabled;
 	
-	function route_restrict_enabled return boolean is begin
-		for r in type_route_restrict'first .. type_route_restrict'last loop
-			if layers.route_restrict (r) = ON then
-				return true;
-			end if;
-		end loop;
-
-		return false;
-	end route_restrict_enabled;
-
-	function via_restrict_enabled return boolean is begin
-		for r in type_via_restrict'first .. type_via_restrict'last loop
-			if layers.via_restrict (r) = ON then
-				return true;
-			end if;
-		end loop;
-
-		return false;
-	end via_restrict_enabled;
 
 	function conductors_enabled return boolean is begin
 		for r in type_conductors'first .. type_conductors'last loop
@@ -184,6 +165,30 @@ package body et_display.board is
 			return false;
 		end if;
 	end conductor_enabled;
+
+
+
+	
+	function route_restrict_enabled return boolean is begin
+		for r in type_route_restrict'first .. type_route_restrict'last loop
+			if layers.route_restrict (r) = ON then
+				return true;
+			end if;
+		end loop;
+
+		return false;
+	end route_restrict_enabled;
+	
+	function route_restrict_layer_enabled (
+		layer : in type_signal_layer) 
+		return boolean 
+	is begin
+		if layers.route_restrict (layer) = ON then
+			return true;
+		else
+			return false;
+		end if;
+	end route_restrict_layer_enabled;
 	
 	function route_restrict_layer_enabled (layers : in type_signal_layers.set)
 		return boolean is
@@ -203,6 +208,30 @@ package body et_display.board is
 		return result;
 	end route_restrict_layer_enabled;
 
+
+	
+
+	function via_restrict_enabled return boolean is begin
+		for r in type_via_restrict'first .. type_via_restrict'last loop
+			if layers.via_restrict (r) = ON then
+				return true;
+			end if;
+		end loop;
+
+		return false;
+	end via_restrict_enabled;
+
+	function via_restrict_layer_enabled (
+		layer : in type_signal_layer) 
+		return boolean 
+	is begin
+		if layers.via_restrict (layer) = ON then
+			return true;
+		else
+			return false;
+		end if;
+	end via_restrict_layer_enabled;
+	
 	function via_restrict_layer_enabled (layers : in type_signal_layers.set)
 		return boolean is
 		result : boolean := false;
@@ -221,6 +250,8 @@ package body et_display.board is
 		return result;
 	end via_restrict_layer_enabled;
 
+
+	
 	function enabled_conductor_layers return string is
 		use ada.text_io;
 		use ada.strings;
