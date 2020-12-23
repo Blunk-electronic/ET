@@ -402,6 +402,10 @@ is
 
 				-- tracks:
 				iterate (module.nets, query_net'access);
+
+				
+				draw_text_being_placed_in_conductors (
+					self, in_area, context, et_packages.LAYER_CAT_CONDUCTOR, ly);
 				
 			end if;
 		end loop;
@@ -413,6 +417,7 @@ begin -- draw_conductors
 	pac_generic_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
+
 	
 end draw_conductors;
 

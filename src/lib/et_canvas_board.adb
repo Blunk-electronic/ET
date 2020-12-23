@@ -588,6 +588,64 @@ package body et_canvas_board is
 		end if;
 	end draw_text_being_placed_in_outline;
 
+	-- This procedure draws the text that is being placed in a
+	-- conductor layer.
+	-- The properties are taken from variable et_canvas_board_texts.text_place.
+	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. 
+	-- Otherwise nothing happens here:
+	procedure draw_text_being_placed_in_conductors (
+		self    	: not null access type_view;
+		in_area		: in type_rectangle := no_rectangle;
+		context 	: in type_draw_context;
+		category	: in et_packages.type_layer_category_conductor;
+		layer		: in et_pcb_stack.type_signal_layer)
+	is 
+		use et_packages;
+		use et_pcb_stack;
+		use et_text;
+		use et_terminals.pac_text.pac_vector_text_lines;
+		vector_text : et_terminals.pac_text.pac_vector_text_lines.list;
+
+		-- The place where the text shall be placed:
+		point : type_point;
+
+		-- The place where the text origin will be drawn:
+		origin : type_position;
+	begin
+		if verb = VERB_PLACE and noun = NOUN_TEXT and text_place.being_moved then
+			
+			if text_place.category = category and text_place.signal_layer = layer then
+
+				-- Set the point where the text is to be drawn:
+				case primary_tool is
+					when KEYBOARD	=> point := cursor_main.position;
+					when MOUSE		=> point := self.snap_to_grid (self.mouse_position);
+				end case;
+
+				-- Draw the origin of the text:
+				origin := type_position (to_position (point, zero_rotation));
+				draw_text_origin (self, origin, in_area, context);
+
+				-- Set the line width of the vector text:
+				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
+
+				-- Vectorize the text:
+				vector_text := et_terminals.pac_text.vectorize (
+					content		=> text_place.text.content,
+					size		=> text_place.text.size,
+					rotation	=> rot (text_place.text.position),
+					position	=> point,
+					mirror		=> NO,
+					line_width	=> text_place.text.line_width,
+					alignment	=> text_place.text.alignment -- right, bottom
+					);
+
+				-- Draw the text:
+				draw_vector_text (in_area, context, vector_text, self.frame_height);
+			end if;
+		end if;
+	end draw_text_being_placed_in_conductors;
+
 	
 	procedure draw_outline (
 		self    : not null access type_view;

@@ -4092,7 +4092,7 @@ package body et_board_ops is
 			case layer_category is
 				when LAYER_CAT_OUTLINE =>
 					null;
-					-- CS append (module.board.outline.top.texts, text);
+					-- CS append (module.board.contours.texts, text);
 
 				when others => null; -- CS
 			end case;

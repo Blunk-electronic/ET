@@ -79,6 +79,7 @@ package et_packages is
 
 	type type_layer_category is (
 		LAYER_CAT_OUTLINE,
+		-- CS LAYER_CAT_OUTLINE_TEMPLATE -- CS
 									
 		-- NON CONDUCTOR LAYERS.
 		-- These layers are paired. Means there is a TOP and a BOTTOM:
