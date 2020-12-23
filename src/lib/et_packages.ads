@@ -78,24 +78,31 @@ package et_packages is
 	layer_category_prefix : constant string := "LAYER_CAT_";
 
 	type type_layer_category is (
-		-- NON CONDUCTOR LAYERS:
+		LAYER_CAT_OUTLINE,
+									
+		-- NON CONDUCTOR LAYERS.
+		-- These layers are paired. Means there is a TOP and a BOTTOM:
 		LAYER_CAT_ASSY,
 		LAYER_CAT_KEEPOUT,
-		LAYER_CAT_OUTLINE,
 		LAYER_CAT_SILKSCREEN,
 		LAYER_CAT_STENCIL,
 		LAYER_CAT_STOP,
 
-		-- CONDUCTOR LAYERS:
+		-- CONDUCTOR LAYERS.
+		-- These layers are numbered:
 		LAYER_CAT_CONDUCTOR,
 		
 		-- NOTE: Restrict layers do not contain any conducting
 		-- objects. They are irrelevant for manufacturing.
 		-- Since they are of mere supportive nature the are here
-		-- regarded as conducor layers:
+		-- regarded as conducor layers.
+		-- These layers are numbered:
 		LAYER_CAT_ROUTE_RESTRICT,
 		LAYER_CAT_VIA_RESTRICT);
 
+	subtype type_layer_category_outline is type_layer_category
+		range LAYER_CAT_OUTLINE .. LAYER_CAT_OUTLINE;
+	
 	subtype type_layer_category_non_conductor is type_layer_category
 		range LAYER_CAT_ASSY .. LAYER_CAT_STOP;
 

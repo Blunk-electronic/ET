@@ -4076,7 +4076,36 @@ package body et_board_ops is
 			process		=> place_text'access);
 
 	end place_text_in_non_conductor_layer;
-	
+
+	procedure place_text_in_outline_layer (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer_category	: in type_layer_category_outline;
+		text			: in type_text_with_content;
+		log_threshold	: in type_log_level)
+	is 
+		procedure place_text (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			use pac_texts_with_content;
+		begin
+			case layer_category is
+				when LAYER_CAT_OUTLINE =>
+					null;
+					-- CS append (module.board.outline.top.texts, text);
+
+				when others => null; -- CS
+			end case;
+		end place_text;
+
+	begin
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> place_text'access);
+
+	end place_text_in_outline_layer;
+
 	
 	procedure place_text_in_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
