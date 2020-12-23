@@ -95,6 +95,8 @@ package body et_canvas_board_texts is
 		text_place.category := to_layer_category (glib.values.get_string (item_text));
 		--put_line ("cat " & to_string (text_place.category));
 
+		et_canvas_board.redraw_board;
+		
 		-- CS display layer ?
 	end layer_category_changed;
 
@@ -115,6 +117,8 @@ package body et_canvas_board_texts is
 		text_place.face := to_face (glib.values.get_string (item_text));
 		--put_line ("face " & to_string (text_place.face));
 
+		et_canvas_board.redraw_board;
+		
 		-- CS display layer ?
 	end face_changed;
 
@@ -135,6 +139,8 @@ package body et_canvas_board_texts is
 		text_place.signal_layer := to_signal_layer (glib.values.get_string (item_text));
 		--put_line ("signal layer " & to_string (text_place.signal_layer));
 
+		et_canvas_board.redraw_board;
+		
 		-- CS display layer ?
 	end signal_layer_changed;
 

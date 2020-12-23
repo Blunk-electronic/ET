@@ -43,8 +43,8 @@ procedure draw_assy_doc (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context;
-	face	: in type_face) is
-
+	face	: in type_face)
+is
 	use et_general;
 	use et_terminals.pac_shapes;	
 	use et_packages;
@@ -226,51 +226,7 @@ procedure draw_assy_doc (
 				iterate (module.board.assy_doc.bottom.texts, query_text'access);
 
 		end case;
-
 	end query_items;
-
-	procedure draw_text_being_placed is 
-		use pac_text.pac_vector_text_lines;
-		vector_text : pac_text.pac_vector_text_lines.list;
-		point : type_point;
-		destination : type_position;
-	begin
-		case primary_tool is
-			when KEYBOARD	=> point := cursor_main.position;
-			when MOUSE		=> point := self.snap_to_grid (self.mouse_position);
-		end case;
-
-		destination := type_position (to_position (point, zero_rotation));
-		
-		case verb is
-			when VERB_PLACE =>
-
-				draw_text_origin (self, destination, in_area, context);
-
-				-- Set the line width of the vector text:
-				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
-
-				-- Vectorize the text:
-				vector_text := pac_text.vectorize (
-					content		=> text_place.text.content,
-					size		=> text_place.text.size,
-					rotation	=> rot (text_place.text.position),
-					position	=> point,
-					mirror		=> face_to_mirror (text_place.face),
-					line_width	=> text_place.text.line_width,
-					alignment	=> text_place.text.alignment -- right, bottom
-					);
-
-				-- Draw the text:
-				draw_vector_text (in_area, context, vector_text, self.frame_height);
-
-				
-			when others => null;
-		end case;
-				
-	end draw_text_being_placed;
-
-
 	
 begin -- draw_assy_doc
 -- 	put_line ("draw board assembly documentation ...");
@@ -279,10 +235,7 @@ begin -- draw_assy_doc
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 
-
-	if text_place.being_moved then
-		draw_text_being_placed;
-	end if;
+	draw_text_being_placed (self, in_area, context, face, LAYER_CAT_ASSY);
 	
 end draw_assy_doc;
 

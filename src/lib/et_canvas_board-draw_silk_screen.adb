@@ -233,6 +233,8 @@ begin -- draw_silk_screen
 	pac_generic_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
+
+	draw_text_being_placed (self, in_area, context, face, LAYER_CAT_SILKSCREEN);
 	
 end draw_silk_screen;
 

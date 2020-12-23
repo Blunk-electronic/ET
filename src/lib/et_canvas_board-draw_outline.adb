@@ -97,6 +97,8 @@ begin -- draw_outline
 	pac_generic_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_segments'access);
+
+	draw_text_being_placed_in_outline (self, in_area, context);
 	
 end draw_outline;
 

@@ -478,6 +478,117 @@ package body et_canvas_board is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	-- This procedure draws the text that is being placed in a
+	-- paired layer. The properties
+	-- are taken from variable et_canvas_board_texts.text_place.
+	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. Otherwise
+	-- nothing happens here:
+	procedure draw_text_being_placed (
+		self    	: not null access type_view;
+		in_area		: in type_rectangle := no_rectangle;
+		context 	: in type_draw_context;
+		face		: in type_face;
+		category	: in et_packages.type_layer_category_non_conductor)
+	is 
+		use et_packages;
+		use et_terminals.pac_text.pac_vector_text_lines;
+		vector_text : et_terminals.pac_text.pac_vector_text_lines.list;
+
+		-- The place where the text shall be placed:
+		point : type_point;
+
+		-- The place where the text origin will be drawn:
+		origin : type_position;
+	begin
+		if verb = VERB_PLACE and noun = NOUN_TEXT and text_place.being_moved then
+
+			if text_place.category = category and text_place.face = face then
+
+				-- Set the point where the text is to be drawn:
+				case primary_tool is
+					when KEYBOARD	=> point := cursor_main.position;
+					when MOUSE		=> point := self.snap_to_grid (self.mouse_position);
+				end case;
+
+				-- Draw the origin of the text:
+				origin := type_position (to_position (point, zero_rotation));
+				draw_text_origin (self, origin, in_area, context);
+
+				-- Set the line width of the vector text:
+				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
+
+				-- Vectorize the text:
+				vector_text := et_terminals.pac_text.vectorize (
+					content		=> text_place.text.content,
+					size		=> text_place.text.size,
+					rotation	=> rot (text_place.text.position),
+					position	=> point,
+					mirror		=> face_to_mirror (face),
+					line_width	=> text_place.text.line_width,
+					alignment	=> text_place.text.alignment -- right, bottom
+					);
+
+				-- Draw the text:
+				draw_vector_text (in_area, context, vector_text, self.frame_height);
+
+			end if;
+		end if;
+	end draw_text_being_placed;
+
+	-- This procedure draws the text that is being placed in outline/contours.
+	-- The properties are taken from variable et_canvas_board_texts.text_place.
+	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. 
+	-- The layer category of text_place must be LAYER_CAT_OUTLINE.
+	-- Otherwise nothing happens here:
+	procedure draw_text_being_placed_in_outline (
+		self    	: not null access type_view;
+		in_area		: in type_rectangle := no_rectangle;
+		context 	: in type_draw_context)
+	is 
+		use et_packages;
+		use et_text;
+		use et_terminals.pac_text.pac_vector_text_lines;
+		vector_text : et_terminals.pac_text.pac_vector_text_lines.list;
+
+		-- The place where the text shall be placed:
+		point : type_point;
+
+		-- The place where the text origin will be drawn:
+		origin : type_position;
+	begin
+		if verb = VERB_PLACE and noun = NOUN_TEXT and text_place.being_moved 
+		and text_place.category = LAYER_CAT_OUTLINE then
+
+			-- Set the point where the text is to be drawn:
+			case primary_tool is
+				when KEYBOARD	=> point := cursor_main.position;
+				when MOUSE		=> point := self.snap_to_grid (self.mouse_position);
+			end case;
+
+			-- Draw the origin of the text:
+			origin := type_position (to_position (point, zero_rotation));
+			draw_text_origin (self, origin, in_area, context);
+
+			-- Set the line width of the vector text:
+			set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
+
+			-- Vectorize the text:
+			vector_text := et_terminals.pac_text.vectorize (
+				content		=> text_place.text.content,
+				size		=> text_place.text.size,
+				rotation	=> rot (text_place.text.position),
+				position	=> point,
+				mirror		=> NO,
+				line_width	=> text_place.text.line_width,
+				alignment	=> text_place.text.alignment -- right, bottom
+				);
+
+			-- Draw the text:
+			draw_vector_text (in_area, context, vector_text, self.frame_height);
+		end if;
+	end draw_text_being_placed_in_outline;
+
+	
 	procedure draw_outline (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
@@ -512,7 +623,7 @@ package body et_canvas_board is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context;
 		face	: in type_face) is separate;
-
+	
 	procedure draw_route_restrict (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;
