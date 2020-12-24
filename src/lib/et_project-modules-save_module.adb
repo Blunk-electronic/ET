@@ -1470,6 +1470,7 @@ is
 			iterate (element (module_cursor).board.contours.lines, write_line'access);
 			iterate (element (module_cursor).board.contours.arcs, write_arc'access);
 			iterate (element (module_cursor).board.contours.circles, write_circle'access);
+			iterate (element (module_cursor).board.contours.texts, write_text'access);
 		section_mark (section_pcb_contours, FOOTER);
 		
 		---BOARD END-----

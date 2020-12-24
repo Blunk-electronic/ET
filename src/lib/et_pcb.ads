@@ -185,6 +185,7 @@ package et_pcb is
 		lines 	: pac_pcb_contour_lines.list;
 		arcs	: pac_pcb_contour_arcs.list;
 		circles	: pac_pcb_contour_circles.list;
+		texts	: pac_texts_with_content.list;
 	end record;
 
 

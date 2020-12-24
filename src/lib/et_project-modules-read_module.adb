@@ -741,6 +741,47 @@ is
 			invalid_keyword (kw);
 		end if;
 	end read_schematic_text;
+
+	procedure read_board_text_non_conductor is 
+		use et_pcb_coordinates.pac_geometry_brd;
+		kw : constant  string := f (line, 1);
+	begin
+		case stack.parent (degree => 2) is
+			when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK 
+				| SEC_CONTOURS => -- CS SEC_KEEPOUT
+
+				-- CS: In the following: set a corresponding parameter-found-flag
+				if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+					expect_field_count (line, 7);
+
+					-- extract position of note starting at field 2
+					board_text.position := to_position (line, 2);
+
+				elsif kw = et_text.keyword_size then -- size 1.000
+					expect_field_count (line, 2);
+					board_text.size := to_distance (f (line, 2));
+
+				elsif kw = et_text.keyword_line_width then -- line_width 0.1
+					expect_field_count (line, 2);
+					board_text.line_width := to_distance (f (line, 2));
+
+				elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+					expect_field_count (line, 5);
+
+					-- extract alignment starting at field 2
+					board_text.alignment := et_text.to_alignment (line, 2);
+					
+				elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
+					expect_field_count (line, 2); -- actual content in quotes !
+					board_text.content := et_text.to_content (f (line, 2));
+					
+				else
+					invalid_keyword (kw);
+				end if;
+				
+			when others => invalid_section;
+		end case;
+	end read_board_text_non_conductor;
 	
 	procedure read_layer is
 		kw : constant string := f (line, 1);
@@ -2810,6 +2851,29 @@ is
 				board_reset_lock_status;
 			end insert_circle_contour;
 
+			--procedure insert_text_contour is
+				--use et_pcb;
+				
+				--procedure do_it (
+					--module_name	: in pac_module_name.bounded_string;
+					--module		: in out et_schematic.type_module) is
+				--begin
+					--pac_pcb_contour_circles.append (
+						--container	=> module.board.contours.texts,
+						--new_item	=> (et_terminals.pac_shapes.type_circle (board_circle) with board_lock_status));
+				--end do_it;
+									
+			--begin -- insert_text_contour
+				--update_element (
+					--container	=> generic_modules,
+					--position	=> module_cursor,
+					--process		=> do_it'access);
+
+				---- clean up for next pcb contour circle
+				--board_reset_circle;
+				--board_reset_lock_status;
+			--end insert_text_contour;
+			
 			procedure insert_netchanger (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
@@ -5737,45 +5801,8 @@ is
 						when SEC_TEXTS => -- in schematic
 							read_schematic_text;
 
-						when SEC_TOP | SEC_BOTTOM =>
-							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
-									declare
-										use et_pcb_coordinates.pac_geometry_brd;
-										kw : string := f (line, 1);
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
-											expect_field_count (line, 7);
-
-											-- extract position of note starting at field 2
-											board_text.position := to_position (line, 2);
-
-										elsif kw = et_text.keyword_size then -- size 1.000
-											expect_field_count (line, 2);
-											board_text.size := to_distance (f (line, 2));
-
-										elsif kw = et_text.keyword_line_width then -- line_width 0.1
-											expect_field_count (line, 2);
-											board_text.line_width := to_distance (f (line, 2));
-
-										elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
-											expect_field_count (line, 5);
-
-											-- extract alignment starting at field 2
-											board_text.alignment := et_text.to_alignment (line, 2);
-											
-										elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
-											expect_field_count (line, 2); -- actual content in quotes !
-											board_text.content := et_text.to_content (f (line, 2));
-											
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-									
-								when others => invalid_section;
-							end case;
+						when SEC_TOP | SEC_BOTTOM => -- in board
+							read_board_text_non_conductor;
 
 						when SEC_COPPER =>
 							declare
