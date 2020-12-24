@@ -175,7 +175,7 @@ package body et_frames is
 			(( 89, 25),(220, 25))  -- horizontal
 			);
 		
-		lines_pcb : constant type_lines (1 .. 9) := (
+		lines_pcb : constant type_lines (1 .. 8) := (
 			-- outer lines
 			((  0,  0),(220,  0)),
 			((220,  0),(220, 50)),
@@ -184,10 +184,10 @@ package body et_frames is
 
 			-- inner lines
 			(( 89,  0),( 89, 50)), -- vertical
-			((119, 20),(119,  0)), -- vertical
-			((150, 20),(150,  0)), -- vertical
-			(( 89, 15),(220, 15)), -- horizontal
-			(( 89, 20),(220, 20)) -- horizontal
+			((119, 15),(119,  0)), -- vertical
+			((150, 15),(150,  0)), -- vertical
+			(( 89, 15),(220, 15)) -- horizontal
+			--(( 89, 20),(220, 20)) -- horizontal
 			);
 
 		-- Collects the lines of the given array and returns them as a list:
@@ -205,7 +205,7 @@ package body et_frames is
 		-- TEXTS IN TITLE BLOCK
 		type type_texts is array (positive range <>) of type_text;
 
-		texts_sch : constant type_texts (1 .. 16) := (
+		texts_sch : constant type_texts (1 .. 14) := (
 			(position => (  2, 36), size => 3, content => et_text.to_content ("Company:")),
 			(position => (  2, 31), size => 3, content => et_text.to_content ("Project:")),
 			(position => (  2, 26), size => 3, content => et_text.to_content ("Module:")),
@@ -215,8 +215,8 @@ package body et_frames is
 			(position => (  2,  6), size => 3, content => et_text.to_content ("Drwg. No:")),
 			(position => (  2,  1), size => 3, content => et_text.to_content ("Revision:")),
 
-			(position => (120, 16), size => 3, content => et_text.to_content ("date")),
-			(position => (152, 16), size => 3, content => et_text.to_content ("name")),
+			--(position => (120, 16), size => 3, content => et_text.to_content ("date")),
+			--(position => (152, 16), size => 3, content => et_text.to_content ("name")),
 			(position => ( 90, 11), size => 3, content => et_text.to_content ("edited:")),
 			(position => ( 90,  6), size => 3, content => et_text.to_content ("checked:")),
 			(position => ( 90,  1), size => 3, content => et_text.to_content ("approved")),
@@ -226,7 +226,7 @@ package body et_frames is
 			(position => ( 90, 21), size => 3, content => et_text.to_content ("CAT:"))
 			);
 
-		texts_pcb : constant type_texts (1 .. 13) := (
+		texts_pcb : constant type_texts (1 .. 11) := (
 			(position => (  2, 36), size => 3, content => et_text.to_content ("Company:")),
 			(position => (  2, 31), size => 3, content => et_text.to_content ("Project:")),
 			(position => (  2, 26), size => 3, content => et_text.to_content ("Module:")),
@@ -236,8 +236,8 @@ package body et_frames is
 			(position => (  2,  6), size => 3, content => et_text.to_content ("Drwg. No:")),
 			(position => (  2,  1), size => 3, content => et_text.to_content ("Revision:")),
 
-			(position => (120, 16), size => 3, content => et_text.to_content ("date")),
-			(position => (152, 16), size => 3, content => et_text.to_content ("name")),
+			--(position => (120, 16), size => 3, content => et_text.to_content ("date")),
+			--(position => (152, 16), size => 3, content => et_text.to_content ("name")),
 			(position => ( 90, 11), size => 3, content => et_text.to_content ("edited:")),
 			(position => ( 90,  6), size => 3, content => et_text.to_content ("checked:")),
 			(position => ( 90,  1), size => 3, content => et_text.to_content ("approved"))
@@ -312,15 +312,19 @@ package body et_frames is
 				-- cam markers
 				frame.title_block_pcb.cam_markers.face.position 							:= ( 90, 46);
 				frame.title_block_pcb.cam_markers.signal_layer.position 					:= ( 90, 41);
+				
 				frame.title_block_pcb.cam_markers.silk_screen.position 						:= (120, 36);
-				frame.title_block_pcb.cam_markers.assy_doc.position 						:= (150, 36);
-				frame.title_block_pcb.cam_markers.stop_mask.position 						:= (175, 36);
-				frame.title_block_pcb.cam_markers.stencil.position 							:= (190, 36);
-				frame.title_block_pcb.cam_markers.pcb_outline.position 						:= (120, 31);
-				frame.title_block_pcb.cam_markers.plated_millings.position					:= (145, 31);
-				frame.title_block_pcb.cam_markers.keepout.position 							:= (185, 31);
-				frame.title_block_pcb.cam_markers.route_restrict.position 					:= ( 90, 26);
-				frame.title_block_pcb.cam_markers.via_restrict.position 					:= ( 90, 16);
+				frame.title_block_pcb.cam_markers.assy_doc.position 						:= (155, 36);
+				frame.title_block_pcb.cam_markers.keepout.position 							:= (185, 36);
+				
+				frame.title_block_pcb.cam_markers.stop_mask.position 						:= (120, 31);
+				frame.title_block_pcb.cam_markers.stencil.position 							:= (155, 31);
+
+				frame.title_block_pcb.cam_markers.pcb_outline.position 						:= (120, 26);
+				frame.title_block_pcb.cam_markers.plated_millings.position					:= (155, 26);
+
+				frame.title_block_pcb.cam_markers.route_restrict.position 					:= (120, 21);
+				frame.title_block_pcb.cam_markers.via_restrict.position 					:= (170, 21);
 		end case;
 	end apply_defaults;
 	

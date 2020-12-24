@@ -45,7 +45,7 @@ with ada.directories;			use ada.directories;
 with et_geometry;				use et_geometry;
 with et_coordinates;			use et_coordinates;
 with et_general;				use et_general;
-with et_text;
+with et_text;					use et_text;
 
 with glib;
 with cairo;
@@ -184,7 +184,7 @@ package et_frames is
 
 	
 	type type_text is new type_placeholder with record
-		content			: et_text.type_text_content.bounded_string;
+		content			: type_text_content.bounded_string;
 	end record;
 
 	package pac_texts is new doubly_linked_lists (type_text);
@@ -203,20 +203,20 @@ package et_frames is
 
 	
 	-- GUI relevant only: The font of placeholders:
-	font_placeholders : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+	font_placeholders : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);	
 
 	-- GUI relevant only: The font of other texts:
-	font_texts : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+	font_texts : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);	
 
 	-- GUI relevant only: The font of column and row indexes:
-	font_indexes : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+	font_indexes : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);	
 
@@ -279,17 +279,17 @@ package et_frames is
 	type type_cam_marker is new type_text with null record;
 
 	type type_cam_markers is record
-		face			: type_cam_marker := (content => et_text.to_content ("FACE:"), others => <>);
-		silk_screen		: type_cam_marker := (content => et_text.to_content ("SILKSCREEN"), others => <>);
-		assy_doc		: type_cam_marker := (content => et_text.to_content ("ASSEMBLY"), others => <>);
-		keepout			: type_cam_marker := (content => et_text.to_content ("KEEPOUT"), others => <>);
-		plated_millings	: type_cam_marker := (content => et_text.to_content ("PLTD_MILLGS"), others => <>); 
-		pcb_outline 	: type_cam_marker := (content => et_text.to_content ("OUTLINE"), others => <>);
-		route_restrict	: type_cam_marker := (content => et_text.to_content ("ROUTE_RESTR:"), others => <>);
-		via_restrict	: type_cam_marker := (content => et_text.to_content ("VIA_RESTR:"), others => <>);		
-		signal_layer	: type_cam_marker := (content => et_text.to_content ("SGNL_LYR:"), others => <>);
-		stencil			: type_cam_marker := (content => et_text.to_content ("STENCIL"), others => <>);		
-		stop_mask		: type_cam_marker := (content => et_text.to_content ("STOP_MASK"), others => <>);
+		face			: type_cam_marker := (content => to_content ("FACE:"), others => <>);
+		silk_screen		: type_cam_marker := (content => to_content ("SILKSCREEN"), others => <>);
+		assy_doc		: type_cam_marker := (content => to_content ("ASSEMBLY"), others => <>);
+		keepout			: type_cam_marker := (content => to_content ("KEEPOUT"), others => <>);
+		plated_millings	: type_cam_marker := (content => to_content ("PLTD_MILLGS"), others => <>); 
+		pcb_outline 	: type_cam_marker := (content => to_content ("OUTLINE"), others => <>);
+		route_restrict	: type_cam_marker := (content => to_content ("ROUTE_RESTRICT"), others => <>);
+		via_restrict	: type_cam_marker := (content => to_content ("VIA_RESTRICT"), others => <>);		
+		signal_layer	: type_cam_marker := (content => to_content ("SGNL_LYR:"), others => <>);
+		stencil			: type_cam_marker := (content => to_content ("STENCIL"), others => <>);		
+		stop_mask		: type_cam_marker := (content => to_content ("STOP_MASK"), others => <>);
 	end record;
 	
 	type type_placeholders_pcb is new type_placeholders_basic with record
@@ -366,7 +366,7 @@ package et_frames is
 	function to_category (cat : in string) return type_schematic_sheet_category;
 	
 	type type_schematic_description is record
-		content		: et_text.type_text_content.bounded_string := et_text.to_content ("no description");
+		content		: type_text_content.bounded_string := to_content ("no description");
 		category	: type_schematic_sheet_category := schematic_sheet_category_default;
 	end record;
 		

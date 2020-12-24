@@ -560,7 +560,7 @@ package et_pcb is
 	-- The board origin is positioned x/y away from the lower left
 	-- corner of the drawing frame.
 	-- Unless specified by operator the board origin default is:
-	origin_default : constant type_point := type_point (set (20.0, 50.0));
+	origin_default : constant type_point := type_point (set (20.0, 62.0));
 
 
 	-- This is general board stuff:
