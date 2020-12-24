@@ -44,7 +44,6 @@ procedure read_module (
 	file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 	log_threshold	: in et_string_processing.type_log_level) 
 is
-
 	previous_input : ada.text_io.file_type renames current_input;
 
 	use et_string_processing;
@@ -925,6 +924,7 @@ is
 			
 			-- for sorting general board stuff:
 			type type_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION, STENCIL, STOP_MASK, KEEPOUT);
+			-- CS remove
 			
 			procedure insert_net_class (
 				module_name	: in pac_module_name.bounded_string;
@@ -2235,33 +2235,35 @@ is
 			end insert_cutout_copper;
 			
 			procedure insert_text (
-				layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
-				face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+				layer_cat	: in et_packages.type_layer_category;
+				face		: in et_pcb_coordinates.type_face)  -- TOP, BOTTOM
+			is
 			-- The board_text has been a general thing until now. 
-			-- Depending on the layer and the side of the board (face) the board_text
+			-- Depending on the layer category and the side of the board (face) the board_text
 			-- is now assigned to the board where it belongs to.
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
+					module		: in out et_schematic.type_module) 
+				is
 					use et_pcb_coordinates;
 					use et_packages;
 					use et_pcb;
-				begin -- do_it
+				begin
 					case face is
 						when TOP =>
-							case layer is
-								when SILK_SCREEN =>
+							case layer_cat is
+								when LAYER_CAT_SILKSCREEN =>
 									pac_texts_with_content.append (
 										container	=> module.board.silk_screen.top.texts,
 										new_item	=> board_text);
 
-								when ASSEMBLY_DOCUMENTATION =>
+								when LAYER_CAT_ASSY =>
 									pac_texts_with_content.append (
 										container	=> module.board.assy_doc.top.texts,
 										new_item	=> board_text);
 
-								when STOP_MASK =>
+								when LAYER_CAT_STOP =>
 									pac_texts_with_content.append (
 										container	=> module.board.stop_mask.top.texts,
 										new_item	=> board_text);
@@ -2276,18 +2278,18 @@ is
 							end case;
 							
 						when BOTTOM => null;
-							case layer is
-								when SILK_SCREEN =>
+							case layer_cat is
+								when LAYER_CAT_SILKSCREEN =>
 									pac_texts_with_content.append (
 										container	=> module.board.silk_screen.bottom.texts,
 										new_item	=> board_text);
 
-								when ASSEMBLY_DOCUMENTATION =>
+								when LAYER_CAT_ASSY =>
 									pac_texts_with_content.append (
 										container	=> module.board.assy_doc.bottom.texts,
 										new_item	=> board_text);
 									
-								when STOP_MASK =>
+								when LAYER_CAT_STOP =>
 									pac_texts_with_content.append (
 										container	=> module.board.stop_mask.bottom.texts,
 										new_item	=> board_text);
@@ -2315,32 +2317,35 @@ is
 			end insert_text;
 
 			procedure insert_placeholder (
-				layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
-				face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+				layer_cat	: in et_packages.type_layer_category;
+				face		: in et_pcb_coordinates.type_face)  -- TOP, BOTTOM
+			is
 			-- The board_text_placeholder has been a general thing until now. 
 			-- Depending on the layer and the side of the board (face) the board_text_placeholder
 			-- is now assigned to the board where it belongs to.
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
+					module		: in out et_schematic.type_module) 
+				is
 					use et_pcb_coordinates;
+					--use et_packages;
 					use et_pcb;
-				begin -- do_it
+				begin
 					case face is
 						when TOP =>
-							case layer is
-								when SILK_SCREEN =>
-									pac_text_placeholders.append (
+							case layer_cat is
+								when et_packages.LAYER_CAT_SILKSCREEN =>
+									 pac_text_placeholders.append (
 										container	=> module.board.silk_screen.top.placeholders,
 										new_item	=> board_text_placeholder);
 
-								when ASSEMBLY_DOCUMENTATION =>
+								when et_packages.LAYER_CAT_ASSY =>
 									pac_text_placeholders.append (
 										container	=> module.board.assy_doc.top.placeholders,
 										new_item	=> board_text_placeholder);
 
-								when STOP_MASK =>
+								when et_packages.LAYER_CAT_STOP =>
 									pac_text_placeholders.append (
 										container	=> module.board.stop_mask.top.placeholders,
 										new_item	=> board_text_placeholder);
@@ -2355,18 +2360,18 @@ is
 							end case;
 							
 						when BOTTOM => null;
-							case layer is
-								when SILK_SCREEN =>
+							case layer_cat is
+								when et_packages.LAYER_CAT_SILKSCREEN =>
 									pac_text_placeholders.append (
 										container	=> module.board.silk_screen.bottom.placeholders,
 										new_item	=> board_text_placeholder);
 
-								when ASSEMBLY_DOCUMENTATION =>
+								when et_packages.LAYER_CAT_ASSY =>
 									pac_text_placeholders.append (
 										container	=> module.board.assy_doc.bottom.placeholders,
 										new_item	=> board_text_placeholder);
 									
-								when STOP_MASK =>
+								when et_packages.LAYER_CAT_STOP =>
 									pac_text_placeholders.append (
 										container	=> module.board.stop_mask.bottom.placeholders,
 										new_item	=> board_text_placeholder);
@@ -3917,18 +3922,18 @@ is
 							case stack.parent (degree => 2) is
 								when SEC_SILK_SCREEN =>
 									insert_text (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.TOP);
+										layer_cat	=> et_packages.LAYER_CAT_SILKSCREEN,
+										face		=> et_pcb_coordinates.TOP);
 
 								when SEC_ASSEMBLY_DOCUMENTATION =>
 									insert_text (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.TOP);
+										layer_cat	=> et_packages.LAYER_CAT_ASSY,
+										face		=> et_pcb_coordinates.TOP);
 
 								when SEC_STOP_MASK =>
 									insert_text (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.TOP);
+										layer_cat	=> et_packages.LAYER_CAT_STOP,
+										face		=> et_pcb_coordinates.TOP);
 
 								-- CS
 								--when SEC_KEEPOUT =>
@@ -3943,18 +3948,18 @@ is
 							case stack.parent (degree => 2) is
 								when SEC_SILK_SCREEN =>
 									insert_text (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.BOTTOM);
+										layer_cat	=> et_packages.LAYER_CAT_SILKSCREEN,
+										face		=> et_pcb_coordinates.BOTTOM);
 
 								when SEC_ASSEMBLY_DOCUMENTATION =>
 									insert_text (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.BOTTOM);
+										layer_cat	=> et_packages.LAYER_CAT_ASSY,
+										face		=> et_pcb_coordinates.BOTTOM);
 
 								when SEC_STOP_MASK =>
 									insert_text (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.BOTTOM);
+										layer_cat	=> et_packages.LAYER_CAT_STOP,
+										face		=> et_pcb_coordinates.BOTTOM);
 
 								-- CS
 								--when SEC_KEEPOUT =>
@@ -4004,18 +4009,18 @@ is
 							case stack.parent (degree => 2) is
 								when SEC_SILK_SCREEN =>
 									insert_placeholder (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.TOP);
+										layer_cat	=> et_packages.LAYER_CAT_SILKSCREEN,
+										face		=> et_pcb_coordinates.TOP);
 
 								when SEC_ASSEMBLY_DOCUMENTATION =>
 									insert_placeholder (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.TOP);
+										layer_cat	=> et_packages.LAYER_CAT_ASSY,
+										face		=> et_pcb_coordinates.TOP);
 
 								when SEC_STOP_MASK =>
 									insert_placeholder (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.TOP);
+										layer_cat	=> et_packages.LAYER_CAT_STOP,
+										face		=> et_pcb_coordinates.TOP);
 
 								when others => invalid_section;
 							end case;
@@ -4024,18 +4029,18 @@ is
 							case stack.parent (degree => 2) is
 								when SEC_SILK_SCREEN =>
 									insert_placeholder (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.BOTTOM);
+										layer_cat	=> et_packages.LAYER_CAT_SILKSCREEN,
+										face		=> et_pcb_coordinates.BOTTOM);
 
 								when SEC_ASSEMBLY_DOCUMENTATION =>
 									insert_placeholder (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.BOTTOM);
+										layer_cat	=> et_packages.LAYER_CAT_ASSY,
+										face		=> et_pcb_coordinates.BOTTOM);
 
 								when SEC_STOP_MASK =>
 									insert_placeholder (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.BOTTOM);
+										layer_cat	=> et_packages.LAYER_CAT_STOP,
+										face		=> et_pcb_coordinates.BOTTOM);
 
 								when others => invalid_section;
 							end case;
