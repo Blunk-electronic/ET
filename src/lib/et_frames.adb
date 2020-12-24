@@ -206,41 +206,41 @@ package body et_frames is
 		type type_texts is array (positive range <>) of type_text;
 
 		texts_sch : constant type_texts (1 .. 14) := (
-			(position => (  2, 36), size => 3, content => et_text.to_content ("Company:")),
-			(position => (  2, 31), size => 3, content => et_text.to_content ("Project:")),
-			(position => (  2, 26), size => 3, content => et_text.to_content ("Module:")),
-			(position => (  2, 21), size => 3, content => et_text.to_content ("Variant:")),
-			(position => (  2, 16), size => 3, content => et_text.to_content ("Customer:")),
-			(position => (  2, 11), size => 3, content => et_text.to_content ("Partcode:")),
-			(position => (  2,  6), size => 3, content => et_text.to_content ("Drwg. No:")),
-			(position => (  2,  1), size => 3, content => et_text.to_content ("Revision:")),
+			(position => (  2, 36), size => 3, content => to_content ("Company:")),
+			(position => (  2, 31), size => 3, content => to_content ("Project:")),
+			(position => (  2, 26), size => 3, content => to_content ("Module:")),
+			(position => (  2, 21), size => 3, content => to_content ("Variant:")),
+			(position => (  2, 16), size => 3, content => to_content ("Customer:")),
+			(position => (  2, 11), size => 3, content => to_content ("Partcode:")),
+			(position => (  2,  6), size => 3, content => to_content ("Drwg. No:")),
+			(position => (  2,  1), size => 3, content => to_content ("Revision:")),
 
-			--(position => (120, 16), size => 3, content => et_text.to_content ("date")),
-			--(position => (152, 16), size => 3, content => et_text.to_content ("name")),
-			(position => ( 90, 11), size => 3, content => et_text.to_content ("edited:")),
-			(position => ( 90,  6), size => 3, content => et_text.to_content ("checked:")),
-			(position => ( 90,  1), size => 3, content => et_text.to_content ("approved")),
+			--(position => (120, 16), size => 3, content => to_content ("date")),
+			--(position => (152, 16), size => 3, content => to_content ("name")),
+			(position => ( 90, 11), size => 3, content => to_content ("edited:")),
+			(position => ( 90,  6), size => 3, content => to_content ("checked:")),
+			(position => ( 90,  1), size => 3, content => to_content ("approved")),
 
-			(position => ( 90, 35), size => 3, content => et_text.to_content ("SHEET DESCRIPTION:")),
-			(position => (192, 21), size => 3, content => et_text.to_content ("SHEET")),
-			(position => ( 90, 21), size => 3, content => et_text.to_content ("CAT:"))
+			(position => ( 90, 35), size => 3, content => to_content ("SHEET DESCRIPTION:")),
+			(position => (192, 21), size => 3, content => to_content ("SHEET")),
+			(position => ( 90, 21), size => 3, content => to_content ("CAT:"))
 			);
 
 		texts_pcb : constant type_texts (1 .. 11) := (
-			(position => (  2, 36), size => 3, content => et_text.to_content ("Company:")),
-			(position => (  2, 31), size => 3, content => et_text.to_content ("Project:")),
-			(position => (  2, 26), size => 3, content => et_text.to_content ("Module:")),
-			(position => (  2, 21), size => 3, content => et_text.to_content ("Variant:")),
-			(position => (  2, 16), size => 3, content => et_text.to_content ("Customer:")),
-			(position => (  2, 11), size => 3, content => et_text.to_content ("Partcode:")),
-			(position => (  2,  6), size => 3, content => et_text.to_content ("Drwg. No:")),
-			(position => (  2,  1), size => 3, content => et_text.to_content ("Revision:")),
+			(position => (  2, 36), size => 3, content => to_content ("Company:")),
+			(position => (  2, 31), size => 3, content => to_content ("Project:")),
+			(position => (  2, 26), size => 3, content => to_content ("Module:")),
+			(position => (  2, 21), size => 3, content => to_content ("Variant:")),
+			(position => (  2, 16), size => 3, content => to_content ("Customer:")),
+			(position => (  2, 11), size => 3, content => to_content ("Partcode:")),
+			(position => (  2,  6), size => 3, content => to_content ("Drwg. No:")),
+			(position => (  2,  1), size => 3, content => to_content ("Revision:")),
 
-			--(position => (120, 16), size => 3, content => et_text.to_content ("date")),
-			--(position => (152, 16), size => 3, content => et_text.to_content ("name")),
-			(position => ( 90, 11), size => 3, content => et_text.to_content ("edited:")),
-			(position => ( 90,  6), size => 3, content => et_text.to_content ("checked:")),
-			(position => ( 90,  1), size => 3, content => et_text.to_content ("approved"))
+			--(position => (120, 16), size => 3, content => to_content ("date")),
+			--(position => (152, 16), size => 3, content => to_content ("name")),
+			(position => ( 90, 11), size => 3, content => to_content ("edited:")),
+			(position => ( 90,  6), size => 3, content => to_content ("checked:")),
+			(position => ( 90,  1), size => 3, content => to_content ("approved"))
 			);
 
 		-- Collects the texts of the given array and returns them as a list:

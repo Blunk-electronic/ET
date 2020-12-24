@@ -58,7 +58,7 @@ generic
 
 	in_area			: draw_ops.pac_shapes.pac_geometry.type_rectangle;
 	context			: draw_ops.pac_canvas.type_draw_context;
-	frame_size		: et_frames.type_size;
+	frame_size		: et_frames.type_frame_size;
 	border_width	: et_frames.type_border_width;
 	sectors			: et_frames.type_sectors;
 	title_block		: et_frames.type_title_block;  -- incl. common placeholders

@@ -100,7 +100,7 @@ package et_frames is
 	function to_string (distance : in type_distance) return string;
 	function to_distance (distance : in string) return type_distance;
 	
-	type type_size is record -- CS rename to type_frame_size
+	type type_frame_size is record
 		x	: type_distance := 280;
 		y	: type_distance := 200;
 	end record;
@@ -318,7 +318,7 @@ package et_frames is
 		paper			: type_paper_size := paper_size_default;
 		orientation		: type_orientation := orientation_default;
 		border_width	: type_border_width := border_width_default;
-		size			: type_size;
+		size			: type_frame_size;
 		sectors			: type_sectors;
 	
 		case domain is
