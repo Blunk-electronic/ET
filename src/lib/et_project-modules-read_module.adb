@@ -922,13 +922,10 @@ is
 		-- Once a section concludes, the temporarily variables are read, evaluated
 		-- and finally assembled to actual objects:
 			
-			-- for sorting general board stuff:
-			type type_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION, STENCIL, STOP_MASK, KEEPOUT);
-			-- CS remove
-			
 			procedure insert_net_class (
 				module_name	: in pac_module_name.bounded_string;
-				module		: in out et_schematic.type_module) is
+				module		: in out et_schematic.type_module) 
+			is
 				use et_pcb;
 				inserted : boolean;
 				cursor : pac_net_classes.cursor;
@@ -1519,8 +1516,9 @@ is
 			
 
 			procedure insert_line (
-				layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
-				face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+				layer_cat	: in et_packages.type_layer_category_non_conductor;
+				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
+			is
 			-- The board_line and its board_line_width have been general things until now.
 			-- Depending on the layer and the side of the board (face) the board_line
 			-- is now assigned to the board where it belongs to.
@@ -1530,33 +1528,34 @@ is
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
+					module		: in out et_schematic.type_module)
+				is
 					use et_pcb_coordinates;
-				begin -- do_it
+				begin
 					case face is
 						when TOP =>
-							case layer is
-								when SILK_SCREEN =>
+							case layer_cat is
+								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_lines.append (
 										container	=> module.board.silk_screen.top.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
-								when ASSEMBLY_DOCUMENTATION =>
+								when LAYER_CAT_ASSY =>
 									pac_doc_lines.append (
 										container	=> module.board.assy_doc.top.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
-								when STENCIL =>
+								when LAYER_CAT_STENCIL =>
 									pac_stencil_lines.append (
 										container	=> module.board.stencil.top.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 									
-								when STOP_MASK =>
+								when LAYER_CAT_STOP =>
 									pac_stop_lines.append (
 										container	=> module.board.stop_mask.top.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
-								when KEEPOUT =>
+								when LAYER_CAT_KEEPOUT =>
 									pac_keepout_lines.append (
 										container	=> module.board.keepout.top.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with null record));
@@ -1564,28 +1563,28 @@ is
 							end case;
 							
 						when BOTTOM => null;
-							case layer is
-								when SILK_SCREEN =>
+							case layer_cat is
+								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_lines.append (
 										container	=> module.board.silk_screen.bottom.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
-								when ASSEMBLY_DOCUMENTATION =>
+								when LAYER_CAT_ASSY =>
 									pac_doc_lines.append (
 										container	=> module.board.assy_doc.bottom.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 									
-								when STENCIL =>
+								when LAYER_CAT_STENCIL =>
 									pac_stencil_lines.append (
 										container	=> module.board.stencil.bottom.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 									
-								when STOP_MASK =>
+								when LAYER_CAT_STOP =>
 									pac_stop_lines.append (
 										container	=> module.board.stop_mask.bottom.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
-								when KEEPOUT =>
+								when LAYER_CAT_KEEPOUT =>
 									pac_keepout_lines.append (
 										container	=> module.board.keepout.bottom.lines,
 										new_item	=> (pac_shapes.type_line (board_line) with null record));
@@ -1607,8 +1606,9 @@ is
 			end insert_line;
 
 			procedure insert_arc (
-				layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
-				face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+				layer_cat	: in et_packages.type_layer_category_non_conductor;
+				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
+			is
 			-- The board_arc and its board_line_width have been general things until now. 
 			-- Depending on the layer and the side of the board (face) the board_arc
 			-- is now assigned to the board where it belongs to.
@@ -1618,61 +1618,62 @@ is
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
+					module		: in out et_schematic.type_module) 
+				is
 					use et_pcb_coordinates;
-				begin -- do_it
+				begin
 					case face is
 						when TOP =>
-							case layer is
-								when SILK_SCREEN =>
+							case layer_cat is
+								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_arcs.append (
 										container	=> module.board.silk_screen.top.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
-								when ASSEMBLY_DOCUMENTATION =>
+								when LAYER_CAT_ASSY =>
 									pac_doc_arcs.append (
 										container	=> module.board.assy_doc.top.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
-								when STENCIL =>
+								when LAYER_CAT_STENCIL =>
 									pac_stencil_arcs.append (
 										container	=> module.board.stencil.top.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 									
-								when STOP_MASK =>
+								when LAYER_CAT_STOP =>
 									pac_stop_arcs.append (
 										container	=> module.board.stop_mask.top.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
-								when KEEPOUT =>
+								when LAYER_CAT_KEEPOUT =>
 									pac_keepout_arcs.append (
 										container	=> module.board.keepout.top.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with null record));
 							end case;
 							
 						when BOTTOM => null;
-							case layer is
-								when SILK_SCREEN =>
+							case layer_cat is
+								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_arcs.append (
 										container	=> module.board.silk_screen.bottom.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
-								when ASSEMBLY_DOCUMENTATION =>
+								when LAYER_CAT_ASSY =>
 									pac_doc_arcs.append (
 										container	=> module.board.assy_doc.bottom.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 									
-								when STENCIL =>
+								when LAYER_CAT_STENCIL =>
 									pac_stencil_arcs.append (
 										container	=> module.board.stencil.bottom.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 									
-								when STOP_MASK =>
+								when LAYER_CAT_STOP =>
 									pac_stop_arcs.append (
 										container	=> module.board.stop_mask.bottom.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
-								when KEEPOUT =>
+								when LAYER_CAT_KEEPOUT =>
 									pac_keepout_arcs.append (
 										container	=> module.board.keepout.bottom.arcs,
 										new_item	=> (pac_shapes.type_arc (board_arc) with null record));
@@ -1693,8 +1694,9 @@ is
 			end insert_arc;
 
 			procedure insert_circle (
-				layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
-				face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+				layer_cat	: in et_packages.type_layer_category_non_conductor;
+				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
+			is
 			-- The board_circle has been a general thing until now. 
 			-- Depending on the layer and the side of the board (face) the board_circle
 			-- is now assigned to the board where it belongs to.
@@ -1703,61 +1705,62 @@ is
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
+					module		: in out et_schematic.type_module) 
+				is
 					use et_pcb_coordinates;
-				begin -- do_it
+				begin
 					case face is
 						when TOP =>
-							case layer is
-								when SILK_SCREEN =>
+							case layer_cat is
+								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_circles.append (
 										container	=> module.board.silk_screen.top.circles,
 										new_item	=> board_make_fillable_circle);
 
-								when ASSEMBLY_DOCUMENTATION =>
+								when LAYER_CAT_ASSY =>
 									pac_doc_circles.append (
 										container	=> module.board.assy_doc.top.circles,
 										new_item	=> board_make_fillable_circle);
 
-								when STENCIL =>
+								when LAYER_CAT_STENCIL =>
 									pac_stencil_circles.append (
 										container	=> module.board.stencil.top.circles,
 										new_item	=> board_make_fillable_circle);
 									
-								when STOP_MASK =>
+								when LAYER_CAT_STOP =>
 									pac_stop_circles.append (
 										container	=> module.board.stop_mask.top.circles,
 										new_item	=> board_make_fillable_circle);
 
-								when KEEPOUT =>
+								when LAYER_CAT_KEEPOUT =>
 									pac_keepout_circles.append (
 										container	=> module.board.keepout.top.circles,
 										new_item	=> board_make_fillable_circle_solid);
 							end case;
 							
 						when BOTTOM => null;
-							case layer is
-								when SILK_SCREEN =>
+							case layer_cat is
+								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_circles.append (
 										container	=> module.board.silk_screen.bottom.circles,
 										new_item	=> board_make_fillable_circle);
 
-								when ASSEMBLY_DOCUMENTATION =>
+								when LAYER_CAT_ASSY =>
 									pac_doc_circles.append (
 										container	=> module.board.assy_doc.bottom.circles,
 										new_item	=> board_make_fillable_circle);
 									
-								when STENCIL =>
+								when LAYER_CAT_STENCIL =>
 									pac_stencil_circles.append (
 										container	=> module.board.stencil.bottom.circles,
 										new_item	=> board_make_fillable_circle);
 									
-								when STOP_MASK =>
+								when LAYER_CAT_STOP =>
 									pac_stop_circles.append (
 										container	=> module.board.stop_mask.bottom.circles,
 										new_item	=> board_make_fillable_circle);
 
-								when KEEPOUT =>
+								when LAYER_CAT_KEEPOUT =>
 									pac_keepout_circles.append (
 										container	=> module.board.keepout.bottom.circles,
 										new_item	=> board_make_fillable_circle_solid);
@@ -2881,6 +2884,113 @@ is
 				--board_reset_circle;
 				--board_reset_lock_status;
 			--end insert_text_contour;
+
+			procedure build_non_conductor_line (
+				face : in et_pcb_coordinates.type_face)
+			is
+				use et_packages;
+			begin
+				case stack.parent (degree => 2) is
+					when SEC_SILK_SCREEN =>
+						insert_line (
+							layer_cat	=> LAYER_CAT_SILKSCREEN,
+							face		=> face);
+
+					when SEC_ASSEMBLY_DOCUMENTATION =>
+						insert_line (
+							layer_cat	=> LAYER_CAT_ASSY,
+							face		=> face);
+
+					when SEC_STENCIL =>
+						insert_line (
+							layer_cat	=> LAYER_CAT_STENCIL,
+							face		=> face);
+
+					when SEC_STOP_MASK =>
+						insert_line (
+							layer_cat	=> LAYER_CAT_STOP,
+							face		=> face);
+
+					when SEC_KEEPOUT =>
+						insert_line (
+							layer_cat	=> LAYER_CAT_KEEPOUT,
+							face		=> face);
+						
+					when others => invalid_section;
+				end case;
+			end build_non_conductor_line;
+
+			procedure build_non_conductor_arc (
+				face : in et_pcb_coordinates.type_face)
+			is
+				use et_packages;
+			begin
+				board_check_arc (log_threshold + 1);
+				
+				case stack.parent (degree => 2) is
+					when SEC_SILK_SCREEN =>
+						insert_arc (
+							layer_cat	=> LAYER_CAT_SILKSCREEN,
+							face		=> face);
+
+					when SEC_ASSEMBLY_DOCUMENTATION =>
+						insert_arc (
+							layer_cat	=> LAYER_CAT_ASSY,
+							face		=> face);
+
+					when SEC_STENCIL =>
+						insert_arc (
+							layer_cat	=> LAYER_CAT_STENCIL,
+							face		=> face);
+
+					when SEC_STOP_MASK =>
+						insert_arc (
+							layer_cat	=> LAYER_CAT_STOP,
+							face		=> face);
+
+					when SEC_KEEPOUT =>
+						insert_arc (
+							layer_cat	=> LAYER_CAT_KEEPOUT,
+							face		=> face);
+						
+					when others => invalid_section;
+				end case;
+			end build_non_conductor_arc;
+
+			procedure build_non_conductor_circle (
+				face : in et_pcb_coordinates.type_face)
+			is
+				use et_packages;
+			begin
+				case stack.parent (degree => 2) is
+					when SEC_SILK_SCREEN =>
+						insert_circle (
+							layer_cat	=> LAYER_CAT_SILKSCREEN,
+							face		=> face);
+
+					when SEC_ASSEMBLY_DOCUMENTATION =>
+						insert_circle (
+							layer_cat	=> LAYER_CAT_ASSY,
+							face		=> face);
+
+					when SEC_STENCIL =>
+						insert_circle (
+							layer_cat	=> LAYER_CAT_STENCIL,
+							face		=> face);
+
+					when SEC_STOP_MASK =>
+						insert_circle (
+							layer_cat	=> LAYER_CAT_STOP,
+							face		=> face);
+
+					when SEC_KEEPOUT =>
+						insert_circle (
+							layer_cat	=> LAYER_CAT_KEEPOUT,
+							face		=> face);
+						
+					when others => invalid_section;
+				end case;
+			end build_non_conductor_circle;							
 			
 			procedure insert_netchanger (
 				module_name	: in pac_module_name.bounded_string;
@@ -3451,64 +3561,10 @@ is
 							board_reset_signal_layer;
 
 						when SEC_TOP =>
-							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
-									insert_line (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_ASSEMBLY_DOCUMENTATION =>
-									insert_line (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_STENCIL =>
-									insert_line (
-										layer	=> STENCIL,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_STOP_MASK =>
-									insert_line (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_KEEPOUT =>
-									insert_line (
-										layer	=> KEEPOUT,
-										face	=> et_pcb_coordinates.TOP);
-									
-								when others => invalid_section;
-							end case;
+							build_non_conductor_line (et_pcb_coordinates.TOP);
 
 						when SEC_BOTTOM =>
-							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
-									insert_line (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_ASSEMBLY_DOCUMENTATION =>
-									insert_line (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_STENCIL =>
-									insert_line (
-										layer	=> STENCIL,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_STOP_MASK =>
-									insert_line (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_KEEPOUT =>
-									insert_line (
-										layer	=> KEEPOUT,
-										face	=> et_pcb_coordinates.BOTTOM);
-									
-								when others => invalid_section;
-							end case;
+							build_non_conductor_line (et_pcb_coordinates.BOTTOM);
 
 						when SEC_ROUTE_RESTRICT =>
 							insert_line_route_restrict;
@@ -3546,68 +3602,10 @@ is
 							board_reset_signal_layer;
 							
 						when SEC_TOP =>
-							board_check_arc (log_threshold + 1);
-							
-							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
-									insert_arc (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_ASSEMBLY_DOCUMENTATION =>
-									insert_arc (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_STENCIL =>
-									insert_arc (
-										layer	=> STENCIL,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_STOP_MASK =>
-									insert_arc (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_KEEPOUT =>
-									insert_arc (
-										layer	=> KEEPOUT,
-										face	=> et_pcb_coordinates.TOP);
-									
-								when others => invalid_section;
-							end case;
+							build_non_conductor_arc (et_pcb_coordinates.TOP);
 
 						when SEC_BOTTOM =>
-							board_check_arc (log_threshold + 1);
-							
-							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
-									insert_arc (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_ASSEMBLY_DOCUMENTATION =>
-									insert_arc (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_STENCIL =>
-									insert_arc (
-										layer	=> STENCIL,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_STOP_MASK =>
-									insert_arc (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_KEEPOUT =>
-									insert_arc (
-										layer	=> KEEPOUT,
-										face	=> et_pcb_coordinates.BOTTOM);
-									
-								when others => invalid_section;
-							end case;
+							build_non_conductor_arc (et_pcb_coordinates.BOTTOM);
 
 						when SEC_ROUTE_RESTRICT =>
 							board_check_arc (log_threshold + 1);
@@ -3633,64 +3631,10 @@ is
 						when SEC_CONTOURS => add_polygon_circle (board_circle);
 						
 						when SEC_TOP =>
-							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
-									insert_circle (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_ASSEMBLY_DOCUMENTATION =>
-									insert_circle (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_STENCIL =>
-									insert_circle (
-										layer	=> STENCIL,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_STOP_MASK =>
-									insert_circle (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_KEEPOUT =>
-									insert_circle (
-										layer	=> KEEPOUT,
-										face	=> et_pcb_coordinates.TOP);
-									
-								when others => invalid_section;
-							end case;
+							build_non_conductor_circle (et_pcb_coordinates.TOP);
 
 						when SEC_BOTTOM =>
-							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
-									insert_circle (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_ASSEMBLY_DOCUMENTATION =>
-									insert_circle (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_STENCIL =>
-									insert_circle (
-										layer	=> STENCIL,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_STOP_MASK =>
-									insert_circle (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_KEEPOUT =>
-									insert_circle (
-										layer	=> KEEPOUT,
-										face	=> et_pcb_coordinates.BOTTOM);
-									
-								when others => invalid_section;
-							end case;
+							build_non_conductor_circle (et_pcb_coordinates.BOTTOM);
 
 						when SEC_ROUTE_RESTRICT =>
 							insert_circle_route_restrict;
