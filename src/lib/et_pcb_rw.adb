@@ -52,6 +52,7 @@ with et_general;				use et_general;
 with et_string_processing;
 with et_general_rw;				use et_general_rw;
 with et_text;					use et_text;
+with et_exceptions;				use et_exceptions;
 
 package body et_pcb_rw is
 
@@ -561,23 +562,29 @@ package body et_pcb_rw is
 	procedure signal_layer_invalid (
 		line			: in et_string_processing.type_fields_of_line;
 		signal_layer	: in et_pcb_stack.type_signal_layer;
-		check_layers	: in et_pcb_stack.type_layer_check) is
+		check_layers	: in et_pcb_stack.type_layer_check) 
+	is
 		use et_string_processing;
 		use et_pcb_stack;
 	begin
-		log (WARNING, affected_line (line) & "Signal layer " & to_string (signal_layer) &
-			 " is deeper than the deepest signal layer " &
-			 to_string (check_layers.deepest_layer) & " !" &
-			 " Objects in this layer will be ignored !");
+		--log (WARNING, affected_line (line) & "Signal layer " & to_string (signal_layer) &
+			 --" is deeper than the deepest signal layer " &
+			 --to_string (check_layers.deepest_layer) & " !" &
+		--" Objects in this layer will be ignored !");
 		
+		raise semantic_error_1 with
+			"ERROR: " & affected_line (line) 
+			& "Signal layer " & to_string (signal_layer) 
+			& " is deeper than the deepest signal layer " 
+			& to_string (check_layers.deepest_layer) & " !";
 	end signal_layer_invalid;
 	
 	
 	function to_layers (
 		line			: in et_string_processing.type_fields_of_line; -- layers 1 3 17
 		check_layers	: in et_pcb_stack.type_layer_check)
-		return et_pcb_stack.type_signal_layers.set is
-
+		return et_pcb_stack.type_signal_layers.set 
+	is
 		use et_pcb;
 		use et_pcb_stack;
 		use et_pcb_stack.type_signal_layers;
@@ -588,37 +595,65 @@ package body et_pcb_rw is
 		inserted	: boolean;
 		layer 		: type_signal_layer;
 		place 		: positive := 2; -- we start reading the layer numbers with field 2
-	begin
-		-- CS test whether field 2 is something like [1,3,5-9]. If yes then
-		-- call function et_pcb_stack.to_layers to get a set of layers.
-		-- Then iterate layers and validate each of them.
-		-- Then insert them in container "layers".
+
+		field_2			: constant string := f (line, 2);
+		field_2_first	: constant positive := field_2'first;
+		field_2_last	: constant positive := field_2'last;
+
+		procedure validate_layer (c : in type_signal_layers.cursor) is begin
+			if not signal_layer_valid (element (c), check_layers) then
+				signal_layer_invalid (line, element (c), check_layers);
+			end if;
+		end validate_layer;
 		
-		while place <= positive (field_count (line)) loop
+	begin -- to_layers
+		
+		-- Test the first character of the 2nd field.
+		-- If it is the start mark of a layer term like [1, 3, 6-11]
+		-- then it must be converted to a set of layers.
+		-- Otherwise we assume the layer numbers are given in a
+		-- row of discrete layer ids like "1 4 10"
+		if field_2 (field_2_first) = layer_term_start then
 
-			-- get the layer number from current place
-			layer := to_signal_layer (f (line, place));
+			layers := to_layers (field_2);
 
-			-- Issue warning if signal layer is invalid:
-			if not signal_layer_valid (layer, check_layers) then
-				signal_layer_invalid (line, layer, check_layers);
-			end if;
-
-			-- insert the layer number in the container "layers"
-			insert (
-				container	=> layers,
-				new_item	=> layer,
-				inserted	=> inserted,
-				position	=> cursor);
-
-			-- warn if layer already in container
-			if not inserted then
-				log (WARNING, affected_line (line) & "signal layer " & to_string (layer) 
-					& " specified multiple times !");
-			end if;
+			-- Iterate layers and validate each of them.
+			layers.iterate (validate_layer'access);
 			
-			place := place + 1; -- advance to next place
-		end loop;
+		else -- discrete layer ids like "1 4 10"
+			while place <= positive (field_count (line)) loop
+
+				-- get the layer number from current place
+				layer := to_signal_layer (f (line, place));
+
+				-- Issue warning if signal layer is invalid:
+				if not signal_layer_valid (layer, check_layers) then
+					signal_layer_invalid (line, layer, check_layers);
+				end if;
+
+				-- insert the layer number in the container "layers"
+				insert (
+					container	=> layers,
+					new_item	=> layer,
+					inserted	=> inserted,
+					position	=> cursor);
+
+				-- warn if layer already in container
+				if not inserted then
+					
+					--log (WARNING, affected_line (line) & "signal layer " & to_string (layer) 
+					--& " specified multiple times !");
+					
+					raise semantic_error_1 with
+						"ERROR: " & affected_line (line) 
+						& "Signal layer " & to_string (layer) 
+						& " specified multiple times !";
+				end if;
+				
+				place := place + 1; -- advance to next place
+			end loop;
+		
+		end if;
 		
 		return layers;
 	end to_layers;

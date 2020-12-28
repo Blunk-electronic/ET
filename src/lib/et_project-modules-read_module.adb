@@ -654,7 +654,7 @@ is
 	board_layer : et_pcb_stack.type_layer;
 	board_layers : et_pcb_stack.package_layers.vector;
 
-	-- Whever a signal layer id is to be read, it must be checked against the
+	-- Whenver a signal layer id is to be read, it must be checked against the
 	-- deepest signal layer used. The variable check_layers controls this check.
 	-- As preparation we enable the check by setting the "check" to YES.
 	-- When section BOARD_LAYER_STACK closes, we also assign the deepest layer used.
@@ -781,6 +781,41 @@ is
 			when others => invalid_section;
 		end case;
 	end read_board_text_non_conductor;
+
+	procedure read_board_text_contours is 
+		use et_pcb_coordinates.pac_geometry_brd;
+		kw : constant  string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+			expect_field_count (line, 7);
+
+			-- extract position of note starting at field 2
+			board_text.position := to_position (line, 2);
+
+		elsif kw = et_text.keyword_size then -- size 1.000
+			expect_field_count (line, 2);
+			board_text.size := to_distance (f (line, 2));
+
+		elsif kw = et_text.keyword_line_width then -- line_width 0.1
+			expect_field_count (line, 2);
+			board_text.line_width := to_distance (f (line, 2));
+
+		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+			expect_field_count (line, 5);
+
+			-- extract alignment starting at field 2
+			board_text.alignment := et_text.to_alignment (line, 2);
+			
+		elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
+			expect_field_count (line, 2); -- actual content in quotes !
+			board_text.content := et_text.to_content (f (line, 2));
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_board_text_contours;
+
 	
 	procedure read_layer is
 		kw : constant string := f (line, 1);
@@ -2322,6 +2357,34 @@ is
 				board_text := (others => <>);
 			end insert_text;
 
+			
+			procedure build_contour_text is
+
+				procedure do_it (
+					module_name	: in pac_module_name.bounded_string;
+					module		: in out et_schematic.type_module) 
+				is
+					use et_packages;
+					use et_pcb;
+				begin
+					pac_texts_with_content.append (
+						container	=> module.board.contours.texts,
+						new_item	=> board_text);
+
+				end do_it;
+				
+			begin -- build_contours_text
+				update_element (
+					container	=> generic_modules,
+					position	=> module_cursor,
+					process		=> do_it'access);
+
+				-- clean up for next board text
+				board_text := (others => <>);
+
+			end build_contour_text;
+
+				
 			procedure insert_placeholder (
 				layer_cat	: in et_packages.type_layer_category;
 				face		: in et_pcb_coordinates.type_face)  -- TOP, BOTTOM
@@ -3284,8 +3347,7 @@ is
 					when others => invalid_section;
 				end case;
 			end build_non_conductor_text;
-								
-				
+			
 		begin -- execute_section
 			case stack.current is
 
@@ -3864,6 +3926,9 @@ is
 					
 						when SEC_BOTTOM =>
 							build_non_conductor_text (et_pcb_coordinates.BOTTOM);
+
+						when SEC_PCB_CONTOURS_NON_PLATED =>
+							build_contour_text;
 							
 						when SEC_COPPER =>
 							insert_board_text;
@@ -4888,7 +4953,6 @@ is
 
 										-- there must be at least two fields:
 										expect_field_count (line => line, count_expected => 2, warn => false);
-
 										signal_layers := to_layers (line, check_layers);
 									else
 										invalid_keyword (kw);
@@ -5701,6 +5765,9 @@ is
 						when SEC_TEXTS => -- in schematic
 							read_schematic_text;
 
+						when SEC_PCB_CONTOURS_NON_PLATED => -- in board
+							read_board_text_contours;
+							
 						when SEC_TOP | SEC_BOTTOM => -- in board
 							read_board_text_non_conductor;
 

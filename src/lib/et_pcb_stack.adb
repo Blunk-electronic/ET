@@ -107,7 +107,9 @@ package body et_pcb_stack is
 		return to_string (layer_string);
 	end;
 
-	function to_layers (layers : in string) return type_signal_layers.set is
+	function to_layers (layers : in string) 
+		return type_signal_layers.set 
+	is
 		use type_signal_layers;
 		layer_set : type_signal_layers.set; -- to be returned
 		char : character;
@@ -222,8 +224,8 @@ package body et_pcb_stack is
 	function signal_layer_valid (
 		signal_layer 	: in et_pcb_stack.type_signal_layer;
 		check_layers	: in et_pcb_stack.type_layer_check)
-		return boolean is 
-		use et_pcb_stack;
+		return boolean 
+	is 
 		result : boolean := false;
 	begin
 		if check_layers.check = YES then

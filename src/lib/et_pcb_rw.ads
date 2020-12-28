@@ -155,7 +155,8 @@ package et_pcb_rw is
 		check_layers	: in et_pcb_stack.type_layer_check);
 	
 	function to_layers (
-	-- Converts a line like "layers 1 4 17" to a set of signal layers.
+	-- Converts a line like "layers 1 4 17" or "layers [1,3,4-9]" to 
+	-- a set of signal layers.
 	-- Issues warning if a layer number occurs more than once.
 	-- If layer check requested, issues warning if a layer id is greater than the 
 	-- deepest layer used (given in argument check_layer).
