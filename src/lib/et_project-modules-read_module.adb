@@ -1777,15 +1777,17 @@ is
 			end insert_circle;
 
 			procedure insert_polygon (
-				layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
-				face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+				layer_cat	: in et_packages.type_layer_category_non_conductor;
+				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
+			is
 			-- The polygon has been a general thing until now. 
 			-- Depending on the layer and the side of the board (face) the polygon
 			-- is now assigned to the board where it belongs to.
 
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
+					module		: in out et_schematic.type_module)
+				is
 					use et_pcb_coordinates;
 					use et_terminals;
 					use et_terminals.pac_shapes;
@@ -1960,39 +1962,39 @@ is
 				begin -- do_it
 					case face is
 						when TOP =>
-							case layer is
-								when SILK_SCREEN =>
+							case layer_cat is
+								when LAYER_CAT_SILKSCREEN =>
 									append_silk_polygon_top;
 												
-								when ASSEMBLY_DOCUMENTATION =>
+								when LAYER_CAT_ASSY =>
 									append_assy_doc_polygon_top;
 
-								when STENCIL =>
+								when LAYER_CAT_STENCIL =>
 									append_stencil_polygon_top;
 									
-								when STOP_MASK =>
+								when LAYER_CAT_STOP =>
 									append_stop_polygon_top;
 									
-								when KEEPOUT =>
+								when LAYER_CAT_KEEPOUT =>
 									append_keepout_polygon_top;
 									
 							end case;
 							
 						when BOTTOM =>
-							case layer is
-								when SILK_SCREEN =>
+							case layer_cat is
+								when LAYER_CAT_SILKSCREEN =>
 									append_silk_polygon_bottom;
 
-								when ASSEMBLY_DOCUMENTATION =>
+								when LAYER_CAT_ASSY =>
 									append_assy_doc_polygon_bottom;
 									
-								when STENCIL =>
+								when LAYER_CAT_STENCIL =>
 									append_stencil_polygon_bottom;
 									
-								when STOP_MASK =>
+								when LAYER_CAT_STOP =>
 									append_stop_polygon_bottom;
 									
-								when KEEPOUT =>
+								when LAYER_CAT_KEEPOUT =>
 									append_keepout_polygon_bottom;
 									
 							end case;
@@ -2011,15 +2013,17 @@ is
 			end insert_polygon;
 
 			procedure insert_cutout (
-				layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
-				face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+				layer_cat	: in et_packages.type_layer_category_non_conductor;
+				face		: in et_pcb_coordinates.type_face) -- TOP, BOTTOM
+			is
 			-- The polygon has been a general thing until now. 
-			-- Depending on the layer and the side of the board (face) the polygon
+			-- Depending on the layer category and the side of the board (face) the polygon
 			-- is threated as a cutout zone and assigned to the board where it belongs to.
 
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
+					module		: in out et_schematic.type_module)
+				is
 					use et_pcb_coordinates;
 					use et_terminals;
 					use et_terminals.pac_shapes;
@@ -2098,43 +2102,42 @@ is
 				begin -- do_it
 					case face is
 						when TOP =>
-							case layer is
-								when SILK_SCREEN =>
+							case layer_cat is
+								when LAYER_CAT_SILKSCREEN =>
 									append_silk_cutout_top;
 												
-								when ASSEMBLY_DOCUMENTATION =>
+								when LAYER_CAT_ASSY =>
 									append_assy_doc_cutout_top;
 
-								when STENCIL =>
+								when LAYER_CAT_STENCIL =>
 									append_stencil_cutout_top;
 									
-								when STOP_MASK =>
+								when LAYER_CAT_STOP =>
 									append_stop_cutout_top;
 									
-								when KEEPOUT =>
+								when LAYER_CAT_KEEPOUT =>
 									append_keepout_cutout_top;
 									
 							end case;
 							
 						when BOTTOM => null;
-							case layer is
-								when SILK_SCREEN =>
+							case layer_cat is
+								when LAYER_CAT_SILKSCREEN =>
 									append_silk_cutout_bottom;
 
-								when ASSEMBLY_DOCUMENTATION =>
+								when LAYER_CAT_ASSY =>
 									append_assy_doc_cutout_bottom;
 									
-								when STENCIL =>
+								when LAYER_CAT_STENCIL =>
 									append_stencil_cutout_bottom;
 									
-								when STOP_MASK =>
+								when LAYER_CAT_STOP =>
 									append_stop_cutout_bottom;
 									
-								when KEEPOUT =>
+								when LAYER_CAT_KEEPOUT =>
 									append_keepout_cutout_bottom;
 									
-							end case;
-							
+							end case;							
 					end case;
 				end do_it;
 									
@@ -3069,8 +3072,110 @@ is
 									layer	=> signal_layer));
 
 				board_reset_polygon; -- clean up for next cutout zone
-			end;
+			end build_route_cutout;
+
+			procedure build_non_conductor_cutout (
+				face	: in et_pcb_coordinates.type_face) 
+			is 
+				use et_packages;
+			begin
+				case stack.parent (degree => 2) is
+					when SEC_SILK_SCREEN =>
+						insert_cutout (
+							layer_cat	=> LAYER_CAT_SILKSCREEN,
+							face		=> face);
+
+					when SEC_ASSEMBLY_DOCUMENTATION =>
+						insert_cutout (
+							layer_cat	=> LAYER_CAT_ASSY,
+							face		=> face);
+
+					when SEC_STENCIL =>
+						insert_cutout (
+							layer_cat	=> LAYER_CAT_STENCIL,
+							face		=> face);
+
+					when SEC_STOP_MASK =>
+						insert_cutout (
+							layer_cat	=> LAYER_CAT_STOP,
+							face		=> face);
+
+					when SEC_KEEPOUT =>
+						insert_cutout (
+							layer_cat	=> LAYER_CAT_KEEPOUT,
+							face		=> face);
+						
+					when others => invalid_section;
+				end case;
+			end build_non_conductor_cutout;
+
+			procedure build_non_conductor_fill_zone (
+				face	: in et_pcb_coordinates.type_face)
+			is
+				use et_packages;
+			begin
+				case stack.parent (degree => 2) is
+					when SEC_SILK_SCREEN =>
+						insert_polygon (
+							layer_cat	=> LAYER_CAT_SILKSCREEN,
+							face		=> face);
+
+					when SEC_ASSEMBLY_DOCUMENTATION =>
+						insert_polygon (
+							layer_cat	=> LAYER_CAT_ASSY,
+							face		=> face);
+
+					when SEC_STENCIL =>
+						insert_polygon (
+							layer_cat	=> LAYER_CAT_STENCIL,
+							face		=> face);
+
+					when SEC_STOP_MASK =>
+						insert_polygon (
+							layer_cat	=> LAYER_CAT_STOP,
+							face		=> face);
+
+					when SEC_KEEPOUT =>
+						insert_polygon (
+							layer_cat	=> LAYER_CAT_KEEPOUT,
+							face		=> face);
+						
+					when others => invalid_section;
+				end case;
+			end build_non_conductor_fill_zone;
 			
+			procedure build_non_conductor_text (
+				face : in et_pcb_coordinates.type_face)
+			is
+				use et_packages;
+			begin
+				case stack.parent (degree => 2) is
+					when SEC_SILK_SCREEN =>
+						insert_text (
+							layer_cat	=> LAYER_CAT_SILKSCREEN,
+							face		=> face);
+
+					when SEC_ASSEMBLY_DOCUMENTATION =>
+						insert_text (
+							layer_cat	=> LAYER_CAT_ASSY,
+							face		=> face);
+
+					when SEC_STOP_MASK =>
+						insert_text (
+							layer_cat	=> LAYER_CAT_STOP,
+							face		=> face);
+
+					-- CS
+					--when SEC_KEEPOUT =>
+					--	insert_text (
+					--		layer	=> KEEPOUT,
+					--		face	=> face);
+						
+					when others => invalid_section;
+				end case;
+			end build_non_conductor_text;
+								
+				
 		begin -- execute_section
 			case stack.current is
 
@@ -3619,64 +3724,10 @@ is
 							build_route_cutout;
 
 						when SEC_TOP =>
-							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
-									insert_cutout (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_ASSEMBLY_DOCUMENTATION =>
-									insert_cutout (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_STENCIL =>
-									insert_cutout (
-										layer	=> STENCIL,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_STOP_MASK =>
-									insert_cutout (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_KEEPOUT =>
-									insert_cutout (
-										layer	=> KEEPOUT,
-										face	=> et_pcb_coordinates.TOP);
-									
-								when others => invalid_section;
-							end case;
+							build_non_conductor_cutout (et_pcb_coordinates.TOP);
 
 						when SEC_BOTTOM =>
-							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
-									insert_cutout (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_ASSEMBLY_DOCUMENTATION =>
-									insert_cutout (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_STENCIL =>
-									insert_cutout (
-										layer	=> STENCIL,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_STOP_MASK =>
-									insert_cutout (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_KEEPOUT =>
-									insert_cutout (
-										layer	=> KEEPOUT,
-										face	=> et_pcb_coordinates.BOTTOM);
-									
-								when others => invalid_section;
-							end case;
+							build_non_conductor_cutout (et_pcb_coordinates.BOTTOM);
 
 						when SEC_ROUTE_RESTRICT =>
 							insert_cutout_route_restrict;
@@ -3696,64 +3747,10 @@ is
 							build_route_polygon;
 
 						when SEC_TOP =>
-							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
-									insert_polygon (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_ASSEMBLY_DOCUMENTATION =>
-									insert_polygon (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_STENCIL =>
-									insert_polygon (
-										layer	=> STENCIL,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_STOP_MASK =>
-									insert_polygon (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.TOP);
-
-								when SEC_KEEPOUT =>
-									insert_polygon (
-										layer	=> KEEPOUT,
-										face	=> et_pcb_coordinates.TOP);
-									
-								when others => invalid_section;
-							end case;
-
+							build_non_conductor_fill_zone (et_pcb_coordinates.TOP);
+					
 						when SEC_BOTTOM =>
-							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
-									insert_polygon (
-										layer	=> SILK_SCREEN,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_ASSEMBLY_DOCUMENTATION =>
-									insert_polygon (
-										layer	=> ASSEMBLY_DOCUMENTATION,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_STENCIL =>
-									insert_polygon (
-										layer	=> STENCIL,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_STOP_MASK =>
-									insert_polygon (
-										layer	=> STOP_MASK,
-										face	=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_KEEPOUT =>
-									insert_polygon (
-										layer	=> KEEPOUT,
-										face	=> et_pcb_coordinates.BOTTOM);
-									
-								when others => invalid_section;
-							end case;
+							build_non_conductor_fill_zone (et_pcb_coordinates.BOTTOM);
 
 						when SEC_ROUTE_RESTRICT =>
 							insert_polygon_route_restrict;
@@ -3919,57 +3916,11 @@ is
 								process		=> insert_note'access);
 
 						when SEC_TOP =>
-							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
-									insert_text (
-										layer_cat	=> et_packages.LAYER_CAT_SILKSCREEN,
-										face		=> et_pcb_coordinates.TOP);
-
-								when SEC_ASSEMBLY_DOCUMENTATION =>
-									insert_text (
-										layer_cat	=> et_packages.LAYER_CAT_ASSY,
-										face		=> et_pcb_coordinates.TOP);
-
-								when SEC_STOP_MASK =>
-									insert_text (
-										layer_cat	=> et_packages.LAYER_CAT_STOP,
-										face		=> et_pcb_coordinates.TOP);
-
-								-- CS
-								--when SEC_KEEPOUT =>
-								--	insert_text (
-								--		layer	=> KEEPOUT,
-								--		face	=> et_pcb_coordinates.TOP);
-									
-								when others => invalid_section;
-							end case;
-
+							build_non_conductor_text (et_pcb_coordinates.TOP);
+					
 						when SEC_BOTTOM =>
-							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
-									insert_text (
-										layer_cat	=> et_packages.LAYER_CAT_SILKSCREEN,
-										face		=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_ASSEMBLY_DOCUMENTATION =>
-									insert_text (
-										layer_cat	=> et_packages.LAYER_CAT_ASSY,
-										face		=> et_pcb_coordinates.BOTTOM);
-
-								when SEC_STOP_MASK =>
-									insert_text (
-										layer_cat	=> et_packages.LAYER_CAT_STOP,
-										face		=> et_pcb_coordinates.BOTTOM);
-
-								-- CS
-								--when SEC_KEEPOUT =>
-								--	insert_text (
-								--		layer	=> KEEPOUT,
-								--		face	=> et_pcb_coordinates.BOTTOM);
-									
-								when others => invalid_section;
-							end case;
-
+							build_non_conductor_text (et_pcb_coordinates.BOTTOM);
+							
 						when SEC_COPPER =>
 							insert_board_text;
 							
