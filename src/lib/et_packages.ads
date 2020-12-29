@@ -732,8 +732,7 @@ package et_packages is
 		circles		: pac_route_restrict_circles.list;
 		polygons	: pac_route_restrict_polygons.list;
 		cutouts		: pac_route_restrict_cutouts.list;
-		texts		: pac_texts_with_content.list; -- for notes on routing
-		--texts: pac_conductor_texts.list;
+		texts		: pac_conductor_texts.list; -- for notes on routing
 	end record;
 
 
@@ -788,7 +787,7 @@ package et_packages is
 		circles		: pac_via_restrict_circles.list;
 		polygons	: pac_via_restrict_polygons.list;
 		cutouts		: pac_via_restrict_cutouts.list;
-		texts		: pac_texts_with_content.list; -- for notes on via restrict
+		texts		: pac_conductor_texts.list; -- for notes on via restrict
 	end record;
 
 	

@@ -45,8 +45,8 @@ separate (et_canvas_board)
 procedure draw_route_restrict (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
-	context : in type_draw_context) is
-
+	context : in type_draw_context) 
+is
 	use et_general;
 	use et_terminals.pac_shapes;	
 	use et_packages;
@@ -55,7 +55,7 @@ procedure draw_route_restrict (
 	use pac_route_restrict_circles;
 	use pac_route_restrict_polygons;
 	use pac_route_restrict_cutouts;
-	
+	use pac_conductor_texts;
 	
 	procedure query_line (c : in pac_route_restrict_lines.cursor) is begin
 
@@ -146,6 +146,34 @@ procedure draw_route_restrict (
 		end if;
 	end query_cutout;
 
+
+	procedure query_text (c : in pac_conductor_texts.cursor) is 
+		use pac_text.pac_vector_text_lines;
+		vector_text : pac_text.pac_vector_text_lines.list;
+	begin
+		draw_text_origin (self, element (c).position, in_area, context);
+
+		-- Set the line width of the vector text:
+		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
+
+		-- Vectorize the text:
+		vector_text := pac_text.vectorize (
+			content		=> element (c).content,
+			size		=> element (c).size,
+			rotation	=> rot (element (c).position),
+			position	=> type_point (element (c).position),
+			line_width	=> element (c).line_width,
+			alignment	=> element (c).alignment -- right, bottom
+			);
+
+		-- NOTE: Texts in route restrict are never mirrored.
+		-- Even in the deepest (bottom) signal layer the text is not mirrored.
+		
+		-- Draw the text:
+		draw_vector_text (in_area, context, vector_text, self.frame_height);
+		
+	end query_text;
+
 	
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
@@ -160,6 +188,7 @@ procedure draw_route_restrict (
 		iterate (module.board.route_restrict.circles, query_circle'access);
 		iterate (module.board.route_restrict.polygons, query_polygon'access);
 		iterate (module.board.route_restrict.cutouts, query_cutout'access);
+		iterate (module.board.route_restrict.texts, query_text'access);
 
 	end query_items;
 
