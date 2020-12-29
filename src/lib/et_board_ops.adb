@@ -4098,6 +4098,12 @@ package body et_board_ops is
 		end place_text;
 
 	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " placing text in outline layer at"
+			& to_string (text.position),
+			level => log_threshold);
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,

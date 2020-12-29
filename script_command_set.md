@@ -1010,6 +1010,11 @@ board led_driver draw outline circle 50 50 50 # center 50/50 radius 50
 board led_driver delete outline 40 50 1 # crossing 40/50, accuracy 1
 ```
 
+To place a text in the outline layer:
+```
+board demo place text outline 0.2 5 54 1 0 "SOME TEXT" # line width 0.2, size 5, x/y 54/1, rotation zero
+```
+
 ## SILK SCREEN
 This is (mostly) the white ink that the PCB house applies onto the board. 
 NOTE: Whatever you place or draw in here affects the PCB manufacturing.

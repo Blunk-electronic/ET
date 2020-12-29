@@ -83,9 +83,9 @@ package et_packages is
 									
 		-- NON CONDUCTOR LAYERS.
 		-- These layers are paired. Means there is a TOP and a BOTTOM:
+		LAYER_CAT_SILKSCREEN,
 		LAYER_CAT_ASSY,
 		LAYER_CAT_KEEPOUT,
-		LAYER_CAT_SILKSCREEN,
 		LAYER_CAT_STENCIL,
 		LAYER_CAT_STOP,
 
@@ -105,7 +105,7 @@ package et_packages is
 		range LAYER_CAT_OUTLINE .. LAYER_CAT_OUTLINE;
 	
 	subtype type_layer_category_non_conductor is type_layer_category
-		range LAYER_CAT_ASSY .. LAYER_CAT_STOP;
+		range LAYER_CAT_SILKSCREEN .. LAYER_CAT_STOP;
 
 	subtype type_layer_category_conductor is type_layer_category
 		range LAYER_CAT_CONDUCTOR .. LAYER_CAT_VIA_RESTRICT;

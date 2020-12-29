@@ -2275,89 +2275,6 @@ is
 				board_reset_polygon;
 			end insert_cutout_copper;
 			
-			procedure insert_text (
-				layer_cat	: in et_packages.type_layer_category;
-				face		: in et_pcb_coordinates.type_face)  -- TOP, BOTTOM
-			is
-			-- The board_text has been a general thing until now. 
-			-- Depending on the layer category and the side of the board (face) the board_text
-			-- is now assigned to the board where it belongs to.
-				
-				procedure do_it (
-					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) 
-				is
-					use et_pcb_coordinates;
-					use et_packages;
-					use et_pcb;
-				begin
-					case face is
-						when TOP =>
-							case layer_cat is
-								when LAYER_CAT_SILKSCREEN =>
-									pac_texts_with_content.append (
-										container	=> module.board.silk_screen.top.texts,
-										new_item	=> board_text);
-
-								when LAYER_CAT_ASSY =>
-									pac_texts_with_content.append (
-										container	=> module.board.assy_doc.top.texts,
-										new_item	=> board_text);
-
-								when LAYER_CAT_STOP =>
-									pac_texts_with_content.append (
-										container	=> module.board.stop_mask.top.texts,
-										new_item	=> board_text);
-
-								-- CS
-								--when KEEPOUT =>
-								--	pac_texts_with_content.append (
-								--		container	=> module.board.keepout.top.texts,
-								--		new_item	=> board_text);
-
-								when others => invalid_section;
-							end case;
-							
-						when BOTTOM => null;
-							case layer_cat is
-								when LAYER_CAT_SILKSCREEN =>
-									pac_texts_with_content.append (
-										container	=> module.board.silk_screen.bottom.texts,
-										new_item	=> board_text);
-
-								when LAYER_CAT_ASSY =>
-									pac_texts_with_content.append (
-										container	=> module.board.assy_doc.bottom.texts,
-										new_item	=> board_text);
-									
-								when LAYER_CAT_STOP =>
-									pac_texts_with_content.append (
-										container	=> module.board.stop_mask.bottom.texts,
-										new_item	=> board_text);
-
-								-- CS
-								--when KEEPOUT =>
-								--	pac_texts_with_content.append (
-								--		container	=> module.board.keepout.bottom.texts,
-								--		new_item	=> board_text);
-
-								when others => invalid_section;
-							end case;
-							
-					end case;
-				end do_it;
-									
-			begin -- insert_text
-				update_element (
-					container	=> generic_modules,
-					position	=> module_cursor,
-					process		=> do_it'access);
-
-				-- clean up for next board text
-				board_text := (others => <>);
-			end insert_text;
-
-			
 			procedure build_contour_text is
 
 				procedure do_it (
@@ -3321,7 +3238,90 @@ is
 				face : in et_pcb_coordinates.type_face)
 			is
 				use et_packages;
-			begin
+
+				procedure insert_text (
+					layer_cat	: in et_packages.type_layer_category_non_conductor;
+					face		: in et_pcb_coordinates.type_face)  -- TOP, BOTTOM
+				is
+				-- The board_text has been a general thing until now. 
+				-- Depending on the layer category and the side of the board (face) the board_text
+				-- is now assigned to the board where it belongs to.
+					
+					procedure do_it (
+						module_name	: in pac_module_name.bounded_string;
+						module		: in out et_schematic.type_module) 
+					is
+						use et_pcb_coordinates;
+						use et_packages;
+						use et_pcb;
+					begin
+						case face is
+							when TOP =>
+								case layer_cat is
+									when LAYER_CAT_SILKSCREEN =>
+										pac_texts_with_content.append (
+											container	=> module.board.silk_screen.top.texts,
+											new_item	=> board_text);
+
+									when LAYER_CAT_ASSY =>
+										pac_texts_with_content.append (
+											container	=> module.board.assy_doc.top.texts,
+											new_item	=> board_text);
+
+									when LAYER_CAT_STOP =>
+										pac_texts_with_content.append (
+											container	=> module.board.stop_mask.top.texts,
+											new_item	=> board_text);
+
+									-- CS
+									--when KEEPOUT =>
+									--	pac_texts_with_content.append (
+									--		container	=> module.board.keepout.top.texts,
+									--		new_item	=> board_text);
+
+									when others => invalid_section;
+								end case;
+								
+							when BOTTOM => null;
+								case layer_cat is
+									when LAYER_CAT_SILKSCREEN =>
+										pac_texts_with_content.append (
+											container	=> module.board.silk_screen.bottom.texts,
+											new_item	=> board_text);
+
+									when LAYER_CAT_ASSY =>
+										pac_texts_with_content.append (
+											container	=> module.board.assy_doc.bottom.texts,
+											new_item	=> board_text);
+										
+									when LAYER_CAT_STOP =>
+										pac_texts_with_content.append (
+											container	=> module.board.stop_mask.bottom.texts,
+											new_item	=> board_text);
+
+									-- CS
+									--when KEEPOUT =>
+									--	pac_texts_with_content.append (
+									--		container	=> module.board.keepout.bottom.texts,
+									--		new_item	=> board_text);
+
+									when others => invalid_section;
+								end case;
+								
+						end case;
+					end do_it;
+										
+				begin -- insert_text
+					update_element (
+						container	=> generic_modules,
+						position	=> module_cursor,
+						process		=> do_it'access);
+
+					-- clean up for next board text
+					board_text := (others => <>);
+				end insert_text;
+				
+			begin -- build_non_conductor_text
 				case stack.parent (degree => 2) is
 					when SEC_SILK_SCREEN =>
 						insert_text (
@@ -3333,16 +3333,20 @@ is
 							layer_cat	=> LAYER_CAT_ASSY,
 							face		=> face);
 
+					when SEC_KEEPOUT =>
+						insert_text (
+							layer_cat	=> LAYER_CAT_KEEPOUT,
+							face		=> face);
+
+					when SEC_STENCIL =>
+						insert_text (
+							layer_cat	=> LAYER_CAT_STENCIL,
+							face		=> face);
+						
 					when SEC_STOP_MASK =>
 						insert_text (
 							layer_cat	=> LAYER_CAT_STOP,
 							face		=> face);
-
-					-- CS
-					--when SEC_KEEPOUT =>
-					--	insert_text (
-					--		layer	=> KEEPOUT,
-					--		face	=> face);
 						
 					when others => invalid_section;
 				end case;

@@ -51,6 +51,8 @@ is
 	use pac_pcb_contour_arcs;
 	use pac_pcb_contour_circles;
 	
+	use et_packages.pac_texts_with_content;
+	
 	procedure query_line (c : in pac_pcb_contour_lines.cursor) is begin
 		draw_line (
 			area		=> in_area,
@@ -76,6 +78,30 @@ is
 			filled		=> NO, -- circles in outline are never filled
 			height		=> self.frame_height);
 	end query_circle;
+
+	procedure query_text (c : in et_packages.pac_texts_with_content.cursor) is 
+		use pac_text.pac_vector_text_lines;
+		vector_text : pac_text.pac_vector_text_lines.list;
+	begin
+		draw_text_origin (self, element (c).position, in_area, context);
+
+		-- Set the line width of the vector text:
+		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
+
+		-- Vectorize the text:
+		vector_text := pac_text.vectorize (
+			content		=> element (c).content,
+			size		=> element (c).size,
+			rotation	=> rot (element (c).position),
+			position	=> type_point (element (c).position),
+			line_width	=> element (c).line_width,
+			alignment	=> element (c).alignment -- right, bottom
+			);
+
+		-- Draw the text:
+		draw_vector_text (in_area, context, vector_text, self.frame_height);
+		
+	end query_text;
 	
 	procedure query_segments (
 		module_name	: in pac_module_name.bounded_string;
@@ -88,7 +114,8 @@ is
 		iterate (module.board.contours.lines, query_line'access);
 		iterate (module.board.contours.arcs, query_arc'access);
 		iterate (module.board.contours.circles, query_circle'access);
-
+		iterate (module.board.contours.texts, query_text'access);
+		
 	end query_segments;
 	
 begin -- draw_outline
