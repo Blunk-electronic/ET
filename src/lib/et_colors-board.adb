@@ -58,20 +58,24 @@ package body et_colors.board is
 			color_range (opacity));
 	end set_color_background;
 	
-	procedure set_color_frame (context : in cairo_context) is begin		
-		set_source_rgb (
-			context, 
-			frame.red,
-			frame.green,
-			frame.blue);
+	procedure set_color_frame (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default)
+	is begin
+		-- CS query color schema defined by user
+		-- and overwrite value of variable frame
+		
+		set_color (context, frame, brightness);
 	end set_color_frame;
 
-	procedure set_color_origin (context : in cairo_context) is begin		
-		set_source_rgb (
-			context, 
-			origin.red,
-			origin.green,
-			origin.blue);
+	procedure set_color_origin (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default)
+	is begin
+		-- CS query color schema defined by user
+		-- and overwrite value of variable origin
+		
+		set_color (context, origin, brightness);
 	end set_color_origin;
 	
 	procedure set_color_outline (

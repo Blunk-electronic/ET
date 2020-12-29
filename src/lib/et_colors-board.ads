@@ -97,11 +97,18 @@ package et_colors.board is
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
 
-	-- CS add argument brightness	: in type_brightness := brightness_default);
-	-- see et_colors.schematic
 	
-	procedure set_color_frame (context : in cairo_context);	
-	procedure set_color_origin (context : in cairo_context);
+	procedure set_color_frame (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default);
+	
+	procedure set_color_origin (
+		context		: in cairo_context;
+		brightness	: in type_brightness := brightness_default);
+
+	
+	-- CS add argument for brightness
+	-- to the follwing subprograms ?
 	
 	procedure set_color_outline (
 		context : in cairo_context;
