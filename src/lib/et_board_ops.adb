@@ -4064,12 +4064,32 @@ package body et_board_ops is
 							append (module.board.stop_mask.bottom.texts, text);
 					end case;
 
-				when others => null; -- CS add other layers of type_layer_category_non_conductor
-					
+				when LAYER_CAT_STENCIL =>
+					case face is
+						when TOP =>
+							append (module.board.stencil.top.texts, text);
+						when BOTTOM =>
+							append (module.board.stencil.bottom.texts, text);
+					end case;
+
+				when LAYER_CAT_KEEPOUT =>
+					case face is
+						when TOP =>
+							append (module.board.keepout.top.texts, text);
+						when BOTTOM =>
+							append (module.board.keepout.bottom.texts, text);
+					end case;
 			end case;
 		end place_text;
 
-	begin
+	begin -- place_text_in_non_conductor_layer
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " placing text in non-conductor layer at" -- CS output category
+			& to_string (text.position)
+			& " face" & to_string (face),
+			level => log_threshold);
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,

@@ -539,7 +539,10 @@ package et_packages is
 		circles		: pac_stencil_circles.list;
 		polygons	: pac_stencil_polygons.list;
 		cutouts		: pac_stencil_cutouts.list;
-		-- CS: texts ? -- not reasonable and a waste of resources
+		
+		texts		: pac_texts_with_content.list;
+		-- NOTE: Probably not reasonable and a waste of resources.
+		-- DRC should output warning if texts in stencil detected.
 	end record;
 
 	-- Because stencil is about two sides of the board this composite is required:
@@ -667,7 +670,7 @@ package et_packages is
 		circles		: pac_keepout_circles.list;
 		polygons	: pac_keepout_polygons.list;
 		cutouts 	: pac_keepout_cutouts.list;
-		-- CS texts		: pac_texts_with_content.list; -- for placement notes ?
+		texts		: pac_texts_with_content.list; -- for notes on placement
 	end record;
 
 	type type_keepout_both_sides is record

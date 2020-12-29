@@ -44,8 +44,8 @@ procedure draw_stencil (
 	self    : not null access type_view;
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context;
-	face	: in type_face) is
-
+	face	: in type_face) 
+is
 	use et_general;
 	use et_terminals.pac_shapes;	
 	use et_packages;
@@ -54,6 +54,8 @@ procedure draw_stencil (
 	use pac_stencil_circles;
 	use pac_stencil_polygons;
 	use pac_stencil_cutouts;
+
+	use et_packages.pac_texts_with_content;
 	
 	procedure query_line (c : in pac_stencil_lines.cursor) is begin
 		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
@@ -140,6 +142,32 @@ procedure draw_stencil (
 
 	end query_cutout;
 
+	procedure query_text (c : in et_packages.pac_texts_with_content.cursor) is 
+		use pac_text.pac_vector_text_lines;
+		vector_text : pac_text.pac_vector_text_lines.list;
+	begin
+		draw_text_origin (self, element (c).position, in_area, context);
+
+		-- Set the line width of the vector text:
+		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
+
+		-- Vectorize the text:
+		vector_text := pac_text.vectorize (
+			content		=> element (c).content,
+			size		=> element (c).size,
+			rotation	=> rot (element (c).position),
+			position	=> type_point (element (c).position),
+			mirror		=> face_to_mirror (face),
+			line_width	=> element (c).line_width,
+			alignment	=> element (c).alignment -- right, bottom
+			);
+
+		-- Draw the text:
+		draw_vector_text (in_area, context, vector_text, self.frame_height);
+		
+	end query_text;
+
+	
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module) is
@@ -154,13 +182,15 @@ procedure draw_stencil (
 				iterate (module.board.stencil.top.circles, query_circle'access);
 				iterate (module.board.stencil.top.polygons, query_polygon'access);
 				iterate (module.board.stencil.top.cutouts, query_cutout'access);
-
+				iterate (module.board.stencil.top.texts, query_text'access);
+				
 			when BOTTOM =>
 				iterate (module.board.stencil.bottom.lines, query_line'access);
 				iterate (module.board.stencil.bottom.arcs, query_arc'access);
 				iterate (module.board.stencil.bottom.circles, query_circle'access);
 				iterate (module.board.stencil.bottom.polygons, query_polygon'access);
 				iterate (module.board.stencil.bottom.cutouts, query_cutout'access);
+				iterate (module.board.stencil.bottom.texts, query_text'access);				
 		end case;
 
 	end query_items;

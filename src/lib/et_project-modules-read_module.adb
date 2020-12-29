@@ -3235,18 +3235,16 @@ is
 			end build_non_conductor_fill_zone;
 			
 			procedure build_non_conductor_text (
-				face : in et_pcb_coordinates.type_face)
+				face : in et_pcb_coordinates.type_face)  -- TOP, BOTTOM
 			is
+			-- The board_text has been a general thing until now. 
+			-- Depending on the layer category and the side of the board (face) the board_text
+			-- is now assigned to the board where it belongs to.
 				use et_packages;
 
 				procedure insert_text (
-					layer_cat	: in et_packages.type_layer_category_non_conductor;
-					face		: in et_pcb_coordinates.type_face)  -- TOP, BOTTOM
-				is
-				-- The board_text has been a general thing until now. 
-				-- Depending on the layer category and the side of the board (face) the board_text
-				-- is now assigned to the board where it belongs to.
-					
+					layer_cat	: in et_packages.type_layer_category_non_conductor)
+				is					
 					procedure do_it (
 						module_name	: in pac_module_name.bounded_string;
 						module		: in out et_schematic.type_module) 
@@ -3324,29 +3322,19 @@ is
 			begin -- build_non_conductor_text
 				case stack.parent (degree => 2) is
 					when SEC_SILK_SCREEN =>
-						insert_text (
-							layer_cat	=> LAYER_CAT_SILKSCREEN,
-							face		=> face);
+						insert_text (LAYER_CAT_SILKSCREEN);
 
 					when SEC_ASSEMBLY_DOCUMENTATION =>
-						insert_text (
-							layer_cat	=> LAYER_CAT_ASSY,
-							face		=> face);
+						insert_text (LAYER_CAT_ASSY);
 
 					when SEC_KEEPOUT =>
-						insert_text (
-							layer_cat	=> LAYER_CAT_KEEPOUT,
-							face		=> face);
+						insert_text (LAYER_CAT_KEEPOUT);
 
 					when SEC_STENCIL =>
-						insert_text (
-							layer_cat	=> LAYER_CAT_STENCIL,
-							face		=> face);
+						insert_text (LAYER_CAT_STENCIL);
 						
 					when SEC_STOP_MASK =>
-						insert_text (
-							layer_cat	=> LAYER_CAT_STOP,
-							face		=> face);
+						insert_text (LAYER_CAT_STOP);
 						
 					when others => invalid_section;
 				end case;
