@@ -235,13 +235,12 @@ package et_pcb is
 
 
 	
-	type type_text is new et_packages.type_text_with_content with record
+	type type_conductor_text is new et_packages.type_text_with_content with record
 		layer	: type_signal_layer;
 	end record;
-	-- CS rename to type_conductor_text
 	
-	package pac_texts is new doubly_linked_lists (type_text);
-	-- CS rename to pac_conductor_texts
+	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
+
 	
 	-- Cutout-polygons in conductor layers:
 	type type_conductor_cutout is new et_packages.type_cutout_zone with record
@@ -307,7 +306,7 @@ package et_pcb is
 		polygons		: type_conductor_polygons_floating; 
 		cutouts			: pac_conductor_cutouts.list;		
 		
-		texts			: pac_texts.list;
+		texts			: pac_conductor_texts.list;
 		placeholders	: pac_text_placeholders_conductors.list;
 	end record;
 
@@ -528,7 +527,7 @@ package et_pcb is
 	
 	procedure text_conductor_properties (
 	-- Logs the properties of the given text.
-		cursor			: in pac_texts.cursor;
+		cursor			: in pac_conductor_texts.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure route_line_properties (

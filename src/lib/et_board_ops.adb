@@ -4135,14 +4135,14 @@ package body et_board_ops is
 	procedure place_text_in_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_category	: in type_layer_category_conductor;
-		text			: in et_pcb.type_text;
+		text			: in et_pcb.type_conductor_text;
 		log_threshold	: in type_log_level)
 	is
 		procedure place_text (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
-			use et_pcb.pac_texts;
+			use et_pcb.pac_conductor_texts;
 			use pac_texts_with_content;
 		begin
 			case layer_category is

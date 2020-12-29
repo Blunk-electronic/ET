@@ -210,11 +210,11 @@ package body et_pcb is
 	
 
 	procedure text_conductor_properties (
-		cursor			: in pac_texts.cursor;
+		cursor			: in pac_conductor_texts.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) 
 	is
-		use pac_texts;
-		text : type_text;
+		use pac_conductor_texts;
+		text : type_conductor_text;
 	begin
 		text := element (cursor);
 		log (text => "copper text signal layer" & to_string (text.layer) & latin_1.space

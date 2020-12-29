@@ -64,7 +64,7 @@ is
 	use pac_conductor_polygons_floating_solid;
 	use pac_conductor_polygons_floating_hatched;
 	use et_pcb.pac_text_placeholders_conductors;
-	use et_pcb.pac_texts;
+	use et_pcb.pac_conductor_texts;
 	
 	-- For diplaying net names and classes we need this stuff:
 	is_signal : boolean := false;
@@ -251,7 +251,7 @@ is
 		end if;
 	end query_placeholder;
 
-	procedure query_text (c : in et_pcb.pac_texts.cursor) is 
+	procedure query_text (c : in et_pcb.pac_conductor_texts.cursor) is 
 		use et_terminals.pac_text.pac_vector_text_lines;
 		vector_text : et_terminals.pac_text.pac_vector_text_lines.list;
 	begin
