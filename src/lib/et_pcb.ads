@@ -188,7 +188,11 @@ package et_pcb is
 		texts	: pac_texts_with_content.list;
 	end record;
 
-
+	-- CS
+	-- The DRC shall:
+	-- - detect gaps in outline
+	-- - detect texts in outline and output an error if texts are
+	--   inside the board area.
 		
 
 

@@ -807,6 +807,10 @@ package et_packages is
 		circles	: pac_pcb_contour_circles.list;
 	end record;
 
+	-- NOTE: There is no reason to allow texts in contours here.
+	-- The text would most likely end up somewhere inside the board area. 
+	-- This in turn would cause the DRC to output errors.
+	
 
 	
 -- APPEARANCE
