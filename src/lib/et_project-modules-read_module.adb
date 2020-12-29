@@ -682,7 +682,7 @@ is
 
 	
 -- 		board_track_circle : et_pcb.type_copper_circle;
-	board_text_copper : et_pcb.type_conductor_text;
+	board_text_copper : et_packages.type_conductor_text;
 	board_text_copper_placeholder : et_pcb.type_text_placeholder_conductors;
 
 	net_junctions : et_schematic.type_junctions;
@@ -2730,7 +2730,7 @@ is
 			end insert_circle_track;
 
 			procedure insert_board_text is
-				use et_pcb;
+				use et_packages;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;

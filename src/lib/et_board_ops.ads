@@ -581,7 +581,7 @@ package et_board_ops is
 	procedure place_text_in_conductor_layer (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer_category	: in type_layer_category_conductor;
-		text			: in et_pcb.type_conductor_text;
+		text			: in type_conductor_text;
 		log_threshold	: in type_log_level);
 				
 	

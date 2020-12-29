@@ -235,11 +235,6 @@ package et_pcb is
 
 
 	
-	type type_conductor_text is new et_packages.type_text_with_content with record
-		layer	: type_signal_layer;
-	end record;
-	
-	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
 
 	
 	-- Cutout-polygons in conductor layers:

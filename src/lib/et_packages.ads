@@ -680,6 +680,13 @@ package et_packages is
 	
 
 
+	type type_conductor_text is new type_text_with_content with record
+		layer	: type_signal_layer;
+	end record;
+	
+	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
+
+	
 	
 -- ROUTE RESTRICT
 
@@ -726,6 +733,7 @@ package et_packages is
 		polygons	: pac_route_restrict_polygons.list;
 		cutouts		: pac_route_restrict_cutouts.list;
 		texts		: pac_texts_with_content.list; -- for notes on routing
+		--texts: pac_conductor_texts.list;
 	end record;
 
 

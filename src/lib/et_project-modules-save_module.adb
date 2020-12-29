@@ -1133,7 +1133,7 @@ is
 		use et_packages.pac_via_restrict_circles;
 		use et_packages.pac_via_restrict_polygons;
 
-		use pac_conductor_texts;
+		use et_packages.pac_conductor_texts;
 
 		use et_pcb.pac_pcb_contour_lines;
 		use et_pcb.pac_pcb_contour_arcs;
@@ -1225,7 +1225,7 @@ is
 		end;
 
 		-- texts any signal layers
-		procedure write_text (cursor : in pac_conductor_texts.cursor) is begin
+		procedure write_text (cursor : in et_packages.pac_conductor_texts.cursor) is begin
 			text_begin;
 			write (keyword => keyword_content, parameters => to_string (element (cursor).content));
 			write_text_properties (element (cursor));
