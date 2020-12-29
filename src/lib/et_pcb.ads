@@ -238,9 +238,11 @@ package et_pcb is
 	type type_text is new et_packages.type_text_with_content with record
 		layer	: type_signal_layer;
 	end record;
-
+	-- CS rename to type_conductor_text
+	
 	package pac_texts is new doubly_linked_lists (type_text);
-
+	-- CS rename to pac_conductor_texts
+	
 	-- Cutout-polygons in conductor layers:
 	type type_conductor_cutout is new et_packages.type_cutout_zone with record
 		layer 	: type_signal_layer;

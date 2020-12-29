@@ -4143,16 +4143,23 @@ package body et_board_ops is
 			module		: in out type_module) 
 		is
 			use et_pcb.pac_texts;
+			use pac_texts_with_content;
 		begin
 			case layer_category is
 				when LAYER_CAT_CONDUCTOR =>
 					append (module.board.conductors.texts, text);
 
 				when LAYER_CAT_ROUTE_RESTRICT =>
+					-- CS Check signal layer. layer must exist and
+					-- must not be deeper than deppest used layer.
 					null;
+					--pac_texts_with_content.append (module.board.route_restrict.texts, text);
 					
 				when LAYER_CAT_VIA_RESTRICT =>
+					-- CS Check signal layer. layer must exist and
+					-- must not be deeper than deppest used layer.
 					null;
+					--append (module.board.via_restrict.texts, text);
 
 			end case;
 		end place_text;

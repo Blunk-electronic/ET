@@ -725,7 +725,7 @@ package et_packages is
 		circles		: pac_route_restrict_circles.list;
 		polygons	: pac_route_restrict_polygons.list;
 		cutouts		: pac_route_restrict_cutouts.list;
-		-- CS texts		: pac_texts_with_content.list; -- for routing notes ? mind signal layer !
+		texts		: pac_texts_with_content.list; -- for notes on routing
 	end record;
 
 
@@ -780,7 +780,7 @@ package et_packages is
 		circles		: pac_via_restrict_circles.list;
 		polygons	: pac_via_restrict_polygons.list;
 		cutouts		: pac_via_restrict_cutouts.list;
-		-- CS texts		: pac_texts_with_content.list; -- for via notes ?
+		texts		: pac_texts_with_content.list; -- for notes on via restrict
 	end record;
 
 	
