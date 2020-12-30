@@ -291,8 +291,8 @@ is
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module)
+		is
 			use et_design_rules;
 		begin
 			-- assign rules
@@ -328,8 +328,8 @@ is
 	function to_position (
 		line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
 		from : in positive)
-		return et_coordinates.type_position is
-		
+		return et_coordinates.type_position
+	is		
 		use et_coordinates;
 		use pac_geometry_sch;
 		
@@ -367,7 +367,8 @@ is
 	function to_size (
 		line : in type_fields_of_line; -- "size x 30 y 40"
 		from : in positive)
-		return et_submodules.type_submodule_size is
+		return et_submodules.type_submodule_size 
+	is
 		use et_coordinates.pac_geometry_sch;
 		
 		size : et_submodules.type_submodule_size; -- to be returned
@@ -399,7 +400,8 @@ is
 	-- Returns a type_package_position in the layout.
 		line : in type_fields_of_line; -- "position x 23 y 0.2 rotation 90.0 face top"
 		from : in positive)
-		return et_pcb_coordinates.type_package_position is
+		return et_pcb_coordinates.type_package_position
+	is
 		use et_pcb_coordinates;
 		use et_pcb_coordinates.pac_geometry_brd;
 		
@@ -681,10 +683,16 @@ is
 	end validate_signal_layer;
 
 	
--- 		board_track_circle : et_pcb.type_copper_circle;
-	board_text_copper : et_packages.type_conductor_text;
-	board_text_copper_placeholder : et_pcb.type_text_placeholder_conductors;
+	-- 		board_track_circle : et_pcb.type_copper_circle;
 
+	-- This variable is used for texts in conductor layers
+	-- and for texts in restrict layers:
+	board_text_conductor : et_packages.type_conductor_text;
+
+	-- This variable is used for text placeholders in conductor layers:
+	board_text_conductor_placeholder : et_pcb.type_text_placeholder_conductors;
+
+	
 	net_junctions : et_schematic.type_junctions;
 	
 	procedure set_junction (place : in string) is begin
@@ -697,6 +705,8 @@ is
 		end if;
 	end set_junction;
 
+
+	
 	procedure read_schematic_text is
 		use et_coordinates.pac_geometry_sch;
 		kw : constant string := f (line, 1);
@@ -792,30 +802,30 @@ is
 			expect_field_count (line, 7);
 
 			-- extract position of note starting at field 2
-			board_text_copper.position := to_position (line, 2);
+			board_text_conductor.position := to_position (line, 2);
 
 		elsif kw = et_text.keyword_size then -- size 1.000
 			expect_field_count (line, 2);
-			board_text_copper.size := to_distance (f (line, 2));
+			board_text_conductor.size := to_distance (f (line, 2));
 
 		elsif kw = et_text.keyword_line_width then -- line_width 0.1
 			expect_field_count (line, 2);
-			board_text_copper.line_width := to_distance (f (line, 2));
+			board_text_conductor.line_width := to_distance (f (line, 2));
 
 		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
 
 			-- extract alignment starting at field 2
-			board_text_copper.alignment := et_text.to_alignment (line, 2);
+			board_text_conductor.alignment := et_text.to_alignment (line, 2);
 			
 		elsif kw = keyword_content then -- content "TOP", "L2", "BOT"
 			expect_field_count (line, 2); -- actual content in quotes !
-			board_text_copper.content := et_text.to_content (f (line, 2));
+			board_text_conductor.content := et_text.to_content (f (line, 2));
 
 		elsif kw = keyword_layer then -- layer 15
 			expect_field_count (line, 2);
-			board_text_copper.layer := et_pcb_stack.to_signal_layer (f (line, 2));
-			validate_signal_layer (board_text_copper.layer);
+			board_text_conductor.layer := et_pcb_stack.to_signal_layer (f (line, 2));
+			validate_signal_layer (board_text_conductor.layer);
 			
 		else
 			invalid_keyword (kw);
@@ -2784,17 +2794,17 @@ is
 						when LAYER_CAT_CONDUCTOR =>
 							append (
 								container	=> module.board.conductors.texts,
-								new_item	=> board_text_copper);
+								new_item	=> board_text_conductor);
 
 						when LAYER_CAT_ROUTE_RESTRICT =>
 							append (
 								container	=> module.board.route_restrict.texts,
-								new_item	=> board_text_copper);
+								new_item	=> board_text_conductor);
 
 						when LAYER_CAT_VIA_RESTRICT =>
 							append (
 								container	=> module.board.via_restrict.texts,
-								new_item	=> board_text_copper);
+								new_item	=> board_text_conductor);
 
 					end case;
 				end do_it;
@@ -2806,7 +2816,7 @@ is
 					process		=> do_it'access);
 
 				-- clean up for next text in copper
-				board_text_copper := (others => <>);
+				board_text_conductor := (others => <>);
 			end build_conductor_text;
 
 			procedure insert_board_text_placeholder is
@@ -2818,7 +2828,7 @@ is
 				begin
 					pac_text_placeholders_conductors.append (
 						container	=> module.board.conductors.placeholders,
-						new_item	=> board_text_copper_placeholder);
+						new_item	=> board_text_conductor_placeholder);
 				end do_it;
 									
 			begin -- insert_board_text_placeholder
@@ -2828,7 +2838,7 @@ is
 					process		=> do_it'access);
 
 				-- clean up for next placeholder in copper
-				board_text_copper_placeholder := (others => <>);
+				board_text_conductor_placeholder := (others => <>);
 			end insert_board_text_placeholder;
 			
 			procedure insert_line_contour is
@@ -6014,30 +6024,30 @@ is
 									expect_field_count (line, 7);
 
 									-- extract position of note starting at field 2
-									board_text_copper_placeholder.position := to_position (line, 2);
+									board_text_conductor_placeholder.position := to_position (line, 2);
 
 								elsif kw = et_text.keyword_size then -- size 1.000
 									expect_field_count (line, 2);
-									board_text_copper_placeholder.size := to_distance (f (line, 2));
+									board_text_conductor_placeholder.size := to_distance (f (line, 2));
 
 								elsif kw = et_text.keyword_line_width then -- line_width 0.1
 									expect_field_count (line, 2);
-									board_text_copper_placeholder.line_width := to_distance (f (line, 2));
+									board_text_conductor_placeholder.line_width := to_distance (f (line, 2));
 
 								elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 									expect_field_count (line, 5);
 
 									-- extract alignment starting at field 2
-									board_text_copper_placeholder.alignment := et_text.to_alignment (line, 2);
+									board_text_conductor_placeholder.alignment := et_text.to_alignment (line, 2);
 									
 								elsif kw = keyword_meaning then -- meaning revision/project_name/...
 									expect_field_count (line, 2);
-									board_text_copper_placeholder.meaning := et_pcb.to_meaning (f (line, 2));
+									board_text_conductor_placeholder.meaning := et_pcb.to_meaning (f (line, 2));
 
 								elsif kw = keyword_layer then -- layer 15
 									expect_field_count (line, 2);
-									board_text_copper_placeholder.layer := et_pcb_stack.to_signal_layer (f (line, 2));
-									validate_signal_layer (board_text_copper_placeholder.layer);
+									board_text_conductor_placeholder.layer := et_pcb_stack.to_signal_layer (f (line, 2));
+									validate_signal_layer (board_text_conductor_placeholder.layer);
 									
 								else
 									invalid_keyword (kw);
