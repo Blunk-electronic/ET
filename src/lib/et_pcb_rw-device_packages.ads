@@ -58,6 +58,7 @@ package et_pcb_rw.device_packages is
 	
 	
 	type type_section is (
+		SEC_CONDUCTOR,
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,
 		SEC_INIT,
@@ -69,7 +70,6 @@ package et_pcb_rw.device_packages is
 		SEC_SILK_SCREEN,
 		SEC_ASSEMBLY_DOCUMENTATION,
 		SEC_KEEPOUT,
-		SEC_COPPER,
 		SEC_STOP_MASK,
 		SEC_STENCIL,
 		SEC_ROUTE_RESTRICT,

@@ -173,7 +173,7 @@ package body et_pcb_rw.device_packages is
 			end;
 			
 		begin -- write_copper
-			section_mark (section_copper, HEADER);
+			section_mark (section_conductor, HEADER);
 
 			-- top
 			section_mark (section_top, HEADER);			
@@ -197,7 +197,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.conductors.bottom.texts, write_text'access);			
 			section_mark (section_bottom, FOOTER);
 
-			section_mark (section_copper, FOOTER);
+			section_mark (section_conductor, FOOTER);
 		end write_copper;
 
 		use pac_text_placeholders;		
@@ -1513,7 +1513,7 @@ package body et_pcb_rw.device_packages is
 			begin -- execute_section
 				case stack.current is
 
-					when SEC_COPPER | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+					when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
 						SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 						SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT | SEC_PCB_CONTOURS_NON_PLATED | 
 						SEC_TERMINALS | SEC_PACKAGE_3D_CONTOURS =>
@@ -1525,7 +1525,7 @@ package body et_pcb_rw.device_packages is
 							
 					when SEC_TOP =>
 						case stack.parent is
-							when SEC_COPPER | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
 								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION => null;
 
 							when SEC_PAD_CONTOURS_THT => 
@@ -1543,7 +1543,7 @@ package body et_pcb_rw.device_packages is
 						
 					when SEC_BOTTOM =>
 						case stack.parent is
-							when SEC_COPPER | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
 								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION => null;
 
 							when SEC_PAD_CONTOURS_THT =>
@@ -1563,7 +1563,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
-									when SEC_COPPER => -- NON-ELECTRIC !!
+									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 
 										pac_conductor_lines.append (
 											container	=> packge.conductors.top.lines, 
@@ -1626,7 +1626,7 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_COPPER => -- NON-ELECTRIC !!
+									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 
 										pac_conductor_lines.append (
 											container	=> packge.conductors.bottom.lines, 
@@ -1737,7 +1737,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
-									when SEC_COPPER => -- NON-ELECTRIC !!
+									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 
 										pac_conductor_arcs.append (
 											container	=> packge.conductors.top.arcs, 
@@ -1800,7 +1800,7 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_COPPER => -- NON-ELECTRIC !!
+									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 
 										pac_conductor_arcs.append (
 											container	=> packge.conductors.bottom.arcs, 
@@ -1907,7 +1907,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
-									when SEC_COPPER => -- NON-ELECTRIC !!
+									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 
 										et_packages.pac_conductor_circles.append (
 											container	=> packge.conductors.top.circles, 
@@ -1957,7 +1957,7 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
-									when SEC_COPPER => -- NON-ELECTRIC !!
+									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 
 										et_packages.pac_conductor_circles.append (
 											container	=> packge.conductors.bottom.circles, 
@@ -2064,7 +2064,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_KEEPOUT =>
 										append_keepout_polygon_top;
 
-									when SEC_COPPER =>
+									when SEC_CONDUCTOR =>
 										append_copper_polygon_top;
 										
 									when others => invalid_section;
@@ -2087,7 +2087,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_KEEPOUT =>
 										append_keepout_polygon_bottom;
 
-									when SEC_COPPER =>
+									when SEC_CONDUCTOR =>
 										append_copper_polygon_bottom;
 										
 									when others => invalid_section;
@@ -2121,7 +2121,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_KEEPOUT =>
 										append_keepout_cutout_top;
 
-									when SEC_COPPER =>
+									when SEC_CONDUCTOR =>
 										append_copper_cutout_top;
 
 									when others => invalid_section;
@@ -2144,7 +2144,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_KEEPOUT =>
 										append_keepout_cutout_bottom;
 
-									when SEC_COPPER =>
+									when SEC_CONDUCTOR =>
 										append_copper_cutout_bottom;
 
 									when others => invalid_section;
@@ -2170,7 +2170,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP =>
 								case stack.parent (degree => 2) is
-									when SEC_COPPER =>
+									when SEC_CONDUCTOR =>
 										
 										pac_texts_with_content.append (
 											container	=> packge.conductors.top.texts,
@@ -2205,7 +2205,7 @@ package body et_pcb_rw.device_packages is
 								
 							when SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
-									when SEC_COPPER =>
+									when SEC_CONDUCTOR =>
 										
 										pac_texts_with_content.append (
 											container	=> packge.conductors.bottom.texts,
@@ -2409,7 +2409,7 @@ package body et_pcb_rw.device_packages is
 			elsif set (section_silk_screen, SEC_SILK_SCREEN) then null;
 			elsif set (section_assembly_doc, SEC_ASSEMBLY_DOCUMENTATION) then null;
 			elsif set (section_keepout, SEC_KEEPOUT) then null;			
-			elsif set (section_copper, SEC_COPPER) then null;
+			elsif set (section_conductor, SEC_CONDUCTOR) then null;
 			elsif set (section_stop_mask, SEC_STOP_MASK) then null;			
 			elsif set (section_stencil, SEC_STENCIL) then null;			
 			elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;			
@@ -2472,7 +2472,7 @@ package body et_pcb_rw.device_packages is
 							end if;
 						end;
 
-					when SEC_COPPER | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+					when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
 						SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 						SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT | SEC_PCB_CONTOURS_NON_PLATED | 
 						SEC_TERMINALS | SEC_PACKAGE_3D_CONTOURS =>
@@ -2490,7 +2490,7 @@ package body et_pcb_rw.device_packages is
 						
 					when SEC_TOP | SEC_BOTTOM =>
 						case stack.parent is
-							when SEC_COPPER | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
 								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 								SEC_PAD_CONTOURS_THT => null;
 
@@ -2503,7 +2503,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									when SEC_CONDUCTOR | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK =>
 
 										if not read_board_line (line) then
@@ -2568,7 +2568,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									when SEC_CONDUCTOR | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK =>
 
 										if not read_board_arc (line) then
@@ -2682,7 +2682,7 @@ package body et_pcb_rw.device_packages is
 											end;
 										end if;
 										
-									when SEC_COPPER => -- NON-ELECTRIC !!
+									when SEC_CONDUCTOR => -- NON-ELECTRIC !!
 										if not read_board_circle (line) then
 											declare
 												kw : string := f (line, 1);
@@ -2806,7 +2806,7 @@ package body et_pcb_rw.device_packages is
 											invalid_keyword (kw);
 										end;
 										
-									when SEC_COPPER =>
+									when SEC_CONDUCTOR =>
 										declare
 											kw : string := f (line, 1);
 										begin
@@ -2894,7 +2894,7 @@ package body et_pcb_rw.device_packages is
 											end if;
 										end;
 										
-									when SEC_COPPER =>
+									when SEC_CONDUCTOR =>
 										declare
 											kw : string := f (line, 1);
 										begin
@@ -2974,7 +2974,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
-									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
+									when SEC_CONDUCTOR | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
 
 										read_text;
 										

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -66,7 +66,7 @@ package et_pcb_rw is
 	section_keepout				: constant string	:= "[KEEPOUT";
 	section_route_restrict		: constant string	:= "[ROUTE_RESTRICT";
 	section_via_restrict		: constant string	:= "[VIA_RESTRICT";
-	section_copper				: constant string	:= "[COPPER";
+	section_conductor			: constant string	:= "[CONDUCTOR";
 	section_pcb_contours		: constant string	:= "[PCB_CONTOURS_NON_PLATED";
 	--section_pcb_contours_plated	: constant string	:= "[PCB_CONTOURS_PLATED"; 
 	section_pac_3d_contours		: constant string	:= "[PACKAGE_3D_CONTOURS";

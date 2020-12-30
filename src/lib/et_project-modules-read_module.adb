@@ -3702,7 +3702,7 @@ is
 						when SEC_VIA_RESTRICT =>
 							insert_line_via_restrict;
 
-						when SEC_COPPER =>
+						when SEC_CONDUCTOR =>
 							insert_line_track;
 
 						when SEC_PCB_CONTOURS_NON_PLATED =>
@@ -3745,7 +3745,7 @@ is
 							board_check_arc (log_threshold + 1);
 							insert_arc_via_restrict;
 
-						when SEC_COPPER =>
+						when SEC_CONDUCTOR =>
 							board_check_arc (log_threshold + 1);
 							insert_arc_track;
 
@@ -3772,7 +3772,7 @@ is
 						when SEC_VIA_RESTRICT =>
 							insert_circle_via_restrict;
 
-						when SEC_COPPER =>
+						when SEC_CONDUCTOR =>
 							insert_circle_track;
 
 						when SEC_PCB_CONTOURS_NON_PLATED =>
@@ -3809,7 +3809,7 @@ is
 						when SEC_VIA_RESTRICT =>
 							insert_cutout_via_restrict;
 
-						when SEC_COPPER =>
+						when SEC_CONDUCTOR =>
 							insert_cutout_conductor;
 							
 						when others => invalid_section;
@@ -3832,7 +3832,7 @@ is
 						when SEC_VIA_RESTRICT =>
 							insert_polygon_via_restrict;
 
-						when SEC_COPPER =>
+						when SEC_CONDUCTOR =>
 							insert_polygon_conductor;
 							
 						when others => invalid_section;
@@ -3998,7 +3998,7 @@ is
 						when SEC_PCB_CONTOURS_NON_PLATED =>
 							build_contour_text;
 							
-						when SEC_COPPER =>
+						when SEC_CONDUCTOR =>
 							build_conductor_text (et_packages.LAYER_CAT_CONDUCTOR);
 
 						when SEC_ROUTE_RESTRICT =>
@@ -4079,7 +4079,7 @@ is
 								when others => invalid_section;
 							end case;
 
-						when SEC_COPPER =>
+						when SEC_CONDUCTOR =>
 							insert_board_text_placeholder;
 							
 						when others => invalid_section;
@@ -4255,7 +4255,7 @@ is
 					
 				when SEC_DEVICES_NON_ELECTRIC | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 					SEC_STOP_MASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
-					SEC_COPPER | SEC_PCB_CONTOURS_NON_PLATED =>
+					SEC_CONDUCTOR | SEC_PCB_CONTOURS_NON_PLATED =>
 					case stack.parent is
 						when SEC_BOARD => null;
 						when others => invalid_section;
@@ -4381,7 +4381,7 @@ is
 		elsif set (section_keepout, SEC_KEEPOUT) then null;
 		elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;
 		elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
-		elsif set (section_copper, SEC_COPPER) then null;				
+		elsif set (section_conductor, SEC_CONDUCTOR) then null;				
 		elsif set (section_pcb_contours, SEC_PCB_CONTOURS_NON_PLATED) then null;
 		else
 			-- The line contains something else -> the payload data. 
@@ -5034,7 +5034,7 @@ is
 								end;
 							end if;
 							
-						when SEC_COPPER =>
+						when SEC_CONDUCTOR =>
 							if not read_board_line (line) then
 								declare
 									kw : string := f (line, 1);
@@ -5153,7 +5153,7 @@ is
 
 							end if;
 							
-						when SEC_COPPER =>
+						when SEC_CONDUCTOR =>
 							if not read_board_arc (line) then
 								declare
 									kw : string := f (line, 1);
@@ -5289,7 +5289,7 @@ is
 
 							end if;
 							
-						when SEC_COPPER =>
+						when SEC_CONDUCTOR =>
 							if not read_board_circle (line) then
 								declare
 									use et_packages;
@@ -5438,7 +5438,7 @@ is
 								end if;
 							end;
 
-						when SEC_COPPER => -- non electrical
+						when SEC_CONDUCTOR => -- non electrical
 							declare
 								use et_packages;
 								use et_terminals.pac_shapes;									
@@ -5619,7 +5619,7 @@ is
 								end if;
 							end;
 
-						when SEC_COPPER => -- non electrical
+						when SEC_CONDUCTOR => -- non electrical
 							declare
 								use et_packages;
 								use et_terminals.pac_shapes;									
@@ -5845,7 +5845,7 @@ is
 						when SEC_TOP | SEC_BOTTOM => -- in board
 							read_board_text_non_conductor;
 
-						when SEC_COPPER | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+						when SEC_CONDUCTOR | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 							read_board_text_conductor;
 							
 						when others => invalid_section;
@@ -6013,7 +6013,7 @@ is
 								when others => invalid_section;
 							end case;
 
-						when SEC_COPPER =>
+						when SEC_CONDUCTOR =>
 							declare
 								use et_pcb_coordinates.pac_geometry_brd;
 								use et_pcb_stack;
@@ -6162,7 +6162,7 @@ is
 					
 				when SEC_DEVICES_NON_ELECTRIC | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 					SEC_STOP_MASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
-					SEC_COPPER | SEC_PCB_CONTOURS_NON_PLATED =>
+					SEC_CONDUCTOR | SEC_PCB_CONTOURS_NON_PLATED =>
 					case stack.parent is
 						when SEC_BOARD => null;
 						when others => invalid_section;

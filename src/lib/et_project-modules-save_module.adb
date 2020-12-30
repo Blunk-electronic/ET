@@ -1459,7 +1459,7 @@ is
 		section_mark (section_via_restrict, FOOTER);
 
 		-- COPPER (NON-ELECTRIC)
-		section_mark (section_copper, HEADER);
+		section_mark (section_conductor, HEADER);
 			iterate (element (module_cursor).board.conductors.lines, write_line'access);
 			iterate (element (module_cursor).board.conductors.arcs, write_arc'access);
 			iterate (element (module_cursor).board.conductors.circles, write_circle'access);
@@ -1468,7 +1468,7 @@ is
 			iterate (element (module_cursor).board.conductors.cutouts, write_cutout'access);			
 			iterate (element (module_cursor).board.conductors.texts, write_text'access);
 			iterate (element (module_cursor).board.conductors.placeholders, write_placeholder'access);
-		section_mark (section_copper, FOOTER);
+		section_mark (section_conductor, FOOTER);
 
 		-- BOARD CONTOUR
 		section_mark (section_pcb_contours, HEADER);
