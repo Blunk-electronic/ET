@@ -747,7 +747,7 @@ is
 	begin
 		case stack.parent (degree => 2) is
 			when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK 
-				| SEC_CONTOURS => -- CS SEC_KEEPOUT
+				| SEC_KEEPOUT | SEC_STENCIL =>
 
 				-- CS: In the following: set a corresponding parameter-found-flag
 				if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
@@ -782,6 +782,46 @@ is
 		end case;
 	end read_board_text_non_conductor;
 
+	procedure read_board_text_conductor is
+		use et_pcb_coordinates.pac_geometry_brd;
+		use et_pcb_stack;
+		kw : string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+			expect_field_count (line, 7);
+
+			-- extract position of note starting at field 2
+			board_text_copper.position := to_position (line, 2);
+
+		elsif kw = et_text.keyword_size then -- size 1.000
+			expect_field_count (line, 2);
+			board_text_copper.size := to_distance (f (line, 2));
+
+		elsif kw = et_text.keyword_line_width then -- line_width 0.1
+			expect_field_count (line, 2);
+			board_text_copper.line_width := to_distance (f (line, 2));
+
+		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+			expect_field_count (line, 5);
+
+			-- extract alignment starting at field 2
+			board_text_copper.alignment := et_text.to_alignment (line, 2);
+			
+		elsif kw = keyword_content then -- content "TOP", "L2", "BOT"
+			expect_field_count (line, 2); -- actual content in quotes !
+			board_text_copper.content := et_text.to_content (f (line, 2));
+
+		elsif kw = keyword_layer then -- layer 15
+			expect_field_count (line, 2);
+			board_text_copper.layer := et_pcb_stack.to_signal_layer (f (line, 2));
+			validate_signal_layer (board_text_copper.layer);
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_board_text_conductor;
+	
 	procedure read_board_text_contours is 
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant  string := f (line, 1);
@@ -3266,16 +3306,20 @@ is
 											container	=> module.board.assy_doc.top.texts,
 											new_item	=> board_text);
 
+									when LAYER_CAT_KEEPOUT =>
+										pac_texts_with_content.append (
+											container	=> module.board.keepout.top.texts,
+											new_item	=> board_text);
+
+									when LAYER_CAT_STENCIL =>
+										pac_texts_with_content.append (
+											container	=> module.board.stencil.top.texts,
+											new_item	=> board_text);
+
 									when LAYER_CAT_STOP =>
 										pac_texts_with_content.append (
 											container	=> module.board.stop_mask.top.texts,
 											new_item	=> board_text);
-
-									-- CS
-									--when KEEPOUT =>
-									--	pac_texts_with_content.append (
-									--		container	=> module.board.keepout.top.texts,
-									--		new_item	=> board_text);
 
 									when others => invalid_section;
 								end case;
@@ -3292,16 +3336,20 @@ is
 											container	=> module.board.assy_doc.bottom.texts,
 											new_item	=> board_text);
 										
+									when LAYER_CAT_KEEPOUT =>
+										pac_texts_with_content.append (
+											container	=> module.board.keepout.bottom.texts,
+											new_item	=> board_text);
+
+									when LAYER_CAT_STENCIL =>
+										pac_texts_with_content.append (
+											container	=> module.board.stencil.bottom.texts,
+											new_item	=> board_text);
+
 									when LAYER_CAT_STOP =>
 										pac_texts_with_content.append (
 											container	=> module.board.stop_mask.bottom.texts,
 											new_item	=> board_text);
-
-									-- CS
-									--when KEEPOUT =>
-									--	pac_texts_with_content.append (
-									--		container	=> module.board.keepout.bottom.texts,
-									--		new_item	=> board_text);
 
 									when others => invalid_section;
 								end case;
@@ -5763,46 +5811,8 @@ is
 						when SEC_TOP | SEC_BOTTOM => -- in board
 							read_board_text_non_conductor;
 
-						when SEC_COPPER =>
-							declare
-								use et_pcb_coordinates.pac_geometry_brd;
-								use et_pcb_stack;
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
-									expect_field_count (line, 7);
-
-									-- extract position of note starting at field 2
-									board_text_copper.position := to_position (line, 2);
-
-								elsif kw = et_text.keyword_size then -- size 1.000
-									expect_field_count (line, 2);
-									board_text_copper.size := to_distance (f (line, 2));
-
-								elsif kw = et_text.keyword_line_width then -- line_width 0.1
-									expect_field_count (line, 2);
-									board_text_copper.line_width := to_distance (f (line, 2));
-
-								elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
-									expect_field_count (line, 5);
-
-									-- extract alignment starting at field 2
-									board_text_copper.alignment := et_text.to_alignment (line, 2);
-									
-								elsif kw = keyword_content then -- content "TOP", "L2", "BOT"
-									expect_field_count (line, 2); -- actual content in quotes !
-									board_text_copper.content := et_text.to_content (f (line, 2));
-
-								elsif kw = keyword_layer then -- layer 15
-									expect_field_count (line, 2);
-									board_text_copper.layer := et_pcb_stack.to_signal_layer (f (line, 2));
-									validate_signal_layer (board_text_copper.layer);
-									
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
+						when SEC_COPPER | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+							read_board_text_conductor;
 							
 						when others => invalid_section;
 					end case;
