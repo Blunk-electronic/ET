@@ -2769,19 +2769,37 @@ is
 				-- CS reset other properites
 			end insert_circle_track;
 
-			procedure insert_board_text is
+			procedure build_conductor_text (
+				layer_cat	: in et_packages.type_layer_category_conductor)
+			is
 				use et_packages;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
+					module		: in out et_schematic.type_module) 
+				is
+					use pac_conductor_texts;
 				begin
-					pac_conductor_texts.append (
-						container	=> module.board.conductors.texts,
-						new_item	=> board_text_copper);
+					case layer_cat is
+						when LAYER_CAT_CONDUCTOR =>
+							append (
+								container	=> module.board.conductors.texts,
+								new_item	=> board_text_copper);
+
+						when LAYER_CAT_ROUTE_RESTRICT =>
+							append (
+								container	=> module.board.route_restrict.texts,
+								new_item	=> board_text_copper);
+
+						when LAYER_CAT_VIA_RESTRICT =>
+							append (
+								container	=> module.board.via_restrict.texts,
+								new_item	=> board_text_copper);
+
+					end case;
 				end do_it;
 									
-			begin -- insert_board_text
+			begin -- build_conductor_text
 				update_element (
 					container	=> generic_modules,
 					position	=> module_cursor,
@@ -2789,7 +2807,7 @@ is
 
 				-- clean up for next text in copper
 				board_text_copper := (others => <>);
-			end insert_board_text;
+			end build_conductor_text;
 
 			procedure insert_board_text_placeholder is
 				use et_pcb;
@@ -3971,7 +3989,13 @@ is
 							build_contour_text;
 							
 						when SEC_COPPER =>
-							insert_board_text;
+							build_conductor_text (et_packages.LAYER_CAT_CONDUCTOR);
+
+						when SEC_ROUTE_RESTRICT =>
+							build_conductor_text (et_packages.LAYER_CAT_ROUTE_RESTRICT);
+
+						when SEC_VIA_RESTRICT =>
+							build_conductor_text (et_packages.LAYER_CAT_VIA_RESTRICT);
 							
 						when others => invalid_section;
 					end case;
