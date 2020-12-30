@@ -585,7 +585,7 @@ is
 	submodule_name 			: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 	submodule				: et_submodules.type_submodule;
 
-	note : et_schematic.type_text;
+	schematic_text : et_schematic.type_text;
 
 	-- The temporarily device will exist where "device" points at:
 	device					: access et_schematic.type_device_sch;
@@ -716,35 +716,35 @@ is
 			expect_field_count (line, 7);
 
 			declare
-				-- extract position of note starting at field 2
+				-- extract position of schematic_text starting at field 2
 				pos : constant et_coordinates.type_position := to_position (line, 2);
 			begin
-				note.position := type_point (pos);
-				note.sheet := sheet (pos);
+				schematic_text.position := type_point (pos);
+				schematic_text.sheet := sheet (pos);
 			end;
 
 		elsif kw = keyword_content then -- content "DUMMY TEXT IN CORE MODULE"
 			expect_field_count (line, 2); -- actual content in quotes !
-			note.content := et_text.to_content (f (line, 2));
+			schematic_text.content := et_text.to_content (f (line, 2));
 
 		elsif kw = et_text.keyword_size then -- size 1.4
 			expect_field_count (line, 2);
-			note.size := to_distance (f (line, 2));
+			schematic_text.size := to_distance (f (line, 2));
 
 		elsif kw = keyword_rotation then -- rotation 90
 			expect_field_count (line, 2);
-			note.rotation := et_symbols.pac_text.to_rotation_doc (f (line, 2));
+			schematic_text.rotation := et_symbols.pac_text.to_rotation_doc (f (line, 2));
 
 -- 			elsif kw = keyword_style then -- style normal/italic
 -- 				expect_field_count (line, 2);
-			-- note.font := et_symbols.to_text_style (f (line, 2)); -- CS
+			-- schematic_text.font := et_symbols.to_text_style (f (line, 2)); -- CS
 			-- CS: currently font and style are ignored.
 
 		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
 
 			-- extract alignment starting at field 2
-			note.alignment := et_text.to_alignment (line, 2);
+			schematic_text.alignment := et_text.to_alignment (line, 2);
 			
 		else
 			invalid_keyword (kw);
@@ -763,7 +763,7 @@ is
 				if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
 					expect_field_count (line, 7);
 
-					-- extract position of note starting at field 2
+					-- extract position starting at field 2
 					board_text.position := to_position (line, 2);
 
 				elsif kw = et_text.keyword_size then -- size 1.000
@@ -801,7 +801,7 @@ is
 		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
 			expect_field_count (line, 7);
 
-			-- extract position of note starting at field 2
+			-- extract position starting at field 2
 			board_text_conductor.position := to_position (line, 2);
 
 		elsif kw = et_text.keyword_size then -- size 1.000
@@ -840,7 +840,7 @@ is
 		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
 			expect_field_count (line, 7);
 
-			-- extract position of note starting at field 2
+			-- extract position starting at field 2
 			board_text.position := to_position (line, 2);
 
 		elsif kw = et_text.keyword_size then -- size 1.000
@@ -1224,16 +1224,16 @@ is
 				module.board.origin := frame_board_origin;
 			end set_frame_board;
 
-			procedure insert_note (
+			procedure insert_schematic_text (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out et_schematic.type_module) is
 			begin
 				-- append schematic note to collection of notes
-				et_schematic.pac_texts.append (module.texts, note);
+				et_schematic.pac_texts.append (module.texts, schematic_text);
 
 				-- clean up for next note
-				note := (others => <>);
-			end insert_note;
+				schematic_text := (others => <>);
+			end insert_schematic_text;
 			
 			procedure insert_package_placeholder is
 				use et_packages;
@@ -3987,7 +3987,7 @@ is
 							update_element (
 								container	=> generic_modules,
 								position	=> module_cursor,
-								process		=> insert_note'access);
+								process		=> insert_schematic_text'access);
 
 						when SEC_TOP =>
 							build_non_conductor_text (et_pcb_coordinates.TOP);
