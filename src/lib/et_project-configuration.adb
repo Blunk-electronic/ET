@@ -93,6 +93,7 @@ package body et_project.configuration is
 	end;
 
 	procedure save_configuration (
+		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level) 
 		is separate;
 

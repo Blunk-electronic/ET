@@ -89,7 +89,7 @@ package et_project.configuration is
 	-- The current working directory is assumed to be the parent directory
 	-- of the current project. Call this procedure when saving a whole project.
 	procedure save_configuration (
--- 		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
+		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 -- 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level);
 	

@@ -512,8 +512,8 @@ package body et_project is
 	
 	procedure save_project (
 		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
-		log_threshold 	: in et_string_processing.type_log_level) is
-
+		log_threshold 	: in et_string_processing.type_log_level) 
+	is
 		use et_project.rigs;
 		use rigs.pac_rigs;		
 
@@ -607,6 +607,7 @@ package body et_project is
 
 		-- save project configuration
 		configuration.save_configuration (
+			project_name	=> name, -- blood_sample_analyzer_experimental
 			log_threshold 	=> log_threshold + 1);
 
 		copy_design_rules;

@@ -38,6 +38,7 @@
 separate (et_project.configuration)
 	
 procedure save_configuration (
+	project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 	log_threshold 	: in et_string_processing.type_log_level) 
 is
 	-- backup the previous output destination
@@ -67,9 +68,10 @@ begin -- save_configuration
 		 level => log_threshold, console => true);
 	log_indentation_up;
 
-	-- compose the full file name
+	-- Compose the full file name:
+	-- The file base name is the same as the project name.
 	file_name := pac_file_name.to_bounded_string (compose (
-		name 		=> to_string (current_project), -- file base name same as project name
+		name 		=> to_string (project_name),
 		extension 	=> file_extension)); -- prj
 	
 	-- create the file
