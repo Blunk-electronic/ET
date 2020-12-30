@@ -137,11 +137,12 @@ is
 			size		=> element (c).size,
 			rotation	=> rot (element (c).position),
 			position	=> type_point (element (c).position),
-			mirror		=> face_to_mirror (face),
 			line_width	=> element (c).line_width,
 			alignment	=> element (c).alignment -- right, bottom
 			);
 
+		-- NOTE: Keepout text at bottom is never mirrored.
+		
 		-- Draw the text:
 		draw_vector_text (in_area, context, vector_text, self.frame_height);
 		

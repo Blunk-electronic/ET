@@ -1227,9 +1227,12 @@ is
 		-- texts any signal layers
 		procedure write_text (cursor : in et_packages.pac_conductor_texts.cursor) is begin
 			text_begin;
-			write (keyword => keyword_content, parameters => to_string (element (cursor).content));
+			write (keyword => keyword_content, wrap => true,
+				   parameters => to_string (element (cursor).content));
+			
 			write_text_properties (element (cursor));
-			write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
+			write (keyword => keyword_layer, 
+				   parameters => to_string (element (cursor).layer));
 			text_end;
 		end write_text;
 
@@ -1375,6 +1378,7 @@ is
 			iterate (element (module_cursor).board.stencil.top.circles, write_circle'access);
 			iterate (element (module_cursor).board.stencil.top.polygons, write_polygon'access);
 			iterate (element (module_cursor).board.stencil.top.cutouts, write_cutout'access);
+			iterate (element (module_cursor).board.stencil.top.texts, write_text'access);
 			section_mark (section_top, FOOTER);
 
 			section_mark (section_bottom, HEADER);
@@ -1383,6 +1387,7 @@ is
 			iterate (element (module_cursor).board.stencil.bottom.circles, write_circle'access);
 			iterate (element (module_cursor).board.stencil.bottom.polygons, write_polygon'access);
 			iterate (element (module_cursor).board.stencil.bottom.cutouts, write_cutout'access);
+			iterate (element (module_cursor).board.stencil.bottom.texts, write_text'access);		
 		section_mark (section_bottom, FOOTER);
 
 		section_mark (section_stencil, FOOTER);
@@ -1419,7 +1424,7 @@ is
 			iterate (element (module_cursor).board.keepout.top.circles, write_circle'access);
 			iterate (element (module_cursor).board.keepout.top.polygons, write_polygon'access);
 			iterate (element (module_cursor).board.keepout.top.cutouts, write_cutout'access);
-			-- CS iterate (et_schematic.element (module_cursor).board.keepout.top.texts, write_text'access);
+			iterate (element (module_cursor).board.keepout.top.texts, write_text'access);
 			section_mark (section_top, FOOTER);
 
 			section_mark (section_bottom, HEADER);
@@ -1428,7 +1433,7 @@ is
 			iterate (element (module_cursor).board.keepout.bottom.circles, write_circle'access);
 			iterate (element (module_cursor).board.keepout.bottom.polygons, write_polygon'access);
 			iterate (element (module_cursor).board.keepout.bottom.cutouts, write_cutout'access);
-			-- CS iterate (et_schematic.element (module_cursor).board.keepout.bottom.texts, write_text'access);
+			iterate (element (module_cursor).board.keepout.bottom.texts, write_text'access);
 			section_mark (section_bottom, FOOTER);
 
 		section_mark (section_keepout, FOOTER);
@@ -1440,7 +1445,7 @@ is
 			iterate (element (module_cursor).board.route_restrict.circles, write_circle'access);
 			iterate (element (module_cursor).board.route_restrict.polygons, write_polygon'access);
 			iterate (element (module_cursor).board.route_restrict.cutouts, write_cutout'access);
-			-- CS iterate (et_schematic.element (module_cursor).board.route_restrict.texts, write_text'access);
+			iterate (element (module_cursor).board.route_restrict.texts, write_text'access);
 		section_mark (section_route_restrict, FOOTER);
 
 		-- VIA RESTRICT
@@ -1450,7 +1455,7 @@ is
 			iterate (element (module_cursor).board.via_restrict.circles, write_circle'access);
 			iterate (element (module_cursor).board.via_restrict.polygons, write_polygon'access);
 			iterate (element (module_cursor).board.via_restrict.cutouts, write_cutout'access);
-			-- CS iterate (et_schematic.element (module_cursor).board.via_restrict.texts, write_text'access);
+			iterate (element (module_cursor).board.via_restrict.texts, write_text'access);
 		section_mark (section_via_restrict, FOOTER);
 
 		-- COPPER (NON-ELECTRIC)
