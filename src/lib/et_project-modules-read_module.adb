@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          ET_PROJECT.READ_MODULE                          --
+--                             READ MODULE                                  --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -2297,7 +2297,7 @@ is
 				clear (signal_layers);
 			end insert_cutout_route_restrict;
 
-			procedure insert_cutout_copper is
+			procedure insert_cutout_conductor is
 			-- This is about cutout zones to trim floating polygons in signal layers. No connection to any net.
 				use et_terminals;
 				use et_terminals.pac_shapes;
@@ -2315,7 +2315,7 @@ is
 								layer			=> signal_layer));
 				end do_it;
 									
-			begin -- insert_cutout_copper
+			begin -- insert_cutout_conductor
 				update_element (
 					container	=> generic_modules,
 					position	=> module_cursor,
@@ -2323,7 +2323,7 @@ is
 
 				-- clean up for next floating board polygon
 				board_reset_polygon;
-			end insert_cutout_copper;
+			end insert_cutout_conductor;
 			
 			procedure build_contour_text is
 
@@ -2654,7 +2654,7 @@ is
 				clear (signal_layers);
 			end insert_polygon_via_restrict;
 
-			procedure insert_polygon_copper is
+			procedure insert_polygon_conductor is
 			-- This is about floating polygons in signal layers. No connection to any net.
 				use et_packages;
 				use et_terminals.pac_shapes;
@@ -2692,7 +2692,7 @@ is
 					end case;
 				end do_it;
 									
-			begin -- insert_polygon_copper
+			begin -- insert_polygon_conductor
 				update_element (
 					container	=> generic_modules,
 					position	=> module_cursor,
@@ -2700,7 +2700,7 @@ is
 
 				-- clean up for next floating board polygon
 				board_reset_polygon;
-			end insert_polygon_copper;
+			end insert_polygon_conductor;
 
 			procedure insert_line_track is -- about freetracks
 				use et_pcb;
@@ -2815,7 +2815,7 @@ is
 					position	=> module_cursor,
 					process		=> do_it'access);
 
-				-- clean up for next text in copper
+				-- clean up for next text in conductor layer
 				board_text_conductor := (others => <>);
 			end build_conductor_text;
 
@@ -2837,7 +2837,7 @@ is
 					position	=> module_cursor,
 					process		=> do_it'access);
 
-				-- clean up for next placeholder in copper
+				-- clean up for next placeholder in conductor layer
 				board_text_conductor_placeholder := (others => <>);
 			end insert_board_text_placeholder;
 			
@@ -3810,7 +3810,7 @@ is
 							insert_cutout_via_restrict;
 
 						when SEC_COPPER =>
-							insert_cutout_copper;
+							insert_cutout_conductor;
 							
 						when others => invalid_section;
 					end case;
@@ -3833,7 +3833,7 @@ is
 							insert_polygon_via_restrict;
 
 						when SEC_COPPER =>
-							insert_polygon_copper;
+							insert_polygon_conductor;
 							
 						when others => invalid_section;
 					end case;
