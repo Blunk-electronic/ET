@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -990,8 +990,8 @@ package body et_canvas_schematic is
 	
 	procedure evaluate_key (
 		self	: not null access type_view;
-		key		: in gdk_key_type) is
-
+		key		: in gdk_key_type) 
+	is
 		use gdk.types;
 		use gdk.types.keysyms;
 

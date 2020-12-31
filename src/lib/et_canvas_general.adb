@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --         Bases on the package gtkada.canvas_view written by               --
 --         E. Briot, J. Brobecker and A. Charlet, AdaCore                   --
@@ -161,7 +161,8 @@ package body pac_canvas is
 	function on_key_event (
 		self	: access gtk_widget_record'class;
 		event	: in gdk_event_key) 
-		return boolean is
+		return boolean 
+	is
 
 		-- This is required in order to propagate the key-pressed event further.
 		result : boolean; -- to be returned. Indicates that the event has been handled.
@@ -223,19 +224,6 @@ package body pac_canvas is
 		return result;
 	end on_key_event;
 
--- 	function on_button_event (
--- 		self  : access gtk_widget_record'class;
--- 		event : gdk_event_button)
--- 		return boolean
--- 	is
--- -- 		self    : constant type_view_ptr := type_view_ptr (view);
--- 	begin
--- 		put_line ("top mouse button pressed");
--- 
--- 		return false; -- indicates that event has been handled
--- 	end on_button_event;
-
-	
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
 		use gtk.gentry;
@@ -653,7 +641,8 @@ package body pac_canvas is
 	-- This procedure unifies two rectangles to one.
 	procedure union (
 		rect1 : in out type_rectangle;
-		rect2 : type_rectangle) is
+		rect2 : type_rectangle) 
+	is
 		right : constant type_distance := 
 			type_distance'max (rect1.x + rect1.width, rect2.x + rect2.width);
 		bottom : constant type_distance :=
@@ -716,17 +705,16 @@ package body pac_canvas is
 
 	function on_view_draw (
 		view	: system.address; 
-		cr		: cairo_context) return gboolean is
-		
-		self : constant type_view_ptr := type_view_ptr (glib.object.convert (view));
+		cr		: cairo_context) 
+	return gboolean is		
 		x1, y1, x2, y2 : gdouble;
 	begin
 		clip_extents (cr, x1, y1, x2, y2);
 
 		if x2 < x1 or else y2 < y1 then
-			refresh (self, cr);
+			canvas.refresh (cr);
 		else
-			refresh (self, cr, self.view_to_model ((x1, y1, x2 - x1, y2 - y1)));
+			canvas.refresh (cr, canvas.view_to_model ((x1, y1, x2 - x1, y2 - y1)));
 		end if;
 
 		return 1;
@@ -774,17 +762,16 @@ package body pac_canvas is
 	end on_view_realize;
 
 	procedure on_layout_changed_for_view (view : not null access gobject_record'class) is
-		self  : constant type_view_ptr := type_view_ptr (view);
 		alloc : gtk_allocation;
 	begin
-		self.get_allocation (alloc);
+		canvas.get_allocation (alloc);
 
 		--  on_adjustments_set will be called anyway when size_allocate is called
 		--  so no need to call it now if the size is unknown yet.
 
 		if alloc.width > 1 then
-			set_adjustment_values (self);
-			self.queue_draw;
+			canvas.set_adjustment_values;
+			canvas.queue_draw;
 		end if;
 
 	end on_layout_changed_for_view;
@@ -890,23 +877,6 @@ package body pac_canvas is
 		return mtv (p, self.scale, self.topleft);
 	end model_to_view;
 
--- 
--- 	function model_to_view (
--- 		self   : not null access type_view;
--- 		rect   : in type_rectangle)
--- 		return type_view_rectangle is
--- 		result : type_view_rectangle;
--- 	begin
--- 		result := (
--- 			x      => type_view_coordinate (rect.x - self.topleft.x) * self.scale,
--- 			y      => type_view_coordinate (rect.y - self.topleft.y) * self.scale,
--- 			width  => type_view_coordinate (rect.width) * self.scale,
--- 			height => type_view_coordinate (rect.height) * self.scale
--- 			);
--- 		
--- 		return result;
--- 	end model_to_view;
-
 	procedure set_adjustment_values (self : not null access type_view'class) is
 		box   : type_rectangle;
 		area  : constant type_rectangle := self.get_visible_area;
@@ -951,18 +921,17 @@ package body pac_canvas is
 		self.viewport_changed;
 	end set_adjustment_values;
 
-	procedure on_adj_value_changed (view : access glib.object.gobject_record'class) is
 	-- Called when one of the scrollbars has changed value.		
-		self : constant type_view_ptr := type_view_ptr (view);
+	procedure on_adj_value_changed (view : access glib.object.gobject_record'class) is
 		pos  : constant type_point := type_point (set (
-							x => type_distance (self.hadj.get_value),
-							y => type_distance (self.vadj.get_value)));
+				x => type_distance (canvas.hadj.get_value),
+				y => type_distance (canvas.vadj.get_value)));
 
 	begin
-		if pos /= self.topleft then
-			self.topleft := pos;
-			self.viewport_changed;
-			queue_draw (self);
+		if pos /= canvas.topleft then
+			canvas.topleft := pos;
+			canvas.viewport_changed;
+			canvas.queue_draw;
 		end if;
 	end on_adj_value_changed;
 
@@ -973,29 +942,27 @@ package body pac_canvas is
 		property_spec : param_spec)
 	is
 		pragma unreferenced (property_spec);
-		self : constant type_view_ptr := type_view_ptr (object);
 	begin
 		case prop_id is
 			when h_adj_property =>
-				self.hadj := gtk_adjustment (get_object (value));
-				if self.hadj /= null then
-					set_adjustment_values (self);
-					self.hadj.on_value_changed (access_on_adj_value_changed, self);
-					self.queue_draw;
+				canvas.hadj := gtk_adjustment (get_object (value));
+				if canvas.hadj /= null then
+					canvas.set_adjustment_values;
+					canvas.hadj.on_value_changed (access_on_adj_value_changed, canvas);
+					canvas.queue_draw;
 				end if;
 
 			when v_adj_property => 
 
-				self.vadj := gtk_adjustment (get_object (value));
+				canvas.vadj := gtk_adjustment (get_object (value));
 
-				if self.vadj /= null then
-					set_adjustment_values (self);
-					self.vadj.on_value_changed (access_on_adj_value_changed, self);
-					self.queue_draw;
+				if canvas.vadj /= null then
+					canvas.set_adjustment_values;
+					canvas.vadj.on_value_changed (access_on_adj_value_changed, canvas);
+					canvas.queue_draw;
 				end if;
 
 			when h_scroll_property => null;
-
 			when v_scroll_property => null;
 
 			when others => null;
@@ -1009,11 +976,10 @@ package body pac_canvas is
 		property_spec : param_spec)
 	is
 		pragma unreferenced (property_spec);
-		self : constant type_view_ptr := type_view_ptr (object);
 	begin
 		case prop_id is
-			when h_adj_property => set_object (value, self.hadj);
-			when v_adj_property => set_object (value, self.vadj);
+			when h_adj_property => set_object (value, canvas.hadj);
+			when v_adj_property => set_object (value, canvas.vadj);
 			when h_scroll_property => set_enum (value, gtk_policy_type'pos (policy_automatic));
 			when v_scroll_property => set_enum (value, gtk_policy_type'pos (policy_automatic));
 			when others => null;
@@ -1024,7 +990,6 @@ package body pac_canvas is
 		view	: system.address;
 		alloc	: gtk_allocation)
 	is
-		self : constant type_view_ptr := type_view_ptr (glib.object.convert (view));
 		salloc : gtk_allocation := alloc;
 	begin
 		--  for some reason, when we maximize the toplevel window in testgtk, or
@@ -1037,22 +1002,22 @@ package body pac_canvas is
 
 		salloc.x := 0;
 		salloc.y := 0;
-		self.set_allocation (salloc);
-		set_adjustment_values (self);
+		canvas.set_allocation (salloc);
+		canvas.set_adjustment_values;
 
-		if self.get_realized then
-			if self.get_has_window then
-				move_resize (self.get_window, alloc.x, alloc.y, alloc.width, alloc.height);
+		if canvas.get_realized then
+			if canvas.get_has_window then
+				move_resize (canvas.get_window, alloc.x, alloc.y, alloc.width, alloc.height);
 			end if;
 
 			--  send_configure event ?
 		end if;
 
-		if self.scale_to_fit_requested /= 0.0 then
+		if canvas.scale_to_fit_requested /= 0.0 then
 			
-			self.scale_to_fit (
-				rect      => self.scale_to_fit_area,
-				max_scale => self.scale_to_fit_requested);
+			canvas.scale_to_fit (
+				rect      => canvas.scale_to_fit_area,
+				max_scale => canvas.scale_to_fit_requested);
 			
 		end if;
 	end on_size_allocate;
@@ -1105,23 +1070,17 @@ package body pac_canvas is
 
 	function on_mouse_movement (
 		view  : access gtk_widget_record'class;
-		event : gdk_event_motion) return boolean 
+		event : gdk_event_motion) 
+		return boolean 
 	is
-		use et_general;
-		
 		-- the point where the mouse pointer is pointing at
 		view_point : type_view_point;
-
-		-- The conversion from view to model coordinates requires a pointer to
-		-- the view. This command sets self so that it points to the view:
-		self : constant type_view_ptr := type_view_ptr (view);
 
 		-- The point in the model expressed in millimeters:
 		model_point : type_point;
 
 		-- The point in the drawing:
 		drawing_point : type_point;
-
 	begin
 		-- new_line;
 		-- put_line ("mouse movement ! new positions are:");
@@ -1131,23 +1090,23 @@ package body pac_canvas is
 		-- put_line (" " & to_string (view_point));
 
 		-- Convert the view point (pixels) to the position (millimeters) in the model:
-		model_point := self.view_to_model (view_point);
+		model_point := canvas.view_to_model (view_point);
 		--put_line (" model " & to_string (model_point));
 
 		-- Convert model_point to drawing_point:
-		drawing_point := model_to_drawing (self, model_point);
+		drawing_point := model_to_drawing (canvas, model_point);
 
 		-- Snap the drawing point to the current grid:
-		drawing_point := self.snap_to_grid (drawing_point);
+		drawing_point := canvas.snap_to_grid (drawing_point);
 		--put_line (to_string (x (drawing_point)));
 
 		-- Update mouse position display (left of the canvas).
 		gtk_entry (mouse_position_x.get_child).set_text (to_string (x (drawing_point)));
 		gtk_entry (mouse_position_y.get_child).set_text (to_string (y (drawing_point)));
 		
-		update_coordinates_display (self);
+		canvas.update_coordinates_display;
 
-		self.evaluate_mouse_position (drawing_point);
+		canvas.evaluate_mouse_position (drawing_point);
 		
 		return true; -- indicates that event has been handled
 	end on_mouse_movement;
@@ -1249,8 +1208,8 @@ package body pac_canvas is
 	
 	function on_scroll_event (
 		view	: access gtk_widget_record'class;
-		event	: gdk_event_scroll) return boolean is
-
+		event	: gdk_event_scroll) return boolean
+	is
 		result : boolean := false; -- to be returned
 		-- When true, no other handler will process the event.
 
@@ -1268,8 +1227,6 @@ package body pac_canvas is
 		-- its sign only. Negative means zooming in, positive means zooming out.
 		dy : gdouble := event.delta_y;
 		
-		self : constant type_view_ptr := type_view_ptr (view);
-
 		-- The model point at which the zooming takes place:
 		point : type_point;
 		
@@ -1279,7 +1236,7 @@ package body pac_canvas is
 		if (event.state and accel_mask) = control_mask then
 
 			-- Get the center of the zooming operation:
-			point := view_to_model (self, (event.x, event.y));
+			point := view_to_model (canvas, (event.x, event.y));
 			
 			-- CS: Testing event.direction would be more useful 
 			-- but for some reason always returns SMOOTH_SCROLL.
@@ -1333,8 +1290,6 @@ package body pac_canvas is
 		
 		use gdk.types;
 		use gdk.types.keysyms;
-		
-		self    : constant type_view_ptr := type_view_ptr (view);
 
 		key_ctrl	: gdk_modifier_type := event.state and control_mask;
 		--key_shift	: gdk_modifier_type := event.state and shift_mask;
@@ -1352,12 +1307,12 @@ package body pac_canvas is
 				-- Zoom in/out on ctrl and +/- key:
 				when GDK_KP_Add | GDK_PLUS =>
 					zoom_in (
-						point	=> drawing_to_model (self, cursor_main.position),
+						point	=> canvas.drawing_to_model (cursor_main.position),
 						step	=> scale_factor_on_zoom);
 					
 				when GDK_KP_Subtract | GDK_minus =>
 					zoom_out (
-						point	=> drawing_to_model (self, cursor_main.position),
+						point	=> canvas.drawing_to_model (cursor_main.position),
 						step	=> scale_factor_on_zoom);
 
 				-- Advance to next grid density on ctrl and shift
@@ -1367,11 +1322,15 @@ package body pac_canvas is
 					next_grid_density;
 
 					-- Update new grid in coordinates display:
-					self.update_coordinates_display;
+					canvas.update_coordinates_display;
 
 					-- Draw the canvas so that the new grid is visible:
-					self.queue_draw;
+					canvas.queue_draw;
 					event_handled := true;
+
+				-- Save drawing on ctrl-s
+				when GDK_LC_s =>
+					null; -- CS
 					
 				when others => null;
 			end case;
@@ -1383,22 +1342,22 @@ package body pac_canvas is
 
 				when GDK_Right =>
 					canvas.move_cursor (RIGHT, cursor_main);
-					self.queue_draw; -- without frame and grid initialization
+					canvas.queue_draw; -- without frame and grid initialization
 					event_handled := true;
 
 				when GDK_Left =>
 					canvas.move_cursor (LEFT, cursor_main);
-					self.queue_draw; -- without frame and grid initialization
+					canvas.queue_draw; -- without frame and grid initialization
 					event_handled := true;
 					
 				when GDK_Up =>
 					canvas.move_cursor (UP, cursor_main);
-					self.queue_draw; -- without frame and grid initialization
+					canvas.queue_draw; -- without frame and grid initialization
 					event_handled := true;
 					
 				when GDK_Down =>
 					canvas.move_cursor (DOWN, cursor_main);
-					self.queue_draw; -- without frame and grid initialization
+					canvas.queue_draw; -- without frame and grid initialization
 					event_handled := true;
 
 				-- Some keys are reserved. Nothing happens if they are pressed:
@@ -1436,23 +1395,21 @@ package body pac_canvas is
 		event : gdk_event_button)
 		return boolean
 	is
-		self : constant type_view_ptr := type_view_ptr (view);
-
 		-- get the clicked mouse button:
 		mouse_button : constant type_mouse_button := type_mouse_button (event.button);
 
 		-- Get the mouse pointer position.
 		-- Convert from mouse pointer position to drawing point:
 		view_point		: constant type_view_point := (event.x, event.y);
-		model_point		: constant type_point := self.view_to_model (view_point);
-		drawing_point	: constant type_point := self.model_to_drawing (model_point);
+		model_point		: constant type_point := canvas.view_to_model (view_point);
+		drawing_point	: constant type_point := canvas.model_to_drawing (model_point);
 	begin
 -- 		put_line ("mouse button " & positive'image (mouse_button) & " pressed");
 
 		-- After any click somewhere in the canvas, the canvas gets the keyboard focus:
-		self.grab_focus;
+		canvas.grab_focus;
 
-		self.button_pressed (mouse_button, drawing_point);
+		canvas.button_pressed (mouse_button, drawing_point);
 		
 		return true; -- indicates the caller that the event has been handled
 	end on_button_event;
@@ -1675,8 +1632,8 @@ package body pac_canvas is
 		grid	: in geometry.type_grid;
 		start_x	: in type_view_coordinate;
 		start_y	: in type_view_coordinate;
-		color	: in et_colors.type_color) is
-
+		color	: in et_colors.type_color)
+	is
 		x : type_view_coordinate := start_x;
 		y : type_view_coordinate := start_y;
 
@@ -1740,10 +1697,10 @@ package body pac_canvas is
 
 	function frame_bounding_box (
 		self : not null access type_view'class)
-		return type_rectangle is
+		return type_rectangle 
+	is
 		box : type_rectangle; -- to be returned
 
-		use et_general;
 		use et_frames;
 
 		paper_height : constant type_distance_positive := type_distance_positive (paper_dimension (
@@ -1770,9 +1727,8 @@ package body pac_canvas is
 	
 	function paper_bounding_box (
 		self : not null access type_view'class)
-		return type_rectangle is
-
-		use et_general;
+		return type_rectangle
+	is
 		use et_frames;
 
 		paper_height : constant type_distance_positive := type_distance_positive (paper_dimension (
