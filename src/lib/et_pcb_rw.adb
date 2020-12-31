@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -233,8 +233,8 @@ package body et_pcb_rw is
 		circle_end;
 	end write_circle_fillable;
 
-	-- CS unify the follwing two procedures write_circle_copper:
-	procedure write_circle_copper (circle : in type_conductor_circle) is begin
+	-- CS unify the follwing two procedures write_circle_conductor:
+	procedure write_circle_conductor (circle : in type_conductor_circle) is begin
 		circle_begin;
 		write_circle (circle);
 		write (keyword => keyword_filled, parameters => space & to_string (circle.filled));
@@ -254,9 +254,9 @@ package body et_pcb_rw is
 
 		end case;
 		circle_end;
-	end write_circle_copper;
+	end write_circle_conductor;
 
-	procedure write_circle_copper (circle : in et_pcb.type_conductor_circle) is begin
+	procedure write_circle_conductor (circle : in et_pcb.type_conductor_circle) is begin
 		circle_begin;
 		write_circle (circle);
 		write_signal_layer (circle.layer);
@@ -280,7 +280,7 @@ package body et_pcb_rw is
 
 		end case;
 		circle_end;
-	end write_circle_copper;
+	end write_circle_conductor;
 
 	
 	procedure write_polygon_segments (polygon : in pac_shapes.type_polygon_base) is
@@ -1016,7 +1016,7 @@ package body et_pcb_rw is
 		return (pac_shapes.type_circle (board_circle) with board_filled);
 	end;
 
-	function board_make_copper_circle return type_conductor_circle is begin
+	function board_make_conductor_circle return type_conductor_circle is begin
 		case board_filled is
 			when NO =>
 				return (pac_shapes.type_circle (board_circle) with 
@@ -1035,7 +1035,7 @@ package body et_pcb_rw is
 						return (pac_shapes.type_circle (board_circle) with
 							filled		=> YES,
 							fill_style	=> HATCHED,
-							hatching 	=> board_hatching_copper);
+							hatching 	=> board_hatching_conductor);
 				end case;
 		end case;
 	end;

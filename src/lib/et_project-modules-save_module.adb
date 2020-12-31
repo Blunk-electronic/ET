@@ -1149,7 +1149,7 @@ is
 			placeholder_end;
 		end write_placeholder;
 
-		-- COPPER (NON-ELECTRIC) in any signal layers
+		-- CONDUCTOR (NON-ELECTRIC) in any signal layers
 		use pac_conductor_lines;
 		procedure write_line (cursor : in pac_conductor_lines.cursor) is begin
 			line_begin;
@@ -1170,10 +1170,10 @@ is
 
 		use et_pcb.pac_conductor_circles;
 		procedure write_circle (cursor : in et_pcb.pac_conductor_circles.cursor) is begin
-			write_circle_copper (element (cursor));
+			write_circle_conductor (element (cursor));
 		end;
 
-		-- solid fill zones in copper
+		-- solid fill zones in conductor
 		use pac_conductor_polygons_floating_solid;
 		procedure write_polygon (cursor : in pac_conductor_polygons_floating_solid.cursor) is begin
 			fill_zone_begin;
@@ -1193,7 +1193,7 @@ is
 			fill_zone_end;
 		end;
 
-		-- hatched fill zones in copper
+		-- hatched fill zones in conductor
 		use pac_conductor_polygons_floating_hatched;
 		procedure write_polygon (cursor : in pac_conductor_polygons_floating_hatched.cursor) is begin
 			fill_zone_begin;
@@ -1458,7 +1458,7 @@ is
 			iterate (element (module_cursor).board.via_restrict.texts, write_text'access);
 		section_mark (section_via_restrict, FOOTER);
 
-		-- COPPER (NON-ELECTRIC)
+		-- CONDUCTOR (NON-ELECTRIC)
 		section_mark (section_conductor, HEADER);
 			iterate (element (module_cursor).board.conductors.lines, write_line'access);
 			iterate (element (module_cursor).board.conductors.arcs, write_arc'access);

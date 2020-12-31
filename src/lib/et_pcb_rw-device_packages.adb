@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -100,8 +100,8 @@ package body et_pcb_rw.device_packages is
 		
 		use pac_texts_with_content;
 		
-		procedure write_copper is
-		-- This is about copper objects in either top or bottom.
+		procedure write_conductor is
+		-- This is about conductor objects in either top or bottom.
 		-- These objects have no connection to any pad or signal.
 
 			use pac_conductor_lines;
@@ -122,7 +122,7 @@ package body et_pcb_rw.device_packages is
 
 			use pac_conductor_circles;
 			procedure write_circle (cursor : in pac_conductor_circles.cursor) is begin
-				write_circle_copper (element (cursor));
+				write_circle_conductor (element (cursor));
 			end write_circle;
 
 			use pac_conductor_polygons_solid;
@@ -172,7 +172,7 @@ package body et_pcb_rw.device_packages is
 				cutout_zone_end;
 			end;
 			
-		begin -- write_copper
+		begin -- write_conductor
 			section_mark (section_conductor, HEADER);
 
 			-- top
@@ -198,7 +198,7 @@ package body et_pcb_rw.device_packages is
 			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_conductor, FOOTER);
-		end write_copper;
+		end write_conductor;
 
 		use pac_text_placeholders;		
 		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is begin
@@ -615,7 +615,7 @@ package body et_pcb_rw.device_packages is
 						-- stop mask
 						write_stop_mask_tht;
 						
-						-- copper width in inner layers
+						-- conductor width in inner layers
 						write (keyword => keyword_width_inner_layers, 
 							   parameters => to_string (element (terminal_cursor).width_inner_layers));
 						
@@ -679,7 +679,7 @@ package body et_pcb_rw.device_packages is
 		write_silk_screen;
 		write_assembly_documentation;
 		write_keepout;
-		write_copper;
+		write_conductor;
 		write_stop_mask;
 		write_stencil;
 		write_route_restrict;
@@ -1285,7 +1285,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_polygon;
 				end;
 
-				procedure append_copper_polygon_top is begin
+				procedure append_conductor_polygon_top is begin
 					case board_fill_style is
 						when SOLID =>
 							pac_conductor_polygons_solid.append (
@@ -1302,7 +1302,7 @@ package body et_pcb_rw.device_packages is
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
-										hatching	=> board_hatching_copper,
+										hatching	=> board_hatching_conductor,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 					end case;
@@ -1311,7 +1311,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_polygon;
 				end;
 
-				procedure append_copper_polygon_bottom is begin
+				procedure append_conductor_polygon_bottom is begin
 					case board_fill_style is
 						when SOLID =>
 							pac_conductor_polygons_solid.append (
@@ -1328,7 +1328,7 @@ package body et_pcb_rw.device_packages is
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
-										hatching	=> board_hatching_copper,
+										hatching	=> board_hatching_conductor,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 					end case;
@@ -1464,7 +1464,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_polygon;
 				end;
 
-				procedure append_copper_cutout_top is begin
+				procedure append_conductor_cutout_top is begin
 					et_packages.pac_conductor_cutouts.append (
 						container	=> packge.conductors.top.cutouts, 
 						new_item	=> (pac_shapes.type_polygon_base (polygon) with
@@ -1474,7 +1474,7 @@ package body et_pcb_rw.device_packages is
 					board_reset_polygon;
 				end;
 
-				procedure append_copper_cutout_bottom is begin
+				procedure append_conductor_cutout_bottom is begin
 					et_packages.pac_conductor_cutouts.append (
 						container	=> packge.conductors.bottom.cutouts, 
 						new_item	=> (pac_shapes.type_polygon_base (polygon) with
@@ -1911,7 +1911,7 @@ package body et_pcb_rw.device_packages is
 
 										et_packages.pac_conductor_circles.append (
 											container	=> packge.conductors.top.circles, 
-											new_item	=> board_make_copper_circle);
+											new_item	=> board_make_conductor_circle);
 
 									when SEC_SILK_SCREEN => 
 										pac_silk_circles.append (
@@ -1961,7 +1961,7 @@ package body et_pcb_rw.device_packages is
 
 										et_packages.pac_conductor_circles.append (
 											container	=> packge.conductors.bottom.circles, 
-											new_item	=> board_make_copper_circle);
+											new_item	=> board_make_conductor_circle);
 
 									when SEC_SILK_SCREEN => 
 										pac_silk_circles.append (
@@ -2065,7 +2065,7 @@ package body et_pcb_rw.device_packages is
 										append_keepout_polygon_top;
 
 									when SEC_CONDUCTOR =>
-										append_copper_polygon_top;
+										append_conductor_polygon_top;
 										
 									when others => invalid_section;
 								end case;
@@ -2088,7 +2088,7 @@ package body et_pcb_rw.device_packages is
 										append_keepout_polygon_bottom;
 
 									when SEC_CONDUCTOR =>
-										append_copper_polygon_bottom;
+										append_conductor_polygon_bottom;
 										
 									when others => invalid_section;
 								end case;
@@ -2122,7 +2122,7 @@ package body et_pcb_rw.device_packages is
 										append_keepout_cutout_top;
 
 									when SEC_CONDUCTOR =>
-										append_copper_cutout_top;
+										append_conductor_cutout_top;
 
 									when others => invalid_section;
 								end case;
@@ -2145,7 +2145,7 @@ package body et_pcb_rw.device_packages is
 										append_keepout_cutout_bottom;
 
 									when SEC_CONDUCTOR =>
-										append_copper_cutout_bottom;
+										append_conductor_cutout_bottom;
 
 									when others => invalid_section;
 								end case;
@@ -2702,14 +2702,14 @@ package body et_pcb_rw.device_packages is
 
 												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 													expect_field_count (line, 2);													
-													board_hatching_copper.line_width := to_distance (f (line, 2));
+													board_hatching_conductor.line_width := to_distance (f (line, 2));
 
 												elsif kw = keyword_hatching_border_width then -- hatching_border_width 1.0
-													board_hatching_copper.border_width := to_distance (f (line, 2));
+													board_hatching_conductor.border_width := to_distance (f (line, 2));
 
 												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 													expect_field_count (line, 2);													
-													board_hatching_copper.spacing := to_distance (f (line, 2));
+													board_hatching_conductor.spacing := to_distance (f (line, 2));
 													
 												else
 													invalid_keyword (kw);
@@ -2913,15 +2913,15 @@ package body et_pcb_rw.device_packages is
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												board_hatching_copper.line_width := to_distance (f (line, 2));
+												board_hatching_conductor.line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												board_hatching_copper.spacing := to_distance (f (line, 2));
+												board_hatching_conductor.spacing := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
 												expect_field_count (line, 2);													
-												board_hatching_copper.border_width := to_distance (f (line, 2));
+												board_hatching_conductor.border_width := to_distance (f (line, 2));
 												
 											elsif kw = keyword_isolation then -- isolation 0.5
 												expect_field_count (line, 2);

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -217,7 +217,7 @@ package body et_pcb is
 		text : type_conductor_text;
 	begin
 		text := element (cursor);
-		log (text => "copper text signal layer" & to_string (text.layer) & latin_1.space
+		log (text => "conductor text signal layer" & to_string (text.layer) & latin_1.space
 			& "content '" & et_text.to_string (text.content) & "'", level => log_threshold
 			);
 
@@ -264,9 +264,9 @@ package body et_pcb is
 
 -- 	procedure route_polygon_properties (
 -- 	-- Logs the properties of the given polygon of a route
--- 		cursor			: in pac_copper_polygons_signal.cursor;
+-- 		cursor			: in pac_conductor_polygons_signal.cursor;
 -- 		log_threshold 	: in et_string_processing.type_log_level) is
--- 		use pac_copper_polygons_signal;
+-- 		use pac_conductor_polygons_signal;
 -- 		use type_polygon_points;
 -- 		points : type_polygon_points.set;
 -- 		point_cursor : type_polygon_points.cursor;

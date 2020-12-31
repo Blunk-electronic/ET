@@ -2763,7 +2763,7 @@ is
 				begin
 					pac_conductor_circles.append (
 						container	=> module.board.conductors.circles,
-						new_item	=> (board_make_copper_circle with signal_layer));
+						new_item	=> (board_make_conductor_circle with signal_layer));
 				end;
 									
 			begin -- insert_circle_track
@@ -5313,15 +5313,15 @@ is
 
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
-										board_hatching_copper.line_width := to_distance (f (line, 2));
+										board_hatching_conductor.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 										expect_field_count (line, 2);													
-										board_hatching_copper.spacing := to_distance (f (line, 2));
+										board_hatching_conductor.spacing := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
 										expect_field_count (line, 2);													
-										board_hatching_copper.border_width := to_distance (f (line, 2));
+										board_hatching_conductor.border_width := to_distance (f (line, 2));
 										
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
@@ -5501,15 +5501,15 @@ is
 
 								elsif kw = keyword_hatching_line_width then -- hatching_line_width 1
 									expect_field_count (line, 2);
-									board_hatching_copper.line_width := to_distance (f (line, 2));
+									board_hatching_conductor.line_width := to_distance (f (line, 2));
 
 								elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 1
 									expect_field_count (line, 2);
-									board_hatching_copper.spacing := to_distance (f (line, 2));
+									board_hatching_conductor.spacing := to_distance (f (line, 2));
 
 								elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
 									expect_field_count (line, 2);
-									board_hatching_copper.border_width := to_distance (f (line, 2));
+									board_hatching_conductor.border_width := to_distance (f (line, 2));
 									
 								elsif kw = keyword_layer then -- layer 2
 									expect_field_count (line, 2);
@@ -5642,15 +5642,15 @@ is
 									
 								elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 									expect_field_count (line, 2);													
-									board_hatching_copper.line_width := to_distance (f (line, 2));
+									board_hatching_conductor.line_width := to_distance (f (line, 2));
 
 								elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 									expect_field_count (line, 2);													
-									board_hatching_copper.spacing := to_distance (f (line, 2));
+									board_hatching_conductor.spacing := to_distance (f (line, 2));
 
 								elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
 									expect_field_count (line, 2);													
-									board_hatching_copper.border_width := to_distance (f (line, 2));
+									board_hatching_conductor.border_width := to_distance (f (line, 2));
 									
 								elsif kw = keyword_min_width then -- min_width 0.5
 									expect_field_count (line, 2);
