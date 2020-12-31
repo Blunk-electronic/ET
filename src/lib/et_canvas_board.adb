@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -73,6 +73,13 @@ package body et_canvas_board is
 		window.set_title (title & to_string (module));
 	end set_title_bar;
 
+	
+	procedure set_label_console is
+		text_before : constant string := label_console.get_text;
+	begin
+		label_console.set_text (text_before & et_canvas_schematic.label_console_text);
+	end set_label_console;
+	
 
 	procedure redraw_board is begin
 		redraw (canvas);
@@ -87,22 +94,6 @@ package body et_canvas_board is
 		redraw_board;
 	end redraw;
 
-	
-	procedure next_module (
-		self	: not null access type_view)
-	is 
-		use et_canvas_schematic;
-	begin
-		next_module;
-	end next_module;
-
-	procedure previous_module (
-		self	: not null access type_view)
-	is 
-		use et_canvas_schematic;
-	begin
-		previous_module;
-	end previous_module;
 
 	
 	function model_to_drawing (
@@ -1143,6 +1134,14 @@ package body et_canvas_board is
 
 				reset_text_place; -- after placing a text
 
+				
+			when GDK_F11 =>
+				et_canvas_schematic.previous_module;
+
+			when GDK_F12 =>
+				et_canvas_schematic.next_module;
+
+				
 			when others =>
 				
 				-- If the command is waiting for finalization, usually by pressing

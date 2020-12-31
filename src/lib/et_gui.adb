@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -82,7 +82,7 @@ package body et_gui is
 
 		build_mode_display;
 
-
+		
 		-- Connect to the on_activate signal (on hitting enter key):
 		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
 		gtk_entry (cursor_position_y.get_child).on_activate (set_cursor_position_y'access);
@@ -93,6 +93,7 @@ package body et_gui is
 		build_toolbars;
 		
 		build_console;
+		set_label_console;
 		
 		-- Connect to the on_activate signal of the entry (which is a child of console):
 		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
@@ -163,7 +164,8 @@ package body et_gui is
 		build_toolbars;
 
 		build_console;
-
+		set_label_console;
+		
 		-- Connect to the on_activate signal of the entry (which is a child of console):
 		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
 

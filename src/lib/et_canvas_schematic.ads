@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -44,6 +44,11 @@
 -- by various draw operations.
 --  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
+
+with ada.strings;					use ada.strings;
+--with ada.characters;				use ada.characters;
+--with ada.characters.handling;		use ada.characters.handling;
+with ada.strings.fixed; 			use ada.strings.fixed;
 
 with gdk.types;						use gdk.types;
 with gdk.types.keysyms;				use gdk.types.keysyms;
@@ -166,24 +171,32 @@ package et_canvas_schematic is
 		drawing	: type_drawing;
 	end record;
 
+
+	
+	label_console_text : constant string := 
+		(8 * " ") & "switch module: F11 / F12";
+
+	-- Appends the label_console_text to the existing text
+	-- of label_console:
+	procedure set_label_console;
+
+
+	
 	procedure redraw_board;
 	procedure redraw_schematic;
 	procedure redraw;
 
+
 	
-	-- Called by the overriding procedure next_module (see below)
-	-- to do the acutal switching from one module to the next:
+	-- Advances no previous generic module. If there is no
+	-- previous module, selects the last module of 
+	-- collection of generic modules.
 	procedure next_module;
 
-	overriding procedure next_module (
-		self	: not null access type_view);
-
-	-- Called by the overriding procedure previous_module (see below)
-	-- to do the acutal switching from one module to the previous one:
+	-- Advances no next generic module. If there is no
+	-- next module, selects the first module of 
+	-- collection of generic modules.
 	procedure previous_module;
-
-	overriding procedure previous_module (
-		self	: not null access type_view);
 
 	
 	

@@ -87,7 +87,11 @@ package body et_canvas_schematic is
 		pack_start (box_sheet, cbox_sheet);
 	end build_sheet_number_display;
 
-	
+	procedure set_label_console is
+		text_before : constant string := label_console.get_text;
+	begin
+		label_console.set_text (text_before & label_console_text);
+	end set_label_console;
 	
 	procedure redraw_board is begin
 		et_canvas_board.redraw_board;
@@ -124,14 +128,6 @@ package body et_canvas_schematic is
 		redraw;
 	end next_module;
 
-	procedure next_module (
-		self	: not null access type_view)
-	is
-		use pac_generic_modules;
-	begin
-		next_module;
-	end next_module;
-
 	procedure previous_module is
 		use pac_generic_modules;
 	begin
@@ -154,13 +150,6 @@ package body et_canvas_schematic is
 		redraw;
 	end previous_module;
 
-	procedure previous_module (
-		self	: not null access type_view)
-	is
-		use pac_generic_modules;
-	begin
-		previous_module;
-	end previous_module;
 
 
 	
@@ -1913,6 +1902,11 @@ package body et_canvas_schematic is
 					update_sheet_number_display;
 				end if;
 
+			when GDK_F11 =>
+				previous_module;
+
+			when GDK_F12 =>
+				next_module;
 				
 			when others =>
 

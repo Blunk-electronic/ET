@@ -66,8 +66,6 @@ with et_project.modules;		use et_project.modules;
 with et_schematic;
 with et_frames;
 
---with et_board_ops;				use et_board_ops;
-
 with et_canvas_general;				use et_canvas_general;
 with et_canvas_primitive_draw_ops;
 with et_string_processing;			use et_string_processing;
@@ -134,16 +132,19 @@ package et_canvas_board is
 		drawing	: type_drawing;
 	end record;
 
+
+	-- Appends the et_canvas_schematic.label_console_text to the existing text
+	-- of label_console:
+	procedure set_label_console;
+
+
+	
 	procedure redraw_board;
 	procedure redraw_schematic;
 	procedure redraw;
 
 	
-	overriding procedure next_module (
-		self	: not null access type_view);
-	
-	overriding procedure previous_module (
-		self	: not null access type_view);
+
 
 	
 	overriding function bounding_box (self : not null access type_view)

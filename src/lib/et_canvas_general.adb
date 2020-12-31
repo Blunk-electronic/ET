@@ -198,16 +198,6 @@ package body pac_canvas is
 				change_primary_tool;
 				
 				result := true; -- event handled
-
-			when GDK_F11 =>
-				canvas.previous_module;
-				
-				result := true; -- event handled
-
-			when GDK_F12 =>
-				canvas.next_module;
-				
-				result := true; -- event handled
 				
 			-- Other keys are propagated to the canvas:
 			when others =>
@@ -581,14 +571,11 @@ package body pac_canvas is
 		pack_start (box_right, box_console, expand => false);
 
 		gtk_new (label_console, 
-			"CONSOLE (F3 to enter command / F4 to focus on canvas)"
-			& "         switch module: F11 / F12");
+			"CONSOLE (F3 to enter command / F4 to focus on canvas)");
 		pack_start (box_console, label_console, expand => false);
 
 		-- the command line
 		gtk_new_with_entry (console);
-		
-		-- console2.on_changed (echo_command'access); -- for every key pressed
 		
 		pack_start (box_console, console, expand => false);
 

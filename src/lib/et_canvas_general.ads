@@ -393,20 +393,6 @@ package pac_canvas is
 	procedure redraw (view : in type_view_ptr);
 
 	
-	-- Advances no next generic module. If there is no
-	-- next module, selects the first module of 
-	-- collection of generic modules.
-	procedure next_module (
-		self	: not null access type_view)
-	is null;
-
-	-- Advances no previous generic module. If there is no
-	-- previous module, selects the last module of 
-	-- collection of generic modules.
-	procedure previous_module (
-		self	: not null access type_view)
-	is null;
-
 
 
 	function on_key_event (
