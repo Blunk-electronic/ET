@@ -260,6 +260,11 @@ package et_canvas_board is
 		self	: not null access type_view;
 		button	: in type_mouse_button;
 		point	: in type_point);
+
+	-- Saves the current module by calling 
+	-- et_canvas_schematic.save_module:
+	overriding procedure save_drawing (
+		self : not null access type_view);
 	
 end et_canvas_board;
 

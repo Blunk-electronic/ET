@@ -1317,7 +1317,7 @@ package body pac_canvas is
 
 				-- Save drawing on ctrl-s
 				when GDK_LC_s =>
-					null; -- CS
+					canvas.save_drawing;
 					
 				when others => null;
 			end case;

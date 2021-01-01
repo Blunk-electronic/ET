@@ -131,6 +131,7 @@ package et_canvas_schematic is
 	
 	-- The currently active project is stored here:
 	current_active_project : et_project.pac_project_name.bounded_string; -- blood_sample_analyzer
+	-- CS redundant variable: remove and use et_project.current_project instead
 	
 	-- The current active module is stored here. Whenever objects of the schematic
 	-- or board are to be drawn, this variable must be read.
@@ -345,6 +346,20 @@ package et_canvas_schematic is
 
 	overriding procedure reset_properties_selection (
 		self : not null access type_view);
+
+
+	status_text_module_saved : constant string := "Module saved.";
+
+	-- This procedure saves the current active module 
+	-- in its file. This procedure is called from
+	-- the overridden procedure save_drawing.
+	procedure save_module;
+
+	-- Saves the current module by calling save_module 
+	-- (see above):
+	overriding procedure save_drawing (
+		self : not null access type_view);
+
 	
 end et_canvas_schematic;
 

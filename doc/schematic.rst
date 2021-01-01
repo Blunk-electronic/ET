@@ -497,7 +497,7 @@ Commands and Verb-Noun key sequences
 
 		save module
 
-	|VNS| |CS|
+	|VNS| |NI| Use the common shortcut CTRL-S instead.
 
 	- save with a different name
 	

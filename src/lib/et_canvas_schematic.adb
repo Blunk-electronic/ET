@@ -2721,6 +2721,41 @@ package body et_canvas_schematic is
 		
 		-- CS reset other stuff ?
 	end reset_properties_selection;
+
+	procedure save_module is
+		use ada.directories;
+		use et_project;
+
+		-- Backup the current directory (like /home/user/et/blood_sample_analyzer):
+		cur_dir_bak : constant string := current_directory;
+	begin
+		-- NOTE: We are not in the project directory yet but
+		-- in its parent directory.
+		
+		-- Change into the directory of the current project:
+		set_directory (to_string (current_active_project));
+		
+		-- Save the module with its own name:
+		save_module (
+			module_cursor	=> current_active_module,
+			log_threshold	=> log_threshold + 1);
+
+		-- Return to previous directory:
+		set_directory (cur_dir_bak);
+		
+		-- Show a brief message in the schematic status bar:
+		set_status (status_text_module_saved);
+
+		-- Show a brief message in the board status bar:
+		et_canvas_board.pac_canvas.set_status (status_text_module_saved);
+	end save_module;
+	
+	procedure save_drawing (
+		self : not null access type_view)
+	is begin
+		save_module;
+	end save_drawing;
+
 	
 end et_canvas_schematic;
 

@@ -1300,6 +1300,15 @@ package body et_canvas_board is
 
 		
 	end button_pressed;
+
+	
+	procedure save_drawing (
+		self : not null access type_view)
+	is 
+		use et_canvas_schematic;
+	begin
+		save_module;
+	end save_drawing;
 	
 end et_canvas_board;
 

@@ -816,6 +816,16 @@ package pac_canvas is
 
 	procedure set_status_properties (text : in string);
 	procedure set_property_before (text : in string);
+
+
+	-- Saves the drawing in its current state.
+	-- Since this procedure is generic, the overridden
+	-- procedure of save_drawing dispatches to the 
+	-- actual subprogram to save the module, symbol,
+	-- package or device:
+	procedure save_drawing (
+		self : not null access type_view) is null;
+
 	
 private
 
