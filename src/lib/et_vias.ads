@@ -46,12 +46,8 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
---with ada.containers.indefinite_doubly_linked_lists;
---with ada.containers.ordered_maps;
---with ada.containers.indefinite_ordered_maps;
---with ada.containers.ordered_sets;
+with ada.containers.indefinite_doubly_linked_lists;
 
---with et_general;
 with et_string_processing;		use et_string_processing;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
@@ -88,6 +84,13 @@ package et_vias is
 	-- Converts a string like "1-3" to a type_via_layers.
 	function to_via_layers (text : in string) 
 		return type_via_layers;
+
+	type type_via_category is (
+		THROUGH,
+		BURIED,
+		BLIND_DRILLED_FROM_TOP,
+		BLIND_DRILLED_FROM_BOTTOM
+		);
 	
 	type type_via is new type_drill with record
 		restring_outer	: type_restring_width;	-- restring in outer layers (top/bottom)
@@ -95,6 +98,35 @@ package et_vias is
 		layers			: type_via_layers;
 	end record;
 
+	type type_via2 (category : type_via_category)
+	is new type_drill with record
+
+		-- Whatever the via category, there is always a restring 
+		-- in inner layers (mostly wider than restring_outer).
+		-- Exception: One or two layer boards do not have innner restring.
+		restring_inner	: type_restring_width;
+		
+		case category is
+			when THROUGH =>
+				-- Restring in outer layers (top/bottom)
+				restring_outer	: type_restring_width;
+
+			when BLIND_DRILLED_FROM_TOP =>
+				restring_top			: type_restring_width;
+				from_top_to_layer		: type_signal_layer;
+
+			when BLIND_DRILLED_FROM_BOTTOM =>
+				restring_bottom			: type_restring_width;
+				from_bottom_to_layer	: type_signal_layer;
+				
+			when BURIED =>
+				layers : type_via_layers;
+				
+		end case;
+	end record;
+
+	package pac_vias2 is new indefinite_doubly_linked_lists (type_via2);
+	
 	-- vias are collected in simple lists
 	package pac_vias is new doubly_linked_lists (type_via);
 	
