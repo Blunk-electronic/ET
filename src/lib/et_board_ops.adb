@@ -2078,6 +2078,23 @@ package body et_board_ops is
 		end if;
 
 	end draw_track_arc;
+
+	procedure place_via (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string; -- reset_n
+		via				: in type_via;
+		log_threshold	: in type_log_level) 
+	is
+	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " net " & to_string (net_name) 
+			& " placing via at" 
+			& to_string (via.position), -- CS output more properties
+			level => log_threshold);
+
+	end place_via;
+		
 	
 	procedure ripup_track_segment (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

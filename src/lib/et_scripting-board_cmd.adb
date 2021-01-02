@@ -1473,6 +1473,30 @@ is
 			when others => command_incomplete;
 		end case;
 	end place_text;
+
+	procedure place_via is
+		via : type_via;
+	begin
+		-- board demo place via RESET_N 10 14 [1-3] [0.35]
+		case fields is
+			when 7 =>
+				-- board demo place via RESET_N 10 14
+				null;
+				
+			when 8 =>
+				-- board demo place via RESET_N 10 14 1-3
+				null;
+				
+			when 9 =>
+				-- board demo place via RESET_N 10 14 1-3 0.35
+				null;
+				
+			when 10.. count_type'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+
+	end place_via;
 	
 	-- CS circular tracks are currently not supported
 	subtype type_track_shape is type_shape range LINE..ARC;
@@ -2270,8 +2294,9 @@ is
 
 			when VERB_PLACE =>
 				case noun is
-					when NOUN_TEXT => place_text;
-					when others => invalid_noun (to_string (noun));
+					when NOUN_VIA	=> place_via;
+					when NOUN_TEXT	=> place_text;
+					when others		=> invalid_noun (to_string (noun));
 				end case;
 				
 			when VERB_POSITION => -- GUI related

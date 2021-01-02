@@ -679,6 +679,7 @@ package body et_canvas_board is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	-- Draws objects in conductor layers (incl. vias):
 	procedure draw_conductors (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;

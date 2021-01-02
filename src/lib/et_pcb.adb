@@ -170,6 +170,15 @@ package body et_pcb is
 		return type_polygon_priority'value (priority_level);
 	end;
 
+	function to_via_layers (text : in string) 
+		return type_via_layers
+	is
+		layers : type_via_layers; -- to be returned
+	begin
+
+		return layers;
+	end to_via_layers;
+
 
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
 		return to_lower (type_polygon_pad_connection'image (polygon_pad_connection));

@@ -297,6 +297,13 @@ package et_board_ops is
 		arc				: in et_pcb.type_conductor_arc;
 		log_threshold	: in type_log_level);
 
+	-- Places a via in the given net:
+	procedure place_via (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string; -- reset_n
+		via				: in type_via;
+		log_threshold	: in type_log_level);
+	
 	procedure ripup_track_segment (
 	-- Rips up the track segment of a net that crosses the given point in given layer.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.

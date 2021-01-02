@@ -311,6 +311,15 @@ package et_pcb is
 -- VIAS
 	keyword_layer_start	: constant string := "layer_start";
 	keyword_layer_end	: constant string := "layer_end";		
+
+	type type_via_layers is record
+		layer_start		: type_signal_layer;
+		layer_end		: type_signal_layer;
+	end record;
+
+	-- Converts a string like [1-3] to a type_via_layers.
+	function to_via_layers (text : in string) 
+		return type_via_layers;
 	
 	type type_via is new type_drill with record
 		restring_outer	: type_restring_width;	-- restring in outer layers (top/bottom)
