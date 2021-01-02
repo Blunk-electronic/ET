@@ -53,25 +53,22 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;
-with et_string_processing;
+with et_string_processing;		use et_string_processing;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;
 with et_terminals;				use et_terminals;
 with et_drills;					use et_drills;
+with et_vias;					use et_vias;
 with et_packages;				use et_packages;
 with et_pcb_stack;				use et_pcb_stack;
 with et_frames;
 
 package et_pcb is
+	
 	use et_pcb_coordinates.pac_geometry_brd;
 	use et_terminals.pac_shapes;
 
-	
--- VIAS
-	type type_micro_vias_allowed is (NO, YES);
-	function to_micro_vias_allowed (allowed : in string) return type_micro_vias_allowed;
-	function to_string (allowed : in type_micro_vias_allowed) return string;
 	
 
 -- NET CLASSES
@@ -305,32 +302,9 @@ package et_pcb is
 		placeholders	: pac_text_placeholders_conductors.list;
 	end record;
 
+
+	
 -- Types for ELECTRIC !! conductor objects:
-
-	
--- VIAS
-	keyword_layer_start	: constant string := "layer_start";
-	keyword_layer_end	: constant string := "layer_end";		
-
-	type type_via_layers is record
-		layer_start		: type_signal_layer;
-		layer_end		: type_signal_layer;
-	end record;
-
-	-- Converts a string like [1-3] to a type_via_layers.
-	function to_via_layers (text : in string) 
-		return type_via_layers;
-	
-	type type_via is new type_drill with record
-		restring_outer	: type_restring_width;	-- restring in outer layers (top/bottom)
-		restring_inner	: type_restring_width;	-- restring in inner layers (mostly wider than restring_outer)
-		layer_start		: type_signal_layer;
-		layer_end		: type_signal_layer;
-	end record;
-
-	-- vias are collected in simple lists
-	package pac_vias is new doubly_linked_lists (type_via);
-	
 
 
 	-- A polygon in a signal layer is usually connected with 

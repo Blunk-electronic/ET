@@ -509,7 +509,7 @@ is
 	net_netchanger_ports : et_netlists.pac_netchanger_ports.set;
 	
 	route		: et_pcb.type_route;
-	route_via	: et_pcb.type_via;
+	route_via	: et_vias.type_via;
 
 	sheet_descriptions			: et_frames.pac_schematic_descriptions.map;
 	sheet_description_category	: et_frames.type_schematic_sheet_category := 
@@ -1000,6 +1000,51 @@ is
 		end if;
 
 	end read_device_non_electric;
+
+	procedure read_via is
+		use et_pcb_coordinates.pac_geometry_brd;
+		use et_pcb;
+		use et_vias;
+		use et_terminals;
+		use et_packages;
+		use et_pcb_stack;
+		kw : string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_position then -- position x 22.3 y 23.3
+			expect_field_count (line, 5);
+
+			-- extract the position starting at field 2 of line
+			route_via.position := to_position (line, 2);
+
+		elsif kw = keyword_diameter then -- diameter 0.35
+			expect_field_count (line, 2);
+			route_via.diameter := to_distance (f (line, 2));
+
+		elsif kw = keyword_restring_outer_layers then -- restring_outer_layers 0.3
+			expect_field_count (line, 2);
+			route_via.restring_outer := to_distance (f (line, 2));
+
+		elsif kw = keyword_restring_inner_layers then -- restring_inner_layers 0.34
+			expect_field_count (line, 2);
+			route_via.restring_inner := to_distance (f (line, 2));
+
+		elsif kw = keyword_layer_start then -- layer_start 1
+			expect_field_count (line, 2);
+			route_via.layers.l_start := et_pcb_stack.to_signal_layer (f (line, 2));
+			validate_signal_layer (route_via.layers.l_start);
+			
+		elsif kw = keyword_layer_end then -- layer_end 15
+			expect_field_count (line, 2);
+			route_via.layers.l_end := et_pcb_stack.to_signal_layer (f (line, 2));
+			validate_signal_layer (route_via.layers.l_end);
+			
+		else
+			invalid_keyword (kw);
+		end if;
+		
+	end read_via;
+
 	
 	procedure process_line is 
 
@@ -3786,7 +3831,7 @@ is
 						when SEC_ROUTE =>
 
 							-- insert via in route.vias
-							et_pcb.pac_vias.append (route.vias, route_via);
+							et_vias.pac_vias.append (route.vias, route_via);
 							route_via := (others => <>); -- clean up for next via
 
 						when others => invalid_section;
@@ -5679,50 +5724,8 @@ is
 
 				when SEC_VIA =>
 					case stack.parent is
-						when SEC_ROUTE =>
-							declare
-								use et_pcb_coordinates.pac_geometry_brd;
-								use et_pcb;
-								use et_terminals;
-								use et_packages;
-								use et_pcb_stack;
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_position then -- position x 22.3 y 23.3
-									expect_field_count (line, 5);
-
-									-- extract the position starting at field 2 of line
-									route_via.position := to_position (line, 2);
-
-								elsif kw = keyword_diameter then -- diameter 0.35
-									expect_field_count (line, 2);
-									route_via.diameter := to_distance (f (line, 2));
-
-								elsif kw = keyword_restring_outer_layers then -- restring_outer_layers 0.3
-									expect_field_count (line, 2);
-									route_via.restring_outer := to_distance (f (line, 2));
-
-								elsif kw = keyword_restring_inner_layers then -- restring_inner_layers 0.34
-									expect_field_count (line, 2);
-									route_via.restring_inner := to_distance (f (line, 2));
-
-								elsif kw = keyword_layer_start then -- layer_start 1
-									expect_field_count (line, 2);
-									route_via.layer_start := et_pcb_stack.to_signal_layer (f (line, 2));
-									validate_signal_layer (route_via.layer_start);
-									
-								elsif kw = keyword_layer_end then -- layer_end 15
-									expect_field_count (line, 2);
-									route_via.layer_end := et_pcb_stack.to_signal_layer (f (line, 2));
-									validate_signal_layer (route_via.layer_end);
-									
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-
-						when others => invalid_section;
+						when SEC_ROUTE	=> read_via;
+						when others		=> invalid_section;
 					end case;
 				
 				when SEC_SUBMODULE =>

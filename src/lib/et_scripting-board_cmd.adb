@@ -49,6 +49,7 @@ is
 	use et_board_ops;
 	use et_packages;
 	use et_terminals.pac_shapes;
+	use et_vias;
 	use et_pcb;
 	use et_pcb_coordinates;
 	use et_pcb_coordinates.pac_geometry_brd;
@@ -106,8 +107,8 @@ is
 	-- Enables/disables the outline layer. If status is empty,
 	-- the layer will be enabled.
 	procedure display_outline ( -- GUI related
-		status	: in string := "") is 
-
+		status	: in string := "") 
+	is 
 		ls : type_layer_status;
 	begin
 		-- Convert the given status to type_layer_status.
@@ -131,8 +132,8 @@ is
 	procedure display_non_conductor_layer ( -- GUI related
 		layer	: in type_noun;
 		face	: in string; -- top/bottom
-		status	: in string := "") is 
-
+		status	: in string := "") 
+	is
 		ls : type_layer_status;
 		fc : type_face;
 	begin
@@ -186,8 +187,8 @@ is
 	-- If status is empty, the layer will be enabled.
 	procedure display_conductor_layer ( -- GUI related
 		layer	: in string;
-		status	: in string := "") is 
-
+		status	: in string := "")
+	is 
 		ls : type_layer_status;
 		ly : type_signal_layer;
 	begin
@@ -214,8 +215,8 @@ is
 	-- If status is empty, the layer will be enabled.
 	procedure display_vias ( -- GUI related
 		--layer	: in string;
-		status	: in string := "") is 
-
+	   status	: in string := "") 
+	is 
 		ls : type_layer_status;
 		--ly : type_signal_layer;
 	begin
@@ -245,8 +246,8 @@ is
 	procedure display_restrict_layer ( -- GUI related
 		objects	: in string; -- route/via
 		layer	: in string; -- 1, 2, 8, ...
-		status	: in string := "") is 
-
+		status	: in string := "")
+	is 
 		ls : type_layer_status;
 		ly : type_signal_layer;
 	begin
@@ -1476,20 +1477,54 @@ is
 
 	procedure place_via is
 		via : type_via;
-	begin
+		net_name : pac_net_name.bounded_string;
+
+		procedure set_net_name is begin
+			-- CS check net name: characters, lenth, existence of net
+			net_name := to_net_name (f (5));
+		end set_net_name;
+
+		procedure set_position is 
+		begin
+			via.position := type_point (set (
+				x => to_distance (f (6)), -- 10
+				y => to_distance (f (7)))); -- 14
+
+			-- CS check position: must be inside board area
+		end set_position;
+
+		procedure set_layers is begin
+			via.layers := to_via_layers (f (8));
+
+			-- CS check layers
+		end set_layers;
+		
+	begin -- place_via
+
+		-- By default the deepest signal layer of the via is the deepest
+		-- signal layer of the board:
+		via.layers.l_end := deepest_conductor_layer (module_cursor);
+		
 		-- board demo place via RESET_N 10 14 [1-3] [0.35]
 		case fields is
 			when 7 =>
 				-- board demo place via RESET_N 10 14
-				null;
+				set_net_name;
+				set_position;
 				
 			when 8 =>
 				-- board demo place via RESET_N 10 14 1-3
-				null;
+				set_net_name;
+				set_position;
 				
 			when 9 =>
 				-- board demo place via RESET_N 10 14 1-3 0.35
-				null;
+				set_net_name;
+				set_position;
+				set_layers;
+
+				-- read drill size
+				via.diameter := to_distance (f (9));
 				
 			when 10.. count_type'last => too_long;
 				

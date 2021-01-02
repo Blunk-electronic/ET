@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -59,6 +59,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_kicad_general;			use et_kicad_general;
 with et_text;
 with et_terminals;				use et_terminals;
+with et_vias;					use et_vias;
 with et_drills;					use et_drills;
 with et_packages;
 with et_devices;				use et_devices;
@@ -304,7 +305,7 @@ package et_kicad.pcb is
 		via_min_drill		: type_drill_size;		-- regular vias
 		micro_via_size		: type_via_diameter;	-- micro vias
 		micro_via_drill		: type_drill_size;		-- micro vias
-		micro_vias_allowed	: et_pcb.type_micro_vias_allowed;
+		micro_vias_allowed	: type_micro_vias_allowed;
 		micro_via_min_size	: type_via_diameter;	-- micro vias
 		micro_via_min_drill	: type_drill_size;		-- micro vias
 		pcb_text_width		: et_terminals.pac_text.type_text_line_width;	-- all kinds of texts (no matter what layer)

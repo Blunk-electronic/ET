@@ -51,6 +51,7 @@ with et_geometry;				use et_geometry;
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 with et_project.modules;
+with et_vias;
 with et_terminals;
 with et_packages;
 with et_kicad_general;
@@ -639,12 +640,15 @@ package body et_kicad_to_native is
 
 					use et_pcb.pac_conductor_lines;
 					use et_pcb.pac_conductor_arcs;
-					use et_pcb.pac_vias;
+					
+					use et_vias;
+					use pac_vias;
+					
 					use et_pcb.pac_signal_polygons_solid;
 					
 					line_cursor : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
 					arc_cursor	: et_pcb.pac_conductor_arcs.cursor := net.route.arcs.first;
-					via_cursor	: et_pcb.pac_vias.cursor := net.route.vias.first;
+					via_cursor	: pac_vias.cursor := net.route.vias.first;
 					poly_cursor	: et_pcb.pac_signal_polygons_solid.cursor := net.route.polygons_2.solid.first;
 
 					board_track : constant string (1..12) := "board track ";
@@ -682,7 +686,7 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end move_arc;
 
-					procedure move_via (via : in out et_pcb.type_via) is
+					procedure move_via (via : in out type_via) is
 						use et_pcb_coordinates.pac_geometry_brd;
 					begin
 						log (text => board_track & "via", level => log_threshold + 4);
@@ -725,8 +729,8 @@ package body et_kicad_to_native is
 					end loop;
 
 					-- Move vias:
-					while via_cursor /= et_pcb.pac_vias.no_element loop
-						et_pcb.pac_vias.update_element (
+					while via_cursor /= pac_vias.no_element loop
+						pac_vias.update_element (
 							container 	=> net.route.vias,
 							position	=> via_cursor,
 							process		=> move_via'access);

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -43,6 +43,7 @@ with ada.exceptions;
 
 with et_import;
 with et_geometry;				use et_geometry;
+with et_vias;
 with et_pcb_stack;
 with et_symbols;
 
@@ -4816,9 +4817,9 @@ package body et_kicad.pcb is
 					segment_cursor : type_segments.cursor := board.segments.first;
 					line : et_pcb.type_conductor_line; -- an ET segment
 
-					use type_vias;
+					use type_vias; -- kicad vias !
 					via_cursor : type_vias.cursor := board.vias.first;
-					via : et_pcb.type_via; -- an ET via
+					via : et_vias.type_via; -- an ET via
 					restring : et_terminals.type_restring_width;
 
 					use type_polygons;
@@ -4878,9 +4879,11 @@ package body et_kicad.pcb is
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
 									-- The bottom layer in kicad is always number 31. Top layer is number 0.
 									-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-									layer_start	=> et_pcb_stack.type_signal_layer (element (via_cursor).layer_start + 1),
-									layer_end 	=> et_pcb_stack.type_signal_layer (element (via_cursor).layer_end + 1),
-
+									layers => (
+										l_start	=> et_pcb_stack.type_signal_layer (element (via_cursor).layer_start + 1),
+										l_end 	=> et_pcb_stack.type_signal_layer (element (via_cursor).layer_end + 1)
+									),
+									
 									-- Since kicad does not distinguish between restring in outer or inner layers
 									-- both are assigned the same value here:
 									restring_outer => restring,
@@ -4900,7 +4903,7 @@ package body et_kicad.pcb is
 					end loop;
 
 					-- Log if the net has no vias.
-					if et_pcb.pac_vias.is_empty (route.vias) then
+					if et_vias.pac_vias.is_empty (route.vias) then
 						log (text => "no vias", level => log_threshold + 3);
 					end if;
 

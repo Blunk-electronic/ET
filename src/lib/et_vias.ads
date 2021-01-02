@@ -1,0 +1,110 @@
+------------------------------------------------------------------------------
+--                                                                          --
+--                             SYSTEM ET                                    --
+--                                                                          --
+--                                VIAS                                      --
+--                                                                          --
+--                               S p e c                                    --
+--                                                                          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+--                                                                          --
+--    This program is free software: you can redistribute it and/or modify  --
+--    it under the terms of the GNU General Public License as published by  --
+--    the Free Software Foundation, either version 3 of the License, or     --
+--    (at your option) any later version.                                   --
+--                                                                          --
+--    This program is distributed in the hope that it will be useful,       --
+--    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
+--    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
+--    GNU General Public License for more details.                          --
+--                                                                          --
+--    You should have received a copy of the GNU General Public License     --
+--    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+------------------------------------------------------------------------------
+
+--   For correct displaying set tab width in your edtior to 4.
+
+--   The two letters "CS" indicate a "construction site" where things are not
+--   finished yet or intended for the future.
+
+--   Please send your questions and comments to:
+--
+--   info@blunk-electronic.de
+--   or visit <http://www.blunk-electronic.de> for more contact data
+--
+--   history of changes:
+--
+--   to do:
+
+
+with ada.text_io;				use ada.text_io;
+with ada.characters;			use ada.characters;
+with ada.characters.handling;	use ada.characters.handling;
+
+with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.containers; 			use ada.containers;
+
+with ada.containers.doubly_linked_lists;
+--with ada.containers.indefinite_doubly_linked_lists;
+--with ada.containers.ordered_maps;
+--with ada.containers.indefinite_ordered_maps;
+--with ada.containers.ordered_sets;
+
+--with et_general;
+with et_string_processing;		use et_string_processing;
+
+with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_geometry;
+with et_terminals;				use et_terminals;
+with et_drills;					use et_drills;
+with et_pcb_stack;				use et_pcb_stack;
+
+
+package et_vias is
+	
+	use et_pcb_coordinates.pac_geometry_brd;
+
+	
+	type type_micro_vias_allowed is (NO, YES);
+	function to_micro_vias_allowed (allowed : in string) return type_micro_vias_allowed;
+	function to_string (allowed : in type_micro_vias_allowed) return string;
+	
+
+
+	
+
+	keyword_layer_start	: constant string := "layer_start";
+	keyword_layer_end	: constant string := "layer_end";		
+
+	type type_via_layers is record
+		-- The topmost signal layer of the via:
+		l_start		: type_signal_layer := type_signal_layer'first;
+
+		-- The deepest signal layer of the via:
+		l_end		: type_signal_layer := type_signal_layer'last;
+	end record;
+
+	-- Converts a string like "1-3" to a type_via_layers.
+	function to_via_layers (text : in string) 
+		return type_via_layers;
+	
+	type type_via is new type_drill with record
+		restring_outer	: type_restring_width;	-- restring in outer layers (top/bottom)
+		restring_inner	: type_restring_width;	-- restring in inner layers (mostly wider than restring_outer)
+		layers			: type_via_layers;
+	end record;
+
+	-- vias are collected in simple lists
+	package pac_vias is new doubly_linked_lists (type_via);
+	
+
+	
+end et_vias;
+
+-- Soli Deo Gloria
+
+-- For God so loved the world that he gave 
+-- his one and only Son, that whoever believes in him 
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16

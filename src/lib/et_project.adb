@@ -94,7 +94,8 @@ package body et_project is
 	
 	procedure create_supplementary_directories (
 		path			: in string;
-		log_threshold	: in et_string_processing.type_log_level) is
+		log_threshold	: in et_string_processing.type_log_level) 
+	is
 		use et_string_processing;
 		use ada.directories;
 		use gnat.directory_operations;
@@ -416,78 +417,6 @@ package body et_project is
 	end open_project;
 
 
-
--- DO NOT REMOVE ! MIGHT BE USEFUL IN THE FUTURE !
--- 	procedure save_libraries (
--- 	-- Saves the library containers (et_devices.devices and et_packages.packages) in
--- 	-- the directory specified by project_path and project_name.
--- 		project_name	: in et_project.pac_project_name.bounded_string;		-- blood_sample_analyzer
--- 		project_path	: in et_project.type_et_project_path.bounded_string; 	-- /home/user/ecad
--- 		log_threshold	: in et_string_processing.type_log_level) is
--- 		use et_project;
--- 		use pac_project_name;
--- 		use type_et_project_path;
--- 		use ada.directories;
--- 		use et_string_processing;
--- 
--- 		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
--- 		use type_path;
--- 		path : type_path.bounded_string := to_bounded_string (
--- 				compose (type_et_project_path.to_string (project_path), pac_project_name.to_string (project_name)));
--- 		-- Path now contains something like /home/user/ecad/blood_sample_analyzer
--- 		
--- 		use et_devices;
--- 
--- 		procedure save_device (device_cursor : in type_devices.cursor) is 
--- 			use type_devices;
--- 		begin
--- 			save_device (
--- 				-- library name like: 
--- 				-- /home/user/ecad/blood_sample_analyzer/libraries/devices/bel_connector_and_jumper_FEMALE_01X06.dev
--- 				file_name		=> to_file_name 
--- 					(
--- 					to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor))
--- 					),
--- 
--- 				-- the device model itself:
--- 				device			=> element (device_cursor),
--- 				log_threshold	=> log_threshold + 1); 
--- 		end save_device;
--- 
--- 		use et_packages;
--- 		
--- 		procedure save_package (package_cursor : in type_packages.cursor) is
--- 			use type_package_model_file;
--- 			use type_packages;
--- 		begin
--- 			save_package (
--- 				-- package name like: 
--- 				-- /home/user/ecad/blood_sample_analyzer/libraries/packages/bel_connector_and_jumper_FEMALE_01X06.pac
--- 				file_name		=> to_file_name (
--- 					to_string (path) & gnat.directory_operations.dir_separator &
--- 					type_package_model_file.to_string (key (package_cursor))),
--- 
--- 				-- the package model itself:
--- 				packge			=> element (package_cursor),
--- 				log_threshold	=> log_threshold + 1); 
--- 		end save_package;
--- 		
--- 	begin -- save_libraries
--- 		log (text => "saving libraries ...", level => log_threshold);
--- 		log_indentation_up;
--- 
--- 		log (text => "devices ...", level => log_threshold + 1);
--- 		log_indentation_up;
--- 		type_devices.iterate (devices, save_device'access);
--- 		log_indentation_down;
--- 		
--- 		log (text => "packages ...", level => log_threshold + 1);
--- 		log_indentation_up;
--- 		type_packages.iterate (packages, save_package'access);
--- 		log_indentation_down;
--- 
--- 		log_indentation_down;			
--- 	end save_libraries;
 
 	function inside_project_directory (file_name : in string) return boolean is
 	-- Tests whether the given file name indicates whether the file is inside the project directory.

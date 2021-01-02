@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -38,7 +38,9 @@
 with ada.text_io;				use ada.text_io;
 
 with et_pcb;					use et_pcb;
-use et_pcb.pac_vias;
+
+with et_vias;					use et_vias;
+use et_vias.pac_vias;
 
 with et_pcb_stack;				use et_pcb_stack;
 with et_display.board;			use et_display.board;
