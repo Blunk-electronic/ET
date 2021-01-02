@@ -75,11 +75,11 @@ with et_canvas_board_devices;	use et_canvas_board_devices;
 
 package et_canvas_board is
 
-	title : constant string := et_general.system_name & " BOARD ";
+	title : constant string := system_name & " BOARD ";
 
 	procedure set_title_bar (
 		-- CS project name								
-		module		: in et_general.pac_module_name.bounded_string);
+		module		: in pac_module_name.bounded_string);
 
 
 	

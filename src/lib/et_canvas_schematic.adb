@@ -60,9 +60,8 @@ package body et_canvas_schematic is
 
 	procedure set_title_bar (
 		-- CS project name
-		module		: in et_general.pac_module_name.bounded_string)
-	is
-	begin
+		module		: in pac_module_name.bounded_string)
+	is begin
 		window.set_title (title & to_string (module));
 	end set_title_bar;
 
@@ -198,7 +197,6 @@ package body et_canvas_schematic is
 	procedure execute_script (script : in pac_script_name.bounded_string) is
 		use ada.directories;
 		use et_scripting;
-		use pac_script_name;
 		use et_modes;
 		use et_project;
 		
@@ -206,9 +204,9 @@ package body et_canvas_schematic is
 		-- like "schematic motor_driver execute script my_script.scr:
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_SCHEMATIC)) & space &
-			et_general.to_string (et_canvas_schematic.active_module) & space &
+			to_string (et_canvas_schematic.active_module) & space &
 			"execute" & space & "script" & space &
-			et_general.to_string (script); -- "my_script.scr"
+			to_string (script); -- "my_script.scr"
 		
 		cmd : et_string_processing.type_fields_of_line;
 
@@ -281,7 +279,7 @@ package body et_canvas_schematic is
 		-- command after this declaration will be "schematic led_driver rename device R1 R2".
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_SCHEMATIC)) & space &
-			et_general.to_string (active_module) & space &
+			to_string (active_module) & space &
 			get_text (self);
 		
 		cmd : et_string_processing.type_fields_of_line;
@@ -355,8 +353,8 @@ package body et_canvas_schematic is
 
 
 	
-	function active_module return et_general.pac_module_name.bounded_string is
-		use et_general.pac_module_name;
+	function active_module return pac_module_name.bounded_string is
+		use pac_module_name;
 		use et_project.modules.pac_generic_modules;
 	begin
 		return key (current_active_module); -- motor_driver (without extension)
@@ -599,7 +597,7 @@ package body et_canvas_schematic is
 	end draw_internal;
 
 	procedure set_module (
-		module	: in et_general.pac_module_name.bounded_string)  -- motor_driver
+		module	: in pac_module_name.bounded_string)  -- motor_driver
 	is
 		use et_project.modules;
 		use et_project.modules.pac_generic_modules;

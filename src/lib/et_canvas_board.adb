@@ -66,7 +66,7 @@ package body et_canvas_board is
 	
 	procedure set_title_bar (
 		-- CS project name
-		module		: in et_general.pac_module_name.bounded_string)
+		module		: in pac_module_name.bounded_string)
 	is begin
 		window.set_title (title & to_string (module));
 	end set_title_bar;
@@ -99,7 +99,6 @@ package body et_canvas_board is
 		model_point : in type_point)	
 		return type_point 
 	is 
-		use et_general;
 		p : type_point; -- to be returned
 	begin
 		set (point	=> p,
@@ -123,8 +122,8 @@ package body et_canvas_board is
 	function drawing_to_model (
 		self			: not null access type_view;
 		drawing_point : in type_point)	
-		return type_point is 
-		use et_general;
+		return type_point 
+	is 
 		p : type_point; -- to be returned
 	begin
 		set (point	=> p,
@@ -149,7 +148,6 @@ package body et_canvas_board is
 	procedure execute_script (script : in pac_script_name.bounded_string) is
 		use ada.directories;
 		use et_scripting;
-		use pac_script_name;
 		use et_modes;
 		use et_project;
 
@@ -157,9 +155,9 @@ package body et_canvas_board is
 		-- like "board motor_driver execute script my_script.scr:
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_BOARD)) & space &
-			et_general.to_string (et_canvas_schematic.active_module) & space &
+			to_string (et_canvas_schematic.active_module) & space &
 			"execute" & space & "script" & space &
-			et_general.to_string (script); -- "my_script.scr"
+			to_string (script); -- "my_script.scr"
 		
 		cmd : et_string_processing.type_fields_of_line;
 
@@ -230,7 +228,7 @@ package body et_canvas_board is
 		-- command after this declaration will be "board led_driver rename device R1 R2".		
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_BOARD)) & space &
-			et_general.to_string (et_canvas_schematic.active_module) & space &
+			to_string (et_canvas_schematic.active_module) & space &
 			get_text (self);
 		
 		cmd : et_string_processing.type_fields_of_line;
@@ -303,11 +301,11 @@ package body et_canvas_board is
 
 	
 	function active_module (self : not null access type_view) 
-		return string is
-		use et_general.pac_module_name;
+		return string
+	is
 		use et_canvas_schematic;
 	begin
-		return et_general.to_string (key (current_active_module)); -- motor_driver (without extension)
+		return to_string (key (current_active_module)); -- motor_driver (without extension)
 	end active_module;
 
 
@@ -428,9 +426,8 @@ package body et_canvas_board is
 	-- Maps from the meaning of a text to its actutal content.
 	function to_placeholder_content (
 		meaning : in et_pcb.type_text_meaning)
-		return et_text.type_text_content.bounded_string is
-
-		use et_general;
+		return et_text.type_text_content.bounded_string 
+	is
 		use et_text;
 		use et_meta;
 		use et_canvas_schematic;
@@ -698,8 +695,6 @@ package body et_canvas_board is
 		context : type_draw_context;
 		area    : type_rectangle) 
 	is
-		use et_general;
-
 		-- The given area must be shifted (left and up) by the position
 		-- of the drawing frame. This is required for all objects in the 
 		-- drawing frame.
@@ -850,8 +845,8 @@ package body et_canvas_board is
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;
 		cursor		: in out type_cursor;
-		position	: in type_point) is
-		use et_general;
+		position	: in type_point) 
+	is
 		use et_canvas_schematic;		
 	begin
 		case coordinates is
@@ -871,10 +866,9 @@ package body et_canvas_board is
 	procedure move_cursor (
 		self		: not null access type_view;
 		direction	: in type_cursor_direction;
-		cursor		: in out type_cursor) is
-
+		cursor		: in out type_cursor) 
+	is
 		-- Get the currently active grid:
-		use et_general;
 		use et_canvas_schematic;		
 		--grid : constant type_grid := element (current_active_module).board.grid;
 		grid : constant type_grid := self.get_grid;

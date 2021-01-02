@@ -94,11 +94,11 @@ package et_canvas_schematic is
 	use et_project.modules.pac_generic_modules;
 	
 	
-	title : constant string := et_general.system_name & " SCHEMATIC ";
+	title : constant string := system_name & " SCHEMATIC ";
 
 	procedure set_title_bar (
 		-- CS project name								
-		module		: in et_general.pac_module_name.bounded_string);
+		module		: in pac_module_name.bounded_string);
 	
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
@@ -198,7 +198,7 @@ package et_canvas_schematic is
 	
 	
 	-- Returns the name of the currently active module:
-	function active_module return et_general.pac_module_name.bounded_string;
+	function active_module return pac_module_name.bounded_string;
 
 	-- Returns the bounding box of all items of the current sheet.
 	overriding function bounding_box (self : not null access type_view)
@@ -230,7 +230,7 @@ package et_canvas_schematic is
 	-- Sets the active module to be displayed in the canvas.
 	-- The module must exist inside the current project directory.
 	procedure set_module (
-		module	: in et_general.pac_module_name.bounded_string); -- motor_driver
+		module	: in pac_module_name.bounded_string); -- motor_driver
 
 	-- Sets the global variables "current_active_module" and "current_active_sheet".
 	-- Sets the grid values to be displayed in the coordinates display.
