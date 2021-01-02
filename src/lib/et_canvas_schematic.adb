@@ -200,7 +200,7 @@ package body et_canvas_schematic is
 		use et_scripting;
 		use pac_script_name;
 		use et_modes;
-		use et_project.pac_project_name;
+		use et_project;
 		
 		-- We compose a command that executes a script
 		-- like "schematic motor_driver execute script my_script.scr:
@@ -238,7 +238,7 @@ package body et_canvas_schematic is
 
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
-		set_directory (to_string (et_canvas_schematic.current_active_project));
+		set_directory (to_string (current_active_project));
 		
 		-- execute the schematic command
 		schematic_cmd (current_active_module, cmd, log_threshold);
@@ -272,7 +272,7 @@ package body et_canvas_schematic is
 		use ada.directories;	
 		use et_scripting;
 		use et_modes;
-		use et_project.pac_project_name;
+		use et_project;
 		
 		-- The operator enters a command like "rename device R1 R2".
 		-- The operator is not required to type domain and module name.
@@ -694,7 +694,8 @@ package body et_canvas_schematic is
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;
 		cursor		: in out type_cursor;
-		position	: in type_point) is
+		position	: in type_point) 
+	is
 		use et_project.modules.pac_generic_modules;
 	begin
 		case coordinates is
@@ -817,8 +818,8 @@ package body et_canvas_schematic is
 	
 	function get_frame (
 		self : not null access type_view)
-		return et_frames.type_frame is
-
+		return et_frames.type_frame 
+	is
 		use et_project.modules.pac_generic_modules;
 	begin
 		return element (current_active_module).frames.frame;

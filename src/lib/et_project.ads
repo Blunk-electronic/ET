@@ -84,8 +84,8 @@ package et_project is
 	project_name_max : constant natural := 100;
 	package pac_project_name is new generic_bounded_length (project_name_max);
 
-	-- here we store the name of the currently open project:
-	current_project : pac_project_name.bounded_string;
+	-- Here we store the name of the currently open project:
+	current_active_project : pac_project_name.bounded_string;
 	
 	function to_string (project_name : in pac_project_name.bounded_string) return string;
 	function to_project_name (name : in string) return pac_project_name.bounded_string;

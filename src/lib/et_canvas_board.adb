@@ -47,7 +47,7 @@ with gtk.window;					use gtk.window;
 
 with et_scripting;
 with et_modes;
---with et_project;
+with et_project;
 
 with et_canvas_schematic;
 with et_display.board;
@@ -67,9 +67,7 @@ package body et_canvas_board is
 	procedure set_title_bar (
 		-- CS project name
 		module		: in et_general.pac_module_name.bounded_string)
-	is
-		use et_general;
-	begin
+	is begin
 		window.set_title (title & to_string (module));
 	end set_title_bar;
 
@@ -99,7 +97,8 @@ package body et_canvas_board is
 	function model_to_drawing (
 		self		: not null access type_view;
 		model_point : in type_point)	
-		return type_point is 
+		return type_point 
+	is 
 		use et_general;
 		p : type_point; -- to be returned
 	begin
@@ -152,7 +151,7 @@ package body et_canvas_board is
 		use et_scripting;
 		use pac_script_name;
 		use et_modes;
-		use et_project.pac_project_name;
+		use et_project;
 
 		-- We assemble a command that executes a script
 		-- like "board motor_driver execute script my_script.scr:
@@ -190,7 +189,7 @@ package body et_canvas_board is
 
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
-		set_directory (to_string (et_canvas_schematic.current_active_project));
+		set_directory (to_string (current_active_project));
 		
 		-- execute the board command
 		board_cmd (et_canvas_schematic.current_active_module, cmd, log_threshold);
@@ -222,7 +221,7 @@ package body et_canvas_board is
 		use et_string_processing;
 		use et_scripting;
 		use et_modes;
-		use et_project.pac_project_name;
+		use et_project;
 		
 		-- The operator enters a command like "rename device R1 R2".
 		-- The operator is not required to type domain and module name.
@@ -264,10 +263,10 @@ package body et_canvas_board is
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
 		log (text => "changing to directory " &
-				enclose_in_quotes (to_string (et_canvas_schematic.current_active_project)) & " ...",
+				enclose_in_quotes (to_string (current_active_project)) & " ...",
 			level => log_threshold + 1);
 		
-		set_directory (to_string (et_canvas_schematic.current_active_project));
+		set_directory (to_string (current_active_project));
 		
 		-- execute the board command
 		board_cmd (et_canvas_schematic.current_active_module, cmd, log_threshold);

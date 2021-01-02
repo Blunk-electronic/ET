@@ -393,7 +393,7 @@ package body et_project is
 		validate_project (project_name, log_threshold + 1);
 	
 		-- set global project name
-		current_project := project_name;
+		current_active_project := project_name;
 
 		-- change in project directory
 		set_directory (to_string (project_name));
