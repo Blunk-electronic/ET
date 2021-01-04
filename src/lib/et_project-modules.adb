@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -56,6 +56,8 @@ with et_meta;
 with et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_symbols;
+
+with et_drills;
 
 with et_symbol_rw;				use et_symbol_rw;
 with et_device_rw;				use et_device_rw;

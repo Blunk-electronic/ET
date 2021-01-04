@@ -35,6 +35,7 @@
 --   history of changes:
 --
 
+with et_drills;
 with et_modes.board;
 with et_canvas_board_devices;
 with et_canvas_board_texts;
@@ -49,6 +50,7 @@ is
 	use et_board_ops;
 	use et_packages;
 	use et_terminals.pac_shapes;
+	use et_drills;
 	use et_vias;
 	use et_pcb;
 	use et_pcb_coordinates;
@@ -1476,7 +1478,7 @@ is
 	end place_text;
 
 	procedure place_via is
-		via : type_via;
+		drill : type_drill;
 		net_name : pac_net_name.bounded_string;
 
 		procedure set_net_name is begin
@@ -1486,24 +1488,24 @@ is
 
 		procedure set_position is 
 		begin
-			via.position := type_point (set (
+			drill.position := type_point (set (
 				x => to_distance (f (6)), -- 10
 				y => to_distance (f (7)))); -- 14
 
 			-- CS check position: must be inside board area
 		end set_position;
 
-		procedure set_layers is begin
-			via.layers := to_via_layers (f (8));
+		--procedure set_layers is begin
+			--via.layers := to_via_layers (f (8));
 
-			-- CS check layers
-		end set_layers;
+			---- CS check layers
+		--end set_layers;
 		
 	begin -- place_via
 
 		-- By default the deepest signal layer of the via is the deepest
 		-- signal layer of the board:
-		via.layers.l_end := deepest_conductor_layer (module_cursor);
+		--via.layers.l_end := deepest_conductor_layer (module_cursor);
 		
 		-- board demo place via RESET_N 10 14 [1-3] [0.35]
 		case fields is
@@ -1521,10 +1523,10 @@ is
 				-- board demo place via RESET_N 10 14 1-3 0.35
 				set_net_name;
 				set_position;
-				set_layers;
+				--set_layers;
 
 				-- read drill size
-				via.diameter := to_distance (f (9));
+				drill.diameter := to_distance (f (9));
 				
 			when 10.. count_type'last => too_long;
 				

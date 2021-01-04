@@ -69,21 +69,35 @@ package et_vias is
 
 
 	
+	keyword_via_category 	: constant string := "category";
 
-	keyword_layer_start	: constant string := "layer_start";
-	keyword_layer_end	: constant string := "layer_end";		
+	-- for buried vias:
+	keyword_layers			: constant string := "layers";
 
-	type type_via_layers is record
+	-- for blind vias:
+	keyword_destination		: constant string := "destination";
+
+	-- For blind or buried vias use this type. This is about inner layers only.
+	subtype type_via_layer is type_signal_layer range
+		type_signal_layer'first + 1 -- the topmost inner layer
+		.. 
+		type_signal_layer'last - 1; -- the deepest inner layer.
+		-- NOTE: The upper end of the range defined here does not
+		-- suffice. The deepest inner layer of a particular buried or blind
+		-- via must be validated against the pcb layer stack of the board.
+		
+	
+	type type_buried_layers is record
 		-- The topmost signal layer of the via:
-		l_start		: type_signal_layer := type_signal_layer'first;
+		upper	: type_via_layer := type_via_layer'first;
 
 		-- The deepest signal layer of the via:
-		l_end		: type_signal_layer := type_signal_layer'last;
+		lower	: type_via_layer := type_via_layer'last;
 	end record;
 
-	-- Converts a string like "1-3" to a type_via_layers.
+	-- Converts a string like "1-3" to a type_buried_layers.
 	function to_via_layers (text : in string) 
-		return type_via_layers;
+		return type_buried_layers;
 
 	type type_via_category is (
 		THROUGH,
@@ -91,14 +105,14 @@ package et_vias is
 		BLIND_DRILLED_FROM_TOP,
 		BLIND_DRILLED_FROM_BOTTOM
 		);
-	
-	type type_via is new type_drill with record
-		restring_outer	: type_restring_width;	-- restring in outer layers (top/bottom)
-		restring_inner	: type_restring_width;	-- restring in inner layers (mostly wider than restring_outer)
-		layers			: type_via_layers;
-	end record;
 
-	type type_via2 (category : type_via_category)
+	via_category_default : constant type_via_category := THROUGH;
+	
+	function to_string (category : in type_via_category) return string;
+	function to_via_category (category : in string) return type_via_category;
+	
+
+	type type_via (category : type_via_category)
 	is new type_drill with record
 
 		-- Whatever the via category, there is always a restring 
@@ -111,24 +125,28 @@ package et_vias is
 				-- Restring in outer layers (top/bottom)
 				restring_outer	: type_restring_width;
 
-			when BLIND_DRILLED_FROM_TOP =>
-				restring_top			: type_restring_width;
-				from_top_to_layer		: type_signal_layer;
+				-- CS: stop mask open top/bottom
 
+			when BLIND_DRILLED_FROM_TOP =>
+				restring_top	: type_restring_width;
+				lower			: type_via_layer;
+				-- CS: stop mask open
+				
 			when BLIND_DRILLED_FROM_BOTTOM =>
-				restring_bottom			: type_restring_width;
-				from_bottom_to_layer	: type_signal_layer;
+				restring_bottom	: type_restring_width;
+				upper			: type_via_layer;
+				-- CS: stop mask open
 				
 			when BURIED =>
-				layers : type_via_layers;
+				layers : type_buried_layers;
 				
 		end case;
 	end record;
 
-	package pac_vias2 is new indefinite_doubly_linked_lists (type_via2);
+	package pac_vias is new indefinite_doubly_linked_lists (type_via);
 	
 	-- vias are collected in simple lists
-	package pac_vias is new doubly_linked_lists (type_via);
+	--package pac_vias is new doubly_linked_lists (type_via);
 	
 
 	

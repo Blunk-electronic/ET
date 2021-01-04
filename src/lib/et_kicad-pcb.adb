@@ -34,6 +34,8 @@
 --
 --   history of changes:
 --
+--   To Do:
+--	- distinguish between through, blind and buried vias.
 
 with ada.directories;
 with ada.strings;				use ada.strings;
@@ -4819,7 +4821,7 @@ package body et_kicad.pcb is
 
 					use type_vias; -- kicad vias !
 					via_cursor : type_vias.cursor := board.vias.first;
-					via : et_vias.type_via; -- an ET via
+					via : et_vias.type_via := (category => THROUGH, others => <>); -- an ET via
 					restring : et_terminals.type_restring_width;
 
 					use type_polygons;
@@ -4875,14 +4877,21 @@ package body et_kicad.pcb is
 							-- copy position, drill diameter (by a conversion to the base type)
 							via := (type_drill (element (via_cursor)) with 
 
+									-- Currently all vias in the kicad design are theated as THROUGH vias.
+									category => THROUGH,
+
+									-- To distinguish between categories BLIND, BLIND_DRILLED_FROM_TOP
+									-- and BLIND_DRILLED_FROM_BOTTOM the total number of layers must be known.
+									-- CS to be done.
+
 									-- Translate the kicad layer id to the ET signal layer:
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
 									-- The bottom layer in kicad is always number 31. Top layer is number 0.
 									-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-									layers => (
-										l_start	=> et_pcb_stack.type_signal_layer (element (via_cursor).layer_start + 1),
-										l_end 	=> et_pcb_stack.type_signal_layer (element (via_cursor).layer_end + 1)
-									),
+									--layers => (
+										--l_start	=> et_pcb_stack.type_signal_layer (element (via_cursor).layer_start + 1),
+										--l_end 	=> et_pcb_stack.type_signal_layer (element (via_cursor).layer_end + 1)
+									--),
 									
 									-- Since kicad does not distinguish between restring in outer or inner layers
 									-- both are assigned the same value here:

@@ -550,10 +550,12 @@ is
 			while via_cursor /= pac_vias.no_element loop
 				section_mark (section_via, HEADER);
 
+				-- CS write properties according to category
+				
 				write (keyword => keyword_position, parameters => position (element (via_cursor).position));
 				write (keyword => keyword_diameter, parameters => to_string (element (via_cursor).diameter));
-				write (keyword => keyword_layer_start, parameters => to_string (element (via_cursor).layers.l_start));
-				write (keyword => keyword_layer_end  , parameters => to_string (element (via_cursor).layers.l_end));
+				--write (keyword => keyword_upper, parameters => to_string (element (via_cursor).layers.upper));
+				--write (keyword => keyword_lower, parameters => to_string (element (via_cursor).layers.lower));
 				write (keyword => keyword_restring_outer_layers, parameters => to_string (element (via_cursor).restring_outer));
 				write (keyword => keyword_restring_inner_layers, parameters => to_string (element (via_cursor).restring_inner));
 				

@@ -48,10 +48,19 @@ package body et_vias is
 	end to_string;
 
 
+	function to_string (category : in type_via_category) return string is begin
+		return to_lower (type_via_category'image (category));
+	end to_string;
+
+	function to_via_category (category : in string) return type_via_category is begin
+		return type_via_category'value (category);
+	end to_via_category;
+
+	
 	function to_via_layers (text : in string) 
-		return type_via_layers
+		return type_buried_layers
 	is
-		layers : type_via_layers; -- to be returned
+		layers : type_buried_layers; -- to be returned
 	begin
 
 		return layers;

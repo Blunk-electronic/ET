@@ -143,14 +143,6 @@ package body et_pcb is
 		return type_polygon_priority'value (priority_level);
 	end;
 
-	function to_via_layers (text : in string) 
-		return type_via_layers
-	is
-		layers : type_via_layers; -- to be returned
-	begin
-
-		return layers;
-	end to_via_layers;
 
 
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
@@ -232,16 +224,30 @@ package body et_pcb is
 		log_threshold 	: in et_string_processing.type_log_level) 
 	is
 		use pac_vias;
-		via : type_via;
+		
+		procedure do_it (via : type_via) 
+		is begin
+			case via.category is
+				when THROUGH =>
+					log (text => "via" 
+						& " category " & to_string (via.category) & space
+						& to_string (type_drill (via)) 
+						& " restring outer" & to_string (via.restring_outer) -- outer layers
+						& " restring inner" & to_string (via.restring_inner), -- inner layers
+						level => log_threshold);
+
+				when others => null;
+				-- CS log properties of other via categories
+				
+			end case;
+						--& " layer_start" & to_string (via.layers.l_start) &
+			 --" layer_end" & to_string (via.layers.l_end)
+			 ---- CS locked
+		end do_it;
+	
 	begin
-		via := element (cursor);
-		log (text => "via" & to_string (type_drill (via)) &
-			 " restring_outer" & to_string (via.restring_outer) & -- outer layers
-			 " restring_inner" & to_string (via.restring_inner) & -- inner layers
-			 " layer_start" & to_string (via.layers.l_start) &
-			 " layer_end" & to_string (via.layers.l_end)
-			 -- CS locked
-			 , level => log_threshold);
+		do_it (element (cursor));
+	
 	end route_via_properties;
 
 -- 	procedure route_polygon_properties (

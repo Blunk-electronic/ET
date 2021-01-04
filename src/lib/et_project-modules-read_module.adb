@@ -509,7 +509,6 @@ is
 	net_netchanger_ports : et_netlists.pac_netchanger_ports.set;
 	
 	route		: et_pcb.type_route;
-	route_via	: et_vias.type_via;
 
 	sheet_descriptions			: et_frames.pac_schematic_descriptions.map;
 	sheet_description_category	: et_frames.type_schematic_sheet_category := 
@@ -1001,6 +1000,17 @@ is
 
 	end read_device_non_electric;
 
+	-- This variable provides the basic things for a simple drill
+	-- and a via (the type_via is derived from type_drill):
+	drill : et_drills.type_drill;
+
+	-- Via properties:
+	via_category : et_vias.type_via_category;
+	via_restring_inner : et_terminals.type_restring_width; -- CS default DRC
+	via_restring_outer : et_terminals.type_restring_width; -- CS default DRC	
+	via_layers_buried : et_vias.type_buried_layers;
+	via_layer_blind : et_vias.type_via_layer;
+	
 	procedure read_via is
 		use et_pcb_coordinates.pac_geometry_brd;
 		use et_pcb;
@@ -1015,29 +1025,33 @@ is
 			expect_field_count (line, 5);
 
 			-- extract the position starting at field 2 of line
-			route_via.position := to_position (line, 2);
+			drill.position := to_position (line, 2);
 
+		elsif kw = keyword_via_category then -- category through/buried/...
+			expect_field_count (line, 2);
+			via_category := to_via_category (f (line, 2));
+			
 		elsif kw = keyword_diameter then -- diameter 0.35
 			expect_field_count (line, 2);
-			route_via.diameter := to_distance (f (line, 2));
+			drill.diameter := to_distance (f (line, 2));
 
 		elsif kw = keyword_restring_outer_layers then -- restring_outer_layers 0.3
 			expect_field_count (line, 2);
-			route_via.restring_outer := to_distance (f (line, 2));
+			via_restring_outer := to_distance (f (line, 2));
 
 		elsif kw = keyword_restring_inner_layers then -- restring_inner_layers 0.34
 			expect_field_count (line, 2);
-			route_via.restring_inner := to_distance (f (line, 2));
+			via_restring_inner := to_distance (f (line, 2));
 
-		elsif kw = keyword_layer_start then -- layer_start 1
+		elsif kw = et_vias.keyword_layers then -- layers 2-3 (for buried via only)
 			expect_field_count (line, 2);
-			route_via.layers.l_start := et_pcb_stack.to_signal_layer (f (line, 2));
-			validate_signal_layer (route_via.layers.l_start);
+			via_layers_buried := to_via_layers (f (line, 2));
 			
-		elsif kw = keyword_layer_end then -- layer_end 15
+		elsif kw = keyword_destination then -- destination_layer 15 (for blind via only)
 			expect_field_count (line, 2);
-			route_via.layers.l_end := et_pcb_stack.to_signal_layer (f (line, 2));
-			validate_signal_layer (route_via.layers.l_end);
+			via_layer_blind := et_pcb_stack.to_signal_layer (f (line, 2));
+			-- CS exception rises if layer out of range (i.e. less than 2).
+			--validate_signal_layer (via_layers_buried.lower);
 			
 		else
 			invalid_keyword (kw);
@@ -1045,6 +1059,49 @@ is
 		
 	end read_via;
 
+
+	procedure build_via is 
+		use et_vias;
+		use pac_vias;
+	begin
+		-- insert via in route.vias
+		case via_category is
+			when THROUGH =>
+				append (route.vias, ((drill with
+					category		=> THROUGH,
+					restring_inner	=> via_restring_inner,
+					restring_outer	=> via_restring_outer)));
+
+			when BLIND_DRILLED_FROM_TOP =>
+				append (route.vias, ((drill with
+					category		=> BLIND_DRILLED_FROM_TOP,
+					restring_inner	=> via_restring_inner,
+					restring_top	=> via_restring_outer,
+					lower			=> via_layer_blind)));
+
+			when BLIND_DRILLED_FROM_BOTTOM =>
+				append (route.vias, ((drill with
+					category		=> BLIND_DRILLED_FROM_BOTTOM,
+					restring_inner	=> via_restring_inner,
+					restring_bottom	=> via_restring_outer,
+					upper			=> via_layer_blind)));
+
+			when BURIED =>
+				append (route.vias, ((drill with
+					category		=> BURIED,
+					restring_inner	=> via_restring_inner,
+					layers			=> via_layers_buried)));
+				
+		end case;
+
+		drill := (others => <>); -- clean up for next via
+		via_category := via_category_default;
+		via_layers_buried := (others => <>);
+		via_layer_blind := type_via_layer'first;
+		-- CS
+		-- via_restring_inner := DRC ?
+		-- via_restring_outer := 
+	end build_via;
 	
 	procedure process_line is 
 
@@ -3829,11 +3886,8 @@ is
 				when SEC_VIA =>
 					case stack.parent is
 						when SEC_ROUTE =>
-
-							-- insert via in route.vias
-							et_vias.pac_vias.append (route.vias, route_via);
-							route_via := (others => <>); -- clean up for next via
-
+							build_via;
+					
 						when others => invalid_section;
 					end case;
 
