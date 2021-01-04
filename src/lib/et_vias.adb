@@ -57,14 +57,17 @@ package body et_vias is
 	end to_via_category;
 
 	
-	function to_via_layers (text : in string) 
-		return type_buried_layers
-	is
+	function to_via_layers (text : in string) return type_buried_layers is
 		layers : type_buried_layers; -- to be returned
 	begin
-
+		-- CS
 		return layers;
 	end to_via_layers;
+
+	function to_string (layers : in type_buried_layers) return string is
+	begin
+		return ""; -- CS
+	end to_string;
 	
 end et_vias;
 

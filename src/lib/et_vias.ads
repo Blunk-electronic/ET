@@ -96,9 +96,10 @@ package et_vias is
 	end record;
 
 	-- Converts a string like "1-3" to a type_buried_layers.
-	function to_via_layers (text : in string) 
-		return type_buried_layers;
+	function to_via_layers (text : in string) return type_buried_layers;
 
+	function to_string (layers : in type_buried_layers) return string;
+	
 	type type_via_category is (
 		THROUGH,
 		BURIED,

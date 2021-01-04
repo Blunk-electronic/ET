@@ -494,7 +494,8 @@ is
 		procedure query_route (
 		-- This is about routed tracks/traces and zones in the board:
 			net_name	: in pac_net_name.bounded_string;
-			net			: in et_schematic.type_net) is
+			net			: in et_schematic.type_net) 
+		is
 			--use et_packages;
 			use et_terminals;
 			use et_terminals.pac_shapes;
@@ -508,10 +509,6 @@ is
 			use pac_conductor_arcs;
 			arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
 
-			use et_vias;
-			use pac_vias;
-			via_cursor : pac_vias.cursor := net.route.vias.first;
-
 			use pac_signal_polygons_solid; 
 			use pac_signal_polygons_hatched;
 			use et_pcb.pac_conductor_cutouts;
@@ -519,6 +516,43 @@ is
 			polygon_hatched_cursor : pac_signal_polygons_hatched.cursor := net.route.polygons_2.hatched.first;
 			cutout_zone_cursor : et_pcb.pac_conductor_cutouts.cursor := net.route.cutouts.first;
 
+			procedure write_vias is
+				use et_vias;
+				use pac_vias;
+
+				procedure query_via (c : in pac_vias.cursor) is begin
+					section_mark (section_via, HEADER);
+
+					write (keyword => keyword_position, parameters => position (element (c).position));
+					write (keyword => keyword_diameter, parameters => to_string (element (c).diameter));
+
+					case element (c).category is
+						when THROUGH =>
+							write (keyword => keyword_restring_outer_layers,
+								parameters => to_string (element (c).restring_outer));
+							
+						when BLIND_DRILLED_FROM_TOP =>
+							write (keyword => keyword_restring_outer_layers, parameters => to_string (element (c).restring_outer));
+							write (keyword => keyword_destination, parameters => to_string (element (c).lower));
+							
+						when BLIND_DRILLED_FROM_BOTTOM =>
+							write (keyword => keyword_restring_outer_layers, parameters => to_string (element (c).restring_outer));
+							write (keyword => keyword_destination, parameters => to_string (element (c).upper));
+							
+						when BURIED =>
+							write (keyword => et_vias.keyword_layers, parameters => to_string (element (c).layers));
+					end case;
+
+					write (keyword => keyword_restring_inner_layers,
+						parameters => to_string (element (c).restring_inner));
+					
+					section_mark (section_via, FOOTER);
+				end query_via;
+				
+			begin
+				net.route.vias.iterate (query_via'access);
+			end write_vias;
+			
 		begin -- query_route
 			section_mark (section_route, HEADER);
 
@@ -547,22 +581,8 @@ is
 				next (arc_cursor);
 			end loop;
 
-			while via_cursor /= pac_vias.no_element loop
-				section_mark (section_via, HEADER);
-
-				-- CS write properties according to category
-				
-				write (keyword => keyword_position, parameters => position (element (via_cursor).position));
-				write (keyword => keyword_diameter, parameters => to_string (element (via_cursor).diameter));
-				--write (keyword => keyword_upper, parameters => to_string (element (via_cursor).layers.upper));
-				--write (keyword => keyword_lower, parameters => to_string (element (via_cursor).layers.lower));
-				write (keyword => keyword_restring_outer_layers, parameters => to_string (element (via_cursor).restring_outer));
-				write (keyword => keyword_restring_inner_layers, parameters => to_string (element (via_cursor).restring_inner));
-				
-				section_mark (section_via, FOOTER);
-				next (via_cursor);
-			end loop;
-
+			write_vias;
+			
 			-- solid fill zones
 			while polygon_solid_cursor /= pac_signal_polygons_solid.no_element loop
 				fill_zone_begin;
