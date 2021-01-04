@@ -1478,16 +1478,24 @@ is
 	end place_text;
 
 	procedure place_via is
-		drill : type_drill;
-		net_name : pac_net_name.bounded_string;
+		use et_terminals;
+		
+		net_name		: pac_net_name.bounded_string;
+		drill			: type_drill;
+		category		: type_via_category;
+		restring_top	: type_restring_width;
+		restring_bottom	: type_restring_width;
+		restring_inner	: type_restring_width;
+		buried_layers	: type_buried_layers;
+		lower_layer		: type_via_layer;
+		upper_layer		: type_via_layer;
 
 		procedure set_net_name is begin
 			-- CS check net name: characters, lenth, existence of net
 			net_name := to_net_name (f (5));
 		end set_net_name;
 
-		procedure set_position is 
-		begin
+		procedure set_position is begin
 			drill.position := type_point (set (
 				x => to_distance (f (6)), -- 10
 				y => to_distance (f (7)))); -- 14
@@ -1495,41 +1503,78 @@ is
 			-- CS check position: must be inside board area
 		end set_position;
 
-		--procedure set_layers is begin
-			--via.layers := to_via_layers (f (8));
-
-			---- CS check layers
-		--end set_layers;
+		keyword_buried	: constant string := "buried";
+		keyword_blind	: constant string := "blind";
+		keyword_top		: constant string := "top";
+		keyword_bottom	: constant string := "bottom";
 		
 	begin -- place_via
-
+		-- Set the drill size according to a user specific value:
+		-- If user has not specified a default, use DRU data set
+		drill.diameter := 0.3; -- CS 
+		--restring_top := -- CS DRU
+		--restring_bottom := -- CS DRU
+		--restring_inner := -- CS DRU
+		
 		-- By default the deepest signal layer of the via is the deepest
 		-- signal layer of the board:
 		--via.layers.l_end := deepest_conductor_layer (module_cursor);
 		
-		-- board demo place via RESET_N 10 14 [1-3] [0.35]
 		case fields is
 			when 7 => 
 				-- board demo place via RESET_N 10 14
-				set_net_name;
-				set_position;
-				
-			when 8 =>
-				-- board demo place via RESET_N 10 14 buried 2-3
+				category := THROUGH;
 				set_net_name;
 				set_position;
 				
 			when 9 =>
-				-- board demo place via RESET_N 10 14 blind top-3 0.35
-				-- board demo place via RESET_N 10 14 blind bottom-2 0.35
-				set_net_name;
-				set_position;
-				--set_layers;
+				if f (8) = keyword_buried then
 
-				-- read drill size
-				drill.diameter := to_distance (f (9));
+					-- board demo place via RESET_N 10 14 buried 2-15
+					category := BURIED;
+					set_net_name;
+					set_position;
+					buried_layers := to_buried_layers (f (8));
+				else
+					raise syntax_error_1 with 
+						"ERROR: Expect keyword " & enclose_in_quotes (keyword_buried)
+						& " after y position !";
+				end if;
+
+			when 10 =>
+				if f (8) = keyword_blind then
+
+					-- board demo place via RESET_N 10 14 blind top 5
+					-- board demo place via RESET_N 10 14 blind bottom 2
+					set_net_name;
+					set_position;
+
+					if f (9) = keyword_top then
+						category := BLIND_DRILLED_FROM_TOP;
+						lower_layer := to_signal_layer (f (10));
+						
+					elsif f (9) = keyword_bottom then
+						category := BLIND_DRILLED_FROM_BOTTOM;
+						upper_layer := to_signal_layer (f (10));
+						
+					else
+						raise syntax_error_1 with 
+							"ERROR: Expect keywords " 
+							& enclose_in_quotes (keyword_top)
+							& " or " 
+							& enclose_in_quotes (keyword_bottom)
+							& " after keyword " 
+							& enclose_in_quotes (keyword_blind)
+							& " !";							
+					end if;
+						
+				else
+					raise syntax_error_1 with 
+						"ERROR: Expect keyword " & enclose_in_quotes (keyword_blind)
+						& " after y position !";
+				end if;
 				
-			when 10.. count_type'last => too_long;
+			when 11 .. count_type'last => too_long;
 				
 			when others => command_incomplete;
 		end case;

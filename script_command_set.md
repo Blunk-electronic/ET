@@ -692,17 +692,23 @@ board led_driver route net reset_n 1 line 0.25 IC1 H7 to x 5
 board led_driver width net reset_n 1 12 10 1.2 # layer 1, segment in layer 1, crossing 12/10, new width 1.2
 ```-->
 
-Place a via in net RESET_N at x/y 10/14:
+Place a through-via in net RESET_N at x/y 10/14. 
 ```
-board led_driver place via RESET_N 10 14 [1-3] [0.35]
+board led_driver place via RESET_N 10 14
 ```
-Place a via in net RESET_N at x/y 10/14 conncting layers 1 to 3:
+Place a blind-via in net RESET_N at x/y 10/14 drilled from
+top to layer 3:
 ```
-board led_driver place via RESET_N 10 14 1-3
+board led_driver place via RESET_N 10 14 blind top 3
 ```
-Place a via at x/y 10/14 conncting layers 1 to 3 with drill diameter 0.35:
+Place a blind-via in net RESET_N at x/y 10/14 drilled from
+bottom to layer 14:
 ```
-board led_driver place via RESET_N 10 14 1-3 0.35
+board led_driver place via RESET_N 10 14 blind bottom 14
+```
+Place a buried-via at x/y 10/14 going from layer 5 to 8:
+```
+board led_driver place via RESET_N 10 14 buried 5-8
 ```
 
 

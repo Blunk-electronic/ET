@@ -1045,7 +1045,7 @@ is
 
 		elsif kw = et_vias.keyword_layers then -- layers 2-3 (for buried via only)
 			expect_field_count (line, 2);
-			via_layers_buried := to_via_layers (f (line, 2));
+			via_layers_buried := to_buried_layers (f (line, 2));
 			
 		elsif kw = keyword_destination then -- destination 15 (for blind via only)
 			expect_field_count (line, 2);

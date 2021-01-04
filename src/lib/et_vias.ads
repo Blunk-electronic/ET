@@ -95,8 +95,8 @@ package et_vias is
 		lower	: type_via_layer := type_via_layer'last;
 	end record;
 
-	-- Converts a string like "1-3" to a type_buried_layers.
-	function to_via_layers (text : in string) return type_buried_layers;
+	-- Converts a string like "2-6" to a type_buried_layers.
+	function to_buried_layers (text : in string) return type_buried_layers;
 
 	function to_string (layers : in type_buried_layers) return string;
 	
@@ -113,8 +113,7 @@ package et_vias is
 	function to_via_category (category : in string) return type_via_category;
 	
 
-	type type_via (category : type_via_category)
-	is new type_drill with record
+	type type_via (category : type_via_category) is new type_drill with record
 
 		-- Whatever the via category, there is always a restring 
 		-- in inner layers (mostly wider than restring_outer).
