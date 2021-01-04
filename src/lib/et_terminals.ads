@@ -132,8 +132,8 @@ package et_terminals is
 
 
 -- RESTRING
-	keyword_restring_outer_layers : constant string := "restring_outer_layers";
-	keyword_restring_inner_layers : constant string := "restring_inner_layers";		
+	keyword_restring_outer : constant string := "restring_outer";
+	keyword_restring_inner : constant string := "restring_inner";
 
 	restring_width_max : constant type_distance_positive := 5.0;
 	subtype type_restring_width is type_distance_positive 

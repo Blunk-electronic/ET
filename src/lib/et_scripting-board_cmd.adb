@@ -1509,18 +1509,19 @@ is
 		
 		-- board demo place via RESET_N 10 14 [1-3] [0.35]
 		case fields is
-			when 7 =>
+			when 7 => 
 				-- board demo place via RESET_N 10 14
 				set_net_name;
 				set_position;
 				
 			when 8 =>
-				-- board demo place via RESET_N 10 14 1-3
+				-- board demo place via RESET_N 10 14 buried 2-3
 				set_net_name;
 				set_position;
 				
 			when 9 =>
-				-- board demo place via RESET_N 10 14 1-3 0.35
+				-- board demo place via RESET_N 10 14 blind top-3 0.35
+				-- board demo place via RESET_N 10 14 blind bottom-2 0.35
 				set_net_name;
 				set_position;
 				--set_layers;

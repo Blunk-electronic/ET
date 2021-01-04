@@ -1035,11 +1035,11 @@ is
 			expect_field_count (line, 2);
 			drill.diameter := to_distance (f (line, 2));
 
-		elsif kw = keyword_restring_outer_layers then -- restring_outer_layers 0.3
+		elsif kw = keyword_restring_outer then -- restring_outer 0.3
 			expect_field_count (line, 2);
 			via_restring_outer := to_distance (f (line, 2));
 
-		elsif kw = keyword_restring_inner_layers then -- restring_inner_layers 0.34
+		elsif kw = keyword_restring_inner then -- restring_inner 0.34
 			expect_field_count (line, 2);
 			via_restring_inner := to_distance (f (line, 2));
 
@@ -1047,7 +1047,7 @@ is
 			expect_field_count (line, 2);
 			via_layers_buried := to_via_layers (f (line, 2));
 			
-		elsif kw = keyword_destination then -- destination_layer 15 (for blind via only)
+		elsif kw = keyword_destination then -- destination 15 (for blind via only)
 			expect_field_count (line, 2);
 			via_layer_blind := et_pcb_stack.to_signal_layer (f (line, 2));
 			-- CS exception rises if layer out of range (i.e. less than 2).
@@ -1073,6 +1073,9 @@ is
 					restring_outer	=> via_restring_outer)));
 
 			when BLIND_DRILLED_FROM_TOP =>
+				-- CS validate via_layer_blind. must be higher than 
+				-- deepest used layer.
+				
 				append (route.vias, ((drill with
 					category		=> BLIND_DRILLED_FROM_TOP,
 					restring_inner	=> via_restring_inner,
@@ -1080,6 +1083,9 @@ is
 					lower			=> via_layer_blind)));
 
 			when BLIND_DRILLED_FROM_BOTTOM =>
+				-- CS validate via_layer_blind. must be lower than 
+				-- top layer and higher than deepest used layer.
+				
 				append (route.vias, ((drill with
 					category		=> BLIND_DRILLED_FROM_BOTTOM,
 					restring_inner	=> via_restring_inner,
@@ -1087,6 +1093,9 @@ is
 					upper			=> via_layer_blind)));
 
 			when BURIED =>
+				-- CS validate via_layers_buried. must be higher than 
+				-- deepst used layer.
+				
 				append (route.vias, ((drill with
 					category		=> BURIED,
 					restring_inner	=> via_restring_inner,

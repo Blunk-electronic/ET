@@ -528,22 +528,22 @@ is
 
 					case element (c).category is
 						when THROUGH =>
-							write (keyword => keyword_restring_outer_layers,
+							write (keyword => keyword_restring_outer,
 								parameters => to_string (element (c).restring_outer));
 							
 						when BLIND_DRILLED_FROM_TOP =>
-							write (keyword => keyword_restring_outer_layers, parameters => to_string (element (c).restring_outer));
+							write (keyword => keyword_restring_outer, parameters => to_string (element (c).restring_outer));
 							write (keyword => keyword_destination, parameters => to_string (element (c).lower));
 							
 						when BLIND_DRILLED_FROM_BOTTOM =>
-							write (keyword => keyword_restring_outer_layers, parameters => to_string (element (c).restring_outer));
+							write (keyword => keyword_restring_outer, parameters => to_string (element (c).restring_outer));
 							write (keyword => keyword_destination, parameters => to_string (element (c).upper));
 							
 						when BURIED =>
 							write (keyword => et_vias.keyword_layers, parameters => to_string (element (c).layers));
 					end case;
 
-					write (keyword => keyword_restring_inner_layers,
+					write (keyword => keyword_restring_inner,
 						parameters => to_string (element (c).restring_inner));
 					
 					section_mark (section_via, FOOTER);
