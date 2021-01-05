@@ -82,10 +82,7 @@ is
 	prf_libs_brd	: et_meta.pac_preferred_libraries_board.list;
 
 	
-	-- RULES
-	rules			: et_schematic.type_rules := (others => <>);
--- 	rules_layout	: et_design_rules.pac_file_name.bounded_string;
-	-- CS ERC rules ?
+
 	
 	active_assembly_variant : et_general.pac_assembly_variant_name.bounded_string; -- "low_cost"
 	
@@ -272,6 +269,11 @@ is
 		end if;
 	end read_preferred_lib_board;
 
+
+	-- RULES
+	rules			: et_schematic.type_rules := (others => <>);
+-- 	rules_layout	: et_design_rules.pac_file_name.bounded_string;
+	-- CS ERC rules ?
 	
 	-- The design rules is simply the name of the DRU file
 	-- like JLP_ML4_standard.dru. The content of the DRU file itself

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -72,8 +72,8 @@ package body et_design_rules is
 	is separate;
 	
 	function get_rules (rules : in pac_file_name.bounded_string) -- JLP_ML4_standard.dru
-		return type_design_rules is
-
+		return type_design_rules 
+	is
 		use pac_design_rules;
 
 		-- Locate the design rules:

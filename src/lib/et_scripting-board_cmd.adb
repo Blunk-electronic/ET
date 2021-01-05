@@ -39,6 +39,7 @@ with et_drills;
 with et_modes.board;
 with et_canvas_board_devices;
 with et_canvas_board_texts;
+with et_design_rules;
 
 separate (et_scripting)
 	
@@ -1482,7 +1483,7 @@ is
 		
 		net_name		: pac_net_name.bounded_string;
 		drill			: type_drill;
-		category		: type_via_category;
+		restring_outer	: type_restring_width;
 		restring_top	: type_restring_width;
 		restring_bottom	: type_restring_width;
 		restring_inner	: type_restring_width;
@@ -1507,34 +1508,80 @@ is
 		keyword_blind	: constant string := "blind";
 		keyword_top		: constant string := "top";
 		keyword_bottom	: constant string := "bottom";
+
+		procedure through is
+			via : type_via (THROUGH);
+		begin
+			via := (drill with
+				category		=> THROUGH,
+				restring_inner	=> restring_inner,
+				restring_outer	=> restring_outer);
+					
+			et_board_ops.place_via (module_cursor, net_name, via, log_threshold + 1);
+		end through;
+
+		procedure blind_top is
+			via : type_via (BLIND_DRILLED_FROM_TOP);
+		begin
+			via := (drill with
+				category		=> BLIND_DRILLED_FROM_TOP,
+				restring_inner	=> restring_inner,
+				restring_top	=> restring_top,
+				lower			=> lower_layer);
+					
+			et_board_ops.place_via (module_cursor, net_name, via, log_threshold + 1);
+		end blind_top;
+
+		procedure blind_bottom is
+			via : type_via (BLIND_DRILLED_FROM_BOTTOM);
+		begin
+			via := (drill with
+				category		=> BLIND_DRILLED_FROM_BOTTOM,
+				restring_inner	=> restring_inner,
+				restring_bottom	=> restring_bottom,
+				upper			=> upper_layer);
+					
+			et_board_ops.place_via (module_cursor, net_name, via, log_threshold + 1);
+		end blind_bottom;
+
+		procedure buried is
+			via : type_via (BURIED);
+		begin
+			via := (drill with
+				category		=> BURIED,
+				restring_inner	=> restring_inner,
+				layers			=> buried_layers);
+					
+			et_board_ops.place_via (module_cursor, net_name, via, log_threshold + 1);
+		end buried;
+
+		use et_design_rules;
+		rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
 		
 	begin -- place_via
-		-- Set the drill size according to a user specific value:
-		-- If user has not specified a default, use DRU data set
-		drill.diameter := 0.3; -- CS 
-		--restring_top := -- CS DRU
-		--restring_bottom := -- CS DRU
-		--restring_inner := -- CS DRU
-		
-		-- By default the deepest signal layer of the via is the deepest
-		-- signal layer of the board:
-		--via.layers.l_end := deepest_conductor_layer (module_cursor);
+		-- Set the drill size and restring according to a user specific value:
+		-- If user has not specified a default, use values given in DRU data set:
+		drill.diameter	:= rules.sizes.drills;
+		restring_outer	:= rules.sizes.restring.outer;
+		restring_top	:= rules.sizes.restring.outer;
+		restring_bottom	:= rules.sizes.restring.outer;
+		restring_inner	:= rules.sizes.restring.inner;
 		
 		case fields is
 			when 7 => 
 				-- board demo place via RESET_N 10 14
-				category := THROUGH;
 				set_net_name;
 				set_position;
+				through;
 				
 			when 9 =>
 				if f (8) = keyword_buried then
 
 					-- board demo place via RESET_N 10 14 buried 2-15
-					category := BURIED;
 					set_net_name;
 					set_position;
 					buried_layers := to_buried_layers (f (8));
+					buried;
 				else
 					raise syntax_error_1 with 
 						"ERROR: Expect keyword " & enclose_in_quotes (keyword_buried)
@@ -1550,12 +1597,12 @@ is
 					set_position;
 
 					if f (9) = keyword_top then
-						category := BLIND_DRILLED_FROM_TOP;
 						lower_layer := to_signal_layer (f (10));
+						blind_top;
 						
 					elsif f (9) = keyword_bottom then
-						category := BLIND_DRILLED_FROM_BOTTOM;
 						upper_layer := to_signal_layer (f (10));
+						blind_bottom;
 						
 					else
 						raise syntax_error_1 with 

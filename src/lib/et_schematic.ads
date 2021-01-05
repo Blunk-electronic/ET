@@ -553,7 +553,7 @@ package et_schematic is
 
 	-- For the design rules we simply refer to the file where the rules are
 	-- written like JLP_ML4_standard.dru.
-	-- The content of the file itelsf will later be stored in
+	-- The content of the file itself will later be stored in
 	-- project wide collection of design rules et_design_rules.design_rules.
 	type type_rules is record
 		layout		: et_design_rules.pac_file_name.bounded_string; -- JLP_ML4_standard.dru

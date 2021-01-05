@@ -35,6 +35,7 @@
 --   history of changes:
 --
 
+with ada.strings;				use ada.strings;
 with ada.exceptions;
 
 with et_submodules;
@@ -2085,14 +2086,77 @@ package body et_board_ops is
 		via				: in type_via;
 		log_threshold	: in type_log_level) 
 	is
+		console : boolean := true; -- for test and debugging only
 	begin
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " net " & to_string (net_name) 
-			& " placing via at" 
-			& to_string (via.position), -- CS output more properties
+			& " placing via in net " & to_string (net_name) 
+			& " at" & to_string (via.position)
+			& " drill size " & to_string (via.diameter)
+			& " cat " & to_string (via.category),
+			console => console,
 			level => log_threshold);
 
+		case via.category is
+			when THROUGH =>
+				log (text => keyword_restring_inner & space
+					 & to_string (via.restring_inner), 
+					console => console,
+					level => log_threshold);
+
+				log (text => keyword_restring_outer & space
+					 & to_string (via.restring_outer),
+					console => console,
+					level => log_threshold);
+
+				
+			when BLIND_DRILLED_FROM_TOP =>
+				log (text => keyword_destination & space
+					 & to_string (via.lower),
+					console => console,
+					level => log_threshold);
+
+				log (text => keyword_restring_inner & space
+					 & to_string (via.restring_inner),
+					console => console,
+					level => log_threshold);
+				
+				log (text => keyword_restring_outer & space
+					 & to_string (via.restring_top), 
+					console => console,
+					level => log_threshold);
+
+
+			when BLIND_DRILLED_FROM_BOTTOM =>
+				log (text => keyword_destination & space
+					 & to_string (via.upper), 
+					console => console,
+					level => log_threshold);
+
+				log (text => keyword_restring_inner & space
+					 & to_string (via.restring_inner),
+					console => console,
+					level => log_threshold);
+				
+				log (text => keyword_restring_outer & space
+					 & to_string (via.restring_bottom),
+					console => console,
+					level => log_threshold);
+
+				
+			when BURIED =>
+				log (text => et_vias.keyword_layers & space
+					 & to_string (via.layers),
+					console => console,
+					level => log_threshold);
+
+				log (text => keyword_restring_inner & space
+					 & to_string (via.restring_inner),
+					console => console,
+					level => log_threshold);
+
+		end case;
+		
 	end place_via;
 		
 	
