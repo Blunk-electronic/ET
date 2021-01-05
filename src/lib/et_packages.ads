@@ -60,6 +60,7 @@ with et_pcb_stack;				use et_pcb_stack;
 with et_drills;					use et_drills;
 with et_terminals;				use et_terminals;
 with et_text;
+with et_design_rules;			use et_design_rules;
 
 with cairo;
 
@@ -504,10 +505,6 @@ package et_packages is
 
 
 	
-	stop_mask_expansion_min : constant et_pcb_coordinates.type_distance := 0.02;
-	stop_mask_expansion_max : constant et_pcb_coordinates.type_distance := 0.2;
-	subtype type_stop_mask_expansion is et_pcb_coordinates.type_distance range stop_mask_expansion_min .. stop_mask_expansion_max;
-	-- see <https://docs.oshpark.com/tips+tricks/stop-mask-expansion/>
 
 
 

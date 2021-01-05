@@ -66,6 +66,7 @@ with et_assembly_variants;
 with et_pick_and_place;
 with et_devices;				use et_devices;
 with et_conventions;
+with et_design_rules;			use et_design_rules;
 
 package et_board_ops is
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -49,7 +49,7 @@ with et_pcb_stack;				use et_pcb_stack;
 
 with et_display.board;			use et_display.board;
 with et_colors;					use et_colors;
-
+with et_design_rules;			use et_design_rules;
 with et_text;
 
 with et_canvas_primitive_draw_ops;

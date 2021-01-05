@@ -64,6 +64,7 @@ with et_drills;					use et_drills;
 with et_packages;
 with et_devices;				use et_devices;
 with et_frames;
+with et_design_rules;			use et_design_rules;
 
 with et_kicad.schematic;
 with et_kicad_libraries;		--use et_kicad_libraries;
@@ -292,12 +293,12 @@ package et_kicad.pcb is
 	type type_visible_elements is new string (1..8);
 
 	type type_board_setup is record
-		last_trace_width	: et_terminals.type_track_width;
-		trace_clearance		: et_terminals.type_track_clearance;
-		zone_clearance		: et_terminals.type_track_clearance;
+		last_trace_width	: type_track_width;
+		trace_clearance		: type_track_clearance;
+		zone_clearance		: type_track_clearance;
 		zone_45_only		: type_zone_45_only;
-		trace_min			: et_terminals.type_track_width;
-		segment_width		: et_terminals.type_track_width;
+		trace_min			: type_track_width;
+		segment_width		: type_track_width;
 		edge_width			: type_edge_cut_line_width;
 		via_size			: type_via_diameter;	-- regular vias
 		via_drill			: type_drill_size;		-- regular vias
@@ -318,7 +319,7 @@ package et_kicad.pcb is
 		pad_size_x			: et_terminals.type_pad_size;
 		pad_size_y			: et_terminals.type_pad_size;
 		pad_drill			: type_drill_size;
-		stop_mask_expansion	: et_packages.type_stop_mask_expansion;
+		stop_mask_expansion	: type_stop_mask_expansion;
 		aux_axis_origin_x	: type_aux_axis_origin;
 		aux_axis_origin_y	: type_aux_axis_origin;
 		visible_elements	: type_visible_elements;
@@ -608,7 +609,7 @@ package et_kicad.pcb is
 		timestamp			: type_timestamp;
 		gui_hatch_style		: type_polygon_hatch := EDGE;
 		gui_hatch_width		: et_pcb_coordinates.type_distance;	-- see spec for type_polygon_hatch. always 0.508. CS use subtype
-		min_thickness		: et_terminals.type_track_width;	-- minimum line width
+		min_thickness		: type_track_width;	-- minimum line width
 		filled				: boolean; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
 		arc_segments		: natural := 0; -- CS subtype ? -- only 16 or 32 allowed
@@ -617,7 +618,7 @@ package et_kicad.pcb is
 		pad_technology		: type_polygon_pad_technology := type_polygon_pad_technology'last;
 		pad_connection		: type_polygon_pad_connection := type_polygon_pad_connection'first;
 		priority_level		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
-		isolation_gap		: et_terminals.type_track_clearance := et_terminals.type_track_clearance'first; -- the space between foreign pads and the polygon
+		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 		corners				: type_polygon_points.list;
 		fill_style			: et_packages.type_fill_style := et_packages.SOLID; -- a polygon is always filled
 		hatching			: et_packages.type_hatching;

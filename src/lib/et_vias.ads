@@ -55,6 +55,7 @@ with et_geometry;
 with et_terminals;				use et_terminals;
 with et_drills;					use et_drills;
 with et_pcb_stack;				use et_pcb_stack;
+with et_design_rules;			use et_design_rules;
 
 
 package et_vias is
@@ -143,11 +144,8 @@ package et_vias is
 		end case;
 	end record;
 
-	package pac_vias is new indefinite_doubly_linked_lists (type_via);
-	
 	-- vias are collected in simple lists
-	--package pac_vias is new doubly_linked_lists (type_via);
-	
+	package pac_vias is new indefinite_doubly_linked_lists (type_via);
 
 	
 end et_vias;

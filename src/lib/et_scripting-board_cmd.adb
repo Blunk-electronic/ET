@@ -39,7 +39,7 @@ with et_drills;
 with et_modes.board;
 with et_canvas_board_devices;
 with et_canvas_board_texts;
-with et_design_rules;
+with et_design_rules;				use et_design_rules;
 
 separate (et_scripting)
 	
@@ -1562,10 +1562,10 @@ is
 		-- Set the drill size and restring according to a user specific value:
 		-- If user has not specified a default, use values given in DRU data set:
 		drill.diameter	:= rules.sizes.drills;
-		restring_outer	:= rules.sizes.restring.outer;
+		restring_outer	:= auto_set_restring (OUTER, drill.diameter);
 		restring_top	:= rules.sizes.restring.outer;
 		restring_bottom	:= rules.sizes.restring.outer;
-		restring_inner	:= rules.sizes.restring.inner;
+		restring_inner	:= auto_set_restring (OUTER, rules.sizes.restring.delta_size, drill.diameter);
 		
 		case fields is
 			when 7 => 

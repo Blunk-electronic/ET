@@ -43,6 +43,7 @@ with et_vias;					use et_vias;
 use et_vias.pac_vias;
 
 with et_pcb_stack;				use et_pcb_stack;
+with et_design_rules;			use et_design_rules;
 with et_display.board;			use et_display.board;
 with et_canvas_primitive_draw_ops;
 

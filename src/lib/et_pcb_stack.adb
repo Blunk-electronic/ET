@@ -243,8 +243,8 @@ package body et_pcb_stack is
 
 	procedure mirror (
 		signal_layers	: in out type_signal_layers.set;
-		deepest_layer	: in type_signal_layer) is
-
+		deepest_layer	: in type_signal_layer) 
+	is
 		use type_signal_layers;
 		mir : type_signal_layers.set;
 

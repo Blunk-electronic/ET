@@ -52,7 +52,7 @@ with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
 with et_drills;					use et_drills;
 with et_text;
-
+with et_design_rules;			use et_design_rules;
 with cairo;
 
 
@@ -85,27 +85,6 @@ package et_terminals is
 		line_width_default	=> line_width_default);
 
 	
--- CONDUCTOR STRUCTURES GENERAL
-
-	conductor_width_min : constant et_pcb_coordinates.type_distance := 0.05;
-	
-	conductor_clearance_min : constant 
-		et_pcb_coordinates.type_distance := conductor_width_min;
-	
-
-	subtype type_track_clearance is type_distance_positive 
-		range conductor_clearance_min .. et_pcb_coordinates.type_distance'last;
-
-	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance);
-	-- Checks whether the given track clearance is in range of type_track_clearance.
-
-	track_width_max : constant type_distance_positive := 100.0;
-	
-	subtype type_track_width is type_distance_positive 
-		range conductor_width_min .. track_width_max;
-
-	procedure validate_track_width (track_width : in type_distance_positive);
-	-- Checks whether the given track width is in range of type_track_width.
 
 	
 	
@@ -132,16 +111,11 @@ package et_terminals is
 
 
 -- RESTRING
+
+	
 	keyword_restring_outer : constant string := "restring_outer";
 	keyword_restring_inner : constant string := "restring_inner";
 
-	restring_width_max : constant type_distance_positive := 5.0;
-	subtype type_restring_width is type_distance_positive 
-		range conductor_width_min .. restring_width_max;
-
-	procedure validate_restring_width (
-		restring_width : in et_pcb_coordinates.type_distance);
-	-- Checks whether the given restring width is in range of type_restring_width.
 
 
 	

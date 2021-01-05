@@ -41,6 +41,7 @@ with ada.characters.handling;		use ada.characters.handling;
 with gnat.directory_operations;
 with et_general;					use et_general;
 with et_general_rw;					use et_general_rw;
+with et_exceptions;					use et_exceptions;
 
 package body et_design_rules is
 
@@ -60,11 +61,52 @@ package body et_design_rules is
 		return pac_file_name.to_string (file);
 	end to_string;
 
+	procedure validate_track_clearance (clearance : in type_distance) is begin
+		if clearance not in type_track_clearance then
+			raise semantic_error_1 with
+				"ERROR: Track clearance invalid ! Allowed range is" 
+				 & to_string (type_track_clearance'first) & " .."
+				 & to_string (type_track_clearance'last);
+		end if;
+	end validate_track_clearance;
+	
 	function to_string (section : in type_section_name) return string is
 		len : positive := type_section_name'image (section)'length;
 	begin
 		return to_lower (type_section_name'image (section) (5..len));
 	end to_string;
+
+	function auto_set_restring (
+		restring	: in type_restring_category;
+		drill_size	: in type_drill_size;
+		delta_size	: in type_restring_delta_inner_outer := zero)
+		return type_restring_width
+	is
+		result : type_restring_width;
+	begin
+		-- CS
+		return result;
+	end auto_set_restring;
+
+	procedure validate_restring_width (restring_width : in type_distance) is begin
+		if restring_width not in type_restring_width then
+			raise semantic_error_1 with
+				"ERROR: Restring width invalid ! Allowed range is" 
+				 & to_string (type_restring_width'first) & " .."
+				 & to_string (type_restring_width'last);
+		end if;
+	end validate_restring_width;
+
+	procedure validate_track_width (track_width : in type_distance_positive) is begin
+		if track_width not in type_track_width then
+			raise semantic_error_1 with
+				"ERROR: Track width invalid ! Allowed range is" 
+				 & to_string (type_track_width'first) & " .."
+				 & to_string (type_track_width'last);
+		end if;
+	end validate_track_width;
+
+
 	
 	procedure read_rules (
 		file_name		: in pac_file_name.bounded_string;

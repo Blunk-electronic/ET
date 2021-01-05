@@ -1416,7 +1416,7 @@ is
 		section_mark (section_stencil, FOOTER);
 
 		-- STOP MASK
-		section_mark (section_stop_mask, HEADER);
+		section_mark (et_pcb_rw.section_stop_mask, HEADER);
 
 		section_mark (section_top, HEADER);
 			iterate (element (module_cursor).board.stop_mask.top.lines, write_line'access);
@@ -1436,7 +1436,7 @@ is
 			iterate (element (module_cursor).board.stop_mask.bottom.texts, write_text'access);
 			section_mark (section_bottom, FOOTER);
 
-		section_mark (section_stop_mask, FOOTER);
+		section_mark (et_pcb_rw.section_stop_mask, FOOTER);
 
 		-- KEEPOUT
 		section_mark (section_keepout, HEADER);

@@ -1008,8 +1008,8 @@ is
 
 	-- Via properties:
 	via_category : et_vias.type_via_category;
-	via_restring_inner : et_terminals.type_restring_width; -- CS default DRC
-	via_restring_outer : et_terminals.type_restring_width; -- CS default DRC	
+	via_restring_inner : type_restring_width; -- CS default DRC
+	via_restring_outer : type_restring_width; -- CS default DRC	
 	via_layers_buried : et_vias.type_buried_layers;
 	via_layer_blind : et_vias.type_via_layer;
 	
@@ -4487,7 +4487,7 @@ is
 		elsif set (section_circle, SEC_CIRCLE) then null;
 		elsif set (section_assembly_doc, SEC_ASSEMBLY_DOCUMENTATION) then null;
 		elsif set (section_stencil, SEC_STENCIL) then null;
-		elsif set (section_stop_mask, SEC_STOP_MASK) then null;
+		elsif set (et_pcb_rw.section_stop_mask, SEC_STOP_MASK) then null;
 		elsif set (section_keepout, SEC_KEEPOUT) then null;
 		elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;
 		elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;

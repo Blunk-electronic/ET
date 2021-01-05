@@ -63,6 +63,7 @@ with et_vias;					use et_vias;
 with et_packages;				use et_packages;
 with et_pcb_stack;				use et_pcb_stack;
 with et_frames;
+with et_design_rules;			use et_design_rules;
 
 package et_pcb is
 	

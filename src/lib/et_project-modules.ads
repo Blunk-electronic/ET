@@ -53,7 +53,7 @@ with et_pcb;
 with et_pcb_stack;
 with et_devices;				use et_devices;
 with et_frames;
-with et_design_rules;
+with et_design_rules;			use et_design_rules;
 with et_meta;
 
 package et_project.modules is

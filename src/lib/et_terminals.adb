@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -37,59 +37,22 @@
 
 with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
-
 with ada.exceptions;
+
+with et_exceptions;				use et_exceptions;
 
 package body et_terminals is
 
-	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance) is
-	-- Checks whether the given track clearance is in range of type_track_clearance.
-	begin
-		if clearance not in type_track_clearance then
-			log (ERROR, "track clearance invalid ! Allowed range is" 
-				 & to_string (type_track_clearance'first) & " .."
-				 & to_string (type_track_clearance'last),
-				 console => true);
-			raise constraint_error;
-		end if;
-	end validate_track_clearance;
-
-	procedure validate_track_width (track_width : in type_distance_positive) is
-	-- Checks whether the given width is in range of type_track_width.
-	begin
-		if track_width not in type_track_width then
-			log (ERROR, "track width invalid ! Allowed range is" 
-				 & to_string (type_track_width'first) & " .."
-				 & to_string (type_track_width'last),
-				 console => true);
-			raise constraint_error;
-		end if;
-	end validate_track_width;
-	
-	procedure validate_pad_size (size : in et_pcb_coordinates.type_distance) is
-	-- Checks whether given pad size is in range of type_pad_size
-	begin
+	procedure validate_pad_size (size : in type_distance) is begin
 		if size not in type_pad_size then
-			log (ERROR, "pad size invalid ! Allowed range is" 
+			raise semantic_error_1 with
+				"ERROR: Pad size invalid ! Allowed range is" 
 				 & to_string (type_pad_size'first) & " .."
-				 & to_string (type_pad_size'last),
-				 console => true);
-			raise constraint_error;
+				 & to_string (type_pad_size'last);
 		end if;
 	end validate_pad_size;
 
-	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance) is
-	-- Checks whether the given restring width is in range of type_restring_width.	
-	begin
-		if restring_width not in type_restring_width then
-			log (ERROR, "restring width invalid ! Allowed range is" 
-				 & to_string (type_restring_width'first) & " .."
-				 & to_string (type_restring_width'last),
-				 console => true);
-			raise constraint_error;
-		end if;
-	end validate_restring_width;
-
+	
 	procedure log_plated_millings (
 		millings 		: in type_plated_millings;
 		log_threshold	: in et_string_processing.type_log_level)

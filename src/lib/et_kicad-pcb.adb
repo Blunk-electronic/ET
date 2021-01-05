@@ -4822,7 +4822,7 @@ package body et_kicad.pcb is
 					use type_vias; -- kicad vias !
 					via_cursor : type_vias.cursor := board.vias.first;
 					via : et_vias.type_via := (category => THROUGH, others => <>); -- an ET via
-					restring : et_terminals.type_restring_width;
+					restring : type_restring_width;
 
 					use type_polygons;
 					polygon_cursor : type_polygons.cursor := board.polygons.first;

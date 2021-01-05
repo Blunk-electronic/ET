@@ -47,6 +47,7 @@ with et_drills;					use et_drills;
 with et_packages;				use et_packages;
 with et_pcb;
 with et_pcb_stack;
+with et_design_rules;			use et_design_rules;
 
 package et_pcb_rw is
 

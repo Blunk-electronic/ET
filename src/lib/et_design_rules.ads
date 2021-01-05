@@ -47,7 +47,7 @@ with ada.directories;			use ada.directories;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_brd;
 with et_string_processing;
-with et_terminals;				use et_terminals;
+--with et_terminals;				use et_terminals;
 with et_drills;					use et_drills;
 
 package et_design_rules is
@@ -66,6 +66,19 @@ package et_design_rules is
 	file_extension : constant string := "dru";
 
 
+	conductor_width_min : constant et_pcb_coordinates.type_distance := 0.05;
+	
+	conductor_clearance_min : constant 
+		et_pcb_coordinates.type_distance := conductor_width_min;
+	
+	subtype type_track_clearance is type_distance_positive 
+		range conductor_clearance_min .. et_pcb_coordinates.type_distance'last;
+
+	-- Checks whether the given track clearance is in range of type_track_clearance.
+	procedure validate_track_clearance (clearance : in type_distance);
+
+	
+
 	subtype type_clearance_conductors_of_same_net is type_distance_positive range zero .. type_track_clearance'last;
 	
 	subtype type_clearance_conductor_to_edge is type_distance_positive range zero .. 0.5;
@@ -79,10 +92,50 @@ package et_design_rules is
 		edge_to_edge				: type_clearance_edge_to_edge := 0.3;
 	end record;
 
+
+-- RESTRING
+	restring_width_max : constant type_distance_positive := 5.0;
+	subtype type_restring_width is type_distance_positive 
+		range conductor_width_min .. restring_width_max;
+
+	
+	-- Some PCB manufacturers make the inner restring slightly
+	-- wider than the outer. So we require a type for the
+	-- delta between inner an outer restring:
+	subtype type_restring_delta_inner_outer is type_distance_positive
+		range 0.0 .. type_restring_width'last;
+	
 	type type_restring is record
-		outer	: type_restring_width := 0.15;
-		inner	: type_restring_width := 0.15;
+		outer		: type_restring_width := 0.15;
+		delta_size	: type_restring_delta_inner_outer := 0.0;
+		inner		: type_restring_width := 0.15;
 	end record;
+
+	type type_restring_category is (INNER, OUTER);
+	
+	-- Calculates the width of the restring:
+	function auto_set_restring (
+		restring	: in type_restring_category; -- inner/outer
+		drill_size	: in type_drill_size;
+		delta_size	: in type_restring_delta_inner_outer := zero)
+		return type_restring_width;
+
+	-- Checks whether the given restring width is in range of type_restring_width.
+	procedure validate_restring_width (
+		restring_width : in type_distance);
+
+
+	
+	
+	track_width_max : constant type_distance_positive := 100.0;
+	
+	subtype type_track_width is type_distance_positive 
+		range conductor_width_min .. track_width_max;
+
+	-- Checks whether the given track width is in range of type_track_width.
+	procedure validate_track_width (track_width : in type_distance_positive);
+
+	
 	
 	type type_sizes is record
 		tracks		: type_track_width := 0.15;
@@ -90,11 +143,20 @@ package et_design_rules is
 		restring	: type_restring;
 	end record;
 
-	subtype type_stop_mask_expansion is type_distance_positive range 0.01 .. 0.2;
+	
+
+	stop_mask_expansion_min : constant type_distance_positive := 0.01;
+	stop_mask_expansion_max : constant type_distance_positive := 0.2;
+	subtype type_stop_mask_expansion is type_distance_positive
+		range stop_mask_expansion_min .. stop_mask_expansion_max;
+	-- see <https://docs.oshpark.com/tips+tricks/stop-mask-expansion/>
+
 	
 	type type_stop_mask is record
 		expansion_min	: type_stop_mask_expansion := 0.075;
 	end record;
+
+
 	
 	type type_design_rules is record
 		clearances	: type_clearances;
@@ -126,6 +188,7 @@ package et_design_rules is
 	keyword_drills	: constant string := "drills";
 	keyword_inner	: constant string := "inner";
 	keyword_outer	: constant string := "outer";
+	keyword_delta	: constant string := "delta";
 
 	keyword_expansion_min	: constant string := "expansion_min";
 	
