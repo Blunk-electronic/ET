@@ -1563,8 +1563,8 @@ is
 		-- If user has not specified a default, use values given in DRU data set:
 		drill.diameter	:= rules.sizes.drills;
 		restring_outer	:= auto_set_restring (OUTER, drill.diameter);
-		restring_top	:= rules.sizes.restring.outer;
-		restring_bottom	:= rules.sizes.restring.outer;
+		restring_top	:= restring_outer;
+		restring_bottom	:= restring_outer;
 		restring_inner	:= auto_set_restring (OUTER, rules.sizes.restring.delta_size, drill.diameter);
 		
 		case fields is

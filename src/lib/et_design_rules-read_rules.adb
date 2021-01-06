@@ -136,6 +136,11 @@ is
 			expect_field_count (line, 2);
 
 			restring.outer := to_distance (f (line, 2));
+
+		elsif kw = keyword_delta then
+			expect_field_count (line, 2);
+
+			restring.delta_size := to_distance (f (line, 2));
 			
 		else
 			invalid_keyword (kw);

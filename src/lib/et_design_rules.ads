@@ -112,10 +112,13 @@ package et_design_rules is
 	end record;
 
 	type type_restring_category is (INNER, OUTER);
+
+
+	drill_to_restring_multiplier : constant type_distance_positive := 0.25;
 	
 	-- Calculates the width of the restring:
 	function auto_set_restring (
-		restring	: in type_restring_category; -- inner/outer
+		category	: in type_restring_category; -- inner/outer
 		drill_size	: in type_drill_size;
 		delta_size	: in type_restring_delta_inner_outer := zero)
 		return type_restring_width;

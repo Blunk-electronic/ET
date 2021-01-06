@@ -77,14 +77,24 @@ package body et_design_rules is
 	end to_string;
 
 	function auto_set_restring (
-		restring	: in type_restring_category;
+		category	: in type_restring_category;
 		drill_size	: in type_drill_size;
 		delta_size	: in type_restring_delta_inner_outer := zero)
 		return type_restring_width
 	is
 		result : type_restring_width;
+		scratch : type_distance_positive;
 	begin
-		-- CS
+		scratch := drill_size + drill_size * drill_to_restring_multiplier;
+		
+		case category is
+			when OUTER =>
+				result := scratch;
+
+			when INNER =>
+				result := delta_size + scratch;
+		end case;
+
 		return result;
 	end auto_set_restring;
 
