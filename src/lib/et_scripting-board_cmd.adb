@@ -1565,7 +1565,7 @@ is
 		restring_outer	:= auto_set_restring (OUTER, drill.diameter);
 		restring_top	:= restring_outer;
 		restring_bottom	:= restring_outer;
-		restring_inner	:= auto_set_restring (OUTER, rules.sizes.restring.delta_size, drill.diameter);
+		restring_inner	:= auto_set_restring (INNER, drill.diameter, rules.sizes.restring.delta_size);
 		
 		case fields is
 			when 7 => 
@@ -1574,22 +1574,19 @@ is
 				set_position;
 				through;
 				
-			when 9 =>
+			when 10 =>
 				if f (8) = keyword_buried then
 
-					-- board demo place via RESET_N 10 14 buried 2-15
+					-- board demo place via RESET_N 10 14 buried 2 15
 					set_net_name;
 					set_position;
-					buried_layers := to_buried_layers (f (8));
+					buried_layers := to_buried_layers (
+								upper	=> f (9), 
+								lower	=> f (10),
+								bottom	=> deepest_conductor_layer (module_cursor));
 					buried;
-				else
-					raise syntax_error_1 with 
-						"ERROR: Expect keyword " & enclose_in_quotes (keyword_buried)
-						& " after y position !";
-				end if;
 
-			when 10 =>
-				if f (8) = keyword_blind then
+				elsif f (8) = keyword_blind then
 
 					-- board demo place via RESET_N 10 14 blind top 5
 					-- board demo place via RESET_N 10 14 blind bottom 2
@@ -1617,7 +1614,8 @@ is
 						
 				else
 					raise syntax_error_1 with 
-						"ERROR: Expect keyword " & enclose_in_quotes (keyword_blind)
+						"ERROR: Expect keywords " & enclose_in_quotes (keyword_blind)
+						& " or " & enclose_in_quotes (keyword_buried)
 						& " after y position !";
 				end if;
 				

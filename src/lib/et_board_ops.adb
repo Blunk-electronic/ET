@@ -2020,8 +2020,8 @@ package body et_board_ops is
 		
 		procedure add_named_track (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
+			module		: in out type_module) 
+		is
 			-- A track belonging to a net requires the net to be located in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
@@ -2087,7 +2087,38 @@ package body et_board_ops is
 		log_threshold	: in type_log_level) 
 	is
 		console : boolean := true; -- for test and debugging only
-	begin
+
+		procedure locate_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+
+			procedure locate_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is
+				use pac_vias;
+			begin
+				append (
+					container	=> net.route.vias,
+					new_item	=> via);
+			end locate_net;
+			
+		begin -- locate_module
+			if net_exists (net_cursor) then
+
+				pac_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> locate_net'access);
+				
+			else
+				net_not_found (net_name);
+			end if;
+		end locate_module;
+						  
+	begin -- place_via
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " placing via in net " & to_string (net_name) 
@@ -2156,6 +2187,11 @@ package body et_board_ops is
 					level => log_threshold);
 
 		end case;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> locate_module'access);
 		
 	end place_via;
 		

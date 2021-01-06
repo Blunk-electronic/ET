@@ -708,7 +708,7 @@ board led_driver place via RESET_N 10 14 blind bottom 14
 ```
 Place a buried-via at x/y 10/14 going from layer 5 to 8:
 ```
-board led_driver place via RESET_N 10 14 buried 5-8
+board led_driver place via RESET_N 10 14 buried 5 8
 ```
 
 

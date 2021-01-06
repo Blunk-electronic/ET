@@ -114,9 +114,14 @@ package et_design_rules is
 	type type_restring_category is (INNER, OUTER);
 
 
-	drill_to_restring_multiplier : constant type_distance_positive := 0.25;
+	drill_to_restring_multiplier : constant type_distance_positive := 0.5;
 	
-	-- Calculates the width of the restring:
+	-- Calculates the width of the restring as follows:
+	-- If category is OUTER then the formula is:
+	--  restring : drill_size * drill_to_restring_multiplier
+	-- If category is INNER then the formula is:
+	--  restring : drill_size * drill_to_restring_multiplier + delta_size
+	-- So delta_size is not relevant if category is OUTER.
 	function auto_set_restring (
 		category	: in type_restring_category; -- inner/outer
 		drill_size	: in type_drill_size;

@@ -35,6 +35,9 @@
 --   history of changes:
 --
 
+with ada.strings;					use ada.strings;
+
+with et_exceptions;					use et_exceptions;
 
 package body et_vias is
 	
@@ -57,16 +60,46 @@ package body et_vias is
 	end to_via_category;
 
 	
-	function to_buried_layers (text : in string) return type_buried_layers is
+	function to_buried_layers (
+		upper, lower	: in string; -- 2, 6
+		bottom			: in type_signal_layer) -- 16
+		return type_buried_layers
+	is
+		u, l : type_signal_layer;
 		layers : type_buried_layers; -- to be returned
+
+		text : constant string := " invalid. Must be an inner signal layer !";
 	begin
-		-- CS
+		u := to_signal_layer (upper);
+		l := to_signal_layer (lower);
+
+		-- Validate upper layer:
+		if u > type_signal_layer'first and u < bottom then
+			layers.upper := u;
+		else
+			raise semantic_error_1 with
+				"ERROR: Layer " & upper & text;
+		end if;
+
+		-- Validate lower layer:
+		if u < l then
+			if l < bottom then
+				layers.lower := l;
+			else
+				raise semantic_error_1 with
+					"ERROR: Layer " & lower & text;
+			end if;
+		else
+			raise semantic_error_1 with
+				"ERROR: The lower layer must be deeper than " & upper & " !";
+		end if;
+		
 		return layers;
 	end to_buried_layers;
 
 	function to_string (layers : in type_buried_layers) return string is
 	begin
-		return ""; -- CS
+		return to_string (layers.upper) & space & to_string (layers.lower);
 	end to_string;
 
 

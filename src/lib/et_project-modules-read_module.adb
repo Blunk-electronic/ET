@@ -1045,9 +1045,12 @@ is
 			expect_field_count (line, 2);
 			via_restring_inner := to_distance (f (line, 2));
 
-		elsif kw = et_vias.keyword_layers then -- layers 2-3 (for buried via only)
-			expect_field_count (line, 2);
-			via_layers_buried := to_buried_layers (f (line, 2));
+		elsif kw = et_vias.keyword_layers then -- layers 2 3 (for buried via only)
+			expect_field_count (line, 3);
+			via_layers_buried := to_buried_layers (
+						upper	=> f (line, 2),
+						lower	=> f (line, 3),
+						bottom	=> deepest_conductor_layer (module_cursor));
 			
 		elsif kw = keyword_destination then -- destination 15 (for blind via only)
 			expect_field_count (line, 2);
@@ -6260,7 +6263,7 @@ is
 	-- Take a copy of the submodules stored in module.submods. 
 	-- Then iterate in that copy (submods) to read the actual 
 	-- module files (like templates/clock_generator.mod).
-	-- NOTE: The parent procedure "read_module_file" calls itself here !
+	-- NOTE: The parent procedure "read_module" calls itself here !
 
 		use et_submodules;
 		use pac_submodules;
@@ -6305,8 +6308,8 @@ is
 
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module) is
-
+			module		: in et_schematic.type_module)
+		is
 			use et_assembly_variants;
 			use et_assembly_variants.pac_assembly_variants;
 			
@@ -6315,7 +6318,8 @@ is
 
 			procedure query_submodules (
 				variant_name	: in et_general.pac_assembly_variant_name.bounded_string;
-				variant			: in et_assembly_variants.type_assembly_variant) is
+				variant			: in et_assembly_variants.type_assembly_variant)
+			is
 				use pac_submodule_variants;
 				submod_cursor : pac_submodule_variants.cursor := variant.submodules.first;
 				submod_name : pac_module_instance_name.bounded_string; -- CLK_GENERATOR

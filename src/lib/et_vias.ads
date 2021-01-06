@@ -96,8 +96,13 @@ package et_vias is
 		lower	: type_via_layer := type_via_layer'last;
 	end record;
 
-	-- Converts a string like "2-6" to a type_buried_layers.
-	function to_buried_layers (text : in string) return type_buried_layers;
+	-- Converts two strings like "2" and "6" to a type_buried_layers.
+	-- Checks the layers. The layers must be inner layers. Otherwise
+	-- exception error is raised.
+	function to_buried_layers (
+		upper, lower	: in string; -- 2, 6
+		bottom			: in type_signal_layer) -- 16
+		return type_buried_layers;
 
 	function to_string (layers : in type_buried_layers) return string;
 	

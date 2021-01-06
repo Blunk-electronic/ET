@@ -83,6 +83,14 @@ is
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := 
 		deepest_conductor_layer (et_canvas_schematic.current_active_module);
+
+	function is_inner_layer (layer : in type_signal_layer) return boolean is begin
+		if layer > top_layer and layer < bottom_layer then
+			return true;
+		else
+			return false;
+		end if;
+	end is_inner_layer;		
 	
 	-- The layer being drawn:
 	current_layer : type_signal_layer;
@@ -291,60 +299,107 @@ is
 		type type_circle is new et_terminals.pac_shapes.type_circle with null record;
 		circle : type_circle;
 
-		function greatest_restring return type_restring_width is begin
-			if element (v).restring_inner > element (v).restring_outer then
-				return element (v).restring_inner;
-			else
-				return element (v).restring_outer;
-			end if;
-		end greatest_restring;
-		
+		radius_base : type_distance_positive;
+
+		--function greatest_restring return type_restring_width is begin
+			--if element (v).restring_inner > element (v).restring_outer then
+				--return element (v).restring_inner;
+			--else
+				--return element (v).restring_outer;
+			--end if;
+		--end greatest_restring;
+
+		procedure set_restring (r : in type_restring_width) is begin
+			set_line_width (context.cr, type_view_coordinate (r));
+		end set_restring;
+			
+		procedure draw is begin
+			draw_circle (
+				area		=> in_area,
+				context		=> context,
+				circle		=> circle,
+				filled		=> NO,
+				height		=> self.frame_height);
+		end draw;
+			
 	begin -- query_via
 		circle.center := element (v).position;
-
+		radius_base := element (v).diameter / 2.0;
+		
 		if vias_enabled then
 			set_color_vias (context.cr);
 
-			-- Draw a filled circle with the greatest available restring:
-			circle.radius := element (v).diameter / 2.0 + greatest_restring;
-		else
-			if current_layer = bottom_layer or current_layer = top_layer then
+			case element (v).category is
+				when THROUGH =>
+					if is_inner_layer (current_layer) then
+						-- current_layer is an inner layer
+						set_restring (element (v).restring_inner);
+						circle.radius := radius_base + element (v).restring_inner / 2.0;
+					else
+						-- current_layer is an outer layer
+						set_restring (element (v).restring_outer);
+						circle.radius := radius_base + element (v).restring_outer / 2.0;
+					end if;
 
-				-- Draw a filled circle with the restring of outer layers:
-				circle.radius := element (v).diameter / 2.0 + element (v).restring_outer;
-				--put_line ("outer " & to_string (distance => circle.radius * 2.0));
-				
-			else
-				-- Draw a filled circle with the restring of inner layers:
-				circle.radius := element (v).diameter / 2.0 + element (v).restring_inner;
-				--put_line ("inner " & to_string (distance => circle.radius * 2.0));
-			end if;
+					draw;
+					
+					
+				when BURIED =>
+					null;
 
+				when BLIND_DRILLED_FROM_TOP =>
+					null;
+					
+				when BLIND_DRILLED_FROM_BOTTOM =>
+					null;
+					
+			end case;
 		end if;
+		
+		--if vias_enabled then
+			--set_color_vias (context.cr);
 
+			---- Draw a filled circle with the greatest available restring:
+			--circle.radius := element (v).diameter / 2.0 + greatest_restring;
+		--else
+			--if current_layer = bottom_layer or current_layer = top_layer then
+
+				---- Draw a filled circle with the restring of outer layers:
+				--circle.radius := element (v).diameter / 2.0 + element (v).restring_outer;
+				----put_line ("outer " & to_string (distance => circle.radius * 2.0));
+				
+			--else
+				---- Draw a filled circle with the restring of inner layers:
+				--circle.radius := element (v).diameter / 2.0 + element (v).restring_inner;
+				----put_line ("inner " & to_string (distance => circle.radius * 2.0));
+			--end if;
+
+		--end if;
+
+		
 		-- Draw a large filled circle to show the restring:
-		draw_circle (
-			area		=> in_area,
-			context		=> context,
-			circle		=> circle,
-			filled		=> YES,
-			height		=> self.frame_height);
+		--draw_circle (
+			--area		=> in_area,
+			--context		=> context,
+			--circle		=> circle,
+			--filled		=> YES,
+			--height		=> self.frame_height);
 
 		-- Draw a small filled circle to show the drill:
 		
 		-- Draw the drill hole. It is a filled circle with background color
 		-- and diameter as given by the drill:
-		set_color_background (context.cr);
+		--set_color_background (context.cr);
 
-		circle.radius := element (v).diameter / 2.0;
-		--put_line ("drill " & to_string (distance => circle.radius * 2.0));
+		--circle.radius := element (v).diameter / 2.0;
+		----put_line ("drill " & to_string (distance => circle.radius * 2.0));
 
-		draw_circle (
-			area		=> in_area,
-			context		=> context,
-			circle		=> circle,
-			filled		=> YES,
-			height		=> self.frame_height);
+		--draw_circle (
+			--area		=> in_area,
+			--context		=> context,
+			--circle		=> circle,
+			--filled		=> YES,
+			--height		=> self.frame_height);
 
 		-- CS draw layer numbers
 		
