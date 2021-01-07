@@ -159,15 +159,15 @@ package et_text is
 	generic
 		with package pac_shapes is new et_geometry.generic_pac_shapes (<>);
 		
-		size_min, size_max, size_default : pac_shapes.pac_geometry.type_distance;
-		line_width_min, line_width_max, line_width_default : pac_shapes.pac_geometry.type_distance;
+		size_min, size_max, size_default : pac_shapes.pac_geometry.type_distance_positive;
+		line_width_min, line_width_max, line_width_default : pac_shapes.pac_geometry.type_distance_positive;
 		
 	package generic_pac_text is
 		use pac_shapes;
 		use pac_geometry;
 
-		subtype type_text_size is type_distance range size_min .. size_max; -- in millimeters
-		subtype type_text_line_width is type_distance range line_width_min .. line_width_max;
+		subtype type_text_size is type_distance_positive range size_min .. size_max; -- in millimeters
+		subtype type_text_line_width is type_distance_positive range line_width_min .. line_width_max;
 
 		-- With this line uncommented the linker does not output any errors:
 		function to_text_size (size : in pac_geometry.type_distance) return type_text_size;
