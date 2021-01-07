@@ -273,7 +273,7 @@ is
 
 			-- Set the line width of the vector text:
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
-
+			
 			-- Vectorize the text:
 			vector_text := et_terminals.pac_text.vectorize (
 				content		=> element (c).content,
@@ -293,35 +293,46 @@ is
 
 		end if;
 	end query_text;
-	
-	
+
 	procedure query_via (v : in pac_vias.cursor) is 
 		type type_circle is new et_terminals.pac_shapes.type_circle with null record;
 		circle : type_circle;
 
 		radius_base : type_distance_positive;
 
-		--function greatest_restring return type_restring_width is begin
-			--if element (v).restring_inner > element (v).restring_outer then
-				--return element (v).restring_inner;
-			--else
-				--return element (v).restring_outer;
-			--end if;
-		--end greatest_restring;
-
-		procedure set_restring (r : in type_restring_width) is begin
+		procedure set_width_and_radius (r : in type_restring_width) is begin
 			set_line_width (context.cr, type_view_coordinate (r));
-		end set_restring;
-			
-		procedure draw is begin
+			circle.radius := radius_base + r / 2.0;
+		end set_width_and_radius;
+
+		procedure draw_restring is begin
 			draw_circle (
 				area		=> in_area,
 				context		=> context,
 				circle		=> circle,
 				filled		=> NO,
 				height		=> self.frame_height);
-		end draw;
+		end draw_restring;
+
+		procedure draw_numbers (from, to : in string) is 
+			use et_text;
+		begin
+
+			draw_text (
+				area		=> in_area,
+				context		=> context,
+				content		=> to_content (from & "-" & to),
+				size		=> 1.0,
+				font		=> layer_numbers_font,
+				position	=> circle.center,
+				origin		=> false,
+				rotation	=> zero_rotation,
+				alignment	=> (center, center),
+				height		=> self.frame_height
+				);
 			
+		end draw_numbers;
+		
 	begin -- query_via
 		circle.center := element (v).position;
 		radius_base := element (v).diameter / 2.0;
@@ -333,82 +344,56 @@ is
 				when THROUGH =>
 					if is_inner_layer (current_layer) then
 						-- current_layer is an inner layer
-						set_restring (element (v).restring_inner);
-						circle.radius := radius_base + element (v).restring_inner / 2.0;
+						set_width_and_radius (element (v).restring_inner);
 					else
 						-- current_layer is an outer layer
-						set_restring (element (v).restring_outer);
-						circle.radius := radius_base + element (v).restring_outer / 2.0;
+						set_width_and_radius (element (v).restring_outer);
 					end if;
 
-					draw;
-					
+					draw_restring;					
 					
 				when BURIED =>
-					null;
-
+					if element (v).layers.upper = current_layer or element (v).layers.lower = current_layer then
+						set_width_and_radius (element (v).restring_inner);
+						draw_restring;
+						draw_numbers (
+							from	=> to_string (element (v).layers.upper),
+							to		=> to_string (element (v).layers.lower));
+					end if;
+					
 				when BLIND_DRILLED_FROM_TOP =>
-					null;
+					if current_layer = top_layer then
+						set_width_and_radius (element (v).restring_top);
+						draw_restring;
+					end if;
+
+					if current_layer = element (v).lower then
+						set_width_and_radius (element (v).restring_inner);
+						draw_restring;
+					end if;
+
+					draw_numbers (
+						from	=> "T",
+						to		=> to_string (element (v).lower));
+
 					
 				when BLIND_DRILLED_FROM_BOTTOM =>
-					null;
+					if current_layer = bottom_layer then
+						set_width_and_radius (element (v).restring_bottom);
+						draw_restring;
+					end if;
+
+					if current_layer = element (v).upper then
+						set_width_and_radius (element (v).restring_inner);
+						draw_restring;
+					end if;
+
+					draw_numbers (
+						from	=> "B",
+						to		=> to_string (element (v).upper));
 					
 			end case;
 		end if;
-		
-		--if vias_enabled then
-			--set_color_vias (context.cr);
-
-			---- Draw a filled circle with the greatest available restring:
-			--circle.radius := element (v).diameter / 2.0 + greatest_restring;
-		--else
-			--if current_layer = bottom_layer or current_layer = top_layer then
-
-				---- Draw a filled circle with the restring of outer layers:
-				--circle.radius := element (v).diameter / 2.0 + element (v).restring_outer;
-				----put_line ("outer " & to_string (distance => circle.radius * 2.0));
-				
-			--else
-				---- Draw a filled circle with the restring of inner layers:
-				--circle.radius := element (v).diameter / 2.0 + element (v).restring_inner;
-				----put_line ("inner " & to_string (distance => circle.radius * 2.0));
-			--end if;
-
-		--end if;
-
-		
-		-- Draw a large filled circle to show the restring:
-		--draw_circle (
-			--area		=> in_area,
-			--context		=> context,
-			--circle		=> circle,
-			--filled		=> YES,
-			--height		=> self.frame_height);
-
-		-- Draw a small filled circle to show the drill:
-		
-		-- Draw the drill hole. It is a filled circle with background color
-		-- and diameter as given by the drill:
-		--set_color_background (context.cr);
-
-		--circle.radius := element (v).diameter / 2.0;
-		----put_line ("drill " & to_string (distance => circle.radius * 2.0));
-
-		--draw_circle (
-			--area		=> in_area,
-			--context		=> context,
-			--circle		=> circle,
-			--filled		=> YES,
-			--height		=> self.frame_height);
-
-		-- CS draw layer numbers
-		
--- 		type type_via is new type_drill with record
--- 			restring_outer	: type_restring_width;	-- restring in outer layers (top/bottom)
--- 			restring_inner	: type_restring_width;	-- restring in inner layers (mostly wider than restring_outer)
--- 			layer_start		: type_signal_layer;
--- 			layer_end		: type_signal_layer;
--- 		end record;
 		
 	end query_via;
 	
@@ -424,6 +409,12 @@ is
 		--iterate (element (n).route.cutouts, query_cutout'access);
 
 		iterate (element (n).route.vias, query_via'access);
+
+		-- After drawing the vias, the color for vias is still active.
+		
+		-- Reset color back according to current signal layer:
+		set_color_conductor (context.cr, current_layer);
+
 	end query_net;
 	
 	procedure query_items (

@@ -48,6 +48,8 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
+with cairo;
+
 with et_string_processing;		use et_string_processing;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
@@ -56,7 +58,7 @@ with et_terminals;				use et_terminals;
 with et_drills;					use et_drills;
 with et_pcb_stack;				use et_pcb_stack;
 with et_design_rules;			use et_design_rules;
-
+with et_text;					use et_text;
 
 package et_vias is
 	
@@ -151,6 +153,12 @@ package et_vias is
 
 	-- vias are collected in simple lists
 	package pac_vias is new indefinite_doubly_linked_lists (type_via);
+
+
+	layer_numbers_font : constant et_text.type_font := (
+		family	=> et_text.to_family ("monospace"),
+		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
+		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
 	
 end et_vias;
