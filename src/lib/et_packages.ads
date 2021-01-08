@@ -57,6 +57,7 @@ with et_string_processing;		use et_string_processing;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
+with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_drills;					use et_drills;
 with et_terminals;				use et_terminals;
 with et_text;
@@ -67,8 +68,7 @@ with cairo;
 package et_packages is
 	use pac_geometry_brd;
 
-	use et_terminals.pac_shapes;
-	-- NOTE; The shapes package has been instantiated in et_terminals.
+	use et_board_shapes_and_text.pac_shapes;
 
 
 

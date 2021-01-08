@@ -35,6 +35,7 @@
 --   history of changes:
 --
 
+with et_board_shapes_and_text;
 with et_drills;
 with et_modes.board;
 with et_canvas_board_devices;
@@ -50,7 +51,8 @@ procedure board_cmd (
 is
 	use et_board_ops;
 	use et_packages;
-	use et_terminals.pac_shapes;
+	use et_board_shapes_and_text.pac_shapes;
+	--use et_terminals.pac_shapes;
 	use et_drills;
 	use et_vias;
 	use et_pcb;

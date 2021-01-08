@@ -58,7 +58,7 @@ is
 	use et_schematic.pac_nets;
 	
 	use et_general;
-	use et_terminals.pac_shapes;	
+	use et_board_shapes_and_text.pac_shapes;	
 	--use et_packages;
 	use pac_conductor_lines;
 	use pac_conductor_arcs;
@@ -231,8 +231,8 @@ is
 	end query_cutout;
 
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders_conductors.cursor) is 
-		use et_terminals.pac_text_fab.pac_vector_text_lines;
-		vector_text : et_terminals.pac_text_fab.pac_vector_text_lines.list;
+		use pac_text_fab.pac_vector_text_lines;
+		vector_text : pac_text_fab.pac_vector_text_lines.list;
 	begin
 		-- Draw the placeholder if it is in theh current layer:
 		if element (c).layer = current_layer then
@@ -243,7 +243,7 @@ is
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 			-- Vectorize the text:
-			vector_text := et_terminals.pac_text_fab.vectorize (
+			vector_text := pac_text_fab.vectorize (
 				content		=> to_placeholder_content (element (c).meaning),
 				size		=> element (c).size,
 				rotation	=> rot (element (c).position),
@@ -263,8 +263,8 @@ is
 	end query_placeholder;
 
 	procedure query_text (c : in et_packages.pac_conductor_texts.cursor) is 
-		use et_terminals.pac_text_fab.pac_vector_text_lines;
-		vector_text : et_terminals.pac_text_fab.pac_vector_text_lines.list;
+		use pac_text_fab.pac_vector_text_lines;
+		vector_text : pac_text_fab.pac_vector_text_lines.list;
 	begin
 		-- Draw the text if it is in theh current layer:
 		if element (c).layer = current_layer then
@@ -275,7 +275,7 @@ is
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 			
 			-- Vectorize the text:
-			vector_text := et_terminals.pac_text_fab.vectorize (
+			vector_text := pac_text_fab.vectorize (
 				content		=> element (c).content,
 				size		=> element (c).size,
 				rotation	=> rot (element (c).position),
@@ -295,7 +295,7 @@ is
 	end query_text;
 
 	procedure query_via (v : in pac_vias.cursor) is 
-		type type_circle is new et_terminals.pac_shapes.type_circle with null record;
+		type type_circle is new pac_shapes.type_circle with null record;
 		circle : type_circle;
 
 		radius_base : type_distance_positive;
@@ -318,7 +318,7 @@ is
 			use et_text;
 		begin
 
-			pac_draw_doc.draw_text (
+			pac_draw_fab.draw_text (
 				area		=> in_area,
 				context		=> context,
 				content		=> to_content (from & "-" & to),

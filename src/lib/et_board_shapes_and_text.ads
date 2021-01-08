@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                            KICAD TO NATIVE                               --
+--                       BOARD SHAPES AND TEXT                              --
 --                                                                          --
---                               S p e c                                    --
+--                              S p e c                                     --
 --                                                                          --
 --         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -22,7 +22,7 @@
 --    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your editor to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -34,43 +34,41 @@
 --
 --   history of changes:
 --
+--   to do:
 
-with ada.text_io;				use ada.text_io;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
-with ada.containers;            use ada.containers;
-with ada.containers.vectors;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
 
-with et_project;
-with et_general;
-with et_coordinates;
-with et_string_processing;
-with et_pcb;
-with et_pcb_coordinates;
+with et_text;
+with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_geometry;				use et_geometry;
 
-package et_kicad_to_native is
+package et_board_shapes_and_text is
+	use pac_geometry_brd;
 
-	procedure transpose (log_threshold : in et_string_processing.type_log_level);
-	-- Transposes coordinates of schematic and layout elements:
-	-- 1. In schematic changes the path (selector of et_coordinates.type_coordinates) to the root path (/).
-	-- 2. Moves schematic objects from negative to positive y coordinates.
-	--    (The origin in kicad is the upper left corner. The origin in ET is the lower left corner.)
+	-- Instantiation of the shapes package:
+	package pac_shapes is new 
+		et_geometry.generic_pac_shapes (et_pcb_coordinates.pac_geometry_brd);
+
 	
-	procedure to_native (
-		project_name	: in et_project.pac_project_name.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level);
-	-- Converts the kicad module (incl. component libraries) to a native module.
-	-- Converts the packages (from package_libraries) to native packages.
-	-- NOTE: Packages of the board (incl. their deviations/modifications
-	-- from the package_libraries) are ignored !
-	-- Creates a directory named after project_name and saves the module in that directory.
-		
-end et_kicad_to_native;
+	text_size_min 		: constant type_distance_positive := 0.5;
+	text_size_max 		: constant type_distance_positive := 100.0;
+	text_size_default 	: constant type_distance_positive := 1.5;
+	
+	line_width_min 		: constant type_distance_positive := 0.15;
+	line_width_max 		: constant type_distance_positive := 10.0;
+	line_width_default 	: constant type_distance_positive := 0.15;
+
+	
+	-- Instantiation of the text package:
+	package pac_text_fab is new et_text.generic_pac_text (
+		pac_shapes			=> pac_shapes,
+		size_min			=> text_size_min,
+		size_max			=> text_size_max,
+		size_default		=> text_size_default,
+		line_width_min		=> line_width_min,
+		line_width_max		=> line_width_max,
+		line_width_default	=> line_width_default);
+	
+end et_board_shapes_and_text;
 
 -- Soli Deo Gloria
 

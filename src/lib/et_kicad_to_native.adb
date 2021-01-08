@@ -52,7 +52,7 @@ with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 with et_project.modules;
 with et_vias;
-with et_terminals;
+with et_board_shapes_and_text;
 with et_packages;
 with et_kicad_general;
 with et_kicad_libraries;
@@ -251,9 +251,9 @@ package body et_kicad_to_native is
 			set (Y, new_y, point);
 		end move;
 
-		procedure move (polygon : in out et_terminals.pac_shapes.type_polygon_base'class) is
+		procedure move (polygon : in out et_board_shapes_and_text.pac_shapes.type_polygon_base'class) is
 		-- Moves the segments of a polygon from the kicad frame to the ET native frame.
-			use et_terminals.pac_shapes;
+			use et_board_shapes_and_text.pac_shapes;
 			use pac_polygon_lines;
 			use pac_polygon_arcs;
 			use pac_polygon_circles;
@@ -1635,7 +1635,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 				
-				procedure move_polygon (polygon : in out et_terminals.pac_shapes.type_polygon) is begin
+				procedure move_polygon (polygon : in out et_board_shapes_and_text.pac_shapes.type_polygon) is begin
 					log (text => keepout & "polygon segments", level => log_threshold + log_threshold_add);
 					move (polygon);
 				end move_polygon;

@@ -46,6 +46,7 @@ with et_submodules;
 with et_netlists;
 with et_assembly_variants;		--use et_assembly_variants;
 with et_vias;
+with et_board_shapes_and_text;
 with et_terminals;
 with et_drills;
 with et_packages;

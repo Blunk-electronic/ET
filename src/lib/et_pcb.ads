@@ -57,7 +57,7 @@ with et_string_processing;		use et_string_processing;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;
-with et_terminals;				use et_terminals;
+with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_drills;					use et_drills;
 with et_vias;					use et_vias;
 with et_packages;				use et_packages;
@@ -68,7 +68,7 @@ with et_design_rules;			use et_design_rules;
 package et_pcb is
 	
 	use et_pcb_coordinates.pac_geometry_brd;
-	use et_terminals.pac_shapes;
+	use et_board_shapes_and_text.pac_shapes;
 
 	
 

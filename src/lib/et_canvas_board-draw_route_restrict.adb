@@ -48,7 +48,7 @@ procedure draw_route_restrict (
 	context : in type_draw_context) 
 is
 	use et_general;
-	use et_terminals.pac_shapes;	
+	use et_board_shapes_and_text.pac_shapes;	
 	use et_packages;
 	use pac_route_restrict_lines;
 	use pac_route_restrict_arcs;

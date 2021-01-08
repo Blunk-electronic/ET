@@ -52,41 +52,18 @@ with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
 with et_drills;					use et_drills;
 with et_text;
+with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
 with cairo;
 
 
 package et_terminals is
+
 	use pac_geometry_brd;
-	
-	-- Instantiation of the shapes package:
-	package pac_shapes is new 
-		et_geometry.generic_pac_shapes (et_pcb_coordinates.pac_geometry_brd);
-	
 	use pac_shapes;
+	use pac_text_fab;
 
-	text_size_min 		: constant type_distance_positive := 0.5;
-	text_size_max 		: constant type_distance_positive := 100.0;
-	text_size_default 	: constant type_distance_positive := 1.5;
-	
-	line_width_min 		: constant type_distance_positive := 0.15;
-	line_width_max 		: constant type_distance_positive := 10.0;
-	line_width_default 	: constant type_distance_positive := 0.15;
 
-	
-	-- Instantiation of the text package:
-	package pac_text_fab is new et_text.generic_pac_text (
-		pac_shapes			=> pac_shapes,
-		size_min			=> text_size_min,
-		size_max			=> text_size_max,
-		size_default		=> text_size_default,
-		line_width_min		=> line_width_min,
-		line_width_max		=> line_width_max,
-		line_width_default	=> line_width_default);
-
-	
-
-	
 	
 	pad_size_min : constant type_track_width := 0.05;
 	pad_size_max : constant type_track_width := 10.0;

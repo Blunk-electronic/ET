@@ -46,8 +46,9 @@ with et_general;				use et_general;
 with et_geometry;				use et_geometry;
 with et_drills;
 with et_terminals;				use et_terminals;
-use et_terminals.pac_shapes;
-use et_terminals.pac_text_fab;
+with et_board_shapes_and_text;	use et_board_shapes_and_text;
+use et_board_shapes_and_text.pac_shapes;
+use et_board_shapes_and_text.pac_text_fab;
 
 with et_packages;
 with et_kicad_general;			use et_kicad_general;
@@ -119,18 +120,18 @@ package et_kicad_packages is
 	-- They are derived from the abstract anchestor types in et_pcb.ads.
 	-- Their additional components (width, layer, angle, ...) are later 
 	-- copied to the final lines, arcs and circles as specified in et_pcb.ads:
-	type type_line is new et_terminals.pac_shapes.type_line with record
+	type type_line is new pac_shapes.type_line with record
 		width	: type_text_line_width;
 		layer	: type_layer_abbrevation;
 	end record;
 
-	type type_arc is new et_terminals.pac_shapes.type_arc with record
+	type type_arc is new pac_shapes.type_arc with record
 		width 	: type_text_line_width;
 		angle 	: et_pcb_coordinates.type_rotation;
 		layer	: type_layer_abbrevation;
 	end record;
 
-	type type_circle is new et_terminals.pac_shapes.type_circle with record -- center and radius incl.
+	type type_circle is new pac_shapes.type_circle with record -- center and radius incl.
 		width 	: type_text_line_width;
 		point 	: type_point;
 		layer	: type_layer_abbrevation;

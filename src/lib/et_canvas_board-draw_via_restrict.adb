@@ -49,7 +49,7 @@ procedure draw_via_restrict (
 	context : in type_draw_context) 
 is
 	use et_general;
-	use et_terminals.pac_shapes;	
+	use et_board_shapes_and_text.pac_shapes;	
 	use et_packages;
 	use pac_via_restrict_lines;
 	use pac_via_restrict_arcs;

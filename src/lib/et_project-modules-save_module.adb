@@ -497,8 +497,10 @@ is
 			net			: in et_schematic.type_net) 
 		is
 			--use et_packages;
+			use et_board_shapes_and_text;
+			use pac_shapes;
+
 			use et_terminals;
-			use et_terminals.pac_shapes;
 			use et_pcb;
 			use et_pcb_stack;
 			use et_pcb_coordinates.pac_geometry_brd;
@@ -1113,7 +1115,8 @@ is
 
 	procedure query_board is
 		--use et_packages;
-		use et_terminals;
+		--use et_terminals;
+		use et_board_shapes_and_text;
 		use et_pcb;
 		use et_pcb_stack;
 		use et_pcb_coordinates.pac_geometry_brd;

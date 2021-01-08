@@ -99,11 +99,9 @@ package body et_kicad_packages is
 		position	: in type_position;
 		diameter	: in type_pad_size;
 		offset		: in type_point)	-- the offset of the pad from the center
-		return type_pad_outline is
-
-		use et_terminals.pac_shapes;
+		return type_pad_outline 
+	is
 		use pac_polygon_circles;
-
 		circle : type_polygon_circle;
 		shape : type_pad_outline; -- to be returned
 	begin
@@ -123,9 +121,8 @@ package body et_kicad_packages is
 		size_x		: in type_pad_size;	-- the size in x of the pad
 		size_y		: in type_pad_size;	-- the size in y of the pad
 		offset		: in type_point)	-- the offset of the pad from the center
-		return type_pad_outline is
-
-		use et_terminals.pac_shapes;
+		return type_pad_outline 
+	is
 		use pac_polygon_lines;
 		use et_pcb_coordinates;
 		use pac_geometry_brd;
@@ -210,9 +207,8 @@ package body et_kicad_packages is
 		size_x	: in type_pad_size;	-- the size in x of the pad
 		size_y	: in type_pad_size;	-- the size in y of the pad
 		offset	: in type_point)			-- the offset of the pad from the center
-		return type_pad_outline is
-
-		use et_terminals.pac_shapes;
+		return type_pad_outline 
+	is
 		use pac_polygon_lines;
 		use pac_polygon_arcs;		
 		use et_pcb_coordinates;
@@ -318,9 +314,8 @@ package body et_kicad_packages is
 		size_x	: in type_pad_size;	-- the size in x of the hole
 		size_y	: in type_pad_size;	-- the size in y of the hole
 		offset	: in type_point)	-- the offset of the pad from the center
-		return pac_shapes.pac_polygon_lines.list is
-
-		use et_terminals.pac_shapes;
+		return pac_shapes.pac_polygon_lines.list 
+	is
 		use et_pcb_coordinates;
 		use pac_geometry_brd;
 

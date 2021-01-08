@@ -52,7 +52,7 @@ is
 	use et_canvas_schematic;
 	
 	package pac_draw_frame is new et_canvas_draw_frame.pac_draw_frame (
-		draw_ops		=> pac_draw_doc,
+		draw_ops		=> pac_draw_fab,
 		in_area			=> in_area,
 		context			=> context,
 		frame_size		=> self.get_frame.size,

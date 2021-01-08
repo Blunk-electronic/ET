@@ -375,8 +375,7 @@ package body et_canvas_board is
 		in_area	: in type_rectangle;
 		context	: in type_draw_context) 
 	is		
-		use et_terminals;
-		type type_line is new et_terminals.pac_shapes.type_line with null record;
+		type type_line is new pac_shapes.type_line with null record;
 		
 		line_horizontal : constant type_line := ( -- from left to right
 			start_point		=> type_point (set (x => x (p) - pac_text_fab.origin_half_size, y => y (p))),
@@ -478,8 +477,8 @@ package body et_canvas_board is
 		category	: in et_packages.type_layer_category_non_conductor)
 	is 
 		use et_packages;
-		use et_terminals.pac_text_fab.pac_vector_text_lines;
-		vector_text : et_terminals.pac_text_fab.pac_vector_text_lines.list;
+		use pac_text_fab.pac_vector_text_lines;
+		vector_text : pac_text_fab.pac_vector_text_lines.list;
 
 		-- The place where the text shall be placed:
 		point : type_point;
@@ -505,7 +504,7 @@ package body et_canvas_board is
 				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
 
 				-- Vectorize the text:
-				vector_text := et_terminals.pac_text_fab.vectorize (
+				vector_text := pac_text_fab.vectorize (
 					content		=> text_place.text.content,
 					size		=> text_place.text.size,
 					rotation	=> rot (text_place.text.position),
@@ -534,8 +533,8 @@ package body et_canvas_board is
 	is 
 		use et_packages;
 		use et_text;
-		use et_terminals.pac_text_fab.pac_vector_text_lines;
-		vector_text : et_terminals.pac_text_fab.pac_vector_text_lines.list;
+		use pac_text_fab.pac_vector_text_lines;
+		vector_text : pac_text_fab.pac_vector_text_lines.list;
 
 		-- The place where the text shall be placed:
 		point : type_point;
@@ -560,7 +559,7 @@ package body et_canvas_board is
 			set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
 
 			-- Vectorize the text:
-			vector_text := et_terminals.pac_text_fab.vectorize (
+			vector_text := pac_text_fab.vectorize (
 				content		=> text_place.text.content,
 				size		=> text_place.text.size,
 				rotation	=> rot (text_place.text.position),
@@ -590,8 +589,8 @@ package body et_canvas_board is
 		use et_packages;
 		use et_pcb_stack;
 		use et_text;
-		use et_terminals.pac_text_fab.pac_vector_text_lines;
-		vector_text : et_terminals.pac_text_fab.pac_vector_text_lines.list;
+		use pac_text_fab.pac_vector_text_lines;
+		vector_text : pac_text_fab.pac_vector_text_lines.list;
 
 		-- The place where the text shall be placed:
 		point : type_point;
@@ -617,7 +616,7 @@ package body et_canvas_board is
 				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
 
 				-- Vectorize the text:
-				vector_text := et_terminals.pac_text_fab.vectorize (
+				vector_text := pac_text_fab.vectorize (
 					content		=> text_place.text.content,
 					size		=> text_place.text.size,
 					rotation	=> rot (text_place.text.position),

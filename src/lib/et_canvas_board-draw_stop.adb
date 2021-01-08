@@ -46,7 +46,7 @@ procedure draw_stop (
 	face	: in type_face)
 is
 	use et_general;
-	use et_terminals.pac_shapes;	
+	use et_board_shapes_and_text.pac_shapes;	
 	use et_packages;
 	use pac_stop_lines;
 	use pac_stop_arcs;

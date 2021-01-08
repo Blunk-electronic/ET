@@ -77,7 +77,7 @@ is
 		placeholders	: in et_packages.type_text_placeholders) -- specified in the board. will override default positions
 	is
 
-		use et_terminals.pac_shapes;
+		use et_board_shapes_and_text.pac_shapes;
 		use pac_packages_lib;
 
 		function flipped return boolean is 
@@ -136,7 +136,7 @@ is
 		end to_placeholder_content;
 			
 		procedure draw_text_origin (p : in type_point; f : in type_face) is
-			type type_line is new et_terminals.pac_shapes.type_line with null record;
+			type type_line is new pac_shapes.type_line with null record;
 			
 			line_horizontal : constant type_line := ( -- from left to right
 				start_point		=> type_point (set (x => x (p) - pac_text_fab.origin_half_size, y => y (p))),
@@ -2692,11 +2692,11 @@ is
 				name		: in string;  -- H5, 5, 3
 				drill_size	: in type_drill_size;
 				restring	: in type_track_width;
-				pad_pos_in	: in type_position) is -- the center of the pad incl. its rotation
-
+				pad_pos_in	: in type_position) -- the center of the pad incl. its rotation
+			is
 				pad_pos : type_position := pad_pos_in;
 
-				type type_circle is new et_terminals.pac_shapes.type_circle with null record;
+				type type_circle is new pac_shapes.type_circle with null record;
 				circle : type_circle;
 			begin
 				-- We draw the hole only if a conductor layer is enabled.
@@ -2777,7 +2777,7 @@ is
 		end draw_terminals;
 		
 		procedure draw_package_origin is
-			type type_line is new et_terminals.pac_shapes.type_line with null record;
+			type type_line is new pac_shapes.type_line with null record;
 			
 			line_horizontal : constant type_line := ( -- from left to right
 				start_point		=> type_point (set (x => x (package_position) - origin_half_size, y => y (package_position))),

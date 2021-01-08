@@ -42,7 +42,7 @@ with ada.containers;            use ada.containers;
 with et_string_processing;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;				use et_geometry;
-with et_terminals;				use et_terminals;
+with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_drills;					use et_drills;
 with et_packages;				use et_packages;
 with et_pcb;

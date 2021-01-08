@@ -47,6 +47,7 @@ with ada.containers.ordered_maps;
 with et_general;				use et_general;
 with et_general_rw;				use et_general_rw;
 with et_text;					use et_text;
+with et_terminals;				use et_terminals;
 
 package body et_pcb_rw.device_packages is
 
