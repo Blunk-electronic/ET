@@ -318,11 +318,11 @@ is
 			use et_text;
 		begin
 
-			draw_text (
+			pac_draw_doc.draw_text (
 				area		=> in_area,
 				context		=> context,
 				content		=> to_content (from & "-" & to),
-				size		=> 0.3,
+				size		=> 0.5,
 				font		=> layer_numbers_font,
 				position	=> circle.center,
 				origin		=> false,

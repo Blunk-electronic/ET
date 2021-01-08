@@ -56,10 +56,15 @@ et_canvas_board
 - pac_canvas (instance of et_canvas_general.pac_canvas with
 				parameter et_pcb_coordinates.pac_geometry_brd)
 
-- pac_draw (instance of et_canvas_primitive_draw_ops.pac_draw with
+For drawing fabrication relevant stuff:
+- pac_draw_fab (instance of et_canvas_primitive_draw_ops.pac_draw with
 				parameter pac_canvas, et_terminals.pac_shapes, et_terminals.pac_text_fab)
 
+For drawing documentational stuff (not fabrication relevant):
+- pac_draw_doc (instance of et_canvas_primitive_draw_ops.pac_draw with
+				parameter pac_canvas, et_terminals.pac_shapes, et_terminals.pac_text_fab)
 
+				
 SCHEMATIC
 ---------
 et_canvas_schematic
