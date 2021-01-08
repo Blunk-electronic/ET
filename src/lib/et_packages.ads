@@ -176,9 +176,9 @@ package et_packages is
 	
 	
 -- TEXT
-	type type_text is new pac_text.type_text with record
+	type type_text is new pac_text_fab.type_text with record
 		position	: type_position; -- x/y/rotation
-		line_width	: pac_text.type_text_line_width; -- CS default := line_width_default; 
+		line_width	: pac_text_fab.type_text_line_width; -- CS default := line_width_default; 
 		-- CS locked : type_locked;		
 	end record;
 

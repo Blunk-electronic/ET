@@ -75,7 +75,7 @@ package et_terminals is
 
 	
 	-- Instantiation of the text package:
-	package pac_text is new et_text.generic_pac_text (
+	package pac_text_fab is new et_text.generic_pac_text (
 		pac_shapes			=> pac_shapes,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
@@ -321,7 +321,7 @@ package et_terminals is
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
-	terminal_name_size : constant pac_text.type_text_size := 0.5;
+	terminal_name_size : constant pac_text_fab.type_text_size := 0.5;
 	
 
 	

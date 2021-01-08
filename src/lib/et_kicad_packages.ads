@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -47,7 +47,7 @@ with et_geometry;				use et_geometry;
 with et_drills;
 with et_terminals;				use et_terminals;
 use et_terminals.pac_shapes;
-use et_terminals.pac_text;
+use et_terminals.pac_text_fab;
 
 with et_packages;
 with et_kicad_general;			use et_kicad_general;

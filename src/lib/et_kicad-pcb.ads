@@ -73,7 +73,7 @@ with et_kicad_packages;			use et_kicad_packages;
 package et_kicad.pcb is
 
 	use et_terminals.pac_shapes;
-	use et_terminals.pac_text;
+	use et_terminals.pac_text_fab;
 	use et_pcb_coordinates.pac_geometry_brd;
 
 
@@ -309,13 +309,13 @@ package et_kicad.pcb is
 		micro_vias_allowed	: type_micro_vias_allowed;
 		micro_via_min_size	: type_via_diameter;	-- micro vias
 		micro_via_min_drill	: type_drill_size;		-- micro vias
-		pcb_text_width		: et_terminals.pac_text.type_text_line_width;	-- all kinds of texts (no matter what layer)
-		pcb_text_size_x		: et_terminals.pac_text.type_text_size;
-		pcb_text_size_y		: et_terminals.pac_text.type_text_size;		
+		pcb_text_width		: et_terminals.pac_text_fab.type_text_line_width;	-- all kinds of texts (no matter what layer)
+		pcb_text_size_x		: et_terminals.pac_text_fab.type_text_size;
+		pcb_text_size_y		: et_terminals.pac_text_fab.type_text_size;		
 		module_edge_width	: et_packages.type_general_line_width;
-		module_text_size_x	: et_terminals.pac_text.type_text_size;
-		module_text_size_y	: et_terminals.pac_text.type_text_size;
-		module_text_width	: et_terminals.pac_text.type_text_line_width; -- line width
+		module_text_size_x	: et_terminals.pac_text_fab.type_text_size;
+		module_text_size_y	: et_terminals.pac_text_fab.type_text_size;
+		module_text_width	: et_terminals.pac_text_fab.type_text_line_width; -- line width
 		pad_size_x			: et_terminals.type_pad_size;
 		pad_size_y			: et_terminals.type_pad_size;
 		pad_drill			: type_drill_size;

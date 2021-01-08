@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -80,8 +80,8 @@ is
 	end query_circle;
 
 	procedure query_text (c : in et_packages.pac_texts_with_content.cursor) is 
-		use pac_text.pac_vector_text_lines;
-		vector_text : pac_text.pac_vector_text_lines.list;
+		use pac_text_fab.pac_vector_text_lines;
+		vector_text : pac_text_fab.pac_vector_text_lines.list;
 	begin
 		draw_text_origin (self, element (c).position, in_area, context);
 
@@ -89,7 +89,7 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 		-- Vectorize the text:
-		vector_text := pac_text.vectorize (
+		vector_text := pac_text_fab.vectorize (
 			content		=> element (c).content,
 			size		=> element (c).size,
 			rotation	=> rot (element (c).position),

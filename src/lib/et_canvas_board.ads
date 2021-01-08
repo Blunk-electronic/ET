@@ -94,9 +94,9 @@ package et_canvas_board is
 	package pac_draw is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas	=> pac_canvas,
 		pac_shapes	=> et_terminals.pac_shapes,
-		pac_text	=> et_terminals.pac_text);
+		pac_text	=> et_terminals.pac_text_fab);
 	
-	use pac_draw;
+	use pac_draw; -- CS rename to pac_draw_fab
 	
 
 

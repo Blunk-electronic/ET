@@ -139,12 +139,12 @@ is
 			type type_line is new et_terminals.pac_shapes.type_line with null record;
 			
 			line_horizontal : constant type_line := ( -- from left to right
-				start_point		=> type_point (set (x => x (p) - pac_text.origin_half_size, y => y (p))),
-				end_point		=> type_point (set (x => x (p) + pac_text.origin_half_size, y => y (p))));
+				start_point		=> type_point (set (x => x (p) - pac_text_fab.origin_half_size, y => y (p))),
+				end_point		=> type_point (set (x => x (p) + pac_text_fab.origin_half_size, y => y (p))));
 
 			line_vertical : constant type_line := ( -- from bottom to top
-				start_point		=> type_point (set (x => x (p), y => y (p) - pac_text.origin_half_size)),
-				end_point		=> type_point (set (x => x (p), y => y (p) + pac_text.origin_half_size)));
+				start_point		=> type_point (set (x => x (p), y => y (p) - pac_text_fab.origin_half_size)),
+				end_point		=> type_point (set (x => x (p), y => y (p) + pac_text_fab.origin_half_size)));
 
 		begin -- draw_text_origin
 			if device_origins_enabled (f) then
@@ -154,7 +154,7 @@ is
 				save (context.cr);
 				
 				set_color_origin (context.cr);
-				set_line_width (context.cr, type_view_coordinate (pac_text.origin_line_width));
+				set_line_width (context.cr, type_view_coordinate (pac_text_fab.origin_line_width));
 				draw_line (in_area, context, line_horizontal, self.frame_height);
 				draw_line (in_area, context, line_vertical, self.frame_height);
 
@@ -178,8 +178,8 @@ is
 			t : in out type_text_with_content;
 			f : in type_face) is
 
-			use pac_text.pac_vector_text_lines;
-			vector_text : pac_text.pac_vector_text_lines.list;
+			use pac_text_fab.pac_vector_text_lines;
+			vector_text : pac_text_fab.pac_vector_text_lines.list;
 	
 		begin
 
@@ -199,7 +199,7 @@ is
 			set_line_width (context.cr, type_view_coordinate (t.line_width));
 
 			-- Vectorize the content of the text:
-			vector_text := pac_text.vectorize (
+			vector_text := pac_text_fab.vectorize (
 				content		=> t.content,
 				size		=> t.size,
 				rotation	=> add (rot (t.position), rot (package_position)),
@@ -435,8 +435,8 @@ is
 				ph	: in out type_text_placeholder;
 				f	: in type_face) is
 
-				use pac_text.pac_vector_text_lines;
-				vector_text : pac_text.pac_vector_text_lines.list;
+				use pac_text_fab.pac_vector_text_lines;
+				vector_text : pac_text_fab.pac_vector_text_lines.list;
 
 			begin
 				if silkscreen_enabled (f) then
@@ -465,7 +465,7 @@ is
 						set_line_width (context.cr, type_view_coordinate (ph.line_width));
 
 						-- Vectorize the content of the placeholder:
-						vector_text := pac_text.vectorize (
+						vector_text := pac_text_fab.vectorize (
 							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
 							rotation	=> add (rot (ph.position), rot (package_position)),
@@ -794,8 +794,8 @@ is
 				ph	: in out type_text_placeholder;
 				f	: in type_face) is
 
-				use pac_text.pac_vector_text_lines;
-				vector_text : pac_text.pac_vector_text_lines.list;
+				use pac_text_fab.pac_vector_text_lines;
+				vector_text : pac_text_fab.pac_vector_text_lines.list;
 
 			begin
 				if assy_doc_enabled (f) then
@@ -824,7 +824,7 @@ is
 						set_line_width (context.cr, type_view_coordinate (ph.line_width));
 
 						-- Vectorize the content of the placeholder:
-						vector_text := pac_text.vectorize (
+						vector_text := pac_text_fab.vectorize (
 							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
 							rotation	=> add (rot (ph.position), rot (package_position)),

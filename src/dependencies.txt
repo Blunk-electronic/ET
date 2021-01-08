@@ -36,12 +36,12 @@ et_pcb_coordinates (for board and packages/footprints)
 et_terminals
 - uses pac_geometry_brd
 - pac_shapes (instance of generic_pac_shapes with parameter pac_geometry_brd)
-- pac_text (isntance of generic_pac_text with parameter pac_shapes)
+- pac_text_fab (instance of generic_pac_text with parameter pac_shapes)
 
 et_packages
 - uses pac_geometry_brd
 - uses et_terminals.pac_shapes
-- uses et_terminals.pac_text
+- uses et_terminals.pac_text_fab
 
 
 
@@ -57,7 +57,7 @@ et_canvas_board
 				parameter et_pcb_coordinates.pac_geometry_brd)
 
 - pac_draw (instance of et_canvas_primitive_draw_ops.pac_draw with
-				parameter pac_canvas, et_terminals.pac_shapes, et_terminals.pac_text)
+				parameter pac_canvas, et_terminals.pac_shapes, et_terminals.pac_text_fab)
 
 
 SCHEMATIC

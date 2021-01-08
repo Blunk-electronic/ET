@@ -52,7 +52,7 @@ use et_pcb_coordinates.pac_geometry_brd;
 with et_terminals;					use et_terminals;
 
 with et_text;						use et_text;
-use et_terminals.pac_text;
+use et_terminals.pac_text_fab;
 
 with et_pcb_stack;					use et_pcb_stack;
 with et_packages;					use et_packages;
