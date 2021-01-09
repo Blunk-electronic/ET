@@ -164,23 +164,25 @@ package et_text is
 		
 	package generic_pac_text is
 		use pac_shapes;
-		use pac_geometry;
 
+		use pac_geometry;
+		-- NOTE: This use clause does not work properly. 
+		-- For some reason the prefix "pac_geometry" must be explicitely provided
+		-- for types that stem from pac_shapes.pac_geometry.
+		-- Otherwise the linker reports lots of "undefined references" ...
+
+		
 		subtype type_text_size is type_distance_positive range size_min .. size_max; -- in millimeters
 		subtype type_text_line_width is type_distance_positive range line_width_min .. line_width_max;
 
-		-- With this line uncommented the linker does not output any errors:
-		function to_text_size (size : in pac_geometry.type_distance) return type_text_size;
-
-		-- With this line uncommented the linker outputs errors like "undefined reference ..."
-		-- function to_text_size (size : in type_distance) return type_text_size;
-		
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
+		function to_text_size (size : in pac_geometry.type_distance) return type_text_size;
+	
 		
-		procedure validate_text_size (size : in type_distance);
+		procedure validate_text_size (size : in pac_geometry.type_distance);
 		-- Checks whether given text size is in range of type_text_size.
 
-		procedure validate_text_line_width (width : in type_distance);
+		procedure validate_text_line_width (width : in pac_geometry.type_distance);
 		-- Checks whether given line width is in range of type_text_line_width
 		
 		type type_text is abstract tagged record
@@ -196,7 +198,7 @@ package et_text is
 		
 		-- Converts HORIZONTAL/VERTICAL to 0.0/90.0 degrees:
 		function to_rotation (rotation : in type_rotation_documentation) 
-			return type_rotation;
+			return pac_geometry.type_rotation;
 
 		-- Converts HORIZONTAL/VERTICAL to 0.0/90.0 degrees as string:
 		function to_string (rotation : in type_rotation_documentation) return string;
@@ -204,8 +206,8 @@ package et_text is
 		-- Adds HORIZONTAL/VERTICAL (which is 0/90 degrees) to rotation_add:
 		function "+" (
 			rotation_doc	: in type_rotation_documentation;
-			rotation_add	: in type_rotation)
-			return type_rotation;
+			rotation_add	: in pac_geometry.type_rotation)
+			return pac_geometry.type_rotation;
 
 		-- Issues a warning that the given angle is neither 0 or 90 degrees.
 		procedure warning_rotation_outside_range; -- CS argument for angle ?
@@ -826,10 +828,10 @@ package et_text is
 		function vectorize_text (
 			content		: in type_text_content.bounded_string;
 			size		: in type_text_size;
-			rotation	: in type_rotation;
+			rotation	: in pac_geometry.type_rotation;
 			position	: in type_point;
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
-			line_width	: in type_distance_positive;
+			line_width	: in pac_geometry.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
 			return pac_vector_text_lines.list;
 

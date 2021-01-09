@@ -38,7 +38,7 @@
 with ada.text_io;				use ada.text_io;
 with et_general;				use et_general;
 with et_pcb;					use et_pcb;
-with et_canvas_primitive_draw_ops;
+--with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
 
@@ -47,6 +47,8 @@ procedure draw_outline (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) 
 is	
+	use pac_draw_fab;
+	
 	use pac_pcb_contour_lines;
 	use pac_pcb_contour_arcs;
 	use pac_pcb_contour_circles;
@@ -80,6 +82,7 @@ is
 	end query_circle;
 
 	procedure query_text (c : in et_packages.pac_texts_with_content.cursor) is 
+		use et_board_shapes_and_text;
 		use pac_text_fab.pac_vector_text_lines;
 		vector_text : pac_text_fab.pac_vector_text_lines.list;
 	begin
@@ -89,7 +92,7 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 		-- Vectorize the text:
-		vector_text := pac_text_fab.vectorize_text (
+		vector_text := et_board_shapes_and_text.pac_text_fab.vectorize_text (
 			content		=> element (c).content,
 			size		=> element (c).size,
 			rotation	=> rot (element (c).position),

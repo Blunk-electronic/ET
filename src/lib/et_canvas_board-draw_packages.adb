@@ -37,7 +37,6 @@
 
 with ada.text_io;				use ada.text_io;
 
-with et_general;				use et_general;
 with et_symbols;
 with et_devices;
 
@@ -76,8 +75,11 @@ is
 		flip			: in et_pcb.type_flipped;
 		placeholders	: in et_packages.type_text_placeholders) -- specified in the board. will override default positions
 	is
+		use pac_draw_fab;
+		use et_board_shapes_and_text;
+		use et_board_shapes_and_text.pac_text_fab;
+		use et_board_shapes_and_text.pac_shapes;	
 
-		use et_board_shapes_and_text.pac_shapes;
 		use pac_packages_lib;
 
 		function flipped return boolean is 
@@ -2780,19 +2782,19 @@ is
 			type type_line is new pac_shapes.type_line with null record;
 			
 			line_horizontal : constant type_line := ( -- from left to right
-				start_point		=> type_point (set (x => x (package_position) - origin_half_size, y => y (package_position))),
-				end_point		=> type_point (set (x => x (package_position) + origin_half_size, y => y (package_position))));
+				start_point		=> type_point (set (x => x (package_position) - et_packages.origin_half_size, y => y (package_position))),
+				end_point		=> type_point (set (x => x (package_position) + et_packages.origin_half_size, y => y (package_position))));
 
 			line_vertical : constant type_line := ( -- from bottom to top
-				start_point		=> type_point (set (x => x (package_position), y => y (package_position) - origin_half_size)),
-				end_point		=> type_point (set (x => x (package_position), y => y (package_position) + origin_half_size)));
+				start_point		=> type_point (set (x => x (package_position), y => y (package_position) - et_packages.origin_half_size)),
+				end_point		=> type_point (set (x => x (package_position), y => y (package_position) + et_packages.origin_half_size)));
 
 		begin -- draw_package_origin
 			if face = get_face (package_position) then
 				if device_origins_enabled (get_face (package_position)) then
 
 					set_color_origin (context.cr);
-					set_line_width (context.cr, type_view_coordinate (origin_line_width));
+					set_line_width (context.cr, type_view_coordinate (et_packages.origin_line_width));
 					draw_line (in_area, context, line_horizontal, self.frame_height);
 					draw_line (in_area, context, line_vertical, self.frame_height);
 

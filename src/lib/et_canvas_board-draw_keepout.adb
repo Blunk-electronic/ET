@@ -45,8 +45,11 @@ procedure draw_keepout (
 	context : in type_draw_context;
 	face	: in type_face) 
 is
-	use et_general;
+	use pac_draw_fab;
+	use et_board_shapes_and_text;
+	use et_board_shapes_and_text.pac_text_fab;
 	use et_board_shapes_and_text.pac_shapes;	
+
 	use et_packages;
 	use pac_keepout_lines;
 	use pac_keepout_arcs;
@@ -123,8 +126,8 @@ is
 	end query_cutout;
 
 	procedure query_text (c : in et_packages.pac_texts_with_content.cursor) is 
-		use pac_text_fab.pac_vector_text_lines;
-		vector_text : pac_text_fab.pac_vector_text_lines.list;
+		use pac_vector_text_lines;
+		vector_text : pac_vector_text_lines.list;
 	begin
 		draw_text_origin (self, element (c).position, in_area, context);
 
@@ -132,7 +135,7 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 		-- Vectorize the text:
-		vector_text := pac_text_fab.vectorize_text (
+		vector_text := vectorize_text (
 			content		=> element (c).content,
 			size		=> element (c).size,
 			rotation	=> rot (element (c).position),

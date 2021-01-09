@@ -274,8 +274,7 @@ package body et_text is
 		end to_text_size;
 		
 		
-		procedure validate_text_size (size : in type_distance) is
-		-- Checks whether given text size is in range of type_text_size.
+		procedure validate_text_size (size : in pac_geometry.type_distance) is
 		begin
 			if size not in type_text_size then
 				log (ERROR, "text size invalid ! Allowed range is" 
@@ -286,8 +285,7 @@ package body et_text is
 			end if;
 		end validate_text_size;
 
-		procedure validate_text_line_width (width : in type_distance) is
-		-- Checks whether given line width is in range of type_text_line_width
+		procedure validate_text_line_width (width : in pac_geometry.type_distance) is
 		begin
 			if width not in type_text_line_width then
 				log (ERROR, "line width invalid ! Allowed range is" 
@@ -316,7 +314,7 @@ package body et_text is
 		end text_properties;
 
 		function to_rotation (rotation : in type_rotation_documentation) 
-			return type_rotation is
+			return pac_geometry.type_rotation is
 		begin
 			case rotation is
 				when HORIZONTAL => return zero_rotation;
@@ -336,8 +334,8 @@ package body et_text is
 
 		function "+" (
 			rotation_doc	: in type_rotation_documentation;
-			rotation_add	: in type_rotation)
-			return type_rotation is
+			rotation_add	: in pac_geometry.type_rotation)
+			return pac_geometry.type_rotation is
 		begin
 			return to_rotation (rotation_doc) + rotation_add;
 		end;
@@ -365,7 +363,7 @@ package body et_text is
 	
 		
 		function to_rotation_doc (rotation : in string) return type_rotation_documentation is
-			r : constant type_rotation := to_rotation (rotation);
+			r : constant pac_geometry.type_rotation := to_rotation (rotation);
 		begin
 			if r = zero_rotation then
 				return HORIZONTAL;
@@ -418,10 +416,10 @@ package body et_text is
 		function vectorize_text (
 			content		: in type_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size		: in type_text_size;
-			rotation	: in type_rotation; 
+			rotation	: in pac_geometry.type_rotation; 
 			position	: in type_point; -- the anchor point of the text (where the origin is)
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
-			line_width	: in type_distance_positive;
+			line_width	: in pac_geometry.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
 			return pac_vector_text_lines.list
 		is

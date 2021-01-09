@@ -60,7 +60,7 @@ with et_geometry;				use et_geometry;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_brd;
 
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_board_shapes_and_text;	--use et_board_shapes_and_text;
 with et_terminals;				use et_terminals;
 with et_packages;
 with et_project.modules;		use et_project.modules;
@@ -98,7 +98,7 @@ package et_canvas_board is
 		pac_shapes	=> et_board_shapes_and_text.pac_shapes,
 		pac_text	=> et_board_shapes_and_text.pac_text_fab);
 	
-	use pac_draw_fab;
+	--use pac_draw_fab;
 
 	-- In order to draw objects of packages and board 
 	-- that are for documentation (not fabrication relevant):
@@ -213,7 +213,7 @@ package et_canvas_board is
 	
 	cursor_line_width : constant type_distance_positive := 0.8;
 	cursor_half_size : constant type_distance_positive := 50.0;
-	type type_cursor_line is new pac_shapes.type_line with null record;
+	type type_cursor_line is new et_board_shapes_and_text.pac_shapes.type_line with null record;
 	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;

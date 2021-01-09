@@ -56,10 +56,12 @@ procedure draw_conductors (
 is
 	use et_schematic;
 	use et_schematic.pac_nets;
-	
-	use et_general;
+
+	use pac_draw_fab;
+	use et_board_shapes_and_text;
+	use et_board_shapes_and_text.pac_text_fab;
 	use et_board_shapes_and_text.pac_shapes;	
-	--use et_packages;
+
 	use pac_conductor_lines;
 	use pac_conductor_arcs;
 	use pac_conductor_circles;
@@ -231,8 +233,8 @@ is
 	end query_cutout;
 
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders_conductors.cursor) is 
-		use pac_text_fab.pac_vector_text_lines;
-		vector_text : pac_text_fab.pac_vector_text_lines.list;
+		use pac_vector_text_lines;
+		vector_text : pac_vector_text_lines.list;
 	begin
 		-- Draw the placeholder if it is in theh current layer:
 		if element (c).layer = current_layer then
@@ -243,7 +245,7 @@ is
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 			-- Vectorize the text:
-			vector_text := pac_text_fab.vectorize_text (
+			vector_text := vectorize_text (
 				content		=> to_placeholder_content (element (c).meaning),
 				size		=> element (c).size,
 				rotation	=> rot (element (c).position),
@@ -263,8 +265,8 @@ is
 	end query_placeholder;
 
 	procedure query_text (c : in et_packages.pac_conductor_texts.cursor) is 
-		use pac_text_fab.pac_vector_text_lines;
-		vector_text : pac_text_fab.pac_vector_text_lines.list;
+		use pac_vector_text_lines;
+		vector_text : pac_vector_text_lines.list;
 	begin
 		-- Draw the text if it is in theh current layer:
 		if element (c).layer = current_layer then
@@ -275,7 +277,7 @@ is
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 			
 			-- Vectorize the text:
-			vector_text := pac_text_fab.vectorize_text (
+			vector_text := vectorize_text (
 				content		=> element (c).content,
 				size		=> element (c).size,
 				rotation	=> rot (element (c).position),
