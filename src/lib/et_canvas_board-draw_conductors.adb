@@ -319,7 +319,8 @@ is
 		procedure draw_numbers (from, to : in string) is 
 			use et_text;
 		begin
-
+			set_color_via_layers (context.cr);
+			
 			pac_draw_doc.draw_text (
 				area		=> in_area,
 				context		=> context,

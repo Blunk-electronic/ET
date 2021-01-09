@@ -167,7 +167,7 @@ package et_packages is
 	
 	
 	subtype type_general_line_width is type_distance_positive
-		range line_width_min .. line_width_max;
+		range text_parameters_fab.width_min .. text_parameters_fab.width_max;
 	
 	procedure validate_general_line_width (width : in et_pcb_coordinates.type_distance);
 	-- Checks whether given line width is in range of type_general_line_width
@@ -644,7 +644,7 @@ package et_packages is
 -- KEEPOUT
 
 	-- GUI relevant only: The line width of keepout:
-	keepout_line_width : constant type_general_line_width := line_width_min;
+	keepout_line_width : constant type_general_line_width := text_parameters_fab.width_min;
 
 	type type_keepout_line is new type_line with null record;
 	
@@ -688,7 +688,7 @@ package et_packages is
 -- ROUTE RESTRICT
 
 	-- GUI relevant only: The line width of route restrict:
-	route_restrict_line_width : constant type_general_line_width := line_width_min;
+	route_restrict_line_width : constant type_general_line_width := text_parameters_fab.width_min;
 	
 	type type_route_restrict_line is new type_line with record
 		layers 	: type_signal_layers.set;
@@ -739,7 +739,7 @@ package et_packages is
 -- VIA RESTRICT
 
 	-- GUI relevant only: The line width of via restrict:
-	via_restrict_line_width : constant type_general_line_width := line_width_min;
+	via_restrict_line_width : constant type_general_line_width := text_parameters_fab.width_min;
 	
 	type type_via_restrict_line is new type_line with record
 		layers	: type_signal_layers.set;
@@ -796,7 +796,7 @@ package et_packages is
 	-- nessecarily connected with each other. DON'T try to model the pcb outline with a polygon !
 
 	-- GUI relevant only: The line width of contours:
-	pcb_contour_line_width : constant type_general_line_width := line_width_min;
+	pcb_contour_line_width : constant type_general_line_width := text_parameters_fab.width_min;
 	
 	type type_pcb_contour_line is new type_line with null record;
 	package pac_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);

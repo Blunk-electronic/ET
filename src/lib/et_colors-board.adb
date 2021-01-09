@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -101,6 +101,18 @@ package body et_colors.board is
 			via.blue,
 			color_range (opacity));
 	end set_color_vias;
+
+	procedure set_color_via_layers (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity)
+	is begin		
+		set_source_rgba (
+			context, 
+			via_layers.red,
+			via_layers.green,
+			via_layers.blue,
+			color_range (opacity));
+	end set_color_via_layers;
 	
 	procedure set_color_silkscreen (
 		context : in cairo_context;

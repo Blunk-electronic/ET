@@ -48,25 +48,18 @@ package et_board_shapes_and_text is
 	package pac_shapes is new 
 		et_geometry.generic_pac_shapes (et_pcb_coordinates.pac_geometry_brd);
 
-	
-	text_size_min 		: constant type_distance_positive := 0.5;
-	text_size_max 		: constant type_distance_positive := 100.0;
-	text_size_default 	: constant type_distance_positive := 1.5;
-	
-	line_width_min 		: constant type_distance_positive := 0.15;
-	line_width_max 		: constant type_distance_positive := 10.0;
-	line_width_default 	: constant type_distance_positive := 0.15;
 
 	type type_text_parameters is record
 		size_min 		: type_distance_positive;
 		size_max 		: type_distance_positive;
-		size_default 	: type_distance_positive;
-		
+		size_default 	: type_distance_positive;		
 		width_min 		: type_distance_positive;
 		width_max 		: type_distance_positive;
 		width_default 	: type_distance_positive;
 	end record;
 
+
+	-- FAB RELEVANT
 	text_parameters_fab : constant type_text_parameters := (
 		size_min 		=> 0.5,
 		size_max 		=> 100.0,
@@ -75,8 +68,6 @@ package et_board_shapes_and_text is
 		width_max 		=> 10.0,
 		width_default 	=> 0.15);
 
-	
-	-- Instantiation of the text package:
 	package pac_text_fab is new et_text.generic_pac_text (
 		pac_shapes			=> pac_shapes,
 		size_min			=> text_parameters_fab.size_min,
@@ -87,6 +78,7 @@ package et_board_shapes_and_text is
 		line_width_default	=> text_parameters_fab.width_default);
 
 
+	-- DOCUMENTATION RELEVANT (NON-FAB)
 	text_parameters_doc : constant type_text_parameters := (
 		size_min 		=> 0.1,
 		size_max 		=> 100.0,
@@ -103,7 +95,6 @@ package et_board_shapes_and_text is
 		line_width_min		=> text_parameters_doc.width_min,
 		line_width_max		=> text_parameters_doc.width_max,
 		line_width_default	=> text_parameters_doc.width_default);
-
 	
 end et_board_shapes_and_text;
 

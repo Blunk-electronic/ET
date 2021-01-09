@@ -33,15 +33,20 @@ PCB / BOARD / LAYOUT / PACKAGE / FOOTPRINT
 et_pcb_coordinates (for board and packages/footprints)
 - pac_geometry_brd (instance of generic_pac_geometry)
 
-et_terminals
+et_board_shapes_and_text
 - uses pac_geometry_brd
 - pac_shapes (instance of generic_pac_shapes with parameter pac_geometry_brd)
-- pac_text_fab (instance of generic_pac_text with parameter pac_shapes)
+- pac_text_fab (instance of generic_pac_text with parameter pac_shapes and
+  text parameters relevant for fabrication)
 
+- pac_text_doc (instance of generic_pac_text with parameter pac_shapes and
+  text parameters relevant for documentation)
+
+  
 et_packages
 - uses pac_geometry_brd
-- uses et_terminals.pac_shapes
-- uses et_terminals.pac_text_fab
+- uses et_board_shapes_and_text.pac_shapes
+- uses et_board_shapes_and_text.pac_text_fab
 
 
 
@@ -58,11 +63,15 @@ et_canvas_board
 
 For drawing fabrication relevant stuff:
 - pac_draw_fab (instance of et_canvas_primitive_draw_ops.pac_draw with
-				parameter pac_canvas, et_terminals.pac_shapes, et_terminals.pac_text_fab)
+				parameter pac_canvas, 
+				et_board_shapes_and_text.pac_shapes,
+				et_board_shapes_and_text.pac_text_fab)
 
 For drawing documentational stuff (not fabrication relevant):
 - pac_draw_doc (instance of et_canvas_primitive_draw_ops.pac_draw with
-				parameter pac_canvas, et_terminals.pac_shapes, et_terminals.pac_text_fab)
+				parameter pac_canvas,
+				et_board_shapes_and_text.pac_shapes,
+				et_board_shapes_and_text.pac_text_doc)
 
 				
 SCHEMATIC

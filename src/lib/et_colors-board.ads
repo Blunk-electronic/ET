@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -52,6 +52,7 @@ package et_colors.board is
 	origin				: type_color := gray;	
 	placeholders		: type_color := white;
 	via					: type_color := green;
+	via_layers			: type_color := white; -- the layers the via is connecting
 	terminal_names		: type_color := white;
 	tht_pads			: type_color := green;
 	
@@ -118,6 +119,10 @@ package et_colors.board is
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
 
+	procedure set_color_via_layers (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity);
+	
 	procedure set_color_silkscreen (
 		context : in cairo_context;
 		face	: in type_face;
