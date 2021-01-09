@@ -324,7 +324,7 @@ is
 				area		=> in_area,
 				context		=> context,
 				content		=> to_content (from & "-" & to),
-				size		=> 0.5,
+				size		=> 0.2,
 				font		=> layer_numbers_font,
 				position	=> circle.center,
 				origin		=> false,

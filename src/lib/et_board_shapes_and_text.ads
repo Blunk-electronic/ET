@@ -57,25 +57,52 @@ package et_board_shapes_and_text is
 	line_width_max 		: constant type_distance_positive := 10.0;
 	line_width_default 	: constant type_distance_positive := 0.15;
 
+	type type_text_parameters is record
+		size_min 		: type_distance_positive;
+		size_max 		: type_distance_positive;
+		size_default 	: type_distance_positive;
+		
+		width_min 		: type_distance_positive;
+		width_max 		: type_distance_positive;
+		width_default 	: type_distance_positive;
+	end record;
+
+	text_parameters_fab : constant type_text_parameters := (
+		size_min 		=> 0.5,
+		size_max 		=> 100.0,
+		size_default 	=> 1.5,
+		width_min 		=> 0.15,
+		width_max 		=> 10.0,
+		width_default 	=> 0.15);
+
 	
 	-- Instantiation of the text package:
 	package pac_text_fab is new et_text.generic_pac_text (
 		pac_shapes			=> pac_shapes,
-		size_min			=> text_size_min,
-		size_max			=> text_size_max,
-		size_default		=> text_size_default,
-		line_width_min		=> line_width_min,
-		line_width_max		=> line_width_max,
-		line_width_default	=> line_width_default);
+		size_min			=> text_parameters_fab.size_min,
+		size_max			=> text_parameters_fab.size_max,
+		size_default		=> text_parameters_fab.size_default,
+		line_width_min		=> text_parameters_fab.width_min,
+		line_width_max		=> text_parameters_fab.width_max,
+		line_width_default	=> text_parameters_fab.width_default);
 
+
+	text_parameters_doc : constant type_text_parameters := (
+		size_min 		=> 0.1,
+		size_max 		=> 100.0,
+		size_default 	=> 1.5,
+		width_min 		=> 0.05,
+		width_max 		=> 10.0,
+		width_default 	=> 0.05);
+	
 	package pac_text_doc is new et_text.generic_pac_text (
 		pac_shapes			=> pac_shapes,
-		size_min			=> text_size_min,
-		size_max			=> text_size_max,
-		size_default		=> text_size_default,
-		line_width_min		=> line_width_min,
-		line_width_max		=> line_width_max,
-		line_width_default	=> line_width_default);
+		size_min			=> text_parameters_doc.size_min,
+		size_max			=> text_parameters_doc.size_max,
+		size_default		=> text_parameters_doc.size_default,
+		line_width_min		=> text_parameters_doc.width_min,
+		line_width_max		=> text_parameters_doc.width_max,
+		line_width_default	=> text_parameters_doc.width_default);
 
 	
 end et_board_shapes_and_text;
