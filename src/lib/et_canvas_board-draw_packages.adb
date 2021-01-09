@@ -199,7 +199,7 @@ is
 			set_line_width (context.cr, type_view_coordinate (t.line_width));
 
 			-- Vectorize the content of the text:
-			vector_text := pac_text_fab.vectorize (
+			vector_text := pac_text_fab.vectorize_text (
 				content		=> t.content,
 				size		=> t.size,
 				rotation	=> add (rot (t.position), rot (package_position)),
@@ -465,7 +465,7 @@ is
 						set_line_width (context.cr, type_view_coordinate (ph.line_width));
 
 						-- Vectorize the content of the placeholder:
-						vector_text := pac_text_fab.vectorize (
+						vector_text := pac_text_fab.vectorize_text (
 							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
 							rotation	=> add (rot (ph.position), rot (package_position)),
@@ -824,7 +824,7 @@ is
 						set_line_width (context.cr, type_view_coordinate (ph.line_width));
 
 						-- Vectorize the content of the placeholder:
-						vector_text := pac_text_fab.vectorize (
+						vector_text := pac_text_fab.vectorize_text (
 							content		=> to_placeholder_content (ph), -- map from meaning to content
 							size		=> ph.size,
 							rotation	=> add (rot (ph.position), rot (package_position)),

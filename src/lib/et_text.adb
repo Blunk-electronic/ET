@@ -415,7 +415,7 @@ package body et_text is
 
 			
 		
-		function vectorize (
+		function vectorize_text (
 			content		: in type_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size		: in type_text_size;
 			rotation	: in type_rotation; 
@@ -423,8 +423,8 @@ package body et_text is
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
 			line_width	: in type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default)
-			return pac_vector_text_lines.list is
-
+			return pac_vector_text_lines.list
+		is
 			use et_general;
 			use pac_vector_text_lines;
 
@@ -598,7 +598,7 @@ package body et_text is
 				result := scratch;
 			end finalize;
 			
-		begin
+		begin -- vectorize_text
 			-- Read the text to be displayed character by character and
 			-- map from character to the corresponding vectorized character:
 			for c in text'first .. text'last loop
@@ -688,7 +688,7 @@ package body et_text is
 			finalize;
 			
 			return result;
-		end vectorize;
+		end vectorize_text;
 
 		
 	end generic_pac_text;

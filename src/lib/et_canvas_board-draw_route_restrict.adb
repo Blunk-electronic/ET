@@ -160,7 +160,7 @@ is
 			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
 
 			-- Vectorize the text:
-			vector_text := pac_text_fab.vectorize (
+			vector_text := pac_text_fab.vectorize_text (
 				content		=> element (c).content,
 				size		=> element (c).size,
 				rotation	=> rot (element (c).position),

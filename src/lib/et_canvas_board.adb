@@ -504,7 +504,7 @@ package body et_canvas_board is
 				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
 
 				-- Vectorize the text:
-				vector_text := pac_text_fab.vectorize (
+				vector_text := pac_text_fab.vectorize_text (
 					content		=> text_place.text.content,
 					size		=> text_place.text.size,
 					rotation	=> rot (text_place.text.position),
@@ -559,7 +559,7 @@ package body et_canvas_board is
 			set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
 
 			-- Vectorize the text:
-			vector_text := pac_text_fab.vectorize (
+			vector_text := pac_text_fab.vectorize_text (
 				content		=> text_place.text.content,
 				size		=> text_place.text.size,
 				rotation	=> rot (text_place.text.position),
@@ -616,7 +616,7 @@ package body et_canvas_board is
 				set_line_width (context.cr, type_view_coordinate (text_place.text.line_width));
 
 				-- Vectorize the text:
-				vector_text := pac_text_fab.vectorize (
+				vector_text := pac_text_fab.vectorize_text (
 					content		=> text_place.text.content,
 					size		=> text_place.text.size,
 					rotation	=> rot (text_place.text.position),
