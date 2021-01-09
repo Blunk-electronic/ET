@@ -320,7 +320,7 @@ is
 			use et_text;
 		begin
 
-			pac_draw_fab.draw_text (
+			pac_draw_doc.draw_text (
 				area		=> in_area,
 				context		=> context,
 				content		=> to_content (from & "-" & to),

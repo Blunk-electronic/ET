@@ -100,12 +100,12 @@ package et_canvas_board is
 	
 	--use pac_draw_fab;
 
-	-- In order to draw objects of packages and board 
-	-- that are for documentation (not fabrication relevant):
-	--package pac_draw_doc is new et_canvas_primitive_draw_ops.pac_draw (
-		--pac_canvas	=> pac_canvas,
-		--pac_shapes	=> et_board_shapes_and_text.pac_shapes,
-		--pac_text	=> et_board_shapes_and_text.pac_text_fab);
+	--In order to draw objects of packages and board 
+	--that are for documentation (not fabrication relevant):
+	package pac_draw_doc is new et_canvas_primitive_draw_ops.pac_draw (
+		pac_canvas	=> pac_canvas,
+		pac_shapes	=> et_board_shapes_and_text.pac_shapes,
+		pac_text	=> et_board_shapes_and_text.pac_text_doc);
 
 	--use pac_draw_doc;
 

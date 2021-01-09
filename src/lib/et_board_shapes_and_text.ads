@@ -67,6 +67,16 @@ package et_board_shapes_and_text is
 		line_width_min		=> line_width_min,
 		line_width_max		=> line_width_max,
 		line_width_default	=> line_width_default);
+
+	package pac_text_doc is new et_text.generic_pac_text (
+		pac_shapes			=> pac_shapes,
+		size_min			=> text_size_min,
+		size_max			=> text_size_max,
+		size_default		=> text_size_default,
+		line_width_min		=> line_width_min,
+		line_width_max		=> line_width_max,
+		line_width_default	=> line_width_default);
+
 	
 end et_board_shapes_and_text;
 
