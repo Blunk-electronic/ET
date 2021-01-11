@@ -547,7 +547,11 @@ package et_pcb is
 	-- Unless specified by operator the board origin default is:
 	origin_default : constant type_point := type_point (set (20.0, 65.0));
 
-
+	type type_user_settings is record
+		vias		: type_via_settings;
+		-- CS auto set drill and track width ?
+	end record;
+		
 	-- This is general board stuff:
 	type type_board is tagged record
 		origin			: type_point := origin_default;
@@ -565,6 +569,8 @@ package et_pcb is
 		-- non-electric stuff, incl. floating polygons !
 		conductors		: type_conductor_objects;
 		contours		: type_pcb_contours; -- pcb outline
+
+		user_settings	: type_user_settings;
 	end record;
 
 	

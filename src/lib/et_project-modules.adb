@@ -881,6 +881,24 @@ package body et_project.modules is
 		return get_rules (element (module).rules.layout); 
 	end get_pcb_design_rules;
 
+	function get_user_settings (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return et_pcb.type_user_settings
+	is
+		settings : et_pcb.type_user_settings; -- to be returned
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module)
+		is begin
+			settings := module.board.user_settings;
+		end;
+	begin
+		pac_generic_modules.query_element (module, query_module'access);
+		
+		return settings;
+	end get_user_settings;
+
 	
 end et_project.modules;
 	

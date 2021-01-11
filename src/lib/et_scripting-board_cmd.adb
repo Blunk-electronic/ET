@@ -1501,16 +1501,63 @@ is
 				& " after " & to_string (noun) & " !";
 		end expect_keywords;
 
+		use pac_generic_modules;
+		use et_schematic;
+		
+		procedure deactivate_drill (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.vias.drill.active := false;
+		end deactivate_drill;
+
+		procedure activate_drill (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.vias.drill.active := true;
+			module.board.user_settings.vias.drill.size := to_distance (f (6));
+		end activate_drill;
+
+		procedure deactivate_inner_restring (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.vias.restring_inner.active := false;
+		end deactivate_inner_restring;
+
+		procedure activate_inner_restring (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.vias.restring_inner.active := true;
+			module.board.user_settings.vias.restring_inner.width := to_distance (f (6));
+		end activate_inner_restring;
+
+		procedure deactivate_outer_restring (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.vias.restring_outer.active := false;
+		end deactivate_outer_restring;
+
+		procedure activate_outer_restring (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.vias.restring_outer.active := true;
+			module.board.user_settings.vias.restring_outer.width := to_distance (f (6));
+		end activate_outer_restring;
+		
 	begin -- set_via_properties
 		case fields is
 			when 6 => 
 				-- board demo set via drill 0.3/dru
 				if f (5) = kw_drill then
 					if f (6) = kw_dru then
-						user_drill.active := false;
+						update_element (generic_modules, module_cursor, deactivate_drill'access);
 					else
-						user_drill.size := to_distance (f (6));
-						user_drill.active := true;
+						update_element (generic_modules, module_cursor, activate_drill'access);
 					end if;
 				else
 					expect_keywords;
@@ -1524,20 +1571,18 @@ is
 					-- board demo set via restring inner dru
 					if f (6) = kw_inner then
 						if f (7) = kw_dru then
-							user_restring_inner.active := false;
+							update_element (generic_modules, module_cursor, deactivate_inner_restring'access);
 						else
-							user_restring_inner.width := to_distance (f (7));
-							user_restring_inner.active := true;
+							update_element (generic_modules, module_cursor, activate_inner_restring'access);
 						end if;
 
 					-- board demo set via restring outer 0.2
 					-- board demo set via restring outer dru
 					elsif f (6) = kw_outer then
 						if f (7) = kw_dru then
-							user_restring_outer.active := false;
+							update_element (generic_modules, module_cursor, deactivate_outer_restring'access);
 						else
-							user_restring_outer.width := to_distance (f (7));
-							user_restring_outer.active := true;
+							update_element (generic_modules, module_cursor, activate_outer_restring'access);
 						end if;
 						
 					else
@@ -1558,7 +1603,10 @@ is
 		end case;
 
 	end set_via_properties;
-	
+
+	-- This procedure builds the final via and calls et_board_ops.place_via
+	-- accordingly. User specific settings are taken into account.
+	-- CS: Take into account class settings (via drill size).
 	procedure place_via is
 		net_name		: pac_net_name.bounded_string;
 		drill			: type_drill;
@@ -1636,21 +1684,27 @@ is
 
 		use et_design_rules;
 		rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
+
+		-- get the user specific settings of the board
+		settings : constant type_user_settings := get_user_settings (module_cursor);
 		
 	begin -- place_via
 		-- Set the drill size and restring according to a user specific values:
 		-- If user has not specified defaults, use values given in DRU data set:
 
 		-- set drill size:
-		if user_drill.active then
-			drill.diameter	:= user_drill.size;
+		if settings.vias.drill.active then
+			drill.diameter	:= settings.vias.drill.size;
 		else
 			drill.diameter	:= rules.sizes.drills;
 		end if;
 
+		-- CS: take minimum drill diameter as defined in net class into account
+		-- Requres a command like "set via drill class"
+		
 		-- set outer restring:
-		if user_restring_outer.active then
-			restring_outer	:= user_restring_outer.width;
+		if settings.vias.restring_outer.active then
+			restring_outer	:= settings.vias.restring_outer.width;
 		else
 			restring_outer	:= auto_set_restring (OUTER, drill.diameter);
 		end if;
@@ -1659,8 +1713,8 @@ is
 		restring_bottom	:= restring_outer; -- for blind via drilled from bottom
 
 		-- set inner restring:
-		if user_restring_inner.active then
-			restring_inner	:= user_restring_inner.width;
+		if settings.vias.restring_inner.active then
+			restring_inner	:= settings.vias.restring_inner.width;
 		else
 			restring_inner	:= auto_set_restring (INNER, drill.diameter, rules.sizes.restring.delta_size);
 		end if;

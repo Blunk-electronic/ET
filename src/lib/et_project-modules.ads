@@ -383,7 +383,11 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return et_design_rules.type_design_rules; -- JLP_ML4_standard.dru
 		
-	
+	function get_user_settings (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return et_pcb.type_user_settings;
+
+								   
 end et_project.modules;
 
 -- Soli Deo Gloria
