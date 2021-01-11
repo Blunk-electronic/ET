@@ -1480,9 +1480,86 @@ is
 		end case;
 	end place_text;
 
+	-- Pares a command like "board demo set via restring inner/outer 0.2"
+	-- or "board demo set via restring inner 0.2" and sets the value
+	-- for user specific via drill or restring.
+	-- If the field for the value contains the keyword "dru" instead of 0.2
+	-- then the user specific value is deactivated so that the value
+	-- is taken from the DRU settings.
+	procedure set_via_properties is
+		kw_drill	: constant string := "drill";
+		kw_restring	: constant string := "restring";
+		kw_inner	: constant string := "inner";
+		kw_outer	: constant string := "outer";
+		kw_dru		: constant string := "dru";
+
+		procedure expect_keywords is begin
+			raise syntax_error_1 with 
+				"ERROR: Expect keyword "
+				& enclose_in_quotes (kw_drill) & " or "
+				& enclose_in_quotes (kw_restring) 
+				& " after " & to_string (noun) & " !";
+		end expect_keywords;
+
+	begin -- set_via_properties
+		case fields is
+			when 6 => 
+				-- board demo set via drill 0.3/dru
+				if f (5) = kw_drill then
+					if f (6) = kw_dru then
+						user_drill.active := false;
+					else
+						user_drill.size := to_distance (f (6));
+						user_drill.active := true;
+					end if;
+				else
+					expect_keywords;
+				end if;
+
+			when 7 => 
+				-- board demo set via restring inner/outer 0.2
+				if f (5) = kw_restring then
+
+					-- board demo set via restring inner 0.2
+					-- board demo set via restring inner dru
+					if f (6) = kw_inner then
+						if f (7) = kw_dru then
+							user_restring_inner.active := false;
+						else
+							user_restring_inner.width := to_distance (f (7));
+							user_restring_inner.active := true;
+						end if;
+
+					-- board demo set via restring outer 0.2
+					-- board demo set via restring outer dru
+					elsif f (6) = kw_outer then
+						if f (7) = kw_dru then
+							user_restring_outer.active := false;
+						else
+							user_restring_outer.width := to_distance (f (7));
+							user_restring_outer.active := true;
+						end if;
+						
+					else
+						raise syntax_error_1 with
+							"ERROR: Expect keywords " 
+							& enclose_in_quotes (kw_inner) & " or "
+							& enclose_in_quotes (kw_outer) 
+							& " after " & enclose_in_quotes (kw_restring) & " !";
+					
+					end if;
+				else
+					expect_keywords;
+				end if;
+				
+			when 8 .. count_type'last => too_long;
+
+			when others => command_incomplete;
+		end case;
+
+	end set_via_properties;
+	
 	procedure place_via is
-		use et_terminals;
-		
 		net_name		: pac_net_name.bounded_string;
 		drill			: type_drill;
 		restring_outer	: type_restring_width;
@@ -1561,13 +1638,32 @@ is
 		rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
 		
 	begin -- place_via
-		-- Set the drill size and restring according to a user specific value:
-		-- If user has not specified a default, use values given in DRU data set:
-		drill.diameter	:= rules.sizes.drills;
-		restring_outer	:= auto_set_restring (OUTER, drill.diameter);
-		restring_top	:= restring_outer;
-		restring_bottom	:= restring_outer;
-		restring_inner	:= auto_set_restring (INNER, drill.diameter, rules.sizes.restring.delta_size);
+		-- Set the drill size and restring according to a user specific values:
+		-- If user has not specified defaults, use values given in DRU data set:
+
+		-- set drill size:
+		if user_drill.active then
+			drill.diameter	:= user_drill.size;
+		else
+			drill.diameter	:= rules.sizes.drills;
+		end if;
+
+		-- set outer restring:
+		if user_restring_outer.active then
+			restring_outer	:= user_restring_outer.width;
+		else
+			restring_outer	:= auto_set_restring (OUTER, drill.diameter);
+		end if;
+		
+		restring_top	:= restring_outer; -- for blind via drilled from top
+		restring_bottom	:= restring_outer; -- for blind via drilled from bottom
+
+		-- set inner restring:
+		if user_restring_inner.active then
+			restring_inner	:= user_restring_inner.width;
+		else
+			restring_inner	:= auto_set_restring (INNER, drill.diameter, rules.sizes.restring.delta_size);
+		end if;
 		
 		case fields is
 			when 7 => 
@@ -2622,11 +2718,13 @@ is
 								
 							when others => command_incomplete;
 						end case;
-						
+
+					when NOUN_VIA =>
+						set_via_properties;
+
 					when others => invalid_noun (to_string (noun));
-
 				end case;
-
+				
 	-- 			when VERB_SHOW => -- GUI related
 	-- 				case noun is
 	-- 					when NOUN_DEVICE =>

@@ -328,7 +328,7 @@ is
 				area		=> in_area,
 				context		=> context,
 				content		=> to_content (from & "-" & to),
-				size		=> circle.radius * text_size_multiplier,
+				size		=> radius_base * text_size_multiplier,
 				font		=> layer_numbers_font,
 				position	=> circle.center,
 				origin		=> false,
@@ -373,42 +373,36 @@ is
 					if current_layer = top_layer then
 						set_width_and_radius (element (v).restring_top);
 						draw_restring;
-
-						draw_numbers (
-							from	=> "T",
-							to		=> to_string (element (v).lower));
 					end if;
 
 					if current_layer = element (v).lower then
 						set_width_and_radius (element (v).restring_inner);
 						draw_restring;
-
-						draw_numbers (
-							from	=> "T",
-							to		=> to_string (element (v).lower));
 					end if;
 
+					draw_numbers (
+						from	=> "T",
+						to		=> to_string (element (v).lower));
 					
 				when BLIND_DRILLED_FROM_BOTTOM =>
 					if current_layer = bottom_layer then
 						set_width_and_radius (element (v).restring_bottom);
 						draw_restring;
-
-						draw_numbers (
-							from	=> "B",
-							to		=> to_string (element (v).upper));
 					end if;
 
 					if current_layer = element (v).upper then
 						set_width_and_radius (element (v).restring_inner);
 						draw_restring;
-
-						draw_numbers (
-							from	=> "B",
-							to		=> to_string (element (v).upper));
 					end if;
-											
+
+					draw_numbers (
+						from	=> "B",
+						to		=> to_string (element (v).upper));
+
+					
 			end case;
+
+			-- CS display drill size and restring ?			
 		end if;
 		
 	end query_via;

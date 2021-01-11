@@ -167,6 +167,25 @@ package et_vias is
 	-- size = drill radius * text_size_multiplier.
 	-- CS: Adjustment required for layer numbers greater 10.
 	text_size_multiplier : constant type_distance_positive := 0.3;
+
+	type type_user_specific_drill_size is record
+		active	: boolean := false;
+		size	: type_drill_size := type_drill_size'first;
+	end record;
+	
+	user_drill : type_user_specific_drill_size;
+
+
+	type type_user_specific_restring is record
+		active	: boolean := false;
+		width	: type_restring_width := type_restring_width'first;
+	end record;
+
+	-- CS: should be stored in the module:
+	user_restring_inner : type_user_specific_restring;
+	user_restring_outer : type_user_specific_restring;
+
+	
 	
 end et_vias;
 
