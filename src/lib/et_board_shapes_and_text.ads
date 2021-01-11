@@ -53,13 +53,15 @@ package et_board_shapes_and_text is
 		size_min 		: type_distance_positive;
 		size_max 		: type_distance_positive;
 		size_default 	: type_distance_positive;		
+
+		-- These parameters are relevant for vector text:
 		width_min 		: type_distance_positive;
 		width_max 		: type_distance_positive;
 		width_default 	: type_distance_positive;
 	end record;
 
 
-	-- FAB RELEVANT
+-- FAB RELEVANT
 	text_parameters_fab : constant type_text_parameters := (
 		size_min 		=> 0.5,
 		size_max 		=> 100.0,
@@ -78,14 +80,16 @@ package et_board_shapes_and_text is
 		line_width_default	=> text_parameters_fab.width_default);
 
 
-	-- DOCUMENTATION RELEVANT (NON-FAB)
+	
+
+-- DOCUMENTATION RELEVANT (NON-FAB)
 	text_parameters_doc : constant type_text_parameters := (
-		size_min 		=> 0.1,
+		size_min 		=> 0.01,
 		size_max 		=> 100.0,
-		size_default 	=> 1.5,
-		width_min 		=> 0.05,
+		size_default 	=> 1.0,
+		width_min 		=> 0.005,
 		width_max 		=> 10.0,
-		width_default 	=> 0.05);
+		width_default 	=> 0.005);
 	
 	package pac_text_doc is new et_text.generic_pac_text (
 		pac_shapes			=> pac_shapes,

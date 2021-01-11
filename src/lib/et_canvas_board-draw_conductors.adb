@@ -316,23 +316,25 @@ is
 				height		=> self.frame_height);
 		end draw_restring;
 
+		-- Draws the layer numbers. The text size is automatically
+		-- calculated according to text_size_multiplier.
 		procedure draw_numbers (from, to : in string) is 
 			use et_text;
 		begin
+			-- The layer numbers are displayed in a special color:
 			set_color_via_layers (context.cr);
-			
+
 			pac_draw_doc.draw_text (
 				area		=> in_area,
 				context		=> context,
 				content		=> to_content (from & "-" & to),
-				size		=> 0.2,
+				size		=> circle.radius * text_size_multiplier,
 				font		=> layer_numbers_font,
 				position	=> circle.center,
 				origin		=> false,
 				rotation	=> zero_rotation,
 				alignment	=> (center, center),
-				height		=> self.frame_height
-				);
+				height		=> self.frame_height);
 			
 		end draw_numbers;
 		
@@ -353,12 +355,15 @@ is
 						set_width_and_radius (element (v).restring_outer);
 					end if;
 
-					draw_restring;					
+					draw_restring;
+
+					-- NOTE: For a through via, no layer numbers are displayed.
 					
 				when BURIED =>
 					if element (v).layers.upper = current_layer or element (v).layers.lower = current_layer then
 						set_width_and_radius (element (v).restring_inner);
 						draw_restring;
+						
 						draw_numbers (
 							from	=> to_string (element (v).layers.upper),
 							to		=> to_string (element (v).layers.lower));
@@ -368,33 +373,41 @@ is
 					if current_layer = top_layer then
 						set_width_and_radius (element (v).restring_top);
 						draw_restring;
+
+						draw_numbers (
+							from	=> "T",
+							to		=> to_string (element (v).lower));
 					end if;
 
 					if current_layer = element (v).lower then
 						set_width_and_radius (element (v).restring_inner);
 						draw_restring;
-					end if;
 
-					draw_numbers (
-						from	=> "T",
-						to		=> to_string (element (v).lower));
+						draw_numbers (
+							from	=> "T",
+							to		=> to_string (element (v).lower));
+					end if;
 
 					
 				when BLIND_DRILLED_FROM_BOTTOM =>
 					if current_layer = bottom_layer then
 						set_width_and_radius (element (v).restring_bottom);
 						draw_restring;
+
+						draw_numbers (
+							from	=> "B",
+							to		=> to_string (element (v).upper));
 					end if;
 
 					if current_layer = element (v).upper then
 						set_width_and_radius (element (v).restring_inner);
 						draw_restring;
-					end if;
 
-					draw_numbers (
-						from	=> "B",
-						to		=> to_string (element (v).upper));
-					
+						draw_numbers (
+							from	=> "B",
+							to		=> to_string (element (v).upper));
+					end if;
+											
 			end case;
 		end if;
 		

@@ -160,6 +160,13 @@ package et_vias is
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
+
+	-- This constant defines the text size of the layer numbers
+	-- that are displayed in the center of the via.
+	-- The final text size is calculated by this formula:
+	-- size = drill radius * text_size_multiplier.
+	-- CS: Adjustment required for layer numbers greater 10.
+	text_size_multiplier : constant type_distance_positive := 0.3;
 	
 end et_vias;
 
