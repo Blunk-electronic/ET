@@ -484,14 +484,154 @@ is
 		-- CS reset parameter-found-flags
 	end reset_net_class;
 
+	procedure read_net_class is 
+		use et_terminals;
+		use et_drills;
+		use et_packages;									
+		use et_pcb;
+		kw : constant string := f (line, 1);
+	begin
+		if kw = keyword_name then
+			expect_field_count (line, 2);
+			net_class_name := to_net_class_name (f (line,2));
+
+		-- CS: In the following: set a corresponding parameter-found-flag
+		elsif kw = keyword_description then
+			expect_field_count (line, 2);
+			net_class.description := to_net_class_description (f (line,2));
+			
+		elsif kw = keyword_clearance then
+			expect_field_count (line, 2);
+			net_class.clearance := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
+			validate_track_clearance (net_class.clearance);
+			-- CS validate against dru settings
+												
+		elsif kw = keyword_track_width_min then
+			expect_field_count (line, 2);
+			net_class.track_width_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
+			validate_track_width (net_class.track_width_min);
+			-- CS validate against dru settings
+			
+		elsif kw = keyword_via_drill_min then
+			expect_field_count (line, 2);
+			net_class.via_drill_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
+			validate_drill_size (net_class.via_drill_min);
+			-- CS validate against dru settings
+			
+		elsif kw = keyword_via_restring_min then
+			expect_field_count (line, 2);
+			net_class.via_restring_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
+			validate_restring_width (net_class.via_restring_min);
+			-- CS validate against dru settings
+			
+		elsif kw = keyword_micro_via_drill_min then
+			expect_field_count (line, 2);
+			net_class.micro_via_drill_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
+			validate_drill_size (net_class.micro_via_drill_min);
+			-- CS validate against dru settings
+			
+		elsif kw = keyword_micro_via_restring_min then
+			expect_field_count (line, 2);
+			net_class.micro_via_restring_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
+			validate_restring_width (net_class.micro_via_restring_min);
+			-- CS validate against dru settings
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_net_class;
+
+	
 	-- nets
 	net_name	: pac_net_name.bounded_string; -- motor_on_off
 	net			: et_schematic.type_net;
 
+	procedure read_net is
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_name then
+			expect_field_count (line, 2);
+			net_name := to_net_name (f (line,2));
+			
+		elsif kw = keyword_class then
+			-- CS: imported kicad projects lack the class name sometimes.
+			-- For this reason we do not abort in such cases but issue a warning.
+			-- If abort is a must, the next two statements are required. 
+			-- The "if" construct must be in comments instead.
+			-- It is perhaps more reasonable to care for this flaw in et_kicad_pcb package.
+			
+			-- expect_field_count (line, 2);
+			-- net.class := et_pcb.to_net_class_name (f (line,2));
+			
+			if field_count (line) = 2 then
+				net.class := et_pcb.to_net_class_name (f (line,2));
+			else
+				net.class := et_pcb.net_class_name_default;
+				log (text => message_warning & affected_line (line) & "No net class specified ! Assume default class !");
+			end if;
+		elsif kw = keyword_scope then
+			expect_field_count (line, 2);
+			net.scope := et_netlists.to_net_scope (f (line,2));
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_net;
+	
 	strands : et_schematic.pac_strands.list;
 	strand	: et_schematic.type_strand;
+
+	procedure read_strand is
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
+			expect_field_count (line, 7);
+
+			-- extract strand position starting at field 2
+			strand.position := to_position (line, 2);
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_strand;
+	
 	net_segments : et_schematic.pac_net_segments.list;
 	net_segment	: et_schematic.type_net_segment;
+	net_junctions : et_schematic.type_junctions;
+	
+	procedure set_junction (place : in string) is begin
+		if f (line, 2) = keyword_start then
+			net_junctions.start_point := true;
+		end if;
+		
+		if f (line, 2) = keyword_end then
+			net_junctions.end_point := true;
+		end if;
+	end set_junction;
+	
+	procedure read_net_segment is
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_start then -- "start x 3 y 4"
+			expect_field_count (line, 5);
+
+			-- extract start position starting at field 2
+			net_segment.start_point := to_position (line, from => 2);
+			
+		elsif kw = keyword_end then -- "end x 6 y 4"
+			expect_field_count (line, 5);
+
+			-- extract end position starting at field 2
+			net_segment.end_point := to_position (line, from => 2);
+
+		elsif kw = keyword_junction then -- "junction start/end"
+			expect_field_count (line, 2);
+			set_junction (f (line, 2));
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_net_segment;
 	
 	net_labels				: et_schematic.pac_net_labels.list;
 	net_label 				: et_schematic.type_net_label_base;
@@ -500,6 +640,47 @@ is
 
 	-- The net label direction is relevant if appearance is TAG:
 	net_label_direction : et_schematic.type_net_label_direction := et_schematic.type_net_label_direction'first;
+
+	procedure read_label is
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_position then -- position x 148.59 y 104.59
+			expect_field_count (line, 5);
+
+			-- extract label position starting at field 2 of line
+			net_label.position := to_position (line, 2);
+			
+		elsif kw = keyword_rotation then -- rotation 0.0
+			expect_field_count (line, 2);
+			net_label_rotation := pac_geometry_sch.to_rotation (f (line, 2));
+
+		elsif kw = et_text.keyword_size then -- size 1.3
+			expect_field_count (line, 2);
+			net_label.size := pac_geometry_sch.to_distance (f (line, 2));
+
+-- 									elsif kw = keyword_style then -- style normal
+-- 										expect_field_count (line, 2);
+-- 										net_label.style := et_symbols.to_text_style (f (line, 2));
+
+		elsif kw = et_text.keyword_line_width then -- line_width 0.1
+			expect_field_count (line, 2);
+			net_label.width := pac_geometry_sch.to_distance (f (line, 2));
+
+		elsif kw = keyword_appearance then -- appearance tag/simple
+			expect_field_count (line, 2);
+			net_label_appearance := et_schematic.to_appearance (f (line, 2));
+
+		elsif kw = et_schematic.keyword_direction then -- direction input/output
+			expect_field_count (line, 2);
+			net_label_direction := et_schematic.to_direction (f (line, 2));
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_label;
+
+
 	
 	net_device_port : et_schematic.type_device_port;
 	net_device_ports : et_schematic.pac_device_ports.set;
@@ -509,9 +690,102 @@ is
 
 	net_netchanger_port : et_netlists.type_port_netchanger;
 	net_netchanger_ports : et_netlists.pac_netchanger_ports.set;
+
+	-- read port parameters
+	-- NOTE: A device, submodule or netchanger port is defined by a
+	-- single line.
+	-- Upon reading the line like "device/submodule/netchanger x port 1" 
+	-- the port is appended to the corresponding port collection 
+	-- immediately when the line is read. See main code of process_line.
+	procedure read_ports is
+		use et_symbols;
+		kw : constant string := f (line, 1);
+	begin
+		if kw = keyword_device then -- device R1 port 1
+			expect_field_count (line, 4);
+
+			net_device_port.device_name := to_device_name (f (line, 2)); -- IC3
+
+			if f (line, 3) = keyword_port then -- port
+				net_device_port.port_name := to_port_name (f (line, 4)); -- CE
+
+				-- Insert port in port collection of device ports. First make sure it is
+				-- not already in the net segment.
+				if et_schematic.pac_device_ports.contains (net_device_ports, net_device_port) then
+					log (ERROR, "device " & to_string (net_device_port.device_name) &
+						" port " & to_string (net_device_port.port_name) & 
+						" already in net segment !", console => true);
+					raise constraint_error;
+				end if;
+
+				et_schematic.pac_device_ports.insert (net_device_ports, net_device_port); 
+
+			else
+				invalid_keyword (f (line, 3));
+			end if;
+
+		elsif kw = keyword_submodule then -- submodule motor_driver port mot_on_off
+			expect_field_count (line, 4);
+			
+			net_submodule_port.module_name := et_general.to_instance_name (f (line, 2)); -- motor_driver
+
+			if f (line, 3) = keyword_port then -- port
+				net_submodule_port.port_name := to_net_name (f (line, 4)); -- A
+
+				-- Insert submodule port in collection of submodule ports. First make sure it is
+				-- not already in the net segment.
+				if et_schematic.pac_submodule_ports.contains (net_submodule_ports, net_submodule_port) then
+					log (ERROR, "submodule " & to_string (net_submodule_port.module_name) &
+						" port " & et_general.to_string (net_submodule_port.port_name) & 
+						" already in net segment !", console => true);
+					raise constraint_error;
+				end if;
+				
+				et_schematic.pac_submodule_ports.insert (net_submodule_ports, net_submodule_port);
+
+				-- clean up for next submodule port
+				net_submodule_port := (others => <>);
+
+			else
+				invalid_keyword (f (line, 3));
+			end if;
+
+		elsif kw = keyword_netchanger then -- netchanger 1 port master/slave
+			expect_field_count (line, 4);
+			
+			net_netchanger_port.index := et_submodules.to_netchanger_id (f (line, 2)); -- 1
+
+			if f (line, 3) = keyword_port then -- port
+				net_netchanger_port.port := et_submodules.to_port_name (f (line, 4)); -- MASTER, SLAVE
+
+				-- Insert netchanger port in collection of netchanger ports. First make sure it is
+				-- not already in the net segment.
+				if et_netlists.pac_netchanger_ports.contains (net_netchanger_ports, net_netchanger_port) then
+					log (ERROR, "netchanger" & et_submodules.to_string (net_netchanger_port.index) &
+						et_submodules.to_string (net_netchanger_port.port) & " port" & 
+						" already in net segment !", console => true);
+					raise constraint_error;
+				end if;
+				
+				et_netlists.pac_netchanger_ports.insert (net_netchanger_ports, net_netchanger_port);
+
+				-- clean up for next netchanger port
+				net_netchanger_port := (others => <>);
+
+			else
+				invalid_keyword (f (line, 3));
+			end if;
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_ports;
+
+
 	
 	route		: et_pcb.type_route;
 
+	
 	sheet_descriptions			: et_frames.pac_schematic_descriptions.map;
 	sheet_description_category	: et_frames.type_schematic_sheet_category := 
 		et_frames.schematic_sheet_category_default; -- product/develpment/routing
@@ -580,19 +854,17 @@ is
 	end read_sheet_description;
 	
 	-- submodules
-	submodule_port			: et_submodules.type_submodule_port;
 	submodule_port_name		: et_general.pac_net_name.bounded_string; -- RESET
 	submodule_ports			: et_submodules.pac_submodule_ports.map;
 	submodule_name 			: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
-	submodule				: et_submodules.type_submodule;
 
 	schematic_text : et_schematic.type_text;
 
 	-- The temporarily device will exist where "device" points at:
 	device					: access et_schematic.type_device_sch;
 	
-	device_name					: type_device_name; -- C12
-	device_model				: pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
+	device_name				: type_device_name; -- C12
+	device_model			: pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 	
 	
 	device_value			: pac_device_value.bounded_string; -- 470R
@@ -683,6 +955,363 @@ is
 		end if;
 	end validate_signal_layer;
 
+	procedure read_cutout_route is
+		use et_packages;
+		use et_pcb_coordinates.pac_geometry_brd;
+		use et_pcb_stack;
+		kw : constant  string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+			expect_field_count (line, 2);
+			board_easing.style := to_corner_easing (f (line, 2));
+
+		elsif kw = keyword_easing_radius then -- easing_radius 0.3
+			expect_field_count (line, 2);
+			board_easing.radius := to_distance (f (line, 2));
+
+		elsif kw = keyword_layer then -- layer 2
+			expect_field_count (line, 2);
+			signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+			validate_signal_layer;
+
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_cutout_route;
+
+	procedure read_cutout_non_conductor is
+		use et_packages;
+		use et_board_shapes_and_text.pac_shapes;
+		use et_pcb_coordinates.pac_geometry_brd;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+			expect_field_count (line, 2);													
+			board_easing.style := to_corner_easing (f (line, 2));
+
+		elsif kw = keyword_easing_radius then -- easing_radius 0.4
+			expect_field_count (line, 2);													
+			board_easing.radius := to_distance (f (line, 2));
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_cutout_non_conductor;
+
+	procedure read_cutout_restrict is
+		use et_pcb_stack;
+		use et_packages;
+		use et_board_shapes_and_text.pac_shapes;
+		use et_pcb_coordinates.pac_geometry_brd;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_layers then -- layers 1 14 3
+
+			-- there must be at least two fields:
+			expect_field_count (line => line, count_expected => 2, warn => false);
+			signal_layers := to_layers (line, check_layers);
+
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_cutout_restrict;
+
+	-- Reads cutout zone in conductor layer.
+	-- NOTE: This is about floating conductor zones. Has nothing to
+	-- do with nets and routes.
+	procedure read_cutout_conductor_non_electric is
+		use et_packages;
+		use et_board_shapes_and_text.pac_shapes;									
+		use et_pcb_stack;
+		use et_pcb_coordinates.pac_geometry_brd;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+			expect_field_count (line, 2);													
+			board_easing.style := to_corner_easing (f (line, 2));
+
+		elsif kw = keyword_easing_radius then -- easing_radius 0.4
+			expect_field_count (line, 2);													
+			board_easing.radius := to_distance (f (line, 2));
+			
+		elsif kw = keyword_layer then -- layer 1
+			expect_field_count (line, 2);
+			signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+			validate_signal_layer;
+
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_cutout_conductor_non_electric;
+
+	-- Reads parameters of a conductor fill zone connected with a net:
+	procedure read_fill_zone_route is
+		use et_packages;
+		use et_pcb_coordinates.pac_geometry_brd;
+		use et_pcb;
+		use et_pcb_stack;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = et_pcb.keyword_priority then -- priority 2
+			expect_field_count (line, 2);
+			polygon_priority := et_pcb.to_polygon_priority (f (line, 2));
+
+		elsif kw = keyword_isolation then -- isolation 0.5
+			expect_field_count (line, 2);
+			polygon_isolation := to_distance (f (line, 2));
+			
+		elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+			expect_field_count (line, 2);
+			board_easing.style := to_corner_easing (f (line, 2));
+
+		elsif kw = keyword_easing_radius then -- easing_radius 0.3
+			expect_field_count (line, 2);
+			board_easing.radius := to_distance (f (line, 2));
+
+		elsif kw = keyword_fill_style then -- fill_style solid,hatched
+			expect_field_count (line, 2);
+			board_fill_style := to_fill_style (f (line, 2));
+
+		elsif kw = keyword_hatching_line_width then -- hatching_line_width 1
+			expect_field_count (line, 2);
+			board_hatching_conductor.line_width := to_distance (f (line, 2));
+
+		elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 1
+			expect_field_count (line, 2);
+			board_hatching_conductor.spacing := to_distance (f (line, 2));
+
+		elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
+			expect_field_count (line, 2);
+			board_hatching_conductor.border_width := to_distance (f (line, 2));
+			
+		elsif kw = keyword_layer then -- layer 2
+			expect_field_count (line, 2);
+			signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+			validate_signal_layer;
+			
+		elsif kw = keyword_min_width then -- min_width 0.3
+			expect_field_count (line, 2);
+			polygon_width_min := to_distance (f (line, 2));
+
+		elsif kw = keyword_pad_technology then -- pad_technology smt_only/tht_only/smt_and_tht
+			expect_field_count (line, 2);
+			et_pcb_rw.thermal.technology := to_pad_technology (f (line, 2));
+
+		elsif kw = keyword_pad_connection then -- pad_connection thermal/solid
+			expect_field_count (line, 2);
+			polygon_pad_connection := to_pad_connection (f (line, 2));
+			
+		elsif kw = keyword_thermal_width then -- thermal_width 0.3
+			expect_field_count (line, 2);
+			et_pcb_rw.thermal.width := to_distance (f (line, 2));
+
+		elsif kw = keyword_thermal_gap then -- thermal_gap 0.7
+			expect_field_count (line, 2);
+			et_pcb_rw.thermal.gap := to_distance (f (line, 2));
+
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_fill_zone_route;
+
+	procedure read_fill_zone_non_conductor is
+		use et_packages;
+		use et_board_shapes_and_text.pac_shapes;
+		use et_pcb_coordinates.pac_geometry_brd;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_fill_style then -- fill_style solid/hatched
+			expect_field_count (line, 2);													
+			board_fill_style := to_fill_style (f (line, 2));
+
+		elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+			expect_field_count (line, 2);													
+			board_easing.style := to_corner_easing (f (line, 2));
+
+		elsif kw = keyword_easing_radius then -- easing_radius 0.4
+			expect_field_count (line, 2);													
+			board_easing.radius := to_distance (f (line, 2));
+			
+		elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+			expect_field_count (line, 2);													
+			board_hatching.line_width := to_distance (f (line, 2));
+
+		elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+			expect_field_count (line, 2);													
+			board_hatching.spacing := to_distance (f (line, 2));
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_fill_zone_non_conductor;
+
+	procedure read_fill_zone_keepout is
+		use et_board_shapes_and_text.pac_shapes;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_filled then -- filled yes/no
+			expect_field_count (line, 2);													
+			board_filled := to_filled (f (line, 2));
+
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_fill_zone_keepout;
+
+	procedure read_fill_zone_restrict is
+		use et_pcb_stack;
+		use et_packages;
+		use et_board_shapes_and_text.pac_shapes;
+		use et_pcb_coordinates.pac_geometry_brd;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_filled then -- filled yes/no
+			expect_field_count (line, 2);													
+			board_filled := to_filled (f (line, 2));
+
+		elsif kw = keyword_layers then -- layers 1 14 3
+
+			-- there must be at least two fields:
+			expect_field_count (line => line, count_expected => 2, warn => false);
+			signal_layers := to_layers (line, check_layers);
+
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_fill_zone_restrict;
+
+	procedure read_fill_zone_conductor_non_electric is
+		use et_packages;
+		use et_board_shapes_and_text.pac_shapes;									
+		use et_pcb_stack;
+		use et_pcb_coordinates.pac_geometry_brd;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_fill_style then -- fill_style solid/hatched
+			expect_field_count (line, 2);													
+			board_fill_style := to_fill_style (f (line, 2));
+
+		elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+			expect_field_count (line, 2);													
+			board_easing.style := to_corner_easing (f (line, 2));
+
+		elsif kw = keyword_easing_radius then -- easing_radius 0.4
+			expect_field_count (line, 2);													
+			board_easing.radius := to_distance (f (line, 2));
+			
+		elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+			expect_field_count (line, 2);													
+			board_hatching_conductor.line_width := to_distance (f (line, 2));
+
+		elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+			expect_field_count (line, 2);													
+			board_hatching_conductor.spacing := to_distance (f (line, 2));
+
+		elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
+			expect_field_count (line, 2);													
+			board_hatching_conductor.border_width := to_distance (f (line, 2));
+			
+		elsif kw = keyword_min_width then -- min_width 0.5
+			expect_field_count (line, 2);
+			polygon_width_min := to_distance (f (line, 2));
+			
+		elsif kw = keyword_layer then -- layer 1
+			expect_field_count (line, 2);
+			signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+			validate_signal_layer;
+			
+		elsif kw = et_pcb.keyword_priority then -- priority 2
+			expect_field_count (line, 2);
+			polygon_priority := et_pcb.to_polygon_priority (f (line, 2));
+
+		elsif kw = keyword_isolation then -- isolation 0.5
+			expect_field_count (line, 2);
+			polygon_isolation := to_distance (f (line, 2));
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_fill_zone_conductor_non_electric;
+
+	
+	submodule : et_submodules.type_submodule;
+
+	-- Reads the parameters of a submodule:
+	procedure read_submodule is
+		use et_submodules;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_file then -- file $ET_TEMPLATES/motor_driver.mod
+			expect_field_count (line, 2);
+			submodule.file := et_submodules.to_submodule_path (f (line, 2));
+
+		elsif kw = keyword_name then -- name stepper_driver
+			expect_field_count (line, 2);
+			submodule_name := to_instance_name (f (line, 2));
+
+		elsif kw = keyword_position then -- position sheet 3 x 130 y 210
+			expect_field_count (line, 7);
+
+			-- extract position of submodule starting at field 2
+			submodule.position := to_position (line, 2);
+
+		elsif kw = et_submodules.keyword_size then -- size x 30 y 30
+			expect_field_count (line, 5);
+
+			-- extract size of submodule starting at field 2
+			submodule.size := to_size (line, 2);
+
+		elsif kw = keyword_position_in_board then -- position_in_board x 23 y 0.2 rotation 90.0
+			expect_field_count (line, 7);
+
+			-- extract position of submodule starting at field 2
+			submodule.position_in_board := to_position (line, 2);
+
+		elsif kw = keyword_view_mode then -- view_mode origin/instance
+			expect_field_count (line, 2);
+			submodule.view_mode := et_submodules.to_view_mode (f (line, 2));
+
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_submodule;
+
+	
+	submodule_port : et_submodules.type_submodule_port;
+	
+	procedure read_submodule_port is
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_name then -- name clk_out
+			expect_field_count (line, 2);
+			submodule_port_name := to_net_name (f (line, 2));
+
+		elsif kw = keyword_position then -- position x 0 y 10
+			expect_field_count (line, 5);
+
+			-- extract port position starting at field 2
+			submodule_port.position := to_position (line, 2);
+
+		elsif kw = et_submodules.keyword_direction then -- direction master/slave
+			expect_field_count (line, 2);
+
+			submodule_port.direction := et_submodules.to_port_name (f (line, 2));
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_submodule_port;
+
 	
 	-- 		board_track_circle : et_pcb.type_copper_circle;
 
@@ -692,20 +1321,6 @@ is
 
 	-- This variable is used for text placeholders in conductor layers:
 	board_text_conductor_placeholder : et_pcb.type_text_placeholder_conductors;
-
-	
-	net_junctions : et_schematic.type_junctions;
-	
-	procedure set_junction (place : in string) is begin
-		if f (line, 2) = keyword_start then
-			net_junctions.start_point := true;
-		end if;
-		
-		if f (line, 2) = keyword_end then
-			net_junctions.end_point := true;
-		end if;
-	end set_junction;
-
 
 	
 	procedure read_schematic_text is
@@ -775,6 +1390,8 @@ is
 					expect_field_count (line, 2);
 					board_text.line_width := to_distance (f (line, 2));
 
+					-- CS validate against dru settings
+					
 				elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 					expect_field_count (line, 5);
 
@@ -813,6 +1430,8 @@ is
 			expect_field_count (line, 2);
 			board_text_conductor.line_width := to_distance (f (line, 2));
 
+			-- CS validate against dru settings
+			
 		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
 
@@ -1036,15 +1655,18 @@ is
 		elsif kw = keyword_diameter then -- diameter 0.35
 			expect_field_count (line, 2);
 			drill.diameter := to_distance (f (line, 2));
-
+			-- CS validate against dru settings
+						
 		elsif kw = keyword_restring_outer then -- restring_outer 0.3
 			expect_field_count (line, 2);
 			via_restring_outer := to_distance (f (line, 2));
-
+			-- CS validate against dru settings
+			
 		elsif kw = keyword_restring_inner then -- restring_inner 0.34
 			expect_field_count (line, 2);
 			via_restring_inner := to_distance (f (line, 2));
-
+			-- CS validate against dru settings
+						
 		elsif kw = et_vias.keyword_layers then -- layers 2 3 (for buried via only)
 			expect_field_count (line, 3);
 			via_layers_buried := to_buried_layers (
@@ -1116,7 +1738,7 @@ is
 		-- via_restring_outer := 
 	end build_via;
 
-	
+	-- temporarily storage place for user settings
 	user_settings_board : et_pcb.type_user_settings;
 	
 	procedure read_user_settings_vias is
@@ -4843,77 +5465,13 @@ is
 					
 				when SEC_NET_CLASS =>
 					case stack.parent is
-						when SEC_NET_CLASSES =>
-							declare
-								use et_terminals;
-								use et_drills;
-								use et_packages;									
-								use et_pcb;
-								kw : string := f (line, 1);
-							begin
-								if kw = keyword_name then
-									expect_field_count (line, 2);
-									net_class_name := to_net_class_name (f (line,2));
-
-								-- CS: In the following: set a corresponding parameter-found-flag
-								elsif kw = keyword_description then
-									expect_field_count (line, 2);
-									net_class.description := to_net_class_description (f (line,2));
-									
-								elsif kw = keyword_clearance then
-									expect_field_count (line, 2);
-									net_class.clearance := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
-									validate_track_clearance (net_class.clearance);
-									
-								elsif kw = keyword_track_width_min then
-									expect_field_count (line, 2);
-									net_class.track_width_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
-									validate_track_width (net_class.track_width_min);
-									
-								elsif kw = keyword_via_drill_min then
-									expect_field_count (line, 2);
-									net_class.via_drill_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
-									validate_drill_size (net_class.via_drill_min);
-									
-								elsif kw = keyword_via_restring_min then
-									expect_field_count (line, 2);
-									net_class.via_restring_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
-									validate_restring_width (net_class.via_restring_min);
-									
-								elsif kw = keyword_micro_via_drill_min then
-									expect_field_count (line, 2);
-									net_class.micro_via_drill_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
-									validate_drill_size (net_class.micro_via_drill_min);
-									
-								elsif kw = keyword_micro_via_restring_min then
-									expect_field_count (line, 2);
-									net_class.micro_via_restring_min := et_pcb_coordinates.pac_geometry_brd.to_distance (f (line,2));
-									validate_restring_width (net_class.micro_via_restring_min);
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-
+						when SEC_NET_CLASSES => read_net_class;
 						when others => invalid_section;
 					end case;
 
 				when SEC_STRAND =>
 					case stack.parent is
-						when SEC_STRANDS =>
-							declare
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
-									expect_field_count (line, 7);
-
-									-- extract strand position starting at field 2
-									strand.position := to_position (line, 2);
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-						
+						when SEC_STRANDS => read_strand;
 						when others => invalid_section;
 					end case;
 					
@@ -4931,40 +5489,7 @@ is
 				
 				when SEC_NET =>
 					case stack.parent is
-						when SEC_NETS =>
-							declare
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_name then
-									expect_field_count (line, 2);
-									net_name := to_net_name (f (line,2));
-									
-								elsif kw = keyword_class then
-									-- CS: imported kicad projects lack the class name sometimes.
-									-- For this reason we do not abort in such cases but issue a warning.
-									-- If abort is a must, the next two statements are required. 
-									-- The "if" construct must be in comments instead.
-									-- It is perhaps more reasonable to care for this flaw in et_kicad_pcb package.
-									
-									-- expect_field_count (line, 2);
-									-- net.class := et_pcb.to_net_class_name (f (line,2));
-									
-									if field_count (line) = 2 then
-										net.class := et_pcb.to_net_class_name (f (line,2));
-									else
-										net.class := et_pcb.net_class_name_default;
-										log (text => message_warning & affected_line (line) & "No net class specified ! Assume default class !");
-									end if;
-								elsif kw = keyword_scope then
-									expect_field_count (line, 2);
-									net.scope := et_netlists.to_net_scope (f (line,2));
-									
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-									
+						when SEC_NETS => read_net;
 						when others => invalid_section;
 					end case;
 
@@ -4976,31 +5501,7 @@ is
 					
 				when SEC_SEGMENT =>
 					case stack.parent is
-						when SEC_SEGMENTS =>
-							declare
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_start then -- "start x 3 y 4"
-									expect_field_count (line, 5);
-
-									-- extract start position starting at field 2
-									net_segment.start_point := to_position (line, from => 2);
-									
-								elsif kw = keyword_end then -- "end x 6 y 4"
-									expect_field_count (line, 5);
-
-									-- extract end position starting at field 2
-									net_segment.end_point := to_position (line, from => 2);
-
-								elsif kw = keyword_junction then -- "junction start/end"
-									expect_field_count (line, 2);
-									set_junction (f (line, 2));
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-									
+						when SEC_SEGMENTS => read_net_segment;
 						when others => invalid_section;
 					end case;
 
@@ -5018,150 +5519,19 @@ is
 					
 				when SEC_PORTS =>
 					case stack.parent is 
-						when SEC_SEGMENT =>
-							-- read port parameters
-							-- NOTE: A device, submodule or netchanger port is defined by a
-							-- single line.
-							-- Upon reading the line like "device/submodule/netchanger x port 1" 
-							-- the port is appended to the corresponding port collection 
-							-- immediately when the line is read. See main code of process_line.
-							declare
-								use et_symbols;
-								kw : string := f (line, 1);
-							begin
-								if kw = keyword_device then -- device R1 port 1
-									expect_field_count (line, 4);
-
-									net_device_port.device_name := to_device_name (f (line, 2)); -- IC3
-
-									if f (line, 3) = keyword_port then -- port
-										net_device_port.port_name := to_port_name (f (line, 4)); -- CE
-
-										-- Insert port in port collection of device ports. First make sure it is
-										-- not already in the net segment.
-										if et_schematic.pac_device_ports.contains (net_device_ports, net_device_port) then
-											log (ERROR, "device " & to_string (net_device_port.device_name) &
-												" port " & to_string (net_device_port.port_name) & 
-												" already in net segment !", console => true);
-											raise constraint_error;
-										end if;
-
-										et_schematic.pac_device_ports.insert (net_device_ports, net_device_port); 
-
-									else
-										invalid_keyword (f (line, 3));
-									end if;
-
-								elsif kw = keyword_submodule then -- submodule motor_driver port mot_on_off
-									expect_field_count (line, 4);
-									
-									net_submodule_port.module_name := et_general.to_instance_name (f (line, 2)); -- motor_driver
-
-									if f (line, 3) = keyword_port then -- port
-										net_submodule_port.port_name := to_net_name (f (line, 4)); -- A
-
-										-- Insert submodule port in collection of submodule ports. First make sure it is
-										-- not already in the net segment.
-										if et_schematic.pac_submodule_ports.contains (net_submodule_ports, net_submodule_port) then
-											log (ERROR, "submodule " & to_string (net_submodule_port.module_name) &
-												" port " & et_general.to_string (net_submodule_port.port_name) & 
-												" already in net segment !", console => true);
-											raise constraint_error;
-										end if;
-										
-										et_schematic.pac_submodule_ports.insert (net_submodule_ports, net_submodule_port);
-
-										-- clean up for next submodule port
-										net_submodule_port := (others => <>);
-
-									else
-										invalid_keyword (f (line, 3));
-									end if;
-
-								elsif kw = keyword_netchanger then -- netchanger 1 port master/slave
-									expect_field_count (line, 4);
-									
-									net_netchanger_port.index := et_submodules.to_netchanger_id (f (line, 2)); -- 1
-
-									if f (line, 3) = keyword_port then -- port
-										net_netchanger_port.port := et_submodules.to_port_name (f (line, 4)); -- MASTER, SLAVE
-
-										-- Insert netchanger port in collection of netchanger ports. First make sure it is
-										-- not already in the net segment.
-										if et_netlists.pac_netchanger_ports.contains (net_netchanger_ports, net_netchanger_port) then
-											log (ERROR, "netchanger" & et_submodules.to_string (net_netchanger_port.index) &
-												et_submodules.to_string (net_netchanger_port.port) & " port" & 
-												" already in net segment !", console => true);
-											raise constraint_error;
-										end if;
-										
-										et_netlists.pac_netchanger_ports.insert (net_netchanger_ports, net_netchanger_port);
-
-										-- clean up for next netchanger port
-										net_netchanger_port := (others => <>);
-
-									else
-										invalid_keyword (f (line, 3));
-									end if;
-									
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-
+						when SEC_SEGMENT => read_ports;
 						when SEC_SUBMODULE => null; -- nothing to do
-							
 						when others => invalid_section;
 					end case;
 
 				when SEC_LABEL =>
 					case stack.parent is
-						when SEC_LABELS =>
-							declare
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_position then -- position x 148.59 y 104.59
-									expect_field_count (line, 5);
-
-									-- extract label position starting at field 2 of line
-									net_label.position := to_position (line, 2);
-									
-								elsif kw = keyword_rotation then -- rotation 0.0
-									expect_field_count (line, 2);
-									net_label_rotation := pac_geometry_sch.to_rotation (f (line, 2));
-
-								elsif kw = et_text.keyword_size then -- size 1.3
-									expect_field_count (line, 2);
-									net_label.size := pac_geometry_sch.to_distance (f (line, 2));
-
--- 									elsif kw = keyword_style then -- style normal
--- 										expect_field_count (line, 2);
--- 										net_label.style := et_symbols.to_text_style (f (line, 2));
-
-								elsif kw = et_text.keyword_line_width then -- line_width 0.1
-									expect_field_count (line, 2);
-									net_label.width := pac_geometry_sch.to_distance (f (line, 2));
-
-								elsif kw = keyword_appearance then -- appearance tag/simple
-									expect_field_count (line, 2);
-									net_label_appearance := et_schematic.to_appearance (f (line, 2));
-
-								elsif kw = et_schematic.keyword_direction then -- direction input/output
-									expect_field_count (line, 2);
-									net_label_direction := et_schematic.to_direction (f (line, 2));
-									
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-
+						when SEC_LABELS => read_label;
 						when others => invalid_section;
 					end case;
 				
 				when SEC_LINE =>
 					case stack.parent is
-
 						when SEC_CONTOURS => read_board_line (line); -- of a cutout or fill zone
 							
 						when SEC_ROUTE =>
@@ -5211,8 +5581,7 @@ is
 								when others => invalid_section;
 							end case;
 							
-						when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-							
+						when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>							
 							if not read_board_line (line) then
 								declare
 									kw : string := f (line, 1);
@@ -5252,8 +5621,7 @@ is
 								end;
 							end if;
 							
-						when SEC_PCB_CONTOURS_NON_PLATED => 
-
+						when SEC_PCB_CONTOURS_NON_PLATED =>
 							if not read_board_line (line) then
 								declare
 									kw : string := f (line, 1);
@@ -5274,7 +5642,6 @@ is
 
 				when SEC_ARC =>
 					case stack.parent is
-
 						when SEC_CONTOURS => read_board_arc (line);
 						
 						when SEC_ROUTE =>
@@ -5394,7 +5761,6 @@ is
 
 				when SEC_CIRCLE =>
 					case stack.parent is
-
 						when SEC_CONTOURS => read_board_circle (line);
 						
 						when SEC_TOP | SEC_BOTTOM => 
@@ -5553,55 +5919,11 @@ is
 
 				when SEC_CUTOUT_ZONE =>
 					case stack.parent is
-						when SEC_ROUTE =>
-							declare
-								use et_packages;
-								use et_pcb_coordinates.pac_geometry_brd;
-								use et_pcb_stack;
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
-									expect_field_count (line, 2);
-									board_easing.style := to_corner_easing (f (line, 2));
-
-								elsif kw = keyword_easing_radius then -- easing_radius 0.3
-									expect_field_count (line, 2);
-									board_easing.radius := to_distance (f (line, 2));
-
-								elsif kw = keyword_layer then -- layer 2
-									expect_field_count (line, 2);
-									signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
-									validate_signal_layer;
-
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-
+						when SEC_ROUTE => read_cutout_route;
 						when SEC_TOP | SEC_BOTTOM => 
 							case stack.parent (degree => 2) is
 								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-									SEC_STENCIL | SEC_STOP_MASK =>
-									declare
-										use et_packages;
-										use et_board_shapes_and_text.pac_shapes;
-										use et_pcb_coordinates.pac_geometry_brd;
-										kw : string := f (line, 1);
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
-											expect_field_count (line, 2);													
-											board_easing.style := to_corner_easing (f (line, 2));
-
-										elsif kw = keyword_easing_radius then -- easing_radius 0.4
-											expect_field_count (line, 2);													
-											board_easing.radius := to_distance (f (line, 2));
-											
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
+									SEC_STENCIL | SEC_STOP_MASK => read_cutout_non_conductor;
 
 								when SEC_KEEPOUT =>
 									-- no parameters allowed here
@@ -5614,262 +5936,26 @@ is
 								when others => invalid_section;
 							end case;
 
-						when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-							declare
-								use et_pcb_stack;
-								use et_packages;
-								use et_board_shapes_and_text.pac_shapes;
-								use et_pcb_coordinates.pac_geometry_brd;
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_layers then -- layers 1 14 3
-
-									-- there must be at least two fields:
-									expect_field_count (line => line, count_expected => 2, warn => false);
-									signal_layers := to_layers (line, check_layers);
-
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-
-						when SEC_CONDUCTOR => -- non electrical
-							declare
-								use et_packages;
-								use et_board_shapes_and_text.pac_shapes;									
-								use et_pcb_stack;
-								use et_pcb_coordinates.pac_geometry_brd;
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
-									expect_field_count (line, 2);													
-									board_easing.style := to_corner_easing (f (line, 2));
-
-								elsif kw = keyword_easing_radius then -- easing_radius 0.4
-									expect_field_count (line, 2);													
-									board_easing.radius := to_distance (f (line, 2));
-									
-								elsif kw = keyword_layer then -- layer 1
-									expect_field_count (line, 2);
-									signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
-									validate_signal_layer;
-
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-							
+						when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => read_cutout_restrict;
+						when SEC_CONDUCTOR => read_cutout_conductor_non_electric;
 						when others => invalid_section;
 					end case;
 					
 				when SEC_FILL_ZONE =>
 					case stack.parent is
-						when SEC_ROUTE => -- connected with a net
-							declare
-								use et_packages;
-								use et_pcb_coordinates.pac_geometry_brd;
-								use et_pcb;
-								use et_pcb_stack;
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = et_pcb.keyword_priority then -- priority 2
-									expect_field_count (line, 2);
-									polygon_priority := et_pcb.to_polygon_priority (f (line, 2));
-
-								elsif kw = keyword_isolation then -- isolation 0.5
-									expect_field_count (line, 2);
-									polygon_isolation := to_distance (f (line, 2));
-									
-								elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
-									expect_field_count (line, 2);
-									board_easing.style := to_corner_easing (f (line, 2));
-
-								elsif kw = keyword_easing_radius then -- easing_radius 0.3
-									expect_field_count (line, 2);
-									board_easing.radius := to_distance (f (line, 2));
-
-								elsif kw = keyword_fill_style then -- fill_style solid,hatched
-									expect_field_count (line, 2);
-									board_fill_style := to_fill_style (f (line, 2));
-
-								elsif kw = keyword_hatching_line_width then -- hatching_line_width 1
-									expect_field_count (line, 2);
-									board_hatching_conductor.line_width := to_distance (f (line, 2));
-
-								elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 1
-									expect_field_count (line, 2);
-									board_hatching_conductor.spacing := to_distance (f (line, 2));
-
-								elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
-									expect_field_count (line, 2);
-									board_hatching_conductor.border_width := to_distance (f (line, 2));
-									
-								elsif kw = keyword_layer then -- layer 2
-									expect_field_count (line, 2);
-									signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
-									validate_signal_layer;
-									
-								elsif kw = keyword_min_width then -- min_width 0.3
-									expect_field_count (line, 2);
-									polygon_width_min := to_distance (f (line, 2));
-
-								elsif kw = keyword_pad_technology then -- pad_technology smt_only/tht_only/smt_and_tht
-									expect_field_count (line, 2);
-									et_pcb_rw.thermal.technology := to_pad_technology (f (line, 2));
-
-								elsif kw = keyword_pad_connection then -- pad_connection thermal/solid
-									expect_field_count (line, 2);
-									polygon_pad_connection := to_pad_connection (f (line, 2));
-									
-								elsif kw = keyword_thermal_width then -- thermal_width 0.3
-									expect_field_count (line, 2);
-									et_pcb_rw.thermal.width := to_distance (f (line, 2));
-
-								elsif kw = keyword_thermal_gap then -- thermal_gap 0.7
-									expect_field_count (line, 2);
-									et_pcb_rw.thermal.gap := to_distance (f (line, 2));
-
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
+						when SEC_ROUTE => read_fill_zone_route;
 
 						when SEC_TOP | SEC_BOTTOM => 
 							case stack.parent (degree => 2) is
 								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-									SEC_STENCIL | SEC_STOP_MASK =>
-									declare
-										use et_packages;
-										use et_board_shapes_and_text.pac_shapes;
-										use et_pcb_coordinates.pac_geometry_brd;
-										kw : string := f (line, 1);
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_fill_style then -- fill_style solid/hatched
-											expect_field_count (line, 2);													
-											board_fill_style := to_fill_style (f (line, 2));
+									SEC_STENCIL | SEC_STOP_MASK => read_fill_zone_non_conductor;
 
-										elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
-											expect_field_count (line, 2);													
-											board_easing.style := to_corner_easing (f (line, 2));
-
-										elsif kw = keyword_easing_radius then -- easing_radius 0.4
-											expect_field_count (line, 2);													
-											board_easing.radius := to_distance (f (line, 2));
-											
-										elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-											expect_field_count (line, 2);													
-											board_hatching.line_width := to_distance (f (line, 2));
-
-										elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-											expect_field_count (line, 2);													
-											board_hatching.spacing := to_distance (f (line, 2));
-											
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-
-								when SEC_KEEPOUT =>
-									declare
-										use et_board_shapes_and_text.pac_shapes;
-										kw : string := f (line, 1);
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_filled then -- filled yes/no
-											expect_field_count (line, 2);													
-											board_filled := to_filled (f (line, 2));
-
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-									
+								when SEC_KEEPOUT => read_fill_zone_keepout;
 								when others => invalid_section;
 							end case;
 
-						when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-							declare
-								use et_pcb_stack;
-								use et_packages;
-								use et_board_shapes_and_text.pac_shapes;
-								use et_pcb_coordinates.pac_geometry_brd;
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_filled then -- filled yes/no
-									expect_field_count (line, 2);													
-									board_filled := to_filled (f (line, 2));
-
-								elsif kw = keyword_layers then -- layers 1 14 3
-
-									-- there must be at least two fields:
-									expect_field_count (line => line, count_expected => 2, warn => false);
-									signal_layers := to_layers (line, check_layers);
-
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-
-						when SEC_CONDUCTOR => -- non electrical
-							declare
-								use et_packages;
-								use et_board_shapes_and_text.pac_shapes;									
-								use et_pcb_stack;
-								use et_pcb_coordinates.pac_geometry_brd;
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_fill_style then -- fill_style solid/hatched
-									expect_field_count (line, 2);													
-									board_fill_style := to_fill_style (f (line, 2));
-
-								elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
-									expect_field_count (line, 2);													
-									board_easing.style := to_corner_easing (f (line, 2));
-
-								elsif kw = keyword_easing_radius then -- easing_radius 0.4
-									expect_field_count (line, 2);													
-									board_easing.radius := to_distance (f (line, 2));
-									
-								elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-									expect_field_count (line, 2);													
-									board_hatching_conductor.line_width := to_distance (f (line, 2));
-
-								elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-									expect_field_count (line, 2);													
-									board_hatching_conductor.spacing := to_distance (f (line, 2));
-
-								elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
-									expect_field_count (line, 2);													
-									board_hatching_conductor.border_width := to_distance (f (line, 2));
-									
-								elsif kw = keyword_min_width then -- min_width 0.5
-									expect_field_count (line, 2);
-									polygon_width_min := to_distance (f (line, 2));
-									
-								elsif kw = keyword_layer then -- layer 1
-									expect_field_count (line, 2);
-									signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
-									validate_signal_layer;
-									
-								elsif kw = et_pcb.keyword_priority then -- priority 2
-									expect_field_count (line, 2);
-									polygon_priority := et_pcb.to_polygon_priority (f (line, 2));
-
-								elsif kw = keyword_isolation then -- isolation 0.5
-									expect_field_count (line, 2);
-									polygon_isolation := to_distance (f (line, 2));
-									
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-							
+						when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => read_fill_zone_restrict;
+						when SEC_CONDUCTOR => read_fill_zone_conductor_non_electric;
 						when others => invalid_section;
 					end case;
 
@@ -5881,47 +5967,7 @@ is
 				
 				when SEC_SUBMODULE =>
 					case stack.parent is
-						when SEC_SUBMODULES =>
-							declare
-								use et_submodules;
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_file then -- file $ET_TEMPLATES/motor_driver.mod
-									expect_field_count (line, 2);
-									submodule.file := et_submodules.to_submodule_path (f (line, 2));
-
-								elsif kw = keyword_name then -- name stepper_driver
-									expect_field_count (line, 2);
-									submodule_name := to_instance_name (f (line, 2));
-
-								elsif kw = keyword_position then -- position sheet 3 x 130 y 210
-									expect_field_count (line, 7);
-
-									-- extract position of submodule starting at field 2
-									submodule.position := to_position (line, 2);
-
-								elsif kw = et_submodules.keyword_size then -- size x 30 y 30
-									expect_field_count (line, 5);
-
-									-- extract size of submodule starting at field 2
-									submodule.size := to_size (line, 2);
-
-								elsif kw = keyword_position_in_board then -- position_in_board x 23 y 0.2 rotation 90.0
-									expect_field_count (line, 7);
-
-									-- extract position of submodule starting at field 2
-									submodule.position_in_board := to_position (line, 2);
-
-								elsif kw = keyword_view_mode then -- view_mode origin/instance
-									expect_field_count (line, 2);
-									submodule.view_mode := et_submodules.to_view_mode (f (line, 2));
-
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-							
+						when SEC_SUBMODULES => read_submodule;
 						when others => invalid_section;
 					end case;
 
@@ -5929,30 +5975,7 @@ is
 					case stack.parent is
 						when SEC_PORTS =>
 							case stack.parent (degree => 2) is
-								when SEC_SUBMODULE =>
-									declare
-										kw : string := f (line, 1);
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_name then -- name clk_out
-											expect_field_count (line, 2);
-											submodule_port_name := to_net_name (f (line, 2));
-
-										elsif kw = keyword_position then -- position x 0 y 10
-											expect_field_count (line, 5);
-
-											-- extract port position starting at field 2
-											submodule_port.position := to_position (line, 2);
-
-										elsif kw = et_submodules.keyword_direction then -- direction master/slave
-											expect_field_count (line, 2);
-
-											submodule_port.direction := et_submodules.to_port_name (f (line, 2));
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-
+								when SEC_SUBMODULE => read_submodule_port;
 								when others => invalid_section;
 							end case;
 
