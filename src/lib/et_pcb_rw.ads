@@ -58,6 +58,7 @@ package et_pcb_rw is
 	section_bottom				: constant string	:= "[BOTTOM";
 	section_board_layer_stack	: constant string 	:= "[BOARD_LAYER_STACK";
 	section_via					: constant string	:= "[VIA";
+	section_vias				: constant string	:= "[VIAS";
 	
 	section_route				: constant string 	:= "[ROUTE";	
 	section_silk_screen			: constant string	:= "[SILK_SCREEN";
@@ -80,7 +81,11 @@ package et_pcb_rw is
 	keyword_via_restring_min		: constant string := "via_restring_min";	
 	keyword_micro_via_drill_min		: constant string := "micro_via_drill_min";
 	keyword_micro_via_restring_min	: constant string := "micro_via_restring_min";	
-	
+
+	keyword_dru					: constant string := "dru";
+	keyword_via_drill			: constant string := "drill";
+	keyword_via_restring_inner	: constant string := "restring_inner";
+	keyword_via_restring_outer	: constant string := "restring_outer";
 	
 	procedure write_text_properties (t : in et_packages.type_text'class);
 	

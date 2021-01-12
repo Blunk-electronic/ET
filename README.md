@@ -134,7 +134,7 @@ $ et --open-project my_et_project/ --log-level 2
 $ et --conventions conventions.txt --open-project /home/user/ecad/my_et_project/ --log-level 2
 ```
 
-The project can also be saved under a different name at a different place:
+The project can also be saved with a different name at a different place:
 
 ```sh
 $ et --conventions conventions.txt --open-project /home/user/ecad/my_et_project/ --save-project-as /home/user/tmp/eval --log-level 2

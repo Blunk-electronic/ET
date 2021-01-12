@@ -1064,7 +1064,6 @@ is
 		
 	end read_via;
 
-
 	procedure build_via is 
 		use et_vias;
 		use pac_vias;
@@ -1116,6 +1115,69 @@ is
 		-- via_restring_inner := DRC ?
 		-- via_restring_outer := 
 	end build_via;
+
+	
+	user_settings_board : et_pcb.type_user_settings;
+	
+	procedure read_user_settings_vias is
+		use et_pcb_coordinates.pac_geometry_brd;
+		kw : constant string := f (line, 1);
+	begin
+		-- via drill
+		if kw = keyword_via_drill then
+			expect_field_count (line, 2);
+			
+			if f (line, 2) = keyword_dru then -- drill dru
+				user_settings_board.vias.drill.active := false;
+			else -- drill 0.6
+				user_settings_board.vias.drill.active := true;
+				user_settings_board.vias.drill.size := to_distance (f (line, 2));
+
+				-- CS validate against dru settings
+			end if;
+
+		-- inner restring
+		elsif kw = keyword_via_restring_inner then
+			expect_field_count (line, 2);
+
+			if f (line, 2) = keyword_dru then -- restring_inner dru
+				user_settings_board.vias.restring_inner.active := false;
+			else -- restring_inner 0.22
+				user_settings_board.vias.restring_inner.active := true;
+				user_settings_board.vias.restring_inner.width := to_distance (f (line, 2));
+				
+				-- CS validate against dru settings
+			end if;
+
+		-- outer restring
+		elsif kw = keyword_via_restring_outer then
+			expect_field_count (line, 2);
+
+			if f (line, 2) = keyword_dru then -- restring_outer dru
+				user_settings_board.vias.restring_outer.active := false;
+			else -- restring_outer 0.2
+				user_settings_board.vias.restring_outer.active := true;
+				user_settings_board.vias.restring_outer.width := to_distance (f (line, 2));
+
+				-- CS validate against dru settings
+			end if;
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_user_settings_vias;
+
+	procedure assign_user_settings_board is
+		procedure do_it (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out et_schematic.type_module) 
+		is begin
+			module.board.user_settings := user_settings_board;
+		end do_it;
+	begin
+		update_element (generic_modules, module_cursor, do_it'access);
+	end assign_user_settings_board;
+
 	
 	procedure process_line is 
 
@@ -4380,7 +4442,27 @@ is
 
 						when others => invalid_section;
 					end case;
-					
+
+				when SEC_USER_SETTINGS =>
+					case stack.parent is
+						when SEC_BOARD		=> assign_user_settings_board;
+						-- CS when SEC_SCHEMATIC	=> null;
+						
+						when others => invalid_section;
+					end case;
+
+				when SEC_VIAS =>
+					case stack.parent is
+						when SEC_USER_SETTINGS =>
+							case stack.parent (degree => 2) is
+								when SEC_BOARD	=> null;
+								when others		=> invalid_section;
+							end case;
+
+						when others => invalid_section;
+					end case;
+
+						
 				when SEC_INIT => null; -- CS: should never happen
 			end case;
 
@@ -4495,6 +4577,8 @@ is
 		elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
 		elsif set (section_conductor, SEC_CONDUCTOR) then null;				
 		elsif set (section_pcb_contours, SEC_PCB_CONTOURS_NON_PLATED) then null;
+		elsif set (section_user_settings, SEC_USER_SETTINGS) then null;
+		elsif set (section_vias, SEC_VIAS) then null;
 		else
 			-- The line contains something else -> the payload data. 
 			-- Temporarily this data is stored in corresponding variables.
@@ -6242,6 +6326,25 @@ is
 					case stack.parent is
 						when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 							SEC_STOP_MASK | SEC_KEEPOUT => null;
+
+						when others => invalid_section;
+					end case;
+
+				when SEC_USER_SETTINGS =>
+					case stack.parent is
+						when SEC_BOARD		=> null;
+						-- CS when SEC_SCHEMATIC	=> null;
+						
+						when others => invalid_section;
+					end case;
+
+				when SEC_VIAS =>
+					case stack.parent is
+						when SEC_USER_SETTINGS =>
+							case stack.parent (degree => 2) is
+								when SEC_BOARD	=> read_user_settings_vias;								
+								when others		=> invalid_section;
+							end case;
 
 						when others => invalid_section;
 					end case;

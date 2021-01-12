@@ -1558,6 +1558,8 @@ is
 						update_element (generic_modules, module_cursor, deactivate_drill'access);
 					else
 						update_element (generic_modules, module_cursor, activate_drill'access);
+
+						-- CS validate against dru settings
 					end if;
 				else
 					expect_keywords;
@@ -1574,6 +1576,8 @@ is
 							update_element (generic_modules, module_cursor, deactivate_inner_restring'access);
 						else
 							update_element (generic_modules, module_cursor, activate_inner_restring'access);
+
+							-- CS validate against dru settings	
 						end if;
 
 					-- board demo set via restring outer 0.2
@@ -1583,6 +1587,8 @@ is
 							update_element (generic_modules, module_cursor, deactivate_outer_restring'access);
 						else
 							update_element (generic_modules, module_cursor, activate_outer_restring'access);
+
+							-- CS validate against dru settings
 						end if;
 						
 					else

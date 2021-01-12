@@ -194,6 +194,8 @@ package et_project.modules is
 
 	section_preferred_libraries	: constant string := "[PREFERRED_LIBRARIES";
 
+	section_user_settings		: constant string := "[USER_SETTINGS";
+
 	
 	type type_section is ( -- CS: sort aphabetically
 		SEC_DEVICES_NON_ELECTRIC,
@@ -219,6 +221,7 @@ package et_project.modules is
 		SEC_LINE,
 		SEC_ARC,
 		SEC_VIA,
+		SEC_VIAS,
 		SEC_SUBMODULES,
 		SEC_SUBMODULE,
 		SEC_SHEET_DESCRIPTIONS,
@@ -254,7 +257,8 @@ package et_project.modules is
 		SEC_PCB_CONTOURS_NON_PLATED,
 		-- CS SEC_PCB_CONTOUR_PLATED
 		SEC_TOP,
-		SEC_BOTTOM
+		SEC_BOTTOM,
+		SEC_USER_SETTINGS
 		);
 
 	function to_string (section : in type_section) return string;

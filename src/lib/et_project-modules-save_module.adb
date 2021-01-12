@@ -525,6 +525,7 @@ is
 				procedure query_via (c : in pac_vias.cursor) is begin
 					section_mark (section_via, HEADER);
 
+					write (keyword => keyword_via_category, parameters => to_string (element (c).category));
 					write (keyword => keyword_position, parameters => position (element (c).position));
 					write (keyword => keyword_diameter, parameters => to_string (element (c).diameter));
 
@@ -534,11 +535,11 @@ is
 								parameters => to_string (element (c).restring_outer));
 							
 						when BLIND_DRILLED_FROM_TOP =>
-							write (keyword => keyword_restring_outer, parameters => to_string (element (c).restring_outer));
+							write (keyword => keyword_restring_outer, parameters => to_string (element (c).restring_top));
 							write (keyword => keyword_destination, parameters => to_string (element (c).lower));
 							
 						when BLIND_DRILLED_FROM_BOTTOM =>
-							write (keyword => keyword_restring_outer, parameters => to_string (element (c).restring_outer));
+							write (keyword => keyword_restring_outer, parameters => to_string (element (c).restring_bottom));
 							write (keyword => keyword_destination, parameters => to_string (element (c).upper));
 							
 						when BURIED =>
@@ -1336,10 +1337,59 @@ is
 			
 			section_mark (section_device, FOOTER);
 		end query_devices_non_electric;
+
+		procedure query_user_settings is
+			us : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
+		begin
+			section_mark (section_user_settings, HEADER);
+
+				section_mark (section_vias, HEADER);
+
+				-- via drill
+				if us.vias.drill.active then
+					write ( -- drill 0.3
+						keyword		=> keyword_via_drill, 
+						parameters	=> to_string (us.vias.drill.size));
+				else
+					write ( -- drill dru
+						keyword		=> keyword_via_drill, 
+						parameters	=> keyword_dru);
+				end if;
+
+				-- inner restring
+				if us.vias.restring_inner.active then
+					write ( -- restring_inner 0.3
+						keyword		=> keyword_via_restring_inner, 
+						parameters	=> to_string (us.vias.restring_inner.width));
+				else
+					write ( -- restring_inner dru
+						keyword		=> keyword_via_restring_inner, 
+						parameters	=> keyword_dru);
+				end if;
+
+				-- outer restring
+				if us.vias.restring_outer.active then
+					write ( -- restring_outer 0.3
+						keyword		=> keyword_via_restring_outer, 
+						parameters	=> to_string (us.vias.restring_outer.width));
+				else
+					write ( -- restring_inner dru
+						keyword		=> keyword_via_restring_outer, 
+						parameters	=> keyword_dru);
+				end if;
+				
+				section_mark (section_vias, FOOTER);
+			
+			section_mark (section_user_settings, FOOTER);
+		end query_user_settings;
+		
 		
 	begin -- query_board
 		section_mark (section_board, HEADER);
 
+		-- USER SETTINGS
+		query_user_settings;
+	
 		-- NON-ELECTRIC DEVICES
 		section_mark (section_devices_non_electric, HEADER);
 		iterate (element (module_cursor).devices_non_electric, query_devices_non_electric'access);
