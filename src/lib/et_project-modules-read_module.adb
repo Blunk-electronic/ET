@@ -852,11 +852,10 @@ is
 			invalid_keyword (kw);
 		end if;
 	end read_sheet_description;
+
 	
-	-- submodules
-	submodule_port_name		: et_general.pac_net_name.bounded_string; -- RESET
-	submodule_ports			: et_submodules.pac_submodule_ports.map;
-	submodule_name 			: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
+
+	
 
 	schematic_text : et_schematic.type_text;
 
@@ -871,19 +870,218 @@ is
 	device_appearance		: et_schematic.type_appearance_schematic;
 	--device_unit				: et_schematic.type_unit;
 	--device_unit_rotation	: et_coordinates.type_rotation := geometry.zero_rotation;
+
+
 	device_unit_mirror		: et_schematic.type_mirror := et_schematic.NO;
 	device_unit_name		: pac_unit_name.bounded_string; -- GPIO_BANK_1
 	device_unit_position	: et_coordinates.type_position; -- x,y,sheet,rotation
 
+	procedure read_unit is
+		use et_devices;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_name then -- name 1, GPIO_BANK_1, ...
+			expect_field_count (line, 2);
+			device_unit_name := to_unit_name (f (line, 2));
+			
+		elsif kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
+			expect_field_count (line, 7);
+
+			-- extract position of unit starting at field 2
+			device_unit_position := to_position (line, 2);
+
+		elsif kw = keyword_rotation then -- rotation 180.0
+			expect_field_count (line, 2);
+			--device_unit_rotation := geometry.to_rotation (f (line, 2));
+			set (device_unit_position, pac_geometry_sch.to_rotation (f (line, 2)));
+
+		elsif kw = keyword_mirrored then -- mirrored no/x_axis/y_axis
+			expect_field_count (line, 2);
+			device_unit_mirror := et_schematic.to_mirror_style (f (line, 2));
+
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_unit;
+	
 
 	device_non_electric			: et_schematic.type_device_non_electric;
 	device_non_electric_model	: et_packages.pac_package_model_file_name.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
+
+
 	
 	-- assembly variants
 	assembly_variant_name			: et_general.pac_assembly_variant_name.bounded_string; -- low_cost
 	assembly_variant_description	: et_assembly_variants.type_description; -- "variant without temp. sensor"
 	assembly_variant_devices		: et_assembly_variants.pac_device_variants.map;
 	assembly_variant_submodules		: et_assembly_variants.pac_submodule_variants.map;
+
+	procedure read_assembly_variant is
+		use et_devices;
+		kw : constant string := f (line, 1);
+		device_name		: type_device_name; -- R1
+		device			: access et_assembly_variants.type_device;
+		device_cursor	: et_assembly_variants.pac_device_variants.cursor;
+		
+		submod_name		: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		submod_var		: et_general.pac_assembly_variant_name.bounded_string; -- low_cost
+		submod_cursor	: et_assembly_variants.pac_submodule_variants.cursor;
+		inserted		: boolean;
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_name then -- name low_cost
+			expect_field_count (line, 2);
+			assembly_variant_name := et_general.to_variant (f (line, 2));
+
+		elsif kw = keyword_description then -- description "variant without temperature sensor"
+			expect_field_count (line, 2);
+
+			assembly_variant_description := et_assembly_variants.to_unbounded_string (f (line, 2));
+			
+		-- A line like "device R1 not_mounted" or
+		-- a line like "device R1 value 270R partcode 12345" or		
+		-- a line like "device R1 value 270R partcode 12345 purpose "set temperature""
+		-- tells whether a device is mounted or not.
+		elsif kw = keyword_device then
+
+			-- there must be at least 3 fields:
+			expect_field_count (line, 3, warn => false);
+			
+			device_name := to_device_name (f (line, 2));
+
+			-- test whether device exists
+			if not exists (module_cursor, device_name) then
+				log (ERROR, "device " &
+						enclose_in_quotes (to_string (device_name)) &
+						" does not exist !", console => true);
+				raise constraint_error;
+			end if;
+
+			if f (line, 3) = keyword_not_mounted then
+				-- line like "device R1 not_mounted"
+
+				device := new et_assembly_variants.type_device'(
+					mounted	=> et_assembly_variants.NO);
+				
+			elsif f (line, 3) = keyword_value then
+				-- line like "device R1 value 270R partcode 12345"
+
+				-- create a device with discriminant "mounted" where
+				-- pointer assembly_variant_device is pointing at.
+				device := new et_assembly_variants.type_device'(
+					mounted	=> et_assembly_variants.YES,
+					others	=> <>); -- to be assigned later
+				
+				-- there must be at least 6 fields:
+				expect_field_count (line, 6, warn => false);
+
+				-- read and validate value
+				device.value := to_value_with_check (f (line, 4));
+
+				-- read partcode
+				if f (line, 5) = et_material.keyword_partcode then
+					device.partcode := et_material.to_partcode (f (line, 6));
+				else -- keyword partcode not found
+					log (ERROR, "expect keyword " & enclose_in_quotes (et_material.keyword_partcode) &
+							" after value !", console => true);
+					raise constraint_error;
+				end if;
+
+				-- read optional purpose
+				if field_count (line) > 6 then
+					expect_field_count (line, 8);
+
+					if f (line, 7) = keyword_purpose then
+
+						-- validate purpose
+						device.purpose := to_purpose (f (line, 8));
+
+					else -- keyword purpose not found
+						log (ERROR, "expect keyword " & enclose_in_quotes (keyword_purpose) &
+							" after partcode !", console => true);
+						raise constraint_error;
+					end if;
+				end if;
+					
+			else -- keyword value not found
+				log (ERROR, "expect keyword " & enclose_in_quotes (keyword_value) &
+						" or keyword " & enclose_in_quotes (keyword_not_mounted) &
+						" after device name !", console => true);
+				raise constraint_error;
+			end if;											
+
+			-- Insert the device in the current assembly variant:
+			et_assembly_variants.pac_device_variants.insert (
+				container	=> assembly_variant_devices,
+				key			=> device_name, -- R1
+				new_item	=> device.all,
+				inserted	=> inserted,
+				position	=> device_cursor);
+
+			-- Raise error if device occurs more than once:
+			if not inserted then
+				log (ERROR, "device " &
+						enclose_in_quotes (to_string (device_name)) &
+						" already specified !", console => true);
+				raise constraint_error;
+			end if;
+
+		-- a line like "submodule OSC1 variant low_cost
+		-- tells which assembly variant of a submodule is used:
+		elsif kw = keyword_submodule then
+
+			-- there must be 4 fields:
+			expect_field_count (line, 4);
+
+			submod_name := et_general.to_instance_name (f (line, 2)); -- OSC1
+
+			-- test whether submodule instance exists
+			if not exists (module_cursor, submod_name) then
+				log (ERROR, "submodule instance " &
+						enclose_in_quotes (et_general.to_string (submod_name)) &
+						" does not exist !", console => true);
+				raise constraint_error;
+			end if;
+
+			-- After the instance name (like OSC1) must come the keyword "variant"
+			-- followed by the variant name:
+			if f (line, 3) = keyword_variant then
+				submod_var := et_general.to_variant (f (line, 4));
+				
+				-- NOTE: A test whether the submodule does provide the variant can
+				-- not be executed at this stage because the submodules have not 
+				-- been read yet. This will be done after procdure 
+				-- read_submodule_files has been executed. See far below.
+
+				-- Insert the submodule in the current assembly variant:
+				et_assembly_variants.pac_submodule_variants.insert (
+					container	=> assembly_variant_submodules,
+					key			=> submod_name, -- OSC1
+					new_item	=> (variant => submod_var), -- type_submodule is a record with currently only one element
+					inserted	=> inserted,
+					position	=> submod_cursor);
+
+				-- Raise error if submodule occurs more than once:
+				if not inserted then
+					log (ERROR, "submodule " &
+						enclose_in_quotes (et_general.to_string (submod_name)) &
+						" already specified !", console => true);
+					raise constraint_error;
+				end if;
+
+			else
+				log (ERROR, "expect keyword " & enclose_in_quotes (keyword_variant) &
+						" after instance name !", console => true);
+				raise constraint_error;
+			end if;
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_assembly_variant;
+
+
 	
 	-- temporarily collection of units:
 	device_units	: et_schematic.pac_units.map; -- PWR, A, B, ...
@@ -891,9 +1089,8 @@ is
 	device_partcode	: et_material.type_partcode.bounded_string;
 	device_purpose	: pac_device_purpose.bounded_string;
 	device_variant	: pac_package_variant_name.bounded_string; -- D, N
-	device_position	: et_pcb_coordinates.type_package_position; -- in the layout ! incl. angle and face
-	device_flipped	: et_pcb.type_flipped := et_pcb.flipped_default;
 
+	
 	-- These two variables assist when a particular placeholder is appended to the
 	-- list of placholders in silk screen, assy doc and their top or bottom face:
 	device_text_placeholder_position: et_pcb_coordinates.type_package_position := et_pcb_coordinates.placeholder_position_default; -- incl. rotation and face
@@ -902,6 +1099,48 @@ is
 	-- a single temporarily placeholder of a package
 	device_text_placeholder		: et_packages.type_text_placeholder;
 
+	procedure read_device_text_placeholder is
+		use et_packages;
+		use et_pcb_stack;
+		use et_pcb_coordinates.pac_geometry_brd;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_meaning then -- meaning name, value, ...
+			expect_field_count (line, 2);
+			device_text_placeholder.meaning := to_text_meaning (f (line, 2));
+			
+		elsif kw = keyword_layer then -- layer silk_screen/assembly_documentation
+			expect_field_count (line, 2);
+			device_text_placeholder_layer := to_layer (f (line, 2));
+			
+		elsif kw = keyword_position then -- position x 0.000 y 5.555 rotation 0.00 face top
+			expect_field_count (line, 9);
+
+			-- extract position of placeholder starting at field 2
+			device_text_placeholder_position := to_position (line, 2);
+
+		elsif kw = et_text.keyword_size then -- size 5
+			expect_field_count (line, 2);
+			device_text_placeholder.size := to_distance (f (line, 2));
+
+		elsif kw = et_text.keyword_line_width then -- line_width 0.15
+			expect_field_count (line, 2);
+
+			device_text_placeholder.line_width := to_distance (f (line, 2));
+
+		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+			expect_field_count (line, 5);
+
+			-- extract alignment of placeholder starting at field 2
+			device_text_placeholder.alignment := et_text.to_alignment (line, 2);
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_device_text_placeholder;
+
+	
 	-- the temporarily collection of placeholders of packages (in the layout)
 	device_text_placeholders	: et_packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
 
@@ -913,13 +1152,86 @@ is
 	unit_placeholder_value		: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
 	unit_placeholder_purpose	: et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE);
 
-	-- temporarily a netchanger is stored here:
-	netchanger		: et_submodules.type_netchanger;
-	netchanger_id	: et_submodules.type_netchanger_id := et_submodules.type_netchanger_id'first;
-				
+	procedure read_unit_placeholder is
+		use et_coordinates.pac_geometry_sch;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_meaning then -- meaning reference, value or purpose
+			expect_field_count (line, 2);
+			unit_placeholder_meaning := et_symbols.to_meaning (f (line, 2));
+			
+		elsif kw = keyword_position then -- position x 0.000 y 5.555
+			expect_field_count (line, 5);
+
+			-- extract position of placeholder starting at field 2
+			unit_placeholder_position := to_position (line, 2);
+
+		elsif kw = et_text.keyword_size then -- size 3.0
+			expect_field_count (line, 2);
+			unit_placeholder.size := to_distance (f (line, 2));
+
+		elsif kw = keyword_rotation then -- rotation 90.0
+			expect_field_count (line, 2);
+
+			unit_placeholder.rotation := et_symbols.pac_text.to_rotation_doc (f (line, 2));
+
+-- 											elsif kw = keyword_style then -- stlye italic
+-- 												expect_field_count (line, 2);
+-- 
+-- 												unit_placeholder.style := et_symbols.to_text_style (f (line, 2));
+
+		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+			expect_field_count (line, 5);
+
+			-- extract alignment of placeholder starting at field 2
+			unit_placeholder.alignment := et_text.to_alignment (line, 2);
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_unit_placeholder;
+
+
+	
+	
 	-- general board stuff
 	board_text : et_packages.type_text_with_content;
 	board_text_placeholder : et_pcb.type_text_placeholder;
+
+	procedure read_board_text_placeholder is
+		use et_pcb_coordinates.pac_geometry_brd;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+			expect_field_count (line, 7);
+
+			-- extract position of note starting at field 2
+			board_text_placeholder.position := to_position (line, 2);
+
+		elsif kw = et_text.keyword_size then -- size 1.000
+			expect_field_count (line, 2);
+			board_text_placeholder.size := to_distance (f (line, 2));
+
+		elsif kw = et_text.keyword_line_width then -- line_width 0.1
+			expect_field_count (line, 2);
+			board_text_placeholder.line_width := to_distance (f (line, 2));
+
+		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+			expect_field_count (line, 5);
+
+			-- extract alignment starting at field 2
+			board_text_placeholder.alignment := et_text.to_alignment (line, 2);
+			
+		elsif kw = keyword_meaning then -- meaning project_name
+			expect_field_count (line, 2);
+			board_text_placeholder.meaning := et_pcb.to_meaning (f (line, 2));
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_board_text_placeholder;
 
 	
 	signal_layers : et_pcb_stack.type_signal_layers.set;
@@ -955,6 +1267,48 @@ is
 		end if;
 	end validate_signal_layer;
 
+
+	
+	-- temporarily a netchanger is stored here:
+	netchanger		: et_submodules.type_netchanger;
+	netchanger_id	: et_submodules.type_netchanger_id := et_submodules.type_netchanger_id'first;
+
+	procedure read_netchanger is
+		kw : constant string := f (line, 1);
+		use et_pcb_stack;
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_name then -- name 1, 2, 304, ...
+			expect_field_count (line, 2);
+			netchanger_id := et_submodules.to_netchanger_id (f (line, 2));
+			
+		elsif kw = keyword_position_in_schematic then -- position_in_schematic sheet 1 x 1.000 y 5.555
+			expect_field_count (line, 7);
+
+			-- extract position (in schematic) starting at field 2
+			netchanger.position_sch := to_position (line, 2);
+
+		elsif kw = keyword_rotation_in_schematic then -- rotation_in_schematic 180.0
+			expect_field_count (line, 2);
+			set (netchanger.position_sch, pac_geometry_sch.to_rotation (f (line, 2)));
+
+		elsif kw = keyword_position_in_board then -- position_in_board x 55.000 y 7.555
+			expect_field_count (line, 5);
+
+			-- extract position (in board) starting at field 2
+			netchanger.position_brd := to_position (line, 2);
+
+		elsif kw = keyword_layer then -- layer 3 (signal layer in board)
+			expect_field_count (line, 2);
+			netchanger.layer := et_pcb_stack.to_signal_layer (f (line, 2));
+			validate_signal_layer (netchanger.layer);
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_netchanger;
+	
+	
 	procedure read_cutout_route is
 		use et_packages;
 		use et_pcb_coordinates.pac_geometry_brd;
@@ -1242,8 +1596,14 @@ is
 		end if;
 	end read_fill_zone_conductor_non_electric;
 
-	
-	submodule : et_submodules.type_submodule;
+
+
+	-- submodules	
+	submodule_port_name	: et_general.pac_net_name.bounded_string; -- RESET
+	submodule_ports		: et_submodules.pac_submodule_ports.map;
+	submodule_name 		: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
+	submodule_port 		: et_submodules.type_submodule_port;
+	submodule 			: et_submodules.type_submodule;
 
 	-- Reads the parameters of a submodule:
 	procedure read_submodule is
@@ -1285,9 +1645,6 @@ is
 			invalid_keyword (kw);
 		end if;
 	end read_submodule;
-
-	
-	submodule_port : et_submodules.type_submodule_port;
 	
 	procedure read_submodule_port is
 		kw : constant string := f (line, 1);
@@ -1312,6 +1669,64 @@ is
 		end if;
 	end read_submodule_port;
 
+	procedure insert_submodule_port is
+		cursor : et_submodules.pac_submodule_ports.cursor;
+		inserted : boolean;
+	begin
+		-- Test whether the port sits at the edge of the submodule box:
+		if et_submodules.at_edge (submodule_port.position, submodule.size) then
+			
+			-- append port to collection of submodule ports
+			et_submodules.pac_submodule_ports.insert (
+				container	=> submodule_ports,
+				key			=> submodule_port_name, -- RESET
+				new_item	=> submodule_port,
+				inserted	=> inserted,
+				position	=> cursor
+				);
+
+			if not inserted then
+				log (ERROR, "port " & 
+					et_general.to_string (submodule_port_name) & " already used !",
+					console => true
+					);
+				raise constraint_error;
+			end if;
+
+		else
+			port_not_at_edge (submodule_port_name);
+		end if;
+
+		-- clean up for next port
+		submodule_port_name := to_net_name ("");
+		submodule_port := (others => <>);
+		
+	end insert_submodule_port;
+
+
+	
+	device_position	: et_pcb_coordinates.type_package_position; -- in the layout ! incl. angle and face
+	device_flipped	: et_pcb.type_flipped := et_pcb.flipped_default;
+	
+	procedure read_package is
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
+			expect_field_count (line, 9);
+
+			-- extract package position starting at field 2
+			device_position := to_position (line, 2);
+
+		elsif kw = keyword_flipped then -- flipped no/yes
+			expect_field_count (line, 2);
+
+			device_flipped := et_pcb.to_flipped (f (line, 2));
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_package;
+
 	
 	-- 		board_track_circle : et_pcb.type_copper_circle;
 
@@ -1321,6 +1736,46 @@ is
 
 	-- This variable is used for text placeholders in conductor layers:
 	board_text_conductor_placeholder : et_pcb.type_text_placeholder_conductors;
+
+	procedure read_board_text_conductor_placeholder is
+		use et_pcb_coordinates.pac_geometry_brd;
+		use et_pcb_stack;
+		kw : constant string := f (line, 1);
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+			expect_field_count (line, 7);
+
+			-- extract position of note starting at field 2
+			board_text_conductor_placeholder.position := to_position (line, 2);
+
+		elsif kw = et_text.keyword_size then -- size 1.000
+			expect_field_count (line, 2);
+			board_text_conductor_placeholder.size := to_distance (f (line, 2));
+
+		elsif kw = et_text.keyword_line_width then -- line_width 0.1
+			expect_field_count (line, 2);
+			board_text_conductor_placeholder.line_width := to_distance (f (line, 2));
+
+		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+			expect_field_count (line, 5);
+
+			-- extract alignment starting at field 2
+			board_text_conductor_placeholder.alignment := et_text.to_alignment (line, 2);
+			
+		elsif kw = keyword_meaning then -- meaning revision/project_name/...
+			expect_field_count (line, 2);
+			board_text_conductor_placeholder.meaning := et_pcb.to_meaning (f (line, 2));
+
+		elsif kw = keyword_layer then -- layer 15
+			expect_field_count (line, 2);
+			board_text_conductor_placeholder.layer := et_pcb_stack.to_signal_layer (f (line, 2));
+			validate_signal_layer (board_text_conductor_placeholder.layer);
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end read_board_text_conductor_placeholder;
 
 	
 	procedure read_schematic_text is
@@ -4247,7 +4702,7 @@ is
 
 				when SEC_BOARD_LAYER_STACK =>
 					case stack.parent is
-						when SEC_INIT => 
+						when SEC_INIT =>  -- CS clean up. separate procedures required
 
 							-- add board layer
 							update_element (
@@ -4312,7 +4767,7 @@ is
 
 				when SEC_STRAND =>
 					case stack.parent is
-						when SEC_STRANDS =>
+						when SEC_STRANDS => -- CS clean up. separate procedures required 
 
 							declare
 								use et_coordinates;
@@ -4360,7 +4815,7 @@ is
 						when others => invalid_section;
 					end case;
 
-				when SEC_SEGMENT =>
+				when SEC_SEGMENT => -- CS clean up. separate procedures required
 					case stack.parent is
 						when SEC_SEGMENTS =>
 
@@ -4394,7 +4849,7 @@ is
 						when others => invalid_section;
 					end case;
 
-				when SEC_PORTS =>
+				when SEC_PORTS =>  -- CS clean up. separate procedures required
 					case stack.parent is
 						when SEC_SEGMENT =>
 
@@ -4430,7 +4885,7 @@ is
 						when others => invalid_section;
 					end case;
 							
-				when SEC_LABEL =>
+				when SEC_LABEL => -- CS clean up. separate procedures required
 					case stack.parent is
 						when SEC_LABELS =>
 
@@ -4472,7 +4927,7 @@ is
 						when others => invalid_section;
 					end case;
 					
-				when SEC_LINE =>
+				when SEC_LINE => -- CS clean up. separate procedures required
 					case stack.parent is
 						when SEC_CONTOURS => add_polygon_line (board_line);
 							
@@ -4510,7 +4965,7 @@ is
 						when others => invalid_section;
 					end case;
 					
-				when SEC_ARC =>
+				when SEC_ARC => -- CS clean up. separate procedures required
 					case stack.parent is
 						when SEC_CONTOURS => 
 							board_check_arc (log_threshold + 1);
@@ -4555,7 +5010,7 @@ is
 						when others => invalid_section;
 					end case;
 
-				when SEC_CIRCLE =>
+				when SEC_CIRCLE => -- CS clean up. separate procedures required
 					case stack.parent is
 						when SEC_CONTOURS => add_polygon_circle (board_circle);
 						
@@ -4651,40 +5106,7 @@ is
 					case stack.parent is
 						when SEC_PORTS =>
 							case stack.parent (degree => 2) is
-								when SEC_SUBMODULE =>
-									declare
-										cursor : et_submodules.pac_submodule_ports.cursor;
-										inserted : boolean;
-									begin
-										-- Test whether the port sits at the edge of the submodule box:
-										if et_submodules.at_edge (submodule_port.position, submodule.size) then
-											
-											-- append port to collection of submodule ports
-											et_submodules.pac_submodule_ports.insert (
-												container	=> submodule_ports,
-												key			=> submodule_port_name, -- RESET
-												new_item	=> submodule_port,
-												inserted	=> inserted,
-												position	=> cursor
-												);
-
-											if not inserted then
-												log (ERROR, "port " & 
-													et_general.to_string (submodule_port_name) & " already used !",
-													console => true
-													);
-												raise constraint_error;
-											end if;
-
-										else
-											port_not_at_edge (submodule_port_name);
-										end if;
-									end;
-
-									-- clean up for next port
-									submodule_port_name := to_net_name ("");
-									submodule_port := (others => <>);
-
+								when SEC_SUBMODULE => insert_submodule_port;
 								when others => invalid_section;
 							end case;
 
@@ -5248,171 +5670,7 @@ is
 
 				when SEC_ASSEMBLY_VARIANT =>
 					case stack.parent is
-						when SEC_ASSEMBLY_VARIANTS =>
-							declare
-								use et_devices;
-								kw : string 	:= f (line, 1);
-								device_name		: type_device_name; -- R1
-								device			: access et_assembly_variants.type_device;
-								device_cursor	: et_assembly_variants.pac_device_variants.cursor;
-								
-								submod_name		: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
-								submod_var		: et_general.pac_assembly_variant_name.bounded_string; -- low_cost
-								submod_cursor	: et_assembly_variants.pac_submodule_variants.cursor;
-								inserted		: boolean;
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_name then -- name low_cost
-									expect_field_count (line, 2);
-									assembly_variant_name := et_general.to_variant (f (line, 2));
-
-								elsif kw = keyword_description then -- description "variant without temperature sensor"
-									expect_field_count (line, 2);
-
-									assembly_variant_description := et_assembly_variants.to_unbounded_string (f (line, 2));
-									
-								-- A line like "device R1 not_mounted" or
-								-- a line like "device R1 value 270R partcode 12345" or		
-								-- a line like "device R1 value 270R partcode 12345 purpose "set temperature""
-								-- tells whether a device is mounted or not.
-								elsif kw = keyword_device then
-
-									-- there must be at least 3 fields:
-									expect_field_count (line, 3, warn => false);
-									
-									device_name := to_device_name (f (line, 2));
-
-									-- test whether device exists
-									if not exists (module_cursor, device_name) then
-										log (ERROR, "device " &
-												enclose_in_quotes (to_string (device_name)) &
-												" does not exist !", console => true);
-										raise constraint_error;
-									end if;
-
-									if f (line, 3) = keyword_not_mounted then
-										-- line like "device R1 not_mounted"
-
-										device := new et_assembly_variants.type_device'(
-											mounted	=> et_assembly_variants.NO);
-										
-									elsif f (line, 3) = keyword_value then
-										-- line like "device R1 value 270R partcode 12345"
-
-										-- create a device with discriminant "mounted" where
-										-- pointer assembly_variant_device is pointing at.
-										device := new et_assembly_variants.type_device'(
-											mounted	=> et_assembly_variants.YES,
-											others	=> <>); -- to be assigned later
-										
-										-- there must be at least 6 fields:
-										expect_field_count (line, 6, warn => false);
-
-										-- read and validate value
-										device.value := to_value_with_check (f (line, 4));
-
-										-- read partcode
-										if f (line, 5) = et_material.keyword_partcode then
-											device.partcode := et_material.to_partcode (f (line, 6));
-										else -- keyword partcode not found
-											log (ERROR, "expect keyword " & enclose_in_quotes (et_material.keyword_partcode) &
-													" after value !", console => true);
-											raise constraint_error;
-										end if;
-
-										-- read optional purpose
-										if field_count (line) > 6 then
-											expect_field_count (line, 8);
-
-											if f (line, 7) = keyword_purpose then
-
-												-- validate purpose
-												device.purpose := to_purpose (f (line, 8));
-
-											else -- keyword purpose not found
-												log (ERROR, "expect keyword " & enclose_in_quotes (keyword_purpose) &
-													" after partcode !", console => true);
-												raise constraint_error;
-											end if;
-										end if;
-											
-									else -- keyword value not found
-										log (ERROR, "expect keyword " & enclose_in_quotes (keyword_value) &
-												" or keyword " & enclose_in_quotes (keyword_not_mounted) &
-												" after device name !", console => true);
-										raise constraint_error;
-									end if;											
-
-									-- Insert the device in the current assembly variant:
-									et_assembly_variants.pac_device_variants.insert (
-										container	=> assembly_variant_devices,
-										key			=> device_name, -- R1
-										new_item	=> device.all,
-										inserted	=> inserted,
-										position	=> device_cursor);
-
-									-- Raise error if device occurs more than once:
-									if not inserted then
-										log (ERROR, "device " &
-												enclose_in_quotes (to_string (device_name)) &
-												" already specified !", console => true);
-										raise constraint_error;
-									end if;
-
-								-- a line like "submodule OSC1 variant low_cost
-								-- tells which assembly variant of a submodule is used:
-								elsif kw = keyword_submodule then
-
-									-- there must be 4 fields:
-									expect_field_count (line, 4);
-
-									submod_name := et_general.to_instance_name (f (line, 2)); -- OSC1
-
-									-- test whether submodule instance exists
-									if not exists (module_cursor, submod_name) then
-										log (ERROR, "submodule instance " &
-												enclose_in_quotes (et_general.to_string (submod_name)) &
-												" does not exist !", console => true);
-										raise constraint_error;
-									end if;
-
-									-- After the instance name (like OSC1) must come the keyword "variant"
-									-- followed by the variant name:
-									if f (line, 3) = keyword_variant then
-										submod_var := et_general.to_variant (f (line, 4));
-										
-										-- NOTE: A test whether the submodule does provide the variant can
-										-- not be executed at this stage because the submodules have not 
-										-- been read yet. This will be done after procdure 
-										-- read_submodule_files has been executed. See far below.
-
-										-- Insert the submodule in the current assembly variant:
-										et_assembly_variants.pac_submodule_variants.insert (
-											container	=> assembly_variant_submodules,
-											key			=> submod_name, -- OSC1
-											new_item	=> (variant => submod_var), -- type_submodule is a record with currently only one element
-											inserted	=> inserted,
-											position	=> submod_cursor);
-
-										-- Raise error if submodule occurs more than once:
-										if not inserted then
-											log (ERROR, "submodule " &
-												enclose_in_quotes (et_general.to_string (submod_name)) &
-												" already specified !", console => true);
-											raise constraint_error;
-										end if;
-
-									else
-										log (ERROR, "expect keyword " & enclose_in_quotes (keyword_variant) &
-												" after instance name !", console => true);
-										raise constraint_error;
-									end if;
-									
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-							
+						when SEC_ASSEMBLY_VARIANTS => read_assembly_variant;							
 						when others => invalid_section;
 					end case;
 					
@@ -5530,7 +5788,7 @@ is
 						when others => invalid_section;
 					end case;
 				
-				when SEC_LINE =>
+				when SEC_LINE => -- CS clean up: separate procdures required
 					case stack.parent is
 						when SEC_CONTOURS => read_board_line (line); -- of a cutout or fill zone
 							
@@ -5640,7 +5898,7 @@ is
 						when others => invalid_section;
 					end case;
 
-				when SEC_ARC =>
+				when SEC_ARC =>  -- CS clean up: separate procdures required
 					case stack.parent is
 						when SEC_CONTOURS => read_board_arc (line);
 						
@@ -5759,7 +6017,7 @@ is
 						when others => invalid_section;
 					end case;
 
-				when SEC_CIRCLE =>
+				when SEC_CIRCLE => -- CS clean up: separate procdures required
 					case stack.parent is
 						when SEC_CONTOURS => read_board_circle (line);
 						
@@ -6037,26 +6295,7 @@ is
 
 				when SEC_PACKAGE =>
 					case stack.parent is
-						when SEC_DEVICE =>
-							declare
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
-									expect_field_count (line, 9);
-
-									-- extract package position starting at field 2
-									device_position := to_position (line, 2);
-
-								elsif kw = keyword_flipped then -- flipped no/yes
-									expect_field_count (line, 2);
-
-									device_flipped := et_pcb.to_flipped (f (line, 2));
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-
+						when SEC_DEVICE => read_package;
 						when others => invalid_section;
 					end case;
 
@@ -6064,172 +6303,21 @@ is
 					case stack.parent is
 						when SEC_PLACEHOLDERS =>
 							case stack.parent (degree => 2) is
-								when SEC_DEVICE | SEC_PACKAGE => -- in layout
-									declare
-										use et_packages;
-										use et_pcb_stack;
-										use et_pcb_coordinates.pac_geometry_brd;
-										kw : string := f (line, 1);
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_meaning then -- meaning reference, value, ...
-											expect_field_count (line, 2);
-											device_text_placeholder.meaning := to_text_meaning (f (line, 2));
-											
-										elsif kw = keyword_layer then -- layer silk_screen/assembly_documentation
-											expect_field_count (line, 2);
-											device_text_placeholder_layer := to_layer (f (line, 2));
-											
-										elsif kw = keyword_position then -- position x 0.000 y 5.555 rotation 0.00 face top
-											expect_field_count (line, 9);
-
-											-- extract position of placeholder starting at field 2
-											device_text_placeholder_position := to_position (line, 2);
-
-										elsif kw = et_text.keyword_size then -- size 5
-											expect_field_count (line, 2);
-											device_text_placeholder.size := to_distance (f (line, 2));
-
-										elsif kw = et_text.keyword_line_width then -- line_width 0.15
-											expect_field_count (line, 2);
-
-											device_text_placeholder.line_width := to_distance (f (line, 2));
-
-										elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
-											expect_field_count (line, 5);
-
-											-- extract alignment of placeholder starting at field 2
-											device_text_placeholder.alignment := et_text.to_alignment (line, 2);
-											
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-
-								when SEC_UNIT =>
-									declare
-										use et_coordinates.pac_geometry_sch;
-										kw : string := f (line, 1);
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_meaning then -- meaning reference, value or purpose
-											expect_field_count (line, 2);
-											unit_placeholder_meaning := et_symbols.to_meaning (f (line, 2));
-											
-										elsif kw = keyword_position then -- position x 0.000 y 5.555
-											expect_field_count (line, 5);
-
-											-- extract position of placeholder starting at field 2
-											unit_placeholder_position := to_position (line, 2);
-
-										elsif kw = et_text.keyword_size then -- size 3.0
-											expect_field_count (line, 2);
-											unit_placeholder.size := to_distance (f (line, 2));
-
-										elsif kw = keyword_rotation then -- rotation 90.0
-											expect_field_count (line, 2);
-
-											unit_placeholder.rotation := et_symbols.pac_text.to_rotation_doc (f (line, 2));
-
--- 											elsif kw = keyword_style then -- stlye italic
--- 												expect_field_count (line, 2);
--- 
--- 												unit_placeholder.style := et_symbols.to_text_style (f (line, 2));
-
-										elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
-											expect_field_count (line, 5);
-
-											-- extract alignment of placeholder starting at field 2
-											unit_placeholder.alignment := et_text.to_alignment (line, 2);
-											
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-
+								when SEC_DEVICE | SEC_PACKAGE => read_device_text_placeholder; -- in layout
+								when SEC_UNIT => read_unit_placeholder;
 								when others => invalid_section;
 							end case;
 
 						when SEC_TOP | SEC_BOTTOM =>
 							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
-									declare
-										use et_pcb_coordinates.pac_geometry_brd;
-										kw : string := f (line, 1);
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
-											expect_field_count (line, 7);
-
-											-- extract position of note starting at field 2
-											board_text_placeholder.position := to_position (line, 2);
-
-										elsif kw = et_text.keyword_size then -- size 1.000
-											expect_field_count (line, 2);
-											board_text_placeholder.size := to_distance (f (line, 2));
-
-										elsif kw = et_text.keyword_line_width then -- line_width 0.1
-											expect_field_count (line, 2);
-											board_text_placeholder.line_width := to_distance (f (line, 2));
-
-										elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
-											expect_field_count (line, 5);
-
-											-- extract alignment starting at field 2
-											board_text_placeholder.alignment := et_text.to_alignment (line, 2);
-											
-										elsif kw = keyword_meaning then -- meaning project_name
-											expect_field_count (line, 2);
-											board_text_placeholder.meaning := et_pcb.to_meaning (f (line, 2));
-											
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-									
+								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION 
+									| SEC_STOP_MASK => -- CS SEC_KEEPOUT
+									read_board_text_placeholder;
+						
 								when others => invalid_section;
 							end case;
 
-						when SEC_CONDUCTOR =>
-							declare
-								use et_pcb_coordinates.pac_geometry_brd;
-								use et_pcb_stack;
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
-									expect_field_count (line, 7);
-
-									-- extract position of note starting at field 2
-									board_text_conductor_placeholder.position := to_position (line, 2);
-
-								elsif kw = et_text.keyword_size then -- size 1.000
-									expect_field_count (line, 2);
-									board_text_conductor_placeholder.size := to_distance (f (line, 2));
-
-								elsif kw = et_text.keyword_line_width then -- line_width 0.1
-									expect_field_count (line, 2);
-									board_text_conductor_placeholder.line_width := to_distance (f (line, 2));
-
-								elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
-									expect_field_count (line, 5);
-
-									-- extract alignment starting at field 2
-									board_text_conductor_placeholder.alignment := et_text.to_alignment (line, 2);
-									
-								elsif kw = keyword_meaning then -- meaning revision/project_name/...
-									expect_field_count (line, 2);
-									board_text_conductor_placeholder.meaning := et_pcb.to_meaning (f (line, 2));
-
-								elsif kw = keyword_layer then -- layer 15
-									expect_field_count (line, 2);
-									board_text_conductor_placeholder.layer := et_pcb_stack.to_signal_layer (f (line, 2));
-									validate_signal_layer (board_text_conductor_placeholder.layer);
-									
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
+						when SEC_CONDUCTOR => read_board_text_conductor_placeholder;
 							
 						when others => invalid_section;
 					end case;
@@ -6251,36 +6339,7 @@ is
 
 				when SEC_UNIT =>
 					case stack.parent is
-						when SEC_UNITS =>
-							declare
-								use et_devices;
-								kw : string := f (line, 1);
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_name then -- name 1, GPIO_BANK_1, ...
-									expect_field_count (line, 2);
-									device_unit_name := to_unit_name (f (line, 2));
-									
-								elsif kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
-									expect_field_count (line, 7);
-
-									-- extract position of unit starting at field 2
-									device_unit_position := to_position (line, 2);
-
-								elsif kw = keyword_rotation then -- rotation 180.0
-									expect_field_count (line, 2);
-									--device_unit_rotation := geometry.to_rotation (f (line, 2));
-									set (device_unit_position, pac_geometry_sch.to_rotation (f (line, 2)));
-
-								elsif kw = keyword_mirrored then -- mirrored no/x_axis/y_axis
-									expect_field_count (line, 2);
-									device_unit_mirror := et_schematic.to_mirror_style (f (line, 2));
-
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-							
+						when SEC_UNITS => read_unit;
 						when others => invalid_section;
 					end case;
 
@@ -6298,42 +6357,7 @@ is
 
 				when SEC_NETCHANGER =>
 					case stack.parent is
-						when SEC_NETCHANGERS =>
-							declare
-								kw : string := f (line, 1);
-								use et_pcb_stack;
-							begin
-								-- CS: In the following: set a corresponding parameter-found-flag
-								if kw = keyword_name then -- name 1, 2, 304, ...
-									expect_field_count (line, 2);
-									netchanger_id := et_submodules.to_netchanger_id (f (line, 2));
-									
-								elsif kw = keyword_position_in_schematic then -- position_in_schematic sheet 1 x 1.000 y 5.555
-									expect_field_count (line, 7);
-
-									-- extract position (in schematic) starting at field 2
-									netchanger.position_sch := to_position (line, 2);
-
-								elsif kw = keyword_rotation_in_schematic then -- rotation_in_schematic 180.0
-									expect_field_count (line, 2);
-									set (netchanger.position_sch, pac_geometry_sch.to_rotation (f (line, 2)));
-
-								elsif kw = keyword_position_in_board then -- position_in_board x 55.000 y 7.555
-									expect_field_count (line, 5);
-
-									-- extract position (in board) starting at field 2
-									netchanger.position_brd := to_position (line, 2);
-
-								elsif kw = keyword_layer then -- layer 3 (signal layer in board)
-									expect_field_count (line, 2);
-									netchanger.layer := et_pcb_stack.to_signal_layer (f (line, 2));
-									validate_signal_layer (netchanger.layer);
-									
-								else
-									invalid_keyword (kw);
-								end if;
-							end;
-
+						when SEC_NETCHANGERS => read_netchanger;
 						when others => invalid_section;
 					end case;
 					
