@@ -53,7 +53,7 @@ package et_drills is
 	-- DRILLS
 	type type_drill is tagged record
 		position	: type_point;
-		diameter	: type_drill_size;
+		diameter	: type_drill_size := drill_size_min;
 		-- CS locked : type_locked;
 	end record;
 

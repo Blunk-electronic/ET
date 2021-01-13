@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         CANVAS BOARD TEXTS                               --
+--                         CANVAS BOARD VIAS                                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -39,40 +39,27 @@
 
 with gtk.window;					use gtk.window;
 with gtk.box;						use gtk.box;
-with gtk.text_view;					--use gtk.text_view;
 
 with et_general;					use et_general;
---with et_geometry;				use et_geometry;
 with et_canvas_general;				use et_canvas_general;
 with et_canvas_schematic;
 
 with et_pcb_coordinates;			use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_brd;
 
---with et_terminals;					use et_terminals;
-
-
-with et_text;						use et_text;
-
-with et_board_shapes_and_text;		use et_board_shapes_and_text;
-use et_board_shapes_and_text.pac_text_fab;
-
+with et_drills;						use et_drills;
+with et_vias;						use et_vias;
 with et_pcb_stack;					use et_pcb_stack;
-with et_packages;					use et_packages;
+with et_design_rules;				use et_design_rules;
 with et_project.modules;			use et_project.modules;
 with et_pcb;
---with et_frames;
 
---with et_board_ops;
-
---with et_canvas_general;				use et_canvas_general;
---with et_canvas_primitive_draw_ops;
 with et_string_processing;			use et_string_processing;
 
-package et_canvas_board_texts is
+package et_canvas_board_vias is
 
 
-	-- The text properties bar:
+	-- The via properties bar:
 	type type_box_properties is record
 		box_main	: gtk_hbox;
 		
@@ -88,47 +75,45 @@ package et_canvas_board_texts is
 
 	
 	-- to be output in the status bar:
-	status_place_text : constant string := 
+	status_place_via : constant string := 
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to place text." 
+		& "to place via." 
 		& status_hint_for_abort;
 
 	-- The properties of the text being placed:
-	type type_text_place is record
-		being_moved		: boolean := false;
-		
-		category		: type_layer_category := type_layer_category'first;
-		signal_layer	: type_signal_layer := signal_layer_default;
-		face			: type_face := face_default;
+	type type_via_place is record
+		being_moved			: boolean := false;
+		category			: type_via_category := type_via_category'first;
+		drill				: type_drill;
 
-		text			: type_text_with_content := (
-							size		=> 10.0,
-							line_width	=> 1.0,
-							position	=> origin_zero_rotation,
-							alignment	=> text_alignment_default,
-							content		=> empty_text_content); 
-		-- NOTE: The content will be extracted from selector entry_content.
+		-- for blind via:
+		destination_blind	: type_via_layer := type_via_layer'first;
 
-		entry_content	: gtk.text_view.gtk_text_view;
+		-- for blind via:
+		restring_inner		: type_restring_width := type_restring_width'first;
+		restring_outer		: type_restring_width := type_restring_width'first;
+
+		-- for buried via:
+		layers_buried		: type_buried_layers;
 	end record;
 
-	text_place : type_text_place;
+	via_place : type_via_place;
 
-	-- Clears text_place.being_moved and box_properties.displayed.
+	-- Clears via_place.being_moved and box_properties.displayed.
 	-- Removes the text properties bar.
-	procedure reset_text_place;
+	procedure reset_via_place;
 
 	-- Calls reset_text_place if the verb is not VERB_PLACE.
-	procedure remove_text_properties;
+	--procedure remove_text_properties;
 	
-	-- Builds the box for the text properties and
+	-- Builds the box for the via properties and
 	-- inserts it below the console.
 	-- If the box is already on display, nothing happens.
-	procedure show_text_properties;
+	procedure show_via_properties;
 	
-end et_canvas_board_texts;
+end et_canvas_board_vias;
 
 -- Soli Deo Gloria
 

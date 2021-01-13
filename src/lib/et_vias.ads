@@ -95,7 +95,11 @@ package et_vias is
 		upper	: type_via_layer := type_via_layer'first;
 
 		-- The deepest signal layer of the via:
-		lower	: type_via_layer := type_via_layer'last;
+		lower	: type_via_layer := type_via_layer'first;
+		-- NOTE: It is reasonable to use as default the 
+		-- same as for the upper layer. The last value in
+		-- range type_via_layer would always produce a lower 
+		-- layer much deeper than the deepest layer of the stack.
 	end record;
 
 	-- Converts two strings like "2" and "6" to a type_buried_layers.

@@ -1087,8 +1087,7 @@ package body et_canvas_board is
 
 		use et_modes;
 
-		procedure delete is
-		begin
+		procedure delete is begin
 			case key is
 				when GDK_LC_d =>
 					noun := NOUN_DEVICE;
@@ -1099,8 +1098,7 @@ package body et_canvas_board is
 			end case;
 		end delete;
 		
-		procedure place is
-		begin
+		procedure place is begin
 			case key is
 				-- EVALUATE KEY FOR NOUN:
 				when GDK_LC_t =>
@@ -1108,11 +1106,20 @@ package body et_canvas_board is
 					show_text_properties;
 					set_status (status_place_text);
 
+				when GDK_LC_v =>
+					noun := NOUN_VIA;
+					show_via_properties;
+					set_status (status_place_via);
+					
 				-- If space pressed, then the operator wishes to operate via keyboard:	
 				when GDK_Space =>
 					case noun is
 						when NOUN_TEXT =>
 							place_text (cursor_main.position);
+
+						when NOUN_VIA =>
+							null;
+							-- CS place_via (cursor_main.position);
 							
 						when others => null;
 					end case;
@@ -1137,7 +1144,7 @@ package body et_canvas_board is
 				status_enter_verb;
 
 				reset_text_place; -- after placing a text
-
+				reset_via_place; -- after placing a via
 				
 			when GDK_F11 =>
 				et_canvas_schematic.previous_module;
@@ -1236,8 +1243,7 @@ package body et_canvas_board is
 	procedure evaluate_mouse_position (
 		self	: not null access type_view;
 		point	: in type_point) 
-	is
-	begin
+	is begin
 		case verb is
 			when VERB_PLACE =>
 				case noun is
@@ -1246,6 +1252,11 @@ package body et_canvas_board is
 							redraw;
 						end if;
 
+					when NOUN_VIA =>
+						if via_place.being_moved then
+							redraw;
+						end if;
+						
 					when others => null;
 				end case;
 
@@ -1271,6 +1282,10 @@ package body et_canvas_board is
 						when NOUN_TEXT =>
 							place_text (snap_point);
 
+						when NOUN_VIA =>
+							null;
+							-- CS place_via (snap_point);
+							
 						when others => null;
 					end case;
 					

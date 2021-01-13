@@ -45,25 +45,25 @@
 --  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
-with gdk.types;					use gdk.types;
-with gdk.types.keysyms;			use gdk.types.keysyms;
+with gdk.types;						use gdk.types;
+with gdk.types.keysyms;				use gdk.types.keysyms;
 
 with gtk;
-with gtk.gentry;				use gtk.gentry;
+with gtk.gentry;					use gtk.gentry;
 
-with glib;						use glib;
-with cairo;						use cairo;
+with glib;							use glib;
+with cairo;							use cairo;
 
-with et_general;				use et_general;
-with et_geometry;				use et_geometry;
+with et_general;					use et_general;
+with et_geometry;					use et_geometry;
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates;			use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_brd;
 
-with et_board_shapes_and_text;	--use et_board_shapes_and_text;
-with et_terminals;				use et_terminals;
+with et_board_shapes_and_text;		--use et_board_shapes_and_text;
+with et_terminals;					use et_terminals;
 with et_packages;
-with et_project.modules;		use et_project.modules;
+with et_project.modules;			use et_project.modules;
 with et_schematic;
 with et_frames;
 
@@ -71,8 +71,9 @@ with et_canvas_general;				use et_canvas_general;
 with et_canvas_primitive_draw_ops;
 with et_string_processing;			use et_string_processing;
 
-with et_canvas_board_texts;		use et_canvas_board_texts;
-with et_canvas_board_devices;	use et_canvas_board_devices;
+with et_canvas_board_texts;			use et_canvas_board_texts;
+with et_canvas_board_vias;			use et_canvas_board_vias;
+with et_canvas_board_devices;		use et_canvas_board_devices;
 
 package et_canvas_board is
 

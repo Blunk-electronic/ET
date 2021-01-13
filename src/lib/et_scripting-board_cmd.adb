@@ -40,6 +40,7 @@ with et_drills;
 with et_modes.board;
 with et_canvas_board_devices;
 with et_canvas_board_texts;
+with et_canvas_board_vias;
 with et_design_rules;				use et_design_rules;
 
 separate (et_scripting)
@@ -2849,6 +2850,7 @@ is
 	procedure propose_arguments is
 		use et_canvas_board_devices;
 		use et_canvas_board_texts;
+		use et_canvas_board_vias;
 		
 		device_name		: et_devices.type_device_name;
 		
@@ -2879,17 +2881,12 @@ is
 				case noun is
 					when NOUN_TEXT =>
 						show_text_properties;
-
 						single_cmd_status.finalization_pending := true;
-						--case fields is
-							--when 4 => -- board demo place text
-								--null;
-								--set_status (et_canvas_board_texts.status_place_text);
 
-								-- CS window to enter category, face and content,
-								-- line width, size, rotation
-
-							--when 5 
+					when NOUN_VIA =>
+						show_via_properties;
+						single_cmd_status.finalization_pending := true;
+						
 					when others => null; -- CS
 				end case;
 

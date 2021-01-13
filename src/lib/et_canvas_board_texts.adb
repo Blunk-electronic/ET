@@ -344,7 +344,10 @@ package body et_canvas_board_texts is
 		label_size, label_line_width, label_rotation : gtk_label;
 		
 		cbox_category, cbox_face, cbox_signal_layer : gtk_combo_box;
+		-- Operator can choose between fixed menu entries.
+		
 		cbox_line_width, cbox_size, cbox_rotation : gtk_combo_box_text;
+		-- Operator may enter an additional value in the menu.
 		
 		button_apply : gtk_button;
 
@@ -353,11 +356,13 @@ package body et_canvas_board_texts is
 		-- text size and line width:
 		text_size_length_min : constant gint := 1;
 		text_size_length_max : constant gint := 6; 
-		-- CS: adjust if necessary. see et_terminals parameters of pac_text.
+		-- CS: adjust if necessary. see parameters 
+		-- of et_board_shapes_and_text.pac_text_fab.
 		
 		line_width_length_min : constant gint := 1;
 		line_width_length_max : constant gint := 5;
-		-- CS: adjust if necessary. see et_terminals parameters of pac_text.
+		-- CS: adjust if necessary. see parameters
+		-- of et_board_shapes_and_text.pac_text_fab.
 		
 		rotation_length_min : constant gint := 1;
 		rotation_length_max : constant gint := 5;
@@ -366,7 +371,7 @@ package body et_canvas_board_texts is
 		-- The spacing between the boxes:
 		spacing : constant natural := 5;
 
-		procedure make_combo_for_categories is
+		procedure make_combo_category is
 			storage_model : gtk_list_store;
 
 			-- An entry consists of just a single column:
@@ -412,7 +417,7 @@ package body et_canvas_board_texts is
 			gtk_new (render);
 			pack_start (cbox_category, render, expand => true);
 			add_attribute (cbox_category, render, "markup", column_0);
-		end make_combo_for_categories;
+		end make_combo_category;
 
 		procedure make_combo_for_face is
 			storage_model : gtk_list_store;
@@ -616,7 +621,7 @@ package body et_canvas_board_texts is
 			reorder_child (box_right, box_properties.box_main, 1);
 
 			-- build the elements of the properties bar:
-			make_combo_for_categories;
+			make_combo_category;
 			make_combo_for_face;
 			make_combo_for_signal_layer;
 			make_combo_for_size;
