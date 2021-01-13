@@ -1077,6 +1077,44 @@ package body et_canvas_board is
 		end if;	
 	end place_text;
 
+	procedure place_via (destination : in type_point) is
+		use et_canvas_schematic;
+		via : type_via (category => via_place.category);
+	begin
+		if via_place.being_moved then
+			
+			via.position := via_place.drill.position;
+			via.diameter := via_place.drill.diameter;
+			
+			via.restring_inner := via_place.restring_inner;
+			
+			move_to (via_place.drill.position, destination);
+
+			case via_place.category is
+				when THROUGH =>
+					via.restring_outer := via_place.restring_outer;
+								  
+				when BURIED =>
+					via.layers := via_place.layers_buried;
+										  
+				when BLIND_DRILLED_FROM_TOP =>
+					via.restring_top := via_place.restring_outer;
+					via.lower := via_place.destination_blind;
+					
+				when BLIND_DRILLED_FROM_BOTTOM =>
+					via.restring_bottom := via_place.restring_outer;
+					via.upper := via_place.destination_blind;
+
+			end case;
+
+			place_via (
+				module_cursor	=> current_active_module,
+				net_name		=> via_place.net_name,
+				via				=> via,
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+	end place_via;
 	
 	procedure evaluate_key (
 		self	: not null access type_view;
@@ -1118,8 +1156,7 @@ package body et_canvas_board is
 							place_text (cursor_main.position);
 
 						when NOUN_VIA =>
-							null;
-							-- CS place_via (cursor_main.position);
+							place_via (cursor_main.position);
 							
 						when others => null;
 					end case;
@@ -1283,8 +1320,7 @@ package body et_canvas_board is
 							place_text (snap_point);
 
 						when NOUN_VIA =>
-							null;
-							-- CS place_via (snap_point);
+							place_via (snap_point);
 							
 						when others => null;
 					end case;

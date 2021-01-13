@@ -40,6 +40,10 @@ with ada.strings.bounded;       use ada.strings.bounded;
 with ada.directories;
 with ada.containers; 			use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
+with ada.containers.ordered_maps;
+--with ada.containers.ordered_sets;
+--with ada.containers.doubly_linked_lists;
+--with ada.containers.vectors;
 -- with gnat.source_info;
 
 package et_general is
@@ -173,6 +177,13 @@ package et_general is
 	package pac_net_name is new generic_bounded_length (net_name_length_max); 
 	use pac_net_name;
 
+	-- Plain net names can be collected in an ordered map.
+	-- A map is used in order to get an alphabetically ordering along 
+	-- with a consequtive index:
+	package pac_net_names is new ordered_maps (
+		key_type		=> pac_net_name.bounded_string,
+		element_type	=> natural);
+	
 	procedure check_net_name_length (net : in string);
 	-- Tests if the given net name is longer than allowed.
 	

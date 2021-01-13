@@ -583,7 +583,7 @@ package et_schematic is
 		
 		texts       	: pac_texts.list; -- general notes in schematic, not related to drawing frames !
 
-		-- the nets of the module (incl. routing information from the board):
+		-- the nets of the module (incl. routing information for the board):
 		nets 	    	: pac_nets.map;
 
 		-- the assembly variants of the module

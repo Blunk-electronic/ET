@@ -305,14 +305,18 @@ package body et_canvas_board_vias is
 		use gtk.cell_renderer_text;
 		use gtk.cell_layout;
 
+		box_net_name,
 		box_category, box_destination_blind, 
 		box_buried_upper, box_buried_lower, box_drill,
 		box_restring_inner, box_restring_outer : gtk_vbox;
-		
+
+		label_net_name,
 		label_category, label_destination_blind, 
+		
 		label_buried_upper, label_buried_lower, label_drill,
 		label_restring_inner, label_restring_outer : gtk_label;
-		
+
+		cbox_net_name,
 		cbox_category, cbox_destination_blind,
 		cbox_buried_upper, cbox_buried_lower : gtk_combo_box;
 		-- Operator can choose between fixed menu entries.
@@ -335,6 +339,68 @@ package body et_canvas_board_vias is
 		-- The spacing between the boxes:
 		spacing : constant natural := 5;
 
+		-- NET NAME
+		procedure make_combo_net is
+			storage_model : gtk_list_store;
+
+			-- An entry consists of just a single column:
+			column_0 : constant := 0;
+
+			-- The single column is to contain strings:
+			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string);
+
+			iter : gtk_tree_iter;			
+			render : gtk_cell_renderer_text;
+
+			-- We need a list of all net names of the current module:
+			use pac_net_names;
+			net_names : constant pac_net_names.map := get_net_names (et_canvas_schematic.current_active_module);
+
+			--index : natural := 0;
+			
+			procedure query_net_name (n : in pac_net_names.cursor) is begin
+				storage_model.append (iter);
+				gtk.list_store.set (storage_model, iter, column_0, to_string (key (n)));
+				--index := index + 1;
+			end query_net_name;
+			
+		begin -- make_combo_net
+			
+			gtk_new_vbox (box_net_name, homogeneous => false);
+			pack_start (box_properties.box_main, box_net_name, padding => guint (spacing));
+
+			gtk_new (label_net_name, "NET");
+			pack_start (box_net_name, label_net_name, padding => guint (spacing));
+
+			
+			-- Create the storage model:
+			gtk_new (list_store => storage_model, types => (entry_structure));
+
+			-- Insert the net names in the storage model:
+			iterate (net_names, query_net_name'access);
+			
+
+			-- Create the combo box:
+			gtk.combo_box.gtk_new_with_model (
+				combo_box	=> cbox_net_name,
+				model		=> +storage_model); -- ?
+
+			-- Set the category used last:
+			--cbox_category.set_active (type_via_category'pos (via_place.category));
+
+
+			pack_start (box_net_name, cbox_net_name, padding => guint (spacing));
+			-- CS cbox_category.on_changed (category_changed'access);
+
+			-- The purpose of this stuff is unclear, but it
+			-- is required to make the entries visible:
+			gtk_new (render);
+			pack_start (cbox_net_name, render, expand => true);
+			add_attribute (cbox_net_name, render, "markup", column_0);
+		end make_combo_net;
+
+		
+		-- CATEGORY
 		procedure make_combo_category is
 			storage_model : gtk_list_store;
 
@@ -640,6 +706,7 @@ package body et_canvas_board_vias is
 
 			-- build the elements of the properties bar:
 			make_combo_category;
+			make_combo_net;
 			make_combo_destination;
 			make_combo_buried_upper;
 			make_combo_buried_lower;			

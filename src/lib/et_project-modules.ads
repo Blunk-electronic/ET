@@ -391,7 +391,12 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return et_pcb.type_user_settings;
 
-								   
+	-- Returns the names of all nets that exist in the given module:
+	function get_net_names (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return pac_net_names.map;
+
+							   
 end et_project.modules;
 
 -- Soli Deo Gloria

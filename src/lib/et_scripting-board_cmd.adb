@@ -2884,8 +2884,21 @@ is
 						single_cmd_status.finalization_pending := true;
 
 					when NOUN_VIA =>
-						show_via_properties;
-						single_cmd_status.finalization_pending := true;
+						case fields is
+							when 4 => -- place via
+								show_via_properties;
+								single_cmd_status.finalization_pending := true;
+
+							when 5 => -- place via RESET_N
+								-- Preset the net name so that it is visible
+								-- in the via properties bar:
+								via_place.net_name := to_net_name (f (5));
+								
+								show_via_properties;
+								single_cmd_status.finalization_pending := true;
+
+							when others => null;
+						end case;
 						
 					when others => null; -- CS
 				end case;

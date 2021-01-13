@@ -899,6 +899,40 @@ package body et_project.modules is
 		return settings;
 	end get_user_settings;
 
+	function get_net_names (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return pac_net_names.map
+	is
+		use et_schematic;
+		names : pac_net_names.map; -- to be returned
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module)
+		is 
+			index : natural := 0;
+			
+			procedure query_net (n : in pac_nets.cursor) is
+				use pac_net_names;
+			begin
+				index := index + 1;
+
+				names.insert (
+					key 		=> pac_nets.key (n),
+					new_item	=> index);
+				
+			end query_net;
+			
+		begin
+			pac_nets.iterate (module.nets, query_net'access);
+		end;
+					
+	begin
+		pac_generic_modules.query_element (module, query_module'access);
+		
+		return names;
+	end get_net_names;
+
 	
 end et_project.modules;
 	
