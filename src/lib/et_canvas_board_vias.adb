@@ -289,18 +289,17 @@ package body et_canvas_board_vias is
 		model : constant gtk_tree_model := combo.get_model;
 		iter : constant gtk_tree_iter := combo.get_active_iter;
 
-		item_text : glib.values.gvalue;
-		index : glib.values.gvalue;
+		name	: glib.values.gvalue;
+		index	: glib.values.gvalue;
 	begin
-		-- Get the actual text of the entry (column is 0):
-		gtk.tree_model.get_value (model, iter, 0, item_text);
+		-- Get the net name of the entry column 0:
+		gtk.tree_model.get_value (model, iter, 0, name);
+		via_place.net_name := to_net_name (glib.values.get_string (name));
 
+		-- Get the net index of the entry column 1:
 		gtk.tree_model.get_value (model, iter, 1, index);
-		
-		
-		via_place.net_name := to_net_name (glib.values.get_string (item_text));
 		via_place.net_idx := positive'value (glib.values.get_string (index));
-		
+				
 		put_line ("net " & to_string (via_place.net_name) & " idx " & positive'image (via_place.net_idx));
 
 		et_canvas_board.redraw_board;
@@ -368,25 +367,39 @@ package body et_canvas_board_vias is
 		procedure make_combo_net is
 			storage_model : gtk_list_store;
 
-			-- An entry consists of just a single column:
-			column_0 : constant := 0;
-			column_1 : constant := 1;
+			-- An entry consists of two columns.
+			-- But only the first will be displayed in the combo box. The first entry
+			-- will contain the net name.
+			-- The second entry will not be displayed but is necessary to convey
+			-- the net index.
+			column_0 : constant := 0; -- for the net name
+			column_1 : constant := 1; -- for the net index
 
-			-- The single column is to contain strings:
-			entry_structure : glib.gtype_array := (column_0 => glib.gtype_string, column_1 => glib.gtype_string);
+			-- As an indermediate format, the columns will contain 
+			-- the data type string:
+			entry_structure : glib.gtype_array := (
+					column_0 => glib.gtype_string,
+					column_1 => glib.gtype_string);
 
-			iter : gtk_tree_iter;			
-			render : gtk_cell_renderer_text;
+			iter	: gtk_tree_iter;			
+			render	: gtk_cell_renderer_text;
 
 			-- We need a list of all net names of the current module:
 			use pac_net_names_indexed;
-			net_names : constant pac_net_names_indexed.vector := get_net_names (et_canvas_schematic.current_active_module);
+			net_names : constant pac_net_names_indexed.vector := 
+				get_net_names (et_canvas_schematic.current_active_module);
 
-			procedure query_net_name (n : in pac_net_names_indexed.cursor) is begin
+			procedure query_net (n : in pac_net_names_indexed.cursor) is 
+				use gtk.list_store;
+			begin
 				storage_model.append (iter);
-				gtk.list_store.set (storage_model, iter, column_0, to_string (element (n)));
-				gtk.list_store.set (storage_model, iter, column_1, positive'image (to_index (n)));
-			end query_net_name;
+
+				-- set the net name in the first column:
+				set (storage_model, iter, column_0, to_string (element (n)));
+
+				-- set the net name in the second column:
+				set (storage_model, iter, column_1, positive'image (to_index (n)));
+			end query_net;
 			
 		begin -- make_combo_net
 			
@@ -400,12 +413,11 @@ package body et_canvas_board_vias is
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
-			-- Insert the net names in the storage model:
-			net_names.iterate (query_net_name'access);
+			-- Insert the net names and indexes in the storage model:
+			net_names.iterate (query_net'access);
 			
-
 			-- Create the combo box:
-			gtk.combo_box.gtk_new_with_model (
+			gtk_new_with_model (
 				combo_box	=> cbox_net_name,
 				model		=> +storage_model); -- ?
 

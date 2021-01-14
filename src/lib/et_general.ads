@@ -177,14 +177,11 @@ package et_general is
 	package pac_net_name is new generic_bounded_length (net_name_length_max); 
 	use pac_net_name;
 
-	-- Plain net names can be collected in an ordered map.
-	-- A map is used in order to get an alphabetically ordering along 
-	-- with a consequtive index:
+	-- Plain net names can be collected in a vector.
+	-- A vector is used in order to get a consequtive index.
 	package pac_net_names_indexed is new vectors (
 		index_type		=> positive,
-		element_type	=> pac_net_name.bounded_string
-		--element_type	=> natural
-		);
+		element_type	=> pac_net_name.bounded_string);
 	
 	procedure check_net_name_length (net : in string);
 	-- Tests if the given net name is longer than allowed.

@@ -87,7 +87,7 @@ package et_canvas_board_vias is
 		being_moved			: boolean := false;
 		
 		net_name			: pac_net_name.bounded_string; -- RESET_N
-		net_idx				: positive;
+		net_idx				: positive := 1;
 		
 		category			: type_via_category := type_via_category'first;
 		drill				: type_drill;

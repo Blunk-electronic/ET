@@ -392,7 +392,17 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return et_pcb.type_user_settings;
 
-	-- Returns the names of all nets that exist in the given module:
+	-- Returns the names of all nets that exist in the given module.
+	-- The return is a vector with alphabetically sorted net names
+	-- and a consequtive index as shown in this example table:
+	--
+	--     net       |  index
+	-- ------------------------
+	-- analog_input  |      1
+	-- digital_out   |      2
+	-- gnd           |      3
+	-- zero_pressure |    109
+	--
 	function get_net_names (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return pac_net_names_indexed.vector;

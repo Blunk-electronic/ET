@@ -911,15 +911,15 @@ package body et_project.modules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module)
 		is 
+			-- First we need an ordered set of net names:
 			package pac_names_sorted is new ordered_sets (pac_net_name.bounded_string);
 			use pac_names_sorted;
-			names_sorted : pac_names_sorted.set;
+			sorted : pac_names_sorted.set;
 			sorted_length : count_type;
 			
 			procedure query_net_1 (n : in pac_nets.cursor) is begin
-				names_sorted.insert (pac_nets.key (n));
+				sorted.insert (pac_nets.key (n));
 			end query_net_1;
-
 			
 			procedure query_net_2 (n : in pac_names_sorted.cursor) is 
 				use pac_net_names_indexed;
@@ -927,16 +927,25 @@ package body et_project.modules is
 				names_idx.append (element (n));
 			end query_net_2;
 			
-		begin
-			pac_nets.iterate (module.nets, query_net_1'access);
-			sorted_length := length (names_sorted);
-
-			names_idx.reserve_capacity (sorted_length);
+		begin -- query_module
 			
-			names_sorted.iterate (query_net_2'access);
-		end;
+			-- Fill the set of net names with the net names found in the
+			-- given module. This way we get an alphabetically ordered list
+			-- of net names in container "sorted":
+			pac_nets.iterate (module.nets, query_net_1'access);
+
+			-- To improve performance we need the length of the set "sorted"
+			-- and preset the length of the list to be returned:
+			sorted_length := length (sorted);
+			names_idx.reserve_capacity (sorted_length);
+
+			-- Now iterate in "sorted" and append each element to the vector
+			-- "names_idx". This way each net gets a consequtive index assigned:
+			sorted.iterate (query_net_2'access);
+		end query_module;
 					
 	begin
+		-- query the targeted module
 		pac_generic_modules.query_element (module, query_module'access);
 		
 		return names_idx;
