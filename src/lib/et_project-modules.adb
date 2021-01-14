@@ -47,6 +47,7 @@ with gnat.directory_operations;
 
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
+with ada.containers.ordered_sets;
 
 with et_export;
 with et_text;					use et_text;
@@ -901,36 +902,44 @@ package body et_project.modules is
 
 	function get_net_names (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return pac_net_names.map
+		return pac_net_names_indexed.vector
 	is
 		use et_schematic;
-		names : pac_net_names.map; -- to be returned
+		names_idx : pac_net_names_indexed.vector; -- to be returned
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module)
 		is 
-			index : natural := 0;
+			package pac_names_sorted is new ordered_sets (pac_net_name.bounded_string);
+			use pac_names_sorted;
+			names_sorted : pac_names_sorted.set;
+			sorted_length : count_type;
 			
-			procedure query_net (n : in pac_nets.cursor) is
-				use pac_net_names;
-			begin
-				index := index + 1;
+			procedure query_net_1 (n : in pac_nets.cursor) is begin
+				names_sorted.insert (pac_nets.key (n));
+			end query_net_1;
 
-				names.insert (
-					key 		=> pac_nets.key (n),
-					new_item	=> index);
-				
-			end query_net;
+			
+			procedure query_net_2 (n : in pac_names_sorted.cursor) is 
+				use pac_net_names_indexed;
+			begin
+				names_idx.append (element (n));
+			end query_net_2;
 			
 		begin
-			pac_nets.iterate (module.nets, query_net'access);
+			pac_nets.iterate (module.nets, query_net_1'access);
+			sorted_length := length (names_sorted);
+
+			names_idx.reserve_capacity (sorted_length);
+			
+			names_sorted.iterate (query_net_2'access);
 		end;
 					
 	begin
 		pac_generic_modules.query_element (module, query_module'access);
 		
-		return names;
+		return names_idx;
 	end get_net_names;
 
 	

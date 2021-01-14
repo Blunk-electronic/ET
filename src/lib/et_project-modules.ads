@@ -38,6 +38,7 @@
 
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
+with ada.containers.vectors;
 
 with et_coordinates;			use et_coordinates;
 with et_symbols;
@@ -394,7 +395,7 @@ package et_project.modules is
 	-- Returns the names of all nets that exist in the given module:
 	function get_net_names (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return pac_net_names.map;
+		return pac_net_names_indexed.vector;
 
 							   
 end et_project.modules;
