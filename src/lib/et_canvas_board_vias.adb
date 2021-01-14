@@ -294,13 +294,19 @@ package body et_canvas_board_vias is
 	begin
 		-- Get the net name of the entry column 0:
 		gtk.tree_model.get_value (model, iter, 0, name);
-		via_place.net_name := to_net_name (glib.values.get_string (name));
 
 		-- Get the net index of the entry column 1:
 		gtk.tree_model.get_value (model, iter, 1, index);
-		via_place.net_idx := positive'value (glib.values.get_string (index));
-				
-		put_line ("net " & to_string (via_place.net_name) & " idx " & positive'image (via_place.net_idx));
+		
+		--via_place.net_name := to_net_name (glib.values.get_string (name));
+		--via_place.net_idx := positive'value (glib.values.get_string (index));
+
+		set (
+			net		=> via_place.net,
+			name	=> to_net_name (glib.values.get_string (name)),
+			idx 	=> positive'value (glib.values.get_string (index)));
+		
+		--put_line ("net " & to_string (via_place.net_name) & " idx " & positive'image (via_place.net_idx));
 
 		et_canvas_board.redraw_board;
 		
@@ -387,7 +393,7 @@ package body et_canvas_board_vias is
 			-- We need a list of all net names of the current module:
 			use pac_net_names_indexed;
 			net_names : constant pac_net_names_indexed.vector := 
-				get_net_names (et_canvas_schematic.current_active_module);
+				get_indexed_nets (et_canvas_schematic.current_active_module);
 
 			procedure query_net (n : in pac_net_names_indexed.cursor) is 
 				use gtk.list_store;
@@ -422,7 +428,7 @@ package body et_canvas_board_vias is
 				model		=> +storage_model); -- ?
 
 			-- Preset the net used last:
-			cbox_net_name.set_active (gint (via_place.net_idx) - 1);
+			cbox_net_name.set_active (gint (get_index (via_place.net)) - 1);
 
 
 			pack_start (box_net_name, cbox_net_name, padding => guint (spacing));

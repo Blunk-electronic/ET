@@ -1109,7 +1109,7 @@ package body et_canvas_board is
 
 			place_via (
 				module_cursor	=> current_active_module,
-				net_name		=> via_place.net_name,
+				net_name		=> get_name (via_place.net),
 				via				=> via,
 				log_threshold	=> log_threshold + 1);
 

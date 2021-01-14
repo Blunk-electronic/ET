@@ -85,9 +85,8 @@ package et_canvas_board_vias is
 	-- The properties of the text being placed:
 	type type_via_place is record
 		being_moved			: boolean := false;
-		
-		net_name			: pac_net_name.bounded_string; -- RESET_N
-		net_idx				: positive := 1;
+
+		net					: type_net_indexed; -- net name and index
 		
 		category			: type_via_category := type_via_category'first;
 		drill				: type_drill;

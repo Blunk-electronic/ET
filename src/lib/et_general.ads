@@ -182,6 +182,28 @@ package et_general is
 	package pac_net_names_indexed is new vectors (
 		index_type		=> positive,
 		element_type	=> pac_net_name.bounded_string);
+
+	type type_net_indexed is private;
+
+	-- This function returns the index of an indexed net:
+	function get_index (net : in type_net_indexed) return positive;
+
+	-- This function returns the name of an indexed net:
+	function get_name (net : in type_net_indexed) return pac_net_name.bounded_string;
+
+	
+	-- This procedure "builds" an indexed net.
+	-- WARNING ! There is no check whether the net name
+	-- and the index match ! Fox example: You can build an indexed
+	-- net named "analog_input" with an index "999" and
+	-- nothing would prevent you from doing so.
+	procedure set (
+		net 	: in out type_net_indexed;
+		name	: in pac_net_name.bounded_string;
+		idx		: in positive := positive'first);
+
+
+	
 	
 	procedure check_net_name_length (net : in string);
 	-- Tests if the given net name is longer than allowed.
@@ -262,6 +284,11 @@ package et_general is
 		procedure init;
 	end stack_lifo;
 
+	private
+		type type_net_indexed is record
+			name	: pac_net_name.bounded_string;
+			idx		: positive := positive'first;
+		end record;
 	
 end et_general;
 

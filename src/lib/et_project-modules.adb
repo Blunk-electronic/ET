@@ -900,7 +900,7 @@ package body et_project.modules is
 		return settings;
 	end get_user_settings;
 
-	function get_net_names (
+	function get_indexed_nets (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return pac_net_names_indexed.vector
 	is
@@ -949,8 +949,52 @@ package body et_project.modules is
 		pac_generic_modules.query_element (module, query_module'access);
 		
 		return names_idx;
-	end get_net_names;
+	end get_indexed_nets;
 
+	procedure set_index (
+		net 	: in out type_net_indexed;
+		module	: in pac_generic_modules.cursor)
+	is 
+		-- Extract the actual name of the given net (like RESET_N):
+		name : constant pac_net_name.bounded_string := get_name (net);
+		
+		use pac_net_names_indexed;
+		nets : pac_net_names_indexed.vector;
+		c : pac_net_names_indexed.cursor;
+		idx : positive;
+	begin
+		-- Get the list of all nets of the module:
+		nets := get_indexed_nets (module);
+
+		-- Iterate the indexed nets of the module.
+		-- When the targeted net has been found, then update the 
+		-- given indexed net with the associated index and abort iteration.
+		c := nets.first;
+		
+		while c /= pac_net_names_indexed.no_element loop
+
+			if element (c) = name then -- net found
+				idx := to_index (c);
+
+				-- Rebuild the indexed net. The net name is unchanged.
+				set (net, name, idx);
+				
+				exit; -- cancel iteration
+			end if;
+			
+			next (c);
+		end loop;
+
+		-- If iteration completed and net not found, error:
+		if c = pac_net_names_indexed.no_element then
+			raise constraint_error with
+				"ERROR: Net " & enclose_in_quotes (et_general.to_string (name)) 
+				& " not found !";
+		end if;
+		
+	end set_index;
+
+	
 	
 end et_project.modules;
 	

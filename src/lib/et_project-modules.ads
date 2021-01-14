@@ -403,11 +403,20 @@ package et_project.modules is
 	-- gnd           |      3
 	-- zero_pressure |    109
 	--
-	function get_net_names (
+	function get_indexed_nets (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return pac_net_names_indexed.vector;
 
-							   
+	-- This procedure updates the index of the given net
+	-- according to the given module.
+	-- Raises constraint error if given net.name does not
+	-- exist in the module:
+	procedure set_index (
+		net 	: in out type_net_indexed; -- contains name and old index
+		module	: in pac_generic_modules.cursor);
+
+
+	
 end et_project.modules;
 
 -- Soli Deo Gloria

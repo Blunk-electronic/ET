@@ -207,6 +207,26 @@ package body et_general is
 	
 	
 -- NET NAMES
+
+	function get_index (net : in type_net_indexed) return positive is begin
+		return net.idx;
+	end get_index;
+
+	function get_name (net : in type_net_indexed) return pac_net_name.bounded_string is begin
+		return net.name;
+	end get_name;
+	
+	procedure set (
+		net 	: in out type_net_indexed;
+		name	: in pac_net_name.bounded_string;
+		idx		: in positive := positive'first)
+	is begin
+		net.name := name;
+		net.idx := idx;
+	end set;
+
+	
+	
 	procedure check_net_name_length (net : in string) is
 	-- Tests if the given net name is longer than allowed.	
 		use et_string_processing;
