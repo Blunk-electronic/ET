@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -46,6 +46,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.vectors;
 
 with et_general;				use et_general;
+with et_nets;					use et_nets;
 with et_project;
 with et_geometry;				use et_geometry;
 with et_schematic;
@@ -374,21 +375,21 @@ package et_kicad.schematic is
 	-- It does also contain ports of virtual components (power symbols) except 
 	-- so called "power flags".
 	package type_netlist is new ordered_maps (
-		key_type		=> et_general.pac_net_name.bounded_string, -- net name like "MCU_CLOCK"
-		"<"				=> et_general.pac_net_name."<",
+		key_type		=> pac_net_name.bounded_string, -- net name like "MCU_CLOCK"
+		"<"				=> pac_net_name."<",
 		"="				=> type_ports_with_reference."=",
 		element_type	=> type_ports_with_reference.set); -- the list of ports connected with the net
 
 
-	function simple_name (net_name : in et_general.pac_net_name.bounded_string) 
-		return et_general.pac_net_name.bounded_string;
+	function simple_name (net_name : in pac_net_name.bounded_string) 
+		return pac_net_name.bounded_string;
 	-- Returns the simple name of the given net name.
 	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 
 	type type_net_label (label_appearance : et_schematic.type_net_label_appearance) is record
 		coordinates	: pac_geometry_sch.type_point;
 		rotation	: et_coordinates.type_rotation;
-        text		: et_general.pac_net_name.bounded_string;
+        text		: pac_net_name.bounded_string;
         size		: et_symbols.pac_text.type_text_size;
         width		: et_symbols.type_text_line_width;
 		processed	: boolean := false; -- used for associating label with net segment
@@ -466,7 +467,7 @@ package et_kicad.schematic is
 	-- have a name and their own scope.
 	type type_strand is record
 		position	: et_kicad_coordinates.type_position; -- x/y/sheet -- CS only sheet matters
-		name		: et_general.pac_net_name.bounded_string; -- example "CPU_CLOCK"		
+		name		: pac_net_name.bounded_string; -- example "CPU_CLOCK"		
 		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
 		segments	: type_net_segments.list;
 	end record;
@@ -486,8 +487,8 @@ package et_kicad.schematic is
 	
 	-- Nets are collected in a map:
 	package type_nets is new ordered_maps (
-		key_type		=> et_general.pac_net_name.bounded_string, -- example "CPU_CLOCK"
-		"<"				=> et_general.pac_net_name."<",
+		key_type		=> pac_net_name.bounded_string, -- example "CPU_CLOCK"
+		"<"				=> pac_net_name."<",
 		element_type	=> type_net);
 	
 	
@@ -754,7 +755,7 @@ package et_kicad.schematic is
 	-- An anonymous strand is a list of net segments that are connected with each other (by their start or end points):
 	type type_anonymous_strand is record
 		segments 	: type_net_segments.list; -- the net segments
-		name 		: et_general.pac_net_name.bounded_string;	-- the strand name (derived from net labels)
+		name 		: pac_net_name.bounded_string;	-- the strand name (derived from net labels)
 		scope 		: type_strand_scope := type_strand_scope'first; -- the scope (derived from net labels)
 		processed	: boolean := false;	-- set once a label has been found on the net
 	end record;
@@ -776,8 +777,8 @@ package et_kicad.schematic is
 	end record;
 
 	package type_hierarchic_sheet_ports is new ordered_maps (
-		key_type		=> et_general.pac_net_name.bounded_string,
-		"<"				=> et_general.pac_net_name."<",
+		key_type		=> pac_net_name.bounded_string,
+		"<"				=> pac_net_name."<",
 		element_type	=> type_hierarchic_sheet_port);
 
 	-- A hierachic sheet is identified by the file name and the sheet name itself.
@@ -874,14 +875,14 @@ package et_kicad.schematic is
 	
 	function components_in_net (
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
-		net				: in et_general.pac_net_name.bounded_string; -- motor_on_off
+		net				: in pac_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_ports_with_reference.set;
 	-- Returns a list of component ports that are connected with the given net.
 	
 	function real_components_in_net (
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
-		net				: in et_general.pac_net_name.bounded_string; -- motor_on_off
+		net				: in pac_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_ports_with_reference.set;
 	-- Returns a list of real component ports that are connected with the given net.
@@ -959,7 +960,7 @@ package et_kicad.schematic is
 	function connected_net (
 		port			: in type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
 		log_threshold	: in et_string_processing.type_log_level)
-		return et_general.pac_net_name.bounded_string;
+		return pac_net_name.bounded_string;
 	-- Returns the name of the net connected with the given port.
 	-- Searches the netlist of the given module for the given port. 
 	-- The net which is connected with the port is the net whose name
@@ -981,13 +982,13 @@ package et_kicad.schematic is
 	-- Returns the number of terminals of the given component reference.
 	-- Requires module_cursor (global variable) to point to the current module.
 	
-	function connected_net (
 	-- Returns the name of the net connected with the given component and terminal.
+	function connected_net (
 		module			: in type_submodule_name.bounded_string;	-- nucleo_core
 		reference		: in et_devices.type_device_name;	-- IC45
 		terminal		: in et_terminals.pac_terminal_name.bounded_string; -- E14
 		log_threshold	: in et_string_processing.type_log_level)		
-		return et_general.pac_net_name.bounded_string;
+		return pac_net_name.bounded_string;
 
 -- 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);  -- CS this is general and should be in et_schematic
 -- 	-- Writes the statistics on components and nets of the modules.

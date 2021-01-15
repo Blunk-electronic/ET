@@ -160,10 +160,10 @@ package body et_project.modules is
 		end if;
 	end sheet_description;
 	
-	procedure port_not_at_edge (name : in et_general.pac_net_name.bounded_string) is 
+	procedure port_not_at_edge (name : in pac_net_name.bounded_string) is 
 		use et_string_processing;
 	begin
-		log (ERROR, "port " & enclose_in_quotes (et_general.to_string (name)) &
+		log (ERROR, "port " & enclose_in_quotes (to_string (name)) &
 			" must be at the edge of the submodule !", console => true);
 		raise constraint_error;
 	end;
@@ -494,10 +494,10 @@ package body et_project.modules is
 	-- Returns true if the given module provides the given port.
 	-- The module being searched in must be in the rig already.
 		module			: in et_submodules.pac_submodules.cursor;
-		port			: in et_general.pac_net_name.bounded_string; -- clock_output
+		port			: in pac_net_name.bounded_string; -- clock_output
 		direction		: in et_submodules.type_netchanger_port_name) -- master/slave
-		return boolean is
-
+		return boolean 
+	is
 		result : boolean := false; -- to be returned
 		
 		use et_string_processing;

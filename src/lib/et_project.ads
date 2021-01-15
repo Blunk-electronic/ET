@@ -40,6 +40,7 @@ with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 
+with et_nets;					use et_nets;
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 

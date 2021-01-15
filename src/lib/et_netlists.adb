@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -93,7 +93,7 @@ package body et_netlists is
 
 	function "<" (left, right : in type_submodule_port_extended) return boolean is
 		use pac_module_instance_name;
-		use et_general.pac_net_name;
+		use pac_net_name;
 		result : boolean := false;
 	begin
 		if left.module < right.module then
@@ -115,8 +115,7 @@ package body et_netlists is
 	end;
 	
 	function to_prefix (instance : in pac_module_instance_name.bounded_string) -- OSC1
-	-- Converts an instance name to a net prefix with a trailing level separator.
-		return et_general.pac_net_name.bounded_string is
+		return pac_net_name.bounded_string is
 	begin
 		return to_net_name (to_string (instance) & level_separator);
 	end;
@@ -168,7 +167,7 @@ package body et_netlists is
 	
 	function "<" (left, right : in type_net_name) return boolean is
 		result : boolean := false;
-		use et_general.pac_net_name;
+		use pac_net_name;
 	begin
 		if left.prefix < right.prefix then
 			result := true;
@@ -317,24 +316,25 @@ package body et_netlists is
 		return result;
 	end is_primary;
 
-	function contains (
 	-- Returns true if net (indicated by net_cursor) is connected with the
 	-- given port of a submodule instance.
+	function contains (
 		net_cursor		: in pac_nets.cursor;
 		submodule		: in pac_module_instance_name.bounded_string; -- OSC1
-		port			: in et_general.pac_net_name.bounded_string) -- clock_out
-		return boolean is
-
+		port			: in pac_net_name.bounded_string) -- clock_out
+		return boolean 
+	is
 		result : boolean := false;
 		
 		use pac_nets;
 
 		procedure query_submod_ports (
 			net_name	: in type_net_name;
-			net			: in type_net) is
+			net			: in type_net) 
+		is
 			use pac_submodule_ports_extended;
 			port_cursor : pac_submodule_ports_extended.cursor := net.submodules.first;
-			use et_general.pac_net_name;
+			use pac_net_name;
 			use et_general.pac_module_instance_name;
 		begin
 			while port_cursor /= pac_submodule_ports_extended.no_element loop
@@ -362,8 +362,8 @@ package body et_netlists is
 		module_cursor	: in pac_modules.cursor; -- the module that contains the port
 		net_cursor		: in pac_nets.cursor;
 		log_threshold	: in type_log_level)
-		return pac_global_nets.list is
-
+		return pac_global_nets.list
+	is
 		use pac_modules;
 		use pac_nets;
 		
@@ -378,7 +378,7 @@ package body et_netlists is
 			-- with the base names of the nets in the module. The cursor to the net and 
 			-- the name of the generic module is then
 			-- appended to the list net_cursors (to be returned).
-				use et_general.pac_net_name;
+				use pac_net_name;
 				cursor : pac_nets.cursor := module.nets.first;
 			begin
 				-- iterate the nets of the module
@@ -534,8 +534,8 @@ package body et_netlists is
 		module_cursor	: in pac_modules.cursor; -- the module that contains the port
 		port			: in type_submodule_port_extended;
 		log_threshold	: in type_log_level)
-		return pac_nets.cursor is
-
+		return pac_nets.cursor 
+	is
 		use pac_modules;
 		use pac_nets;
 		net_cursor : pac_nets.cursor; -- to be returned
@@ -550,7 +550,7 @@ package body et_netlists is
 			-- See specs of type_net_name. The base name is something like "output".
 			-- The prefix is something like "CLK_GENERATOR/FLT1/". 
 			-- But as said above the prefix does not matter here.
-				use et_general.pac_net_name;
+				use pac_net_name;
 			begin
 				-- iterate the nets of the module
 				net_cursor := module.nets.first;

@@ -48,6 +48,7 @@ with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_sets;
 
 with et_general;				use et_general;
+with et_nets;					use et_nets;
 with et_submodules;				use et_submodules;
 with et_assembly_variants;
 with et_string_processing;		use et_string_processing;
@@ -107,9 +108,9 @@ package et_netlists is
 	
 	level_separator : constant character := '/';
 
+	-- Converts an instance name to a net prefix with a trailing level separator.
 	function to_prefix (instance : in pac_module_instance_name.bounded_string) -- OSC1
-	-- Converts an instance name to a net prefix with a trailing level separator.		
-		return et_general.pac_net_name.bounded_string;
+		return pac_net_name.bounded_string;
 
 
 	
@@ -145,8 +146,8 @@ package et_netlists is
 	end record;
 	
 	type type_net_name is record
-		base_name	: et_general.pac_net_name.bounded_string; -- output
-		prefix		: et_general.pac_net_name.bounded_string; -- CLK_GENERATOR/FLT1/
+		base_name	: pac_net_name.bounded_string; -- output
+		prefix		: pac_net_name.bounded_string; -- CLK_GENERATOR/FLT1/
 	end record;
 		
 	function "<" (left, right : in type_net_name) return boolean;

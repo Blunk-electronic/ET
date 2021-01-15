@@ -161,72 +161,6 @@ package et_general is
 
 	procedure show_cdl_switches;
 	-- Outputs the command line switches that initiate something.
-	
-
-	
--- NET NAMES
-    -- If the name of a strand can not be identified, we default to the well proved "N$" notation:
-	anonymous_net_name_prefix : constant string := "N$";
-	subtype type_anonymous_net_index is positive range 1 .. 1_000_000;
-	
-	-- The name of a net may have 100 characters which seems sufficient for now.
-	net_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set ("_-#");
-	net_inversion_mark : constant string := "#"; -- CS required ?
- 	net_name_length_max : constant natural := 100;
-
-	package pac_net_name is new generic_bounded_length (net_name_length_max); 
-	use pac_net_name;
-
-	-- Plain net names can be collected in a vector.
-	-- A vector is used in order to get a consequtive index.
-	package pac_net_names_indexed is new vectors (
-		index_type		=> positive, -- CS
-		element_type	=> pac_net_name.bounded_string);
-
-	type type_net_indexed is private;
-
-	-- This function returns the index of an indexed net:
-	function get_index (net : in type_net_indexed) return positive;
-
-	-- This function returns the name of an indexed net:
-	function get_name (net : in type_net_indexed) return pac_net_name.bounded_string;
-
-	
-	-- This procedure "builds" an indexed net.
-	-- WARNING ! There is no check whether the net name
-	-- and the index match ! Fox example: You can build an indexed
-	-- net named "analog_input" with an index "999" and
-	-- nothing would prevent you from doing so.
-	procedure set (
-		net 	: in out type_net_indexed;
-		name	: in pac_net_name.bounded_string;
-		idx		: in positive := positive'first);
-
-
-	
-	
-	procedure check_net_name_length (net : in string);
-	-- Tests if the given net name is longer than allowed.
-	
-	procedure check_net_name_characters (
-		net			: in pac_net_name.bounded_string;
-		characters	: in character_set := net_name_characters);
-	-- Tests if the given net name contains only valid characters as specified
-	-- by given character set.
-
-	-- Returns true if given net name is empty:
-	function is_empty (net : in pac_net_name.bounded_string)
-		return boolean;
-	
-	function to_net_name (net_name : in string) return pac_net_name.bounded_string;
-	function to_string (net_name : in pac_net_name.bounded_string) return string;
-
-	-- Returns a name for an anonymous net like N$56
-	function to_anonymous_net_name (index : in type_anonymous_net_index) 
-		return pac_net_name.bounded_string;
-	
-	function anonymous (net_name : in pac_net_name.bounded_string) return boolean;
-	-- Returns true if the given net name is anonymous.
 
 
 -- MODULES AND INSTANCE NAMES
@@ -284,11 +218,6 @@ package et_general is
 		procedure init;
 	end stack_lifo;
 
-	private
-		type type_net_indexed is record
-			name	: pac_net_name.bounded_string;
-			idx		: positive := positive'first;
-		end record;
 	
 end et_general;
 

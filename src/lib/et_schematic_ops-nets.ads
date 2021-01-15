@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -72,8 +72,8 @@ package et_schematic_ops.nets is
 	-- must provide sheet and x/y start position of strand. 
 	-- CS: In the future x/y can be any point on any segment of the strand.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name_before	: in et_general.pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		net_name_after	: in et_general.pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
+		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
 		scope			: in type_net_scope; -- strand, sheet, everywhere
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
@@ -87,7 +87,7 @@ package et_schematic_ops.nets is
 	-- must provide sheet and x/y start position of strand. In the future x/y can be
 	-- any point on any segment of the strand.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- strand, sheet, everywhere
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
@@ -95,7 +95,7 @@ package et_schematic_ops.nets is
 	-- Deletes a segment of a net.
 	procedure delete_segment (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 	
@@ -125,15 +125,15 @@ package et_schematic_ops.nets is
 	--       CS: The resulting overlapping segments should be detected by the ERC.
 	procedure drag_segment (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		point_of_attack	: in et_coordinates.type_position; -- sheet/x/y
 		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	package type_net_names is new doubly_linked_lists (
-		element_type	=> et_general.pac_net_name.bounded_string,
-		"="				=> et_general.pac_net_name."=");
+		element_type	=> pac_net_name.bounded_string,
+		"="				=> pac_net_name."=");
 
 	-- Returns lists of nets that cross the given place.
 	function nets_at_place (
@@ -166,7 +166,7 @@ package et_schematic_ops.nets is
 	procedure insert_net (
 	-- See description for procedure insert_segment.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		start_point		: in et_coordinates.type_position; -- sheet/x/y
 		end_point		: in type_point; -- x/y
 		log_threshold	: in type_log_level);
@@ -174,7 +174,7 @@ package et_schematic_ops.nets is
 	procedure set_scope (
 	-- Sets the scope of a net.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in et_netlists.type_net_scope; -- local/global
 		log_threshold	: in type_log_level);
 
@@ -233,7 +233,7 @@ package et_schematic_ops.nets is
 	-- given position returns the direction of the stub.
 	function query_stub (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		position		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level)
 		return type_stub;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -6059,9 +6059,8 @@ package body et_kicad.schematic is
 	end check_orphaned_no_connection_flags;
 
 	function simple_name (net_name : in pac_net_name.bounded_string)
-		return pac_net_name.bounded_string is
-	-- Returns the simple name of the given net name.
-	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
+		return pac_net_name.bounded_string 
+	is
 		position_of_last_separator : natural := 0;
 		use et_schematic;
 		name : pac_net_name.bounded_string;
@@ -6434,13 +6433,8 @@ package body et_kicad.schematic is
 	function connected_net (
 		port			: in type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
 		log_threshold	: in et_string_processing.type_log_level)
-		return pac_net_name.bounded_string is
-	-- Returns the name of the net connected with the given port.
-	-- Searches the netlist of the given module for the given port. 
-	-- The net which is connected with the port is the net whose name
-	-- is to be returned.
-	-- If no net connected with the given port, an empty string is returned.
-
+		return pac_net_name.bounded_string 
+	is
 		use et_string_processing;
 		use type_modules;
 		use et_symbols;
@@ -7354,9 +7348,8 @@ package body et_kicad.schematic is
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in pac_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
-		return type_ports_with_reference.set is
-	-- Returns a list of component ports that are connected with the given net.
-
+		return type_ports_with_reference.set 
+	is
 		use et_string_processing;
 		use et_symbols;
 		use type_modules;
@@ -7465,9 +7458,8 @@ package body et_kicad.schematic is
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in pac_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
-		return type_ports_with_reference.set is
-	-- Returns a list of real component ports that are connected with the given net.
-
+		return type_ports_with_reference.set 
+	is
 		use et_string_processing;
 		use et_symbols;
 		use type_modules;

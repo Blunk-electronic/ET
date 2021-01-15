@@ -47,6 +47,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with et_nets;					use et_nets;
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
 with et_coordinates;			use et_coordinates;
