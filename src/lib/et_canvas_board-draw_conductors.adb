@@ -296,6 +296,18 @@ is
 		end if;
 	end query_text;
 
+	procedure query_net_track (n : in pac_nets.cursor) is begin
+		is_signal := true;
+		net_name := key (n);
+		net_class := element (n).class;
+
+		iterate (element (n).route.lines, query_line'access);
+		iterate (element (n).route.arcs, query_arc'access);
+		-- CS ? iterate (element (n).route.circles, query_circle'access);
+		--iterate (element (n).route.polygons_2, query_polygon'access);
+		--iterate (element (n).route.cutouts, query_cutout'access);
+	end query_net_track;
+
 	procedure query_via (v : in pac_vias.cursor) is 
 		type type_circle is new pac_shapes.type_circle with null record;
 		circle : type_circle;
@@ -308,6 +320,8 @@ is
 		end set_width_and_radius;
 
 		procedure draw_restring is begin
+			set_color_vias (context.cr);
+			
 			draw_circle (
 				area		=> in_area,
 				context		=> context,
@@ -337,95 +351,98 @@ is
 				height		=> self.frame_height);
 			
 		end draw_numbers;
+
+		procedure iterate_layers is begin
+			-- Iterate all conductor layers starting at the bottom layer and ending
+			-- with the top layer:
+			for ly in reverse top_layer .. bottom_layer loop
+
+				-- Draw the layer only if it is enabled. Otherwise skip the layer:
+				if conductor_enabled (ly) then
+					
+					-- Set the layer being drawn:
+					current_layer := ly;
+					--put_line (to_string (current_layer));
+			
+					case element (v).category is
+						when THROUGH =>
+							if is_inner_layer (current_layer) then
+								-- current_layer is an inner layer
+								set_width_and_radius (element (v).restring_inner);
+							else
+								-- current_layer is an outer layer
+								set_width_and_radius (element (v).restring_outer);
+							end if;
+
+							draw_restring;
+
+							-- NOTE: For a through via, no layer numbers are displayed.
+							
+						when BURIED =>
+							if element (v).layers.upper = current_layer or element (v).layers.lower = current_layer then
+								set_width_and_radius (element (v).restring_inner);
+								draw_restring;
+								
+								draw_numbers (
+									from	=> to_string (element (v).layers.upper),
+									to		=> to_string (element (v).layers.lower));
+							end if;
+							
+						when BLIND_DRILLED_FROM_TOP =>
+							if current_layer = top_layer then
+								set_width_and_radius (element (v).restring_top);
+								draw_restring;
+							end if;
+
+							if current_layer = element (v).lower then
+								set_width_and_radius (element (v).restring_inner);
+								draw_restring;
+							end if;
+
+							draw_numbers (
+								from	=> "T",
+								to		=> to_string (element (v).lower));
+							
+						when BLIND_DRILLED_FROM_BOTTOM =>
+							if current_layer = bottom_layer then
+								set_width_and_radius (element (v).restring_bottom);
+								draw_restring;
+							end if;
+
+							if current_layer = element (v).upper then
+								set_width_and_radius (element (v).restring_inner);
+								draw_restring;
+							end if;
+
+							draw_numbers (
+								from	=> "B",
+								to		=> to_string (element (v).upper));
+
+							
+					end case;
+
+				end if;
+			end loop;
+		end iterate_layers;
 		
 	begin -- query_via
 		circle.center := element (v).position;
 		radius_base := element (v).diameter / 2.0;
 		
 		if vias_enabled then
-			set_color_vias (context.cr);
-
-			case element (v).category is
-				when THROUGH =>
-					if is_inner_layer (current_layer) then
-						-- current_layer is an inner layer
-						set_width_and_radius (element (v).restring_inner);
-					else
-						-- current_layer is an outer layer
-						set_width_and_radius (element (v).restring_outer);
-					end if;
-
-					draw_restring;
-
-					-- NOTE: For a through via, no layer numbers are displayed.
-					
-				when BURIED =>
-					if element (v).layers.upper = current_layer or element (v).layers.lower = current_layer then
-						set_width_and_radius (element (v).restring_inner);
-						draw_restring;
-						
-						draw_numbers (
-							from	=> to_string (element (v).layers.upper),
-							to		=> to_string (element (v).layers.lower));
-					end if;
-					
-				when BLIND_DRILLED_FROM_TOP =>
-					if current_layer = top_layer then
-						set_width_and_radius (element (v).restring_top);
-						draw_restring;
-					end if;
-
-					if current_layer = element (v).lower then
-						set_width_and_radius (element (v).restring_inner);
-						draw_restring;
-					end if;
-
-					draw_numbers (
-						from	=> "T",
-						to		=> to_string (element (v).lower));
-					
-				when BLIND_DRILLED_FROM_BOTTOM =>
-					if current_layer = bottom_layer then
-						set_width_and_radius (element (v).restring_bottom);
-						draw_restring;
-					end if;
-
-					if current_layer = element (v).upper then
-						set_width_and_radius (element (v).restring_inner);
-						draw_restring;
-					end if;
-
-					draw_numbers (
-						from	=> "B",
-						to		=> to_string (element (v).upper));
-
-					
-			end case;
+			iterate_layers;
 
 			-- CS display drill size and restring ?			
 		end if;
 		
 	end query_via;
 	
-	procedure query_net (n : in pac_nets.cursor) is begin
-		is_signal := true;
+	procedure query_net_via (n : in pac_nets.cursor) is begin
 		net_name := key (n);
 		net_class := element (n).class;
 
-		iterate (element (n).route.lines, query_line'access);
-		iterate (element (n).route.arcs, query_arc'access);
-		-- CS ? iterate (element (n).route.circles, query_circle'access);
-		--iterate (element (n).route.polygons_2, query_polygon'access);
-		--iterate (element (n).route.cutouts, query_cutout'access);
-
 		iterate (element (n).route.vias, query_via'access);
-
-		-- After drawing the vias, the color for vias is still active.
-		
-		-- Reset color back according to current signal layer:
-		set_color_conductor (context.cr, current_layer);
-
-	end query_net;
+	end query_net_via;
 	
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
@@ -460,7 +477,7 @@ is
 				iterate (module.board.conductors.texts, query_text'access);
 
 				-- tracks:
-				iterate (module.nets, query_net'access);
+				iterate (module.nets, query_net_track'access);
 
 				
 				draw_text_being_placed_in_conductors (
@@ -468,6 +485,9 @@ is
 				
 			end if;
 		end loop;
+
+		iterate (module.nets, query_net_via'access);
+
 	end query_items;
 	
 begin -- draw_conductors
