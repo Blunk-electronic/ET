@@ -63,6 +63,11 @@ package body et_canvas_schematic is
 		module		: in pac_module_name.bounded_string)
 	is begin
 		window.set_title (title & to_string (module));
+
+		-- Since this procedure is called each time the module changes
+		-- this is a good place to init some module specific things:
+		-- CS init_property_bars; 
+		-- CS see et_canvas_board.set_title_bar for ideas.
 	end set_title_bar;
 
 

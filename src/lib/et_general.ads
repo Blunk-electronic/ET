@@ -180,7 +180,7 @@ package et_general is
 	-- Plain net names can be collected in a vector.
 	-- A vector is used in order to get a consequtive index.
 	package pac_net_names_indexed is new vectors (
-		index_type		=> positive,
+		index_type		=> positive, -- CS
 		element_type	=> pac_net_name.bounded_string);
 
 	type type_net_indexed is private;

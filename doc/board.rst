@@ -6,6 +6,22 @@
 Board Layout Editor
 *******************
 
+++++
+Vias
+++++
+
+Commands and Verb-Noun key sequences
+------------------------------------
+
+#. Place via
+
+	.. code-block::
+
+		place via [net name]
+
+	|VNS| p v
+
+
 
 
 +++++

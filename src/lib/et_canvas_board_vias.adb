@@ -308,6 +308,10 @@ package body et_canvas_board_vias is
 		
 		--put_line ("net " & to_string (via_place.net_name) & " idx " & positive'image (via_place.net_idx));
 
+		--via_place.being_moved := true;
+		--canvas.grab_focus;
+
+		
 		et_canvas_board.redraw_board;
 		
 		-- CS display layer ?

@@ -411,7 +411,7 @@ package et_project.modules is
 	-- according to the given module.
 	-- Raises constraint error if given net.name does not
 	-- exist in the module:
-	procedure set_index (
+	procedure set_index ( -- CS
 		net 	: in out type_net_indexed; -- contains name and old index
 		module	: in pac_generic_modules.cursor);
 

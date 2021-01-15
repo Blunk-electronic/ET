@@ -56,6 +56,7 @@ with et_modes.board;				use et_modes.board;
 with et_board_ops;					use et_board_ops;
 with et_pcb;
 with et_pcb_stack;
+with et_design_rules;
 with et_text;
 with et_meta;
 with et_exceptions;					use et_exceptions;
@@ -63,12 +64,71 @@ with et_exceptions;					use et_exceptions;
 package body et_canvas_board is
 
 	use et_project.modules.pac_generic_modules;
+
+
+	-- This procedure initializes the variable et_canvas_board_vias.via_place
+	-- so that the via properties bar shows the user specific settings
+	-- or the values as defined in the DRU data set.
+	procedure init_via_place is
+		use et_pcb;
+		use et_canvas_schematic;
+		
+		use et_design_rules;
+		rules : constant type_design_rules := get_pcb_design_rules (current_active_module);
+
+		-- get the user specific settings of the board
+		settings : constant type_user_settings := get_user_settings (current_active_module);
+
+	begin
+		-- Set the drill size and restring according to a user specific values:
+		-- If user has not specified defaults, use values given in DRU data set:
+
+		-- set drill size:
+		if settings.vias.drill.active then
+			via_place.drill.diameter	:= settings.vias.drill.size;
+		else
+			via_place.drill.diameter	:= rules.sizes.drills;
+		end if;
+
+		-- set outer restring:
+		if settings.vias.restring_outer.active then
+			via_place.restring_outer	:= settings.vias.restring_outer.width;
+		else
+			via_place.restring_outer	:= auto_set_restring (
+				OUTER, via_place.drill.diameter);
+		end if;
+		
+		-- set inner restring:
+		if settings.vias.restring_inner.active then
+			via_place.restring_inner	:= settings.vias.restring_inner.width;
+		else
+			via_place.restring_inner	:= auto_set_restring (
+				INNER, via_place.drill.diameter, rules.sizes.restring.delta_size);
+		end if;
+
+	end init_via_place;
+
+	-- This procedure should be called each time after the current active module 
+	-- changes. It calls procedures that initialize the values used in property
+	-- bars for vias, tracks, ...
+	procedure init_property_bars is begin
+		init_via_place;
+		--  CS init route
+		-- CS init text
+		-- ...
+	end init_property_bars;
+
+
 	
 	procedure set_title_bar (
 		-- CS project name
 		module		: in pac_module_name.bounded_string)
 	is begin
 		window.set_title (title & to_string (module));
+
+		-- Since this procedure is called each time the module changes
+		-- this is a good place to init some module specific things:
+		init_property_bars;
 	end set_title_bar;
 
 	
@@ -1188,7 +1248,6 @@ package body et_canvas_board is
 
 			when GDK_F12 =>
 				et_canvas_schematic.next_module;
-
 				
 			when others =>
 				
@@ -1364,6 +1423,7 @@ package body et_canvas_board is
 	begin
 		save_module;
 	end save_drawing;
+
 	
 end et_canvas_board;
 

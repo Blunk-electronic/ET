@@ -94,7 +94,6 @@ package et_canvas_board_vias is
 		-- for blind via:
 		destination_blind	: type_via_layer := type_via_layer'first;
 
-		-- for blind via:
 		restring_inner		: type_restring_width := type_restring_width'first;
 		restring_outer		: type_restring_width := type_restring_width'first;
 
