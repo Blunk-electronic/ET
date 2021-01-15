@@ -86,6 +86,14 @@ is
 	bottom_layer	: constant type_signal_layer := 
 		deepest_conductor_layer (et_canvas_schematic.current_active_module);
 
+	function is_double_layer_board return boolean is begin
+		if bottom_layer = 2 then
+			return true;
+		else 
+			return false;
+		end if;
+	end is_double_layer_board;
+	
 	function is_inner_layer (layer : in type_signal_layer) return boolean is begin
 		if layer > top_layer and layer < bottom_layer then
 			return true;
@@ -352,7 +360,131 @@ is
 			
 		end draw_numbers;
 
-		procedure iterate_layers is begin
+		-- These flags are used to prevent objects from being drawn
+		-- multple times at the same place:
+		outer_restring_drawn, inner_restring_drawn,
+		numbers_drawn, cancel : boolean := false;
+		
+		procedure query_category is begin			
+			case element (v).category is
+				when THROUGH =>
+					if is_inner_layer (current_layer) then
+						-- current_layer is an inner layer
+						set_width_and_radius (element (v).restring_inner);
+
+						inner_restring_drawn := true;
+					else
+						-- current_layer is an outer layer
+						set_width_and_radius (element (v).restring_outer);
+
+						outer_restring_drawn := true;
+					end if;
+
+					draw_restring;
+
+					-- For a double layer board it is sufficent to draw 
+					-- the restring of the top or bottom layer. Double layer boards
+					-- do not have inner restrings for vias.
+					if is_double_layer_board then
+						if outer_restring_drawn then
+							cancel := true; -- causes the layer iterator to cancel
+						end if;
+					else 
+					-- For a multilayer board we need to draw only one outer restring
+					-- (top or bottom, which one does not matter) and one inner restring.
+					-- Once that is done, there is no need to draw the via again.	
+						if outer_restring_drawn and inner_restring_drawn then
+							cancel := true; -- causes the layer iterator to cancel
+						end if;
+					end if;
+					
+					-- NOTE: For a through via, no layer numbers are displayed.
+					
+				when BURIED =>
+					if element (v).layers.upper = current_layer 
+					or element (v).layers.lower = current_layer then
+						set_width_and_radius (element (v).restring_inner);
+					
+						draw_restring;
+
+						-- Since the inner restring width is the same for all
+						-- inner signal layers, it is sufficent to draw only one
+						-- restring.
+						cancel := true;  -- causes the layer iterator to cancel
+
+						-- Draw the layer numbers only once (cancel flag already set)
+						draw_numbers (
+							from	=> to_string (element (v).layers.upper),
+							to		=> to_string (element (v).layers.lower));
+					end if;
+					
+				when BLIND_DRILLED_FROM_TOP =>
+					if current_layer = top_layer then
+						set_width_and_radius (element (v).restring_top);
+						outer_restring_drawn := true;
+						draw_restring;
+					end if;
+
+					if current_layer = element (v).lower then
+						set_width_and_radius (element (v).restring_inner);
+						inner_restring_drawn := true;
+						draw_restring;
+					end if;
+
+					-- At least the top restring AND one inner restring 
+					-- must have been drawn. After that no more restring
+					-- shall be drawn.
+					if outer_restring_drawn and inner_restring_drawn then
+						cancel := true; -- causes the layer iterator to cancel
+					end if;
+
+					-- Draw the layer numbers only once:
+					if not numbers_drawn then
+						draw_numbers (
+							from	=> "T",
+							to		=> to_string (element (v).lower));
+
+						numbers_drawn := true;
+					end if;
+					
+				when BLIND_DRILLED_FROM_BOTTOM =>
+					if current_layer = bottom_layer then
+						set_width_and_radius (element (v).restring_bottom);
+						outer_restring_drawn := true;
+						draw_restring;
+					end if;
+
+					if current_layer = element (v).upper then
+						set_width_and_radius (element (v).restring_inner);
+						inner_restring_drawn := true;
+						draw_restring;
+					end if;
+
+					-- At least the bottom restring AND one inner restring 
+					-- must have been drawn. After that no more restring
+					-- shall be drawn.
+					if outer_restring_drawn and inner_restring_drawn then
+						cancel := true;
+					end if;
+
+					-- Draw the layer numbers only once:
+					if not numbers_drawn then
+						draw_numbers (
+							from	=> "B",
+							to		=> to_string (element (v).upper));
+
+						numbers_drawn := true;
+					end if;
+					
+			end case;
+		end query_category;
+		
+	begin -- query_via
+		circle.center := element (v).position;
+		radius_base := element (v).diameter / 2.0;
+		
+		if vias_enabled then
+
 			-- Iterate all conductor layers starting at the bottom layer and ending
 			-- with the top layer:
 			for ly in reverse top_layer .. bottom_layer loop
@@ -362,76 +494,20 @@ is
 					
 					-- Set the layer being drawn:
 					current_layer := ly;
-					--put_line (to_string (current_layer));
-			
-					case element (v).category is
-						when THROUGH =>
-							if is_inner_layer (current_layer) then
-								-- current_layer is an inner layer
-								set_width_and_radius (element (v).restring_inner);
-							else
-								-- current_layer is an outer layer
-								set_width_and_radius (element (v).restring_outer);
-							end if;
 
-							draw_restring;
-
-							-- NOTE: For a through via, no layer numbers are displayed.
-							
-						when BURIED =>
-							if element (v).layers.upper = current_layer or element (v).layers.lower = current_layer then
-								set_width_and_radius (element (v).restring_inner);
-								draw_restring;
-								
-								draw_numbers (
-									from	=> to_string (element (v).layers.upper),
-									to		=> to_string (element (v).layers.lower));
-							end if;
-							
-						when BLIND_DRILLED_FROM_TOP =>
-							if current_layer = top_layer then
-								set_width_and_radius (element (v).restring_top);
-								draw_restring;
-							end if;
-
-							if current_layer = element (v).lower then
-								set_width_and_radius (element (v).restring_inner);
-								draw_restring;
-							end if;
-
-							draw_numbers (
-								from	=> "T",
-								to		=> to_string (element (v).lower));
-							
-						when BLIND_DRILLED_FROM_BOTTOM =>
-							if current_layer = bottom_layer then
-								set_width_and_radius (element (v).restring_bottom);
-								draw_restring;
-							end if;
-
-							if current_layer = element (v).upper then
-								set_width_and_radius (element (v).restring_inner);
-								draw_restring;
-							end if;
-
-							draw_numbers (
-								from	=> "B",
-								to		=> to_string (element (v).upper));
-
-							
-					end case;
-
+					query_category;
 				end if;
-			end loop;
-		end iterate_layers;
-		
-	begin -- query_via
-		circle.center := element (v).position;
-		radius_base := element (v).diameter / 2.0;
-		
-		if vias_enabled then
-			iterate_layers;
 
+				-- If the cancel flag has been set after drawing the via,
+				-- then exit this iteration. This prevents objects from begin
+				-- drawn multiple times:
+				if cancel then
+					exit;
+				end if;
+
+			end loop;
+
+			
 			-- CS display drill size and restring ?			
 		end if;
 		
