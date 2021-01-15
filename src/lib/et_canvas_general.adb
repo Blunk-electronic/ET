@@ -1770,6 +1770,7 @@ package body pac_canvas is
 	procedure change_primary_tool is begin
 		if primary_tool = MOUSE then
 			primary_tool := KEYBOARD;
+			canvas.grab_focus;
 		else
 			primary_tool := MOUSE;
 		end if;

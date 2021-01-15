@@ -1137,6 +1137,9 @@ package body et_canvas_board is
 		end if;	
 	end place_text;
 
+	-- Builds the final via-to-be-placed from the information
+	-- provided by temporarily variable via_place.
+	-- Inserts the via in the module.
 	procedure place_via (destination : in type_point) is
 		use et_canvas_schematic;
 		via : type_via (category => via_place.category);
@@ -1148,7 +1151,7 @@ package body et_canvas_board is
 			
 			via.restring_inner := via_place.restring_inner;
 			
-			move_to (via_place.drill.position, destination);
+			move_to (via.position, destination);
 
 			case via_place.category is
 				when THROUGH =>

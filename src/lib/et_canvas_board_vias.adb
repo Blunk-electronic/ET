@@ -298,19 +298,10 @@ package body et_canvas_board_vias is
 		-- Get the net index of the entry column 1:
 		gtk.tree_model.get_value (model, iter, 1, index);
 		
-		--via_place.net_name := to_net_name (glib.values.get_string (name));
-		--via_place.net_idx := positive'value (glib.values.get_string (index));
-
 		set (
 			net		=> via_place.net,
 			name	=> to_net_name (glib.values.get_string (name)),
 			idx 	=> positive'value (glib.values.get_string (index)));
-		
-		--put_line ("net " & to_string (via_place.net_name) & " idx " & positive'image (via_place.net_idx));
-
-		--via_place.being_moved := true;
-		--canvas.grab_focus;
-
 		
 		et_canvas_board.redraw_board;
 		
@@ -759,6 +750,9 @@ package body et_canvas_board_vias is
 			make_combo_drill;
 			make_combo_restring_inner;
 			make_combo_restring_outer;
+
+			-- Signal the GUI to draw the via:
+			via_place.being_moved := true;
 			
 			-- Redraw the right box of the window:
 			box_right.show_all;

@@ -565,6 +565,70 @@ is
 		iterate (module.nets, query_net_via'access);
 
 	end query_items;
+
+	vias_being_placed : pac_vias.list;
+
+	procedure draw_vias_being_placed is 
+		-- The place where the text shall be placed:
+		position : type_point;
+	begin
+		if via_place.being_moved then
+
+			-- Set the point where the via is to be drawn:
+			case primary_tool is
+				when KEYBOARD	=> position := cursor_main.position;
+				when MOUSE		=> position := self.snap_to_grid (self.mouse_position);
+			end case;
+			
+			case via_place.category is
+				when THROUGH =>
+					append (
+						container	=> vias_being_placed,
+						new_item	=> (
+							category		=> THROUGH,
+							diameter		=> via_place.drill.diameter,
+							position		=> position,
+							restring_inner	=> via_place.restring_inner,
+							restring_outer	=> via_place.restring_outer));
+
+				when BLIND_DRILLED_FROM_TOP =>
+					append (
+						container	=> vias_being_placed,
+						new_item	=> (
+							category		=> BLIND_DRILLED_FROM_TOP,
+							diameter		=> via_place.drill.diameter,
+							position		=> position,
+							restring_inner	=> via_place.restring_inner,
+							restring_top	=> via_place.restring_outer,
+							lower			=> via_place.destination_blind));
+					
+				when BLIND_DRILLED_FROM_BOTTOM =>
+					append (
+						container	=> vias_being_placed,
+						new_item	=> (
+							category		=> BLIND_DRILLED_FROM_BOTTOM,
+							diameter		=> via_place.drill.diameter,
+							position		=> position,
+							restring_inner	=> via_place.restring_inner,
+							restring_bottom	=> via_place.restring_outer,
+							upper			=> via_place.destination_blind));
+					
+				when BURIED =>
+					append (
+						container	=> vias_being_placed,
+						new_item	=> (
+							category		=> BURIED,
+							diameter		=> via_place.drill.diameter,
+							position		=> position,
+							layers			=> via_place.layers_buried,
+							restring_inner	=> via_place.restring_inner));
+					
+			end case;
+
+			-- draw the single via that is in container vias_being_placed:
+			vias_being_placed.iterate (query_via'access); 
+		end if;
+	end draw_vias_being_placed;
 	
 begin -- draw_conductors
 -- 	put_line ("draw conductor layers ...");
@@ -573,6 +637,7 @@ begin -- draw_conductors
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 
+	draw_vias_being_placed;
 	
 end draw_conductors;
 
