@@ -1778,7 +1778,21 @@ package body pac_canvas is
 		update_primary_tool_display;
 	end change_primary_tool;
 
+	function tool_position (
+		view : not null access type_view'class)
+		return type_point 
+	is
+		point : type_point;
+	begin
+		case primary_tool is
+			when KEYBOARD	=> point := cursor_main.position;
+			when MOUSE		=> point := view.snap_to_grid (view.mouse_position);
+		end case;
 
+		return point;
+	end tool_position;
+	
+	
 	procedure evaluate_exception (
 		name	: in string; -- exception name
 		message : in string) -- exception message

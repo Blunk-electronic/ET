@@ -581,10 +581,7 @@ package body et_canvas_board is
 			if text_place.category = category and text_place.face = face then
 
 				-- Set the point where the text is to be drawn:
-				case primary_tool is
-					when KEYBOARD	=> point := cursor_main.position;
-					when MOUSE		=> point := self.snap_to_grid (self.mouse_position);
-				end case;
+				point := self.tool_position;
 
 				-- Draw the origin of the text:
 				origin := type_position (to_position (point, zero_rotation));
@@ -638,10 +635,7 @@ package body et_canvas_board is
 		and text_place.category = LAYER_CAT_OUTLINE then
 
 			-- Set the point where the text is to be drawn:
-			case primary_tool is
-				when KEYBOARD	=> point := cursor_main.position;
-				when MOUSE		=> point := self.snap_to_grid (self.mouse_position);
-			end case;
+			point := self.tool_position;
 
 			-- Draw the origin of the text:
 			origin := type_position (to_position (point, zero_rotation));
@@ -697,10 +691,7 @@ package body et_canvas_board is
 			if text_place.category = category and text_place.signal_layer = layer then
 
 				-- Set the point where the text is to be drawn:
-				case primary_tool is
-					when KEYBOARD	=> point := cursor_main.position;
-					when MOUSE		=> point := self.snap_to_grid (self.mouse_position);
-				end case;
+				point := self.tool_position;
 
 				-- Draw the origin of the text:
 				origin := type_position (to_position (point, zero_rotation));

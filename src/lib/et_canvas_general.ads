@@ -767,6 +767,19 @@ package pac_canvas is
 
 	procedure change_primary_tool;
 
+
+	-- Returns the position where the primary tool
+	-- is pointing at. 
+	-- If the primary tool is MOUSE, then the return value 
+	-- is snapped to the nearest grid point.
+	-- If the primary tool is KEYBOARD, then the return 
+	-- value is the position of cursor_main. The cursor
+	-- is always on a grid position (no snap required).
+	function tool_position (
+		view : not null access type_view'class)
+		return type_point;
+
+	
 	
 
 	procedure evaluate_exception (

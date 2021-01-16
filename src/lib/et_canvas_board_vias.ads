@@ -109,8 +109,6 @@ package et_canvas_board_vias is
 	-- Removes the text properties bar.
 	procedure reset_via_place;
 
-	-- Calls reset_text_place if the verb is not VERB_PLACE.
-	--procedure remove_text_properties;
 	
 	-- Builds the box for the via properties and
 	-- inserts it below the console.

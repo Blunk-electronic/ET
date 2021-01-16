@@ -575,10 +575,7 @@ is
 		if via_place.being_moved then
 
 			-- Set the point where the via is to be drawn:
-			case primary_tool is
-				when KEYBOARD	=> position := cursor_main.position;
-				when MOUSE		=> position := self.snap_to_grid (self.mouse_position);
-			end case;
+			position := self.tool_position;
 			
 			case via_place.category is
 				when THROUGH =>
