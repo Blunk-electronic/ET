@@ -47,6 +47,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with et_nets;					use et_nets;
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
 with et_string_processing;		use et_string_processing;
@@ -72,6 +73,8 @@ package et_board_ops is
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
+
+	use pac_net_name;
 	
 	procedure move_board (
 	-- Moves the origin of the board to the given point (relative to the lower left 

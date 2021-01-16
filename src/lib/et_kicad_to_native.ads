@@ -35,10 +35,10 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
-with ada.containers;            use ada.containers;
+with ada.text_io;					use ada.text_io;
+with ada.strings.maps;				use ada.strings.maps;
+with ada.strings.bounded;   	    use ada.strings.bounded;
+with ada.containers;        	    use ada.containers;
 with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
@@ -46,6 +46,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with et_nets;						use et_nets;
 with et_project;
 with et_general;
 with et_coordinates;
@@ -55,6 +56,8 @@ with et_pcb_coordinates;
 
 package et_kicad_to_native is
 
+	use pac_net_name;
+	
 	procedure transpose (log_threshold : in et_string_processing.type_log_level);
 	-- Transposes coordinates of schematic and layout elements:
 	-- 1. In schematic changes the path (selector of et_coordinates.type_coordinates) to the root path (/).

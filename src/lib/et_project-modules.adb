@@ -73,7 +73,6 @@ with et_exceptions;				use et_exceptions;
 
 package body et_project.modules is
 
-	use et_general.pac_net_name;
 	use pac_generic_modules;
 	
 	function to_string (project_name : in pac_project_name.bounded_string) return string is begin
@@ -185,8 +184,9 @@ package body et_project.modules is
 			net_cursor : pac_nets.cursor := module.nets.first;
 
 			procedure query_strands (
-				net_name	: in et_general.pac_net_name.bounded_string;
-				net			: in type_net) is
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net) 
+			is
 				use pac_strands;
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
@@ -268,8 +268,9 @@ package body et_project.modules is
 		use et_schematic;
 		
 		procedure query_strands (
-			net_name	: in et_general.pac_net_name.bounded_string;
-			net			: in type_net) is
+			net_name	: in pac_net_name.bounded_string;
+			net			: in type_net)
+		is
 			use pac_strands;
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
@@ -514,7 +515,7 @@ package body et_project.modules is
 			net_cursor : pac_nets.cursor;
 
 			-- The port being inquired is a net inside the submodule.
-			net : constant string := et_general.to_string (port);
+			net : constant string := to_string (port);
 			use pac_nets;
 		begin
 			-- locate the net in the submodule
@@ -988,7 +989,7 @@ package body et_project.modules is
 		-- If iteration completed and net not found, error:
 		if c = pac_net_names_indexed.no_element then
 			raise constraint_error with
-				"ERROR: Net " & enclose_in_quotes (et_general.to_string (name)) 
+				"ERROR: Net " & enclose_in_quotes (to_string (name)) 
 				& " not found !";
 		end if;
 		

@@ -71,6 +71,7 @@ package et_schematic_ops is
 
 	use et_symbols.pac_text;
 
+	use pac_net_name;
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.

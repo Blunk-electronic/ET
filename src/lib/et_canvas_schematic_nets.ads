@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -41,6 +41,7 @@ with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
+with et_nets;						use et_nets;
 with et_geometry;					use et_geometry;
 with et_general;					use et_general;
 with et_canvas_general;				use et_canvas_general;
@@ -59,6 +60,7 @@ package et_canvas_schematic_nets is
 
 	use et_project.modules.pac_generic_modules;
 
+	use pac_net_name;
 	use et_symbols.pac_shapes;
 	use pac_nets;
 	use pac_strands;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -42,7 +42,7 @@ with et_kicad_libraries;		use et_kicad_libraries;
 with et_kicad_packages;			use et_kicad_packages;
 
 package et_kicad is
-
+	
 	procedure dummy;
 	
 end et_kicad;

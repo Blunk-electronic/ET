@@ -736,7 +736,7 @@ is
 				-- not already in the net segment.
 				if et_schematic.pac_submodule_ports.contains (net_submodule_ports, net_submodule_port) then
 					log (ERROR, "submodule " & to_string (net_submodule_port.module_name) &
-						" port " & et_general.to_string (net_submodule_port.port_name) & 
+						" port " & to_string (net_submodule_port.port_name) & 
 						" already in net segment !", console => true);
 					raise constraint_error;
 				end if;
@@ -1599,7 +1599,7 @@ is
 
 
 	-- submodules	
-	submodule_port_name	: et_general.pac_net_name.bounded_string; -- RESET
+	submodule_port_name	: pac_net_name.bounded_string; -- RESET
 	submodule_ports		: et_submodules.pac_submodule_ports.map;
 	submodule_name 		: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 	submodule_port 		: et_submodules.type_submodule_port;
@@ -1687,7 +1687,7 @@ is
 
 			if not inserted then
 				log (ERROR, "port " & 
-					et_general.to_string (submodule_port_name) & " already used !",
+					to_string (submodule_port_name) & " already used !",
 					console => true
 					);
 				raise constraint_error;
@@ -2354,7 +2354,7 @@ is
 				inserted : boolean;
 				cursor : pac_nets.cursor;
 			begin -- insert_net
-				log (text => "net " & et_general.to_string (net_name), level => log_threshold + 1);
+				log (text => "net " & to_string (net_name), level => log_threshold + 1);
 
 				-- CS: notify about missing parameters (by reading the parameter-found-flags)
 				-- If a parameter is missing, the default is assumed. See type_net spec.
@@ -2367,7 +2367,7 @@ is
 					position	=> cursor);
 
 				if not inserted then
-					log (ERROR, "net '" & et_general.to_string (net_name) 
+					log (ERROR, "net '" & to_string (net_name) 
 						& "' already exists !", console => true);
 					raise constraint_error;
 				end if;
@@ -4784,7 +4784,7 @@ is
 								if type_point (strand.position) /= position_found_in_module_file then
 									log (WARNING, affected_line (line) & "Sheet" & to_sheet (sheet (strand.position))
 										 & " net " 
-										 & et_general.to_string (net_name) & ": Lowest x/y position of strand invalid !");
+										 & to_string (net_name) & ": Lowest x/y position of strand invalid !");
 									log (text => " Found " & to_string (point => position_found_in_module_file));
 									log (text => " Will be overridden by calculated position" & 
 											to_string (point => type_point (strand.position)));

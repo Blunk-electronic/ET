@@ -102,8 +102,8 @@ package et_nets is
 		return boolean;
 	
 	function to_net_name (net_name : in string) return pac_net_name.bounded_string;
-	function to_string (net_name : in pac_net_name.bounded_string) return string;
 
+	
 	-- Returns a name for an anonymous net like N$56
 	function to_anonymous_net_name (index : in type_anonymous_net_index) 
 		return pac_net_name.bounded_string;

@@ -49,7 +49,7 @@ with et_kicad.pcb;				use et_kicad.pcb;
 
 package body et_kicad.schematic is
 
-	use et_general.pac_net_name;
+	use et_nets.pac_net_name;
 
 	use et_symbols.pac_shapes;
 	
@@ -1173,7 +1173,7 @@ package body et_kicad.schematic is
 				name	: in pac_net_name.bounded_string;
 				net		: in out type_net) is
 			begin
-				log (text => "strand of net " & et_general.to_string (name), level => log_threshold + 2);
+				log (text => "strand of net " & to_string (name), level => log_threshold + 2);
 				
 				if net_created then -- net has just been created
 					net.scope := element (strand).scope; -- set scope of net
@@ -1217,7 +1217,7 @@ package body et_kicad.schematic is
 
 					-- Output a warning if strand has no name.
 					if anonymous (element (strand).name) then
-						log (WARNING, "net " & et_general.to_string (element (strand).name) 
+						log (WARNING, "net " & to_string (element (strand).name) 
 							& " at" & to_string (
 								position => element (strand).position, scope => et_kicad_coordinates.MODULE)
 							& " has no dedicated name !");
@@ -1246,13 +1246,13 @@ package body et_kicad.schematic is
 					if type_path_to_submodule.is_empty (path (element (strand).position)) then
 						net_name := to_net_name (
 							et_coordinates.hierarchy_separator
-							& et_general.to_string (element (strand).name));
+							& to_string (element (strand).name));
 
 					else -- strand is in any submodule. form a net name like "/SENSOR/RESET"
 						net_name := to_net_name (
 							to_string (path (element (strand).position))
 							& et_coordinates.hierarchy_separator 
-							& et_general.to_string (element (strand).name));
+							& to_string (element (strand).name));
 					end if;
 				
                     -- Create net and append strand to module.nets
@@ -1438,7 +1438,7 @@ package body et_kicad.schematic is
 												-- example /core/LEVEL_SHIFTER
 
 									-- The name of the subordinated hierarchical net:
-									name		=> to_net_name (et_general.to_string (key (port))));
+									name		=> to_net_name (to_string (key (port))));
 
 								-- prematurely exit as the return is ready now
 								exit;
@@ -1547,7 +1547,7 @@ package body et_kicad.schematic is
 			if net.available then
 				log_indentation_up;
 
-				log (text => "probing hierarchic net " & et_general.to_string (net.name) 
+				log (text => "probing hierarchic net " & to_string (net.name) 
 						& " in sheet " & to_string (net.path) & " ...",
 					level => log_threshold + 2);
 				
@@ -1560,7 +1560,7 @@ package body et_kicad.schematic is
 
 								log (text => "reaches down into sheet " 
 									& to_string (net.path) 
-									& " as net " & et_general.to_string (net.name),
+									& " as net " & to_string (net.name),
 									level => log_threshold + 1
 									);
 
@@ -1583,7 +1583,7 @@ package body et_kicad.schematic is
 
 				-- Raise warning if hierarchic net not found in submodule:
 				if not hierarchic_net_found then
-					log (WARNING, "hierarchic net " & et_general.to_string (net.name) 
+					log (WARNING, "hierarchic net " & to_string (net.name) 
 						& " in submodule " & to_string (net.path) 
 						& " not found ! "
 						& "Hierarchic sheet in parent module requires this net !");
@@ -1699,7 +1699,7 @@ package body et_kicad.schematic is
 		net := first_net;
 		log_indentation_up;
 		while net /= type_nets.no_element loop
-			log (text => "net " & et_general.to_string (key (net)), level => log_threshold + 1);
+			log (text => "net " & to_string (key (net)), level => log_threshold + 1);
 
 			-- Examine the global or local net for any hierarchical nets connected to it.
 			-- If there are any, they are collected in hierarchic_strands_tmp.
@@ -1829,7 +1829,7 @@ package body et_kicad.schematic is
 		begin
 			log_indentation_up;
 			while net /= type_nets.no_element loop
-				log (text => "net " & et_general.to_string (key (net)));
+				log (text => "net " & to_string (key (net)));
 
 				query_element (
 					position	=> net,
@@ -3468,7 +3468,7 @@ package body et_kicad.schematic is
 		begin
 			log_indentation_up;
 			log (text => "inserting strand " 
-				 & et_general.to_string (strand.name) & " in database ...", level => 3); -- CS log_threshold ?
+				 & to_string (strand.name) & " in database ...", level => 3); -- CS log_threshold ?
 			log_indentation_down;
 
 			module.strands.append (strand);
@@ -3588,8 +3588,8 @@ package body et_kicad.schematic is
 		end rename;
 		
 	begin -- rename_strands
-		log (text => "renaming strands from " & et_general.to_string (name_before)
-			 & " to " & et_general.to_string (name_after) & " ...", level => log_threshold);
+		log (text => "renaming strands from " & to_string (name_before)
+			 & " to " & to_string (name_after) & " ...", level => log_threshold);
 		
 		modules.update_element (
 			position	=> module_cursor,
@@ -3601,7 +3601,7 @@ package body et_kicad.schematic is
 		else
 			-- CS: This should never happen
 			log (ERROR, "strand " 
-				& et_general.to_string (name_before) & " not found !");
+				& to_string (name_before) & " not found !");
 			raise constraint_error;
 		end if;
 	end rename_strands;
@@ -3813,7 +3813,7 @@ package body et_kicad.schematic is
 		-- LOOP IN STRANDS OF MODULE
 		while strand /= type_strands.no_element loop
 			log_indentation_up;
-			log (text => "strand of net " & et_general.to_string (element (strand).name), level => log_threshold + 3);
+			log (text => "strand of net " & to_string (element (strand).name), level => log_threshold + 3);
 
 			-- LOOP IN SEGMENTS OF STRAND
 			segment := first_segment (strand);
@@ -3861,11 +3861,11 @@ package body et_kicad.schematic is
 
 								-- If strand has been given a name already (for example by previous power-in ports) AND
 								-- if strand name differs from name of current power-in port -> warning
-								elsif et_general.to_string (element (strand).name) /= to_string (element (port).name) then
+								elsif to_string (element (strand).name) /= to_string (element (port).name) then
 									log (WARNING, "component " & to_string (key (component)) 
 										& " POWER IN port " & to_string (element (port).name) 
 										& " at" & to_string (element (port).coordinates, module)
-										& " conflicts with net " & et_general.to_string (element (strand).name) & " !");
+										& " conflicts with net " & to_string (element (strand).name) & " !");
 									--raise constraint_error;
 
 								-- If strand has a name and is local or hierarchic -> error and abort
@@ -3875,7 +3875,7 @@ package body et_kicad.schematic is
 										& " POWER IN port " & to_string (element (port).name) 
 										& " at" & to_string (element (port).coordinates, module)
 										& " conflicts with " & to_string (element (strand).scope) 
-										& " net " & et_general.to_string (element (strand).name) & " !");
+										& " net " & to_string (element (strand).name) & " !");
 									raise constraint_error;
 
 								end if;
@@ -3966,7 +3966,7 @@ package body et_kicad.schematic is
 				while strand /= type_strands.no_element loop
 					log_indentation_up;
 
-					log (text => et_general.to_string (element (strand).name) &
+					log (text => to_string (element (strand).name) &
 						 " scope " & to_string (element (strand).scope) &
 						 " in " & to_string (path (element (strand).position)));
 					
@@ -5401,7 +5401,7 @@ package body et_kicad.schematic is
 					-- are tested. If no junction is expected return junction_position.expected false.
 					while (not junction_position.expected) and strand_cursor_sec /= type_strands.no_element loop
 
-						log (text => et_general.to_string (element (strand_cursor_sec).name)
+						log (text => to_string (element (strand_cursor_sec).name)
 							& " at " 
 							& to_string (element (strand_cursor_sec).position, scope => et_kicad_coordinates.MODULE),
 							level => log_threshold + 3);
@@ -5480,7 +5480,7 @@ package body et_kicad.schematic is
 			
 			while strand_cursor_prim /= type_strands.no_element loop
 			
-				log (text => et_general.to_string (element (strand_cursor_prim).name)
+				log (text => to_string (element (strand_cursor_prim).name)
 					& " at " 
 					& to_string (element (strand_cursor_prim).position, scope => et_kicad_coordinates.MODULE),
 					level => log_threshold + 1);
@@ -5913,7 +5913,7 @@ package body et_kicad.schematic is
 			
 			while strand_cursor /= type_strands.no_element loop
 
-				log (text => et_general.to_string (element (strand_cursor).name)
+				log (text => to_string (element (strand_cursor).name)
 					& " at " 
 					& to_string (element (strand_cursor).position, scope => et_kicad_coordinates.MODULE),
 					level => log_threshold + 1);
@@ -6093,20 +6093,20 @@ package body et_kicad.schematic is
 		case label.label_appearance is
 			when SIMPLE =>
 			log (text => "simple label " & 
-				 et_general.to_string (label.text) & " at " & 
+				 to_string (label.text) & " at " & 
 				 --to_string (position => label.coordinates)); -- CS log_threshold ?
 				 to_string (point => label.coordinates)); -- CS log_threshold ?
 				
 			when TAG =>
 				if label.hierarchic then
 					log (text => "hierarchic label " & 
-					et_general.to_string (label.text) & " at " &
+					to_string (label.text) & " at " &
 					--to_string (position => label.coordinates));  -- CS log_threshold ?
 					to_string (point => label.coordinates));  -- CS log_threshold ?
 				end if;
 					
 				if label.global then
-					log (text => "global label " & et_general.to_string (label.text) & " at " &
+					log (text => "global label " & to_string (label.text) & " at " &
 					--to_string (position => label.coordinates));  -- CS log_threshold ?
 					to_string (point => label.coordinates));  -- CS log_threshold ?
 				end if;
@@ -6230,7 +6230,7 @@ package body et_kicad.schematic is
 				begin count := count + 1; end increment;
 				
 				function show_net return string is begin
-					return "net " & et_general.to_string (key (net_cursor));
+					return "net " & to_string (key (net_cursor));
 					-- CS: show coordinates directly ?
 				end show_net;
 
@@ -6295,11 +6295,11 @@ package body et_kicad.schematic is
 				-- Test if net has zero OR one single port. Warn about floating inputs:
 				case length (ports) is
 					when 0 =>
-						log (WARNING, "net " & et_general.to_string (key (net_cursor)) & " has no ports !"
+						log (WARNING, "net " & to_string (key (net_cursor)) & " has no ports !"
 							& " See import report for coordinates.");
 					
 					when 1 =>
-						log (WARNING, "net " & et_general.to_string (key (net_cursor)) 
+						log (WARNING, "net " & to_string (key (net_cursor)) 
 							& " has only one port at "
 							& to_string (element (ports.first).coordinates, scope => et_kicad_coordinates.MODULE));
 
@@ -6390,7 +6390,7 @@ package body et_kicad.schematic is
 			log_indentation_up;
 		
 			while net_cursor /= type_netlist.no_element loop
-				log (text => et_general.to_string (key (net_cursor)), level => log_threshold + 2);
+				log (text => to_string (key (net_cursor)), level => log_threshold + 2);
 
 				log_indentation_up;
 				
@@ -6496,7 +6496,7 @@ package body et_kicad.schematic is
 				--while not net_found and net_cursor /= et_schematic.type_netlist.no_element loop
 				while not net_found and type_netlist."/=" (net_cursor, type_netlist.no_element) loop
 				--while not net_found and net_cursor /= type_netlist.no_element loop
-					log (text => et_general.to_string (type_netlist.key (net_cursor)), level => log_threshold + 2); -- show net name
+					log (text => to_string (type_netlist.key (net_cursor)), level => log_threshold + 2); -- show net name
 					log_indentation_up;
 					
 					type_netlist.query_element (
@@ -6774,7 +6774,7 @@ package body et_kicad.schematic is
 				while net_cursor /= type_nets.no_element loop
 
 					-- log the name of the net being built
-					log (text => et_general.to_string (key (net_cursor)), level => log_threshold + 2);
+					log (text => to_string (key (net_cursor)), level => log_threshold + 2);
 				
 					-- create net in netlist
 					type_netlist.insert (
@@ -7412,7 +7412,7 @@ package body et_kicad.schematic is
 							type_ports_with_reference.next (port_cursor);
 						end loop;
 					else
-						log (WARNING, "net " & et_general.to_string (net) & " is not connected with any ports !");
+						log (WARNING, "net " & to_string (net) & " is not connected with any ports !");
 					end if;
 
 					log_indentation_down;
@@ -7421,7 +7421,7 @@ package body et_kicad.schematic is
 					
 			else -- net does not exist -> abort
 				log (ERROR, "in module " 
-					 & to_string (module_name) & " net " & et_general.to_string (net) 
+					 & to_string (module_name) & " net " & to_string (net) 
 					 & " not found !", console => true);
 				raise constraint_error;
 			end if;
@@ -7431,7 +7431,7 @@ package body et_kicad.schematic is
 			
 	begin -- components_in_net
 		log (text => "locating components in module " & to_string (module) & " net " &
-			 et_general.to_string (net) & " ...",
+			 to_string (net) & " ...",
 			level => log_threshold);
 		log_indentation_up;
 
@@ -7510,12 +7510,12 @@ package body et_kicad.schematic is
 						type_ports_with_reference.next (port_cursor);
 					end loop;
 				else
-					log (WARNING, "net " & et_general.to_string (net) & " is not connected with any ports !");
+					log (WARNING, "net " & to_string (net) & " is not connected with any ports !");
 				end if;
 					
 			else -- net does not exist -> abort
 				log (ERROR, "in module " 
-					 & to_string (module_name) & " net " & et_general.to_string (net) 
+					 & to_string (module_name) & " net " & to_string (net) 
 					 & " not found !", console => true);
 				raise constraint_error;
 			end if;
@@ -7525,7 +7525,7 @@ package body et_kicad.schematic is
 			
 	begin -- real_components_in_net
 		log (text => "locating real components in module " & to_string (module) & " net " &
-			 et_general.to_string (net) & " ...",
+			 to_string (net) & " ...",
 			 level => log_threshold);
 		log_indentation_up;
 

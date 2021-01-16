@@ -639,7 +639,7 @@ is
 								add_port (
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
-									port_name		=> et_general.to_net_name (f (6)),
+									port_name		=> to_net_name (f (6)),
 									position		=> type_point (set 
 												(
 												x => to_distance (f (7)),
@@ -916,7 +916,7 @@ is
 									(
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
-									port_name		=> et_general.to_net_name (f (6)),
+									port_name		=> to_net_name (f (6)),
 									log_threshold	=> log_threshold + 1
 									);
 
@@ -1075,7 +1075,7 @@ is
 								drag_port (
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
-									port_name		=> et_general.to_net_name (f (6)),
+									port_name		=> to_net_name (f (6)),
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									point			=> type_point (set (
 												x => to_distance (f (8)),
@@ -1263,7 +1263,7 @@ is
 								move_port (
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
-									port_name		=> et_general.to_net_name (f (6)),
+									port_name		=> to_net_name (f (6)),
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									point			=> type_point (set (
 												x => to_distance (f (8)),
@@ -1893,7 +1893,7 @@ is
 							when 6 =>
 								set_scope (
 									module_name 	=> module,
-									net_name		=> et_general.to_net_name (f (5)),
+									net_name		=> to_net_name (f (5)),
 									scope			=> et_netlists.to_net_scope (f (6)),
 									log_threshold	=> log_threshold + 1
 									);

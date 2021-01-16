@@ -422,7 +422,7 @@ is
 						write (keyword => keyword_submodule, parameters => 
 							space & to_string (element (port_cursor).module_name)
 							& space & keyword_port & space
-							& et_general.to_string (element (port_cursor).port_name)
+							& to_string (element (port_cursor).port_name)
 							); -- submodule CLK_GENERATOR port out
 
 						next (port_cursor);
@@ -670,10 +670,10 @@ is
 		end query_route;
 
 		procedure write (net_cursor : in et_schematic.pac_nets.cursor) is begin
-			log (text => "net " & et_general.to_string (key (net_cursor)), level => log_threshold + 1);
+			log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 			section_mark (section_net, HEADER);
 
-			write (keyword => keyword_name, parameters => et_general.to_string (key (net_cursor)));
+			write (keyword => keyword_name, parameters => to_string (key (net_cursor)));
 			write (keyword => keyword_class, parameters => to_string (element (net_cursor).class));
 			write (keyword => keyword_scope, parameters => et_netlists.to_string (element (net_cursor).scope));
 
@@ -1040,7 +1040,7 @@ is
 			use et_submodules.pac_submodule_ports;
 		begin
 			section_mark (section_port, HEADER);
-			write (keyword => keyword_name, parameters => et_general.to_string (key (port_cursor))); -- name clk_out
+			write (keyword => keyword_name, parameters => to_string (key (port_cursor))); -- name clk_out
 			write (keyword => keyword_position, parameters => position (element (port_cursor).position)); -- position x 0 y 10
 			write (keyword => et_submodules.keyword_direction, parameters => to_string (element (port_cursor).direction)); -- direction master/slave
 			section_mark (section_port, FOOTER);

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -69,9 +69,9 @@ package body et_canvas_schematic_nets is
 
 			procedure query_strands (
 			-- Searches the strands of the net for a segment that sits on given place.
-				net_name	: in et_general.pac_net_name.bounded_string;
-				net			: in out et_schematic.type_net) is
-				
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out et_schematic.type_net) 
+			is				
 				procedure query_segments (strand : in out type_strand) is
 				begin
 					log (text => "segment " & to_string (element (s.segment)), 
@@ -465,7 +465,6 @@ package body et_canvas_schematic_nets is
 		use et_schematic.pac_nets;
 		net_cursor	: et_schematic.pac_nets.cursor;
 
-		use et_general.pac_net_name;
 		net_name_auto_generated	: pac_net_name.bounded_string; -- N$234
 		net_name_start, net_name_end : pac_net_name.bounded_string;
 
@@ -476,7 +475,7 @@ package body et_canvas_schematic_nets is
 		-- of the segment in the targeted net:
 		procedure extend_net (net_name : in pac_net_name.bounded_string) is begin
 			log (text => "attaching start point of new segment to net "
-				& et_general.to_string (net_name),
+				& to_string (net_name),
 				level => log_threshold + 1);
 			
 			log_indentation_up;
@@ -496,9 +495,9 @@ package body et_canvas_schematic_nets is
 			if not is_empty (net_name_given) then
 
 				set_status ("Net name " 
-					& et_general.to_string (net_name_given)
+					& to_string (net_name_given)
 					& " ignored on attempt to extend net " 
-					& et_general.to_string (net_name) & " !");
+					& to_string (net_name) & " !");
 
 			end if;
 		end extend_net;
@@ -541,7 +540,7 @@ package body et_canvas_schematic_nets is
 				net_name_auto_generated := lowest_available_anonymous_net (module); -- N$234
 				
 				log (text => "creating new anonymous net " 
-					 & et_general.to_string (net_name_auto_generated),
+					 & to_string (net_name_auto_generated),
 					 level => log_threshold + 1);
 				
 				log_indentation_up;
@@ -556,7 +555,7 @@ package body et_canvas_schematic_nets is
 				
 			else -- explicit net name provided
 				log (text => "explicit net name is " 
-					& et_general.to_string (net_name_given),
+					& to_string (net_name_given),
 					level => log_threshold + 1);
 				
 				log_indentation_up;

@@ -2871,8 +2871,8 @@ package body et_schematic_ops.nets is
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		position		: in et_coordinates.type_position; -- sheet/x/y		
 		log_threshold	: in type_log_level)
-		return type_stub is
-
+		return type_stub 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 		net_cursor : pac_nets.cursor; -- points to the net
 		

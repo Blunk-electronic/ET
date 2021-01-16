@@ -60,6 +60,8 @@ with et_meta;
 
 package et_project.modules is
 
+	use pac_net_name;
+	
 	use et_symbols.pac_text;
 	
 	-- Generic modules and submodules (which contain schematic and layout stuff)

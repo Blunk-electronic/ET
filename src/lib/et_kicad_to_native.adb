@@ -74,7 +74,6 @@ with et_frames;
 
 package body et_kicad_to_native is
 
-	use et_general.pac_net_name;
 	use et_symbols.pac_text;
 	
 	procedure transpose (log_threshold : in et_string_processing.type_log_level) is
@@ -775,7 +774,7 @@ package body et_kicad_to_native is
 			log_indentation_up;
 			
 			while net_cursor /= et_kicad.schematic.type_nets.no_element loop
-				log (text => et_general.to_string (key (net_cursor)), level => log_threshold + 3);
+				log (text => to_string (key (net_cursor)), level => log_threshold + 3);
 
 				log_indentation_up;
 				
@@ -2054,7 +2053,7 @@ package body et_kicad_to_native is
 				
 				use et_coordinates;
 			begin -- query_ports
-				log (text => "net " & et_general.to_string (net_name), level => log_threshold + 3);
+				log (text => "net " & to_string (net_name), level => log_threshold + 3);
 				log_indentation_up;
 
 				-- Loop in ports of given net and change path and y position.
@@ -3077,7 +3076,7 @@ package body et_kicad_to_native is
 		begin -- copy_nets
 			-- loop in kicad nets
 			while kicad_net_cursor /= et_kicad.schematic.type_nets.no_element loop
-				log (text => "net " & et_general.to_string (key (kicad_net_cursor)), level => log_threshold + 2);
+				log (text => "net " & to_string (key (kicad_net_cursor)), level => log_threshold + 2);
 
 				et_schematic.pac_nets.insert (
 					container	=> module.nets,

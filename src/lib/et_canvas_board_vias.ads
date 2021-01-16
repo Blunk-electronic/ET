@@ -41,6 +41,7 @@ with gtk.window;					use gtk.window;
 with gtk.box;						use gtk.box;
 
 with et_general;					use et_general;
+with et_nets;						use et_nets;
 with et_canvas_general;				use et_canvas_general;
 with et_canvas_schematic;
 
@@ -58,6 +59,7 @@ with et_string_processing;			use et_string_processing;
 
 package et_canvas_board_vias is
 
+	use pac_net_name;
 
 	-- The via properties bar:
 	type type_box_properties is record

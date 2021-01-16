@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -436,7 +436,7 @@ function read (
 											when hierarchic => -- strand has been marked as "hierarchic" already. no local label allowed !
 												output_net_label_conflict;
 												log (ERROR,
-													"hierarchic net " & et_general.to_string (anon_strand_a.name) 
+													"hierarchic net " & to_string (anon_strand_a.name) 
 													& " has a local label at" 
 													--& to_string (position => ls.coordinates) & " !");
 													& to_string (point => ls.coordinates) & " !");
@@ -445,7 +445,7 @@ function read (
 											when global => -- strand has been marked as "global" already. no local label allowed !
 												output_net_label_conflict;
 												log (ERROR,
-													"global net " & et_general.to_string (anon_strand_a.name) 
+													"global net " & to_string (anon_strand_a.name) 
 													& " has a local label at" 
 													--& to_string (position => ls.coordinates) & " !");
 													& to_string (point => ls.coordinates) & " !");
@@ -466,7 +466,7 @@ function read (
 
 												-- for the log, some more information
 												log (ERROR, 
-														"Net " & et_general.to_string (anon_strand_a.name) & " has contradicting label " 
+														"Net " & to_string (anon_strand_a.name) & " has contradicting label " 
 														--& "at" & to_string (position => ls.coordinates) & " !");
 														& "at" & to_string (point => ls.coordinates) & " !");
 												raise constraint_error;
@@ -543,7 +543,7 @@ function read (
 												if lt.global or lt.hierarchic then
 													output_net_label_conflict;
 													log (ERROR,
-														"local net " & et_general.to_string (anon_strand_a.name) 
+														"local net " & to_string (anon_strand_a.name) 
 														& " has a hierarchic or global label at" 
 														--& to_string (position => lt.coordinates) & " !");
 														& to_string (point => lt.coordinates) & " !");
@@ -554,7 +554,7 @@ function read (
 												if lt.global then
 													output_net_label_conflict;
 													log (ERROR,
-														"hierarchic net " & et_general.to_string (anon_strand_a.name) 
+														"hierarchic net " & to_string (anon_strand_a.name) 
 														& " has a global label at" 
 														--& to_string (position => lt.coordinates) & " !");
 														& to_string (point => lt.coordinates) & " !");
@@ -565,7 +565,7 @@ function read (
 												if lt.hierarchic then
 													output_net_label_conflict;
 													log (ERROR,
-														"global net " & et_general.to_string (anon_strand_a.name) 
+														"global net " & to_string (anon_strand_a.name) 
 														& " has a hierarchic label at" 
 														--& to_string (position => lt.coordinates) & " !");
 														& to_string (point => lt.coordinates) & " !");
@@ -581,7 +581,7 @@ function read (
 											-- If label text is different from previously assigned net name:
 											if anon_strand_a.name /= lt.text then 
 												log (ERROR, 
-														"Net " & et_general.to_string (anon_strand_a.name) & " has contradicting label " 
+														"Net " & to_string (anon_strand_a.name) & " has contradicting label " 
 														--& "at" & to_string (position => lt.coordinates) & " !");
 														& "at" & to_string (point => lt.coordinates) & " !");
 												raise constraint_error;
@@ -656,7 +656,7 @@ function read (
 					net_name := to_net_name (
 						anonymous_net_name_prefix & trim (natural'image (net_id), left));
 
-					log (text => et_general.to_string (net_name), level => 2);
+					log (text => to_string (net_name), level => 2);
 					
 					strand.name := net_name;
 					strand.scope := local;
@@ -710,7 +710,7 @@ function read (
 
 				if anon_strand_a.processed then -- it must have a name
 
-					log (text => et_general.to_string (anon_strand_a.name), level => 2);
+					log (text => to_string (anon_strand_a.name), level => 2);
 					
 					strand.name := anon_strand_a.name;
 					strand.scope := anon_strand_a.scope;

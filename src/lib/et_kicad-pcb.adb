@@ -51,8 +51,6 @@ with et_symbols;
 
 package body et_kicad.pcb is
 
-	use et_general.pac_net_name;
-	
 	function to_plot_output_directory (directory : in string) return type_plot_output_directory.bounded_string is
 	begin
 		return type_plot_output_directory.to_bounded_string (directory);
@@ -78,6 +76,7 @@ package body et_kicad.pcb is
 	function right_net_before_left (right, left : in type_netlist_net) return boolean is
 	-- Returns true if the right net id comes beforr the left net id AND
 	-- if the right net name differs from the left net name.
+		use pac_net_name;
 	begin
 		if 
 			right.id > left.id 
@@ -93,6 +92,7 @@ package body et_kicad.pcb is
 	function right_net_equals_left (right, left : in type_netlist_net) return boolean is
 	-- Returns true if the right net id equals the left net id OR
 	-- if the right net name equals the left net name.
+		use pac_net_name;
 	begin
 		if 
 			right.id = left.id 
@@ -3037,7 +3037,9 @@ package body et_kicad.pcb is
 				raise constraint_error;
 			end invalid_layer;
 
-			procedure warn_on_missing_net is begin
+			procedure warn_on_missing_net is 
+				use pac_net_name;
+			begin
 			-- Warns operator if a terminal is not connected to a net.
 				if length (terminal_net_name) = 0 then
 					log (WARNING, to_string (package_reference) & latin_1.space
@@ -3286,12 +3288,12 @@ package body et_kicad.pcb is
 					-- log the net id and name. but skip the first dummy net with id 0
 					if netlist_net.id > type_net_id'first then
 						log (text => "net id" & to_string (netlist_net.id) & " name " 
-							& et_general.to_string (netlist_net.name),
+							& to_string (netlist_net.name),
 							level => log_threshold + 1);
 					end if;
 				else
 					log (ERROR, "either net id" & to_string (netlist_net.id) 
-						& " or net name '" & et_general.to_string (netlist_net.name) & "' already used !",
+						& " or net name '" & to_string (netlist_net.name) & "' already used !",
 						 console => true);
 					raise constraint_error;
 				end if;
@@ -4118,8 +4120,8 @@ package body et_kicad.pcb is
 					-- the terminal_net_name. If the terminal (pad) has no net name provided (section SEC_PAD)
 					-- the terminal_net_name is empty.
 					log_indentation_up;
-					if length (terminal_net_name) > 0 then
-						log (text => "connected with net " & et_general.to_string (terminal_net_name),
+					if pac_net_name.length (terminal_net_name) > 0 then
+						log (text => "connected with net " & to_string (terminal_net_name),
 							level => log_threshold + 1);
 					else
 						log (text => "not connected", level => log_threshold + 1);
@@ -4292,7 +4294,7 @@ package body et_kicad.pcb is
 			begin
 				board.polygons.append (polygon);
 
-				log (text => "polygon/zone net " & et_general.to_string (polygon.net_name) &
+				log (text => "polygon/zone net " & to_string (polygon.net_name) &
 					 " " & text_polygon_signal_layer & to_string (polygon.layer) &
 					 " timestamp " & string (polygon.timestamp) & -- CS use constant
 					 " " & keyword_priority & et_pcb.to_string (polygon.priority_level) &
@@ -4317,7 +4319,7 @@ package body et_kicad.pcb is
 				-- CS log fill points
 
 				-- Warn about floating polygons:
-				if length (polygon.net_name) = 0 then
+				if pac_net_name.length (polygon.net_name) = 0 then
 					log (WARNING, "Polygon without connection with any net found !");
 				end if;
 
@@ -4756,6 +4758,7 @@ package body et_kicad.pcb is
 					port		: schematic.type_port_with_reference;
 					terminal	: et_devices.type_terminal;
 					net_name_in_board : pac_net_name.bounded_string;
+
 				begin -- to_net_id
 
 					-- If the given net has a proper name (like MCU_CLK), then the net id
@@ -4774,7 +4777,7 @@ package body et_kicad.pcb is
 
 						-- if the net could not be found, then board and schematic are not consistent -> error
 						if length (net_name_in_board) = 0 then
-							log (ERROR, "net '" & to_string (net_name => name) & "' not found in board !", console => true);
+							log (ERROR, "net '" & to_string (name) & "' not found in board !", console => true);
 							raise constraint_error;
 						end if;
 
@@ -5140,9 +5143,12 @@ package body et_kicad.pcb is
 
 						procedure query_terminals (
 							package_name	: in type_device_name;
-							packge			: in type_package_board) is
+							packge			: in type_package_board)
+						is
 							use type_terminals;
 							terminal_cursor : type_terminals.cursor := packge.terminals.first;
+
+							use pac_net_name;
 						begin -- query_terminals
 							-- Loop in terminals of current package until a terminal
 							-- is found that is connected with the given net name_in.
@@ -5166,7 +5172,7 @@ package body et_kicad.pcb is
 							
 					begin -- to_net_name
 						log_indentation_up;
-						log (text => "translating anonymous kicad net name " & et_general.to_string (net_name_in) & " to " &
+						log (text => "translating anonymous kicad net name " & to_string (net_name_in) & " to " &
 							et_general.system_name & " name ... ", level => log_threshold + 3);
 
 						-- Loop in packages until a suitable terminal has been found.
@@ -5182,7 +5188,7 @@ package body et_kicad.pcb is
 						end loop;
 
 						if not terminal_found then
-							log (ERROR, "net " & et_general.to_string (net_name_in) 
+							log (ERROR, "net " & to_string (net_name_in) 
 								 & " not connected to any package !", console => true);
 							raise constraint_error;
 						end if;
@@ -5196,7 +5202,7 @@ package body et_kicad.pcb is
 
 						log_indentation_up;
 						log (text => "the " & et_general.system_name & " net name is " 
-							 & et_general.to_string (net_name_out), level => log_threshold + 3);
+							 & to_string (net_name_out), level => log_threshold + 3);
 						log_indentation_down;
 						
 						log_indentation_down;
@@ -5209,7 +5215,7 @@ package body et_kicad.pcb is
 						net 		: in out schematic.type_net) is
 					begin
 						net.class := key (net_class_cursor_board);
-						log (text => " net name " & et_general.to_string (net_name), level => log_threshold + 3);
+						log (text => " net name " & to_string (net_name), level => log_threshold + 3);
 					end set_net_class;
 					
 				begin -- transfer_net_classes
@@ -5331,7 +5337,7 @@ package body et_kicad.pcb is
 
 							-- log (text => "pre net " & to_string (key (net_cursor)), level => log_threshold + 2);
 							net_id := to_net_id (key (net_cursor));
-							log (text => "net " & et_general.to_string (key (net_cursor)) & " id" &
+							log (text => "net " & to_string (key (net_cursor)) & " id" &
 								 to_string (net_id), level => log_threshold + 2);
 
 							-- add route (segments and vias) to module.nets (see et_schematic type_module)

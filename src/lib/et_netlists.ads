@@ -61,6 +61,7 @@ package et_netlists is
 
 	comment_mark : constant string := "#";
 
+	use pac_net_name;
 	
 	-- Whenever we deal with netlist files this type should be used:
 	file_name_length_max : constant positive := 100; -- CS: should suffice for now

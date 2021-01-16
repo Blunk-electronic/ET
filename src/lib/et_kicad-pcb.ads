@@ -52,6 +52,7 @@ with ada.containers.ordered_sets;
 with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
 with et_general;
+with et_nets;					use et_nets;
 with et_terminals;				use et_terminals;
 with et_packages;
 with et_pcb;
@@ -76,7 +77,7 @@ package et_kicad.pcb is
 	use et_board_shapes_and_text.pac_text_fab;
 	use et_pcb_coordinates.pac_geometry_brd;
 
-
+	use pac_net_name;
 	
 	-- For things in section layers like (0 F.Cu signal) or (49 F.Fab user) we have those specs.
 	-- This is board file related.
@@ -342,7 +343,7 @@ package et_kicad.pcb is
 	
 	type type_netlist_net is record
 		id		: type_net_id;
-		name	: et_general.pac_net_name.bounded_string;
+		name	: pac_net_name.bounded_string;
 	end record;
 
 	-- When nets are collected in an ordered set, the next two functions serve to
@@ -412,8 +413,8 @@ package et_kicad.pcb is
 	
 	-- KiCad keeps a list of net names which are in a certain net class.
 	package type_nets_of_class is new doubly_linked_lists (
-		element_type	=> et_general.pac_net_name.bounded_string,
-		"="				=> et_general.pac_net_name."=");
+		element_type	=> pac_net_name.bounded_string,
+		"="				=> pac_net_name."=");
 
 	-- The net class type used here extends the basic net class by the list
 	-- of net names:
@@ -492,7 +493,7 @@ package et_kicad.pcb is
 	-- In the pcb drawing, a terminal has a net attached. For this reason a
 	-- list of terminals is declared here:
 	type type_terminal is new et_terminals.type_terminal with record
-		net_name : et_general.pac_net_name.bounded_string;
+		net_name : pac_net_name.bounded_string;
 	end record;
 
 	-- the list of terminals of a package:
@@ -603,7 +604,7 @@ package et_kicad.pcb is
 	function to_pad_connection (connection : in string) return type_polygon_pad_connection;
 	
 	type type_polygon is record
-		net_name			: et_general.pac_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
+		net_name			: pac_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
 		net_id				: type_net_id; -- if id is 0, the polygon is not connected to any net
 		layer				: type_signal_layer_id;
 		timestamp			: type_timestamp;

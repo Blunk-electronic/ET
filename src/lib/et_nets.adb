@@ -132,9 +132,6 @@ package body et_nets is
 		return pac_net_name.to_bounded_string (to_upper (net_name));
 	end to_net_name;
 	
-	function to_string (net_name : in pac_net_name.bounded_string) return string is begin
-		return pac_net_name.to_string (net_name);
-	end to_string;
 
 	function to_anonymous_net_name (index : in type_anonymous_net_index) -- 56
 		return pac_net_name.bounded_string -- N$56

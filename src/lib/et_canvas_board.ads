@@ -54,6 +54,7 @@ with gtk.gentry;					use gtk.gentry;
 with glib;							use glib;
 with cairo;							use cairo;
 
+with et_nets;						use et_nets;
 with et_general;					use et_general;
 with et_geometry;					use et_geometry;
 
@@ -78,6 +79,8 @@ with et_canvas_board_devices;		use et_canvas_board_devices;
 
 package et_canvas_board is
 
+	use pac_net_name;
+	
 	title : constant string := system_name & " BOARD ";
 
 	procedure set_title_bar (

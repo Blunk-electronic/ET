@@ -1548,7 +1548,7 @@ package body et_board_ops is
 		if length (net_name) = 0 then
 			return " freetrack";
 		else
-			return " net " & enclose_in_quotes (et_general.to_string (net_name));
+			return " net " & enclose_in_quotes (to_string (net_name));
 		end if;
 	end freetrack;
 

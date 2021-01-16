@@ -63,6 +63,7 @@ with gtk.combo_box_text;			use gtk.combo_box_text;
 with glib;							use glib;
 with cairo;							use cairo;
 
+with et_nets;						use et_nets;
 with et_general;					use et_general;
 with et_geometry;					use et_geometry;
 
@@ -93,6 +94,7 @@ package et_canvas_schematic is
 	
 	use et_project.modules.pac_generic_modules;
 	
+	use pac_net_name;
 	
 	title : constant string := system_name & " SCHEMATIC ";
 

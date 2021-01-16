@@ -40,6 +40,7 @@ with ada.text_io;				use ada.text_io;
 with ada.containers;			use ada.containers;
 with ada.exceptions;			use ada.exceptions;
 
+with et_nets;					use et_nets;
 with et_general;				use et_general;
 with et_text;					use et_text;
 with et_string_processing;		use et_string_processing;
@@ -50,6 +51,10 @@ with et_canvas_board;
 with et_modes;					use et_modes;
 
 package et_scripting is
+
+	use pac_net_name;
+
+	
 	comment_mark : constant string := ("#");
 
 	-- Script files have a name like "rename_power_nets.scr":
