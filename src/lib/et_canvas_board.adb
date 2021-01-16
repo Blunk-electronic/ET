@@ -112,25 +112,36 @@ package body et_canvas_board is
 				INNER, via_place.drill.diameter, rules.sizes.restring.delta_size);
 		end if;
 
-		put_line ("length " & ada.containers.count_type'image (length (net_names)));
+		--put_line ("length " & ada.containers.count_type'image (length (net_names)));
 		
-		put_line ("name " & to_string (element (net_names.first))
-				  & " idx " & natural'image (to_index (net_names.first)));
-		
-		-- set the net (the topmost net in the alphabet):
-		set (
-			net		=> via_place.net,
-			name	=> element (net_names.first), -- AGND
-			idx		=> to_index (net_names.first) -- 1
-			);
+		--put_line ("name " & to_string (element (net_names.first))
+				  --& " idx " & natural'image (to_index (net_names.first)));
+
+		-- If the module contains nets, then set the topmost net in the alphabet.
+		-- If there are no nets in the module, then via_place.net
+		-- remains un-initalized:
+		if is_empty (net_names) then
+			set (
+				net		=> via_place.net,
+				name	=> to_net_name ("")); -- no name
+		else
+			set (
+				net		=> via_place.net,
+				name	=> element (net_names.first), -- AGND
+				idx		=> to_index (net_names.first)); -- 1
+		end if;
 		
 	end init_via_place;
 
 	-- This procedure should be called each time after the current active module 
-	-- changes. It calls procedures that initialize the values used in property
+	-- changes. 
+	-- It removes all property bars (if being displayed) and
+	-- calls other procedures that initialize the values used in property
 	-- bars for vias, tracks, ...
 	procedure init_property_bars is begin
+		reset_via_place;
 		init_via_place;
+
 		--  CS init route
 		-- CS init text
 		-- ...

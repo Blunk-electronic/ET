@@ -69,6 +69,7 @@ with et_canvas_board;
 use et_canvas_board.pac_canvas;
 
 with et_modes.board;
+with et_exceptions;					use et_exceptions;
 
 package body et_canvas_board_vias is
 
@@ -727,37 +728,47 @@ package body et_canvas_board_vias is
 
 			
 	begin -- show_via_properties
-		
-		-- If the box is already shown, do nothing.
-		-- Otherwise build it:
-		if not box_properties.displayed then
-			box_properties.displayed := true;
-		
-			gtk_new_hbox (box_properties.box_main);
-			pack_start (et_canvas_board.pac_canvas.box_right, box_properties.box_main,
-						expand	=> false);
 
-			-- The properties bar is to be displayed in the right box
-			-- below the console:
-			reorder_child (box_right, box_properties.box_main, 1);
-
-			-- build the elements of the properties bar:
-			make_combo_category;
-			make_combo_net;
-			make_combo_destination;
-			make_combo_buried_upper;
-			make_combo_buried_lower;			
-			make_combo_drill;
-			make_combo_restring_inner;
-			make_combo_restring_outer;
-
-			-- Signal the GUI to draw the via:
-			via_place.being_moved := true;
+		-- If via_place.net is initialized then the property
+		-- bar is allowed to be shown. This should usually be the case.
+		-- If the module has no nets, then via_place.net is not
+		-- initialized which forbids placing vias.
+		if is_initialized (via_place.net) then
 			
-			-- Redraw the right box of the window:
-			box_right.show_all;
+			-- If the box is already shown, do nothing.
+			-- Otherwise build it:
+			if not box_properties.displayed then
+				box_properties.displayed := true;
+			
+				gtk_new_hbox (box_properties.box_main);
+				pack_start (et_canvas_board.pac_canvas.box_right, box_properties.box_main,
+							expand	=> false);
+
+				-- The properties bar is to be displayed in the right box
+				-- below the console:
+				reorder_child (box_right, box_properties.box_main, 1);
+
+				-- build the elements of the properties bar:
+				make_combo_category;
+				make_combo_net;
+				make_combo_destination;
+				make_combo_buried_upper;
+				make_combo_buried_lower;			
+				make_combo_drill;
+				make_combo_restring_inner;
+				make_combo_restring_outer;
+
+				-- Signal the GUI to draw the via:
+				via_place.being_moved := true;
+				
+				-- Redraw the right box of the window:
+				box_right.show_all;
+			end if;
+
+		else
+			raise semantic_error_1 with
+			"ERROR: The module has no nets. So no vias can be placed !";
 		end if;
-		
 	end show_via_properties;
 	
 end et_canvas_board_vias;

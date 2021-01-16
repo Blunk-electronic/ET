@@ -141,7 +141,11 @@ package et_nets is
 		name	: in pac_net_name.bounded_string;
 		idx		: in type_net_index := type_net_index'first);
 
-
+	-- Returns true if the given indexed net has been
+	-- initialized. "Initialized" means, it has a
+	-- non-empty net name.
+	function is_initialized (net : in type_net_indexed)
+		return boolean;
 	
 
 	private

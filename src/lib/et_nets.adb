@@ -163,6 +163,16 @@ package body et_nets is
 		net.idx := idx;
 	end set;
 
+	function is_initialized (net : in type_net_indexed)
+		return boolean
+	is begin
+		if length (net.name) > 0 then
+			return true;
+		else
+			return false;
+		end if;
+	end is_initialized;
+
 	
 end et_nets;
 
