@@ -342,7 +342,11 @@ is
 		-- calculated according to text_size_multiplier.
 		procedure draw_numbers (from, to : in string) is 
 			use et_text;
+			position : type_point := circle.center;
+			offset : type_point := type_point (set (zero, radius_base * 0.4));
 		begin
+			move_by (position, offset);
+			
 			-- The layer numbers are displayed in a special color:
 			set_color_via_layers (context.cr);
 
@@ -352,7 +356,7 @@ is
 				content		=> to_content (from & "-" & to),
 				size		=> radius_base * text_size_multiplier,
 				font		=> layer_numbers_font,
-				position	=> circle.center,
+				position	=> position,
 				origin		=> false,
 				rotation	=> zero_rotation,
 				alignment	=> (center, center),
@@ -360,6 +364,55 @@ is
 			
 		end draw_numbers;
 
+		procedure draw_net_name is 
+			use et_text;
+			position : type_point := circle.center;
+			--offset : type_point := type_point (set (zero, - radius_base * 0.2));
+		begin
+			--move_by (position, offset);
+					 
+			-- The net name is displayed in a special color:
+			set_color_via_layers (context.cr); -- CS
+
+			pac_draw_doc.draw_text (
+				area		=> in_area,
+				context		=> context,
+				content		=> to_content (to_string (net_name)),
+				size		=> radius_base * text_size_multiplier,
+				font		=> layer_numbers_font, -- CS
+				position	=> position,
+				origin		=> false,
+				rotation	=> zero_rotation,
+				alignment	=> (center, center),
+				height		=> self.frame_height);
+
+		end draw_net_name;
+
+		procedure draw_drill_size is 
+			use et_text;
+			position : type_point := circle.center;
+			offset : type_point := type_point (set (zero, - radius_base * 0.4));
+		begin
+			move_by (position, offset);
+					 
+			-- The drill size is displayed in a special color:
+			set_color_via_layers (context.cr); -- CS
+
+			pac_draw_doc.draw_text (
+				area		=> in_area,
+				context		=> context,
+				content		=> to_content (to_string (element (v).diameter)),
+				size		=> radius_base * text_size_multiplier,
+				font		=> layer_numbers_font, -- CS
+				position	=> position,
+				origin		=> false,
+				rotation	=> zero_rotation,
+				alignment	=> (center, center),
+				height		=> self.frame_height);
+
+		end draw_drill_size;
+
+		
 		-- These flags are used to prevent objects from being drawn
 		-- multple times at the same place:
 		outer_restring_drawn, inner_restring_drawn,
@@ -507,19 +560,25 @@ is
 
 			end loop;
 
+			draw_net_name;
+			draw_drill_size;
 			
 			-- CS display drill size and restring ?			
 		end if;
 		
 	end query_via;
+
 	
+	-- Draws the vias of the current net:
 	procedure query_net_via (n : in pac_nets.cursor) is begin
 		net_name := key (n);
 		net_class := element (n).class;
 
 		iterate (element (n).route.vias, query_via'access);
 	end query_net_via;
+
 	
+	-- Draws the tracks, vias and texts in conductor layers:
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_module) is
@@ -562,20 +621,30 @@ is
 			end if;
 		end loop;
 
+		-- Draw the vias that exist in the nets:
 		iterate (module.nets, query_net_via'access);
-
 	end query_items;
 
+	
+	-- CS: Currently this list will contain only the single via
+	-- that is being placed. It could be useful for copy/paste/move of
+	-- groups of vias.
 	vias_being_placed : pac_vias.list;
 
-	procedure draw_vias_being_placed is 
-		-- The place where the text shall be placed:
+	-- Draws the via that is attached to the primary tool while the
+	-- operator is placing the via.
+	-- Uses list vias_being_placed as storage place for the single via.
+	procedure draw_via_being_placed is 
+		-- The place where the via shall be placed:
 		position : type_point;
 	begin
 		if via_place.being_moved then
 
 			-- Set the point where the via is to be drawn:
 			position := self.tool_position;
+
+			-- Get the name of the targeted net:
+			net_name := get_name (via_place.net);
 			
 			case via_place.category is
 				when THROUGH =>
@@ -625,7 +694,7 @@ is
 			-- draw the single via that is in container vias_being_placed:
 			vias_being_placed.iterate (query_via'access); 
 		end if;
-	end draw_vias_being_placed;
+	end draw_via_being_placed;
 	
 begin -- draw_conductors
 -- 	put_line ("draw conductor layers ...");
@@ -634,7 +703,7 @@ begin -- draw_conductors
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_items'access);
 
-	draw_vias_being_placed;
+	draw_via_being_placed;
 	
 end draw_conductors;
 

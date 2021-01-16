@@ -172,6 +172,8 @@ package et_vias is
 	-- CS: Adjustment required for layer numbers greater 10.
 	text_size_multiplier : constant type_distance_positive := 0.3;
 
+
+	
 	type type_user_specific_drill_size is record
 		active	: boolean := false;
 		size	: type_drill_size := type_drill_size'first;
