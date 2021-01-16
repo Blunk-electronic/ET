@@ -398,8 +398,8 @@ package body et_canvas_board_vias is
 				-- set the net name in the first column:
 				set (storage_model, iter, column_0, to_string (element (n)));
 
-				-- set the net name in the second column:
-				set (storage_model, iter, column_1, positive'image (to_index (n)));
+				-- set the net index in the second column:
+				set (storage_model, iter, column_1, type_net_index'image (to_index (n)));
 			end query_net;
 			
 		begin -- make_combo_net

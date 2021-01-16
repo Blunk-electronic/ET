@@ -383,6 +383,8 @@ is
 		update_sheet_number_display;
 	end show_sheet;
 
+
+	
 	-- Sets the active module and first sheet.
 	procedure show_module is -- GUI related
 		use et_general;
@@ -402,8 +404,15 @@ is
 		
 		-- Update the board window title bar:
 		et_canvas_board.set_title_bar (module);
+
+
+		-- CS Init defaults of property bars in schematic.
+		
+		-- Init defaults of property bars in board:
+		et_canvas_board.init_property_bars;
 	end show_module;
 
+	
 	procedure show_module_and_sheet is  -- GUI related
 	-- Sets the active module and sheet.
 		use et_general;
@@ -424,8 +433,16 @@ is
 		
 		-- Update the board window title bar:
 		et_canvas_board.set_title_bar (module);
+
+
+		-- CS Init defaults of property bars in schematic.
+		
+		-- Init defaults of property bars in board:
+		et_canvas_board.init_property_bars;
 	end show_module_and_sheet;
 
+
+	
 	-- Enables a certain layer. If status is empty, the layer will be enabled.
 	procedure display ( -- GUI related
 		layer	: in type_noun;

@@ -63,11 +63,6 @@ package body et_canvas_schematic is
 		module		: in pac_module_name.bounded_string)
 	is begin
 		window.set_title (title & to_string (module));
-
-		-- Since this procedure is called each time the module changes
-		-- this is a good place to init some module specific things:
-		-- CS init_property_bars; 
-		-- CS see et_canvas_board.set_title_bar for ideas.
 	end set_title_bar;
 
 
@@ -127,7 +122,12 @@ package body et_canvas_schematic is
 		-- both schematic and layout editor:
 		set_title_bar (active_module);
 		et_canvas_board.set_title_bar (active_module);
-
+		
+		-- CS Init defaults of property bars in schematic.
+		
+		-- Init defaults of property bars in board:
+		et_canvas_board.init_property_bars;
+		
 		-- Redraw both schematic and board:
 		redraw;
 	end next_module;
@@ -150,6 +150,12 @@ package body et_canvas_schematic is
 		set_title_bar (active_module);
 		et_canvas_board.set_title_bar (active_module);
 
+		-- CS Init defaults of property bars in schematic.
+		
+		-- Init defaults of property bars in board:
+		et_canvas_board.init_property_bars;
+
+		
 		-- Redraw both schematic and board:
 		redraw;
 	end previous_module;

@@ -241,6 +241,15 @@ package body et_gui is
 			-- 5. et_scripting.execute_command parses the command and dispatches
 			--    to procedure schematic_cmd, board_cmd or project_cmd.
 		end if;
+
+
+		
+		-- CS Init defaults of property bars in schematic.
+
+		-- Init defaults of property bars in board:
+		et_canvas_board.init_property_bars;
+		
+
 		
 		-- Start the main gtk loop. This is a loop that permanently draws the widgets and
 		-- samples them for possible signals sent.

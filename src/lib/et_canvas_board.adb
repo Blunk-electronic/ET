@@ -41,6 +41,7 @@ with ada.strings;					use ada.strings;
 with ada.strings.fixed;				use ada.strings.fixed;
 with ada.directories;
 with ada.exceptions;				use ada.exceptions;
+with ada.containers;
 
 with gtk.window;					use gtk.window;
 
@@ -79,6 +80,11 @@ package body et_canvas_board is
 		-- get the user specific settings of the board
 		settings : constant type_user_settings := get_user_settings (current_active_module);
 
+		-- We need a list of all net names of the current module:
+		use pac_net_names_indexed;
+		net_names : constant pac_net_names_indexed.vector := 
+			get_indexed_nets (et_canvas_schematic.current_active_module);
+		
 	begin
 		-- Set the drill size and restring according to a user specific values:
 		-- If user has not specified defaults, use values given in DRU data set:
@@ -106,6 +112,18 @@ package body et_canvas_board is
 				INNER, via_place.drill.diameter, rules.sizes.restring.delta_size);
 		end if;
 
+		put_line ("length " & ada.containers.count_type'image (length (net_names)));
+		
+		put_line ("name " & to_string (element (net_names.first))
+				  & " idx " & natural'image (to_index (net_names.first)));
+		
+		-- set the net (the topmost net in the alphabet):
+		set (
+			net		=> via_place.net,
+			name	=> element (net_names.first), -- AGND
+			idx		=> to_index (net_names.first) -- 1
+			);
+		
 	end init_via_place;
 
 	-- This procedure should be called each time after the current active module 
@@ -125,10 +143,6 @@ package body et_canvas_board is
 		module		: in pac_module_name.bounded_string)
 	is begin
 		window.set_title (title & to_string (module));
-
-		-- Since this procedure is called each time the module changes
-		-- this is a good place to init some module specific things:
-		init_property_bars;
 	end set_title_bar;
 
 	

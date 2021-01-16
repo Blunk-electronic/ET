@@ -80,9 +80,16 @@ with et_canvas_board_devices;		use et_canvas_board_devices;
 package et_canvas_board is
 
 	use pac_net_name;
+
+	-- This procedure should be called each time after the current active module 
+	-- changes. It calls procedures that initialize the values used in property
+	-- bars for vias, tracks, ...
+	procedure init_property_bars;
+
+
 	
 	title : constant string := system_name & " BOARD ";
-
+	
 	procedure set_title_bar (
 		-- CS project name								
 		module		: in pac_module_name.bounded_string);

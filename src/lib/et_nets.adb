@@ -35,42 +35,9 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.directories;
-with gnat.directory_operations;
-
-with et_string_processing;
-
 package body et_nets is
-
-	function get_index (net : in type_net_indexed) return positive is begin
-		return net.idx;
-	end get_index;
-
-	function get_name (net : in type_net_indexed) return pac_net_name.bounded_string is begin
-		return net.name;
-	end get_name;
 	
-	procedure set (
-		net 	: in out type_net_indexed;
-		name	: in pac_net_name.bounded_string;
-		idx		: in positive := positive'first)
-	is begin
-		net.name := name;
-		net.idx := idx;
-	end set;
-
-	
-	
-	procedure check_net_name_length (net : in string) is
-	-- Tests if the given net name is longer than allowed.	
-		use et_string_processing;
-	begin
+	procedure check_net_name_length (net : in string) is begin
 		if net'length > net_name_length_max then
 			log (ERROR, "max. number of characters for net name is" 
 				 & positive'image (net_name_length_max) & " !",
@@ -81,10 +48,8 @@ package body et_nets is
 
 	procedure check_net_name_characters (
 		net			: in pac_net_name.bounded_string;
-		characters	: in character_set := net_name_characters) is
-	-- Tests if the given net name contains only valid characters as specified
-	-- by given character set.
-		use et_string_processing;
+		characters	: in character_set := net_name_characters) 
+	is
 		invalid_character_position : natural := 0;
 		inversion_mark_position : natural := 0;
 	begin
@@ -178,6 +143,27 @@ package body et_nets is
 	end anonymous;
 	
 
+	
+-- INDEXED NETS
+	
+	function get_index (net : in type_net_indexed) return type_net_index is begin
+		return net.idx;
+	end get_index;
+
+	function get_name (net : in type_net_indexed) return pac_net_name.bounded_string is begin
+		return net.name;
+	end get_name;
+	
+	procedure set (
+		net 	: in out type_net_indexed;
+		name	: in pac_net_name.bounded_string;
+		idx		: in type_net_index := type_net_index'first)
+	is begin
+		net.name := name;
+		net.idx := idx;
+	end set;
+
+	
 end et_nets;
 
 -- Soli Deo Gloria
