@@ -90,6 +90,8 @@ package body et_colors.board is
 			color_range (opacity));
 	end set_color_outline;
 
+	
+-- VIAS
 	procedure set_color_vias (
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity)
@@ -113,6 +115,32 @@ package body et_colors.board is
 			via_layers.blue,
 			color_range (opacity));
 	end set_color_via_layers;
+
+	procedure set_color_via_net_name (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity)
+	is begin		
+		set_source_rgba (
+			context, 
+			via_net_name.red,
+			via_net_name.green,
+			via_net_name.blue,
+			color_range (opacity));
+	end set_color_via_net_name;
+
+	procedure set_color_via_drill_size (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity)
+	is begin		
+		set_source_rgba (
+			context, 
+			via_drill_size.red,
+			via_drill_size.green,
+			via_drill_size.blue,
+			color_range (opacity));
+	end set_color_via_drill_size;
+
+	
 	
 	procedure set_color_silkscreen (
 		context : in cairo_context;

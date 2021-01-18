@@ -51,8 +51,12 @@ package et_colors.board is
 	grid 				: type_color := gray;	
 	origin				: type_color := gray;	
 	placeholders		: type_color := white;
+	
 	via					: type_color := green;
 	via_layers			: type_color := white; -- the layers the via is connecting
+	via_net_name		: type_color := yellow; -- the net where the via is part of
+	via_drill_size		: type_color := white; -- the drill size of the via
+	
 	terminal_names		: type_color := white;
 	tht_pads			: type_color := green;
 	
@@ -115,6 +119,8 @@ package et_colors.board is
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
 	
+
+-- VIAS
 	procedure set_color_vias (
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
@@ -122,6 +128,16 @@ package et_colors.board is
 	procedure set_color_via_layers (
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
+
+	procedure set_color_via_net_name (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity);
+
+	procedure set_color_via_drill_size (
+		context : in cairo_context;
+		opacity : in type_opacity := default_opacity);
+
+	
 	
 	procedure set_color_silkscreen (
 		context : in cairo_context;

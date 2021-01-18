@@ -159,19 +159,23 @@ package et_vias is
 	package pac_vias is new indefinite_doubly_linked_lists (type_via);
 
 
-	layer_numbers_font : constant et_text.type_font := (
+	via_text_font : constant et_text.type_font := (
 		family	=> et_text.to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
-
 
 	-- This constant defines the text size of the layer numbers
 	-- that are displayed in the center of the via.
 	-- The final text size is calculated by this formula:
 	-- size = drill radius * text_size_multiplier.
 	-- CS: Adjustment required for layer numbers greater 10.
-	text_size_multiplier : constant type_distance_positive := 0.3;
+	text_size_factor : constant type_distance_positive := 0.3;
 
+	-- Above the net name the layer numbers are displayed.
+	-- Below the net name the drill size is displayed.
+	-- This constant defines the position of layer numbers
+	-- and drill size.
+	text_position_layer_and_drill_factor : constant type_distance_positive := 0.4;
 
 	
 	type type_user_specific_drill_size is record

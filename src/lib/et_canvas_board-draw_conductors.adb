@@ -338,12 +338,36 @@ is
 				height		=> self.frame_height);
 		end draw_restring;
 
-		-- Draws the layer numbers. The text size is automatically
-		-- calculated according to text_size_multiplier.
+		-- Draws the net name right in the center of the via (no offset).
+		-- The text size is set automatically with the radius of the drill:
+		procedure draw_net_name is 
+			use et_text;
+			position : type_point := circle.center;
+		begin
+			-- The net name is displayed in a special color:
+			set_color_via_net_name (context.cr);
+
+			pac_draw_doc.draw_text (
+				area		=> in_area,
+				context		=> context,
+				content		=> to_content (to_string (net_name)),
+				size		=> radius_base * text_size_factor,
+				font		=> via_text_font,
+				position	=> position,
+				origin		=> false,
+				rotation	=> zero_rotation,
+				alignment	=> (center, center),
+				height		=> self.frame_height);
+
+		end draw_net_name;
+
+		-- Draws the layer numbers above the net name.
+		-- The text size is set automatically with the radius of the drill:
 		procedure draw_numbers (from, to : in string) is 
 			use et_text;
 			position : type_point := circle.center;
-			offset : type_point := type_point (set (zero, radius_base * 0.4));
+			offset : type_point := type_point (
+				set (zero, + radius_base * text_position_layer_and_drill_factor));
 		begin
 			move_by (position, offset);
 			
@@ -354,8 +378,8 @@ is
 				area		=> in_area,
 				context		=> context,
 				content		=> to_content (from & "-" & to),
-				size		=> radius_base * text_size_multiplier,
-				font		=> layer_numbers_font,
+				size		=> radius_base * text_size_factor,
+				font		=> via_text_font,
 				position	=> position,
 				origin		=> false,
 				rotation	=> zero_rotation,
@@ -364,46 +388,25 @@ is
 			
 		end draw_numbers;
 
-		procedure draw_net_name is 
-			use et_text;
-			position : type_point := circle.center;
-			--offset : type_point := type_point (set (zero, - radius_base * 0.2));
-		begin
-			--move_by (position, offset);
-					 
-			-- The net name is displayed in a special color:
-			set_color_via_layers (context.cr); -- CS
-
-			pac_draw_doc.draw_text (
-				area		=> in_area,
-				context		=> context,
-				content		=> to_content (to_string (net_name)),
-				size		=> radius_base * text_size_multiplier,
-				font		=> layer_numbers_font, -- CS
-				position	=> position,
-				origin		=> false,
-				rotation	=> zero_rotation,
-				alignment	=> (center, center),
-				height		=> self.frame_height);
-
-		end draw_net_name;
-
+		-- Draws the drill size below the net name.
+		-- The text size is set automatically with the radius of the drill:
 		procedure draw_drill_size is 
 			use et_text;
 			position : type_point := circle.center;
-			offset : type_point := type_point (set (zero, - radius_base * 0.4));
+			offset : type_point := type_point (
+				set (zero, - radius_base * text_position_layer_and_drill_factor));
 		begin
 			move_by (position, offset);
 					 
 			-- The drill size is displayed in a special color:
-			set_color_via_layers (context.cr); -- CS
+			set_color_via_drill_size (context.cr); -- CS
 
 			pac_draw_doc.draw_text (
 				area		=> in_area,
 				context		=> context,
 				content		=> to_content (to_string (element (v).diameter)),
-				size		=> radius_base * text_size_multiplier,
-				font		=> layer_numbers_font, -- CS
+				size		=> radius_base * text_size_factor,
+				font		=> via_text_font,
 				position	=> position,
 				origin		=> false,
 				rotation	=> zero_rotation,
