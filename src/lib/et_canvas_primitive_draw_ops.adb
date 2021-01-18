@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -203,8 +203,8 @@ package body pac_draw is
 		context	: in type_draw_context;
 		circle	: in type_circle'class;
 		filled	: in type_filled;		
-		height	: in pac_shapes.pac_geometry.type_distance) is
-
+		height	: in pac_shapes.pac_geometry.type_distance)
+	is
 		-- compute the boundaries (greatest/smallest x/y) of the given circle:
 		boundaries : type_boundaries := pac_shapes.boundaries (circle);
 
@@ -264,8 +264,10 @@ package body pac_draw is
 		polygon	: in type_polygon_base'class;
 		filled	: in type_filled;
 		-- CS fill style
-		height	: in pac_shapes.pac_geometry.type_distance) is
 
+		height	: in pac_shapes.pac_geometry.type_distance;
+		cutout	: in type_cutout_area := (others => <>))
+	is
 		-- compute the boundaries (greatest/smallest x/y) of the given polygon:
 		boundaries : type_boundaries := pac_shapes.boundaries (polygon);
 

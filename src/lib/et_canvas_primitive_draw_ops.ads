@@ -54,6 +54,9 @@
 with glib;					use glib;
 with cairo;					use cairo;
 
+with ada.containers; 			use ada.containers;
+with ada.containers.doubly_linked_lists;
+
 with et_geometry;			use et_geometry;
 with et_text;
 with et_canvas_general;
@@ -117,13 +120,57 @@ package pac_draw is
 		height	: in pac_shapes.pac_geometry.type_distance);
 		-- CS fill style ?
 
+
+	
+	type type_cutout is (NO, YES);
+	
+	type type_cutout_shape is (
+		CIRCULAR,
+		ARBITRARY
+		-- CS square, triangle, ... ?
+		);
+
+	type type_cutout_circle is new type_circle with null record;
+	type type_cutout_arbitrary is new type_polygon_base with null record;
+
+	package pac_cutouts_arbitrary is new doubly_linked_lists (type_cutout_arbitrary);
+
+	type type_cutout_area (
+		required	: type_cutout := NO;
+
+		-- If required is NO, then shape is don't care:
+		shape		: type_cutout_shape := CIRCULAR)
+	is record
+		case required is
+			when NO		=> null; -- no cutout required
+			when YES	=> -- cutout required
+
+				case shape is
+					when CIRCULAR =>
+						cutout_circular : type_cutout_circle;
+
+					-- CS other basic shapes ?
+						
+					when ARBITRARY =>
+						cutout_arbitrary : pac_cutouts_arbitrary.list;
+
+				end case;
+		end case;
+	end record;
+
+
+	
 	procedure draw_polygon (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
 		polygon	: in type_polygon_base'class;
 		filled	: in type_filled;
 		-- CS fill style
-		height	: in pac_shapes.pac_geometry.type_distance);
+
+		height	: in pac_shapes.pac_geometry.type_distance;
+		cutout	: in type_cutout_area := (others => <>));
+
+	
 	
 	-- This procedure draws the a rectangle on the given context.
 	-- The rectangle is shifted in y to a plane of given height. This plane

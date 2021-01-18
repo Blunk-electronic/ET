@@ -2573,10 +2573,15 @@ is
 			-- in an outer signal layer (specified by caller).
 			-- The terminal name will be drawn only when the signal layer is enabled.
 			procedure draw_pad_tht_outer_layer (
-				pad_outline_in	: in type_pad_outline; -- the outline of the solder pad (copper)
+				pad_outline_in	: in type_pad_outline; -- the outline of the solder pad
 				stop_mask_in	: in et_terminals.type_stop_mask; -- the stop mask in the outer layer
 				pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
-				f				: in type_face)
+				f				: in type_face;
+				
+				tht_hole		: in type_terminal_tht_hole := DRILLED; -- drilled/milled
+				drill_size		: in type_drill_size_tht := type_drill_size_tht'first;
+				millings		: in type_plated_millings := (others => <>)
+				)
 			is
 				pad_outline : type_pad_outline := pad_outline_in;
 				pad_pos : type_position := pad_pos_in;
@@ -2595,12 +2600,28 @@ is
 						-- rotated or mirrored pad outline.
 						move (pad_pos, type_polygon_base (pad_outline));
 
-						-- draw the solder pad (copper):
+						-- draw the solder pad (conductor):
 						if conductor_enabled (ly) then
 
 							set_color_tht_pad (context.cr);
-							draw_polygon (in_area, context, pad_outline, YES, self.frame_height);
 
+							case tht_hole is
+								when DRILLED =>
+									draw_polygon (
+										area		=> in_area,
+										context		=> context,
+										polygon		=> pad_outline,
+										filled		=> YES,
+										height		=> self.frame_height);
+
+								when MILLED =>
+									draw_polygon (
+										area		=> in_area,
+										context		=> context,
+										polygon		=> pad_outline,
+										filled		=> YES,
+										height		=> self.frame_height);
+							end case;
 						end if;
 						
 						-- draw the stop mask
@@ -2634,7 +2655,26 @@ is
 							end case;
 
 							set_color_stop_mask (context.cr, f, self.scale);
-							draw_polygon (in_area, context, stop_mask_contours, YES, self.frame_height);
+
+							case tht_hole is
+								when DRILLED =>
+							
+									draw_polygon (
+										area		=> in_area,
+										context		=> context,
+										polygon		=> stop_mask_contours,
+										filled		=> YES,
+										height		=> self.frame_height);
+
+								when MILLED =>
+									
+									draw_polygon (
+										area		=> in_area,
+										context		=> context,
+										polygon		=> stop_mask_contours,
+										filled		=> YES,
+										height		=> self.frame_height);
+							end case;
 						end if;
 
 					end if;
@@ -2743,20 +2783,56 @@ is
 				case t.technology is
 					
 					when THT =>
-						-- draw pad outline of top layer:
-						set_destination;
-						draw_pad_tht_outer_layer (t.pad_shape_tht.top, t.stop_mask_shape_tht.top, t.position, destination);
-
-						-- draw pad outline of bottom layer:
-						set_destination (INVERSE);
-						draw_pad_tht_outer_layer (t.pad_shape_tht.bottom, t.stop_mask_shape_tht.bottom, t.position, destination);
 
 						-- The pad can have a circular hole or a hole of arbitrary shape:
 						case t.tht_hole is
+
 							when DRILLED => -- circlular hole
+
+								-- draw pad outline of top layer:
+								set_destination;
+								draw_pad_tht_outer_layer (
+									pad_outline_in	=> t.pad_shape_tht.top,
+									stop_mask_in	=> t.stop_mask_shape_tht.top,
+									pad_pos_in		=> t.position,
+									f				=> destination,
+									tht_hole		=> DRILLED,
+									drill_size		=> t.drill_size);
+
+								-- draw pad outline of bottom layer:
+								set_destination (INVERSE);
+								draw_pad_tht_outer_layer (
+									pad_outline_in	=> t.pad_shape_tht.bottom,
+									stop_mask_in	=> t.stop_mask_shape_tht.bottom,
+									pad_pos_in		=> t.position,
+									f				=> destination,
+									tht_hole		=> DRILLED,
+									drill_size		=> t.drill_size);
+
 								draw_pad_tht_hole_drilled (to_string (key (c)), t.drill_size, t.width_inner_layers, t.position);
 								
 							when MILLED => -- arbitrary shape or so called plated millings
+
+								-- draw pad outline of top layer:
+								set_destination;
+								draw_pad_tht_outer_layer (
+									pad_outline_in	=> t.pad_shape_tht.top,
+									stop_mask_in	=> t.stop_mask_shape_tht.top,
+									pad_pos_in		=> t.position,
+									f				=> destination,
+									tht_hole		=> MILLED,
+									millings		=> t.millings);
+
+								-- draw pad outline of bottom layer:
+								set_destination (INVERSE);
+								draw_pad_tht_outer_layer (
+									pad_outline_in	=> t.pad_shape_tht.bottom,
+									stop_mask_in	=> t.stop_mask_shape_tht.bottom,
+									pad_pos_in		=> t.position,
+									f				=> destination,
+									tht_hole		=> MILLED,
+									millings		=> t.millings);
+
 								draw_pad_tht_hole_milled (to_string (key (c)), t.millings, t.width_inner_layers, t.position);
 						end case;
 						
