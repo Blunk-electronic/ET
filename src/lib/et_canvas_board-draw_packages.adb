@@ -2454,7 +2454,7 @@ is
 					position	=> type_point (pos),
 					origin		=> false, -- no origin required
 					rotation	=> zero_rotation,
-					alignment	=> (others => <>),
+					alignment	=> (center, center),
 					height		=> self.frame_height);
 
 			end draw_name;

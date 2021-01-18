@@ -253,9 +253,10 @@ package et_terminals is
 				-- This is the width of the conductor surrounding the 
 				-- hole in inner layers.
 				-- Since the hole can be of any shape we do not speak about restring.
+				-- Nevertheless the type_restring_width is used.
 				-- The shape of the conductor area around the hole is the same as 
 				-- the shape of the hole. No further extra contours possible.
-				width_inner_layers	: type_track_width;
+				width_inner_layers	: type_restring_width;
 				
 				case tht_hole is
 					when DRILLED =>
