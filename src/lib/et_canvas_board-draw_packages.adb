@@ -2439,7 +2439,8 @@ is
 
 			procedure draw_name (
 				name	: in string;  -- H5, 5, 3
-				pos		: in type_position) is -- the center of the pad
+				pos		: in type_position)  -- the center of the pad
+			is
 				use et_text;
 			begin
 				set_color_terminal_name (context.cr);
@@ -2575,8 +2576,8 @@ is
 				pad_outline_in	: in type_pad_outline; -- the outline of the solder pad (copper)
 				stop_mask_in	: in et_terminals.type_stop_mask; -- the stop mask in the outer layer
 				pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
-				f				: in type_face) is
-
+				f				: in type_face)
+			is
 				pad_outline : type_pad_outline := pad_outline_in;
 				pad_pos : type_position := pad_pos_in;
 
@@ -2688,12 +2689,12 @@ is
 				end if;
 			end draw_pad_tht_hole_milled;
 
-			-- This procedure draws the circular hole of a THT pad and the restring
-			-- of the inner signal layers:
+			-- This procedure draws the circular! restring of the inner
+			-- signal layers of a THT pad:
 			procedure draw_pad_tht_hole_drilled (
 				name		: in string;  -- H5, 5, 3
 				drill_size	: in type_drill_size;
-				restring	: in type_track_width;
+				restring	: in type_restring_width;
 				pad_pos_in	: in type_position) -- the center of the pad incl. its rotation
 			is
 				pad_pos : type_position := pad_pos_in;
@@ -2721,18 +2722,15 @@ is
 					-- If any inner layer is enabled, build a circle to show the restring 
 					-- of inner layers:
 					if inner_conductors_enabled (bottom_layer) then
-						circle.radius := drill_size * 0.5 + restring;
+
+						-- set line width and radius:
+						set_line_width (context.cr, type_view_coordinate (restring));
+						circle.radius := (drill_size + restring) * 0.5;
 					
 						set_color_tht_pad (context.cr);
-						draw_circle (in_area, context, circle, YES, self.frame_height);
+						draw_circle (in_area, context, circle, NO, self.frame_height);
 					end if;
 					
-					-- Build a black filled circle to show the drill:
-					circle.radius := drill_size * 0.5;
-					
-					set_color_background (context.cr);
-					draw_circle (in_area, context, circle, YES, self.frame_height);
-
 					-- draw the terminal name
 					draw_name (name, pad_pos);
 				end if;
@@ -2822,7 +2820,8 @@ is
 	
 	procedure query_devices (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_module) is
+		module		: in type_module) 
+	is
 		use et_schematic.pac_devices_sch;
 
 		procedure query_device (d : in et_schematic.pac_devices_sch.cursor) is
