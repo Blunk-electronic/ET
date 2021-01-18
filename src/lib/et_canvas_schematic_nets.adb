@@ -475,7 +475,7 @@ package body et_canvas_schematic_nets is
 		-- of the segment in the targeted net:
 		procedure extend_net (net_name : in pac_net_name.bounded_string) is begin
 			log (text => "attaching start point of new segment to net "
-				& to_string (net_name),
+				& enclose_in_quotes (to_string (net_name)),
 				level => log_threshold + 1);
 			
 			log_indentation_up;
@@ -489,16 +489,19 @@ package body et_canvas_schematic_nets is
 			status_clear;
 			
 			log_indentation_down;
-				
-			-- The net to be extended must have the same name as the explicit
-			-- given net name:
-			if not is_empty (net_name_given) then
 
-				set_status ("Net name " 
-					& to_string (net_name_given)
-					& " ignored on attempt to extend net " 
-					& to_string (net_name) & " !");
+			-- If an explicit net name was given AND if it does
+			-- NOT match the name of the net being extended,
+			-- then output a message:
+			if not is_empty (net_name_given) then -- explicit name given
+				if net_name_given /= net_name then -- names do NOT match
 
+					set_status ("WARNING ! Given net name " 
+						& enclose_in_quotes (to_string (net_name_given))
+						& " ignored while extending net " 
+						& enclose_in_quotes (to_string (net_name)) & " !");
+					
+				end if;
 			end if;
 		end extend_net;
 		
