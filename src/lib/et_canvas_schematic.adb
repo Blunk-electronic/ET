@@ -878,6 +878,8 @@ package body et_canvas_schematic is
 	-- Builds a live net route. This procedure requires to be called twice:
 	-- first time for the start and the second time for the end point of the route.
 	-- The current bend style in global variable "net_route" is taken into account.
+	-- The route may be started and finished with different tools. For example start
+	-- with MOUSE and finish with KEYBOARD or vice versa.
 	procedure make_net_route (
 		self	: not null access type_view;
 		tool	: in type_tool;
@@ -1920,18 +1922,26 @@ package body et_canvas_schematic is
 				
 			when others =>
 
-				-- If the command is waiting for finalization, usually by pressing
-				-- the space key, AND the primary tool is the keyboard, then
-				-- we call the corresponding subprogram right away here:
-				if single_cmd_status.finalization_pending and primary_tool = KEYBOARD then
-					case verb is
-						when VERB_DRAG		=> drag;
-						when VERB_DRAW		=> draw;
-						when VERB_INVOKE	=> invoke;
-						when VERB_MOVE		=> move;
-						when others			=> null;
-					end case;
-					
+				-- If an imcomplete command has been entered via console then it starts
+				-- waiting for finalization. This can be done by pressing the SPACE key.
+				-- Then we call the corresponding subprogram for the actual job right away here:
+				
+				--if single_cmd_status.finalization_pending and primary_tool = KEYBOARD then
+				if single_cmd_status.finalization_pending then
+				
+					if key = GDK_Space then
+							
+						case verb is
+							when VERB_DELETE	=> delete;
+							when VERB_DRAG		=> drag;
+							when VERB_DRAW		=> draw;
+							when VERB_INVOKE	=> invoke;
+							when VERB_MOVE		=> move;
+							when VERB_PLACE		=> place;							
+							when others			=> null;
+						end case;
+
+					end if;
 				else
 				-- Evaluate the verb and noun (as typed on the keyboard):
 					
