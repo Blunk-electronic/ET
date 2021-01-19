@@ -2589,6 +2589,9 @@ is
 				stop_mask_contours : type_stop_mask_contours;
 				
 				ly : constant type_signal_layer := face_to_layer (f);
+
+				cutout_circular : type_cutout_circle;
+				--cutout_arbitrary : 
 			begin
 				-- We draw only if either the signal layer or the stop mask
 				-- is enabled. Otherwise nothing will happen here:
@@ -2607,12 +2610,15 @@ is
 
 							case tht_hole is
 								when DRILLED =>
+									cutout_circular	:= (center => type_point (pad_pos_in), radius => drill_size * 0.5);
+									
 									draw_polygon (
 										area		=> in_area,
 										context		=> context,
 										polygon		=> pad_outline,
 										filled		=> YES,
-										height		=> self.frame_height);
+										height		=> self.frame_height,
+										cutout		=> (YES, CIRCULAR, cutout_circular));
 
 								when MILLED =>
 									draw_polygon (

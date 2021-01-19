@@ -122,6 +122,8 @@ package pac_draw is
 
 
 	
+-- CUTOUT
+	
 	type type_cutout is (NO, YES);
 	
 	type type_cutout_shape is (
@@ -158,8 +160,23 @@ package pac_draw is
 		end case;
 	end record;
 
-
 	
+-- CROP
+	type type_crop is (NO, YES);
+	type type_crop_arbitrary is new type_polygon_base with null record;
+	
+	type type_crop_area (
+		required	: type_crop := NO)
+	is record
+		case required is
+			when NO		=> null; -- no crop required
+			when YES	=> -- crop required
+				crop : type_crop_arbitrary;
+
+		end case;
+	end record;
+
+							
 	procedure draw_polygon (
 		area	: in type_rectangle;
 		context	: in type_draw_context;
@@ -168,7 +185,8 @@ package pac_draw is
 		-- CS fill style
 
 		height	: in pac_shapes.pac_geometry.type_distance;
-		cutout	: in type_cutout_area := (others => <>));
+		cutout	: in type_cutout_area := (others => <>);
+		crop	: in type_crop_area := (others => <>));
 
 	
 	

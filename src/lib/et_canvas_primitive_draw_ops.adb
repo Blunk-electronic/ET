@@ -266,7 +266,8 @@ package body pac_draw is
 		-- CS fill style
 
 		height	: in pac_shapes.pac_geometry.type_distance;
-		cutout	: in type_cutout_area := (others => <>))
+		cutout	: in type_cutout_area := (others => <>);
+		crop	: in type_crop_area := (others => <>))
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given polygon:
 		boundaries : type_boundaries := pac_shapes.boundaries (polygon);
