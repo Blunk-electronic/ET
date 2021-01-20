@@ -252,10 +252,13 @@ package et_string_processing is
 		position	: in positive;
 		content		: in string);
 	
-	function field (line : in type_fields_of_line; position : in positive) return string; 
 	-- Returns the field at the given position. Raises constraint error if there is no 
 	-- field at given position.
 	-- CS: position should be a count_type
+	function get_field (
+		line		: in type_fields_of_line;
+		position	: in positive) 
+		return string;
 
 	function to_string (line : in type_fields_of_line) return string;
 

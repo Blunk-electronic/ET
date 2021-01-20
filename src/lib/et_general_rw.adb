@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -44,22 +44,19 @@ with ada.text_io;				use ada.text_io;
 
 with ada.exceptions;
 
-with et_string_processing;
-
 package body et_general_rw is
 	
 	-- This function returns the string at position in given line:
 	-- It is frequently used when reading lines of files.
-	function f (line : in et_string_processing.type_fields_of_line; position : in positive) return string 
-		renames et_string_processing.field;
+	function f (line : in type_fields_of_line; position : in positive) 
+		return string renames get_field;
 
 	
 	procedure expect_field_count (
-		line			: in et_string_processing.type_fields_of_line;	-- the list of fields of the line
+		line			: in type_fields_of_line;	-- the list of fields of the line
 		count_expected	: in count_type;			-- the min. number of fields to expect
 		warn			: in boolean := true) 		-- warn if too many fields
-		is 
-		use et_string_processing;
+	is 
 		count_found : constant count_type := field_count (line);
 
 		f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
@@ -79,9 +76,7 @@ package body et_general_rw is
 		
 	end expect_field_count;
 
-	procedure invalid_keyword (word : in string) is 
-		use et_string_processing;
-	begin
+	procedure invalid_keyword (word : in string) is begin
 		log (ERROR, "invalid keyword '" & word & "' !", console => true);
 		raise constraint_error;
 	end;
@@ -98,9 +93,7 @@ package body et_general_rw is
 	function write_section_stack_not_empty return string is begin
 		return "section stack not empty !"; end;
 	
-	procedure invalid_section is 
-		use et_string_processing;
-	begin
+	procedure invalid_section is begin
 		log (ERROR, "invalid section name !", console => true);
 		raise constraint_error;
 	end;
@@ -173,9 +166,7 @@ package body et_general_rw is
 	end write;	
 
 
-	procedure invalid_arc is 
-		use et_string_processing;
-	begin
+	procedure invalid_arc is begin
 		log (ERROR, "Start and end point of arc have differing distance to center !",
 			 console => true);
 		raise constraint_error;

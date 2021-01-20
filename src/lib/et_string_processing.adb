@@ -879,19 +879,19 @@ package body et_string_processing is
 		null; -- CS
 	end set_field;
 	
-	function field (line : in type_fields_of_line; position : in positive) return string is
-	-- Returns the field at the given position. Raises constraint error if there is no 
-	-- field at given position.		
+	function get_field (
+		line		: in type_fields_of_line;
+		position	: in positive)
+		return string 
+	is
 		use type_list_of_strings;
 	begin
-		--log ("field ct:" & count_type'image (line.field_count));
 		if count_type (position) > line.field_count then
-			--return "";
 			raise constraint_error;
 		else
 			return element (line.fields, positive (position));
 		end if;
-	end field;
+	end get_field;
 
 	-- CS: comments	
 	function to_string (line : in type_fields_of_line) return string is
@@ -902,9 +902,9 @@ package body et_string_processing is
 			for i in 1..positive (line.field_count) loop
 				case i is
 					when 1 =>
-						s := to_unbounded_string (trim (field (line, i),both));
+						s := to_unbounded_string (trim (get_field (line, i),both));
 					when others =>
-						s := s & ifs & to_unbounded_string (trim (field (line, i),both));
+						s := s & ifs & to_unbounded_string (trim (get_field (line, i),both));
 				end case;
 			end loop;
 		end if;

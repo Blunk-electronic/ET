@@ -2195,7 +2195,7 @@ package body et_geometry is
 			p : tp;
 			--function dummy return type_polygon_base
 
-			segment	: type_shape;
+			shape : type_shape;
 		begin
 
 			return type_polygon_base (p);

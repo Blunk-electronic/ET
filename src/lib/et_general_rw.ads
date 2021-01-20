@@ -38,16 +38,16 @@
 with ada.characters;			--use ada.characters
 with ada.containers;            use ada.containers;
 
-with et_string_processing;
+with et_string_processing;		use et_string_processing;
 
 package et_general_rw is
 
 	comment_mark : constant string := ("--");
 									  
-	function f (line : in et_string_processing.type_fields_of_line; position : in positive) return string;
+	function f (line : in type_fields_of_line; position : in positive) return string;
 
 	procedure expect_field_count (
-		line			: in et_string_processing.type_fields_of_line;	-- the list of fields of the line
+		line			: in type_fields_of_line;	-- the list of fields of the line
 		count_expected	: in count_type;			-- the min. number of fields to expect
 		warn			: in boolean := true); 		-- warn if too many fields
 
@@ -73,7 +73,7 @@ package et_general_rw is
 	subtype type_tab_depth is natural range natural'first .. 9;
 	tab_depth : type_tab_depth := type_tab_depth'first;
 	
-	tab : character renames et_string_processing.tabulator;
+	tab : character renames tabulator;
 
 	procedure tab_depth_up;
 	procedure tab_depth_down;
