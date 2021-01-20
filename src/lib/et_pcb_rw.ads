@@ -137,20 +137,20 @@ package et_pcb_rw is
 	function to_position ( -- CS combine with next function to_position using the tag test ?
 	-- Returns a type_point_2d in the the layout.
 		line : in et_string_processing.type_fields_of_line; -- "start x 44.5 y 53.5"
-		from : in positive)
+		from : in count_type)
 		return type_point;
 		
 	function to_position (
 	-- Returns a type_position in the layout.
 		line : in et_string_processing.type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
-		from : in positive)
+		from : in count_type)
 		return type_position;
 
 	function position (point : in type_point'class) return string;
 	
 	function to_grid (
 		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
-		from : in positive)
+		from : in count_type)
 		return type_grid;
 
 	-- Issues a warning that the given signal layer is deeper than the deepest

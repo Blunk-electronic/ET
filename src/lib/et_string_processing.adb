@@ -881,12 +881,12 @@ package body et_string_processing is
 	
 	function get_field (
 		line		: in type_fields_of_line;
-		position	: in positive)
+		position	: in count_type)
 		return string 
 	is
 		use type_list_of_strings;
 	begin
-		if count_type (position) > line.field_count then
+		if position > line.field_count then
 			raise constraint_error;
 		else
 			return element (line.fields, positive (position));
@@ -899,12 +899,12 @@ package body et_string_processing is
 		ifs : constant character := latin_1.space;
 	begin
 		if line.field_count > 0 then
-			for i in 1..positive (line.field_count) loop
+			for i in 1 .. line.field_count loop
 				case i is
 					when 1 =>
-						s := to_unbounded_string (trim (get_field (line, i),both));
+						s := to_unbounded_string (trim (get_field (line, i), both));
 					when others =>
-						s := s & ifs & to_unbounded_string (trim (get_field (line, i),both));
+						s := s & ifs & to_unbounded_string (trim (get_field (line, i), both));
 				end case;
 			end loop;
 		end if;

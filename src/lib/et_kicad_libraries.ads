@@ -67,7 +67,9 @@ with et_devices;				use et_devices;
 
 package et_kicad_libraries is
 
-	function f (line : in type_fields_of_line; position : in positive) return string;
+	function f (line : in type_fields_of_line; position : in count_type) return string
+		renames get_field;
+
 
 	
 	-- SYM-LIB-TABLES AND FP-LIB-TABLES ------------------------------------------------------------------------------

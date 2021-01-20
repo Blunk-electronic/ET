@@ -329,18 +329,18 @@ is
 	
 	function to_position (
 		line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
-		from : in positive)
+		from : in count_type)
 		return et_coordinates.type_position
 	is		
 		use et_coordinates;
 		use pac_geometry_sch;
 		
 		point : et_coordinates.type_position; -- to be returned
-		place : positive := from; -- the field being read from given line
+		place : count_type := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
-		while place <= positive (field_count (line)) loop
+		while place <= field_count (line) loop
 
 			-- We expect after "sheet" the sheet number
 			if f (line, place) = keyword_sheet then
@@ -368,17 +368,17 @@ is
 
 	function to_size (
 		line : in type_fields_of_line; -- "size x 30 y 40"
-		from : in positive)
+		from : in count_type)
 		return et_submodules.type_submodule_size 
 	is
 		use et_coordinates.pac_geometry_sch;
 		
 		size : et_submodules.type_submodule_size; -- to be returned
-		place : positive := from; -- the field being read from given line
+		place : count_type := from; -- the field being read from given line
 
 		-- CS: flags to detect missing x or y
 	begin
-		while place <= positive (field_count (line)) loop
+		while place <= field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
@@ -401,18 +401,18 @@ is
 	function to_position (
 	-- Returns a type_package_position in the layout.
 		line : in type_fields_of_line; -- "position x 23 y 0.2 rotation 90.0 face top"
-		from : in positive)
+		from : in count_type)
 		return et_pcb_coordinates.type_package_position
 	is
 		use et_pcb_coordinates;
 		use et_pcb_coordinates.pac_geometry_brd;
 		
 		point : type_package_position; -- to be returned
-		place : positive := from; -- the field being read from given line
+		place : count_type := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
-		while place <= positive (field_count (line)) loop
+		while place <= field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then

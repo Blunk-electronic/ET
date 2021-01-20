@@ -66,7 +66,7 @@ is
 	
 	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	
-	function f (place : in positive) return string is begin
+	function f (place : in count_type) return string is begin
 		return get_field (single_cmd_status.cmd, place);
 	end;
 

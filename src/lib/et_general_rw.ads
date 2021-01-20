@@ -44,7 +44,11 @@ package et_general_rw is
 
 	comment_mark : constant string := ("--");
 									  
-	function f (line : in type_fields_of_line; position : in positive) return string;
+	-- This function returns the string at position in given line:
+	-- It is frequently used when reading lines of files.
+	function f (line : in type_fields_of_line; position : in count_type) 
+		return string renames get_field;
+
 
 	procedure expect_field_count (
 		line			: in type_fields_of_line;	-- the list of fields of the line

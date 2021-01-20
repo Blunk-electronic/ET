@@ -67,19 +67,19 @@ package body et_text is
 
 	function to_alignment (
 		line : in type_fields_of_line; -- "alignment horizontal center vertical center"
-		from : in positive)
+		from : in count_type)
 		return type_text_alignment 
 	is
-		function f (line : in type_fields_of_line; position : in positive) 
+		function f (line : in type_fields_of_line; position : in count_type) 
 			return string renames get_field;
 		
 		alignment : type_text_alignment; -- to be returned
 
-		place : positive := from; -- the field being read from given line
+		place : count_type := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
-		while place <= positive (field_count (line)) loop
+		while place <= field_count (line) loop
 
 			-- We expect after the "horizontal" the horizontal alignment
 			if f (line, place) = keyword_horizontal then

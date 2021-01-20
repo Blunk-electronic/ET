@@ -345,7 +345,7 @@ package body et_scripting is
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 	is
-		function f (place : in positive) return string is begin
+		function f (place : in count_type) return string is begin
 			return get_field (cmd, place);
 		end;
 

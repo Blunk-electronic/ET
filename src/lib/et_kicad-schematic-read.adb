@@ -49,8 +49,8 @@ function read (
 	current_schematic	: in type_hierarchic_sheet_file_name_and_timestamp;
 	sheet_number		: in et_coordinates.type_sheet;
 	log_threshold		: in type_log_level)
-	return type_hierarchic_sheet_file_names_extended is
-
+	return type_hierarchic_sheet_file_names_extended
+is
 	hierarchic_sheet_file_names : type_hierarchic_sheet_file_names_extended; -- list to be returned
 	name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to hierarchic_sheet_file_names
 	
@@ -2812,7 +2812,7 @@ function read (
 			-- Transfer the path segments to alt_ref_path.
 			-- "path" contains a list of strings.
 			-- alt_ref_path is a list of timestamps
-			for place in 1 .. positive (et_string_processing.field_count (path)) loop
+			for place in 1 .. et_string_processing.field_count (path) loop
 
 				-- convert the segment from string to timestamp
 				path_segment := type_timestamp (f (path, place));

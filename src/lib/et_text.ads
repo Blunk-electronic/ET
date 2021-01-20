@@ -71,7 +71,7 @@ package et_text is
 	
 	function to_alignment (
 		line : in type_fields_of_line; -- "alignment horizontal center vertical center"
-		from : in positive)
+		from : in count_type)
 		return type_text_alignment;
 	
 	function to_string (alignment : in type_text_alignment) return string;

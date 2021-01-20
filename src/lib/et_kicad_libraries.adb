@@ -56,9 +56,6 @@ with et_conventions;
 
 package body et_kicad_libraries is
 
-	function f (line : in type_fields_of_line; position : in positive) return string
-		renames get_field;
-	
 	function to_string (meaning : in type_placeholder_meaning) return string is begin
 		return to_lower (type_placeholder_meaning'image (meaning));
 	end;
@@ -1410,10 +1407,10 @@ package body et_kicad_libraries is
 				-- last field : fill style N/F/f no fill/foreground/background
 			
 				-- we start processing the fields from here (where the total number of points is)
-				pos 		: positive := 2; 
+				pos 		: count_type := 2; 
 
 				-- the x position of the last point of the line is here (field #10 in example above)
-				end_point	: positive := positive (field_count (line)) - 2;
+				end_point	: count_type := field_count (line) - 2;
 
 				-- temporarily we store coordinates of a point here
 				point		: type_point;

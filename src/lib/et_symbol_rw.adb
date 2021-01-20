@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -57,15 +57,16 @@ package body et_symbol_rw is
 
 	function to_grid (
 		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
-		from : in positive)
-		return type_grid is
+		from : in count_type)
+		return type_grid 
+	is
 		use et_string_processing;
 		
 		grid : type_grid; -- to be returned
-		place : positive := from; -- the field being read from given line
+		place : count_type := from; -- the field being read from given line
 
 	begin
-		while place <= positive (field_count (line)) loop
+		while place <= field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
@@ -99,17 +100,17 @@ package body et_symbol_rw is
 
 	function to_position (
 		line : in et_string_processing.type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
-		from : in positive)
-		return type_point is
-
+		from : in count_type)
+		return type_point 
+	is
 		use et_string_processing;
 		
 		point : type_point; -- to be returned
-		place : positive := from; -- the field being read from given line
+		place : count_type := from; -- the field being read from given line
 
 		-- CS: flags to detect missing x or y
 	begin
-		while place <= positive (field_count (line)) loop
+		while place <= field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
@@ -807,7 +808,7 @@ package body et_symbol_rw is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
-										symbol_line.start_point := to_position (line,2);
+										symbol_line.start_point := to_position (line, 2);
 										
 									elsif kw = keyword_end then -- end x 0.00 y 0.00
 										expect_field_count (line, 5);

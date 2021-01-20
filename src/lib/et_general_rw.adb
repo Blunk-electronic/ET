@@ -46,12 +46,6 @@ with ada.exceptions;
 
 package body et_general_rw is
 	
-	-- This function returns the string at position in given line:
-	-- It is frequently used when reading lines of files.
-	function f (line : in type_fields_of_line; position : in positive) 
-		return string renames get_field;
-
-	
 	procedure expect_field_count (
 		line			: in type_fields_of_line;	-- the list of fields of the line
 		count_expected	: in count_type;			-- the min. number of fields to expect
@@ -70,7 +64,7 @@ package body et_general_rw is
 		elsif count_found > count_expected then -- more fields than expeced
 			if warn then
 				log (WARNING, affected_line (line) & "excessive parameters after '" &
-					f (line, positive (count_expected)) & "' ignored !");
+					f (line, count_expected) & "' ignored !");
 			end if;
 		end if;
 		

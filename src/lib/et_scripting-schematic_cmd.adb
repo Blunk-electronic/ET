@@ -68,7 +68,7 @@ is
 	-- apply to the current sheet, we use the UNIX-bash-like period character:
 	here : constant string := ".";
 	
-	function f (place : in positive) return string is begin
+	function f (place : in count_type) return string is begin
 		return get_field (single_cmd_status.cmd, place);
 	end;
 

@@ -429,17 +429,17 @@ package body et_pcb_rw is
 	function to_position ( -- CS combine with next function to_position using the tag test ?
 	-- Returns a type_point_2d in the the layout.
 		line : in et_string_processing.type_fields_of_line; -- "start x 44.5 y 53.5"
-		from : in positive)
-		return type_point is
-		
+		from : in count_type)
+		return type_point 
+	is
 		use et_string_processing;
 
 		point : type_point; -- to be returned
-		place : positive := from; -- the field being read from given line
+		place : count_type := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
-		while place <= positive (field_count (line)) loop
+		while place <= field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
@@ -468,17 +468,17 @@ package body et_pcb_rw is
 	function to_position (
 	-- Returns a type_position in the layout.
 		line : in et_string_processing.type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
-		from : in positive)
-		return type_position is
-
+		from : in count_type)
+		return type_position 
+	is
 		use et_string_processing;
 		
 		point : type_position; -- to be returned
-		place : positive := from; -- the field being read from given line
+		place : count_type := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
-		while place <= positive (field_count (line)) loop
+		while place <= field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
@@ -530,16 +530,17 @@ package body et_pcb_rw is
 	
 	function to_grid (
 		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
-		from : in positive)
-		return type_grid is
+		from : in count_type)
+		return type_grid 
+	is
 		use et_string_processing;
 		
 		grid : type_grid; -- to be returned
 
-		place : positive := from; -- the field being read from given line
+		place : count_type := from; -- the field being read from given line
 
 	begin
-		while place <= positive (field_count (line)) loop
+		while place <= field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
@@ -594,7 +595,7 @@ package body et_pcb_rw is
 		cursor 		: type_signal_layers.cursor;
 		inserted	: boolean;
 		layer 		: type_signal_layer;
-		place 		: positive := 2; -- we start reading the layer numbers with field 2
+		place 		: count_type := 2; -- we start reading the layer numbers with field 2
 
 		field_2			: constant string := f (line, 2);
 		field_2_first	: constant positive := field_2'first;
@@ -621,7 +622,7 @@ package body et_pcb_rw is
 			layers.iterate (validate_layer'access);
 			
 		else -- discrete layer ids like "1 4 10"
-			while place <= positive (field_count (line)) loop
+			while place <= field_count (line) loop
 
 				-- get the layer number from current place
 				layer := to_signal_layer (f (line, place));

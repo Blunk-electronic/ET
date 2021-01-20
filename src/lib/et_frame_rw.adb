@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -73,10 +73,10 @@ package body et_frame_rw is
 		use et_geometry; -- for keywords only
 		position : type_position;
 
-		procedure error (p : positive) is begin invalid_keyword (f (line, p)); end;
+		procedure error (p : count_type) is begin invalid_keyword (f (line, p)); end;
 	
 	begin
-		for place in 2 .. 5 loop
+		for place in count_type (2) .. count_type (5) loop
 			case place is
 				when 2 => if f (line, place) /= keyword_x then error (place); end if; -- expect an x
 				when 3 => position.x := to_distance (f (line, place)); -- expect x value

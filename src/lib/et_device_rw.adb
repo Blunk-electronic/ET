@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -304,13 +304,13 @@ package body et_device_rw is
 			unit		: pac_unit_name.bounded_string; -- PWR, IO_BANK_2
 			port		: pac_port_name.bounded_string; -- VCC
 
-			place : positive := 1; -- the field being read from given line
+			place : count_type := 1; -- the field being read from given line
 
 			-- CS: detect missing parameters
 			-- CS: warn about wrong misplaced keywords
 			-- CS: test if terminal, unit and port exist
 		begin
-			while place <= positive (field_count (line)) loop
+			while place <= field_count (line) loop
 			
 				-- We expect the terminal name after the keyword "terminal"
 				if f (line, place) = keyword_terminal then
