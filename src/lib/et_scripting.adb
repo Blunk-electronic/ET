@@ -216,9 +216,8 @@ package body et_scripting is
 	-- when executing a script from inside the GUI:
 	procedure execute_nested_script (
 		file			: in string; -- like "rename_nets.scr"
-		log_threshold	: in et_string_processing.type_log_level) is
-		
-		use et_string_processing;
+		log_threshold	: in type_log_level) 
+	is
 		use ada.directories;
 		use et_canvas_general;
 		use et_canvas_schematic;
@@ -229,7 +228,7 @@ package body et_scripting is
 		file_handle : ada.text_io.file_type;
 
 		-- The command read from the script:
-		cmd : et_string_processing.type_fields_of_line;
+		cmd : type_fields_of_line;
 
 		script_name : pac_script_name.bounded_string := to_script_name (file);
 	begin
@@ -264,7 +263,7 @@ package body et_scripting is
 			-- read the file line by line
 			while not end_of_file loop
 				
-				cmd := et_string_processing.read_line (
+				cmd := read_line (
 					line 			=> get_line,
 					number			=> ada.text_io.line (current_input),
 					comment_mark 	=> comment_mark,
@@ -347,11 +346,11 @@ package body et_scripting is
 		log_threshold	: in type_log_level)
 	is
 		function f (place : in positive) return string is begin
-			return et_string_processing.field (cmd, place);
+			return get_field (cmd, place);
 		end;
 
 		function fields return count_type is begin
-			return et_string_processing.field_count (cmd);
+			return field_count (cmd);
 		end;
 		
 		use et_project;
@@ -554,7 +553,7 @@ package body et_scripting is
 		script_directory : pac_script_name.bounded_string;
 		
 		file_handle : ada.text_io.file_type;
-		line : et_string_processing.type_fields_of_line;
+		line : type_fields_of_line;
 		
 	begin -- execute_script
 		log (text => row_separator_double, level => log_threshold);
@@ -592,7 +591,7 @@ package body et_scripting is
 			-- read the file line by line
 			while not end_of_file loop
 				
-				line := et_string_processing.read_line (
+				line := read_line (
 					line 			=> get_line,
 					number			=> ada.text_io.line (current_input),
 					comment_mark 	=> comment_mark,

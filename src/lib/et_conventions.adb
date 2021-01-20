@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -2695,12 +2695,12 @@ package body et_conventions is
 						-- Build the prefix from field #1:
 						-- Test if prefix is not too long, if it contains only allowed characters.
 						-- We test against the default character set as specified in et_libraries.
-						check_prefix_length (et_string_processing.field (element (line_cursor), 1));
-						prefix := pac_device_prefix.to_bounded_string (et_string_processing.field (element (line_cursor), 1));
+						check_prefix_length (get_field (element (line_cursor), 1));
+						prefix := pac_device_prefix.to_bounded_string (get_field (element (line_cursor), 1));
 						check_prefix_characters (prefix);
 
 						-- build the component category from field #2:
-						cat := to_category (et_string_processing.field (element (line_cursor), 2));
+						cat := to_category (get_field (element (line_cursor), 2));
 						
 						-- insert the prefix assignment in container component_prefixes
 						type_component_prefixes.insert (
@@ -2734,11 +2734,11 @@ package body et_conventions is
 						-- Build the unit abbrevation from field #1:
 						-- Test if abbrevation contains only allowed characters.
 						-- We test against the character set specified for abbrevations of units of measurement.
-						abbrevation := type_unit_abbrevation.to_bounded_string (et_string_processing.field (element (line_cursor), 1));
+						abbrevation := type_unit_abbrevation.to_bounded_string (get_field (element (line_cursor), 1));
 						check_abbrevation_of_unit_characters (abbrevation, unit_abbrevation_characters);
 
 						-- Build the unit of measurement from field #2:
-						unit := to_unit_of_measurement (et_string_processing.field (element (line_cursor), 2));
+						unit := to_unit_of_measurement (get_field (element (line_cursor), 2));
 						
 						-- insert the abbrevation to unit of measurement assignment in container component_units
 						type_units_of_measurement.insert (
@@ -2779,7 +2779,7 @@ package body et_conventions is
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- build the component category from field #1:
-						cat := to_category (et_string_processing.field (element (line_cursor), 1));
+						cat := to_category (get_field (element (line_cursor), 1));
 
 						-- insert the category in container component_categories_with_operator_interaction
 						type_categories_with_operator_interacton.insert (
@@ -2804,31 +2804,31 @@ package body et_conventions is
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- build the text category from field #1:
-						text := to_text (et_string_processing.field (element (line_cursor), 1));
+						text := to_text (get_field (element (line_cursor), 1));
 
 						-- build the text size from field #2. 
 						-- Depending on the text category the string is passed through
 						-- the corresponding text size subtypes for that category:
 						case text is
 							when NET_LABEL =>
-								size := to_net_label_text_size (et_string_processing.field (element (line_cursor), 2));
+								size := to_net_label_text_size (get_field (element (line_cursor), 2));
 
 							when PORT_NAME =>
-								size := to_distance (et_string_processing.field (element (line_cursor), 2));
+								size := to_distance (get_field (element (line_cursor), 2));
 
 							when TERMINAL_NAME =>
-								size := to_distance (et_string_processing.field (element (line_cursor), 2));
+								size := to_distance (get_field (element (line_cursor), 2));
 
 							when COMPONENT_ATTRIBUTE =>
-								size := to_distance (et_string_processing.field (element (line_cursor), 2));
+								size := to_distance (get_field (element (line_cursor), 2));
 
 							when SHEET_NAME => -- CS obsolete
 								null;
--- 								size := et_project.to_sheet_name_text_size (et_string_processing.field (element (line_cursor), 2));
+-- 								size := et_project.to_sheet_name_text_size (get_field (element (line_cursor), 2));
 
 							when et_conventions.FILE_NAME => -- CS obsolete
 								null;
--- 								size := et_project.modules.to_file_name_text_size (et_string_processing.field (element (line_cursor), 2));
+-- 								size := et_project.modules.to_file_name_text_size (get_field (element (line_cursor), 2));
 								
 						end case;
 						
@@ -2856,12 +2856,12 @@ package body et_conventions is
 						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- build the partcode keyword from field #1:
-						check_partcode_keyword_length (et_string_processing.field (element (line_cursor), 1));
-						partcode_keyword := to_partcode_keyword (et_string_processing.field (element (line_cursor), 1));
+						check_partcode_keyword_length (get_field (element (line_cursor), 1));
+						partcode_keyword := to_partcode_keyword (get_field (element (line_cursor), 1));
 						check_partcode_keyword_characters (partcode_keyword);
 
 						-- build the partcode section name from field #2. 
-						partcode_section := to_partcode_section (et_string_processing.field (element (line_cursor), 2));
+						partcode_section := to_partcode_section (get_field (element (line_cursor), 2));
 						
 						-- insert the text category and size in container text_sizes_schematic
 						type_partcode_keywords.insert (
@@ -2934,27 +2934,27 @@ package body et_conventions is
 						-- The PREVIOUS section is then processed with all its lines in container "lines".
 						-- Set section_entered according to the section BEING entered.
 
-						if et_string_processing.field (line, 1) = section_component_prefixes then
+						if get_field (line, 1) = section_component_prefixes then
 							process_previous_section;
 							section_entered := component_prefixes;
 						end if;
 
-						if et_string_processing.field (line, 1) = section_component_units then
+						if get_field (line, 1) = section_component_units then
 							process_previous_section;
 							section_entered := component_units;
 						end if;
 
-						if et_string_processing.field (line, 1) = section_components_with_operator_interaction then
+						if get_field (line, 1) = section_components_with_operator_interaction then
 							process_previous_section;
 							section_entered := components_with_operator_interaction;
 						end if;
 
-						if et_string_processing.field (line, 1) = section_text_sizes_schematic then
+						if get_field (line, 1) = section_text_sizes_schematic then
 							process_previous_section;
 							section_entered := text_sizes_schematic;
 						end if;
 
-						if et_string_processing.field (line, 1) = section_partcode_keywords then
+						if get_field (line, 1) = section_partcode_keywords then
 							process_previous_section;
 							section_entered := partcode_keywords;
 						end if;

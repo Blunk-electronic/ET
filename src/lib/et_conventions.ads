@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -49,7 +49,7 @@ with ada.directories;			use ada.directories;
 with et_coordinates;
 -- with et_import;
 with et_material;
-with et_string_processing;
+with et_string_processing;		use et_string_processing;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_packages;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -66,14 +66,12 @@ package body et_text is
 	end;
 
 	function to_alignment (
-		line : in et_string_processing.type_fields_of_line; -- "alignment horizontal center vertical center"
+		line : in type_fields_of_line; -- "alignment horizontal center vertical center"
 		from : in positive)
-		return type_text_alignment is
-
-		use et_string_processing;
-
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
+		return type_text_alignment 
+	is
+		function f (line : in type_fields_of_line; position : in positive) 
+			return string renames get_field;
 		
 		alignment : type_text_alignment; -- to be returned
 
@@ -142,8 +140,8 @@ package body et_text is
 	function characters_valid (
 		content		: in type_text_content.bounded_string;
 		characters	: in character_set := valid_characters) 
-		return boolean is
-		use et_string_processing;
+		return boolean 
+	is
 		use type_text_content;
 		invalid_character_position : natural := 0;
 	begin
@@ -169,7 +167,6 @@ package body et_text is
 		replace_by	: in character := replace_by_default;
 		characters	: in character_set := valid_characters)
 	is
-		use et_string_processing;
 		use type_text_content;
 		invalid_character_position : natural := 0;
 
@@ -210,7 +207,6 @@ package body et_text is
 	
 	procedure check_text_content_length (content : in string) is
 	-- Tests if the content is longer than allowed.
-		use et_string_processing;
 	begin
 		if content'length > text_length_max then
 			log (ERROR, "max. number of characters for a text field is" 
@@ -234,8 +230,6 @@ package body et_text is
 	
 	package body generic_pac_text is
 
-		use et_string_processing;
-
 		-- With this line uncommented the linker does not output any errors:
 		function to_text_size (size : in pac_geometry.type_distance) return type_text_size is
 
@@ -243,8 +237,6 @@ package body et_text is
 		-- function to_text_size (size : in type_distance) return type_text_size is
 			
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
-			use et_string_processing;
-			
 			function to_string (
 				size		: in type_text_size;
 				preamble	: in boolean := true) return string is
@@ -341,7 +333,6 @@ package body et_text is
 		end;
 		
 		procedure warning_rotation_outside_range is
-			use et_string_processing;
 		begin
 			log (WARNING, "rotation of documentational text invalid. Must be 0 or 90 degrees !");
 		end;

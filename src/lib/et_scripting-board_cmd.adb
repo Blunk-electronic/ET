@@ -67,11 +67,11 @@ is
 	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	
 	function f (place : in positive) return string is begin
-		return et_string_processing.field (single_cmd_status.cmd, place);
+		return get_field (single_cmd_status.cmd, place);
 	end;
 
 	function fields return count_type is begin
-		return et_string_processing.field_count (single_cmd_status.cmd);
+		return field_count (single_cmd_status.cmd);
 	end;
 
 	procedure too_long is begin -- CS use it more often

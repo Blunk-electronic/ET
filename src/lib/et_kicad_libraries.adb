@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -57,7 +57,7 @@ with et_conventions;
 package body et_kicad_libraries is
 
 	function f (line : in type_fields_of_line; position : in positive) return string
-		renames et_string_processing.field;
+		renames get_field;
 	
 	function to_string (meaning : in type_placeholder_meaning) return string is begin
 		return to_lower (type_placeholder_meaning'image (meaning));
@@ -98,10 +98,10 @@ package body et_kicad_libraries is
 	
 	procedure check_prefix_characters (
 		prefix 		: in pac_device_prefix.bounded_string;
-		characters	: in character_set) is
+		characters	: in character_set) 
+	is
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
-		use et_string_processing;
 		use pac_device_prefix;
 		invalid_character_position : natural := 0;
 	begin
@@ -144,9 +144,7 @@ package body et_kicad_libraries is
 		c : character;
 		p : pac_device_prefix.bounded_string;
 	
-		procedure invalid_reference is
-			use et_string_processing;
-		begin
+		procedure invalid_reference is begin
 			log (ERROR, latin_1.lf & "invalid component reference " & enclose_in_quotes (text_in_justified),
 				console => true);
 			
@@ -283,7 +281,6 @@ package body et_kicad_libraries is
 		library			: in et_kicad_general.type_device_library_name.bounded_string; -- ../lib/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
 		is
-		use et_string_processing;
 	begin
 		log (ERROR, "component " & to_string (reference) -- CS: output coordinates
 			& " has no generic model " & to_string (generic_name)
@@ -311,7 +308,6 @@ package body et_kicad_libraries is
 			component	: in type_component_library) is
 
 			use type_units_library;
-			use et_string_processing;
 		begin
 			-- Set the unit cursor to the first unit of the component.
 			unit_cursor := type_units_library.first (component.units);
@@ -347,7 +343,6 @@ package body et_kicad_libraries is
 			unit : in type_unit_library) is
 
 			use type_ports_library;
-			use et_string_processing;
 		begin
 			-- Set the port cursor to the first port of the unit.
 			port_cursor := type_ports_library.first (unit.symbol.ports);
@@ -372,7 +367,6 @@ package body et_kicad_libraries is
 
 	procedure check_datasheet_length (datasheet : in string) is
 	-- Tests if the given datasheet is longer than allowed.
-		use et_string_processing;
 	begin
 		if datasheet'length > component_datasheet_length_max then
 			log (ERROR, "max. number of characters for URL is" 
@@ -387,7 +381,6 @@ package body et_kicad_libraries is
 		characters : in character_set := component_datasheet_characters) is
 	-- Tests if the given URL contains only valid characters as specified
 	-- by given character set. Issues warning if invalid character found.
-		use et_string_processing;
 		use type_component_datasheet;
 		invalid_character_position : natural := 0;
 	begin
@@ -422,7 +415,6 @@ package body et_kicad_libraries is
 	procedure validate_prefix (prefix : in pac_device_prefix.bounded_string) is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
-		use et_string_processing;
 		use pac_device_prefix;
 	begin
 		if et_devices.to_string (prefix) = power_flag_prefix 
@@ -723,14 +715,13 @@ package body et_kicad_libraries is
 	-- example: DEF 74LS00 IC 0 30 Y Y 4 F N
 	-- In a schematic it is defined by a hash sign:
 	-- example: L P3V3 #PWR07
-		return type_appearance is
-		
+		return type_appearance 
+	is		
 		comp_app	: type_appearance;
 		lca			: type_library_component_appearance;
 
-		procedure invalid_appearance is
-		begin
-			log (ERROR, et_string_processing.affected_line (line) 
+		procedure invalid_appearance is begin
+			log (ERROR, affected_line (line) 
 				 & "invalid visibility flag !", console => true);
 			raise constraint_error;
 		end invalid_appearance;	
@@ -846,11 +837,9 @@ package body et_kicad_libraries is
 	procedure check_generic_name_characters (
 	-- Checks if the given generic component name meets certain conventions.
 		name		: in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
-		characters	: in character_set) is
-
-		use et_string_processing;
+		characters	: in character_set) 
+	is
 		invalid_character_position : natural := 0;
-
 	begin
 		-- Test given generic name and get position of possible invalid characters.
 		invalid_character_position := index (
@@ -905,10 +894,8 @@ package body et_kicad_libraries is
 		(name : in et_packages.pac_package_name.bounded_string) is
 	-- Tests if the given component package name meets certain conventions.
 		use et_packages.pac_package_name;
-		use et_string_processing;
 		
-		procedure no_package is
-		begin
+		procedure no_package is begin
 			log (ERROR, "no package associated !", 
 				console => true);
 			raise constraint_error;
@@ -925,8 +912,9 @@ package body et_kicad_libraries is
 	function full_library_name (
 		library_name	: in type_library_name.bounded_string; -- bel_logic
 		package_name 	: in et_packages.pac_package_name.bounded_string; -- S_SO14
-		log_threshold	: in et_string_processing.type_log_level)
-		return type_package_library_name.bounded_string is
+		log_threshold	: in type_log_level)
+		return type_package_library_name.bounded_string 
+	is
 	-- Returns the full library name of the library that
 	-- contains the given package library with the given package.
 		
@@ -1405,7 +1393,7 @@ package body et_kicad_libraries is
 				end if;
 			end to_fill;
 			
-			function to_polyline (line : in et_string_processing.type_fields_of_line) return type_symbol_polyline is
+			function to_polyline (line : in type_fields_of_line) return type_symbol_polyline is
 			-- Returns from the given fields of a line a type_polyline.
 				polyline	: type_symbol_polyline;
 				total		: positive; -- for cross checking 
@@ -1425,7 +1413,7 @@ package body et_kicad_libraries is
 				pos 		: positive := 2; 
 
 				-- the x position of the last point of the line is here (field #10 in example above)
-				end_point	: positive := positive (et_string_processing.field_count (line)) - 2;
+				end_point	: positive := positive (field_count (line)) - 2;
 
 				-- temporarily we store coordinates of a point here
 				point		: type_point;
@@ -1471,7 +1459,7 @@ package body et_kicad_libraries is
 				return polyline;
 			end to_polyline;
 
-			function to_rectangle (line : in et_string_processing.type_fields_of_line) return type_symbol_rectangle is
+			function to_rectangle (line : in type_fields_of_line) return type_symbol_rectangle is
 			-- Returns from the given fields of a line a type_rectangle.
 				rectangle	: type_symbol_rectangle;
 
@@ -1518,7 +1506,7 @@ package body et_kicad_libraries is
 				return rectangle;
 			end to_rectangle;
 
-			function to_circle (line : in et_string_processing.type_fields_of_line) return type_symbol_circle is
+			function to_circle (line : in type_fields_of_line) return type_symbol_circle is
 			-- Returns from the given fields of a circle a type_circle.
 				circle	: type_symbol_circle;
 
@@ -1558,7 +1546,7 @@ package body et_kicad_libraries is
 				return circle;
 			end to_circle;
 
-			function to_arc (line : in et_string_processing.type_fields_of_line) return type_symbol_arc is
+			function to_arc (line : in type_fields_of_line) return type_symbol_arc is
 			-- Returns from the given fields of an arc a type_arc.
 				arc		: type_symbol_arc;
 
@@ -1631,7 +1619,7 @@ package body et_kicad_libraries is
 				return arc;
 			end to_arc;
 	
-			function to_text (line : in et_string_processing.type_fields_of_line) return et_symbols.type_text is
+			function to_text (line : in type_fields_of_line) return et_symbols.type_text is
 			-- Returns from the given fields of a text a type_symbol_text.
 				text : et_symbols.type_text;
 
@@ -1693,7 +1681,7 @@ package body et_kicad_libraries is
 					t : string (1..text_in'length) := text_in; -- copy given text to t
 				begin
 					-- replace tildes in given text by spaces.
-					translate (t, et_string_processing.tilde_to_space'access);
+					translate (t, tilde_to_space'access);
 					return et_text.type_text_content.to_bounded_string (t);
 				end to_content;
 
@@ -1726,7 +1714,7 @@ package body et_kicad_libraries is
 				return text;
 			end to_text;
 
-			function to_port (line : in et_string_processing.type_fields_of_line) return type_port_library is
+			function to_port (line : in type_fields_of_line) return type_port_library is
 			-- Converts the given line to a type_port.
 			
 				port : type_port_library; -- the port being built -> to be returned
@@ -2765,9 +2753,6 @@ package body et_kicad_libraries is
 			-- F1 "GND" 0 -100 50 H V C CNN
 			-- F2 "" 0 0 50 H I C CNN
 			-- F3 "" 0 0 50 H I C CNN
-					
-				use et_string_processing;
-
 			begin -- read_field
 				
 				-- read text fields from a component library (thats why scheamtic => false)
@@ -2921,7 +2906,7 @@ package body et_kicad_libraries is
 			
 			while not end_of_file loop
 
-				-- Store line in variable "line" (see et_string_processing.ads)
+				-- Store line in variable "line" (see ads)
 				-- The schematic library files use comments (#). But only the comments at the begin
 				-- of a line are relevant. Others are to be ignored. Thus test_whole_line is false.
 				line := read_line(
@@ -3259,13 +3244,11 @@ package body et_kicad_libraries is
 		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
 		package_name 		: in et_packages.pac_package_name.bounded_string;	-- S_SO14
-		log_threshold		: in et_string_processing.type_log_level)
-		return pac_package_variant_name.bounded_string is 					-- D
-
+		log_threshold		: in type_log_level)
+		return pac_package_variant_name.bounded_string -- D
+	is
 		library_cursor : type_device_libraries.cursor; -- points to the component library
 		
-		use et_string_processing;
-
 		use et_devices;
 		variant : pac_package_variant_name.bounded_string; -- variant name to be returned
 		
@@ -3461,7 +3444,6 @@ package body et_kicad_libraries is
 	function component_power_flag (cursor : in type_components_library.cursor)
 	-- Returns the component power flag status.
 		return type_power_flag is
-		use et_string_processing;
 	begin
 		-- Only vitual components have the power flag property. 
 		-- For real components the return is always false;
@@ -3510,7 +3492,6 @@ package body et_kicad_libraries is
 		comp_cursor	: type_components_library.cursor := no_element;
 	
 		use type_device_libraries;
-		use et_string_processing;
 
 		procedure locate (
 			library 	: in et_kicad_general.type_device_library_name.bounded_string;
@@ -3548,9 +3529,8 @@ package body et_kicad_libraries is
 
 	procedure write_note_properties (
 		note 			: in type_text;
-		log_threshold	: in et_string_processing.type_log_level := 0) is
+		log_threshold	: in type_log_level := 0) is
 	-- Writes the properties of the given note
-		use et_string_processing;
 		use et_text;
 	begin
 		log (text => "text note" & to_string (

@@ -43,7 +43,7 @@ with ada.containers.indefinite_ordered_maps;
 
 with cairo;
 with et_geometry;				use et_geometry;
-with et_string_processing;
+with et_string_processing;		use et_string_processing;
 
 package et_text is
 
@@ -70,7 +70,7 @@ package et_text is
 	text_alignment_default : constant type_text_alignment := (LEFT, BOTTOM);
 	
 	function to_alignment (
-		line : in et_string_processing.type_fields_of_line; -- "alignment horizontal center vertical center"
+		line : in type_fields_of_line; -- "alignment horizontal center vertical center"
 		from : in positive)
 		return type_text_alignment;
 	

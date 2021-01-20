@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -763,7 +763,7 @@ package et_kicad_libraries is
 
 	procedure write_note_properties (
 		note			: in type_text;
-		log_threshold	: in et_string_processing.type_log_level := 0);
+		log_threshold	: in type_log_level := 0);
 	-- Writes the properties of the given note
 	
 	package type_texts is new doubly_linked_lists (type_text);
@@ -783,7 +783,7 @@ package et_kicad_libraries is
 	function full_library_name (
 		library_name	: in type_library_name.bounded_string; -- bel_logic
 		package_name 	: in et_packages.pac_package_name.bounded_string; -- S_SO14
-		log_threshold	: in et_string_processing.type_log_level)
+		log_threshold	: in type_log_level)
 		return type_package_library_name.bounded_string;
 
 	-- Used when terminal_port_maps are to be used for packages.
