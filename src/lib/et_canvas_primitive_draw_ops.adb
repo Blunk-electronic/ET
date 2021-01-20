@@ -359,6 +359,45 @@ package body pac_draw is
 
 		-- For cairo, en arc must be expressed by start and end arc:
 		arc_temp : type_arc_angles;
+
+		--p : cairo_pattern;
+		s : cairo_surface;
+
+		procedure draw_cutout is begin
+			if cutout.required = YES then
+				--p := pattern_create_rgb (0.0, 0.0, 0.0);
+				set_source_rgb (context.cr, 0.0, 0.0, 0.0);
+				
+				--new_sub_path (context.cr); -- required to suppress an initial line
+
+				-- CS if cutout.shape = circular ..
+				--mask (context.cr, p);
+				s := get_target (context.cr);
+
+				mask_surface (context.cr, s, 0.0, 0.0);
+				
+				--put_line (to_string (cutout.cutout_circular.radius));
+				
+				cairo.arc (
+					context.cr,
+					xc		=> convert_x (cutout.cutout_circular.center.x),
+					yc		=> shift_y (cutout.cutout_circular.center.y, height),
+					radius	=> type_view_coordinate (cutout.cutout_circular.radius),
+
+					-- it must be a full circle starting at 0 degree and ending at 360 degree:
+					angle1	=> 0.0,
+					angle2	=> type_view_coordinate (2 * pi)				
+					);
+
+				fill (context.cr);
+
+				--cairo.set_line_width (context.cr, type_view_coordinate (zero));
+				
+				--stroke (context.cr);
+
+				--cairo.set_line_width (context.cr, line_width_before);
+			end if;
+		end draw_cutout;
 		
 	begin -- draw_polygon
 
@@ -372,6 +411,10 @@ package body pac_draw is
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;
 	-- 			end if;
+
+			--draw_cutout;
+
+			
 
 			-- Iterate segments of given polygon. For each iteration s indicates the
 			-- segment to be drawn. It can be among lines (most likely), among arcs (less likely)
@@ -493,6 +536,8 @@ package body pac_draw is
 			end case;
 
  			stroke (context.cr);
+
+			--draw_cutout;
 			
 		end if;
 	end draw_polygon;
