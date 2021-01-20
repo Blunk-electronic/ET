@@ -2186,6 +2186,23 @@ package body et_geometry is
 				& " radius" & to_string (circle.radius);
 		end to_string;
 
+
+		function to_polygon (
+			segments	: in type_fields_of_line)
+			return type_polygon_base'class
+		is
+			type tp is new type_polygon_base with null record;
+			p : tp;
+			--function dummy return type_polygon_base
+
+			segment	: type_shape;
+		begin
+
+			return type_polygon_base (p);
+		end to_polygon;
+		
+
+		
 		function boundaries (polygon : in type_polygon_base) return type_boundaries is
 			b : type_boundaries; -- to be returned
 

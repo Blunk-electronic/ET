@@ -301,7 +301,8 @@ package et_packages is
 
 	
 	-- POLYGON
-	type type_polygon (fill_style : type_fill_style) is new type_polygon_base with record
+	type type_polygon (fill_style : type_fill_style)
+	is new type_polygon_base with record
 		easing : type_easing;
 		
 		case fill_style is
@@ -311,7 +312,8 @@ package et_packages is
 	end record;
 
 	-- Polygons in conductor layers have a dedicated type for the hatching:
-	type type_conductor_polygon (fill_style : type_fill_style) is new type_polygon_base with record
+	type type_conductor_polygon (fill_style : type_fill_style) 
+	is new type_polygon_base with record
 		easing : type_easing;
 		
 		case fill_style is

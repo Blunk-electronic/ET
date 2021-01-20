@@ -1784,13 +1784,138 @@ is
 		end case;
 
 	end place_via;
+
+
+
+-- ROUTE / TRACK / POLYGON
 	
+	type type_track_shape is (LINE, ARC, POLYGON);
 	-- CS circular tracks are currently not supported
-	subtype type_track_shape is type_shape range LINE..ARC;
+
+	procedure route_freetrack is
+		shape : type_track_shape := type_track_shape'value (f (6));
+
+		procedure make_polygon is
+			ps : et_pcb.type_conductor_polygon_floating_solid;
+			--ph : et_pcb.type_conductor_polygon_floating_hatched;
+			--ph : et_pcb.type_conductor_polygon_hatched (THERMAL);
+
+			-- Extract from the given command the polygon arguments (everything after width 0.25):
+			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 7);
+		begin
+			ps.width_min := to_distance (f (7));
+			
+			-- Build the polygon from the arguments:
+			ps := et_pcb.type_conductor_polygon_floating_solid (to_polygon (arguments));
+
+			-- Assign properties:
+			--ps.isolaton
+			--ps.layer
+			--ps.priority_level
+		end make_polygon;
+		
+	begin -- route_freetrack
+		case shape is
+			when LINE =>
+				case fields is
+					when 11 =>
+						-- draw a freetrack
+						draw_track_line (
+							module_name 	=> module,
+							net_name		=> to_net_name (""),
+							line	=> (
+								width		=> to_distance (f (7)),
+								start_point	=> type_point (set (
+									x => to_distance (f (8)),
+									y => to_distance (f (9)))),
+								end_point	=> type_point (set (
+									x => to_distance (f (10)),
+									y => to_distance (f (11)))),
+								layer		=> to_signal_layer (f (5))
+								),
+							log_threshold	=> log_threshold + 1
+							);
+
+					when 12 .. count_type'last =>
+						command_too_long (single_cmd_status.cmd, fields - 1);
+						
+					when others =>
+						command_incomplete;
+				end case;
+				
+			when ARC =>
+				case fields is
+					when 14 =>
+						-- draw a freetrack
+						draw_track_arc (
+							module_name 	=> module,
+							arc			=> (
+								layer			=> to_signal_layer (f (5)),
+								width			=> to_distance (f (7)),
+								center			=> type_point (set (
+									x => to_distance (f (8)),
+									y => to_distance (f (9)))),
+								start_point		=> type_point (set (
+									x => to_distance (f (10)),
+									y => to_distance (f (11)))),
+								end_point		=> type_point (set (
+									x => to_distance (f (12)),
+									y => to_distance (f (13)))),
+								direction	=> to_direction (f (14))
+									),
+							net_name		=> to_net_name (""),
+
+							log_threshold	=> log_threshold + 1
+							);
+						
+					when 15 .. count_type'last =>
+						command_too_long (single_cmd_status.cmd, fields - 1);
+						
+					when others =>
+						command_incomplete;
+				end case;
+
+			when POLYGON =>
+				case fields is
+					-- The polygon command is very long. The following example spreads across
+					-- several lines:
+					--  board led_driver route freetrack 1 polygon 0.25 /
+					--  line 0 0 100 0 /
+					--  line 100 0 100 100 / 
+					--  arc 50 100 100 100 0 100 ccw / 
+					--  line 0 100 0 0
+					when 6 .. count_type'last =>
+						make_polygon;
+
+					when others =>
+						command_incomplete;
+				end case;
+			end case;
+	end route_freetrack;
 	
 	procedure route_net is 
 		use et_terminals;
-		shape : type_track_shape := to_shape (f (7));
+		shape : type_track_shape := type_track_shape'value (f (7));
+
+		procedure make_polygon is
+			ps : et_pcb.type_conductor_polygon_solid (THERMAL);
+			--ph : et_pcb.type_conductor_polygon_hatched (THERMAL);
+
+			-- Extract from the given command the polygon arguments (everything after width 0.25):
+			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 8);
+		begin
+			ps.width_min := to_distance (f (8));
+
+			-- Build the polygon from the arguments:
+			ps := et_pcb.type_conductor_polygon_solid (to_polygon (arguments));
+
+			-- Assign properties:
+			--ps.isolaton
+			--ps.layer
+			--ps.priority_level
+			--ps.thermal / ps.technology
+		end make_polygon;
+
 	begin
 		case shape is
 			when LINE =>
@@ -1989,9 +2114,27 @@ is
 						command_incomplete;
 				end case;
 
+			when POLYGON =>
+				case fields is
+					-- The polygon command is very long. The following example spreads across
+					-- several lines:
+					--  board led_driver route net RESET_N 1 polygon 0.25 /
+					--  line 0 0 100 0 /
+					--  line 100 0 100 100 / 
+					--  arc 50 100 100 100 0 100 ccw / 
+					--  line 0 100 0 0
+					when 7 .. count_type'last =>
+						make_polygon;
+
+					when others =>
+						command_incomplete;
+				end case;
+				
 		end case;
 	end route_net;
 
+
+	
 	procedure add_layer is
 		use et_pcb_stack;
 		layer : type_layer;
@@ -2615,71 +2758,7 @@ is
 			when VERB_ROUTE =>
 				case noun is
 					when NOUN_FREETRACK =>
-						declare
-							shape : type_track_shape := to_shape (f (6));
-						begin
-							case shape is
-								when LINE =>
-									case fields is
-										when 11 =>
-											-- draw a freetrack
-											draw_track_line (
-												module_name 	=> module,
-												net_name		=> to_net_name (""),
-												line	=> (
-													width		=> to_distance (f (7)),
-													start_point	=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-													end_point	=> type_point (set (
-														x => to_distance (f (10)),
-														y => to_distance (f (11)))),
-													layer		=> to_signal_layer (f (5))
-													),
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 12 .. count_type'last =>
-											command_too_long (single_cmd_status.cmd, fields - 1);
-											
-										when others =>
-											command_incomplete;
-									end case;
-									
-								when ARC =>
-									case fields is
-										when 14 =>
-											-- draw a freetrack
-											draw_track_arc (
-												module_name 	=> module,
-												arc			=> (
-													layer			=> to_signal_layer (f (5)),
-													width			=> to_distance (f (7)),
-													center			=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-													start_point		=> type_point (set (
-														x => to_distance (f (10)),
-														y => to_distance (f (11)))),
-													end_point		=> type_point (set (
-														x => to_distance (f (12)),
-														y => to_distance (f (13)))),
-													direction	=> to_direction (f (14))
-														),
-												net_name		=> to_net_name (""),
-
-												log_threshold	=> log_threshold + 1
-												);
-											
-										when 15 .. count_type'last =>
-											command_too_long (single_cmd_status.cmd, fields - 1);
-											
-										when others =>
-											command_incomplete;
-									end case;
-
-							end case;
-						end;
+						route_freetrack;
 
 					when NOUN_NET =>
 						route_net;

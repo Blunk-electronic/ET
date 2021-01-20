@@ -692,6 +692,13 @@ board led_driver route net reset_n 1 line 0.25 IC1 H7 to x 5
 board led_driver width net reset_n 1 12 10 1.2 # layer 1, segment in layer 1, crossing 12/10, new width 1.2
 ```-->
 
+#### Polygons / Fill Zones
+```
+board led_driver route net reset_n 1 poly 0.25 line 0 0 100 0 line 100 0 100 100 
+arc 50 100 100 100 0 100 ccw line 0 100 0 0
+```
+
+
 ##### Via Restring
 Set the inner/outer resting width of vias.
 ```
@@ -758,9 +765,6 @@ board led_driver ripup net # everything in all nets
 CS board led_driver ripup net reset_n arc last-->
 
 
-<!--```
-board led_driver place via 10 10 0.25 5-9 reset_n # pos. 10/10, diameter 0.25, layers 5-9, net_name reset_n
-```-->
 <!--```
 board led_driver move via 10 10 5-9 relative 1 0
 ```
