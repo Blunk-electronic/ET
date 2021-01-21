@@ -669,7 +669,7 @@ package body et_pcb_rw is
 		l : type_polygon_line := (pac_shapes.type_line (line) with others => <>);
 	begin
 		-- Use the current total of segments as id for the current segment:
-		l.id := get_segments_total (polygon);
+		l.id := get_segments_total (polygon) + 1;
 		
 		--append (polygon.segments.lines, l);
 		append_segment_line (polygon, l);
@@ -687,7 +687,7 @@ package body et_pcb_rw is
 		a : type_polygon_arc := (pac_shapes.type_arc (arc) with others => <>);
 	begin
 		-- Use the current total of segments as id for the current segment:
-		a.id := get_segments_total (polygon);
+		a.id := get_segments_total (polygon) + 1;
 
 		append_segment_arc (polygon, a);
 
@@ -704,7 +704,7 @@ package body et_pcb_rw is
 		c : type_polygon_circle := (pac_shapes.type_circle (circle) with others => <>);
 	begin
 		-- Use the current total of segments as id for the current segment:
-		c.id := get_segments_total (polygon);
+		c.id := get_segments_total (polygon) + 1;
 		
 		append_segment_circle (polygon, c);
 

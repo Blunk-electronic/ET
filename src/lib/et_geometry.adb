@@ -2229,7 +2229,23 @@ package body et_geometry is
 			polygon.segments := (others => <>);
 			polygon.segments.lines := lines;
 		end load_lines;
-			
+
+		procedure load_circles (
+			polygon		: in out type_polygon_base'class;
+			circles		: in pac_polygon_circles.list)
+		is
+			use pac_polygon_circles;
+			c : constant count_type := length (circles);
+		begin
+			-- set the total number of segments:
+			polygon.segments_total := type_polygon_segment_count (c);
+
+			-- Clear existing segments and 
+			-- assign the given list of circles:
+			polygon.segments := (others => <>);
+			polygon.segments.circles := circles;
+		end load_circles;
+		
 		procedure load_segments (
 			polygon		: in out type_polygon_base'class;
 			segments	: in type_polygon_segments)
@@ -2255,13 +2271,6 @@ package body et_geometry is
 
 		end load_segments;
 
-		function get_empty_polygon return type_polygon_base'class is
-			type poly is new type_polygon_base with null record;
-			p : poly;
-		begin
-			return type_polygon_base (p);
-		end get_empty_polygon;
-		
 		procedure delete_segments (polygon : in out type_polygon_base) 
 		is begin
 			polygon.segments := (others => <>);

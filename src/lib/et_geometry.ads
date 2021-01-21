@@ -898,6 +898,13 @@ package et_geometry is
 		procedure load_lines (
 			polygon		: in out type_polygon_base'class;
 			lines		: in pac_polygon_lines.list);
+
+		-- Loads the given circles into given polygon.
+		-- NOTE: Overwrites already existing segments in the polygon.
+		procedure load_circles (
+			polygon		: in out type_polygon_base'class;
+			circles		: in pac_polygon_circles.list);
+
 		
 		-- Loads the given segments into given polygon.
 		-- NOTE: Overwrites already existing segments in the polygon.
@@ -907,8 +914,6 @@ package et_geometry is
 		
 		procedure delete_segments (polygon : in out type_polygon_base);
 
-		function get_empty_polygon return type_polygon_base'class;
-		
 		function get_segments (polygon : in type_polygon_base) 
 			return type_polygon_segments;
 

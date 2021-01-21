@@ -107,8 +107,9 @@ package et_terminals is
 		millings 		: in type_plated_millings;
 		log_threshold	: in et_string_processing.type_log_level);
 
-	plated_millings_default : constant type_plated_millings := type_plated_millings (get_empty_polygon);
-
+	plated_millings_default : type_plated_millings;
+	-- CS this variable should never be changed.
+	-- Find a way to make it a constant.
 
 	
 	-- The solder paste status is for compatibility with other CAE systems

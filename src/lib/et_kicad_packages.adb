@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -101,14 +101,15 @@ package body et_kicad_packages is
 		offset		: in type_point)	-- the offset of the pad from the center
 		return type_pad_outline 
 	is
-		use pac_polygon_circles;
-		circle : type_polygon_circle;
 		shape : type_pad_outline; -- to be returned
+		c : type_polygon_circle;
 	begin
-		circle.center := type_point (position);
-		circle.radius := diameter / 2.0;
-		move_by (circle.center, offset);
-		append (shape.segments.circles, circle);
+		c.center := type_point (position);
+		c.radius := diameter / 2.0;
+		move_by (c.center, offset);
+
+		c.id := 1;
+		shape.append_segment_circle (c);
 		
 		return shape;
 	end to_pad_shape_circle;
@@ -123,7 +124,6 @@ package body et_kicad_packages is
 		offset		: in type_point)	-- the offset of the pad from the center
 		return type_pad_outline 
 	is
-		use pac_polygon_lines;
 		use et_pcb_coordinates;
 		use pac_geometry_brd;
 
@@ -191,11 +191,10 @@ package body et_kicad_packages is
 		line_3.id := 4;
 		
 		-- build shape
-		shape.segments_total := 4; -- altogther we have 4 segments
-		shape.segments.lines.append (line_1);
-		shape.segments.lines.append (line_4);
-		shape.segments.lines.append (line_2);
-		shape.segments.lines.append (line_3);
+		shape.append_segment_line (line_1);
+		shape.append_segment_line (line_4);
+		shape.append_segment_line (line_2);
+		shape.append_segment_line (line_3);
 		
 		return shape;
 	end to_pad_shape_rectangle;
@@ -209,8 +208,6 @@ package body et_kicad_packages is
 		offset	: in type_point)			-- the offset of the pad from the center
 		return type_pad_outline 
 	is
-		use pac_polygon_lines;
-		use pac_polygon_arcs;		
 		use et_pcb_coordinates;
 		use pac_geometry_brd;
 
@@ -298,11 +295,10 @@ package body et_kicad_packages is
 		arc_1.id := 4;
 		
 		-- build shape
-		shape.segments_total := 4;  -- altogther we have 4 segments
-		shape.segments.lines.append (line_1);
-		shape.segments.arcs.append (arc_2);
-		shape.segments.lines.append (line_2);
-		shape.segments.arcs.append (arc_1);
+		shape.append_segment_line (line_1);
+		shape.append_segment_arc (arc_2);
+		shape.append_segment_line (line_2);
+		shape.append_segment_arc (arc_1);
 		
 		return shape;
 	end to_pad_shape_oval;
@@ -1952,15 +1948,21 @@ package body et_kicad_packages is
 
 						when OVAL => -- a milled hole
 							declare
+								-- KiCad does not allow arcs or circles for plated millings.
+								-- So we have only lines and nothing else.
 								lines : pac_polygon_lines.list := to_pad_milling_contour (
-													center	=> terminal_position,
-													size_x	=> terminal_milling_size_x,
-													size_y	=> terminal_milling_size_y,
-													offset	=> terminal_pad_drill_offset);
+											center	=> terminal_position,
+											size_x	=> terminal_milling_size_x,
+											size_y	=> terminal_milling_size_y,
+											offset	=> terminal_pad_drill_offset);
 
-								use pac_polygon_lines;
-								total : type_polygon_segment_id := type_polygon_segment_id (length (lines));
+								segments : type_polygon_segments;
+								millings : type_plated_millings;
+								
 							begin
+								segments.lines := lines;
+								load_segments (millings, segments);
+
 								terminals.insert (
 									key 		=> terminal_name,
 									position	=> terminal_cursor,
@@ -1987,11 +1989,7 @@ package body et_kicad_packages is
 										width_inner_layers	=> terminal_copper_width_inner_layers,
 
 										-- The plated millings of the hole is a list of lines.
-										millings => (
-											segments => (lines, others	=> <>),
-											-- KiCad does not allow arcs or circles for plated millings.
-											-- So we have only lines and nothing else.
-											segments_total => total)
+										millings => millings
 									));
 							end;
 					end case;

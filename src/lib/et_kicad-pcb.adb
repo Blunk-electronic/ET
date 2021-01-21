@@ -3874,10 +3874,10 @@ package body et_kicad.pcb is
 								-- KiCad does not allow arcs or circles for plated millings.
 								-- So we have only lines and nothing else.
 								lines : pac_polygon_lines.list := to_pad_milling_contour (
-													center	=> terminal_position,
-													size_x	=> terminal_milling_size_x,
-													size_y	=> terminal_milling_size_y,
-													offset	=> terminal_pad_drill_offset);
+											center	=> terminal_position,
+											size_x	=> terminal_milling_size_x,
+											size_y	=> terminal_milling_size_y,
+											offset	=> terminal_pad_drill_offset);
 
 								segments : type_polygon_segments;
 								millings : type_plated_millings;
@@ -5262,39 +5262,37 @@ package body et_kicad.pcb is
 
 				end transfer_net_classes;
 
+				-- Transfers floating polygons (their net_id is zero) to the schematic 
+				-- module (selector "board.conductors.polygons").
 				procedure transfer_floating_polygons is
-				-- Transfers floating polygons (their net_id is zero) to the schematic module (selector "board.conductors.polygons").
 					use type_polygons;
 					polygon_cursor : type_polygons.cursor := board.polygons.first;
+
+					p : et_pcb.type_conductor_polygon_floating_solid;
 				begin
 					-- search polygons with a net_id of zero:
 					while polygon_cursor /= type_polygons.no_element loop
 						if element (polygon_cursor).net_id = type_net_id'first then
-						-- Transfer kicad polygon to et polygon:
+							-- Transfer kicad polygon to et polygon:
 
 							-- These properites of kicad polygons are discarded as there is no need for them:
 							-- net_id, timestamp, hatch_style, hatch_width, filled, fill_mode_segment, arc_segments
+
+							-- convert the polygon corner point to a list of lines:
+							load_lines (p, corners_to_lines (element (polygon_cursor).corners));
+
+							-- set the minimal line width:
+							p.width_min	:= element (polygon_cursor).min_thickness;
+
+							-- Translate the kicad layer id to the ET signal layer:
+							-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
+							-- The bottom layer in kicad is always number 31. Top layer is number 0.
+							-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
+							p.layer := et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1);
+
+							-- CS set other properties like isolation and priority_level
 							
-							module.board.conductors.polygons.solid.append (
-								new_item => (
-
-									-- convert the polygon corner point to a list of lines:
-									segments	=> (
-												lines => corners_to_lines (element (polygon_cursor).corners),
-												others => <>),
-												
-									fill_style	=> et_packages.SOLID,
-									width_min	=> element (polygon_cursor).min_thickness,
-
-									-- Translate the kicad layer id to the ET signal layer:
-									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
-									-- The bottom layer in kicad is always number 31. Top layer is number 0.
-									-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-									layer 		=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1),
-
-									-- CS
-									others => <>
-								));
+							module.board.conductors.polygons.solid.append (p);
 
 							floating_copper_polygon_properties (module.board.conductors.polygons.solid.last, log_threshold + 2);
 							log (WARNING, "polygon is not connected with any net !", level => log_threshold + 2);
@@ -5539,8 +5537,8 @@ package body et_kicad.pcb is
 	function terminal_count (
 	-- Returns the number of terminals of the given package in the given library.
 		packge : in type_package_library_name.bounded_string) -- ../lbr/bel_ic.pretty/S_SO14
-		return et_devices.type_terminal_count is
-
+		return et_devices.type_terminal_count 
+	is
 		library_name : type_package_library_name.bounded_string;
 		package_name : et_packages.pac_package_name.bounded_string;
 		
