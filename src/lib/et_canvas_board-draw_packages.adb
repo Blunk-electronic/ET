@@ -2580,7 +2580,7 @@ is
 				
 				tht_hole		: in type_terminal_tht_hole := DRILLED; -- drilled/milled
 				drill_size		: in type_drill_size_tht := type_drill_size_tht'first;
-				millings		: in type_plated_millings := (others => <>)
+				millings		: in type_plated_millings := plated_millings_default
 				)
 			is
 				pad_outline : type_pad_outline := pad_outline_in;

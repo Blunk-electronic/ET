@@ -51,7 +51,8 @@ with et_design_rules;			use et_design_rules;
 
 package et_pcb_rw is
 
-	use et_pcb_coordinates.pac_geometry_brd;
+	use pac_geometry_brd;
+	use pac_shapes;
 	
 	section_board				: constant string	:= "[BOARD";
 	section_top					: constant string	:= "[TOP";
@@ -231,23 +232,19 @@ package et_pcb_rw is
 	board_easing : et_packages.type_easing;
 
 	
-	type type_polygon is new pac_shapes.type_polygon_base with null record;
-
+	type type_board_polygon is new pac_shapes.type_polygon_base with null record;
+	
+	
 	procedure check_outline (
-		polygon			: in type_polygon;
+		polygon			: in type_board_polygon;
 		log_threshold	: in et_string_processing.type_log_level);
 	-- Ensures that the polygon outline is properly closed. Issues a warning
 	-- if it detects gaps.
 
-	polygon : type_polygon;
+
+	-- A temporarily storage place when reading a polygon:
+	polygon : type_board_polygon;
 	
-	-- Increments polygon.segments_total by 1:
-	procedure increment_segment_count;
-
-	-- Returns the total number of segments of polygon:
-	function segment_count return pac_shapes.type_polygon_segment_count;
-
-
 	
 	polygon_isolation : type_track_clearance := type_track_clearance'first;
 	polygon_width_min : type_track_width := type_track_width'first;

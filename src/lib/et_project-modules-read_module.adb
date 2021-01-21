@@ -3127,6 +3127,8 @@ is
 			-- Depending on the layer and the side of the board (face) the polygon
 			-- is now assigned to the board where it belongs to.
 
+				use et_board_shapes_and_text.pac_shapes;
+				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module)
@@ -3212,18 +3214,24 @@ is
 						end case;
 					end;
 
-					procedure append_keepout_polygon_top is begin
+					procedure append_keepout_polygon_top is 
+						kp : pac_shapes.type_polygon;
+					begin
+						kp := pac_shapes.type_polygon (to_fillable_polygon (polygon, board_filled));
+						
 						pac_keepout_polygons.append (
 							container	=> module.board.keepout.top.polygons, 
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with
-											filled	=> board_filled));
+							new_item	=> kp);
 					end;
 
-					procedure append_keepout_polygon_bottom is begin
+					procedure append_keepout_polygon_bottom is
+						kp : pac_shapes.type_polygon;
+					begin
+						kp := pac_shapes.type_polygon (to_fillable_polygon (polygon, board_filled));
+
 						pac_keepout_polygons.append (
 							container	=> module.board.keepout.bottom.polygons, 
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with
-											filled	=> board_filled));
+							new_item	=> kp);
 					end;
 
 					procedure append_stencil_polygon_top is begin
@@ -3769,20 +3777,22 @@ is
 			end insert_circle_route_restrict;
 
 			procedure insert_polygon_route_restrict is
-				use et_board_shapes_and_text;
-				use et_packages;
+				use et_board_shapes_and_text.pac_shapes;
+				use et_packages.pac_route_restrict_polygons;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
+					module		: in out et_schematic.type_module) 
+				is
+					p : type_polygon;
 				begin
-					pac_route_restrict_polygons.append (
+					p := type_polygon (to_fillable_polygon (polygon, board_filled));
+
+					append (
 						container	=> module.board.route_restrict.polygons,
-						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
-										filled	=> board_filled,
-										layers	=> signal_layers));
+						new_item	=> (p with signal_layers));
 				end do_it;
 									
 			begin -- insert_polygon_route_restrict
@@ -3880,20 +3890,22 @@ is
 			end insert_circle_via_restrict;
 
 			procedure insert_polygon_via_restrict is
-				use et_board_shapes_and_text;
-				use et_packages;
+				use et_board_shapes_and_text.pac_shapes;
+				use et_packages.pac_via_restrict_polygons;
 				use et_pcb_stack;
 				use type_signal_layers;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
+					module		: in out et_schematic.type_module) 
+				is
+					p : type_polygon;
 				begin
-					pac_via_restrict_polygons.append (
+					p := type_polygon (to_fillable_polygon (polygon, board_filled));
+					
+					append (
 						container	=> module.board.via_restrict.polygons,
-						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
-										filled	=> board_filled,
-										layers	=> signal_layers));
+						new_item	=> (p with signal_layers));
 				end do_it;
 									
 			begin -- insert_polygon_via_restrict
@@ -4372,7 +4384,7 @@ is
 					procedure connection_thermal is
 						p : et_pcb.type_conductor_polygon_solid (connection => et_pcb.THERMAL);
 					begin
-						p.segments := polygon.segments;
+						load_segments (p, get_segments (polygon));
 						
 						p.easing := board_easing;
 						
@@ -4391,7 +4403,7 @@ is
 					procedure connection_solid is
 						p : et_pcb.type_conductor_polygon_solid (connection => et_pcb.SOLID);
 					begin
-						p.segments := polygon.segments;
+						load_segments (p, get_segments (polygon));
 						
 						p.easing := board_easing;
 						
@@ -4422,7 +4434,7 @@ is
 					procedure connection_thermal is
 						p : et_pcb.type_conductor_polygon_hatched (connection => et_pcb.THERMAL);
 					begin
-						p.segments := polygon.segments;
+						load_segments (p, get_segments (polygon));
 						
 						p.easing := board_easing;
 						
@@ -4441,7 +4453,7 @@ is
 					procedure connection_solid is
 						p : et_pcb.type_conductor_polygon_hatched (connection => et_pcb.SOLID);
 					begin
-						p.segments := polygon.segments;
+						load_segments (p, get_segments (polygon));
 						
 						p.easing := board_easing;
 						

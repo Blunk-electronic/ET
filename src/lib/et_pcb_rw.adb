@@ -284,7 +284,6 @@ package body et_pcb_rw is
 
 	
 	procedure write_polygon_segments (polygon : in pac_shapes.type_polygon_base) is
-		use pac_shapes;
 		use pac_shapes.pac_polygon_lines;
 		use pac_shapes.pac_polygon_arcs;
 		use pac_shapes.pac_polygon_circles;		
@@ -293,7 +292,7 @@ package body et_pcb_rw is
 		-- and return a cursor to the segment if it exists. Otherwise they return no_element:
 		
 		function get_line (segment : in type_polygon_segment_id) return pac_polygon_lines.cursor is 
-			c : pac_polygon_lines.cursor := polygon.segments.lines.first;
+			c : pac_polygon_lines.cursor := get_segments (polygon).lines.first;
 			found : boolean := false;
 
 			procedure query_line (l : in type_polygon_line) is begin
@@ -315,7 +314,7 @@ package body et_pcb_rw is
 		end get_line;
 		
 		function get_arc (segment : in type_polygon_segment_id) return pac_polygon_arcs.cursor is 
-			c : pac_polygon_arcs.cursor := polygon.segments.arcs.first;
+			c : pac_polygon_arcs.cursor := get_segments (polygon).arcs.first;
 			found : boolean := false;
 
 			procedure query_arc (l : in type_polygon_arc) is begin
@@ -337,7 +336,7 @@ package body et_pcb_rw is
 		end get_arc;
 		
 		function get_circle (segment : in type_polygon_segment_id) return pac_polygon_circles.cursor is 
-			c : pac_polygon_circles.cursor := polygon.segments.circles.first;
+			c : pac_polygon_circles.cursor := get_segments (polygon).circles.first;
 			found : boolean := false;
 
 			procedure query_circle (l : in type_polygon_circle) is begin
@@ -391,7 +390,7 @@ package body et_pcb_rw is
 		-- and among circles (least likely). The functions get_line, get_arc and get_circle
 		-- return a cursor to the segment if it is among lines, arcs or circles.
 		-- Otherwise get_line, get_arc or get_circle return no_element.
-		for s in type_polygon_segment_id'first .. polygon.segments_total loop
+		for s in type_polygon_segment_id'first .. get_segments_total (polygon) loop
 
 			-- Search the segment among the lines:
 			cl := get_line (s);
@@ -664,21 +663,16 @@ package body et_pcb_rw is
 -- BASIC GEOMETRIC OBJECTS USED IN PACKAGES AND BOARDS
 
 	procedure add_polygon_line (line : in out type_board_line) is
-		use pac_shapes;
 		use pac_shapes.pac_polygon_lines;
 
 		-- make a polygon line:
 		l : type_polygon_line := (pac_shapes.type_line (line) with others => <>);
 	begin
-		-- For each segment of the polygon we add 1 to the total number of polygon segments:
-		increment_segment_count;
-		
-		-- Collect the polygon line. 
-
 		-- Use the current total of segments as id for the current segment:
-		l.id := segment_count;
+		l.id := get_segments_total (polygon);
 		
-		append (polygon.segments.lines, l);
+		--append (polygon.segments.lines, l);
+		append_segment_line (polygon, l);
 
 		board_reset_line;
 	end;
@@ -687,21 +681,15 @@ package body et_pcb_rw is
 
 	
 	procedure add_polygon_arc (arc : in out type_board_arc) is
-		use pac_shapes;
 		use pac_shapes.pac_polygon_arcs;
 
 		-- make a polygon arc:
 		a : type_polygon_arc := (pac_shapes.type_arc (arc) with others => <>);
 	begin
-		-- For each segment of the polygon we add 1 to the total number of polygon segments:
-		increment_segment_count;
-
-		-- collect the polygon arc 
-
 		-- Use the current total of segments as id for the current segment:
-		a.id := segment_count;
+		a.id := get_segments_total (polygon);
 
-		append (polygon.segments.arcs, a);
+		append_segment_arc (polygon, a);
 
 		board_reset_arc;
 	end;
@@ -710,21 +698,15 @@ package body et_pcb_rw is
 
 
 	procedure add_polygon_circle (circle : in out type_board_circle) is
-		use pac_shapes;
 		use pac_shapes.pac_polygon_circles;
 
 		-- make a polygon circle:
 		c : type_polygon_circle := (pac_shapes.type_circle (circle) with others => <>);
 	begin
-		-- For each segment of the polygon we add 1 to the total number of polygon segments:
-		increment_segment_count;
-
-		-- collect the polygon circle 
-
 		-- Use the current total of segments as id for the current segment:
-		c.id := segment_count;
+		c.id := get_segments_total (polygon);
 		
-		append (polygon.segments.circles, c);
+		append_segment_circle (polygon, c);
 
 		board_reset_circle;
 	end;
@@ -907,10 +889,10 @@ package body et_pcb_rw is
 
 
 	procedure check_outline (
-		polygon			: in type_polygon;
-		log_threshold	: in et_string_processing.type_log_level) is
+		polygon			: in type_board_polygon;
+		log_threshold	: in et_string_processing.type_log_level) 
+	is
 		use et_string_processing;
-		use pac_shapes;
 		status : constant type_polygon_status := is_closed (polygon);
 	begin
 		log (text => "checking polygon outline ...", level => log_threshold);
@@ -926,15 +908,6 @@ package body et_pcb_rw is
 		log_indentation_down;
 	end check_outline;
 	
-	procedure increment_segment_count is 
-		use pac_shapes;
-	begin
-		polygon.segments_total := polygon.segments_total + 1;
-	end increment_segment_count;
-
-	function segment_count return pac_shapes.type_polygon_segment_count is begin
-		return polygon.segments_total;
-	end segment_count;
 
 	
 	
@@ -957,9 +930,7 @@ package body et_pcb_rw is
 	end;
 
 	-- package and board relevant:	
-	procedure board_reset_circle_fillable is 
-		use pac_shapes;
-	begin 
+	procedure board_reset_circle_fillable is begin 
 		board_circle		:= (others => <>);
 		board_filled		:= type_filled'first;
 		board_fill_style	:= fill_style_default;
@@ -1047,8 +1018,8 @@ package body et_pcb_rw is
 	-- Some properties have no meaning in packages as remarked below.
 		use et_pcb_stack;
 	begin
-		polygon				:= (others => <>);
-
+		delete_segments (polygon);
+		
 		board_filled		:= filled_default;
 		board_fill_style	:= fill_style_default;
 		board_hatching		:= (others => <>);
@@ -1222,7 +1193,7 @@ package body et_pcb_rw is
 		use pac_keepout_polygons;
 	begin
 		fill_zone_begin;
-		write_fill_status (element (cursor).filled);
+		write_fill_status (pac_shapes.get_fill_status (element (cursor)));
 
 		contours_begin;
 		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
@@ -1390,7 +1361,7 @@ package body et_pcb_rw is
 		use pac_route_restrict_polygons;
 	begin
 		fill_zone_begin;
-		write_fill_status (element (cursor).filled);
+		write_fill_status (get_fill_status (element (cursor)));
 		write_signal_layers (element (cursor).layers);
 
 		contours_begin;
@@ -1450,7 +1421,7 @@ package body et_pcb_rw is
 		use pac_via_restrict_polygons;
 	begin
 		fill_zone_begin;
-		write_fill_status (element (cursor).filled);
+		write_fill_status (get_fill_status (element (cursor)));
 		write_signal_layers (element (cursor).layers);			
 
 		contours_begin;

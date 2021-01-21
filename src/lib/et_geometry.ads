@@ -849,25 +849,40 @@ package et_geometry is
 		
 
 	-- POLYGON
-
+		type type_polygon_base is abstract tagged private;
+		
 		type type_polygon_segment_count is new natural; -- CS range ?
 		subtype type_polygon_segment_id is type_polygon_segment_count range 1 .. type_polygon_segment_count'last;
 		
 		type type_polygon_line is new type_line with record
 			id : type_polygon_segment_id := type_polygon_segment_id'first;
 		end record;
+
+		procedure append_segment_line (
+			polygon	: in out type_polygon_base'class;
+			segment	: in type_polygon_line);
 		
 		package pac_polygon_lines is new doubly_linked_lists (type_polygon_line);
 
+		
 		type type_polygon_arc is new type_arc with record
 			id : type_polygon_segment_id := type_polygon_segment_id'first;
 		end record;
 		
+		procedure append_segment_arc (
+			polygon	: in out type_polygon_base'class;
+			segment	: in type_polygon_arc);
+
 		package pac_polygon_arcs is new doubly_linked_lists (type_polygon_arc);
 
+		
 		type type_polygon_circle is new type_circle with record
 			id : type_polygon_segment_id := type_polygon_segment_id'first;
 		end record;
+
+		procedure append_segment_circle (
+			polygon	: in out type_polygon_base'class;
+			segment	: in type_polygon_circle);
 		
 		package pac_polygon_circles is new doubly_linked_lists (type_polygon_circle);
 
@@ -877,11 +892,41 @@ package et_geometry is
 			circles	: pac_polygon_circles.list;
 		end record;
 
+
+		-- Loads the given lines into given polygon.
+		-- NOTE: Overwrites already existing segments in the polygon.
+		procedure load_lines (
+			polygon		: in out type_polygon_base'class;
+			lines		: in pac_polygon_lines.list);
 		
-		type type_polygon_base is abstract tagged record -- CS should be private. accessor functions required
-			segments		: type_polygon_segments;
-			segments_total	: type_polygon_segment_count := type_polygon_segment_count'first;
-		end record;
+		-- Loads the given segments into given polygon.
+		-- NOTE: Overwrites already existing segments in the polygon.
+		procedure load_segments (
+			polygon		: in out type_polygon_base'class;
+			segments	: in type_polygon_segments);
+		
+		procedure delete_segments (polygon : in out type_polygon_base);
+
+		function get_empty_polygon return type_polygon_base'class;
+		
+		function get_segments (polygon : in type_polygon_base) 
+			return type_polygon_segments;
+
+		function get_segments_total (polygon : in type_polygon_base)
+			return type_polygon_segment_count;
+
+		-- Transposes a polygon in Y direction.
+		-- Each point of each segment gets shifted by
+		-- the formula new_y = offset - old_y:
+		procedure transpose_polygon (
+			polygon	: in out type_polygon_base'class;
+			offset	: in type_distance);
+
+		
+		--type type_polygon_base is abstract tagged record -- CS should be private. accessor functions required
+			--segments		: type_polygon_segments;
+			--segments_total	: type_polygon_segment_count := type_polygon_segment_count'first;
+		--end record;
 
 		-- Reads the segments provided in a form like 
 		-- "line 0 0 100 0 /
@@ -972,10 +1017,20 @@ package et_geometry is
 			offset		: in type_offset);
 
 		
+
+		type type_polygon is new type_polygon_base with private;
+
+		function to_fillable_polygon (
+			polygon	: in type_polygon_base'class;
+			filled	: in type_filled)
+			return type_polygon'class;
 		
-		type type_polygon is new type_polygon_base with record
-			filled	: type_filled;
-		end record;
+		function get_fill_status (polygon : in type_polygon)
+			return type_filled;
+
+		procedure set_fill_status (
+			polygon	: in out type_polygon;
+			filled	: in type_filled);
 
 		
 	private
@@ -990,6 +1045,14 @@ package et_geometry is
 			out_of_range	: boolean := true;
 		end record;
 
+		type type_polygon_base is abstract tagged record
+			segments		: type_polygon_segments;
+			segments_total	: type_polygon_segment_count := type_polygon_segment_count'first;
+		end record;
+
+		type type_polygon is new type_polygon_base with record
+			filled	: type_filled := filled_default;
+		end record;
 		
 	end generic_pac_shapes;
 	

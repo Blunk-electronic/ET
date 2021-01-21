@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017-2020 Mario Blunk, Blunk electronic            --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -2185,8 +2185,158 @@ package body et_geometry is
 				& "center" & to_string (circle.center) 
 				& " radius" & to_string (circle.radius);
 		end to_string;
+		
+		procedure append_segment_line (
+			polygon	: in out type_polygon_base'class;
+			segment	: in type_polygon_line)
+		is begin
+			polygon.segments.lines.append (segment);
+
+			polygon.segments_total := polygon.segments_total + 1;
+		end append_segment_line;
+
+		procedure append_segment_arc (
+			polygon	: in out type_polygon_base'class;
+			segment	: in type_polygon_arc)
+		is begin
+			polygon.segments.arcs.append (segment);
+
+			polygon.segments_total := polygon.segments_total + 1;
+		end append_segment_arc;
+
+		procedure append_segment_circle (
+			polygon	: in out type_polygon_base'class;
+			segment	: in type_polygon_circle)
+		is begin
+			polygon.segments.circles.append (segment);
+
+			polygon.segments_total := polygon.segments_total + 1;
+		end append_segment_circle;
 
 
+		procedure load_lines (
+			polygon		: in out type_polygon_base'class;
+			lines		: in pac_polygon_lines.list)
+		is
+			use pac_polygon_lines;
+			l : constant count_type := length (lines);
+		begin
+			-- set the total number of segments:
+			polygon.segments_total := type_polygon_segment_count (l);
+
+			-- Clear existing segments and 
+			-- assign the given list of lines:
+			polygon.segments := (others => <>);
+			polygon.segments.lines := lines;
+		end load_lines;
+			
+		procedure load_segments (
+			polygon		: in out type_polygon_base'class;
+			segments	: in type_polygon_segments)
+		is
+			use pac_polygon_lines;
+			use pac_polygon_arcs;
+			use pac_polygon_circles;
+			
+			l : constant count_type := length (segments.lines);
+			a : constant count_type := length (segments.arcs);
+			c : constant count_type := length (segments.circles);
+
+			t : type_polygon_segment_count;
+		begin
+			-- compute the total number of segments:
+			t := type_polygon_segment_count (l + a + c);
+
+			-- set the total number of segments:
+			polygon.segments_total := t;
+
+			-- assign the actual segments:
+			polygon.segments := segments;
+
+		end load_segments;
+
+		function get_empty_polygon return type_polygon_base'class is
+			type poly is new type_polygon_base with null record;
+			p : poly;
+		begin
+			return type_polygon_base (p);
+		end get_empty_polygon;
+		
+		procedure delete_segments (polygon : in out type_polygon_base) 
+		is begin
+			polygon.segments := (others => <>);
+			polygon.segments_total := 0;
+		end delete_segments;			
+		
+		function get_segments (polygon : in type_polygon_base) 
+			return type_polygon_segments
+		is begin
+			return polygon.segments;
+		end get_segments;
+
+		function get_segments_total (polygon : in type_polygon_base)
+			return type_polygon_segment_count
+		is begin
+			return polygon.segments_total;
+		end get_segments_total;
+
+		procedure transpose_polygon (
+			polygon	: in out type_polygon_base'class;
+			offset	: in type_distance)
+		is 
+			procedure move (point : in out type_point) is
+				new_y : type_distance;
+			begin
+				new_y := offset - y (point);
+				set (Y, new_y, point);
+			end move;
+
+			use pac_polygon_lines;
+			use pac_polygon_arcs;
+			use pac_polygon_circles;
+
+			procedure move (cursor : in pac_polygon_lines.cursor) is 
+				procedure do_it (line : in out type_polygon_line) is begin 
+					move (line.start_point);
+					move (line.end_point);
+				end;
+			begin
+				update_element (
+					container	=> polygon.segments.lines,
+					position	=> cursor,
+					process		=> do_it'access);
+			end move;
+
+			procedure move (cursor : in pac_polygon_arcs.cursor) is
+				procedure do_it (arc : in out type_polygon_arc) is begin
+					move (arc.start_point);
+					move (arc.end_point); 
+					move (arc.center); 
+				end;
+			begin
+				update_element (
+					container	=> polygon.segments.arcs,
+					position	=> cursor,
+					process		=> do_it'access);
+			end move;
+
+			procedure move (cursor : in pac_polygon_circles.cursor) is 
+				procedure do_it (circle : in out type_polygon_circle) is begin 
+					move (circle.center); 
+				end;
+			begin
+				update_element (
+					container	=> polygon.segments.circles,
+					position	=> cursor,
+					process		=> do_it'access);
+			end move;
+
+		begin -- transpose_polygon			
+			iterate (polygon.segments.lines, move'access);
+			iterate (polygon.segments.arcs, move'access);
+			iterate (polygon.segments.circles, move'access);
+		end transpose_polygon;
+		
 		function to_polygon (
 			segments	: in type_fields_of_line)
 			return type_polygon_base'class
@@ -2753,6 +2903,30 @@ package body et_geometry is
 -- 			-- CS move segments of polygon
 -- 			null;
 -- 		end;
+
+		function to_fillable_polygon (
+			polygon	: in type_polygon_base'class;
+			filled	: in type_filled)
+			return type_polygon'class
+		is 
+			p : type_polygon;
+		begin
+			p.filled := filled;
+			return p;
+		end to_fillable_polygon;
+		
+		function get_fill_status (polygon : in type_polygon)
+			return type_filled
+		is begin
+			return polygon.filled;
+		end get_fill_status;
+	
+		procedure set_fill_status (
+			polygon	: in out type_polygon;
+			filled	: in type_filled) 
+		is begin
+			polygon.filled := filled;
+		end set_fill_status;
 		
 	end generic_pac_shapes;
 

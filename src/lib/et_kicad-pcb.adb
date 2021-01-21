@@ -3871,16 +3871,21 @@ package body et_kicad.pcb is
 
 						when OVAL => -- a milled hole
 							declare
+								-- KiCad does not allow arcs or circles for plated millings.
+								-- So we have only lines and nothing else.
 								lines : pac_polygon_lines.list := to_pad_milling_contour (
 													center	=> terminal_position,
 													size_x	=> terminal_milling_size_x,
 													size_y	=> terminal_milling_size_y,
 													offset	=> terminal_pad_drill_offset);
 
-								use pac_polygon_lines;
-								total : type_polygon_segment_id := type_polygon_segment_id (length (lines));
-							begin
+								segments : type_polygon_segments;
+								millings : type_plated_millings;
 
+							begin
+								segments.lines := lines;
+								load_segments (millings, segments);
+								
 								terminals.insert (
 									key 		=> terminal_name,
 									position	=> terminal_cursor,
@@ -3907,11 +3912,7 @@ package body et_kicad.pcb is
 										width_inner_layers	=> terminal_copper_width_inner_layers,
 
 										-- The plated millings of the hole is a list of lines.
-										millings => (
-											segments => (lines, others	=> <>),
-											-- KiCad does not allow arcs or circles for plated millings.
-											-- So we have only lines and nothing else.
-											segments_total => total),
+										millings => millings,
 											
 										-- the pad is connected with a certain net
 										net_name			=> terminal_net_name
@@ -4950,7 +4951,7 @@ package body et_kicad.pcb is
 													width		=> element (polygon_cursor).thermal_width);
 
 										-- convert the polygon corner point to a list of lines:
-										p.segments.lines := corners_to_lines (element (polygon_cursor).corners);
+										load_lines (p, corners_to_lines (element (polygon_cursor).corners));
 										
 										route.polygons_2.solid.append (p);																					  
 									end;
@@ -4973,8 +4974,8 @@ package body et_kicad.pcb is
 										p.technology := element (polygon_cursor).pad_technology;
 
 										-- convert the polygon corner point to a list of lines:
-										p.segments.lines := corners_to_lines (element (polygon_cursor).corners);
-
+										load_lines (p, corners_to_lines (element (polygon_cursor).corners));
+										
 										route.polygons_2.solid.append (p);																					  
 									end;
 

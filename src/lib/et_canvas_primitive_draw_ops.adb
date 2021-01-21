@@ -287,7 +287,7 @@ package body pac_draw is
 		-- and return a cursor to the segment if it exists. Otherwise they return no_element:
 		
 		function get_line (segment : in type_polygon_segment_id) return pac_polygon_lines.cursor is 
-			c : pac_polygon_lines.cursor := polygon.segments.lines.first;
+			c : pac_polygon_lines.cursor := get_segments (polygon).lines.first;
 			found : boolean := false;
 
 			procedure query_line (l : in type_polygon_line) is begin
@@ -309,7 +309,7 @@ package body pac_draw is
 		end get_line;
 		
 		function get_arc (segment : in type_polygon_segment_id) return pac_polygon_arcs.cursor is 
-			c : pac_polygon_arcs.cursor := polygon.segments.arcs.first;
+			c : pac_polygon_arcs.cursor := get_segments (polygon).arcs.first;
 			found : boolean := false;
 
 			procedure query_arc (l : in type_polygon_arc) is begin
@@ -331,7 +331,7 @@ package body pac_draw is
 		end get_arc;
 		
 		function get_circle (segment : in type_polygon_segment_id) return pac_polygon_circles.cursor is 
-			c : pac_polygon_circles.cursor := polygon.segments.circles.first;
+			c : pac_polygon_circles.cursor := get_segments (polygon).circles.first;
 			found : boolean := false;
 
 			procedure query_circle (l : in type_polygon_circle) is begin
@@ -421,7 +421,7 @@ package body pac_draw is
 			-- and among circles (least likely). The functions get_line, get_arc and get_circle
 			-- return a cursor to the segment if it is among lines, arcs or circles.
 			-- Otherwise get_line, get_arc or get_circle return no_element.
-			for s in type_polygon_segment_id'first .. polygon.segments_total loop
+			for s in type_polygon_segment_id'first .. get_segments_total (polygon) loop
 
 				-- Search the segment among the lines:
 				cl := get_line (s);

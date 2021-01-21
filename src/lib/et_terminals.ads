@@ -102,11 +102,15 @@ package et_terminals is
 	
 	-- Plated millings as used by terminals. These structures have closed circumfence.
 	type type_plated_millings is new pac_shapes.type_polygon_base with null record;
-
+	
 	procedure log_plated_millings (
 		millings 		: in type_plated_millings;
 		log_threshold	: in et_string_processing.type_log_level);
 
+	plated_millings_default : constant type_plated_millings := type_plated_millings (get_empty_polygon);
+
+
+	
 	-- The solder paste status is for compatibility with other CAE systems
 	-- to account for virtual devices like net-ties or netchangers.
 	type type_solder_paste_status is (NONE, APPLIED);
