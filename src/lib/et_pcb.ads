@@ -200,7 +200,7 @@ package et_pcb is
 	-- in various layers.
 	-- This requires a layer id for the object.
 	type type_conductor_line is new et_packages.type_conductor_line with record
-		layer	: type_signal_layer;
+		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
 
@@ -213,7 +213,7 @@ package et_pcb is
 		return boolean;
 	
 	type type_conductor_arc is new et_packages.type_conductor_arc with record
-		layer	: type_signal_layer;		
+		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
 
@@ -226,7 +226,7 @@ package et_pcb is
 		return boolean;
 	
 	type type_conductor_circle is new et_packages.type_conductor_circle with record
-		layer	: type_signal_layer;
+		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 	package pac_conductor_circles is new indefinite_doubly_linked_lists (type_conductor_circle);
 	
@@ -237,7 +237,7 @@ package et_pcb is
 	
 	-- Cutout-polygons in conductor layers:
 	type type_conductor_cutout is new et_packages.type_cutout_zone with record
-		layer 	: type_signal_layer;
+		layer 	: type_signal_layer := type_signal_layer'first;
 	end record;
 
 	package pac_conductor_cutouts is new doubly_linked_lists (type_conductor_cutout);
@@ -260,7 +260,7 @@ package et_pcb is
 
 		-- the space between foreign pads and the polygon:
 		isolation		: type_track_clearance := type_track_clearance'first;
-		layer 			: type_signal_layer;
+		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
 	end record;
 
@@ -273,7 +273,7 @@ package et_pcb is
 	with record
 		width_min		: type_track_width; -- the minimum width
 		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
-		layer 			: type_signal_layer;
+		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
 	end record;
 

@@ -4287,7 +4287,7 @@ package body et_board_ops is
 	end place_text_in_conductor_layer;
 
 
-	procedure draw_polygon_conductor_floating (
+	procedure place_polygon_conductor_floating (
 		module_cursor	: in pac_generic_modules.cursor;
 		polygon			: in et_pcb.type_conductor_polygon_floating_solid;
 		log_threshold	: in type_log_level)
@@ -4296,17 +4296,25 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
+			use pac_conductor_polygons_floating_solid;
 		begin
-			null;
+			module.board.conductors.polygons.solid.append (polygon);
 		end place_text;
 
 	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " placing polygon ...",
+			
+			level => log_threshold);
+
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> place_text'access);
 
-	end draw_polygon_conductor_floating;
+	end place_polygon_conductor_floating;
 
 	
 end et_board_ops;

@@ -1805,7 +1805,7 @@ is
 			ps : et_pcb.type_conductor_polygon_floating_solid; -- := to_polygon (arguments);
 
 			-- Build the polygon from the arguments:
-			p : type_polygon_base'class := to_polygon (arguments);
+			p : constant type_polygon_base'class := to_polygon (arguments);
 		begin
 			-- CS case polygon_fill_style is ...
 			
@@ -1814,11 +1814,11 @@ is
 				width_min	=> to_distance (f (7)),
 				-- CS Assign properties:
 				--isolaton
-				--layer
+				layer => to_signal_layer (f (5)),
 				--priority_level
 				others		=> <>);
 
-			draw_polygon_conductor_floating (module_cursor, ps, log_threshold + 1);
+			place_polygon_conductor_floating (module_cursor, ps, log_threshold + 1);
 			
 		end make_polygon;
 		

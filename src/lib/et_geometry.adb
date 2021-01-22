@@ -2356,31 +2356,46 @@ package body et_geometry is
 				return to_lower (get_field (arguments, place));
 			end;
 
+			-- Each segment whether line, arc or circle gets an
+			-- id assigned. We start with id 1.
+			idx : type_polygon_segment_id := 1;
+
+			-- After processing a segment, the index must be incremented:
+			procedure increment_index is begin
+				idx := idx + 1;
+			end;
+			
 			l : type_polygon_line;
 			a : type_polygon_arc;
 			c : type_polygon_circle;
-			
-			shape : type_shape;
-			idx : type_polygon_segment_id := 1;
 
-			 p : count_type := 1;
+			-- The shape of the segment being processed:
+			shape : type_shape;
+
+			-- The place at which we fetch a field from:
+			p : count_type := 1;
 		begin
+			-- Iterate all fields of given list of arguments:
 			while p <= field_count (arguments) loop
 
+				-- If a keyword like "line", "arc" or "circle" occurs,
+				-- then set shape accordingly:
 				if f (p) = to_string (LINE) then
-					put_line ("line");
+					--put_line ("line");
 					shape := LINE;
 					
 				elsif f (p) = to_string (ARC) then
-					put_line ("arc");
+					--put_line ("arc");
 					shape := ARC;
 
 				elsif f (p) = to_string (CIRCLE) then
-					put_line ("circle");
+					--put_line ("circle");
 					shape := CIRCLE;
 
 				end if;
 
+				-- Fetch the parameters for the shape by
+				-- looking ahead of p:
 				case shape is
 					when LINE => -- line 0 0 100 0
 						l.start_point := type_point (set (
@@ -2392,9 +2407,10 @@ package body et_geometry is
 								y => to_distance (f (p + 4))));
 
 						l.id := idx;
-						
-						result.segments.lines.append (l);
-						
+						append_segment_line (result, l);
+						increment_index;
+
+						-- fast forward p to next shape:
 						p := p + 5;
 						
 					when ARC => -- arc 50 100 100 100 0 100 ccw
@@ -2413,11 +2429,11 @@ package body et_geometry is
 						a.direction := to_direction (f (p + 7));
 						
 						a.id := idx;
-						
-						result.segments.arcs.append (a);
+						append_segment_arc (result, a);
+						increment_index;
 
+						-- fast forward p to next shape:						
 						p := p + 8;
-				
 						
 					when CIRCLE => -- circle 40 40 10
 						c.center := type_point (set (
@@ -2427,21 +2443,25 @@ package body et_geometry is
 						c.radius := to_distance (f (p + 3));
 						
 						c.id := idx;
-						
-						result.segments.circles.append (c);
+						append_segment_circle (result, c);
+						increment_index;
 
+						-- fast forward p to next shape:						
 						p := p + 4;
 
 				end case;
 				
 			end loop;
 
+			--put_line (type_polygon_segment_count'image (result.segments_total));
+			
 			return type_polygon_base (result);
 
-		-- CS
-		--exception when event: others =>
-			--put_line (exception_message);
-			--return p;
+			-- CS exception handler required for invalid fields:
+			
+			--exception when event: others =>
+				--put_line (exception_message);
+				--return p;
 		
 		end to_polygon;
 		
