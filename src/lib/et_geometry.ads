@@ -850,9 +850,13 @@ package et_geometry is
 
 	-- POLYGON
 		type type_polygon_base is abstract tagged private;
+
+		-- CS: For the moment we limit the number of segments (that form the outline)
+		-- to a reasonable value. Increase if necessary:
+		type type_polygon_segment_count is range 0 .. 100;
 		
-		type type_polygon_segment_count is new natural; -- CS range ?
-		subtype type_polygon_segment_id is type_polygon_segment_count range 1 .. type_polygon_segment_count'last;
+		subtype type_polygon_segment_id is type_polygon_segment_count 
+			range 1 .. type_polygon_segment_count'last;
 		
 		type type_polygon_line is new type_line with record
 			id : type_polygon_segment_id := type_polygon_segment_id'first;

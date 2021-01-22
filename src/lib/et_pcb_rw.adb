@@ -288,11 +288,15 @@ package body et_pcb_rw is
 		use pac_shapes.pac_polygon_arcs;
 		use pac_shapes.pac_polygon_circles;		
 
+		-- Take a copy of the segments. Further search operations will take 
+		-- place here:
+		segments : type_polygon_segments := get_segments (polygon);
+		
 		-- The functions get_line, get_arc and get_circle search for a polygon segment (by its id)
 		-- and return a cursor to the segment if it exists. Otherwise they return no_element:
 		
-		function get_line (segment : in type_polygon_segment_id) return pac_polygon_lines.cursor is 
-			c : pac_polygon_lines.cursor := get_segments (polygon).lines.first;
+		function get_line (segment : in type_polygon_segment_id) return pac_polygon_lines.cursor is
+			c : pac_polygon_lines.cursor := segments.lines.first;
 			found : boolean := false;
 
 			procedure query_line (l : in type_polygon_line) is begin
@@ -314,7 +318,7 @@ package body et_pcb_rw is
 		end get_line;
 		
 		function get_arc (segment : in type_polygon_segment_id) return pac_polygon_arcs.cursor is 
-			c : pac_polygon_arcs.cursor := get_segments (polygon).arcs.first;
+			c : pac_polygon_arcs.cursor := segments.arcs.first;
 			found : boolean := false;
 
 			procedure query_arc (l : in type_polygon_arc) is begin
@@ -336,7 +340,7 @@ package body et_pcb_rw is
 		end get_arc;
 		
 		function get_circle (segment : in type_polygon_segment_id) return pac_polygon_circles.cursor is 
-			c : pac_polygon_circles.cursor := get_segments (polygon).circles.first;
+			c : pac_polygon_circles.cursor := segments.circles.first;
 			found : boolean := false;
 
 			procedure query_circle (l : in type_polygon_circle) is begin
@@ -380,20 +384,25 @@ package body et_pcb_rw is
 			circle_end;
 		end;
 
-	begin
--- 		iterate (polygon.segments.lines, write_line'access);
--- 		iterate (polygon.segments.arcs, write_arc'access);
--- 		iterate (polygon.segments.circles, write_circle'access);
-
+	begin -- write_polygon_segments
+		
 		-- Iterate segments of given polygon. For each iteration s indicates the
 		-- segment to be processed. It can be among lines (most likely), among arcs (less likely)
 		-- and among circles (least likely). The functions get_line, get_arc and get_circle
 		-- return a cursor to the segment if it is among lines, arcs or circles.
 		-- Otherwise get_line, get_arc or get_circle return no_element.
+
+		--put_line (standard_output, "ct " & type_polygon_segment_count'image (get_segments_total (polygon)));
+		
 		for s in type_polygon_segment_id'first .. get_segments_total (polygon) loop
 
+			--put_line (standard_output, "id A " & type_polygon_segment_count'image (s));
+			
 			-- Search the segment among the lines:
 			cl := get_line (s);
+
+			--put_line (standard_output, "id B " & type_polygon_segment_count'image (s));
+			
 			if cl /= pac_polygon_lines.no_element then
 
 				write_line (cl);
@@ -671,6 +680,8 @@ package body et_pcb_rw is
 		-- Use the current total of segments as id for the current segment:
 		l.id := get_segments_total (polygon) + 1;
 		
+		--put_line ("id " & type_polygon_segment_count'image (l.id));
+															   
 		--append (polygon.segments.lines, l);
 		append_segment_line (polygon, l);
 

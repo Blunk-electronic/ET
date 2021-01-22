@@ -643,6 +643,14 @@ board led_driver route freetrack 1 line 0.25 10 10 16 13 # layer 1, line, width 
 board led_driver route freetrack 1 arc 0.25 50 50 50 0 50 100 cw # layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100, clockwise
 ```
 
+#### Polygons / Fill Zones
+```
+board led_driver route freetrack 1 polygon 0.25 line 0 0 100 0 line 100 0 100 100 
+arc 50 100 100 100 0 100 ccw line 0 100 0 0
+```
+
+
+
 <!--Changing width. CS: Not implemented yet.
 ```
 board led_driver width freetrack 1 12 10 1.2 # layer 1, segment in layer 1, crossing 12/10, new width 1.2
@@ -694,7 +702,7 @@ board led_driver width net reset_n 1 12 10 1.2 # layer 1, segment in layer 1, cr
 
 #### Polygons / Fill Zones
 ```
-board led_driver route net reset_n 1 poly 0.25 line 0 0 100 0 line 100 0 100 100 
+board led_driver route net reset_n 1 polygon 0.25 line 0 0 100 0 line 100 0 100 100 
 arc 50 100 100 100 0 100 ccw line 0 100 0 0
 ```
 
