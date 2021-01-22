@@ -595,7 +595,15 @@ package et_board_ops is
 		layer_category	: in type_layer_category_conductor;
 		text			: in type_conductor_text;
 		log_threshold	: in type_log_level);
-				
+
+
+-- POLYGONS / FILL ZONES
+	procedure draw_polygon_conductor_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		polygon			: in et_pcb.type_conductor_polygon_floating_solid;
+		log_threshold	: in type_log_level);
+
+	
 	
 end et_board_ops;
 

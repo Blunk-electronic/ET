@@ -1481,7 +1481,7 @@ is
 		end case;
 	end place_text;
 
-	-- Pares a command like "board demo set via restring inner/outer 0.2"
+	-- Parses a command like "board demo set via restring inner/outer 0.2"
 	-- or "board demo set via restring inner 0.2" and sets the value
 	-- for user specific via drill or restring.
 	-- If the field for the value contains the keyword "dru" instead of 0.2
@@ -1796,22 +1796,30 @@ is
 		shape : type_track_shape := type_track_shape'value (f (6));
 
 		procedure make_polygon is
-			ps : et_pcb.type_conductor_polygon_floating_solid;
 			--ph : et_pcb.type_conductor_polygon_floating_hatched;
 			--ph : et_pcb.type_conductor_polygon_hatched (THERMAL);
 
 			-- Extract from the given command the polygon arguments (everything after width 0.25):
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 7);
-		begin
-			ps.width_min := to_distance (f (7));
 			
-			-- Build the polygon from the arguments:
-			ps := et_pcb.type_conductor_polygon_floating_solid (to_polygon (arguments));
+			ps : et_pcb.type_conductor_polygon_floating_solid; -- := to_polygon (arguments);
 
-			-- Assign properties:
-			--ps.isolaton
-			--ps.layer
-			--ps.priority_level
+			-- Build the polygon from the arguments:
+			p : type_polygon_base'class := to_polygon (arguments);
+		begin
+			-- CS case polygon_fill_style is ...
+			
+			ps := (type_polygon_base (p) with 
+				fill_style	=> SOLID,
+				width_min	=> to_distance (f (7)),
+				-- CS Assign properties:
+				--isolaton
+				--layer
+				--priority_level
+				others		=> <>);
+
+			draw_polygon_conductor_floating (module_cursor, ps, log_threshold + 1);
+			
 		end make_polygon;
 		
 	begin -- route_freetrack

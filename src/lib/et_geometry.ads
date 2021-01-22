@@ -87,7 +87,7 @@ package et_geometry is
 	type type_shape is (LINE, ARC, CIRCLE);
 
 	function to_shape (shape : in string) return type_shape;
-	function to_shape (shape : in type_shape) return string;
+	function to_string (shape : in type_shape) return string;
 	
 
 	
@@ -931,20 +931,16 @@ package et_geometry is
 			polygon	: in out type_polygon_base'class;
 			offset	: in type_distance);
 
-		
-		--type type_polygon_base is abstract tagged record -- CS should be private. accessor functions required
-			--segments		: type_polygon_segments;
-			--segments_total	: type_polygon_segment_count := type_polygon_segment_count'first;
-		--end record;
 
-		-- Reads the segments provided in a form like 
+		-- Reads the segments provided in a row of
+		-- arguments in a form like 
 		-- "line 0 0 100 0 /
 		--  line 100 0 100 100 / 
 		--  arc 50 100 100 100 0 100 ccw / 
 		--  line 0 100 0 0"
 		-- and builds a polygon:
 		function to_polygon (
-			segments	: in type_fields_of_line)
+			arguments : in type_fields_of_line)
 			return type_polygon_base'class;
 		
 		function boundaries (polygon : in type_polygon_base) return type_boundaries;

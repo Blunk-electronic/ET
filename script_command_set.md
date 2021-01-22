@@ -648,7 +648,10 @@ board led_driver route freetrack 1 arc 0.25 50 50 50 0 50 100 cw # layer 1, arc,
 board led_driver route freetrack 1 polygon 0.25 line 0 0 100 0 line 100 0 100 100 
 arc 50 100 100 100 0 100 ccw line 0 100 0 0
 ```
-
+Notes on syntax:
+Line: start x/y, end x/y
+Arc: center x/y, start x/y, end x/y, direction
+Circle: center x/y, radius
 
 
 <!--Changing width. CS: Not implemented yet.

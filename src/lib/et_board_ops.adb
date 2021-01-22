@@ -2086,7 +2086,7 @@ package body et_board_ops is
 		via				: in type_via;
 		log_threshold	: in type_log_level) 
 	is
-		console : boolean := true; -- for test and debugging only
+		console : boolean := false; -- for test and debugging only
 
 		procedure locate_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -4285,6 +4285,28 @@ package body et_board_ops is
 			process		=> place_text'access);
 
 	end place_text_in_conductor_layer;
+
+
+	procedure draw_polygon_conductor_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		polygon			: in et_pcb.type_conductor_polygon_floating_solid;
+		log_threshold	: in type_log_level)
+	is
+		procedure place_text (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+		begin
+			null;
+		end place_text;
+
+	begin
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> place_text'access);
+
+	end draw_polygon_conductor_floating;
 
 	
 end et_board_ops;

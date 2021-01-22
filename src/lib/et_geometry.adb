@@ -85,7 +85,7 @@ package body et_geometry is
 		return type_shape'value (shape);
 	end;
 
-	function to_shape (shape : in type_shape) return string is begin
+	function to_string (shape : in type_shape) return string is begin
 		return to_lower (type_shape'image (shape));
 	end;
 
@@ -2347,17 +2347,102 @@ package body et_geometry is
 		end transpose_polygon;
 		
 		function to_polygon (
-			segments	: in type_fields_of_line)
+			arguments : in type_fields_of_line)
 			return type_polygon_base'class
 		is
-			type tp is new type_polygon_base with null record;
-			p : tp;
-			--function dummy return type_polygon_base
+			result : type_polygon; -- will be converted back to anchestor on return
 
+			function f (place : in count_type) return string is begin
+				return to_lower (get_field (arguments, place));
+			end;
+
+			l : type_polygon_line;
+			a : type_polygon_arc;
+			c : type_polygon_circle;
+			
 			shape : type_shape;
-		begin
+			idx : type_polygon_segment_id := 1;
 
-			return type_polygon_base (p);
+			 p : count_type := 1;
+		begin
+			while p <= field_count (arguments) loop
+
+				if f (p) = to_string (LINE) then
+					put_line ("line");
+					shape := LINE;
+					
+				elsif f (p) = to_string (ARC) then
+					put_line ("arc");
+					shape := ARC;
+
+				elsif f (p) = to_string (CIRCLE) then
+					put_line ("circle");
+					shape := CIRCLE;
+
+				end if;
+
+				case shape is
+					when LINE => -- line 0 0 100 0
+						l.start_point := type_point (set (
+								x => to_distance (f (p + 1)),
+								y => to_distance (f (p + 2))));
+
+						l.end_point := type_point (set (
+								x => to_distance (f (p + 3)),
+								y => to_distance (f (p + 4))));
+
+						l.id := idx;
+						
+						result.segments.lines.append (l);
+						
+						p := p + 5;
+						
+					when ARC => -- arc 50 100 100 100 0 100 ccw
+						a.center := type_point (set (
+								x => to_distance (f (p + 1)),
+								y => to_distance (f (p + 2))));
+							
+						a.start_point := type_point (set (
+								x => to_distance (f (p + 3)),
+								y => to_distance (f (p + 4))));
+
+						a.end_point := type_point (set (
+								x => to_distance (f (p + 5)),
+								y => to_distance (f (p + 6))));
+
+						a.direction := to_direction (f (p + 7));
+						
+						a.id := idx;
+						
+						result.segments.arcs.append (a);
+
+						p := p + 8;
+				
+						
+					when CIRCLE => -- circle 40 40 10
+						c.center := type_point (set (
+								x => to_distance (f (p + 1)),
+								y => to_distance (f (p + 2))));
+
+						c.radius := to_distance (f (p + 3));
+						
+						c.id := idx;
+						
+						result.segments.circles.append (c);
+
+						p := p + 4;
+
+				end case;
+				
+			end loop;
+
+			return type_polygon_base (result);
+
+		-- CS
+		--exception when event: others =>
+			--put_line (exception_message);
+			--return p;
+		
 		end to_polygon;
 		
 
