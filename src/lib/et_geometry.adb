@@ -3025,22 +3025,22 @@ package body et_geometry is
 		is 
 			p : type_polygon;
 		begin
-			p.filled := filled;
+			--p.filled := filled;
 			return p;
 		end to_fillable_polygon;
 		
-		function get_fill_status (polygon : in type_polygon)
-			return type_filled
-		is begin
-			return polygon.filled;
-		end get_fill_status;
+		--function get_fill_status (polygon : in type_polygon)
+			--return type_filled
+		--is begin
+			--return polygon.filled;
+		--end get_fill_status;
 	
-		procedure set_fill_status (
-			polygon	: in out type_polygon;
-			filled	: in type_filled) 
-		is begin
-			polygon.filled := filled;
-		end set_fill_status;
+		--procedure set_fill_status (
+			--polygon	: in out type_polygon;
+			--filled	: in type_filled) 
+		--is begin
+			--polygon.filled := filled;
+		--end set_fill_status;
 		
 	end generic_pac_shapes;
 

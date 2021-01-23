@@ -1204,7 +1204,6 @@ package body et_pcb_rw is
 		use pac_keepout_polygons;
 	begin
 		fill_zone_begin;
-		write_fill_status (pac_shapes.get_fill_status (element (cursor)));
 
 		contours_begin;
 		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));

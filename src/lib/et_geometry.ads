@@ -1030,12 +1030,12 @@ package et_geometry is
 			filled	: in type_filled)
 			return type_polygon'class;
 		
-		function get_fill_status (polygon : in type_polygon)
-			return type_filled;
+		--function get_fill_status (polygon : in type_polygon)
+			--return type_filled;
 
-		procedure set_fill_status (
-			polygon	: in out type_polygon;
-			filled	: in type_filled);
+		--procedure set_fill_status (
+			--polygon	: in out type_polygon;
+			--filled	: in type_filled);
 
 		
 	private
@@ -1055,9 +1055,7 @@ package et_geometry is
 			segments_total	: type_polygon_segment_count := type_polygon_segment_count'first;
 		end record;
 
-		type type_polygon is new type_polygon_base with record
-			filled	: type_filled := filled_default;
-		end record;
+		type type_polygon is new type_polygon_base with null record;
 		
 	end generic_pac_shapes;
 	
