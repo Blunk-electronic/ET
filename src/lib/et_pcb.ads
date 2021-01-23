@@ -357,7 +357,7 @@ package et_pcb is
 	
 	
 	type type_conductor_polygon_solid (connection : type_polygon_pad_connection) is new
-		et_packages.type_conductor_polygon_solid 
+		et_packages.type_polygon_conductor_solid 
 	with record
 		layer 			: type_signal_layer;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
@@ -374,7 +374,7 @@ package et_pcb is
 	end record;
 
 	type type_conductor_polygon_hatched (connection : type_polygon_pad_connection) is new
-		et_packages.type_conductor_polygon_hatched 
+		et_packages.type_polygon_conductor_hatched 
 	with record
 		layer 			: type_signal_layer;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;

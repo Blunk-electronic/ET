@@ -2190,7 +2190,7 @@ is
 			use pac_conductor_polygons_solid;
 
 			procedure draw_polygon_solid (
-				polygon	: in out et_packages.type_conductor_polygon_solid;
+				polygon	: in out et_packages.type_polygon_conductor_solid;
 				f		: in type_face) is
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
@@ -2218,14 +2218,14 @@ is
 			end draw_polygon_solid;
 			
 			procedure query_polygon_top_solid (c : in pac_conductor_polygons_solid.cursor) is
-				polygon : et_packages.type_conductor_polygon_solid := element (c);
+				polygon : et_packages.type_polygon_conductor_solid := element (c);
 			begin
 				set_destination;
 				draw_polygon_solid (polygon, destination);
 			end query_polygon_top_solid;
 
 			procedure query_polygon_bottom_solid (c : in pac_conductor_polygons_solid.cursor) is
-				polygon : et_packages.type_conductor_polygon_solid := element (c);
+				polygon : et_packages.type_polygon_conductor_solid := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon_solid (polygon, destination);
@@ -2236,7 +2236,7 @@ is
 			use pac_conductor_polygons_hatched;
 
 			procedure draw_polygon_hatched (
-				polygon	: in out et_packages.type_conductor_polygon_hatched;
+				polygon	: in out et_packages.type_polygon_conductor_hatched;
 				f		: in type_face) is
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
@@ -2265,14 +2265,14 @@ is
 			end draw_polygon_hatched;
 			
 			procedure query_polygon_top_hatched (c : in pac_conductor_polygons_hatched.cursor) is
-				polygon : et_packages.type_conductor_polygon_hatched := element (c);
+				polygon : et_packages.type_polygon_conductor_hatched := element (c);
 			begin
 				set_destination;
 				draw_polygon_hatched (polygon, destination);
 			end query_polygon_top_hatched;
 
 			procedure query_polygon_bottom_hatched (c : in pac_conductor_polygons_hatched.cursor) is
-				polygon : et_packages.type_conductor_polygon_hatched := element (c);
+				polygon : et_packages.type_polygon_conductor_hatched := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon_hatched (polygon, destination);

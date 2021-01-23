@@ -386,19 +386,19 @@ package et_packages is
 	-- the minimal width of a polygon
 	keyword_min_width : constant string := "min_width";
 	
-	type type_conductor_polygon_solid is new type_polygon_conductor (fill_style => SOLID) with record
+	type type_polygon_conductor_solid is new type_polygon_conductor (fill_style => SOLID) with record
 		width_min : type_track_width; -- the minimum width
 		isolation : type_track_clearance := type_track_clearance'first; 
 	end record;
 
-	package pac_conductor_polygons_solid is new doubly_linked_lists (type_conductor_polygon_solid);
+	package pac_conductor_polygons_solid is new doubly_linked_lists (type_polygon_conductor_solid);
 
-	type type_conductor_polygon_hatched is new type_polygon_conductor (fill_style => HATCHED) with record
+	type type_polygon_conductor_hatched is new type_polygon_conductor (fill_style => HATCHED) with record
 		width_min : type_track_width; -- the minimum width
 		isolation : type_track_clearance := type_track_clearance'first;
 	end record;
 
-	package pac_conductor_polygons_hatched is new doubly_linked_lists (type_conductor_polygon_hatched);
+	package pac_conductor_polygons_hatched is new doubly_linked_lists (type_polygon_conductor_hatched);
 
 	-- A cutout-polygon used in conductor layers:
 	package pac_conductor_cutouts is new doubly_linked_lists (type_cutout_zone);

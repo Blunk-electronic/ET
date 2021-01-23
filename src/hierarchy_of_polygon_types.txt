@@ -12,10 +12,19 @@ et_packages
  - type_cutout_zone
 
 - derived from type_polygon_conductor
- - type_conductor_polygon_solid
- - type_conductor_polygon_hatched
+ - type_polygon_conductor_solid
+ - type_polygon_conductor_hatched
 
 - derived from et_geometry.type_polygon
  - type_route_restrict_polygon
  - type_via_restrict_polygon
 
+et_pcb
+- derived from type_polygon_conductor
+ - type_conductor_polygon_floating_solid
+ - type_conductor_polygon_floating_hatched
+ 
+- derived from et_packages.type_cutout_zone
+ - type_conductor_cutout
+ 
+ 
