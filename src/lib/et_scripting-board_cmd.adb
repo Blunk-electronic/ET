@@ -1796,13 +1796,13 @@ is
 		shape : type_track_shape := type_track_shape'value (f (6));
 
 		procedure make_polygon is
-			--ph : et_pcb.type_conductor_polygon_floating_hatched;
+			--ph : et_pcb.type_polygon_conductor_hatched_floating;
 			--ph : et_pcb.type_conductor_polygon_hatched (THERMAL);
 
 			-- Extract from the given command the polygon arguments (everything after width 0.25):
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 7);
 			
-			ps : et_pcb.type_conductor_polygon_floating_solid; -- := to_polygon (arguments);
+			ps : et_pcb.type_polygon_conductor_solid_floating; -- := to_polygon (arguments);
 
 			-- Build the polygon from the arguments:
 			p : constant type_polygon_base'class := to_polygon (arguments);

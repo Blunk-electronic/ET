@@ -253,7 +253,7 @@ package et_pcb is
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 	
 	-- A floating conductor polygon is not connected to any net:
-	type type_conductor_polygon_floating_solid is new 
+	type type_polygon_conductor_solid_floating is new 
 		type_polygon_conductor (fill_style => SOLID) 
 	with record
 		width_min		: type_track_width; -- the minimum width
@@ -265,10 +265,10 @@ package et_pcb is
 	end record;
 
 	package pac_conductor_polygons_floating_solid is new 
-		indefinite_doubly_linked_lists (type_conductor_polygon_floating_solid);
+		indefinite_doubly_linked_lists (type_polygon_conductor_solid_floating);
 
 		
-	type type_conductor_polygon_floating_hatched is new 
+	type type_polygon_conductor_hatched_floating is new 
 		type_polygon_conductor (fill_style => HATCHED) 
 	with record
 		width_min		: type_track_width; -- the minimum width
@@ -278,7 +278,7 @@ package et_pcb is
 	end record;
 
 	package pac_conductor_polygons_floating_hatched is new
-		indefinite_doubly_linked_lists (type_conductor_polygon_floating_hatched);
+		indefinite_doubly_linked_lists (type_polygon_conductor_hatched_floating);
 	
 	type type_conductor_polygons_floating is record
 		solid	: pac_conductor_polygons_floating_solid.list;

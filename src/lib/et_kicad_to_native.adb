@@ -1851,12 +1851,12 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_pcb.type_conductor_polygon_floating_solid) is begin
+				procedure move_polygon (polygon : in out et_pcb.type_polygon_conductor_solid_floating) is begin
 					log (text => board_copper & "solid polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
 
-				procedure move_polygon (polygon : in out et_pcb.type_conductor_polygon_floating_hatched) is begin
+				procedure move_polygon (polygon : in out et_pcb.type_polygon_conductor_hatched_floating) is begin
 					log (text => board_copper & "hatched polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;

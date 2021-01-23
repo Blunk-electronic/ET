@@ -600,7 +600,7 @@ package et_board_ops is
 -- POLYGONS / FILL ZONES
 	procedure place_polygon_conductor_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		polygon			: in et_pcb.type_conductor_polygon_floating_solid;
+		polygon			: in type_polygon_conductor_solid_floating;
 		log_threshold	: in type_log_level);
 
 	
