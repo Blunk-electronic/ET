@@ -181,6 +181,32 @@ package body et_pcb is
 		return type_flipped'value (flipped);
 	end;
 
+
+	function conductor_polygon_properties_to_string (
+		fill_style		: in type_fill_style;
+		width_min		: in type_track_width;
+		isolation		: in type_track_clearance;
+		layer			: in type_signal_layer;
+		priority_level	: in type_polygon_priority)
+		return string
+	is begin
+
+			--& " fill style " & to_string (polygon.fill_style)
+			--& to_string (polygon.layer) & "."
+			--& " Minimal track width " & to_string (polygon.width_min) & "."
+			--& " Isolation " & to_string (polygon.isolation)
+			--& 
+			
+			--level => log_threshold);
+
+
+		return "";
+
+	
+
+
+	end conductor_polygon_properties_to_string;
+
 	
 
 	procedure text_conductor_properties (
@@ -300,6 +326,7 @@ package body et_pcb is
 -- 		log_indentation_down;
 -- 	end route_polygon_properties;
 
+		
 
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	procedure line_pcb_contour_properties (

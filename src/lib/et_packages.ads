@@ -301,7 +301,8 @@ package et_packages is
 
 	
 	-- POLYGON
-	type type_polygon (fill_style : type_fill_style)
+	type type_polygon (fill_style : type_fill_style) 
+	-- CS rename to type_polygon_non_conductor
 	is new type_polygon_base with record
 		easing : type_easing;
 		

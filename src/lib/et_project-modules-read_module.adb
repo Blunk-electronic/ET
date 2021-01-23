@@ -3953,7 +3953,7 @@ is
 										isolation		=> polygon_isolation,
 										layer			=> signal_layer,
 										width_min		=> polygon_width_min,
-										hatching		=> board_hatching)
+										hatching		=> board_hatching_conductor)
 										);
 					end case;
 				end do_it;

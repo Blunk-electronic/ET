@@ -1,0 +1,21 @@
+HIERARCHY OF POLYGON TYPES
+==========================
+
+et_geometry
+- abstract private type_polygon_base
+- derived private type_polygon
+
+et_packages
+- derived from type_polygon_base:
+ - type_polygon (for non conductors)
+ - type_conductor_polygon
+ - type_cutout_zone
+
+- derived from type_conductor_polygon
+ - type_conductor_polygon_solid
+ - type_conductor_polygon_hatched
+
+- derived from et_geometry.type_polygon
+ - type_route_restrict_polygon
+ - type_via_restrict_polygon
+
