@@ -254,7 +254,7 @@ package et_pcb is
 	
 	-- A floating conductor polygon is not connected to any net:
 	type type_conductor_polygon_floating_solid is new 
-		et_packages.type_conductor_polygon (fill_style => SOLID) 
+		type_polygon_conductor (fill_style => SOLID) 
 	with record
 		width_min		: type_track_width; -- the minimum width
 
@@ -269,7 +269,7 @@ package et_pcb is
 
 		
 	type type_conductor_polygon_floating_hatched is new 
-		et_packages.type_conductor_polygon (fill_style => HATCHED) 
+		type_polygon_conductor (fill_style => HATCHED) 
 	with record
 		width_min		: type_track_width; -- the minimum width
 		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
