@@ -3,11 +3,11 @@ HIERARCHY OF POLYGON TYPES
 
 et_geometry
 - abstract private type_polygon_base
-- derived private type_polygon
+- derived private type_polygon ? purpose ?
 
 et_packages
 - derived from type_polygon_base:
- - type_polygon (for non conductors)
+ - type_polygon_non_conductor
  - type_conductor_polygon
  - type_cutout_zone
 

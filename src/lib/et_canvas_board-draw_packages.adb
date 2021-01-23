@@ -345,7 +345,7 @@ is
 			use pac_silk_polygons;
 
 			procedure draw_polygon (
-				polygon	: in out et_packages.type_polygon;
+				polygon	: in out type_polygon_non_conductor;
 				f		: in type_face)
 			is begin
 				if silkscreen_enabled (f) then
@@ -376,14 +376,14 @@ is
 			end draw_polygon;
 			
 			procedure query_polygon_top (c : in pac_silk_polygons.cursor) is
-				polygon : et_packages.type_polygon := element (c);
+				polygon : type_polygon_non_conductor := element (c);
 			begin
 				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_silk_polygons.cursor) is
-				polygon : et_packages.type_polygon := element (c);
+				polygon : type_polygon_non_conductor := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon (polygon, destination);
@@ -704,7 +704,7 @@ is
 			use pac_doc_polygons;
 
 			procedure draw_polygon (
-				polygon	: in out et_packages.type_polygon;
+				polygon	: in out type_polygon_non_conductor;
 				f		: in type_face)
 			is begin
 				if assy_doc_enabled (f) then
@@ -735,14 +735,14 @@ is
 			end draw_polygon;
 			
 			procedure query_polygon_top (c : in pac_doc_polygons.cursor) is
-				polygon : et_packages.type_polygon := element (c);
+				polygon : type_polygon_non_conductor := element (c);
 			begin
 				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_doc_polygons.cursor) is
-				polygon : et_packages.type_polygon := element (c);
+				polygon : type_polygon_non_conductor := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon (polygon, destination);
@@ -1274,7 +1274,7 @@ is
 			use pac_stop_polygons;
 
 			procedure draw_polygon (
-				polygon	: in out et_packages.type_polygon;
+				polygon	: in out type_polygon_non_conductor;
 				f		: in type_face)
 			is begin
 				if stop_mask_enabled (f) then
@@ -1304,14 +1304,14 @@ is
 			end draw_polygon;
 			
 			procedure query_polygon_top (c : in pac_stop_polygons.cursor) is
-				polygon : et_packages.type_polygon := element (c);
+				polygon : type_polygon_non_conductor := element (c);
 			begin
 				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_stop_polygons.cursor) is
-				polygon : et_packages.type_polygon := element (c);
+				polygon : type_polygon_non_conductor := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon (polygon, destination);
@@ -1548,7 +1548,7 @@ is
 			use pac_stencil_polygons;
 
 			procedure draw_polygon (
-				polygon	: in out et_packages.type_polygon;
+				polygon	: in out type_polygon_non_conductor;
 				f		: in type_face)
 			is begin
 				if stencil_enabled (f) then
@@ -1578,14 +1578,14 @@ is
 			end draw_polygon;
 			
 			procedure query_polygon_top (c : in pac_stencil_polygons.cursor) is
-				polygon : et_packages.type_polygon := element (c);
+				polygon : type_polygon_non_conductor := element (c);
 			begin
 				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_stencil_polygons.cursor) is
-				polygon : et_packages.type_polygon := element (c);
+				polygon : type_polygon_non_conductor := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon (polygon, destination);

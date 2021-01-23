@@ -813,7 +813,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_packages.type_polygon) is begin
+				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
 					log (text => board_silk_screen & "polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end;
@@ -1009,7 +1009,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_packages.type_polygon) is begin
+				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
 					log (text => doc & "polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end;
@@ -1207,7 +1207,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_packages.type_polygon) is begin
+				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
 					log (text => stencil & "polygon corner points", level => log_threshold + log_threshold_add);
 					move_polygon (polygon);
 				end move_polygon;
@@ -1371,7 +1371,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_packages.type_polygon) is begin
+				procedure move_polygon (polygon : in out type_polygon_non_conductor) is begin
 					log (text => stop & "polygon corner points", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;

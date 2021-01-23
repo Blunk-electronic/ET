@@ -301,7 +301,7 @@ package et_packages is
 
 	
 	-- POLYGON
-	type type_polygon (fill_style : type_fill_style) 
+	type type_polygon_non_conductor (fill_style : type_fill_style) 
 	-- CS rename to type_polygon_non_conductor
 	is new type_polygon_base with record
 		easing : type_easing;
@@ -484,7 +484,7 @@ package et_packages is
 
 	package pac_stop_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
-	package pac_stop_polygons is new indefinite_doubly_linked_lists (type_polygon);
+	package pac_stop_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
 	package pac_stop_cutouts is new doubly_linked_lists (type_cutout_zone);
 	
 	-- This is the type for stop mask objects in general.
@@ -529,7 +529,7 @@ package et_packages is
 
 	package pac_stencil_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
-	package pac_stencil_polygons is new indefinite_doubly_linked_lists (type_polygon);
+	package pac_stencil_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
 	package pac_stencil_cutouts is new doubly_linked_lists (type_cutout_zone);	
 	
 	-- This is the type for solder paste stencil objects in general:
@@ -572,7 +572,7 @@ package et_packages is
 	
 	package pac_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle); -- CS rename to pac_silk_circles
 
-	package pac_silk_polygons is new indefinite_doubly_linked_lists (type_polygon);
+	package pac_silk_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
 	package pac_silk_cutouts is new doubly_linked_lists (type_cutout_zone);	
 	
 
@@ -616,7 +616,7 @@ package et_packages is
 	
 	package pac_doc_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 	
-	package pac_doc_polygons is new indefinite_doubly_linked_lists (type_polygon);
+	package pac_doc_polygons is new indefinite_doubly_linked_lists (type_polygon_non_conductor);
 	package pac_doc_cutouts is new doubly_linked_lists (type_cutout_zone);	
 	
 	-- This is the base type for assembly documentation objects in general:
