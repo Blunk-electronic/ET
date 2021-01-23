@@ -651,7 +651,7 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end move_via;
 
-					procedure move_polygon (polygon : in out et_pcb.type_conductor_polygon_solid) is begin
+					procedure move_polygon (polygon : in out et_pcb.type_polygon_conductor_signal_solid) is begin
 						log (text => "polygon segments", level => log_threshold + 4);
 						et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 					end move_polygon;

@@ -23,6 +23,15 @@ et_pcb
 - derived from type_polygon_conductor
  - type_polygon_conductor_solid_floating
  - type_polygon_conductor_hatched_floating
+
+ 
+- derived from et_packages.type_polygon_conductor_solid 
+ - type_polygon_conductor_route_solid
+
+- derived from et_packages.type_polygon_conductor_hatched
+ - type_polygon_conductor_route_hatched
+
+ 
  
 - derived from et_packages.type_cutout_zone
  - type_conductor_cutout
