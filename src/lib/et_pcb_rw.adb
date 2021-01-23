@@ -1372,7 +1372,6 @@ package body et_pcb_rw is
 		use pac_route_restrict_polygons;
 	begin
 		fill_zone_begin;
-		write_fill_status (get_fill_status (element (cursor)));
 		write_signal_layers (element (cursor).layers);
 
 		contours_begin;
@@ -1432,7 +1431,6 @@ package body et_pcb_rw is
 		use pac_via_restrict_polygons;
 	begin
 		fill_zone_begin;
-		write_fill_status (get_fill_status (element (cursor)));
 		write_signal_layers (element (cursor).layers);			
 
 		contours_begin;

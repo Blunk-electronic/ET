@@ -3785,14 +3785,11 @@ is
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) 
-				is
-					p : type_polygon;
-				begin
-					p := type_polygon (to_fillable_polygon (polygon, board_filled));
-
+				is begin
 					append (
 						container	=> module.board.route_restrict.polygons,
-						new_item	=> (p with signal_layers));
+						new_item	=> (type_polygon_base (to_fillable_polygon (polygon, board_filled))
+										   with signal_layers));
 				end do_it;
 									
 			begin -- insert_polygon_route_restrict
@@ -3898,14 +3895,11 @@ is
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) 
-				is
-					p : type_polygon;
-				begin
-					p := type_polygon (to_fillable_polygon (polygon, board_filled));
-					
+				is begin
 					append (
 						container	=> module.board.via_restrict.polygons,
-						new_item	=> (p with signal_layers));
+						new_item	=> (type_polygon_base (to_fillable_polygon (polygon, board_filled))
+										with signal_layers));
 				end do_it;
 									
 			begin -- insert_polygon_via_restrict

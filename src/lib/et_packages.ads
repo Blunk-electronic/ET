@@ -713,10 +713,10 @@ package et_packages is
 	
 	package pac_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
-	type type_route_restrict_polygon is new pac_shapes.type_polygon with record
+	type type_route_restrict_polygon is new pac_shapes.type_polygon_base with record
 		layers 	: type_signal_layers.set;
 	end record;
-	-- A polygon in route restrict is always filled.
+
 
 	package pac_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
 
@@ -766,10 +766,9 @@ package et_packages is
 	package pac_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
 
 	
-	type type_via_restrict_polygon is new pac_shapes.type_polygon with record
+	type type_via_restrict_polygon is new pac_shapes.type_polygon_base with record
 		layers 	: type_signal_layers.set;
 	end record;
-	-- A polygon in via restrict is always filled.
 	
 	package pac_via_restrict_polygons is new doubly_linked_lists (type_via_restrict_polygon);
 

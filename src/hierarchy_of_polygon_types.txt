@@ -15,7 +15,7 @@ et_packages
  - type_polygon_conductor_solid
  - type_polygon_conductor_hatched
 
-- derived from et_geometry.type_polygon
+- derived from et_geometry.type_polygon_base
  - type_route_restrict_polygon
  - type_via_restrict_polygon
 

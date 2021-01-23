@@ -1344,14 +1344,11 @@ package body et_pcb_rw.device_packages is
 					board_reset_polygon;
 				end;
 
-				procedure append_route_restrict_polygon is 
-					p : pac_shapes.type_polygon;
-				begin
-					p := pac_shapes.type_polygon (to_fillable_polygon (polygon, board_filled));
-
+				procedure append_route_restrict_polygon is begin
 					pac_route_restrict_polygons.append (
 						container	=> packge.route_restrict.polygons, 
-						new_item	=> (p with signal_layers));
+						new_item	=> (type_polygon_base (to_fillable_polygon (polygon, board_filled)) 
+										with signal_layers));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1359,14 +1356,11 @@ package body et_pcb_rw.device_packages is
 					et_pcb_stack.type_signal_layers.clear (signal_layers);
 				end;
 
-				procedure append_via_restrict_polygon is 
-					p : pac_shapes.type_polygon;
-				begin
-					p := pac_shapes.type_polygon (to_fillable_polygon (polygon, board_filled));
-
+				procedure append_via_restrict_polygon is begin
 					pac_via_restrict_polygons.append (
 						container	=> packge.via_restrict.polygons, 
-						new_item	=> (p with signal_layers));
+						new_item	=> (type_polygon_base (to_fillable_polygon (polygon, board_filled))
+										with signal_layers));
 
 					-- clean up for next polygon
 					board_reset_polygon;
