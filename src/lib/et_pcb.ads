@@ -251,15 +251,12 @@ package et_pcb is
 	subtype type_polygon_priority is natural range natural'first .. polygon_priority_max;
 	function to_string (priority_level : in type_polygon_priority) return string;
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
+
 	
 	-- A floating conductor polygon is not connected to any net:
 	type type_polygon_conductor_solid_floating is new 
 		type_polygon_conductor (fill_style => SOLID) 
 	with record
-		width_min		: type_track_width; -- the minimum width
-
-		-- the space between foreign pads and the polygon:
-		isolation		: type_track_clearance := type_track_clearance'first;
 		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
 	end record;
@@ -271,8 +268,6 @@ package et_pcb is
 	type type_polygon_conductor_hatched_floating is new 
 		type_polygon_conductor (fill_style => HATCHED) 
 	with record
-		width_min		: type_track_width; -- the minimum width
-		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
 	end record;

@@ -316,6 +316,13 @@ package et_packages is
 	-- Polygons in conductor layers have a dedicated type for the hatching:
 	type type_polygon_conductor (fill_style : type_fill_style) 
 	is new type_polygon_base with record
+
+		-- the minimum width:
+		width_min : type_track_width := type_track_width'first;
+
+		-- the space between the polygon and foreign conducor objects:
+		isolation : type_track_clearance := type_track_clearance'first; 
+	
 		easing : type_easing;
 		
 		case fill_style is
@@ -385,21 +392,24 @@ package et_packages is
 
 	-- the minimal width of a polygon
 	keyword_min_width : constant string := "min_width";
+
+
 	
-	type type_polygon_conductor_solid is new type_polygon_conductor (fill_style => SOLID) with record
-		width_min : type_track_width; -- the minimum width
-		isolation : type_track_clearance := type_track_clearance'first; 
-	end record;
+	-- SOLID CONDUCTOR POLYGONS
+	type type_polygon_conductor_solid 
+	is new type_polygon_conductor (fill_style => SOLID) with null record;
 
 	package pac_conductor_polygons_solid is new doubly_linked_lists (type_polygon_conductor_solid);
 
-	type type_polygon_conductor_hatched is new type_polygon_conductor (fill_style => HATCHED) with record
-		width_min : type_track_width; -- the minimum width
-		isolation : type_track_clearance := type_track_clearance'first;
-	end record;
+	
+	-- HATCHED CONDUCTOR POLYGONS
+	type type_polygon_conductor_hatched
+	is new type_polygon_conductor (fill_style => HATCHED) with null record;
 
 	package pac_conductor_polygons_hatched is new doubly_linked_lists (type_polygon_conductor_hatched);
 
+
+	
 	-- A cutout-polygon used in conductor layers:
 	package pac_conductor_cutouts is new doubly_linked_lists (type_cutout_zone);
 
