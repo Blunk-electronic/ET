@@ -468,8 +468,11 @@ package et_packages is
 		filled : type_filled;
 	end record;
 
+
+
 	
 -- SOLDER STOP MASK
+	
 	type type_stop_line is new type_line with record
 		width	: type_general_line_width;
 	end record;
@@ -515,6 +518,7 @@ package et_packages is
 
 
 -- STENCIL / SOLDER PASTE MASK
+	
 	type type_stencil_line is new type_line with record
 		width	: type_general_line_width;
 	end record;
@@ -558,6 +562,7 @@ package et_packages is
 	
 	
 -- SILK SCREEN
+	
 	type type_silk_line is new type_line with record
 		width	: type_general_line_width;
 	end record;
@@ -598,10 +603,12 @@ package et_packages is
 		bottom	: type_silk_screen;
 	end record;
 
+	
 
 	
 
 -- ASSEMBLY DOCUMENTATION
+	
 	type type_doc_line is new type_line with record
 		width	: type_general_line_width;
 	end record;
@@ -651,17 +658,15 @@ package et_packages is
 	keepout_line_width : constant type_general_line_width := text_parameters_fab.width_min;
 
 	type type_keepout_line is new type_line with null record;
-	
 	package pac_keepout_lines is new doubly_linked_lists (type_keepout_line);
 
 	type type_keepout_arc is new type_arc with null record;
-		
 	package pac_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
 	
 	package pac_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
 
-	package pac_keepout_polygons is new doubly_linked_lists (pac_shapes.type_polygon);
-	-- Polygons in keepout are always filled.
+	type type_keepout_polygon is new type_polygon_base with null record;
+	package pac_keepout_polygons is new doubly_linked_lists (type_keepout_polygon);
 	
 	package pac_keepout_cutouts is new doubly_linked_lists (type_cutout_zone);	
 	
@@ -686,6 +691,8 @@ package et_packages is
 	end record;
 	
 	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
+
+
 
 	
 	
@@ -713,13 +720,13 @@ package et_packages is
 	
 	package pac_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
-	type type_route_restrict_polygon is new pac_shapes.type_polygon_base with record
+	type type_route_restrict_polygon is new type_polygon_base with record
 		layers 	: type_signal_layers.set;
 	end record;
 
-
 	package pac_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
 
+	
 	type type_route_restrict_cutout is new type_cutout_zone with record
 		layers 	: type_signal_layers.set;
 	end record;
@@ -738,6 +745,7 @@ package et_packages is
 
 
 
+	
 	
 
 -- VIA RESTRICT
@@ -766,7 +774,7 @@ package et_packages is
 	package pac_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
 
 	
-	type type_via_restrict_polygon is new pac_shapes.type_polygon_base with record
+	type type_via_restrict_polygon is new type_polygon_base with record
 		layers 	: type_signal_layers.set;
 	end record;
 	
@@ -789,6 +797,8 @@ package et_packages is
 		cutouts		: pac_via_restrict_cutouts.list;
 		texts		: pac_conductor_texts.list; -- for notes on via restrict
 	end record;
+
+
 
 	
 -- PCB CONTOURS

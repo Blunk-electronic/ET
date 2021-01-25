@@ -3018,16 +3018,16 @@ package body et_geometry is
 -- 			null;
 -- 		end;
 
-		function to_fillable_polygon (
-			polygon	: in type_polygon_base'class;
-			filled	: in type_filled)
-			return type_polygon'class
-		is 
-			p : type_polygon;
-		begin
-			--p.filled := filled;
-			return p;
-		end to_fillable_polygon;
+		--function to_fillable_polygon (
+			--polygon	: in type_polygon_base'class;
+			--filled	: in type_filled)
+			--return type_polygon'class
+		--is 
+			--p : type_polygon;
+		--begin
+			----p.filled := filled;
+			--return p;
+		--end to_fillable_polygon;
 		
 		--function get_fill_status (polygon : in type_polygon)
 			--return type_filled

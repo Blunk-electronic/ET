@@ -3214,24 +3214,16 @@ is
 						end case;
 					end;
 
-					procedure append_keepout_polygon_top is 
-						kp : pac_shapes.type_polygon;
-					begin
-						kp := pac_shapes.type_polygon (to_fillable_polygon (polygon, board_filled));
-						
+					procedure append_keepout_polygon_top is begin
 						pac_keepout_polygons.append (
 							container	=> module.board.keepout.top.polygons, 
-							new_item	=> kp);
+							new_item	=> (type_polygon_base (polygon) with null record));
 					end;
 
-					procedure append_keepout_polygon_bottom is
-						kp : pac_shapes.type_polygon;
-					begin
-						kp := pac_shapes.type_polygon (to_fillable_polygon (polygon, board_filled));
-
+					procedure append_keepout_polygon_bottom is begin
 						pac_keepout_polygons.append (
 							container	=> module.board.keepout.bottom.polygons, 
-							new_item	=> kp);
+							new_item	=> (type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_stencil_polygon_top is begin
@@ -3788,8 +3780,7 @@ is
 				is begin
 					append (
 						container	=> module.board.route_restrict.polygons,
-						new_item	=> (type_polygon_base (to_fillable_polygon (polygon, board_filled))
-										   with signal_layers));
+						new_item	=> (type_polygon_base (polygon) with signal_layers));
 				end do_it;
 									
 			begin -- insert_polygon_route_restrict
@@ -3898,8 +3889,7 @@ is
 				is begin
 					append (
 						container	=> module.board.via_restrict.polygons,
-						new_item	=> (type_polygon_base (to_fillable_polygon (polygon, board_filled))
-										with signal_layers));
+						new_item	=> (type_polygon_base (polygon) with signal_layers));
 				end do_it;
 									
 			begin -- insert_polygon_via_restrict

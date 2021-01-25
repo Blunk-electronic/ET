@@ -1178,27 +1178,21 @@ package body et_pcb_rw.device_packages is
 					board_reset_polygon;
 				end;
 
-				procedure append_keepout_polygon_top is
-					kp : pac_shapes.type_polygon;
-				begin
-					kp := pac_shapes.type_polygon (to_fillable_polygon (polygon, board_filled));
+				procedure append_keepout_polygon_top is begin
 					
 					pac_keepout_polygons.append (
 						container	=> packge.keepout.top.polygons, 
-						new_item	=> kp);
+						new_item	=> (type_polygon_base (polygon) with null record));
 						
 					-- clean up for next polygon
 					board_reset_polygon;
 				end;
 
-				procedure append_keepout_polygon_bottom is 
-					kp : pac_shapes.type_polygon;
-				begin
-					kp := pac_shapes.type_polygon (to_fillable_polygon (polygon, board_filled));
+				procedure append_keepout_polygon_bottom is begin
 
 					pac_keepout_polygons.append (
 						container	=> packge.keepout.bottom.polygons, 
-						new_item	=> kp);
+						new_item	=> (type_polygon_base (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1347,7 +1341,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_route_restrict_polygon is begin
 					pac_route_restrict_polygons.append (
 						container	=> packge.route_restrict.polygons, 
-						new_item	=> (type_polygon_base (to_fillable_polygon (polygon, board_filled)) 
+						new_item	=> (type_polygon_base (polygon) 
 										with signal_layers));
 
 					-- clean up for next polygon
@@ -1359,7 +1353,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_via_restrict_polygon is begin
 					pac_via_restrict_polygons.append (
 						container	=> packge.via_restrict.polygons, 
-						new_item	=> (type_polygon_base (to_fillable_polygon (polygon, board_filled))
+						new_item	=> (type_polygon_base (polygon)
 										with signal_layers));
 
 					-- clean up for next polygon

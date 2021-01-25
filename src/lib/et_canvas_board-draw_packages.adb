@@ -1043,7 +1043,7 @@ is
 			use pac_keepout_polygons;
 
 			procedure draw_polygon (
-				polygon	: in out pac_shapes.type_polygon;
+				polygon	: in out type_polygon_base'class;
 				f		: in type_face)
 			is begin
 				if keepout_enabled (f) then
@@ -1065,14 +1065,14 @@ is
 			end draw_polygon;
 			
 			procedure query_polygon_top (c : in pac_keepout_polygons.cursor) is
-				polygon : pac_shapes.type_polygon := element (c);
+				polygon : type_keepout_polygon := element (c);
 			begin
 				set_destination;
 				draw_polygon (polygon, destination);
 			end query_polygon_top;
 
 			procedure query_polygon_bottom (c : in pac_keepout_polygons.cursor) is
-				polygon : pac_shapes.type_polygon := element (c);
+				polygon : type_keepout_polygon := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_polygon (polygon, destination);

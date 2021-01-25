@@ -7,10 +7,15 @@ et_geometry
 
 et_packages
 - derived from type_polygon_base:
- - type_polygon_non_conductor
+ - type_polygon_non_conductor (used by stop mask, stencil, silkscreen, assy doc)
  - type_polygon_conductor
  - type_cutout_zone
-
+ - type_keepout_polygon
+ - type_route_restrict_polygon
+ - type_via_restrict_polygon
+ 
+ 
+ 
 - derived from type_polygon_conductor
  - type_polygon_conductor_solid
  - type_polygon_conductor_hatched

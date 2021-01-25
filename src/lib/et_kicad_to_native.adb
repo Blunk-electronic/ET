@@ -1585,7 +1585,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 				
-				procedure move_polygon (polygon : in out et_board_shapes_and_text.pac_shapes.type_polygon) is begin
+				procedure move_polygon (polygon : in out type_keepout_polygon) is begin
 					log (text => keepout & "polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
