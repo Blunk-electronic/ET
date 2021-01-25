@@ -4366,7 +4366,7 @@ is
 					use et_packages;
 
 					procedure connection_thermal is
-						p : et_pcb.type_polygon_conductor_signal_solid (connection => et_pcb.THERMAL);
+						p : et_pcb.type_polygon_conductor_route_solid (connection => et_pcb.THERMAL);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4385,7 +4385,7 @@ is
 					end;
 
 					procedure connection_solid is
-						p : et_pcb.type_polygon_conductor_signal_solid (connection => et_pcb.SOLID);
+						p : et_pcb.type_polygon_conductor_route_solid (connection => et_pcb.SOLID);
 					begin
 						load_segments (p, get_segments (polygon));
 						

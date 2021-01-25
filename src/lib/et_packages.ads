@@ -385,7 +385,7 @@ package et_packages is
 	package pac_conductor_circles is new indefinite_doubly_linked_lists (type_conductor_circle);
 	use pac_conductor_circles;
 
-	
+	 
 	
 	-- the space between foreign pads and the polygon outline
 	keyword_isolation : constant string := "isolation";

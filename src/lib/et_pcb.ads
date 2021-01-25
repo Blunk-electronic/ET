@@ -351,7 +351,7 @@ package et_pcb is
 	end record;
 	
 	
-	type type_polygon_conductor_signal_solid (connection : type_polygon_pad_connection) is new
+	type type_polygon_conductor_route_solid (connection : type_polygon_pad_connection) is new
 		et_packages.type_polygon_conductor_solid
 	with record
 		layer 			: type_signal_layer;
@@ -388,7 +388,7 @@ package et_pcb is
 
 	
 	package pac_signal_polygons_solid is new
-		indefinite_doubly_linked_lists (type_polygon_conductor_signal_solid);
+		indefinite_doubly_linked_lists (type_polygon_conductor_route_solid);
 	
 	package pac_signal_polygons_hatched is new
 		indefinite_doubly_linked_lists (type_polygon_conductor_route_hatched);	

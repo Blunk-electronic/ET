@@ -1906,7 +1906,7 @@ is
 		shape : type_track_shape := type_track_shape'value (f (7));
 
 		procedure make_polygon is
-			ps : et_pcb.type_polygon_conductor_signal_solid (THERMAL);
+			ps : et_pcb.type_polygon_conductor_route_solid (THERMAL);
 			--ph : et_pcb.type_conductor_polygon_hatched (THERMAL);
 
 			-- Extract from the given command the polygon arguments (everything after width 0.25):
@@ -1915,7 +1915,7 @@ is
 			ps.width_min := to_distance (f (8));
 
 			-- Build the polygon from the arguments:
-			ps := et_pcb.type_polygon_conductor_signal_solid (to_polygon (arguments));
+			ps := et_pcb.type_polygon_conductor_route_solid (to_polygon (arguments));
 
 			-- Assign properties:
 			--ps.isolaton
