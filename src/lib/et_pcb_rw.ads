@@ -233,8 +233,8 @@ package et_pcb_rw is
 
 	
 	type type_board_polygon is new pac_shapes.type_polygon_base with null record;
-	
-	
+
+
 	procedure check_outline (
 		polygon			: in type_board_polygon;
 		log_threshold	: in et_string_processing.type_log_level);

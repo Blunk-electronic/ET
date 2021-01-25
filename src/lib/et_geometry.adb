@@ -2350,6 +2350,8 @@ package body et_geometry is
 			arguments : in type_fields_of_line)
 			return type_polygon_base'class
 		is
+			--type type_polygon_local is new type_polygon_base with null record;
+			
 			result : type_polygon; -- will be converted back to anchestor on return
 
 			function f (place : in count_type) return string is begin
@@ -3017,31 +3019,7 @@ package body et_geometry is
 -- 			-- CS move segments of polygon
 -- 			null;
 -- 		end;
-
-		--function to_fillable_polygon (
-			--polygon	: in type_polygon_base'class;
-			--filled	: in type_filled)
-			--return type_polygon'class
-		--is 
-			--p : type_polygon;
-		--begin
-			----p.filled := filled;
-			--return p;
-		--end to_fillable_polygon;
-		
-		--function get_fill_status (polygon : in type_polygon)
-			--return type_filled
-		--is begin
-			--return polygon.filled;
-		--end get_fill_status;
-	
-		--procedure set_fill_status (
-			--polygon	: in out type_polygon;
-			--filled	: in type_filled) 
-		--is begin
-			--polygon.filled := filled;
-		--end set_fill_status;
-		
+			
 	end generic_pac_shapes;
 
 	

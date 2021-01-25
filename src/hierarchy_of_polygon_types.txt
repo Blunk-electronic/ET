@@ -3,7 +3,7 @@ HIERARCHY OF POLYGON TYPES
 
 et_geometry
 - abstract private type_polygon_base
-- derived private type_polygon ? purpose ?
+- derived private type_polygon. for package internal things. not publicly visible
 
 et_packages
 - derived from type_polygon_base:

@@ -1023,19 +1023,8 @@ package et_geometry is
 
 		
 
-		type type_polygon is new type_polygon_base with private;
-
-		--function to_fillable_polygon (
-			--polygon	: in type_polygon_base'class;
-			--filled	: in type_filled)
-			--return type_polygon'class;
-		
-		--function get_fill_status (polygon : in type_polygon)
-			--return type_filled;
-
-		--procedure set_fill_status (
-			--polygon	: in out type_polygon;
-			--filled	: in type_filled);
+		--type type_polygon is new type_polygon_base with private;
+		-- not publicly visible. for internal use only.
 
 		
 	private
