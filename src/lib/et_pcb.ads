@@ -252,10 +252,18 @@ package et_pcb is
 	function to_string (priority_level : in type_polygon_priority) return string;
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 
+
+	
+	type type_conductor_polygon_properties is record
+		layer 			: type_signal_layer := type_signal_layer'first;
+		priority_level	: type_polygon_priority := type_polygon_priority'first;
+	end record;
+
+	
 	
 	-- A floating conductor polygon is not connected to any net:
 	type type_polygon_conductor_solid_floating is new 
-		type_polygon_conductor (fill_style => SOLID) 
+		type_polygon_conductor (fill_style => SOLID)
 	with record
 		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;

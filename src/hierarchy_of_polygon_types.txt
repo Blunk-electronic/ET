@@ -26,15 +26,15 @@ et_packages
 
 et_pcb
 - derived from type_polygon_conductor
- - type_polygon_conductor_solid_floating
- - type_polygon_conductor_hatched_floating
+ - type_polygon_conductor_solid_floating (selectors: layer, priority)
+ - type_polygon_conductor_hatched_floating (selectors: layer, priority)
 
  
 - derived from type_polygon_conductor_solid 
- - type_polygon_conductor_route_solid
+ - type_polygon_conductor_route_solid  (selectors: layer, priority)
 
 - derived from type_polygon_conductor_hatched
- - type_polygon_conductor_route_hatched
+ - type_polygon_conductor_route_hatched  (selectors: layer, priority)
 
  
  
