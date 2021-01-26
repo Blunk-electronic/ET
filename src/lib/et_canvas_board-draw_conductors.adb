@@ -176,7 +176,7 @@ is
 	procedure query_polygon (c : in et_pcb.pac_conductor_polygons_floating_solid.cursor) is
 	begin
 		-- Draw the polygon if it is in the current layer:
-		if element (c).layer = current_layer then
+		if element (c).properties.layer = current_layer then
 			
 			draw_polygon (
 				area	=> in_area,

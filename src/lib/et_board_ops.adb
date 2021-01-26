@@ -4305,19 +4305,20 @@ package body et_board_ops is
 	begin
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " placing floating polygon in conductor layer ...",
+			& " placing polygon in conductor layer ...",
 			level => log_threshold);
 
-		log (text => conductor_polygon_properties_to_string (
-				polygon.fill_style, polygon.width_min, polygon.isolation,
-				polygon.layer, polygon.priority_level),
-				level => log_threshold + 1);
-
+		log_indentation_up;
+		
+		log (text => conductor_polygon_properties_to_string (polygon, polygon.properties),
+			level => log_threshold + 1);
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> place_polygon'access);
 
+		log_indentation_down;
 	end place_polygon_conductor_floating;
 
 	

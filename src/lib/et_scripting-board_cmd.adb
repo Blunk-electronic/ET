@@ -1814,8 +1814,10 @@ is
 				width_min	=> to_distance (f (7)),
 				-- CS Assign properties:
 				--isolaton
-				layer => to_signal_layer (f (5)),
-				--priority_level
+				properties	=> (
+						layer => to_signal_layer (f (5)),
+						others => <>), --priority_level
+				
 				others		=> <>);
 
 			place_polygon_conductor_floating (module_cursor, ps, log_threshold + 1);

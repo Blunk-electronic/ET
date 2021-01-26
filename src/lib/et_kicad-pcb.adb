@@ -4617,7 +4617,7 @@ package body et_kicad.pcb is
 	begin
 		-- general stuff
 		log (text => "polygon" & 
-			 " " & text_polygon_signal_layer & to_string (element (cursor).layer) &
+			 " " & text_polygon_signal_layer & to_string (element (cursor).properties.layer) &
 			 " " & text_polygon_width_min & to_string (element (cursor).width_min) &
 			 " " & et_packages.keyword_corner_easing & to_string (element (cursor).easing.style) &
 			 " " & et_packages.keyword_easing_radius & to_string (element (cursor).easing.radius),
@@ -4937,13 +4937,13 @@ package body et_kicad.pcb is
 									begin
 										p.width_min	:= element (polygon_cursor).min_thickness;
 										p.isolation := element (polygon_cursor).isolation_gap;
-										p.priority_level := element (polygon_cursor).priority_level;
+										p.properties.priority_level := element (polygon_cursor).priority_level;
 										
 										-- Translate the kicad layer id to the ET signal layer:
 										-- kicad signal layers are numbered from 0..31, ET signal layers are numbered from 1..n.
 										-- The bottom layer in kicad is always number 31. Top layer is number 0.
 										-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-										p.layer := et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1);
+										p.properties.layer := et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1);
 										
 										p.thermal := (
 													technology	=> element (polygon_cursor).pad_technology,
@@ -4963,13 +4963,13 @@ package body et_kicad.pcb is
 									begin
 										p.width_min	:= element (polygon_cursor).min_thickness;
 										p.isolation := element (polygon_cursor).isolation_gap;
-										p.priority_level := element (polygon_cursor).priority_level;
+										p.properties.priority_level := element (polygon_cursor).priority_level;
 										
 										-- Translate the kicad layer id to the ET signal layer:
 										-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
 										-- The bottom layer in kicad is always number 31. Top layer is number 0.
 										-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-										p.layer := et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1);
+										p.properties.layer := et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1);
 										
 										p.technology := element (polygon_cursor).pad_technology;
 
@@ -5288,7 +5288,7 @@ package body et_kicad.pcb is
 							-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
 							-- The bottom layer in kicad is always number 31. Top layer is number 0.
 							-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-							p.layer := et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1);
+							p.properties.layer := et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1);
 
 							-- CS set other properties like isolation and priority_level
 							

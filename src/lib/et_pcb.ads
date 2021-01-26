@@ -253,7 +253,8 @@ package et_pcb is
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 
 
-	
+	-- All fill zones in conductor layers have these common
+	-- properties:
 	type type_conductor_polygon_properties is record
 		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
@@ -265,8 +266,7 @@ package et_pcb is
 	type type_polygon_conductor_solid_floating is new 
 		type_polygon_conductor (fill_style => SOLID)
 	with record
-		layer 			: type_signal_layer := type_signal_layer'first;
-		priority_level	: type_polygon_priority := type_polygon_priority'first;
+		properties	: type_conductor_polygon_properties;
 	end record;
 
 	package pac_conductor_polygons_floating_solid is new 
@@ -276,8 +276,7 @@ package et_pcb is
 	type type_polygon_conductor_hatched_floating is new 
 		type_polygon_conductor (fill_style => HATCHED) 
 	with record
-		layer 			: type_signal_layer := type_signal_layer'first;
-		priority_level	: type_polygon_priority := type_polygon_priority'first;
+		properties	: type_conductor_polygon_properties;
 	end record;
 
 	package pac_conductor_polygons_floating_hatched is new
@@ -362,9 +361,8 @@ package et_pcb is
 	type type_polygon_conductor_route_solid (connection : type_polygon_pad_connection) is new
 		et_packages.type_polygon_conductor_solid
 	with record
-		layer 			: type_signal_layer;
-		priority_level	: type_polygon_priority := type_polygon_priority'first;
-				
+		properties	: type_conductor_polygon_properties;
+
 		case connection is
 			when THERMAL =>
 				thermal : type_thermal;
@@ -379,8 +377,7 @@ package et_pcb is
 	type type_polygon_conductor_route_hatched (connection : type_polygon_pad_connection) is new
 		et_packages.type_polygon_conductor_hatched 
 	with record
-		layer 			: type_signal_layer;
-		priority_level	: type_polygon_priority := type_polygon_priority'first;
+		properties	: type_conductor_polygon_properties;
 				
 		case connection is
 			when THERMAL =>
@@ -508,11 +505,8 @@ package et_pcb is
 -- LOGGING PROPERTIES OF OBJECTS
 
 	function conductor_polygon_properties_to_string (
-		fill_style		: in type_fill_style;
-		width_min		: in type_track_width;
-		isolation		: in type_track_clearance;
-		layer			: in type_signal_layer;
-		priority_level	: in type_polygon_priority)
+		polygon			: in type_polygon_conductor'class;
+		properties		: in type_conductor_polygon_properties)
 		return string;
 	
 	

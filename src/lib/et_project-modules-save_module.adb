@@ -595,8 +595,8 @@ is
 				write_width_min (element (polygon_solid_cursor).width_min);
 				write_isolation (element (polygon_solid_cursor).isolation);
 				
-				write_priority (element (polygon_solid_cursor).priority_level);
-				write_signal_layer (element (polygon_solid_cursor).layer);
+				write_priority (element (polygon_solid_cursor).properties.priority_level);
+				write_signal_layer (element (polygon_solid_cursor).properties.layer);
 
 				write_fill_stlye (et_packages.SOLID);
 
@@ -627,8 +627,8 @@ is
 				write_width_min (element (polygon_hatched_cursor).width_min);
 				write_isolation (element (polygon_hatched_cursor).isolation);
 				
-				write_priority (element (polygon_hatched_cursor).priority_level);
-				write_signal_layer (element (polygon_hatched_cursor).layer);
+				write_priority (element (polygon_hatched_cursor).properties.priority_level);
+				write_signal_layer (element (polygon_hatched_cursor).properties.layer);
 
 				write_fill_stlye (et_packages.HATCHED);
 				
@@ -1210,8 +1210,8 @@ is
 			write_width_min (element (cursor).width_min);
 			write_isolation (element (cursor).isolation);
 
-			write_priority (element (cursor).priority_level);
-			write_signal_layer (element (cursor).layer);
+			write_priority (element (cursor).properties.priority_level);
+			write_signal_layer (element (cursor).properties.layer);
 
 			write_fill_stlye (element (cursor).fill_style);
 
@@ -1230,8 +1230,8 @@ is
 			write_width_min (element (cursor).width_min);
 			write_isolation (element (cursor).isolation);
 
-			write_priority (element (cursor).priority_level);
-			write_signal_layer (element (cursor).layer);
+			write_priority (element (cursor).properties.priority_level);
+			write_signal_layer (element (cursor).properties.layer);
 
 			write_fill_stlye (element (cursor).fill_style);
 			write_hatching (element (cursor).hatching);

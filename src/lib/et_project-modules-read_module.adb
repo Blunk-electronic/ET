@@ -3921,9 +3921,8 @@ is
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style 		=> SOLID,
 										easing			=> board_easing,
-										priority_level	=> polygon_priority,
+										properties		=> (signal_layer, polygon_priority),
 										isolation		=> polygon_isolation,
-										layer			=> signal_layer,
 										width_min		=> polygon_width_min)
 										);
 
@@ -3933,9 +3932,8 @@ is
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style 		=> HATCHED,
 										easing			=> board_easing,
-										priority_level	=> polygon_priority,
+										properties		=> (signal_layer, polygon_priority),
 										isolation		=> polygon_isolation,
-										layer			=> signal_layer,
 										width_min		=> polygon_width_min,
 										hatching		=> board_hatching_conductor)
 										);
@@ -4026,7 +4024,7 @@ is
 				board_reset_circle;
 				board_reset_line_width;
 				board_reset_signal_layer;
-				-- CS reset other properites
+				-- CS reset other properties
 			end insert_circle_track;
 
 			procedure build_conductor_text (
@@ -4375,9 +4373,9 @@ is
 						p.width_min	:= polygon_width_min;
 						p.isolation	:= polygon_isolation;
 						
-						p.layer				:= signal_layer;
-						p.priority_level	:= polygon_priority;
-						p.thermal			:= thermal;
+						p.properties.layer			:= signal_layer;
+						p.properties.priority_level	:= polygon_priority;
+						p.thermal					:= thermal;
 
 						et_pcb.pac_signal_polygons_solid.append (
 							container	=> route.polygons_2.solid,
@@ -4394,10 +4392,9 @@ is
 						p.width_min	:= polygon_width_min;
 						p.isolation	:= polygon_isolation;
 						
-						p.layer				:= signal_layer;
-						p.priority_level	:= polygon_priority;
-						
-						p.technology := thermal.technology;
+						p.properties.layer			:= signal_layer;
+						p.properties.priority_level	:= polygon_priority;
+						p.technology				:= thermal.technology;
 
 						et_pcb.pac_signal_polygons_solid.append (
 							container	=> route.polygons_2.solid,
@@ -4425,9 +4422,9 @@ is
 						p.width_min	:= polygon_width_min;
 						p.isolation	:= polygon_isolation;
 						
-						p.layer				:= signal_layer;
-						p.priority_level	:= polygon_priority;
-						p.thermal			:= thermal;
+						p.properties.layer			:= signal_layer;
+						p.properties.priority_level	:= polygon_priority;
+						p.thermal					:= thermal;
 						
 						et_pcb.pac_signal_polygons_hatched.append (
 							container	=> route.polygons_2.hatched,
@@ -4444,8 +4441,8 @@ is
 						p.width_min	:= polygon_width_min;
 						p.isolation	:= polygon_isolation;
 						
-						p.layer				:= signal_layer;
-						p.priority_level	:= polygon_priority;
+						p.properties.layer			:= signal_layer;
+						p.properties.priority_level	:= polygon_priority;
 						
 						p.technology := thermal.technology;
 						

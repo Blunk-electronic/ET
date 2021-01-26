@@ -31,10 +31,10 @@ et_pcb
 
  
 - derived from type_polygon_conductor_solid 
- - type_polygon_conductor_route_solid  (selectors: layer, priority)
+ - type_polygon_conductor_route_solid (discriminiant : connection, selectors: layer, priority)
 
 - derived from type_polygon_conductor_hatched
- - type_polygon_conductor_route_hatched  (selectors: layer, priority)
+ - type_polygon_conductor_route_hatched (discriminiant : connection, selectors: layer, priority)
 
  
  

@@ -35,7 +35,10 @@
 --   history of changes:
 --
 
+with ada.strings.unbounded;
 with ada.exceptions;
+with ada.tags;
+
 with et_text;					use et_text;
 
 package body et_pcb is
@@ -183,27 +186,65 @@ package body et_pcb is
 
 
 	function conductor_polygon_properties_to_string (
-		fill_style		: in type_fill_style;
-		width_min		: in type_track_width;
-		isolation		: in type_track_clearance;
-		layer			: in type_signal_layer;
-		priority_level	: in type_polygon_priority)
+		polygon			: in type_polygon_conductor'class;
+		properties		: in type_conductor_polygon_properties)
 		return string
-	is begin
+	is
+		use ada.strings.unbounded;
+		use ada.tags;
+		
+		result : unbounded_string := to_unbounded_string ("properties:");
 
-			--& " fill style " & to_string (polygon.fill_style)
-			--& to_string (polygon.layer) & "."
-			--& " Minimal track width " & to_string (polygon.width_min) & "."
-			--& " Isolation " & to_string (polygon.isolation)
-			--& 
+		procedure append (s : in string) is begin
+			result := result & space & s;
+		end append;
+
+		procedure connected_with_net (p : in type_polygon_conductor_route_solid) is
+		begin
+			case p.connection is
+				when THERMAL => NULL;
+
+				when SOLID => null;
+			end case;
+
+		end connected_with_net;
+		
+	begin -- conductor_polygon_properties_to_string
+
+		if polygon'tag = type_polygon_conductor_solid_floating'tag 
+		or polygon'tag = type_polygon_conductor_hatched_floating'tag 
+		then
+			append ("floating");
 			
-			--level => log_threshold);
+		elsif polygon'tag = type_polygon_conductor_route_solid'tag 
+		or    polygon'tag = type_polygon_conductor_route_hatched'tag 
+		then
+			append ("net");
+			-- CS net name
+			
+			connected_with_net (type_polygon_conductor_route_solid (polygon));
+		end if;
 
+		
+		case polygon.fill_style is
+			when SOLID =>
+				append (keyword_fill_style & space & to_string (polygon.fill_style));
 
-		return "";
+				
+			when HATCHED =>
+				append (keyword_fill_style & space & to_string (polygon.fill_style));
 
-	
+		end case;
 
+		append (keyword_min_width & to_string (polygon.width_min));
+		append (keyword_isolation & to_string (polygon.isolation));
+		append (keyword_corner_easing & space & to_string (polygon.easing.style));
+		append (keyword_easing_radius & to_string (polygon.easing.radius));
+		
+		append (keyword_layer & to_string (properties.layer));
+		append (keyword_priority & to_string (properties.priority_level));
+
+		return to_string (result);
 
 	end conductor_polygon_properties_to_string;
 
