@@ -60,6 +60,7 @@ package et_pcb_rw is
 	section_board_layer_stack	: constant string 	:= "[BOARD_LAYER_STACK";
 	section_via					: constant string	:= "[VIA";
 	section_vias				: constant string	:= "[VIAS";
+	section_polygons			: constant string	:= "[POLYGONS";
 	
 	section_route				: constant string 	:= "[ROUTE";	
 	section_silk_screen			: constant string	:= "[SILK_SCREEN";

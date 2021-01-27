@@ -219,12 +219,12 @@ package body et_packages is
 
 	
 	-- EASING
-	function to_corner_easing (easing : in string) return type_corner_easing is begin
-		return type_corner_easing'value (easing);
+	function to_easing_style (easing : in string) return type_easing_style is begin
+		return type_easing_style'value (easing);
 	end;
 
-	function to_string (easing : in type_corner_easing) return string is begin
-		return to_lower (type_corner_easing'image (easing));
+	function to_string (easing : in type_easing_style) return string is begin
+		return to_lower (type_easing_style'image (easing));
 	end;
 
 

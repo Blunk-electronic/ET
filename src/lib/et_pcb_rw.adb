@@ -151,7 +151,7 @@ package body et_pcb_rw is
 	procedure write_easing (easing: in et_packages.type_easing) is
 		use et_packages;
 	begin
-		write (keyword => keyword_corner_easing, parameters => to_string (easing.style));
+		write (keyword => keyword_easing_style, parameters => to_string (easing.style));
 		write (keyword => keyword_easing_radius, parameters => to_string (easing.radius));
 	end;
 

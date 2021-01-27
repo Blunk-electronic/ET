@@ -37,6 +37,7 @@
 
 with ada.strings;				use ada.strings;
 with ada.exceptions;
+with ada.tags;
 
 with et_submodules;
 with et_numbering;
@@ -4288,18 +4289,27 @@ package body et_board_ops is
 
 
 
-	procedure place_polygon_conductor_floating (
+	procedure place_polygon_conductor (
 		module_cursor	: in pac_generic_modules.cursor;
-		polygon			: in type_polygon_conductor_solid_floating;
+		polygon			: in type_polygon_conductor'class;
 		log_threshold	: in type_log_level)
 	is
+		use ada.tags;
+		
 		procedure place_polygon (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
 			use pac_conductor_polygons_floating_solid;
+
+			p : type_polygon_conductor_solid_floating := 
+				type_polygon_conductor_solid_floating (polygon);
+			
 		begin
-			module.board.conductors.polygons.solid.append (polygon);
+			log (text => conductor_polygon_properties_to_string (p, p.properties),
+				level => log_threshold + 1);
+
+			module.board.conductors.polygons.solid.append (p);
 		end place_polygon;
 
 	begin
@@ -4310,16 +4320,20 @@ package body et_board_ops is
 
 		log_indentation_up;
 		
-		log (text => conductor_polygon_properties_to_string (polygon, polygon.properties),
-			level => log_threshold + 1);
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> place_polygon'access);
 
+		if polygon'tag = type_polygon_conductor_solid_floating'tag then
+
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> place_polygon'access);
+
+		else
+			null;
+		end if;
+		
 		log_indentation_down;
-	end place_polygon_conductor_floating;
+	end place_polygon_conductor;
 
 	
 end et_board_ops;

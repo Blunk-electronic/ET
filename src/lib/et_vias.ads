@@ -190,7 +190,7 @@ package et_vias is
 
 
 
-	type type_via_settings is record
+	type type_user_settings_vias is record
 		drill			: type_user_specific_drill_size;
 		restring_inner	: type_user_specific_restring;
 		restring_outer	: type_user_specific_restring;

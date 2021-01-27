@@ -598,9 +598,10 @@ package et_board_ops is
 
 
 -- POLYGONS / FILL ZONES
-	procedure place_polygon_conductor_floating (
+	
+	procedure place_polygon_conductor (
 		module_cursor	: in pac_generic_modules.cursor;
-		polygon			: in type_polygon_conductor_solid_floating;
+		polygon			: in type_polygon_conductor'class;
 		log_threshold	: in type_log_level);
 
 	

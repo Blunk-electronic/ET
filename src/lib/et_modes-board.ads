@@ -89,6 +89,7 @@ package et_modes.board is
 		NOUN_ORIGINS, -- the center of a package
 		NOUN_OUTLINE,
 		NOUN_PARTCODE,
+		NOUN_POLYGON,
 		NOUN_PNP, -- pick & place
 		NOUN_PURPOSE,
 		NOUN_RESTRICT,

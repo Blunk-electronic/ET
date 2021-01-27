@@ -2941,7 +2941,7 @@ package body et_kicad.pcb is
 						when SEC_SMOOTHING =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => polygon.easing.style := to_corner_easing (to_string (arg));
+								when 1 => polygon.easing.style := to_easing_style (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -4619,7 +4619,7 @@ package body et_kicad.pcb is
 		log (text => "polygon" & 
 			 " " & text_polygon_signal_layer & to_string (element (cursor).properties.layer) &
 			 " " & text_polygon_width_min & to_string (element (cursor).width_min) &
-			 " " & et_packages.keyword_corner_easing & to_string (element (cursor).easing.style) &
+			 " " & et_packages.keyword_easing_style & to_string (element (cursor).easing.style) &
 			 " " & et_packages.keyword_easing_radius & to_string (element (cursor).easing.radius),
 			 level => log_threshold);
 

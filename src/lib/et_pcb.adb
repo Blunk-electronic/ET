@@ -238,7 +238,7 @@ package body et_pcb is
 
 		append (keyword_min_width & to_string (polygon.width_min));
 		append (keyword_isolation & to_string (polygon.isolation));
-		append (keyword_corner_easing & space & to_string (polygon.easing.style));
+		append (keyword_easing_style & space & to_string (polygon.easing.style));
 		append (keyword_easing_radius & to_string (polygon.easing.radius));
 		
 		append (keyword_layer & to_string (properties.layer));

@@ -1788,40 +1788,150 @@ is
 
 
 -- ROUTE / TRACK / POLYGON
+
+	-- Applies to polygons (or fill zones) in conductor layers only.
+	-- Parses a command like "board demo set polygon fill solid/hatched"
+	-- or "board demo set polygon isolaton 0.4" and sets the value
+	-- in user specific settings..
+	procedure set_polygon_properties is
+		kw_fill		: constant string := "fill";
+		kw_width	: constant string := "width";
+		kw_isolation: constant string := "isolation";
+		kw_easing	: constant string := "easing";
+		kw_style	: constant string := "style";
+		kw_radius	: constant string := "radius";
+		kw_priority	: constant string := "priority";
+
+		use pac_generic_modules;
+		use et_schematic;
+
+		procedure expect_keywords is 
+			comma : constant character := ',';
+		begin
+			raise syntax_error_1 with 
+				"ERROR: Expect keyword "
+				& enclose_in_quotes (kw_width) & comma
+				& enclose_in_quotes (kw_priority) & comma
+				& enclose_in_quotes (kw_easing) & " or "
+				& enclose_in_quotes (kw_isolation) 
+				& " after " & to_string (noun) & " !";
+		end expect_keywords;
+
+
+		procedure set_fill_style (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.polygons.fill_style := to_fill_style (f (6));
+		end set_fill_style;
+
+		procedure set_min_width (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.polygons.min_width := to_distance (f (6));
+		end set_min_width;
+
+		procedure set_iso (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.polygons.isolation := to_distance (f (6));
+		end set_iso;
+
+		procedure set_priority (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.polygons.priority_level := to_polygon_priority (f (6));
+		end set_priority;
+
+		
+	begin -- set_polygon_properties
+		case fields is
+			when 6 => 
+				-- board demo set polygon fill solid/hatched
+				if f (5) = kw_fill then
+					update_element (generic_modules, module_cursor, set_fill_style'access);
+
+				-- board demo set polygon width 0.25
+				elsif f (5) = kw_width then
+					update_element (generic_modules, module_cursor, set_min_width'access);
+
+				-- board demo set polygon isolaton 0.4
+				elsif f (5) = kw_isolation then
+					update_element (generic_modules, module_cursor, set_iso'access);
+					
+				-- board demo set polygon priority 2
+				elsif f (5) = kw_priority then
+					update_element (generic_modules, module_cursor, set_priority'access);
+
+				-- CS easing
+				-- CS connection thermal/solid
+					
+				else
+					expect_keywords;
+				end if;
+
+			when 7 .. count_type'last => too_long;
+
+			when others => command_incomplete;
+				
+		end case;
+	end set_polygon_properties;
 	
 	type type_track_shape is (LINE, ARC, POLYGON);
 	-- CS circular tracks are currently not supported
 
 	procedure route_freetrack is
-		shape : type_track_shape := type_track_shape'value (f (6));
+		shape : constant type_track_shape := type_track_shape'value (f (6));
+
+		-- get the user specific settings of the board
+		settings : constant type_user_settings := get_user_settings (module_cursor);
+		
 
 		procedure make_polygon is
-			--ph : et_pcb.type_polygon_conductor_hatched_floating;
-			--ph : et_pcb.type_conductor_polygon_hatched (THERMAL);
-
-			-- Extract from the given command the polygon arguments (everything after width 0.25):
-			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 7);
+			-- Extract from the given command the polygon arguments (everything after "polygon"):
+			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 6);
 			
-			ps : et_pcb.type_polygon_conductor_solid_floating; -- := to_polygon (arguments);
+			ps : et_pcb.type_polygon_conductor_solid_floating;
+			ph : et_pcb.type_polygon_conductor_hatched_floating;
 
-			-- Build the polygon from the arguments:
+			-- Build a basic polygon from the arguments:
 			p : constant type_polygon_base'class := to_polygon (arguments);
-		begin
-			-- CS case polygon_fill_style is ...
+		begin -- make_polygon
+			case settings.polygons.fill_style is
+				when SOLID =>
 			
-			ps := (type_polygon_base (p) with 
-				fill_style	=> SOLID,
-				width_min	=> to_distance (f (7)),
-				-- CS Assign properties:
-				--isolaton
-				properties	=> (
-						layer => to_signal_layer (f (5)),
-						others => <>), --priority_level
-				
-				others		=> <>);
+					ps := (type_polygon_base (p) with 
+						fill_style	=> SOLID,
+						width_min	=> settings.polygons.min_width,
+						isolation	=> settings.polygons.isolation,
+						properties	=> (
+								layer 			=> to_signal_layer (f (5)),
+								priority_level	=> settings.polygons.priority_level),
+						
+						easing		=> settings.polygons.easing);
 
-			place_polygon_conductor_floating (module_cursor, ps, log_threshold + 1);
-			
+					place_polygon_conductor (module_cursor, ps, log_threshold + 1);
+
+					
+				when HATCHED =>
+
+					ph := (type_polygon_base (p) with 
+						fill_style	=> HATCHED,
+						hatching	=> settings.polygons.hatching,
+						width_min	=> settings.polygons.min_width,
+						isolation	=> settings.polygons.isolation,
+						properties	=> (
+								layer 			=> to_signal_layer (f (5)),
+								priority_level	=> settings.polygons.priority_level),
+						
+						easing		=> settings.polygons.easing);
+
+					place_polygon_conductor (module_cursor, ph, log_threshold + 1);
+					
+			end case;
 		end make_polygon;
 		
 	begin -- route_freetrack
@@ -1889,12 +1999,12 @@ is
 				case fields is
 					-- The polygon command is very long. The following example spreads across
 					-- several lines:
-					--  board led_driver route freetrack 1 polygon 0.25 /
+					--  board led_driver route freetrack 1 polygon /
 					--  line 0 0 100 0 /
 					--  line 100 0 100 100 / 
 					--  arc 50 100 100 100 0 100 ccw / 
 					--  line 0 100 0 0
-					when 6 .. count_type'last =>
+					when 5 .. count_type'last =>
 						make_polygon;
 
 					when others =>
@@ -1905,28 +2015,100 @@ is
 	
 	procedure route_net is 
 		use et_terminals;
-		shape : type_track_shape := type_track_shape'value (f (7));
+		shape : constant type_track_shape := type_track_shape'value (f (7));
 
+		-- get the user specific settings of the board
+		settings : constant type_user_settings := get_user_settings (module_cursor);
+		
 		procedure make_polygon is
-			ps : et_pcb.type_polygon_conductor_route_solid (THERMAL);
-			--ph : et_pcb.type_conductor_polygon_hatched (THERMAL);
+			-- Extract from the given command the polygon arguments (everything after "polygon"):
+			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 7);
 
-			-- Extract from the given command the polygon arguments (everything after width 0.25):
-			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 8);
-		begin
-			ps.width_min := to_distance (f (8));
 
-			-- Build the polygon from the arguments:
-			ps := et_pcb.type_polygon_conductor_route_solid (to_polygon (arguments));
+			--pht : et_pcb.type_polygon_conductor_route_hatched (connection => THERMAL);
+			--phs : et_pcb.type_polygon_conductor_route_hatched (connection => SOLID);
+			
+			-- Build a basic polygon from the arguments:
+			p : constant type_polygon_base'class := to_polygon (arguments);
 
-			-- Assign properties:
-			--ps.isolaton
-			--ps.layer
-			--ps.priority_level
-			--ps.thermal / ps.technology
+			--pc : type_polygon_conductor := (fill_style => settings.polygons.fill_style, others => <>);
+
+
+			procedure make_solid_thermal is
+				pst : et_pcb.type_polygon_conductor_route_solid (connection => THERMAL);
+			begin
+				null;
+				--pst := (type_polygon_base (p) with 
+					--connection	=> THERMAL,
+					----fill_style	=> SOLID,
+					--thermal		=> settings.polygons.thermal,
+					--width_min	=> settings.polygons.min_width,
+					--isolation	=> settings.polygons.isolation,
+					--properties	=> (
+							--layer 			=> to_signal_layer (f (5)),
+							--priority_level	=> settings.polygons.priority_level),
+					
+					--easing		=> settings.polygons.easing);
+
+				--place_polygon_conductor (module_cursor, ps, log_threshold + 1);
+				
+			end make_solid_thermal;
+
+			procedure make_solid_solid is 
+				pss : et_pcb.type_polygon_conductor_route_solid (connection => SOLID);
+			begin
+				null;
+				--pss := (type_polygon_base (p) with 
+					----fill_style	=> SOLID,
+					--connection	=> SOLID,
+					--thermal		=> settings.polygons.thermal,
+					--width_min	=> settings.polygons.min_width,
+					--isolation	=> settings.polygons.isolation,
+					--properties	=> (
+							--layer 			=> to_signal_layer (f (5)),
+							--priority_level	=> settings.polygons.priority_level),
+					
+					--easing		=> settings.polygons.easing);
+
+				--place_polygon_conductor (module_cursor, ps, log_threshold + 1);
+			end make_solid_solid;
+			
+		begin -- make_polygon
+			case settings.polygons.fill_style is
+				when SOLID =>
+
+					case settings.polygons.connection is
+						when THERMAL =>
+
+							make_solid_thermal;
+
+						when SOLID =>
+
+							make_solid_solid;
+
+					end case;
+					
+				when HATCHED =>
+
+					--ph := (type_polygon_base (p) with 
+						--fill_style	=> HATCHED,
+						--hatching	=> settings.polygons.hatching,
+						--width_min	=> settings.polygons.min_width,
+						--isolation	=> settings.polygons.isolation,
+						--properties	=> (
+								--layer 			=> to_signal_layer (f (5)),
+								--priority_level	=> settings.polygons.priority_level),
+						
+						--easing		=> settings.polygons.easing);
+
+					--place_polygon_conductor (module_cursor, ph, log_threshold + 1);
+					null;
+					
+			end case;
+
 		end make_polygon;
 
-	begin
+	begin -- route_net
 		case shape is
 			when LINE =>
 				if is_number (f (9)) then -- 33.4 or IC4
@@ -2128,12 +2310,12 @@ is
 				case fields is
 					-- The polygon command is very long. The following example spreads across
 					-- several lines:
-					--  board led_driver route net RESET_N 1 polygon 0.25 /
+					--  board led_driver route net RESET_N 1 polygon /
 					--  line 0 0 100 0 /
 					--  line 100 0 100 100 / 
 					--  arc 50 100 100 100 0 100 ccw / 
 					--  line 0 100 0 0
-					when 7 .. count_type'last =>
+					when 6 .. count_type'last =>
 						make_polygon;
 
 					when others =>
@@ -2869,6 +3051,9 @@ is
 							when others => command_incomplete;
 						end case;
 
+					when NOUN_POLYGON =>
+						set_polygon_properties; -- conductor layers related
+						
 					when NOUN_VIA =>
 						set_via_properties;
 

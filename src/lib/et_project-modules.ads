@@ -218,6 +218,7 @@ package et_project.modules is
 		SEC_SEGMENT,
 		SEC_LABELS,
 		SEC_LABEL,
+		SEC_POLYGONS,
 		SEC_PORTS,
 		SEC_PORT,
 		SEC_ROUTE,

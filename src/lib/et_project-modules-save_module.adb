@@ -1340,9 +1340,8 @@ is
 
 		procedure query_user_settings is
 			us : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
-		begin
-			section_mark (section_user_settings, HEADER);
 
+			procedure vias is begin
 				section_mark (section_vias, HEADER);
 
 				-- via drill
@@ -1379,7 +1378,32 @@ is
 				end if;
 				
 				section_mark (section_vias, FOOTER);
-			
+			end vias;
+
+			procedure polygons is begin
+				section_mark (section_polygons, HEADER);
+
+				write_fill_stlye (us.polygons.fill_style);
+				write_hatching (us.polygons.hatching);
+				
+				write_priority (us.polygons.priority_level);
+				write_width_min (us.polygons.min_width);
+				write_isolation (us.polygons.isolation);
+
+				write_pad_connection (us.polygons.connection);
+				write_thermal (us.polygons.thermal);
+
+				write_easing (us.polygons.easing);
+				
+				section_mark (section_polygons, FOOTER);
+			end polygons;
+		
+		begin -- query_user_settings
+			section_mark (section_user_settings, HEADER);
+
+			vias;
+			polygons;
+				
 			section_mark (section_user_settings, FOOTER);
 		end query_user_settings;
 		

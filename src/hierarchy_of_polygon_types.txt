@@ -8,7 +8,10 @@ et_geometry
 et_packages
 - derived from type_polygon_base:
  - type_polygon_non_conductor (used by stop mask, stencil, silkscreen, assy doc)
- - type_polygon_conductor (selectors: width_min, isolation, easing, fill style)
+ - type_polygon_conductor 
+	- discriminiant: fill_style
+	- selectors: width_min, isolation, easing
+	
  - type_cutout_zone
  - type_keepout_polygon
  - type_route_restrict_polygon
@@ -26,8 +29,13 @@ et_packages
 
 et_pcb
 - derived from type_polygon_conductor
- - type_polygon_conductor_solid_floating (selectors: layer, priority)
- - type_polygon_conductor_hatched_floating (selectors: layer, priority)
+ - type_polygon_conductor_solid_floating 
+	- fixed discriminiant: solid
+	- selectors: layer, priority
+	
+ - type_polygon_conductor_hatched_floating
+	- fixed discriminiant: hatched
+	- selectors: layer, priority
 
  
 - derived from type_polygon_conductor_solid 

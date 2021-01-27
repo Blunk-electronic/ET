@@ -1316,9 +1316,9 @@ is
 		kw : constant  string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+		if kw = keyword_easing_style then -- easing_style none/chamfer/fillet
 			expect_field_count (line, 2);
-			board_easing.style := to_corner_easing (f (line, 2));
+			board_easing.style := to_easing_style (f (line, 2));
 
 		elsif kw = keyword_easing_radius then -- easing_radius 0.3
 			expect_field_count (line, 2);
@@ -1341,9 +1341,9 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+		if kw = keyword_easing_style then -- easing_style none/chamfer/fillet
 			expect_field_count (line, 2);													
-			board_easing.style := to_corner_easing (f (line, 2));
+			board_easing.style := to_easing_style (f (line, 2));
 
 		elsif kw = keyword_easing_radius then -- easing_radius 0.4
 			expect_field_count (line, 2);													
@@ -1384,9 +1384,9 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+		if kw = keyword_easing_style then -- easing_style none/chamfer/fillet
 			expect_field_count (line, 2);													
-			board_easing.style := to_corner_easing (f (line, 2));
+			board_easing.style := to_easing_style (f (line, 2));
 
 		elsif kw = keyword_easing_radius then -- easing_radius 0.4
 			expect_field_count (line, 2);													
@@ -1419,9 +1419,9 @@ is
 			expect_field_count (line, 2);
 			polygon_isolation := to_distance (f (line, 2));
 			
-		elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+		elsif kw = keyword_easing_style then -- easing_style none/chamfer/fillet
 			expect_field_count (line, 2);
-			board_easing.style := to_corner_easing (f (line, 2));
+			board_easing.style := to_easing_style (f (line, 2));
 
 		elsif kw = keyword_easing_radius then -- easing_radius 0.3
 			expect_field_count (line, 2);
@@ -1484,9 +1484,9 @@ is
 			expect_field_count (line, 2);													
 			board_fill_style := to_fill_style (f (line, 2));
 
-		elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+		elsif kw = keyword_easing_style then -- easing_style none/chamfer/fillet
 			expect_field_count (line, 2);													
-			board_easing.style := to_corner_easing (f (line, 2));
+			board_easing.style := to_easing_style (f (line, 2));
 
 		elsif kw = keyword_easing_radius then -- easing_radius 0.4
 			expect_field_count (line, 2);													
@@ -1554,9 +1554,9 @@ is
 			expect_field_count (line, 2);													
 			board_fill_style := to_fill_style (f (line, 2));
 
-		elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+		elsif kw = keyword_easing_style then -- easing_style none/chamfer/fillet
 			expect_field_count (line, 2);													
-			board_easing.style := to_corner_easing (f (line, 2));
+			board_easing.style := to_easing_style (f (line, 2));
 
 		elsif kw = keyword_easing_radius then -- easing_radius 0.4
 			expect_field_count (line, 2);													
@@ -2244,6 +2244,14 @@ is
 		end if;
 	end read_user_settings_vias;
 
+	procedure read_user_settings_polygons is
+		use et_pcb_coordinates.pac_geometry_brd;
+		kw : constant string := f (line, 1);
+	begin
+		null; -- CS
+	end read_user_settings_polygons;
+
+	
 	procedure assign_user_settings_board is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
@@ -5499,7 +5507,18 @@ is
 						when others => invalid_section;
 					end case;
 
-						
+				when SEC_POLYGONS =>
+					case stack.parent is
+						when SEC_USER_SETTINGS =>
+							case stack.parent (degree => 2) is
+								when SEC_BOARD	=> null;
+								when others		=> invalid_section;
+							end case;
+
+						when others => invalid_section;
+					end case;
+
+					
 				when SEC_INIT => null; -- CS: should never happen
 			end case;
 
@@ -5569,6 +5588,7 @@ is
 		elsif set (section_segment, SEC_SEGMENT) then null;
 		elsif set (section_labels, SEC_LABELS) then null;
 		elsif set (section_label, SEC_LABEL) then null;
+		elsif set (section_label, SEC_POLYGONS) then null;
 		elsif set (section_ports, SEC_PORTS) then null;
 		elsif set (section_port, SEC_PORT) then null;				
 		elsif set (section_route, SEC_ROUTE) then null;								
@@ -6388,6 +6408,18 @@ is
 
 						when others => invalid_section;
 					end case;
+
+				when SEC_POLYGONS =>
+					case stack.parent is
+						when SEC_USER_SETTINGS =>
+							case stack.parent (degree => 2) is
+								when SEC_BOARD	=> read_user_settings_polygons;
+								when others		=> invalid_section;
+							end case;
+
+						when others => invalid_section;
+					end case;
+
 					
 				when SEC_INIT => null; -- CS: should never happen
 			end case;

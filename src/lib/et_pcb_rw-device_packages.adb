@@ -2784,9 +2784,9 @@ package body et_pcb_rw.device_packages is
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+											if kw = keyword_easing_style then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												board_easing.style := to_corner_easing (f (line, 2));
+												board_easing.style := to_easing_style (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
@@ -2810,9 +2810,9 @@ package body et_pcb_rw.device_packages is
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+											if kw = keyword_easing_style then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												board_easing.style := to_corner_easing (f (line, 2));
+												board_easing.style := to_easing_style (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
@@ -2860,9 +2860,9 @@ package body et_pcb_rw.device_packages is
 												expect_field_count (line, 2);													
 												board_fill_style := to_fill_style (f (line, 2));
 
-											elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+											elsif kw = keyword_easing_style then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												board_easing.style := to_corner_easing (f (line, 2));
+												board_easing.style := to_easing_style (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
@@ -2902,9 +2902,9 @@ package body et_pcb_rw.device_packages is
 												expect_field_count (line, 2);													
 												board_fill_style := to_fill_style (f (line, 2));
 
-											elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+											elsif kw = keyword_easing_style then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												board_easing.style := to_corner_easing (f (line, 2));
+												board_easing.style := to_easing_style (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													

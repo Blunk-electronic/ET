@@ -278,24 +278,24 @@ package et_packages is
 		line_width : type_track_width := type_track_width'first;
 
 		-- the space between the lines inside the area:
-		spacing	: type_track_clearance := type_track_clearance'last;
+		spacing	: type_track_clearance := type_track_clearance'first;
 	end record;
 
 	
 	-- EASING
-	keyword_corner_easing : constant string := "corner_easing";
+	keyword_easing_style : constant string := "easing_style";
 	keyword_easing_radius : constant string := "easing_radius";	
 
-	type type_corner_easing is (NONE, CHAMFER, FILLET);
+	type type_easing_style is (NONE, CHAMFER, FILLET);
 
-	function to_corner_easing (easing : in string) return type_corner_easing;
-	function to_string (easing : in type_corner_easing) return string;
+	function to_easing_style (easing : in string) return type_easing_style;
+	function to_string (easing : in type_easing_style) return string;
 	
 	easing_radius_max : constant type_distance_positive := 100.0;
 	subtype type_easing_radius is type_distance_positive range type_distance_positive'first .. easing_radius_max;
 
 	type type_easing is record
-		style	: type_corner_easing := NONE;
+		style	: type_easing_style := NONE;
 		radius	: type_easing_radius := zero; -- center of circle at corner point
 	end record;
 
