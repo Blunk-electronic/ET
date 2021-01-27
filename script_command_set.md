@@ -644,8 +644,36 @@ board led_driver route freetrack 1 arc 0.25 50 50 50 0 50 100 cw # layer 1, arc,
 ```
 
 #### Polygons / Fill Zones
+Commands to set basic properties:
 ```
-board led_driver route freetrack 1 polygon 0.25 line 0 0 100 0 line 100 0 100 100 
+board led_driver set polygon fill solid # hatched
+```
+```
+board led_driver set polygon width 0.35
+```
+```
+board led_driver set polygon isolation 0.3
+```
+```
+board led_driver set polygon easing style fillet # chamfer, none, fillet
+```
+```
+board led_driver set polygon easing radius 0.6
+```
+```
+board led_driver set polygon connection thermal # solid
+```
+```
+board led_driver set polygon hatching width 0.3
+```
+```
+board led_driver set polygon hatching border 0.4
+```
+```
+board led_driver set polygon hatching spacing 1.1
+```
+```
+board led_driver route freetrack 1 polygon line 0 0 100 0 line 100 0 100 100 
 arc 50 100 100 100 0 100 ccw line 0 100 0 0
 ```
 Notes on syntax:
@@ -704,8 +732,9 @@ board led_driver width net reset_n 1 12 10 1.2 # layer 1, segment in layer 1, cr
 ```-->
 
 #### Polygons / Fill Zones
+Commands to set basic properties: (see section freetracks)
 ```
-board led_driver route net reset_n 1 polygon 0.25 line 0 0 100 0 line 100 0 100 100 
+board led_driver route net reset_n 1 polygon line 0 0 100 0 line 100 0 100 100 
 arc 50 100 100 100 0 100 ccw line 0 100 0 0
 ```
 
@@ -713,27 +742,27 @@ arc 50 100 100 100 0 100 ccw line 0 100 0 0
 ##### Via Restring
 Set the inner/outer resting width of vias.
 ```
-board demo set via restring inner 0.22
+board led_driver set via restring inner 0.22
 ```
 ```
-board demo set via restring outer 0.2
+board led_driver set via restring outer 0.2
 ```
 Use the minimum resting width of vias as defined in design rules (default).
 ```
-board demo set via restring inner dru
+board led_driver set via restring inner dru
 ```
 ```
-board demo set via restring outer dru
+board led_driver set via restring outer dru
 ```
 
 ##### Via Drill Size
 Set the drill size of vias.
 ```
-board demo set via drill 0.6
+board led_driver set via drill 0.6
 ```
 Use the minimum drill size of vias as defined in design rules (default).
 ```
-board demo set via drill dru
+board led_driver set via drill dru
 ```
 
 ##### Placing Vias
@@ -1074,7 +1103,7 @@ board led_driver delete outline 40 50 1 # crossing 40/50, accuracy 1
 
 To place a text in the outline layer:
 ```
-board demo place text outline 0.2 5 54 1 0 "SOME TEXT" # line width 0.2, size 5, x/y 54/1, rotation zero
+board led_driver place text outline 0.2 5 54 1 0 "SOME TEXT" # line width 0.2, size 5, x/y 54/1, rotation zero
 ```
 
 ## SILK SCREEN

@@ -1794,24 +1794,31 @@ is
 	-- or "board demo set polygon isolaton 0.4" and sets the value
 	-- in user specific settings..
 	procedure set_polygon_properties is
-		kw_fill		: constant string := "fill";
-		kw_width	: constant string := "width";
-		kw_isolation: constant string := "isolation";
-		kw_easing	: constant string := "easing";
-		kw_style	: constant string := "style";
-		kw_radius	: constant string := "radius";
-		kw_priority	: constant string := "priority";
-
+		kw_fill			: constant string := "fill";
+		kw_width		: constant string := "width";
+		kw_connection	: constant string := "connection";
+		kw_isolation	: constant string := "isolation";
+		kw_easing		: constant string := "easing";
+		kw_style		: constant string := "style";
+		kw_radius		: constant string := "radius";
+		kw_priority		: constant string := "priority";
+		kw_hatching		: constant string := "hatching";
+		kw_border		: constant string := "border";
+		kw_spacing		: constant string := "spacing";
+		
 		use pac_generic_modules;
 		use et_schematic;
 
+		comma : constant character := ',';
+		
 		procedure expect_keywords is 
-			comma : constant character := ',';
 		begin
 			raise syntax_error_1 with 
 				"ERROR: Expect keyword "
 				& enclose_in_quotes (kw_width) & comma
+				& enclose_in_quotes (kw_connection) & comma
 				& enclose_in_quotes (kw_priority) & comma
+				& enclose_in_quotes (kw_hatching) & comma
 				& enclose_in_quotes (kw_easing) & " or "
 				& enclose_in_quotes (kw_isolation) 
 				& " after " & to_string (noun) & " !";
@@ -1846,6 +1853,47 @@ is
 			module.board.user_settings.polygons.priority_level := to_polygon_priority (f (6));
 		end set_priority;
 
+		procedure set_easing_style (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.polygons.easing.style := to_easing_style (f (7));
+		end set_easing_style;
+
+		procedure set_easing_radius (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.polygons.easing.radius := to_distance (f (7));
+		end set_easing_radius;	
+
+		procedure set_connection (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.polygons.connection := to_pad_connection (f (6));
+		end set_connection;	
+
+		procedure set_hatching_line_width (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.polygons.hatching.line_width := to_distance (f (7));
+		end set_hatching_line_width;	
+
+		procedure set_hatching_border_width (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.polygons.hatching.border_width := to_distance (f (7));
+		end set_hatching_border_width;	
+
+		procedure set_hatching_spacing (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.polygons.hatching.spacing := to_distance (f (7));
+		end set_hatching_spacing;	
 		
 	begin -- set_polygon_properties
 		case fields is
@@ -1866,14 +1914,58 @@ is
 				elsif f (5) = kw_priority then
 					update_element (generic_modules, module_cursor, set_priority'access);
 
-				-- CS easing
-				-- CS connection thermal/solid
+				-- board demo set polygon connection thermal/solid
+				elsif f (5) = kw_connection then
+					update_element (generic_modules, module_cursor, set_connection'access);
 					
 				else
 					expect_keywords;
 				end if;
 
-			when 7 .. count_type'last => too_long;
+			when 7 =>
+				-- board demo set polygon easing style none/chamfer/fillet
+				if f (5) = kw_easing then
+
+					if f (6) = kw_style then
+						update_element (generic_modules, module_cursor, set_easing_style'access);
+
+					elsif f (6) = kw_radius then
+						update_element (generic_modules, module_cursor, set_easing_radius'access);
+
+					else
+						raise syntax_error_1 with
+							"ERROR: Expect keywords " 
+							& enclose_in_quotes (kw_style) & " or "
+							& enclose_in_quotes (kw_radius) 
+							& " after " & enclose_in_quotes (kw_easing) & " !";
+					end if;
+
+				elsif f (5) = kw_hatching then
+
+					if f (6) = kw_width then
+						update_element (generic_modules, module_cursor, set_hatching_line_width'access);
+
+					elsif f (6) = kw_border then
+						update_element (generic_modules, module_cursor, set_hatching_border_width'access);
+
+					elsif f (6) = kw_spacing then
+						update_element (generic_modules, module_cursor, set_hatching_spacing'access);
+						
+					else
+						raise syntax_error_1 with
+						"ERROR: Expect keywords " 
+							& enclose_in_quotes (kw_width) & comma
+							& enclose_in_quotes (kw_border) & " or "
+							& enclose_in_quotes (kw_spacing) 
+							& " after " & enclose_in_quotes (kw_hatching) & " !";
+					end if;
+
+
+				else
+					expect_keywords;
+				end if;
+				
+			when 8 .. count_type'last => too_long;
 
 			when others => command_incomplete;
 				
