@@ -60,7 +60,7 @@ package et_pcb_rw is
 	section_board_layer_stack	: constant string 	:= "[BOARD_LAYER_STACK";
 	section_via					: constant string	:= "[VIA";
 	section_vias				: constant string	:= "[VIAS";
-	section_polygons			: constant string	:= "[POLYGONS";
+	section_fill_zones_conductor: constant string	:= "[FILL_ZONES_CONDUCTOR";
 	
 	section_route				: constant string 	:= "[ROUTE";	
 	section_silk_screen			: constant string	:= "[SILK_SCREEN";
@@ -119,7 +119,7 @@ package et_pcb_rw is
 	procedure write_isolation (iso : in type_track_clearance);
 	procedure write_priority (prio : in et_pcb.type_polygon_priority);
 	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer);
-	procedure write_fill_stlye (fill_style : in et_packages.type_fill_style);
+	procedure write_fill_style (fill_style : in et_packages.type_fill_style);
 	procedure write_fill_status (filled : in type_filled);
 	procedure write_pad_connection (connection : in et_pcb.type_polygon_pad_connection);
 	procedure write_pad_technology (techno : in et_pcb.type_polygon_pad_technology);	

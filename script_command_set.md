@@ -673,6 +673,12 @@ board led_driver set polygon hatching border 0.4
 board led_driver set polygon hatching spacing 1.1
 ```
 ```
+board demo set polygon thermal width 0.2
+```
+```
+board demo set polygon thermal gap 0.33
+```
+```
 board led_driver route freetrack 1 polygon line 0 0 100 0 line 100 0 100 100 
 arc 50 100 100 100 0 100 ccw line 0 100 0 0
 ```

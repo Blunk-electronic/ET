@@ -134,7 +134,7 @@ package body et_pcb_rw.device_packages is
 				write_width_min (element (cursor).width_min);
 				write_isolation (element (cursor).isolation);
 
-				write_fill_stlye (element (cursor).fill_style);
+				write_fill_style (element (cursor).fill_style);
 				
 				contours_begin;
 				write_polygon_segments (type_polygon_base (element (cursor)));
@@ -151,7 +151,7 @@ package body et_pcb_rw.device_packages is
 				write_width_min (element (cursor).width_min);
 				write_isolation (element (cursor).isolation);
 
-				write_fill_stlye (element (cursor).fill_style);
+				write_fill_style (element (cursor).fill_style);
 				write_hatching (element (cursor).hatching);
 
 				contours_begin;

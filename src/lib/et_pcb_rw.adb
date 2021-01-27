@@ -183,7 +183,7 @@ package body et_pcb_rw is
 		write (keyword => keyword_layer, parameters => to_string (layer));
 	end;
 
-	procedure write_fill_stlye (fill_style : in et_packages.type_fill_style) is
+	procedure write_fill_style (fill_style : in et_packages.type_fill_style) is
 		use et_packages;
 	begin
 		write (keyword => keyword_fill_style, parameters => to_string (fill_style));
@@ -1084,7 +1084,7 @@ package body et_pcb_rw is
 		fill_zone_begin;
 
 		write_easing (element (cursor).easing);
-		write_fill_stlye (element (cursor).fill_style);
+		write_fill_style (element (cursor).fill_style);
 
 		case element (cursor).fill_style is
 			when HATCHED =>
@@ -1145,7 +1145,7 @@ package body et_pcb_rw is
 		fill_zone_begin;
 
 		write_easing (element (cursor).easing);
-		write_fill_stlye (element (cursor).fill_style);
+		write_fill_style (element (cursor).fill_style);
 
 		case element (cursor).fill_style is
 			when HATCHED =>
@@ -1254,7 +1254,7 @@ package body et_pcb_rw is
 	begin
 		fill_zone_begin;
 		write_easing (element (cursor).easing);
-		write_fill_stlye (element (cursor).fill_style);
+		write_fill_style (element (cursor).fill_style);
 		
 		if element (cursor).fill_style = HATCHED then
 			write_hatching (element (cursor).hatching);
@@ -1310,7 +1310,7 @@ package body et_pcb_rw is
 	begin
 		fill_zone_begin;
 		write_easing (element (cursor).easing);
-		write_fill_stlye (element (cursor).fill_style);
+		write_fill_style (element (cursor).fill_style);
 					  
 		if element (cursor).fill_style = HATCHED then
 			write_hatching (element (cursor).hatching);

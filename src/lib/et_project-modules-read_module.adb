@@ -2244,12 +2244,12 @@ is
 		end if;
 	end read_user_settings_vias;
 
-	procedure read_user_settings_polygons is
+	procedure read_user_settings_fill_zones_conductor is
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
 	begin
 		null; -- CS
-	end read_user_settings_polygons;
+	end read_user_settings_fill_zones_conductor;
 
 	
 	procedure assign_user_settings_board is
@@ -5496,7 +5496,7 @@ is
 						when others => invalid_section;
 					end case;
 
-				when SEC_VIAS =>
+				when SEC_VIAS | SEC_FILL_ZONES_CONDUCTOR =>
 					case stack.parent is
 						when SEC_USER_SETTINGS =>
 							case stack.parent (degree => 2) is
@@ -5506,18 +5506,6 @@ is
 
 						when others => invalid_section;
 					end case;
-
-				when SEC_POLYGONS =>
-					case stack.parent is
-						when SEC_USER_SETTINGS =>
-							case stack.parent (degree => 2) is
-								when SEC_BOARD	=> null;
-								when others		=> invalid_section;
-							end case;
-
-						when others => invalid_section;
-					end case;
-
 					
 				when SEC_INIT => null; -- CS: should never happen
 			end case;
@@ -5588,7 +5576,7 @@ is
 		elsif set (section_segment, SEC_SEGMENT) then null;
 		elsif set (section_labels, SEC_LABELS) then null;
 		elsif set (section_label, SEC_LABEL) then null;
-		elsif set (section_label, SEC_POLYGONS) then null;
+		elsif set (section_fill_zones_conductor, SEC_FILL_ZONES_CONDUCTOR) then null;
 		elsif set (section_ports, SEC_PORTS) then null;
 		elsif set (section_port, SEC_PORT) then null;				
 		elsif set (section_route, SEC_ROUTE) then null;								
@@ -6409,11 +6397,11 @@ is
 						when others => invalid_section;
 					end case;
 
-				when SEC_POLYGONS =>
+				when SEC_FILL_ZONES_CONDUCTOR =>
 					case stack.parent is
 						when SEC_USER_SETTINGS =>
 							case stack.parent (degree => 2) is
-								when SEC_BOARD	=> read_user_settings_polygons;
+								when SEC_BOARD	=> read_user_settings_fill_zones_conductor;
 								when others		=> invalid_section;
 							end case;
 

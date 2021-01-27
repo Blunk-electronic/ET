@@ -1499,7 +1499,7 @@ is
 				"ERROR: Expect keyword "
 				& enclose_in_quotes (kw_drill) & " or "
 				& enclose_in_quotes (kw_restring) 
-				& " after " & to_string (noun) & " !";
+				& " after " & enclose_in_quotes (to_lower (to_string (noun))) & " !";
 		end expect_keywords;
 
 		use pac_generic_modules;
@@ -1597,7 +1597,7 @@ is
 							"ERROR: Expect keywords " 
 							& enclose_in_quotes (kw_inner) & " or "
 							& enclose_in_quotes (kw_outer) 
-							& " after " & enclose_in_quotes (kw_restring) & " !";
+							& " after keyword " & enclose_in_quotes (kw_restring) & " !";
 					
 					end if;
 				else
@@ -1796,32 +1796,37 @@ is
 	procedure set_polygon_properties is
 		kw_fill			: constant string := "fill";
 		kw_width		: constant string := "width";
-		kw_connection	: constant string := "connection";
 		kw_isolation	: constant string := "isolation";
+		kw_priority		: constant string := "priority";
+		
 		kw_easing		: constant string := "easing";
 		kw_style		: constant string := "style";
 		kw_radius		: constant string := "radius";
-		kw_priority		: constant string := "priority";
+		
 		kw_hatching		: constant string := "hatching";
 		kw_border		: constant string := "border";
 		kw_spacing		: constant string := "spacing";
+		
+		kw_connection	: constant string := "connection";
+		kw_thermal		: constant string := "thermal";
+		kw_gap			: constant string := "gap";
 		
 		use pac_generic_modules;
 		use et_schematic;
 
 		comma : constant character := ',';
 		
-		procedure expect_keywords is 
-		begin
+		procedure expect_keywords is begin
 			raise syntax_error_1 with 
 				"ERROR: Expect keyword "
 				& enclose_in_quotes (kw_width) & comma
 				& enclose_in_quotes (kw_connection) & comma
 				& enclose_in_quotes (kw_priority) & comma
 				& enclose_in_quotes (kw_hatching) & comma
+				& enclose_in_quotes (kw_thermal) & comma
 				& enclose_in_quotes (kw_easing) & " or "
 				& enclose_in_quotes (kw_isolation) 
-				& " after " & to_string (noun) & " !";
+				& " after keyword " & enclose_in_quotes (to_lower (to_string (noun))) & " !";
 		end expect_keywords;
 
 
@@ -1894,6 +1899,20 @@ is
 		is begin
 			module.board.user_settings.polygons.hatching.spacing := to_distance (f (7));
 		end set_hatching_spacing;	
+
+		procedure set_thermal_width (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.polygons.thermal.width := to_distance (f (7));
+		end set_thermal_width;	
+
+		procedure set_thermal_gap (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module)
+		is begin
+			module.board.user_settings.polygons.thermal.gap := to_distance (f (7));
+		end set_thermal_gap;	
 		
 	begin -- set_polygon_properties
 		case fields is
@@ -1937,9 +1956,10 @@ is
 							"ERROR: Expect keywords " 
 							& enclose_in_quotes (kw_style) & " or "
 							& enclose_in_quotes (kw_radius) 
-							& " after " & enclose_in_quotes (kw_easing) & " !";
+							& " after keyword " & enclose_in_quotes (kw_easing) & " !";
 					end if;
 
+				-- board demo set polygon hatching width/border/spacing 0.3
 				elsif f (5) = kw_hatching then
 
 					if f (6) = kw_width then
@@ -1957,9 +1977,25 @@ is
 							& enclose_in_quotes (kw_width) & comma
 							& enclose_in_quotes (kw_border) & " or "
 							& enclose_in_quotes (kw_spacing) 
-							& " after " & enclose_in_quotes (kw_hatching) & " !";
+							& " after keyword " & enclose_in_quotes (kw_hatching) & " !";
 					end if;
 
+				-- board demo set polygon thermal width/gap 0.3
+				elsif f (5) = kw_thermal then
+
+					if f (6) = kw_width then
+						update_element (generic_modules, module_cursor, set_thermal_width'access);
+
+					elsif f (6) = kw_gap then
+						update_element (generic_modules, module_cursor, set_thermal_gap'access);
+						
+					else
+						raise syntax_error_1 with
+						"ERROR: Expect keywords " 
+							& enclose_in_quotes (kw_width) & " or "
+							& enclose_in_quotes (kw_gap) 
+							& " after keyword " & enclose_in_quotes (kw_thermal) & " !";
+					end if;
 
 				else
 					expect_keywords;

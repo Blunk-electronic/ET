@@ -598,7 +598,7 @@ is
 				write_priority (element (polygon_solid_cursor).properties.priority_level);
 				write_signal_layer (element (polygon_solid_cursor).properties.layer);
 
-				write_fill_stlye (et_packages.SOLID);
+				write_fill_style (et_packages.SOLID);
 
 				case element (polygon_solid_cursor).connection is
 					when et_pcb.THERMAL => 
@@ -630,7 +630,7 @@ is
 				write_priority (element (polygon_hatched_cursor).properties.priority_level);
 				write_signal_layer (element (polygon_hatched_cursor).properties.layer);
 
-				write_fill_stlye (et_packages.HATCHED);
+				write_fill_style (et_packages.HATCHED);
 				
 				write_hatching (element (polygon_hatched_cursor).hatching);
 
@@ -1213,7 +1213,7 @@ is
 			write_priority (element (cursor).properties.priority_level);
 			write_signal_layer (element (cursor).properties.layer);
 
-			write_fill_stlye (element (cursor).fill_style);
+			write_fill_style (element (cursor).fill_style);
 
 			write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 
@@ -1233,7 +1233,7 @@ is
 			write_priority (element (cursor).properties.priority_level);
 			write_signal_layer (element (cursor).properties.layer);
 
-			write_fill_stlye (element (cursor).fill_style);
+			write_fill_style (element (cursor).fill_style);
 			write_hatching (element (cursor).hatching);
 
 			write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
@@ -1381,21 +1381,21 @@ is
 			end vias;
 
 			procedure polygons is begin
-				section_mark (section_polygons, HEADER);
+				section_mark (section_fill_zones_conductor, HEADER);
 
-				write_fill_stlye (us.polygons.fill_style);
+				write_fill_style (us.polygons.fill_style);
+				write_width_min (us.polygons.min_width);
+				write_priority (us.polygons.priority_level);
+				write_isolation (us.polygons.isolation);
+				
 				write_hatching (us.polygons.hatching);
 				
-				write_priority (us.polygons.priority_level);
-				write_width_min (us.polygons.min_width);
-				write_isolation (us.polygons.isolation);
-
 				write_pad_connection (us.polygons.connection);
 				write_thermal (us.polygons.thermal);
 
 				write_easing (us.polygons.easing);
 				
-				section_mark (section_polygons, FOOTER);
+				section_mark (section_fill_zones_conductor, FOOTER);
 			end polygons;
 		
 		begin -- query_user_settings
