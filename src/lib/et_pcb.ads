@@ -343,7 +343,7 @@ package et_pcb is
 
 	
 	-- Polygons may be connected with SMT, THT or all pad technologies
-	-- CS: Is that a reasonable idea ?????
+	-- CS: Is that a reasonable idea ????? it was inherited from kicad.
 	keyword_pad_technology : constant string := "pad_technology";
 	
 	type type_polygon_pad_technology is (

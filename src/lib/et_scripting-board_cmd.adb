@@ -1988,6 +1988,8 @@ is
 
 					elsif f (6) = kw_gap then
 						update_element (generic_modules, module_cursor, set_thermal_gap'access);
+
+					-- CS technology ?
 						
 					else
 						raise syntax_error_1 with
