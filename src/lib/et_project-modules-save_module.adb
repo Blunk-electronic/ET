@@ -1383,17 +1383,17 @@ is
 			procedure polygons is begin
 				section_mark (section_fill_zones_conductor, HEADER);
 
-				write_fill_style (us.polygons.fill_style);
-				write_width_min (us.polygons.min_width);
-				write_priority (us.polygons.priority_level);
-				write_isolation (us.polygons.isolation);
+				write_fill_style (us.polygons_conductor.fill_style);
+				write_width_min (us.polygons_conductor.min_width);
+				write_priority (us.polygons_conductor.priority_level);
+				write_isolation (us.polygons_conductor.isolation);
 				
-				write_hatching (us.polygons.hatching);
+				write_hatching (us.polygons_conductor.hatching);
 				
-				write_pad_connection (us.polygons.connection);
-				write_thermal (us.polygons.thermal);
+				write_pad_connection (us.polygons_conductor.connection);
+				write_thermal (us.polygons_conductor.thermal);
 
-				write_easing (us.polygons.easing);
+				write_easing (us.polygons_conductor.easing);
 				
 				section_mark (section_fill_zones_conductor, FOOTER);
 			end polygons;

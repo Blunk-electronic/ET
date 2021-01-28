@@ -1834,84 +1834,84 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons.fill_style := to_fill_style (f (6));
+			module.board.user_settings.polygons_conductor.fill_style := to_fill_style (f (6));
 		end set_fill_style;
 
 		procedure set_min_width (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons.min_width := to_distance (f (6));
+			module.board.user_settings.polygons_conductor.min_width := to_distance (f (6));
 		end set_min_width;
 
 		procedure set_iso (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons.isolation := to_distance (f (6));
+			module.board.user_settings.polygons_conductor.isolation := to_distance (f (6));
 		end set_iso;
 
 		procedure set_priority (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons.priority_level := to_polygon_priority (f (6));
+			module.board.user_settings.polygons_conductor.priority_level := to_polygon_priority (f (6));
 		end set_priority;
 
 		procedure set_easing_style (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons.easing.style := to_easing_style (f (7));
+			module.board.user_settings.polygons_conductor.easing.style := to_easing_style (f (7));
 		end set_easing_style;
 
 		procedure set_easing_radius (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons.easing.radius := to_distance (f (7));
+			module.board.user_settings.polygons_conductor.easing.radius := to_distance (f (7));
 		end set_easing_radius;	
 
 		procedure set_connection (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons.connection := to_pad_connection (f (6));
+			module.board.user_settings.polygons_conductor.connection := to_pad_connection (f (6));
 		end set_connection;	
 
 		procedure set_hatching_line_width (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons.hatching.line_width := to_distance (f (7));
+			module.board.user_settings.polygons_conductor.hatching.line_width := to_distance (f (7));
 		end set_hatching_line_width;	
 
 		procedure set_hatching_border_width (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons.hatching.border_width := to_distance (f (7));
+			module.board.user_settings.polygons_conductor.hatching.border_width := to_distance (f (7));
 		end set_hatching_border_width;	
 
 		procedure set_hatching_spacing (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons.hatching.spacing := to_distance (f (7));
+			module.board.user_settings.polygons_conductor.hatching.spacing := to_distance (f (7));
 		end set_hatching_spacing;	
 
 		procedure set_thermal_width (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons.thermal.width := to_distance (f (7));
+			module.board.user_settings.polygons_conductor.thermal.width := to_distance (f (7));
 		end set_thermal_width;	
 
 		procedure set_thermal_gap (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.user_settings.polygons.thermal.gap := to_distance (f (7));
+			module.board.user_settings.polygons_conductor.thermal.gap := to_distance (f (7));
 		end set_thermal_gap;	
 		
 	begin -- set_polygon_properties
@@ -2030,18 +2030,18 @@ is
 			-- Build a basic polygon from the arguments:
 			p : constant type_polygon_base'class := to_polygon (arguments);
 		begin -- make_polygon
-			case settings.polygons.fill_style is
+			case settings.polygons_conductor.fill_style is
 				when SOLID =>
 			
 					ps := (type_polygon_base (p) with 
 						fill_style	=> SOLID,
-						width_min	=> settings.polygons.min_width,
-						isolation	=> settings.polygons.isolation,
+						width_min	=> settings.polygons_conductor.min_width,
+						isolation	=> settings.polygons_conductor.isolation,
 						properties	=> (
 								layer 			=> to_signal_layer (f (5)),
-								priority_level	=> settings.polygons.priority_level),
+								priority_level	=> settings.polygons_conductor.priority_level),
 						
-						easing		=> settings.polygons.easing);
+						easing		=> settings.polygons_conductor.easing);
 
 					place_polygon_conductor (module_cursor, ps, log_threshold + 1);
 
@@ -2050,14 +2050,14 @@ is
 
 					ph := (type_polygon_base (p) with 
 						fill_style	=> HATCHED,
-						hatching	=> settings.polygons.hatching,
-						width_min	=> settings.polygons.min_width,
-						isolation	=> settings.polygons.isolation,
+						hatching	=> settings.polygons_conductor.hatching,
+						width_min	=> settings.polygons_conductor.min_width,
+						isolation	=> settings.polygons_conductor.isolation,
 						properties	=> (
 								layer 			=> to_signal_layer (f (5)),
-								priority_level	=> settings.polygons.priority_level),
+								priority_level	=> settings.polygons_conductor.priority_level),
 						
-						easing		=> settings.polygons.easing);
+						easing		=> settings.polygons_conductor.easing);
 
 					place_polygon_conductor (module_cursor, ph, log_threshold + 1);
 					
@@ -2163,16 +2163,16 @@ is
 			begin
 				p1 := (type_polygon_base (p0) with 
 					fill_style	=> SOLID,
-					width_min	=> settings.polygons.min_width,
-					isolation	=> settings.polygons.isolation,					
-					easing		=> settings.polygons.easing);
+					width_min	=> settings.polygons_conductor.min_width,
+					isolation	=> settings.polygons_conductor.isolation,					
+					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
 					connection	=> THERMAL,
-					thermal		=> settings.polygons.thermal,
+					thermal		=> settings.polygons_conductor.thermal,
 					properties	=> (
 							layer 			=> to_signal_layer (f (6)),
-							priority_level	=> settings.polygons.priority_level));
+							priority_level	=> settings.polygons_conductor.priority_level));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2188,16 +2188,16 @@ is
 			begin
 				p1 := (type_polygon_base (p0) with 
 					fill_style	=> SOLID,
-					width_min	=> settings.polygons.min_width,
-					isolation	=> settings.polygons.isolation,					
-					easing		=> settings.polygons.easing);
+					width_min	=> settings.polygons_conductor.min_width,
+					isolation	=> settings.polygons_conductor.isolation,					
+					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
 					connection	=> SOLID,
-					technology	=> SMT_AND_THT, -- CS settings.polygons.technology,
+					technology	=> SMT_AND_THT, -- CS settings.polygons_conductor.technology,
 					properties	=> (
 							layer 			=> to_signal_layer (f (6)),
-							priority_level	=> settings.polygons.priority_level));
+							priority_level	=> settings.polygons_conductor.priority_level));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2213,17 +2213,17 @@ is
 			begin
 				p1 := (type_polygon_base (p0) with 
 					fill_style	=> HATCHED,
-					hatching	=> settings.polygons.hatching,
-					width_min	=> settings.polygons.min_width,
-					isolation	=> settings.polygons.isolation,					
-					easing		=> settings.polygons.easing);
+					hatching	=> settings.polygons_conductor.hatching,
+					width_min	=> settings.polygons_conductor.min_width,
+					isolation	=> settings.polygons_conductor.isolation,					
+					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
 					connection	=> THERMAL,
-					thermal		=> settings.polygons.thermal,
+					thermal		=> settings.polygons_conductor.thermal,
 					properties	=> (
 							layer 			=> to_signal_layer (f (6)),
-							priority_level	=> settings.polygons.priority_level));
+							priority_level	=> settings.polygons_conductor.priority_level));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2239,17 +2239,17 @@ is
 			begin
 				p1 := (type_polygon_base (p0) with 
 					fill_style	=> HATCHED,
-					hatching	=> settings.polygons.hatching,
-					width_min	=> settings.polygons.min_width,
-					isolation	=> settings.polygons.isolation,					
-					easing		=> settings.polygons.easing);
+					hatching	=> settings.polygons_conductor.hatching,
+					width_min	=> settings.polygons_conductor.min_width,
+					isolation	=> settings.polygons_conductor.isolation,					
+					easing		=> settings.polygons_conductor.easing);
 
 				p2 := (p1 with
 					connection	=> SOLID,
-					technology	=> SMT_AND_THT, -- CS settings.polygons.technology,
+					technology	=> SMT_AND_THT, -- CS settings.polygons_conductor.technology,
 					properties	=> (
 							layer 			=> to_signal_layer (f (6)),
-							priority_level	=> settings.polygons.priority_level));
+							priority_level	=> settings.polygons_conductor.priority_level));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2260,15 +2260,15 @@ is
 			end make_hatched_solid;
 			
 		begin -- make_polygon
-			case settings.polygons.fill_style is
+			case settings.polygons_conductor.fill_style is
 				when SOLID =>
-					case settings.polygons.connection is
+					case settings.polygons_conductor.connection is
 						when THERMAL	=> make_solid_thermal;
 						when SOLID		=> make_solid_solid;
 					end case;
 					
 				when HATCHED =>
-					case settings.polygons.connection is
+					case settings.polygons_conductor.connection is
 						when THERMAL	=> make_hatched_thermal;
 						when SOLID		=> make_hatched_solid;
 					end case;

@@ -569,8 +569,7 @@ package et_pcb is
 	origin_default : constant type_point := type_point (set (20.0, 65.0));
 
 
-	type type_user_settings_polygons is record
-		-- CS rename to type_user_settings_polygons_conductor
+	type type_user_settings_polygons_conductor is record
 
 		-- relevant if polygon is connected with a net:
 		connection		: type_polygon_pad_connection := polygon_pad_connection_default;
@@ -593,8 +592,8 @@ package et_pcb is
 	type type_user_settings is record
 		vias		: type_user_settings_vias;
 		-- CS auto set drill and track width ?
-		polygons	: type_user_settings_polygons;
-		-- CS rename selector to polygons_conductor
+		
+		polygons_conductor	: type_user_settings_polygons_conductor;
 
 		-- CS polygons_non_conductor
 	end record;

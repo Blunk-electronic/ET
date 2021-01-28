@@ -2252,55 +2252,55 @@ is
 	begin
 		if kw = keyword_fill_style then -- fill_style solid/hatched
 			expect_field_count (line, 2);
-			user_settings_board.polygons.fill_style := to_fill_style (f (line, 2));
+			user_settings_board.polygons_conductor.fill_style := to_fill_style (f (line, 2));
 
 		elsif kw = keyword_min_width then -- min_width 0.3
 			expect_field_count (line, 2);
-			user_settings_board.polygons.min_width := to_distance (f (line, 2));
+			user_settings_board.polygons_conductor.min_width := to_distance (f (line, 2));
 
 		elsif kw = keyword_priority then -- priority 2
 			expect_field_count (line, 2);
-			user_settings_board.polygons.priority_level := to_polygon_priority (f (line, 2));
+			user_settings_board.polygons_conductor.priority_level := to_polygon_priority (f (line, 2));
 
 		elsif kw = keyword_isolation then -- isolation 0.4
 			expect_field_count (line, 2);
-			user_settings_board.polygons.isolation := to_distance (f (line, 2));
+			user_settings_board.polygons_conductor.isolation := to_distance (f (line, 2));
 
 		elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.5
 			expect_field_count (line, 2);
-			user_settings_board.polygons.hatching.line_width := to_distance (f (line, 2));
+			user_settings_board.polygons_conductor.hatching.line_width := to_distance (f (line, 2));
 
 		elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
 			expect_field_count (line, 2);
-			user_settings_board.polygons.hatching.border_width := to_distance (f (line, 2));
+			user_settings_board.polygons_conductor.hatching.border_width := to_distance (f (line, 2));
 
 		elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.5
 			expect_field_count (line, 2);
-			user_settings_board.polygons.hatching.spacing := to_distance (f (line, 2));
+			user_settings_board.polygons_conductor.hatching.spacing := to_distance (f (line, 2));
 
 		elsif kw = keyword_pad_connection then -- pad_connection thermal/solid
 			expect_field_count (line, 2);
-			user_settings_board.polygons.connection := to_pad_connection (f (line, 2));
+			user_settings_board.polygons_conductor.connection := to_pad_connection (f (line, 2));
 
 		elsif kw = keyword_pad_technology then -- pad_technology smt_and_tht
 			expect_field_count (line, 2);
-			user_settings_board.polygons.thermal.technology := to_pad_technology (f (line, 2));
+			user_settings_board.polygons_conductor.thermal.technology := to_pad_technology (f (line, 2));
 
 		elsif kw = keyword_thermal_width then -- thermal_width 0.25
 			expect_field_count (line, 2);
-			user_settings_board.polygons.thermal.width := to_distance (f (line, 2));
+			user_settings_board.polygons_conductor.thermal.width := to_distance (f (line, 2));
 
 		elsif kw = keyword_thermal_gap then -- thermal_gap 0.25
 			expect_field_count (line, 2);
-			user_settings_board.polygons.thermal.gap := to_distance (f (line, 2));
+			user_settings_board.polygons_conductor.thermal.gap := to_distance (f (line, 2));
 
 		elsif kw = keyword_easing_style then -- easing_style none/chamfer/fillet
 			expect_field_count (line, 2);
-			user_settings_board.polygons.easing.style := to_easing_style (f (line, 2));
+			user_settings_board.polygons_conductor.easing.style := to_easing_style (f (line, 2));
 
 		elsif kw = keyword_easing_radius then -- easing_radius 1.0
 			expect_field_count (line, 2);
-			user_settings_board.polygons.easing.radius := to_distance (f (line, 2));
+			user_settings_board.polygons_conductor.easing.radius := to_distance (f (line, 2));
 			
 		else
 			invalid_keyword (kw);
