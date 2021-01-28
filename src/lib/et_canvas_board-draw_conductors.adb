@@ -188,40 +188,22 @@ is
 				filled	=> YES,
 				height	=> self.frame_height);
 
--- CS
--- 			easing : type_easing;
--- 		width_min		: type_track_width; -- the minimum width
--- 		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
--- 		layer 			: type_signal_layer;
--- 		priority_level	: type_polygon_priority := type_polygon_priority'first;
-			
 		end if;
-
 	end query_polygon;
 
 	procedure query_polygon (c : in pac_conductor_polygons_floating_hatched.cursor) is 
 	begin
-		null; -- CS
-		
--- 		-- Draw the polygon if it is in the current layer:
--- 		if element (c).layer = current_layer then
--- 			
--- 			draw_polygon (
--- 				area	=> in_area,
--- 				context	=> context,
--- 				polygon	=> element (c),
--- 				filled	=> YES,
--- 				height	=> self.frame_height);
--- 			
+		-- Draw the polygon if it is in the current layer:
+		if element (c).properties.layer = current_layer then
+			
+			draw_polygon (
+				area	=> in_area,
+				context	=> context,
+				polygon	=> element (c),
+				filled	=> YES,
+				height	=> self.frame_height);
 
--- 		easing : type_easing;
--- 		hatching : type_hatching;
--- 		width_min		: type_track_width; -- the minimum width
--- 		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
--- 		layer 			: type_signal_layer;
--- 		priority_level	: type_polygon_priority := type_polygon_priority'first;
-		
--- 		end if;
+		end if;
 	end query_polygon;
 
 	procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is 
@@ -234,20 +216,27 @@ is
 				area	=> in_area,
 				context	=> context,
 				polygon	=> element (c),
-				filled	=> YES,
+				filled	=> NO, --YES,
 				height	=> self.frame_height);
-			
 
--- 		easing : type_easing;
--- 		hatching : type_hatching;
--- 		width_min		: type_track_width; -- the minimum width
--- 		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
--- 		layer 			: type_signal_layer;
--- 		priority_level	: type_polygon_priority := type_polygon_priority'first;
-		
 		end if;
 	end query_polygon;
 
+	procedure query_polygon (c : in pac_signal_polygons_hatched.cursor) is 
+	begin
+		
+		-- Draw the polygon if it is in the current layer:
+		if element (c).properties.layer = current_layer then
+			
+			draw_polygon (
+				area	=> in_area,
+				context	=> context,
+				polygon	=> element (c),
+				filled	=> YES,
+				height	=> self.frame_height);
+	
+		end if;
+	end query_polygon;
 	
 	procedure query_cutout (c : in et_pcb.pac_conductor_cutouts.cursor) is
 	begin
@@ -340,7 +329,10 @@ is
 		iterate (element (n).route.lines, query_line'access);
 		iterate (element (n).route.arcs, query_arc'access);
 		-- CS ? iterate (element (n).route.circles, query_circle'access);
+		
 		iterate (element (n).route.polygons.solid, query_polygon'access);
+		iterate (element (n).route.polygons.hatched, query_polygon'access);
+		
 		--iterate (element (n).route.cutouts, query_cutout'access);
 	end query_net_track;
 
