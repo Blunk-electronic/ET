@@ -340,7 +340,7 @@ is
 		iterate (element (n).route.lines, query_line'access);
 		iterate (element (n).route.arcs, query_arc'access);
 		-- CS ? iterate (element (n).route.circles, query_circle'access);
-		iterate (element (n).route.polygons_2.solid, query_polygon'access);
+		iterate (element (n).route.polygons.solid, query_polygon'access);
 		--iterate (element (n).route.cutouts, query_cutout'access);
 	end query_net_track;
 

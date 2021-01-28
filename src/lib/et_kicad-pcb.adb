@@ -4953,7 +4953,7 @@ package body et_kicad.pcb is
 										-- convert the polygon corner point to a list of lines:
 										load_lines (p, corners_to_lines (element (polygon_cursor).corners));
 										
-										route.polygons_2.solid.append (p);																					  
+										route.polygons.solid.append (p);																					  
 									end;
 									
 								when SOLID =>
@@ -4976,13 +4976,13 @@ package body et_kicad.pcb is
 										-- convert the polygon corner point to a list of lines:
 										load_lines (p, corners_to_lines (element (polygon_cursor).corners));
 										
-										route.polygons_2.solid.append (p);																					  
+										route.polygons.solid.append (p);																					  
 									end;
 
 								when NONE => null; -- floating polygon is ignored here. will be handled below
 							end case;
 
--- 							et_pcb.route_polygon_properties (route.polygons_2.solid.last, log_threshold + 3);
+-- 							et_pcb.route_polygon_properties (route.polygons.solid.last, log_threshold + 3);
 
 						else
 							null;

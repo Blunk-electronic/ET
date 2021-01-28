@@ -4358,7 +4358,7 @@ package body et_board_ops is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is begin
-				net.route.polygons_2.solid.append (p);
+				net.route.polygons.solid.append (p);
 			end add_polygon;
 			
 		begin --route_solid
@@ -4385,7 +4385,7 @@ package body et_board_ops is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is begin
-				net.route.polygons_2.hatched.append (p);
+				net.route.polygons.hatched.append (p);
 			end add_polygon;
 
 		begin -- route_hatched

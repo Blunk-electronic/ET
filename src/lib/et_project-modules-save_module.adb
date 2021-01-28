@@ -514,8 +514,8 @@ is
 			use pac_signal_polygons_solid; 
 			use pac_signal_polygons_hatched;
 			use et_pcb.pac_conductor_cutouts;
-			polygon_solid_cursor : pac_signal_polygons_solid.cursor := net.route.polygons_2.solid.first;
-			polygon_hatched_cursor : pac_signal_polygons_hatched.cursor := net.route.polygons_2.hatched.first;
+			polygon_solid_cursor : pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
+			polygon_hatched_cursor : pac_signal_polygons_hatched.cursor := net.route.polygons.hatched.first;
 			cutout_zone_cursor : et_pcb.pac_conductor_cutouts.cursor := net.route.cutouts.first;
 
 			procedure write_vias is

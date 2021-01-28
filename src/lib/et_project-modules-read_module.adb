@@ -4386,7 +4386,7 @@ is
 						p.thermal					:= thermal;
 
 						et_pcb.pac_signal_polygons_solid.append (
-							container	=> route.polygons_2.solid,
+							container	=> route.polygons.solid,
 							new_item	=> p);
 					end;
 
@@ -4405,7 +4405,7 @@ is
 						p.technology				:= thermal.technology;
 
 						et_pcb.pac_signal_polygons_solid.append (
-							container	=> route.polygons_2.solid,
+							container	=> route.polygons.solid,
 							new_item	=> p);
 					end;
 					
@@ -4435,7 +4435,7 @@ is
 						p.thermal					:= thermal;
 						
 						et_pcb.pac_signal_polygons_hatched.append (
-							container	=> route.polygons_2.hatched,
+							container	=> route.polygons.hatched,
 							new_item	=> p);
 					end;
 
@@ -4455,7 +4455,7 @@ is
 						p.technology := thermal.technology;
 						
 						et_pcb.pac_signal_polygons_hatched.append (
-							container	=> route.polygons_2.hatched,
+							container	=> route.polygons.hatched,
 							new_item	=> p);
 					end;
 					

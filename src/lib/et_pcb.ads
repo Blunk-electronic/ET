@@ -421,7 +421,7 @@ package et_pcb is
 		arcs		: pac_conductor_arcs.list;
 		-- CS: circles ?
 		vias		: pac_vias.list;
-		polygons_2	: type_signal_polygons; -- CS rename to polygons
+		polygons	: type_signal_polygons;
 		cutouts		: pac_conductor_cutouts.list;
 	end record;
 	
