@@ -58,6 +58,7 @@ with et_string_processing;		use et_string_processing;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_nets;					use et_nets;
 with et_drills;					use et_drills;
 with et_vias;					use et_vias;
 with et_packages;				use et_packages;
@@ -420,7 +421,7 @@ package et_pcb is
 		arcs		: pac_conductor_arcs.list;
 		-- CS: circles ?
 		vias		: pac_vias.list;
-		polygons_2	: type_signal_polygons;
+		polygons_2	: type_signal_polygons; -- CS rename to polygons
 		cutouts		: pac_conductor_cutouts.list;
 	end record;
 	
@@ -516,7 +517,11 @@ package et_pcb is
 
 	function conductor_polygon_properties_to_string (
 		polygon			: in type_polygon_conductor'class;
-		properties		: in type_conductor_polygon_properties)
+		properties		: in type_conductor_polygon_properties;
+
+		-- Net name is relevant if polygon is part of a route.
+		-- The type of the given polygon is the cirteria:
+		net_name		: in pac_net_name.bounded_string := no_name)
 		return string;
 	
 	

@@ -187,11 +187,13 @@ package body et_pcb is
 
 	function conductor_polygon_properties_to_string (
 		polygon			: in type_polygon_conductor'class;
-		properties		: in type_conductor_polygon_properties)
+		properties		: in type_conductor_polygon_properties;
+		net_name		: in pac_net_name.bounded_string := no_name)
 		return string
 	is
 		use ada.strings.unbounded;
 		use ada.tags;
+		--use et_nets;
 		
 		result : unbounded_string := to_unbounded_string ("properties:");
 
@@ -219,8 +221,7 @@ package body et_pcb is
 		elsif polygon'tag = type_polygon_conductor_route_solid'tag 
 		or    polygon'tag = type_polygon_conductor_route_hatched'tag 
 		then
-			append ("net");
-			-- CS net name
+			append ("net " & pac_net_name.to_string (net_name));
 			
 			connected_with_net (type_polygon_conductor_route_solid (polygon));
 		end if;

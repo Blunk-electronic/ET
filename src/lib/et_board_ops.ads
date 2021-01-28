@@ -602,7 +602,11 @@ package et_board_ops is
 	procedure place_polygon_conductor (
 		module_cursor	: in pac_generic_modules.cursor;
 		polygon			: in type_polygon_conductor'class;
-		log_threshold	: in type_log_level);
+		log_threshold	: in type_log_level;
+
+		-- Net name is relevant if polygon is part of a route.
+		-- The type of the given polygon is the cirteria:
+		net_name		: in pac_net_name.bounded_string := no_name);
 
 	
 	

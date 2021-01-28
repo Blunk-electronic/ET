@@ -68,6 +68,9 @@ is
 	use pac_conductor_cutouts;
 	use pac_conductor_polygons_floating_solid;
 	use pac_conductor_polygons_floating_hatched;
+	use pac_signal_polygons_solid;
+	use pac_signal_polygons_hatched;
+	
 	use et_pcb.pac_text_placeholders_conductors;
 	use et_packages.pac_conductor_texts;
 	
@@ -173,7 +176,7 @@ is
 		end if;
 	end query_circle;
 
-	procedure query_polygon (c : in et_pcb.pac_conductor_polygons_floating_solid.cursor) is
+	procedure query_polygon (c : in pac_conductor_polygons_floating_solid.cursor) is
 	begin
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
@@ -196,7 +199,7 @@ is
 
 	end query_polygon;
 
-	procedure query_polygon (c : in et_pcb.pac_conductor_polygons_floating_hatched.cursor) is 
+	procedure query_polygon (c : in pac_conductor_polygons_floating_hatched.cursor) is 
 	begin
 		null; -- CS
 		
@@ -221,6 +224,31 @@ is
 -- 		end if;
 	end query_polygon;
 
+	procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is 
+	begin
+		
+		-- Draw the polygon if it is in the current layer:
+		if element (c).properties.layer = current_layer then
+			
+			draw_polygon (
+				area	=> in_area,
+				context	=> context,
+				polygon	=> element (c),
+				filled	=> YES,
+				height	=> self.frame_height);
+			
+
+-- 		easing : type_easing;
+-- 		hatching : type_hatching;
+-- 		width_min		: type_track_width; -- the minimum width
+-- 		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
+-- 		layer 			: type_signal_layer;
+-- 		priority_level	: type_polygon_priority := type_polygon_priority'first;
+		
+		end if;
+	end query_polygon;
+
+	
 	procedure query_cutout (c : in et_pcb.pac_conductor_cutouts.cursor) is
 	begin
 		-- Draw the zone if it is in the current layer:
@@ -312,7 +340,7 @@ is
 		iterate (element (n).route.lines, query_line'access);
 		iterate (element (n).route.arcs, query_arc'access);
 		-- CS ? iterate (element (n).route.circles, query_circle'access);
-		--iterate (element (n).route.polygons_2, query_polygon'access);
+		iterate (element (n).route.polygons_2.solid, query_polygon'access);
 		--iterate (element (n).route.cutouts, query_cutout'access);
 	end query_net_track;
 

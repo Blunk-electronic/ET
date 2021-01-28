@@ -2154,88 +2154,126 @@ is
 			-- Extract from the given command the polygon arguments (everything after "polygon"):
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 7);
 
-
-			--pht : et_pcb.type_polygon_conductor_route_hatched (connection => THERMAL);
-			--phs : et_pcb.type_polygon_conductor_route_hatched (connection => SOLID);
-			
 			-- Build a basic polygon from the arguments:
-			p : constant type_polygon_base'class := to_polygon (arguments);
-
-			--pc : type_polygon_conductor := (fill_style => settings.polygons.fill_style, others => <>);
-
+			p0 : constant type_polygon_base'class := to_polygon (arguments);
 
 			procedure make_solid_thermal is
-				pst : et_pcb.type_polygon_conductor_route_solid (connection => THERMAL);
+				p1 : type_polygon_conductor_solid;
+				p2 : type_polygon_conductor_route_solid (connection => THERMAL);
 			begin
-				null;
-				--pst := (type_polygon_base (p) with 
-					--connection	=> THERMAL,
-					----fill_style	=> SOLID,
-					--thermal		=> settings.polygons.thermal,
-					--width_min	=> settings.polygons.min_width,
-					--isolation	=> settings.polygons.isolation,
-					--properties	=> (
-							--layer 			=> to_signal_layer (f (5)),
-							--priority_level	=> settings.polygons.priority_level),
-					
-					--easing		=> settings.polygons.easing);
+				p1 := (type_polygon_base (p0) with 
+					fill_style	=> SOLID,
+					width_min	=> settings.polygons.min_width,
+					isolation	=> settings.polygons.isolation,					
+					easing		=> settings.polygons.easing);
 
-				--place_polygon_conductor (module_cursor, ps, log_threshold + 1);
+				p2 := (p1 with
+					connection	=> THERMAL,
+					thermal		=> settings.polygons.thermal,
+					properties	=> (
+							layer 			=> to_signal_layer (f (6)),
+							priority_level	=> settings.polygons.priority_level));
+					   
+				place_polygon_conductor (
+					module_cursor	=> module_cursor,
+					polygon			=> p2,
+					net_name		=> to_net_name (f (5)),
+					log_threshold	=> log_threshold + 1);
 				
 			end make_solid_thermal;
 
 			procedure make_solid_solid is 
-				pss : et_pcb.type_polygon_conductor_route_solid (connection => SOLID);
+				p1 : type_polygon_conductor_solid;
+				p2 : type_polygon_conductor_route_solid (connection => SOLID);
 			begin
-				null;
-				--pss := (type_polygon_base (p) with 
-					----fill_style	=> SOLID,
-					--connection	=> SOLID,
-					--thermal		=> settings.polygons.thermal,
-					--width_min	=> settings.polygons.min_width,
-					--isolation	=> settings.polygons.isolation,
-					--properties	=> (
-							--layer 			=> to_signal_layer (f (5)),
-							--priority_level	=> settings.polygons.priority_level),
-					
-					--easing		=> settings.polygons.easing);
+				p1 := (type_polygon_base (p0) with 
+					fill_style	=> SOLID,
+					width_min	=> settings.polygons.min_width,
+					isolation	=> settings.polygons.isolation,					
+					easing		=> settings.polygons.easing);
 
-				--place_polygon_conductor (module_cursor, ps, log_threshold + 1);
+				p2 := (p1 with
+					connection	=> SOLID,
+					technology	=> SMT_AND_THT, -- CS settings.polygons.technology,
+					properties	=> (
+							layer 			=> to_signal_layer (f (6)),
+							priority_level	=> settings.polygons.priority_level));
+					   
+				place_polygon_conductor (
+					module_cursor	=> module_cursor,
+					polygon			=> p2,
+					net_name		=> to_net_name (f (5)),
+					log_threshold	=> log_threshold + 1);
+
 			end make_solid_solid;
+
+			procedure make_hatched_thermal is
+				p1 : type_polygon_conductor_hatched;
+				p2 : type_polygon_conductor_route_hatched (connection => THERMAL);
+			begin
+				p1 := (type_polygon_base (p0) with 
+					fill_style	=> HATCHED,
+					hatching	=> settings.polygons.hatching,
+					width_min	=> settings.polygons.min_width,
+					isolation	=> settings.polygons.isolation,					
+					easing		=> settings.polygons.easing);
+
+				p2 := (p1 with
+					connection	=> THERMAL,
+					thermal		=> settings.polygons.thermal,
+					properties	=> (
+							layer 			=> to_signal_layer (f (6)),
+							priority_level	=> settings.polygons.priority_level));
+					   
+				place_polygon_conductor (
+					module_cursor	=> module_cursor,
+					polygon			=> p2,
+					net_name		=> to_net_name (f (5)),
+					log_threshold	=> log_threshold + 1);
+				
+			end make_hatched_thermal;
+
+			procedure make_hatched_solid is
+				p1 : type_polygon_conductor_hatched;
+				p2 : type_polygon_conductor_route_hatched (connection => SOLID);
+			begin
+				p1 := (type_polygon_base (p0) with 
+					fill_style	=> HATCHED,
+					hatching	=> settings.polygons.hatching,
+					width_min	=> settings.polygons.min_width,
+					isolation	=> settings.polygons.isolation,					
+					easing		=> settings.polygons.easing);
+
+				p2 := (p1 with
+					connection	=> SOLID,
+					technology	=> SMT_AND_THT, -- CS settings.polygons.technology,
+					properties	=> (
+							layer 			=> to_signal_layer (f (6)),
+							priority_level	=> settings.polygons.priority_level));
+					   
+				place_polygon_conductor (
+					module_cursor	=> module_cursor,
+					polygon			=> p2,
+					net_name		=> to_net_name (f (5)),
+					log_threshold	=> log_threshold + 1);
+				
+			end make_hatched_solid;
 			
 		begin -- make_polygon
 			case settings.polygons.fill_style is
 				when SOLID =>
-
 					case settings.polygons.connection is
-						when THERMAL =>
-
-							make_solid_thermal;
-
-						when SOLID =>
-
-							make_solid_solid;
-
+						when THERMAL	=> make_solid_thermal;
+						when SOLID		=> make_solid_solid;
 					end case;
 					
 				when HATCHED =>
-
-					--ph := (type_polygon_base (p) with 
-						--fill_style	=> HATCHED,
-						--hatching	=> settings.polygons.hatching,
-						--width_min	=> settings.polygons.min_width,
-						--isolation	=> settings.polygons.isolation,
-						--properties	=> (
-								--layer 			=> to_signal_layer (f (5)),
-								--priority_level	=> settings.polygons.priority_level),
-						
-						--easing		=> settings.polygons.easing);
-
-					--place_polygon_conductor (module_cursor, ph, log_threshold + 1);
-					null;
+					case settings.polygons.connection is
+						when THERMAL	=> make_hatched_thermal;
+						when SOLID		=> make_hatched_solid;
+					end case;
 					
 			end case;
-
 		end make_polygon;
 
 	begin -- route_net

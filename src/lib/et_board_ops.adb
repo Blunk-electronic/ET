@@ -45,6 +45,7 @@ with et_symbols;
 with et_packages;
 with et_pcb_rw.device_packages;
 with et_conventions;
+with et_exceptions;				use et_exceptions;
 
 package body et_board_ops is
 
@@ -4292,11 +4293,12 @@ package body et_board_ops is
 	procedure place_polygon_conductor (
 		module_cursor	: in pac_generic_modules.cursor;
 		polygon			: in type_polygon_conductor'class;
-		log_threshold	: in type_log_level)
+		log_threshold	: in type_log_level;
+		net_name		: in pac_net_name.bounded_string := no_name)
 	is
 		use ada.tags;
 		
-		procedure place_polygon (
+		procedure floating_solid (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
@@ -4310,9 +4312,94 @@ package body et_board_ops is
 				level => log_threshold + 1);
 
 			module.board.conductors.polygons.solid.append (p);
-		end place_polygon;
+		end floating_solid;
 
-	begin
+		procedure floating_hatched (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			use pac_conductor_polygons_floating_hatched;
+
+			p : type_polygon_conductor_hatched_floating := 
+				type_polygon_conductor_hatched_floating (polygon);
+			
+		begin
+			log (text => conductor_polygon_properties_to_string (p, p.properties),
+				level => log_threshold + 1);
+
+			module.board.conductors.polygons.hatched.append (p);
+		end floating_hatched;
+
+		-- Polygons which are connected with a net are part of a route.
+		-- They must be added to the targeted net. So we need a cursor
+		-- to the targeted net:
+		net_cursor : pac_nets.cursor;
+
+		procedure locate_targeted_net is begin
+			net_cursor := locate_net (module_cursor, net_name);
+
+			if net_cursor = pac_nets.no_element then
+				raise semantic_error_1 with
+					"ERROR: Net " & enclose_in_quotes (to_string (net_name)) 
+					& " does not exist !";
+			end if;
+		end locate_targeted_net;
+		
+		procedure route_solid (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			use pac_signal_polygons_solid;
+
+			p : type_polygon_conductor_route_solid := 
+				type_polygon_conductor_route_solid (polygon);
+
+			procedure add_polygon (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is begin
+				net.route.polygons_2.solid.append (p);
+			end add_polygon;
+			
+		begin --route_solid
+			log (text => conductor_polygon_properties_to_string (p, p.properties, net_name),
+				level => log_threshold + 1);
+
+			update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> add_polygon'access);
+			
+		end route_solid;
+
+		procedure route_hatched (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_module) 
+		is
+			use pac_signal_polygons_hatched;
+
+			p : type_polygon_conductor_route_hatched := 
+				type_polygon_conductor_route_hatched (polygon);
+			
+			procedure add_polygon (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is begin
+				net.route.polygons_2.hatched.append (p);
+			end add_polygon;
+
+		begin -- route_hatched
+			log (text => conductor_polygon_properties_to_string (p, p.properties, net_name),
+				level => log_threshold + 1);
+
+			update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> add_polygon'access);
+
+		end route_hatched;
+		
+	begin -- place_polygon_conductor
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " placing polygon in conductor layer ...",
@@ -4320,16 +4407,43 @@ package body et_board_ops is
 
 		log_indentation_up;
 		
-
+		-- floating polygons:
 		if polygon'tag = type_polygon_conductor_solid_floating'tag then
 
 			update_element (
 				container	=> generic_modules,
 				position	=> module_cursor,
-				process		=> place_polygon'access);
+				process		=> floating_solid'access);
 
+		elsif polygon'tag = type_polygon_conductor_hatched_floating'tag then
+
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> floating_hatched'access);
+
+
+		-- route polygons:
+		elsif polygon'tag = type_polygon_conductor_route_solid'tag then
+
+			locate_targeted_net;
+						
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> route_solid'access);
+
+		elsif polygon'tag = type_polygon_conductor_route_hatched'tag then
+
+			locate_targeted_net;
+
+			update_element (
+				container	=> generic_modules,
+				position	=> module_cursor,
+				process		=> route_hatched'access);
+			
 		else
-			null;
+			null; -- CS ?
 		end if;
 		
 		log_indentation_down;

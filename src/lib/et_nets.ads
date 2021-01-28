@@ -66,7 +66,7 @@ package et_nets is
 	package pac_net_name is new generic_bounded_length (net_name_length_max); 
 	use pac_net_name;
 
-
+	no_name : constant pac_net_name.bounded_string := to_bounded_string ("");
 
 	
 	
