@@ -2590,7 +2590,7 @@ is
 				
 				ly : constant type_signal_layer := face_to_layer (f);
 
-				cutout_circular : type_cutout_circle;
+				--cutout_circular : type_cutout_circle;
 				--cutout_arbitrary : 
 			begin
 				-- We draw only if either the signal layer or the stop mask
@@ -2610,22 +2610,22 @@ is
 
 							case tht_hole is
 								when DRILLED =>
-									cutout_circular	:= (center => type_point (pad_pos_in), radius => drill_size * 0.5);
+									--cutout_circular	:= (center => type_point (pad_pos_in), radius => drill_size * 0.5);
 									
 									draw_polygon (
 										area		=> in_area,
 										context		=> context,
 										polygon		=> pad_outline,
-										filled		=> YES,
-										height		=> self.frame_height,
-										cutout		=> (YES, CIRCULAR, cutout_circular));
+										filled		=> NO,
+										height		=> self.frame_height);
+										--cutout		=> (YES, CIRCULAR, cutout_circular));
 
 								when MILLED =>
 									draw_polygon (
 										area		=> in_area,
 										context		=> context,
 										polygon		=> pad_outline,
-										filled		=> YES,
+										filled		=> NO,
 										height		=> self.frame_height);
 							end case;
 						end if;
@@ -2721,14 +2721,14 @@ is
 						-- move the conductor frame to its final position:
 						move (pad_pos, type_polygon_base (pad_outline));
 						
-						-- Draw the conductor frame:
+						-- Draw the conductor frame (outer contour):
 						set_color_tht_pad (context.cr);
-						draw_polygon (in_area, context, pad_outline, YES, self.frame_height);
+						draw_polygon (in_area, context, pad_outline, NO, self.frame_height);
 					end if;
 					
-					-- Draw the hole outline:
-					set_color_background (context.cr);
-					draw_polygon (in_area, context, hole_outline, YES, self.frame_height);
+					-- Draw the hole outline (inner restring contour):
+					--set_color_background (context.cr);
+					draw_polygon (in_area, context, hole_outline, NO, self.frame_height);
 
 					-- draw the terminal name
 					draw_name (name, pad_pos);

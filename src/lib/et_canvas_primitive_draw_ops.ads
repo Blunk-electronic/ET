@@ -122,59 +122,59 @@ package pac_draw is
 
 
 	
--- CUTOUT
+---- CUTOUT
 	
-	type type_cutout is (NO, YES);
+	--type type_cutout is (NO, YES);
 	
-	type type_cutout_shape is (
-		CIRCULAR,
-		ARBITRARY
-		-- CS square, triangle, ... ?
-		);
+	--type type_cutout_shape is (
+		--CIRCULAR,
+		--ARBITRARY
+		---- CS square, triangle, ... ?
+		--);
 
-	type type_cutout_circle is new type_circle with null record;
-	type type_cutout_arbitrary is new type_polygon_base with null record;
+	--type type_cutout_circle is new type_circle with null record;
+	--type type_cutout_arbitrary is new type_polygon_base with null record;
 
-	package pac_cutouts_arbitrary is new doubly_linked_lists (type_cutout_arbitrary);
+	--package pac_cutouts_arbitrary is new doubly_linked_lists (type_cutout_arbitrary);
 
-	type type_cutout_area (
-		required	: type_cutout := NO;
+	--type type_cutout_area (
+		--required	: type_cutout := NO;
 
-		-- If required is NO, then shape is don't care:
-		shape		: type_cutout_shape := CIRCULAR)
-	is record
-		case required is
-			when NO		=> null; -- no cutout required
-			when YES	=> -- cutout required
+		---- If required is NO, then shape is don't care:
+		--shape		: type_cutout_shape := CIRCULAR)
+	--is record
+		--case required is
+			--when NO		=> null; -- no cutout required
+			--when YES	=> -- cutout required
 
-				case shape is
-					when CIRCULAR =>
-						cutout_circular : type_cutout_circle;
+				--case shape is
+					--when CIRCULAR =>
+						--cutout_circular : type_cutout_circle;
 
-					-- CS other basic shapes ?
+					---- CS other basic shapes ?
 						
-					when ARBITRARY =>
-						cutout_arbitrary : pac_cutouts_arbitrary.list;
+					--when ARBITRARY =>
+						--cutout_arbitrary : pac_cutouts_arbitrary.list;
 
-				end case;
-		end case;
-	end record;
+				--end case;
+		--end case;
+	--end record;
 
 	
--- CROP
-	type type_crop is (NO, YES);
-	type type_crop_arbitrary is new type_polygon_base with null record;
+---- CROP
+	--type type_crop is (NO, YES);
+	--type type_crop_arbitrary is new type_polygon_base with null record;
 	
-	type type_crop_area (
-		required	: type_crop := NO)
-	is record
-		case required is
-			when NO		=> null; -- no crop required
-			when YES	=> -- crop required
-				crop : type_crop_arbitrary;
+	--type type_crop_area (
+		--required	: type_crop := NO)
+	--is record
+		--case required is
+			--when NO		=> null; -- no crop required
+			--when YES	=> -- crop required
+				--crop : type_crop_arbitrary;
 
-		end case;
-	end record;
+		--end case;
+	--end record;
 
 							
 	procedure draw_polygon (
@@ -184,9 +184,7 @@ package pac_draw is
 		filled	: in type_filled;
 		-- CS fill style
 
-		height	: in pac_shapes.pac_geometry.type_distance;
-		cutout	: in type_cutout_area := (others => <>);
-		crop	: in type_crop_area := (others => <>));
+		height	: in pac_shapes.pac_geometry.type_distance);
 
 	
 	

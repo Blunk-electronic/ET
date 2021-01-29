@@ -185,7 +185,7 @@ is
 				area	=> in_area,
 				context	=> context,
 				polygon	=> element (c),
-				filled	=> YES,
+				filled	=> NO,
 				height	=> self.frame_height);
 
 		end if;
@@ -200,7 +200,7 @@ is
 				area	=> in_area,
 				context	=> context,
 				polygon	=> element (c),
-				filled	=> YES,
+				filled	=> NO,
 				height	=> self.frame_height);
 
 		end if;
@@ -216,7 +216,7 @@ is
 				area	=> in_area,
 				context	=> context,
 				polygon	=> element (c),
-				filled	=> NO, --YES,
+				filled	=> NO,
 				height	=> self.frame_height);
 
 		end if;
@@ -232,7 +232,7 @@ is
 				area	=> in_area,
 				context	=> context,
 				polygon	=> element (c),
-				filled	=> YES,
+				filled	=> NO,
 				height	=> self.frame_height);
 	
 		end if;
@@ -243,17 +243,17 @@ is
 		-- Draw the zone if it is in the current layer:
 		if element (c).layer = current_layer then
 
-			save (context.cr);
-			set_color_background (context.cr);
+			--save (context.cr);
+			--set_color_background (context.cr);
 			
 			draw_polygon (
 				area	=> in_area,
 				context	=> context,
 				polygon	=> element (c),
-				filled	=> YES,
+				filled	=> NO,
 				height	=> self.frame_height);
 
-			restore (context.cr);
+			--restore (context.cr);
 		end if;
 	end query_cutout;
 
@@ -333,7 +333,7 @@ is
 		iterate (element (n).route.polygons.solid, query_polygon'access);
 		iterate (element (n).route.polygons.hatched, query_polygon'access);
 		
-		--iterate (element (n).route.cutouts, query_cutout'access);
+		-- CS iterate (element (n).route.cutouts, query_cutout'access);
 	end query_net_track;
 
 	procedure query_via (v : in pac_vias.cursor) is 

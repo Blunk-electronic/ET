@@ -265,9 +265,7 @@ package body pac_draw is
 		filled	: in type_filled;
 		-- CS fill style
 
-		height	: in pac_shapes.pac_geometry.type_distance;
-		cutout	: in type_cutout_area := (others => <>);
-		crop	: in type_crop_area := (others => <>))
+		height	: in pac_shapes.pac_geometry.type_distance)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given polygon:
 		boundaries : type_boundaries := pac_shapes.boundaries (polygon);
@@ -365,46 +363,7 @@ package body pac_draw is
 
 		-- For cairo, en arc must be expressed by start and end arc:
 		arc_temp : type_arc_angles;
-
-		--p : cairo_pattern;
-		--s : cairo_surface;
-
-		--procedure draw_cutout is begin
-			--if cutout.required = YES then
-				----p := pattern_create_rgb (0.0, 0.0, 0.0);
-				--set_source_rgb (context.cr, 0.0, 0.0, 0.0);
-				
-				----new_sub_path (context.cr); -- required to suppress an initial line
-
-				---- CS if cutout.shape = circular ..
-				----mask (context.cr, p);
-				--s := get_target (context.cr);
-
-				--mask_surface (context.cr, s, 0.0, 0.0);
-				
-				----put_line (to_string (cutout.cutout_circular.radius));
-				
-				--cairo.arc (
-					--context.cr,
-					--xc		=> convert_x (cutout.cutout_circular.center.x),
-					--yc		=> shift_y (cutout.cutout_circular.center.y, height),
-					--radius	=> type_view_coordinate (cutout.cutout_circular.radius),
-
-					---- it must be a full circle starting at 0 degree and ending at 360 degree:
-					--angle1	=> 0.0,
-					--angle2	=> type_view_coordinate (2 * pi)				
-					--);
-
-				--fill (context.cr);
-
-				----cairo.set_line_width (context.cr, type_view_coordinate (zero));
-				
-				----stroke (context.cr);
-
-				----cairo.set_line_width (context.cr, line_width_before);
-			--end if;
-		--end draw_cutout;
-		
+	
 	begin -- draw_polygon
 
 		-- We draw the polygon if:
@@ -418,10 +377,10 @@ package body pac_draw is
 	-- 				return;
 	-- 			end if;
 
-			--draw_cutout;
-
 			--put_line ("total " & type_polygon_segment_count'image (get_segments_total (polygon)));
 
+			new_sub_path (context.cr); -- required to suppress an initial line
+			
 			-- Iterate segments of given polygon. For each iteration s indicates the
 			-- segment to be drawn. It can be among lines (most likely), among arcs (less likely)
 			-- and among circles (least likely). The functions get_line, get_arc and get_circle
@@ -435,8 +394,6 @@ package body pac_draw is
 				cl := get_line (s);
 				if cl /= pac_polygon_lines.no_element then
 
-					--put_line ("line");
-					
 					-- start point
 					line_to (
 						context.cr,
@@ -455,10 +412,6 @@ package body pac_draw is
 				else 
 					ca := get_arc (s);
 					if ca /= pac_polygon_arcs.no_element then
-
-						--put_line ("arc");
-						
-						-- put_line (type_polygon_segment_id'image (s));
 
 						-- Convert the segment to a type that uses start and end angles.
 						-- The angles of arc_temp will later be inverted for cairo draw operation:
@@ -509,7 +462,7 @@ package body pac_draw is
 
 							-- CS: All segments of the polygon must have the same color.
 							-- Where the circle overlaps the polygon the brightness increases.
-							
+
 							cairo.arc (
 								context.cr,
 								xc		=> convert_x (element (cc).center.x),
@@ -533,8 +486,6 @@ package body pac_draw is
 					end if;
 				end if;
 
-				-- stroke each segment of the polygon
--- 				stroke (context.cr);
 			end loop;
 			
 			case filled is
@@ -546,14 +497,12 @@ package body pac_draw is
 					-- The ends of the line are round:
 					set_line_cap (context.cr, cairo_line_cap_round);
 
+					--set_line_width (context.cr, type_view_coordinate (pac_text_fab.origin_line_width));
+					set_line_width (context.cr, 0.1);
 					-- The line width has been set by the calling unit.
 			end case;
 
  			stroke (context.cr);
-
-			--draw_cutout;
-
-					  
 		end if;
 	end draw_polygon;
 
