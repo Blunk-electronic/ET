@@ -2468,8 +2468,8 @@ is
 				stop_mask_in	: in type_stop_mask_smt; -- the stop mask of the pad
 				stencil_in		: in et_terminals.type_stencil; -- the solder cream mask of the pad
 				pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
-				f				: in type_face) is
-
+				f				: in type_face) 
+			is
 				pad_outline : type_pad_outline := pad_outline_in;
 				pad_pos : type_position := pad_pos_in;
 
@@ -2569,29 +2569,25 @@ is
 				end if;
 			end draw_pad_smt;
 
-			-- This procedure draws the outer "restring" of the THT pad and the stop mask
-			-- in an outer signal layer (specified by caller).
+			-- This procedure draws the outer countour of the THT pad and 
+			-- outer contour of the stop mask
+			-- in top/bottom signal layer (specified by caller).
 			-- The terminal name will be drawn only when the signal layer is enabled.
 			procedure draw_pad_tht_outer_layer (
 				pad_outline_in	: in type_pad_outline; -- the outline of the solder pad
 				stop_mask_in	: in et_terminals.type_stop_mask; -- the stop mask in the outer layer
 				pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
 				f				: in type_face;
-				
-				tht_hole		: in type_terminal_tht_hole := DRILLED; -- drilled/milled
 				drill_size		: in type_drill_size_tht := type_drill_size_tht'first;
 				millings		: in type_plated_millings := plated_millings_default
 				)
 			is
-				pad_outline : type_pad_outline := pad_outline_in;
+				pad_outline : type_pad_outline := pad_outline_in; --
 				pad_pos : type_position := pad_pos_in;
 
-				stop_mask_contours : type_stop_mask_contours;
+				stop_mask_contours : type_stop_mask_contours; --
 				
 				ly : constant type_signal_layer := face_to_layer (f);
-
-				--cutout_circular : type_cutout_circle;
-				--cutout_arbitrary : 
 			begin
 				-- We draw only if either the signal layer or the stop mask
 				-- is enabled. Otherwise nothing will happen here:
@@ -2603,31 +2599,18 @@ is
 						-- rotated or mirrored pad outline.
 						move (pad_pos, type_polygon_base (pad_outline));
 
-						-- draw the solder pad (conductor):
+						-- draw the outer solder pad contour:
 						if conductor_enabled (ly) then
 
 							set_color_tht_pad (context.cr);
 
-							case tht_hole is
-								when DRILLED =>
-									--cutout_circular	:= (center => type_point (pad_pos_in), radius => drill_size * 0.5);
-									
-									draw_polygon (
-										area		=> in_area,
-										context		=> context,
-										polygon		=> pad_outline,
-										filled		=> NO,
-										height		=> self.frame_height);
-										--cutout		=> (YES, CIRCULAR, cutout_circular));
+							draw_polygon (
+								area		=> in_area,
+								context		=> context,
+								polygon		=> pad_outline,
+								filled		=> NO,
+								height		=> self.frame_height);
 
-								when MILLED =>
-									draw_polygon (
-										area		=> in_area,
-										context		=> context,
-										polygon		=> pad_outline,
-										filled		=> NO,
-										height		=> self.frame_height);
-							end case;
 						end if;
 						
 						-- draw the stop mask
@@ -2662,25 +2645,14 @@ is
 
 							set_color_stop_mask (context.cr, f, self.scale);
 
-							case tht_hole is
-								when DRILLED =>
-							
-									draw_polygon (
-										area		=> in_area,
-										context		=> context,
-										polygon		=> stop_mask_contours,
-										filled		=> YES,
-										height		=> self.frame_height);
+							-- draw the outer contour of the stop mask opening
+							draw_polygon (
+								area		=> in_area,
+								context		=> context,
+								polygon		=> stop_mask_contours,
+								filled		=> YES,
+								height		=> self.frame_height);
 
-								when MILLED =>
-									
-									draw_polygon (
-										area		=> in_area,
-										context		=> context,
-										polygon		=> stop_mask_contours,
-										filled		=> YES,
-										height		=> self.frame_height);
-							end case;
 						end if;
 
 					end if;
@@ -2691,16 +2663,15 @@ is
 			-- of the inner signal layers:
 			procedure draw_pad_tht_hole_milled (
 				name			: in string;  -- H5, 5, 3
-				outline_in		: in type_plated_millings;
+				outline_in		: in type_plated_millings; -- the countours of the milled hole
 				restring_width	: in type_track_width;
-				pad_pos_in		: in type_position) is -- the center of the pad incl. its rotation
-
-				hole_outline : type_plated_millings := outline_in;
+				pad_pos_in		: in type_position) -- the center of the pad incl. its rotation
+			is
+				hole_outline : type_plated_millings := outline_in; --
 				pad_pos : type_position := pad_pos_in;
 
-				pad_outline : type_pad_outline;				
-			begin
-				
+				pad_outline : type_pad_outline; --
+			begin				
 				-- We draw the hole only if any conductor layer is enabled.
 				-- If no conductor layers are enabled, no hole will be shown.
 				if conductors_enabled then
@@ -2746,7 +2717,7 @@ is
 				pad_pos : type_position := pad_pos_in;
 
 				type type_circle is new pac_shapes.type_circle with null record;
-				circle : type_circle;
+				circle : type_circle; --
 			begin
 				-- We draw the hole only if a conductor layer is enabled.
 				-- If no conductor layers are enabled, no hole will be shown.
@@ -2802,7 +2773,6 @@ is
 									stop_mask_in	=> t.stop_mask_shape_tht.top,
 									pad_pos_in		=> t.position,
 									f				=> destination,
-									tht_hole		=> DRILLED,
 									drill_size		=> t.drill_size);
 
 								-- draw pad outline of bottom layer:
@@ -2812,7 +2782,6 @@ is
 									stop_mask_in	=> t.stop_mask_shape_tht.bottom,
 									pad_pos_in		=> t.position,
 									f				=> destination,
-									tht_hole		=> DRILLED,
 									drill_size		=> t.drill_size);
 
 								draw_pad_tht_hole_drilled (to_string (key (c)), t.drill_size, t.width_inner_layers, t.position);
@@ -2826,7 +2795,6 @@ is
 									stop_mask_in	=> t.stop_mask_shape_tht.top,
 									pad_pos_in		=> t.position,
 									f				=> destination,
-									tht_hole		=> MILLED,
 									millings		=> t.millings);
 
 								-- draw pad outline of bottom layer:
@@ -2836,7 +2804,6 @@ is
 									stop_mask_in	=> t.stop_mask_shape_tht.bottom,
 									pad_pos_in		=> t.position,
 									f				=> destination,
-									tht_hole		=> MILLED,
 									millings		=> t.millings);
 
 								draw_pad_tht_hole_milled (to_string (key (c)), t.millings, t.width_inner_layers, t.position);
