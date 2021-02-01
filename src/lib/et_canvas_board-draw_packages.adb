@@ -178,11 +178,10 @@ is
 
 		procedure draw_text_with_content (
 			t : in out type_text_with_content;
-			f : in type_face) is
-
+			f : in type_face)
+		is
 			use pac_text_fab.pac_vector_text_lines;
 			vector_text : pac_text_fab.pac_vector_text_lines.list;
-	
 		begin
 
 			-- Rotate the position of the text by the rotation of the package.
@@ -435,11 +434,10 @@ is
 
 			procedure draw_placeholder (
 				ph	: in out type_text_placeholder;
-				f	: in type_face) is
-
+				f	: in type_face)
+			is
 				use pac_text_fab.pac_vector_text_lines;
 				vector_text : pac_text_fab.pac_vector_text_lines.list;
-
 			begin
 				if silkscreen_enabled (f) then
 					
@@ -2569,6 +2567,41 @@ is
 				end if;
 			end draw_pad_smt;
 
+			procedure draw_tht_pad_with_circular_cutout (
+				outer_border	: in type_pad_outline;
+				drill_position	: in type_point;
+				drill_size		: in type_drill_size)
+			is 
+				type t_c is new type_circle with null record;
+				ib : constant t_c := (center => drill_position, radius => drill_size * 0.5);
+			begin
+				--set_color_tht_pad (context.cr);
+
+				draw_polygon_with_circular_cutout (
+					area			=> in_area,
+					context			=> context,
+					outer_border	=> outer_border,
+					inner_border	=> ib,
+					height			=> self.frame_height);
+
+			end draw_tht_pad_with_circular_cutout;
+
+			procedure draw_tht_pad_with_arbitrary_cutout (
+				outer_border	: in type_pad_outline;
+				inner_border	: in type_plated_millings)
+			is begin
+				set_color_tht_pad (context.cr);
+
+				draw_polygon_with_arbitrary_cutout (
+					area			=> in_area,
+					context			=> context,
+					outer_border	=> outer_border,
+					inner_border	=> inner_border,
+					height			=> self.frame_height);
+				
+			end draw_tht_pad_with_arbitrary_cutout;
+
+			
 			-- This procedure draws the outer countour of the THT pad and 
 			-- outer contour of the stop mask
 			-- in top/bottom signal layer (specified by caller).
@@ -2578,13 +2611,15 @@ is
 				stop_mask_in	: in et_terminals.type_stop_mask; -- the stop mask in the outer layer
 				pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
 				f				: in type_face;
-				drill_size		: in type_drill_size_tht := type_drill_size_tht'first;
-				millings		: in type_plated_millings := plated_millings_default
-				)
+				drilled_milled	: in type_terminal_tht_hole;
+				drill_size		: in type_drill_size := type_drill_size'first;
+				hole_outline_in	: in type_plated_millings := plated_millings_default)
 			is
-				pad_outline : type_pad_outline := pad_outline_in; --
+				pad_outline_outer_layer : type_pad_outline := pad_outline_in; --
 				pad_pos : type_position := pad_pos_in;
 
+				hole_outline : type_plated_millings := hole_outline_in; --
+				
 				stop_mask_contours : type_stop_mask_contours; --
 				
 				ly : constant type_signal_layer := face_to_layer (f);
@@ -2597,20 +2632,30 @@ is
 
 						-- Calculate the final position of the terminal and the
 						-- rotated or mirrored pad outline.
-						move (pad_pos, type_polygon_base (pad_outline));
+						move (pad_pos, type_polygon_base (pad_outline_outer_layer));
 
 						-- draw the outer solder pad contour:
 						if conductor_enabled (ly) then
+							case drilled_milled is
+								when DRILLED =>
+								
+									draw_tht_pad_with_circular_cutout (
+										outer_border	=> pad_outline_outer_layer,
+										drill_position	=> type_point (pad_pos),
+										drill_size		=> drill_size);
 
-							set_color_tht_pad (context.cr);
 
-							draw_polygon (
-								area		=> in_area,
-								context		=> context,
-								polygon		=> pad_outline,
-								filled		=> NO,
-								height		=> self.frame_height);
+								when MILLED =>
 
+									-- Calculate the final position of the milled hole:
+									pad_pos := pad_pos_in;
+									move (pad_pos, type_polygon_base (hole_outline));
+									
+									draw_tht_pad_with_arbitrary_cutout (
+										outer_border	=> pad_outline_outer_layer,
+										inner_border	=> hole_outline);
+
+							end case;
 						end if;
 						
 						-- draw the stop mask
@@ -2619,7 +2664,7 @@ is
 							case stop_mask_in.shape is
 								when AS_PAD =>
 									-- copy solder pad contours to stop mask:
-									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline_outer_layer) with null record);
 									
 								when EXPAND_PAD =>
 									pad_pos := pad_pos_in;  -- get initial pad position
@@ -2663,47 +2708,56 @@ is
 			-- of the inner signal layers:
 			procedure draw_pad_tht_hole_milled (
 				name			: in string;  -- H5, 5, 3
-				outline_in		: in type_plated_millings; -- the countours of the milled hole
+				hole_outline_in	: in type_plated_millings; -- the countours of the milled hole
 				restring_width	: in type_track_width;
 				pad_pos_in		: in type_position) -- the center of the pad incl. its rotation
 			is
-				hole_outline : type_plated_millings := outline_in; --
+				hole_outline : type_plated_millings := hole_outline_in; --
 				pad_pos : type_position := pad_pos_in;
 
-				pad_outline : type_pad_outline; --
+				pad_outline_inner_layers : type_pad_outline; --
 			begin				
 				-- We draw the hole only if any conductor layer is enabled.
 				-- If no conductor layers are enabled, no hole will be shown.
-				if conductors_enabled then
-					
-					move (pad_pos, type_polygon_base (hole_outline));
+				--if conductors_enabled then					
 
-					-- Draw the conductor frame ("restring") around the hole if any inner signal layer is enabled:
+					-- Draw the conductor frame ("restring") around the hole if 
+					-- any inner signal layer is enabled:
 					if inner_conductors_enabled (bottom_layer) then
-						pad_pos := pad_pos_in;  -- get initial pad position
+						move (pad_pos, type_polygon_base (hole_outline));
 						
 						-- Compute a polygon that extends the given hole outline by the restring_width:
-						pad_outline := (type_polygon_base (outline_in) with null record);
+						pad_outline_inner_layers := (type_polygon_base (hole_outline_in) with null record);
 						
 						offset_polygon (
-							polygon		=> pad_outline, 
+							polygon		=> pad_outline_inner_layers, 
 							offset		=> (style => BY_DISTANCE, distance => restring_width));
 
 						-- move the conductor frame to its final position:
-						move (pad_pos, type_polygon_base (pad_outline));
+						pad_pos := pad_pos_in;  -- get initial pad position
+						move (pad_pos, type_polygon_base (pad_outline_inner_layers));
 						
 						-- Draw the conductor frame (outer contour):
-						set_color_tht_pad (context.cr);
-						draw_polygon (in_area, context, pad_outline, NO, self.frame_height);
+						--set_color_tht_pad (context.cr);
+						--draw_polygon (in_area, context, pad_outline_inner_layers, NO, self.frame_height);
+
+						--pad_pos := pad_pos_in;  -- get initial pad position
+
+						--move (pad_pos, type_polygon_base (hole_outline));
+						
+						draw_tht_pad_with_arbitrary_cutout (
+							outer_border	=> pad_outline_inner_layers,
+							inner_border	=> hole_outline);
+
+						-- draw the terminal name
+						--draw_name (name, pad_pos);
 					end if;
 					
 					-- Draw the hole outline (inner restring contour):
 					--set_color_background (context.cr);
-					draw_polygon (in_area, context, hole_outline, NO, self.frame_height);
+					--draw_polygon (in_area, context, hole_outline, NO, self.frame_height);
 
-					-- draw the terminal name
-					draw_name (name, pad_pos);
-				end if;
+				--end if;
 			end draw_pad_tht_hole_milled;
 
 			-- This procedure draws the circular! restring of the inner
@@ -2773,6 +2827,7 @@ is
 									stop_mask_in	=> t.stop_mask_shape_tht.top,
 									pad_pos_in		=> t.position,
 									f				=> destination,
+									drilled_milled	=> t.tht_hole,
 									drill_size		=> t.drill_size);
 
 								-- draw pad outline of bottom layer:
@@ -2782,8 +2837,10 @@ is
 									stop_mask_in	=> t.stop_mask_shape_tht.bottom,
 									pad_pos_in		=> t.position,
 									f				=> destination,
+									drilled_milled	=> t.tht_hole,
 									drill_size		=> t.drill_size);
 
+								-- draw circular inner restring and terminal name:
 								draw_pad_tht_hole_drilled (to_string (key (c)), t.drill_size, t.width_inner_layers, t.position);
 								
 							when MILLED => -- arbitrary shape or so called plated millings
@@ -2795,7 +2852,8 @@ is
 									stop_mask_in	=> t.stop_mask_shape_tht.top,
 									pad_pos_in		=> t.position,
 									f				=> destination,
-									millings		=> t.millings);
+									drilled_milled	=> t.tht_hole,
+									hole_outline_in	=> t.millings);
 
 								-- draw pad outline of bottom layer:
 								set_destination (INVERSE);
@@ -2804,8 +2862,10 @@ is
 									stop_mask_in	=> t.stop_mask_shape_tht.bottom,
 									pad_pos_in		=> t.position,
 									f				=> destination,
-									millings		=> t.millings);
+									drilled_milled	=> t.tht_hole,
+									hole_outline_in	=> t.millings);
 
+								-- draw the shape of inner layers, the milled hole and terminal name:
 								draw_pad_tht_hole_milled (to_string (key (c)), t.millings, t.width_inner_layers, t.position);
 						end case;
 						

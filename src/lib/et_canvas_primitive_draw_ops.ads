@@ -186,6 +186,20 @@ package pac_draw is
 
 		height	: in pac_shapes.pac_geometry.type_distance);
 
+
+	procedure draw_polygon_with_circular_cutout (
+		area			: in type_rectangle;
+		context			: in type_draw_context;
+		outer_border	: in type_polygon_base'class;
+		inner_border	: in type_circle'class;
+		height			: in pac_shapes.pac_geometry.type_distance);
+
+	procedure draw_polygon_with_arbitrary_cutout (
+		area			: in type_rectangle;
+		context			: in type_draw_context;
+		outer_border	: in type_polygon_base'class;
+		inner_border	: in type_polygon_base'class;
+		height			: in pac_shapes.pac_geometry.type_distance);
 	
 	
 	-- This procedure draws the a rectangle on the given context.

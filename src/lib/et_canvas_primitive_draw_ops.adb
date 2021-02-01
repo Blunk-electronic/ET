@@ -268,10 +268,10 @@ package body pac_draw is
 		height	: in pac_shapes.pac_geometry.type_distance)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given polygon:
-		boundaries : type_boundaries := pac_shapes.boundaries (polygon);
+		boundaries : constant type_boundaries := pac_shapes.boundaries (polygon);
 
 		-- compute the bounding box of the given polygon
-		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
+		bounding_box : constant type_rectangle := make_bounding_box (height, boundaries);
 
 		-- backup previous line width
 		line_width_before : constant type_view_coordinate := get_line_width (context.cr);
@@ -378,8 +378,9 @@ package body pac_draw is
 	-- 			end if;
 
 			--put_line ("total " & type_polygon_segment_count'image (get_segments_total (polygon)));
-
+			
 			new_sub_path (context.cr); -- required to suppress an initial line
+
 			
 			-- Iterate segments of given polygon. For each iteration s indicates the
 			-- segment to be drawn. It can be among lines (most likely), among arcs (less likely)
@@ -474,10 +475,6 @@ package body pac_draw is
 								angle2	=> type_view_coordinate (2 * pi)				
 								);
 
-					-- Restore line width as it was before this procedure:
--- CS					cairo.set_line_width (context.cr, line_width_before);
-
-							
 						else
 							-- If segment is not among circles, we have a problem:
 							raise constraint_error; -- CS should never happen. log message !
@@ -491,21 +488,68 @@ package body pac_draw is
 			case filled is
 				when YES => 
 					fill (context.cr);
+					set_line_width (context.cr, type_view_coordinate (zero));
 					
-				when NO => null;
+				when NO =>
 
 					-- The ends of the line are round:
 					set_line_cap (context.cr, cairo_line_cap_round);
-
-					--set_line_width (context.cr, type_view_coordinate (pac_text_fab.origin_line_width));
-					set_line_width (context.cr, 0.1);
-					-- The line width has been set by the calling unit.
 			end case;
 
- 			stroke (context.cr);
+			stroke (context.cr);
+
+			-- Restore line width as it was before this procedure:
+			set_line_width (context.cr, line_width_before);
+
 		end if;
 	end draw_polygon;
 
+
+	procedure draw_polygon_with_circular_cutout (
+		area			: in type_rectangle;
+		context			: in type_draw_context;
+		outer_border	: in type_polygon_base'class;
+		inner_border	: in type_circle'class;
+		height			: in pac_shapes.pac_geometry.type_distance)
+	is 
+		s : cairo_pattern;
+	begin
+		--s := pattern_create_rgb (0.0 , 0.0, 0.0);
+		s := pattern_create_rgba (0.5 , 0.5, 0.5, 0.0);
+		
+		mask (context.cr, s);
+		
+		set_line_width (context.cr, 0.01); -- CS adjust dynamically according to scale
+		
+		-- draw inner border (not filled)
+		draw_circle (area, context, inner_border, NO, height);
+
+		
+
+		s := pattern_create_rgb (0.0 , 1.0, 0.0);
+		set_source (context.cr, s);
+		
+		-- draw outer border (not filled)
+		draw_polygon (area, context, outer_border, YES, height);
+
+	end draw_polygon_with_circular_cutout;
+
+	procedure draw_polygon_with_arbitrary_cutout (
+		area			: in type_rectangle;
+		context			: in type_draw_context;
+		outer_border	: in type_polygon_base'class;
+		inner_border	: in type_polygon_base'class;
+		height			: in pac_shapes.pac_geometry.type_distance)
+	is
+	begin
+		set_line_width (context.cr, 0.01); -- CS adjust dynamically according to scale
+		
+		-- draw outer border (not filled)
+		draw_polygon (area, context, outer_border, NO, height);
+
+		-- draw inner border (not filled)
+		draw_polygon (area, context, inner_border, NO, height);
+	end draw_polygon_with_arbitrary_cutout;
 	
 	procedure draw_rectangle (
 		area			: in type_rectangle;
