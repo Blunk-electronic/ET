@@ -511,36 +511,21 @@ package body pac_draw is
 		outer_border	: in type_polygon_base'class;
 		inner_border	: in type_circle'class;
 		height			: in pac_shapes.pac_geometry.type_distance)
-	is 
-		--s : cairo_pattern;
-	begin
-		--s := pattern_create_rgb (0.0 , 0.0, 0.0);
-		--s := pattern_create_rgba (0.5 , 0.5, 0.5, 0.0);
+	is begin
+		-- Since this is about filled areas, the line width must be zero:
+		set_line_width (context.cr, type_view_coordinate (zero));
 		
-		--mask (context.cr, s);
-		--mask_surface (context.cr ,s, 0.0, 0.0);
-		
-		set_line_width (context.cr, 0.01); -- CS adjust dynamically according to scale
-		
-		---- draw inner border (not filled)
-		--draw_circle (area, context, inner_border, NO, height);
-
-		
-
-		--s := pattern_create_rgb (0.0 , 1.0, 0.0);
-		--set_source (context.cr, s);
-		
-		-- draw outer border (not filled)
+		-- draw outer polygon with outer border
 		draw_polygon (area, context, outer_border, YES, height);
 
-
-		--set_operator (context.cr, CAIRO_OPERATOR_OUT);
+		-- the cutout area must clear out the outer area:
+		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 		
-		-- draw inner border (not filled)
-		draw_circle (area, context, inner_border, NO, height);
+		-- draw inner polygon - the area to be taken out:
+		draw_circle (area, context, inner_border, YES, height);
 
-		set_operator (context.cr, CAIRO_OPERATOR_OVER);
-		
+		-- restore default compositing operator:
+		set_operator (context.cr, CAIRO_OPERATOR_OVER);		
 	end draw_polygon_with_circular_cutout;
 
 	procedure draw_polygon_with_arbitrary_cutout (
@@ -549,15 +534,21 @@ package body pac_draw is
 		outer_border	: in type_polygon_base'class;
 		inner_border	: in type_polygon_base'class;
 		height			: in pac_shapes.pac_geometry.type_distance)
-	is
-	begin
-		set_line_width (context.cr, 0.01); -- CS adjust dynamically according to scale
+	is begin
+		-- Since this is about filled areas, the line width must be zero:
+		set_line_width (context.cr, type_view_coordinate (zero));
 		
-		-- draw outer border (not filled)
-		draw_polygon (area, context, outer_border, NO, height);
+		-- draw outer polygon with outer border
+		draw_polygon (area, context, outer_border, YES, height);
 
-		-- draw inner border (not filled)
-		draw_polygon (area, context, inner_border, NO, height);
+		-- the cutout area must clear out the outer area:
+		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
+		
+		-- draw inner polygon - the area to be taken out:
+		draw_polygon (area, context, inner_border, YES, height);
+		
+		-- restore default compositing operator:
+		set_operator (context.cr, CAIRO_OPERATOR_OVER);		
 	end draw_polygon_with_arbitrary_cutout;
 	
 	procedure draw_rectangle (
