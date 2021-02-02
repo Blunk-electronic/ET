@@ -2575,7 +2575,7 @@ is
 				type t_c is new type_circle with null record;
 				ib : constant t_c := (center => drill_position, radius => drill_size * 0.5);
 			begin
-				--set_color_tht_pad (context.cr);
+				set_color_tht_pad (context.cr);
 
 				draw_polygon_with_circular_cutout (
 					area			=> in_area,

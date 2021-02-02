@@ -512,26 +512,35 @@ package body pac_draw is
 		inner_border	: in type_circle'class;
 		height			: in pac_shapes.pac_geometry.type_distance)
 	is 
-		s : cairo_pattern;
+		--s : cairo_pattern;
 	begin
 		--s := pattern_create_rgb (0.0 , 0.0, 0.0);
-		s := pattern_create_rgba (0.5 , 0.5, 0.5, 0.0);
+		--s := pattern_create_rgba (0.5 , 0.5, 0.5, 0.0);
 		
-		mask (context.cr, s);
+		--mask (context.cr, s);
+		--mask_surface (context.cr ,s, 0.0, 0.0);
 		
 		set_line_width (context.cr, 0.01); -- CS adjust dynamically according to scale
 		
-		-- draw inner border (not filled)
-		draw_circle (area, context, inner_border, NO, height);
+		---- draw inner border (not filled)
+		--draw_circle (area, context, inner_border, NO, height);
 
 		
 
-		s := pattern_create_rgb (0.0 , 1.0, 0.0);
-		set_source (context.cr, s);
+		--s := pattern_create_rgb (0.0 , 1.0, 0.0);
+		--set_source (context.cr, s);
 		
 		-- draw outer border (not filled)
 		draw_polygon (area, context, outer_border, YES, height);
 
+
+		--set_operator (context.cr, CAIRO_OPERATOR_OUT);
+		
+		-- draw inner border (not filled)
+		draw_circle (area, context, inner_border, NO, height);
+
+		set_operator (context.cr, CAIRO_OPERATOR_OVER);
+		
 	end draw_polygon_with_circular_cutout;
 
 	procedure draw_polygon_with_arbitrary_cutout (
