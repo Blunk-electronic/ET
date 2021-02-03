@@ -2435,138 +2435,6 @@ is
 				move_by (outline, type_point (term_pos));
 			end move;
 
-			procedure draw_name (
-				name	: in string;  -- H5, 5, 3
-				pos		: in type_position)  -- the center of the pad
-			is
-				use et_text;
-			begin
-				set_color_terminal_name (context.cr);
-
-				draw_text (
-					area		=> in_area,
-					context		=> context,
-					content		=> to_content (name),
-					size		=> terminal_name_size,
-					font		=> terminal_name_font,
-					position	=> type_point (pos),
-					origin		=> false, -- no origin required
-					rotation	=> zero_rotation,
-					alignment	=> (center, center),
-					height		=> self.frame_height);
-
-			end draw_name;
-
-			-- This procedure draws the SMT pad, the stop mask, the stencil and 
-			-- the terminal name. The terminal name will be drawn only when
-			-- the signal layer is enabled.
-			procedure draw_pad_smt (
-				name			: in string;  -- H5, 5, 3
-				pad_outline_in	: in type_pad_outline; -- the outline of the solder pad (copper)
-				stop_mask_in	: in type_stop_mask_smt; -- the stop mask of the pad
-				stencil_in		: in et_terminals.type_stencil; -- the solder cream mask of the pad
-				pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
-				f				: in type_face) 
-			is
-				pad_outline : type_pad_outline := pad_outline_in;
-				pad_pos : type_position := pad_pos_in;
-
-				stop_mask_contours	: type_stop_mask_contours;
-				stencil_contours	: type_stencil_contours;
-				
-				ly : constant type_signal_layer := face_to_layer (f);
-			begin
-				-- We draw only if either the signal layer, the stop mask or the stencil
-				-- is enabled. Otherwise nothing will happen here:
-				if conductor_enabled (ly) or stop_mask_enabled (f) or stencil_enabled (f) then
-					
-					if f = face then
-
-						-- Calculate the final position of the terminal and the
-						-- rotated or mirrored pad outline.
-						move (pad_pos, type_polygon_base (pad_outline));
-						
-						-- draw the solder pad (copper):
-						if conductor_enabled (ly) then
-
-							set_color_conductor (context.cr, ly);
-							draw_polygon (in_area, context, pad_outline, YES, self.frame_height);
-
-							-- draw the terminal name
-							draw_name (name, pad_pos);
-						end if;
-						
-						-- draw the stop mask
-						if stop_mask_enabled (f) then
-							
-							case stop_mask_in.shape is
-								when AS_PAD =>
-									-- copy solder pad contours
-									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
-									
-								when EXPAND_PAD =>
-									pad_pos := pad_pos_in;  -- get initial pad position
-									
-									-- copy solder pad contours and expand according to DRU
-									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline_in) with null record);
-									
-									offset_polygon (
-										polygon		=> stop_mask_contours,
-										offset		=> (
-											style		=> BY_DISTANCE,
-											distance	=> get_stop_mask_expansion)); -- from DRU
-
-									-- compute final position of expanded stop mask opening
-									move (pad_pos, type_polygon_base (stop_mask_contours));
-									
-								when USER_SPECIFIC =>
-									-- compute position of user specific stop mask contours:
-									pad_pos := pad_pos_in;
-									stop_mask_contours := stop_mask_in.contours;
-									move (pad_pos, type_polygon_base (stop_mask_contours));
-							end case;
-
-							set_color_stop_mask (context.cr, f, self.scale);
-							draw_polygon (in_area, context, stop_mask_contours, YES, self.frame_height);
-						end if;
-						
-						-- draw stencil (or solder paste mask)
-						if stencil_enabled (f) then
-
-							case stencil_in.shape is
-								
-								when AS_PAD =>
-									-- copy solder pad contours
-									stencil_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
-									
-								when SHRINK_PAD =>
-									pad_pos := pad_pos_in;  -- get initial pad position
-
-									-- copy solder pad contours and shrink according to shrink_factor
-									stencil_contours := (pac_shapes.type_polygon_base (pad_outline_in) with null record);
-									
-									offset_polygon (
-										polygon		=> stencil_contours,
-										offset		=> (style => BY_SCALE, scale => stencil_in.shrink_factor));
-
-									-- compute final position of shrinked stencil opening
-									move (pad_pos, type_polygon_base (stencil_contours));
-									
-								when USER_SPECIFIC =>
-									-- compute position of user specific stencil contours:
-									pad_pos := pad_pos_in; -- get initial pad position
-									stencil_contours := stencil_in.contours;
-									move (pad_pos, type_polygon_base (stencil_contours));
-							end case;
-
-							set_color_stencil (context.cr, f, self.scale);
-							draw_polygon (in_area, context, stencil_contours, YES, self.frame_height);
-						end if;
-
-					end if;
-				end if;
-			end draw_pad_smt;
-
 			procedure draw_tht_pad_with_circular_cutout (
 				outer_border	: in type_pad_outline;
 				drill_position	: in type_point;
@@ -2602,196 +2470,394 @@ is
 			end draw_tht_pad_with_arbitrary_cutout;
 
 			
-			-- This procedure draws the outer contour of the THT pad and 
-			-- th outer contour of the stop mask
-			-- in top/bottom signal layer (specified by caller).
-			procedure tht_outer_layer (
-				name			: in string;  -- H5, 5, 3
-				pad_outline_in	: in type_pad_outline; -- the outline of the solder pad
-				stop_mask_in	: in et_terminals.type_stop_mask; -- the stop mask in the outer layer
-				pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
-				f				: in type_face;
-				drilled_milled	: in type_terminal_tht_hole;
-				drill_size		: in type_drill_size := type_drill_size'first;
-				hole_outline_in	: in type_plated_millings := plated_millings_default)
-			is
-				pad_outline_outer_layer : type_pad_outline := pad_outline_in;
-				pad_pos : type_position := pad_pos_in;
-
-				hole_outline : type_plated_millings := hole_outline_in;
-				
-				stop_mask_contours : type_stop_mask_contours;
-				
-				ly : constant type_signal_layer := face_to_layer (f);
-			begin
-				-- We draw only if either the signal layer or the stop mask
-				-- is enabled. Otherwise nothing will happen here:
-				if conductor_enabled (ly) or stop_mask_enabled (f) then
-					
-					if f = face then
-
-						-- Calculate the final position of the terminal and the
-						-- rotated or mirrored pad outline.
-						move (pad_pos, type_polygon_base (pad_outline_outer_layer));
-
-						-- draw the outer solder pad contour:
-						if conductor_enabled (ly) then
-							case drilled_milled is
-								when DRILLED =>
-								
-									draw_tht_pad_with_circular_cutout (
-										outer_border	=> pad_outline_outer_layer,
-										drill_position	=> type_point (pad_pos),
-										drill_size		=> drill_size);
-
-
-								when MILLED =>
-
-									-- Calculate the final position of the milled hole:
-									pad_pos := pad_pos_in;
-									move (pad_pos, type_polygon_base (hole_outline));
-									
-									draw_tht_pad_with_arbitrary_cutout (
-										outer_border	=> pad_outline_outer_layer,
-										inner_border	=> hole_outline);
-
-							end case;
-						end if;
-						
-						-- draw the stop mask
-						if stop_mask_enabled (f) then
-							
-							case stop_mask_in.shape is
-								when AS_PAD =>
-									-- copy solder pad contours to stop mask:
-									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline_outer_layer) with null record);
-									
-								when EXPAND_PAD =>
-									pad_pos := pad_pos_in;  -- get initial pad position
-									
-									-- copy solder pad contours and expand according to DRU
-									stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline_in) with null record);
-									
-									offset_polygon (
-										polygon		=> stop_mask_contours,
-										offset		=> (
-											style 		=> BY_DISTANCE,
-											distance	=> get_stop_mask_expansion));  -- from DRU
-
-									-- compute final position of expanded stop mask opening
-									move (pad_pos, type_polygon_base (stop_mask_contours));
-									
-								when USER_SPECIFIC =>
-									-- compute position of user specific stop mask contours:
-									pad_pos := pad_pos_in;
-									stop_mask_contours := stop_mask_in.contours;
-									move (pad_pos, type_polygon_base (stop_mask_contours));
-							end case;
-
-							set_color_stop_mask (context.cr, f, self.scale);
-
-							-- draw the outer contour of the stop mask opening
-							draw_polygon (
-								area		=> in_area,
-								context		=> context,
-								polygon		=> stop_mask_contours,
-								filled		=> YES,
-								height		=> self.frame_height);
-
-						end if;
-
-					end if;
-
-					-- draw the terminal name
-					draw_name (name, pad_pos);
-
-				end if;
-			end tht_outer_layer;
-
-			-- This procedure draws the pad contour of a milled THT pad
-			-- in an inner conductor layer
-			-- if any inner conductor layer is enabled. If no inner conductor
-			-- layer is enabled, nothing happens.
-			procedure tht_inner_layer_milled (
-				name			: in string;  -- H5, 5, 3
-				hole_outline_in	: in type_plated_millings; -- the countours of the milled hole
-				restring_width	: in type_track_width;
-				pad_pos_in		: in type_position) -- the center of the pad incl. its rotation
-			is
-				hole_outline : type_plated_millings := hole_outline_in;
-				pad_pos : type_position := pad_pos_in;
-
-				pad_outline_inner_layers : type_pad_outline;
-			begin
-				if inner_conductors_enabled (bottom_layer) then
-					move (pad_pos, type_polygon_base (hole_outline));
-					
-					-- Compute a polygon that extends the given hole outline by the restring_width:
-					pad_outline_inner_layers := (type_polygon_base (hole_outline_in) with null record);
-					
-					offset_polygon (
-						polygon		=> pad_outline_inner_layers, 
-						offset		=> (style => BY_DISTANCE, distance => restring_width));
-
-					-- move the conductor frame to its final position:
-					pad_pos := pad_pos_in;  -- get initial pad position
-					move (pad_pos, type_polygon_base (pad_outline_inner_layers));
-					
-					draw_tht_pad_with_arbitrary_cutout (
-						outer_border	=> pad_outline_inner_layers,
-						inner_border	=> hole_outline);
-
-					-- draw the terminal name
-					draw_name (name, pad_pos);
-				end if;
-			end tht_inner_layer_milled;
-
-			-- This procedure draws the pad contour of a drilled THT pad
-			-- in an inner conductor layer
-			-- if any inner conductor layer is enabled. If no inner conductor
-			-- layer is enabled, nothing happens.
-			procedure tht_inner_layer_drilled (
-				name		: in string;  -- H5, 5, 3
-				drill_size	: in type_drill_size;
-				restring	: in type_restring_width;
-				pad_pos_in	: in type_position) -- the center of the pad incl. its rotation
-			is
-				pad_pos : type_position := pad_pos_in;
-
-				type type_circle is new pac_shapes.type_circle with null record;
-				circle : type_circle; --
-			begin
-				if inner_conductors_enabled (bottom_layer) then
-					
-					if flipped then 
-						mirror (pad_pos, Y);
-					end if;
-					
-					-- Rotate the position of the drill by the rotation of the package:
-					rotate_by (pad_pos, rot (package_position));
-
-					-- Move the drill by the position of the package:
-					move_by (pad_pos, type_point (package_position));
-
-
-					-- Build a circle to show the restring of inner layers:
-					circle.center := type_point (pad_pos);
-
-					-- set line width and radius:
-					set_line_width (context.cr, type_view_coordinate (restring));
-					circle.radius := (drill_size + restring) * 0.5;
-					
-					set_color_tht_pad (context.cr);
-					draw_circle (in_area, context, circle, NO, self.frame_height);
-					
-					-- draw the terminal name
-					draw_name (name, pad_pos);
-				end if;
-			end tht_inner_layer_drilled;
 			
 			procedure query_terminal (c : in type_terminals.cursor) is
 				t : constant type_terminal := element (c);
-			begin
+
+				procedure draw_name_smt (
+					name		: in string;  -- H5, 5, 3
+					pad_pos_in	: in type_position)  -- the center of the pad
+				is
+					use et_text;
+				begin
+					set_color_terminal_name (context.cr);
+					
+					draw_text (
+						area		=> in_area,
+						context		=> context,
+						content		=> to_content (name),
+						size		=> terminal_name_size,
+						font		=> terminal_name_font,
+						position	=> type_point (pad_pos_in),
+						origin		=> false, -- no origin required
+						rotation	=> zero_rotation,
+						alignment	=> (center, center),
+						height		=> self.frame_height);
+
+				end draw_name_smt;
+
+				
+				-- The pad name shall be drawn only once. For this reason we
+				-- use this flag. It is set once the name has been drawn the first time.
+				name_drawn : boolean := false;
+
+				-- Draws the pad name if any conductor layer is enabled and
+				-- if the name has not been drawn already:
+				procedure draw_name_tht (
+					name		: in string;  -- H5, 5, 3
+					pad_pos_in	: in type_position)  -- the center of the pad
+				is
+					use et_text;
+					pad_pos : type_point := type_point (pad_pos_in);
+					
+				begin
+					if conductors_enabled then
+						if not name_drawn then
+							set_color_terminal_name (context.cr);
+	
+							if flipped then 
+								mirror (pad_pos, Y);
+							end if;
+							
+							-- Rotate the position of the drill by the rotation of the package:
+							rotate_by (pad_pos, rot (package_position));
+
+							-- Move the drill by the position of the package:
+							move_by (pad_pos, type_point (package_position));
+
+							
+							draw_text (
+								area		=> in_area,
+								context		=> context,
+								content		=> to_content (name),
+								size		=> terminal_name_size,
+								font		=> terminal_name_font,
+								position	=> pad_pos,
+								origin		=> false, -- no origin required
+								rotation	=> zero_rotation,
+								alignment	=> (center, center),
+								height		=> self.frame_height);
+
+							name_drawn := true;
+						end if;
+					end if;
+				end draw_name_tht;
+
+				-- This procedure draws the SMT pad, the stop mask, the stencil and 
+				-- the terminal name. The terminal name will be drawn only when
+				-- the signal layer is enabled.
+				procedure draw_pad_smt (
+					name			: in string;  -- H5, 5, 3
+					pad_outline_in	: in type_pad_outline; -- the outline of the solder pad (copper)
+					stop_mask_in	: in type_stop_mask_smt; -- the stop mask of the pad
+					stencil_in		: in et_terminals.type_stencil; -- the solder cream mask of the pad
+					pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
+					f				: in type_face) 
+				is
+					pad_outline : type_pad_outline := pad_outline_in;
+					pad_pos : type_position := pad_pos_in;
+
+					stop_mask_contours	: type_stop_mask_contours;
+					stencil_contours	: type_stencil_contours;
+					
+					ly : constant type_signal_layer := face_to_layer (f);
+				begin
+					-- We draw only if either the signal layer, the stop mask or the stencil
+					-- is enabled. Otherwise nothing will happen here:
+					if conductor_enabled (ly) or stop_mask_enabled (f) or stencil_enabled (f) then
+						
+						if f = face then
+
+							-- Calculate the final position of the terminal and the
+							-- rotated or mirrored pad outline.
+							move (pad_pos, type_polygon_base (pad_outline));
+							
+							-- draw the solder pad (copper):
+							if conductor_enabled (ly) then
+
+								set_color_conductor (context.cr, ly);
+								draw_polygon (in_area, context, pad_outline, YES, self.frame_height);
+
+								-- draw the terminal name
+								draw_name_smt (name, pad_pos);
+							end if;
+							
+							-- draw the stop mask
+							if stop_mask_enabled (f) then
+								
+								case stop_mask_in.shape is
+									when AS_PAD =>
+										-- copy solder pad contours
+										stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+										
+									when EXPAND_PAD =>
+										pad_pos := pad_pos_in;  -- get initial pad position
+										
+										-- copy solder pad contours and expand according to DRU
+										stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline_in) with null record);
+										
+										offset_polygon (
+											polygon		=> stop_mask_contours,
+											offset		=> (
+												style		=> BY_DISTANCE,
+												distance	=> get_stop_mask_expansion)); -- from DRU
+
+										-- compute final position of expanded stop mask opening
+										move (pad_pos, type_polygon_base (stop_mask_contours));
+										
+									when USER_SPECIFIC =>
+										-- compute position of user specific stop mask contours:
+										pad_pos := pad_pos_in;
+										stop_mask_contours := stop_mask_in.contours;
+										move (pad_pos, type_polygon_base (stop_mask_contours));
+								end case;
+
+								set_color_stop_mask (context.cr, f, self.scale);
+								draw_polygon (in_area, context, stop_mask_contours, YES, self.frame_height);
+							end if;
+							
+							-- draw stencil (or solder paste mask)
+							if stencil_enabled (f) then
+
+								case stencil_in.shape is
+									
+									when AS_PAD =>
+										-- copy solder pad contours
+										stencil_contours := (pac_shapes.type_polygon_base (pad_outline) with null record);
+										
+									when SHRINK_PAD =>
+										pad_pos := pad_pos_in;  -- get initial pad position
+
+										-- copy solder pad contours and shrink according to shrink_factor
+										stencil_contours := (pac_shapes.type_polygon_base (pad_outline_in) with null record);
+										
+										offset_polygon (
+											polygon		=> stencil_contours,
+											offset		=> (style => BY_SCALE, scale => stencil_in.shrink_factor));
+
+										-- compute final position of shrinked stencil opening
+										move (pad_pos, type_polygon_base (stencil_contours));
+										
+									when USER_SPECIFIC =>
+										-- compute position of user specific stencil contours:
+										pad_pos := pad_pos_in; -- get initial pad position
+										stencil_contours := stencil_in.contours;
+										move (pad_pos, type_polygon_base (stencil_contours));
+								end case;
+
+								set_color_stencil (context.cr, f, self.scale);
+								draw_polygon (in_area, context, stencil_contours, YES, self.frame_height);
+							end if;
+
+						end if;
+					end if;
+				end draw_pad_smt;
+				
+				-- This procedure draws the outer contour of the THT pad and 
+				-- th outer contour of the stop mask
+				-- in top/bottom signal layer (specified by caller).
+				procedure tht_outer_layer (
+					name			: in string;  -- H5, 5, 3
+					pad_outline_in	: in type_pad_outline; -- the outline of the solder pad
+					stop_mask_in	: in et_terminals.type_stop_mask; -- the stop mask in the outer layer
+					pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
+					f				: in type_face;
+					drilled_milled	: in type_terminal_tht_hole;
+					drill_size		: in type_drill_size := type_drill_size'first;
+					hole_outline_in	: in type_plated_millings := plated_millings_default)
+				is
+					pad_outline_outer_layer : type_pad_outline := pad_outline_in;
+					pad_pos : type_position := pad_pos_in;
+
+					hole_outline : type_plated_millings := hole_outline_in;
+					
+					stop_mask_contours : type_stop_mask_contours;
+					
+					ly : constant type_signal_layer := face_to_layer (f);
+				begin
+					-- We draw only if either the signal layer or the stop mask
+					-- is enabled. Otherwise nothing will happen here:
+					if conductor_enabled (ly) or stop_mask_enabled (f) then
+						
+						if f = face then
+
+							-- Calculate the final position of the terminal and the
+							-- rotated or mirrored pad outline.
+							move (pad_pos, type_polygon_base (pad_outline_outer_layer));
+
+							-- draw the outer solder pad contour:
+							if conductor_enabled (ly) then
+								case drilled_milled is
+									when DRILLED =>
+									
+										draw_tht_pad_with_circular_cutout (
+											outer_border	=> pad_outline_outer_layer,
+											drill_position	=> type_point (pad_pos),
+											drill_size		=> drill_size);
+
+
+									when MILLED =>
+
+										-- Calculate the final position of the milled hole:
+										pad_pos := pad_pos_in;
+										move (pad_pos, type_polygon_base (hole_outline));
+										
+										draw_tht_pad_with_arbitrary_cutout (
+											outer_border	=> pad_outline_outer_layer,
+											inner_border	=> hole_outline);
+
+								end case;
+							end if;
+							
+							-- draw the stop mask
+							if stop_mask_enabled (f) then
+								
+								case stop_mask_in.shape is
+									when AS_PAD =>
+										-- copy solder pad contours to stop mask:
+										stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline_outer_layer) with null record);
+										
+									when EXPAND_PAD =>
+										pad_pos := pad_pos_in;  -- get initial pad position
+										
+										-- copy solder pad contours and expand according to DRU
+										stop_mask_contours := (pac_shapes.type_polygon_base (pad_outline_in) with null record);
+										
+										offset_polygon (
+											polygon		=> stop_mask_contours,
+											offset		=> (
+												style 		=> BY_DISTANCE,
+												distance	=> get_stop_mask_expansion));  -- from DRU
+
+										-- compute final position of expanded stop mask opening
+										move (pad_pos, type_polygon_base (stop_mask_contours));
+										
+									when USER_SPECIFIC =>
+										-- compute position of user specific stop mask contours:
+										pad_pos := pad_pos_in;
+										stop_mask_contours := stop_mask_in.contours;
+										move (pad_pos, type_polygon_base (stop_mask_contours));
+								end case;
+
+								set_color_stop_mask (context.cr, f, self.scale);
+
+								-- draw the outer contour of the stop mask opening
+								draw_polygon (
+									area		=> in_area,
+									context		=> context,
+									polygon		=> stop_mask_contours,
+									filled		=> YES,
+									height		=> self.frame_height);
+
+							end if;
+
+						end if;
+
+						-- draw the terminal name
+						--draw_name (name, pad_pos);
+
+					end if;
+				end tht_outer_layer;
+
+				-- This procedure draws the pad contour of a milled THT pad
+				-- in an inner conductor layer
+				-- if any inner conductor layer is enabled. If no inner conductor
+				-- layer is enabled, nothing happens.
+				procedure tht_inner_layer_milled (
+					name			: in string;  -- H5, 5, 3
+					hole_outline_in	: in type_plated_millings; -- the countours of the milled hole
+					restring_width	: in type_track_width;
+					pad_pos_in		: in type_position) -- the center of the pad incl. its rotation
+				is
+					hole_outline : type_plated_millings := hole_outline_in;
+					pad_pos : type_position := pad_pos_in;
+
+					pad_outline_inner_layers : type_pad_outline;
+				begin
+					if inner_conductors_enabled (bottom_layer) then
+						move (pad_pos, type_polygon_base (hole_outline));
+						
+						-- Compute a polygon that extends the given hole outline by the restring_width:
+						pad_outline_inner_layers := (type_polygon_base (hole_outline_in) with null record);
+						
+						offset_polygon (
+							polygon		=> pad_outline_inner_layers, 
+							offset		=> (style => BY_DISTANCE, distance => restring_width));
+
+						-- move the conductor frame to its final position:
+						pad_pos := pad_pos_in;  -- get initial pad position
+						move (pad_pos, type_polygon_base (pad_outline_inner_layers));
+						
+						draw_tht_pad_with_arbitrary_cutout (
+							outer_border	=> pad_outline_inner_layers,
+							inner_border	=> hole_outline);
+
+						-- draw the terminal name
+						--draw_name (name, pad_pos);
+					end if;
+				end tht_inner_layer_milled;
+
+				-- This procedure draws the pad contour of a drilled THT pad
+				-- in an inner conductor layer
+				-- if any inner conductor layer is enabled. If no inner conductor
+				-- layer is enabled, nothing happens.
+				procedure tht_inner_layer_drilled (
+					name		: in string;  -- H5, 5, 3
+					drill_size	: in type_drill_size;
+					restring	: in type_restring_width;
+					pad_pos_in	: in type_position) -- the center of the pad incl. its rotation
+				is
+					pad_pos : type_position := pad_pos_in;
+
+					type type_circle is new pac_shapes.type_circle with null record;
+					circle : type_circle; --
+				begin
+					if inner_conductors_enabled (bottom_layer) then
+						
+						if flipped then 
+							mirror (pad_pos, Y);
+						end if;
+						
+						-- Rotate the position of the drill by the rotation of the package:
+						rotate_by (pad_pos, rot (package_position));
+
+						-- Move the drill by the position of the package:
+						move_by (pad_pos, type_point (package_position));
+
+
+						-- Build a circle to show the restring of inner layers:
+						circle.center := type_point (pad_pos);
+
+						-- set line width and radius:
+						--set_line_width (context.cr, type_view_coordinate (restring));
+						--circle.radius := (drill_size + restring) * 0.5;
+
+						set_color_tht_pad (context.cr);
+						set_line_width (context.cr, type_view_coordinate (zero));
+
+						circle.radius := drill_size * 0.5 + restring;
+						
+						--draw_circle (in_area, context, circle, NO, self.frame_height);
+						draw_circle (in_area, context, circle, YES, self.frame_height);
+
+						
+						-- the cutout area must clear out the outer area:
+						set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
+
+						circle.radius := drill_size * 0.5;
+						draw_circle (in_area, context, circle, YES, self.frame_height);
+
+						-- restore default compositing operator:
+						set_operator (context.cr, CAIRO_OPERATOR_OVER);		
+						
+						-- draw the terminal name
+						--draw_name (name, pad_pos);
+					end if;
+				end tht_inner_layer_drilled;
+
+				
+
+			begin -- query_terminal
 				-- The terminal can be a through-hole type (THT) or a pad for surface mounting (SMT):
 				case t.technology is
 					
@@ -2831,6 +2897,7 @@ is
 									restring		=> t.width_inner_layers,
 									pad_pos_in		=> t.position);
 
+									draw_name_tht (to_string (key (c)), t.position);
 								
 							when MILLED => -- arbitrary shape or so called plated millings
 
@@ -2862,6 +2929,8 @@ is
 									hole_outline_in	=> t.millings,
 									restring_width	=> t.width_inner_layers,
 									pad_pos_in		=> t.position);
+
+								draw_name_tht (to_string (key (c)), t.position);
 						end case;
 						
 					when SMT =>

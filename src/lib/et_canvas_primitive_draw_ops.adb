@@ -528,6 +528,7 @@ package body pac_draw is
 		set_operator (context.cr, CAIRO_OPERATOR_OVER);		
 	end draw_polygon_with_circular_cutout;
 
+
 	procedure draw_polygon_with_arbitrary_cutout (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
@@ -550,6 +551,7 @@ package body pac_draw is
 		-- restore default compositing operator:
 		set_operator (context.cr, CAIRO_OPERATOR_OVER);		
 	end draw_polygon_with_arbitrary_cutout;
+
 	
 	procedure draw_rectangle (
 		area			: in type_rectangle;
