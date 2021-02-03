@@ -2474,6 +2474,7 @@ is
 			procedure query_terminal (c : in type_terminals.cursor) is
 				t : constant type_terminal := element (c);
 
+				-- Draws the name of a smt pad.
 				procedure draw_name_smt (
 					name		: in string;  -- H5, 5, 3
 					pad_pos_in	: in type_position)  -- the center of the pad
@@ -2501,7 +2502,7 @@ is
 				-- use this flag. It is set once the name has been drawn the first time.
 				name_drawn : boolean := false;
 
-				-- Draws the pad name if any conductor layer is enabled and
+				-- Draws the name of a THT pad if any conductor layer is enabled and
 				-- if the name has not been drawn already:
 				procedure draw_name_tht (
 					name		: in string;  -- H5, 5, 3
@@ -2512,19 +2513,20 @@ is
 					
 				begin
 					if conductors_enabled then
+						
 						if not name_drawn then
-							set_color_terminal_name (context.cr);
-	
-							if flipped then 
-								mirror (pad_pos, Y);
-							end if;
-							
-							-- Rotate the position of the drill by the rotation of the package:
+								
+							-- Rotate the position of the pad by the rotation of the package:
 							rotate_by (pad_pos, rot (package_position));
 
-							-- Move the drill by the position of the package:
+							-- If the package is flipped, then the terminal position
+							-- must be mirrored along the Y axis.
+							if flipped then mirror (pad_pos, Y); end if;
+							
+							-- Move the pad by the position of the package:
 							move_by (pad_pos, type_point (package_position));
-
+							
+							set_color_terminal_name (context.cr);
 							
 							draw_text (
 								area		=> in_area,
@@ -2540,6 +2542,7 @@ is
 
 							name_drawn := true;
 						end if;
+						
 					end if;
 				end draw_name_tht;
 
@@ -2753,9 +2756,6 @@ is
 
 						end if;
 
-						-- draw the terminal name
-						--draw_name (name, pad_pos);
-
 					end if;
 				end tht_outer_layer;
 
@@ -2775,6 +2775,7 @@ is
 					pad_outline_inner_layers : type_pad_outline;
 				begin
 					if inner_conductors_enabled (bottom_layer) then
+								
 						move (pad_pos, type_polygon_base (hole_outline));
 						
 						-- Compute a polygon that extends the given hole outline by the restring_width:
@@ -2792,8 +2793,6 @@ is
 							outer_border	=> pad_outline_inner_layers,
 							inner_border	=> hole_outline);
 
-						-- draw the terminal name
-						--draw_name (name, pad_pos);
 					end if;
 				end tht_inner_layer_milled;
 
@@ -2849,9 +2848,6 @@ is
 
 						-- restore default compositing operator:
 						set_operator (context.cr, CAIRO_OPERATOR_OVER);		
-						
-						-- draw the terminal name
-						--draw_name (name, pad_pos);
 					end if;
 				end tht_inner_layer_drilled;
 
@@ -2898,7 +2894,8 @@ is
 									pad_pos_in		=> t.position);
 
 									draw_name_tht (to_string (key (c)), t.position);
-								
+
+									
 							when MILLED => -- arbitrary shape or so called plated millings
 
 								-- draw pad outline of top layer:

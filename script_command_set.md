@@ -414,7 +414,8 @@ board led_driver rotate device R1 absolute 70
 board led_driver rotate device R1 relative -4
 ```
 NOTE: For devices placed on the bottom side of the board the
-rotation is negated.
+rotation is reverse. If you look at the bottom side
+of the board then the rotation is correct.
 
 By default a package model in the library is drawn as if it were placed on
 the top side of the board.
