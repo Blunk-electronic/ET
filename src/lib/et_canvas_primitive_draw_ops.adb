@@ -367,6 +367,11 @@ package body pac_draw is
 		-- If the polygon is not to be filled, then its contours must be drawn 
 		-- with a line widht that depends on the current scale:
 		scale : type_scale;
+
+		-- The line style, or the dash pattern, will be calculated 
+		-- according to the current scale:
+		dash_on, dash_off	: gdouble;
+		dash_pattern		: dash_array (1 .. 2);
 		
 	begin -- draw_polygon
 
@@ -501,6 +506,15 @@ package body pac_draw is
 					
 					-- The ends of the line are round:
 					set_line_cap (context.cr, cairo_line_cap_round);
+
+					--dash_on := 0.2 + 1.0 / scale;
+					--dash_off := 0.1 + 1.0 / scale;
+					dash_on := 20.0 / scale;
+					dash_off := 15.0 / scale;
+
+					dash_pattern (1) := dash_on;
+					dash_pattern (2) := dash_off;
+					set_dash (context.cr, dash_pattern, 0.0);
 			end case;
 
 			stroke (context.cr);
@@ -508,6 +522,9 @@ package body pac_draw is
 			-- Restore line width as it was before this procedure:
 			set_line_width (context.cr, line_width_before);
 
+			-- Disable line dashes:
+			set_dash (context.cr, no_dashes, 0.0);
+			
 		end if;
 	end draw_polygon;
 
