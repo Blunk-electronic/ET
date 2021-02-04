@@ -363,7 +363,11 @@ package body pac_draw is
 
 		-- For cairo, en arc must be expressed by start and end arc:
 		arc_temp : type_arc_angles;
-	
+
+		-- If the polygon is not to be filled, then its contours must be drawn 
+		-- with a line widht that depends on the current scale:
+		scale : type_scale;
+		
 	begin -- draw_polygon
 
 		-- We draw the polygon if:
@@ -491,7 +495,9 @@ package body pac_draw is
 					set_line_width (context.cr, type_view_coordinate (zero));
 					
 				when NO =>
-					set_line_width (context.cr, type_view_coordinate (0.1));
+					-- Calculate the line width of the contours:
+					scale := get_scale (canvas);
+					set_line_width (context.cr, type_view_coordinate (0.01 + 1.0 / scale));
 					
 					-- The ends of the line are round:
 					set_line_cap (context.cr, cairo_line_cap_round);
