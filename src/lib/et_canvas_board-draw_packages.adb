@@ -2845,7 +2845,6 @@ is
 						set_operator (context.cr, CAIRO_OPERATOR_OVER);		
 					end if;
 				end tht_inner_layer_drilled;
-
 				
 
 			begin -- query_terminal
@@ -2960,18 +2959,20 @@ is
 		end draw_package_origin;
 		
 	begin -- draw_package
-		draw_silkscreen;
-		draw_assembly_documentation;
-		draw_terminals; -- pins, pads, plated millings
 		draw_conductors; -- NON-TERMINAL RELATED, NON-ELECTRICAL
-		draw_keepout; 
+		draw_terminals; -- pins, pads, plated millings
+		
 		draw_stop_mask; -- non-terminal related
 		draw_stencil; -- non-terminal related
+
+		draw_silkscreen;
+		draw_assembly_documentation;
+		draw_keepout; 
+
 		draw_route_restrict;
 		draw_via_restrict;
 		draw_pcb_contour;
 		
-		-- The origin is drawn last so that it obscures other elements of the package:
 		draw_package_origin;
 	end draw_package;
 

@@ -491,7 +491,8 @@ package body pac_draw is
 					set_line_width (context.cr, type_view_coordinate (zero));
 					
 				when NO =>
-
+					set_line_width (context.cr, type_view_coordinate (0.1));
+					
 					-- The ends of the line are round:
 					set_line_cap (context.cr, cairo_line_cap_round);
 			end case;

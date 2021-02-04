@@ -792,7 +792,93 @@ package body et_canvas_board is
 						y => - self.frame_bounding_box.y));
 
 		use et_display.board;
-	begin
+
+		procedure draw_packages is begin
+			draw_packages (self, area_shifted, context, BOTTOM);
+			draw_packages (self, area_shifted, context, TOP);
+		end draw_packages;
+
+		procedure draw_silkscreen is begin
+			if silkscreen_enabled (BOTTOM) then
+				draw_silk_screen (self, area_shifted, context, BOTTOM);
+			end if;
+
+			if silkscreen_enabled (TOP) then
+				draw_silk_screen (self, area_shifted, context, TOP);
+			end if;
+		end draw_silkscreen;
+
+		procedure draw_assy_doc is begin
+			if assy_doc_enabled (BOTTOM) then
+				draw_assy_doc (self, area_shifted, context, BOTTOM);
+			end if;
+
+			if assy_doc_enabled (TOP) then
+				draw_assy_doc (self, area_shifted, context, TOP);
+			end if;
+		end draw_assy_doc;
+
+		procedure draw_keepout is begin
+			if keepout_enabled (BOTTOM) then
+				draw_keepout (self, area_shifted, context, BOTTOM);
+			end if;
+
+			if keepout_enabled (TOP) then
+				draw_keepout (self, area_shifted, context, TOP);
+			end if;
+		end draw_keepout;
+
+		procedure draw_stop_mask is begin
+			if stop_mask_enabled (BOTTOM) then
+				draw_stop (self, area_shifted, context, BOTTOM);
+			end if;
+
+			if stop_mask_enabled (TOP) then
+				draw_stop (self, area_shifted, context, TOP);
+			end if;
+		end draw_stop_mask;
+
+		procedure draw_stencil is begin
+			if stencil_enabled (BOTTOM) then
+				draw_stencil (self, area_shifted, context, BOTTOM);
+			end if;
+
+			if stencil_enabled (TOP) then
+				draw_stencil (self, area_shifted, context, TOP);
+			end if;
+		end draw_stencil;
+
+		procedure draw_pcb_outline is begin
+			if outline_enabled then		
+				draw_outline (self, area_shifted, context);
+			end if;
+		end draw_pcb_outline;
+
+		procedure draw_conductor_layers is begin
+			draw_route_restrict (self, area_shifted, context);
+			draw_via_restrict (self, area_shifted, context);
+			
+			draw_conductors (self, area_shifted, context);
+
+			-- CS unrouted
+		end draw_conductor_layers;
+
+		procedure draw_board is begin
+			draw_packages;
+			draw_silkscreen;
+			draw_assy_doc;
+			draw_keepout;
+			draw_stop_mask;
+			draw_stencil;
+			draw_pcb_outline;
+			draw_conductor_layers;
+			
+			-- CS draw_submodules
+			
+		end draw_board;
+		
+	begin -- draw_internal
+		
 -- 		put_line ("draw internal ...");
 		
 		set_color_background (context.cr, et_colors.no_opacity);
@@ -833,92 +919,21 @@ package body et_canvas_board is
 			convert_x (self.frame_bounding_box.x + x (self.board_origin)),
 			convert_y (self.frame_bounding_box.y - y (self.board_origin)));
 
-		-- The order of drawing layers is so that top layers
-		-- always obscure layers underneath:
-		
-	-- BOTTOM
-		-- silkscreen
-		if silkscreen_enabled (BOTTOM) then
-			draw_silk_screen (self, area_shifted, context, BOTTOM);
-		end if;
 
-		-- stop mask
-		if stop_mask_enabled (BOTTOM) then
-			draw_stop (self, area_shifted, context, BOTTOM);
-		end if;
-
-		-- stencil / solder paste / solder cream
-		if stencil_enabled (BOTTOM) then
-			draw_stencil (self, area_shifted, context, BOTTOM);
-		end if;
-
-		-- draw packages on the bottom side of the board
-		draw_packages (self, area_shifted, context, BOTTOM);
-		
-		-- keepout
-		if keepout_enabled (BOTTOM) then
-			draw_keepout (self, area_shifted, context, BOTTOM);
-		end if;
-		
-		-- assembly documentation
-		if assy_doc_enabled (BOTTOM) then
-			draw_assy_doc (self, area_shifted, context, BOTTOM);
-		end if;
-	
-	-- CONDUCTOR LAYERS
-		draw_route_restrict (self, area_shifted, context);
-		draw_via_restrict (self, area_shifted, context);
-		draw_conductors (self, area_shifted, context);
-		-- CS draw unrouted
-		
-	-- TOP		
-		-- silkscreen
-		if silkscreen_enabled (TOP) then
-			draw_silk_screen (self, area_shifted, context, TOP);
-		end if;
-
-		-- stop mask
-		if stop_mask_enabled (TOP) then
-			draw_stop (self, area_shifted, context, TOP);
-		end if;
-
-		-- stencil / solder paste / solder cream
-		if stencil_enabled (TOP) then
-			draw_stencil (self, area_shifted, context, TOP);
-		end if;
-
-		-- draw packages on the top side of the board
-		draw_packages (self, area_shifted, context, TOP);
-		
-		-- keepout
-		if keepout_enabled (TOP) then
-			draw_keepout (self, area_shifted, context, TOP);
-		end if;
-		
-		-- assembly documentation
-		if assy_doc_enabled (TOP) then
-			draw_assy_doc (self, area_shifted, context, TOP);
-		end if;
+		-- draw packages, tracks, vias, silkscreen, pcb outline, ...
+		draw_board;
 
 		
-		-- CS draw_submodules
-
-	-- OUTLINE
-		if outline_enabled then		
-			draw_outline (self, area_shifted, context);
-		end if;
-
-
+		-- Grid and cursor is drawn last so that they
+		-- are visible regardless of areas drawn with the 
+		-- cairo CLEAR operator:
 		
-		-- Grid and cursor is drawn here so that they are in the foreground:
-		
-	-- CURSOR
 		draw_cursor (self, area_shifted, context, cursor_main);
 		restore (context.cr);
 
-	-- GRID
 		-- Restore context to draw the grid:
 		restore (context.cr);
+
 		if grid_enabled then
 			draw_grid (self, context, area);
 		end if;
