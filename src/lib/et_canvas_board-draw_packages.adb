@@ -2660,7 +2660,6 @@ is
 				-- th outer contour of the stop mask
 				-- in top/bottom signal layer (specified by caller).
 				procedure tht_outer_layer (
-					name			: in string;  -- H5, 5, 3
 					pad_outline_in	: in type_pad_outline; -- the outline of the solder pad
 					stop_mask_in	: in et_terminals.type_stop_mask; -- the stop mask in the outer layer
 					pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
@@ -2764,7 +2763,6 @@ is
 				-- if any inner conductor layer is enabled. If no inner conductor
 				-- layer is enabled, nothing happens.
 				procedure tht_inner_layer_milled (
-					name			: in string;  -- H5, 5, 3
 					hole_outline_in	: in type_plated_millings; -- the countours of the milled hole
 					restring_width	: in type_track_width;
 					pad_pos_in		: in type_position) -- the center of the pad incl. its rotation
@@ -2801,7 +2799,6 @@ is
 				-- if any inner conductor layer is enabled. If no inner conductor
 				-- layer is enabled, nothing happens.
 				procedure tht_inner_layer_drilled (
-					name		: in string;  -- H5, 5, 3
 					drill_size	: in type_drill_size;
 					restring	: in type_restring_width;
 					pad_pos_in	: in type_position) -- the center of the pad incl. its rotation
@@ -2813,12 +2810,10 @@ is
 				begin
 					if inner_conductors_enabled (bottom_layer) then
 						
-						if flipped then 
-							mirror (pad_pos, Y);
-						end if;
-						
 						-- Rotate the position of the drill by the rotation of the package:
 						rotate_by (pad_pos, rot (package_position));
+
+						if flipped then mirror (pad_pos, Y); end if;
 
 						-- Move the drill by the position of the package:
 						move_by (pad_pos, type_point (package_position));
@@ -2867,7 +2862,6 @@ is
 								-- draw pad outline of top layer:
 								set_destination;
 								tht_outer_layer (
-									name			=> to_string (key (c)),
 									pad_outline_in	=> t.pad_shape_tht.top,
 									stop_mask_in	=> t.stop_mask_shape_tht.top,
 									pad_pos_in		=> t.position,
@@ -2878,7 +2872,6 @@ is
 								-- draw pad outline of bottom layer:
 								set_destination (INVERSE);
 								tht_outer_layer (
-									name			=> to_string (key (c)),
 									pad_outline_in	=> t.pad_shape_tht.bottom,
 									stop_mask_in	=> t.stop_mask_shape_tht.bottom,
 									pad_pos_in		=> t.position,
@@ -2888,7 +2881,6 @@ is
 
 								-- draw pad outline of inner layer:
 								tht_inner_layer_drilled (
-									name			=> to_string (key (c)),
 									drill_size		=> t.drill_size,
 									restring		=> t.width_inner_layers,
 									pad_pos_in		=> t.position);
@@ -2901,7 +2893,6 @@ is
 								-- draw pad outline of top layer:
 								set_destination;
 								tht_outer_layer (
-									name			=> to_string (key (c)),
 									pad_outline_in	=> t.pad_shape_tht.top,
 									stop_mask_in	=> t.stop_mask_shape_tht.top,
 									pad_pos_in		=> t.position,
@@ -2912,7 +2903,6 @@ is
 								-- draw pad outline of bottom layer:
 								set_destination (INVERSE);
 								tht_outer_layer (
-									name			=> to_string (key (c)),
 									pad_outline_in	=> t.pad_shape_tht.bottom,
 									stop_mask_in	=> t.stop_mask_shape_tht.bottom,
 									pad_pos_in		=> t.position,
@@ -2922,7 +2912,6 @@ is
 								
 								-- draw pad outline of inner layer:
 								tht_inner_layer_milled (
-									name			=> to_string (key (c)),
 									hole_outline_in	=> t.millings,
 									restring_width	=> t.width_inner_layers,
 									pad_pos_in		=> t.position);
