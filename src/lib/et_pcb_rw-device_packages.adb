@@ -164,7 +164,6 @@ package body et_pcb_rw.device_packages is
 			use pac_conductor_cutouts;
 			procedure write_cutout (cursor : in pac_conductor_cutouts.cursor) is begin
 				cutout_zone_begin;
-				write_easing (element (cursor).easing);
 
 				contours_begin;
 				write_polygon_segments (type_polygon_base (element (cursor)));
@@ -1366,8 +1365,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_silk_cutout_top is begin
 					pac_silk_cutouts.append (
 						container	=> packge.silk_screen.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with
-										easing => board_easing));
+						new_item	=> (type_polygon_base (polygon) with null record));
 					
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1376,8 +1374,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_silk_cutout_bottom is begin
 					pac_silk_cutouts.append (
 						container	=> packge.silk_screen.bottom.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with
-										easing => board_easing));
+						new_item	=> (type_polygon_base (polygon) with null record));
 					
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1386,8 +1383,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_assy_doc_cutout_top is begin
 					pac_doc_cutouts.append (
 						container	=> packge.assembly_documentation.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with 
-										easing => board_easing));
+						new_item	=> (type_polygon_base (polygon) with null record));
 					
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1396,8 +1392,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_assy_doc_cutout_bottom is begin
 					pac_doc_cutouts.append (
 						container	=> packge.assembly_documentation.bottom.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with 
-										easing => board_easing));
+						new_item	=> (type_polygon_base (polygon) with null record));
 					
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1406,8 +1401,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_keepout_cutout_top is begin
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with 
-										easing => board_easing));
+						new_item	=> (type_polygon_base (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1416,8 +1410,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_keepout_cutout_bottom is begin
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.bottom.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with 
-										easing => board_easing));
+						new_item	=> (type_polygon_base (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1426,8 +1419,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_stencil_cutout_top is begin
 					pac_stencil_cutouts.append (
 						container	=> packge.stencil.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with
-										easing => board_easing));
+						new_item	=> (type_polygon_base (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1436,8 +1428,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_stencil_cutout_bottom is begin
 					pac_stencil_cutouts.append (
 						container	=> packge.stencil.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with
-										easing => board_easing));
+						new_item	=> (type_polygon_base (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1446,8 +1437,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_stop_cutout_top is begin
 					pac_stop_cutouts.append (
 						container	=> packge.stop_mask.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with
-										easing => board_easing));
+						new_item	=> (type_polygon_base (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1456,8 +1446,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_stop_cutout_bottom is begin
 					pac_stop_cutouts.append (
 						container	=> packge.stop_mask.bottom.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with
-										easing => board_easing));
+						new_item	=> (type_polygon_base (polygon) with null record));
 
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1466,8 +1455,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_conductor_cutout_top is begin
 					et_packages.pac_conductor_cutouts.append (
 						container	=> packge.conductors.top.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with
-										easing => board_easing));
+						new_item	=> (type_polygon_base (polygon) with null record));
 										
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1476,8 +1464,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_conductor_cutout_bottom is begin
 					et_packages.pac_conductor_cutouts.append (
 						container	=> packge.conductors.bottom.cutouts, 
-						new_item	=> (type_polygon_base (polygon) with
-										easing => board_easing));
+						new_item	=> (type_polygon_base (polygon) with null record));
 										
 					-- clean up for next polygon
 					board_reset_polygon;
@@ -1487,7 +1474,6 @@ package body et_pcb_rw.device_packages is
 					pac_route_restrict_cutouts.append (
 						container	=> packge.route_restrict.cutouts, 
 						new_item	=> (type_polygon_base (polygon) with 
-										easing => board_easing,
 										layers => signal_layers));
 
 					-- clean up for next polygon
@@ -1500,7 +1486,6 @@ package body et_pcb_rw.device_packages is
 					pac_via_restrict_cutouts.append (
 						container	=> packge.via_restrict.cutouts, 
 						new_item	=> (type_polygon_base (polygon) with 
-										easing => board_easing,
 										layers => signal_layers));
 
 					-- clean up for next polygon

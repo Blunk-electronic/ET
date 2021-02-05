@@ -3439,71 +3439,61 @@ is
 					procedure append_silk_cutout_top is begin
 						pac_silk_cutouts.append (
 							container	=> module.board.silk_screen.top.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with 
-										easing		=> board_easing));
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record)); 
 					end;
 
 					procedure append_silk_cutout_bottom is begin
 						pac_silk_cutouts.append (
 							container	=> module.board.silk_screen.bottom.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with 
-										easing		=> board_easing));
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
 					end;
 					
 					procedure append_assy_doc_cutout_top is begin
 						pac_doc_cutouts.append (
 							container	=> module.board.assy_doc.top.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with 
-											easing		=> board_easing));
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_assy_doc_cutout_bottom is begin
 						pac_doc_cutouts.append (
 							container	=> module.board.assy_doc.bottom.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with 
-											easing		=> board_easing));
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_keepout_cutout_top is begin
 						pac_keepout_cutouts.append (
 							container	=> module.board.keepout.top.cutouts, 
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with
-											easing		=> board_easing));
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_keepout_cutout_bottom is begin
 						pac_keepout_cutouts.append (
 							container	=> module.board.keepout.bottom.cutouts, 
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with
-											easing		=> board_easing));
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_stencil_cutout_top is begin
 						pac_stencil_cutouts.append (
 							container	=> module.board.stencil.top.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with
-											easing		=> board_easing));
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_stencil_cutout_bottom is begin
 						pac_stencil_cutouts.append (
 							container	=> module.board.stencil.bottom.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with
-											easing		=> board_easing));
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_stop_cutout_top is begin
 						pac_stop_cutouts.append (
 							container	=> module.board.stop_mask.top.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with
-											easing		=> board_easing));
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
 					end;
 
 					procedure append_stop_cutout_bottom is begin
 						pac_stop_cutouts.append (
 							container	=> module.board.stop_mask.bottom.cutouts,
-							new_item	=> (pac_shapes.type_polygon_base (polygon) with
-											easing		=> board_easing));
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with null record));
 					end;
 					
 				begin -- do_it
@@ -3570,8 +3560,7 @@ is
 				begin
 					pac_via_restrict_cutouts.append (
 						container	=> module.board.via_restrict.cutouts,
-						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
-										easing	=> board_easing,
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										layers	=> signal_layers));
 				end do_it;
 									
@@ -3600,7 +3589,6 @@ is
 					pac_route_restrict_cutouts.append (
 						container	=> module.board.route_restrict.cutouts,
 						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
-										easing	=> board_easing,
 										layers	=> signal_layers));
 				end do_it;
 									
@@ -3629,7 +3617,6 @@ is
 					et_pcb.pac_conductor_cutouts.append (
 						container	=> module.board.conductors.cutouts,
 						new_item	=> (pac_shapes.type_polygon_base (polygon) with
-								easing			=> board_easing,
 								layer			=> signal_layer));
 				end do_it;
 									
@@ -4537,7 +4524,6 @@ is
 				et_pcb.pac_conductor_cutouts.append (
 					container	=> route.cutouts,
 					new_item	=> (pac_shapes.type_polygon_base (polygon) with
-									easing	=> board_easing,
 									layer	=> signal_layer));
 
 				board_reset_polygon; -- clean up for next cutout zone

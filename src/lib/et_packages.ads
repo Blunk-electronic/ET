@@ -331,17 +331,9 @@ package et_packages is
 		end case;
 	end record;
 
-	-- There are cutout zones (in layers not relevant for CAM) that have no easing:
-	type type_cutout_zone is new type_polygon_base with record
-		easing : type_easing; -- CS remove
-	end record;
-
--- 	-- There are cutout zones (in conductor layers, silk screen, assy doc) that require easing:
--- 	type type_cutout_zone is new type_polygon_base with record -- CS rename to type_cutout_zone_easing
--- 		easing : type_easing;
--- 	end record;
-	-- CS use it
-	
+	-- Polygons may have cutout areas.
+	-- These zones can intersect a polygon or can be inside the polygon:
+	type type_cutout_zone is new type_polygon_base with null record;
 
 
 	

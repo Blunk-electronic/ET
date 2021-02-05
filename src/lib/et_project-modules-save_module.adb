@@ -656,7 +656,6 @@ is
 			while cutout_zone_cursor /= et_pcb.pac_conductor_cutouts.no_element loop
 				cutout_zone_begin;
 				write_signal_layer (element (cutout_zone_cursor).layer);
-				write_easing (element (cutout_zone_cursor).easing);
 
 				contours_begin;
 				write_polygon_segments (pac_shapes.type_polygon_base (element (cutout_zone_cursor)));
@@ -1246,7 +1245,6 @@ is
 		procedure write_cutout (cursor : in et_pcb.pac_conductor_cutouts.cursor) is begin
 			cutout_zone_begin;
 			write_signal_layer (element (cursor).layer);
-			write_easing (element (cursor).easing);
 			write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 			cutout_zone_end;
 		end;

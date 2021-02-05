@@ -1107,7 +1107,6 @@ package body et_pcb_rw is
 		use pac_silk_cutouts;
 	begin
 		cutout_zone_begin;
-		write_easing (element (cursor).easing);
 
 		contours_begin;
 		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
@@ -1167,7 +1166,6 @@ package body et_pcb_rw is
 		use pac_doc_cutouts;
 	begin
 		cutout_zone_begin;
-		write_easing (element (cursor).easing);
 
 		contours_begin;
 		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
@@ -1273,7 +1271,6 @@ package body et_pcb_rw is
 		use pac_stop_cutouts;
 	begin
 		cutout_zone_begin;
-		write_easing (element (cursor).easing);
 
 		contours_begin;
 		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
@@ -1329,7 +1326,6 @@ package body et_pcb_rw is
 		use pac_stencil_cutouts;
 	begin
 		cutout_zone_begin;
-		write_easing (element (cursor).easing);
 
 		contours_begin;
 		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));

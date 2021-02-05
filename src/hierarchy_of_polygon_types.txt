@@ -48,5 +48,6 @@ et_pcb
  
 - derived from et_packages.type_cutout_zone
  - type_conductor_cutout
+	- selector: layer
  
  
