@@ -358,27 +358,40 @@ is
 				height		=> self.frame_height);
 		end draw_restring;
 
+		
+		-- These flags are used to prevent objects from being drawn
+		-- multple times at the same place:
+		outer_restring_drawn, inner_restring_drawn, net_name_drawn,
+		numbers_drawn, drill_size_drawn, cancel : boolean := false;
+
+		-- CS display restring width ?			
+
+		
 		-- Draws the net name right in the center of the via (no offset).
 		-- The text size is set automatically with the radius of the drill:
 		procedure draw_net_name is 
 			use et_text;
 			position : type_point := circle.center;
 		begin
-			-- The net name is displayed in a special color:
-			set_color_via_net_name (context.cr);
+			if not net_name_drawn then
+				
+				-- The net name is displayed in a special color:
+				set_color_via_net_name (context.cr);
 
-			pac_draw_doc.draw_text (
-				area		=> in_area,
-				context		=> context,
-				content		=> to_content (to_string (net_name)),
-				size		=> radius_base * text_size_factor,
-				font		=> via_text_font,
-				position	=> position,
-				origin		=> false,
-				rotation	=> zero_rotation,
-				alignment	=> (center, center),
-				height		=> self.frame_height);
+				pac_draw_doc.draw_text (
+					area		=> in_area,
+					context		=> context,
+					content		=> to_content (to_string (net_name)),
+					size		=> radius_base * text_size_factor,
+					font		=> via_text_font,
+					position	=> position,
+					origin		=> false,
+					rotation	=> zero_rotation,
+					alignment	=> (center, center),
+					height		=> self.frame_height);
 
+				net_name_drawn := true;
+			end if;
 		end draw_net_name;
 
 		-- Draws the layer numbers above the net name.
@@ -413,35 +426,60 @@ is
 		procedure draw_drill_size is 
 			use et_text;
 			position : type_point := circle.center;
-			offset : type_point := type_point (
-				set (zero, - radius_base * text_position_layer_and_drill_factor));
+			offset : type_point;
 		begin
-			move_by (position, offset);
-					 
-			-- The drill size is displayed in a special color:
-			set_color_via_drill_size (context.cr); -- CS
+			if not drill_size_drawn then
 
-			pac_draw_doc.draw_text (
-				area		=> in_area,
-				context		=> context,
-				content		=> to_content (to_string (element (v).diameter)),
-				size		=> radius_base * text_size_factor,
-				font		=> via_text_font,
-				position	=> position,
-				origin		=> false,
-				rotation	=> zero_rotation,
-				alignment	=> (center, center),
-				height		=> self.frame_height);
+				offset := type_point (
+					set (zero, - radius_base * text_position_layer_and_drill_factor));
+				
+				move_by (position, offset);
+						
+				-- The drill size is displayed in a special color:
+				set_color_via_drill_size (context.cr); -- CS
 
+				pac_draw_doc.draw_text (
+					area		=> in_area,
+					context		=> context,
+					content		=> to_content (to_string (element (v).diameter)),
+					size		=> radius_base * text_size_factor,
+					font		=> via_text_font,
+					position	=> position,
+					origin		=> false,
+					rotation	=> zero_rotation,
+					alignment	=> (center, center),
+					height		=> self.frame_height);
+
+				drill_size_drawn := true;
+			end if;
 		end draw_drill_size;
+		
+		
+		procedure query_category is 
+			
+			procedure draw_numbers_blind_top is begin
+				-- Draw the layer numbers only once:
+				if not numbers_drawn then
+					draw_numbers (
+						from	=> "T",
+						to		=> to_string (element (v).lower));
 
-		
-		-- These flags are used to prevent objects from being drawn
-		-- multple times at the same place:
-		outer_restring_drawn, inner_restring_drawn,
-		numbers_drawn, cancel : boolean := false;
-		
-		procedure query_category is begin			
+					numbers_drawn := true;
+				end if;
+			end draw_numbers_blind_top;
+
+			procedure draw_numbers_blind_bottom is begin
+				-- Draw the layer numbers only once:
+				if not numbers_drawn then
+					draw_numbers (
+						from	=> "B",
+						to		=> to_string (element (v).upper));
+
+					numbers_drawn := true;
+				end if;
+			end draw_numbers_blind_bottom;		
+			
+		begin -- query_category	
 			case element (v).category is
 				when THROUGH =>
 					if is_inner_layer (current_layer) then
@@ -473,6 +511,9 @@ is
 							cancel := true; -- causes the layer iterator to cancel
 						end if;
 					end if;
+
+					draw_net_name;
+					draw_drill_size;
 					
 					-- NOTE: For a through via, no layer numbers are displayed.
 					
@@ -487,11 +528,14 @@ is
 						-- inner signal layers, it is sufficent to draw only one
 						-- restring.
 						cancel := true;  -- causes the layer iterator to cancel
-
+					
 						-- Draw the layer numbers only once (cancel flag already set)
 						draw_numbers (
 							from	=> to_string (element (v).layers.upper),
 							to		=> to_string (element (v).layers.lower));
+					
+						draw_net_name;
+						draw_drill_size;
 					end if;
 					
 				when BLIND_DRILLED_FROM_TOP =>
@@ -499,12 +543,18 @@ is
 						set_width_and_radius (element (v).restring_top);
 						outer_restring_drawn := true;
 						draw_restring;
+						draw_numbers_blind_top;
+						draw_net_name;
+						draw_drill_size;
 					end if;
 
 					if current_layer = element (v).lower then
 						set_width_and_radius (element (v).restring_inner);
 						inner_restring_drawn := true;
 						draw_restring;
+						draw_numbers_blind_top;
+						draw_net_name;
+						draw_drill_size;
 					end if;
 
 					-- At least the top restring AND one inner restring 
@@ -514,26 +564,23 @@ is
 						cancel := true; -- causes the layer iterator to cancel
 					end if;
 
-					-- Draw the layer numbers only once:
-					if not numbers_drawn then
-						draw_numbers (
-							from	=> "T",
-							to		=> to_string (element (v).lower));
-
-						numbers_drawn := true;
-					end if;
-					
 				when BLIND_DRILLED_FROM_BOTTOM =>
 					if current_layer = bottom_layer then
 						set_width_and_radius (element (v).restring_bottom);
 						outer_restring_drawn := true;
 						draw_restring;
+						draw_numbers_blind_bottom;
+						draw_net_name;
+						draw_drill_size;
 					end if;
 
 					if current_layer = element (v).upper then
 						set_width_and_radius (element (v).restring_inner);
 						inner_restring_drawn := true;
 						draw_restring;
+						draw_numbers_blind_bottom;
+						draw_net_name;
+						draw_drill_size;
 					end if;
 
 					-- At least the bottom restring AND one inner restring 
@@ -541,15 +588,6 @@ is
 					-- shall be drawn.
 					if outer_restring_drawn and inner_restring_drawn then
 						cancel := true;
-					end if;
-
-					-- Draw the layer numbers only once:
-					if not numbers_drawn then
-						draw_numbers (
-							from	=> "B",
-							to		=> to_string (element (v).upper));
-
-						numbers_drawn := true;
 					end if;
 					
 			end case;
@@ -582,13 +620,7 @@ is
 				end if;
 
 			end loop;
-
-			draw_net_name;
-			draw_drill_size;
-			
-			-- CS display drill size and restring ?			
 		end if;
-		
 	end query_via;
 
 	
