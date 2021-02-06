@@ -244,6 +244,8 @@ package et_terminals is
 			-- would be drawing the contour with zero rotation 
 			-- first (which is easier). Then by applying an angle,
 			-- the countour would be rotated to its final position.
+
+			-- CS thermal_relief on/off
 			
 		case technology is
 			when THT =>
