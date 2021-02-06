@@ -254,11 +254,21 @@ package et_pcb is
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 
 
+
+	-- After filling a polygon the polygon may be reduced to a single
+	-- smaller filled area or it may break into several separated filled
+	-- areas. These areas are always computed automatically
+	-- on filling a conductor polygon.
+	type type_filled_area is new type_polygon_base with null record;
+	package pac_filled_areas is new doubly_linked_lists (type_filled_area);
+	no_filled_areas : constant pac_filled_areas.list := pac_filled_areas.empty_list;
+	
 	-- All fill zones in conductor layers have these common
 	-- properties:
 	type type_conductor_polygon_properties is record
 		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
+		filled_areas	: pac_filled_areas.list;
 	end record;
 
 	

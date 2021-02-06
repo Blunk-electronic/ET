@@ -2038,8 +2038,9 @@ is
 						width_min	=> settings.polygons_conductor.min_width,
 						isolation	=> settings.polygons_conductor.isolation,
 						properties	=> (
-								layer 			=> to_signal_layer (f (5)),
-								priority_level	=> settings.polygons_conductor.priority_level),
+							layer 			=> to_signal_layer (f (5)),
+							priority_level	=> settings.polygons_conductor.priority_level,
+							filled_areas	=> no_filled_areas),
 						
 						easing		=> settings.polygons_conductor.easing);
 
@@ -2054,8 +2055,9 @@ is
 						width_min	=> settings.polygons_conductor.min_width,
 						isolation	=> settings.polygons_conductor.isolation,
 						properties	=> (
-								layer 			=> to_signal_layer (f (5)),
-								priority_level	=> settings.polygons_conductor.priority_level),
+							layer 			=> to_signal_layer (f (5)),
+							priority_level	=> settings.polygons_conductor.priority_level,
+							filled_areas	=> no_filled_areas),
 						
 						easing		=> settings.polygons_conductor.easing);
 
@@ -2171,8 +2173,9 @@ is
 					connection	=> THERMAL,
 					thermal		=> settings.polygons_conductor.thermal,
 					properties	=> (
-							layer 			=> to_signal_layer (f (6)),
-							priority_level	=> settings.polygons_conductor.priority_level));
+						layer 			=> to_signal_layer (f (6)),
+						priority_level	=> settings.polygons_conductor.priority_level,
+						filled_areas	=> no_filled_areas));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2196,8 +2199,9 @@ is
 					connection	=> SOLID,
 					technology	=> SMT_AND_THT, -- CS settings.polygons_conductor.technology,
 					properties	=> (
-							layer 			=> to_signal_layer (f (6)),
-							priority_level	=> settings.polygons_conductor.priority_level));
+						layer 			=> to_signal_layer (f (6)),
+						priority_level	=> settings.polygons_conductor.priority_level,
+						filled_areas	=> no_filled_areas));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2222,8 +2226,9 @@ is
 					connection	=> THERMAL,
 					thermal		=> settings.polygons_conductor.thermal,
 					properties	=> (
-							layer 			=> to_signal_layer (f (6)),
-							priority_level	=> settings.polygons_conductor.priority_level));
+						layer 			=> to_signal_layer (f (6)),
+						priority_level	=> settings.polygons_conductor.priority_level,
+						filled_areas	=> no_filled_areas));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2248,8 +2253,9 @@ is
 					connection	=> SOLID,
 					technology	=> SMT_AND_THT, -- CS settings.polygons_conductor.technology,
 					properties	=> (
-							layer 			=> to_signal_layer (f (6)),
-							priority_level	=> settings.polygons_conductor.priority_level));
+						layer 			=> to_signal_layer (f (6)),
+						priority_level	=> settings.polygons_conductor.priority_level,
+						filled_areas	=> no_filled_areas));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,

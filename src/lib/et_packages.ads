@@ -331,7 +331,7 @@ package et_packages is
 		end case;
 	end record;
 
-	-- Polygons may have cutout areas.
+	-- Polygons can be modified by cutout zones.
 	-- These zones can intersect a polygon or can be inside the polygon:
 	type type_cutout_zone is new type_polygon_base with null record;
 

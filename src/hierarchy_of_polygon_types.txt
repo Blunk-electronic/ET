@@ -31,19 +31,22 @@ et_pcb
 - derived from type_polygon_conductor
  - type_polygon_conductor_solid_floating 
 	- fixed discriminiant: solid
-	- selectors: layer, priority
+	- selectors: properties.layer, properties.priority, properties.filled_areas
 	
  - type_polygon_conductor_hatched_floating
 	- fixed discriminiant: hatched
-	- selectors: layer, priority
+	- selectors: properties.layer, properties.priority, properties.filled_areas
 
  
 - derived from type_polygon_conductor_solid 
- - type_polygon_conductor_route_solid (discriminiant : connection, selectors: layer, priority)
+ - type_polygon_conductor_route_solid
+	- discriminiant: connection,
+	- selectors: properties.layer, properties.priority, properties.filled_areas
 
 - derived from type_polygon_conductor_hatched
- - type_polygon_conductor_route_hatched (discriminiant : connection, selectors: layer, priority)
-
+ - type_polygon_conductor_route_hatched
+	- discriminiant: connection,
+	- selectors: properties.layer, properties.priority, properties.filled_areas
  
  
 - derived from et_packages.type_cutout_zone

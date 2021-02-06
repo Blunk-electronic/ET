@@ -3970,24 +3970,22 @@ is
 							pac_conductor_polygons_floating_solid.append (
 								container	=> module.board.conductors.polygons.solid,
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
-										fill_style 		=> SOLID,
-										easing			=> board_easing,
-										properties		=> (signal_layer, polygon_priority),
-										isolation		=> polygon_isolation,
-										width_min		=> polygon_width_min)
-										);
+									fill_style 		=> SOLID,
+									easing			=> board_easing,
+									properties		=> (signal_layer, polygon_priority, no_filled_areas),
+									isolation		=> polygon_isolation,
+									width_min		=> polygon_width_min));
 
 						when HATCHED =>
 							pac_conductor_polygons_floating_hatched.append (
 								container	=> module.board.conductors.polygons.hatched,
 								new_item	=> (pac_shapes.type_polygon_base (polygon) with
-										fill_style 		=> HATCHED,
-										easing			=> board_easing,
-										properties		=> (signal_layer, polygon_priority),
-										isolation		=> polygon_isolation,
-										width_min		=> polygon_width_min,
-										hatching		=> board_hatching_conductor)
-										);
+									fill_style 		=> HATCHED,
+									easing			=> board_easing,
+									properties		=> (signal_layer, polygon_priority, no_filled_areas),
+									isolation		=> polygon_isolation,
+									width_min		=> polygon_width_min,
+									hatching		=> board_hatching_conductor));
 					end case;
 				end do_it;
 									
