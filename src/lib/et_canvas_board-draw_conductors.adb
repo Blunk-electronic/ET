@@ -70,6 +70,7 @@ is
 	use pac_conductor_polygons_floating_hatched;
 	use pac_signal_polygons_solid;
 	use pac_signal_polygons_hatched;
+	use pac_filled_areas;
 	
 	use et_pcb.pac_text_placeholders_conductors;
 	use et_packages.pac_conductor_texts;
@@ -176,8 +177,36 @@ is
 		end if;
 	end query_circle;
 
-	procedure query_polygon (c : in pac_conductor_polygons_floating_solid.cursor) is
-	begin
+	-- This procedure draws a solidly filled area of a conductor polygon:
+	procedure query_filled_area (a : in pac_filled_areas.cursor) is begin
+		
+		draw_polygon (
+			area	=> in_area,
+			context	=> context,
+			polygon	=> element (a),
+			filled	=> YES,
+			height	=> self.frame_height);
+
+	end query_filled_area;
+	
+	procedure query_polygon (c : in pac_conductor_polygons_floating_solid.cursor) is begin
+		-- Draw the polygon if it is in the current layer:
+		if element (c).properties.layer = current_layer then
+
+			-- draw polygon outer contours
+			draw_polygon (
+				area	=> in_area,
+				context	=> context,
+				polygon	=> element (c),
+				filled	=> NO,
+				height	=> self.frame_height);
+
+			-- draw filled areas
+			iterate (element (c).properties.filled_areas, query_filled_area'access);
+		end if;
+	end query_polygon;
+
+	procedure query_polygon (c : in pac_conductor_polygons_floating_hatched.cursor) is begin
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 			
@@ -188,29 +217,12 @@ is
 				filled	=> NO,
 				height	=> self.frame_height);
 
-			-- CS iterate filled_areas
+			-- draw filled areas
+			-- CS iterate (element (c).properties.filled_areas, query_filled_area'access);
 		end if;
 	end query_polygon;
 
-	procedure query_polygon (c : in pac_conductor_polygons_floating_hatched.cursor) is 
-	begin
-		-- Draw the polygon if it is in the current layer:
-		if element (c).properties.layer = current_layer then
-			
-			draw_polygon (
-				area	=> in_area,
-				context	=> context,
-				polygon	=> element (c),
-				filled	=> NO,
-				height	=> self.frame_height);
-
-			-- CS iterate filled_areas
-			
-		end if;
-	end query_polygon;
-
-	procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is 
-	begin
+	procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is begin
 		
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
@@ -222,13 +234,12 @@ is
 				filled	=> NO,
 				height	=> self.frame_height);
 
-			-- CS iterate filled_areas
-			
+			-- draw filled areas
+			iterate (element (c).properties.filled_areas, query_filled_area'access);
 		end if;
 	end query_polygon;
 
-	procedure query_polygon (c : in pac_signal_polygons_hatched.cursor) is 
-	begin
+	procedure query_polygon (c : in pac_signal_polygons_hatched.cursor) is begin
 		
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
@@ -240,8 +251,8 @@ is
 				filled	=> NO,
 				height	=> self.frame_height);
 
-			-- CS iterate filled_areas
-			
+			-- draw filled areas
+			-- CS iterate (element (c).properties.filled_areas, query_filled_area'access);
 		end if;
 	end query_polygon;
 	
