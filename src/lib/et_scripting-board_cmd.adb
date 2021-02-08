@@ -2983,6 +2983,16 @@ is
 				end case;
 
 			when VERB_EXIT | VERB_QUIT => terminate_main;
+
+			when VERB_FILL =>
+				case noun is
+					when NOUN_POLYGON =>
+						fill_conductor_polygons (module_cursor, log_threshold + 1);
+						set_status ("conductor polygons filled");
+						
+					when others => 
+						invalid_noun (to_string (noun));
+				end case;
 				
 			when VERB_FLIP =>
 				case noun is

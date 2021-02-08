@@ -4449,6 +4449,23 @@ package body et_board_ops is
 		log_indentation_down;
 	end place_polygon_conductor;
 
+
+	procedure fill_conductor_polygons (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is 
+
+	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " refilling conductor polygons ...",
+			level => log_threshold);
+
+		log_indentation_up;
+	
+
+		log_indentation_down;
+	end fill_conductor_polygons;
 	
 end et_board_ops;
 	

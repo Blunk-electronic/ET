@@ -188,6 +188,7 @@ is
 				filled	=> NO,
 				height	=> self.frame_height);
 
+			-- CS iterate filled_areas
 		end if;
 	end query_polygon;
 
@@ -203,6 +204,8 @@ is
 				filled	=> NO,
 				height	=> self.frame_height);
 
+			-- CS iterate filled_areas
+			
 		end if;
 	end query_polygon;
 
@@ -219,6 +222,8 @@ is
 				filled	=> NO,
 				height	=> self.frame_height);
 
+			-- CS iterate filled_areas
+			
 		end if;
 	end query_polygon;
 
@@ -234,7 +239,9 @@ is
 				polygon	=> element (c),
 				filled	=> NO,
 				height	=> self.frame_height);
-	
+
+			-- CS iterate filled_areas
+			
 		end if;
 	end query_polygon;
 	

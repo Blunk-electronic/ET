@@ -608,8 +608,11 @@ package et_board_ops is
 		-- The type of the given polygon is the cirteria:
 		net_name		: in pac_net_name.bounded_string := no_name);
 
-	
-	
+	procedure fill_conductor_polygons (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+											
 end et_board_ops;
 
 -- Soli Deo Gloria

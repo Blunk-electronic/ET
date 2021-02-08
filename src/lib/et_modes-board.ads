@@ -46,6 +46,7 @@ package et_modes.board is
 		VERB_DRAW,	
 		VERB_EXECUTE,
 		VERB_EXIT,
+		VERB_FILL,
 		VERB_FLIP,
 		VERB_MAKE,
 		VERB_MOVE,

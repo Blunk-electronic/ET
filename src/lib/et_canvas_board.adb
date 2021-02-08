@@ -50,7 +50,7 @@ with et_scripting;
 with et_modes;
 with et_project;
 
-with et_canvas_schematic;
+with et_canvas_schematic;			use et_canvas_schematic;
 with et_display.board;
 with et_colors.board;				use et_colors.board;
 with et_modes.board;				use et_modes.board;
@@ -86,7 +86,7 @@ package body et_canvas_board is
 			get_indexed_nets (et_canvas_schematic.current_active_module);
 		
 	begin
-		-- Set the drill size and restring according to a user specific values:
+		-- Set the drill size and restring according to user specific values:
 		-- If user has not specified defaults, use values given in DRU data set:
 
 		-- set drill size:
@@ -1229,6 +1229,18 @@ package body et_canvas_board is
 				when others => status_noun_invalid;
 			end case;
 		end delete;
+
+		procedure fill is begin
+			case key is
+				when GDK_LC_p =>
+					noun := NOUN_POLYGON;
+					fill_conductor_polygons (current_active_module, log_threshold + 1);
+
+					set_status ("conductor polygons filled");
+					
+				when others => status_noun_invalid;
+			end case;
+		end fill;
 		
 		procedure place is begin
 			case key is
@@ -1316,10 +1328,14 @@ package body et_canvas_board is
 									verb := VERB_DELETE;
 									status_enter_noun;
 
-								when GDK_LC_d => -- GDK_D
+								when GDK_LC_d =>
 									verb := VERB_DRAW;
 									status_enter_noun;
 
+								when GDK_LC_f =>
+									verb := VERB_FILL;
+									status_enter_noun;
+									
 								when GDK_LC_p =>
 									verb := VERB_PLACE;
 									status_enter_noun;
@@ -1346,8 +1362,9 @@ package body et_canvas_board is
 							--put_line ("NOUN entered");
 
 							case verb is
-								when VERB_DELETE	=>	delete;
-								when VERB_PLACE		=>	place;							
+								when VERB_DELETE	=> delete;
+								when VERB_FILL		=> fill;
+								when VERB_PLACE		=> place;
 								when others => null; -- CS
 							end case;
 							
