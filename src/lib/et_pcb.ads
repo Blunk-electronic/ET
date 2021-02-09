@@ -373,12 +373,6 @@ package et_pcb is
 		cursor			: in pac_vias.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
-	text_polygon_thermal_width : constant string := "thermal_width";	
-	text_polygon_thermal_gap : constant string := "thermal_gap";	
-	text_polygon_pad_connection : constant string := "pad_connection";	
-	text_polygon_pad_technology : constant string := "connected_with";	
-	text_polygon_width_min : constant string := "minimum_width";	
-	text_polygon_signal_layer : constant string := "signal_layer";
 	
 	procedure line_pcb_contour_properties (
 	-- Logs the properties of the given line of pcb contour

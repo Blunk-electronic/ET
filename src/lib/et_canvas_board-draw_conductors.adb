@@ -35,16 +35,16 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+with ada.text_io;					use ada.text_io;
 
-with et_pcb;					use et_pcb;
-
-with et_vias;					use et_vias;
+with et_pcb;						use et_pcb;
+with et_conductor_polygons;			use et_conductor_polygons;
+with et_vias;						use et_vias;
 use et_vias.pac_vias;
 
-with et_pcb_stack;				use et_pcb_stack;
-with et_design_rules;			use et_design_rules;
-with et_display.board;			use et_display.board;
+with et_pcb_stack;					use et_pcb_stack;
+with et_design_rules;				use et_design_rules;
+with et_display.board;				use et_display.board;
 with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
@@ -256,7 +256,7 @@ is
 		end if;
 	end query_polygon;
 	
-	procedure query_cutout (c : in et_pcb.pac_conductor_cutouts.cursor) is
+	procedure query_cutout (c : in pac_conductor_cutouts.cursor) is
 	begin
 		-- Draw the zone if it is in the current layer:
 		if element (c).layer = current_layer then

@@ -48,6 +48,7 @@ with et_packages;				use et_packages;
 with et_pcb;
 with et_pcb_stack;
 with et_design_rules;			use et_design_rules;
+with et_conductor_polygons;		use et_conductor_polygons;
 
 package et_pcb_rw is
 
@@ -114,15 +115,15 @@ package et_pcb_rw is
 	procedure write_hatching (hatching : in et_packages.type_hatching);
 	procedure write_hatching (hatching : in et_packages.type_conductor_hatching);
 	procedure write_easing (easing: in et_packages.type_easing);
-	procedure write_thermal (thermal : in et_pcb.type_thermal);
+	procedure write_thermal (thermal : in type_thermal);
 	procedure write_width_min (width : in type_track_width);
 	procedure write_isolation (iso : in type_track_clearance);
-	procedure write_priority (prio : in et_pcb.type_polygon_priority);
+	procedure write_priority (prio : in type_polygon_priority);
 	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer);
 	procedure write_fill_style (fill_style : in et_packages.type_fill_style);
 	procedure write_fill_status (filled : in type_filled);
-	procedure write_pad_connection (connection : in et_pcb.type_polygon_pad_connection);
-	procedure write_pad_technology (techno : in et_pcb.type_polygon_pad_technology);	
+	procedure write_pad_connection (connection : in type_polygon_pad_connection);
+	procedure write_pad_technology (techno : in type_polygon_pad_technology);	
 	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set);
 	procedure write_circle_fillable (circle : in type_fillable_circle);
 	procedure write_circle_conductor (circle : in type_conductor_circle);
@@ -251,9 +252,9 @@ package et_pcb_rw is
 	polygon_width_min : type_track_width := type_track_width'first;
 
 	-- board relevant only:
-	polygon_pad_connection	: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
-	polygon_priority		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
-	thermal					: et_pcb.type_thermal;
+	polygon_pad_connection	: type_polygon_pad_connection := type_polygon_pad_connection'first;
+	polygon_priority		: type_polygon_priority := type_polygon_priority'first;
+	thermal					: type_thermal;
 	signal_layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 
 	procedure board_reset_signal_layer;

@@ -155,7 +155,7 @@ package body et_pcb_rw is
 		write (keyword => keyword_easing_radius, parameters => to_string (easing.radius));
 	end;
 
-	procedure write_thermal (thermal : in et_pcb.type_thermal) is
+	procedure write_thermal (thermal : in type_thermal) is
 		use et_pcb;
 	begin
 		write (keyword => keyword_pad_technology, parameters => to_string (thermal.technology));
@@ -173,7 +173,7 @@ package body et_pcb_rw is
 		write (keyword => keyword_isolation, parameters => to_string (iso));
 	end;
 
-	procedure write_priority (prio : in et_pcb.type_polygon_priority) is
+	procedure write_priority (prio : in type_polygon_priority) is
 		use et_pcb;
 	begin
 		write (keyword => keyword_priority , parameters => to_string (prio));
@@ -195,13 +195,13 @@ package body et_pcb_rw is
 		write (keyword => keyword_filled, parameters => to_string (filled));
 	end;
 	
-	procedure write_pad_connection (connection : in et_pcb.type_polygon_pad_connection) is
+	procedure write_pad_connection (connection : in type_polygon_pad_connection) is
 		use et_pcb;
 	begin
 		write (keyword => keyword_pad_connection, parameters => to_string (connection));
 	end;
 
-	procedure write_pad_technology (techno : in et_pcb.type_polygon_pad_technology) is
+	procedure write_pad_technology (techno : in type_polygon_pad_technology) is
 		use et_pcb;
 	begin
 		write (keyword => keyword_pad_technology, parameters => to_string (techno));
@@ -1038,8 +1038,8 @@ package body et_pcb_rw is
 		board_hatching		:= (others => <>);
 		board_easing 		:= (others => <>);
 		
-		polygon_pad_connection	:= et_pcb.type_polygon_pad_connection'first; -- board relevant only
-		polygon_priority		:= et_pcb.type_polygon_priority'first;  -- board relevant only
+		polygon_pad_connection	:= type_polygon_pad_connection'first; -- board relevant only
+		polygon_priority		:= type_polygon_priority'first;  -- board relevant only
 		polygon_isolation		:= type_track_clearance'first;
 		polygon_width_min		:= type_track_width'first;
 

@@ -511,12 +511,12 @@ is
 			use pac_conductor_arcs;
 			arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
 
-			use pac_signal_polygons_solid; 
-			use pac_signal_polygons_hatched;
-			use et_pcb.pac_conductor_cutouts;
-			polygon_solid_cursor : pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
-			polygon_hatched_cursor : pac_signal_polygons_hatched.cursor := net.route.polygons.hatched.first;
-			cutout_zone_cursor : et_pcb.pac_conductor_cutouts.cursor := net.route.cutouts.first;
+			use et_conductor_polygons.pac_signal_polygons_solid; 
+			use et_conductor_polygons.pac_signal_polygons_hatched;
+			use et_conductor_polygons.pac_conductor_cutouts;
+			polygon_solid_cursor	: et_conductor_polygons.pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
+			polygon_hatched_cursor	: et_conductor_polygons.pac_signal_polygons_hatched.cursor := net.route.polygons.hatched.first;
+			cutout_zone_cursor		: et_conductor_polygons.pac_conductor_cutouts.cursor := net.route.cutouts.first;
 
 			procedure write_vias is
 				use et_vias;
@@ -587,7 +587,7 @@ is
 			write_vias;
 			
 			-- solid fill zones
-			while polygon_solid_cursor /= pac_signal_polygons_solid.no_element loop
+			while polygon_solid_cursor /= et_conductor_polygons.pac_signal_polygons_solid.no_element loop
 				fill_zone_begin;
 
 				write_easing (element (polygon_solid_cursor).easing);
@@ -601,11 +601,11 @@ is
 				write_fill_style (et_packages.SOLID);
 
 				case element (polygon_solid_cursor).connection is
-					when et_pcb.THERMAL => 
+					when et_conductor_polygons.THERMAL => 
 						write_pad_connection (element (polygon_solid_cursor).connection);
 						write_thermal (element (polygon_solid_cursor).thermal);
 		
-					when et_pcb.SOLID =>
+					when et_conductor_polygons.SOLID =>
 						write_pad_technology (element (polygon_solid_cursor).technology);
 						
 				end case;
@@ -619,7 +619,7 @@ is
 			end loop;
 
 			-- hatched fill zones
-			while polygon_hatched_cursor /= pac_signal_polygons_hatched.no_element loop
+			while polygon_hatched_cursor /= et_conductor_polygons.pac_signal_polygons_hatched.no_element loop
 				fill_zone_begin;
 
 				write_easing (element (polygon_hatched_cursor).easing);
@@ -635,11 +635,11 @@ is
 				write_hatching (element (polygon_hatched_cursor).hatching);
 
 				case element (polygon_hatched_cursor).connection is
-					when et_pcb.THERMAL => 
+					when et_conductor_polygons.THERMAL => 
 						write_pad_connection (element (polygon_hatched_cursor).connection);
 						write_thermal (element (polygon_hatched_cursor).thermal);
 		
-					when et_pcb.SOLID =>
+					when et_conductor_polygons.SOLID =>
 						write_pad_technology (element (polygon_hatched_cursor).technology);
 
 				end case;
@@ -653,7 +653,7 @@ is
 			end loop;
 
 			-- cutout zones
-			while cutout_zone_cursor /= et_pcb.pac_conductor_cutouts.no_element loop
+			while cutout_zone_cursor /= et_conductor_polygons.pac_conductor_cutouts.no_element loop
 				cutout_zone_begin;
 				write_signal_layer (element (cutout_zone_cursor).layer);
 
@@ -1200,8 +1200,8 @@ is
 		end;
 
 		-- solid fill zones in conductor
-		use pac_conductor_polygons_floating_solid;
-		procedure write_polygon (cursor : in pac_conductor_polygons_floating_solid.cursor) is begin
+		use et_conductor_polygons.pac_conductor_polygons_floating_solid;
+		procedure write_polygon (cursor : in et_conductor_polygons.pac_conductor_polygons_floating_solid.cursor) is begin
 			fill_zone_begin;
 
 			write_easing (element (cursor).easing);
@@ -1220,8 +1220,8 @@ is
 		end;
 
 		-- hatched fill zones in conductor
-		use pac_conductor_polygons_floating_hatched;
-		procedure write_polygon (cursor : in pac_conductor_polygons_floating_hatched.cursor) is begin
+		use et_conductor_polygons.pac_conductor_polygons_floating_hatched;
+		procedure write_polygon (cursor : in et_conductor_polygons.pac_conductor_polygons_floating_hatched.cursor) is begin
 			fill_zone_begin;
 
 			write_easing (element (cursor).easing);
@@ -1241,8 +1241,8 @@ is
 		end;
 
 		-- cutout zones in any signal layers
-		use et_pcb.pac_conductor_cutouts;
-		procedure write_cutout (cursor : in et_pcb.pac_conductor_cutouts.cursor) is begin
+		use et_conductor_polygons.pac_conductor_cutouts;
+		procedure write_cutout (cursor : in et_conductor_polygons.pac_conductor_cutouts.cursor) is begin
 			cutout_zone_begin;
 			write_signal_layer (element (cursor).layer);
 			write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));

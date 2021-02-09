@@ -35,7 +35,7 @@
 --   history of changes:
 --
 
-with ada.strings;				use ada.strings;
+with ada.strings;					use ada.strings;
 with ada.exceptions;
 with ada.tags;
 
@@ -43,9 +43,10 @@ with et_submodules;
 with et_numbering;
 with et_symbols;
 with et_packages;
+with et_conductor_polygons;			use et_conductor_polygons;
 with et_pcb_rw.device_packages;
 with et_conventions;
-with et_exceptions;				use et_exceptions;
+with et_exceptions;					use et_exceptions;
 
 package body et_board_ops is
 

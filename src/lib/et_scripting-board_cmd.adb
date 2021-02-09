@@ -42,6 +42,7 @@ with et_canvas_board_devices;
 with et_canvas_board_texts;
 with et_canvas_board_vias;
 with et_design_rules;				use et_design_rules;
+with et_conductor_polygons;			use et_conductor_polygons;
 
 separate (et_scripting)
 	
@@ -2024,8 +2025,8 @@ is
 			-- Extract from the given command the polygon arguments (everything after "polygon"):
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 6);
 			
-			ps : et_pcb.type_polygon_conductor_solid_floating;
-			ph : et_pcb.type_polygon_conductor_hatched_floating;
+			ps : type_polygon_conductor_solid_floating;
+			ph : type_polygon_conductor_hatched_floating;
 
 			-- Build a basic polygon from the arguments:
 			p : constant type_polygon_base'class := to_polygon (arguments);

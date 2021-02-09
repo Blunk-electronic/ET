@@ -230,9 +230,9 @@ package body et_kicad.pcb is
 	function to_board (
 		file_name		: in string; -- pwr_supply.kicad_pcb
 		lines			: in pac_lines_of_file.list;
-		log_threshold	: in et_string_processing.type_log_level) 
-		return type_board is
-
+		log_threshold	: in type_log_level) 
+		return type_board 
+	is
 		board : type_board; -- to be returned
 
 		use et_pcb;
@@ -4298,7 +4298,7 @@ package body et_kicad.pcb is
 				log (text => "polygon/zone net " & to_string (polygon.net_name) &
 					 " " & text_polygon_signal_layer & to_string (polygon.layer) &
 					 " timestamp " & string (polygon.timestamp) & -- CS use constant
-					 " " & keyword_priority & et_pcb.to_string (polygon.priority_level) &
+					 " " & keyword_priority & et_conductor_polygons.to_string (polygon.priority_level) &
 					 -- CS: hatch_style and hatch_width are related to the display mode in the GUI.
 					 -- So there is no need to output this stuff here.
 					 --" hatch_width" & to_string (polygon.hatch_width) & -- CS use constant for "hatch width" ?
@@ -4607,11 +4607,11 @@ package body et_kicad.pcb is
 
 	procedure floating_copper_polygon_properties (
 	-- Logs the properties of the given floating copper polygon.
-		cursor			: in et_pcb.pac_conductor_polygons_floating_solid.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) 
+		cursor			: in pac_conductor_polygons_floating_solid.cursor;
+		log_threshold 	: in type_log_level) 
 	is
-		use et_pcb;
-		use et_pcb.pac_conductor_polygons_floating_solid;
+		use et_conductor_polygons;
+		use pac_conductor_polygons_floating_solid;
 		use et_pcb_stack;
 		use et_packages;
 	begin
@@ -4643,8 +4643,8 @@ package body et_kicad.pcb is
 	-- Reads the board file. Copies general board stuff to the schematic module.
 	-- Global module_cursor is expected to point to the schematic module.
 		file_name 		: in string;
-		log_threshold	: in et_string_processing.type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		board_handle : ada.text_io.file_type;
 		line : type_fields_of_line; -- a line of the board file
 
@@ -4933,7 +4933,7 @@ package body et_kicad.pcb is
 								when THERMAL =>
 									declare
 										use et_packages;
-										p : et_pcb.type_polygon_conductor_route_solid (et_pcb.THERMAL);
+										p : type_polygon_conductor_route_solid (et_conductor_polygons.THERMAL);
 									begin
 										p.width_min	:= element (polygon_cursor).min_thickness;
 										p.isolation := element (polygon_cursor).isolation_gap;
@@ -4959,7 +4959,7 @@ package body et_kicad.pcb is
 								when SOLID =>
 									declare
 										use et_packages;
-										p : et_pcb.type_polygon_conductor_route_solid (et_pcb.SOLID);
+										p : type_polygon_conductor_route_solid (et_conductor_polygons.SOLID);
 									begin
 										p.width_min	:= element (polygon_cursor).min_thickness;
 										p.isolation := element (polygon_cursor).isolation_gap;
@@ -5268,7 +5268,7 @@ package body et_kicad.pcb is
 					use type_polygons;
 					polygon_cursor : type_polygons.cursor := board.polygons.first;
 
-					p : et_pcb.type_polygon_conductor_solid_floating;
+					p : type_polygon_conductor_solid_floating;
 				begin
 					-- search polygons with a net_id of zero:
 					while polygon_cursor /= type_polygons.no_element loop
@@ -5464,12 +5464,12 @@ package body et_kicad.pcb is
 				-- log (get_line);
 
 				-- Store a single line in variable "line"
-				line := et_string_processing.read_line (
-						line 			=> get_line,
-						comment_mark	=> comment_mark,
-						test_whole_line	=> false, -- comment marks at begin of line matter
-						number 			=> ada.text_io.line (current_input),
-						ifs 			=> latin_1.space); -- fields are separated by space
+				line := read_line (
+					line 			=> get_line,
+					comment_mark	=> comment_mark,
+					test_whole_line	=> false, -- comment marks at begin of line matter
+					number 			=> ada.text_io.line (current_input),
+					ifs 			=> latin_1.space); -- fields are separated by space
 
 				-- insert line in container "lines"
 				if field_count (line) > 0 then -- we skip empty or commented lines
@@ -5503,11 +5503,10 @@ package body et_kicad.pcb is
 		log_indentation_down;
 	end read_board;
 
-	procedure read_boards (log_threshold : in et_string_processing.type_log_level) is
+	procedure read_boards (log_threshold : in type_log_level) is
 	-- Imports layout files. The files to be imported are named after the schematic modules.
 	-- The schematic modules are indicated by module_cursor.
 		use type_modules;
-		use et_string_processing;
 		use ada.directories;
 	begin
 		-- We start with the first module of the modules.

@@ -66,6 +66,7 @@ with et_packages;
 with et_devices;				use et_devices;
 with et_frames;
 with et_design_rules;			use et_design_rules;
+with et_conductor_polygons;		use et_conductor_polygons;
 
 with et_kicad.schematic;
 with et_kicad_libraries;		--use et_kicad_libraries;
@@ -590,8 +591,8 @@ package et_kicad.pcb is
 	
 
 	-- Polygons may be connected with THT pads only or all pad technologies
-	subtype type_polygon_pad_technology is et_pcb.type_polygon_pad_technology 
-		range et_pcb.THT_ONLY .. et_pcb.SMT_AND_THT;
+	subtype type_polygon_pad_technology is et_conductor_polygons.type_polygon_pad_technology 
+		range et_conductor_polygons.THT_ONLY .. et_conductor_polygons.SMT_AND_THT;
 
 -- POLYGON (or fill zone)
 
@@ -614,11 +615,11 @@ package et_kicad.pcb is
 		filled				: boolean; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
 		arc_segments		: natural := 0; -- CS subtype ? -- only 16 or 32 allowed
-		thermal_gap			: et_pcb.type_polygon_thermal_gap := et_pcb.type_polygon_thermal_gap'first;
-		thermal_width		: et_pcb.type_polygon_thermal_width := et_pcb.type_polygon_thermal_width'first; -- spoke width
+		thermal_gap			: type_polygon_thermal_gap := type_polygon_thermal_gap'first;
+		thermal_width		: type_polygon_thermal_width := type_polygon_thermal_width'first; -- spoke width
 		pad_technology		: type_polygon_pad_technology := type_polygon_pad_technology'last;
 		pad_connection		: type_polygon_pad_connection := type_polygon_pad_connection'first;
-		priority_level		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
+		priority_level		: type_polygon_priority := type_polygon_priority'first;
 		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 		corners				: type_polygon_points.list;
 		fill_style			: et_packages.type_fill_style := et_packages.SOLID; -- a polygon is always filled
@@ -630,7 +631,7 @@ package et_kicad.pcb is
 
 	procedure floating_copper_polygon_properties (
 	-- Logs the properties of the given floating solid copper polygon.
-		cursor			: in et_pcb.pac_conductor_polygons_floating_solid.cursor;
+		cursor			: in pac_conductor_polygons_floating_solid.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	

@@ -161,8 +161,8 @@ package body et_pcb_rw.device_packages is
 				fill_zone_end;
 			end write_polygon;
 
-			use pac_conductor_cutouts;
-			procedure write_cutout (cursor : in pac_conductor_cutouts.cursor) is begin
+			use et_packages.pac_conductor_cutouts;
+			procedure write_cutout (cursor : in et_packages.pac_conductor_cutouts.cursor) is begin
 				cutout_zone_begin;
 
 				contours_begin;

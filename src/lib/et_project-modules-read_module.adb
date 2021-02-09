@@ -1406,14 +1406,14 @@ is
 	procedure read_fill_zone_route is
 		use et_packages;
 		use et_pcb_coordinates.pac_geometry_brd;
-		use et_pcb;
+		use et_conductor_polygons;
 		use et_pcb_stack;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = et_pcb.keyword_priority then -- priority 2
+		if kw = keyword_priority then -- priority 2
 			expect_field_count (line, 2);
-			polygon_priority := et_pcb.to_polygon_priority (f (line, 2));
+			polygon_priority := to_polygon_priority (f (line, 2));
 
 		elsif kw = keyword_isolation then -- isolation 0.5
 			expect_field_count (line, 2);
@@ -1546,6 +1546,7 @@ is
 		use et_packages;
 		use et_board_shapes_and_text.pac_shapes;									
 		use et_pcb_stack;
+		use et_conductor_polygons;
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
 	begin
@@ -1583,9 +1584,9 @@ is
 			signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 			validate_signal_layer;
 			
-		elsif kw = et_pcb.keyword_priority then -- priority 2
+		elsif kw = et_conductor_polygons.keyword_priority then -- priority 2
 			expect_field_count (line, 2);
-			polygon_priority := et_pcb.to_polygon_priority (f (line, 2));
+			polygon_priority := to_polygon_priority (f (line, 2));
 
 		elsif kw = keyword_isolation then -- isolation 0.5
 			expect_field_count (line, 2);
@@ -2245,7 +2246,7 @@ is
 	end read_user_settings_vias;
 
 	procedure read_user_settings_fill_zones_conductor is
-		use et_pcb;
+		use et_conductor_polygons;		
 		use et_packages;
 		use et_pcb_coordinates.pac_geometry_brd;
 		kw : constant string := f (line, 1);
@@ -3614,7 +3615,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					et_pcb.pac_conductor_cutouts.append (
+					et_conductor_polygons.pac_conductor_cutouts.append (
 						container	=> module.board.conductors.cutouts,
 						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 								layer			=> signal_layer));
@@ -3959,7 +3960,7 @@ is
 			-- This is about floating polygons in signal layers. No connection to any net.
 				use et_packages;
 				use et_board_shapes_and_text;
-				use et_pcb;
+				use et_conductor_polygons;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4407,13 +4408,14 @@ is
 
 			procedure build_route_polygon is
 				use et_board_shapes_and_text.pac_shapes;
+				use et_conductor_polygons;
 
 				procedure solid_polygon is
-					use et_pcb.pac_signal_polygons_solid;
+					use pac_signal_polygons_solid;
 					use et_packages;
 
 					procedure connection_thermal is
-						p : et_pcb.type_polygon_conductor_route_solid (connection => et_pcb.THERMAL);
+						p : type_polygon_conductor_route_solid (connection => et_conductor_polygons.THERMAL);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4424,15 +4426,15 @@ is
 						
 						p.properties.layer			:= signal_layer;
 						p.properties.priority_level	:= polygon_priority;
-						p.thermal					:= thermal;
+						p.thermal					:= et_pcb_rw.thermal;
 
-						et_pcb.pac_signal_polygons_solid.append (
+						pac_signal_polygons_solid.append (
 							container	=> route.polygons.solid,
 							new_item	=> p);
 					end;
 
 					procedure connection_solid is
-						p : et_pcb.type_polygon_conductor_route_solid (connection => et_pcb.SOLID);
+						p : type_polygon_conductor_route_solid (connection => et_conductor_polygons.SOLID);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4443,26 +4445,26 @@ is
 						
 						p.properties.layer			:= signal_layer;
 						p.properties.priority_level	:= polygon_priority;
-						p.technology				:= thermal.technology;
+						p.technology				:= et_pcb_rw.thermal.technology;
 
-						et_pcb.pac_signal_polygons_solid.append (
+						pac_signal_polygons_solid.append (
 							container	=> route.polygons.solid,
 							new_item	=> p);
 					end;
 					
 				begin -- solid_polygon
 					case polygon_pad_connection is
-						when et_pcb.THERMAL => connection_thermal;
-						when et_pcb.SOLID => connection_solid;
+						when et_conductor_polygons.THERMAL	=> connection_thermal;
+						when et_conductor_polygons.SOLID	=> connection_solid;
 					end case;
 				end solid_polygon;
 
 				procedure hatched_polygon is
-					use et_pcb.pac_signal_polygons_hatched;
+					use pac_signal_polygons_hatched;
 					use et_packages;
 
 					procedure connection_thermal is
-						p : et_pcb.type_polygon_conductor_route_hatched (connection => et_pcb.THERMAL);
+						p : type_polygon_conductor_route_hatched (connection => et_conductor_polygons.THERMAL);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4473,15 +4475,15 @@ is
 						
 						p.properties.layer			:= signal_layer;
 						p.properties.priority_level	:= polygon_priority;
-						p.thermal					:= thermal;
+						p.thermal					:= et_pcb_rw.thermal;
 						
-						et_pcb.pac_signal_polygons_hatched.append (
+						pac_signal_polygons_hatched.append (
 							container	=> route.polygons.hatched,
 							new_item	=> p);
 					end;
 
 					procedure connection_solid is
-						p : et_pcb.type_polygon_conductor_route_hatched (connection => et_pcb.SOLID);
+						p : type_polygon_conductor_route_hatched (connection => et_conductor_polygons.SOLID);
 					begin
 						load_segments (p, get_segments (polygon));
 						
@@ -4493,17 +4495,17 @@ is
 						p.properties.layer			:= signal_layer;
 						p.properties.priority_level	:= polygon_priority;
 						
-						p.technology := thermal.technology;
+						p.technology := et_pcb_rw.thermal.technology;
 						
-						et_pcb.pac_signal_polygons_hatched.append (
+						pac_signal_polygons_hatched.append (
 							container	=> route.polygons.hatched,
 							new_item	=> p);
 					end;
 					
 				begin -- hatched_polygon
 					case polygon_pad_connection is
-						when et_pcb.THERMAL => connection_thermal;
-						when et_pcb.SOLID => connection_solid;
+						when et_conductor_polygons.THERMAL	=> connection_thermal;
+						when et_conductor_polygons.SOLID	=> connection_solid;
 					end case;
 				end hatched_polygon;
 
@@ -4519,7 +4521,7 @@ is
 			procedure build_route_cutout is
 				use et_board_shapes_and_text;
 			begin
-				et_pcb.pac_conductor_cutouts.append (
+				et_conductor_polygons.pac_conductor_cutouts.append (
 					container	=> route.cutouts,
 					new_item	=> (pac_shapes.type_polygon_base (polygon) with
 									layer	=> signal_layer));

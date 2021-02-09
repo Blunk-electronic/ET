@@ -71,6 +71,7 @@ with et_device_rw;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_frames;
+with et_conductor_polygons;		use et_conductor_polygons;
 
 package body et_kicad_to_native is
 
@@ -594,12 +595,12 @@ package body et_kicad_to_native is
 					use et_vias;
 					use pac_vias;
 					
-					use et_pcb.pac_signal_polygons_solid;
+					use pac_signal_polygons_solid;
 					
 					line_cursor : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
 					arc_cursor	: et_pcb.pac_conductor_arcs.cursor := net.route.arcs.first;
 					via_cursor	: pac_vias.cursor := net.route.vias.first;
-					poly_cursor	: et_pcb.pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
+					poly_cursor	: pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
 
 					board_track : constant string (1..12) := "board track ";
 					
@@ -651,7 +652,7 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end move_via;
 
-					procedure move_polygon (polygon : in out et_pcb.type_polygon_conductor_route_solid) is begin
+					procedure move_polygon (polygon : in out type_polygon_conductor_route_solid) is begin
 						log (text => "polygon segments", level => log_threshold + 4);
 						et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 					end move_polygon;
@@ -688,8 +689,8 @@ package body et_kicad_to_native is
 						next (via_cursor);
 					end loop;
 
-					while poly_cursor /= et_pcb.pac_signal_polygons_solid.no_element loop
-						et_pcb.pac_signal_polygons_solid.update_element (
+					while poly_cursor /= pac_signal_polygons_solid.no_element loop
+						pac_signal_polygons_solid.update_element (
 							container 	=> net.route.polygons.solid,
 							position	=> poly_cursor,
 							process		=> move_polygon'access);
@@ -1789,11 +1790,11 @@ package body et_kicad_to_native is
 				use et_pcb.pac_conductor_circles;
 				circles_cursor : et_pcb.pac_conductor_circles.cursor;
 
-				use et_pcb.pac_conductor_polygons_floating_solid;
-				polygons_solid_cursor : et_pcb.pac_conductor_polygons_floating_solid.cursor;
+				use pac_conductor_polygons_floating_solid;
+				polygons_solid_cursor : pac_conductor_polygons_floating_solid.cursor;
 
-				use et_pcb.pac_conductor_polygons_floating_hatched;
-				polygons_hatched_cursor : et_pcb.pac_conductor_polygons_floating_hatched.cursor;
+				use pac_conductor_polygons_floating_hatched;
+				polygons_hatched_cursor : pac_conductor_polygons_floating_hatched.cursor;
 				
 				use pac_conductor_texts;
 				texts_cursor : pac_conductor_texts.cursor;
@@ -1851,12 +1852,12 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_pcb.type_polygon_conductor_solid_floating) is begin
+				procedure move_polygon (polygon : in out type_polygon_conductor_solid_floating) is begin
 					log (text => board_copper & "solid polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
 
-				procedure move_polygon (polygon : in out et_pcb.type_polygon_conductor_hatched_floating) is begin
+				procedure move_polygon (polygon : in out type_polygon_conductor_hatched_floating) is begin
 					log (text => board_copper & "hatched polygon segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_shapes.transpose_polygon (polygon, layout_sheet_height);
 				end move_polygon;
@@ -1931,8 +1932,8 @@ package body et_kicad_to_native is
 				-- POLYGONS
 				-- solid
 				polygons_solid_cursor := module.board.conductors.polygons.solid.first;
-				while polygons_solid_cursor /= et_pcb.pac_conductor_polygons_floating_solid.no_element loop
-					et_pcb.pac_conductor_polygons_floating_solid.update_element (
+				while polygons_solid_cursor /= pac_conductor_polygons_floating_solid.no_element loop
+					pac_conductor_polygons_floating_solid.update_element (
 						container	=> module.board.conductors.polygons.solid,
 						position	=> polygons_solid_cursor,
 						process		=> move_polygon'access);
@@ -1942,8 +1943,8 @@ package body et_kicad_to_native is
 
 				-- hatched
 				polygons_hatched_cursor := module.board.conductors.polygons.hatched.first;
-				while polygons_hatched_cursor /= et_pcb.pac_conductor_polygons_floating_hatched.no_element loop
-					et_pcb.pac_conductor_polygons_floating_hatched.update_element (
+				while polygons_hatched_cursor /= pac_conductor_polygons_floating_hatched.no_element loop
+					pac_conductor_polygons_floating_hatched.update_element (
 						container	=> module.board.conductors.polygons.hatched,
 						position	=> polygons_hatched_cursor,
 						process		=> move_polygon'access);
