@@ -138,33 +138,6 @@ package body et_pcb is
 		return type_locked'value (locked);
 	end;
 
-	function to_string (priority_level : in type_polygon_priority) return string is begin
-		return type_polygon_priority'image (priority_level);
-	end;
-
-	function to_polygon_priority (priority_level : in string) return type_polygon_priority is begin
-		return type_polygon_priority'value (priority_level);
-	end;
-
-
-
-	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
-		return to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
-	end;
-
-	function to_pad_connection (connection : in string) return type_polygon_pad_connection is begin
-		return type_polygon_pad_connection'value (connection);
-	end;
-	
-
-	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string is begin
-		return to_lower (type_polygon_pad_technology'image (polygon_pad_technology));
-	end;
-
-	function to_pad_technology (technology : in string) return type_polygon_pad_technology is begin
-		return type_polygon_pad_technology'value (technology);
-	end to_pad_technology;
-
 	
 
 	function package_position (position : in type_package_position) return string is
@@ -183,71 +156,6 @@ package body et_pcb is
 	function to_flipped (flipped : in string) return type_flipped is begin
 		return type_flipped'value (flipped);
 	end;
-
-
-	function conductor_polygon_properties_to_string (
-		polygon			: in type_polygon_conductor'class;
-		properties		: in type_conductor_polygon_properties;
-		net_name		: in pac_net_name.bounded_string := no_name)
-		return string
-	is
-		use ada.strings.unbounded;
-		use ada.tags;
-		--use et_nets;
-		
-		result : unbounded_string := to_unbounded_string ("properties:");
-
-		procedure append (s : in string) is begin
-			result := result & space & s;
-		end append;
-
-		procedure connected_with_net (p : in type_polygon_conductor_route_solid) is
-		begin
-			case p.connection is
-				when THERMAL => NULL;
-
-				when SOLID => null;
-			end case;
-
-		end connected_with_net;
-		
-	begin -- conductor_polygon_properties_to_string
-
-		if polygon'tag = type_polygon_conductor_solid_floating'tag 
-		or polygon'tag = type_polygon_conductor_hatched_floating'tag 
-		then
-			append ("floating");
-			
-		elsif polygon'tag = type_polygon_conductor_route_solid'tag 
-		or    polygon'tag = type_polygon_conductor_route_hatched'tag 
-		then
-			append ("net " & pac_net_name.to_string (net_name));
-			
-			connected_with_net (type_polygon_conductor_route_solid (polygon));
-		end if;
-
-		
-		case polygon.fill_style is
-			when SOLID =>
-				append (keyword_fill_style & space & to_string (polygon.fill_style));
-
-				
-			when HATCHED =>
-				append (keyword_fill_style & space & to_string (polygon.fill_style));
-
-		end case;
-
-		append (keyword_min_width & to_string (polygon.width_min));
-		append (keyword_isolation & to_string (polygon.isolation));
-		append (keyword_easing_style & space & to_string (polygon.easing.style));
-		append (keyword_easing_radius & to_string (polygon.easing.radius));
-		
-		append (keyword_layer & to_string (properties.layer));
-		append (keyword_priority & to_string (properties.priority_level));
-
-		return to_string (result);
-
-	end conductor_polygon_properties_to_string;
 
 	
 
@@ -317,56 +225,6 @@ package body et_pcb is
 		do_it (element (cursor));
 	
 	end route_via_properties;
-
--- 	procedure route_polygon_properties (
--- 	-- Logs the properties of the given polygon of a route
--- 		cursor			: in pac_conductor_polygons_signal.cursor;
--- 		log_threshold 	: in et_string_processing.type_log_level) is
--- 		use pac_conductor_polygons_signal;
--- 		use type_polygon_points;
--- 		points : type_polygon_points.set;
--- 		point_cursor : type_polygon_points.cursor;
--- 	begin
--- 		-- general stuff
--- 		log (text => "polygon" & 
--- 			 " " & text_polygon_signal_layer & to_string (element (cursor).layer) &
--- 			 " " & text_polygon_width_min & to_string (element (cursor).width_min) &
--- 			 " " & text_polygon_pad_connection & to_string (element (cursor).pad_connection) &
--- 			 " " & text_polygon_priority_level & to_string (element (cursor).priority_level) &
--- 			 " " & text_polygon_isolation_gap & to_string (element (cursor).isolation_gap) &
--- 			 " " & text_polygon_corner_easing & to_string (element (cursor).corner_easing) &
--- 			 " " & text_polygon_easing_radius & to_string (element (cursor).easing_radius),
--- 			 level => log_threshold);
--- 
--- 		log_indentation_up;
--- 		
--- 		-- type depended stuff
--- 		case element (cursor).pad_connection is
--- 			when THERMAL =>
--- 				log (text => text_polygon_pad_technology & to_string (element (cursor).thermal_technology) &
--- 					" " & text_polygon_thermal_width & to_string (element (cursor).thermal_width) &
--- 					" " & text_polygon_thermal_gap & to_string (element (cursor).thermal_gap),
--- 					level => log_threshold);
--- 
--- 			when SOLID =>
--- 				log (text => text_polygon_pad_technology & to_string (element (cursor).solid_technology),
--- 					level => log_threshold);
--- 				
--- 			when NONE =>
--- 				null;
--- 		end case;
--- 
--- 		-- corner points
--- 		log (text => text_polygon_corner_points, level => log_threshold);
--- 		points := element (cursor).corners;
--- 		point_cursor := points.first;
--- 		while point_cursor /= type_polygon_points.no_element loop
--- 			log (text => to_string (element (point_cursor)), level => log_threshold);
--- 			next (point_cursor);
--- 		end loop;
--- 		
--- 		log_indentation_down;
--- 	end route_polygon_properties;
 
 		
 

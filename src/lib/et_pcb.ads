@@ -65,6 +65,7 @@ with et_packages;				use et_packages;
 with et_pcb_stack;				use et_pcb_stack;
 with et_frames;
 with et_design_rules;			use et_design_rules;
+with et_conductor_polygons;		use et_conductor_polygons;
 
 package et_pcb is
 	
@@ -234,71 +235,6 @@ package et_pcb is
 
 
 	
-
-	
-	-- Cutout-polygons in conductor layers:
-	type type_conductor_cutout is new et_packages.type_cutout_zone with record
-		layer 	: type_signal_layer := type_signal_layer'first;
-	end record;
-
-	package pac_conductor_cutouts is new doubly_linked_lists (type_conductor_cutout);
-
-
-	
-	-- Polgon priority: 0 is weakest, 100 ist strongest.
-	keyword_priority : constant string := "priority";
-	
-	polygon_priority_max : constant natural := 100;
-	subtype type_polygon_priority is natural range natural'first .. polygon_priority_max;
-	function to_string (priority_level : in type_polygon_priority) return string;
-	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
-
-
-
-	-- After filling a polygon the polygon may be reduced to a single
-	-- smaller filled area or it may break into several separated filled
-	-- areas. These areas are always computed automatically
-	-- on filling a conductor polygon.
-	type type_filled_area is new type_polygon_base with null record;
-	package pac_filled_areas is new doubly_linked_lists (type_filled_area);
-	no_filled_areas : constant pac_filled_areas.list := pac_filled_areas.empty_list;
-	
-	-- All fill zones in conductor layers have these common
-	-- properties:
-	type type_conductor_polygon_properties is record
-		layer 			: type_signal_layer := type_signal_layer'first;
-		priority_level	: type_polygon_priority := type_polygon_priority'first;
-		filled_areas	: pac_filled_areas.list;
-	end record;
-
-	
-	
-	-- A floating conductor polygon is not connected to any net:
-	type type_polygon_conductor_solid_floating is new 
-		type_polygon_conductor (fill_style => SOLID)
-	with record
-		properties	: type_conductor_polygon_properties;
-	end record;
-
-	package pac_conductor_polygons_floating_solid is new 
-		indefinite_doubly_linked_lists (type_polygon_conductor_solid_floating);
-
-		
-	type type_polygon_conductor_hatched_floating is new 
-		type_polygon_conductor (fill_style => HATCHED) 
-	with record
-		properties	: type_conductor_polygon_properties;
-	end record;
-
-	package pac_conductor_polygons_floating_hatched is new
-		indefinite_doubly_linked_lists (type_polygon_conductor_hatched_floating);
-	
-	type type_conductor_polygons_floating is record
-		solid	: pac_conductor_polygons_floating_solid.list;
-		hatched	: pac_conductor_polygons_floating_hatched.list;
-	end record;
-	
-	
 	-- Type for NON ELECTRIC !! conductor objects:
 	-- NON ELECTRIC conductor objects of a pcb may also 
 	-- include text placeholders:
@@ -310,7 +246,7 @@ package et_pcb is
 		-- CS: It is probably no good idea to allow floating 
 		-- conductor polygons.
 		polygons		: type_conductor_polygons_floating; 
-		cutouts			: pac_conductor_cutouts.list;		
+		cutouts			: et_conductor_polygons.pac_conductor_cutouts.list;		
 		
 		texts			: pac_conductor_texts.list;
 		placeholders	: pac_text_placeholders_conductors.list;
@@ -321,110 +257,6 @@ package et_pcb is
 -- Types for ELECTRIC !! conductor objects:
 
 
-	-- A polygon in a signal layer is usually connected with 
-	-- THT or SMD pads (or both) via thermals, solid (or not at all).
-	-- For this reason we define a controlled type here because some
-	-- properties may exist (or may not exists) depending
-	-- on the kinde of pad_connection:
-
--- THERMALS
-	keyword_thermal_width : constant string := "thermal_width";		
-	keyword_thermal_gap : constant string := "thermal_gap";
-	
-	polygon_thermal_width_min : constant type_track_width := type_track_width'first;
-	polygon_thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
-	subtype type_polygon_thermal_width is pac_geometry_brd.type_distance_positive
-		range polygon_thermal_width_min .. polygon_thermal_width_max;
-
-	-- If a terminal is connected/associated with a polyon,
-	-- this is the space between pad and polygon:
-	polygon_thermal_gap_min : constant type_track_clearance := type_track_clearance'first;
-	polygon_thermal_gap_max : constant type_track_clearance := 3.0; -- CS: adjust if nessecariy
-	subtype type_polygon_thermal_gap is type_track_clearance range polygon_thermal_gap_min .. polygon_thermal_gap_max;
-
-
-	-- Polygons which are connected with a net
-	-- can be connected with pads by thermals or solid:
-	keyword_pad_connection : constant string := "pad_connection";
-	type type_polygon_pad_connection is (THERMAL, SOLID);
-	polygon_pad_connection_default : constant type_polygon_pad_connection := THERMAL;
-
-	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string;
-	function to_pad_connection (connection : in string) return type_polygon_pad_connection;
-
-	
-	-- Polygons may be connected with SMT, THT or all pad technologies
-	-- CS: Is that a reasonable idea ????? it was inherited from kicad.
-	keyword_pad_technology : constant string := "pad_technology";
-	
-	type type_polygon_pad_technology is (
-		SMT_ONLY,
-		THT_ONLY,
-		SMT_AND_THT);
-
-	polygon_pad_technology_default : constant type_polygon_pad_technology := SMT_AND_THT;
-	
-	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string;
-	function to_pad_technology (technology : in string) return type_polygon_pad_technology;
-
-	type type_thermal is record
-		-- whether SMT, THT or both kinds of pads connect with the polygon
-		technology	: type_polygon_pad_technology := polygon_pad_technology_default;
-
-		-- the width of the thermal spokes
-		width		: type_polygon_thermal_width := type_polygon_thermal_width'first;
-
-		-- the space between pad and polygon -- CS: rename to thermal_length ?
-		gap			: type_polygon_thermal_gap := type_polygon_thermal_gap'first;
-	end record;
-	
-	
-	type type_polygon_conductor_route_solid (connection : type_polygon_pad_connection) is new
-		et_packages.type_polygon_conductor_solid
-	with record
-		properties	: type_conductor_polygon_properties;
-
-		case connection is
-			when THERMAL =>
-				thermal : type_thermal;
-
-			when SOLID =>
-				-- whether SMT, THT or both kinds of pads connect with the polygon
-				technology	: type_polygon_pad_technology;
-				-- no need for any kind of thermal parameters
-		end case;				
-	end record;
-
-	type type_polygon_conductor_route_hatched (connection : type_polygon_pad_connection) is new
-		et_packages.type_polygon_conductor_hatched 
-	with record
-		properties	: type_conductor_polygon_properties;
-				
-		case connection is
-			when THERMAL =>
-				thermal : type_thermal;
-
-			when SOLID =>
-				-- whether SMT, THT or both kinds of pads connect with the polygon
-				technology	: type_polygon_pad_technology;
-				-- no need for any kind of thermal parameters
-		end case;
-	end record;
-
-
-	
-	package pac_signal_polygons_solid is new
-		indefinite_doubly_linked_lists (type_polygon_conductor_route_solid);
-	
-	package pac_signal_polygons_hatched is new
-		indefinite_doubly_linked_lists (type_polygon_conductor_route_hatched);	
-
-
-		
-	type type_signal_polygons is record
-		solid	: pac_signal_polygons_solid.list;
-		hatched	: pac_signal_polygons_hatched.list;
-	end record;
 	
 	type type_route is record 
 		lines 		: pac_conductor_lines.list;
@@ -432,7 +264,7 @@ package et_pcb is
 		-- CS: circles ?
 		vias		: pac_vias.list;
 		polygons	: type_signal_polygons;
-		cutouts		: pac_conductor_cutouts.list;
+		cutouts		: et_conductor_polygons.pac_conductor_cutouts.list;
 	end record;
 	
 
@@ -525,15 +357,6 @@ package et_pcb is
 	
 -- LOGGING PROPERTIES OF OBJECTS
 
-	function conductor_polygon_properties_to_string (
-		polygon			: in type_polygon_conductor'class;
-		properties		: in type_conductor_polygon_properties;
-
-		-- Net name is relevant if polygon is part of a route.
-		-- The type of the given polygon is the cirteria:
-		net_name		: in pac_net_name.bounded_string := no_name)
-		return string;
-	
 	
 	procedure text_conductor_properties (
 	-- Logs the properties of the given text.
@@ -578,25 +401,6 @@ package et_pcb is
 	-- Unless specified by operator the board origin default is:
 	origin_default : constant type_point := type_point (set (20.0, 65.0));
 
-
-	type type_user_settings_polygons_conductor is record
-
-		-- relevant if polygon is connected with a net:
-		connection		: type_polygon_pad_connection := polygon_pad_connection_default;
-
-		-- relevant if connection is thermal
-		thermal			: type_thermal;
-		
-		fill_style		: type_fill_style := fill_style_default;
-
-		-- relevant if fill style is HATCHED:
-		hatching		: type_conductor_hatching;
-
-		min_width		: type_track_width := type_track_width'first;
-		isolation		: type_track_clearance := type_track_clearance'first;
-		priority_level	: type_polygon_priority := type_polygon_priority'first;
-		easing			: type_easing;
-	end record;
 
 	
 	type type_user_settings is record
