@@ -27,7 +27,7 @@ et_packages
  - type_route_restrict_polygon
  - type_via_restrict_polygon
 
-et_pcb
+et_conductor_polygons:
 - derived from type_polygon_conductor
  - type_polygon_conductor_solid_floating 
 	- fixed discriminiant: solid
