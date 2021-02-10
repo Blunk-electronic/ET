@@ -4453,18 +4453,109 @@ package body et_board_ops is
 
 	procedure fill_conductor_polygons (
 		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
+		log_threshold	: in type_log_level;
+		nets 			: in pac_net_names.list := no_net_names)
 	is 
+		use pac_net_names;
+		
+		lower_left_corner : type_lower_left_corner;
 
-	begin
+		procedure log_lower_left_corner (log_threshold : in type_log_level) is begin
+			log_indentation_up;
+			log (text => "lower left corner" 
+				& to_string (lower_left_corner.point)
+				& " status " 
+				& type_lower_left_corner_status'image (lower_left_corner.status),
+				level => log_threshold);
+			log_indentation_down;
+		end log_lower_left_corner;
+
+		
+		procedure floating_polygons is
+			use pac_conductor_polygons_floating_solid;
+			
+			procedure query_polygon (c : in pac_conductor_polygons_floating_solid.cursor) is begin
+				lower_left_corner := get_lower_left_corner (element (c));
+				log_lower_left_corner (log_threshold + 2);
+			end query_polygon;
+		
+			use pac_conductor_polygons_floating_hatched;
+			
+			procedure query_polygon (c : in pac_conductor_polygons_floating_hatched.cursor) is begin
+				lower_left_corner := get_lower_left_corner (element (c));
+				log_lower_left_corner (log_threshold + 2);
+			end query_polygon;
+			
+		begin -- floating_polygons
+			log (text => "floating polygons ...", level => log_threshold + 1);
+
+			iterate (element (module_cursor).board.conductors.polygons.solid, query_polygon'access);
+			iterate (element (module_cursor).board.conductors.polygons.hatched, query_polygon'access);
+		end floating_polygons;
+
+
+		procedure route_polygons is
+			use pac_nets;
+			use pac_signal_polygons_solid;
+			use pac_signal_polygons_hatched;
+			
+			procedure query_net (n : in pac_nets.cursor) is 
+
+				procedure log_net_name is begin
+					log (text => "net " & to_string (key (n)), level => log_threshold + 2);
+				end log_net_name;
+		
+				procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is 
+				begin
+					log_net_name;
+					log_indentation_up;
+					lower_left_corner := get_lower_left_corner (element (c));
+					log_lower_left_corner (log_threshold + 3);
+					log_indentation_down;
+				end query_polygon;
+
+				procedure query_polygon (c : in pac_signal_polygons_hatched.cursor) is 
+				begin
+					log_net_name;
+					log_indentation_up;
+					lower_left_corner := get_lower_left_corner (element (c));
+					log_lower_left_corner (log_threshold + 3);
+					log_indentation_down;
+				end query_polygon;
+				
+			begin -- query_net
+				-- CS test if key (c) is in given list of nets
+
+				iterate (element (n).route.polygons.solid, query_polygon'access);
+				iterate (element (n).route.polygons.hatched, query_polygon'access);
+				
+				-- CS element (c).class ?
+			end query_net;
+		
+		begin -- route_polygons
+			log (text => "route polygons ...", level => log_threshold + 1);
+			log_indentation_up;
+			iterate (element (module_cursor).nets, query_net'access);
+			log_indentation_down;
+		end route_polygons;
+
+		
+	begin -- fill_conductor_polygons
+		
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " refilling conductor polygons ...",
 			level => log_threshold);
 
 		log_indentation_up;
-	
 
+		-- Fill floating polygons if no explicit net names given:
+		if is_empty (nets) then
+			floating_polygons;
+		end if;
+
+		route_polygons;
+		
 		log_indentation_down;
 	end fill_conductor_polygons;
 	

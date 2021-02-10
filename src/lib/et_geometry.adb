@@ -3019,7 +3019,61 @@ package body et_geometry is
 -- 			-- CS move segments of polygon
 -- 			null;
 -- 		end;
+
+		function on_polygon_outline (
+			polygon	: in type_polygon_base;	
+			point	: in type_point)
+			return type_polygon_point_status is
+		begin
+			return OUTSIDE;
+		end on_polygon_outline;
+		
+		function get_lower_left_corner (polygon	: in type_polygon_base)
+			return type_lower_left_corner
+		is
+			result : type_lower_left_corner;
+			lowest_x, lowest_y : type_distance := type_distance'last;
+
+			use pac_polygon_lines;
+
+			procedure query_line (c : in pac_polygon_lines.cursor) is begin
+
+				-- X
+				if element (c).start_point.x < lowest_x then
+					lowest_x := element (c).start_point.x;
+				end if;
+
+				if element (c).end_point.x < lowest_x then
+					lowest_x := element (c).end_point.x;
+				end if;
+
+				-- Y
+				if element (c).start_point.y < lowest_y then
+					lowest_y := element (c).start_point.y;
+				end if;
+
+				if element (c).end_point.y < lowest_y then
+					lowest_y := element (c).end_point.y;
+				end if;
+				
+			end query_line;
 			
+		begin -- get_lower_left_corner
+			iterate (polygon.segments.lines, query_line'access);
+
+			result.point := type_point (set (lowest_x, lowest_y));
+
+			case on_polygon_outline (polygon, result.point) is
+				when ON_OUTLINE => 
+					result.status := REAL;
+					
+				when others =>
+					result.status := VIRTUAL;
+			end case;
+			
+			return result;
+		end get_lower_left_corner;
+		
 	end generic_pac_shapes;
 
 	

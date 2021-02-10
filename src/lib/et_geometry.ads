@@ -896,7 +896,6 @@ package et_geometry is
 			circles	: pac_polygon_circles.list;
 		end record;
 
-
 		-- Loads the given lines into given polygon.
 		-- NOTE: Overwrites already existing segments in the polygon.
 		procedure load_lines (
@@ -1026,6 +1025,30 @@ package et_geometry is
 		--type type_polygon is new type_polygon_base with private;
 		-- not publicly visible. for internal use only.
 
+		type type_polygon_point_status is (
+			OUTSIDE,
+			ON_OUTLINE,								  
+			INSIDE);
+
+		function on_polygon_outline (
+			polygon	: in type_polygon_base;	
+			point	: in type_point)
+			return type_polygon_point_status;
+		
+		type type_lower_left_corner_status is (
+			REAL,	-- the corner point is somewhere on the outline
+			VIRTUAL	-- the corner point is outside the polygon (where
+					-- the lowest x and lowest y are)
+			);
+
+		type type_lower_left_corner is record
+			point	: type_point := origin;
+			status	: type_lower_left_corner_status := REAL;
+		end record;
+		
+		function get_lower_left_corner (polygon	: in type_polygon_base)
+			return type_lower_left_corner;
+		
 		
 	private
 		type type_vector is	record

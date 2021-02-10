@@ -62,6 +62,8 @@ with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 use et_pcb_coordinates.pac_geometry_brd;
 
+with et_board_shapes_and_text;
+
 -- with submodules;
 with et_assembly_variants;
 with et_pick_and_place;
@@ -74,6 +76,7 @@ package et_board_ops is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 
+	use et_board_shapes_and_text.pac_shapes;
 	use pac_net_name;
 	
 	procedure move_board (
@@ -609,8 +612,9 @@ package et_board_ops is
 		net_name		: in pac_net_name.bounded_string := no_name);
 
 	procedure fill_conductor_polygons (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
+		module_cursor	: in pac_generic_modules.cursor;	
+		log_threshold	: in type_log_level;
+		nets 			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
 
 											
 end et_board_ops;

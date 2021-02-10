@@ -43,6 +43,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.vectors;
+with ada.containers.doubly_linked_lists;
 
 with et_string_processing;		use et_string_processing;
 
@@ -94,7 +95,9 @@ package et_nets is
 	-- Returns true if the given net name is anonymous.
 
 
-
+	-- Net names can also be collected in simple lists:
+	package pac_net_names is new doubly_linked_lists (pac_net_name.bounded_string);
+	no_net_names : constant pac_net_names.list := pac_net_names.empty_list;
 
 
 -- INDEXED NETS
