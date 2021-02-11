@@ -4461,10 +4461,18 @@ package body et_board_ops is
 	is 
 		use pac_net_names;
 		use et_routing;
-		
+
+		-- We fill the polygons with lines from left to right.
 		lower_left_corner : type_lower_left_corner;
 		distance_to_obstacle : type_distance;
-		draw_direction : type_rotation := zero_rotation;
+		draw_direction : type_rotation := zero_rotation; -- from left to right
+		start_point, end_point : type_point;
+
+		-- In case the lower left corner of the polygon is outside
+		-- the polygon (means the corner point is VIRTUAL) then the
+		-- distance in x from the start_point to the polygon edge is
+		-- always positive:
+		distance_to_polygon : type_distance_positive := zero;
 
 		procedure log_lower_left_corner (log_threshold : in type_log_level) is begin
 			log_indentation_up;
@@ -4512,27 +4520,45 @@ package body et_board_ops is
 				end log_net_name;
 		
 				procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is 
-				begin
+
+					procedure compute_distance_to_obstacle is begin
+						distance_to_obstacle := get_distance_to_obstacle (
+							module_cursor	=> module_cursor,
+							start_point		=> start_point,
+							direction		=> draw_direction,
+							net_name		=> key (n),
+							layer			=> element (c).properties.layer,
+							width			=> element (c).width_min,
+							clearance		=> BOTH,
+							log_threshold	=> log_threshold + 4);
+
+						-- CS isolation, easing ?
+
+						-- compute end point of line
+						end_point := type_point (set (
+										x => X (start_point) + distance_to_obstacle,
+										y => Y (start_point)));
+						
+						-- append line to fill area of polyon:
+
+						-- CS
+					end compute_distance_to_obstacle;
+					
+				begin -- query_polygon
 					log_net_name;
 					lower_left_corner := get_lower_left_corner (element (c));
 					log_lower_left_corner (log_threshold + 3);
 
 					case lower_left_corner.status is
 						when REAL =>
-							distance_to_obstacle := get_distance_to_obstacle (
-								module_cursor	=> module_cursor,
-								start_point		=> lower_left_corner.point,
-								direction		=> draw_direction,
-								net_name		=> key (n),
-								layer			=> element (c).properties.layer,
-								width			=> element (c).width_min,
-								clearance		=> BOTH,
-								log_threshold	=> log_threshold + 4);
-
-							-- CS isolation, easing ?
-							
+							start_point := lower_left_corner.point;
+							compute_distance_to_obstacle;
+					
 						when VIRTUAL =>
-							null;
+							distance_to_polygon := X (lower_left_corner.point);
+							start_point := type_point (move (lower_left_corner.point, 0.0, distance_to_polygon));
+							compute_distance_to_obstacle;
+							
 					end case;
 				end query_polygon;
 
