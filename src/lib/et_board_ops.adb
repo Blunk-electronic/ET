@@ -4508,35 +4508,35 @@ package body et_board_ops is
 				procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is 
 				begin
 					log_net_name;
-					log_indentation_up;
 					lower_left_corner := get_lower_left_corner (element (c));
 					log_lower_left_corner (log_threshold + 3);
-					log_indentation_down;
 				end query_polygon;
 
 				procedure query_polygon (c : in pac_signal_polygons_hatched.cursor) is 
 				begin
 					log_net_name;
-					log_indentation_up;
 					lower_left_corner := get_lower_left_corner (element (c));
 					log_lower_left_corner (log_threshold + 3);
-					log_indentation_down;
 				end query_polygon;
 				
 			begin -- query_net
 				-- CS test if key (c) is in given list of nets
 
+				log_indentation_up;
+				
 				iterate (element (n).route.polygons.solid, query_polygon'access);
 				iterate (element (n).route.polygons.hatched, query_polygon'access);
 				
 				-- CS element (c).class ?
+				
+				log_indentation_down;
 			end query_net;
 		
 		begin -- route_polygons
 			log (text => "route polygons ...", level => log_threshold + 1);
-			log_indentation_up;
+			--log_indentation_up;
 			iterate (element (module_cursor).nets, query_net'access);
-			log_indentation_down;
+			--log_indentation_down;
 		end route_polygons;
 
 		

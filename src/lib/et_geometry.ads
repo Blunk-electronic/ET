@@ -720,10 +720,10 @@ package et_geometry is
 			catch_zone	: in type_catch_zone := zero)
 			return type_distance_point_line;
 
-		function on_line (
 		-- Returns true if the given point sits on the given line.
 		-- The optional parameter accuracy may be used to specifiy the range at
 		-- which the point is regarded as sitting on the line.
+		function on_line (
 			point		: in type_point;
 			line		: in type_line;
 			catch_zone	: in type_catch_zone := zero)
@@ -1027,25 +1027,35 @@ package et_geometry is
 
 		type type_polygon_point_status is (
 			OUTSIDE,
-			ON_OUTLINE,								  
+			EDGE,								  
 			INSIDE);
 
-		function on_polygon_outline (
-			polygon	: in type_polygon_base;	
-			point	: in type_point)
+		-- Detects the position of a point relative to the polygon.
+		function get_point_position (
+			polygon		: in type_polygon_base;	
+			point		: in type_point;
+			catch_zone	: in type_catch_zone := zero)
 			return type_polygon_point_status;
-		
+
+		-- For finding the lower left corner of a polygon this type
+		-- is required. The lower left corner can be a point somewhere
+		-- on the edge of the polygon. In that case the point is REAL.
+		-- If the point is outside the polygon then the point is VIRTUAL.
 		type type_lower_left_corner_status is (
 			REAL,	-- the corner point is somewhere on the outline
 			VIRTUAL	-- the corner point is outside the polygon (where
 					-- the lowest x and lowest y are)
 			);
 
+		-- When the lower left corner is to be found, then
+		-- the result of such a search operation is formed by
+		-- this type:
 		type type_lower_left_corner is record
 			point	: type_point := origin;
 			status	: type_lower_left_corner_status := REAL;
 		end record;
-		
+
+		-- Searches the lower left corner of a polygon:
 		function get_lower_left_corner (polygon	: in type_polygon_base)
 			return type_lower_left_corner;
 		

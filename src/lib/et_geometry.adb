@@ -3020,13 +3020,42 @@ package body et_geometry is
 -- 			null;
 -- 		end;
 
-		function on_polygon_outline (
-			polygon	: in type_polygon_base;	
-			point	: in type_point)
-			return type_polygon_point_status is
-		begin
-			return OUTSIDE;
-		end on_polygon_outline;
+		function get_point_position (
+			polygon		: in type_polygon_base;	
+			point		: in type_point;
+			catch_zone	: in type_catch_zone := zero)
+			return type_polygon_point_status 
+		is
+			result : type_polygon_point_status := type_polygon_point_status'first;
+
+			point_found_on_edge : boolean := false;
+			
+			use pac_polygon_lines;
+			procedure query_line (c : in pac_polygon_lines.cursor) is begin
+
+				if on_line (point, element (c), catch_zone) then
+					point_found_on_edge := true;
+				end if;
+				
+			end query_line;
+
+		begin -- get_point_position
+			
+			-- lines:
+			iterate (polygon.segments.lines, query_line'access);
+			-- CS arcs
+			-- CS circles
+
+			if point_found_on_edge then
+				result := EDGE;
+			else
+				null;
+				-- CS OUTSIDE / INSIDE test
+			end if;
+			
+			return result;
+		end get_point_position;
+
 		
 		function get_lower_left_corner (polygon	: in type_polygon_base)
 			return type_lower_left_corner
@@ -3059,12 +3088,20 @@ package body et_geometry is
 			end query_line;
 			
 		begin -- get_lower_left_corner
+			-- Probe the segments of the polygon:
+
+			-- lines:
 			iterate (polygon.segments.lines, query_line'access);
 
+			-- CS arcs
+			-- CS circles
+
+			-- compose the lower left corner point:
 			result.point := type_point (set (lowest_x, lowest_y));
 
-			case on_polygon_outline (polygon, result.point) is
-				when ON_OUTLINE => 
+			-- figure out whether the point is real or virtual:
+			case get_point_position (polygon, result.point) is
+				when EDGE => 
 					result.status := REAL;
 					
 				when others =>
