@@ -48,6 +48,9 @@ with et_pcb_rw.device_packages;
 with et_conventions;
 with et_exceptions;					use et_exceptions;
 
+with et_routing;
+
+
 package body et_board_ops is
 
 	use et_project.modules.pac_generic_modules;
@@ -4457,8 +4460,11 @@ package body et_board_ops is
 		nets 			: in pac_net_names.list := no_net_names)
 	is 
 		use pac_net_names;
+		use et_routing;
 		
 		lower_left_corner : type_lower_left_corner;
+		distance_to_obstacle : type_distance;
+		draw_direction : type_rotation := zero_rotation;
 
 		procedure log_lower_left_corner (log_threshold : in type_log_level) is begin
 			log_indentation_up;
@@ -4510,6 +4516,24 @@ package body et_board_ops is
 					log_net_name;
 					lower_left_corner := get_lower_left_corner (element (c));
 					log_lower_left_corner (log_threshold + 3);
+
+					case lower_left_corner.status is
+						when REAL =>
+							distance_to_obstacle := get_distance_to_obstacle (
+								module_cursor	=> module_cursor,
+								start_point		=> lower_left_corner.point,
+								direction		=> draw_direction,
+								net_name		=> key (n),
+								layer			=> element (c).properties.layer,
+								width			=> element (c).width_min,
+								clearance		=> BOTH,
+								log_threshold	=> log_threshold + 4);
+
+							-- CS isolation, easing ?
+							
+						when VIRTUAL =>
+							null;
+					end case;
 				end query_polygon;
 
 				procedure query_polygon (c : in pac_signal_polygons_hatched.cursor) is 

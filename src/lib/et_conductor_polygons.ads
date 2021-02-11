@@ -202,11 +202,11 @@ package et_conductor_polygons is
 	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string;
 	function to_pad_technology (technology : in string) return type_polygon_pad_technology;
 
-	type type_thermal is record
+	type type_thermal is record -- CS rename to type_thermal_relief ?
 		-- whether SMT, THT or both kinds of pads connect with the polygon
 		technology	: type_polygon_pad_technology := polygon_pad_technology_default;
 
-		-- the width of the thermal spokes
+		-- the width of the thermal relief spokes
 		width		: type_polygon_thermal_width := type_polygon_thermal_width'first;
 
 		-- the space between pad and polygon -- CS: rename to thermal_length ?
