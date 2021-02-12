@@ -101,6 +101,8 @@ package et_conductor_polygons is
 	type type_filled_area is new type_polygon_base with null record;
 	package pac_filled_areas is new doubly_linked_lists (type_filled_area);
 
+	type type_fill_line is new type_line with null record;
+	package pac_fill_lines is new doubly_linked_lists (type_fill_line);
 	--type type_cutout_area is new type_polygon_base with null record;
 	--package pac_cutout_areas is new doubly_linked_lists (type_cutout_area);
 
@@ -110,7 +112,7 @@ package et_conductor_polygons is
 	--end record;
 
 	no_filled_areas : constant pac_filled_areas.list := pac_filled_areas.empty_list;
-
+	no_fill_lines : constant pac_fill_lines.list := pac_fill_lines.empty_list;
 	--no_filled_areas : constant type_filled_area_2 := (
 			--contours	=> pac_filled_areas.empty_list,	
 			--cutouts		=> pac_cutout_areas.empty_list);
@@ -121,7 +123,8 @@ package et_conductor_polygons is
 	type type_conductor_polygon_properties is record
 		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
-		filled_areas	: pac_filled_areas.list;
+		--filled_areas	: pac_filled_areas.list;
+		fill_lines		: pac_fill_lines.list;
 		--filled_areas	: type_filled_area_2 := no_filled_areas;
 	end record;
 

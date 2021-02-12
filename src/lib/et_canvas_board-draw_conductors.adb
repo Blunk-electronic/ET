@@ -70,7 +70,7 @@ is
 	use pac_conductor_polygons_floating_hatched;
 	use pac_signal_polygons_solid;
 	use pac_signal_polygons_hatched;
-	use pac_filled_areas;
+	use pac_fill_lines;
 	
 	use et_pcb.pac_text_placeholders_conductors;
 	use et_packages.pac_conductor_texts;
@@ -177,17 +177,21 @@ is
 		end if;
 	end query_circle;
 
+	-- The width of the lines that fill the polygon.
+	fill_line_width : type_track_width;
+	
 	-- This procedure draws a solidly filled area of a conductor polygon:
-	procedure query_filled_area (a : in pac_filled_areas.cursor) is begin
-		
-		draw_polygon (
-			area	=> in_area,
-			context	=> context,
-			polygon	=> element (a),
-			filled	=> YES,
-			height	=> self.frame_height);
+	procedure query_fill_line (l : in pac_fill_lines.cursor) is begin
 
-	end query_filled_area;
+		set_line_width (context.cr, type_view_coordinate (fill_line_width));
+			
+		draw_line (
+			area		=> in_area,
+			context		=> context,
+			line		=> element (l),
+			height		=> self.frame_height);
+		
+	end query_fill_line;
 	
 	procedure query_polygon (c : in pac_conductor_polygons_floating_solid.cursor) is begin
 		-- Draw the polygon if it is in the current layer:
@@ -202,7 +206,8 @@ is
 				height	=> self.frame_height);
 
 			-- draw filled areas
-			iterate (element (c).properties.filled_areas, query_filled_area'access);
+			fill_line_width := element (c).width_min;			
+			iterate (element (c).properties.fill_lines, query_fill_line'access);
 		end if;
 	end query_polygon;
 
@@ -218,7 +223,7 @@ is
 				height	=> self.frame_height);
 
 			-- draw filled areas
-			-- CS iterate (element (c).properties.filled_areas, query_filled_area'access);
+			-- CS iterate (element (c).properties.fill_lines, query_fill_line'access);
 		end if;
 	end query_polygon;
 
@@ -235,7 +240,8 @@ is
 				height	=> self.frame_height);
 
 			-- draw filled areas
-			iterate (element (c).properties.filled_areas, query_filled_area'access);
+			fill_line_width := element (c).width_min;
+			iterate (element (c).properties.fill_lines, query_fill_line'access);
 		end if;
 	end query_polygon;
 
@@ -252,7 +258,7 @@ is
 				height	=> self.frame_height);
 
 			-- draw filled areas
-			-- CS iterate (element (c).properties.filled_areas, query_filled_area'access);
+			-- CS iterate (element (c).properties.fill_lines, query_fill_line'access);
 		end if;
 	end query_polygon;
 	

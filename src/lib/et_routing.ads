@@ -74,6 +74,33 @@ package et_routing is
 		log_threshold	: in type_log_level)
 		return type_distance;
 
+	-- Calculates the distance in direction 0 degree from given
+	-- start_point to the next obstacle.
+	-- Use this function for filling conductor polygons.
+	-- Objects that are regarded as obstacles are: 
+	-- - pads (SMT and THT)
+	-- - tracks
+	-- - board outlines
+	-- - route restrict lines, arcs, circles, polygons
+	-- - cutout areas
+	-- - the contour/edge of the conductor polygon
+	-- The clearances as specified in DRU are also taken into account.
+	function get_distance_to_obstacle_in_polygon (
+		module_cursor	: in pac_generic_modules.cursor;
+		polygon			: in type_polygon_conductor'class;
+		
+		-- The start point must be on the edge or inside the polygon:
+		start_point		: in type_point;
+
+		-- The net name is relevant if the polygon is connected
+		-- with a net (depends on the type of the given polygon):
+		net_name		: in pac_net_name.bounded_string := no_name;
+		
+		clearance		: in type_track_observe_clearance := track_observe_clearance_default;
+		log_threshold	: in type_log_level)
+		return type_distance_positive;
+
+	
 	-- CS not final. just an approach:
 	function get_start_point_beyond_obstacle (
 		module_cursor	: in pac_generic_modules.cursor;

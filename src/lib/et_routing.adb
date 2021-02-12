@@ -37,6 +37,8 @@
 -- DESCRIPTION:
 -- 
 
+with ada.tags;					use ada.tags;
+
 with et_vias;					use et_vias;
 with et_terminals;				use et_terminals;
 with et_packages;				use et_packages;
@@ -44,6 +46,7 @@ with et_pcb;					use et_pcb;
 with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;
+with et_conductor_polygons;
 
 package body et_routing is
 	
@@ -68,7 +71,70 @@ package body et_routing is
 		return distance;
 	end get_distance_to_obstacle;
 
+	function get_distance_to_obstacle_in_polygon (
+		module_cursor	: in pac_generic_modules.cursor;
+		polygon			: in type_polygon_conductor'class;
+		start_point		: in type_point;
+		net_name		: in pac_net_name.bounded_string := no_name;
+		clearance		: in type_track_observe_clearance := track_observe_clearance_default;
+		log_threshold	: in type_log_level)
+		return type_distance_positive
+	is
+		use et_conductor_polygons;
+		
+		distance : type_distance_positive := zero;
 
+		layer : type_signal_layer;
+		width : type_track_width := polygon.width_min;
+
+		procedure floating_solid is
+			p : type_polygon_conductor_solid_floating := type_polygon_conductor_solid_floating (polygon);
+		begin
+			layer := p.properties.layer;
+		end floating_solid;
+		
+		procedure floating_hatched is
+			p : type_polygon_conductor_hatched_floating := type_polygon_conductor_hatched_floating (polygon);
+		begin
+			layer := p.properties.layer;
+		end floating_hatched;
+			
+		procedure route_solid is
+			p : type_polygon_conductor_route_solid := type_polygon_conductor_route_solid (polygon);
+		begin
+			layer := p.properties.layer;
+		end route_solid;
+
+		procedure route_hatched is
+			p : type_polygon_conductor_route_hatched := type_polygon_conductor_route_hatched (polygon);
+		begin
+			layer := p.properties.layer;
+		end route_hatched;
+
+		
+	begin -- get_distance_to_obstacle_in_polygon
+		
+		if polygon'tag = type_polygon_conductor_solid_floating'tag then
+			floating_solid;
+
+		elsif polygon'tag = type_polygon_conductor_hatched_floating'tag then
+			floating_hatched;
+			
+		elsif polygon'tag = type_polygon_conductor_route_solid'tag then
+			route_solid;
+
+		elsif polygon'tag = type_polygon_conductor_route_hatched'tag then
+			route_hatched;
+
+		end if;
+
+		
+		null;
+
+		return distance;
+	end get_distance_to_obstacle_in_polygon;
+
+	
 	function get_start_point_beyond_obstacle (
 		module_cursor	: in pac_generic_modules.cursor;
 		end_point		: in type_point;

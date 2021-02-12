@@ -2041,7 +2041,7 @@ is
 						properties	=> (
 							layer 			=> to_signal_layer (f (5)),
 							priority_level	=> settings.polygons_conductor.priority_level,
-							filled_areas	=> no_filled_areas),
+							fill_lines		=> no_fill_lines),
 						
 						easing		=> settings.polygons_conductor.easing);
 
@@ -2058,7 +2058,7 @@ is
 						properties	=> (
 							layer 			=> to_signal_layer (f (5)),
 							priority_level	=> settings.polygons_conductor.priority_level,
-							filled_areas	=> no_filled_areas),
+							fill_lines		=> no_fill_lines),
 						
 						easing		=> settings.polygons_conductor.easing);
 
@@ -2176,7 +2176,7 @@ is
 					properties	=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
-						filled_areas	=> no_filled_areas));
+						fill_lines		=> no_fill_lines));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2202,7 +2202,7 @@ is
 					properties	=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
-						filled_areas	=> no_filled_areas));
+						fill_lines		=> no_fill_lines));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2229,7 +2229,7 @@ is
 					properties	=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
-						filled_areas	=> no_filled_areas));
+						fill_lines		=> no_fill_lines));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,
@@ -2256,7 +2256,7 @@ is
 					properties	=> (
 						layer 			=> to_signal_layer (f (6)),
 						priority_level	=> settings.polygons_conductor.priority_level,
-						filled_areas	=> no_filled_areas));
+						fill_lines		=> no_fill_lines));
 					   
 				place_polygon_conductor (
 					module_cursor	=> module_cursor,

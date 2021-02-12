@@ -4464,8 +4464,7 @@ package body et_board_ops is
 
 		-- We fill the polygons with lines from left to right.
 		lower_left_corner : type_lower_left_corner;
-		distance_to_obstacle : type_distance;
-		draw_direction : type_rotation := zero_rotation; -- from left to right
+		distance_to_obstacle : type_distance_positive;
 		start_point, end_point : type_point;
 
 		-- In case the lower left corner of the polygon is outside
@@ -4521,14 +4520,14 @@ package body et_board_ops is
 		
 				procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is 
 
-					procedure compute_distance_to_obstacle is begin
-						distance_to_obstacle := get_distance_to_obstacle (
+					procedure compute_distance_to_obstacle is 
+						use pac_fill_lines;
+					begin
+						distance_to_obstacle := get_distance_to_obstacle_in_polygon (
 							module_cursor	=> module_cursor,
+							polygon			=> element (c),
 							start_point		=> start_point,
-							direction		=> draw_direction,
 							net_name		=> key (n),
-							layer			=> element (c).properties.layer,
-							width			=> element (c).width_min,
 							clearance		=> BOTH,
 							log_threshold	=> log_threshold + 4);
 
@@ -4536,8 +4535,8 @@ package body et_board_ops is
 
 						-- compute end point of line
 						end_point := type_point (set (
-										x => X (start_point) + distance_to_obstacle,
-										y => Y (start_point)));
+							x => X (start_point) + distance_to_obstacle,
+							y => Y (start_point)));
 						
 						-- append line to fill area of polyon:
 
