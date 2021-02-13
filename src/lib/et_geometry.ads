@@ -158,7 +158,7 @@ package et_geometry is
 		type type_point is tagged private;
 
 		origin : constant type_point;
-		far_upper_right : constant type_point;
+		far_upper_right : constant type_point; -- CS should be maximum x and y ?
 
 		function to_string (point : in type_point) return string;
 		
@@ -466,10 +466,7 @@ package et_geometry is
 			return type_point'class;
 
 		overriding function to_string (point : in type_position) return string;
-
-
-
-		
+			
 	private
 		-- CS need an abstract type_point_abstract ?
 		
@@ -522,7 +519,17 @@ package et_geometry is
 		procedure union (
 			left	: in out type_boundaries;
 			right	: in type_boundaries);
-						
+
+		
+		
+		-- A ray has a fixex starting point, a direction and
+		-- no end point:
+		type type_ray is record
+			start_point	: type_point;
+			direction	: type_rotation;
+		end record;
+
+
 		
 	-- VECTOR OPERATIONS
 		
@@ -570,6 +577,43 @@ package et_geometry is
 			return type_distance;
 
 
+
+		
+		-- Returns the locaton vector of the start point of a ray:
+		function start_vector (ray : in type_ray) 
+			return type_vector;
+
+		-- Returns the direction vector of a ray:
+		function direction_vector (ray : in type_ray) 
+			return type_vector;
+
+
+		type type_line_vector is record
+			v_start		: type_vector; -- start vector of line
+			v_direction	: type_vector; -- direction vector of line
+		end record;
+
+		type type_intersection_status is (
+			NOT_EXISTENT,
+			EXISTS,
+			OVERLAP);
+
+		type type_line_intersection (exists : boolean) is record
+			case exists is
+				when TRUE	=> intersection : type_vector; -- location vector
+				when FALSE	=> null;
+			end case;
+		end record;
+		
+		-- Returns the point where the given two lines intersect.
+		-- Raises constraint error if lines do not intersect ?
+		function get_intersection (
+			line_1, line_2	: in type_line_vector)
+			return type_line_intersection;
+
+		
+		
+		
 	-- LINE
 		type type_line is abstract tagged record
 			start_point 	: type_point;
@@ -577,6 +621,23 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+
+		type type_ray_intersection (exists : boolean) is record
+			case exists is
+				when TRUE	=> intersection : type_point;
+				when FALSE	=> null;
+			end case;
+		end record;
+		
+		-- Returns the point where the given ray intersects
+		-- the given line:
+		function get_intersection (
+			ray		: in type_ray;
+			line	: in type_line)
+			return type_ray_intersection;
+
+
+		
 		-- Returns the location vector of the start point of a line:
 		function start_vector (
 			line	: in type_line)
@@ -1058,6 +1119,22 @@ package et_geometry is
 		-- Searches the lower left corner of a polygon:
 		function get_lower_left_corner (polygon	: in type_polygon_base)
 			return type_lower_left_corner;
+
+
+		
+		type type_distance_to_polygon (polygon_found : boolean) is record
+			case polygon_found is
+				when TRUE	=> distance : type_distance_positive;
+				when FALSE	=> null;
+			end case;
+		end record;
+
+		
+		function get_distance_to_polygon (
+			polygon			: in type_polygon_base;
+			point			: in type_point;
+			direction		: in type_rotation)
+			return type_distance_to_polygon;
 		
 		
 	private

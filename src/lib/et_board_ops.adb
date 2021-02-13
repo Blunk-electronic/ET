@@ -4465,13 +4465,13 @@ package body et_board_ops is
 		-- We fill the polygons with lines from left to right.
 		lower_left_corner : type_lower_left_corner;
 		distance_to_obstacle : type_distance_positive;
-		start_point, end_point : type_point;
+		fill_line : type_fill_line;
 
 		-- In case the lower left corner of the polygon is outside
 		-- the polygon (means the corner point is VIRTUAL) then the
 		-- distance in x from the start_point to the polygon edge is
 		-- always positive:
-		distance_to_polygon : type_distance_positive := zero;
+		--distance_to_polygon : type_distance_positive := zero;
 
 		procedure log_lower_left_corner (log_threshold : in type_log_level) is begin
 			log_indentation_up;
@@ -4487,23 +4487,58 @@ package body et_board_ops is
 		procedure floating_polygons is
 			use pac_conductor_polygons_floating_solid;
 			
-			procedure query_polygon (c : in pac_conductor_polygons_floating_solid.cursor) is begin
-				lower_left_corner := get_lower_left_corner (element (c));
-				log_lower_left_corner (log_threshold + 2);
-			end query_polygon;
+			--procedure query_polygon (c : in pac_conductor_polygons_floating_solid.cursor) is begin
+				--lower_left_corner := get_lower_left_corner (element (c));
+				--log_lower_left_corner (log_threshold + 2);
+			--end query_polygon;
 		
 			use pac_conductor_polygons_floating_hatched;
 			
-			procedure query_polygon (c : in pac_conductor_polygons_floating_hatched.cursor) is begin
-				lower_left_corner := get_lower_left_corner (element (c));
-				log_lower_left_corner (log_threshold + 2);
-			end query_polygon;
+			--procedure query_polygon (c : in pac_conductor_polygons_floating_hatched.cursor) is begin
+				--lower_left_corner := get_lower_left_corner (element (c));
+				--log_lower_left_corner (log_threshold + 2);
+			--end query_polygon;
+
+			procedure floating_solid (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in out type_module) 
+			is
+				c : pac_conductor_polygons_floating_solid.cursor := module.board.conductors.polygons.solid.first;
+			begin
+				while c /= pac_conductor_polygons_floating_solid.no_element loop
+
+					lower_left_corner := get_lower_left_corner (element (c));
+					log_lower_left_corner (log_threshold + 2);
+					
+					next (c);
+				end loop;
+			end floating_solid;
+
+			procedure floating_hatched (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in out type_module) 
+			is
+				c : pac_conductor_polygons_floating_hatched.cursor := module.board.conductors.polygons.hatched.first;
+			begin
+				while c /= pac_conductor_polygons_floating_hatched.no_element loop
+
+					lower_left_corner := get_lower_left_corner (element (c));
+					log_lower_left_corner (log_threshold + 2);
+					
+					next (c);
+				end loop;
+			end floating_hatched;
+
 			
 		begin -- floating_polygons
 			log (text => "floating polygons ...", level => log_threshold + 1);
 
-			iterate (element (module_cursor).board.conductors.polygons.solid, query_polygon'access);
-			iterate (element (module_cursor).board.conductors.polygons.hatched, query_polygon'access);
+			--polygon_cursor := element (
+			--iterate (element (module_cursor).board.conductors.polygons.solid, query_polygon'access);
+			--iterate (element (module_cursor).board.conductors.polygons.hatched, query_polygon'access);
+
+			update_element (generic_modules, module_cursor, floating_solid'access);
+			update_element (generic_modules, module_cursor, floating_hatched'access);
 		end floating_polygons;
 
 
@@ -4512,80 +4547,193 @@ package body et_board_ops is
 			use pac_signal_polygons_solid;
 			use pac_signal_polygons_hatched;
 			
-			procedure query_net (n : in pac_nets.cursor) is 
+			--procedure query_net (n : in pac_nets.cursor) is 
+
+				--procedure log_net_name is begin
+					--log (text => "net " & to_string (key (n)), level => log_threshold + 2);
+				--end log_net_name;
+		
+				--procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is 
+
+					--procedure compute_distance_to_obstacle is 
+						--use pac_fill_lines;
+					--begin
+						--distance_to_obstacle := get_distance_to_obstacle_in_polygon (
+							--module_cursor	=> module_cursor,
+							--polygon			=> element (c),
+							--start_point		=> start_point,
+							--net_name		=> key (n),
+							--clearance		=> BOTH,
+							--log_threshold	=> log_threshold + 4);
+
+						---- CS isolation, easing ?
+
+						---- compute end point of line
+						--end_point := type_point (set (
+							--x => X (start_point) + distance_to_obstacle,
+							--y => Y (start_point)));
+						
+						---- append line to fill area of polyon:
+
+						---- CS
+					--end compute_distance_to_obstacle;
+					
+				--begin -- query_polygon
+					--log_net_name;
+					--lower_left_corner := get_lower_left_corner (element (c));
+					--log_lower_left_corner (log_threshold + 3);
+
+					--case lower_left_corner.status is
+						--when REAL =>
+							--start_point := lower_left_corner.point;
+							--compute_distance_to_obstacle;
+					
+						--when VIRTUAL =>
+							--distance_to_polygon := X (lower_left_corner.point);
+							--start_point := type_point (move (lower_left_corner.point, 0.0, distance_to_polygon));
+							--compute_distance_to_obstacle;
+							
+					--end case;
+				--end query_polygon;
+
+				--procedure query_polygon (c : in pac_signal_polygons_hatched.cursor) is 
+				--begin
+					--log_net_name;
+					--lower_left_corner := get_lower_left_corner (element (c));
+					--log_lower_left_corner (log_threshold + 3);
+				--end query_polygon;
+				
+			--begin -- query_net
+				---- CS test if key (c) is in given list of nets
+
+				--log_indentation_up;
+				
+				--iterate (element (n).route.polygons.solid, query_polygon'access);
+				--iterate (element (n).route.polygons.hatched, query_polygon'access);
+				
+				---- CS element (c).class ?
+				
+				--log_indentation_down;
+			--end query_net;
+
+				
+
+			procedure locate_net (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in out type_module) 
+			is
+				n : pac_nets.cursor := module.nets.first;
 
 				procedure log_net_name is begin
 					log (text => "net " & to_string (key (n)), level => log_threshold + 2);
 				end log_net_name;
-		
-				procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is 
 
-					procedure compute_distance_to_obstacle is 
+
+				procedure route_solid (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in out type_net)
+				is 
+					p : pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
+
+					procedure add_line (
+						polygon	: in out type_polygon_conductor_route_solid)
+					is
 						use pac_fill_lines;
+					begin
+						append (polygon.properties.fill_lines, fill_line);
+					end add_line;
+					
+					procedure compute_distance_to_obstacle is 
 					begin
 						distance_to_obstacle := get_distance_to_obstacle_in_polygon (
 							module_cursor	=> module_cursor,
-							polygon			=> element (c),
-							start_point		=> start_point,
+							polygon			=> element (p),
+							start_point		=> fill_line.start_point,
 							net_name		=> key (n),
 							clearance		=> BOTH,
 							log_threshold	=> log_threshold + 4);
 
 						-- CS isolation, easing ?
 
-						-- compute end point of line
-						end_point := type_point (set (
-							x => X (start_point) + distance_to_obstacle,
-							y => Y (start_point)));
+						-- Compute end point of line. The line runs horizontally 
+						-- in direction 0 degree at a length of distance_to_obstacle:
+						fill_line.end_point := type_point (set (
+							x => X (fill_line.start_point) + distance_to_obstacle,
+							y => Y (fill_line.start_point))); -- horizontal line
 						
-						-- append line to fill area of polyon:
-
-						-- CS
+						-- append line to the fill are of the polyon:
+						update_element (net.route.polygons.solid, p, add_line'access);
 					end compute_distance_to_obstacle;
-					
-				begin -- query_polygon
-					log_net_name;
-					lower_left_corner := get_lower_left_corner (element (c));
-					log_lower_left_corner (log_threshold + 3);
+									
+				begin -- route_solid
+					while p /= pac_signal_polygons_solid.no_element loop
 
-					case lower_left_corner.status is
-						when REAL =>
-							start_point := lower_left_corner.point;
-							compute_distance_to_obstacle;
-					
-						when VIRTUAL =>
-							distance_to_polygon := X (lower_left_corner.point);
-							start_point := type_point (move (lower_left_corner.point, 0.0, distance_to_polygon));
-							compute_distance_to_obstacle;
-							
-					end case;
-				end query_polygon;
+						log_net_name;
+						lower_left_corner := get_lower_left_corner (element (p));
+						log_lower_left_corner (log_threshold + 3);
 
-				procedure query_polygon (c : in pac_signal_polygons_hatched.cursor) is 
+						case lower_left_corner.status is
+							when REAL =>
+								fill_line.start_point := lower_left_corner.point;
+								compute_distance_to_obstacle;
+						
+							when VIRTUAL =>
+								declare
+									d : type_distance_to_polygon :=
+										
+										get_distance_to_polygon (
+											polygon		=> element (p),	
+											point		=> lower_left_corner.point,
+											direction	=> 0.0);
+								begin
+									if d.polygon_found then
+										fill_line.start_point := type_point (move (lower_left_corner.point, 0.0, d.distance));
+									else
+										raise constraint_error;
+									end if;
+									
+									compute_distance_to_obstacle;
+								end;
+						end case;
+						
+						next (p);
+					end loop;
+				end route_solid;
+			
+				procedure route_hatched (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in out type_net)
+				is 
+					p : pac_signal_polygons_hatched.cursor := net.route.polygons.hatched.first;
 				begin
-					log_net_name;
-					lower_left_corner := get_lower_left_corner (element (c));
-					log_lower_left_corner (log_threshold + 3);
-				end query_polygon;
-				
-			begin -- query_net
-				-- CS test if key (c) is in given list of nets
+					while p /= pac_signal_polygons_hatched.no_element loop
 
-				log_indentation_up;
+						log_net_name;
+						lower_left_corner := get_lower_left_corner (element (p));
+						log_lower_left_corner (log_threshold + 3);
+						
+						next (p);
+					end loop;
+				end route_hatched;
+
 				
-				iterate (element (n).route.polygons.solid, query_polygon'access);
-				iterate (element (n).route.polygons.hatched, query_polygon'access);
+
 				
-				-- CS element (c).class ?
-				
-				log_indentation_down;
-			end query_net;
+			begin -- locate_net
+				while n /= pac_nets.no_element loop
+
+					-- CS test if key (n) is in given list of nets
+					
+					update_element (module.nets, n, route_solid'access);
+					update_element (module.nets, n, route_hatched'access);
+					
+					next (n);
+				end loop;
+			end locate_net;
 		
 		begin -- route_polygons
 			log (text => "route polygons ...", level => log_threshold + 1);
-			--log_indentation_up;
-			iterate (element (module_cursor).nets, query_net'access);
-			--log_indentation_down;
+			update_element (generic_modules, module_cursor, locate_net'access);
 		end route_polygons;
 
 		

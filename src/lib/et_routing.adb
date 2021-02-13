@@ -70,7 +70,7 @@ package body et_routing is
 
 		return distance;
 	end get_distance_to_obstacle;
-
+	
 	function get_distance_to_obstacle_in_polygon (
 		module_cursor	: in pac_generic_modules.cursor;
 		polygon			: in type_polygon_conductor'class;
@@ -128,8 +128,8 @@ package body et_routing is
 
 		end if;
 
-		
-		null;
+		distance := 3.0;
+		--null;
 
 		return distance;
 	end get_distance_to_obstacle_in_polygon;

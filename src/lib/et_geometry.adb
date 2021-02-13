@@ -1146,6 +1146,112 @@ package body et_geometry is
 			return lambda;
 		end divide;
 
+		
+
+		function start_vector (ray : in type_ray) 
+			return type_vector
+		is
+			v : type_vector;
+		begin
+			v.x := ray.start_point.x;
+			v.y := ray.start_point.y;
+			v.z := zero;
+
+			return v;
+		end start_vector;
+
+		
+		function direction_vector (ray : in type_ray) 
+			return type_vector
+		is 
+			package functions is new ada.numerics.generic_elementary_functions (float);
+			use functions;
+			
+			v : type_vector;
+		begin
+			-- x = cos (direction) * 1
+			v.x := type_distance (cos (float (ray.direction), float (units_per_cycle)));
+
+			-- y = sin (direction) * 1
+			v.y := type_distance (sin (float (ray.direction), float (units_per_cycle)));
+
+			v.z := zero; -- we are in a 2D world
+			
+			return v;
+		end direction_vector;
+
+		
+		function get_intersection (
+			line_1, line_2	: in type_line_vector)
+			return type_line_intersection
+		is 
+			-- scratch variables:
+			a, b, c, d, e, f, g : type_distance;
+			lambda : type_distance;
+
+			-- location vector of intersection to be returned:			
+			i : type_vector;
+		begin
+			-- CS Test whether there is an intersection at all.
+			
+			-- The direction vector of the first line can be zero in x.
+			-- In order to avoid division by zero we must switch between
+			-- two ways to find the intersection:
+			if line_1.v_direction.x /= zero then
+				a := line_1.v_start.y;
+				b := type_distance (line_2.v_start.x * line_1.v_direction.y) / line_1.v_direction.x;
+				c := type_distance (line_1.v_start.x * line_1.v_direction.y) / line_1.v_direction.x;
+				d := line_2.v_start.y;
+				e := line_2.v_direction.y;
+				f := type_distance (line_2.v_direction.x * line_1.v_direction.y) / line_1.v_direction.x;
+				g := 1.0 / (e - f);
+
+				lambda := (a + b - c - d) * g;
+
+				i := add (line_2.v_start, multiply (line_2.v_direction, lambda));
+			else
+				a := line_2.v_start.y;
+				b := type_distance (line_1.v_start.x * line_2.v_direction.y) / line_2.v_direction.x;
+				c := type_distance (line_2.v_start.x * line_2.v_direction.y) / line_2.v_direction.x;
+				d := line_1.v_start.y;
+				e := line_1.v_direction.y;
+				f := type_distance (line_1.v_direction.x * line_2.v_direction.y) / line_2.v_direction.x;
+				g := 1.0 / (e - f);
+
+				lambda := (a + b - c - d) * g;
+
+				i := add (line_1.v_start, multiply (line_1.v_direction, lambda));
+			end if;
+
+			return (exists => TRUE, intersection => i);
+		end get_intersection;
+
+		
+		function get_intersection (
+			ray		: in type_ray;
+			line	: in type_line)
+			return type_ray_intersection
+		is
+			vrs : constant type_vector := start_vector (ray);
+			vrd : constant type_vector := direction_vector (ray);
+
+			vls : constant type_vector := start_vector (line);
+			vld : constant type_vector := direction_vector (line);
+
+			i : type_line_intersection := get_intersection (
+					line_1	=> (vrs, vrd),
+					line_2	=> (vls, vld));
+		begin
+			if i.exists then
+
+				return (exists => TRUE, intersection => to_point (i.intersection));
+			else
+				return (exists => FALSE);
+			end if;
+		end get_intersection;
+
+
+		
 		function start_vector (
 			line	: in type_line)
 			return type_vector is
@@ -1272,6 +1378,8 @@ package body et_geometry is
 			bend_point : type_point;
 
 			-- CS this procedure should be made public as "intersection" or similar
+			-- CS use function get_intersection with S1, R1, S2, R2 as input
+			-- to compute intersection I.
 			procedure compute_bend_point is 
 				type type_line_here is new type_line with null record;
 				first_line	: constant type_line_here := (start_point, sup_start);
@@ -3110,6 +3218,40 @@ package body et_geometry is
 			
 			return result;
 		end get_lower_left_corner;
+
+		
+		
+		function get_distance_to_polygon (
+			polygon			: in type_polygon_base;
+			point			: in type_point;
+			direction		: in type_rotation)
+			return type_distance_to_polygon
+		is
+			result : type_distance_to_polygon (TRUE);
+
+			r : type_ray;
+
+			use pac_polygon_lines;
+			procedure query_line (c : in pac_polygon_lines.cursor) is
+				i : type_point;
+			begin
+				i := get_intersection (r, element (c));
+
+			end query_line;
+			
+		begin -- get_distance_to_polygon
+			
+			r.start_point := point;
+			r.direction := direction;
+
+
+			iterate (polygon.segments.lines, query_line'access);
+			
+
+			
+			return result;
+		end get_distance_to_polygon;
+
 		
 	end generic_pac_shapes;
 
