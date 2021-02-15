@@ -1192,7 +1192,8 @@ package body et_geometry is
 			-- location vector of intersection to be returned:			
 			i : type_vector;
 		begin
-			-- CS Test whether there is an intersection at all.
+			-- CS Test whether there is an intersection at all or whether
+			-- the lines overlap.
 			
 			-- The direction vector of the first line can be zero in x.
 			-- In order to avoid division by zero we must switch between
@@ -1223,7 +1224,7 @@ package body et_geometry is
 				i := add (line_1.v_start, multiply (line_1.v_direction, lambda));
 			end if;
 
-			return (exists => TRUE, intersection => i);
+			return (status => EXISTS, intersection => i);
 		end get_intersection;
 
 		
@@ -1238,16 +1239,17 @@ package body et_geometry is
 			vls : constant type_vector := start_vector (line);
 			vld : constant type_vector := direction_vector (line);
 
-			i : type_line_intersection := get_intersection (
+			i : constant type_line_intersection := get_intersection (
 					line_1	=> (vrs, vrd),
 					line_2	=> (vls, vld));
 		begin
-			if i.exists then
+			case i.status is
+				when EXISTS =>
+					return (status => EXISTS, intersection => to_point (i.intersection));
 
-				return (exists => TRUE, intersection => to_point (i.intersection));
-			else
-				return (exists => FALSE);
-			end if;
+				when NOT_EXISTENT | OVERLAP =>
+					return (status => NOT_EXISTENT);
+			end case;
 		end get_intersection;
 
 
@@ -3233,9 +3235,9 @@ package body et_geometry is
 
 			use pac_polygon_lines;
 			procedure query_line (c : in pac_polygon_lines.cursor) is
-				i : type_point;
+				i : type_ray_intersection := get_intersection (r, element (c));
 			begin
-				i := get_intersection (r, element (c));
+				null;
 
 			end query_line;
 			

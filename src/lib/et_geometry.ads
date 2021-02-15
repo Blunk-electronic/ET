@@ -598,10 +598,11 @@ package et_geometry is
 			EXISTS,
 			OVERLAP);
 
-		type type_line_intersection (exists : boolean) is record
-			case exists is
-				when TRUE	=> intersection : type_vector; -- location vector
-				when FALSE	=> null;
+		--type type_line_intersection (exists : boolean) is record
+		type type_line_intersection (status : type_intersection_status) is record
+			case status is
+				when EXISTS	=> intersection : type_vector; -- location vector
+				when NOT_EXISTENT | OVERLAP => null;
 			end case;
 		end record;
 		
@@ -622,10 +623,10 @@ package et_geometry is
 		end record;
 
 
-		type type_ray_intersection (exists : boolean) is record
-			case exists is
-				when TRUE	=> intersection : type_point;
-				when FALSE	=> null;
+		type type_ray_intersection (status : type_intersection_status) is record
+			case status is
+				when EXISTS	=> intersection : type_point;
+				when NOT_EXISTENT | OVERLAP => null;
 			end case;
 		end record;
 		
