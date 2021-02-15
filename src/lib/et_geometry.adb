@@ -1123,6 +1123,17 @@ package body et_geometry is
 			return (a.x * b.x  +  a.y * b.y  +  a.z * b.z);
 		end dot_product;
 
+		function mixed_product (
+			a, b, c	: in type_vector)
+			return type_distance
+		is
+			cp : type_vector;
+		begin
+			cp := cross_product (b, c);
+			return dot_product (a, cp);
+		end mixed_product;		
+
+		
 		function divide (
 			a, b	: in type_vector)
 			return type_distance
@@ -1183,7 +1194,7 @@ package body et_geometry is
 		
 		function get_intersection (
 			line_1, line_2	: in type_line_vector)
-			return type_line_intersection
+			return type_intersection
 		is 
 			-- scratch variables:
 			a, b, c, d, e, f, g : type_distance;
@@ -1191,65 +1202,137 @@ package body et_geometry is
 
 			-- location vector of intersection to be returned:			
 			i : type_vector;
-		begin
-			-- CS Test whether there is an intersection at all or whether
-			-- the lines overlap.
+
+			function exists_intersection return boolean is
+				v1, v2 : type_vector;
+			begin
+				-- The first condition to be fulfilled is that the
+				-- cross product of the direction vectors is not a null vector:
+				v1 := cross_product (line_1.v_direction, line_1.v_direction); 
+
+				if v1 /= null_vector then
+
+					-- The second condition is:
+					-- The mixed product of line_2.v_start, line_1.v_start and
+					-- (line_2.v_start - line_1.v_start) must be zero.
+					
+					v2 := subtract (line_2.v_start, line_1.v_start);
+
+					if mixed_product (line_1.v_direction, line_2.v_direction, v2) = zero then
+						return true; -- there is an intersection
+					else
+						return false;  -- no intersection exists
+					end if;
+					
+				else					
+					return false; -- no intersection exists
+				end if;
+			end exists_intersection;
+
+			function lines_overlap return boolean is
+				a, b, distance : type_distance_positive;
+				v1 : type_vector;
+			begin
+				-- The first condition to be fulfilled is that the lines
+				-- must run parallel to each other. In this case the cross
+				-- product is zero.
+				v1 := cross_product (line_1.v_direction, line_1.v_direction); 
+				
+				if v1 = null_vector then -- the lines run parallel to each other.
+
+					-- Compute the distance between the lines.
+					-- If the distance is zero then the lines overlap.
+					
+					a := absolute (cross_product (line_1.v_direction, subtract (line_2.v_start, line_1.v_start)));
+					b := absolute (line_1.v_direction);
+
+					distance := a / b;
+
+					if distance = zero then
+						return true; -- lines overlap each other
+					else
+						return false; -- distance greater zero -> hence no overlap
+					end if;
+					
+				else
+					return false; -- not parallel -> hence no overlap
+				end if;
+			end lines_overlap;
+				
+		begin -- get_intersection
 			
-			-- The direction vector of the first line can be zero in x.
-			-- In order to avoid division by zero we must switch between
-			-- two ways to find the intersection:
-			if line_1.v_direction.x /= zero then
-				a := line_1.v_start.y;
-				b := type_distance (line_2.v_start.x * line_1.v_direction.y) / line_1.v_direction.x;
-				c := type_distance (line_1.v_start.x * line_1.v_direction.y) / line_1.v_direction.x;
-				d := line_2.v_start.y;
-				e := line_2.v_direction.y;
-				f := type_distance (line_2.v_direction.x * line_1.v_direction.y) / line_1.v_direction.x;
-				g := 1.0 / (e - f);
-
-				lambda := (a + b - c - d) * g;
-
-				i := add (line_2.v_start, multiply (line_2.v_direction, lambda));
+			-- Test whether the lines overlap:
+			if lines_overlap then
+				return (status => OVERLAP);
 			else
-				a := line_2.v_start.y;
-				b := type_distance (line_1.v_start.x * line_2.v_direction.y) / line_2.v_direction.x;
-				c := type_distance (line_2.v_start.x * line_2.v_direction.y) / line_2.v_direction.x;
-				d := line_1.v_start.y;
-				e := line_1.v_direction.y;
-				f := type_distance (line_1.v_direction.x * line_2.v_direction.y) / line_2.v_direction.x;
-				g := 1.0 / (e - f);
+				
+				-- Test whether there is an intersection:
+				if exists_intersection then
+				
+					-- The direction vector of the first line can be zero in x.
+					-- In order to avoid division by zero we must switch between
+					-- two ways to find the intersection:
+					if line_1.v_direction.x /= zero then
+						a := line_1.v_start.y;
+						b := type_distance (line_2.v_start.x * line_1.v_direction.y) / line_1.v_direction.x;
+						c := type_distance (line_1.v_start.x * line_1.v_direction.y) / line_1.v_direction.x;
+						d := line_2.v_start.y;
+						e := line_2.v_direction.y;
+						f := type_distance (line_2.v_direction.x * line_1.v_direction.y) / line_1.v_direction.x;
+						g := 1.0 / (e - f);
 
-				lambda := (a + b - c - d) * g;
+						lambda := (a + b - c - d) * g;
 
-				i := add (line_1.v_start, multiply (line_1.v_direction, lambda));
+						i := add (line_2.v_start, multiply (line_2.v_direction, lambda));
+					else
+						a := line_2.v_start.y;
+						b := type_distance (line_1.v_start.x * line_2.v_direction.y) / line_2.v_direction.x;
+						c := type_distance (line_2.v_start.x * line_2.v_direction.y) / line_2.v_direction.x;
+						d := line_1.v_start.y;
+						e := line_1.v_direction.y;
+						f := type_distance (line_1.v_direction.x * line_2.v_direction.y) / line_2.v_direction.x;
+						g := 1.0 / (e - f);
+
+						lambda := (a + b - c - d) * g;
+
+						i := add (line_1.v_start, multiply (line_1.v_direction, lambda));
+					end if;
+
+					return (status => EXISTS, intersection => i);
+				else
+
+					return (status => NOT_EXISTENT);
+				end if;
 			end if;
-
-			return (status => EXISTS, intersection => i);
+			
 		end get_intersection;
 
 		
 		function get_intersection (
 			ray		: in type_ray;
 			line	: in type_line)
-			return type_ray_intersection
+			return type_intersection
 		is
+			-- Build start and direction vector of given ray:
 			vrs : constant type_vector := start_vector (ray);
 			vrd : constant type_vector := direction_vector (ray);
 
+			-- Build start and direction vector of given line:
 			vls : constant type_vector := start_vector (line);
 			vld : constant type_vector := direction_vector (line);
 
-			i : constant type_line_intersection := get_intersection (
-					line_1	=> (vrs, vrd),
-					line_2	=> (vls, vld));
+			-- Find the intersection:
+			--i : constant type_intersection := get_intersection (
+					--line_1	=> (vrs, vrd),
+					--line_2	=> (vls, vld));
 		begin
-			case i.status is
-				when EXISTS =>
-					return (status => EXISTS, intersection => to_point (i.intersection));
-
-				when NOT_EXISTENT | OVERLAP =>
-					return (status => NOT_EXISTENT);
-			end case;
+			-- Find the intersection:
+			return t : type_intersection := get_intersection (
+					line_1	=> (vrs, vrd),
+					line_2	=> (vls, vld))
+			do
+				null;
+			end return;
 		end get_intersection;
 
 
@@ -3229,29 +3312,50 @@ package body et_geometry is
 			direction		: in type_rotation)
 			return type_distance_to_polygon
 		is
-			result : type_distance_to_polygon (TRUE);
-
+			-- These variables will compose the return value:
+			polygon_found : boolean := false;
+			distance : type_distance_positive := type_distance_positive'last;
+			
 			r : type_ray;
 
 			use pac_polygon_lines;
 			procedure query_line (c : in pac_polygon_lines.cursor) is
-				i : type_ray_intersection := get_intersection (r, element (c));
+				i : type_intersection := get_intersection (r, element (c));
+				d : type_distance_positive;
 			begin
-				null;
+				if i.status = EXISTS then
+					polygon_found := TRUE;
+
+					d := distance_total (
+						point_one	=> point,
+						point_two	=> to_point (i.intersection));
+
+					if d < distance then
+						distance := d;
+					end if;
+				end if;
 
 			end query_line;
 			
 		begin -- get_distance_to_polygon
-			
+
+			-- Build a ray from the given point and direction:
 			r.start_point := point;
 			r.direction := direction;
 
-
+			-- probe the lines of the polygon:
 			iterate (polygon.segments.lines, query_line'access);
-			
 
-			
-			return result;
+			-- CS probe arcs and circles:
+
+
+			-- Compose the return value:
+			if polygon_found then
+				return (polygon_found => TRUE, distance => distance);
+			else
+				return (polygon_found => FALSE);
+			end if;
+
 		end get_distance_to_polygon;
 
 		

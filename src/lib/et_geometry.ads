@@ -535,6 +535,10 @@ package et_geometry is
 		
 		type type_vector is private;
 
+		null_vector : constant type_vector;
+
+		unity_vector : constant type_vector;
+		
 		function to_vector (
 			point	: in type_point)
 			return type_vector;
@@ -556,18 +560,26 @@ package et_geometry is
 			a, b	: in type_vector)
 			return type_vector;
 
+		-- Subtracts the components of b from those of a.
+		-- return.x = a.x - b.x, ...
 		function subtract (
 			a, b	: in type_vector)
 			return type_vector;
 		
-		function cross_product (
+		function cross_product ( -- german: Vektorprodukt
 			a, b	: in type_vector)
 			return type_vector;
 		
-		function dot_product (
+		function dot_product ( -- german: Skalarprodukt
 			a, b	: in type_vector)
 			return type_distance;
 
+		function mixed_product ( -- german: Spatprodukt
+			a, b, c	: in type_vector)
+			return type_distance;
+		-- NOTE: Also called scalar triple product or box product.
+
+								   
 		-- Divides the components x,y,z of vector a
 		-- by one of the components of vector b.
 		-- At least one of the components of b 
@@ -598,19 +610,21 @@ package et_geometry is
 			EXISTS,
 			OVERLAP);
 
-		--type type_line_intersection (exists : boolean) is record
-		type type_line_intersection (status : type_intersection_status) is record
+
+		-- When finding intersections this type is required:
+		type type_intersection (status : type_intersection_status) is record
 			case status is
 				when EXISTS	=> intersection : type_vector; -- location vector
 				when NOT_EXISTENT | OVERLAP => null;
 			end case;
 		end record;
-		
-		-- Returns the point where the given two lines intersect.
-		-- Raises constraint error if lines do not intersect ?
+
+
+		-- Tests whether the given two lines intersect.
+		-- If there is an intersection, returns the location vector.
 		function get_intersection (
 			line_1, line_2	: in type_line_vector)
-			return type_line_intersection;
+			return type_intersection;
 
 		
 		
@@ -623,19 +637,13 @@ package et_geometry is
 		end record;
 
 
-		type type_ray_intersection (status : type_intersection_status) is record
-			case status is
-				when EXISTS	=> intersection : type_point;
-				when NOT_EXISTENT | OVERLAP => null;
-			end case;
-		end record;
 		
-		-- Returns the point where the given ray intersects
-		-- the given line:
+		-- Tests whether the given ray intersects the given line.
+		-- If there is an intersection, returns the location vector.
 		function get_intersection (
 			ray		: in type_ray;
 			line	: in type_line)
-			return type_ray_intersection;
+			return type_intersection;
 
 
 		
@@ -1143,6 +1151,9 @@ package et_geometry is
 			x, y, z : type_distance := zero;
 		end record;
 
+		null_vector		: constant type_vector := (others => zero);
+		unity_vector	: constant type_vector := (others => 1.0);
+		
 		type type_distance_point_line is record
 			distance		: type_distance_positive := zero;
 			sits_on_start	: boolean := false;
