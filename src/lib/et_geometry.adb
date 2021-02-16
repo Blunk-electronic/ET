@@ -1208,10 +1208,10 @@ package body et_geometry is
 			begin
 				-- The first condition to be fulfilled is that the
 				-- cross product of the direction vectors is not a null vector:
-				v1 := cross_product (line_1.v_direction, line_1.v_direction); 
+				v1 := cross_product (line_1.v_direction, line_2.v_direction); 
 
 				if v1 /= null_vector then
-
+					
 					-- The second condition is:
 					-- The mixed product of line_2.v_start, line_1.v_start and
 					-- (line_2.v_start - line_1.v_start) must be zero.
@@ -1268,7 +1268,7 @@ package body et_geometry is
 				
 				-- Test whether there is an intersection:
 				if exists_intersection then
-				
+					
 					-- The direction vector of the first line can be zero in x.
 					-- In order to avoid division by zero we must switch between
 					-- two ways to find the intersection:
@@ -3312,17 +3312,41 @@ package body et_geometry is
 			direction		: in type_rotation)
 			return type_distance_to_polygon
 		is
-			-- These variables will compose the return value:
+			-- We will build a ray that starts at the given point
+			-- and travels in the given direction.
+			-- Then we look for intersection of the ray with the 
+			-- edges of the given polygon:
+			r : type_ray;
+			
+			-- In the given direction the polygon may or may not
+			-- exist. If the polygon was not found in given direction then
+			-- the return of this function is just FALSE.
+			-- This flag goes true if at least one side or vertex/corner
+			-- exists in the given direction:
 			polygon_found : boolean := false;
+
+			-- If the polygon exists in the given direction, then the nearest
+			-- point of the polygon (relative to the given point) is stored
+			-- here to be returned:
 			distance : type_distance_positive := type_distance_positive'last;
 			
-			r : type_ray;
 
 			use pac_polygon_lines;
+			
 			procedure query_line (c : in pac_polygon_lines.cursor) is
-				i : type_intersection := get_intersection (r, element (c));
+
+				-- Find the intersection of the ray with the line:
+				i : constant type_intersection := get_intersection (r, element (c));
+
+				-- In case there is an intersection, then we will temporarily store
+				-- the distance from point to intersection here:
 				d : type_distance_positive;
 			begin
+						  
+				-- If there is an intersection:
+				-- - set the polygon_found flag
+				-- - compute the distance d to the intersection
+				-- - keep the smallest distance found during this iteration
 				if i.status = EXISTS then
 					polygon_found := TRUE;
 
@@ -3330,6 +3354,8 @@ package body et_geometry is
 						point_one	=> point,
 						point_two	=> to_point (i.intersection));
 
+					put_line ("distance " & to_string (d));
+					
 					if d < distance then
 						distance := d;
 					end if;

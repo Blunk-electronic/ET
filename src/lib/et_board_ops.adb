@@ -4467,22 +4467,14 @@ package body et_board_ops is
 		distance_to_obstacle : type_distance_positive;
 		fill_line : type_fill_line;
 
-		-- In case the lower left corner of the polygon is outside
-		-- the polygon (means the corner point is VIRTUAL) then the
-		-- distance in x from the start_point to the polygon edge is
-		-- always positive:
-		--distance_to_polygon : type_distance_positive := zero;
-
 		procedure log_lower_left_corner (log_threshold : in type_log_level) is begin
-			log_indentation_up;
 			log (text => "lower left corner" 
 				& to_string (lower_left_corner.point)
 				& " status " 
 				& type_lower_left_corner_status'image (lower_left_corner.status),
 				level => log_threshold);
-			log_indentation_down;
 		end log_lower_left_corner;
-
+	
 		
 		procedure floating_polygons is
 			use pac_conductor_polygons_floating_solid;
@@ -4664,17 +4656,20 @@ package body et_board_ops is
 						-- append line to the fill are of the polyon:
 						update_element (net.route.polygons.solid, p, add_line'access);
 					end compute_distance_to_obstacle;
-									
-				begin -- route_solid
-					while p /= pac_signal_polygons_solid.no_element loop
 
-						log_net_name;
-						lower_left_corner := get_lower_left_corner (element (p));
-						log_lower_left_corner (log_threshold + 3);
-
+					procedure compute_start_point is 
+					begin
 						case lower_left_corner.status is
+
 							when REAL =>
 								fill_line.start_point := lower_left_corner.point;
+
+								log (text => "fill line start" & to_string (fill_line.start_point),
+									level => log_threshold + 3);
+
+								
+								-- Compute the distance from start point to the nearest obstacle
+								-- to the right:
 								compute_distance_to_obstacle;
 						
 							when VIRTUAL =>
@@ -4684,18 +4679,59 @@ package body et_board_ops is
 										get_distance_to_polygon (
 											polygon		=> element (p),	
 											point		=> lower_left_corner.point,
-											direction	=> 0.0);
+											direction	=> 0.0); -- degrees
 								begin
 									if d.polygon_found then
+										
+										log (text => "distance to polygon" & to_string (d.distance),
+											level => log_threshold + 3);
+										
+										-- move start point to the right (where the polygon begins)
 										fill_line.start_point := type_point (move (lower_left_corner.point, 0.0, d.distance));
+
+										log (text => "fill line start" & to_string (fill_line.start_point),
+											level => log_threshold + 3);
+
 									else
 										raise constraint_error;
 									end if;
-									
+
+									-- Compute the distance from start point to the nearest obstacle
+									-- to the right:
 									compute_distance_to_obstacle;
 								end;
 						end case;
+					end compute_start_point;
+
+					-- This is the offset required for the lower left corner:
+					-- Half of the minimal line widht to the right and up.
+					-- This measure is required in order to let the fill lines start inside
+					-- the polygon and not at the polygon edge:
+					offset : type_point;
+					
+				begin -- route_solid
+					while p /= pac_signal_polygons_solid.no_element loop
+
+						log_net_name;
+						lower_left_corner := get_lower_left_corner (element (p));
+
+						log_indentation_up;
+						log_lower_left_corner (log_threshold + 3);
+
+						offset := type_point (set (
+								x => element (p).width_min * 0.5, -- right
+								y => element (p).width_min * 0.5)); -- up
+
 						
+						-- Shift lower left corner slightly to the right and up:
+						move_by (lower_left_corner.point, offset);
+						
+						log (text => "lower left corner plus line width" & to_string (lower_left_corner.point),
+							 level => log_threshold + 3);
+						
+						compute_start_point;
+
+						log_indentation_down;
 						next (p);
 					end loop;
 				end route_solid;
@@ -4725,7 +4761,7 @@ package body et_board_ops is
 					-- CS test if key (n) is in given list of nets
 					
 					update_element (module.nets, n, route_solid'access);
-					update_element (module.nets, n, route_hatched'access);
+					--update_element (module.nets, n, route_hatched'access);
 					
 					next (n);
 				end loop;

@@ -921,6 +921,11 @@ package et_geometry is
 	-- POLYGON
 		type type_polygon_base is abstract tagged private;
 
+		-- In contrast to the common definition of a polygon, a polygon
+		-- in this world is described as a finite number of elements 
+		-- like lines, arcs and even circles that form a polygonal circuit.
+		
+		-- Every segment has an id.
 		-- CS: For the moment we limit the number of segments (that form the outline)
 		-- to a reasonable value. Increase if necessary:
 		type type_polygon_segment_count is range 0 .. 100;
