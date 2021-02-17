@@ -4467,6 +4467,12 @@ package body et_board_ops is
 		distance_to_obstacle : type_distance_positive;
 		fill_line : type_fill_line;
 
+		-- This is the offset required for the lower left corner:
+		-- half of the minimal line widht to the right and up.
+		-- This measure is required in order to let the fill lines start inside
+		-- the polygon and not at the polygon edge:
+		offset : type_point;
+		
 		procedure log_lower_left_corner (log_threshold : in type_log_level) is begin
 			log (text => "lower left corner" 
 				& to_string (lower_left_corner.point)
@@ -4658,16 +4664,31 @@ package body et_board_ops is
 					end compute_distance_to_obstacle;
 
 					procedure compute_start_point is 
-					begin
+
+						-- Shifts the start point slightly to the right
+						-- so that the fill line starts inside the polygon
+						-- and not at the edge:
+						procedure shift_right is begin
+							offset := type_point (set (
+									x => element (p).width_min * 0.5, -- right
+									y => element (p).width_min * 0.0)); -- up
+
+							move_by (fill_line.start_point, offset);
+
+							log (text => "fill line start" & to_string (fill_line.start_point),
+								level => log_threshold + 3);
+
+						end shift_right;
+					
+					begin -- compute_start_point
+
 						case lower_left_corner.status is
 
 							when REAL =>
 								fill_line.start_point := lower_left_corner.point;
 
-								log (text => "fill line start" & to_string (fill_line.start_point),
-									level => log_threshold + 3);
+								shift_right;
 
-								
 								-- Compute the distance from start point to the nearest obstacle
 								-- to the right:
 								compute_distance_to_obstacle;
@@ -4687,11 +4708,10 @@ package body et_board_ops is
 											level => log_threshold + 3);
 										
 										-- move start point to the right (where the polygon begins)
-										fill_line.start_point := type_point (move (lower_left_corner.point, 0.0, d.distance));
+										fill_line.start_point := type_point (
+											move (lower_left_corner.point, 0.0, d.distance));
 
-										log (text => "fill line start" & to_string (fill_line.start_point),
-											level => log_threshold + 3);
-
+										shift_right;
 									else
 										raise constraint_error;
 									end if;
@@ -4703,11 +4723,6 @@ package body et_board_ops is
 						end case;
 					end compute_start_point;
 
-					-- This is the offset required for the lower left corner:
-					-- Half of the minimal line widht to the right and up.
-					-- This measure is required in order to let the fill lines start inside
-					-- the polygon and not at the polygon edge:
-					offset : type_point;
 					
 				begin -- route_solid
 					while p /= pac_signal_polygons_solid.no_element loop
@@ -4719,15 +4734,15 @@ package body et_board_ops is
 						log_lower_left_corner (log_threshold + 3);
 
 						offset := type_point (set (
-								x => element (p).width_min * 0.5, -- right
+								x => element (p).width_min * 0.0, -- right
 								y => element (p).width_min * 0.5)); -- up
-
 						
-						-- Shift lower left corner slightly to the right and up:
+						-- Shift lower left corner slightly up:
 						move_by (lower_left_corner.point, offset);
 						
-						log (text => "lower left corner plus line width" & to_string (lower_left_corner.point),
-							 level => log_threshold + 3);
+						--log (text => "lower left corner shifted up by half the min. line width" 
+							 --& to_string (lower_left_corner.point),
+							 --level => log_threshold + 3);
 						
 						compute_start_point;
 

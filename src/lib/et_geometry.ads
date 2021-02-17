@@ -353,7 +353,7 @@ package et_geometry is
 
 		function distance_polar (point_one, point_two : in type_point) return type_distance_polar;
 		-- Returns the distance of point_two to point_one.	
-		-- Subtracts point_one.x from point_two.y and point_one.y from point_two.y
+		-- Subtracts point_one.x from point_two.x and point_one.y from point_two.y
 		-- returns	total := sqrt ((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
 		--			angle := arctan ((point_two.y - point_one.y) / (point_two.x - point_one.x)
 
@@ -551,9 +551,9 @@ package et_geometry is
 			vector	: in type_vector)
 			return type_distance_positive;
 
-		function multiply (
+		function scale (
 			v	: in type_vector;
-			a	: in type_distance)
+			s	: in float)
 			return type_vector;
 		
 		function add (
@@ -639,7 +639,11 @@ package et_geometry is
 
 		
 		-- Tests whether the given ray intersects the given line.
-		-- If there is an intersection, returns the location vector.
+		-- If there is an intersection between start and end point
+		-- of the given line, then returns the location vector of
+		-- the intersection.
+		-- If the intersection is before start point or
+		-- beyond end point of the given line, return NOT_EXISTENT.
 		function get_intersection (
 			ray		: in type_ray;
 			line	: in type_line)

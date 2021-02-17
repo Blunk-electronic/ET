@@ -1074,18 +1074,19 @@ package body et_geometry is
 				);
 		end absolute;
 
-
-		function multiply (
+		function scale (
 			v	: in type_vector;
-			a	: in type_distance)
+			s	: in float)
 			return type_vector
 		is begin
 			return (
-				x => a * v.x,
-				y => a * v.y,
-				z => a * v.z);
-		end multiply;
-				
+				x => type_distance (s * float (v.x)),
+				y => type_distance (s * float (v.y)),
+				z => type_distance (s * float (v.z))
+				);
+		end scale;
+
+		
 		function add (
 			a, b	: in type_vector)
 			return type_vector
@@ -1197,8 +1198,8 @@ package body et_geometry is
 			return type_intersection
 		is 
 			-- scratch variables:
-			a, b, c, d, e, f, g : type_distance;
-			lambda : type_distance;
+			a, b, c, d, e, f, g : float; -- type_distance;
+			lambda : float; -- type_distance;
 
 			-- location vector of intersection to be returned:			
 			i : type_vector;
@@ -1273,29 +1274,29 @@ package body et_geometry is
 					-- In order to avoid division by zero we must switch between
 					-- two ways to find the intersection:
 					if line_1.v_direction.x /= zero then
-						a := line_1.v_start.y;
-						b := type_distance (line_2.v_start.x * line_1.v_direction.y) / line_1.v_direction.x;
-						c := type_distance (line_1.v_start.x * line_1.v_direction.y) / line_1.v_direction.x;
-						d := line_2.v_start.y;
-						e := line_2.v_direction.y;
-						f := type_distance (line_2.v_direction.x * line_1.v_direction.y) / line_1.v_direction.x;
+						a := float (line_1.v_start.y);
+						b := float (line_2.v_start.x * line_1.v_direction.y) / float (line_1.v_direction.x);
+						c := float (line_1.v_start.x * line_1.v_direction.y) / float (line_1.v_direction.x);
+						d := float (line_2.v_start.y);
+						e := float (line_2.v_direction.y);
+						f := float (line_2.v_direction.x * line_1.v_direction.y) / float (line_1.v_direction.x);
 						g := 1.0 / (e - f);
 
 						lambda := (a + b - c - d) * g;
 
-						i := add (line_2.v_start, multiply (line_2.v_direction, lambda));
+						i := add (line_2.v_start, scale (line_2.v_direction, lambda));
 					else
-						a := line_2.v_start.y;
-						b := type_distance (line_1.v_start.x * line_2.v_direction.y) / line_2.v_direction.x;
-						c := type_distance (line_2.v_start.x * line_2.v_direction.y) / line_2.v_direction.x;
-						d := line_1.v_start.y;
-						e := line_1.v_direction.y;
-						f := type_distance (line_1.v_direction.x * line_2.v_direction.y) / line_2.v_direction.x;
+						a := float (line_2.v_start.y);
+						b := float (line_1.v_start.x * line_2.v_direction.y) / float (line_2.v_direction.x);
+						c := float (line_2.v_start.x * line_2.v_direction.y) / float (line_2.v_direction.x);
+						d := float (line_1.v_start.y);
+						e := float (line_1.v_direction.y);
+						f := float (line_1.v_direction.x * line_2.v_direction.y) / float (line_2.v_direction.x);
 						g := 1.0 / (e - f);
 
 						lambda := (a + b - c - d) * g;
 
-						i := add (line_1.v_start, multiply (line_1.v_direction, lambda));
+						i := add (line_1.v_start, scale (line_1.v_direction, lambda));
 					end if;
 
 					return (status => EXISTS, intersection => i);
@@ -1322,17 +1323,65 @@ package body et_geometry is
 			vld : constant type_vector := direction_vector (line);
 
 			-- Find the intersection:
-			--i : constant type_intersection := get_intersection (
-					--line_1	=> (vrs, vrd),
-					--line_2	=> (vls, vld));
-		begin
-			-- Find the intersection:
-			return t : type_intersection := get_intersection (
+			i : constant type_intersection := get_intersection (
 					line_1	=> (vrs, vrd),
-					line_2	=> (vls, vld))
-			do
-				null;
-			end return;
+					line_2	=> (vls, vld));
+
+			dp : type_distance_polar;
+		begin
+			case i.status is
+				when EXISTS =>
+
+					-- The intersection must be forward the start point
+					-- of the ray, means in direction of travel.
+					-- If the angle of dp equals the direction
+					-- of the ray then the intersection is forward the start point
+					-- of the ray.
+					-- Compute the distance from start point to intersection in 
+					-- polar form:
+					dp := distance_polar (ray.start_point, to_point (i.intersection));
+
+					put_line ("line        " & to_string (line));
+					
+					put_line ("ray start   " & to_string (ray.start_point));
+					put_line ("ray dir.    " & to_string (ray.direction));
+					
+					put_line ("intersection" & to_string (to_point (i.intersection)));
+					put_line (to_string (angle (dp)));
+
+					if angle (dp) = ray.direction then -- intersection forward start point
+
+						-- The intersection must be between start and end point of the
+						-- given line (start and end point itself included).
+						-- If the intersection is between start and end point
+						-- of the given line then return the intersection as it is.
+						-- If the intersection is before start point or
+						-- beyond end point of the given line, return NOT_EXISTENT.
+						if on_line (to_point (i.intersection), line) then
+							put_line ("X");
+							return i;
+						else
+							return (status => NOT_EXISTENT);
+						end if;
+					
+					else
+						return (status => NOT_EXISTENT);
+					end if;
+
+				when others =>
+					
+					return i;
+			end case;
+
+			--return i;
+			
+			-- Find the intersection:
+			--return t : type_intersection := get_intersection (
+					--line_1	=> (vrs, vrd),
+					--line_2	=> (vls, vld))
+			--do
+				--null;
+			--end return;
 		end get_intersection;
 
 
@@ -1503,7 +1552,7 @@ package body et_geometry is
 
 					lambda_2 := (a + b - c - d) * g;
 
-					I := add (S2, multiply (R2, lambda_2));
+					I := add (S2, scale (R2, float (lambda_2)));
 				else
 					a := S2.y;
 					b := type_distance (S1.x * R2.y) / R2.x;
@@ -1515,7 +1564,7 @@ package body et_geometry is
 
 					lambda_1 := (a + b - c - d) * g;
 
-					I := add (S1, multiply (R1, lambda_1));
+					I := add (S1, scale (R1, float (lambda_1)));
 				end if;
 				
 				bend_point := to_point (I);
