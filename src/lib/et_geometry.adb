@@ -1198,8 +1198,8 @@ package body et_geometry is
 			return type_intersection
 		is 
 			-- scratch variables:
-			a, b, c, d, e, f, g : float; -- type_distance;
-			lambda : float; -- type_distance;
+			a, b, c, d, e, f, g : float;
+			lambda : float;
 
 			-- location vector of intersection to be returned:			
 			i : type_vector;
@@ -1341,14 +1341,6 @@ package body et_geometry is
 					-- polar form:
 					dp := distance_polar (ray.start_point, to_point (i.intersection));
 
-					put_line ("line        " & to_string (line));
-					
-					put_line ("ray start   " & to_string (ray.start_point));
-					put_line ("ray dir.    " & to_string (ray.direction));
-					
-					put_line ("intersection" & to_string (to_point (i.intersection)));
-					put_line (to_string (angle (dp)));
-
 					if angle (dp) = ray.direction then -- intersection forward start point
 
 						-- The intersection must be between start and end point of the
@@ -1358,7 +1350,6 @@ package body et_geometry is
 						-- If the intersection is before start point or
 						-- beyond end point of the given line, return NOT_EXISTENT.
 						if on_line (to_point (i.intersection), line) then
-							put_line ("X");
 							return i;
 						else
 							return (status => NOT_EXISTENT);
@@ -1368,20 +1359,10 @@ package body et_geometry is
 						return (status => NOT_EXISTENT);
 					end if;
 
-				when others =>
-					
+				when others =>					
 					return i;
 			end case;
 
-			--return i;
-			
-			-- Find the intersection:
-			--return t : type_intersection := get_intersection (
-					--line_1	=> (vrs, vrd),
-					--line_2	=> (vls, vld))
-			--do
-				--null;
-			--end return;
 		end get_intersection;
 
 
@@ -3403,7 +3384,7 @@ package body et_geometry is
 						point_one	=> point,
 						point_two	=> to_point (i.intersection));
 
-					put_line ("distance " & to_string (d));
+					--put_line ("distance " & to_string (d));
 					
 					if d < distance then
 						distance := d;
