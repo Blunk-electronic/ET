@@ -86,6 +86,90 @@ package body et_pcb is
 	function to_meaning (meaning : in string) return type_text_meaning_conductor is begin
 		return type_text_meaning_conductor'value (meaning);
 	end to_meaning;
+
+	function on_board (
+		point		: in type_point;
+		contours	: in type_pcb_contours)
+		return boolean
+	is 
+		use pac_pcb_contour_lines;
+		line_cursor : pac_pcb_contour_lines.cursor := contours.lines.first;
+		cp : type_point;
+
+		-- This ray starts at the given point and runs toward the
+		-- polygon. Its direction changes in the course of a probing
+		-- mechanism:
+		ray : type_ray := (start_point => point, direction => zero_rotation);
+
+		subtype type_intersections_total is positive range 1 .. 1000; -- CS
+		it : type_intersections_total;
+
+		procedure increment_intersections is begin
+			it := it + 1;
+		end increment_intersections;
+		
+		-- This procedure iterates lines, arcs and circles of the given
+		-- contours and counts the intersections of the ray with each of them:
+		procedure count_intersections is 
+			procedure query_line (c : in pac_pcb_contour_lines.cursor) is
+				i : type_intersection := get_intersection (ray, element (c));
+			begin
+				put_line ("l");
+				if i.status = EXISTS then
+					increment_intersections;
+				end if;
+			end query_line;
+
+		begin
+			iterate (contours.lines, query_line'access);
+
+			-- CS arcs and lines
+		end count_intersections;
+		
+	begin
+		-- Find a suitable contour line that helps to
+		-- set the direction of the ray:
+		while line_cursor /= pac_pcb_contour_lines.no_element loop
+			-- Get the center of the contour line:
+			cp := get_center (element (line_cursor));
+
+			-- The contour line is suitable if its center is different from
+			-- the given point.
+			if point /= cp then
+				
+				-- Set the direction required for the ray so that
+				-- the ray intersects the contour line at its center:
+				ray.direction := angle (distance_polar (point, cp));
+
+				-- The contour line is suitable if it does not run 
+				-- in the same direction as the ray. In that case this 
+				-- loop is to be cancelled.
+				if direction (element (line_cursor)) /= ray.direction then
+					it := 1;
+					exit;
+				end if;
+				
+			end if;
+			
+			next (line_cursor);
+		end loop;
+
+		
+		
+		-- If a suitable has been line found then count the remaining
+		-- intersections of the ray with other segments of the countour:
+		if line_cursor /= pac_pcb_contour_lines.no_element then
+			count_intersections;
+		else
+			-- -- CS search among the arcs, circles ...
+			null;
+		end if;
+
+		put_line ("intersections total: " & positive'image (it));
+		
+		return true;
+	end on_board;
+
 	
 	function on_segment (
 		point			: in type_point; -- x/y

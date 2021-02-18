@@ -193,8 +193,11 @@ package et_pcb is
 	-- - detect gaps in outline
 	-- - detect texts in outline and output an error if texts are
 	--   inside the board area.
-		
 
+	function on_board (
+		point		: in type_point;
+		contours	: in type_pcb_contours)
+		return boolean;
 
 -- CONDUCTOR OBJECTS
 	

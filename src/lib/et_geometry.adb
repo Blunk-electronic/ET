@@ -1193,6 +1193,17 @@ package body et_geometry is
 		end direction_vector;
 
 		
+		function to_line_vector (
+			ray : in type_ray)
+			return type_line_vector
+		is begin
+			return (
+				v_start		=> start_vector (ray),
+				v_direction	=> direction_vector (ray));
+		
+		end to_line_vector;
+
+		
 		function get_intersection (
 			line_1, line_2	: in type_line_vector)
 			return type_intersection
@@ -1308,25 +1319,59 @@ package body et_geometry is
 			
 		end get_intersection;
 
+		function get_angle_of_itersection (
+			line_1, line_2	: in type_line_vector)
+			return type_rotation
+		is 
+			package functions is new ada.numerics.generic_elementary_functions (float);
+			use functions;
+
+			a, b : float;
+		begin
+			a := float (dot_product (line_1.v_direction, line_2.v_direction));
+			b := float (absolute (line_1.v_direction) * absolute (line_2.v_direction));
+
+			return type_rotation (arccos (X => a / b, cycle => float (units_per_cycle)));
+		end get_angle_of_itersection;
+
+		
+		function get_center (
+			line	: in type_line)
+			return type_point
+		is
+			dp : constant type_distance_polar := distance_polar (line.start_point, line.end_point);
+		begin
+			return type_point (move (
+				point		=> line.start_point,
+				direction	=> angle (dp),
+				distance	=> absolute (dp) * 0.5));
+
+		end get_center;
+
+
 		
 		function get_intersection (
 			ray		: in type_ray;
 			line	: in type_line)
 			return type_intersection
 		is
-			-- Build start and direction vector of given ray:
-			vrs : constant type_vector := start_vector (ray);
-			vrd : constant type_vector := direction_vector (ray);
+			---- Build start and direction vector of given ray:
+			--vrs : constant type_vector := start_vector (ray);
+			--vrd : constant type_vector := direction_vector (ray);
 
-			-- Build start and direction vector of given line:
-			vls : constant type_vector := start_vector (line);
-			vld : constant type_vector := direction_vector (line);
+			---- Build start and direction vector of given line:
+			--vls : constant type_vector := start_vector (line);
+			--vld : constant type_vector := direction_vector (line);
 
 			-- Find the intersection:
-			i : constant type_intersection := get_intersection (
-					line_1	=> (vrs, vrd),
-					line_2	=> (vls, vld));
+			--i : constant type_intersection := get_intersection (
+					--line_1	=> (vrs, vrd),
+					--line_2	=> (vls, vld));
 
+			i : constant type_intersection := get_intersection (
+					line_1	=> to_line_vector (ray),
+					line_2	=> to_line_vector (line));
+			
 			dp : type_distance_polar;
 		begin
 			case i.status is
@@ -1400,6 +1445,15 @@ package body et_geometry is
 				);
 		end direction_vector;
 
+		function to_line_vector (
+			line	: in type_line)
+			return type_line_vector
+		is begin
+			return (
+				v_start		=> start_vector (line),
+				v_direction	=> direction_vector (line));
+		end to_line_vector;
+		
 		function distance (
 			line	: in type_line;
 			point	: in type_point)

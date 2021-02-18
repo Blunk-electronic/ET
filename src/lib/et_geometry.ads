@@ -351,14 +351,21 @@ package et_geometry is
 		
 		type type_distance_polar is private;
 
-		function distance_polar (point_one, point_two : in type_point) return type_distance_polar;
+		function distance_polar (point_one, point_two : in type_point) 
+			return type_distance_polar;
 		-- Returns the distance of point_two to point_one.	
 		-- Subtracts point_one.x from point_two.x and point_one.y from point_two.y
 		-- returns	total := sqrt ((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
 		--			angle := arctan ((point_two.y - point_one.y) / (point_two.x - point_one.x)
-
-		function angle (distance : in type_distance_polar) return type_rotation;
-		function absolute (distance : in type_distance_polar) return type_distance_positive;
+		-- NOTE: If the total distance between the points is zero then
+		-- the returned angle is zero. So it is wise to test the two points
+		-- for equality befor calling this function.
+		
+		function angle (distance : in type_distance_polar) 
+			return type_rotation;
+		
+		function absolute (distance : in type_distance_polar) 
+			return type_distance_positive;
 
 
 		
@@ -591,7 +598,7 @@ package et_geometry is
 
 
 		
-		-- Returns the locaton vector of the start point of a ray:
+		-- Returns the location vector of the start point of a ray:
 		function start_vector (ray : in type_ray) 
 			return type_vector;
 
@@ -605,6 +612,15 @@ package et_geometry is
 			v_direction	: type_vector; -- direction vector of line
 		end record;
 
+
+		-- Converts a ray (consisting of start point and a direction)
+		-- to a line vector consisting of start vector and
+		-- direction vector:
+		function to_line_vector (
+			ray : in type_ray)
+			return type_line_vector;
+
+		
 		type type_intersection_status is (
 			NOT_EXISTENT,
 			EXISTS,
@@ -626,6 +642,9 @@ package et_geometry is
 			line_1, line_2	: in type_line_vector)
 			return type_intersection;
 
+		function get_angle_of_itersection (
+			line_1, line_2	: in type_line_vector)
+			return type_rotation;
 		
 		
 		
@@ -636,7 +655,11 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
-
+		-- Returns the point on the given line
+		-- that is between its start and end point:
+		function get_center (
+			line	: in type_line)
+			return type_point;
 		
 		-- Tests whether the given ray intersects the given line.
 		-- If there is an intersection between start and end point
@@ -666,6 +689,13 @@ package et_geometry is
 			line	: in type_line)
 			return type_vector;
 
+		-- Converts a line (consisting of start and end point)
+		-- to a line vector consisting of start vector and
+		-- direction vector:
+		function to_line_vector (
+			line	: in type_line)
+			return type_line_vector;
+			
 		-- Computes the distance of the point from the line.
 		-- This computation does not care about end or start point of the line.
 		-- It assumes an indefinite long line without start or end point.
