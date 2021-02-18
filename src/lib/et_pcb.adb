@@ -88,10 +88,13 @@ package body et_pcb is
 	end to_meaning;
 
 	function on_board (
-		point		: in type_point;
-		contours	: in type_pcb_contours)
+		point			: in type_point;
+		contours		: in type_pcb_contours;
+		log_threshold 	: in type_log_level)
 		return boolean
 	is 
+		result : boolean := false;
+		
 		use pac_pcb_contour_lines;
 		line_cursor : pac_pcb_contour_lines.cursor := contours.lines.first;
 		cp : type_point;
@@ -101,8 +104,8 @@ package body et_pcb is
 		-- mechanism:
 		ray : type_ray := (start_point => point, direction => zero_rotation);
 
-		subtype type_intersections_total is positive range 1 .. 1000; -- CS
-		it : type_intersections_total;
+		subtype type_intersections_total is natural range 0 .. 1000; -- CS
+		it : type_intersections_total := 0;
 
 		procedure increment_intersections is begin
 			it := it + 1;
@@ -113,9 +116,13 @@ package body et_pcb is
 		procedure count_intersections is 
 			procedure query_line (c : in pac_pcb_contour_lines.cursor) is
 				i : type_intersection := get_intersection (ray, element (c));
-			begin
-				put_line ("l");
+			begin				
 				if i.status = EXISTS then
+					
+					log (text => "line" & to_string (element (c))
+						 & " at" & to_string (to_point (i.intersection)),
+						 level => log_threshold + 2);
+					
 					increment_intersections;
 				end if;
 			end query_line;
@@ -129,6 +136,14 @@ package body et_pcb is
 	begin
 		-- Find a suitable contour line that helps to
 		-- set the direction of the ray:
+		log (text => "determining position of point" & to_string (point)
+			 & " relative to board outline ...", level => log_threshold);
+
+		log_indentation_up;
+
+		log (text => "searching a suitable segment ...", level => log_threshold + 1);
+		log_indentation_up;
+		
 		while line_cursor /= pac_pcb_contour_lines.no_element loop
 			-- Get the center of the contour line:
 			cp := get_center (element (line_cursor));
@@ -145,7 +160,17 @@ package body et_pcb is
 				-- in the same direction as the ray. In that case this 
 				-- loop is to be cancelled.
 				if direction (element (line_cursor)) /= ray.direction then
-					it := 1;
+
+					log (text => "selected line:" & to_string (element (line_cursor)),
+						 level => log_threshold + 2);
+					
+					log (text => "scan ray starts at" & to_string (ray.start_point) 
+						 & " in direction" & to_string (ray.direction),
+						 level => log_threshold + 2);
+					
+					log (text => "ray intersects line at" & to_string (cp),
+						 level => log_threshold + 2);
+					
 					exit;
 				end if;
 				
@@ -154,7 +179,12 @@ package body et_pcb is
 			next (line_cursor);
 		end loop;
 
-		
+		log_indentation_down;
+
+		log (text => "counting intersections of ray with board outline ...",
+			 level => log_threshold + 1);
+
+		log_indentation_up;
 		
 		-- If a suitable has been line found then count the remaining
 		-- intersections of the ray with other segments of the countour:
@@ -165,9 +195,24 @@ package body et_pcb is
 			null;
 		end if;
 
-		put_line ("intersections total: " & positive'image (it));
+		log_indentation_down;
 		
-		return true;
+		log (text => "intersections total:" & positive'image (it), level => log_threshold + 1);
+
+		log_indentation_down;
+
+		-- If the total iterations is an odd number, then the given point
+		-- is on the board.
+		-- If the total is even, then the point is outside the board area.
+		if (it rem 2) = 1 then
+			log (text => "point IS on board", level => log_threshold);
+			result := true; -- inside
+		else 
+			log (text => "point is NOT on board", level => log_threshold);
+			result := false; -- outside
+		end if;
+
+		return result;
 	end on_board;
 
 	

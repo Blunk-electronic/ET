@@ -1339,7 +1339,8 @@ package body et_geometry is
 			line	: in type_line)
 			return type_point
 		is
-			dp : constant type_distance_polar := distance_polar (line.start_point, line.end_point);
+			dp : constant type_distance_polar := 
+				distance_polar (line.start_point, line.end_point);
 		begin
 			return type_point (move (
 				point		=> line.start_point,

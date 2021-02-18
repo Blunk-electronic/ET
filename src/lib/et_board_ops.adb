@@ -4682,16 +4682,18 @@ package body et_board_ops is
 					
 					begin -- compute_start_point
 
+						if on_board (lower_left_corner.point, module.board.contours, log_threshold + 3) then
+							null;
+						end if;
+
 						case lower_left_corner.status is
 
 							when REAL =>
+
 								fill_line.start_point := lower_left_corner.point;
 
 								shift_right;
 
-								if on_board (fill_line.start_point, module.board.contours) then
-									null;
-								end if;
 
 								-- Compute the distance from start point to the nearest obstacle
 								-- to the right:
@@ -4716,10 +4718,6 @@ package body et_board_ops is
 											move (lower_left_corner.point, 0.0, d.distance));
 
 										shift_right;
-
-										if on_board (fill_line.start_point, module.board.contours) then
-											null;
-										end if;
 
 									else
 										raise constraint_error;

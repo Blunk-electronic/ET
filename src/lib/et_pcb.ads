@@ -195,8 +195,9 @@ package et_pcb is
 	--   inside the board area.
 
 	function on_board (
-		point		: in type_point;
-		contours	: in type_pcb_contours)
+		point			: in type_point;
+		contours		: in type_pcb_contours;
+		log_threshold 	: in type_log_level)
 		return boolean;
 
 -- CONDUCTOR OBJECTS
