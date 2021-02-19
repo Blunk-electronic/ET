@@ -93,6 +93,15 @@ package body et_pcb is
 		log_threshold 	: in type_log_level)
 		return boolean
 	is 
+		-- The approach to detect whether the given point is inside or outside the
+		-- board area is as follows:
+		-- 1. Build a ray (starting at point) that travels toward the 
+		--    board area. The ray can be regarded as a shot through the board
+		--    so that it intersects at least two or more segments of the contour.
+		-- 2. The number of intersections then tells us:
+		--    - odd number of intersections -> point is inside board area
+		--    - even number -> point is outside board area
+
 		result : boolean := false;
 		
 		use pac_pcb_contour_lines;
@@ -134,13 +143,15 @@ package body et_pcb is
 		end count_intersections;
 		
 	begin
-		-- Find a suitable contour line that helps to
-		-- set the direction of the ray:
 		log (text => "determining position of point" & to_string (point)
 			 & " relative to board outline ...", level => log_threshold);
 
 		log_indentation_up;
 
+		
+		-- It is sufficient to make the ray travel in the direction of just one segment.
+		
+		-- We look for a suitable line:
 		log (text => "searching a suitable segment ...", level => log_threshold + 1);
 		log_indentation_up;
 		
@@ -149,7 +160,7 @@ package body et_pcb is
 			cp := get_center (element (line_cursor));
 
 			-- The contour line is suitable if its center is different from
-			-- the given point.
+			-- the given point. Point and cp must not be equal.
 			if point /= cp then
 				
 				-- Set the direction required for the ray so that
@@ -186,7 +197,7 @@ package body et_pcb is
 
 		log_indentation_up;
 		
-		-- If a suitable has been line found then count the remaining
+		-- If a suitable line has been found then count the remaining
 		-- intersections of the ray with other segments of the countour:
 		if line_cursor /= pac_pcb_contour_lines.no_element then
 			count_intersections;
