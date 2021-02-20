@@ -157,9 +157,10 @@ package et_geometry is
 		
 		type type_point is tagged private;
 
-		origin : constant type_point;
-		far_upper_right : constant type_point; -- CS should be maximum x and y ?
-
+		origin			: constant type_point;		
+		far_upper_right	: constant type_point;
+		far_lower_left	: constant type_point;
+		
 		function to_string (point : in type_point) return string;
 		
 		function to_distance (distance : in string) return type_distance;		
@@ -491,6 +492,11 @@ package et_geometry is
 		far_upper_right : constant type_point :=
 			(x => type_distance'last,
 			 y => type_distance'last);
+
+		far_lower_left : constant type_point :=
+			(x => type_distance'first,
+			 y => type_distance'first);
+
 		
 		type type_position is new type_point with record
 			rotation : type_rotation := zero_rotation;

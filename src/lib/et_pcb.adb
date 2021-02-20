@@ -87,6 +87,73 @@ package body et_pcb is
 		return type_text_meaning_conductor'value (meaning);
 	end to_meaning;
 
+
+	function get_dimensions (
+		contours		: in type_pcb_contours)
+		return type_dimensions
+	is
+		use et_geometry;
+		
+		result : type_dimensions;
+
+		procedure update_greatest_x (p : in type_point) is 
+			d : type_distance := X (p);
+		begin
+			if d > X (result.greatest) then
+				--put_line ("X" & to_string (d));
+				set (axis => X, value => d, point => result.greatest);
+			end if;
+		end update_greatest_x;
+			
+		procedure update_greatest_y (p : in type_point) is 
+			d : type_distance := Y (p);
+		begin
+			if d > Y (result.greatest) then
+				set (axis => Y, value => d, point => result.greatest);
+			end if;
+		end update_greatest_y;
+
+		procedure update_smallest_x (p : in type_point) is 
+			d : type_distance := X (p);
+		begin
+			if d < X (result.smallest) then
+				set (axis => X, value => d, point => result.smallest);
+			end if;
+		end update_smallest_x;
+			
+		procedure update_smallest_y (p : in type_point) is 
+			d : type_distance := Y (p);
+		begin
+			if d < Y (result.smallest) then
+				set (axis => Y, value => d, point => result.smallest);
+			end if;
+		end update_smallest_y;
+
+		
+		use pac_pcb_contour_lines;
+		use pac_pcb_contour_arcs;
+		--use pac_pcb_contour_circles;
+
+		procedure query_line (c : in pac_pcb_contour_lines.cursor) is 
+		begin
+			update_greatest_x (element (c).start_point);
+			update_greatest_y (element (c).start_point);
+			update_smallest_x (element (c).start_point);
+			update_smallest_y (element (c).start_point);
+
+			update_greatest_x (element (c).end_point);
+			update_greatest_y (element (c).end_point);
+			update_smallest_x (element (c).end_point);
+			update_smallest_y (element (c).end_point);
+		end query_line;
+		
+	begin
+		iterate (contours.lines, query_line'access);
+		-- CS arcs, circles
+		
+		return result;
+	end get_dimensions;
+	
 	function on_board (
 		point			: in type_point;
 		contours		: in type_pcb_contours;
@@ -103,6 +170,21 @@ package body et_pcb is
 		--    - even number -> point is outside board area
 
 		result : boolean := false;
+
+		--board_dimensions : constant type_dimensions := get_dimensions (contours);
+
+		--procedure compute_shooting_angle is
+			--ca := constant type_point (set (X (board_dimensions.smallest), Y (board_dimensions.greatest)));
+			--cb := constant type_point (set (X (board_dimensions.smallest), Y (board_dimensions.greatest)));
+			
+			--a, b, c, d : type_rotation;
+		--begin
+			--log (text => "board dimensions: upper right" & to_string (board_dimensions.greatest)
+			 --& " lower left" & to_string (board_dimensions.smallest),
+			 --level => log_threshold + 1);
+			  
+			----a := angle (distance_polar (board_d
+		--end compute_shooting_angle;
 		
 		use pac_pcb_contour_lines;
 		line_cursor : pac_pcb_contour_lines.cursor := contours.lines.first;
@@ -148,6 +230,8 @@ package body et_pcb is
 
 		log_indentation_up;
 
+		--compute_shooting_angle;
+		
 		
 		-- It is sufficient to make the ray travel in the direction of just one segment.
 		

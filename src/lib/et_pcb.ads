@@ -194,6 +194,18 @@ package et_pcb is
 	-- - detect texts in outline and output an error if texts are
 	--   inside the board area.
 
+	type type_dimensions is record
+		greatest : type_point := far_lower_left;
+		smallest : type_point := far_upper_right;
+	end record;
+
+	-- Returns the greatest and smallest x and y values
+	-- used by the board contours:
+	function get_dimensions (
+		contours		: in type_pcb_contours)
+		return type_dimensions;
+								
+	
 	function on_board (
 		point			: in type_point;
 		contours		: in type_pcb_contours;
