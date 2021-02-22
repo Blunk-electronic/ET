@@ -1248,7 +1248,7 @@ package body et_geometry is
 				-- The first condition to be fulfilled is that the lines
 				-- must run parallel to each other. In this case the cross
 				-- product is zero.
-				v1 := cross_product (line_1.v_direction, line_1.v_direction); 
+				v1 := cross_product (line_1.v_direction, line_2.v_direction); 
 				
 				if v1 = null_vector then -- the lines run parallel to each other.
 
@@ -1272,12 +1272,14 @@ package body et_geometry is
 			end lines_overlap;
 				
 		begin -- get_intersection
-			
+			--put_line ("");
+			--put_line ("line_1 start" & to_string (to_point (line_1.v_start)) & " direction" & to_string (to_point (line_1.v_direction)));
+			--put_line ("line_2 start" & to_string (to_point (line_2.v_start)) & " direction" & to_string (to_point (line_2.v_direction)));
+
 			-- Test whether the lines overlap:
 			if lines_overlap then
 				return (status => OVERLAP);
 			else
-				
 				-- Test whether there is an intersection:
 				if exists_intersection then
 					
@@ -1361,7 +1363,7 @@ package body et_geometry is
 		begin
 			case i.status is
 				when EXISTS =>
-
+				
 					-- The intersection must be at OR after the start point
 					-- of probe_line, means in direction of travel.
 					if X (to_point (i.intersection)) >= X (to_point (probe_line.v_start)) then
@@ -1382,7 +1384,7 @@ package body et_geometry is
 						return (status => NOT_EXISTENT);
 					end if;
 
-				when others =>					
+				when others =>		
 					return i;
 			end case;
 

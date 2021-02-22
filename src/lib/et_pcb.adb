@@ -178,42 +178,147 @@ package body et_pcb is
 		
 		probe_line : constant type_line_vector := to_line_vector (line);
 
-		subtype type_intersections_total is natural range 0 .. 1000; -- CS
-		it : type_intersections_total := 0;
+		-- We assume a maximum of intersections with the outline.
+		subtype type_intersections_total is natural range 0 .. 1000; -- CS increase if necessary
 
-		procedure increment_intersections is begin
-			it := it + 1;
-		end increment_intersections;
+		-- This is the variable for the number of intersections detected:
+		it : type_intersections_total := 0;
 		
 		-- This procedure iterates lines, arcs and circles of the given
-		-- contours and counts the intersections of the ray with each of them:
+		-- contours and counts the intersections of the probe line
+		-- with each of them:
 		procedure count_intersections is 
 
+			procedure increment_intersections is begin
+				it := it + 1;
+			end increment_intersections;
+
+			-- In a list we register the intersection points.
+			-- It serves to avoid counting of identical intersection points
+			-- multiple times. This can be the case when the probe line
+			-- crosses the point where two segments of the outline meet each other.
+			package pac_points is new doubly_linked_lists (type_point);
+			use pac_points;
+			it_list : pac_points.list;
+			
 			use pac_pcb_contour_lines;
+			use pac_pcb_contour_arcs;
+			use pac_pcb_contour_circles;
 			
 			procedure query_line (c : in pac_pcb_contour_lines.cursor) is
-				i : type_intersection := get_intersection (probe_line, element (c));
+				i : constant type_intersection := get_intersection (probe_line, element (c));
+
+				-- the actual point of intersection:
+				pi : type_point;
 			begin				
+				--log (text => "probing " & to_string (element (c)), level => log_threshold + 2);
+				
 				if i.status = EXISTS then
 
-					if X (to_point (i.intersection)) > X (point) then
+					pi := to_point (i.intersection);
 					
-						log (text => "intersects line" & to_string (element (c))
-							& " at" & to_string (to_point (i.intersection)),
-							level => log_threshold + 2);
-						
+					log (text => "intersects line" & to_string (element (c))
+						& " at" & to_string (to_point (i.intersection)),
+						level => log_threshold + 2);
+
+					-- If the intersection point has already been registered in
+					-- list it_list then it is to be skipped and not counted:
+					if contains (it_list, pi) then
+						log (text => " intersection already detected -> skipped", 
+							 level => log_threshold + 2);
+					else
 						increment_intersections;
+						append (it_list, pi);
 					end if;
+					
 				end if;
 			end query_line;
 
-		begin
-			iterate (contours.lines, query_line'access);
+			procedure query_arc (c : in pac_pcb_contour_arcs.cursor) is
+				-- CS
+				
+				--i : constant type_intersection := get_intersection (probe_line, element (c));
 
-			-- CS arcs and lines
+				-- the actual point of intersection:
+				--pi : type_point;
+			begin				
+				--log (text => "probing " & to_string (element (c)), level => log_threshold + 2);
+				
+				--if i.status = EXISTS then
+
+					--pi := to_point (i.intersection);
+					
+					--log (text => "intersects line" & to_string (element (c))
+						--& " at" & to_string (to_point (i.intersection)),
+						--level => log_threshold + 2);
+
+					---- If the intersection point has already been registered in
+					---- list it_list then it is to be skipped and not counted:
+					--if contains (it_list, pi) then
+						--log (text => " intersection already detected -> skipped", 
+							 --level => log_threshold + 2);
+					--else
+						--increment_intersections;
+						--append (it_list, pi);
+					--end if;
+					
+				--end if;
+				null;
+			end query_arc;
+
+			procedure query_circle (c : in pac_pcb_contour_circles.cursor) is
+				-- CS
+				
+				--i : constant type_intersection := get_intersection (probe_line, element (c));
+
+				-- the actual point of intersection:
+				--pi : type_point;
+			begin				
+				--log (text => "probing " & to_string (element (c)), level => log_threshold + 2);
+				
+				--if i.status = EXISTS then
+
+					--pi := to_point (i.intersection);
+					
+					--log (text => "intersects line" & to_string (element (c))
+						--& " at" & to_string (to_point (i.intersection)),
+						--level => log_threshold + 2);
+
+					---- If the intersection point has already been registered in
+					---- list it_list then it is to be skipped and not counted:
+					--if contains (it_list, pi) then
+						--log (text => " intersection already detected -> skipped", 
+							 --level => log_threshold + 2);
+					--else
+						--increment_intersections;
+						--append (it_list, pi);
+					--end if;
+					
+				--end if;
+				null;
+			end query_circle;
+			
+		begin -- count_intersections
+			
+			log (text => "lines ...", level => log_threshold + 2);
+			log_indentation_up;
+			iterate (contours.lines, query_line'access);
+			log_indentation_down;
+
+			log (text => "arcs ...", level => log_threshold + 2);
+			log_indentation_up;
+			iterate (contours.arcs, query_arc'access);
+			log_indentation_down;
+
+			log (text => "circles ...", level => log_threshold + 2);
+			log_indentation_up;
+			iterate (contours.circles, query_circle'access);
+			log_indentation_down;
+
 		end count_intersections;
 		
-	begin
+	begin -- on_board
+		
 		log (text => "determining position of point" & to_string (point)
 			 & " relative to board outline ...", level => log_threshold);
 
