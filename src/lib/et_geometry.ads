@@ -136,8 +136,10 @@ package et_geometry is
 		
 	package generic_pac_geometry is
 		
-		zero : constant type_distance := 0.0;
-
+		zero 		: constant type_distance := 0.0;
+		far_right	: constant type_distance := type_distance'last;
+		far_left	: constant type_distance := type_distance'first;
+		
 		subtype type_distance_positive is type_distance range zero .. type_distance'last;
 		subtype type_catch_zone is type_distance_positive range zero .. type_distance_positive'last/1000;
 
@@ -666,6 +668,12 @@ package et_geometry is
 		function get_center (
 			line	: in type_line)
 			return type_point;
+
+
+		function get_intersection (
+			probe_line	: in type_line_vector;
+			line		: in type_line)
+			return type_intersection;
 		
 		-- Tests whether the given ray intersects the given line.
 		-- If there is an intersection between start and end point

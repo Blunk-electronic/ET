@@ -1349,6 +1349,44 @@ package body et_geometry is
 
 		end get_center;
 
+		
+		function get_intersection (
+			probe_line	: in type_line_vector;
+			line		: in type_line)
+			return type_intersection
+		is
+			i : constant type_intersection := get_intersection (
+					line_1	=> probe_line,
+					line_2	=> to_line_vector (line));
+		begin
+			case i.status is
+				when EXISTS =>
+
+					-- The intersection must be at OR after the start point
+					-- of probe_line, means in direction of travel.
+					if X (to_point (i.intersection)) >= X (to_point (probe_line.v_start)) then
+
+						-- The intersection must be between start and end point of
+						-- line (start and end point itself included).
+						-- If the intersection is between start and end point
+						-- of line, then return the intersection as it is.
+						-- If the intersection is before start point or
+						-- beyond end point of line, then return NOT_EXISTENT.
+						if on_line (to_point (i.intersection), line) then
+							return i;
+						else
+							return (status => NOT_EXISTENT);
+						end if;
+
+					else
+						return (status => NOT_EXISTENT);
+					end if;
+
+				when others =>					
+					return i;
+			end case;
+
+		end get_intersection;
 
 		
 		function get_intersection (
@@ -1356,19 +1394,7 @@ package body et_geometry is
 			line	: in type_line)
 			return type_intersection
 		is
-			---- Build start and direction vector of given ray:
-			--vrs : constant type_vector := start_vector (ray);
-			--vrd : constant type_vector := direction_vector (ray);
-
-			---- Build start and direction vector of given line:
-			--vls : constant type_vector := start_vector (line);
-			--vld : constant type_vector := direction_vector (line);
-
 			-- Find the intersection:
-			--i : constant type_intersection := get_intersection (
-					--line_1	=> (vrs, vrd),
-					--line_2	=> (vls, vld));
-
 			i : constant type_intersection := get_intersection (
 					line_1	=> to_line_vector (ray),
 					line_2	=> to_line_vector (line));

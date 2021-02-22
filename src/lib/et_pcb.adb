@@ -162,38 +162,21 @@ package body et_pcb is
 	is 
 		-- The approach to detect whether the given point is inside or outside the
 		-- board area is as follows:
-		-- 1. Build a ray (starting at point) that travels toward the 
-		--    board area. The ray can be regarded as a shot through the board
-		--    so that it intersects at least two or more segments of the contour.
+		-- 1. Build a probe line (starting at point) that runs at zero degrees
+		--    to the right.
 		-- 2. The number of intersections then tells us:
-		--    - odd number of intersections -> point is inside board area
-		--    - even number -> point is outside board area
+		--    - odd -> point is inside board area
+		--    - zero or even -> point is outside board area
 
 		result : boolean := false;
-
-		--board_dimensions : constant type_dimensions := get_dimensions (contours);
-
-		--procedure compute_shooting_angle is
-			--ca := constant type_point (set (X (board_dimensions.smallest), Y (board_dimensions.greatest)));
-			--cb := constant type_point (set (X (board_dimensions.smallest), Y (board_dimensions.greatest)));
-			
-			--a, b, c, d : type_rotation;
-		--begin
-			--log (text => "board dimensions: upper right" & to_string (board_dimensions.greatest)
-			 --& " lower left" & to_string (board_dimensions.smallest),
-			 --level => log_threshold + 1);
-			  
-			----a := angle (distance_polar (board_d
-		--end compute_shooting_angle;
 		
-		use pac_pcb_contour_lines;
-		line_cursor : pac_pcb_contour_lines.cursor := contours.lines.first;
-		cp : type_point;
 
-		-- This ray starts at the given point and runs toward the
-		-- polygon. Its direction changes in the course of a probing
-		-- mechanism:
-		ray : type_ray := (start_point => point, direction => zero_rotation);
+		type type_line is new pac_shapes.type_line with null record;
+		line : constant type_line := (
+				start_point	=> point,
+				end_point	=> type_point (set (X (point) + 1.0, Y (point))));
+		
+		probe_line : constant type_line_vector := to_line_vector (line);
 
 		subtype type_intersections_total is natural range 0 .. 1000; -- CS
 		it : type_intersections_total := 0;
@@ -205,16 +188,22 @@ package body et_pcb is
 		-- This procedure iterates lines, arcs and circles of the given
 		-- contours and counts the intersections of the ray with each of them:
 		procedure count_intersections is 
+
+			use pac_pcb_contour_lines;
+			
 			procedure query_line (c : in pac_pcb_contour_lines.cursor) is
-				i : type_intersection := get_intersection (ray, element (c));
+				i : type_intersection := get_intersection (probe_line, element (c));
 			begin				
 				if i.status = EXISTS then
+
+					if X (to_point (i.intersection)) > X (point) then
 					
-					log (text => "line" & to_string (element (c))
-						 & " at" & to_string (to_point (i.intersection)),
-						 level => log_threshold + 2);
-					
-					increment_intersections;
+						log (text => "intersects line" & to_string (element (c))
+							& " at" & to_string (to_point (i.intersection)),
+							level => log_threshold + 2);
+						
+						increment_intersections;
+					end if;
 				end if;
 			end query_line;
 
@@ -230,65 +219,19 @@ package body et_pcb is
 
 		log_indentation_up;
 
-		--compute_shooting_angle;
-		
-		
-		-- It is sufficient to make the ray travel in the direction of just one segment.
-		
-		-- We look for a suitable line:
-		log (text => "searching a suitable segment ...", level => log_threshold + 1);
-		log_indentation_up;
-		
-		while line_cursor /= pac_pcb_contour_lines.no_element loop
-			-- Get the center of the contour line:
-			cp := get_center (element (line_cursor));
-
-			-- The contour line is suitable if its center is different from
-			-- the given point. Point and cp must not be equal.
-			if point /= cp then
-				
-				-- Set the direction required for the ray so that
-				-- the ray intersects the contour line at its center:
-				ray.direction := angle (distance_polar (point, cp));
-
-				-- The contour line is suitable if it does not run 
-				-- in the same direction as the ray. In that case this 
-				-- loop is to be cancelled.
-				if direction (element (line_cursor)) /= ray.direction then
-
-					log (text => "selected line:" & to_string (element (line_cursor)),
-						 level => log_threshold + 2);
-					
-					log (text => "scan ray starts at" & to_string (ray.start_point) 
-						 & " in direction" & to_string (ray.direction),
-						 level => log_threshold + 2);
-					
-					log (text => "ray intersects line at" & to_string (cp),
-						 level => log_threshold + 2);
-					
-					exit;
-				end if;
-				
-			end if;
+		log (text => "using a probe line: start" 
+			 & to_string (to_point (probe_line.v_start))
+			 & " direction 0 degrees ...", 
+			 level => log_threshold + 1);
 			
-			next (line_cursor);
-		end loop;
-
-		log_indentation_down;
-
-		log (text => "counting intersections of ray with board outline ...",
+		log (text => "counting intersections of probe line with board outline ...",
 			 level => log_threshold + 1);
 
 		log_indentation_up;
 		
-		-- If a suitable line has been found then count the remaining
-		-- intersections of the ray with other segments of the countour:
-		if line_cursor /= pac_pcb_contour_lines.no_element then
-			count_intersections;
-		else
-			-- -- CS search among the arcs, circles ...
-			null;
-		end if;
+		-- Count the intersections of the probe line with the
+		-- segments of the board countour:
+		count_intersections;
 
 		log_indentation_down;
 		
