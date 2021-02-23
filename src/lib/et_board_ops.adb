@@ -4702,11 +4702,10 @@ package body et_board_ops is
 							when VIRTUAL =>
 								declare
 									d : type_distance_to_polygon :=
-										
+
 										get_distance_to_polygon (
 											polygon		=> element (p),	
-											point		=> lower_left_corner.point,
-											direction	=> 0.0); -- degrees
+											point		=> lower_left_corner.point);
 								begin
 									if d.polygon_found then
 										

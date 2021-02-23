@@ -206,7 +206,7 @@ package body et_pcb is
 			
 			procedure query_line (c : in pac_pcb_contour_lines.cursor) is
 				-- Find out whether there is an intersection of the probe line
-				-- and the canditate line of the contour.
+				-- and the candidate line of the contour.
 				i : constant type_intersection := get_intersection (probe_line, element (c));
 
 				function crosses_threshold return boolean is begin
@@ -233,7 +233,7 @@ package body et_pcb is
 				
 				if i.status = EXISTS then
 
-					-- If the canditate line segment crosses the y_threshold then 
+					-- If the candidate line segment crosses the y_threshold then 
 					-- count the intersection:
 					if crosses_threshold then
 						

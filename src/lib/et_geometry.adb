@@ -1353,28 +1353,28 @@ package body et_geometry is
 
 		
 		function get_intersection (
-			probe_line	: in type_line_vector;
-			line		: in type_line)
+			probe_line		: in type_line_vector;
+			candidate_line	: in type_line)
 			return type_intersection
 		is
 			i : constant type_intersection := get_intersection (
 					line_1	=> probe_line,
-					line_2	=> to_line_vector (line));
+					line_2	=> to_line_vector (candidate_line));
 		begin
 			case i.status is
 				when EXISTS =>
 				
-					-- The intersection must be at OR after the start point
+					-- The intersection must be ON OR AFTER the start point
 					-- of probe_line, means in direction of travel.
 					if X (to_point (i.intersection)) >= X (to_point (probe_line.v_start)) then
 
 						-- The intersection must be between start and end point of
-						-- line (start and end point itself included).
+						-- the candidate line (start and end point itself included).
 						-- If the intersection is between start and end point
-						-- of line, then return the intersection as it is.
+						-- of candidate line, then return the intersection as it is.
 						-- If the intersection is before start point or
-						-- beyond end point of line, then return NOT_EXISTENT.
-						if on_line (to_point (i.intersection), line) then
+						-- beyond end point, then return NOT_EXISTENT.
+						if on_line (to_point (i.intersection), candidate_line) then
 							return i;
 						else
 							return (status => NOT_EXISTENT);
@@ -1389,56 +1389,6 @@ package body et_geometry is
 			end case;
 
 		end get_intersection;
-
-		
-		function get_intersection (
-			ray		: in type_ray;
-			line	: in type_line)
-			return type_intersection
-		is
-			-- Find the intersection:
-			i : constant type_intersection := get_intersection (
-					line_1	=> to_line_vector (ray),
-					line_2	=> to_line_vector (line));
-			
-			dp : type_distance_polar;
-		begin
-			case i.status is
-				when EXISTS =>
-
-					-- The intersection must be forward the start point
-					-- of the ray, means in direction of travel.
-					-- If the angle of dp equals the direction
-					-- of the ray then the intersection is forward the start point
-					-- of the ray.
-					-- Compute the distance from start point to intersection in 
-					-- polar form:
-					dp := distance_polar (ray.start_point, to_point (i.intersection));
-
-					if angle (dp) = ray.direction then -- intersection forward start point
-
-						-- The intersection must be between start and end point of the
-						-- given line (start and end point itself included).
-						-- If the intersection is between start and end point
-						-- of the given line then return the intersection as it is.
-						-- If the intersection is before start point or
-						-- beyond end point of the given line, return NOT_EXISTENT.
-						if on_line (to_point (i.intersection), line) then
-							return i;
-						else
-							return (status => NOT_EXISTENT);
-						end if;
-					
-					else
-						return (status => NOT_EXISTENT);
-					end if;
-
-				when others =>					
-					return i;
-			end case;
-
-		end get_intersection;
-
 
 		
 		function start_vector (
@@ -3420,16 +3370,21 @@ package body et_geometry is
 		
 		
 		function get_distance_to_polygon (
-			polygon			: in type_polygon_base;
-			point			: in type_point;
-			direction		: in type_rotation)
+			polygon	: in type_polygon_base;
+			point	: in type_point)
 			return type_distance_to_polygon
 		is
-			-- We will build a ray that starts at the given point
-			-- and travels in the given direction.
-			-- Then we look for intersection of the ray with the 
-			-- edges of the given polygon:
-			r : type_ray;
+			-- We build a probe line that starts at the given point
+			-- and travels in zero degree to the right.
+			-- Then we look for intersection of the line with the 
+			-- sides of the given polygon:
+			type type_line_here is new type_line with null record;
+			line : constant type_line_here := (
+					start_point	=> point,
+					end_point	=> type_point (set (X (point) + 1.0, Y (point))));
+			
+			probe_line : constant type_line_vector := to_line_vector (line);
+			
 			
 			-- In the given direction the polygon may or may not
 			-- exist. If the polygon was not found in given direction then
@@ -3448,8 +3403,9 @@ package body et_geometry is
 			
 			procedure query_line (c : in pac_polygon_lines.cursor) is
 
-				-- Find the intersection of the ray with the line:
-				i : constant type_intersection := get_intersection (r, element (c));
+				-- Find the intersection of the probe line with the candidate line
+				-- of the polygon:
+				i : constant type_intersection := get_intersection (probe_line, element (c));
 
 				-- In case there is an intersection, then we will temporarily store
 				-- the distance from point to intersection here:
@@ -3477,10 +3433,6 @@ package body et_geometry is
 			end query_line;
 			
 		begin -- get_distance_to_polygon
-
-			-- Build a ray from the given point and direction:
-			r.start_point := point;
-			r.direction := direction;
 
 			-- probe the lines of the polygon:
 			iterate (polygon.segments.lines, query_line'access);

@@ -670,20 +670,17 @@ package et_geometry is
 			return type_point;
 
 
-		function get_intersection (
-			probe_line	: in type_line_vector;
-			line		: in type_line)
-			return type_intersection;
-		
-		-- Tests whether the given ray intersects the given line.
+		-- Tests whether the given probe_line intersects the given 
+		-- candidate line.
 		-- If there is an intersection between start and end point
-		-- of the given line, then returns the location vector of
+		-- of the candidate line (start and end point included),
+		-- then returns the location vector of
 		-- the intersection.
 		-- If the intersection is before start point or
 		-- beyond end point of the given line, return NOT_EXISTENT.
 		function get_intersection (
-			ray		: in type_ray;
-			line	: in type_line)
+			probe_line		: in type_line_vector;
+			candidate_line	: in type_line)
 			return type_intersection;
 
 
@@ -1191,11 +1188,14 @@ package et_geometry is
 			end case;
 		end record;
 
-		
+
+		-- Returns the shortest distance of point to the given
+		-- polygon in direction zero degrees. 
+		-- The polygon is assumed to be on the
+		-- right of the given point.
 		function get_distance_to_polygon (
-			polygon			: in type_polygon_base;
-			point			: in type_point;
-			direction		: in type_rotation)
+			polygon	: in type_polygon_base;
+			point	: in type_point)
 			return type_distance_to_polygon;
 		
 		
