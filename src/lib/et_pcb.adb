@@ -160,7 +160,10 @@ package body et_pcb is
 		log_threshold 	: in type_log_level)
 		return boolean
 	is 
-		-- The approach to detect whether the given point is inside or outside the
+		-- This function bases on the algorithm published at
+		-- http://www.alienryderflex.com/polygon/
+		
+		-- The approach to detect whether the given point lies inside or outside the
 		-- board area is as follows:
 		-- 1. Build a probe line (starting at point) that runs at zero degrees
 		--    to the right.
@@ -178,6 +181,10 @@ package body et_pcb is
 		
 		probe_line : constant type_line_vector := to_line_vector (line);
 
+		-- For segments that end or start exactly on the Y value of the probe line
+		-- we define a threshold:
+		y_threshold : constant type_distance := Y (point);
+		
 		-- We assume a maximum of intersections with the outline.
 		subtype type_intersections_total is natural range 0 .. 1000; -- CS increase if necessary
 
@@ -192,45 +199,50 @@ package body et_pcb is
 			procedure increment_intersections is begin
 				it := it + 1;
 			end increment_intersections;
-
-			-- In a list we register the intersection points.
-			-- It serves to avoid counting of identical intersection points
-			-- multiple times. This can be the case when the probe line
-			-- crosses the point where two segments of the outline meet each other.
-			package pac_points is new doubly_linked_lists (type_point);
-			use pac_points;
-			it_list : pac_points.list;
 			
 			use pac_pcb_contour_lines;
 			use pac_pcb_contour_arcs;
 			use pac_pcb_contour_circles;
 			
 			procedure query_line (c : in pac_pcb_contour_lines.cursor) is
+				-- Find out whether there is an intersection of the probe line
+				-- and the canditate line of the contour.
 				i : constant type_intersection := get_intersection (probe_line, element (c));
 
-				-- the actual point of intersection:
-				pi : type_point;
-			begin				
-				--log (text => "probing " & to_string (element (c)), level => log_threshold + 2);
+				function crosses_threshold return boolean is begin
+					-- If the start/end point of the line is ABOVE-OR-ON the 
+					-- threshold AND if the end/start point is BELOW the
+					-- threshold then we consider the segment to be threshold-crossing.
+					if	
+						Y (element (c).start_point) >= y_threshold and 
+						Y (element (c).end_point)   <  y_threshold then
+						return true;
+						
+					elsif
+						Y (element (c).end_point)   >= y_threshold and 
+						Y (element (c).start_point) <  y_threshold then
+						return true;
+						
+					else
+						return false;
+					end if;
+				end crosses_threshold;
+			
+			begin -- query_line				
+				log (text => "probing " & to_string (element (c)), level => log_threshold + 2);
 				
 				if i.status = EXISTS then
 
-					pi := to_point (i.intersection);
-					
-					log (text => "intersects line" & to_string (element (c))
-						& " at" & to_string (to_point (i.intersection)),
-						level => log_threshold + 2);
+					-- If the canditate line segment crosses the y_threshold then 
+					-- count the intersection:
+					if crosses_threshold then
+						
+						log (text => "intersects line" & to_string (element (c))
+							& " at" & to_string (to_point (i.intersection)),
+							level => log_threshold + 2);
 
-					-- If the intersection point has already been registered in
-					-- list it_list then it is to be skipped and not counted:
-					if contains (it_list, pi) then
-						log (text => " intersection already detected -> skipped", 
-							 level => log_threshold + 2);
-					else
 						increment_intersections;
-						append (it_list, pi);
 					end if;
-					
 				end if;
 			end query_line;
 
