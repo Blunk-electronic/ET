@@ -229,7 +229,7 @@ package body et_pcb is
 				end crosses_threshold;
 			
 			begin -- query_line				
-				log (text => "probing " & to_string (element (c)), level => log_threshold + 2);
+				--log (text => "probing" & to_string (element (c)), level => log_threshold + 2);
 				
 				if i.status = EXISTS then
 
@@ -286,17 +286,18 @@ package body et_pcb is
 					get_intersection (probe_line, element (c));
 
 			begin				
-				log (text => "probing " & to_string (element (c)), level => log_threshold + 2);
+				--log (text => "probing" & to_string (element (c)), level => log_threshold + 2);
 				
 				case i.status is
-					when NONE_EXIST => null;
-					
-					when ONE_EXISTS =>
-					
-						log (text => "intersects circle" & to_string (element (c))
-							& " at" & to_string (to_point (i.intersection)),
-							level => log_threshold + 2);
+					when NONE_EXIST | ONE_EXISTS =>
+						null;
+						
+						--log (text => "intersects circle" & to_string (element (c))
+							--& " at" & to_string (to_point (i.intersection)),
+							--level => log_threshold + 2);
 
+						--increment_intersections;
+						
 					when TWO_EXIST =>
 					
 						log (text => "intersects circle" & to_string (element (c))
@@ -304,6 +305,8 @@ package body et_pcb is
 							 & " and" & to_string (to_point (i.intersection_2)),
 							level => log_threshold + 2);
 
+						increment_intersections;
+						increment_intersections;						
 						
 				end case;
 			end query_circle;

@@ -50,6 +50,10 @@ with et_exceptions;				use et_exceptions;
 
 package body et_geometry is
 
+	package functions_float is new ada.numerics.generic_elementary_functions (float);
+	use functions_float;
+
+	
 	function to_string (axis : in type_axis) return string is begin
 		return to_lower (type_axis'image (axis));
 	end;
@@ -166,8 +170,8 @@ package body et_geometry is
 			x : constant float := float (point.x);
 			y : constant float := float (point.y);
 
-			package functions is new ada.numerics.generic_elementary_functions (float);
-			use functions;
+			--package functions is new ada.numerics.generic_elementary_functions (float);
+			--use functions;
 		begin
 			-- NOTE: If x and y are zero then the arctan operation is not possible. 
 			-- In this case we assume the resuling angle is zero.
@@ -490,9 +494,9 @@ package body et_geometry is
 			distance	: in type_distance_positive)
 			return type_point'class is 
 
-			package functions is new ada.numerics.generic_elementary_functions (float);
+			--package functions is new ada.numerics.generic_elementary_functions (float);
 			-- CS could be useful to use a constrained float type			
-			use functions;
+			--use functions;
 			
 			delta_x, delta_y : float := 0.0;
 			-- CS could be useful to use a constrained float type
@@ -655,8 +659,8 @@ package body et_geometry is
 		function distance_polar (point_one, point_two : in type_point) return type_distance_polar is
 			result : type_distance_polar;
 
-			package functions is new ada.numerics.generic_elementary_functions (float);
-			use functions;
+			--package functions is new ada.numerics.generic_elementary_functions (float);
+			--use functions;
 			delta_x, delta_y : float := 0.0;
 			
 		begin
@@ -792,8 +796,8 @@ package body et_geometry is
 			point		: in out type_point'class;
 			rotation	: in type_rotation) is
 
-			package functions_distance is new ada.numerics.generic_elementary_functions (float);
-			use functions_distance;
+			--package functions_distance is new ada.numerics.generic_elementary_functions (float);
+			--use functions_distance;
 			
 			type type_float_angle is digits 4 range -719.9 .. 719.9; -- CS: refine			
 			package functions_angle is new ada.numerics.generic_elementary_functions (type_float_angle);
@@ -872,8 +876,8 @@ package body et_geometry is
 
 			-- CS probably way to much stuff here. simplify. use code of procedure rotate_by (see above).
 
-			package functions_distance is new ada.numerics.generic_elementary_functions (float);
-			use functions_distance;
+			--package functions_distance is new ada.numerics.generic_elementary_functions (float);
+			--use functions_distance;
 			
 			type type_float_angle is digits 4 range -719.9 .. 719.9; -- CS: refine			
 			package functions_angle is new ada.numerics.generic_elementary_functions (type_float_angle);
@@ -1063,8 +1067,8 @@ package body et_geometry is
 			vector	: in type_vector)
 			return type_distance_positive
 		is
-			package functions is new ada.numerics.generic_elementary_functions (float);
-			use functions;
+			--package functions is new ada.numerics.generic_elementary_functions (float);
+			--use functions;
 		begin
 			return type_distance_positive (
 				sqrt (
@@ -1176,8 +1180,8 @@ package body et_geometry is
 		function direction_vector (ray : in type_ray) 
 			return type_vector
 		is 
-			package functions is new ada.numerics.generic_elementary_functions (float);
-			use functions;
+			--package functions is new ada.numerics.generic_elementary_functions (float);
+			--use functions;
 			
 			v : type_vector;
 		begin
@@ -1325,8 +1329,8 @@ package body et_geometry is
 			line_1, line_2	: in type_line_vector)
 			return type_rotation
 		is 
-			package functions is new ada.numerics.generic_elementary_functions (float);
-			use functions;
+			--package functions is new ada.numerics.generic_elementary_functions (float);
+			--use functions;
 
 			a, b : float;
 		begin
@@ -1461,8 +1465,8 @@ package body et_geometry is
 			dx : constant float := float (x (line.end_point) - x (line.start_point));
 			dy : constant float := float (y (line.end_point) - y (line.start_point));
 
-			package pac_functions is new ada.numerics.generic_elementary_functions (float);
-			use pac_functions;
+			--package pac_functions is new ada.numerics.generic_elementary_functions (float);
+			--use pac_functions;
 		begin
 			-- NOTE: If dx and dy are zero then the arctan operation is not possible. 
 			-- In this case we assume the resuling angle is zero.
@@ -2033,9 +2037,9 @@ package body et_geometry is
 		-- the angle will be -90 degree.
 			result : type_arc_angles;
 
-			package functions is new ada.numerics.generic_elementary_functions (float);
+			--package functions is new ada.numerics.generic_elementary_functions (float);
 			-- CS could be useful to use a constrained float type
-			use functions;
+			--use functions;
 						
 			-- Take a copy of the given arc in arc_tmp.
 			type type_arc_tmp is new type_arc with null record;
@@ -2283,9 +2287,9 @@ package body et_geometry is
 			angle 		: in type_rotation) -- unit is degrees
 			return type_point'class is
 
-			package functions is new ada.numerics.generic_elementary_functions (float);
+			--package functions is new ada.numerics.generic_elementary_functions (float);
 			-- CS could be useful to use a constrained float type
-			use functions;
+			--use functions;
 						
 			-- Take a copy of the given arc in arc.
 			type type_arc_tmp is new type_arc with null record;
@@ -2435,8 +2439,8 @@ package body et_geometry is
 			circle	: in type_circle)
 			return type_intersection_of_line_and_circle
 		is
-			package functions_float is new ada.numerics.generic_elementary_functions (float);
-			use functions_float;
+			--package functions_float is new ada.numerics.generic_elementary_functions (float);
+			--use functions_float;
 			
 			-- This function bases on the approach by
 			-- Weisstein, Eric W. "Circle-Line Intersection." 
@@ -2454,18 +2458,16 @@ package body et_geometry is
 			
 			-- The line starts here:
 			ps : type_point;
-			x1 : constant float := float (X (to_point (line.v_start)));
-			y1 : constant float := float (Y (to_point (line.v_start)));
+			x1, y1 : float;
 
 			-- The line ends here:
 			pe : type_point;
 			x2, y2 : float;
-
 			
-			v1 : type_vector;
 			x, y, dx, dy, dr, DI : float;
 
 			-- scratch variables:
+			v1 : type_vector;
 			a, b, c, d : float;
 
 			zero : constant float := 0.0;
@@ -2482,30 +2484,43 @@ package body et_geometry is
 			intersection_1, intersection_2 : type_point;
 			
 		begin
+			
 			-- compute start and end point of given line:
 			ps := to_point (line.v_start);
+			--put_line ("start " & to_string (ps));
 			
 			v1 := scale (line.v_direction, 1.0);
 			pe := to_point (add (line.v_start, v1));
-
+			--put_line ("end   " & to_string (pe));
+			
 			-- move start and end point of line by offset:
 			move_by (ps, type_point (invert (offset)));
 			move_by (pe, type_point (invert (offset)));
 
+			--put_line ("o start " & to_string (ps));
+			--put_line ("o end   " & to_string (pe));
+
+			x1 := float (ps.x);
+			y1 := float (ps.y);
+			
 			x2 := float (pe.x);
 			y2 := float (pe.y);
-
+			
 			dx := x2 - x1;
 			dy := y2 - y1;
+			--put_line ("dx" & float'image (dx) & " dy" & float'image (dy));
 
 			dr := sqrt (dx ** 2 + dy ** 2);
+			--put_line ("dr" & float'image (dr));
+			
 			DI := x1 * y2 - x2 * y1;
-
-			a := r ** 2;
+			--put_line ("DI" & float'image (DI));
+			
 			b := dr ** 2;
+			a := r ** 2;
 			c := DI ** 2;
 			
-			d := functions_float.sqrt (a * b - c); -- incidence of line and circle
+			d := a * b - c; -- incidence of line and circle
 
 			if d < zero then
 				s := NONE_EXIST;
@@ -2526,14 +2541,14 @@ package body et_geometry is
 			else -- d > zero
 				s := TWO_EXIST; -- two intersections
 
-				x := ( DI * dy + sgn (dy) * dx * d) / b;
-				y := (-DI * dx + abs (dy) * d)      / b;
+				x := ( DI * dy + sgn (dy) * dx * sqrt (d)) / b;
+				y := (-DI * dx + abs (dy) * sqrt (d))      / b;
 					  
 				intersection_1 := type_point (set (type_distance (x), type_distance (y)));
 				move_by (intersection_1, offset);
 				
-				x := ( DI * dy - sgn (dy) * dx * d) / b;
-				y := (-DI * dx - abs (dy) * d)      / b;
+				x := ( DI * dy - sgn (dy) * dx * sqrt (d)) / b;
+				y := (-DI * dx - abs (dy) * sqrt (d))      / b;
 					  
 				intersection_2 := type_point (set (type_distance (x), type_distance (y)));
 				move_by (intersection_2, offset);				
