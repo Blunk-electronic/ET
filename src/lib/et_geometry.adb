@@ -1206,7 +1206,7 @@ package body et_geometry is
 		
 		function get_intersection (
 			line_1, line_2	: in type_line_vector)
-			return type_intersection
+			return type_intersection_of_two_lines
 		is 
 			-- scratch variables:
 			a, b, c, d, e, f, g : float;
@@ -1355,9 +1355,9 @@ package body et_geometry is
 		function get_intersection (
 			probe_line		: in type_line_vector;
 			candidate_line	: in type_line)
-			return type_intersection
+			return type_intersection_of_two_lines
 		is
-			i : constant type_intersection := get_intersection (
+			i : constant type_intersection_of_two_lines := get_intersection (
 					line_1	=> probe_line,
 					line_2	=> to_line_vector (candidate_line));
 		begin
@@ -2264,6 +2264,17 @@ package body et_geometry is
 			return false; 
 			-- CS math required
 		end;
+
+
+		function get_intersection (
+			line	: in type_line_vector;
+			arc		: in type_arc)
+			return type_intersection_of_line_and_circle
+		is
+		begin
+			return (status => NONE_EXIST);
+		end get_intersection;
+
 		
 		function arc_end_point (
 		-- Computes the end point of an arc.
@@ -2416,6 +2427,123 @@ package body et_geometry is
 			return false; 
 			-- CS math required
 		end;
+
+
+		
+		function get_intersection (
+			line	: in type_line_vector;
+			circle	: in type_circle)
+			return type_intersection_of_line_and_circle
+		is
+			package functions_float is new ada.numerics.generic_elementary_functions (float);
+			use functions_float;
+			
+			-- This function bases on the approach by
+			-- Weisstein, Eric W. "Circle-Line Intersection." 
+			-- From MathWorld--A Wolfram Web Resource. 
+			-- https://mathworld.wolfram.com/Circle-LineIntersection.html 
+
+			-- The appoach assumes the circle center at 0/0.
+			-- So we must first move the line by
+			-- the given center of the circle. The intersections,
+			-- if any exist, must finally be moved back by this offset:
+			offset : constant type_point := circle.center;
+			
+			-- The circle radius is:
+			r : constant float := float (circle.radius);
+			
+			-- The line starts here:
+			ps : type_point;
+			x1 : constant float := float (X (to_point (line.v_start)));
+			y1 : constant float := float (Y (to_point (line.v_start)));
+
+			-- The line ends here:
+			pe : type_point;
+			x2, y2 : float;
+
+			
+			v1 : type_vector;
+			x, y, dx, dy, dr, DI : float;
+
+			-- scratch variables:
+			a, b, c, d : float;
+
+			zero : constant float := 0.0;
+
+			function sgn (x : float) return float is begin
+				if x >= zero then
+					return 1.0;
+				else
+					return -1.0;
+				end if;
+			end sgn;
+
+			s : type_intersection_status_of_line_and_circle;
+			intersection_1, intersection_2 : type_point;
+			
+		begin
+			-- compute start and end point of given line:
+			ps := to_point (line.v_start);
+			
+			v1 := scale (line.v_direction, 1.0);
+			pe := to_point (add (line.v_start, v1));
+
+			-- move start and end point of line by offset:
+			move_by (ps, type_point (invert (offset)));
+			move_by (pe, type_point (invert (offset)));
+
+			x2 := float (pe.x);
+			y2 := float (pe.y);
+
+			dx := x2 - x1;
+			dy := y2 - y1;
+
+			dr := sqrt (dx ** 2 + dy ** 2);
+			DI := x1 * y2 - x2 * y1;
+
+			a := r ** 2;
+			b := dr ** 2;
+			c := DI ** 2;
+			
+			d := functions_float.sqrt (a * b - c); -- incidence of line and circle
+
+			if d < zero then
+				s := NONE_EXIST;
+				
+				return (status => NONE_EXIST);
+				
+			elsif d = zero then
+				s := ONE_EXISTS; -- tangent
+
+				x := (DI * dy) / b;
+				y := (-DI * dx) / b;
+
+				intersection_1 := type_point (set (type_distance (x), type_distance (y)));
+				move_by (intersection_1, offset);
+
+				return (ONE_EXISTS, to_vector (intersection_1));
+				
+			else -- d > zero
+				s := TWO_EXIST; -- two intersections
+
+				x := ( DI * dy + sgn (dy) * dx * d) / b;
+				y := (-DI * dx + abs (dy) * d)      / b;
+					  
+				intersection_1 := type_point (set (type_distance (x), type_distance (y)));
+				move_by (intersection_1, offset);
+				
+				x := ( DI * dy - sgn (dy) * dx * d) / b;
+				y := (-DI * dx - abs (dy) * d)      / b;
+					  
+				intersection_2 := type_point (set (type_distance (x), type_distance (y)));
+				move_by (intersection_2, offset);				
+
+				return (TWO_EXIST, to_vector (intersection_1), to_vector (intersection_2));
+			end if;
+
+		end get_intersection;
+
+
 		
 		function to_string (line : in type_line) return string is
 		-- Returns the start and end point of the given line as string.
@@ -3405,7 +3533,7 @@ package body et_geometry is
 
 				-- Find the intersection of the probe line with the candidate line
 				-- of the polygon:
-				i : constant type_intersection := get_intersection (probe_line, element (c));
+				i : constant type_intersection_of_two_lines := get_intersection (probe_line, element (c));
 
 				-- In case there is an intersection, then we will temporarily store
 				-- the distance from point to intersection here:

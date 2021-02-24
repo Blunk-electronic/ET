@@ -629,14 +629,14 @@ package et_geometry is
 			return type_line_vector;
 
 		
-		type type_intersection_status is (
+		type type_intersection_status_of_two_lines is (
 			NOT_EXISTENT,
 			EXISTS,
 			OVERLAP);
 
 
-		-- When finding intersections this type is required:
-		type type_intersection (status : type_intersection_status) is record
+		-- When finding intersections of two lines this type is required:
+		type type_intersection_of_two_lines (status : type_intersection_status_of_two_lines) is record
 			case status is
 				when EXISTS	=> intersection : type_vector; -- location vector
 				when NOT_EXISTENT | OVERLAP => null;
@@ -648,7 +648,7 @@ package et_geometry is
 		-- If there is an intersection, returns the location vector.
 		function get_intersection (
 			line_1, line_2	: in type_line_vector)
-			return type_intersection;
+			return type_intersection_of_two_lines;
 
 		function get_angle_of_itersection (
 			line_1, line_2	: in type_line_vector)
@@ -681,7 +681,7 @@ package et_geometry is
 		function get_intersection (
 			probe_line		: in type_line_vector;
 			candidate_line	: in type_line)
-			return type_intersection;
+			return type_intersection_of_two_lines;
 
 
 		
@@ -886,6 +886,36 @@ package et_geometry is
 			arc			: in type_arc;
 			accuracy	: in type_catch_zone := zero)
 			return boolean; 
+
+
+		type type_intersection_status_of_line_and_circle is (
+			NONE_EXIST, -- no intersection at all
+			ONE_EXISTS, -- tangent
+			TWO_EXIST); -- two intersections
+
+		-- When finding intersections of a line with a circle we use this type:
+		type type_intersection_of_line_and_circle (status : type_intersection_status_of_line_and_circle) is record
+			case status is
+				when NONE_EXIST => null;
+				
+				when ONE_EXISTS	=> 
+					intersection : type_vector; -- location vector
+				
+				when TWO_EXIST	=> 
+					intersection_1 : type_vector; -- location vector
+					intersection_2 : type_vector; -- location vector
+					
+			end case;
+		end record;
+
+
+		-- Computes the intersections of a line with an arc:
+		function get_intersection (
+			line	: in type_line_vector;
+			arc		: in type_arc)
+			return type_intersection_of_line_and_circle;
+
+		
 		
 		function arc_end_point (
 		-- Computes the end point of an arc.
@@ -949,6 +979,17 @@ package et_geometry is
 			accuracy	: in type_catch_zone := zero)
 			return boolean;
 		
+
+
+		
+		-- Computes the intersections of a line with a circle:
+		function get_intersection (
+			line	: in type_line_vector;
+			circle	: in type_circle)
+			return type_intersection_of_line_and_circle;
+
+		
+
 		
 		function to_string (line : in type_line) return string;
 		-- Returns the start and end point of the given line as string.

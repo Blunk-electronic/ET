@@ -207,7 +207,7 @@ package body et_pcb is
 			procedure query_line (c : in pac_pcb_contour_lines.cursor) is
 				-- Find out whether there is an intersection of the probe line
 				-- and the candidate line of the contour.
-				i : constant type_intersection := get_intersection (probe_line, element (c));
+				i : constant type_intersection_of_two_lines := get_intersection (probe_line, element (c));
 
 				function crosses_threshold return boolean is begin
 					-- If the start/end point of the line is ABOVE-OR-ON the 
@@ -247,9 +247,10 @@ package body et_pcb is
 			end query_line;
 
 			procedure query_arc (c : in pac_pcb_contour_arcs.cursor) is
-				-- CS
-				
-				--i : constant type_intersection := get_intersection (probe_line, element (c));
+				-- Find out whether there is an intersection of the probe line
+				-- and the candidate arc of the contour.
+				i : constant type_intersection_of_line_and_circle := 
+					get_intersection (probe_line, element (c));
 
 				-- the actual point of intersection:
 				--pi : type_point;
@@ -279,35 +280,32 @@ package body et_pcb is
 			end query_arc;
 
 			procedure query_circle (c : in pac_pcb_contour_circles.cursor) is
-				-- CS
-				
-				--i : constant type_intersection := get_intersection (probe_line, element (c));
+				-- Find out whether there is an intersection of the probe line
+				-- and the candidate circle of the contour.
+				i : constant type_intersection_of_line_and_circle := 
+					get_intersection (probe_line, element (c));
 
-				-- the actual point of intersection:
-				--pi : type_point;
 			begin				
-				--log (text => "probing " & to_string (element (c)), level => log_threshold + 2);
+				log (text => "probing " & to_string (element (c)), level => log_threshold + 2);
 				
-				--if i.status = EXISTS then
-
-					--pi := to_point (i.intersection);
+				case i.status is
+					when NONE_EXIST => null;
 					
-					--log (text => "intersects line" & to_string (element (c))
-						--& " at" & to_string (to_point (i.intersection)),
-						--level => log_threshold + 2);
-
-					---- If the intersection point has already been registered in
-					---- list it_list then it is to be skipped and not counted:
-					--if contains (it_list, pi) then
-						--log (text => " intersection already detected -> skipped", 
-							 --level => log_threshold + 2);
-					--else
-						--increment_intersections;
-						--append (it_list, pi);
-					--end if;
+					when ONE_EXISTS =>
 					
-				--end if;
-				null;
+						log (text => "intersects circle" & to_string (element (c))
+							& " at" & to_string (to_point (i.intersection)),
+							level => log_threshold + 2);
+
+					when TWO_EXIST =>
+					
+						log (text => "intersects circle" & to_string (element (c))
+							 & " at" & to_string (to_point (i.intersection_1))
+							 & " and" & to_string (to_point (i.intersection_2)),
+							level => log_threshold + 2);
+
+						
+				end case;
 			end query_circle;
 			
 		begin -- count_intersections
