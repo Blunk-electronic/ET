@@ -169,9 +169,6 @@ package body et_geometry is
 		function rotation (point : in type_point) return type_rotation is
 			x : constant float := float (point.x);
 			y : constant float := float (point.y);
-
-			--package functions is new ada.numerics.generic_elementary_functions (float);
-			--use functions;
 		begin
 			-- NOTE: If x and y are zero then the arctan operation is not possible. 
 			-- In this case we assume the resuling angle is zero.
@@ -492,12 +489,8 @@ package body et_geometry is
 			point		: in type_point;
 			direction	: in type_rotation;
 			distance	: in type_distance_positive)
-			return type_point'class is 
-
-			--package functions is new ada.numerics.generic_elementary_functions (float);
-			-- CS could be useful to use a constrained float type			
-			--use functions;
-			
+			return type_point'class 
+		is 			
 			delta_x, delta_y : float := 0.0;
 			-- CS could be useful to use a constrained float type
 			
@@ -595,8 +588,6 @@ package body et_geometry is
 			point_one, point_two : in type_point) 
 			return type_distance_positive 
 		is
-			package functions is new ada.numerics.generic_elementary_functions (float);
-			
 			distance : type_distance_positive; -- to be returned
 			delta_x, delta_y : float := 0.0;
 		begin
@@ -612,7 +603,7 @@ package body et_geometry is
 
 				-- put_line (float'image (delta_x) & " " & float'image (delta_y));
 				
-				distance := type_distance (functions.sqrt ((delta_x ** 2) + (delta_y ** 2)));
+				distance := type_distance (sqrt ((delta_x ** 2) + (delta_y ** 2)));
 			end if;
 				
 			return distance;
@@ -656,13 +647,12 @@ package body et_geometry is
 
 
 		
-		function distance_polar (point_one, point_two : in type_point) return type_distance_polar is
+		function distance_polar (point_one, point_two : in type_point) 
+			return type_distance_polar 
+		is
 			result : type_distance_polar;
 
-			--package functions is new ada.numerics.generic_elementary_functions (float);
-			--use functions;
 			delta_x, delta_y : float := 0.0;
-			
 		begin
 			result.absolute := distance_total (point_one, point_two);
 
@@ -794,11 +784,8 @@ package body et_geometry is
 		
 		procedure rotate_by (
 			point		: in out type_point'class;
-			rotation	: in type_rotation) is
-
-			--package functions_distance is new ada.numerics.generic_elementary_functions (float);
-			--use functions_distance;
-			
+			rotation	: in type_rotation) 
+		is			
 			type type_float_angle is digits 4 range -719.9 .. 719.9; -- CS: refine			
 			package functions_angle is new ada.numerics.generic_elementary_functions (type_float_angle);
 			use functions_angle;
@@ -875,9 +862,6 @@ package body et_geometry is
 			rotation	: in type_rotation) is
 
 			-- CS probably way to much stuff here. simplify. use code of procedure rotate_by (see above).
-
-			--package functions_distance is new ada.numerics.generic_elementary_functions (float);
-			--use functions_distance;
 			
 			type type_float_angle is digits 4 range -719.9 .. 719.9; -- CS: refine			
 			package functions_angle is new ada.numerics.generic_elementary_functions (type_float_angle);
@@ -1067,8 +1051,6 @@ package body et_geometry is
 			vector	: in type_vector)
 			return type_distance_positive
 		is
-			--package functions is new ada.numerics.generic_elementary_functions (float);
-			--use functions;
 		begin
 			return type_distance_positive (
 				sqrt (
@@ -1180,9 +1162,6 @@ package body et_geometry is
 		function direction_vector (ray : in type_ray) 
 			return type_vector
 		is 
-			--package functions is new ada.numerics.generic_elementary_functions (float);
-			--use functions;
-			
 			v : type_vector;
 		begin
 			-- x = cos (direction) * 1
@@ -1329,9 +1308,6 @@ package body et_geometry is
 			line_1, line_2	: in type_line_vector)
 			return type_rotation
 		is 
-			--package functions is new ada.numerics.generic_elementary_functions (float);
-			--use functions;
-
 			a, b : float;
 		begin
 			a := float (dot_product (line_1.v_direction, line_2.v_direction));
@@ -2036,10 +2012,6 @@ package body et_geometry is
 		-- The angles may be negative. For example instead of 270 degree
 		-- the angle will be -90 degree.
 			result : type_arc_angles;
-
-			--package functions is new ada.numerics.generic_elementary_functions (float);
-			-- CS could be useful to use a constrained float type
-			--use functions;
 						
 			-- Take a copy of the given arc in arc_tmp.
 			type type_arc_tmp is new type_arc with null record;
@@ -2281,16 +2253,11 @@ package body et_geometry is
 
 		
 		function arc_end_point (
-		-- Computes the end point of an arc.
 			center		: in type_point;
 			start_point	: in type_point;	
 			angle 		: in type_rotation) -- unit is degrees
-			return type_point'class is
-
-			--package functions is new ada.numerics.generic_elementary_functions (float);
-			-- CS could be useful to use a constrained float type
-			--use functions;
-						
+			return type_point'class
+		is						
 			-- Take a copy of the given arc in arc.
 			type type_arc_tmp is new type_arc with null record;
 			arc : type_arc_tmp; -- := (arc with null record);
@@ -2439,9 +2406,6 @@ package body et_geometry is
 			circle	: in type_circle)
 			return type_intersection_of_line_and_circle
 		is
-			--package functions_float is new ada.numerics.generic_elementary_functions (float);
-			--use functions_float;
-			
 			-- This function bases on the approach by
 			-- Weisstein, Eric W. "Circle-Line Intersection." 
 			-- From MathWorld--A Wolfram Web Resource. 
