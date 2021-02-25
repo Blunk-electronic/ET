@@ -252,15 +252,21 @@ package body et_pcb is
 				i : constant type_intersection_of_line_and_circle := 
 					get_intersection (probe_line, element (c));
 
-				-- the actual point of intersection:
-				--pi : type_point;
 			begin				
-				--log (text => "probing " & to_string (element (c)), level => log_threshold + 2);
+				log (text => "probing " & to_string (element (c)), level => log_threshold + 2);
 				
-				--if i.status = EXISTS then
-
-					--pi := to_point (i.intersection);
+				case i.status is
+					when NONE_EXIST => null;
 					
+					when ONE_EXISTS =>
+						case i.tangent_status is
+							when TANGENT => null;
+							when SECANT => null;
+						end case;
+
+					when TWO_EXIST =>
+						null;
+						
 					--log (text => "intersects line" & to_string (element (c))
 						--& " at" & to_string (to_point (i.intersection)),
 						--level => log_threshold + 2);
@@ -275,8 +281,7 @@ package body et_pcb is
 						--append (it_list, pi);
 					--end if;
 					
-				--end if;
-				null;
+				end case;
 			end query_arc;
 
 			procedure query_circle (c : in pac_pcb_contour_circles.cursor) is
@@ -292,6 +297,9 @@ package body et_pcb is
 					when NONE_EXIST | ONE_EXISTS =>
 						null;
 						
+						-- NOTE: If the probe line is a tangent to the
+						-- circle, then we threat this NOT as intersection.
+												
 						--log (text => "intersects circle" & to_string (element (c))
 							--& " at" & to_string (to_point (i.intersection)),
 							--level => log_threshold + 2);

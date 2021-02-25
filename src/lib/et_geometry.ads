@@ -878,13 +878,13 @@ package et_geometry is
 		function boundaries (arc : in type_arc) return type_boundaries;
 		-- Returns the boundaries of the given arc.
 		
-		function on_arc (
 		-- Returns true if the given point sits on the given arc.
 		-- The optional parameter accuracy may be used to specifiy the range at
 		-- which the point is regarded as sitting on the arc.
+		function on_arc (
 			point		: in type_point;
 			arc			: in type_arc;
-			accuracy	: in type_catch_zone := zero)
+			accuracy	: in type_catch_zone := zero) -- CS currently ignored
 			return boolean; 
 
 
@@ -894,16 +894,20 @@ package et_geometry is
 			TWO_EXIST); -- two intersections
 
 		-- When finding intersections of a line with a circle we use this type:
+
+		type type_tangent_status is (TANGENT, SECANT);
+		
 		type type_intersection_of_line_and_circle (status : type_intersection_status_of_line_and_circle) is record
 			case status is
 				when NONE_EXIST => null;
 				
 				when ONE_EXISTS	=> 
-					intersection : type_vector; -- location vector
+					intersection	: type_vector; -- location vector
+					tangent_status	: type_tangent_status;
 				
 				when TWO_EXIST	=> 
-					intersection_1 : type_vector; -- location vector
-					intersection_2 : type_vector; -- location vector
+					intersection_1	: type_vector; -- location vector
+					intersection_2	: type_vector; -- location vector
 					
 			end case;
 		end record;

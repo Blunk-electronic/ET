@@ -2229,17 +2229,51 @@ package body et_geometry is
 		end boundaries;
 		
 		function on_arc (
-		-- Returns true if the given point sits on the given arc.
-		-- The optional parameter accuracy may be used to specifiy the range at
-		-- which the point is regarded as sitting on the arc.
 			point		: in type_point;
 			arc			: in type_arc;
 			accuracy	: in type_catch_zone := zero)
-			return boolean is
+			return boolean 
+		is
+			-- The angle of the given point relative to the
+			-- center of the given arc:
+			ap : type_rotation;
+
+			-- A representation of the given arc in angles:
+			arc_angles : constant type_arc_angles := to_arc_angles (arc);
 		begin
-			return false; 
-			-- CS math required
-		end;
+			-- First test whether the given point is at the circumfence of
+			-- a virtual circle. The circle has the same radius as the arc.
+			if distance_total (point, arc.center) = arc_angles.radius then
+
+				-- Point is on circumfence of virtual circle.
+
+				-- Compute the angle of the point relative to the center
+				-- of the given arc:
+				ap := angle (distance_polar (arc.center, point));
+
+				-- The angle of the point must be between start and end point
+				-- of the arc.
+				case arc.direction is
+					when CW => 
+						if ap <= arc_angles.angle_start and ap >= arc_angles.angle_end then
+							return true;
+						else
+							return false;
+						end if;
+
+					when CCW =>
+						if ap >= arc_angles.angle_start and ap <= arc_angles.angle_end then
+							return true;
+						else
+							return false;
+						end if;
+				end case;
+				
+			else
+				return false; 
+			end if;
+
+		end on_arc;
 
 
 		function get_intersection (
@@ -2247,8 +2281,61 @@ package body et_geometry is
 			arc		: in type_arc)
 			return type_intersection_of_line_and_circle
 		is
+			-- We assume the arc is a virtual circle and compute the
+			-- intersections of the line with the virtual circle.
+			
+			-- Build a virtual circle from the given arc:
+			type type_virtual_circle is new type_circle with null record;
+			vc : constant type_virtual_circle := (
+					center => arc.center, 
+					radius => radius_start (arc));
+
+			-- Compute the virtual intersections of line with circle:
+			vi : constant type_intersection_of_line_and_circle := 
+				get_intersection (line, vc);
+			
 		begin
-			return (status => NONE_EXIST);
+			case vi.status is
+				when NONE_EXIST => 
+					-- line does not meet the virtual circle
+					-- and does not meet the given arc either.
+					return (status => NONE_EXIST);
+
+				when ONE_EXISTS => 
+					-- line is a tangent to the virtual circle
+
+					-- Test whether the point where the tangent meets the
+					-- circle is on the given arc:
+					if on_arc (to_point (vi.intersection), arc) then
+						return (ONE_EXISTS, vi.intersection, TANGENT);
+					else
+						return (status => NONE_EXIST);
+					end if;
+					
+				when TWO_EXIST => 
+					-- line is a secant to the virtual circle:
+
+					-- Test whether the points where the secant meets the
+					-- circle are on the given arc:
+					
+					if	on_arc (to_point (vi.intersection_1), arc) 
+					and on_arc (to_point (vi.intersection_2), arc) then
+						-- both intersections are on the arc
+						return (TWO_EXIST, vi.intersection_1, vi.intersection_2);
+						
+					elsif on_arc (to_point (vi.intersection_1), arc) then
+						-- only intersection 1 in on the arc
+						return (ONE_EXISTS, vi.intersection_1, SECANT);
+
+					elsif on_arc (to_point (vi.intersection_2), arc) then
+						-- only intersection 2 in on the arc
+						return (ONE_EXISTS, vi.intersection_2, SECANT);
+
+					else
+						return (status => NONE_EXIST); -- CS should never happen
+					end if;					
+			end case;
+			
 		end get_intersection;
 
 		
@@ -2387,17 +2474,18 @@ package body et_geometry is
 		end boundaries;
 		
 		function on_circle (
-		-- Returns true if the given point sits on the given circle circumfence.
-		-- The optional parameter accuracy may be used to specifiy the range at
-		-- which the point is regarded as sitting on the circle.
 			point		: in type_point;
 			circle		: in type_circle;
 			accuracy	: in type_catch_zone := zero)
-			return boolean is
+			return boolean 
+		is
 		begin
-			return false; 
-			-- CS math required
-		end;
+			if distance_total (point, circle.center) - circle.radius <= accuracy then
+				return true;
+			else
+				return false; 
+			end if;
+		end on_circle;
 
 
 		
@@ -2500,7 +2588,7 @@ package body et_geometry is
 				intersection_1 := type_point (set (type_distance (x), type_distance (y)));
 				move_by (intersection_1, offset);
 
-				return (ONE_EXISTS, to_vector (intersection_1));
+				return (ONE_EXISTS, to_vector (intersection_1), TANGENT);
 				
 			else -- d > zero
 				s := TWO_EXIST; -- two intersections
