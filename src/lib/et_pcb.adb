@@ -158,7 +158,7 @@ package body et_pcb is
 		point			: in type_point;
 		contours		: in type_pcb_contours;
 		log_threshold 	: in type_log_level)
-		return boolean
+		return type_on_board_query_result
 	is 
 		-- This function bases on the algorithm published at
 		-- <http://www.alienryderflex.com/polygon//>
@@ -168,14 +168,15 @@ package body et_pcb is
 		-- The approach to detect whether the given point lies inside or outside the
 		-- board area is as follows:
 		-- 1. Build a probe line (starting at point) that runs at zero degrees
-		--    to the right. The probe line divides the area in two: a upper half and a
+		--    to the right. The probe line divides the area in two: an upper half and a
 		--    lower half. Special situations arise if objects start or end exactly at
 		--    the probe line.
 		-- 2. The number of intersections then tells us:
 		--    - odd -> point is inside board area
 		--    - zero or even -> point is outside board area
 
-		result : boolean := false;
+		result : type_on_board_query_result;
+
 		
 
 		type type_line is new pac_shapes.type_line with null record;
@@ -199,10 +200,7 @@ package body et_pcb is
 		-- contours and counts the intersections of the probe line
 		-- with each of them:
 		procedure count_intersections is 
-
-			procedure increment_intersections is begin
-				it := it + 1;
-			end increment_intersections;
+			use pac_on_board_query_x_values;
 			
 			use pac_pcb_contour_lines;
 			use pac_pcb_contour_arcs;
@@ -245,7 +243,11 @@ package body et_pcb is
 							& " at" & to_string (to_point (i.intersection)),
 							level => log_threshold + 2);
 
-						increment_intersections;
+						-- count the intersection
+						it := it + 1;
+
+						-- Add the x value of intersection to the result:
+						insert (result.x_values, X (to_point (i.intersection)));
 					end if;
 				end if;
 			end query_line;
@@ -286,6 +288,9 @@ package body et_pcb is
 						level => log_threshold + 2);
 
 					it := it + 1;
+
+					-- Add the x value of intersection to the result:
+					insert (result.x_values, X (to_point (i.intersection)));
 				end count_one;
 				
 				procedure count_two is begin
@@ -295,6 +300,10 @@ package body et_pcb is
 						level => log_threshold + 2);
 
 					it := it + 2;
+
+					-- Add the x values of two intersections to the result:
+					insert (result.x_values, X (to_point (i.intersection_1)));
+					insert (result.x_values, X (to_point (i.intersection_2)));
 				end count_two;
 				
 			begin -- query_arc		
@@ -378,23 +387,24 @@ package body et_pcb is
 				log (text => "probing" & to_string (element (c)), level => log_threshold + 2);
 				
 				case i.status is
-					when NONE_EXIST | ONE_EXISTS =>
-						null;
-						
+					when NONE_EXIST | ONE_EXISTS => null;
 						-- NOTE: If the probe line is a tangent to the
 						-- circle, then we threat this NOT as intersection.
-			
 					
 					when TWO_EXIST =>
-						-- The probe line intesects the circle at two points:
+						-- The probe line intersects the circle at two points:
 					
 						log (text => " intersects circle" -- & to_string (element (c))
 							 & " at" & to_string (to_point (i.intersection_1))
 							 & " and" & to_string (to_point (i.intersection_2)),
 							level => log_threshold + 2);
 
-						increment_intersections;
-						increment_intersections;						
+						-- count two intersections
+						it := it + 2;
+
+						-- Add the x values of two intersections to the result:
+						insert (result.x_values, X (to_point (i.intersection_1)));
+						insert (result.x_values, X (to_point (i.intersection_2)));					
 						
 				end case;
 			end query_circle;
@@ -450,10 +460,10 @@ package body et_pcb is
 		-- If the total is even, then the point is outside the board area.
 		if (it rem 2) = 1 then
 			log (text => "point IS on board", level => log_threshold);
-			result := true; -- inside
+			result.status := INSIDE;
 		else 
 			log (text => "point is NOT on board", level => log_threshold);
-			result := false; -- outside
+			result.status := OUTSIDE;
 		end if;
 
 		return result;

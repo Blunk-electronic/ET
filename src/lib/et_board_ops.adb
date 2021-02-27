@@ -4679,12 +4679,16 @@ package body et_board_ops is
 								level => log_threshold + 3);
 
 						end shift_right;
+
+						on_board_status : constant type_on_board_query_result := 
+							on_board (lower_left_corner.point, module.board.contours, log_threshold + 3);
+					
 					
 					begin -- compute_start_point
 
-						if on_board (lower_left_corner.point, module.board.contours, log_threshold + 3) then
-							null;
-						end if;
+						--if on_board (lower_left_corner.point, module.board.contours, log_threshold + 3) then
+							--null;
+						--end if;
 
 						case lower_left_corner.status is
 

@@ -209,7 +209,15 @@ package et_pcb is
 	
 
 	-- In order to get the status of a point relative to the
-	-- board area we need this stuff:
+	-- board area we need this stuff.
+	-- The general approach is:
+	-- A ray that starts at point and travels in zero degees 
+	-- may intersect the board contours.
+	-- The result of such a query is the type_on_board_query_result
+	-- that contains a status flag (inside/outside) and a list
+	-- of x values where the ray intersects the countours.
+	-- This list provides the x values ordered according to their
+	-- distance to the start point of the ray. Lowest value first.
 
 	type type_on_board_status is (
 		INSIDE,		-- point is in usable board area
@@ -217,11 +225,11 @@ package et_pcb is
 
 	-- For collecting the x values of the intersections of a 
 	-- probe line with the board countours:
-	package pac_on_board_query_x_values is new doubly_linked_lists (type_distance);
+	package pac_on_board_query_x_values is new ordered_sets (type_distance);
 	
 	type type_on_board_query_result is record
-		status		: type_on_board_status;
-		x_values	: pac_on_board_query_x_values.list;
+		status		: type_on_board_status := OUTSIDE;		
+		x_values	: pac_on_board_query_x_values.set;
 	end record;
 	
 	-- This function detects whether the given point is in the usable
@@ -235,7 +243,7 @@ package et_pcb is
 		point			: in type_point;
 		contours		: in type_pcb_contours;
 		log_threshold 	: in type_log_level)
-		return boolean;
+		return type_on_board_query_result;
 
 
 
