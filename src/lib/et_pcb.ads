@@ -204,14 +204,44 @@ package et_pcb is
 	function get_dimensions (
 		contours		: in type_pcb_contours)
 		return type_dimensions;
-								
+
+
 	
+
+	-- In order to get the status of a point relative to the
+	-- board area we need this stuff:
+
+	type type_on_board_status is (
+		INSIDE,		-- point is in usable board area
+		OUTSIDE);	-- point is outside board area
+
+	-- For collecting the x values of the intersections of a 
+	-- probe line with the board countours:
+	package pac_on_board_query_x_values is new doubly_linked_lists (type_distance);
+	
+	type type_on_board_query_result is record
+		status		: type_on_board_status;
+		x_values	: pac_on_board_query_x_values.list;
+	end record;
+	
+	-- This function detects whether the given point is in the usable
+	-- area of the board.
+	-- It uses a ray that starts at point and travels in zero degees 
+	-- to the right. It counts the intersections of the ray with the board
+	-- contours. If the number of intersections is zero or even then the
+	-- point is outside the board area. If the number is even then the
+	-- point is in the board area.
 	function on_board (
 		point			: in type_point;
 		contours		: in type_pcb_contours;
 		log_threshold 	: in type_log_level)
 		return boolean;
 
+
+
+
+
+	
 -- CONDUCTOR OBJECTS
 	
 	-- In a pcb drawing objects in conductor layers can be placed 

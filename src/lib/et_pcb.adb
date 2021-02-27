@@ -161,7 +161,9 @@ package body et_pcb is
 		return boolean
 	is 
 		-- This function bases on the algorithm published at
-		-- http://www.alienryderflex.com/polygon/
+		-- <http://www.alienryderflex.com/polygon//>
+		-- The algorithm has further been extended to detect intersections
+		-- with arcs and even circles.
 		
 		-- The approach to detect whether the given point lies inside or outside the
 		-- board area is as follows:
