@@ -166,7 +166,9 @@ package body et_pcb is
 		-- The approach to detect whether the given point lies inside or outside the
 		-- board area is as follows:
 		-- 1. Build a probe line (starting at point) that runs at zero degrees
-		--    to the right.
+		--    to the right. The probe line divides the area in two: a upper half and a
+		--    lower half. Special situations arise if objects start or end exactly at
+		--    the probe line.
 		-- 2. The number of intersections then tells us:
 		--    - odd -> point is inside board area
 		--    - zero or even -> point is outside board area
@@ -210,9 +212,9 @@ package body et_pcb is
 				i : constant type_intersection_of_two_lines := get_intersection (probe_line, element (c));
 
 				function crosses_threshold return boolean is begin
-					-- If the start/end point of the line is ABOVE-OR-ON the 
-					-- threshold AND if the end/start point is BELOW the
-					-- threshold then we consider the segment to be threshold-crossing.
+					-- If the start/end point of the candidate line is ABOVE-OR-ON the 
+					-- threshold AND if the end/start point of the candidate line is BELOW the
+					-- threshold then we consider the contour line to be threshold-crossing.
 					if	
 						Y (element (c).start_point) >= y_threshold and 
 						Y (element (c).end_point)   <  y_threshold then
@@ -237,7 +239,7 @@ package body et_pcb is
 					-- count the intersection:
 					if crosses_threshold then
 						
-						log (text => "intersects line" & to_string (element (c))
+						log (text => "intersects line" --& to_string (element (c))
 							& " at" & to_string (to_point (i.intersection)),
 							level => log_threshold + 2);
 
@@ -247,39 +249,119 @@ package body et_pcb is
 			end query_line;
 
 			procedure query_arc (c : in pac_pcb_contour_arcs.cursor) is
+
+				-- the candidate arc:
+				arc : constant type_pcb_contour_arc := element (c);
+				
 				-- Find out whether there is an intersection of the probe line
 				-- and the candidate arc of the contour.
 				i : constant type_intersection_of_line_and_circle := 
-					get_intersection (probe_line, element (c));
+					get_intersection (probe_line, arc);
 
-			begin				
-				log (text => "probing " & to_string (element (c)), level => log_threshold + 2);
+				function crosses_threshold return boolean is begin
+					-- If start/end point of the candidate arc is ABOVE-OR-ON the 
+					-- threshold AND if the end/start point of the candidate arc is BELOW the
+					-- threshold then we consider the contour arc to be threshold-crossing.
+					if	
+						Y (arc.start_point) >= y_threshold and 
+						Y (arc.end_point)   <  y_threshold then
+						return true;
+						
+					elsif
+						Y (arc.end_point)   >= y_threshold and 
+						Y (arc.start_point) <  y_threshold then
+						return true;
+						
+					else
+						return false;
+					end if;
+
+				end crosses_threshold;
+
+				procedure count_one is begin
+					log (text => "intersects arc" --& to_string (arc)
+							& " at" & to_string (to_point (i.intersection)),
+						level => log_threshold + 2);
+
+					it := it + 1;
+				end count_one;
+				
+				procedure count_two is begin
+					log (text => "intersects arc" --& to_string (arc)
+							& " at" & to_string (to_point (i.intersection_1))
+							& " and" & to_string (to_point (i.intersection_2)),
+						level => log_threshold + 2);
+
+					it := it + 2;
+				end count_two;
+				
+			begin -- query_arc		
+				log (text => "probing " & to_string (arc), level => log_threshold + 2);
 				
 				case i.status is
 					when NONE_EXIST => null;
 					
 					when ONE_EXISTS =>
 						case i.tangent_status is
-							when TANGENT => null;
-							when SECANT => null;
+							when TANGENT => null; -- not counted
+							
+							when SECANT =>
+								if crosses_threshold then
+									-- The line intersects the arc at one point.
+									-- Start and end point of the arc are opposide 
+									-- of each other with the probe line betweeen them:
+									count_one;
+								end if;
 						end case;
 
 					when TWO_EXIST =>
-						null;
-						
-					--log (text => "intersects line" & to_string (element (c))
-						--& " at" & to_string (to_point (i.intersection)),
-						--level => log_threshold + 2);
+						if Y (arc.start_point) /= y_threshold then
+							-- Since we have TWO intersections, the end point of the arc
+							-- must be in the same half as the start point of the arc:
+							count_two;
+						else
+							-- Special case: Start or end point of arc lies exactly
+							-- at the probe line.
+							
+							-- If start and end point of the candidate arc is ABOVE-OR-ON the 
+							-- threshold then we consider the arc to be threshold-crossing.
+							-- The remaining question is: How often does the arc intersect
+							-- the probe line ?
 
-					---- If the intersection point has already been registered in
-					---- list it_list then it is to be skipped and not counted:
-					--if contains (it_list, pi) then
-						--log (text => " intersection already detected -> skipped", 
-							 --level => log_threshold + 2);
-					--else
-						--increment_intersections;
-						--append (it_list, pi);
-					--end if;
+							-- If start point at probe line:
+							if Y (arc.start_point) = y_threshold then
+
+								-- If the arc starts at the probe line and ends below
+								-- the probe line, then it runs first upwards through the upper half
+								-- and ends somewhere there:
+								if Y (arc.end_point) > y_threshold then
+									count_one;
+									
+								-- If the arc starts at the probe line and ends BELOW
+								-- the probe line, then it runs first upwards through the upper half
+								-- and ends somewhere in the lower half:
+								elsif Y (arc.end_point) < y_threshold then
+									count_two;
+								end if;
+
+								
+							-- If end point at probe line:
+							elsif Y (arc.end_point) = y_threshold then
+								
+								-- If the arc ends at the probe line and starts somewhere in the
+								-- upper half, then it eventually comes down to the end point:
+								if Y (arc.start_point) > y_threshold then
+									count_one;
+
+								-- If the arc ends at the probe line and starts below
+								-- the probe line, then it first runs upwards into
+								-- the upper half and eventually comes down to the end point:
+								elsif Y (arc.start_point) < y_threshold then
+									count_two;
+								end if;
+								
+							end if;
+						end if;
 					
 				end case;
 			end query_arc;
@@ -291,7 +373,7 @@ package body et_pcb is
 					get_intersection (probe_line, element (c));
 
 			begin				
-				--log (text => "probing" & to_string (element (c)), level => log_threshold + 2);
+				log (text => "probing" & to_string (element (c)), level => log_threshold + 2);
 				
 				case i.status is
 					when NONE_EXIST | ONE_EXISTS =>
@@ -299,14 +381,10 @@ package body et_pcb is
 						
 						-- NOTE: If the probe line is a tangent to the
 						-- circle, then we threat this NOT as intersection.
-												
-						--log (text => "intersects circle" & to_string (element (c))
-							--& " at" & to_string (to_point (i.intersection)),
-							--level => log_threshold + 2);
-
-						--increment_intersections;
-						
+			
+					
 					when TWO_EXIST =>
+						-- The probe line intesects the circle at two points:
 					
 						log (text => "intersects circle" & to_string (element (c))
 							 & " at" & to_string (to_point (i.intersection_1))
