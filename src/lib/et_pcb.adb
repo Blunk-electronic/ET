@@ -231,7 +231,7 @@ package body et_pcb is
 				end crosses_threshold;
 			
 			begin -- query_line				
-				--log (text => "probing" & to_string (element (c)), level => log_threshold + 2);
+				log (text => "probing" & to_string (element (c)), level => log_threshold + 2);
 				
 				if i.status = EXISTS then
 
@@ -239,7 +239,7 @@ package body et_pcb is
 					-- count the intersection:
 					if crosses_threshold then
 						
-						log (text => "intersects line" --& to_string (element (c))
+						log (text => " intersects line" --& to_string (element (c))
 							& " at" & to_string (to_point (i.intersection)),
 							level => log_threshold + 2);
 
@@ -279,7 +279,7 @@ package body et_pcb is
 				end crosses_threshold;
 
 				procedure count_one is begin
-					log (text => "intersects arc" --& to_string (arc)
+					log (text => " intersects arc" --& to_string (arc)
 							& " at" & to_string (to_point (i.intersection)),
 						level => log_threshold + 2);
 
@@ -287,7 +287,7 @@ package body et_pcb is
 				end count_one;
 				
 				procedure count_two is begin
-					log (text => "intersects arc" --& to_string (arc)
+					log (text => " intersects arc" --& to_string (arc)
 							& " at" & to_string (to_point (i.intersection_1))
 							& " and" & to_string (to_point (i.intersection_2)),
 						level => log_threshold + 2);
@@ -386,7 +386,7 @@ package body et_pcb is
 					when TWO_EXIST =>
 						-- The probe line intesects the circle at two points:
 					
-						log (text => "intersects circle" & to_string (element (c))
+						log (text => " intersects circle" -- & to_string (element (c))
 							 & " at" & to_string (to_point (i.intersection_1))
 							 & " and" & to_string (to_point (i.intersection_2)),
 							level => log_threshold + 2);
