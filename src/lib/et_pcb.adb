@@ -497,7 +497,7 @@ package body et_pcb is
 		
 		log_indentation_down;
 
-		-- If the total number of iterations is an odd number, then the given point
+		-- If the total number of intersections is an odd number, then the given point
 		-- is on the board.
 		-- If the total is even, then the point is outside the board area.
 		if (it rem 2) = 1 then
