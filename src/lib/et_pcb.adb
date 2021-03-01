@@ -193,15 +193,30 @@ package body et_pcb is
 		-- We assume a maximum of intersections with the outline.
 		subtype type_intersections_total is natural range 0 .. 1000; -- CS increase if necessary
 
-		-- This is the variable for the number of intersections detected:
+		-- This is the variable for the number of intersections detected.
+		-- From this number we will later deduce the position of the given point,
+		-- means whether it is inside or outside the board area:
 		it : type_intersections_total := 0;
+		-- NOTE: In the end there can be more intersections than collected x-values 
+		-- in the ordered set result.x_values. This happens when contour segments meet
+		-- with their start or end points exactly at the y_threshold.
 		
 		-- This procedure iterates lines, arcs and circles of the given
 		-- contours and counts the intersections of the probe line
 		-- with each of them:
 		procedure count_intersections is 
 			use pac_on_board_query_x_values;
-			
+
+			-- This procedure collects the x value of the intersection in
+			-- the ordered set of the return value.
+			-- If an x-value has already been collected due to an earlier
+			-- intersection then it will be ignored.
+			procedure collect_x_value (x : in type_distance) is begin
+				if not contains (result.x_values, x) then
+					insert (result.x_values, x);
+				end if;
+			end collect_x_value;
+	
 			use pac_pcb_contour_lines;
 			use pac_pcb_contour_arcs;
 			use pac_pcb_contour_circles;
@@ -247,7 +262,8 @@ package body et_pcb is
 						it := it + 1;
 
 						-- Add the x value of intersection to the result:
-						insert (result.x_values, X (to_point (i.intersection)));
+						collect_x_value (X (to_point (i.intersection)));
+						
 					end if;
 				end if;
 			end query_line;
@@ -290,7 +306,7 @@ package body et_pcb is
 					it := it + 1;
 
 					-- Add the x value of intersection to the result:
-					insert (result.x_values, X (to_point (i.intersection)));
+					collect_x_value (X (to_point (i.intersection)));
 				end count_one;
 				
 				procedure count_two is begin
@@ -302,8 +318,12 @@ package body et_pcb is
 					it := it + 2;
 
 					-- Add the x values of two intersections to the result:
+					
 					insert (result.x_values, X (to_point (i.intersection_1)));
+					collect_x_value (X (to_point (i.intersection_1)));
+					
 					insert (result.x_values, X (to_point (i.intersection_2)));
+					collect_x_value (X (to_point (i.intersection_2)));
 				end count_two;
 				
 			begin -- query_arc		
@@ -403,14 +423,16 @@ package body et_pcb is
 						it := it + 2;
 
 						-- Add the x values of two intersections to the result:
-						insert (result.x_values, X (to_point (i.intersection_1)));
-						insert (result.x_values, X (to_point (i.intersection_2)));					
 						
+						insert (result.x_values, X (to_point (i.intersection_1)));
+						collect_x_value (X (to_point (i.intersection_1)));
+						
+						insert (result.x_values, X (to_point (i.intersection_2)));					
+						collect_x_value (X (to_point (i.intersection_2)));
 				end case;
 			end query_circle;
 			
-		begin -- count_intersections
-			
+		begin -- count_intersections			
 			log (text => "lines ...", level => log_threshold + 2);
 			log_indentation_up;
 			iterate (contours.lines, query_line'access);
@@ -427,9 +449,29 @@ package body et_pcb is
 			log_indentation_down;
 
 		end count_intersections;
+
+		-- This procedure logs the x-values of the intersections if the current
+		-- log level exceedes the given log level.
+		procedure log_x_values is 
+			use ada.strings.unbounded;
+			use pac_on_board_query_x_values;
+
+			x_values : unbounded_string := to_unbounded_string ("x-values:");
+			
+			procedure query_x (c : pac_on_board_query_x_values.cursor) is begin
+				x_values := x_values & to_string (element (c));
+			end query_x;
+						
+		begin
+			if log_level > log_threshold + 1 then
+				iterate (result.x_values, query_x'access);
+
+				log (text => to_string (x_values));
+			end if;
+			
+		end log_x_values;
 		
-	begin -- on_board
-		
+	begin -- on_board		
 		log (text => "determining position of point" & to_string (point)
 			 & " relative to board outline ...", level => log_threshold);
 
@@ -453,9 +495,15 @@ package body et_pcb is
 		
 		log (text => "intersections total:" & positive'image (it), level => log_threshold + 1);
 
+		-- Log x-values where the probe line intersects the board contours
+		-- to the right of the given point:
+		if it > 0 then
+			log_x_values;
+		end if;
+		
 		log_indentation_down;
 
-		-- If the total iterations is an odd number, then the given point
+		-- If the total number of iterations is an odd number, then the given point
 		-- is on the board.
 		-- If the total is even, then the point is outside the board area.
 		if (it rem 2) = 1 then
@@ -465,7 +513,7 @@ package body et_pcb is
 			log (text => "point is NOT on board", level => log_threshold);
 			result.status := OUTSIDE;
 		end if;
-
+		
 		return result;
 	end on_board;
 
