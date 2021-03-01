@@ -3471,10 +3471,9 @@ package body et_geometry is
 -- 			null;
 -- 		end;
 
-		function get_point_position (
+		function in_polygon (
 			polygon		: in type_polygon_base;	
-			point		: in type_point;
-			catch_zone	: in type_catch_zone := zero)
+			point		: in type_point)
 			return type_inside_polygon_query_result 
 		is
 			-- This function bases on the algorithm published at
@@ -3517,8 +3516,6 @@ package body et_geometry is
 				append (result.x_values, x);
 			end collect_x_value;
 			
-			--point_found_on_edge : boolean := false;
-			
 			use pac_polygon_lines;
 			use pac_polygon_arcs;
 			use pac_polygon_circles;
@@ -3558,10 +3555,6 @@ package body et_geometry is
 						collect_x_value (X (to_point (i.intersection)));
 					end if;
 				end if;
-				
-				--if on_line (point, element (c), catch_zone) then
-					--point_found_on_edge := true;
-				--end if;
 				
 			end query_line;
 
@@ -3703,7 +3696,7 @@ package body et_geometry is
 				sort (result.x_values);
 			end sort_x_values;
 			
-		begin -- get_point_position
+		begin -- in_polygon
 			
 			-- lines:
 			iterate (polygon.segments.lines, query_line'access);
@@ -3727,7 +3720,7 @@ package body et_geometry is
 			end if;
 			
 			return result;
-		end get_point_position;
+		end in_polygon;
 
 		
 		function get_lower_left_corner (polygon	: in type_polygon_base)
@@ -3773,7 +3766,7 @@ package body et_geometry is
 			result.point := type_point (set (lowest_x, lowest_y));
 
 			-- figure out whether the point is real or virtual:
-			case get_point_position (polygon, result.point).status is
+			case in_polygon (polygon, result.point).status is
 				when INSIDE => 
 					result.status := REAL;
 					

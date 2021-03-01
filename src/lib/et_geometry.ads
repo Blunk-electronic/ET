@@ -1216,11 +1216,11 @@ package et_geometry is
 			x_values	: pac_inside_polygon_query_x_values.list;
 		end record;
 
-		-- Detects the position of a point relative to the polygon.
-		function get_point_position (
+		-- Detects whether the given point is inside or outside
+		-- the polygon.
+		function in_polygon (
 			polygon		: in type_polygon_base;	
-			point		: in type_point;
-			catch_zone	: in type_catch_zone := zero)
+			point		: in type_point)
 			return type_inside_polygon_query_result;
 
 		-- For finding the lower left corner of a polygon this type
