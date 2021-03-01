@@ -3507,21 +3507,14 @@ package body et_geometry is
 			-- This is the variable for the number of intersections detected.
 			-- From this number we will later deduce the position of the given point,
 			-- means whether it is inside or outside the polygon:
-			it : type_intersections_total := 0;
-			-- NOTE: In the end there can be more intersections than collected x-values 
-			-- in the ordered set result.x_values. This happens when polygon segments meet
-			-- with their start or end points exactly at the y_threshold.
+			it : count_type := 0;
 
 			use pac_inside_polygon_query_x_values;
 			
 			-- This procedure collects the x value of the intersection in
-			-- the ordered set of the return value.
-			-- If an x-value has already been collected due to an earlier
-			-- intersection then it will be ignored.
+			-- the a simple list in the return value.
 			procedure collect_x_value (x : in type_distance) is begin
-				if not contains (result.x_values, x) then
-					insert (result.x_values, x);
-				end if;
+				append (result.x_values, x);
 			end collect_x_value;
 			
 			--point_found_on_edge : boolean := false;
@@ -3561,12 +3554,8 @@ package body et_geometry is
 					-- count the intersection:
 					if crosses_threshold then
 
-						-- count the intersection
-						it := it + 1;
-
 						-- Add the x value of intersection to the result:
 						collect_x_value (X (to_point (i.intersection)));
-						
 					end if;
 				end if;
 				
@@ -3607,21 +3596,13 @@ package body et_geometry is
 				end crosses_threshold;
 
 				procedure count_one is begin
-					it := it + 1;
-
 					-- Add the x value of intersection to the result:
 					collect_x_value (X (to_point (i.intersection)));
 				end count_one;
 				
 				procedure count_two is begin
-					it := it + 2;
-
 					-- Add the x values of two intersections to the result:
-					
-					insert (result.x_values, X (to_point (i.intersection_1)));
 					collect_x_value (X (to_point (i.intersection_1)));
-					
-					insert (result.x_values, X (to_point (i.intersection_2)));
 					collect_x_value (X (to_point (i.intersection_2)));
 				end count_two;
 				
@@ -3709,19 +3690,18 @@ package body et_geometry is
 					when TWO_EXIST =>
 						-- The probe line intersects the circle at two points:
 
-						-- count two intersections
-						it := it + 2;
-
 						-- Add the x values of two intersections to the result:
-						
-						insert (result.x_values, X (to_point (i.intersection_1)));
 						collect_x_value (X (to_point (i.intersection_1)));
-						
-						insert (result.x_values, X (to_point (i.intersection_2)));					
 						collect_x_value (X (to_point (i.intersection_2)));
 				end case;
 			end query_circle;
 
+			procedure sort_x_values is
+				package pac_sort_x_values is new pac_inside_polygon_query_x_values.generic_sorting;
+				use pac_sort_x_values;
+			begin
+				sort (result.x_values);
+			end sort_x_values;
 			
 		begin -- get_point_position
 			
@@ -3730,13 +3710,13 @@ package body et_geometry is
 			iterate (polygon.segments.arcs, query_arc'access);
 			iterate (polygon.segments.circles, query_circle'access);
 
-			--if point_found_on_edge then
-				--result.status := INSIDE;
-			--else
-				--null;
-				---- CS OUTSIDE / INSIDE test
-			--end if;
+			-- The x-values are not sorted yet. We need them sorted with the
+			-- smallest x first:
+			sort_x_values;
 
+			-- get the total number of intersections
+			it := pac_inside_polygon_query_x_values.length (result.x_values);
+			
 			-- If the total number of intersections is an odd number, then the given point
 			-- is inside the polygon.
 			-- If the total is even, then the point is outside the polygon.

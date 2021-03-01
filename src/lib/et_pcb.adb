@@ -190,25 +190,18 @@ package body et_pcb is
 		-- This is the variable for the number of intersections detected.
 		-- From this number we will later deduce the position of the given point,
 		-- means whether it is inside or outside the board area:
-		it : type_intersections_total := 0;
-		-- NOTE: In the end there can be more intersections than collected x-values 
-		-- in the ordered set result.x_values. This happens when contour segments meet
-		-- with their start or end points exactly at the y_threshold.
+		it : count_type := 0;
 		
 		-- This procedure iterates lines, arcs and circles of the given
 		-- contours and counts the intersections of the probe line
 		-- with each of them:
-		procedure count_intersections is 
+		procedure find_intersections is 
 			use pac_inside_polygon_query_x_values;
 
 			-- This procedure collects the x value of the intersection in
-			-- the ordered set of the return value.
-			-- If an x-value has already been collected due to an earlier
-			-- intersection then it will be ignored.
+			-- the a simple list in the return value.
 			procedure collect_x_value (x : in type_distance) is begin
-				if not contains (result.x_values, x) then
-					insert (result.x_values, x);
-				end if;
+				append (result.x_values, x);
 			end collect_x_value;
 	
 			use pac_pcb_contour_lines;
@@ -252,9 +245,6 @@ package body et_pcb is
 							& " at" & to_string (to_point (i.intersection)),
 							level => log_threshold + 2);
 
-						-- count the intersection
-						it := it + 1;
-
 						-- Add the x value of intersection to the result:
 						collect_x_value (X (to_point (i.intersection)));
 						
@@ -297,8 +287,6 @@ package body et_pcb is
 							& " at" & to_string (to_point (i.intersection)),
 						level => log_threshold + 2);
 
-					it := it + 1;
-
 					-- Add the x value of intersection to the result:
 					collect_x_value (X (to_point (i.intersection)));
 				end count_one;
@@ -309,14 +297,8 @@ package body et_pcb is
 							& " and" & to_string (to_point (i.intersection_2)),
 						level => log_threshold + 2);
 
-					it := it + 2;
-
 					-- Add the x values of two intersections to the result:
-					
-					insert (result.x_values, X (to_point (i.intersection_1)));
 					collect_x_value (X (to_point (i.intersection_1)));
-					
-					insert (result.x_values, X (to_point (i.intersection_2)));
 					collect_x_value (X (to_point (i.intersection_2)));
 				end count_two;
 				
@@ -413,20 +395,13 @@ package body et_pcb is
 							 & " and" & to_string (to_point (i.intersection_2)),
 							level => log_threshold + 2);
 
-						-- count two intersections
-						it := it + 2;
-
 						-- Add the x values of two intersections to the result:
-						
-						insert (result.x_values, X (to_point (i.intersection_1)));
 						collect_x_value (X (to_point (i.intersection_1)));
-						
-						insert (result.x_values, X (to_point (i.intersection_2)));					
 						collect_x_value (X (to_point (i.intersection_2)));
 				end case;
 			end query_circle;
 			
-		begin -- count_intersections			
+		begin -- find_intersections			
 			log (text => "lines ...", level => log_threshold + 2);
 			log_indentation_up;
 			iterate (contours.lines, query_line'access);
@@ -442,7 +417,7 @@ package body et_pcb is
 			iterate (contours.circles, query_circle'access);
 			log_indentation_down;
 
-		end count_intersections;
+		end find_intersections;
 
 		-- This procedure logs the x-values of the intersections if the current
 		-- log level exceedes the given log level.
@@ -464,6 +439,13 @@ package body et_pcb is
 			end if;
 			
 		end log_x_values;
+
+		procedure sort_x_values is
+			package pac_sort_x_values is new pac_inside_polygon_query_x_values.generic_sorting;
+			use pac_sort_x_values;
+		begin
+			sort (result.x_values);
+		end sort_x_values;
 		
 	begin -- on_board		
 		log (text => "determining position of point" & to_string (point)
@@ -481,13 +463,20 @@ package body et_pcb is
 
 		log_indentation_up;
 		
-		-- Count the intersections of the probe line with the
+		-- Find the intersections of the probe line with the
 		-- segments of the board countour:
-		count_intersections;
+		find_intersections;
 
-		log_indentation_down;
+		-- The x-values are not sorted yet. We need them sorted with the
+		-- smallest x first:
+		sort_x_values;
 		
-		log (text => "intersections total:" & positive'image (it), level => log_threshold + 1);
+		log_indentation_down;
+
+		-- get the total number of intersections
+		it := pac_inside_polygon_query_x_values.length (result.x_values);
+		
+		log (text => "intersections total:" & count_type'image (it), level => log_threshold + 1);
 
 		-- Log x-values where the probe line intersects the board contours
 		-- to the right of the given point:

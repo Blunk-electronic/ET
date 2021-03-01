@@ -1203,13 +1203,9 @@ package et_geometry is
 		-- distance to the start point of the ray. Lowest value first.
 		type type_probe_line is new type_line with null record;
 
-		-- We assume a maximum of intersections with the polygon.
-		subtype type_intersections_total is natural range 0 .. 1000; -- CS increase if necessary
-
-		
 		-- For collecting the x values of the intersections of a 
 		-- probe line with the polygon edges:
-		package pac_inside_polygon_query_x_values is new ordered_sets (type_distance);
+		package pac_inside_polygon_query_x_values is new doubly_linked_lists (type_distance);
 		
 		type type_polygon_point_status is (
 			OUTSIDE,	-- point is outside polygon area
@@ -1217,7 +1213,7 @@ package et_geometry is
 		
 		type type_inside_polygon_query_result is record
 			status		: type_polygon_point_status := OUTSIDE;		
-			x_values	: pac_inside_polygon_query_x_values.set;
+			x_values	: pac_inside_polygon_query_x_values.list;
 		end record;
 
 		-- Detects the position of a point relative to the polygon.

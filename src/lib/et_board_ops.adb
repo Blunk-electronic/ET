@@ -4680,7 +4680,7 @@ package body et_board_ops is
 
 						end shift_right;
 
-						on_board_status : constant type_on_board_query_result := 
+						on_board_status : constant type_inside_polygon_query_result := 
 							on_board (lower_left_corner.point, module.board.contours, log_threshold + 3);
 					
 					
