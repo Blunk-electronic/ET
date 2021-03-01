@@ -36,6 +36,7 @@
 --
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
+with ada.containers.ordered_sets;
 with ada.numerics;
 
 with glib;
@@ -1190,17 +1191,41 @@ package et_geometry is
 		--type type_polygon is new type_polygon_base with private;
 		-- not publicly visible. for internal use only.
 
+		-- In order to get the status of a point relative to
+		-- a polygon we need this stuff:
+		-- The general approach is:
+		-- A ray that starts at point and travels in zero degees 
+		-- may intersect the polygon edges.
+		-- The result of such a query is the type_inside_polygon_query_result
+		-- that contains a status flag (inside/outside) and a list
+		-- of x values where the ray intersects the polygon.
+		-- This list provides the x values ordered according to their
+		-- distance to the start point of the ray. Lowest value first.
+		type type_probe_line is new type_line with null record;
+
+		-- We assume a maximum of intersections with the polygon.
+		subtype type_intersections_total is natural range 0 .. 1000; -- CS increase if necessary
+
+		
+		-- For collecting the x values of the intersections of a 
+		-- probe line with the polygon edges:
+		package pac_inside_polygon_query_x_values is new ordered_sets (type_distance);
+		
 		type type_polygon_point_status is (
-			OUTSIDE,
-			EDGE,								  
-			INSIDE);
+			OUTSIDE,	-- point is outside polygon area
+			INSIDE);	-- point is in polygon area
+		
+		type type_inside_polygon_query_result is record
+			status		: type_polygon_point_status := OUTSIDE;		
+			x_values	: pac_inside_polygon_query_x_values.set;
+		end record;
 
 		-- Detects the position of a point relative to the polygon.
 		function get_point_position (
 			polygon		: in type_polygon_base;	
 			point		: in type_point;
 			catch_zone	: in type_catch_zone := zero)
-			return type_polygon_point_status;
+			return type_inside_polygon_query_result;
 
 		-- For finding the lower left corner of a polygon this type
 		-- is required. The lower left corner can be a point somewhere

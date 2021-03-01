@@ -3475,33 +3475,275 @@ package body et_geometry is
 			polygon		: in type_polygon_base;	
 			point		: in type_point;
 			catch_zone	: in type_catch_zone := zero)
-			return type_polygon_point_status 
+			return type_inside_polygon_query_result 
 		is
-			result : type_polygon_point_status := type_polygon_point_status'first;
+			-- This function bases on the algorithm published at
+			-- <http://www.alienryderflex.com/polygon//>
+			-- The algorithm has further been extended to detect intersections
+			-- with arcs and even circles.
+			
+			-- The approach to detect whether the given point lies inside or outside 
+			-- the polygon area is as follows:
+			-- 1. Build a probe line (starting at point) that runs at zero degrees
+			--    to the right. The probe line divides the area in two: an upper half and a
+			--    lower half. Special situations arise if objects start or end exactly at
+			--    the probe line.
+			-- 2. The number of intersections then tells us:
+			--    - odd -> point is inside the polygon area
+			--    - zero or even -> point is outside the polygon area
+			
+			result : type_inside_polygon_query_result;
 
-			point_found_on_edge : boolean := false;
+			line : constant type_probe_line := (
+					start_point	=> point,
+					end_point	=> type_point (set (X (point) + 1.0, Y (point))));
+			
+			probe_line : constant type_line_vector := to_line_vector (line);
+
+			-- For segments that end or start exactly on the Y value of the probe line
+			-- we define a threshold:
+			y_threshold : constant type_distance := Y (point);
+			
+			-- This is the variable for the number of intersections detected.
+			-- From this number we will later deduce the position of the given point,
+			-- means whether it is inside or outside the polygon:
+			it : type_intersections_total := 0;
+			-- NOTE: In the end there can be more intersections than collected x-values 
+			-- in the ordered set result.x_values. This happens when polygon segments meet
+			-- with their start or end points exactly at the y_threshold.
+
+			use pac_inside_polygon_query_x_values;
+			
+			-- This procedure collects the x value of the intersection in
+			-- the ordered set of the return value.
+			-- If an x-value has already been collected due to an earlier
+			-- intersection then it will be ignored.
+			procedure collect_x_value (x : in type_distance) is begin
+				if not contains (result.x_values, x) then
+					insert (result.x_values, x);
+				end if;
+			end collect_x_value;
+			
+			--point_found_on_edge : boolean := false;
 			
 			use pac_polygon_lines;
-			procedure query_line (c : in pac_polygon_lines.cursor) is begin
+			use pac_polygon_arcs;
+			use pac_polygon_circles;
+			
+			procedure query_line (c : in pac_polygon_lines.cursor) is 
+				-- Find out whether there is an intersection of the probe line
+				-- and the candidate line of the polygon.
+				i : constant type_intersection_of_two_lines := get_intersection (probe_line, element (c));
 
-				if on_line (point, element (c), catch_zone) then
-					point_found_on_edge := true;
+				function crosses_threshold return boolean is begin
+					-- If the start/end point of the candidate line is ABOVE-OR-ON the 
+					-- threshold AND if the end/start point of the candidate line is BELOW the
+					-- threshold then we consider the contour line to be threshold-crossing.
+					if	
+						Y (element (c).start_point) >= y_threshold and 
+						Y (element (c).end_point)   <  y_threshold then
+						return true;
+						
+					elsif
+						Y (element (c).end_point)   >= y_threshold and 
+						Y (element (c).start_point) <  y_threshold then
+						return true;
+						
+					else
+						return false;
+					end if;
+				end crosses_threshold;
+				
+			begin
+				if i.status = EXISTS then
+
+					-- If the candidate line segment crosses the y_threshold then 
+					-- count the intersection:
+					if crosses_threshold then
+
+						-- count the intersection
+						it := it + 1;
+
+						-- Add the x value of intersection to the result:
+						collect_x_value (X (to_point (i.intersection)));
+						
+					end if;
 				end if;
+				
+				--if on_line (point, element (c), catch_zone) then
+					--point_found_on_edge := true;
+				--end if;
 				
 			end query_line;
 
+			procedure query_arc (c : in pac_polygon_arcs.cursor) is
+
+				-- the candidate arc:
+				arc : constant type_polygon_arc := element (c);
+				
+				-- Find out whether there is an intersection of the probe line
+				-- and the candidate arc of the polygon.
+				i : constant type_intersection_of_line_and_circle := 
+					get_intersection (probe_line, arc);
+
+				function crosses_threshold return boolean is begin
+					-- If start/end point of the candidate arc is ABOVE-OR-ON the 
+					-- threshold AND if the end/start point of the candidate arc is BELOW the
+					-- threshold then we consider the contour arc to be threshold-crossing.
+					if	
+						Y (arc.start_point) >= y_threshold and 
+						Y (arc.end_point)   <  y_threshold then
+						return true;
+						
+					elsif
+						Y (arc.end_point)   >= y_threshold and 
+						Y (arc.start_point) <  y_threshold then
+						return true;
+						
+					else
+						return false;
+					end if;
+
+				end crosses_threshold;
+
+				procedure count_one is begin
+					it := it + 1;
+
+					-- Add the x value of intersection to the result:
+					collect_x_value (X (to_point (i.intersection)));
+				end count_one;
+				
+				procedure count_two is begin
+					it := it + 2;
+
+					-- Add the x values of two intersections to the result:
+					
+					insert (result.x_values, X (to_point (i.intersection_1)));
+					collect_x_value (X (to_point (i.intersection_1)));
+					
+					insert (result.x_values, X (to_point (i.intersection_2)));
+					collect_x_value (X (to_point (i.intersection_2)));
+				end count_two;
+				
+			begin -- query_arc		
+				case i.status is
+					when NONE_EXIST => null;
+					
+					when ONE_EXISTS =>
+						case i.tangent_status is
+							when TANGENT => null; -- not counted
+							
+							when SECANT =>
+								if crosses_threshold then
+									-- The line intersects the arc at one point.
+									-- Start and end point of the arc are opposide 
+									-- of each other with the probe line betweeen them:
+									count_one;
+								end if;
+						end case;
+
+					when TWO_EXIST =>
+						if Y (arc.start_point) /= y_threshold then
+							-- Since we have TWO intersections, the end point of the arc
+							-- must be in the same half as the start point of the arc:
+							count_two;
+						else
+							-- Special case: Start or end point of arc lies exactly
+							-- at the probe line.
+							
+							-- If start and end point of the candidate arc is ABOVE-OR-ON the 
+							-- threshold then we consider the arc to be threshold-crossing.
+							-- The remaining question is: How often does the arc intersect
+							-- the probe line ?
+
+							-- If start point at probe line:
+							if Y (arc.start_point) = y_threshold then
+
+								-- If the arc starts at the probe line and ends below
+								-- the probe line, then it runs first upwards through the upper half
+								-- and ends somewhere there:
+								if Y (arc.end_point) > y_threshold then
+									count_one;
+									
+								-- If the arc starts at the probe line and ends BELOW
+								-- the probe line, then it runs first upwards through the upper half
+								-- and ends somewhere in the lower half:
+								elsif Y (arc.end_point) < y_threshold then
+									count_two;
+								end if;
+
+								
+							-- If end point at probe line:
+							elsif Y (arc.end_point) = y_threshold then
+								
+								-- If the arc ends at the probe line and starts somewhere in the
+								-- upper half, then it eventually comes down to the end point:
+								if Y (arc.start_point) > y_threshold then
+									count_one;
+
+								-- If the arc ends at the probe line and starts below
+								-- the probe line, then it first runs upwards into
+								-- the upper half and eventually comes down to the end point:
+								elsif Y (arc.start_point) < y_threshold then
+									count_two;
+								end if;
+								
+							end if;
+						end if;
+					
+				end case;
+			end query_arc;
+
+			procedure query_circle (c : in pac_polygon_circles.cursor) is
+				-- Find out whether there is an intersection of the probe line
+				-- and the candidate circle of the polygon.
+				i : constant type_intersection_of_line_and_circle := 
+					get_intersection (probe_line, element (c));
+
+			begin				
+				case i.status is
+					when NONE_EXIST | ONE_EXISTS => null;
+						-- NOTE: If the probe line is a tangent to the
+						-- circle, then we threat this NOT as intersection.
+					
+					when TWO_EXIST =>
+						-- The probe line intersects the circle at two points:
+
+						-- count two intersections
+						it := it + 2;
+
+						-- Add the x values of two intersections to the result:
+						
+						insert (result.x_values, X (to_point (i.intersection_1)));
+						collect_x_value (X (to_point (i.intersection_1)));
+						
+						insert (result.x_values, X (to_point (i.intersection_2)));					
+						collect_x_value (X (to_point (i.intersection_2)));
+				end case;
+			end query_circle;
+
+			
 		begin -- get_point_position
 			
 			-- lines:
 			iterate (polygon.segments.lines, query_line'access);
-			-- CS arcs
-			-- CS circles
+			iterate (polygon.segments.arcs, query_arc'access);
+			iterate (polygon.segments.circles, query_circle'access);
 
-			if point_found_on_edge then
-				result := EDGE;
-			else
-				null;
-				-- CS OUTSIDE / INSIDE test
+			--if point_found_on_edge then
+				--result.status := INSIDE;
+			--else
+				--null;
+				---- CS OUTSIDE / INSIDE test
+			--end if;
+
+			-- If the total number of intersections is an odd number, then the given point
+			-- is inside the polygon.
+			-- If the total is even, then the point is outside the polygon.
+			if (it rem 2) = 1 then
+				result.status := INSIDE;
+			else 
+				result.status := OUTSIDE;
 			end if;
 			
 			return result;
@@ -3551,11 +3793,11 @@ package body et_geometry is
 			result.point := type_point (set (lowest_x, lowest_y));
 
 			-- figure out whether the point is real or virtual:
-			case get_point_position (polygon, result.point) is
-				when EDGE => 
+			case get_point_position (polygon, result.point).status is
+				when INSIDE => 
 					result.status := REAL;
 					
-				when others =>
+				when OUTSIDE =>
 					result.status := VIRTUAL;
 			end case;
 			

@@ -158,7 +158,7 @@ package body et_pcb is
 		point			: in type_point;
 		contours		: in type_pcb_contours;
 		log_threshold 	: in type_log_level)
-		return type_on_board_query_result
+		return type_inside_polygon_query_result
 	is 
 		-- This function bases on the algorithm published at
 		-- <http://www.alienryderflex.com/polygon//>
@@ -175,12 +175,9 @@ package body et_pcb is
 		--    - odd -> point is inside board area
 		--    - zero or even -> point is outside board area
 
-		result : type_on_board_query_result;
+		result : type_inside_polygon_query_result;
 
-		
-
-		type type_line is new pac_shapes.type_line with null record;
-		line : constant type_line := (
+		line : constant type_probe_line := (
 				start_point	=> point,
 				end_point	=> type_point (set (X (point) + 1.0, Y (point))));
 		
@@ -189,9 +186,6 @@ package body et_pcb is
 		-- For segments that end or start exactly on the Y value of the probe line
 		-- we define a threshold:
 		y_threshold : constant type_distance := Y (point);
-		
-		-- We assume a maximum of intersections with the outline.
-		subtype type_intersections_total is natural range 0 .. 1000; -- CS increase if necessary
 
 		-- This is the variable for the number of intersections detected.
 		-- From this number we will later deduce the position of the given point,
@@ -205,7 +199,7 @@ package body et_pcb is
 		-- contours and counts the intersections of the probe line
 		-- with each of them:
 		procedure count_intersections is 
-			use pac_on_board_query_x_values;
+			use pac_inside_polygon_query_x_values;
 
 			-- This procedure collects the x value of the intersection in
 			-- the ordered set of the return value.
@@ -454,11 +448,11 @@ package body et_pcb is
 		-- log level exceedes the given log level.
 		procedure log_x_values is 
 			use ada.strings.unbounded;
-			use pac_on_board_query_x_values;
+			use pac_inside_polygon_query_x_values;
 
 			x_values : unbounded_string := to_unbounded_string ("x-values:");
 			
-			procedure query_x (c : pac_on_board_query_x_values.cursor) is begin
+			procedure query_x (c : pac_inside_polygon_query_x_values.cursor) is begin
 				x_values := x_values & to_string (element (c));
 			end query_x;
 						
@@ -508,10 +502,10 @@ package body et_pcb is
 		-- If the total is even, then the point is outside the board area.
 		if (it rem 2) = 1 then
 			log (text => "point IS on board", level => log_threshold);
-			result.status := INSIDE;
+			result.status := INSIDE; -- point is in usable board area 
 		else 
 			log (text => "point is NOT on board", level => log_threshold);
-			result.status := OUTSIDE;
+			result.status := OUTSIDE; -- point is outside board area
 		end if;
 		
 		return result;
