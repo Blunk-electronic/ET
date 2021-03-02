@@ -48,12 +48,24 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;
 with et_string_processing;		use et_string_processing;
 with et_project.modules;		use et_project.modules;
+with et_conductor_polygons;		use et_conductor_polygons;
 
 package et_routing is
 	
 	use et_pcb_coordinates.pac_geometry_brd;
 	use et_board_shapes_and_text.pac_shapes;
 
+
+	
+	function compute_fill_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		board			: in type_inside_polygon_query_result;
+		polygon			: in type_inside_polygon_query_result)
+		-- CS x-intersections with tracks, pads, texts, ...
+		return pac_fill_lines.list;
+
+
+	
 	type type_track_observe_clearance is (
 		RIGHT,
 		LEFT,

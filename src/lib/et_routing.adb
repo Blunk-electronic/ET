@@ -46,12 +46,24 @@ with et_pcb;					use et_pcb;
 with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;
-with et_conductor_polygons;
+
 
 package body et_routing is
 	
 	use et_pcb_coordinates.pac_geometry_brd;
 	use et_board_shapes_and_text.pac_shapes;
+
+	function compute_fill_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		board			: in type_inside_polygon_query_result;
+		polygon			: in type_inside_polygon_query_result)
+		return pac_fill_lines.list
+	is
+		result : pac_fill_lines.list;
+	begin
+
+		return result;
+	end compute_fill_lines;
 	
 	function get_distance_to_obstacle (
 		module_cursor	: in pac_generic_modules.cursor;

@@ -4663,83 +4663,52 @@ package body et_board_ops is
 						update_element (net.route.polygons.solid, p, add_line'access);
 					end compute_distance_to_obstacle;
 
-					procedure compute_start_point is 
+					procedure compute_fill_lines (start_point : in type_point) is 
 
 						-- Shifts the start point slightly to the right
 						-- so that the fill line starts inside the polygon
 						-- and not at the edge:
-						procedure shift_right is begin
-							offset := type_point (set (
-									x => element (p).width_min * 0.5, -- right
-									y => element (p).width_min * 0.0)); -- up
+						--procedure shift_right is begin
+							--offset := type_point (set (
+									--x => element (p).width_min * 0.5, -- right
+									--y => element (p).width_min * 0.0)); -- up
 
-							move_by (fill_line.start_point, offset);
+							--move_by (fill_line.start_point, offset);
 
-							log (text => "fill line start" & to_string (fill_line.start_point),
-								level => log_threshold + 3);
+							--log (text => "fill line start" & to_string (fill_line.start_point),
+								--level => log_threshold + 3);
 
-						end shift_right;
+						--end shift_right;
 
+						-- The point to board contour status:
 						on_board_status : constant type_inside_polygon_query_result := 
 							on_board (lower_left_corner.point, module.board.contours, log_threshold + 3);
-					
-					
-					begin -- compute_start_point
 
-						--if on_board (lower_left_corner.point, module.board.contours, log_threshold + 3) then
+						-- The point to polygon status:
+						ptp_status : constant type_inside_polygon_query_result :=
+							in_polygon_status (element (p),	start_point);
+
+						fill_lines : constant pac_fill_lines.list := 
+										et_routing.compute_fill_lines (
+											module_cursor	=> module_cursor,
+											board			=> on_board_status,
+											polygon			=> ptp_status);
+
+						--procedure query_line (c : in et_pcb.pac_conductor_lines.cursor) 
+						--is
+						--begin
+							---- append line to the fill are of the polyon:
+							--update_element (net.route.polygons.solid, p, add_line'access);
 							--null;
-						--end if;
-
-						case lower_left_corner.status is
-
-							when REAL =>
-
-								fill_line.start_point := lower_left_corner.point;
-
-								shift_right;
-
-
-								-- Compute the distance from start point to the nearest obstacle
-								-- to the right:
-								compute_distance_to_obstacle;
+						--end query_line;
 						
-							when VIRTUAL =>
-								--put_line ("P1 " & to_string (lower_left_corner.point));
-								
-								declare
-									i : type_inside_polygon_query_result :=
-
-										in_polygon_status (
-											polygon	=> element (p),	
-											point	=> lower_left_corner.point);
-
-									-- the distance to the polygon
-									d : type_distance_positive;
-								begin
-									log (text => to_string (i), level => log_threshold + 3);
-									
-									if intersections_found (i) then
-										d := get_first_intersection (i);
-
-										log (text => "distance to polygon" & to_string (d),
-											level => log_threshold + 3);
-										
-										---- move start point to the right (where the polygon begins)
-										fill_line.start_point := type_point (
-											move (lower_left_corner.point, 0.0, d));
-
-										shift_right;
-
-									else
-										raise constraint_error; -- CS should never happen
-									end if;
-
-									-- Compute the distance from start point to the nearest obstacle
-									-- to the right:
-									compute_distance_to_obstacle;
-								end;
-						end case;
-					end compute_start_point;
+					begin -- compute_fill_lines
+						null;
+						--pac_fill_lines.iterate (fill_lines, query_line'access);
+						
+						--log (text => "distance to polygon" & to_string (d),
+							--level => log_threshold + 3);
+					end compute_fill_lines;
 
 					
 				begin -- route_solid
@@ -4762,7 +4731,7 @@ package body et_board_ops is
 							 --& to_string (lower_left_corner.point),
 							 --level => log_threshold + 3);
 						
-						compute_start_point;
+						compute_fill_lines (lower_left_corner.point);
 
 						log_indentation_down;
 						next (p);

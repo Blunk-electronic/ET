@@ -196,7 +196,7 @@ package body et_pcb is
 		-- contours and counts the intersections of the probe line
 		-- with each of them:
 		procedure find_intersections is 
-			use pac_inside_polygon_query_x_values;
+			use pac_distances;
 
 			-- This procedure collects the x value of the intersection in
 			-- the a simple list in the return value.
@@ -423,11 +423,11 @@ package body et_pcb is
 		-- log level exceedes the given log level.
 		procedure log_x_values is 
 			use ada.strings.unbounded;
-			use pac_inside_polygon_query_x_values;
+			use pac_distances;
 
 			x_values : unbounded_string := to_unbounded_string ("x-values:");
 			
-			procedure query_x (c : pac_inside_polygon_query_x_values.cursor) is begin
+			procedure query_x (c : pac_distances.cursor) is begin
 				x_values := x_values & to_string (element (c));
 			end query_x;
 						
@@ -441,7 +441,7 @@ package body et_pcb is
 		end log_x_values;
 
 		procedure sort_x_values is
-			package pac_sort_x_values is new pac_inside_polygon_query_x_values.generic_sorting;
+			package pac_sort_x_values is new pac_distances.generic_sorting;
 			use pac_sort_x_values;
 		begin
 			sort (result.x_values);
@@ -474,7 +474,7 @@ package body et_pcb is
 		log_indentation_down;
 
 		-- get the total number of intersections
-		it := pac_inside_polygon_query_x_values.length (result.x_values);
+		it := pac_distances.length (result.x_values);
 		
 		log (text => "intersections total:" & count_type'image (it), level => log_threshold + 1);
 

@@ -3476,11 +3476,11 @@ package body et_geometry is
 			return string
 		is
 			use ada.strings.unbounded;
-			use pac_inside_polygon_query_x_values;
+			use pac_distances;
 
 			result : unbounded_string;
 			
-			procedure query_x (c : pac_inside_polygon_query_x_values.cursor) is begin
+			procedure query_x (c : pac_distances.cursor) is begin
 				result := result & to_string (element (c));
 			end query_x;
 
@@ -3547,7 +3547,7 @@ package body et_geometry is
 			-- means whether it is inside or outside the polygon:
 			it : count_type := 0;
 
-			use pac_inside_polygon_query_x_values;
+			use pac_distances;
 			
 			-- This procedure collects the x value of the intersection in
 			-- the a simple list in the return value.
@@ -3729,7 +3729,7 @@ package body et_geometry is
 			end query_circle;
 
 			procedure sort_x_values is
-				package pac_sort_x_values is new pac_inside_polygon_query_x_values.generic_sorting;
+				package pac_sort_x_values is new pac_distances.generic_sorting;
 				use pac_sort_x_values;
 			begin
 				sort (result.x_values);
@@ -3747,7 +3747,7 @@ package body et_geometry is
 			sort_x_values;
 
 			-- get the total number of intersections
-			it := pac_inside_polygon_query_x_values.length (result.x_values);
+			it := pac_distances.length (result.x_values);
 			
 			-- If the total number of intersections is an odd number, then the given point
 			-- is inside the polygon.
@@ -3765,7 +3765,7 @@ package body et_geometry is
 			i : in type_inside_polygon_query_result)
 			return boolean
 		is
-			use pac_inside_polygon_query_x_values;
+			use pac_distances;
 		begin
 			if length (i.x_values) = 0 then -- no intersections with polygon
 				return false;
@@ -3778,7 +3778,7 @@ package body et_geometry is
 			i : in type_inside_polygon_query_result)
 			return type_distance
 		is
-			use pac_inside_polygon_query_x_values;
+			use pac_distances;
 		begin
 			return element (i.x_values.first);
 		end get_first_intersection;

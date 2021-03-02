@@ -144,6 +144,9 @@ package et_geometry is
 		subtype type_distance_positive is type_distance range zero .. type_distance'last;
 		subtype type_catch_zone is type_distance_positive range zero .. type_distance_positive'last/1000;
 
+		-- For collecting distances:
+		package pac_distances is new doubly_linked_lists (type_distance);
+		
 		grid_max : constant type_distance_positive := type_distance_positive'last/1000;
 		subtype type_distance_grid is type_distance_positive range zero .. grid_max;
 		grid_default : constant type_distance_grid := 2.5;
@@ -1198,23 +1201,26 @@ package et_geometry is
 		-- may intersect the polygon edges.
 		-- The result of such a query is the type_inside_polygon_query_result
 		-- that contains a status flag (inside/outside) and a list
-		-- of x values where the ray intersects the polygon.
+		-- of x values where the ray intersects the polygon. For completeness
+		-- the original point where the probe line has started is also provided.
 		-- This list provides the x values ordered according to their
 		-- distance to the start point of the ray. Lowest value first.
+		
 		type type_probe_line is new type_line with null record;
-
-		-- For collecting the x values of the intersections of a 
-		-- probe line with the polygon edges:
-		package pac_inside_polygon_query_x_values is new doubly_linked_lists (type_distance);
 									  
 		type type_polygon_point_status is (
 			OUTSIDE,	-- point is outside polygon area
 			INSIDE);	-- point is in polygon area
 		
 		type type_inside_polygon_query_result is record
-			point		: type_point; -- the point where the probe line started
+			-- the point where the probe line has started:
+			point		: type_point; 
+			
 			status		: type_polygon_point_status := OUTSIDE;		
-			x_values	: pac_inside_polygon_query_x_values.list;
+
+			-- the x values of the intersections of the
+			-- probe line with the polygon edges:
+			x_values	: pac_distances.list;
 		end record;
 
 		-- Returns the query result as a human readable string:
