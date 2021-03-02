@@ -4704,26 +4704,34 @@ package body et_board_ops is
 								compute_distance_to_obstacle;
 						
 							when VIRTUAL =>
+								--put_line ("P1 " & to_string (lower_left_corner.point));
+								
 								declare
-									d : type_distance_to_polygon :=
+									i : type_inside_polygon_query_result :=
 
-										get_distance_to_polygon (
-											polygon		=> element (p),	
-											point		=> lower_left_corner.point);
+										in_polygon_status (
+											polygon	=> element (p),	
+											point	=> lower_left_corner.point);
+
+									-- the distance to the polygon
+									d : type_distance_positive;
 								begin
-									if d.polygon_found then
-										
-										log (text => "distance to polygon" & to_string (d.distance),
+									log (text => to_string (i), level => log_threshold + 3);
+									
+									if intersections_found (i) then
+										d := get_first_intersection (i);
+
+										log (text => "distance to polygon" & to_string (d),
 											level => log_threshold + 3);
 										
-										-- move start point to the right (where the polygon begins)
+										---- move start point to the right (where the polygon begins)
 										fill_line.start_point := type_point (
-											move (lower_left_corner.point, 0.0, d.distance));
+											move (lower_left_corner.point, 0.0, d));
 
 										shift_right;
 
 									else
-										raise constraint_error;
+										raise constraint_error; -- CS should never happen
 									end if;
 
 									-- Compute the distance from start point to the nearest obstacle

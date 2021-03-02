@@ -175,7 +175,7 @@ package body et_pcb is
 		--    - odd -> point is inside board area
 		--    - zero or even -> point is outside board area
 
-		result : type_inside_polygon_query_result;
+		result : type_inside_polygon_query_result := (point => point, others => <>);
 
 		line : constant type_probe_line := (
 				start_point	=> point,

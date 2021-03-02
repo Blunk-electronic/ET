@@ -1206,23 +1206,43 @@ package et_geometry is
 		-- For collecting the x values of the intersections of a 
 		-- probe line with the polygon edges:
 		package pac_inside_polygon_query_x_values is new doubly_linked_lists (type_distance);
-		
+									  
 		type type_polygon_point_status is (
 			OUTSIDE,	-- point is outside polygon area
 			INSIDE);	-- point is in polygon area
 		
 		type type_inside_polygon_query_result is record
+			point		: type_point; -- the point where the probe line started
 			status		: type_polygon_point_status := OUTSIDE;		
 			x_values	: pac_inside_polygon_query_x_values.list;
 		end record;
 
+		-- Returns the query result as a human readable string:
+		function to_string (
+			i : in type_inside_polygon_query_result)
+			return string;
+		
 		-- Detects whether the given point is inside or outside
 		-- the polygon.
-		function in_polygon (
+		function in_polygon_status (
 			polygon		: in type_polygon_base;	
 			point		: in type_point)
 			return type_inside_polygon_query_result;
 
+							   
+		-- Returns true if the given query result contains at least
+		-- one x-value of an intersection:
+		function intersections_found (
+			i : in type_inside_polygon_query_result)
+			return boolean;
+
+		-- Returns the first x-value of the given query result.
+		-- Raises constraint error if given query result does
+		-- not contain any x-values:
+		function get_first_intersection (
+			i : in type_inside_polygon_query_result)
+			return type_distance;
+		
 		-- For finding the lower left corner of a polygon this type
 		-- is required. The lower left corner can be a point somewhere
 		-- on the edge of the polygon. In that case the point is REAL.
@@ -1245,25 +1265,7 @@ package et_geometry is
 		function get_lower_left_corner (polygon	: in type_polygon_base)
 			return type_lower_left_corner;
 
-
-		
-		type type_distance_to_polygon (polygon_found : boolean) is record
-			case polygon_found is
-				when TRUE	=> distance : type_distance_positive;
-				when FALSE	=> null;
-			end case;
-		end record;
-
-
-		-- Returns the shortest distance of point to the given
-		-- polygon in direction zero degrees. 
-		-- The polygon is assumed to be on the
-		-- right of the given point.
-		function get_distance_to_polygon (
-			polygon	: in type_polygon_base;
-			point	: in type_point)
-			return type_distance_to_polygon;
-		
+	
 		
 	private
 		type type_vector is	record

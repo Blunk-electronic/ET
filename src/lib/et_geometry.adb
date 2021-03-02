@@ -3471,7 +3471,46 @@ package body et_geometry is
 -- 			null;
 -- 		end;
 
-		function in_polygon (
+		function to_string (
+			i : in type_inside_polygon_query_result)
+			return string
+		is
+			use ada.strings.unbounded;
+			use pac_inside_polygon_query_x_values;
+
+			result : unbounded_string;
+			
+			procedure query_x (c : pac_inside_polygon_query_x_values.cursor) is begin
+				result := result & to_string (element (c));
+			end query_x;
+
+		begin
+			case i.status is
+				when OUTSIDE =>
+					result := to_unbounded_string ("Point" 
+						& to_string (i.point) 
+						& " is OUTSIDE of polygon. ");
+
+				when INSIDE =>
+					result := to_unbounded_string ("Point" 
+						& to_string (i.point)
+						& " is INSIDE polygon. ");
+			end case;
+
+			if is_empty (i.x_values) then
+				result := result & "No x-intersections.";
+			else
+				result := result & "X-intersection(s): ";
+			end if;
+			
+			iterate (i.x_values, query_x'access);
+			
+			return to_string (result);
+		end to_string;
+
+
+		
+		function in_polygon_status (
 			polygon		: in type_polygon_base;	
 			point		: in type_point)
 			return type_inside_polygon_query_result 
@@ -3491,7 +3530,7 @@ package body et_geometry is
 			--    - odd -> point is inside the polygon area
 			--    - zero or even -> point is outside the polygon area
 			
-			result : type_inside_polygon_query_result;
+			result : type_inside_polygon_query_result := (point => point, others => <>);
 
 			line : constant type_probe_line := (
 					start_point	=> point,
@@ -3550,7 +3589,7 @@ package body et_geometry is
 					-- If the candidate line segment crosses the y_threshold then 
 					-- count the intersection:
 					if crosses_threshold then
-
+						
 						-- Add the x value of intersection to the result:
 						collect_x_value (X (to_point (i.intersection)));
 					end if;
@@ -3696,7 +3735,7 @@ package body et_geometry is
 				sort (result.x_values);
 			end sort_x_values;
 			
-		begin -- in_polygon
+		begin -- in_polygon_status
 			
 			-- lines:
 			iterate (polygon.segments.lines, query_line'access);
@@ -3720,8 +3759,30 @@ package body et_geometry is
 			end if;
 			
 			return result;
-		end in_polygon;
+		end in_polygon_status;
 
+		function intersections_found (
+			i : in type_inside_polygon_query_result)
+			return boolean
+		is
+			use pac_inside_polygon_query_x_values;
+		begin
+			if length (i.x_values) = 0 then -- no intersections with polygon
+				return false;
+			else
+				return true; -- at least one intersection found
+			end if;
+		end intersections_found;
+
+		function get_first_intersection (
+			i : in type_inside_polygon_query_result)
+			return type_distance
+		is
+			use pac_inside_polygon_query_x_values;
+		begin
+			return element (i.x_values.first);
+		end get_first_intersection;
+		
 		
 		function get_lower_left_corner (polygon	: in type_polygon_base)
 			return type_lower_left_corner
@@ -3766,7 +3827,7 @@ package body et_geometry is
 			result.point := type_point (set (lowest_x, lowest_y));
 
 			-- figure out whether the point is real or virtual:
-			case in_polygon (polygon, result.point).status is
+			case in_polygon_status (polygon, result.point).status is
 				when INSIDE => 
 					result.status := REAL;
 					
@@ -3776,89 +3837,7 @@ package body et_geometry is
 			
 			return result;
 		end get_lower_left_corner;
-
 		
-		
-		function get_distance_to_polygon (
-			polygon	: in type_polygon_base;
-			point	: in type_point)
-			return type_distance_to_polygon
-		is
-			-- We build a probe line that starts at the given point
-			-- and travels in zero degree to the right.
-			-- Then we look for intersection of the line with the 
-			-- sides of the given polygon:
-			type type_line_here is new type_line with null record;
-			line : constant type_line_here := (
-					start_point	=> point,
-					end_point	=> type_point (set (X (point) + 1.0, Y (point))));
-			
-			probe_line : constant type_line_vector := to_line_vector (line);
-			
-			
-			-- In the given direction the polygon may or may not
-			-- exist. If the polygon was not found in given direction then
-			-- the return of this function is just FALSE.
-			-- This flag goes true if at least one side or vertex/corner
-			-- exists in the given direction:
-			polygon_found : boolean := false;
-
-			-- If the polygon exists in the given direction, then the nearest
-			-- point of the polygon (relative to the given point) is stored
-			-- here to be returned:
-			distance : type_distance_positive := type_distance_positive'last;
-			
-
-			use pac_polygon_lines;
-			
-			procedure query_line (c : in pac_polygon_lines.cursor) is
-
-				-- Find the intersection of the probe line with the candidate line
-				-- of the polygon:
-				i : constant type_intersection_of_two_lines := get_intersection (probe_line, element (c));
-
-				-- In case there is an intersection, then we will temporarily store
-				-- the distance from point to intersection here:
-				d : type_distance_positive;
-			begin
-						  
-				-- If there is an intersection:
-				-- - set the polygon_found flag
-				-- - compute the distance d to the intersection
-				-- - keep the smallest distance found during this iteration
-				if i.status = EXISTS then
-					polygon_found := TRUE;
-
-					d := distance_total (
-						point_one	=> point,
-						point_two	=> to_point (i.intersection));
-
-					--put_line ("distance " & to_string (d));
-					
-					if d < distance then
-						distance := d;
-					end if;
-				end if;
-
-			end query_line;
-			
-		begin -- get_distance_to_polygon
-
-			-- probe the lines of the polygon:
-			iterate (polygon.segments.lines, query_line'access);
-
-			-- CS probe arcs and circles:
-
-
-			-- Compose the return value:
-			if polygon_found then
-				return (polygon_found => TRUE, distance => distance);
-			else
-				return (polygon_found => FALSE);
-			end if;
-
-		end get_distance_to_polygon;
-
 		
 	end generic_pac_shapes;
 
