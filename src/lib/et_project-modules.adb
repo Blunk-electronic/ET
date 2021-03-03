@@ -901,6 +901,32 @@ package body et_project.modules is
 		return settings;
 	end get_user_settings;
 
+	
+	function get_net_class (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		class	: in et_pcb.pac_net_class_name.bounded_string) -- hi-voltage, si-critical
+		return et_pcb.type_net_class
+	is
+		use et_pcb;
+		
+		result : type_net_class;
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module)
+		is
+			use pac_net_classes;
+		begin
+			result := element (find (module.net_classes, class));
+		end query_module;
+		
+	begin
+		query_element (module, query_module'access);
+		
+		return result;
+	end get_net_class;
+	
+	
 	function get_indexed_nets (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return pac_net_names_indexed.vector

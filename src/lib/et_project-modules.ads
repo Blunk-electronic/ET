@@ -397,6 +397,16 @@ package et_project.modules is
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return et_pcb.type_user_settings;
 
+	-- Returns the settings of the required net class
+	-- of the given module.
+	-- Assumes that the given class exists for the module.
+	-- Otherwise constraint error is raised.
+	function get_net_class (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		class	: in et_pcb.pac_net_class_name.bounded_string) -- hi-voltage, si-critical
+		return et_pcb.type_net_class;
+
+	
 	-- Returns the names of all nets that exist in the given module.
 	-- The return is a vector with alphabetically sorted net names
 	-- and a consequtive index as shown in this example table:

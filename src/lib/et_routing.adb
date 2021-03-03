@@ -55,8 +55,12 @@ package body et_routing is
 
 	function compute_fill_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		board			: in type_inside_polygon_query_result;
-		polygon			: in type_inside_polygon_query_result)
+		board_points	: in type_inside_polygon_query_result;
+		polygon_points	: in type_inside_polygon_query_result;
+		clearance		: in type_track_clearance;
+		isolation 		: in type_track_clearance; 
+		easing			: in type_easing
+		)
 		return pac_fill_lines.list
 	is
 		result : pac_fill_lines.list;

@@ -59,9 +59,25 @@ package et_routing is
 	
 	function compute_fill_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		board			: in type_inside_polygon_query_result;
-		polygon			: in type_inside_polygon_query_result)
+
+		-- The points of intersection with the board contours:
+		board_points	: in type_inside_polygon_query_result;
+
+		-- The points of intersection with the polygon contours:
+		polygon_points	: in type_inside_polygon_query_result;
+
+		-- The clearance of the net where the polygon is
+		-- connected with:
+		clearance		: in type_track_clearance;
+
+		-- The isolation of the polygon:
+		isolation 		: in type_track_clearance; 
+
+		-- The easing of the polygon:
+		easing			: in type_easing
+		
 		-- CS x-intersections with tracks, pads, texts, ...
+		)
 		return pac_fill_lines.list;
 
 

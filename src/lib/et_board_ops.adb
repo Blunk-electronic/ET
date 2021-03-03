@@ -4464,8 +4464,6 @@ package body et_board_ops is
 
 		-- We fill the polygons with lines from left to right.
 		lower_left_corner : type_lower_left_corner;
-		distance_to_obstacle : type_distance_positive;
-		fill_line : type_fill_line;
 
 		-- This is the offset required for the lower left corner:
 		-- half of the minimal line widht to the right and up.
@@ -4544,77 +4542,6 @@ package body et_board_ops is
 			use pac_nets;
 			use pac_signal_polygons_solid;
 			use pac_signal_polygons_hatched;
-			
-			--procedure query_net (n : in pac_nets.cursor) is 
-
-				--procedure log_net_name is begin
-					--log (text => "net " & to_string (key (n)), level => log_threshold + 2);
-				--end log_net_name;
-		
-				--procedure query_polygon (c : in pac_signal_polygons_solid.cursor) is 
-
-					--procedure compute_distance_to_obstacle is 
-						--use pac_fill_lines;
-					--begin
-						--distance_to_obstacle := get_distance_to_obstacle_in_polygon (
-							--module_cursor	=> module_cursor,
-							--polygon			=> element (c),
-							--start_point		=> start_point,
-							--net_name		=> key (n),
-							--clearance		=> BOTH,
-							--log_threshold	=> log_threshold + 4);
-
-						---- CS isolation, easing ?
-
-						---- compute end point of line
-						--end_point := type_point (set (
-							--x => X (start_point) + distance_to_obstacle,
-							--y => Y (start_point)));
-						
-						---- append line to fill area of polyon:
-
-						---- CS
-					--end compute_distance_to_obstacle;
-					
-				--begin -- query_polygon
-					--log_net_name;
-					--lower_left_corner := get_lower_left_corner (element (c));
-					--log_lower_left_corner (log_threshold + 3);
-
-					--case lower_left_corner.status is
-						--when REAL =>
-							--start_point := lower_left_corner.point;
-							--compute_distance_to_obstacle;
-					
-						--when VIRTUAL =>
-							--distance_to_polygon := X (lower_left_corner.point);
-							--start_point := type_point (move (lower_left_corner.point, 0.0, distance_to_polygon));
-							--compute_distance_to_obstacle;
-							
-					--end case;
-				--end query_polygon;
-
-				--procedure query_polygon (c : in pac_signal_polygons_hatched.cursor) is 
-				--begin
-					--log_net_name;
-					--lower_left_corner := get_lower_left_corner (element (c));
-					--log_lower_left_corner (log_threshold + 3);
-				--end query_polygon;
-				
-			--begin -- query_net
-				---- CS test if key (c) is in given list of nets
-
-				--log_indentation_up;
-				
-				--iterate (element (n).route.polygons.solid, query_polygon'access);
-				--iterate (element (n).route.polygons.hatched, query_polygon'access);
-				
-				---- CS element (c).class ?
-				
-				--log_indentation_down;
-			--end query_net;
-
-				
 
 			procedure locate_net (
 				module_name	: in pac_module_name.bounded_string;
@@ -4626,43 +4553,17 @@ package body et_board_ops is
 					log (text => "net " & to_string (key (n)), level => log_threshold + 2);
 				end log_net_name;
 
-
 				procedure route_solid (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
 				is 
 					p : pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
 
-					procedure add_line (
-						polygon	: in out type_polygon_conductor_route_solid)
-					is
-						use pac_fill_lines;
-					begin
-						append (polygon.properties.fill_lines, fill_line);
-					end add_line;
-					
-					procedure compute_distance_to_obstacle is 
-					begin
-						distance_to_obstacle := get_distance_to_obstacle_in_polygon (
-							module_cursor	=> module_cursor,
-							polygon			=> element (p),
-							start_point		=> fill_line.start_point,
-							net_name		=> key (n),
-							clearance		=> BOTH,
-							log_threshold	=> log_threshold + 4);
-
-						-- CS isolation, easing ?
-
-						-- Compute end point of line. The line runs horizontally 
-						-- in direction 0 degree at a length of distance_to_obstacle:
-						fill_line.end_point := type_point (set (
-							x => X (fill_line.start_point) + distance_to_obstacle,
-							y => Y (fill_line.start_point))); -- horizontal line
+					net_class : constant type_net_class := get_net_class (module_cursor, net.class);
 						
-						-- append line to the fill are of the polyon:
-						update_element (net.route.polygons.solid, p, add_line'access);
-					end compute_distance_to_obstacle;
-
+					-- Computes the fill lines required after given start point.
+					-- Appends the fill lines to the polygon indicated by
+					-- polygon cursor p:
 					procedure compute_fill_lines (start_point : in type_point) is 
 
 						-- Shifts the start point slightly to the right
@@ -4681,33 +4582,35 @@ package body et_board_ops is
 						--end shift_right;
 
 						-- The point to board contour status:
-						on_board_status : constant type_inside_polygon_query_result := 
+						board_points : constant type_inside_polygon_query_result := 
 							on_board (lower_left_corner.point, module.board.contours, log_threshold + 3);
 
 						-- The point to polygon status:
-						ptp_status : constant type_inside_polygon_query_result :=
+						polygon_points : constant type_inside_polygon_query_result :=
 							in_polygon_status (element (p),	start_point);
 
-						fill_lines : constant pac_fill_lines.list := 
-										et_routing.compute_fill_lines (
-											module_cursor	=> module_cursor,
-											board			=> on_board_status,
-											polygon			=> ptp_status);
+						fill_lines : pac_fill_lines.list := 
+							et_routing.compute_fill_lines (
+								module_cursor, board_points, polygon_points, net_class.clearance,
+								element (p).isolation, element (p).easing);
 
-						--procedure query_line (c : in et_pcb.pac_conductor_lines.cursor) 
-						--is
-						--begin
-							---- append line to the fill are of the polyon:
-							--update_element (net.route.polygons.solid, p, add_line'access);
-							--null;
-						--end query_line;
-						
+						procedure add_lines (
+							polygon	: in out type_polygon_conductor_route_solid)
+						is
+							use pac_fill_lines;
+						begin
+							splice (
+								target	=> polygon.properties.fill_lines, 
+								before	=> pac_fill_lines.no_element,
+								source	=> fill_lines);
+						end add_lines;
+												
 					begin -- compute_fill_lines
-						null;
-						--pac_fill_lines.iterate (fill_lines, query_line'access);
+						update_element (
+							container	=> net.route.polygons.solid,
+							position	=> p,
+							process		=> add_lines'access);
 						
-						--log (text => "distance to polygon" & to_string (d),
-							--level => log_threshold + 3);
 					end compute_fill_lines;
 
 					
