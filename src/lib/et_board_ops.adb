@@ -4560,7 +4560,7 @@ package body et_board_ops is
 					p : pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
 
 					net_class : constant type_net_class := get_net_class (module_cursor, net.class);
-						
+					
 					-- Computes the fill lines required after given start point.
 					-- Appends the fill lines to the polygon indicated by
 					-- polygon cursor p:
@@ -4581,18 +4581,25 @@ package body et_board_ops is
 
 						--end shift_right;
 
-						-- The point to board contour status:
+						-- We imagine a probe line that starts at start point and travels to the
+						-- right (zero degree direction).
+						-- The probe line intersects board contours, tracks, vias, pads, texts 
+						-- and the current conductor polygon at certain x-positions.
+						
+						-- Get the intersections with the board contours:
 						board_points : constant type_inside_polygon_query_result := 
-							on_board (lower_left_corner.point, module.board.contours, log_threshold + 3);
+							on_board (start_point, module.board.contours, log_threshold + 3);
 
-						-- The point to polygon status:
+						-- Get the intersections with the current conductor polygon:
 						polygon_points : constant type_inside_polygon_query_result :=
 							in_polygon_status (element (p),	start_point);
 
 						fill_lines : pac_fill_lines.list := 
 							et_routing.compute_fill_lines (
 								module_cursor, board_points, polygon_points, net_class.clearance,
-								element (p).isolation, element (p).easing);
+								element (p).isolation, element (p).easing,
+								log_threshold + 3
+								);
 
 						procedure add_lines (
 							polygon	: in out type_polygon_conductor_route_solid)

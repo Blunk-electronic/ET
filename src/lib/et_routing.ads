@@ -74,9 +74,11 @@ package et_routing is
 		isolation 		: in type_track_clearance; 
 
 		-- The easing of the polygon:
-		easing			: in type_easing
+		easing			: in type_easing;
 		
-		-- CS x-intersections with tracks, pads, texts, ...
+		-- CS x-intersections with tracks, vias, pads, texts, ...
+
+		log_threshold	: in type_log_level
 		)
 		return pac_fill_lines.list;
 

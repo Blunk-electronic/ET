@@ -916,8 +916,15 @@ package body et_project.modules is
 			module		: in et_schematic.type_module)
 		is
 			use pac_net_classes;
+			use pac_net_class_name;
 		begin
-			result := element (find (module.net_classes, class));
+			if class = net_class_name_default then
+				null;
+				-- CS load result with DRU settings (min track clearance, min track width, 
+				-- min via drill size)
+			else
+				result := element (find (module.net_classes, class));
+			end if;
 		end query_module;
 		
 	begin

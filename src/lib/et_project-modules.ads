@@ -399,6 +399,8 @@ package et_project.modules is
 
 	-- Returns the settings of the required net class
 	-- of the given module.
+	-- If the given class name is "default" then the settings
+	-- are returned as defined by the design rules (DRU).
 	-- Assumes that the given class exists for the module.
 	-- Otherwise constraint error is raised.
 	function get_net_class (
