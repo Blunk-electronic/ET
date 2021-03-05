@@ -66,17 +66,56 @@ package body et_routing is
 	is
 		result : pac_fill_lines.list;
 
+		type type_stop_go is (
+			STOP,
+			GO);					 
+
+		board_line_status, polygon_line_status : type_stop_go := STOP;
+
+		
+		
+		procedure toggle_status_board_line is begin
+			case board_line_status is
+				when STOP	=> board_line_status := GO;
+				when GO		=> board_line_status := STOP;
+			end case;
+		end toggle_status_board_line;
+
+		procedure toggle_status_polygon_line is begin
+			case polygon_line_status is
+				when STOP	=> polygon_line_status := GO;
+				when GO		=> polygon_line_status := STOP;
+			end case;
+		end toggle_status_polygon_line;
+
+		
+		final_line_status : type_stop_go := STOP;
+		
+		procedure update_line_status is begin
+			if board_line_status = GO and polygon_line_status = GO then
+				final_line_status := GO;
+			else
+				final_line_status := STOP;
+			end if;
+		end update_line_status;
+
+		
+		
 		type type_switch_point_status is (
 			VALID,
 			INVALID);
+
+		type type_switches is record
+			board	: boolean := false;
+			polygon	: boolean := false;
+			-- CS others (tracks, texts, ...)
+		end record;
 		
 		type type_switch_point (status : type_switch_point_status) is record
 			case status is
 				when VALID =>
-					x_value	: type_distance := zero;
-					board	: boolean := false;
-					polygon	: boolean := false;
-					-- CS others (tracks, texts, ...)
+					x_value		: type_distance := zero;
+					switches	: type_switches;
 
 				when INVALID => null;
 			end case;
@@ -95,69 +134,100 @@ package body et_routing is
 			return type_switch_point
 		is
 			use pac_distances;
-			sp : type_switch_point (VALID);
 
+			status : type_switch_point_status := INVALID;
+			switches : type_switches;
+			x_value : type_distance;
 			
-			type type_nearest_points is array (1..2) of type_distance;
-			np : type_nearest_points := (others => type_distance'last);
-			
-			xb, xp  : type_distance := type_distance'last;
-			
+			type type_smallest_differences is array (1..2) of type_distance;
+			sdx : type_smallest_differences := (others => type_distance'last);
+
 			procedure query_board_point (c : in pac_distances.cursor) is
-				d : constant type_distance := element (c) - x_position;
+				dx : constant type_distance := element (c) - forward;
 			begin
-				if d < np(1) then
-					np(1) := d;
+				if dx < sdx(1) then
+					sdx(1) := dx;
+				end if;
+
+				if dx > zero then
+					status := VALID;
 				end if;
 				
 			end query_board_point;
 
 			procedure query_polygon_point (c : in pac_distances.cursor) is
-				d : constant type_distance := element (c) - x_position;
+				dx : constant type_distance := element (c) - forward;
 			begin
-				if d < np(2) then
-					np(2) := d;
+				if dx < sdx(2) then
+					sdx(2) := dx;
+				end if;
+
+				if dx > zero then
+					status := VALID;
 				end if;
 				
 			end query_polygon_point;
-
 			
-			sp_x : type_distance := type_distance'last;
-						
 			procedure set_switch_point is
-				d : type_distance;
+				dx : type_distance := type_distance'last;
 			begin
-				for i in type_nearest_points'first .. type_nearest_points'last loop
-					d := np(i) - x_position;
+				-- Find the smallest difference among the domains:
+				for i in type_smallest_differences'first .. type_smallest_differences'last loop
 
-					if d < sp_x then
-						sp_x := d;
+					if sdx(i) < dx then
+						dx := sdx(i);
 					end if;
 
 				end loop;
 
-				
+
+				-- Find the domains that have the current x_value.
+				-- There can be more than one domain having the current x_value:
+				for i in type_smallest_differences'first .. type_smallest_differences'last loop
+
+					if sdx(i) = dx then
+						case i is
+							when 1 => switches.board := true;
+								toggle_status_board_line;
+							
+							when 2 => switches.polygon := true;
+								toggle_status_polygon_line;
+						end case;
+					end if;
+
+				end loop;				
+
+				-- The absolute position in x of the switch point is:
+				x_value := forward + dx;
 			end set_switch_point;
 			
-		begin
+		begin -- get_next_switch_point
+
+			-- Find the x-value that is nearest to the given forward-value:
 			iterate (board_points.x_values, query_board_point'access);
 
-			log (text => "nearest board point is" & to_string (np(1)),
+			log (text => "nearest board point is" & to_string (sdx(1)),
 				level => log_threshold);
 
-			
+			-- Find the x-value that is nearest to the given forward-value:			
 			iterate (polygon_points.x_values, query_polygon_point'access);
 
-			log (text => "nearest polygon point is" & to_string (np(2)),
+			log (text => "nearest polygon point is" & to_string (sdx(2)),
 				level => log_threshold);
 
-			set_switch_point;
-			
-			log (text => "nearest is" & to_string (sp_x),
-				level => log_threshold);
+			case status is
+				when VALID => 
+					set_switch_point;
+				
+					--log (text => "nearest is" & to_string (sp_x),
+						--level => log_threshold);
 
-			
-			return sp;
+					return (VALID, x_value, switches);
+					
+				when INVALID =>
+					return (status => INVALID);
+			end case;
+
 		end get_next_switch_point;
 
 		
@@ -165,11 +235,28 @@ package body et_routing is
 		log (text => "evaluating switch points after" & to_string (board_points.point),
 			 level => log_threshold);
 
-		declare
-			s : type_switch_point := get_next_switch_point (forward => x_position);
-		begin
-			null;
-		end;
+		-- init line status:
+		case board_points.status is
+			when INSIDE		=> board_line_status := GO;
+			when OUTSIDE	=> board_line_status := STOP;
+		end case;
+
+		case polygon_points.status is
+			when INSIDE		=> polygon_line_status := GO;
+			when OUTSIDE	=> polygon_line_status := STOP;
+		end case;
+
+		update_line_status;
+		
+		
+		loop
+			declare
+				s : type_switch_point := get_next_switch_point (forward => x_position);
+			begin
+				null;
+			end;
+
+		end loop;
 		
 		--while get_next_switch_point (forward => x_position).status = VALID loop
 
