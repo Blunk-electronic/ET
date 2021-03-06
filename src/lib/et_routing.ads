@@ -61,10 +61,10 @@ package et_routing is
 		module_cursor	: in pac_generic_modules.cursor;
 
 		-- The points of intersection with the board contours:
-		board_points	: in type_inside_polygon_query_result;
+		board_domain	: in type_inside_polygon_query_result;
 
 		-- The points of intersection with the polygon contours:
-		polygon_points	: in type_inside_polygon_query_result;
+		polygon_domain	: in type_inside_polygon_query_result;
 
 		-- The clearance of the net where the polygon is
 		-- connected with:
