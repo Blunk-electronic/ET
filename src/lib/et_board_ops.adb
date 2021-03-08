@@ -4564,8 +4564,12 @@ package body et_board_ops is
 					-- Computes the fill lines required after given start point.
 					-- Appends the fill lines to the polygon indicated by
 					-- polygon cursor p:
-					procedure compute_fill_lines (start_point : in type_point) is 
+					procedure compute_fill_lines (start_point_in : in type_point) is
 
+						-- Take a copy of the given start point because start point will
+						-- change its y-position in the course of this procedure:
+						start_point : type_point := start_point_in;
+						
 						-- Shifts the start point slightly to the right
 						-- so that the fill line starts inside the polygon
 						-- and not at the edge:
@@ -4585,21 +4589,14 @@ package body et_board_ops is
 						-- right (zero degree direction).
 						-- The probe line intersects board contours, tracks, vias, pads, texts 
 						-- and the current conductor polygon at certain x-positions.
-						
-						-- Get the intersections with the board contours:
-						board_points : constant type_inside_polygon_query_result := 
-							on_board (start_point, module.board.contours, log_threshold + 3);
 
-						-- Get the intersections with the current conductor polygon:
-						polygon_points : constant type_inside_polygon_query_result :=
-							in_polygon_status (element (p),	start_point);
+						-- The intersections with the board contours:
+						board_points : type_inside_polygon_query_result;
 
-						fill_lines : pac_fill_lines.list := 
-							et_routing.compute_fill_lines (
-								module_cursor, board_points, polygon_points, net_class.clearance,
-								element (p).isolation, element (p).easing,
-								log_threshold + 3
-								);
+						-- The intersections with the current conductor polygon:
+						polygon_points : type_inside_polygon_query_result;
+
+						fill_lines : pac_fill_lines.list;
 
 						procedure add_lines (
 							polygon	: in out type_polygon_conductor_route_solid)
@@ -4611,8 +4608,32 @@ package body et_board_ops is
 								before	=> pac_fill_lines.no_element,
 								source	=> fill_lines);
 						end add_lines;
-												
+
+						b : type_boundaries := boundaries (element (p));
+						
 					begin -- compute_fill_lines
+						log (text => "boundaries " & to_string (b));
+						
+						offset := type_point (set (
+								x => element (p).width_min * 0.0, -- right
+								y => element (p).width_min * 0.5)); -- up
+						
+						-- Shift lower left corner slightly up:
+						move_by (start_point, offset);
+
+						-- Get the intersections with the board contours:
+						board_points := on_board (start_point, module.board.contours, log_threshold + 3);
+						
+						-- Get the intersections with the current conductor polygon:
+						polygon_points := in_polygon_status (element (p), start_point);
+
+						-- Compute the fill lines required for the current row (y-position):
+						fill_lines := et_routing.compute_fill_lines (
+							module_cursor, board_points, polygon_points, net_class.clearance,
+							element (p).isolation, element (p).easing,
+							log_threshold + 3);
+
+						-- Add the fill lines to the conductor polygon:
 						update_element (
 							container	=> net.route.polygons.solid,
 							position	=> p,
@@ -4630,12 +4651,12 @@ package body et_board_ops is
 						log_indentation_up;
 						log_lower_left_corner (log_threshold + 3);
 
-						offset := type_point (set (
-								x => element (p).width_min * 0.0, -- right
-								y => element (p).width_min * 0.5)); -- up
+						--offset := type_point (set (
+								--x => element (p).width_min * 0.0, -- right
+								--y => element (p).width_min * 0.5)); -- up
 						
-						-- Shift lower left corner slightly up:
-						move_by (lower_left_corner.point, offset);
+						---- Shift lower left corner slightly up:
+						--move_by (lower_left_corner.point, offset);
 						
 						--log (text => "lower left corner shifted up by half the min. line width" 
 							 --& to_string (lower_left_corner.point),

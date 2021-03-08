@@ -197,8 +197,9 @@ package body et_geometry is
 		end; 
 
 		
-		function boundaries (point_one, point_two : in type_point) return type_boundaries is
-		-- Calculates the boundaries of the given points.
+		function boundaries (point_one, point_two : in type_point) 
+			return type_boundaries
+		is
 			result : type_boundaries;
 		begin
 			-- X axis
@@ -2920,7 +2921,9 @@ package body et_geometry is
 		
 
 		
-		function boundaries (polygon : in type_polygon_base) return type_boundaries is
+		function boundaries (polygon : in type_polygon_base) 
+			return type_boundaries 
+		is
 			b : type_boundaries; -- to be returned
 
 			use pac_polygon_lines;

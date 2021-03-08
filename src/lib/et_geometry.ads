@@ -181,11 +181,10 @@ package et_geometry is
 		function rotation (point : in type_point) return type_rotation;
 
 		
-		-- The GUI frequently requires the area (a rectanglular box around an object)
-		-- occupied by the object. For preparation we need the type_boundaries.
-		-- Boundaries are to be set in the drawing plane where the y-axis increases upwards.
+		-- The area (a rectanglular box around an object)
+		-- occupied by the object.
 		-- The boundaries are always relative to a certain origin that
-		-- sits somewhere inside the rectangle. 
+		-- sits somewhere inside the rectangular box. 
 		type type_boundaries is record
 			smallest_x, smallest_y : type_distance := type_distance'last;
 			greatest_x, greatest_y : type_distance := type_distance'first;
@@ -202,7 +201,8 @@ package et_geometry is
 			boundaries_two : in type_boundaries);
 		
 		-- Calculates the boundaries of the given points:
-		function boundaries (point_one, point_two : in type_point) return type_boundaries;
+		function boundaries (point_one, point_two : in type_point) 
+			return type_boundaries;
 
 		-- Moves the boundaries by the given offset:
 		procedure move_by (
@@ -1111,8 +1111,9 @@ package et_geometry is
 			arguments : in type_fields_of_line)
 			return type_polygon_base'class;
 		
-		function boundaries (polygon : in type_polygon_base) return type_boundaries;
 		-- Returns the boundaries of the given polygon.
+		function boundaries (polygon : in type_polygon_base) 
+			return type_boundaries;
 
 		-- A polygon must have a properly closed outline.
 		-- The outline check requires a list of points (where the gaps are):
