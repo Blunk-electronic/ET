@@ -70,6 +70,7 @@ is
 				context		=> context,
 				circle		=> j,
 				filled		=> YES,
+				width		=> zero,
 				height		=> self.frame_height);
 		end draw;
 		
@@ -100,6 +101,7 @@ is
 				context		=> context,
 				circle		=> j,
 				filled		=> YES,
+				width		=> zero,
 				height		=> self.frame_height);
 		end draw;
 		
@@ -407,6 +409,7 @@ is
 				area		=> in_area,
 				context		=> context,
 				line		=> element (s),
+				width		=> net_line_width,
 				height		=> self.frame_height);
 
 			draw_junctions (s);
@@ -426,6 +429,7 @@ is
 			area		=> in_area,
 			context		=> context,
 			line		=> segment,
+			width		=> net_line_width,
 			height		=> self.frame_height);
 
 		draw_junctions (segment);
@@ -704,6 +708,7 @@ is
 					area		=> in_area,
 					context		=> context,
 					line		=> copy_of_original_segment,
+					width		=> net_line_width,
 					height		=> self.frame_height);
 
 				-- mark segment as already drawn

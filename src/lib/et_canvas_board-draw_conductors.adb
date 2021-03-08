@@ -114,12 +114,13 @@ is
 		-- Draw the line if it is in the current layer:
 		if element (c).layer = current_layer then
 			
-			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
+			set_line_width (context.cr, type_view_coordinate (element (c).width));
 			
 			draw_line (
 				area		=> in_area,
 				context		=> context,
 				line		=> element (c),
+				width		=> element (c).width,
 				height		=> self.frame_height);
 
 		end if;
@@ -130,12 +131,13 @@ is
 		-- Draw the arc if it is in theh current layer:
 		if element (c).layer = current_layer then
 
-			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
+			set_line_width (context.cr, type_view_coordinate (element (c).width));
 
 			draw_arc (
 				area		=> in_area,
 				context		=> context,
 				arc			=> element (c),
+				width		=> element (c).width,
 				height		=> self.frame_height);
 
 		end if;
@@ -150,13 +152,14 @@ is
 			case element (c).filled is
 				when NO =>
 					-- We draw a normal non-filled circle:
-					cairo.set_line_width (context.cr, type_view_coordinate (element (c).border_width));
+					set_line_width (context.cr, type_view_coordinate (element (c).border_width));
 
 					draw_circle (
 						area		=> in_area,
 						context		=> context,
 						circle		=> element (c),
 						filled		=> NO,
+						width		=> element (c).border_width,
 						height		=> self.frame_height);
 					
 				when YES =>
@@ -168,6 +171,7 @@ is
 								context		=> context,
 								circle		=> element (c),
 								filled		=> YES,
+								width		=> zero,
 								height		=> self.frame_height);
 
 						when HATCHED 	=> null; -- CS
@@ -189,6 +193,7 @@ is
 			area		=> in_area,
 			context		=> context,
 			line		=> element (l),
+			width		=> fill_line_width,
 			height		=> self.frame_height);
 		
 	end query_fill_line;
@@ -203,6 +208,7 @@ is
 				context	=> context,
 				polygon	=> element (c),
 				filled	=> NO,
+				width	=> zero, -- CS should be the dynamically calculated width of the contours
 				height	=> self.frame_height);
 
 			-- draw filled areas
@@ -215,11 +221,13 @@ is
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 			
+			-- draw polygon outer contours
 			draw_polygon (
 				area	=> in_area,
 				context	=> context,
 				polygon	=> element (c),
 				filled	=> NO,
+				width	=> zero, -- CS should be the dynamically calculated width of the contours
 				height	=> self.frame_height);
 
 			-- draw filled areas
@@ -231,12 +239,14 @@ is
 		
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
-			
+
+			-- draw polygon outer contours
 			draw_polygon (
 				area	=> in_area,
 				context	=> context,
 				polygon	=> element (c),
 				filled	=> NO,
+				width	=> zero, -- CS should be the dynamically calculated width of the contours
 				height	=> self.frame_height);
 
 			-- draw filled areas
@@ -249,12 +259,14 @@ is
 		
 		-- Draw the polygon if it is in the current layer:
 		if element (c).properties.layer = current_layer then
-			
+
+			-- draw polygon outer contours
 			draw_polygon (
 				area	=> in_area,
 				context	=> context,
 				polygon	=> element (c),
 				filled	=> NO,
+				width	=> zero,
 				height	=> self.frame_height);
 
 			-- draw filled areas
@@ -262,8 +274,7 @@ is
 		end if;
 	end query_polygon;
 	
-	procedure query_cutout (c : in pac_conductor_cutouts.cursor) is
-	begin
+	procedure query_cutout (c : in pac_conductor_cutouts.cursor) is begin
 		-- Draw the zone if it is in the current layer:
 		if element (c).layer = current_layer then
 
@@ -275,6 +286,7 @@ is
 				context	=> context,
 				polygon	=> element (c),
 				filled	=> NO,
+				width	=> zero,
 				height	=> self.frame_height);
 
 			--restore (context.cr);
@@ -308,7 +320,8 @@ is
 				);
 
 			-- Draw the text:
-			draw_vector_text (in_area, context, vector_text, self.frame_height);
+			draw_vector_text (in_area, context, vector_text,
+				element (c).line_width, self.frame_height);
 
 		end if;
 	end query_placeholder;
@@ -340,7 +353,8 @@ is
 				);
 
 			-- Draw the text:
-			draw_vector_text (in_area, context, vector_text, self.frame_height);
+			draw_vector_text (in_area, context, vector_text,
+				element (c).line_width, self.frame_height);
 
 		end if;
 	end query_text;
@@ -379,6 +393,7 @@ is
 				context		=> context,
 				circle		=> circle,
 				filled		=> NO,
+				width		=> zero, -- CS ?
 				height		=> self.frame_height);
 		end draw_restring;
 

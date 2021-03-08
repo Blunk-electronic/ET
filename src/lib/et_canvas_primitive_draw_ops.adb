@@ -145,10 +145,11 @@ package body pac_draw is
 		area	: in type_rectangle;
 		context	: in type_draw_context;
 		arc		: in type_arc'class;
+		width	: in type_distance_positive;
 		height	: in pac_shapes.pac_geometry.type_distance)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given arc:
-		boundaries : type_boundaries := get_boundaries (arc);
+		boundaries : type_boundaries := get_boundaries (arc, width);
 
 		-- compute the bounding box of the given arc
 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
@@ -203,11 +204,12 @@ package body pac_draw is
 		area	: in type_rectangle;
 		context	: in type_draw_context;
 		circle	: in type_circle'class;
-		filled	: in type_filled;		
+		filled	: in type_filled;
+		width	: in type_distance_positive;
 		height	: in pac_shapes.pac_geometry.type_distance)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given circle:
-		boundaries : type_boundaries := get_boundaries (circle);
+		boundaries : type_boundaries := get_boundaries (circle, width);
 
 		-- compute the bounding box of the given arc
 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
@@ -264,12 +266,13 @@ package body pac_draw is
 		context	: in type_draw_context;
 		polygon	: in type_polygon_base'class;
 		filled	: in type_filled;
+		width	: in type_distance_positive;
 		-- CS fill style
 
 		height	: in pac_shapes.pac_geometry.type_distance)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given polygon:
-		boundaries : constant type_boundaries := get_boundaries (polygon);
+		boundaries : constant type_boundaries := get_boundaries (polygon, width);
 
 		-- compute the bounding box of the given polygon
 		bounding_box : constant type_rectangle := make_bounding_box (height, boundaries);
@@ -541,13 +544,13 @@ package body pac_draw is
 		set_line_width (context.cr, type_view_coordinate (zero));
 		
 		-- draw outer polygon with outer border
-		draw_polygon (area, context, outer_border, YES, height);
+		draw_polygon (area, context, outer_border, YES, zero, height);
 
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 		
-		-- draw inner polygon - the area to be taken out:
-		draw_circle (area, context, inner_border, YES, height);
+		-- draw inner area to be taken out:
+		draw_circle (area, context, inner_border, YES, zero, height);
 
 		-- restore default compositing operator:
 		set_operator (context.cr, CAIRO_OPERATOR_OVER);		
@@ -565,13 +568,13 @@ package body pac_draw is
 		set_line_width (context.cr, type_view_coordinate (zero));
 		
 		-- draw outer polygon with outer border
-		draw_polygon (area, context, outer_border, YES, height);
+		draw_polygon (area, context, outer_border, YES, zero, height);
 
 		-- the cutout area must clear out the outer area:
 		set_operator (context.cr, CAIRO_OPERATOR_CLEAR);
 		
 		-- draw inner polygon - the area to be taken out:
-		draw_polygon (area, context, inner_border, YES, height);
+		draw_polygon (area, context, inner_border, YES, zero, height);
 		
 		-- restore default compositing operator:
 		set_operator (context.cr, CAIRO_OPERATOR_OVER);		
@@ -952,6 +955,7 @@ package body pac_draw is
 		area	: in type_rectangle;
 		context	: in type_draw_context;
 		text	: in pac_vector_text_lines.list;
+		width	: in type_distance_positive;
 		height	: in pac_shapes.pac_geometry.type_distance)
 	is
 		use pac_vector_text_lines;
@@ -959,7 +963,7 @@ package body pac_draw is
 		procedure query_line (c : in pac_vector_text_lines.cursor) is 
 
 			-- compute the boundaries (greatest/smallest x/y) of the given line:
-			b : type_boundaries := get_boundaries (element (c));
+			b : type_boundaries := get_boundaries (element (c), width);
 
 			-- compute the bounding box of the given line
 			bounding_box : type_rectangle := make_bounding_box (height, b);

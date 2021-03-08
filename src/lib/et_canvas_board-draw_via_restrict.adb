@@ -70,6 +70,7 @@ is
 				area		=> in_area,
 				context		=> context,
 				line		=> element (c),
+				width		=> via_restrict_line_width,
 				height		=> self.frame_height);
 
 		end if;
@@ -84,6 +85,7 @@ is
 				area		=> in_area,
 				context		=> context,
 				arc			=> element (c),
+				width		=> via_restrict_line_width,
 				height		=> self.frame_height);
 
 			-- CS For some reason the arc is drawn filled. Should not be filled instead.
@@ -104,6 +106,7 @@ is
 						context		=> context,
 						circle		=> element (c),
 						filled		=> NO,
+						width		=> via_restrict_line_width,
 						height		=> self.frame_height);
 					
 				when YES =>
@@ -113,6 +116,7 @@ is
 						context		=> context,
 						circle		=> element (c),
 						filled		=> YES,
+						width		=> zero,
 						height		=> self.frame_height);
 
 					-- restore line width (draw_circle has set it to zero)
@@ -133,6 +137,7 @@ is
 				context	=> context,
 				polygon	=> element (c),
 				filled	=> YES,
+				width	=> zero,
 				height	=> self.frame_height);
 
 		end if;
@@ -150,6 +155,7 @@ is
 				context	=> context,
 				polygon	=> element (c),
 				filled	=> YES,
+				width	=> zero,
 				height	=> self.frame_height);
 
 		end if;
@@ -181,7 +187,8 @@ is
 			-- Even in the deepest (bottom) signal layer the text is not mirrored.
 			
 			-- Draw the text:
-			draw_vector_text (in_area, context, vector_text, self.frame_height);
+			draw_vector_text (in_area, context, vector_text,
+				element (c).line_width, self.frame_height);
 
 		end if;
 	end query_text;

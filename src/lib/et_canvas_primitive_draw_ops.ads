@@ -91,6 +91,9 @@ package pac_draw is
 		area	: in type_rectangle;	
 		context	: in type_draw_context;
 		line	: in type_line'class;
+
+		-- The line width is used for calculating the boundaries.
+		-- The width for the actual drawing must be set by the caller.
 		width	: in type_distance_positive;
 		height	: in pac_shapes.pac_geometry.type_distance);
 		
@@ -104,6 +107,10 @@ package pac_draw is
 		area	: in type_rectangle;
 		context	: in type_draw_context;
 		arc		: in type_arc'class;
+
+		-- The line width is used for calculating the boundaries.
+		-- The width for the actual drawing must be set by the caller.
+		width	: in type_distance_positive;
 		height	: in pac_shapes.pac_geometry.type_distance);
 
 	-- This procedure draws the given circle on the given context.
@@ -118,6 +125,10 @@ package pac_draw is
 		context	: in type_draw_context;
 		circle	: in type_circle'class;
 		filled	: in type_filled;
+
+		-- The line width is used for calculating the boundaries.
+		-- The width for the actual drawing must be set by the caller.
+		width	: in type_distance_positive;
 		height	: in pac_shapes.pac_geometry.type_distance);
 		-- CS fill style ?
 
@@ -185,6 +196,11 @@ package pac_draw is
 		filled	: in type_filled;
 		-- CS fill style
 
+		-- The line width is used for calculating the boundaries
+		-- of the segments. 
+		-- The width for the actual drawing must be set by the caller.
+		width	: in type_distance_positive;
+		
 		height	: in pac_shapes.pac_geometry.type_distance);
 
 
@@ -271,6 +287,10 @@ package pac_draw is
 		area	: in type_rectangle;
 		context	: in type_draw_context;
 		text	: in pac_vector_text_lines.list;
+
+		-- The line width is used for calculating the boundaries
+		-- of the line segments:
+		width	: in type_distance_positive;
 		height	: in pac_shapes.pac_geometry.type_distance);
 
 	

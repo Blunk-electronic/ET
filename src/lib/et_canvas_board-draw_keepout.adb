@@ -65,6 +65,7 @@ is
 			area		=> in_area,
 			context		=> context,
 			line		=> element (c),
+			width		=> keepout_line_width,
 			height		=> self.frame_height);
 
 	end query_line;
@@ -75,6 +76,7 @@ is
 			area		=> in_area,
 			context		=> context,
 			arc			=> element (c),
+			width		=> keepout_line_width,
 			height		=> self.frame_height);
 
 	end query_arc;
@@ -82,12 +84,13 @@ is
 	procedure query_circle (c : in pac_keepout_circles.cursor) is begin
 		case element (c).filled is
 			when NO =>
-				-- We draw a normal non-filled circle:
+				-- We draw a normal not-filled circle:
 				draw_circle (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c),
 					filled		=> NO,
+					width		=> keepout_line_width,
 					height		=> self.frame_height);
 				
 			when YES =>
@@ -97,6 +100,7 @@ is
 					context		=> context,
 					circle		=> element (c),
 					filled		=> YES,
+					width		=> zero,
 					height		=> self.frame_height);
 
 		end case;
@@ -109,6 +113,7 @@ is
 			context	=> context,
 			polygon	=> element (c),
 			filled	=> YES,
+			width	=> zero,
 			height	=> self.frame_height);
 
 	end query_polygon;
@@ -121,6 +126,7 @@ is
 			context	=> context,
 			polygon	=> element (c),
 			filled	=> YES,
+			width	=> zero,
 			height	=> self.frame_height);
 
 	end query_cutout;
@@ -147,7 +153,8 @@ is
 		-- NOTE: Keepout text at bottom is never mirrored.
 		
 		-- Draw the text:
-		draw_vector_text (in_area, context, vector_text, self.frame_height);
+		draw_vector_text (in_area, context, vector_text,
+			element (c).line_width, self.frame_height);
 		
 	end query_text;
 

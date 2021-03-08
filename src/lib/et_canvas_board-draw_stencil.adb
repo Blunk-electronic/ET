@@ -61,23 +61,25 @@ is
 	use et_packages.pac_texts_with_content;
 	
 	procedure query_line (c : in pac_stencil_lines.cursor) is begin
-		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
+		set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
 		draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> element (c),
+			width		=> element (c).width,
 			height		=> self.frame_height);
 
 	end query_line;
 
 	procedure query_arc (c : in pac_stencil_arcs.cursor) is begin
-		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
+		set_line_width (context.cr, type_view_coordinate (element (c).width));
 		
 		draw_arc (
 			area		=> in_area,
 			context		=> context,
 			arc			=> element (c),
+			width		=> element (c).width,
 			height		=> self.frame_height);
 
 	end query_arc;
@@ -86,13 +88,14 @@ is
 		case element (c).filled is
 			when NO =>
 				-- We draw a normal non-filled circle:
-				cairo.set_line_width (context.cr, type_view_coordinate (element (c).border_width));
+				set_line_width (context.cr, type_view_coordinate (element (c).border_width));
 
 				draw_circle (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c),
 					filled		=> NO,
+					width		=> element (c).border_width,
 					height		=> self.frame_height);
 				
 			when YES =>
@@ -102,6 +105,7 @@ is
 					context		=> context,
 					circle		=> element (c),
 					filled		=> YES,
+					width		=> zero,
 					height		=> self.frame_height);
 
 		end case;
@@ -116,6 +120,7 @@ is
 					context	=> context,
 					polygon	=> element (c),
 					filled	=> YES,
+					width	=> zero,
 					height	=> self.frame_height);
 
 			when HATCHED =>
@@ -126,6 +131,7 @@ is
 					context	=> context,
 					polygon	=> element (c),
 					filled	=> NO,
+					width	=> element (c).hatching.border_width,
 					height	=> self.frame_height);
 
 				-- CS hatching ?
@@ -141,6 +147,7 @@ is
 			context	=> context,
 			polygon	=> element (c),
 			filled	=> YES,
+			width	=> zero,
 			height	=> self.frame_height);
 
 	end query_cutout;
@@ -166,7 +173,8 @@ is
 			);
 
 		-- Draw the text:
-		draw_vector_text (in_area, context, vector_text, self.frame_height);
+		draw_vector_text (in_area, context, vector_text,
+			element (c).line_width, self.frame_height);
 		
 	end query_text;
 

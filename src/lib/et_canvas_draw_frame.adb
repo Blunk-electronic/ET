@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -54,6 +54,7 @@ package body pac_draw_frame is
 			area		=> in_area,
 			context		=> context,
 			line		=> line,
+			width		=> type_distance_positive (line_width_thin),
 			height		=> type_distance_positive (frame_size.y));
 	end draw_line;
 

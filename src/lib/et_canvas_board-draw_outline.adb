@@ -60,6 +60,7 @@ is
 			area		=> in_area,
 			context		=> context,
 			line		=> element (c),
+			width		=> et_packages.pcb_contour_line_width,
 			height		=> self.frame_height);
 
 	end query_line;
@@ -69,6 +70,7 @@ is
 			area		=> in_area,
 			context		=> context,
 			arc			=> element (c),
+			width		=> et_packages.pcb_contour_line_width,
 			height		=> self.frame_height);
 	end query_arc;
 
@@ -78,6 +80,7 @@ is
 			context		=> context,
 			circle		=> element (c),
 			filled		=> NO, -- circles in outline are never filled
+			width		=> et_packages.pcb_contour_line_width,
 			height		=> self.frame_height);
 	end query_circle;
 
@@ -102,7 +105,8 @@ is
 			);
 
 		-- Draw the text:
-		draw_vector_text (in_area, context, vector_text, self.frame_height);
+		draw_vector_text (in_area, context, vector_text,
+			element (c).line_width, self.frame_height);
 		
 	end query_text;
 	

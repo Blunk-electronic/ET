@@ -469,6 +469,7 @@ package body et_canvas_schematic is
 					area		=> in_area,
 					context		=> context,
 					line		=> line,
+					width		=> net_line_width,
 					height		=> self.frame_height);
 			end draw;
 			
@@ -766,6 +767,7 @@ package body et_canvas_schematic is
 		lv : type_cursor_line; -- the vertical line
 
 		size : type_distance_positive;
+		width : type_view_coordinate;
 	begin
 		size := cursor_half_size / type_distance_positive (self.scale);
 		
@@ -789,7 +791,9 @@ package body et_canvas_schematic is
 
 
 		-- The line width is inversely proportional to the scale:
-		cairo.set_line_width (context.cr, type_view_coordinate (cursor_line_width) / self.scale);
+		width := type_view_coordinate (cursor_line_width) / self.scale;
+		
+		set_line_width (context.cr, width);
 		
 		set_color_cursor (context.cr);
 
@@ -797,12 +801,14 @@ package body et_canvas_schematic is
 			area		=> in_area,
 			context		=> context,
 			line		=> lh,
+			width		=> type_distance_positive (width),
 			height		=> self.frame_height);
 
 		draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> lv,
+			width		=> type_distance_positive (width),
 			height		=> self.frame_height);
 		
 		cairo.stroke (context.cr);		

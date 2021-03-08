@@ -76,7 +76,7 @@ is
 		rotate_by (line, unit_rotation);
 		move_by (line, unit_position);
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		draw_line (in_area, context, line, self.frame_height);
+		draw_line (in_area, context, line, element (c).width, self.frame_height);
 	end draw_line;
 
 	procedure draw_arc (c : in pac_arcs.cursor) is 
@@ -86,7 +86,7 @@ is
 		rotate_by (arc, unit_rotation);
 		move_by (arc, unit_position);
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		draw_arc (in_area, context, arc, self.frame_height);
+		draw_arc (in_area, context, arc, element (c).width, self.frame_height);
 	end draw_arc;
 
 	procedure draw_circle (c : in pac_circles.cursor) is 
@@ -97,7 +97,7 @@ is
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 
 		-- the circle is not filled -> actual "filled" is NO
-		draw_circle (in_area, context, circle, NO, self.frame_height);
+		draw_circle (in_area, context, circle, NO, element (c).width, self.frame_height);
 	end draw_circle;
 
 	procedure draw_port (c : in pac_ports.cursor) is
@@ -305,7 +305,7 @@ is
 		move_by (line, unit_position);
 		
 		-- Draw the line of the port:
-		draw_line (in_area, context, line, self.frame_height);
+		draw_line (in_area, context, line, port_line_width, self.frame_height);
 
 
 		-- Draw the circle around a port if the layer is enabled:
@@ -319,8 +319,8 @@ is
 			circle.center := line.start_point;
 			circle.radius := port_circle_radius;
 
-			-- the circle is not filled -> actual "filled" is NO
-			draw_circle (in_area, context, circle, NO, self.frame_height);
+			-- the circle is not filled -> argument "filled" is NO
+			draw_circle (in_area, context, circle, NO, port_circle_line_width, self.frame_height);
 
 			-- CS draw port direction, weakness, power level ?
 			-- probably better in draw_terminal_name or draw_port_name ?
@@ -513,8 +513,8 @@ is
 		
 		-- NOTE: The origin is never rotated.
 
-		draw_line (in_area, context, line_horizontal, self.frame_height);
-		draw_line (in_area, context, line_vertical, self.frame_height);
+		draw_line (in_area, context, line_horizontal, et_symbols.origin_line_width, self.frame_height);
+		draw_line (in_area, context, line_vertical, et_symbols.origin_line_width, self.frame_height);
 	end draw_origin;
 	
 begin -- draw_symbol
