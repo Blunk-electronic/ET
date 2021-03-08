@@ -64,8 +64,6 @@ package body et_routing is
 		)
 		return pac_fill_lines.list
 	is
-		result : pac_fill_lines.list;
-
 		-- EXAMPLE 1:
 		--
 		-- The points where the probe line intersects the
@@ -114,21 +112,49 @@ package body et_routing is
 			STOP,	-- the domain stops the line
 			GO);	-- the domain gives a go for the line
 
+		-- The status of an individual domain:
 		board_line_status, polygon_line_status : type_stop_go := STOP;
 
+		-- After ANDing the status of the domains this the the final
+		-- signal for start and stop of a fill line:
+		final_line_status : type_stop_go := STOP;
+
+		-- This flag indicates that the status for the final
+		-- fill line has changed from GO to STOP or from STOP to GO:
+		final_line_status_has_changed : boolean := false;
+
+		
+		
+		-- A single fill line to be inserted in the list of fill lines.
+		-- which will be returned by this function:
 		fill_line : type_fill_line; -- G====S
+
+		-- The list of fill lines to be returned.
+		-- NOTE: All the lines contained here are in the same row,
+		-- means they all have the same y-value for start and end point:
+		result : pac_fill_lines.list;
 
 		
 		-- This position pointer advances to the right along the x-axis
 		-- It starts at the point P.
-		x_position : type_distance := X (board_domain.point); 
+		--x_position : type_distance := X (board_domain.point); 
 		
 		-- This is the y position of all fill lines. All fill lines
 		-- are in the same row:
 		y_position : type_distance := Y (board_domain.point); 
 
 		
-		
+		procedure init_domain_statuses is begin
+			case board_domain.status is
+				when INSIDE		=> board_line_status := GO;
+				when OUTSIDE	=> board_line_status := STOP;
+			end case;
+
+			case polygon_domain.status is
+				when INSIDE		=> polygon_line_status := GO;
+				when OUTSIDE	=> polygon_line_status := STOP;
+			end case;
+		end init_domain_statuses;
 		
 		procedure toggle_status_board_line is begin
 			case board_line_status is
@@ -156,17 +182,14 @@ package body et_routing is
 			x_value		: type_distance := zero;
 		end record;
 
-		current_milestone : type_milestone;
-		
-		final_line_status : type_stop_go := STOP;
+		milestone : type_milestone;
 
-		-- This flag indicates that the status for the final
-		-- line has changed from GO to STOP or from STOP to GO:
-		final_line_status_has_changed : boolean := false;
-		
-		procedure update_line_status is begin
-			-- ALL domains must give their go for the final fill line.
-			-- So their individual statuses are ANDed:
+
+		-- Computes the final_line_status by ANDing the individual
+		-- domain statuses. 
+		-- ALL domains must give their go for the final fill line.
+		-- Sets the flag final_line_status_has_changed accordingly.
+		procedure update_final_line_status is begin
 			if board_line_status = GO and polygon_line_status = GO then
 
 				-- Detect a change of the status:
@@ -196,39 +219,62 @@ package body et_routing is
 					--level => log_threshold);
 			--end if;
 				
-		end update_line_status;
+		end update_final_line_status;
 
-		-- Generates a fill line. The fill line always starts at the
-		-- current milestone where the final_line_status is a GO mark.
-		-- Its end point is assigned when the final_line_status has just CHANGED
-		-- into a STOP mark.
+		-- Sets the start or end point of a fill line if the current milestone
+		-- is valid.
+		-- The fill line always starts at the
+		-- current milestone where the final_line_status changes to GO.
+		-- The fill line ends when the final_line_status changes to STOP.
 		procedure make_fill_line is
 			use pac_fill_lines;
 		begin
-			case final_line_status is 
-				when GO =>
-					fill_line.start_point := type_point (set (current_milestone.x_value, y_position));
-					
-				when STOP =>
-					--if current_milestone.x_value > x_position then
-
-						if final_line_status_has_changed then
-							fill_line.end_point := type_point (set (current_milestone.x_value, y_position));
-							
-							append (result, fill_line);
-						end if;
+			if milestone.status = VALID then
+				
+				case final_line_status is 
+					when GO =>
+						fill_line.start_point := type_point (set (milestone.x_value, y_position));
 						
-					--end if;
-			end case;
+					when STOP =>
+						--if milestone.x_value > x_position then
 
+						-- Its end point is assigned when the final_line_status has just CHANGED
+						-- into a STOP mark.
+						
+							if final_line_status_has_changed then
+								fill_line.end_point := type_point (set (milestone.x_value, y_position));
+								
+								append (result, fill_line);
+							end if;
+							
+						--end if;
+				end case;
+				
+			end if;			
 		end make_fill_line;
 
-		-- Locates the next milestone in x-direction forward the given x-value.
+		-- Locates the next milestone in x-direction forward the given 
+		-- x-value "forward".
+		-- If a valid milestone was found, updates the final line status by
+		-- calling procedure update_final_line_status.
 		function get_next_milestone (forward : in type_distance)
 			return type_milestone
 		is
 			use pac_distances;
 
+			-- The basic tasks of this function are:
+			-- 1. Find in each domain the point of intersection that comes right
+			--    after "forward". The difference of point.x and "forward"
+			--    is used to find the point. The smallest difference indicates
+			--    the point nearest to "forward".
+			-- 2. Store the smallest difference of point.x and "forward" in array sdx.
+			--    Each domain has an element in sdx.
+			-- 3. Find the smallest difference among the differences stored in sdx.
+			--    intersections of multiple domains may be at the same x-position.
+			--    For each intersection of a domain the status (INSIDE/OUTSIDE)
+			--    is toggled to and fro.
+			
+			-- the milestone being build and to be returned:
 			ms : type_milestone;
 
 			-- These are the smallest distances found between "forward"
@@ -262,14 +308,14 @@ package body et_routing is
 				end if;				
 			end query_polygon_point;
 
-			-- Finds the nearest milestone among the domains and sets the
+			-- Finds the smalles difference among the domains and sets the
 			-- absolute position of the milestone to be returned.
 			-- Toggles the status of the individual lines.
 			procedure set_x is
 				dx : type_distance := type_distance'last;
 			begin
 				-- Find the nearest milestone among the domains
-				-- by finding the smalles difference stored in array sdx:
+				-- by finding the smallest difference stored in array sdx:
 				for i in type_smallest_differences'first .. type_smallest_differences'last loop
 
 					if sdx(i) < dx then
@@ -330,7 +376,7 @@ package body et_routing is
 					--log (text => "switch at" & to_string (ms.x_value),
 						--level => log_threshold);
 
-					update_line_status;
+					update_final_line_status;
 					
 				when INVALID =>					
 					-- If no valid milestone was found, then the milestone to be returned
@@ -345,31 +391,37 @@ package body et_routing is
 		log (text => "evaluating milestones after" & to_string (board_domain.point),
 			 level => log_threshold);
 
-		-- init line status:
-		case board_domain.status is
-			when INSIDE		=> board_line_status := GO;
-			when OUTSIDE	=> board_line_status := STOP;
-		end case;
-
-		case polygon_domain.status is
-			when INSIDE		=> polygon_line_status := GO;
-			when OUTSIDE	=> polygon_line_status := STOP;
-		end case;
-
-		-- Set the initial x-position of the milestone:
-		current_milestone.x_value := x_position;
+		init_domain_statuses;
+	
+		-- Set the initial x-position of the milestone.
+		-- So the first milestone is where the board domain begins:
+		milestone.x_value := X (board_domain.point); --x_position;
+		milestone.status := VALID; -- the first milestone is always valid
 		
-		update_line_status;
-		
+		update_final_line_status;
+
+		-- Assign start to the fill_line if the milestone is valid
+		-- and if the final_line_status is GO.
+		-- Otherwise nothing happens here:
+		make_fill_line;
+
+		-- Get the 2nd milestone. If there is a 2nd milestone, then
+		-- milestone.x_value assumes the x-position of the 2nd milestone.
+		-- If there is no 2nd milestone, then the status of milestone will be set INVALID.
+		-- In this case no further milestones will be searched for.
+		milestone := get_next_milestone (milestone.x_value); -- x_position);
+
+		-- Assign start or end point to the fill_line if the milestone is valid:
+		-- Otherwise nothing happens here:
 		make_fill_line;
 		
-		current_milestone := get_next_milestone (x_position);
+		-- Look for more milestones:
+		while milestone.status = VALID loop
 
-		
-		while current_milestone.status = VALID loop
+			milestone := get_next_milestone (milestone.x_value);
 
-			current_milestone := get_next_milestone (current_milestone.x_value);
-
+			-- Assign start or end point to the fill_line if the milestone is valid:
+			-- Otherwise nothing happens here:
 			make_fill_line;
 			
 		end loop;
