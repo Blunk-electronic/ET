@@ -88,10 +88,11 @@ package pac_draw is
 	-- The line will be drawn if its bounding box intersects the given area.
 	-- If area is no_rectangle then the line would be drawn in any case.
 	procedure draw_line (
-		area			: in type_rectangle;	
-		context			: in type_draw_context;
-		line			: in type_line'class;
-		height			: in pac_shapes.pac_geometry.type_distance);
+		area	: in type_rectangle;	
+		context	: in type_draw_context;
+		line	: in type_line'class;
+		width	: in type_distance_positive;
+		height	: in pac_shapes.pac_geometry.type_distance);
 		
 
 	-- This procedure draws the given arc on the given context.

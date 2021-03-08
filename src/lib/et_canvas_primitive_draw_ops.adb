@@ -96,10 +96,11 @@ package body pac_draw is
 		area	: in type_rectangle;
 		context	: in type_draw_context;
 		line	: in type_line'class;
+		width	: in type_distance_positive;
 		height	: in pac_shapes.pac_geometry.type_distance)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given line:
-		boundaries : type_boundaries := get_boundaries (line);
+		boundaries : type_boundaries := get_boundaries (line, width);
 
 		-- compute the bounding box of the given line
 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);

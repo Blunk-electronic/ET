@@ -201,7 +201,10 @@ package et_geometry is
 			boundaries_two : in type_boundaries);
 		
 		-- Calculates the boundaries of the given points:
-		function get_boundaries (point_one, point_two : in type_point) 
+		function get_boundaries (
+			point_one	: in type_point;
+			point_two	: in type_point;
+			min_size	: in type_distance_positive) 
 			return type_boundaries;
 
 		-- Moves the boundaries by the given offset:
@@ -794,7 +797,9 @@ package et_geometry is
 		procedure next_bend_style (route : in out type_route_live);
 		
 		-- Returns the boundaries of the given line.
-		function get_boundaries (line : in type_line)
+		function get_boundaries (
+			line	: in type_line;	
+			width	: in type_distance_positive)
 			return type_boundaries;
 		
 		-- A line is divided into three zones. Their width is the ratio
@@ -881,7 +886,10 @@ package et_geometry is
 		-- Returns the start and end angles of an arc.
 		
 		-- Returns the boundaries of the given arc.
-		function get_boundaries (arc : in type_arc) return type_boundaries;
+		function get_boundaries (
+			arc			: in type_arc;
+			line_width	: in type_distance_positive) 
+			return type_boundaries;
 		
 		-- Returns true if the given point sits on the given arc.
 		-- The optional parameter accuracy may be used to specifiy the range at
@@ -977,7 +985,9 @@ package et_geometry is
 			rotation	: in type_rotation);
 		
 		-- Returns the boundaries of the given circle.
-		function get_boundaries (circle : in type_circle) 
+		function get_boundaries (
+			circle		: in type_circle;
+			line_width	: in type_distance_positive)						
 			return type_boundaries;
 		
 		function on_circle (
@@ -1114,7 +1124,9 @@ package et_geometry is
 			return type_polygon_base'class;
 		
 		-- Returns the boundaries of the given polygon.
-		function get_boundaries (polygon : in type_polygon_base) 
+		function get_boundaries (
+			polygon		: in type_polygon_base;
+			line_width	: in type_distance_positive)
 			return type_boundaries;
 
 		-- A polygon must have a properly closed outline.
