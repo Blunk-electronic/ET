@@ -201,7 +201,7 @@ package et_geometry is
 			boundaries_two : in type_boundaries);
 		
 		-- Calculates the boundaries of the given points:
-		function boundaries (point_one, point_two : in type_point) 
+		function get_boundaries (point_one, point_two : in type_point) 
 			return type_boundaries;
 
 		-- Moves the boundaries by the given offset:
@@ -793,8 +793,9 @@ package et_geometry is
 		-- Switches to the next bend style of the given live route:
 		procedure next_bend_style (route : in out type_route_live);
 		
-		function boundaries (line : in type_line) return type_boundaries;
 		-- Returns the boundaries of the given line.
+		function get_boundaries (line : in type_line)
+			return type_boundaries;
 		
 		-- A line is divided into three zones. Their width is the ratio
 		-- of line length and the zone_division_factor.
@@ -879,8 +880,8 @@ package et_geometry is
 		function to_arc_angles (arc : in type_arc) return type_arc_angles;
 		-- Returns the start and end angles of an arc.
 		
-		function boundaries (arc : in type_arc) return type_boundaries;
 		-- Returns the boundaries of the given arc.
+		function get_boundaries (arc : in type_arc) return type_boundaries;
 		
 		-- Returns true if the given point sits on the given arc.
 		-- The optional parameter accuracy may be used to specifiy the range at
@@ -975,8 +976,9 @@ package et_geometry is
 			circle		: in out type_circle;
 			rotation	: in type_rotation);
 		
-		function boundaries (circle : in type_circle) return type_boundaries;
 		-- Returns the boundaries of the given circle.
+		function get_boundaries (circle : in type_circle) 
+			return type_boundaries;
 		
 		function on_circle (
 		-- Returns true if the given point sits on the given circle circumfence.
@@ -1112,7 +1114,7 @@ package et_geometry is
 			return type_polygon_base'class;
 		
 		-- Returns the boundaries of the given polygon.
-		function boundaries (polygon : in type_polygon_base) 
+		function get_boundaries (polygon : in type_polygon_base) 
 			return type_boundaries;
 
 		-- A polygon must have a properly closed outline.

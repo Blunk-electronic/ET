@@ -99,7 +99,7 @@ package body pac_draw is
 		height	: in pac_shapes.pac_geometry.type_distance)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given line:
-		boundaries : type_boundaries := pac_shapes.boundaries (line);
+		boundaries : type_boundaries := get_boundaries (line);
 
 		-- compute the bounding box of the given line
 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
@@ -144,10 +144,10 @@ package body pac_draw is
 		area	: in type_rectangle;
 		context	: in type_draw_context;
 		arc		: in type_arc'class;
-		height	: in pac_shapes.pac_geometry.type_distance) is
-
+		height	: in pac_shapes.pac_geometry.type_distance)
+	is
 		-- compute the boundaries (greatest/smallest x/y) of the given arc:
-		boundaries : type_boundaries := pac_shapes.boundaries (arc);
+		boundaries : type_boundaries := get_boundaries (arc);
 
 		-- compute the bounding box of the given arc
 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
@@ -206,7 +206,7 @@ package body pac_draw is
 		height	: in pac_shapes.pac_geometry.type_distance)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given circle:
-		boundaries : type_boundaries := pac_shapes.boundaries (circle);
+		boundaries : type_boundaries := get_boundaries (circle);
 
 		-- compute the bounding box of the given arc
 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
@@ -268,7 +268,7 @@ package body pac_draw is
 		height	: in pac_shapes.pac_geometry.type_distance)
 	is
 		-- compute the boundaries (greatest/smallest x/y) of the given polygon:
-		boundaries : constant type_boundaries := pac_shapes.boundaries (polygon);
+		boundaries : constant type_boundaries := get_boundaries (polygon);
 
 		-- compute the bounding box of the given polygon
 		bounding_box : constant type_rectangle := make_bounding_box (height, boundaries);
@@ -958,7 +958,7 @@ package body pac_draw is
 		procedure query_line (c : in pac_vector_text_lines.cursor) is 
 
 			-- compute the boundaries (greatest/smallest x/y) of the given line:
-			b : type_boundaries := boundaries (element (c));
+			b : type_boundaries := get_boundaries (element (c));
 
 			-- compute the bounding box of the given line
 			bounding_box : type_rectangle := make_bounding_box (height, b);

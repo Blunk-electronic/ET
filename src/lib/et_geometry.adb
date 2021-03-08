@@ -197,7 +197,7 @@ package body et_geometry is
 		end; 
 
 		
-		function boundaries (point_one, point_two : in type_point) 
+		function get_boundaries (point_one, point_two : in type_point) 
 			return type_boundaries
 		is
 			result : type_boundaries;
@@ -235,7 +235,7 @@ package body et_geometry is
 			end if;
 
 			return result;
-		end boundaries;
+		end get_boundaries;
 
 		procedure move_by (
 		-- Moves the boundaries by the given offset.
@@ -1712,9 +1712,11 @@ package body et_geometry is
 			end if;
 		end next_bend_style;
 		
-		function boundaries (line : in type_line) return type_boundaries is begin
-			return boundaries (line.start_point, line.end_point);
-		end boundaries;
+		function get_boundaries (line : in type_line) 
+			return type_boundaries 
+		is begin
+			return get_boundaries (line.start_point, line.end_point);
+		end get_boundaries;
 		
 		function which_zone (
 			point	: in type_point'class;
@@ -2055,8 +2057,9 @@ package body et_geometry is
 			return result;
 		end to_arc_angles;
 		
-		function boundaries (arc : in type_arc) return type_boundaries is
-		-- This function calculates the boundaries of an arc.
+		function get_boundaries (arc : in type_arc) 
+			return type_boundaries 
+		is
 		-- The current implementation is probably not the best solution.
 		-- CS: A more professional approach is required here.
 			
@@ -2087,7 +2090,7 @@ package body et_geometry is
 			q_end   := quadrant (arc_tmp.end_point);
 			
 			-- calculate the boundaries of start and end point
-			result := boundaries (arc_tmp.start_point, arc_tmp.end_point);
+			result := get_boundaries (arc_tmp.start_point, arc_tmp.end_point);
 
 			-- Depending on the quadrants of start and end point, other quadrants may
 			-- be crossed. The boundaries (held in result) must be pushed away into x
@@ -2227,7 +2230,7 @@ package body et_geometry is
 			move_by (result, arc.center);
 			
 			return result;
-		end boundaries;
+		end get_boundaries;
 		
 		function on_arc (
 			point		: in type_point;
@@ -2460,7 +2463,9 @@ package body et_geometry is
 			rotate_by (circle.center, rotation);
 		end;
 		
-		function boundaries (circle : in type_circle) return type_boundaries is
+		function get_boundaries (circle : in type_circle)
+			return type_boundaries 
+		is
 			result : type_boundaries;
 		begin
 			-- X axis
@@ -2472,7 +2477,7 @@ package body et_geometry is
 			result.greatest_y := circle.center.y + circle.radius;
 			
 			return result;
-		end boundaries;
+		end get_boundaries;
 		
 		function on_circle (
 			point		: in type_point;
@@ -2921,7 +2926,7 @@ package body et_geometry is
 		
 
 		
-		function boundaries (polygon : in type_polygon_base) 
+		function get_boundaries (polygon : in type_polygon_base) 
 			return type_boundaries 
 		is
 			b : type_boundaries; -- to be returned
@@ -2931,15 +2936,15 @@ package body et_geometry is
 			use pac_polygon_circles;
 			
 			procedure query_line (c : in pac_polygon_lines.cursor) is begin
-				union (b, boundaries (element (c)));
+				union (b, get_boundaries (element (c)));
 			end query_line;
 
 			procedure query_arc (c : in pac_polygon_arcs.cursor) is begin
-				union (b, boundaries (element (c)));
+				union (b, get_boundaries (element (c)));
 			end query_arc;
 
 			procedure query_circle (c : in pac_polygon_circles.cursor) is begin
-				union (b, boundaries (element (c)));
+				union (b, get_boundaries (element (c)));
 			end query_circle;
 			
 		begin
@@ -2948,7 +2953,7 @@ package body et_geometry is
 			iterate (polygon.segments.circles, query_circle'access);
 
 			return b;
-		end boundaries;
+		end get_boundaries;
 
 		function to_string (gaps : in pac_polygon_gaps.list) return string is
 			use pac_polygon_gaps;
