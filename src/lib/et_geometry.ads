@@ -200,11 +200,14 @@ package et_geometry is
 			boundaries_one : in out type_boundaries;
 			boundaries_two : in type_boundaries);
 		
-		-- Calculates the boundaries of the given points:
+		-- Calculates the boundaries of the given points
+		-- connected with a line that has the
+		-- given width. The boundaries are extended
+		-- by half the given width.
 		function get_boundaries (
 			point_one	: in type_point;
 			point_two	: in type_point;
-			min_size	: in type_distance_positive) 
+			width		: in type_distance_positive) 
 			return type_boundaries;
 
 		-- Moves the boundaries by the given offset:
@@ -797,6 +800,8 @@ package et_geometry is
 		procedure next_bend_style (route : in out type_route_live);
 		
 		-- Returns the boundaries of the given line.
+		-- The line has the given width. 
+		-- The boundaries are extended by half the given width.
 		function get_boundaries (
 			line	: in type_line;	
 			width	: in type_distance_positive)
@@ -886,6 +891,8 @@ package et_geometry is
 		-- Returns the start and end angles of an arc.
 		
 		-- Returns the boundaries of the given arc.
+		-- The arc has the given width. 
+		-- The boundaries are extended by half the given width.
 		function get_boundaries (
 			arc			: in type_arc;
 			line_width	: in type_distance_positive) 
@@ -985,6 +992,8 @@ package et_geometry is
 			rotation	: in type_rotation);
 		
 		-- Returns the boundaries of the given circle.
+		-- The circle has the given width. 
+		-- The boundaries are extended by half the given width.
 		function get_boundaries (
 			circle		: in type_circle;
 			line_width	: in type_distance_positive)						

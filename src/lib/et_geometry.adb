@@ -200,12 +200,12 @@ package body et_geometry is
 		function get_boundaries (
 			point_one	: in type_point;
 			point_two	: in type_point;
-			min_size	: in type_distance_positive) 
+			width		: in type_distance_positive) 
 			return type_boundaries
 		is
 			result : type_boundaries;
 
-			half_width : constant type_distance_positive := min_size * 0.5;
+			half_width : constant type_distance_positive := width * 0.5;
 		begin
 			-- X axis
 			if point_one.x = point_two.x then -- both points on a vertical line
@@ -2075,8 +2075,10 @@ package body et_geometry is
 			line_width	: in type_distance_positive) 
 			return type_boundaries 
 		is
-		-- The current implementation is probably not the best solution.
-		-- CS: A more professional approach is required here.
+			half_width : constant type_distance_positive := line_width * 0.5;
+			
+			-- The current implementation is probably not the best solution.
+			-- CS: A more professional approach is required here.
 			
 			result : type_boundaries; -- to be returned
 
@@ -2091,7 +2093,6 @@ package body et_geometry is
 			q_start : type_quadrant;
 			q_end   : type_quadrant;
 
-			-- CS take line widht into account
 			procedure set_sx is begin result.smallest_x := - radius; end;
 			procedure set_gx is begin result.greatest_x :=   radius; end;
 			procedure set_sy is begin result.smallest_y := - radius; end;
@@ -2105,8 +2106,10 @@ package body et_geometry is
 			q_start := quadrant (arc_tmp.start_point);
 			q_end   := quadrant (arc_tmp.end_point);
 			
-			-- calculate the boundaries of start and end point
-			result := get_boundaries (arc_tmp.start_point, arc_tmp.end_point, line_width);
+			-- Calculate the boundaries of start and end point.
+			-- For the moment we regard start and end point of the arc being
+			-- connected with a straight line, ignoring the line width:
+			result := get_boundaries (arc_tmp.start_point, arc_tmp.end_point, zero);
 
 			-- Depending on the quadrants of start and end point, other quadrants may
 			-- be crossed. The boundaries (held in result) must be pushed away into x
@@ -2244,6 +2247,13 @@ package body et_geometry is
 			-- The boundaries held in "result" are still relative to the origin (0/0).
 			-- They must be moved back to where the given arc is positioned.
 			move_by (result, arc.center);
+
+			-- extend the boundaries by half the line width;
+			result.smallest_x := result.smallest_x - half_width;
+			result.smallest_y := result.smallest_y - half_width;
+
+			result.greatest_x := result.greatest_x + half_width;
+			result.greatest_y := result.greatest_y + half_width;
 			
 			return result;
 		end get_boundaries;
@@ -2485,6 +2495,8 @@ package body et_geometry is
 			return type_boundaries 
 		is
 			result : type_boundaries;
+
+			half_width : constant type_distance_positive := line_width * 0.5;
 		begin
 			-- X axis
 			result.smallest_x := circle.center.x - circle.radius;
@@ -2494,7 +2506,13 @@ package body et_geometry is
 			result.smallest_y := circle.center.y - circle.radius;
 			result.greatest_y := circle.center.y + circle.radius;
 
-			-- CS take line width into account
+			
+			-- extend the boundaries by half the line width;
+			result.smallest_x := result.smallest_x - half_width;
+			result.smallest_y := result.smallest_y - half_width;
+
+			result.greatest_x := result.greatest_x + half_width;
+			result.greatest_y := result.greatest_y + half_width;
 			
 			return result;
 		end get_boundaries;
@@ -2951,22 +2969,24 @@ package body et_geometry is
 			line_width	: in type_distance_positive)
 			return type_boundaries 
 		is
-			b : type_boundaries; -- to be returned
+			result : type_boundaries; -- to be returned
 
+			half_width : constant type_distance_positive := line_width * 0.5;
+			
 			use pac_polygon_lines;
 			use pac_polygon_arcs;
 			use pac_polygon_circles;
 			
 			procedure query_line (c : in pac_polygon_lines.cursor) is begin
-				union (b, get_boundaries (element (c), line_width));
+				union (result, get_boundaries (element (c), zero));
 			end query_line;
 
 			procedure query_arc (c : in pac_polygon_arcs.cursor) is begin
-				union (b, get_boundaries (element (c), line_width));
+				union (result, get_boundaries (element (c), zero));
 			end query_arc;
 
 			procedure query_circle (c : in pac_polygon_circles.cursor) is begin
-				union (b, get_boundaries (element (c), line_width));
+				union (result, get_boundaries (element (c), zero));
 			end query_circle;
 			
 		begin
@@ -2974,7 +2994,15 @@ package body et_geometry is
 			iterate (polygon.segments.arcs, query_arc'access);
 			iterate (polygon.segments.circles, query_circle'access);
 
-			return b;
+			
+			-- extend the boundaries by half the line width;
+			result.smallest_x := result.smallest_x - half_width;
+			result.smallest_y := result.smallest_y - half_width;
+
+			result.greatest_x := result.greatest_x + half_width;
+			result.greatest_y := result.greatest_y + half_width;
+			
+			return result;
 		end get_boundaries;
 
 		function to_string (gaps : in pac_polygon_gaps.list) return string is
