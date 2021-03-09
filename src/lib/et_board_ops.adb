@@ -4609,7 +4609,7 @@ package body et_board_ops is
 								source	=> fill_lines);
 						end add_lines;
 
-						b : type_boundaries := get_boundaries (element (p), element (p).width_min);
+						b : type_boundaries := get_boundaries (element (p), zero); --element (p).width_min);
 						
 					begin -- compute_fill_lines
 						log (text => "boundaries " & to_string (b));

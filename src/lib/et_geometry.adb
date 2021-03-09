@@ -3846,43 +3846,12 @@ package body et_geometry is
 			return type_lower_left_corner
 		is
 			result : type_lower_left_corner;
-			lowest_x, lowest_y : type_distance := type_distance'last;
 
-			use pac_polygon_lines;
-
-			procedure query_line (c : in pac_polygon_lines.cursor) is begin
-
-				-- X
-				if element (c).start_point.x < lowest_x then
-					lowest_x := element (c).start_point.x;
-				end if;
-
-				if element (c).end_point.x < lowest_x then
-					lowest_x := element (c).end_point.x;
-				end if;
-
-				-- Y
-				if element (c).start_point.y < lowest_y then
-					lowest_y := element (c).start_point.y;
-				end if;
-
-				if element (c).end_point.y < lowest_y then
-					lowest_y := element (c).end_point.y;
-				end if;
-				
-			end query_line;
+			boundaries : constant type_boundaries := get_boundaries (polygon, zero);
 			
-		begin -- get_lower_left_corner
-			-- Probe the segments of the polygon:
-
-			-- lines:
-			iterate (polygon.segments.lines, query_line'access);
-
-			-- CS arcs
-			-- CS circles
-
+		begin
 			-- compose the lower left corner point:
-			result.point := type_point (set (lowest_x, lowest_y));
+			result.point := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
 
 			-- figure out whether the point is real or virtual:
 			case in_polygon_status (polygon, result.point).status is
