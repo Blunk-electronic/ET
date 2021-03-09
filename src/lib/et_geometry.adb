@@ -178,6 +178,19 @@ package body et_geometry is
 				return type_rotation (arctan (y, x, float (units_per_cycle)));
 			end if;
 		end rotation;
+
+		
+		function get_height (boundaries : in type_boundaries)
+			return type_distance_positive
+		is begin
+			return boundaries.greatest_y - boundaries.smallest_y;
+		end get_height;
+
+		function get_width (boundaries : in type_boundaries)
+			return type_distance_positive
+		is begin
+			return boundaries.greatest_x - boundaries.smallest_x;
+		end get_width;
 		
 		function to_string (boundaries : in type_boundaries) return string is begin
 			return "boundaries: smallest x" & to_string (boundaries.smallest_x) 
@@ -3004,7 +3017,7 @@ package body et_geometry is
 			
 			return result;
 		end get_boundaries;
-
+		
 		function to_string (gaps : in pac_polygon_gaps.list) return string is
 			use pac_polygon_gaps;
 			use ada.strings.unbounded;
@@ -3855,7 +3868,7 @@ package body et_geometry is
 
 			-- figure out whether the point is real or virtual:
 			case in_polygon_status (polygon, result.point).status is
-				when INSIDE => 
+				when INSIDE => -- or on edge of polygon
 					result.status := REAL;
 					
 				when OUTSIDE =>

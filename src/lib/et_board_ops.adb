@@ -4570,21 +4570,6 @@ package body et_board_ops is
 						-- change its y-position in the course of this procedure:
 						start_point : type_point := start_point_in;
 						
-						-- Shifts the start point slightly to the right
-						-- so that the fill line starts inside the polygon
-						-- and not at the edge:
-						--procedure shift_right is begin
-							--offset := type_point (set (
-									--x => element (p).width_min * 0.5, -- right
-									--y => element (p).width_min * 0.0)); -- up
-
-							--move_by (fill_line.start_point, offset);
-
-							--log (text => "fill line start" & to_string (fill_line.start_point),
-								--level => log_threshold + 3);
-
-						--end shift_right;
-
 						-- We imagine a probe line that starts at start point and travels to the
 						-- right (zero degree direction).
 						-- The probe line intersects board contours, tracks, vias, pads, texts 
@@ -4609,35 +4594,88 @@ package body et_board_ops is
 								source	=> fill_lines);
 						end add_lines;
 
-						b : type_boundaries := get_boundaries (element (p), zero); --element (p).width_min);
+						line_width : constant type_track_width := element (p).width_min;
+						
+						boundaries : constant type_boundaries := get_boundaries (element (p), zero); --element (p).width_min);
+
+						height : constant type_distance_positive := get_height (boundaries);
+
+
+						effective_line_width : constant type_distance_positive := line_width * fill_line_overlap_factor;
+
+						f : constant type_distance_positive := type_distance_positive (height / effective_line_width);
+									  
+						rows_min : constant natural := natural (float'floor (float (f)));
+
+						procedure make_fill_lines is begin
+							-- Get the intersections with the board contours:
+							board_points := on_board (start_point, module.board.contours, log_threshold + 3);
+							
+							-- Get the intersections with the current conductor polygon:
+							polygon_points := in_polygon_status (element (p), start_point);
+
+							log (text => to_string (polygon_points));
+							
+							-- Compute the fill lines required for the current row (y-position):
+							fill_lines := et_routing.compute_fill_lines (
+								module_cursor, board_points, polygon_points, net_class.clearance,
+								element (p).isolation, element (p).easing,
+								log_threshold + 3);
+
+							-- Add the fill lines to the conductor polygon:
+							update_element (
+								container	=> net.route.polygons.solid,
+								position	=> p,
+								process		=> add_lines'access);
+
+						end make_fill_lines;
+
 						
 					begin -- compute_fill_lines
-						log (text => "boundaries " & to_string (b));
+						log (text => to_string (boundaries));
+
 						
+						log (text => "height" & to_string (height) 
+							& " line width" & to_string (line_width)
+							& " rows min" & natural'image (rows_min));
+
 						offset := type_point (set (
-								x => element (p).width_min * 0.0, -- right
-								y => element (p).width_min * 0.5)); -- up
-						
-						-- Shift lower left corner slightly up:
+								x => line_width * 0.5, -- to the right
+								y => line_width * 0.5)); -- up
+
 						move_by (start_point, offset);
 
-						-- Get the intersections with the board contours:
-						board_points := on_board (start_point, module.board.contours, log_threshold + 3);
+						-- make the fill lines (bottom - up)
+						for r in 1 .. rows_min loop
+
+							if r > 1 then
+								offset := type_point (set (
+										x => zero,
+										y => effective_line_width)); -- up
+								
+								move_by (start_point, offset);
+							end if;
+
+							make_fill_lines;
 						
-						-- Get the intersections with the current conductor polygon:
-						polygon_points := in_polygon_status (element (p), start_point);
+						end loop;
 
-						-- Compute the fill lines required for the current row (y-position):
-						fill_lines := et_routing.compute_fill_lines (
-							module_cursor, board_points, polygon_points, net_class.clearance,
-							element (p).isolation, element (p).easing,
-							log_threshold + 3);
 
-						-- Add the fill lines to the conductor polygon:
-						update_element (
-							container	=> net.route.polygons.solid,
-							position	=> p,
-							process		=> add_lines'access);
+						-- make extra fill line if required
+						if f > type_distance_positive (rows_min) then
+							log (text => "extra row required");
+
+							start_point := type_point (set (boundaries.smallest_x, boundaries.greatest_y));
+							
+							offset := type_point (set (
+									x =>   line_width * 0.5, -- to the right
+									y => - line_width * 0.5)); -- down
+
+							move_by (start_point, offset);
+
+							make_fill_lines;
+						end if;
+
 						
 					end compute_fill_lines;
 

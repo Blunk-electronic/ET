@@ -103,6 +103,13 @@ package et_conductor_polygons is
 
 	type type_fill_line is new type_line with null record;
 	package pac_fill_lines is new doubly_linked_lists (type_fill_line);
+
+	-- The factor that causes the fill lines to overlap slightly.
+	-- It is required in order to avoid a possible small gap between them
+	-- that could occur during manufacturing.
+	-- The lower the factor the more overlap. 1.0 means no overlap.
+	fill_line_overlap_factor : constant type_distance_positive := 0.99;
+	
 	--type type_cutout_area is new type_polygon_base with null record;
 	--package pac_cutout_areas is new doubly_linked_lists (type_cutout_area);
 

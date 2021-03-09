@@ -192,6 +192,17 @@ package et_geometry is
 		end record;
 
 		boundaries_default : constant type_boundaries;
+
+		-- Returns the height of the given boundaries by
+		-- calculating boundaries.greatest_y - boundaries.smallest_y:
+		function get_height (boundaries : in type_boundaries)
+			return type_distance_positive;
+
+		-- Returns the width of the given boundaries by
+		-- calculating boundaries.greatest_x - boundaries.smallest_x:
+		function get_width (boundaries : in type_boundaries)
+			return type_distance_positive;
+
 		
 		function to_string (boundaries : in type_boundaries) return string;
 		
@@ -1253,7 +1264,8 @@ package et_geometry is
 			return string;
 		
 		-- Detects whether the given point is inside or outside
-		-- the polygon.
+		-- the polygon. The point is regarded as "outside" if
+		-- it sits exactly on the edge of the polygon.
 		function in_polygon_status (
 			polygon		: in type_polygon_base;	
 			point		: in type_point)
