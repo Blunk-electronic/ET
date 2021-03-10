@@ -3868,10 +3868,10 @@ package body et_geometry is
 
 			-- figure out whether the point is real or virtual:
 			case in_polygon_status (polygon, result.point).status is
-				when INSIDE => -- or on edge of polygon
+				when INSIDE =>
 					result.status := REAL;
 					
-				when OUTSIDE =>
+				when OUTSIDE => -- or on edge of polygon
 					result.status := VIRTUAL;
 			end case;
 			
