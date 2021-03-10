@@ -55,8 +55,10 @@ package body et_routing is
 
 	function compute_fill_lines (
 		module_cursor	: in pac_generic_modules.cursor;
+		design_rules	: in type_design_rules;
 		board_domain	: in type_inside_polygon_query_result;
 		polygon_domain	: in type_inside_polygon_query_result;
+		width			: in type_track_width;
 		clearance		: in type_track_clearance;
 		isolation 		: in type_track_clearance; 
 		easing			: in type_easing;
@@ -134,10 +136,6 @@ package body et_routing is
 		-- means they all have the same y-value for start and end point:
 		result : pac_fill_lines.list;
 
-		
-		-- This position pointer advances to the right along the x-axis
-		-- It starts at the point P.
-		--x_position : type_distance := X (board_domain.point); 
 		
 		-- This is the y position of all fill lines. All fill lines
 		-- are in the same row:
@@ -283,14 +281,33 @@ package body et_routing is
 			sdx : type_smallest_differences := (others => type_distance'last);
 
 			procedure query_board_point (c : in pac_distances.cursor) is
-				dx : constant type_distance := element (c) - forward;
+				--dx1 : constant type_distance := element (c) - forward;
+				--dx2 : type_distance;
+				dx2 : constant type_distance := element (c) - forward;
 			begin
+				--case board_line_status is
+					--when STOP =>
+						--dx2 := dx1 + design_rules.clearances.conductor_to_board_edge;
+
+					--when GO =>
+						--dx2 := dx1 - design_rules.clearances.conductor_to_board_edge;
+				--end case;
+				
 				-- The point must be to the right of "forward":
-				if dx > zero then
+				if dx2 > zero then
 					ms.status := VALID;
 
-					if dx < sdx(1) then
-						sdx(1) := dx;
+					if dx2 < sdx(1) then
+						sdx(1) := dx2;
+
+						--case board_line_status is
+							--when STOP =>
+								--sdx(1) := dx2 + design_rules.clearances.conductor_to_board_edge;
+
+							--when GO =>
+								--sdx(1) := dx2 - design_rules.clearances.conductor_to_board_edge;
+						--end case;
+
 					end if;
 				end if;				
 			end query_board_point;
@@ -395,7 +412,7 @@ package body et_routing is
 	
 		-- Set the initial x-position of the milestone.
 		-- So the first milestone is where the board domain begins:
-		milestone.x_value := X (board_domain.point); --x_position;
+		milestone.x_value := X (board_domain.point);
 		milestone.status := VALID; -- the first milestone is always valid
 		
 		update_final_line_status;
@@ -409,7 +426,7 @@ package body et_routing is
 		-- milestone.x_value assumes the x-position of the 2nd milestone.
 		-- If there is no 2nd milestone, then the status of milestone will be set INVALID.
 		-- In this case no further milestones will be searched for.
-		milestone := get_next_milestone (milestone.x_value); -- x_position);
+		milestone := get_next_milestone (milestone.x_value);
 
 		-- Assign start or end point to the fill_line if the milestone is valid:
 		-- Otherwise nothing happens here:

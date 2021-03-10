@@ -4462,6 +4462,9 @@ package body et_board_ops is
 		use pac_net_names;
 		use et_routing;
 
+		-- Get the design rules:
+		design_rules : type_design_rules := get_pcb_design_rules (module_cursor);
+		
 		-- We fill the polygons with lines from left to right.
 		lower_left_corner : type_point;
 
@@ -4631,9 +4634,15 @@ package body et_board_ops is
 							
 							-- Compute the fill lines required for the current row (y-position):
 							fill_lines := et_routing.compute_fill_lines (
-								module_cursor, board_points, polygon_points, net_class.clearance,
-								element (p).isolation, element (p).easing,
-								log_threshold + 3);
+								module_cursor	=> module_cursor,
+								design_rules	=> design_rules,
+								board_domain	=> board_points, 
+								polygon_domain	=> polygon_points,
+								width			=> line_width,
+								clearance		=> net_class.clearance,
+								isolation		=> element (p).isolation,
+								easing			=> element (p).easing,
+								log_threshold	=> log_threshold + 3);
 
 							-- Add the fill lines to the conductor polygon:
 							update_element (

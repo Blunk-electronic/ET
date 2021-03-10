@@ -210,7 +210,8 @@ package et_pcb is
 
 	
 	-- This function detects whether the given point is in the usable
-	-- area of the board.
+	-- area of the board. The point is regarded as "outside" if
+	-- it sits exactly on the edge of the board.
 	function on_board (
 		point			: in type_point;
 		contours		: in type_pcb_contours;
