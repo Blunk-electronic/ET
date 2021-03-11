@@ -58,7 +58,7 @@ package body et_routing is
 		design_rules	: in type_design_rules;
 		board_domain	: in type_inside_polygon_query_result;
 		polygon_domain	: in type_inside_polygon_query_result;
-		width			: in type_track_width;
+		width			: in type_track_width; -- the width of a fill line
 		clearance		: in type_track_clearance;
 		isolation 		: in type_track_clearance; 
 		easing			: in type_easing;
@@ -280,34 +280,57 @@ package body et_routing is
 			type type_smallest_differences is array (1..2) of type_distance;
 			sdx : type_smallest_differences := (others => type_distance'last);
 
-			procedure query_board_point (c : in pac_distances.cursor) is
-				--dx1 : constant type_distance := element (c) - forward;
-				--dx2 : type_distance;
-				dx2 : constant type_distance := element (c) - forward;
-			begin
-				--case board_line_status is
-					--when STOP =>
-						--dx2 := dx1 + design_rules.clearances.conductor_to_board_edge;
+			-- While searching among the intersections with the board contours
+			-- This flag tells whether we are inside or outside the board area.
+			-- Initially that status is taken from the given board domain.
+			board_point_status : type_polygon_point_status := board_domain.status;
 
-					--when GO =>
-						--dx2 := dx1 - design_rules.clearances.conductor_to_board_edge;
-				--end case;
+			procedure toggle_board_point_status is begin
+				case board_point_status is
+					when OUTSIDE	=> board_point_status := INSIDE;
+					when INSIDE		=> board_point_status := OUTSIDE;
+				end case;
+			end toggle_board_point_status;
+			
+			procedure query_board_point (c : in pac_distances.cursor) is
+				dx : type_distance;
+
+				-- In addition to the intersection with the board contour,
+				-- the clearance between conductor and board edge must be
+				-- respected. Since the line ends are round caps, the line
+				-- width must also be taken into account.
+				spacing : constant type_distance_positive :=
+					design_rules.clearances.conductor_to_board_edge + width * 0.5;
+
+				-- By adding or subtracting spacing we get a fill line that
+				-- starts slightly after entering the board area and ends slightly
+				-- before the leaving the board area.
+			begin
+				-- Each intersection with the board contour causes a change
+				-- of the flag board_point_status:
+				toggle_board_point_status;
+
+				case board_point_status is
+					when INSIDE => -- A change from outside to inside occured.
+						-- Board area entered.
+						-- Create a new virtual intersection after the original
+						-- intersection. The original intersection is omitted.
+						dx := (element (c) + spacing) - forward;
+
+					when OUTSIDE => -- A change from inside to outside occured.
+						-- Board area left.
+						-- Create a new virtual intersection before the original
+						-- intersection. The original intersection is omitted.
+						dx := (element (c) - spacing) - forward;
+						
+				end case;
 				
 				-- The point must be to the right of "forward":
-				if dx2 > zero then
+				if dx > zero then
 					ms.status := VALID;
 
-					if dx2 < sdx(1) then
-						sdx(1) := dx2;
-
-						--case board_line_status is
-							--when STOP =>
-								--sdx(1) := dx2 + design_rules.clearances.conductor_to_board_edge;
-
-							--when GO =>
-								--sdx(1) := dx2 - design_rules.clearances.conductor_to_board_edge;
-						--end case;
-
+					if dx < sdx(1) then
+						sdx(1) := dx;
 					end if;
 				end if;				
 			end query_board_point;
