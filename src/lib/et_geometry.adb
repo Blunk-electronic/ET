@@ -3542,6 +3542,14 @@ package body et_geometry is
 -- 			null;
 -- 		end;
 
+		procedure toggle_status (status : in out type_polygon_point_status) is begin
+			case status is
+				when OUTSIDE	=> status := INSIDE;
+				when INSIDE		=> status := OUTSIDE;
+			end case;
+		end toggle_status;
+
+		
 		function to_string (
 			i : in type_inside_polygon_query_result)
 			return string

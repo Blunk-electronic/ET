@@ -1246,6 +1246,8 @@ package et_geometry is
 		type type_polygon_point_status is (
 			OUTSIDE,	-- point is outside polygon area
 			INSIDE);	-- point is in polygon area
+
+		procedure toggle_status (status : in out type_polygon_point_status);
 		
 		type type_inside_polygon_query_result is record
 			-- the point where the probe line has started:

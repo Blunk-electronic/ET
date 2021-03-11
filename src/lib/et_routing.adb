@@ -281,16 +281,9 @@ package body et_routing is
 			sdx : type_smallest_differences := (others => type_distance'last);
 
 			-- While searching among the intersections with the board contours
-			-- This flag tells whether we are inside or outside the board area.
+			-- this flag tells whether we are inside or outside the board area.
 			-- Initially that status is taken from the given board domain.
 			board_point_status : type_polygon_point_status := board_domain.status;
-
-			procedure toggle_board_point_status is begin
-				case board_point_status is
-					when OUTSIDE	=> board_point_status := INSIDE;
-					when INSIDE		=> board_point_status := OUTSIDE;
-				end case;
-			end toggle_board_point_status;
 			
 			procedure query_board_point (c : in pac_distances.cursor) is
 				dx : type_distance;
@@ -308,7 +301,7 @@ package body et_routing is
 			begin
 				-- Each intersection with the board contour causes a change
 				-- of the flag board_point_status:
-				toggle_board_point_status;
+				toggle_status (board_point_status);
 
 				case board_point_status is
 					when INSIDE => -- A change from outside to inside occured.
@@ -335,9 +328,41 @@ package body et_routing is
 				end if;				
 			end query_board_point;
 
+
+			-- While searching among the intersections with the polygon
+			-- this flag tells whether we are inside or outside the polygon.
+			-- Initially that status is taken from the given polygon domain.
+			polygon_point_status : type_polygon_point_status := polygon_domain.status;
+			
 			procedure query_polygon_point (c : in pac_distances.cursor) is
-				dx : constant type_distance := element (c) - forward;
+				dx : type_distance; -- := element (c) - forward;
+				
+				-- Since the line ends are round caps, the line
+				-- width must be taken into account.
+				spacing : constant type_distance_positive :=
+					width * 0.5;
+
+				-- By adding or subtracting spacing we get a fill line that
+				-- starts slightly after entering the polygon and ends slightly
+				-- before the leaving the polygon.
 			begin
+				-- Each intersection with the polygon causes a change
+				-- of the flag polygon_point_status:
+				toggle_status (polygon_point_status);
+
+				case polygon_point_status is
+					when INSIDE => -- A change from outside to inside occured.
+						-- Create a new virtual intersection after the original
+						-- intersection. The original intersection is omitted.
+						dx := (element (c) + spacing) - forward;
+
+					when OUTSIDE => -- A change from inside to outside occured.
+						-- Create a new virtual intersection before the original
+						-- intersection. The original intersection is omitted.
+						dx := (element (c) - spacing) - forward;
+						
+				end case;
+				
 				-- The point must be to the right of "forward":
 				if dx > zero then
 					ms.status := VALID;
