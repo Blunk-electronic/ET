@@ -196,12 +196,13 @@ package body et_pcb is
 		-- contours and counts the intersections of the probe line
 		-- with each of them:
 		procedure find_intersections is 
-			use pac_distances;
+			use pac_probe_line_intersections;
 
 			-- This procedure collects the intersection in
 			-- the a simple list in the return value.
 			procedure collect_x_value (x : in type_distance) is begin
-				append (result.intersections, x);
+				append (result.intersections, (x_position => x, angle => zero_rotation));
+				-- CS compute angle
 			end collect_x_value;
 	
 			use pac_pcb_contour_lines;
@@ -419,21 +420,24 @@ package body et_pcb is
 
 		end find_intersections;
 
-		-- This procedure logs the x-values of the intersections if the current
+		-- This procedure logs the x-intersections if the current
 		-- log level exceedes the given log level.
 		procedure log_x_values is 
 			use ada.strings.unbounded;
-			use pac_distances;
+			use pac_probe_line_intersections;
 
 			x_values : unbounded_string := to_unbounded_string ("x-values:");
 			
-			procedure query_x (c : pac_distances.cursor) is begin
-				x_values := x_values & to_string (element (c));
-			end query_x;
+			procedure query_intersection (
+				c : pac_probe_line_intersections.cursor) 
+			is begin
+				x_values := x_values & to_string (element (c).x_position)
+							& "/" & to_string (element (c).angle);
+			end query_intersection;
 						
 		begin
 			if log_level > log_threshold + 1 then
-				iterate (result.intersections, query_x'access);
+				iterate (result.intersections, query_intersection'access);
 
 				log (text => to_string (x_values));
 			end if;
@@ -441,7 +445,7 @@ package body et_pcb is
 		end log_x_values;
 
 		procedure sort_x_values is
-			package pac_sort_x_values is new pac_distances.generic_sorting;
+			package pac_sort_x_values is new pac_probe_line_intersections.generic_sorting;
 			use pac_sort_x_values;
 		begin
 			sort (result.intersections);
@@ -474,7 +478,7 @@ package body et_pcb is
 		log_indentation_down;
 
 		-- get the total number of intersections
-		it := pac_distances.length (result.intersections);
+		it := pac_probe_line_intersections.length (result.intersections);
 		
 		log (text => "intersections total:" & count_type'image (it), level => log_threshold + 1);
 

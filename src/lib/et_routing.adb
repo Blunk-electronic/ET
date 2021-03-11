@@ -258,7 +258,7 @@ package body et_routing is
 		function get_next_milestone (forward : in type_distance)
 			return type_milestone
 		is
-			use pac_distances;
+			use pac_probe_line_intersections;
 
 			-- The basic tasks of this function are:
 			-- 1. Find in each domain the point of intersection that comes right
@@ -285,7 +285,7 @@ package body et_routing is
 			-- Initially that status is taken from the given board domain.
 			board_point_status : type_polygon_point_status := board_domain.status;
 			
-			procedure query_board_point (c : in pac_distances.cursor) is
+			procedure query_board_point (c : in pac_probe_line_intersections.cursor) is
 				dx : type_distance;
 
 				-- In addition to the intersection with the board contour,
@@ -308,13 +308,13 @@ package body et_routing is
 						-- Board area entered.
 						-- Create a new virtual intersection after the original
 						-- intersection. The original intersection is omitted.
-						dx := (element (c) + spacing) - forward;
+						dx := (element (c).x_position + spacing) - forward;
 
 					when OUTSIDE => -- A change from inside to outside occured.
 						-- Board area left.
 						-- Create a new virtual intersection before the original
 						-- intersection. The original intersection is omitted.
-						dx := (element (c) - spacing) - forward;
+						dx := (element (c).x_position - spacing) - forward;
 						
 				end case;
 				
@@ -334,8 +334,8 @@ package body et_routing is
 			-- Initially that status is taken from the given polygon domain.
 			polygon_point_status : type_polygon_point_status := polygon_domain.status;
 			
-			procedure query_polygon_point (c : in pac_distances.cursor) is
-				dx : type_distance; -- := element (c) - forward;
+			procedure query_polygon_point (c : in pac_probe_line_intersections.cursor) is
+				dx : type_distance;
 				
 				-- Since the line ends are round caps, the line
 				-- width must be taken into account.
@@ -354,12 +354,12 @@ package body et_routing is
 					when INSIDE => -- A change from outside to inside occured.
 						-- Create a new virtual intersection after the original
 						-- intersection. The original intersection is omitted.
-						dx := (element (c) + spacing) - forward;
+						dx := (element (c).x_position + spacing) - forward;
 
 					when OUTSIDE => -- A change from inside to outside occured.
 						-- Create a new virtual intersection before the original
 						-- intersection. The original intersection is omitted.
-						dx := (element (c) - spacing) - forward;
+						dx := (element (c).x_position - spacing) - forward;
 						
 				end case;
 				

@@ -1256,6 +1256,9 @@ package et_geometry is
 			angle		: type_rotation := zero_rotation;
 		end record;
 
+		function "<" (left, right : in type_probe_line_intersection)
+			return boolean;
+		
 		package pac_probe_line_intersections is new
 			doubly_linked_lists (type_probe_line_intersection);
 
@@ -1267,8 +1270,8 @@ package et_geometry is
 			status			: type_polygon_point_status := OUTSIDE;		
 
 			-- the intersections of the probe line with the polygon edges:
-			intersections	: pac_distances.list;
-			--intersections	: pac_probe_line_intersections.list;
+			--intersections	: pac_distances.list;
+			intersections	: pac_probe_line_intersections.list;
 		end record;
 
 		-- Returns the query result as a human readable string:
@@ -1291,12 +1294,12 @@ package et_geometry is
 			i : in type_inside_polygon_query_result)
 			return boolean;
 
-		-- Returns the first x-value of the given query result.
+		-- Returns the first intersection of the given query result.
 		-- Raises constraint error if given query result does
-		-- not contain any x-values:
+		-- not contain any intersections:
 		function get_first_intersection (
 			i : in type_inside_polygon_query_result)
-			return type_distance;
+			return type_probe_line_intersection;
 		
 		-- For finding the lower left corner of a polygon this type
 		-- is required. The lower left corner can be a point somewhere

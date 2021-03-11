@@ -3542,6 +3542,22 @@ package body et_geometry is
 -- 			null;
 -- 		end;
 
+		function "<" (left, right : in type_probe_line_intersection)
+			return boolean
+		is
+			result : boolean := false;
+		begin
+			if left.x_position < right.x_position then
+				result := true;
+			else
+				result := false;
+			end if;
+
+			-- CS compare angles ?
+			
+			return result;
+		end "<";
+		
 		procedure toggle_status (status : in out type_polygon_point_status) is begin
 			case status is
 				when OUTSIDE	=> status := INSIDE;
@@ -3555,13 +3571,14 @@ package body et_geometry is
 			return string
 		is
 			use ada.strings.unbounded;
-			use pac_distances;
+			use pac_probe_line_intersections;
 
 			result : unbounded_string;
 			
-			procedure query_x (c : pac_distances.cursor) is begin
-				result := result & to_string (element (c));
-			end query_x;
+			procedure query_intersection (c : pac_probe_line_intersections.cursor) is begin
+				result := result & to_string (element (c).x_position) 
+						  & "/" & to_string (element (c).angle);
+			end query_intersection;
 
 		begin
 			case i.status is
@@ -3582,7 +3599,7 @@ package body et_geometry is
 				result := result & "X-intersection(s): ";
 			end if;
 			
-			iterate (i.intersections, query_x'access);
+			iterate (i.intersections, query_intersection'access);
 			
 			return to_string (result);
 		end to_string;
@@ -3626,12 +3643,13 @@ package body et_geometry is
 			-- means whether it is inside or outside the polygon:
 			it : count_type := 0;
 
-			use pac_distances;
+			use pac_probe_line_intersections;
 			
-			-- This procedure collects the x value of the intersection in
-			-- the a simple list in the return value.
+			-- This procedure collects the intersection in
+			-- the simple list in the return value.
 			procedure collect_x_value (x : in type_distance) is begin
-				append (result.intersections, x);
+				append (result.intersections, (x_position => x, angle => zero_rotation));
+				-- CS compute angle
 			end collect_x_value;
 			
 			use pac_polygon_lines;
@@ -3808,7 +3826,7 @@ package body et_geometry is
 			end query_circle;
 
 			procedure sort_x_values is
-				package pac_sort_x_values is new pac_distances.generic_sorting;
+				package pac_sort_x_values is new pac_probe_line_intersections.generic_sorting;
 				use pac_sort_x_values;
 			begin
 				sort (result.intersections);
@@ -3826,7 +3844,7 @@ package body et_geometry is
 			sort_x_values;
 
 			-- get the total number of intersections
-			it := pac_distances.length (result.intersections);
+			it := pac_probe_line_intersections.length (result.intersections);
 			
 			-- If the total number of intersections is an odd number, then the given point
 			-- is inside the polygon.
@@ -3844,7 +3862,7 @@ package body et_geometry is
 			i : in type_inside_polygon_query_result)
 			return boolean
 		is
-			use pac_distances;
+			use pac_probe_line_intersections;
 		begin
 			if length (i.intersections) = 0 then -- no intersections with polygon
 				return false;
@@ -3855,9 +3873,9 @@ package body et_geometry is
 
 		function get_first_intersection (
 			i : in type_inside_polygon_query_result)
-			return type_distance
+			return type_probe_line_intersection
 		is
-			use pac_distances;
+			use pac_probe_line_intersections;
 		begin
 			return element (i.intersections.first);
 		end get_first_intersection;
