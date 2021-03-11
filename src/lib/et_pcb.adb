@@ -175,7 +175,7 @@ package body et_pcb is
 		--    - odd -> point is inside board area
 		--    - zero or even -> point is outside board area
 
-		result : type_inside_polygon_query_result := (point => point, others => <>);
+		result : type_inside_polygon_query_result := (start => point, others => <>);
 
 		line : constant type_probe_line := (
 				start_point	=> point,
@@ -198,10 +198,10 @@ package body et_pcb is
 		procedure find_intersections is 
 			use pac_distances;
 
-			-- This procedure collects the x value of the intersection in
+			-- This procedure collects the intersection in
 			-- the a simple list in the return value.
 			procedure collect_x_value (x : in type_distance) is begin
-				append (result.x_values, x);
+				append (result.intersections, x);
 			end collect_x_value;
 	
 			use pac_pcb_contour_lines;
@@ -433,7 +433,7 @@ package body et_pcb is
 						
 		begin
 			if log_level > log_threshold + 1 then
-				iterate (result.x_values, query_x'access);
+				iterate (result.intersections, query_x'access);
 
 				log (text => to_string (x_values));
 			end if;
@@ -444,7 +444,7 @@ package body et_pcb is
 			package pac_sort_x_values is new pac_distances.generic_sorting;
 			use pac_sort_x_values;
 		begin
-			sort (result.x_values);
+			sort (result.intersections);
 		end sort_x_values;
 		
 	begin -- on_board		
@@ -474,7 +474,7 @@ package body et_pcb is
 		log_indentation_down;
 
 		-- get the total number of intersections
-		it := pac_distances.length (result.x_values);
+		it := pac_distances.length (result.intersections);
 		
 		log (text => "intersections total:" & count_type'image (it), level => log_threshold + 1);
 

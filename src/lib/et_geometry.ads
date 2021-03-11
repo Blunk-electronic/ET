@@ -1248,16 +1248,27 @@ package et_geometry is
 			INSIDE);	-- point is in polygon area
 
 		procedure toggle_status (status : in out type_polygon_point_status);
-		
+
+		-- The intersection of a probe line with the polygon side can
+		-- be described as:
+		type type_probe_line_intersection is record
+			x_position	: type_distance;
+			angle		: type_rotation := zero_rotation;
+		end record;
+
+		package pac_probe_line_intersections is new
+			doubly_linked_lists (type_probe_line_intersection);
+
+			
 		type type_inside_polygon_query_result is record
 			-- the point where the probe line has started:
-			point		: type_point; 
-			
-			status		: type_polygon_point_status := OUTSIDE;		
+			start			: type_point; 
 
-			-- the x values of the intersections of the
-			-- probe line with the polygon edges:
-			x_values	: pac_distances.list;
+			status			: type_polygon_point_status := OUTSIDE;		
+
+			-- the intersections of the probe line with the polygon edges:
+			intersections	: pac_distances.list;
+			--intersections	: pac_probe_line_intersections.list;
 		end record;
 
 		-- Returns the query result as a human readable string:

@@ -3567,22 +3567,22 @@ package body et_geometry is
 			case i.status is
 				when OUTSIDE =>
 					result := to_unbounded_string ("Point" 
-						& to_string (i.point) 
+						& to_string (i.start) 
 						& " is OUTSIDE of polygon. ");
 
 				when INSIDE =>
 					result := to_unbounded_string ("Point" 
-						& to_string (i.point)
+						& to_string (i.start)
 						& " is INSIDE polygon. ");
 			end case;
 
-			if is_empty (i.x_values) then
+			if is_empty (i.intersections) then
 				result := result & "No x-intersections.";
 			else
 				result := result & "X-intersection(s): ";
 			end if;
 			
-			iterate (i.x_values, query_x'access);
+			iterate (i.intersections, query_x'access);
 			
 			return to_string (result);
 		end to_string;
@@ -3609,7 +3609,7 @@ package body et_geometry is
 			--    - odd -> point is inside the polygon area
 			--    - zero or even -> point is outside the polygon area
 			
-			result : type_inside_polygon_query_result := (point => point, others => <>);
+			result : type_inside_polygon_query_result := (start => point, others => <>);
 
 			line : constant type_probe_line := (
 					start_point	=> point,
@@ -3631,7 +3631,7 @@ package body et_geometry is
 			-- This procedure collects the x value of the intersection in
 			-- the a simple list in the return value.
 			procedure collect_x_value (x : in type_distance) is begin
-				append (result.x_values, x);
+				append (result.intersections, x);
 			end collect_x_value;
 			
 			use pac_polygon_lines;
@@ -3811,7 +3811,7 @@ package body et_geometry is
 				package pac_sort_x_values is new pac_distances.generic_sorting;
 				use pac_sort_x_values;
 			begin
-				sort (result.x_values);
+				sort (result.intersections);
 			end sort_x_values;
 			
 		begin -- in_polygon_status
@@ -3826,7 +3826,7 @@ package body et_geometry is
 			sort_x_values;
 
 			-- get the total number of intersections
-			it := pac_distances.length (result.x_values);
+			it := pac_distances.length (result.intersections);
 			
 			-- If the total number of intersections is an odd number, then the given point
 			-- is inside the polygon.
@@ -3846,7 +3846,7 @@ package body et_geometry is
 		is
 			use pac_distances;
 		begin
-			if length (i.x_values) = 0 then -- no intersections with polygon
+			if length (i.intersections) = 0 then -- no intersections with polygon
 				return false;
 			else
 				return true; -- at least one intersection found
@@ -3859,7 +3859,7 @@ package body et_geometry is
 		is
 			use pac_distances;
 		begin
-			return element (i.x_values.first);
+			return element (i.intersections.first);
 		end get_first_intersection;
 		
 		

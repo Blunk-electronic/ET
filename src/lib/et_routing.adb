@@ -139,7 +139,7 @@ package body et_routing is
 		
 		-- This is the y position of all fill lines. All fill lines
 		-- are in the same row:
-		y_position : type_distance := Y (board_domain.point); 
+		y_position : type_distance := Y (board_domain.start); 
 
 		
 		procedure init_domain_statuses is begin
@@ -417,13 +417,13 @@ package body et_routing is
 		begin -- get_next_milestone
 
 			-- Find the x-value that is nearest to the given forward-value:
-			iterate (board_domain.x_values, query_board_point'access);
+			iterate (board_domain.intersections, query_board_point'access);
 
 			--log (text => "next board point after" & to_string (sdx(1)),
 				--level => log_threshold);
 
 			-- Find the x-value that is nearest to the given forward-value:			
-			iterate (polygon_domain.x_values, query_polygon_point'access);
+			iterate (polygon_domain.intersections, query_polygon_point'access);
 
 			--log (text => "next polygon point after" & to_string (sdx(2)),
 				--level => log_threshold);
@@ -453,14 +453,14 @@ package body et_routing is
 		end get_next_milestone;
 		
 	begin -- compute_fill_lines
-		log (text => "evaluating milestones after" & to_string (board_domain.point),
+		log (text => "evaluating milestones after" & to_string (board_domain.start),
 			 level => log_threshold);
 
 		init_domain_statuses;
 	
 		-- Set the initial x-position of the milestone.
 		-- So the first milestone is where the board domain begins:
-		milestone.x_value := X (board_domain.point);
+		milestone.x_value := X (board_domain.start);
 		milestone.status := VALID; -- the first milestone is always valid
 		
 		update_final_line_status;
