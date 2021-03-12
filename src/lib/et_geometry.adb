@@ -1211,6 +1211,12 @@ package body et_geometry is
 		
 		end to_line_vector;
 
+		function to_string (intersection : in type_intersection)
+			return string
+		is begin
+			return to_string (to_point (intersection.point)) 
+				& " angle" & to_string (intersection.angle);
+		end to_string;
 		
 		function get_intersection (
 			line_1, line_2	: in type_line_vector)
@@ -1220,8 +1226,8 @@ package body et_geometry is
 			a, b, c, d, e, f, g : float;
 			lambda : float;
 
-			-- location vector of intersection to be returned:			
-			i : type_vector;
+			-- location vector and angle of intersection to be returned:			
+			i : type_intersection;
 
 			function exists_intersection return boolean is
 				v1, v2 : type_vector;
@@ -1305,7 +1311,7 @@ package body et_geometry is
 
 						lambda := (a + b - c - d) * g;
 
-						i := add (line_2.v_start, scale (line_2.v_direction, lambda));
+						i.point := add (line_2.v_start, scale (line_2.v_direction, lambda));
 					else
 						a := float (line_2.v_start.y);
 						b := float (line_1.v_start.x * line_2.v_direction.y) / float (line_2.v_direction.x);
@@ -1317,7 +1323,7 @@ package body et_geometry is
 
 						lambda := (a + b - c - d) * g;
 
-						i := add (line_1.v_start, scale (line_1.v_direction, lambda));
+						i.point := add (line_1.v_start, scale (line_1.v_direction, lambda));
 					end if;
 
 					return (status => EXISTS, intersection => i);
@@ -1371,7 +1377,7 @@ package body et_geometry is
 				
 					-- The intersection must be ON OR AFTER the start point
 					-- of probe_line, means in direction of travel.
-					if X (to_point (i.intersection)) >= X (to_point (probe_line.v_start)) then
+					if X (to_point (i.intersection.point)) >= X (to_point (probe_line.v_start)) then
 
 						-- The intersection must be between start and end point of
 						-- the candidate line (start and end point itself included).
@@ -1379,7 +1385,7 @@ package body et_geometry is
 						-- of candidate line, then return the intersection as it is.
 						-- If the intersection is before start point or
 						-- beyond end point, then return NOT_EXISTENT.
-						if on_line (to_point (i.intersection), candidate_line) then
+						if on_line (to_point (i.intersection.point), candidate_line) then
 							return i;
 						else
 							return (status => NOT_EXISTENT);
@@ -2349,7 +2355,7 @@ package body et_geometry is
 
 					-- Test whether the point where the tangent meets the
 					-- circle is on the given arc:
-					if on_arc (to_point (vi.intersection), arc) then
+					if on_arc (to_point (vi.intersection.point), arc) then
 						return (ONE_EXISTS, vi.intersection, TANGENT);
 					else
 						return (status => NONE_EXIST);
@@ -2361,16 +2367,16 @@ package body et_geometry is
 					-- Test whether the points where the secant meets the
 					-- circle are on the given arc:
 					
-					if	on_arc (to_point (vi.intersection_1), arc) 
-					and on_arc (to_point (vi.intersection_2), arc) then
+					if	on_arc (to_point (vi.intersection_1.point), arc) 
+					and on_arc (to_point (vi.intersection_2.point), arc) then
 						-- both intersections are on the arc
 						return (TWO_EXIST, vi.intersection_1, vi.intersection_2);
 						
-					elsif on_arc (to_point (vi.intersection_1), arc) then
+					elsif on_arc (to_point (vi.intersection_1.point), arc) then
 						-- only intersection 1 in on the arc
 						return (ONE_EXISTS, vi.intersection_1, SECANT);
 
-					elsif on_arc (to_point (vi.intersection_2), arc) then
+					elsif on_arc (to_point (vi.intersection_2.point), arc) then
 						-- only intersection 2 in on the arc
 						return (ONE_EXISTS, vi.intersection_2, SECANT);
 
@@ -2645,7 +2651,9 @@ package body et_geometry is
 				intersection_1 := type_point (set (type_distance (x), type_distance (y)));
 				move_by (intersection_1, offset);
 
-				return (ONE_EXISTS, to_vector (intersection_1), TANGENT);
+				return (ONE_EXISTS, 
+						(point => to_vector (intersection_1), angle => 0.0),
+						TANGENT);
 				
 			else -- d > zero
 				s := TWO_EXIST; -- two intersections
@@ -2662,7 +2670,10 @@ package body et_geometry is
 				intersection_2 := type_point (set (type_distance (x), type_distance (y)));
 				move_by (intersection_2, offset);				
 
-				return (TWO_EXIST, to_vector (intersection_1), to_vector (intersection_2));
+				return (TWO_EXIST, 
+						(point => to_vector (intersection_1), angle => 0.0),
+						(point => to_vector (intersection_2), angle => 0.0)
+					   );
 			end if;
 
 		end get_intersection;
@@ -3645,12 +3656,15 @@ package body et_geometry is
 
 			use pac_probe_line_intersections;
 			
-			-- This procedure collects the intersection in
-			-- the simple list in the return value.
-			procedure collect_x_value (x : in type_distance) is begin
-				append (result.intersections, (x_position => x, angle => zero_rotation));
-				-- CS compute angle
-			end collect_x_value;
+			-- This procedure collects the intersection in the return value.
+			-- It extracts the x-value and the angle of intersection 
+			procedure collect_intersection (i : in type_intersection) is begin
+				
+				append (result.intersections, (
+					x_position	=> X (to_point (i.point)),
+					angle		=> i.angle));
+				
+			end collect_intersection;
 			
 			use pac_polygon_lines;
 			use pac_polygon_arcs;
@@ -3687,8 +3701,8 @@ package body et_geometry is
 					-- count the intersection:
 					if crosses_threshold then
 						
-						-- Add the x value of intersection to the result:
-						collect_x_value (X (to_point (i.intersection)));
+						-- Add the intersection to the result:
+						collect_intersection (i.intersection);
 					end if;
 				end if;
 				
@@ -3725,14 +3739,14 @@ package body et_geometry is
 				end crosses_threshold;
 
 				procedure count_one is begin
-					-- Add the x value of intersection to the result:
-					collect_x_value (X (to_point (i.intersection)));
+					-- Add the intersection to the result:
+					collect_intersection (i.intersection);
 				end count_one;
 				
 				procedure count_two is begin
-					-- Add the x values of two intersections to the result:
-					collect_x_value (X (to_point (i.intersection_1)));
-					collect_x_value (X (to_point (i.intersection_2)));
+					-- Add the two intersections to the result:
+					collect_intersection (i.intersection_1);
+					collect_intersection (i.intersection_2);
 				end count_two;
 				
 			begin -- query_arc		
@@ -3819,9 +3833,9 @@ package body et_geometry is
 					when TWO_EXIST =>
 						-- The probe line intersects the circle at two points:
 
-						-- Add the x values of two intersections to the result:
-						collect_x_value (X (to_point (i.intersection_1)));
-						collect_x_value (X (to_point (i.intersection_2)));
+						-- Add the two intersections to the result:
+						collect_intersection (i.intersection_1);
+						collect_intersection (i.intersection_2);
 				end case;
 			end query_circle;
 

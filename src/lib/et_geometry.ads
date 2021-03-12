@@ -650,18 +650,28 @@ package et_geometry is
 			return type_line_vector;
 
 		
+		
 		type type_intersection_status_of_two_lines is (
 			NOT_EXISTENT,
 			EXISTS,
 			OVERLAP);
 
-
+		-- In general an intersection is composed of a point, where 
+		-- the two objects meet, and an angle:
+		type type_intersection is record
+			point	: type_vector; -- location vector
+			angle	: type_rotation;
+		end record;
+		
+		function to_string (intersection : in type_intersection)
+			return string;
+		
 		-- When finding intersections of two lines this type is required:
 		type type_intersection_of_two_lines (
 			status : type_intersection_status_of_two_lines) 
 		is record
 			case status is
-				when EXISTS => intersection : type_vector; -- location vector
+				when EXISTS => intersection : type_intersection;
 				when NOT_EXISTENT | OVERLAP => null;
 			end case;
 		end record;
@@ -926,7 +936,8 @@ package et_geometry is
 			ONE_EXISTS, -- tangent
 			TWO_EXIST); -- two intersections
 
-		-- When finding intersections of a line with a circle we use this type:
+		-- When finding intersections of a line with a circle (or arc)
+		-- we use this type:
 
 		type type_tangent_status is (TANGENT, SECANT);
 		
@@ -937,12 +948,12 @@ package et_geometry is
 				when NONE_EXIST => null;
 				
 				when ONE_EXISTS	=> 
-					intersection	: type_vector; -- location vector
+					intersection	: type_intersection;
 					tangent_status	: type_tangent_status;
 				
 				when TWO_EXIST	=> 
-					intersection_1	: type_vector; -- location vector
-					intersection_2	: type_vector; -- location vector
+					intersection_1	: type_intersection;
+					intersection_2	: type_intersection;
 					
 			end case;
 		end record;

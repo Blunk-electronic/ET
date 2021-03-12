@@ -198,11 +198,14 @@ package body et_pcb is
 		procedure find_intersections is 
 			use pac_probe_line_intersections;
 
-			-- This procedure collects the intersection in
-			-- the a simple list in the return value.
-			procedure collect_intersection (x : in type_distance) is begin
-				append (result.intersections, (x_position => x, angle => zero_rotation));
-				-- CS compute angle
+			-- This procedure collects the intersection in the return value.
+			-- It extracts the x-value and the angle of intersection 
+			procedure collect_intersection (i : in type_intersection) is begin
+				
+				append (result.intersections, (
+					x_position	=> X (to_point (i.point)),
+					angle		=> i.angle));
+				
 			end collect_intersection;
 	
 			use pac_pcb_contour_lines;
@@ -244,11 +247,11 @@ package body et_pcb is
 					if crosses_threshold then
 						
 						log (text => " intersects line" --& to_string (element (c))
-							& " at" & to_string (to_point (i.intersection)),
+							& " at" & to_string (i.intersection),
 							level => log_threshold + 2);
 
 						-- Add the intersection to the result:
-						collect_intersection (X (to_point (i.intersection)));
+						collect_intersection (i.intersection);
 						
 					end if;
 				end if;
@@ -286,22 +289,22 @@ package body et_pcb is
 
 				procedure count_one is begin
 					log (text => " intersects arc" --& to_string (arc)
-							& " at" & to_string (to_point (i.intersection)),
+							& " at" & to_string (i.intersection),
 						level => log_threshold + 2);
 
 					-- Add the intersection to the result:
-					collect_intersection (X (to_point (i.intersection)));
+					collect_intersection (i.intersection);
 				end count_one;
 				
 				procedure count_two is begin
 					log (text => " intersects arc" --& to_string (arc)
-							& " at" & to_string (to_point (i.intersection_1))
-							& " and" & to_string (to_point (i.intersection_2)),
+							& " at" & to_string (i.intersection_1)
+							& " and" & to_string (i.intersection_2),
 						level => log_threshold + 2);
 
 					-- Add the intersections to the result:
-					collect_intersection (X (to_point (i.intersection_1)));
-					collect_intersection (X (to_point (i.intersection_2)));
+					collect_intersection (i.intersection_1);
+					collect_intersection (i.intersection_2);
 				end count_two;
 				
 			begin -- query_arc		
@@ -393,13 +396,13 @@ package body et_pcb is
 						-- The probe line intersects the circle at two points:
 					
 						log (text => " intersects circle" -- & to_string (element (c))
-							 & " at" & to_string (to_point (i.intersection_1))
-							 & " and" & to_string (to_point (i.intersection_2)),
+							 & " at" & to_string (i.intersection_1)
+							 & " and" & to_string (i.intersection_2),
 							level => log_threshold + 2);
 
 						-- Add the intersections to the result:
-						collect_intersection (X (to_point (i.intersection_1)));
-						collect_intersection (X (to_point (i.intersection_2)));
+						collect_intersection (i.intersection_1);
+						collect_intersection (i.intersection_2);
 				end case;
 			end query_circle;
 			
