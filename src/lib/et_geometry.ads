@@ -657,9 +657,11 @@ package et_geometry is
 
 
 		-- When finding intersections of two lines this type is required:
-		type type_intersection_of_two_lines (status : type_intersection_status_of_two_lines) is record
+		type type_intersection_of_two_lines (
+			status : type_intersection_status_of_two_lines) 
+		is record
 			case status is
-				when EXISTS	=> intersection : type_vector; -- location vector
+				when EXISTS => intersection : type_vector; -- location vector
 				when NOT_EXISTENT | OVERLAP => null;
 			end case;
 		end record;
@@ -928,7 +930,9 @@ package et_geometry is
 
 		type type_tangent_status is (TANGENT, SECANT);
 		
-		type type_intersection_of_line_and_circle (status : type_intersection_status_of_line_and_circle) is record
+		type type_intersection_of_line_and_circle (
+			status : type_intersection_status_of_line_and_circle)
+		is record
 			case status is
 				when NONE_EXIST => null;
 				

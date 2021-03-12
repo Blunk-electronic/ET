@@ -200,10 +200,10 @@ package body et_pcb is
 
 			-- This procedure collects the intersection in
 			-- the a simple list in the return value.
-			procedure collect_x_value (x : in type_distance) is begin
+			procedure collect_intersection (x : in type_distance) is begin
 				append (result.intersections, (x_position => x, angle => zero_rotation));
 				-- CS compute angle
-			end collect_x_value;
+			end collect_intersection;
 	
 			use pac_pcb_contour_lines;
 			use pac_pcb_contour_arcs;
@@ -212,7 +212,8 @@ package body et_pcb is
 			procedure query_line (c : in pac_pcb_contour_lines.cursor) is
 				-- Find out whether there is an intersection of the probe line
 				-- and the candidate line of the contour.
-				i : constant type_intersection_of_two_lines := get_intersection (probe_line, element (c));
+				i : constant type_intersection_of_two_lines := 
+					get_intersection (probe_line, element (c));
 
 				function crosses_threshold return boolean is begin
 					-- If the start/end point of the candidate line is ABOVE-OR-ON the 
@@ -246,8 +247,8 @@ package body et_pcb is
 							& " at" & to_string (to_point (i.intersection)),
 							level => log_threshold + 2);
 
-						-- Add the x value of intersection to the result:
-						collect_x_value (X (to_point (i.intersection)));
+						-- Add the intersection to the result:
+						collect_intersection (X (to_point (i.intersection)));
 						
 					end if;
 				end if;
@@ -288,8 +289,8 @@ package body et_pcb is
 							& " at" & to_string (to_point (i.intersection)),
 						level => log_threshold + 2);
 
-					-- Add the x value of intersection to the result:
-					collect_x_value (X (to_point (i.intersection)));
+					-- Add the intersection to the result:
+					collect_intersection (X (to_point (i.intersection)));
 				end count_one;
 				
 				procedure count_two is begin
@@ -298,9 +299,9 @@ package body et_pcb is
 							& " and" & to_string (to_point (i.intersection_2)),
 						level => log_threshold + 2);
 
-					-- Add the x values of two intersections to the result:
-					collect_x_value (X (to_point (i.intersection_1)));
-					collect_x_value (X (to_point (i.intersection_2)));
+					-- Add the intersections to the result:
+					collect_intersection (X (to_point (i.intersection_1)));
+					collect_intersection (X (to_point (i.intersection_2)));
 				end count_two;
 				
 			begin -- query_arc		
@@ -396,9 +397,9 @@ package body et_pcb is
 							 & " and" & to_string (to_point (i.intersection_2)),
 							level => log_threshold + 2);
 
-						-- Add the x values of two intersections to the result:
-						collect_x_value (X (to_point (i.intersection_1)));
-						collect_x_value (X (to_point (i.intersection_2)));
+						-- Add the intersections to the result:
+						collect_intersection (X (to_point (i.intersection_1)));
+						collect_intersection (X (to_point (i.intersection_2)));
 				end case;
 			end query_circle;
 			
