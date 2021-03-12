@@ -660,7 +660,7 @@ package et_geometry is
 		-- the two objects meet, and an angle:
 		type type_intersection is record
 			point	: type_vector; -- location vector
-			angle	: type_rotation;
+			angle	: type_rotation := zero_rotation;
 		end record;
 		
 		function to_string (intersection : in type_intersection)

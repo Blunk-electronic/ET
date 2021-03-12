@@ -1326,6 +1326,9 @@ package body et_geometry is
 						i.point := add (line_1.v_start, scale (line_1.v_direction, lambda));
 					end if;
 
+
+					i.angle := get_angle_of_itersection (line_1, line_2);
+					
 					return (status => EXISTS, intersection => i);
 				else
 
@@ -1335,6 +1338,7 @@ package body et_geometry is
 			
 		end get_intersection;
 
+		
 		function get_angle_of_itersection (
 			line_1, line_2	: in type_line_vector)
 			return type_rotation

@@ -426,34 +426,34 @@ package body et_pcb is
 
 		-- This procedure logs the x-intersections if the current
 		-- log level exceedes the given log level.
-		procedure log_x_values is 
+		procedure collect_intersection is 
 			use ada.strings.unbounded;
 			use pac_probe_line_intersections;
 
-			x_values : unbounded_string := to_unbounded_string ("x-values:");
+			x_intersections : unbounded_string := to_unbounded_string ("x/angle:");
 			
 			procedure query_intersection (
 				c : pac_probe_line_intersections.cursor) 
 			is begin
-				x_values := x_values & to_string (element (c).x_position)
-							& "/" & to_string (element (c).angle);
+				x_intersections := x_intersections & to_string (element (c).x_position)
+					& "/" & trim (to_string (element (c).angle), left);
 			end query_intersection;
 						
 		begin
 			if log_level > log_threshold + 1 then
 				iterate (result.intersections, query_intersection'access);
 
-				log (text => to_string (x_values));
+				log (text => to_string (x_intersections));
 			end if;
 			
-		end log_x_values;
+		end collect_intersection;
 
-		procedure sort_x_values is
-			package pac_sort_x_values is new pac_probe_line_intersections.generic_sorting;
-			use pac_sort_x_values;
+		procedure sort_intersections is
+			package pac_sort_intersections is new pac_probe_line_intersections.generic_sorting;
+			use pac_sort_intersections;
 		begin
 			sort (result.intersections);
-		end sort_x_values;
+		end sort_intersections;
 		
 	begin -- on_board		
 		log (text => "determining position of point" & to_string (point)
@@ -475,9 +475,9 @@ package body et_pcb is
 		-- segments of the board countour:
 		find_intersections;
 
-		-- The x-values are not sorted yet. We need them sorted with the
+		-- The intersections are not sorted yet. We need them sorted with the
 		-- smallest x first:
-		sort_x_values;
+		sort_intersections;
 		
 		log_indentation_down;
 
@@ -486,10 +486,10 @@ package body et_pcb is
 		
 		log (text => "intersections total:" & count_type'image (it), level => log_threshold + 1);
 
-		-- Log x-values where the probe line intersects the board contours
+		-- Log intersections where the probe line intersects the board contours
 		-- to the right of the given point:
 		if it > 0 then
-			log_x_values;
+			collect_intersection;
 		end if;
 		
 		log_indentation_down;
