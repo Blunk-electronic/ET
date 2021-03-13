@@ -37,7 +37,10 @@
 -- DESCRIPTION:
 -- 
 
+with ada.text_io;				use ada.text_io;
 with ada.tags;					use ada.tags;
+
+with ada.numerics.generic_elementary_functions;
 
 with et_vias;					use et_vias;
 with et_terminals;				use et_terminals;
@@ -48,11 +51,48 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_board_shapes_and_text;
 
 
+
 package body et_routing is
 	
 	use et_pcb_coordinates.pac_geometry_brd;
 	use et_board_shapes_and_text.pac_shapes;
 
+	package functions_float is new ada.numerics.generic_elementary_functions (float);
+	use functions_float;
+	
+	function compute_clearance_track_to_board_edge (
+		angle		: in type_rotation_0_90;
+		width		: in type_track_width;
+		clearance	: in type_track_clearance)
+		return type_track_clearance
+	is
+		-- The total of inner angles of a rectangual triangle is 180 degrees.
+		-- Two angles are known. Hence:
+		angle_b : constant float := float (90.0 - angle);
+		
+		side_a : constant float := float (clearance + width * 0.5);
+
+		side_c : float; -- to be returned
+	begin
+		put_line ("angle" & type_rotation'image (angle));
+		
+		if angle = 90.0 or angle = 0.0 then -- CS remove comparing with 0.0
+			--put_line (" nothing to do");
+			return clearance + width * 0.5;
+		else
+			--put_line (" clearance" & to_string (clearance));
+			--put_line (" width" & to_string (width));
+			--put_line (" side_a" & float'image (side_a) & " angle_b" & float'image (angle_b));
+
+			side_c := side_a / cos (angle_b, float (units_per_cycle)); 
+			--put_line (" side_c " & float'image (side_c));
+			
+			return type_track_clearance (side_c); 
+		end if;
+		
+	end compute_clearance_track_to_board_edge;
+
+	
 	function compute_fill_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		design_rules	: in type_design_rules;
@@ -292,9 +332,16 @@ package body et_routing is
 				-- the clearance between conductor and board edge must be
 				-- respected. Since the line ends are round caps, the line
 				-- width must also be taken into account.
-				spacing : constant type_distance_positive :=
-					design_rules.clearances.conductor_to_board_edge + width * 0.5;
+				--spacing : constant type_track_clearance :=
+					--design_rules.clearances.conductor_to_board_edge + width * 0.5;
 
+				spacing : constant type_track_clearance :=
+					compute_clearance_track_to_board_edge (
+						angle		=> element (c).angle,
+						width		=> width,
+						clearance	=> design_rules.clearances.conductor_to_board_edge);
+				
+				
 				-- By adding or subtracting spacing we get a fill line that
 				-- starts slightly after entering the board area and ends slightly
 				-- before the leaving the board area.

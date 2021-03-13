@@ -37,6 +37,7 @@
 -- DESCRIPTION:
 -- 
 
+with et_geometry;				use et_geometry;
 with et_design_rules;			use et_design_rules;
 with et_nets;					use et_nets;
 with et_vias;					use et_vias;
@@ -55,6 +56,14 @@ package et_routing is
 	use et_pcb_coordinates.pac_geometry_brd;
 	use et_board_shapes_and_text.pac_shapes;
 
+	-- Computes the clearance of a track that runs along
+	-- a probe line (mostly horizontally) to a board edge.
+	-- CS Sketch !!!
+	function compute_clearance_track_to_board_edge (
+		angle		: in type_rotation_0_90;
+		width		: in type_track_width;
+		clearance	: in type_track_clearance)
+		return type_track_clearance;
 
 	
 	function compute_fill_lines (

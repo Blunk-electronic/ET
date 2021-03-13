@@ -144,6 +144,9 @@ package et_geometry is
 		subtype type_distance_positive is type_distance range zero .. type_distance'last;
 		subtype type_catch_zone is type_distance_positive range zero .. type_distance_positive'last/1000;
 
+		subtype type_rotation_0_90 is type_rotation range 0.0 .. 90.0;
+		
+		
 		-- For collecting distances:
 		package pac_distances is new doubly_linked_lists (type_distance);
 		
@@ -1271,9 +1274,10 @@ package et_geometry is
 			angle		: type_rotation := zero_rotation;
 		end record;
 
-		-- Subtracts 90 degree from the given angle if it is
-		-- greater 90 degree. Otherwise returns the given angle unchanged.		
-		function subtract_90_if_greater_90 (
+		-- Subtracts 180 degree from the given angle if it is
+		-- greater 90 degree and returns the absolute value of the difference.
+		-- Otherwise returns the given angle unchanged.		
+		function subtract_180_if_greater_90 (
 			angle : in type_rotation)
 			return type_rotation;
 

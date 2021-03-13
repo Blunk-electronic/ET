@@ -3596,16 +3596,16 @@ package body et_geometry is
 		end toggle_status;
 
 		
-		function subtract_90_if_greater_90 (
+		function subtract_180_if_greater_90 (
 			angle : in type_rotation)
 			return type_rotation
 		is begin
 			if angle > 90.0 then
-				return angle - 90.0;
+				return abs (angle - 180.0);
 			else
 				return angle;
 			end if;
-		end subtract_90_if_greater_90;
+		end subtract_180_if_greater_90;
 
 
 		

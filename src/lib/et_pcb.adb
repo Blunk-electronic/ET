@@ -206,11 +206,11 @@ package body et_pcb is
 			-- For computing the clearance between objects (tracks. fill lines, vias, ...)
 			-- and the board contours
 			-- we are interested in the acute portion (german: "spitzer Winkel") of the 
-			-- intersection. So we must subtract 90 degrees in case it is greater 90 degrees.
+			-- intersection. So we must subtract 180 degrees in case it is greater 90 degrees.
 			-- See: <https://www.splashlearn.com/math-vocabulary/geometry/acute-angle/> for
 			-- terminology:
 			procedure collect_intersection (i : in type_intersection) is 
-				angle : type_rotation := subtract_90_if_greater_90 (i.angle);
+				angle : type_rotation := subtract_180_if_greater_90 (i.angle);
 			begin
 				log (text => " intersects line at"
 					& to_string (to_point (i.point)) 
