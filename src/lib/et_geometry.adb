@@ -2361,6 +2361,8 @@ package body et_geometry is
 					-- circle is on the given arc:
 					if on_arc (to_point (vi.intersection.point), arc) then
 						return (ONE_EXISTS, vi.intersection, TANGENT);
+
+						-- CS compute angle
 					else
 						return (status => NONE_EXIST);
 					end if;
@@ -2375,15 +2377,21 @@ package body et_geometry is
 					and on_arc (to_point (vi.intersection_2.point), arc) then
 						-- both intersections are on the arc
 						return (TWO_EXIST, vi.intersection_1, vi.intersection_2);
+
+						-- CS compute angles
 						
 					elsif on_arc (to_point (vi.intersection_1.point), arc) then
 						-- only intersection 1 in on the arc
 						return (ONE_EXISTS, vi.intersection_1, SECANT);
 
+						-- CS compute angle
+						
 					elsif on_arc (to_point (vi.intersection_2.point), arc) then
 						-- only intersection 2 in on the arc
 						return (ONE_EXISTS, vi.intersection_2, SECANT);
 
+						-- CS compute angle
+						
 					else
 						return (status => NONE_EXIST); -- CS should never happen
 					end if;					
@@ -2658,6 +2666,9 @@ package body et_geometry is
 				return (ONE_EXISTS, 
 						(point => to_vector (intersection_1), angle => 0.0),
 						TANGENT);
+
+				-- CS compute angle
+				
 				
 			else -- d > zero
 				s := TWO_EXIST; -- two intersections
@@ -2678,6 +2689,10 @@ package body et_geometry is
 						(point => to_vector (intersection_1), angle => 0.0),
 						(point => to_vector (intersection_2), angle => 0.0)
 					   );
+
+				-- CS compute angles
+				
+				
 			end if;
 
 		end get_intersection;
@@ -3581,6 +3596,19 @@ package body et_geometry is
 		end toggle_status;
 
 		
+		function subtract_90_if_greater_90 (
+			angle : in type_rotation)
+			return type_rotation
+		is begin
+			if angle > 90.0 then
+				return angle - 90.0;
+			else
+				return angle;
+			end if;
+		end subtract_90_if_greater_90;
+
+
+		
 		function to_string (
 			i : in type_inside_polygon_query_result)
 			return string
@@ -3592,7 +3620,7 @@ package body et_geometry is
 			
 			procedure query_intersection (c : pac_probe_line_intersections.cursor) is begin
 				result := result & to_string (element (c).x_position) 
-						  & "/" & to_string (element (c).angle);
+						  & "/" & trim (to_string (element (c).angle), left);
 			end query_intersection;
 
 		begin
@@ -3609,9 +3637,9 @@ package body et_geometry is
 			end case;
 
 			if is_empty (i.intersections) then
-				result := result & "No x-intersections.";
+				result := result & "no intersections";
 			else
-				result := result & "X-intersection(s): ";
+				result := result & "intersection(s) x/angle:";
 			end if;
 			
 			iterate (i.intersections, query_intersection'access);
@@ -3661,7 +3689,7 @@ package body et_geometry is
 			use pac_probe_line_intersections;
 			
 			-- This procedure collects the intersection in the return value.
-			-- It extracts the x-value and the angle of intersection 
+			-- It extracts the x-value and the angle of intersection.
 			procedure collect_intersection (i : in type_intersection) is begin
 				
 				append (result.intersections, (

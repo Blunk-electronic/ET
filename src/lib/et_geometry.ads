@@ -1271,6 +1271,13 @@ package et_geometry is
 			angle		: type_rotation := zero_rotation;
 		end record;
 
+		-- Subtracts 90 degree from the given angle if it is
+		-- greater 90 degree. Otherwise returns the given angle unchanged.		
+		function subtract_90_if_greater_90 (
+			angle : in type_rotation)
+			return type_rotation;
+
+		
 		function "<" (left, right : in type_probe_line_intersection)
 			return boolean;
 		

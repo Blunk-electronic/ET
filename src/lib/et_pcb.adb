@@ -199,12 +199,27 @@ package body et_pcb is
 			use pac_probe_line_intersections;
 
 			-- This procedure collects the intersection in the return value.
-			-- It extracts the x-value and the angle of intersection 
-			procedure collect_intersection (i : in type_intersection) is begin
+			-- It extracts the x-value and the angle of intersection.
+			-- NOTE: The angle of intersection with the board contour can be 
+			-- greater 90 degrees, which is
+			-- an obtuse angle (German: "stumpfer Winkel"). 
+			-- For computing the clearance between objects (tracks. fill lines, vias, ...)
+			-- and the board contours
+			-- we are interested in the acute portion (german: "spitzer Winkel") of the 
+			-- intersection. So we must subtract 90 degrees in case it is greater 90 degrees.
+			-- See: <https://www.splashlearn.com/math-vocabulary/geometry/acute-angle/> for
+			-- terminology:
+			procedure collect_intersection (i : in type_intersection) is 
+				angle : type_rotation := subtract_90_if_greater_90 (i.angle);
+			begin
+				log (text => " intersects line at"
+					& to_string (to_point (i.point)) 
+					& " angle" & to_string (angle),
+					level => log_threshold + 2);
 				
 				append (result.intersections, (
 					x_position	=> X (to_point (i.point)),
-					angle		=> i.angle));
+					angle		=> angle));
 				
 			end collect_intersection;
 	
@@ -246,9 +261,9 @@ package body et_pcb is
 					-- count the intersection:
 					if crosses_threshold then
 						
-						log (text => " intersects line" --& to_string (element (c))
-							& " at" & to_string (i.intersection),
-							level => log_threshold + 2);
+						--log (text => " intersects line"
+							--& " at" & to_string (i.intersection),
+							--level => log_threshold + 2);
 
 						-- Add the intersection to the result:
 						collect_intersection (i.intersection);
