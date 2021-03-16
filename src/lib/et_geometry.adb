@@ -43,15 +43,19 @@ with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
-with ada.numerics.generic_elementary_functions;
-
 with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
 
 package body et_geometry is
 
-	package functions_float is new ada.numerics.generic_elementary_functions (float);
-	use functions_float;
+	function sgn (x : float) return float is begin
+		if x >= 0.0 then
+			return 1.0;
+		else
+			return -1.0;
+		end if;
+	end sgn;
+
 
 	
 	function to_string (axis : in type_axis) return string is begin
@@ -1200,6 +1204,27 @@ package body et_geometry is
 			return v;
 		end direction_vector;
 
+
+		function get_angle (
+			line	: in type_line_vector)
+			return type_rotation
+		is 
+			dx, dy : type_distance;
+			a : type_rotation;
+		begin
+			dx := line.v_direction.x - line.v_start.x;
+			dy := line.v_direction.y - line.v_start.y;
+
+			-- dz ignored. we are in a 2D world
+
+			a :=  type_rotation (arctan (
+					y		=> float (dy), 
+					x		=> float (dx), 
+					cycle	=> float (units_per_cycle)));
+
+			return a;
+		end get_angle;
+		
 		
 		function to_line_vector (
 			ray : in type_ray)
@@ -2361,8 +2386,6 @@ package body et_geometry is
 					-- circle is on the given arc:
 					if on_arc (to_point (vi.intersection.point), arc) then
 						return (ONE_EXISTS, vi.intersection, TANGENT);
-
-						-- CS compute angle
 					else
 						return (status => NONE_EXIST);
 					end if;
@@ -2377,20 +2400,14 @@ package body et_geometry is
 					and on_arc (to_point (vi.intersection_2.point), arc) then
 						-- both intersections are on the arc
 						return (TWO_EXIST, vi.intersection_1, vi.intersection_2);
-
-						-- CS compute angles
 						
 					elsif on_arc (to_point (vi.intersection_1.point), arc) then
 						-- only intersection 1 in on the arc
 						return (ONE_EXISTS, vi.intersection_1, SECANT);
-
-						-- CS compute angle
 						
 					elsif on_arc (to_point (vi.intersection_2.point), arc) then
 						-- only intersection 2 in on the arc
 						return (ONE_EXISTS, vi.intersection_2, SECANT);
-
-						-- CS compute angle
 						
 					else
 						return (status => NONE_EXIST); -- CS should never happen
@@ -2547,6 +2564,7 @@ package body et_geometry is
 			
 			return result;
 		end get_boundaries;
+
 		
 		function on_circle (
 			point		: in type_point;
@@ -2562,7 +2580,23 @@ package body et_geometry is
 			end if;
 		end on_circle;
 
+		
+		function get_tangent_angle (p : in type_point) 
+			return type_rotation
+		is
+			a : type_rotation := angle (distance_polar (origin, p));
+		begin
+			case quadrant (p) is
+				when ONE	=> a := a -  90.0;
+				when TWO	=> a := a -  90.0;
+				when THREE	=> a := a - 270.0;
+				when FOUR	=> a := a - 270.0;
+			end case;
+			
+			return a;
+		end get_tangent_angle;
 
+		
 		
 		function get_intersection (
 			line	: in type_line_vector;
@@ -2572,7 +2606,10 @@ package body et_geometry is
 			-- This function bases on the approach by
 			-- Weisstein, Eric W. "Circle-Line Intersection." 
 			-- From MathWorld--A Wolfram Web Resource. 
-			-- https://mathworld.wolfram.com/Circle-LineIntersection.html 
+			-- <https://mathworld.wolfram.com/Circle-LineIntersection.html/>.
+			-- It has been further-on extended so that the angles
+			-- of intersections are computed along with the actual points
+			-- of intersection.
 
 			-- The appoach assumes the circle center at 0/0.
 			-- So we must first move the line by
@@ -2599,18 +2636,36 @@ package body et_geometry is
 
 			zero : constant float := 0.0;
 
-			function sgn (x : float) return float is begin
-				if x >= zero then
-					return 1.0;
-				else
-					return -1.0;
-				end if;
-			end sgn;
-
 			s : type_intersection_status_of_line_and_circle;
 			intersection_1, intersection_2 : type_point;
+
+			line_angle : constant type_rotation := get_angle (line);
+
+			intersection_angle_1, intersection_angle_2 : type_rotation;
+
+			-- Computes the angle of intersection of the given line with
+			-- the circle at point p.
+			-- NOTE: Since we assume a secant, the angle
+			-- line_angle is travelling with, must not be a multiple of 90 degrees !
+			function compute_intersection_angle (p : in type_point) 
+				return type_rotation
+			is
+				result : type_rotation;
+
+				-- Compute the tangent at the intersection:
+				tangent_angle : constant type_rotation := get_tangent_angle (p);
+			begin
+				result := line_angle + tangent_angle + 90.0;
+
+				if result > 180.0 then
+					result := result - 180.0;
+				end if;
+				
+				return result;
+			end compute_intersection_angle;
+
 			
-		begin
+		begin -- get_intersection
 			
 			-- compute start and end point of given line:
 			ps := to_point (line.v_start);
@@ -2620,7 +2675,8 @@ package body et_geometry is
 			pe := to_point (add (line.v_start, v1));
 			--put_line ("end   " & to_string (pe));
 			
-			-- move start and end point of line by offset:
+			-- Move start and end point of line by offset 
+			-- (which is the center of the given circle):
 			move_by (ps, type_point (invert (offset)));
 			move_by (pe, type_point (invert (offset)));
 
@@ -2661,37 +2717,56 @@ package body et_geometry is
 				y := (-DI * dx) / b;
 
 				intersection_1 := type_point (set (type_distance (x), type_distance (y)));
+				
+				-- Move computed intersection back by offset
+				-- (Which is the center of the given circle):
 				move_by (intersection_1, offset);
 
 				return (ONE_EXISTS, 
-						(point => to_vector (intersection_1), angle => 0.0),
+						(point => to_vector (intersection_1), angle => line_angle),
 						TANGENT);
 
-				-- CS compute angle
-				
+				-- NOTE: The angle of the travel direction of the given line
+				-- is now the angle of the tangent at this single intersection point.
 				
 			else -- d > zero
 				s := TWO_EXIST; -- two intersections
 
+				-- COMPUTE 1ST INTERSECTION:
 				x := ( DI * dy + sgn (dy) * dx * sqrt (d)) / b;
 				y := (-DI * dx + abs (dy) * sqrt (d))      / b;
-					  
+
+				-- Compose the point of intersection 1:
 				intersection_1 := type_point (set (type_distance (x), type_distance (y)));
+
+				intersection_angle_1 := compute_intersection_angle (intersection_1);
+					
+				-- Move computed intersection 1 back by offset
+				-- (Which is the center of the given circle):
 				move_by (intersection_1, offset);
+
+
 				
+				-- COMPUTE 2ND INTERSECTION:				
 				x := ( DI * dy - sgn (dy) * dx * sqrt (d)) / b;
 				y := (-DI * dx - abs (dy) * sqrt (d))      / b;
 					  
+				-- Compose the point of intersection 2:
 				intersection_2 := type_point (set (type_distance (x), type_distance (y)));
+
+				intersection_angle_2 := compute_intersection_angle (intersection_2);
+				
+				-- Move computed intersection 2 back by offset
+				-- (Which is the center of the given circle):
 				move_by (intersection_2, offset);				
 
+
+				
 				return (TWO_EXIST, 
-						(point => to_vector (intersection_1), angle => 0.0),
-						(point => to_vector (intersection_2), angle => 0.0)
+						(point => to_vector (intersection_1), angle => intersection_angle_1),
+						(point => to_vector (intersection_2), angle => intersection_angle_2)
 					   );
 
-				-- CS compute angles
-				
 				
 			end if;
 
@@ -2699,9 +2774,7 @@ package body et_geometry is
 
 
 		
-		function to_string (line : in type_line) return string is
-		-- Returns the start and end point of the given line as string.
-		begin
+		function to_string (line : in type_line) return string is begin
 			return latin_1.space 
 				& "start" & to_string (line.start_point) 
 				& " end" & to_string (line.end_point);

@@ -39,6 +39,8 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_sets;
 with ada.numerics;
 
+with ada.numerics.generic_elementary_functions;
+
 with glib;
 
 with et_general;				use et_general;
@@ -46,6 +48,15 @@ with et_string_processing;		use et_string_processing;
 
 package et_geometry is
 
+	package functions_float is new ada.numerics.generic_elementary_functions (float);
+	use functions_float;
+
+	-- Returns 1.0 if given x is greater or equal zero.
+	-- Returns -1.0 if x less than zero.
+	function sgn (x : float) return float;
+
+	
+	
 	keyword_position	: constant string := "position";
 	keyword_x 			: constant string := "x";
 	keyword_y 			: constant string := "y";		
@@ -644,7 +655,12 @@ package et_geometry is
 			v_direction	: type_vector; -- direction vector of line
 		end record;
 
-
+		-- Returns the direction of travel of the given line
+		-- in degrees:
+		function get_angle (
+			line	: in type_line_vector)
+			return type_rotation;
+			
 		-- Converts a ray (consisting of start point and a direction)
 		-- to a line vector consisting of start vector and
 		-- direction vector:
@@ -1028,19 +1044,46 @@ package et_geometry is
 			line_width	: in type_distance_positive)						
 			return type_boundaries;
 		
-		function on_circle (
 		-- Returns true if the given point sits on the given circle circumfence.
 		-- The optional parameter accuracy may be used to specifiy the range at
 		-- which the point is regarded as sitting on the circle.
+		function on_circle (
 			point		: in type_point;
 			circle		: in type_circle;
 			accuracy	: in type_catch_zone := zero)
 			return boolean;
 		
+		-- Computes the angle of a tangent that touches a circle
+		-- the the given point. The center of the circle is assumed to be the origin.
+		-- - If the tangent increases in y as it travels from left to right 
+		--   then its angle is positive. 
+		-- - If the tangent decreases in y, then its angle is negative.
+		-- - If it does not change in y, then the tangent runs horizontally and has zero angle.
+		-- - If it is vertical, then its angle is 90 degrees.
+		function get_tangent_angle (p : in type_point) 
+			return type_rotation;
 
 
 		
-		-- Computes the intersections of a line with a circle:
+		-- Computes the intersections of a line with a circle.
+		-- - If there is no intersection then it returns NONE_EXIST.
+		-- - If there is only one intersection then the given line is a tangent.
+		--   The return status will then be ONE_EXISTS and the 
+		--   actual intersection (with point and angle).
+		--   The tangent status will be TANGENT. See 
+		-- - If there are two intersections then the given line is a secant.
+		--   The return status will be TWO_EXIST and the two intersections
+		--   (with their point and angle).
+		-- See details of type type_intersection_of_line_and_circle.
+		--
+		-- IMPORTANT: CONVENTION ON INTERSECTION ANGLE OF A SECANT:
+		-- The angle of intersection is defined as follows:
+		-- The given line enters and leaves the circle at some point and angle.
+		-- As the given line is a line vector, it has a direction. Imagine
+		-- sitting on this line as it enters/leveas the circle. 
+		-- The angle BETWEEN the line and the circle circumfence visible
+		-- on your LEFT is the angle of intersection.
+		-- The angle of intersection is always greater zero and less than 180 degrees.
 		function get_intersection (
 			line	: in type_line_vector;
 			circle	: in type_circle)
@@ -1275,7 +1318,7 @@ package et_geometry is
 		end record;
 
 		-- Subtracts 180 degree from the given angle if it is
-		-- greater 90 degree and returns the absolute value of the difference.
+		-- greater 90 degrees and returns the absolute value of the difference.
 		-- Otherwise returns the given angle unchanged.		
 		function subtract_180_if_greater_90 (
 			angle : in type_rotation)
