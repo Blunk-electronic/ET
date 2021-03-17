@@ -66,7 +66,7 @@ package body et_routing is
 		clearance	: in type_track_clearance)
 		return type_track_clearance
 	is
-		-- The total of inner angles of a rectangual triangle is 180 degrees.
+		-- The total of inner angles of a rectangular triangle is 180 degrees.
 		-- Two angles are known. Hence:
 		angle_b : constant float := float (90.0 - angle);
 		
@@ -76,7 +76,7 @@ package body et_routing is
 	begin
 		put_line ("angle" & type_rotation'image (angle));
 		
-		if angle = 90.0 or angle = 0.0 then -- CS remove comparing with 0.0
+		if angle = 90.0 then
 			--put_line (" nothing to do");
 			return clearance + width * 0.5;
 		else
@@ -346,6 +346,8 @@ package body et_routing is
 				-- starts slightly after entering the board area and ends slightly
 				-- before the leaving the board area.
 			begin
+				put_line ("spacing " & to_string (spacing));
+				
 				-- Each intersection with the board contour causes a change
 				-- of the flag board_point_status:
 				toggle_status (board_point_status);

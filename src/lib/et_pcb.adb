@@ -212,7 +212,7 @@ package body et_pcb is
 			procedure collect_intersection (i : in type_intersection) is 
 				angle : type_rotation := subtract_180_if_greater_90 (i.angle);
 			begin
-				log (text => " intersects line at"
+				log (text => " intersects at"
 					& to_string (to_point (i.point)) 
 					& " angle" & to_string (angle),
 					level => log_threshold + 2);
@@ -303,19 +303,19 @@ package body et_pcb is
 				end crosses_threshold;
 
 				procedure count_one is begin
-					log (text => " intersects arc" --& to_string (arc)
-							& " at" & to_string (i.intersection),
-						level => log_threshold + 2);
+					--log (text => " intersects arc" --& to_string (arc)
+							--& " at" & to_string (i.intersection),
+						--level => log_threshold + 2);
 
 					-- Add the intersection to the result:
 					collect_intersection (i.intersection);
 				end count_one;
 				
 				procedure count_two is begin
-					log (text => " intersects arc" --& to_string (arc)
-							& " at" & to_string (i.intersection_1)
-							& " and" & to_string (i.intersection_2),
-						level => log_threshold + 2);
+					--log (text => " intersects arc" --& to_string (arc)
+							--& " at" & to_string (i.intersection_1)
+							--& " and" & to_string (i.intersection_2),
+						--level => log_threshold + 2);
 
 					-- Add the intersections to the result:
 					collect_intersection (i.intersection_1);
@@ -410,10 +410,10 @@ package body et_pcb is
 					when TWO_EXIST =>
 						-- The probe line intersects the circle at two points:
 					
-						log (text => " intersects circle" -- & to_string (element (c))
-							 & " at" & to_string (i.intersection_1)
-							 & " and" & to_string (i.intersection_2),
-							level => log_threshold + 2);
+						--log (text => " intersects circle" -- & to_string (element (c))
+							 --& " at" & to_string (i.intersection_1)
+							 --& " and" & to_string (i.intersection_2),
+							--level => log_threshold + 2);
 
 						-- Add the intersections to the result:
 						collect_intersection (i.intersection_1);

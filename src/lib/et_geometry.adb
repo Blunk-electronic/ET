@@ -1209,19 +1209,16 @@ package body et_geometry is
 			line	: in type_line_vector)
 			return type_rotation
 		is 
-			dx, dy : type_distance;
 			a : type_rotation;
 		begin
-			dx := line.v_direction.x - line.v_start.x;
-			dy := line.v_direction.y - line.v_start.y;
 
-			-- dz ignored. we are in a 2D world
-
-			a :=  type_rotation (arctan (
-					y		=> float (dy), 
-					x		=> float (dx), 
+			a := type_rotation (arctan (
+					y		=> float (line.v_direction.y), 
+					x		=> float (line.v_direction.x), 
 					cycle	=> float (units_per_cycle)));
 
+			-- dz ignored. we are in a 2D world
+			
 			return a;
 		end get_angle;
 		
@@ -2586,11 +2583,15 @@ package body et_geometry is
 		is
 			a : type_rotation := angle (distance_polar (origin, p));
 		begin
+			--put_line (to_string (a));
+
+			-- The angle a ranges from -180 to 180 degrees.
+			
 			case quadrant (p) is
-				when ONE	=> a := a -  90.0;
-				when TWO	=> a := a -  90.0;
-				when THREE	=> a := a - 270.0;
-				when FOUR	=> a := a - 270.0;
+				when ONE	=> a := a - 90.0;
+				when TWO	=> a := a - 90.0;
+				when THREE	=> a := a + 90.0;
+				when FOUR	=> a := a + 90.0;
 			end case;
 			
 			return a;
@@ -2653,13 +2654,26 @@ package body et_geometry is
 				result : type_rotation;
 
 				-- Compute the tangent at the intersection:
-				tangent_angle : constant type_rotation := get_tangent_angle (p);
+				tangent_angle : type_rotation := get_tangent_angle (p);
 			begin
-				result := line_angle + tangent_angle + 90.0;
+				log (text => "line angle:" & to_string (line_angle));
+				log (text => "tangent angle A:" & to_string (tangent_angle));
+				
+				if tangent_angle < 0.0 then
+					tangent_angle := abs (tangent_angle);
+				else
+					tangent_angle := 180.0 - tangent_angle;
+				end if;
+
+				log (text => "tangent angle B:" & to_string (tangent_angle));
+				
+				result := line_angle + tangent_angle;
 
 				if result > 180.0 then
 					result := result - 180.0;
 				end if;
+				
+				log (text => "intersection angle:" & to_string (result));
 				
 				return result;
 			end compute_intersection_angle;

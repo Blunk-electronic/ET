@@ -389,19 +389,22 @@ package et_geometry is
 		
 		type type_distance_polar is private;
 
-		function distance_polar (point_one, point_two : in type_point) 
-			return type_distance_polar;
 		-- Returns the distance of point_two to point_one.	
 		-- Subtracts point_one.x from point_two.x and point_one.y from point_two.y
 		-- returns	total := sqrt ((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
 		--			angle := arctan ((point_two.y - point_one.y) / (point_two.x - point_one.x)
-		-- NOTE: If the total distance between the points is zero then
-		-- the returned angle is zero. So it is wise to test the two points
-		-- for equality befor calling this function.
-		
+		-- NOTE 1: The angle ranges from -180 to 180 degrees.
+		-- NOTE 2: If the total distance between the points is zero then
+		--         the returned angle is zero. So it is wise to test the two points
+		--         for equality befor calling this function.
+		function distance_polar (point_one, point_two : in type_point) 
+			return type_distance_polar;
+
+		-- Returns the angle of the given polar distance:
 		function angle (distance : in type_distance_polar) 
 			return type_rotation;
-		
+
+		-- Returns the absolute of the given polar distance:
 		function absolute (distance : in type_distance_polar) 
 			return type_distance_positive;
 
@@ -521,7 +524,7 @@ package et_geometry is
 
 		type type_distance_polar is record
 			absolute: type_distance_positive;
-			angle	: type_rotation;
+			angle	: type_rotation; -- ranges from -180 to 180 degrees
 		end record;
 		
 		origin : constant type_point := (others => zero);
@@ -1054,7 +1057,7 @@ package et_geometry is
 			return boolean;
 		
 		-- Computes the angle of a tangent that touches a circle
-		-- the the given point. The center of the circle is assumed to be the origin.
+		-- at the given point. The center of the circle is assumed to be the origin.
 		-- - If the tangent increases in y as it travels from left to right 
 		--   then its angle is positive. 
 		-- - If the tangent decreases in y, then its angle is negative.
