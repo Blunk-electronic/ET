@@ -605,7 +605,6 @@ package body et_geometry is
 		end;
 		
 		function distance_relative (point_one, point_two : in type_point) return type_point'class is
-		-- Returns the relative distance of point_two from point_one.	
 			d : type_point;
 		begin
 			d.x := point_two.x - point_one.x;
@@ -622,10 +621,13 @@ package body et_geometry is
 		begin
 			if point_one = point_two then
 				distance := zero;
+				
 			elsif x (point_one) = x (point_two) then -- points are in a vertical line
 				distance := abs (y (point_two) - y (point_one));
+				
 			elsif y (point_one) = y (point_two) then -- points are in a horizontal line
 				distance := abs (x (point_two) - x (point_one));
+				
 			else
 				delta_x := float (x (point_one) - x (point_two));
 				delta_y := float (y (point_one) - y (point_two));
@@ -994,6 +996,14 @@ package body et_geometry is
 -- 			return type_fill_style'value (fill_style);
 -- 		end;
 
+		procedure toggle_status (status : in out type_point_status) is begin
+			case status is
+				when OUTSIDE	=> status := INSIDE;
+				when INSIDE		=> status := OUTSIDE;
+			end case;
+		end toggle_status;
+
+		
 		procedure union (
 			boundaries	: in out type_boundaries;
 			point		: in type_point) is
@@ -2568,8 +2578,7 @@ package body et_geometry is
 			circle		: in type_circle;
 			accuracy	: in type_catch_zone := zero)
 			return boolean 
-		is
-		begin
+		is begin
 			if distance_total (point, circle.center) - circle.radius <= accuracy then
 				return true;
 			else
@@ -2577,6 +2586,19 @@ package body et_geometry is
 			end if;
 		end on_circle;
 
+
+		function get_point_to_circle_status (
+			point		: in type_point;
+			circle		: in type_circle)
+			return type_point_status
+		is begin
+			if distance_total (point, circle.center) < circle.radius then
+				return INSIDE;
+			else
+				return OUTSIDE; 
+			end if;
+		end get_point_to_circle_status;
+		
 		
 		function get_tangent_angle (p : in type_point) 
 			return type_tangent_angle
@@ -2607,7 +2629,7 @@ package body et_geometry is
 			-- This function bases on the approach by
 			-- Weisstein, Eric W. "Circle-Line Intersection." 
 			-- From MathWorld--A Wolfram Web Resource. 
-			-- <https://mathworld.wolfram.com/Circle-LineIntersection.html/>.
+			-- <https://mathworld.wolfram.com/Circle-LineIntersection.html>.
 			-- It has been further-on extended so that the angles
 			-- of intersections are computed along with the actual points
 			-- of intersection.
@@ -2656,8 +2678,8 @@ package body et_geometry is
 				-- Compute the tangent at the intersection:
 				tangent_angle : type_rotation := get_tangent_angle (p);
 			begin
-				log (text => "line angle:" & to_string (line_angle));
-				log (text => "tangent angle A:" & to_string (tangent_angle));
+				--log (text => "line angle:" & to_string (line_angle));
+				--log (text => "tangent angle A:" & to_string (tangent_angle));
 				
 				if tangent_angle < 0.0 then
 					tangent_angle := abs (tangent_angle);
@@ -2665,7 +2687,7 @@ package body et_geometry is
 					tangent_angle := 180.0 - tangent_angle;
 				end if;
 
-				log (text => "tangent angle B:" & to_string (tangent_angle));
+				--log (text => "tangent angle B:" & to_string (tangent_angle));
 				
 				result := line_angle + tangent_angle;
 
@@ -2673,7 +2695,7 @@ package body et_geometry is
 					result := result - 180.0;
 				end if;
 				
-				log (text => "intersection angle:" & to_string (result));
+				--log (text => "intersection angle:" & to_string (result));
 				
 				return result;
 			end compute_intersection_angle;
@@ -2787,6 +2809,52 @@ package body et_geometry is
 		end get_intersection;
 
 
+		function order_intersections (
+			-- The start point of the line that intersects the circle.
+			-- The start point must be outside the circle and will
+			-- be passed through to the result unchanged.
+			start_point		: in type_point;
+
+			intersections	: in type_intersection_of_line_and_circle)
+			return type_ordered_line_circle_intersections
+		is
+			result : type_ordered_line_circle_intersections := 
+				(start_point => start_point, others => <>); -- pass start point through
+
+			i : constant type_intersection_of_line_and_circle (TWO_EXIST) := intersections;
+
+			ip1, ip2 : type_point;
+			
+			d1, d2 : type_distance_positive;
+
+		begin
+			-- get intersection point 1 and 2:
+			ip1 := to_point (i.intersection_1.point);
+			ip2 := to_point (i.intersection_2.point);
+			
+			-- the distance from start point to intersection point 1:
+			d1 := distance_total (start_point, ip1);
+
+			-- the distance from start point to intersection point 2:
+			d2 := distance_total (start_point, ip2);
+
+			if d1 < d2 then -- point ip1 is closer to start point that ip2
+				result.entry_point := ip1;
+				result.exit_point := ip2;
+				
+			elsif d1 > d2 then -- point ip2 is closer to start point than ip1
+				result.entry_point := ip2;
+				result.exit_point := ip1;
+
+			else -- point ip1 has same distance to start point as ip2
+				raise constraint_error;
+			end if;
+				
+			return result;
+		end order_intersections;
+
+
+		
 		
 		function to_string (line : in type_line) return string is begin
 			return latin_1.space 
@@ -3675,12 +3743,6 @@ package body et_geometry is
 			return result;
 		end "<";
 		
-		procedure toggle_status (status : in out type_polygon_point_status) is begin
-			case status is
-				when OUTSIDE	=> status := INSIDE;
-				when INSIDE		=> status := OUTSIDE;
-			end case;
-		end toggle_status;
 
 		
 		function subtract_180_if_greater_90 (

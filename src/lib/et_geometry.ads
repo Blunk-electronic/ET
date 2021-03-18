@@ -563,6 +563,14 @@ package et_geometry is
 	package generic_pac_shapes is
 		use pac_geometry;
 
+
+		type type_point_status is (
+			OUTSIDE,	-- point is outside a certain area
+			INSIDE);	-- point is inside a certain area
+
+		procedure toggle_status (status : in out type_point_status);
+
+		
 		-- Unites the point with the boundaries. boundaries is updated.
 		procedure union (
 			boundaries	: in out type_boundaries;
@@ -1016,6 +1024,7 @@ package et_geometry is
 			arc			: in out type_arc;
 			rotation	: in type_rotation);
 
+	
 		
 	-- CIRCLE
 		type type_circle is abstract tagged record -- CS rename to type_circle_base
@@ -1056,7 +1065,17 @@ package et_geometry is
 			accuracy	: in type_catch_zone := zero)
 			return boolean;
 
+		-- Gives the status (inside/outside) of a point relative to a circle.
+		-- If the point lies exactly at the circumfence then the result is "outside".
+		function get_point_to_circle_status (
+			point		: in type_point;
+			circle		: in type_circle)
+			return type_point_status;
 
+
+	
+
+		
 		-- The angle of a tangent to a circle:
 		subtype type_tangent_angle is type_rotation range -90.0 .. 90.0;
 		
@@ -1081,6 +1100,10 @@ package et_geometry is
 		-- - If there are two intersections then the given line is a secant.
 		--   The return status will be TWO_EXIST and the two intersections
 		--   (with their point and angle).
+		--   NOTE: There is no information on the order of the two intersections
+		--   as the line travels through the circle. Use function order_intersections
+		--   to get the intersections ordered.
+		--
 		-- See details of type type_intersection_of_line_and_circle.
 		--
 		-- IMPORTANT: CONVENTION ON INTERSECTION ANGLE OF A SECANT:
@@ -1096,9 +1119,32 @@ package et_geometry is
 			circle	: in type_circle)
 			return type_intersection_of_line_and_circle;
 
-		
+		type type_ordered_line_circle_intersections is record
+			-- The start point of the line that intersects the circle.
+			-- The start point must be outside the circle.
+			start_point	: type_point;
 
+			-- The point where the line enters and exits the circle:
+			entry_point	: type_point;
+			exit_point	: type_point;
+		end record;
+
+		-- Sorts the intersections of a line with a circle in the order
+		-- as they appear as the line crosses the circle:
+		-- start point of line, entry point, exit point.
+		-- The given intersections must contain two intersections (discrimintant status),
+		-- otherwise a constraint error will be raised.
+		-- If the given intersections have same distance to start point then
+		-- a constraint error will be raised.
+		function order_intersections (
+			-- The start point of the line that intersects the circle.
+			-- The start point must be outside the circle.
+			start_point		: in type_point;
+
+			intersections	: in type_intersection_of_line_and_circle)
+			return type_ordered_line_circle_intersections;
 		
+			
 		function to_string (line : in type_line) return string;
 		-- Returns the start and end point of the given line as string.
 
@@ -1310,12 +1356,7 @@ package et_geometry is
 		-- distance to the start point of the ray. Lowest value first.
 		
 		type type_probe_line is new type_line with null record;
-									  
-		type type_polygon_point_status is (
-			OUTSIDE,	-- point is outside polygon area
-			INSIDE);	-- point is in polygon area
-
-		procedure toggle_status (status : in out type_polygon_point_status);
+							  
 
 		-- The intersection of a probe line with the polygon side can
 		-- be described as:
@@ -1343,7 +1384,7 @@ package et_geometry is
 			-- the point where the probe line has started:
 			start			: type_point; 
 
-			status			: type_polygon_point_status := OUTSIDE;		
+			status			: type_point_status := OUTSIDE;		
 
 			-- the intersections of the probe line with the polygon edges:
 			--intersections	: pac_distances.list;

@@ -282,6 +282,11 @@ package body et_pcb is
 				i : constant type_intersection_of_line_and_circle := 
 					get_intersection (probe_line, arc);
 
+				-- In case we get two intersections (which speaks for a secant)
+				-- then they need to be ordered according to their distance to
+				-- the start point of the probe line (starts at given point);
+				ordered_intersections : type_ordered_line_circle_intersections;
+				
 				function crosses_threshold return boolean is begin
 					-- If start/end point of the candidate arc is ABOVE-OR-ON the 
 					-- threshold AND if the end/start point of the candidate arc is BELOW the
@@ -342,6 +347,11 @@ package body et_pcb is
 						end case;
 
 					when TWO_EXIST =>
+						-- Order the intersections by their distance to the start point:
+						ordered_intersections := order_intersections (
+							start_point		=> point,
+							intersections	=> i);
+							
 						if Y (arc.start_point) /= y_threshold then
 							-- Since we have TWO intersections, the end point of the arc
 							-- must be in the same half as the start point of the arc:
@@ -399,6 +409,11 @@ package body et_pcb is
 				i : constant type_intersection_of_line_and_circle := 
 					get_intersection (probe_line, element (c));
 
+				-- In case we get two intersections (which speaks for a secant)
+				-- then they need to be ordered according to their distance to
+				-- the start point of the probe line (starts at given point);
+				ordered_intersections : type_ordered_line_circle_intersections;
+				
 			begin				
 				log (text => "probing" & to_string (element (c)), level => log_threshold + 2);
 				
@@ -409,7 +424,13 @@ package body et_pcb is
 					
 					when TWO_EXIST =>
 						-- The probe line intersects the circle at two points:
-					
+
+						-- Order the intersections by their distance to the start point:
+						ordered_intersections := order_intersections (
+							start_point		=> point,
+							intersections	=> i);
+
+						
 						--log (text => " intersects circle" -- & to_string (element (c))
 							 --& " at" & to_string (i.intersection_1)
 							 --& " and" & to_string (i.intersection_2),

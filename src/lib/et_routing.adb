@@ -323,7 +323,7 @@ package body et_routing is
 			-- While searching among the intersections with the board contours
 			-- this flag tells whether we are inside or outside the board area.
 			-- Initially that status is taken from the given board domain.
-			board_point_status : type_polygon_point_status := board_domain.status;
+			board_point_status : type_point_status := board_domain.status;
 			
 			procedure query_board_point (c : in pac_probe_line_intersections.cursor) is
 				dx : type_distance;
@@ -381,7 +381,7 @@ package body et_routing is
 			-- While searching among the intersections with the polygon
 			-- this flag tells whether we are inside or outside the polygon.
 			-- Initially that status is taken from the given polygon domain.
-			polygon_point_status : type_polygon_point_status := polygon_domain.status;
+			polygon_point_status : type_point_status := polygon_domain.status;
 			
 			procedure query_polygon_point (c : in pac_probe_line_intersections.cursor) is
 				dx : type_distance;
