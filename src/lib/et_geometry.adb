@@ -2579,7 +2579,7 @@ package body et_geometry is
 
 		
 		function get_tangent_angle (p : in type_point) 
-			return type_rotation
+			return type_tangent_angle
 		is
 			a : type_rotation := angle (distance_polar (origin, p));
 		begin
