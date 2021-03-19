@@ -199,7 +199,6 @@ package body et_pcb is
 			use pac_probe_line_intersections;
 
 			-- This procedure collects the intersection in the return value.
-			-- It extracts the x-value and the angle of intersection.
 			-- NOTE: The angle of intersection with the board contour can be 
 			-- greater 90 degrees, which is
 			-- an obtuse angle (German: "stumpfer Winkel"). 
@@ -210,25 +209,6 @@ package body et_pcb is
 			-- See: <https://www.splashlearn.com/math-vocabulary/geometry/acute-angle/> for
 			-- terminology:
 			procedure collect_intersection (
-				i 			: in type_intersection)
-				--curvature	: in type_curvature := STRAIGHT;
-				--center		: in type_point := origin;
-				--radius		: in type_distance_positive := zero)
-			is 
-				angle : type_rotation := subtract_180_if_greater_90 (i.angle);
-			begin
-				log (text => " intersects at"
-					& to_string (to_point (i.point)) 
-					& " angle" & to_string (angle),
-					level => log_threshold + 2);
-				
-				--append (result.intersections, (
-					--x_position	=> X (to_point (i.point)),
-					--angle		=> angle));
-				
-			end collect_intersection;
-
-			procedure collect_intersection_2 (
 				intersection: in type_intersection; -- incl. point and angle
 				curvature	: in type_curvature := STRAIGHT;
 				center		: in type_point := origin;
@@ -240,13 +220,37 @@ package body et_pcb is
 					--& to_string (to_point (i.point)) 
 					--& " angle" & to_string (angle),
 					--level => log_threshold + 2);
-				
-				--append (result.intersections, (
-					--x_position	=> X (to_point (i.point)),
-					--angle		=> angle));
 
-				null;
-			end collect_intersection_2;
+				case curvature is
+					when STRAIGHT =>
+						
+						append (result.intersections, (
+							x_position	=> X (to_point (intersection.point)),
+							angle		=> angle_sub,
+							curvature	=> STRAIGHT
+							));
+
+					when CONVEX =>
+
+						append (result.intersections, (
+							x_position	=> X (to_point (intersection.point)),
+							angle		=> angle_sub,
+							curvature	=> CONVEX,
+							center		=> center,
+							radius		=> radius
+							));
+
+					when CONCAVE =>
+
+						append (result.intersections, (
+							x_position	=> X (to_point (intersection.point)),
+							angle		=> angle_sub,
+							curvature	=> CONCAVE,
+							center		=> center,
+							radius		=> radius
+							));
+				end case;
+			end collect_intersection;
 	
 
 			
@@ -274,7 +278,7 @@ package body et_pcb is
 							--level => log_threshold + 2);
 
 						-- Add the intersection to the result:
-						collect_intersection_2 (
+						collect_intersection (
 							intersection	=> i.intersection);
 						
 					end if;
@@ -316,13 +320,13 @@ package body et_pcb is
 							--& " and" & to_string (i.intersection_2),
 						--level => log_threshold + 2);
 
-					collect_intersection_2 (
+					collect_intersection (
 						intersection=> ordered_intersections.entry_point,	
 						curvature	=> CONVEX, -- entry point is always convex
 						center		=> arc.center,
 						radius		=> radius);
 
-					collect_intersection_2 (
+					collect_intersection (
 						intersection=> ordered_intersections.exit_point,	
 						curvature	=> CONCAVE, -- exit point is always concave
 						center		=> arc.center,
@@ -346,7 +350,7 @@ package body et_pcb is
 									-- Start and end point of the arc are opposide 
 									-- of each other with the probe line betweeen them:
 
-									collect_intersection_2 (
+									collect_intersection (
 										intersection	=> i.intersection,	
 
 										-- If there is only one intersection, deduce
@@ -393,14 +397,14 @@ package body et_pcb is
 									-- Count the point P as intersection:
 									case arc.direction is
 										when CCW => 
-											collect_intersection_2 (
+											collect_intersection (
 												intersection=> ordered_intersections.exit_point,	
 												curvature	=> CONCAVE, -- exit point is always concave
 												center		=> arc.center,
 												radius		=> radius);
 
 										when CW => 
-											collect_intersection_2 (
+											collect_intersection (
 												intersection=> ordered_intersections.entry_point,	
 												curvature	=> CONVEX, -- entry point is always convex
 												center		=> arc.center,
@@ -429,14 +433,14 @@ package body et_pcb is
 									-- Count the point P as intersection:
 									case arc.direction is
 										when CCW => 
-											collect_intersection_2 (
+											collect_intersection (
 												intersection=> ordered_intersections.entry_point,	
 												curvature	=> CONVEX, -- entry point is always convex
 												center		=> arc.center,
 												radius		=> radius);
 
 										when CW => 
-											collect_intersection_2 (
+											collect_intersection (
 												intersection=> ordered_intersections.exit_point,	
 												curvature	=> CONCAVE, -- exit point is always concave
 												center		=> arc.center,
@@ -493,13 +497,13 @@ package body et_pcb is
 							--level => log_threshold + 2);
 
 						-- Add the intersections to the result:
-						collect_intersection_2 (
+						collect_intersection (
 							intersection=> ordered_intersections.entry_point,	
 							curvature	=> CONVEX, -- entry point is always convex
 							center		=> element (c).center,
 							radius		=> element (c).radius);
 
-						collect_intersection_2 (
+						collect_intersection (
 							intersection=> ordered_intersections.exit_point,	
 							curvature	=> CONCAVE, -- exit point is always concave
 							center		=> element (c).center,

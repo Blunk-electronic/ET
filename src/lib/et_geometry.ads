@@ -1394,15 +1394,7 @@ package et_geometry is
 
 		-- The intersection of a probe line with the polygon side can
 		-- be described as:
-		type type_probe_line_intersection is record
-			x_position	: type_distance;
-			angle		: type_rotation := zero_rotation;
-		end record;
-
-		
-
-		
-		type type_probe_line_intersection_2 (curvature : type_curvature) is record
+		type type_probe_line_intersection (curvature : type_curvature) is record
 			
 			x_position	: type_distance;
 			angle		: type_rotation := zero_rotation;
@@ -1411,8 +1403,8 @@ package et_geometry is
 				when STRAIGHT => null;
 				
 				when CONVEX | CONCAVE =>
-					center	: type_point;
-					radius	: type_distance_positive;
+					center	: type_point := origin;
+					radius	: type_distance_positive := zero;
 			end case;
 		end record;
 
@@ -1428,11 +1420,10 @@ package et_geometry is
 		function "<" (left, right : in type_probe_line_intersection)
 			return boolean;
 		
-		package pac_probe_line_intersections is new
-			doubly_linked_lists (type_probe_line_intersection);
 
-		package pac_probe_line_intersections_2 is new
-			indefinite_doubly_linked_lists (type_probe_line_intersection_2);
+		
+		package pac_probe_line_intersections is new
+			indefinite_doubly_linked_lists (type_probe_line_intersection);
 
 			
 			
