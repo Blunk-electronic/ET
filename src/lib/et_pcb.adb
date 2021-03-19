@@ -293,7 +293,8 @@ package body et_pcb is
 							--level => log_threshold + 2);
 
 						-- Add the intersection to the result:
-						collect_intersection (i.intersection);
+						collect_intersection_2 (
+							intersection	=> i.intersection);
 						
 					end if;
 				end if;
@@ -552,8 +553,18 @@ package body et_pcb is
 							--level => log_threshold + 2);
 
 						-- Add the intersections to the result:
-						collect_intersection (i.intersection_1);
-						collect_intersection (i.intersection_2);
+						collect_intersection_2 (
+							intersection=> ordered_intersections.entry_point,	
+							curvature	=> CONVEX, -- entry point is always convex
+							center		=> element (c).center,
+							radius		=> element (c).radius);
+
+						collect_intersection_2 (
+							intersection=> ordered_intersections.exit_point,	
+							curvature	=> CONCAVE, -- exit point is always concave
+							center		=> element (c).center,
+							radius		=> element (c).radius);
+							
 				end case;
 			end query_circle;
 			
