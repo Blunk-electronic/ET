@@ -259,25 +259,6 @@ package body et_pcb is
 				-- and the candidate line of the contour.
 				i : constant type_intersection_of_two_lines := 
 					get_intersection (probe_line, element (c));
-
-				function crosses_threshold return boolean is begin
-					-- If the start/end point of the candidate line is ABOVE-OR-ON the 
-					-- threshold AND if the end/start point of the candidate line is BELOW the
-					-- threshold then we consider the contour line to be threshold-crossing.
-					if	
-						Y (element (c).start_point) >= y_threshold and 
-						Y (element (c).end_point)   <  y_threshold then
-						return true;
-						
-					elsif
-						Y (element (c).end_point)   >= y_threshold and 
-						Y (element (c).start_point) <  y_threshold then
-						return true;
-						
-					else
-						return false;
-					end if;
-				end crosses_threshold;
 			
 			begin -- query_line				
 				log (text => "probing" & to_string (element (c)), level => log_threshold + 2);
@@ -286,7 +267,7 @@ package body et_pcb is
 
 					-- If the candidate line segment crosses the y_threshold then 
 					-- count the intersection:
-					if crosses_threshold then
+					if crosses_threshold (element (c), y_threshold) then
 						
 						--log (text => " intersects line"
 							--& " at" & to_string (i.intersection),
@@ -317,51 +298,6 @@ package body et_pcb is
 				-- then they need to be ordered according to their distance to
 				-- the start point of the probe line (starts at given point);
 				ordered_intersections : type_ordered_line_circle_intersections;
-				
-				function crosses_threshold return boolean is begin
-					-- If start/end point of the candidate arc is ABOVE-OR-ON the 
-					-- threshold AND if the end/start point of the candidate arc is BELOW the
-					-- threshold then we consider the contour arc to be threshold-crossing.
-					if	
-						Y (arc.start_point) >= y_threshold and 
-						Y (arc.end_point)   <  y_threshold then
-						return true;
-						
-					elsif
-						Y (arc.end_point)   >= y_threshold and 
-						Y (arc.start_point) <  y_threshold then
-						return true;
-						
-					else
-						return false;
-					end if;
-
-				end crosses_threshold;
-
-				-- If there is only one intersection, this function deduces
-				-- the curvature at the point of intersection:
-				function get_curvature return type_curvature is 
-					c : type_curvature;
-				begin
-					case arc.direction is
-						when CW =>
-							if  Y (arc.start_point) > Y (arc.end_point) then
-								c := CONCAVE; 
-							else
-								c := CONVEX; 
-							end if;
-							
-						when CCW =>
-							if Y (arc.start_point) > Y (arc.end_point) then
-								c := CONVEX;								
-							else
-								c := CONCAVE; 
-							end if;
-					end case;
-
-					return c;
-				end get_curvature;
-								
 
 				--procedure count_one is begin
 					----log (text => " intersects arc" --& to_string (arc)
@@ -405,14 +341,18 @@ package body et_pcb is
 							when TANGENT => null; -- not counted
 							
 							when SECANT =>
-								if crosses_threshold then
+								if crosses_threshold (arc, y_threshold) then
 									-- The line intersects the arc at one point.
 									-- Start and end point of the arc are opposide 
 									-- of each other with the probe line betweeen them:
 
 									collect_intersection_2 (
 										intersection	=> i.intersection,	
-										curvature		=> get_curvature, -- depends on CW/CCW
+
+										-- If there is only one intersection, deduce
+										-- the curvature at the point of intersection:
+										curvature		=> get_curvature (arc), -- depends on CW/CCW
+										
 										center			=> arc.center,
 										radius			=> radius);
 									

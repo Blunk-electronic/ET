@@ -58,7 +58,7 @@ with et_general;
 with et_string_processing;		use et_string_processing;
 
 with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;
+with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_nets;					use et_nets;
 with et_drills;					use et_drills;

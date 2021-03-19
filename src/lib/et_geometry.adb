@@ -1383,6 +1383,27 @@ package body et_geometry is
 			return type_rotation (arccos (X => a / b, cycle => float (units_per_cycle)));
 		end get_angle_of_itersection;
 
+
+		function crosses_threshold (
+			line		: in type_line;	
+			y_threshold	: in type_distance)
+			return boolean
+		is begin
+			if	
+				Y (line.start_point) >= y_threshold and 
+				Y (line.end_point)   <  y_threshold then
+				return true;
+				
+			elsif
+				Y (line.end_point)   >= y_threshold and 
+				Y (line.start_point) <  y_threshold then
+				return true;
+				
+			else
+				return false;
+			end if;
+		end crosses_threshold;
+
 		
 		function get_center (
 			line	: in type_line)
@@ -2062,6 +2083,53 @@ package body et_geometry is
 			end if;
 		end;
 
+		function crosses_threshold (
+			arc			: in type_arc;
+			y_threshold	: in type_distance)
+			return boolean
+		is begin
+			if	
+				Y (arc.start_point) >= y_threshold and 
+				Y (arc.end_point)   <  y_threshold then
+				return true;
+				
+			elsif
+				Y (arc.end_point)   >= y_threshold and 
+				Y (arc.start_point) <  y_threshold then
+				return true;
+				
+			else
+				return false;
+			end if;
+		end crosses_threshold;
+
+		
+		function get_curvature (
+			arc		: in type_arc)
+			return type_curvature_of_arc
+		is
+			c : type_curvature_of_arc;
+		begin
+			case arc.direction is
+				when CW =>
+					if  Y (arc.start_point) > Y (arc.end_point) then
+						c := CONCAVE; 
+					else
+						c := CONVEX; 
+					end if;
+					
+				when CCW =>
+					if Y (arc.start_point) > Y (arc.end_point) then
+						c := CONVEX;								
+					else
+						c := CONCAVE; 
+					end if;
+			end case;
+
+			return c;
+		end get_curvature;
+		
+		
 		function radius_start (arc : in type_arc) return type_distance_positive is begin
 			return distance_total (arc.center, arc.start_point);
 		end radius_start;
@@ -2878,6 +2946,7 @@ package body et_geometry is
 				& "center" & to_string (circle.center) 
 				& " radius" & to_string (circle.radius);
 		end to_string;
+
 		
 		procedure append_segment_line (
 			polygon	: in out type_polygon_base'class;
@@ -3727,6 +3796,8 @@ package body et_geometry is
 -- 			null;
 -- 		end;
 
+
+		
 		function "<" (left, right : in type_probe_line_intersection)
 			return boolean
 		is
@@ -3839,13 +3910,33 @@ package body et_geometry is
 			
 			-- This procedure collects the intersection in the return value.
 			-- It extracts the x-value and the angle of intersection.
-			procedure collect_intersection (i : in type_intersection) is begin
+			--procedure collect_intersection (i : in type_intersection) is begin
+				--null;
+				--append (result.intersections, (
+					--x_position	=> X (to_point (i.point)),
+					--angle		=> i.angle));
 				
-				append (result.intersections, (
-					x_position	=> X (to_point (i.point)),
-					angle		=> i.angle));
+			--end collect_intersection;
+
+			procedure collect_intersection_2 (
+				intersection: in type_intersection; -- incl. point and angle
+				curvature	: in type_curvature := STRAIGHT;
+				center		: in type_point := origin;
+				radius		: in type_distance_positive := zero)
+			is 
+			begin
+				--log (text => " intersects at"
+					--& to_string (to_point (i.point)) 
+					--& " angle" & to_string (angle),
+					--level => log_threshold + 2);
 				
-			end collect_intersection;
+				--append (result.intersections, (
+					--x_position	=> X (to_point (i.point)),
+					--angle		=> angle));
+
+				null;
+			end collect_intersection_2;
+
 			
 			use pac_polygon_lines;
 			use pac_polygon_arcs;
@@ -3855,35 +3946,16 @@ package body et_geometry is
 				-- Find out whether there is an intersection of the probe line
 				-- and the candidate line of the polygon.
 				i : constant type_intersection_of_two_lines := get_intersection (probe_line, element (c));
-
-				function crosses_threshold return boolean is begin
-					-- If the start/end point of the candidate line is ABOVE-OR-ON the 
-					-- threshold AND if the end/start point of the candidate line is BELOW the
-					-- threshold then we consider the contour line to be threshold-crossing.
-					if	
-						Y (element (c).start_point) >= y_threshold and 
-						Y (element (c).end_point)   <  y_threshold then
-						return true;
-						
-					elsif
-						Y (element (c).end_point)   >= y_threshold and 
-						Y (element (c).start_point) <  y_threshold then
-						return true;
-						
-					else
-						return false;
-					end if;
-				end crosses_threshold;
 				
 			begin
 				if i.status = EXISTS then
 
 					-- If the candidate line segment crosses the y_threshold then 
 					-- count the intersection:
-					if crosses_threshold then
+					if crosses_threshold (element (c), y_threshold) then
 						
 						-- Add the intersection to the result:
-						collect_intersection (i.intersection);
+						collect_intersection_2 (i.intersection);
 					end if;
 				end if;
 				
@@ -3893,41 +3965,34 @@ package body et_geometry is
 
 				-- the candidate arc:
 				arc : constant type_polygon_arc := element (c);
+
+				-- the radius of the arc:
+				radius : constant type_distance_positive := radius_start (arc);
 				
 				-- Find out whether there is an intersection of the probe line
 				-- and the candidate arc of the polygon.
 				i : constant type_intersection_of_line_and_circle := 
 					get_intersection (probe_line, arc);
 
-				function crosses_threshold return boolean is begin
-					-- If start/end point of the candidate arc is ABOVE-OR-ON the 
-					-- threshold AND if the end/start point of the candidate arc is BELOW the
-					-- threshold then we consider the contour arc to be threshold-crossing.
-					if	
-						Y (arc.start_point) >= y_threshold and 
-						Y (arc.end_point)   <  y_threshold then
-						return true;
-						
-					elsif
-						Y (arc.end_point)   >= y_threshold and 
-						Y (arc.start_point) <  y_threshold then
-						return true;
-						
-					else
-						return false;
-					end if;
-
-				end crosses_threshold;
-
-				procedure count_one is begin
-					-- Add the intersection to the result:
-					collect_intersection (i.intersection);
-				end count_one;
+				-- In case we get two intersections (which speaks for a secant)
+				-- then they need to be ordered according to their distance to
+				-- the start point of the probe line (starts at given point);
+				ordered_intersections : type_ordered_line_circle_intersections;
 				
 				procedure count_two is begin
 					-- Add the two intersections to the result:
-					collect_intersection (i.intersection_1);
-					collect_intersection (i.intersection_2);
+					collect_intersection_2 (
+						intersection=> ordered_intersections.entry_point,	
+						curvature	=> CONVEX, -- entry point is always convex
+						center		=> arc.center,
+						radius		=> radius);
+
+					collect_intersection_2 (
+						intersection=> ordered_intersections.exit_point,	
+						curvature	=> CONCAVE, -- exit point is always concave
+						center		=> arc.center,
+						radius		=> radius);
+
 				end count_two;
 				
 			begin -- query_arc		
@@ -3939,19 +4004,37 @@ package body et_geometry is
 							when TANGENT => null; -- not counted
 							
 							when SECANT =>
-								if crosses_threshold then
+								if crosses_threshold (arc, y_threshold) then
 									-- The line intersects the arc at one point.
 									-- Start and end point of the arc are opposide 
 									-- of each other with the probe line betweeen them:
-									count_one;
+
+									collect_intersection_2 (
+										intersection	=> i.intersection,	
+
+										-- If there is only one intersection, deduce
+										-- the curvature at the point of intersection:
+										curvature		=> get_curvature (arc), -- depends on CW/CCW
+										
+										center			=> arc.center,
+										radius			=> radius);
+									
 								end if;
 						end case;
 
 					when TWO_EXIST =>
+						-- Order the intersections by their distance to the start point
+						-- of the probe line:
+						ordered_intersections := order_intersections (
+							start_point		=> point,
+							intersections	=> i);
+						
 						if Y (arc.start_point) /= y_threshold then
 							-- Since we have TWO intersections, the end point of the arc
-							-- must be in the same half as the start point of the arc:
+							-- must be in the same half as the start point of the arc.
+							-- The arc crosses the threshold line twice:
 							count_two;
+							
 						else
 							-- Special case: Start or end point of arc lies exactly
 							-- at the probe line.
@@ -3964,32 +4047,72 @@ package body et_geometry is
 							-- If start point at probe line:
 							if Y (arc.start_point) = y_threshold then
 
-								-- If the arc starts at the probe line and ends below
-								-- the probe line, then it runs first upwards through the upper half
-								-- and ends somewhere there:
+								-- If the arc starts ON the probe line and ends ABOVE
+								-- the probe line, then it runs first downwards through the lower half,
+								-- goes up, crosses the threshold at point P and ends somewhere 
+								-- in the upper half:
 								if Y (arc.end_point) > y_threshold then
-									count_one;
-									
-								-- If the arc starts at the probe line and ends BELOW
-								-- the probe line, then it runs first upwards through the upper half
-								-- and ends somewhere in the lower half:
+
+									-- Count the point P as intersection:
+									case arc.direction is
+										when CCW => 
+											collect_intersection_2 (
+												intersection=> ordered_intersections.exit_point,	
+												curvature	=> CONCAVE, -- exit point is always concave
+												center		=> arc.center,
+												radius		=> radius);
+
+										when CW => 
+											collect_intersection_2 (
+												intersection=> ordered_intersections.entry_point,	
+												curvature	=> CONVEX, -- entry point is always convex
+												center		=> arc.center,
+												radius		=> radius);
+									end case;
+											
+								-- If the arc starts ON the probe line and ends BELOW
+								-- the probe line, then it runs first upwards through the upper half,
+								-- goes down, crosses the threshold at point P1 and ends somewhere 
+								-- in the lower half.
 								elsif Y (arc.end_point) < y_threshold then
+
+									-- Count the start point and point P1 as intersections:
 									count_two;
 								end if;
 
 								
 							-- If end point at probe line:
 							elsif Y (arc.end_point) = y_threshold then
-								
-								-- If the arc ends at the probe line and starts somewhere in the
-								-- upper half, then it eventually comes down to the end point:
-								if Y (arc.start_point) > y_threshold then
-									count_one;
 
-								-- If the arc ends at the probe line and starts below
-								-- the probe line, then it first runs upwards into
-								-- the upper half and eventually comes down to the end point:
+								-- If the arc starts somewhere in the upper half, then it runs
+								-- down, crosses the threshold at point P, runs through the 
+								-- lower half, goes up and ends ON the threshold line:
+								if Y (arc.start_point) > y_threshold then
+
+									-- Count the point P as intersection:
+									case arc.direction is
+										when CCW => 
+											collect_intersection_2 (
+												intersection=> ordered_intersections.entry_point,	
+												curvature	=> CONVEX, -- entry point is always convex
+												center		=> arc.center,
+												radius		=> radius);
+
+										when CW => 
+											collect_intersection_2 (
+												intersection=> ordered_intersections.exit_point,	
+												curvature	=> CONCAVE, -- exit point is always concave
+												center		=> arc.center,
+												radius		=> radius);
+									end case;
+								
+
+								-- If the arc starts somewhere in the lower half, then it runs
+								-- up, crosses the threshold at point P, runs through the
+								-- upper half, goes down and ends ON the threshold line:
 								elsif Y (arc.start_point) < y_threshold then
+
+									-- Count the end point and point P as intersections:
 									count_two;
 								end if;
 								
@@ -4005,6 +4128,11 @@ package body et_geometry is
 				i : constant type_intersection_of_line_and_circle := 
 					get_intersection (probe_line, element (c));
 
+				-- In case we get two intersections (which speaks for a secant)
+				-- then they need to be ordered according to their distance to
+				-- the start point of the probe line (starts at given point);
+				ordered_intersections : type_ordered_line_circle_intersections;
+
 			begin				
 				case i.status is
 					when NONE_EXIST | ONE_EXISTS => null;
@@ -4014,9 +4142,25 @@ package body et_geometry is
 					when TWO_EXIST =>
 						-- The probe line intersects the circle at two points:
 
-						-- Add the two intersections to the result:
-						collect_intersection (i.intersection_1);
-						collect_intersection (i.intersection_2);
+						-- Order the intersections by their distance to the start point:
+						ordered_intersections := order_intersections (
+							start_point		=> point,
+							intersections	=> i);
+
+						
+						-- Add the intersections to the result:
+						collect_intersection_2 (
+							intersection=> ordered_intersections.entry_point,	
+							curvature	=> CONVEX, -- entry point is always convex
+							center		=> element (c).center,
+							radius		=> element (c).radius);
+
+						collect_intersection_2 (
+							intersection=> ordered_intersections.exit_point,	
+							curvature	=> CONCAVE, -- exit point is always concave
+							center		=> element (c).center,
+							radius		=> element (c).radius);
+
 				end case;
 			end query_circle;
 

@@ -141,6 +141,13 @@ package et_geometry is
 
 
 	
+	-- CURVATURE ------------------
+	type type_curvature is (STRAIGHT, CONVEX, CONCAVE);
+
+	subtype type_curvature_of_arc is type_curvature range CONVEX .. CONCAVE;
+
+	
+	
 	-------------------------
 	
 	generic
@@ -727,6 +734,15 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+		-- If the start/end point of the candidate line is ABOVE-OR-ON the 
+		-- threshold AND if the end/start point of the candidate line is BELOW the
+		-- threshold then we consider the line to be threshold-crossing.
+		function crosses_threshold (
+			line		: in type_line;	
+			y_threshold	: in type_distance)
+			return boolean;
+
+		
 		-- Returns the point on the given line
 		-- that is between its start and end point:
 		function get_center (
@@ -922,6 +938,21 @@ package et_geometry is
 			-- CS locked : type_locked;		
 		end record;
 
+		-- If start/end point of the candidate arc is ABOVE-OR-ON the 
+		-- threshold AND if the end/start point of the candidate arc is BELOW the
+		-- threshold then we consider the arc to be threshold-crossing.
+		function crosses_threshold (
+			arc			: in type_arc;
+			y_threshold	: in type_distance)
+			return boolean;
+
+		
+		-- Deduces the curvature of an arc that crosses a certain y_threshold 
+		-- line as it intersects the arc from the left to the right.
+		function get_curvature (
+			arc		: in type_arc)
+			return type_curvature_of_arc;
+		
 		-- Returns the distance between the start point and the center of the arc.
 		function radius_start (arc : in type_arc) return type_distance_positive;
 
@@ -1178,6 +1209,8 @@ package et_geometry is
 			id : type_polygon_segment_id := type_polygon_segment_id'first;
 		end record;
 
+
+		
 		procedure append_segment_line (
 			polygon	: in out type_polygon_base'class;
 			segment	: in type_polygon_line);
@@ -1367,7 +1400,7 @@ package et_geometry is
 		end record;
 
 		
-		type type_curvature is (STRAIGHT, CONVEX, CONCAVE);
+
 		
 		type type_probe_line_intersection_2 (curvature : type_curvature) is record
 			
