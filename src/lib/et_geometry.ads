@@ -1126,8 +1126,8 @@ package et_geometry is
 			start_point	: type_point;
 
 			-- The point where the line enters and exits the circle:
-			entry_point	: type_point;
-			exit_point	: type_point;
+			entry_point	: type_intersection;
+			exit_point	: type_intersection;
 		end record;
 
 		-- Sorts the intersections of a line with a circle in the order

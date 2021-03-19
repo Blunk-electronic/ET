@@ -222,20 +222,19 @@ package body et_pcb is
 					& " angle" & to_string (angle),
 					level => log_threshold + 2);
 				
-				append (result.intersections, (
-					x_position	=> X (to_point (i.point)),
-					angle		=> angle));
+				--append (result.intersections, (
+					--x_position	=> X (to_point (i.point)),
+					--angle		=> angle));
 				
 			end collect_intersection;
 
 			procedure collect_intersection_2 (
-				point 		: in type_point;
-				angle		: in type_rotation;								 
+				intersection: in type_intersection; -- incl. point and angle
 				curvature	: in type_curvature := STRAIGHT;
 				center		: in type_point := origin;
 				radius		: in type_distance_positive := zero)
 			is 
-				angle_sub : type_rotation := subtract_180_if_greater_90 (angle);
+				angle_sub : type_rotation := subtract_180_if_greater_90 (intersection.angle);
 			begin
 				--log (text => " intersects at"
 					--& to_string (to_point (i.point)) 
@@ -338,36 +337,57 @@ package body et_pcb is
 
 				end crosses_threshold;
 
-				procedure count_one is begin
-					--log (text => " intersects arc" --& to_string (arc)
-							--& " at" & to_string (i.intersection),
-						--level => log_threshold + 2);
+				-- If there is only one intersection, this function deduces
+				-- the curvature at the point of intersection:
+				function get_curvature return type_curvature is 
+					c : type_curvature;
+				begin
+					case arc.direction is
+						when CW =>
+							if  Y (arc.start_point) > Y (arc.end_point) then
+								c := CONCAVE; 
+							else
+								c := CONVEX; 
+							end if;
+							
+						when CCW =>
+							if Y (arc.start_point) > Y (arc.end_point) then
+								c := CONVEX;								
+							else
+								c := CONCAVE; 
+							end if;
+					end case;
 
-					-- Add the intersection to the result:
-					collect_intersection (i.intersection);
-				end count_one;
-				
+					return c;
+				end get_curvature;
+								
+
+				--procedure count_one is begin
+					----log (text => " intersects arc" --& to_string (arc)
+							----& " at" & to_string (i.intersection),
+						----level => log_threshold + 2);
+
+					---- Add the intersection to the result:
+					--collect_intersection (i.intersection);
+				--end count_one;
+
+				-- Collects the entry and exit point:
 				procedure count_two is begin
+
 					--log (text => " intersects arc" --& to_string (arc)
 							--& " at" & to_string (i.intersection_1)
 							--& " and" & to_string (i.intersection_2),
 						--level => log_threshold + 2);
 
-					-- Add the intersections to the result:
-					collect_intersection (i.intersection_1);
-					collect_intersection (i.intersection_2);
-
 					collect_intersection_2 (
-						point		=> ordered_intersections.entry_point,	
-						angle		=> i.intersection_1.angle,
-						curvature	=> CONVEX,
+						intersection=> ordered_intersections.entry_point,	
+						curvature	=> CONVEX, -- entry point is always convex
 						center		=> arc.center,
 						radius		=> radius);
 
 					collect_intersection_2 (
-						point		=> ordered_intersections.exit_point,	
-						angle		=> i.intersection_2.angle,
-						curvature	=> CONCAVE,
+						intersection=> ordered_intersections.exit_point,	
+						curvature	=> CONCAVE, -- exit point is always concave
 						center		=> arc.center,
 						radius		=> radius);
 					
@@ -388,20 +408,29 @@ package body et_pcb is
 									-- The line intersects the arc at one point.
 									-- Start and end point of the arc are opposide 
 									-- of each other with the probe line betweeen them:
-									count_one;
+
+									collect_intersection_2 (
+										intersection	=> i.intersection,	
+										curvature		=> get_curvature, -- depends on CW/CCW
+										center			=> arc.center,
+										radius			=> radius);
+									
 								end if;
 						end case;
 
 					when TWO_EXIST =>
-						-- Order the intersections by their distance to the start point:
+						-- Order the intersections by their distance to the start point
+						-- of the probe line:
 						ordered_intersections := order_intersections (
 							start_point		=> point,
 							intersections	=> i);
 							
 						if Y (arc.start_point) /= y_threshold then
 							-- Since we have TWO intersections, the end point of the arc
-							-- must be in the same half as the start point of the arc:
+							-- must be in the same half as the start point of the arc.
+							-- The arc crosses the threshold line twice:
 							count_two;
+							
 						else
 							-- Special case: Start or end point of arc lies exactly
 							-- at the probe line.
@@ -421,18 +450,22 @@ package body et_pcb is
 								if Y (arc.end_point) > y_threshold then
 
 									-- Count the point P as intersection:
-									count_one;
+									case arc.direction is
+										when CCW => 
+											collect_intersection_2 (
+												intersection=> ordered_intersections.exit_point,	
+												curvature	=> CONCAVE, -- exit point is always concave
+												center		=> arc.center,
+												radius		=> radius);
 
-									--case arc.direction is
-										--when CCW => 
-											--collect_intersection_2 (
-												--point		=> ordered_intersections.exit_point,	
-												--angle		=> i.intersection_1.angle,
-												--curvature	=> CONVEX,
-												--center		=> arc.center,
-												--radius		=> radius);
-
-									
+										when CW => 
+											collect_intersection_2 (
+												intersection=> ordered_intersections.entry_point,	
+												curvature	=> CONVEX, -- entry point is always convex
+												center		=> arc.center,
+												radius		=> radius);
+									end case;
+											
 								-- If the arc starts ON the probe line and ends BELOW
 								-- the probe line, then it runs first upwards through the upper half,
 								-- goes down, crosses the threshold at point P1 and ends somewhere 
@@ -453,7 +486,22 @@ package body et_pcb is
 								if Y (arc.start_point) > y_threshold then
 
 									-- Count the point P as intersection:
-									count_one;
+									case arc.direction is
+										when CCW => 
+											collect_intersection_2 (
+												intersection=> ordered_intersections.entry_point,	
+												curvature	=> CONVEX, -- entry point is always convex
+												center		=> arc.center,
+												radius		=> radius);
+
+										when CW => 
+											collect_intersection_2 (
+												intersection=> ordered_intersections.exit_point,	
+												curvature	=> CONCAVE, -- exit point is always concave
+												center		=> arc.center,
+												radius		=> radius);
+									end case;
+								
 
 								-- If the arc starts somewhere in the lower half, then it runs
 								-- up, crosses the threshold at point P, runs through the

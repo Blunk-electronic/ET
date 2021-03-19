@@ -2839,12 +2839,12 @@ package body et_geometry is
 			d2 := distance_total (start_point, ip2);
 
 			if d1 < d2 then -- point ip1 is closer to start point that ip2
-				result.entry_point := ip1;
-				result.exit_point := ip2;
+				result.entry_point := i.intersection_1;
+				result.exit_point  := i.intersection_2;
 				
 			elsif d1 > d2 then -- point ip2 is closer to start point than ip1
-				result.entry_point := ip2;
-				result.exit_point := ip1;
+				result.entry_point := i.intersection_2;
+				result.exit_point  := i.intersection_1;
 
 			else -- point ip1 has same distance to start point as ip2
 				raise constraint_error;
