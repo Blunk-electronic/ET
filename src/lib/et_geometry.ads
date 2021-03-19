@@ -36,6 +36,7 @@
 --
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_sets;
 with ada.numerics;
 
@@ -1365,6 +1366,24 @@ package et_geometry is
 			angle		: type_rotation := zero_rotation;
 		end record;
 
+		
+		type type_curvature is (STRAIGHT, CONVEX, CONCAVE);
+		
+		type type_probe_line_intersection_2 (curvature : type_curvature) is record
+			
+			x_position	: type_distance;
+			angle		: type_rotation := zero_rotation;
+
+			case curvature is
+				when STRAIGHT => null;
+				
+				when CONVEX | CONCAVE =>
+					center	: type_point;
+					radius	: type_distance_positive;
+			end case;
+		end record;
+
+		
 		-- Subtracts 180 degree from the given angle if it is
 		-- greater 90 degrees and returns the absolute value of the difference.
 		-- Otherwise returns the given angle unchanged.		
@@ -1379,6 +1398,10 @@ package et_geometry is
 		package pac_probe_line_intersections is new
 			doubly_linked_lists (type_probe_line_intersection);
 
+		package pac_probe_line_intersections_2 is new
+			indefinite_doubly_linked_lists (type_probe_line_intersection_2);
+
+			
 			
 		type type_inside_polygon_query_result is record
 			-- the point where the probe line has started:

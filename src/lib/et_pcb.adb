@@ -209,7 +209,12 @@ package body et_pcb is
 			-- intersection. So we must subtract 180 degrees in case it is greater 90 degrees.
 			-- See: <https://www.splashlearn.com/math-vocabulary/geometry/acute-angle/> for
 			-- terminology:
-			procedure collect_intersection (i : in type_intersection) is 
+			procedure collect_intersection (
+				i 			: in type_intersection)
+				--curvature	: in type_curvature := STRAIGHT;
+				--center		: in type_point := origin;
+				--radius		: in type_distance_positive := zero)
+			is 
 				angle : type_rotation := subtract_180_if_greater_90 (i.angle);
 			begin
 				log (text => " intersects at"
@@ -222,7 +227,30 @@ package body et_pcb is
 					angle		=> angle));
 				
 			end collect_intersection;
+
+			procedure collect_intersection_2 (
+				point 		: in type_point;
+				angle		: in type_rotation;								 
+				curvature	: in type_curvature := STRAIGHT;
+				center		: in type_point := origin;
+				radius		: in type_distance_positive := zero)
+			is 
+				angle_sub : type_rotation := subtract_180_if_greater_90 (angle);
+			begin
+				--log (text => " intersects at"
+					--& to_string (to_point (i.point)) 
+					--& " angle" & to_string (angle),
+					--level => log_threshold + 2);
+				
+				--append (result.intersections, (
+					--x_position	=> X (to_point (i.point)),
+					--angle		=> angle));
+
+				null;
+			end collect_intersection_2;
 	
+
+			
 			use pac_pcb_contour_lines;
 			use pac_pcb_contour_arcs;
 			use pac_pcb_contour_circles;
@@ -276,6 +304,9 @@ package body et_pcb is
 
 				-- the candidate arc:
 				arc : constant type_pcb_contour_arc := element (c);
+
+				-- the radius of the arc:
+				radius : constant type_distance_positive := radius_start (arc);
 				
 				-- Find out whether there is an intersection of the probe line
 				-- and the candidate arc of the contour.
@@ -325,6 +356,21 @@ package body et_pcb is
 					-- Add the intersections to the result:
 					collect_intersection (i.intersection_1);
 					collect_intersection (i.intersection_2);
+
+					collect_intersection_2 (
+						point		=> ordered_intersections.entry_point,	
+						angle		=> i.intersection_1.angle,
+						curvature	=> CONVEX,
+						center		=> arc.center,
+						radius		=> radius);
+
+					collect_intersection_2 (
+						point		=> ordered_intersections.exit_point,	
+						angle		=> i.intersection_2.angle,
+						curvature	=> CONCAVE,
+						center		=> arc.center,
+						radius		=> radius);
+					
 				end count_two;
 				
 			begin -- query_arc		
@@ -360,7 +406,7 @@ package body et_pcb is
 							-- Special case: Start or end point of arc lies exactly
 							-- at the probe line.
 							
-							-- If start and end point of the candidate arc is ABOVE-OR-ON the 
+							-- If start or end point of the candidate arc is ABOVE-OR-ON the 
 							-- threshold then we consider the arc to be threshold-crossing.
 							-- The remaining question is: How often does the arc intersect
 							-- the probe line ?
@@ -368,32 +414,53 @@ package body et_pcb is
 							-- If start point at probe line:
 							if Y (arc.start_point) = y_threshold then
 
-								-- If the arc starts at the probe line and ends below
-								-- the probe line, then it runs first upwards through the upper half
-								-- and ends somewhere there:
+								-- If the arc starts ON the probe line and ends ABOVE
+								-- the probe line, then it runs first downwards through the lower half,
+								-- goes up, crosses the threshold at point P and ends somewhere 
+								-- in the upper half:
 								if Y (arc.end_point) > y_threshold then
+
+									-- Count the point P as intersection:
 									count_one;
+
+									--case arc.direction is
+										--when CCW => 
+											--collect_intersection_2 (
+												--point		=> ordered_intersections.exit_point,	
+												--angle		=> i.intersection_1.angle,
+												--curvature	=> CONVEX,
+												--center		=> arc.center,
+												--radius		=> radius);
+
 									
-								-- If the arc starts at the probe line and ends BELOW
-								-- the probe line, then it runs first upwards through the upper half
-								-- and ends somewhere in the lower half:
+								-- If the arc starts ON the probe line and ends BELOW
+								-- the probe line, then it runs first upwards through the upper half,
+								-- goes down, crosses the threshold at point P1 and ends somewhere 
+								-- in the lower half.
 								elsif Y (arc.end_point) < y_threshold then
+
+									-- Count the start point and point P1 as intersections:
 									count_two;
 								end if;
 
 								
 							-- If end point at probe line:
 							elsif Y (arc.end_point) = y_threshold then
-								
-								-- If the arc ends at the probe line and starts somewhere in the
-								-- upper half, then it eventually comes down to the end point:
+
+								-- If the arc starts somewhere in the upper half, then it runs
+								-- down, crosses the threshold at point P, runs through the 
+								-- lower half, goes up and ends ON the threshold line:
 								if Y (arc.start_point) > y_threshold then
+
+									-- Count the point P as intersection:
 									count_one;
 
-								-- If the arc ends at the probe line and starts below
-								-- the probe line, then it first runs upwards into
-								-- the upper half and eventually comes down to the end point:
+								-- If the arc starts somewhere in the lower half, then it runs
+								-- up, crosses the threshold at point P, runs through the
+								-- upper half, goes down and ends ON the threshold line:
 								elsif Y (arc.start_point) < y_threshold then
+
+									-- Count the end point and point P as intersections:
 									count_two;
 								end if;
 								
