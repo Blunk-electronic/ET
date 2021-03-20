@@ -60,6 +60,7 @@ package et_routing is
 	-- a probe line (mostly horizontally) to a board edge.
 	-- CS Sketch !!!
 	function compute_clearance_track_to_board_edge (
+		status			: in type_point_status; -- inside/outside
 		y_position		: in type_distance; -- the y-position of the fill line
 		intersection	: in type_probe_line_intersection;
 		line_width		: in type_track_width;  -- the width of the fill line

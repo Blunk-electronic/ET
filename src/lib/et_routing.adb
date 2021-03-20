@@ -61,6 +61,7 @@ package body et_routing is
 	use functions_float;
 	
 	function compute_clearance_track_to_board_edge (
+		status			: in type_point_status; -- inside/outside
 		y_position		: in type_distance; -- the y-position of the fill line
 		intersection	: in type_probe_line_intersection;
 		line_width		: in type_track_width; -- the width of the fill line
@@ -75,6 +76,18 @@ package body et_routing is
 
 		type type_line is new et_board_shapes_and_text.pac_shapes.type_line with null record;
 
+		function mirror_intersection (i : in type_probe_line_intersection) 
+			return type_probe_line_intersection
+		is
+			im : type_probe_line_intersection := i;
+		begin
+			--move (im.center, invert (im.center));
+
+			--im
+			--im.x_position := im.x_position * -1.0;
+			return im;
+		end mirror_intersection;
+			
 	
 		function compute_straight return type_track_clearance is
 			-- If the probe line intersects with a straight segment of the board
@@ -125,34 +138,34 @@ package body et_routing is
 			--distance_center_to_fill_line_cap : type_distance;
 			side_a, side_b, side_c, clearance_tmp : float;
 
-			subtype type_iteration is natural range 0 .. 100;
+			subtype type_iteration is natural range 0 .. 1000;
 			i : type_iteration := 0;
 
 			error : float;
 			min_error : float := 0.01;
 			
 		begin
-			log (text => "");
+			--log (text => "");
 			angle_gamma := float (get_angle_of_itersection (probe_line, center_to_intersection));
-			log (text => "gamma " & float'image (angle_gamma));
+			--log (text => "gamma " & float'image (angle_gamma));
 			
 			side_a := float (intersection.radius);
-			log (text => "side a" & float'image (side_a));
+			--log (text => "side a" & float'image (side_a));
 			
 			side_b := clearance + side_a; -- init
 
 			loop
 				i := i + 1;
-				log (text => "");
+				--log (text => "");
 				log (text => "iteration " & natural'image (i));
 				
-				log (text => " side b" & float'image (side_b));
+				--log (text => " side b" & float'image (side_b));
 				
 				side_c := sqrt (side_a ** 2.0 + side_b ** 2.0 - 2.0 * side_a * side_b * cos (angle_gamma, float (units_per_cycle)));
-				log (text => " side c" & float'image (side_c));
+				--log (text => " side c" & float'image (side_c));
 				
 				clearance_tmp := side_c - side_a;
-				log (text => " clearance tmp" & float'image (clearance_tmp));
+				--log (text => " clearance" & float'image (clearance_tmp));
 
 				error := abs (clearance_tmp - clearance);
 
@@ -161,14 +174,15 @@ package body et_routing is
 				end if;
 				
 				if clearance_tmp > clearance then
-					log (text => " too much");
-					side_b := side_b / (float (i) * 2.0);
+					--log (text => " too far");
+					--side_b := side_b / (float (i) * 2.0);
+					side_b := side_b - side_b / 2.0;
 					
 				elsif clearance_tmp < clearance then
-					log (text => " too little");
+					--log (text => " too close");
 					--side_b := side_b * float (i) * 1.1;
 
-					side_b := side_b * 2.0;
+					side_b := side_b + side_b / 2.0;
 					
 				else
 					exit;
@@ -206,10 +220,25 @@ package body et_routing is
 					result := compute_straight;
 
 				when CONVEX =>
-					result := compute_convex;
+					--case status is
+						--when OUTSIDE =>
+							result := compute_convex;
 
+						--when INSIDE =>
+							--result := compute_concave;
+							--result := compute_straight;
+					--end case;
+					
 				when CONCAVE =>
-					result := compute_straight; -- CS compute_concave;
+					--case status is
+						--when OUTSIDE =>
+							--result := compute_concave;
+							result := compute_straight;
+
+						--when INSIDE =>
+							--result := compute_convex;
+					--end case;
+
 					
 			end case;
 					
@@ -461,24 +490,33 @@ package body et_routing is
 				--spacing : constant type_track_clearance :=
 					--design_rules.clearances.conductor_to_board_edge + width * 0.5;
 
-				spacing : constant type_track_clearance :=
-					compute_clearance_track_to_board_edge (
-						y_position		=> y_position,
-						intersection	=> element (c),
-						line_width		=> width,
-						clearance_dru	=> design_rules.clearances.conductor_to_board_edge);
+				spacing : type_track_clearance;-- :=
+					--compute_clearance_track_to_board_edge (
+						--status			=> board_point_status,
+						--y_position		=> y_position,
+						--intersection	=> element (c),
+						--line_width		=> width,
+						--clearance_dru	=> design_rules.clearances.conductor_to_board_edge);
 				
 				
 				-- By adding or subtracting spacing we get a fill line that
 				-- starts slightly after entering the board area and ends slightly
 				-- before the leaving the board area.
 			begin
-				put_line ("spacing " & to_string (spacing));
 				
 				-- Each intersection with the board contour causes a change
 				-- of the flag board_point_status:
 				toggle_status (board_point_status);
 
+				spacing := compute_clearance_track_to_board_edge (
+					status			=> board_point_status,
+					y_position		=> y_position,
+					intersection	=> element (c),
+					line_width		=> width,
+					clearance_dru	=> design_rules.clearances.conductor_to_board_edge);
+
+				put_line ("spacing " & to_string (spacing));
+				
 				case board_point_status is
 					when INSIDE => -- A change from outside to inside occured.
 						-- Board area entered.
