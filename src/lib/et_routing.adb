@@ -61,33 +61,88 @@ package body et_routing is
 	use functions_float;
 	
 	function compute_clearance_track_to_board_edge (
-		angle		: in type_rotation_0_90;
-		width		: in type_track_width;
-		clearance	: in type_track_clearance)
+		intersection	: in type_probe_line_intersection;
+		line_width		: in type_track_width; -- the width of the fill line
+		clearance_dru	: in type_track_clearance)  -- the clearance as given by DRU
 		return type_track_clearance
 	is
-		-- The total of inner angles of a rectangular triangle is 180 degrees.
-		-- Two angles are known. Hence:
-		angle_b : constant float := float (90.0 - angle);
-		
-		side_a : constant float := float (clearance + width * 0.5);
+		result : type_track_clearance;
 
-		side_c : float; -- to be returned
-	begin
-		put_line ("angle" & type_rotation'image (angle));
+		-- Since the cap of the fill line is round, the minimal distance to observe
+		-- from the center of the cap to the board edge is:
+		clearance : constant float := float (clearance_dru + line_width * 0.5);
 		
-		if angle = 90.0 then
-			--put_line (" nothing to do");
-			return clearance + width * 0.5;
-		else
+		function compute_straight return type_track_clearance is
+			-- If the probe line intersects with a straight segment of the board
+			-- edge then we have to deal with a rectangular triangle.
+			
+			-- The total of inner angles of a rectangular triangle is 180 degrees.
+			-- Two angles are known. Hence:
+
+			-- The distance from center of line cap to board edge along the probe line:
+			side_c : float; -- to be returned
+
+			-- The distance from track end point to board edge.
+			-- A line perpendicular to the board edge:
+			side_a : constant float := clearance;
+
+			-- The angle between sida_a and side_c:
+			angle_b : constant float := float (90.0 - intersection.angle);
+		begin
 			--put_line (" clearance" & to_string (clearance));
 			--put_line (" width" & to_string (width));
 			--put_line (" side_a" & float'image (side_a) & " angle_b" & float'image (angle_b));
 
 			side_c := side_a / cos (angle_b, float (units_per_cycle)); 
 			--put_line (" side_c " & float'image (side_c));
+
+			return type_track_clearance (side_c);
+		end compute_straight;
+
+		function compute_convex return type_track_clearance is
+			-- The distance from center of line cap to board edge along the probe line:
+			side_c : float; -- to be returned
 			
-			return type_track_clearance (side_c); 
+		begin
+
+			return type_track_clearance (side_c);
+		end compute_convex;
+
+		
+		function compute_concave return type_track_clearance is
+			-- The distance from center of line cap to board edge along the probe line:
+			side_c : float; -- to be returned
+			
+		begin
+
+			return type_track_clearance (side_c);
+		end compute_concave;
+
+		
+		
+	begin -- compute_clearance_track_to_board_edge
+		
+		--put_line ("angle" & type_rotation'image (angle));
+		
+		if intersection.angle = 90.0 then
+			--put_line (" nothing to do");
+			return type_track_clearance (clearance);
+			
+		else
+			case intersection.curvature is
+				
+				when STRAIGHT =>
+					result := compute_straight;
+
+				when CONVEX =>
+					result := compute_convex;
+
+				when CONCAVE =>
+					result := compute_concave;
+					
+			end case;
+					
+			return result; 
 		end if;
 		
 	end compute_clearance_track_to_board_edge;
@@ -337,9 +392,9 @@ package body et_routing is
 
 				spacing : constant type_track_clearance :=
 					compute_clearance_track_to_board_edge (
-						angle		=> element (c).angle,
-						width		=> width,
-						clearance	=> design_rules.clearances.conductor_to_board_edge);
+						intersection	=> element (c),
+						line_width		=> width,
+						clearance_dru	=> design_rules.clearances.conductor_to_board_edge);
 				
 				
 				-- By adding or subtracting spacing we get a fill line that
