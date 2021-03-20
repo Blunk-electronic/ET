@@ -216,10 +216,11 @@ package body et_pcb is
 			is 
 				angle_sub : type_rotation := subtract_180_if_greater_90 (intersection.angle);
 			begin
-				--log (text => " intersects at"
-					--& to_string (to_point (i.point)) 
-					--& " angle" & to_string (angle),
-					--level => log_threshold + 2);
+				log (text => " intersects at"
+					& to_string (to_point (intersection.point)) 
+					& " angle" & to_string (intersection.angle)
+					& " curvature " & type_curvature'image (curvature),
+					level => log_threshold + 2);
 
 				case curvature is
 					when STRAIGHT =>

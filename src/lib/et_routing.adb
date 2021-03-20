@@ -61,6 +61,7 @@ package body et_routing is
 	use functions_float;
 	
 	function compute_clearance_track_to_board_edge (
+		y_position		: in type_distance; -- the y-position of the fill line
 		intersection	: in type_probe_line_intersection;
 		line_width		: in type_track_width; -- the width of the fill line
 		clearance_dru	: in type_track_clearance)  -- the clearance as given by DRU
@@ -71,7 +72,10 @@ package body et_routing is
 		-- Since the cap of the fill line is round, the minimal distance to observe
 		-- from the center of the cap to the board edge is:
 		clearance : constant float := float (clearance_dru + line_width * 0.5);
-		
+
+		type type_line is new et_board_shapes_and_text.pac_shapes.type_line with null record;
+
+	
 		function compute_straight return type_track_clearance is
 			-- If the probe line intersects with a straight segment of the board
 			-- edge then we have to deal with a rectangular triangle.
@@ -86,7 +90,7 @@ package body et_routing is
 			-- A line perpendicular to the board edge:
 			side_a : constant float := clearance;
 
-			-- The angle between sida_a and side_c:
+			-- The angle between side_a and side_c:
 			angle_b : constant float := float (90.0 - intersection.angle);
 		begin
 			--put_line (" clearance" & to_string (clearance));
@@ -101,11 +105,78 @@ package body et_routing is
 
 		function compute_convex return type_track_clearance is
 			-- The distance from center of line cap to board edge along the probe line:
-			side_c : float; -- to be returned
+			--side_c : float; -- to be returned
+
+			point_of_intersection : constant type_point := type_point (set (intersection.x_position, y_position));
+			
+			line_center_to_intersection_pre : constant type_line := (
+				start_point	=> intersection.center,
+				end_point	=> point_of_intersection);
+			
+			center_to_intersection : constant type_line_vector := to_line_vector (line_center_to_intersection_pre);
+
+			probe_line_start : constant type_point := point_of_intersection;
+			probe_line_end : constant type_point := type_point (set (intersection.x_position + 1.0, y_position));
+			probe_line_pre : constant type_line := (probe_line_start, probe_line_end);
+			probe_line : constant type_line_vector := to_line_vector (probe_line_pre);
+
+			angle_gamma : float;
+
+			--distance_center_to_fill_line_cap : type_distance;
+			side_a, side_b, side_c, clearance_tmp : float;
+
+			subtype type_iteration is natural range 0 .. 100;
+			i : type_iteration := 0;
+
+			error : float;
+			min_error : float := 0.01;
 			
 		begin
+			log (text => "");
+			angle_gamma := float (get_angle_of_itersection (probe_line, center_to_intersection));
+			log (text => "gamma " & float'image (angle_gamma));
+			
+			side_a := float (intersection.radius);
+			log (text => "side a" & float'image (side_a));
+			
+			side_b := clearance + side_a; -- init
 
-			return type_track_clearance (side_c);
+			loop
+				i := i + 1;
+				log (text => "");
+				log (text => "iteration " & natural'image (i));
+				
+				log (text => " side b" & float'image (side_b));
+				
+				side_c := sqrt (side_a ** 2.0 + side_b ** 2.0 - 2.0 * side_a * side_b * cos (angle_gamma, float (units_per_cycle)));
+				log (text => " side c" & float'image (side_c));
+				
+				clearance_tmp := side_c - side_a;
+				log (text => " clearance tmp" & float'image (clearance_tmp));
+
+				error := abs (clearance_tmp - clearance);
+
+				if error <= min_error then
+					exit;
+				end if;
+				
+				if clearance_tmp > clearance then
+					log (text => " too much");
+					side_b := side_b / (float (i) * 2.0);
+					
+				elsif clearance_tmp < clearance then
+					log (text => " too little");
+					--side_b := side_b * float (i) * 1.1;
+
+					side_b := side_b * 2.0;
+					
+				else
+					exit;
+				end if;
+				
+			end loop;
+			
+			return type_track_clearance (side_b);
 		end compute_convex;
 
 		
@@ -138,7 +209,7 @@ package body et_routing is
 					result := compute_convex;
 
 				when CONCAVE =>
-					result := compute_concave;
+					result := compute_straight; -- CS compute_concave;
 					
 			end case;
 					
@@ -392,6 +463,7 @@ package body et_routing is
 
 				spacing : constant type_track_clearance :=
 					compute_clearance_track_to_board_edge (
+						y_position		=> y_position,
 						intersection	=> element (c),
 						line_width		=> width,
 						clearance_dru	=> design_rules.clearances.conductor_to_board_edge);
