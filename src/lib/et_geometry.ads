@@ -1403,6 +1403,7 @@ package et_geometry is
 				when STRAIGHT => null;
 				
 				when CONVEX | CONCAVE =>
+					-- The center and radius of an imaginary circle:
 					center	: type_point := origin;
 					radius	: type_distance_positive := zero;
 			end case;

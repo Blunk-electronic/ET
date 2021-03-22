@@ -61,7 +61,7 @@ package body et_routing is
 	use functions_float;
 	
 	function compute_clearance_track_to_board_edge (
-		status			: in type_point_status; -- inside/outside
+		status			: in type_point_status; -- transition to board inside/outside area
 		y_position		: in type_distance; -- the y-position of the fill line
 		intersection	: in type_probe_line_intersection;
 		line_width		: in type_track_width; -- the width of the fill line
@@ -72,26 +72,14 @@ package body et_routing is
 
 		-- Since the cap of the fill line is round, the minimal distance to observe
 		-- from the center of the cap to the board edge is:
-		clearance : constant float := float (clearance_dru + line_width * 0.5);
+		clearance_min : constant float := float (clearance_dru + line_width * 0.5);
 
 		type type_line is new et_board_shapes_and_text.pac_shapes.type_line with null record;
-
-		function mirror_intersection (i : in type_probe_line_intersection) 
-			return type_probe_line_intersection
-		is
-			im : type_probe_line_intersection := i;
-		begin
-			--move (im.center, invert (im.center));
-
-			--im
-			--im.x_position := im.x_position * -1.0;
-			return im;
-		end mirror_intersection;
 			
 	
 		function compute_straight return type_track_clearance is
 			-- If the probe line intersects with a straight segment of the board
-			-- edge then we have to deal with a rectangular triangle.
+			-- edge then we are dealing with a rectangular triangle.
 			
 			-- The total of inner angles of a rectangular triangle is 180 degrees.
 			-- Two angles are known. Hence:
@@ -101,7 +89,7 @@ package body et_routing is
 
 			-- The distance from track end point to board edge.
 			-- A line perpendicular to the board edge:
-			side_a : constant float := clearance;
+			side_a : constant float := clearance_min;
 
 			-- The angle between side_a and side_c:
 			angle_b : constant float := float (90.0 - intersection.angle);
@@ -116,81 +104,155 @@ package body et_routing is
 			return type_track_clearance (side_c);
 		end compute_straight;
 
+
+		-- Computes the clearance from center of cap to convex board edge.
+		-- - If status is OUTSIDE then we are approaching the convex edge from inside
+		--   the board are to the outside.
+		-- - If status is INSIDE then we are leaving the concave edge behind and are entering
+		--   the board area from outside to inside. However, if you look back to the board edge, then
+		--   it appears convex. We have to compute the distance from board edge to the center
+		--   of the cap.
+		--
+		-- CS: The numerically algorithm implemented here is probably not the best.
+		-- It requires optimization or replacement by a direct, non-numerically method.
 		function compute_convex return type_track_clearance is
-			-- The distance from center of line cap to board edge along the probe line:
-			--side_c : float; -- to be returned
 
-			point_of_intersection : constant type_point := type_point (set (intersection.x_position, y_position));
+			point_of_intersection : type_point;
 			
-			line_center_to_intersection_pre : constant type_line := (
-				start_point	=> intersection.center,
-				end_point	=> point_of_intersection);
-			
-			center_to_intersection : constant type_line_vector := to_line_vector (line_center_to_intersection_pre);
+			line_center_to_intersection_pre : type_line;			
+			center_to_intersection : type_line_vector;
 
-			probe_line_start : constant type_point := point_of_intersection;
-			probe_line_end : constant type_point := type_point (set (intersection.x_position + 1.0, y_position));
-			probe_line_pre : constant type_line := (probe_line_start, probe_line_end);
-			probe_line : constant type_line_vector := to_line_vector (probe_line_pre);
+			probe_line_start : type_point;
+			probe_line_end : type_point;
+			probe_line_pre : type_line;
+			probe_line : type_line_vector;
 
-			angle_gamma : float;
+			-- The angle between probe line and center_to_intersection is greater 0 and
+			-- less than 180 degrees:
+			subtype type_angle is float range (0.0 + float'small) .. (180.0 - float'small);
+			angle_gamma : type_angle;
 
-			--distance_center_to_fill_line_cap : type_distance;
-			side_a, side_b, side_c, clearance_tmp : float;
+			side_a, side_b, side_c, side_d : float;
 
-			subtype type_iteration is natural range 0 .. 1000;
+			-- Since this is a numeric method we limit the number of iterations to a
+			-- reasonable maximum. This prevents the the algorithm from indefinite looping.
+			-- CS: Testing requried. Adjust if necessary.
+			subtype type_iteration is natural range 0 .. 10000;
 			i : type_iteration := 0;
 
 			error : float;
-			min_error : float := 0.01;
+			min_error : constant float := float (type_distance'small);
 			
-		begin
+		begin -- compute_convex
+			case status is
+				when OUTSIDE =>
+					-- The x_position of the intersection comes BEFORE the the x-position of the 
+					-- imaginary center of the circle:
+					point_of_intersection := type_point (set (intersection.x_position, y_position));
+
+				when INSIDE =>
+					-- The x_position of the intersection comes AFTER the the x-position of the 
+					-- imaginary center of the circle. So the x_position must be mirrored so that
+					-- it comes before the x-position of the circle.
+					declare
+						center_x : type_distance := X (intersection.center);
+						delta_x : type_distance_positive := intersection.x_position - center_x;
+						x_pos_mirrored : type_distance := center_x - delta_x;
+					begin
+						point_of_intersection := type_point (set (x_pos_mirrored, y_position));
+					end;					
+			end case;
+
+			-- The line from the center of an imaginary circle to the point of intersection:
+			line_center_to_intersection_pre := (
+				start_point	=> intersection.center,
+				end_point	=> point_of_intersection);
+
+			center_to_intersection := to_line_vector (line_center_to_intersection_pre);
+
+			-- The probe line runs from the point of intersection in 0 degrees to the right.
+			-- To compose this probe line, it does not matter where it starts or where it
+			-- ends. Only the direction matters:
+			probe_line_start := point_of_intersection;
+			probe_line_end := type_point (set (intersection.x_position + 1.0, y_position));
+			probe_line_pre := (probe_line_start, probe_line_end);
+			probe_line := to_line_vector (probe_line_pre);
+			
 			--log (text => "");
-			angle_gamma := float (get_angle_of_itersection (probe_line, center_to_intersection));
+			angle_gamma := type_angle (get_angle_of_itersection (probe_line, center_to_intersection));
 			--log (text => "gamma " & float'image (angle_gamma));
+
+			-- Now we build a triangle composed of:
+			-- - sida_a - from center of imaginary circle to intersection with board edge
+			-- - side_b - from center of cap to intersection with board edge
+			-- - side_c - from center of imaginary circle to center of cap
+			-- - angle_gamma - between sida_b and side_a
 			
 			side_a := float (intersection.radius);
 			--log (text => "side a" & float'image (side_a));
-			
-			side_b := clearance + side_a; -- init
 
+			-- As initial value for side_b we assume the greates possible distance which
+			-- is from center of imaginary cirlce + the minimal clearance (defined by line width
+			-- and DRU settings):
+			side_b := clearance_min + side_a;
+
+			-- Here is the numeric algorithm. It computes side_d (what we wnat), the distance 
+			-- from the center of the cap to the edge of the board:
 			loop
+				-- Count the number of iterations. Constraint error arises if maximum exceeded:				
 				i := i + 1;
+				
 				--log (text => "");
-				log (text => "iteration " & natural'image (i));
+				--log (text => "iteration " & natural'image (i));
 				
 				--log (text => " side b" & float'image (side_b));
+
+				-- Compute side_c using the law of cosines (German: Kosinussatz):
+				side_c := sqrt (
+							side_a ** 2.0 + side_b ** 2.0 
+							- 2.0 * side_a * side_b 
+							* cos (angle_gamma, float (units_per_cycle)));
 				
-				side_c := sqrt (side_a ** 2.0 + side_b ** 2.0 - 2.0 * side_a * side_b * cos (angle_gamma, float (units_per_cycle)));
 				--log (text => " side c" & float'image (side_c));
 				
-				clearance_tmp := side_c - side_a;
-				--log (text => " clearance" & float'image (clearance_tmp));
+				-- Compute the resulting side_d and the deviation from the targeted clearance:
+				side_d := side_c - side_a;
+				--log (text => " clearance" & float'image (side_d));
 
-				error := abs (clearance_tmp - clearance);
+				error := abs (side_d - clearance_min);
 
+				-- If the deviation is below (or equal) the minimal allowed error than exit
+				-- the algorithm. The computed side_d is then the result of this function.
 				if error <= min_error then
 					exit;
-				end if;
-				
-				if clearance_tmp > clearance then
-					--log (text => " too far");
-					--side_b := side_b / (float (i) * 2.0);
-					side_b := side_b - side_b / 2.0;
-					
-				elsif clearance_tmp < clearance then
-					--log (text => " too close");
-					--side_b := side_b * float (i) * 1.1;
-
-					side_b := side_b + side_b / 2.0;
-					
 				else
-					exit;
+
+					-- If the deviation is to large, then side_b must be become shorter or longer
+					-- and another iteration be started.
+					
+					if side_d > clearance_min then -- too much clearance, reduce side_b
+						--log (text => " too far");
+						side_b := side_b - side_b / 2.0; -- CS improve
+						
+					else -- too less clearance, increase side_b
+						--log (text => " too close");
+						side_b := side_b + side_b / 2.0; -- CS improve
+
+					end if;
+					-- NOTE: The case when side_b equals clearance_min has been covered already above.
+
 				end if;
-				
 			end loop;
+
+			--log (text => "iterations " & natural'image (i));
 			
 			return type_track_clearance (side_b);
+
+			exception
+				when others =>
+					log (text => "iteration limit exceeded: " & natural'image (i + 1));
+					raise;
+					
 		end compute_convex;
 
 		
@@ -210,8 +272,10 @@ package body et_routing is
 		--put_line ("angle" & type_rotation'image (angle));
 		
 		if intersection.angle = 90.0 then
+
+			-- The probe line approaches the board edge perpendicular:
 			--put_line (" nothing to do");
-			return type_track_clearance (clearance);
+			return type_track_clearance (clearance_min);
 			
 		else
 			case intersection.curvature is
@@ -220,24 +284,24 @@ package body et_routing is
 					result := compute_straight;
 
 				when CONVEX =>
-					--case status is
-						--when OUTSIDE =>
+					case status is
+						when OUTSIDE =>
 							result := compute_convex;
 
-						--when INSIDE =>
+						when INSIDE =>
 							--result := compute_concave;
-							--result := compute_straight;
-					--end case;
+							result := compute_straight;
+					end case;
 					
 				when CONCAVE =>
-					--case status is
-						--when OUTSIDE =>
+					case status is
+						when OUTSIDE =>
 							--result := compute_concave;
 							result := compute_straight;
 
-						--when INSIDE =>
-							--result := compute_convex;
-					--end case;
+						when INSIDE =>
+							result := compute_convex;
+					end case;
 
 					
 			end case;
@@ -483,21 +547,7 @@ package body et_routing is
 			procedure query_board_point (c : in pac_probe_line_intersections.cursor) is
 				dx : type_distance;
 
-				-- In addition to the intersection with the board contour,
-				-- the clearance between conductor and board edge must be
-				-- respected. Since the line ends are round caps, the line
-				-- width must also be taken into account.
-				--spacing : constant type_track_clearance :=
-					--design_rules.clearances.conductor_to_board_edge + width * 0.5;
-
-				spacing : type_track_clearance;-- :=
-					--compute_clearance_track_to_board_edge (
-						--status			=> board_point_status,
-						--y_position		=> y_position,
-						--intersection	=> element (c),
-						--line_width		=> width,
-						--clearance_dru	=> design_rules.clearances.conductor_to_board_edge);
-				
+				spacing : type_track_clearance;
 				
 				-- By adding or subtracting spacing we get a fill line that
 				-- starts slightly after entering the board area and ends slightly
@@ -508,8 +558,13 @@ package body et_routing is
 				-- of the flag board_point_status:
 				toggle_status (board_point_status);
 
+				-- In addition to the intersection with the board contour,
+				-- the clearance between conductor and board edge must be
+				-- respected. Since the line ends are round caps, the line
+				-- width must also be taken into account.
+
 				spacing := compute_clearance_track_to_board_edge (
-					status			=> board_point_status,
+					status			=> board_point_status, -- transition to board inside/outside area
 					y_position		=> y_position,
 					intersection	=> element (c),
 					line_width		=> width,

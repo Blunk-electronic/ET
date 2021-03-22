@@ -56,11 +56,11 @@ package et_routing is
 	use et_pcb_coordinates.pac_geometry_brd;
 	use et_board_shapes_and_text.pac_shapes;
 
-	-- Computes the clearance of a track that runs along
-	-- a probe line (mostly horizontally) to a board edge.
-	-- CS Sketch !!!
+	-- Computes the clearance of a fill line that runs
+	-- from the left to the right (horizontally) to a board edge.
+	-- CS append a sketch !!!
 	function compute_clearance_track_to_board_edge (
-		status			: in type_point_status; -- inside/outside
+		status			: in type_point_status; -- transition to board inside/outside area
 		y_position		: in type_distance; -- the y-position of the fill line
 		intersection	: in type_probe_line_intersection;
 		line_width		: in type_track_width;  -- the width of the fill line
