@@ -107,7 +107,7 @@ package body et_routing is
 
 		-- Computes the clearance from center of cap to convex board edge.
 		-- - If status is OUTSIDE then we are approaching the convex edge from inside
-		--   the board are to the outside.
+		--   the board area to the outside.
 		-- - If status is INSIDE then we are leaving the concave edge behind and are entering
 		--   the board area from outside to inside. However, if you look back to the board edge, then
 		--   it appears convex. We have to compute the distance from board edge to the center
@@ -256,13 +256,122 @@ package body et_routing is
 		end compute_convex;
 
 		
+		-- Computes the clearance from center of cap to concave board edge.
+		-- - If status is OUTSIDE then we are approaching the concave edge from inside
+		--   the board area to the outside.
+		-- - If status is INSIDE then we are leaving the convex edge behind and are entering
+		--   the board area from outside to inside. However, if you look back to the board edge, then
+		--   it appears concave. We have to compute the distance from board edge to the center
+		--   of the cap.
+		--
+		-- CS: The numerically algorithm implemented here is probably not the best.
+		-- It requires optimization or replacement by a direct, non-numerically method.
 		function compute_concave return type_track_clearance is
-			-- The distance from center of line cap to board edge along the probe line:
-			side_c : float; -- to be returned
-			
-		begin
 
-			return type_track_clearance (side_c);
+			-- The initial position of the cap is at maximum distance away from the point
+			-- of intersection:
+			position_of_cap : type_point := type_point (set (
+				x => X (intersection.center), 
+				y => y_position));
+
+			-- The amount by which the position_of_cap will be shifted right or left:
+			dx : type_distance_positive := intersection.x_position - X (intersection.center);
+			
+			type type_direction is (RIGHT, LEFT);
+			
+			procedure shift_cap (
+				direction	: in type_direction)
+			is
+				offset : type_point;
+			begin
+				case direction is
+					when RIGHT =>
+						dx := dx - dx/2.0;
+
+						offset := type_point (set (x => + dx, y => zero));
+						
+					when LEFT =>
+						dx := dx + dx/2.0;
+						
+						offset := type_point (set (x => - dx, y => zero));
+						
+				end case;
+
+				move_by (position_of_cap, offset);
+			end shift_cap;
+			
+			-- Since this is a numeric method we limit the number of iterations to a
+			-- reasonable maximum. This prevents the the algorithm from indefinite looping.
+			-- CS: Testing requried. Adjust if necessary.
+			subtype type_iteration is natural range 0 .. 10000;
+			i : type_iteration := 0;
+
+			
+			clearance_min : constant type_distance_positive := clearance_dru + line_width * 0.5;
+			
+			error : type_distance_positive;
+			min_error : constant type_distance_positive := type_distance'small;
+
+			clearance : type_distance_positive;
+
+			result : type_track_clearance;
+		begin
+			--log (text => "intersection x" & to_string (intersection.x_position));
+
+			clearance := intersection.radius - distance_total (intersection.center, position_of_cap);
+
+			if clearance < clearance_min then
+				-- If the initial clearance from cap to board edge is already less than the minimum
+				-- clearance then the result is:
+				result := intersection.x_position - X (position_of_cap);
+
+			else
+				-- Here is the numeric algorithm. It computes result (what we wnat), the distance 
+				-- from the center of the cap to the edge of the board:
+				loop
+					-- Count the number of iterations. Constraint error arises if maximum exceeded:				
+					i := i + 1;
+					
+					--log (text => "");
+					--log (text => "iteration " & natural'image (i));
+
+					--log (text => "center to cap " & to_string (distance_total (intersection.center, position_of_cap)));
+					clearance := intersection.radius - distance_total (intersection.center, position_of_cap);
+					--log (text => "clearance " & to_string (clearance));
+					
+					error := abs (clearance - clearance_min);
+
+					-- If the deviation is below (or equal) the minimal allowed error than exit
+					-- the algorithm. The computed side_d is then the result of this function.
+					if error <= min_error then
+						exit;
+					else
+
+						if clearance > clearance_min then -- too much clearance, move cap right
+							--log (text => " too far");
+							shift_cap (RIGHT);
+							
+						else -- too less clearance, move cap left
+							--log (text => " too close");
+							shift_cap (LEFT);
+
+						end if;
+						-- NOTE: The case when clearance equals clearance_min has been covered already above.
+
+					end if;
+
+				end loop;
+
+				result := intersection.x_position - X (position_of_cap);
+			end if;
+			
+			return result;
+
+			exception
+				when others =>
+					log (text => "iteration limit exceeded: " & natural'image (i + 1));
+					raise;
+
 		end compute_concave;
 
 		
@@ -296,8 +405,8 @@ package body et_routing is
 				when CONCAVE =>
 					case status is
 						when OUTSIDE =>
-							--result := compute_concave;
-							result := compute_straight;
+							result := compute_concave;
+							--result := compute_straight;
 
 						when INSIDE =>
 							result := compute_convex;
@@ -553,6 +662,7 @@ package body et_routing is
 				-- starts slightly after entering the board area and ends slightly
 				-- before the leaving the board area.
 			begin
+				--log (text => "board point " & to_string (element (c).x_position));
 				
 				-- Each intersection with the board contour causes a change
 				-- of the flag board_point_status:
@@ -570,7 +680,7 @@ package body et_routing is
 					line_width		=> width,
 					clearance_dru	=> design_rules.clearances.conductor_to_board_edge);
 
-				put_line ("spacing " & to_string (spacing));
+				--put_line ("spacing " & to_string (spacing));
 				
 				case board_point_status is
 					when INSIDE => -- A change from outside to inside occured.
