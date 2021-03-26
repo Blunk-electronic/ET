@@ -163,6 +163,18 @@ package et_geometry is
 		subtype type_distance_positive is type_distance range zero .. type_distance'last;
 		subtype type_catch_zone is type_distance_positive range zero .. type_distance_positive'last/1000;
 
+		subtype type_rotation_positive is type_rotation range 0.0 .. type_rotation'last;
+
+		--subtype type_rotation_wide_positive is type_rotation_wide range 0.0 .. type_rotation_wide'last;
+
+		
+		-- Converts an angle like -90.0 degrees to 270 degrees:
+		-- The return will be calculated by: rotation + 360 degees
+		function to_positive_rotation (
+			rotation	: in type_rotation)
+			--return type_rotation_wide_positive;
+			return type_rotation; -- CS
+		
 		subtype type_rotation_0_90 is type_rotation range 0.0 .. 90.0;
 		
 		

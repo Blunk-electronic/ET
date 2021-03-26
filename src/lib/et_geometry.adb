@@ -126,6 +126,14 @@ package body et_geometry is
 	
 	package body generic_pac_geometry is
 
+		function to_positive_rotation (
+			rotation	: in type_rotation)
+			return type_rotation
+		is begin
+			return rotation + 0.0; -- CS 360.0;
+		end to_positive_rotation;
+
+		
 		procedure scale_grid (
 			grid	: in out type_grid;
 			scale	: in type_distance_positive)
@@ -2394,30 +2402,46 @@ package body et_geometry is
 			-- A representation of the given arc in angles:
 			arc_angles : constant type_arc_angles := to_arc_angles (arc);
 		begin
-			-- First test whether the given point is at the circumfence of
+			-- First test whether the given point is on the circumfence of
 			-- a virtual circle. The circle has the same radius as the arc.
 			if distance_total (point, arc.center) = arc_angles.radius then
 
 				-- Point is on circumfence of virtual circle.
+				log (text => "on circumfence");
 
+				log (text => "a start" & to_string (arc_angles.angle_start));
+				log (text => "a end  " & to_string (arc_angles.angle_end));
+				
 				-- Compute the angle of the point relative to the center
 				-- of the given arc:
 				ap := angle (distance_polar (arc.center, point));
-
+				log (text => "ap" & to_string (ap));
+				
 				-- The angle of the point must be between start and end point
 				-- of the arc.
 				case arc.direction is
 					when CW => 
-						if ap <= arc_angles.angle_start and ap >= arc_angles.angle_end then
+						if  to_positive_rotation (ap) <= to_positive_rotation (arc_angles.angle_start)
+						and to_positive_rotation (ap) >= to_positive_rotation (arc_angles.angle_end)
+						then
+							log (text => "on cw arc");
 							return true;
 						else
+							log (text => "not on cw arc");
 							return false;
 						end if;
 
 					when CCW =>
-						if ap >= arc_angles.angle_start and ap <= arc_angles.angle_end then
+						if  to_positive_rotation (ap) >= to_positive_rotation (arc_angles.angle_start) 
+						and to_positive_rotation (ap) <= to_positive_rotation (arc_angles.angle_end) 
+						then
+						--if  ap >= arc_angles.angle_start
+						--and ap <= arc_angles.angle_end
+						--then
+							log (text => "on ccw arc");
 							return true;
 						else
+							log (text => "not on ccw arc");
 							return false;
 						end if;
 				end case;
@@ -2477,14 +2501,15 @@ package body et_geometry is
 						return (TWO_EXIST, vi.intersection_1, vi.intersection_2);
 						
 					elsif on_arc (to_point (vi.intersection_1.point), arc) then
-						-- only intersection 1 in on the arc
+						-- only intersection 1 is on the arc
 						return (ONE_EXISTS, vi.intersection_1, SECANT);
 						
 					elsif on_arc (to_point (vi.intersection_2.point), arc) then
-						-- only intersection 2 in on the arc
+						-- only intersection 2 is on the arc
 						return (ONE_EXISTS, vi.intersection_2, SECANT);
 						
 					else
+						log (text => "x none");
 						return (status => NONE_EXIST); -- CS should never happen
 					end if;					
 			end case;

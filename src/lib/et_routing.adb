@@ -275,7 +275,7 @@ package body et_routing is
 				y => y_position));
 
 			-- The amount by which the position_of_cap will be shifted right or left:
-			dx : type_distance_positive := intersection.x_position - X (intersection.center);
+			dx : type_distance_positive := abs (intersection.x_position - X (intersection.center));
 			
 			type type_direction is (RIGHT, LEFT);
 			
@@ -323,7 +323,7 @@ package body et_routing is
 			if clearance < clearance_min then
 				-- If the initial clearance from cap to board edge is already less than the minimum
 				-- clearance then the result is:
-				result := intersection.x_position - X (position_of_cap);
+				result := abs (intersection.x_position - X (position_of_cap));
 
 			else
 				-- Here is the numeric algorithm. It computes result (what we wnat), the distance 
@@ -347,14 +347,27 @@ package body et_routing is
 						exit;
 					else
 
-						if clearance > clearance_min then -- too much clearance, move cap right
+						if clearance > clearance_min then -- too much clearance
 							--log (text => " too far");
-							shift_cap (RIGHT);
-							
-						else -- too less clearance, move cap left
-							--log (text => " too close");
-							shift_cap (LEFT);
 
+							case status is
+								when OUTSIDE =>
+									shift_cap (RIGHT);
+
+								when INSIDE =>
+									shift_cap (LEFT);
+							end case;
+							
+						else -- too less clearance
+							--log (text => " too close");
+							case status is
+								when OUTSIDE =>
+									shift_cap (LEFT);
+
+								when INSIDE =>
+									shift_cap (RIGHT);
+							end case;
+									
 						end if;
 						-- NOTE: The case when clearance equals clearance_min has been covered already above.
 
@@ -362,7 +375,7 @@ package body et_routing is
 
 				end loop;
 
-				result := intersection.x_position - X (position_of_cap);
+				result := abs (intersection.x_position - X (position_of_cap));
 			end if;
 			
 			return result;

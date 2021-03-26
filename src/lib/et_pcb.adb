@@ -340,12 +340,16 @@ package body et_pcb is
 				
 				case i.status is
 					when NONE_EXIST => null;
+						--log (text => "none", level => log_threshold + 2);
 					
 					when ONE_EXISTS =>
 						case i.tangent_status is
 							when TANGENT => null; -- not counted
+								--log (text => "tangent", level => log_threshold + 2);
 							
 							when SECANT =>
+								--log (text => "secant", level => log_threshold + 2);
+								
 								if crosses_threshold (arc, y_threshold) then
 									-- The line intersects the arc at one point.
 									-- Start and end point of the arc are opposide 
@@ -365,6 +369,8 @@ package body et_pcb is
 						end case;
 
 					when TWO_EXIST =>
+						--log (text => "two exist", level => log_threshold + 2);
+						
 						-- Order the intersections by their distance to the start point
 						-- of the probe line:
 						ordered_intersections := order_intersections (

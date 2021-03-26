@@ -77,8 +77,18 @@ package et_pcb_coordinates is
 	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 
 
-	type type_rotation is delta 0.01 range -359.9 .. 359.9;
-	for type_rotation'small use 0.01;
+	type type_rotation_wide is delta 0.01 range -719.99 .. 719.99;
+	for type_rotation_wide'small use 0.01;
+
+	
+	--type type_rotation is delta 0.01 range -359.99 .. 359.99;
+	--for type_rotation'small use 0.01;
+	subtype type_rotation is type_rotation_wide range -359.99 .. 359.99;
+
+
+
+	
+	
 	
 	-- instantiation of the geometry package:	
 	package pac_geometry_brd is new et_geometry.generic_pac_geometry (
