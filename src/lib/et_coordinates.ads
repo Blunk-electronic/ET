@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -70,8 +70,9 @@ package et_coordinates is
 	
 	-- instantiation of the geometry package:
 	package pac_geometry_sch is new et_geometry.generic_pac_geometry (
-		type_distance	=> type_distance,
-		type_rotation	=> type_rotation);
+		type_distance		=> type_distance,
+		type_rotation_wide	=> type_rotation,							 
+		type_rotation		=> type_rotation);
 	
 	use pac_geometry_sch;
 	

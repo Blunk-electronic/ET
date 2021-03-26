@@ -128,9 +128,13 @@ package body et_geometry is
 
 		function to_positive_rotation (
 			rotation	: in type_rotation)
-			return type_rotation
+			return type_rotation_positive
 		is begin
-			return rotation + 0.0; -- CS 360.0;
+			if rotation < 0.0 then
+				return 360.0 + rotation;
+			else
+				return rotation;
+			end if;
 		end to_positive_rotation;
 
 		
