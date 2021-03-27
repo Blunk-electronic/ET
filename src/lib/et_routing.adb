@@ -286,15 +286,29 @@ package body et_routing is
 			begin
 				case direction is
 					when RIGHT =>
-						dx := dx - dx/2.0;
+
+						case status is
+							when OUTSIDE =>
+								dx := dx - dx/2.0;
+
+							when INSIDE =>
+								dx := dx + dx/2.0;
+								
+						end case;
 
 						offset := type_point (set (x => + dx, y => zero));
 						
 					when LEFT =>
-						dx := dx + dx/2.0;
-						
+
+						case status is
+							when OUTSIDE =>
+								dx := dx + dx/2.0;
+
+							when INSIDE =>
+								dx := dx - dx/2.0;
+						end case;
+								
 						offset := type_point (set (x => - dx, y => zero));
-						
 				end case;
 
 				move_by (position_of_cap, offset);
