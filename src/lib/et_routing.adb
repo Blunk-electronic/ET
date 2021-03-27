@@ -113,8 +113,8 @@ package body et_routing is
 		--   it appears convex. We have to compute the distance from board edge to the center
 		--   of the cap.
 		--
-		-- CS: The numerically algorithm implemented here is probably not the best.
-		-- It requires optimization or replacement by a direct, non-numerically method.
+		-- CS: The numerical algorithm implemented here is probably not the best.
+		-- It requires optimization or replacement by a direct, non-numerical method.
 		function compute_convex return type_track_clearance is
 
 			point_of_intersection : type_point;
@@ -264,8 +264,8 @@ package body et_routing is
 		--   it appears concave. We have to compute the distance from board edge to the center
 		--   of the cap.
 		--
-		-- CS: The numerically algorithm implemented here is probably not the best.
-		-- It requires optimization or replacement by a direct, non-numerically method.
+		-- CS: The numerical algorithm implemented here is probably not the best.
+		-- It requires optimization or replacement by a direct, non-numerical method.
 		function compute_concave return type_track_clearance is
 
 			-- The initial position of the cap is at maximum distance away from the point

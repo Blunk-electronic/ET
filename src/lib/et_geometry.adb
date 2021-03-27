@@ -2198,6 +2198,11 @@ package body et_geometry is
 						y => float (arc_tmp.end_point.y),
 						x => float (arc_tmp.end_point.x)));
 			end if;
+	
+			-- make sure start and end angle are not equal
+			if result.angle_start = result.angle_end then
+				raise constraint_error; -- CS warning instead ?
+			end if;
 			
 			-- direction is not changed:
 			result.direction := arc.direction;
