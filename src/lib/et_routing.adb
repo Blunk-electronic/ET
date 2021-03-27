@@ -315,7 +315,9 @@ package body et_routing is
 			clearance : type_distance_positive;
 
 			result : type_track_clearance;
-		begin
+			
+		begin -- compute_concave
+			
 			--log (text => "intersection x" & to_string (intersection.x_position));
 
 			clearance := intersection.radius - distance_total (intersection.center, position_of_cap);
@@ -411,15 +413,14 @@ package body et_routing is
 							result := compute_convex;
 
 						when INSIDE =>
-							--result := compute_concave;
-							result := compute_straight;
+							result := compute_concave;
+							--result := compute_straight;
 					end case;
 					
 				when CONCAVE =>
 					case status is
 						when OUTSIDE =>
 							result := compute_concave;
-							--result := compute_straight;
 
 						when INSIDE =>
 							result := compute_convex;

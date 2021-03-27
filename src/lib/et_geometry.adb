@@ -2401,51 +2401,87 @@ package body et_geometry is
 		is
 			-- The angle of the given point relative to the
 			-- center of the given arc:
-			ap : type_rotation;
+			P : type_rotation_positive;
 
 			-- A representation of the given arc in angles:
 			arc_angles : constant type_arc_angles := to_arc_angles (arc);
-		begin
+			
+			-- make the angles of the arc positive:
+			S : type_rotation_positive := to_positive_rotation (arc_angles.angle_start);
+			E : type_rotation_positive := to_positive_rotation (arc_angles.angle_end);
+
+			-- In 
+			procedure offset_ccw is 
+				T : type_rotation_positive;
+			begin
+				T := 360.0 - S;
+				--log (text => "offset" & to_string (T));
+				
+				S := 0.0;
+				E := E + T;
+				P := add (P, T);
+			end offset_ccw;
+
+			procedure offset_cw is 
+				T : type_rotation_positive;
+			begin
+				T := 360.0 - E;
+				E := 0.0;
+				S := S + T;
+				P := add (P, T);
+			end offset_cw;
+			
+		begin -- on_arc
+			
 			-- First test whether the given point is on the circumfence of
 			-- a virtual circle. The circle has the same radius as the arc.
 			if distance_total (point, arc.center) = arc_angles.radius then
 
 				-- Point is on circumfence of virtual circle.
-				log (text => "on circumfence");
+				--log (text => "on circumfence");
 
-				log (text => "a start" & to_string (arc_angles.angle_start));
-				log (text => "a end  " & to_string (arc_angles.angle_end));
+				--log (text => "start" & to_string (S));
+				--log (text => "end  " & to_string (E));
 				
 				-- Compute the angle of the point relative to the center
 				-- of the given arc:
-				ap := angle (distance_polar (arc.center, point));
-				log (text => "ap" & to_string (ap));
+				P := to_positive_rotation (angle (distance_polar (arc.center, point)));
+				--log (text => "P" & to_string (P));
 				
 				-- The angle of the point must be between start and end point
-				-- of the arc.
+				-- of the arc to be considered as "on the arc".
+				-- Special problem: The arc may run across the ZDG ("zero degree mark").
+				--  In that case the start and end angle and the point angle must first be
+				--  rotated so that the arc no longer crossed the ZDG.
 				case arc.direction is
-					when CW => 
-						if  to_positive_rotation (ap) <= to_positive_rotation (arc_angles.angle_start)
-						and to_positive_rotation (ap) >= to_positive_rotation (arc_angles.angle_end)
-						then
-							log (text => "on cw arc");
+					when CW =>
+						if S <= E then -- arc crosses the ZDG
+							offset_cw;
+						end if;
+						
+						if P <= S and P >= E then
+							--log (text => "on cw arc");
 							return true;
 						else
-							log (text => "not on cw arc");
+							--log (text => "not on cw arc");
 							return false;
 						end if;
 
 					when CCW =>
-						if  to_positive_rotation (ap) >= to_positive_rotation (arc_angles.angle_start) 
-						and to_positive_rotation (ap) <= to_positive_rotation (arc_angles.angle_end) 
-						then
-						--if  ap >= arc_angles.angle_start
-						--and ap <= arc_angles.angle_end
-						--then
-							log (text => "on ccw arc");
+						if S >= E then -- arc crosses the ZDG
+							offset_ccw;
+						end if;
+
+						--log (text => "start" & to_string (S));
+						--log (text => "end  " & to_string (E));
+						--log (text => "point" & to_string (P));
+
+						
+						if P >= S and P <= E then
+							--log (text => "on ccw arc");
 							return true;
 						else
-							log (text => "not on ccw arc");
+							--log (text => "not on ccw arc");
 							return false;
 						end if;
 				end case;
@@ -2513,8 +2549,9 @@ package body et_geometry is
 						return (ONE_EXISTS, vi.intersection_2, SECANT);
 						
 					else
-						log (text => "x none");
-						return (status => NONE_EXIST); -- CS should never happen
+						--log (text => "x none");
+						raise constraint_error;
+						--return (status => NONE_EXIST); -- CS should never happen
 					end if;					
 			end case;
 			

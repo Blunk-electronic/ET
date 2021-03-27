@@ -152,7 +152,6 @@ package et_geometry is
 	
 	generic
 		type type_distance is delta <>;
-		type type_rotation_wide is delta <>;
 		type type_rotation is delta <>;
 		
 	package generic_pac_geometry is
@@ -166,11 +165,10 @@ package et_geometry is
 
 		subtype type_rotation_positive is type_rotation range 0.0 .. type_rotation'last;
 
-		subtype type_rotation_wide_positive is type_rotation_wide range 0.0 .. type_rotation_wide'last;
-
 		
 		-- Converts an angle like -90.0 degrees to 270 degrees.
 		-- Converts an angle like -1.0 degrees to 359 degrees.
+		-- Leaves a positive angle like 135 degree as it is and returns it.
 		function to_positive_rotation (
 			rotation	: in type_rotation)
 			return type_rotation_positive;
