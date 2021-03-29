@@ -269,52 +269,68 @@ package body et_routing is
 		function compute_concave return type_track_clearance is
 
 			-- The initial position of the cap is at maximum distance away from the point
-			-- of intersection:
-			position_of_cap : type_point := type_point (set (
-				x => X (intersection.center), 
+			-- of intersection.
+			P : type_point := type_point (set (
+				x => X (intersection.center), -- the x-value of the center of the arc
 				y => y_position));
 
-			-- The amount by which the position_of_cap will be shifted right or left:
+			-- The amount by which the cap will be shifted right or left:
 			dx : type_distance_positive := abs (intersection.x_position - X (intersection.center));
 			
 			type type_direction is (RIGHT, LEFT);
 			
-			procedure shift_cap (
-				direction	: in type_direction)
-			is
+			procedure shift_cap (direction : in type_direction) is
 				offset : type_point;
-			begin
+
+				procedure reduce is begin
+					dx := dx - dx/2.0;
+				end;
+
+				procedure increase is begin
+					dx := dx + dx/2.0;
+				end;
+				
+			begin -- shift_cap
+				
 				case direction is
 					when RIGHT =>
 
 						case status is
-							when OUTSIDE =>
-								dx := dx - dx/2.0;
+							-- Each right shift forward towards the board edge means
+							-- to reduce dx slightly:
+							when OUTSIDE => reduce;
 
-							when INSIDE =>
-								dx := dx + dx/2.0;
+							-- Each right shift backwards towards the board edge means
+							-- to increase dx slightly:
+							when INSIDE => increase;
 								
 						end case;
 
+						-- The cap wil be moved right. So dx must be positive:
 						offset := type_point (set (x => + dx, y => zero));
 						
 					when LEFT =>
 
 						case status is
-							when OUTSIDE =>
-								dx := dx + dx/2.0;
+							-- Each left shift backwards away from the board edge means
+							-- to increase dx slightly:
+							when OUTSIDE => increase;
 
-							when INSIDE =>
-								dx := dx - dx/2.0;
+							-- Each left shift forward away from the board edge means
+							-- to reduce dx slightly:
+							when INSIDE => reduce;
 						end case;
-								
+
+						-- The cap wil be moved left. So dx must be negative:
 						offset := type_point (set (x => - dx, y => zero));
 				end case;
 
-				move_by (position_of_cap, offset);
+				-- Move the cap by the offset:
+				move_by (P, offset);
+				
 			end shift_cap;
 			
-			-- Since this is a numeric method we limit the number of iterations to a
+			-- Since this is a numerical method we limit the number of iterations to a
 			-- reasonable maximum. This prevents the the algorithm from indefinite looping.
 			-- CS: Testing requried. Adjust if necessary.
 			subtype type_iteration is natural range 0 .. 10000;
@@ -334,15 +350,15 @@ package body et_routing is
 			
 			--log (text => "intersection x" & to_string (intersection.x_position));
 
-			clearance := intersection.radius - distance_total (intersection.center, position_of_cap);
+			clearance := intersection.radius - distance_total (intersection.center, P);
 
 			if clearance < clearance_min then
 				-- If the initial clearance from cap to board edge is already less than the minimum
 				-- clearance then the result is:
-				result := abs (intersection.x_position - X (position_of_cap));
+				result := abs (intersection.x_position - X (P));
 
 			else
-				-- Here is the numeric algorithm. It computes result (what we wnat), the distance 
+				-- Here is the numerical algorithm. It computes result (what we wnat), the distance 
 				-- from the center of the cap to the edge of the board:
 				loop
 					-- Count the number of iterations. Constraint error arises if maximum exceeded:				
@@ -351,8 +367,8 @@ package body et_routing is
 					--log (text => "");
 					--log (text => "iteration " & natural'image (i));
 
-					--log (text => "center to cap " & to_string (distance_total (intersection.center, position_of_cap)));
-					clearance := intersection.radius - distance_total (intersection.center, position_of_cap);
+					--log (text => "center to cap " & to_string (distance_total (intersection.center, P)));
+					clearance := intersection.radius - distance_total (intersection.center, P);
 					--log (text => "clearance " & to_string (clearance));
 					
 					error := abs (clearance - clearance_min);
@@ -367,21 +383,31 @@ package body et_routing is
 							--log (text => " too far");
 
 							case status is
-								when OUTSIDE =>
-									shift_cap (RIGHT);
+								-- If the probe line is leaving the board area at
+								-- a concave edge, then the cap must be moved right
+								-- TOWARDS the board edge:
+								when OUTSIDE => shift_cap (RIGHT);
 
-								when INSIDE =>
-									shift_cap (LEFT);
+								-- If the probe line is entering the board area at
+								-- a convex edge and if you look back to the edge, then it
+								-- appears concave. Now the cap must be moved left
+								-- TOWARDS the board edge:
+								when INSIDE => shift_cap (LEFT);
 							end case;
 							
 						else -- too less clearance
 							--log (text => " too close");
 							case status is
-								when OUTSIDE =>
-									shift_cap (LEFT);
+								-- If the probe line is leaving the board area at
+								-- a concave edge, then the cap must be moved left
+								-- AWAY from the board edge:
+								when OUTSIDE => shift_cap (LEFT);
 
-								when INSIDE =>
-									shift_cap (RIGHT);
+								-- If the probe line is entering the board area at
+								-- a convex edge and if you look back to the edge, then it
+								-- appears concave. Now the cap must be moved right
+								-- AWAY from the board edge:
+								when INSIDE => shift_cap (RIGHT);
 							end case;
 									
 						end if;
@@ -391,15 +417,15 @@ package body et_routing is
 
 				end loop;
 
-				result := abs (intersection.x_position - X (position_of_cap));
+				result := abs (intersection.x_position - X (P));
 			end if;
 			
 			return result;
 
-			exception
-				when others =>
-					log (text => "iteration limit exceeded: " & natural'image (i + 1));
-					raise;
+			--exception
+				--when others =>
+					--log (text => "iteration limit exceeded: " & natural'image (i + 1));
+					--raise;
 
 		end compute_concave;
 
