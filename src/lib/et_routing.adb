@@ -117,17 +117,18 @@ package body et_routing is
 		-- It requires optimization or replacement by a direct, non-numerical method.
 		function compute_convex return type_track_clearance is
 
-			point_of_intersection : type_point;
+			-- The point where the probe line intersects the arc:
+			PI : type_point;
 			
-			line_center_to_intersection_pre : type_line;			
-			center_to_intersection : type_line_vector;
+			CI_pre : type_line;			
+			CI : type_line_vector; -- the line from center of arc to intersection point PI
 
 			probe_line_start : type_point;
 			probe_line_end : type_point;
 			probe_line_pre : type_line;
 			probe_line : type_line_vector;
 
-			-- The angle between probe line and center_to_intersection is greater 0 and
+			-- The angle between probe line and CI is greater 0 and
 			-- less than 180 degrees:
 			subtype type_angle is float range (0.0 + float'small) .. (180.0 - float'small);
 			angle_gamma : type_angle;
@@ -144,60 +145,64 @@ package body et_routing is
 			min_error : constant float := float (type_distance'small);
 			
 		begin -- compute_convex
+
+			-- First me must initialize the point of intersection PI:
 			case status is
 				when OUTSIDE =>
-					-- The x_position of the intersection comes BEFORE the the x-position of the 
-					-- imaginary center of the circle:
-					point_of_intersection := type_point (set (intersection.x_position, y_position));
+					-- If we approach the board edge from inside the board area, then
+					-- the x_position of the intersection is BEFORE the the x-position of the 
+					-- center of the arc:
+					PI := type_point (set (intersection.x_position, y_position));
 
 				when INSIDE =>
-					-- The x_position of the intersection comes AFTER the the x-position of the 
-					-- imaginary center of the circle. So the x_position must be mirrored so that
-					-- it comes before the x-position of the circle.
+					-- If we approach the board edge from outside the board area, then
+					-- the x_position of the intersection is BEHIND the the x-position of the 
+					-- center of the arc. So the x_position must be mirrored so that
+					-- it comes before the x-position of the center of the arc:
 					declare
 						center_x : type_distance := X (intersection.center);
 						delta_x : type_distance_positive := intersection.x_position - center_x;
 						x_pos_mirrored : type_distance := center_x - delta_x;
 					begin
-						point_of_intersection := type_point (set (x_pos_mirrored, y_position));
+						PI := type_point (set (x_pos_mirrored, y_position));
 					end;					
 			end case;
 
-			-- The line from the center of an imaginary circle to the point of intersection:
-			line_center_to_intersection_pre := (
+			-- Build a line from the center of the arc to the point of intersection:
+			CI_pre := (
 				start_point	=> intersection.center,
-				end_point	=> point_of_intersection);
+				end_point	=> PI);
 
-			center_to_intersection := to_line_vector (line_center_to_intersection_pre);
+			CI := to_line_vector (CI_pre);
 
 			-- The probe line runs from the point of intersection in 0 degrees to the right.
 			-- To compose this probe line, it does not matter where it starts or where it
 			-- ends. Only the direction matters:
-			probe_line_start := point_of_intersection;
+			probe_line_start := PI;
 			probe_line_end := type_point (set (intersection.x_position + 1.0, y_position));
 			probe_line_pre := (probe_line_start, probe_line_end);
 			probe_line := to_line_vector (probe_line_pre);
 			
 			--log (text => "");
-			angle_gamma := type_angle (get_angle_of_itersection (probe_line, center_to_intersection));
+			angle_gamma := type_angle (get_angle_of_itersection (probe_line, CI));
 			--log (text => "gamma " & float'image (angle_gamma));
 
 			-- Now we build a triangle composed of:
-			-- - sida_a - from center of imaginary circle to intersection with board edge
-			-- - side_b - from center of cap to intersection with board edge
-			-- - side_c - from center of imaginary circle to center of cap
+			-- - sida_a - from center of arc to intersection with board edge
+			-- - side_b - from center of cap (P) to intersection with board edge
+			-- - side_c - from center of arc to center of cap (P)
 			-- - angle_gamma - between sida_b and side_a
 			
 			side_a := float (intersection.radius);
 			--log (text => "side a" & float'image (side_a));
 
-			-- As initial value for side_b we assume the greates possible distance which
-			-- is from center of imaginary cirlce + the minimal clearance (defined by line width
+			-- As initial value for side_b we assume the greatest possible distance, which
+			-- is from center of arc + the minimal clearance (defined by line width
 			-- and DRU settings):
 			side_b := clearance_min + side_a;
 
-			-- Here is the numeric algorithm. It computes side_d (what we wnat), the distance 
-			-- from the center of the cap to the edge of the board:
+			-- Here is the numerical algorithm. It computes side_d (this is what we wnat),
+			-- the distance from the center of the cap to the edge of the board:
 			loop
 				-- Count the number of iterations. Constraint error arises if maximum exceeded:				
 				i := i + 1;
@@ -248,10 +253,10 @@ package body et_routing is
 			
 			return type_track_clearance (side_b);
 
-			exception
-				when others =>
-					log (text => "iteration limit exceeded: " & natural'image (i + 1));
-					raise;
+			--exception
+				--when others =>
+					--log (text => "iteration limit exceeded: " & natural'image (i + 1));
+					--raise;
 					
 		end compute_convex;
 
