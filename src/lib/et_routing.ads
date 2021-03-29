@@ -58,11 +58,10 @@ package et_routing is
 
 	-- Computes the clearance of a fill line that runs
 	-- from the left to the right (horizontally) to a board edge.
-	-- CS append a sketch !!!
 	function compute_clearance_track_to_board_edge (
 		status			: in type_point_status; -- transition to board inside/outside area
 		y_position		: in type_distance; -- the y-position of the fill line
-		intersection	: in type_probe_line_intersection;
+		intersection	: in type_probe_line_intersection; -- provides curvature, x-value, angle, ...
 		line_width		: in type_track_width;  -- the width of the fill line
 		clearance_dru	: in type_track_clearance) -- the clearance as given by DRU
 		return type_track_clearance;

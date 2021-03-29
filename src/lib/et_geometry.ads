@@ -1404,7 +1404,9 @@ package et_geometry is
 
 		-- The intersection of a probe line with the polygon side can
 		-- be described as:
-		type type_probe_line_intersection (curvature : type_curvature) is record
+		type type_probe_line_intersection (
+			curvature : type_curvature)
+		is record
 			
 			x_position	: type_distance;
 			angle		: type_rotation := zero_rotation;

@@ -63,7 +63,7 @@ package body et_routing is
 	function compute_clearance_track_to_board_edge (
 		status			: in type_point_status; -- transition to board inside/outside area
 		y_position		: in type_distance; -- the y-position of the fill line
-		intersection	: in type_probe_line_intersection;
+		intersection	: in type_probe_line_intersection; -- provides curvature, x-value, angle, ...
 		line_width		: in type_track_width; -- the width of the fill line
 		clearance_dru	: in type_track_clearance)  -- the clearance as given by DRU
 		return type_track_clearance
@@ -341,8 +341,8 @@ package body et_routing is
 			subtype type_iteration is natural range 0 .. 10000;
 			i : type_iteration := 0;
 
-			
-			clearance_min : constant type_distance_positive := clearance_dru + line_width * 0.5;
+			-- Take a copy of clearance_min and convert it to type_distance:
+			clearance_min_concave : constant type_distance_positive := type_distance (clearance_min);
 			
 			error : type_distance_positive;
 			min_error : constant type_distance_positive := type_distance'small;
@@ -357,7 +357,7 @@ package body et_routing is
 
 			clearance := intersection.radius - distance_total (intersection.center, P);
 
-			if clearance < clearance_min then
+			if clearance < clearance_min_concave then
 				-- If the initial clearance from cap to board edge is already less than the minimum
 				-- clearance then the result is:
 				result := abs (intersection.x_position - X (P));
@@ -376,7 +376,7 @@ package body et_routing is
 					clearance := intersection.radius - distance_total (intersection.center, P);
 					--log (text => "clearance " & to_string (clearance));
 					
-					error := abs (clearance - clearance_min);
+					error := abs (clearance - clearance_min_concave);
 
 					-- If the deviation is below (or equal) the minimal allowed error than exit
 					-- the algorithm. The computed side_d is then the result of this function.
@@ -384,7 +384,7 @@ package body et_routing is
 						exit;
 					else
 
-						if clearance > clearance_min then -- too much clearance
+						if clearance > clearance_min_concave then -- too much clearance
 							--log (text => " too far");
 
 							case status is
@@ -416,7 +416,7 @@ package body et_routing is
 							end case;
 									
 						end if;
-						-- NOTE: The case when clearance equals clearance_min has been covered already above.
+						-- NOTE: The case when clearance equals clearance_min_concave has been covered already above.
 
 					end if;
 
