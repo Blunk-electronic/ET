@@ -63,7 +63,8 @@ package et_routing is
 		y_position		: in type_distance; -- the y-position of the fill line
 		intersection	: in type_probe_line_intersection; -- provides curvature, x-value, angle, ...
 		line_width		: in type_track_width;  -- the width of the fill line
-		clearance_dru	: in type_track_clearance) -- the clearance as given by DRU
+		clearance_dru	: in type_track_clearance;  -- the clearance as given by DRU
+		log_threshold	: in type_log_level)
 		return type_track_clearance;
 
 	

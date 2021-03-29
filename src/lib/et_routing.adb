@@ -65,7 +65,8 @@ package body et_routing is
 		y_position		: in type_distance; -- the y-position of the fill line
 		intersection	: in type_probe_line_intersection; -- provides curvature, x-value, angle, ...
 		line_width		: in type_track_width; -- the width of the fill line
-		clearance_dru	: in type_track_clearance)  -- the clearance as given by DRU
+		clearance_dru	: in type_track_clearance;  -- the clearance as given by DRU
+		log_threshold	: in type_log_level)
 		return type_track_clearance
 	is
 		result : type_track_clearance;
@@ -145,7 +146,9 @@ package body et_routing is
 			min_error : constant float := float (type_distance'small);
 			
 		begin -- compute_convex
-
+			log (text => "computing convex ...", level => log_threshold + 1);
+			log_indentation_up;
+			
 			-- First me must initialize the point of intersection PI:
 			case status is
 				when OUTSIDE =>
@@ -208,7 +211,7 @@ package body et_routing is
 				i := i + 1;
 				
 				--log (text => "");
-				--log (text => "iteration " & natural'image (i));
+				log (text => "iteration " & natural'image (i), level => log_threshold + 2);
 				
 				--log (text => " side b" & float'image (side_b));
 
@@ -222,7 +225,9 @@ package body et_routing is
 				
 				-- Compute the resulting side_d and the deviation from the targeted clearance:
 				side_d := side_c - side_a;
-				--log (text => " clearance" & float'image (side_d));
+
+				log (text => "clearance" & float'image (side_d),
+					 level => log_threshold + 2);
 
 				error := abs (side_d - clearance_min);
 
@@ -250,6 +255,8 @@ package body et_routing is
 			end loop;
 
 			--log (text => "iterations " & natural'image (i));
+
+			log_indentation_down;
 			
 			return type_track_clearance (side_b);
 
@@ -296,7 +303,9 @@ package body et_routing is
 				end;
 				
 			begin -- shift_cap
-				
+				log (text => "shift cap " & type_direction'image (direction), 
+					level => log_threshold + 2);
+
 				case direction is
 					when RIGHT =>
 
@@ -332,6 +341,9 @@ package body et_routing is
 
 				-- Move the cap by the offset:
 				move_by (P, offset);
+
+				log (text => "new cap position" & to_string (P), 
+					level => log_threshold + 2);
 				
 			end shift_cap;
 			
@@ -352,6 +364,11 @@ package body et_routing is
 			result : type_track_clearance;
 			
 		begin -- compute_concave
+			log (text => "computing concave ...", level => log_threshold + 1);
+			log_indentation_up;
+
+			log (text => "targeted clearance" & to_string (clearance_min_concave),
+				 level => log_threshold + 2);
 			
 			--log (text => "intersection x" & to_string (intersection.x_position));
 
@@ -370,12 +387,17 @@ package body et_routing is
 					i := i + 1;
 					
 					--log (text => "");
-					--log (text => "iteration " & natural'image (i));
-
-					--log (text => "center to cap " & to_string (distance_total (intersection.center, P)));
-					clearance := intersection.radius - distance_total (intersection.center, P);
-					--log (text => "clearance " & to_string (clearance));
+					log (text => "iteration " & natural'image (i), level => log_threshold + 2);
+					log (text => "center to cap " 
+						 & to_string (distance_total (intersection.center, P)),
+						level => log_threshold + 2);
 					
+					clearance := intersection.radius - distance_total (intersection.center, P);
+
+					log (text => "clearance " 
+						 & to_string (clearance),
+						level => log_threshold + 2);
+
 					error := abs (clearance - clearance_min_concave);
 
 					-- If the deviation is below (or equal) the minimal allowed error than exit
@@ -424,6 +446,8 @@ package body et_routing is
 
 				result := abs (intersection.x_position - X (P));
 			end if;
+
+			log_indentation_down;
 			
 			return result;
 
@@ -437,46 +461,57 @@ package body et_routing is
 		
 		
 	begin -- compute_clearance_track_to_board_edge
+		log (text => "computing clearance fill line to board edge ...",
+			 level => log_threshold);
+		
+		log_indentation_up;
 		
 		--put_line ("angle" & type_rotation'image (angle));
 		
 		if intersection.angle = 90.0 then
 
 			-- The probe line approaches the board edge perpendicular:
-			--put_line (" nothing to do");
+			log (text => "line approaches edge perpendicular. nothing to do.",
+				 level => log_threshold + 1);
+
+			log_indentation_down;
+			
 			return type_track_clearance (clearance_min);
 			
 		else
+			log (text => "probe line y" & to_string (y_position)
+				 & " intersection x" & to_string (intersection.x_position)
+				 & " angle" & to_string (intersection.angle) 
+				 & " curvature " & to_string (intersection.curvature)
+				 & " status " & to_string (status),
+				level => log_threshold + 1);
+
+			
 			case intersection.curvature is
 				
-				when STRAIGHT =>
-					result := compute_straight;
+				when STRAIGHT => result := compute_straight;
 
 				when CONVEX =>
-					case status is
-						when OUTSIDE =>
-							result := compute_convex;
 
-						when INSIDE =>
-							result := compute_concave;
-							--result := compute_straight;
+					case status is
+						when OUTSIDE	=> result := compute_convex;
+						when INSIDE		=> result := compute_concave;
 					end case;
 					
 				when CONCAVE =>
 					case status is
-						when OUTSIDE =>
-							result := compute_concave;
-
-						when INSIDE =>
-							result := compute_convex;
+						when OUTSIDE	=> result := compute_concave;
+						when INSIDE		=> result := compute_convex;
 					end case;
-
 					
 			end case;
-					
+
+			log_indentation_down;
+			
 			return result; 
 		end if;
-		
+
+
 	end compute_clearance_track_to_board_edge;
 
 	
@@ -737,7 +772,8 @@ package body et_routing is
 					y_position		=> y_position,
 					intersection	=> element (c),
 					line_width		=> width,
-					clearance_dru	=> design_rules.clearances.conductor_to_board_edge);
+					clearance_dru	=> design_rules.clearances.conductor_to_board_edge,
+					log_threshold	=> log_threshold + 1);
 
 				--put_line ("spacing " & to_string (spacing));
 				

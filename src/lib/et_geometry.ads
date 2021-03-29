@@ -144,6 +144,8 @@ package et_geometry is
 	-- CURVATURE ------------------
 	type type_curvature is (STRAIGHT, CONVEX, CONCAVE);
 
+	function to_string (curvature : in type_curvature) return string;
+	
 	subtype type_curvature_of_arc is type_curvature range CONVEX .. CONCAVE;
 
 	
@@ -586,6 +588,8 @@ package et_geometry is
 			OUTSIDE,	-- point is outside a certain area
 			INSIDE);	-- point is inside a certain area
 
+		function to_string (status : in type_point_status) return string;
+		
 		procedure toggle_status (status : in out type_point_status);
 
 		

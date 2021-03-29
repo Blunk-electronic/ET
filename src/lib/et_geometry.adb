@@ -124,6 +124,11 @@ package body et_geometry is
 
 
 	
+	function to_string (curvature : in type_curvature) return string is begin
+		return type_curvature'image (curvature);
+	end to_string;
+	
+	
 	package body generic_pac_geometry is
 
 		function to_positive_rotation (
@@ -1007,7 +1012,11 @@ package body et_geometry is
 -- 		function to_fill_style (fill_style : in string) return type_fill_style is begin
 -- 			return type_fill_style'value (fill_style);
 -- 		end;
-
+		
+		function to_string (status : in type_point_status) return string is begin
+			return type_point_status'image (status);
+		end to_string;
+	
 		procedure toggle_status (status : in out type_point_status) is begin
 			case status is
 				when OUTSIDE	=> status := INSIDE;
