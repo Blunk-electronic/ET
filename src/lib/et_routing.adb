@@ -435,8 +435,6 @@ package body et_routing is
 					--raise;
 
 		end compute_concave;
-
-		
 		
 	begin -- compute_clearance_track_to_board_edge
 		log (text => "computing clearance fill line to board edge ...",
@@ -732,7 +730,7 @@ package body et_routing is
 				
 				-- By adding or subtracting spacing we get a fill line that
 				-- starts slightly after entering the board area and ends slightly
-				-- before the leaving the board area.
+				-- before leaving the board area.
 			begin
 				--log (text => "board point " & to_string (element (c).x_position));
 				

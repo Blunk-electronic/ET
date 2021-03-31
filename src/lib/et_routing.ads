@@ -67,7 +67,9 @@ package et_routing is
 		log_threshold	: in type_log_level)
 		return type_track_clearance;
 
-	
+
+	-- Computes the fill lines required for a single
+	-- row (or a fixed y-position):
 	function compute_fill_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 
@@ -83,7 +85,7 @@ package et_routing is
 		-- The width of a fill line:
 		width			: in type_track_width;
 		
-		-- The clearance of the net where the polygon is
+		-- The clearance of the net the polygon is
 		-- connected with:
 		clearance		: in type_track_clearance;
 
