@@ -139,14 +139,17 @@ package body et_routing is
 			-- Since this is a numeric method we limit the number of iterations to a
 			-- reasonable maximum. This prevents the the algorithm from indefinite looping.
 			-- CS: Testing requried. Adjust if necessary.
-			subtype type_iteration is natural range 0 .. 10000;
+			subtype type_iteration is natural range 0 .. 100;
 			i : type_iteration := 0;
 
 			error : float;
 			min_error : constant float := float (type_distance'small);
 			
 		begin -- compute_convex
-			log (text => "computing convex ...", level => log_threshold + 1);
+			log (text => "computing convex. targeted clearance" 
+				 & to_string (type_distance (clearance_min)),
+				 level => log_threshold + 2);
+
 			log_indentation_up;
 			
 			-- First me must initialize the point of intersection PI:
@@ -211,7 +214,7 @@ package body et_routing is
 				i := i + 1;
 				
 				--log (text => "");
-				log (text => "iteration " & natural'image (i), level => log_threshold + 2);
+				log (text => "iteration" & natural'image (i), level => log_threshold + 2);
 				
 				--log (text => " side b" & float'image (side_b));
 
@@ -226,14 +229,16 @@ package body et_routing is
 				-- Compute the resulting side_d and the deviation from the targeted clearance:
 				side_d := side_c - side_a;
 
-				log (text => "clearance" & float'image (side_d),
-					 level => log_threshold + 2);
+				--log (text => " clearance" & float'image (side_d),
+					 --level => log_threshold + 2);
 
 				error := abs (side_d - clearance_min);
 
-				-- If the deviation is below (or equal) the minimal allowed error than exit
+				log (text => " error" & to_string (type_distance (error)), level => log_threshold + 2);
+
+				-- If the deviation is less than the minimal allowed error then exit
 				-- the algorithm. The computed side_d is then the result of this function.
-				if error <= min_error then
+				if error < min_error then
 					exit;
 				else
 
@@ -242,11 +247,13 @@ package body et_routing is
 					
 					if side_d > clearance_min then -- too much clearance, reduce side_b
 						--log (text => " too far");
-						side_b := side_b - side_b / 2.0; -- CS improve
+						--side_b := side_b - side_b / 2.0; -- CS improve
+						side_b := side_b - error;
 						
 					else -- too less clearance, increase side_b
 						--log (text => " too close");
-						side_b := side_b + side_b / 2.0; -- CS improve
+						--side_b := side_b + side_b / 2.0; -- CS improve
+						side_b := side_b + error;
 
 					end if;
 					-- NOTE: The case when side_b equals clearance_min has been covered already above.
@@ -371,9 +378,9 @@ package body et_routing is
 					log (text => " error" & to_string (error), level => log_threshold + 2);
 
 					
-					-- If the deviation is below (or equal) the minimal allowed error than exit
+					-- If the deviation is less than the minimal allowed error then exit
 					-- the algorithm. The computed side_d is then the result of this function.
-					if error <= min_error then
+					if error < min_error then
 						exit;
 					else
 
