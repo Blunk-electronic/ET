@@ -280,96 +280,71 @@ package body et_routing is
 		-- It requires optimization or replacement by a direct, non-numerical method.
 		function compute_concave return type_track_clearance is
 
+			error : type_distance_positive;
+			min_error : constant type_distance_positive := type_distance'small;
+			
 			-- The initial position of the cap is at maximum distance away from the point
-			-- of intersection.
+			-- of intersection. It is right below the center of the arc:
 			P : type_point := type_point (set (
 				x => X (intersection.center), -- the x-value of the center of the arc
 				y => y_position));
 
-			-- The amount by which the cap will be shifted right or left:
-			dx : type_distance_positive := abs (intersection.x_position - X (intersection.center));
-			
 			type type_direction is (RIGHT, LEFT);
 			
 			procedure shift_cap (direction : in type_direction) is
 				offset : type_point;
 
-				procedure reduce is begin
-					dx := dx - dx/2.0;
-				end;
+				-- The amount by which the cap will be shifted right or left:
+				dx : type_distance_positive := zero;
 
-				procedure increase is begin
-					dx := dx + dx/2.0;
-				end;
-				
-			begin -- shift_cap
-				log (text => "shift cap " & type_direction'image (direction), 
+			begin
+				log (text => " shift cap " & type_direction'image (direction), 
 					level => log_threshold + 2);
 
 				case direction is
 					when RIGHT =>
 
-						case status is
-							-- Each right shift forward towards the board edge means
-							-- to reduce dx slightly:
-							when OUTSIDE => reduce;
-
-							-- Each right shift backwards towards the board edge means
-							-- to increase dx slightly:
-							when INSIDE => increase;
-								
-						end case;
+						dx := error;
 
 						-- The cap wil be moved right. So dx must be positive:
 						offset := type_point (set (x => + dx, y => zero));
 						
 					when LEFT =>
 
-						case status is
-							-- Each left shift backwards away from the board edge means
-							-- to increase dx slightly:
-							when OUTSIDE => increase;
-
-							-- Each left shift forward away from the board edge means
-							-- to reduce dx slightly:
-							when INSIDE => reduce;
-						end case;
-
+						dx := error;
+						
 						-- The cap wil be moved left. So dx must be negative:
 						offset := type_point (set (x => - dx, y => zero));
 				end case;
-
+				
 				-- Move the cap by the offset:
 				move_by (P, offset);
 
-				log (text => "new cap position" & to_string (P), 
-					level => log_threshold + 2);
+				log (text => " new cap position" & to_string (P), 
+					level => log_threshold + 3);
 				
 			end shift_cap;
 			
 			-- Since this is a numerical method we limit the number of iterations to a
 			-- reasonable maximum. This prevents the the algorithm from indefinite looping.
 			-- CS: Testing requried. Adjust if necessary.
-			subtype type_iteration is natural range 0 .. 10000;
+			subtype type_iteration is natural range 0 .. 100;
 			i : type_iteration := 0;
 
 			-- Take a copy of clearance_min and convert it to type_distance:
 			clearance_min_concave : constant type_distance_positive := type_distance (clearance_min);
 			
-			error : type_distance_positive;
-			min_error : constant type_distance_positive := type_distance'small;
-
 			clearance : type_distance_positive;
 
 			result : type_track_clearance;
 			
 		begin -- compute_concave
-			log (text => "computing concave ...", level => log_threshold + 1);
+			log (text => "computing concave. targeted clearance" 
+				 & to_string (clearance_min_concave),
+				 level => log_threshold + 2);
+
 			log_indentation_up;
 
-			log (text => "targeted clearance" & to_string (clearance_min_concave),
-				 level => log_threshold + 2);
-			
 			--log (text => "intersection x" & to_string (intersection.x_position));
 
 			clearance := intersection.radius - distance_total (intersection.center, P);
@@ -387,19 +362,15 @@ package body et_routing is
 					i := i + 1;
 					
 					--log (text => "");
-					log (text => "iteration " & natural'image (i), level => log_threshold + 2);
-					log (text => "center to cap " 
-						 & to_string (distance_total (intersection.center, P)),
-						level => log_threshold + 2);
+					log (text => "iteration" & natural'image (i), level => log_threshold + 2);
 					
 					clearance := intersection.radius - distance_total (intersection.center, P);
 
-					log (text => "clearance " 
-						 & to_string (clearance),
-						level => log_threshold + 2);
-
 					error := abs (clearance - clearance_min_concave);
 
+					log (text => " error" & to_string (error), level => log_threshold + 2);
+
+					
 					-- If the deviation is below (or equal) the minimal allowed error than exit
 					-- the algorithm. The computed side_d is then the result of this function.
 					if error <= min_error then
