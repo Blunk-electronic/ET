@@ -60,20 +60,21 @@ package body et_routing is
 	package functions_float is new ada.numerics.generic_elementary_functions (float);
 	use functions_float;
 	
-	function compute_clearance_track_to_board_edge (
+	function compute_clearance_track_to_edge (
 		status			: in type_point_status; -- transition to board inside/outside area
 		y_position		: in type_distance; -- the y-position of the fill line
 		intersection	: in type_probe_line_intersection; -- provides curvature, x-value, angle, ...
 		line_width		: in type_track_width; -- the width of the fill line
-		clearance_dru	: in type_track_clearance;  -- the clearance as given by DRU
+		extra_clearance	: in boolean := false;
+		clearance		: in type_distance_positive := zero;
 		log_threshold	: in type_log_level)
-		return type_track_clearance
+		return type_distance_positive
 	is
-		result : type_track_clearance;
+		result : type_distance_positive;
 
 		-- Since the cap of the fill line is round, the minimal distance to observe
 		-- from the center of the cap to the board edge is:
-		clearance_min : constant float := float (clearance_dru + line_width * 0.5);
+		clearance_min : constant float := float (clearance + line_width * 0.5);
 
 		type type_line is new et_board_shapes_and_text.pac_shapes.type_line with null record;
 			
@@ -343,7 +344,7 @@ package body et_routing is
 			
 			clearance : type_distance_positive;
 
-			result : type_track_clearance;
+			result : type_distance_positive;
 			
 		begin -- compute_concave
 			log (text => "computing concave. targeted clearance" 
@@ -436,13 +437,10 @@ package body et_routing is
 
 		end compute_concave;
 		
-	begin -- compute_clearance_track_to_board_edge
-		log (text => "computing clearance fill line to board edge ...",
-			 level => log_threshold);
+	begin -- compute_clearance_track_to_edge
 		
+		log (text => "computing clearance fill line to edge ...", level => log_threshold);
 		log_indentation_up;
-		
-		--put_line ("angle" & type_rotation'image (angle));
 
 		log (text => "probe line y" & to_string (y_position)
 				& " width" & to_string (line_width)
@@ -456,21 +454,12 @@ package body et_routing is
 		if intersection.angle = 90.0 then
 
 			-- The probe line approaches the board edge perpendicular:
-			--log (text => "line approaches edge perpendicular. nothing to do.",
-				 --level => log_threshold + 1);
-			
-			--log_indentation_down;
-			
-			--return type_track_clearance (clearance_min);
-			result := type_track_clearance (clearance_min);
+			log (text => " line approaches edge perpendicular. nothing to do.",
+				 level => log_threshold + 2);
+
+			result := type_distance_positive (clearance_min);
 			
 		else
-			--log (text => "probe line y" & to_string (y_position)
-				 --& " intersection x" & to_string (intersection.x_position)
-				 --& " angle" & to_string (intersection.angle) 
-				 --& " curvature " & to_string (intersection.curvature)
-				 --& " status " & to_string (status),
-				--level => log_threshold + 1);
 			
 			case intersection.curvature is
 				
@@ -494,14 +483,14 @@ package body et_routing is
 		end if;
 
 		
-		log (text => " clearance in x direction" & to_string (result),
+		log (text => " clearance" & to_string (result),
 			 level => log_threshold + 1);
 		
 		log_indentation_down;
 		
 		return result; 
 		
-	end compute_clearance_track_to_board_edge;
+	end compute_clearance_track_to_edge;
 
 
 
@@ -534,13 +523,15 @@ package body et_routing is
 			STOP,	-- the domain stops the line
 			GO);	-- the domain gives a go for the line
 
-		-- The status of an individual domain:
+		-- For each domain we have an individual flag:
 		board_line_status, polygon_line_status : type_stop_go := STOP;
 
 		-- After ANDing the status of the domains this the the final
 		-- signal for start and stop of a fill line:
 		final_line_status : type_stop_go := STOP;
 
+		-- At the start point of the domains (All start at the same x-position),
+		-- the individual line flags must be initialized:
 		procedure init_line_statuses is begin
 			case board_domain.status is
 				when INSIDE		=> board_line_status := GO;
@@ -560,13 +551,6 @@ package body et_routing is
 			
 		end init_line_statuses;
 
-		
-		-- This flag indicates that the status for the final
-		-- fill line has changed from GO to STOP or from STOP to GO:
-		final_line_status_has_changed : boolean := false;
-
-
-
 		procedure toggle_status_board_line is begin
 			case board_line_status is
 				when STOP	=> board_line_status := GO;
@@ -582,7 +566,13 @@ package body et_routing is
 		end toggle_status_polygon_line;
 		
 		
+		-- This flag indicates that the status for the final
+		-- fill line has changed from GO to STOP or from STOP to GO:
+		final_line_status_has_changed : boolean := false;
+
 		
+		-- The switches are just a collection of x-positions.
+		-- For each domain we have a list of switches:
 		use pac_distances;				
 		board_switches, polygon_switches : pac_distances.list;
 
@@ -608,27 +598,23 @@ package body et_routing is
 				toggle_status (status_inside_outside);
 
 				if extra_clearance then
-					spacing := compute_clearance_track_to_board_edge (
-						status			=> status_inside_outside, -- transition to board inside/outside area
+					spacing := compute_clearance_track_to_edge (
+						status			=> status_inside_outside, -- transition to inside/outside area
 						y_position		=> y_position,
 						intersection	=> element (c),
 						line_width		=> width,
-						clearance_dru	=> clearance,
+						extra_clearance	=> true,
+						clearance		=> clearance,
 						log_threshold	=> log_threshold + 1);
 
 				else
-					null;
-					-- Since the line ends are round caps, the line
-					-- width must be taken into account.
-					spacing := width * 0.5; -- CS
 					
-					--spacing := compute_clearance_track_to_board_edge (
-						--status			=> status_inside_outside, -- transition to board inside/outside area
-						--y_position		=> y_position,
-						--intersection	=> element (c),
-						--line_width		=> width,
-						--clearance_dru	=> clearance,
-						--log_threshold	=> log_threshold + 1);
+					spacing := compute_clearance_track_to_edge (
+						status			=> status_inside_outside, -- transition to inside/outside area
+						y_position		=> y_position,
+						intersection	=> element (c),
+						line_width		=> width,
+						log_threshold	=> log_threshold + 1);
 
 				end if;
 
@@ -655,7 +641,7 @@ package body et_routing is
 				
 			end query_intersection;
 				
-		begin	
+		begin -- make_switches
 			log_indentation_up;
 			
 			iterate (points.intersections, query_intersection'access);
@@ -667,21 +653,29 @@ package body et_routing is
 
 
 
+
+		-- A milestone is a point in x-direction where the fill line
+		-- starts or where it comes to an end.
+		-- When searching a milestone after a certain point in x-direction
+		-- no further milestone could exist. For this reason astatus flag
+		-- is required:
+
 		type type_milestone_status is (
 			VALID,		-- there is a milestone after a certain point in x-direction
-			INVALID);	-- there is no milestone after a certain point
+			INVALID);	-- there is no milestone after a certain point in x-direction
 
-		
 		type type_milestone is record
-			status		: type_milestone_status := INVALID;
+			status	: type_milestone_status := INVALID;
 
 			-- The absolute x-position of the milestone 
 			-- after a certain point in x-direction:
-			x_value		: type_distance := zero;
+			x		: type_distance := zero;
 		end record;
 
 		milestone : type_milestone;
 
+
+		
 
 		-- Computes the final_line_status by ANDing the individual
 		-- domain statuses. 
@@ -733,7 +727,7 @@ package body et_routing is
 				
 				case final_line_status is 
 					when GO =>
-						fill_line.start_point := type_point (set (milestone.x_value, y_position));
+						fill_line.start_point := type_point (set (milestone.x, y_position));
 						
 					when STOP =>
 						--if milestone.x_value > x_position then
@@ -742,7 +736,7 @@ package body et_routing is
 						-- into a STOP mark.
 						
 							if final_line_status_has_changed then
-								fill_line.end_point := type_point (set (milestone.x_value, y_position));
+								fill_line.end_point := type_point (set (milestone.x, y_position));
 								
 								append (result, fill_line);
 							end if;
@@ -833,7 +827,7 @@ package body et_routing is
 				end loop;				
 
 				-- The absolute position in x of the switch point is:
-				ms.x_value := dx;
+				ms.x := dx;
 			end set_x;
 			
 		begin -- get_next_milestone
@@ -862,8 +856,7 @@ package body et_routing is
 					--log (text => "switch at" & to_string (ms.x_value),
 						--level => log_threshold);
 
-					log (text => "milestone is at" & to_string (ms.x_value),
-						level => log_threshold + 1);
+					log (text => "milestone is at" & to_string (ms.x), level => log_threshold + 1);
 
 					
 					update_final_line_status;
@@ -873,8 +866,7 @@ package body et_routing is
 					-- is INVALID.
 					null;
 
-					log (text => "none found",
-						level => log_threshold + 1);
+					log (text => "none found", level => log_threshold + 1);
 
 			end case;
 
@@ -892,6 +884,9 @@ package body et_routing is
 		
 		--log (text => "make board switches", level => log_threshold);
 
+		-- The calculation of the board switches requires to observe
+		-- the DRU settings for clearance conductor to board edge. For this reason
+		-- we pass extra clearance:
 		board_switches := make_switches (
 			points			=> board_domain,
 			extra_clearance	=> true,
@@ -906,7 +901,7 @@ package body et_routing is
 
 		-- Set the initial x-position of the milestone.
 		-- So the first milestone is where the board domain begins:
-		milestone.x_value := X (board_domain.start);
+		milestone.x := X (board_domain.start);
 		milestone.status := VALID; -- the first milestone is always valid
 		
 		update_final_line_status;
@@ -921,7 +916,7 @@ package body et_routing is
 		-- milestone.x_value assumes the x-position of the 2nd milestone.
 		-- If there is no 2nd milestone, then the status of milestone will be set INVALID.
 		-- In this case no further milestones will be searched for.
-		milestone := get_next_milestone (milestone.x_value);
+		milestone := get_next_milestone (milestone.x);
 
 		-- Assign start or end point to the fill_line if the milestone is valid:
 		-- Otherwise nothing happens here:
@@ -930,7 +925,7 @@ package body et_routing is
 		-- Look for more milestones:
 		while milestone.status = VALID loop
 
-			milestone := get_next_milestone (milestone.x_value);
+			milestone := get_next_milestone (milestone.x);
 
 			-- Assign start or end point to the fill_line if the milestone is valid:
 			-- Otherwise nothing happens here:
