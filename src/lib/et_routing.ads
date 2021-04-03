@@ -104,38 +104,6 @@ package et_routing is
 		)
 		return pac_fill_lines.list;
 
-
-	function compute_fill_lines_2 (
-		module_cursor	: in pac_generic_modules.cursor;
-
-		-- The design rules of the board:
-		design_rules	: in type_design_rules;
-		
-		-- The points of intersection with the board contours:
-		board_domain	: in type_inside_polygon_query_result;
-
-		-- The points of intersection with the polygon contours:
-		polygon_domain	: in type_inside_polygon_query_result;
-
-		-- The width of a fill line:
-		width			: in type_track_width;
-		
-		-- The clearance of the net the polygon is
-		-- connected with:
-		clearance		: in type_track_clearance;
-
-		-- The isolation of the polygon:
-		isolation 		: in type_track_clearance; 
-
-		-- The easing of the polygon:
-		easing			: in type_easing;
-		
-		-- CS x-intersections with tracks, vias, pads, texts, ...
-
-		log_threshold	: in type_log_level
-		)
-		return pac_fill_lines.list;
-
 	
 	
 	type type_track_observe_clearance is (
