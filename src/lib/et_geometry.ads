@@ -179,6 +179,7 @@ package et_geometry is
 		
 		
 		-- For collecting distances:
+		package pac_distances_positive is new doubly_linked_lists (type_distance_positive);
 		package pac_distances is new doubly_linked_lists (type_distance);
 		
 		grid_max : constant type_distance_positive := type_distance_positive'last/1000;

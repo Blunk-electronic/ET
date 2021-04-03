@@ -4633,7 +4633,7 @@ package body et_board_ops is
 							log (text => to_string (polygon_points), level => log_threshold + 3);
 							
 							-- Compute the fill lines required for the current row (y-position):
-							fill_lines := et_routing.compute_fill_lines (
+							fill_lines := et_routing.compute_fill_lines_2 (
 								module_cursor	=> module_cursor,
 								design_rules	=> design_rules,
 								board_domain	=> board_points, 
