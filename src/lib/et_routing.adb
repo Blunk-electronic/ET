@@ -60,8 +60,8 @@ package body et_routing is
 	package functions_float is new ada.numerics.generic_elementary_functions (float);
 	use functions_float;
 	
-	function compute_clearance_track_to_edge (
-		status			: in type_point_status; -- transition to board inside/outside area
+	function compute_clearance (
+		status			: in type_point_status; -- transition to inside/outside area
 		y_position		: in type_distance; -- the y-position of the fill line
 		intersection	: in type_probe_line_intersection; -- provides curvature, x-value, angle, ...
 		line_width		: in type_track_width; -- the width of the fill line
@@ -437,7 +437,7 @@ package body et_routing is
 
 		end compute_concave;
 		
-	begin -- compute_clearance_track_to_edge
+	begin -- compute_clearance
 		
 		log (text => "computing clearance fill line to edge ...", level => log_threshold);
 		log_indentation_up;
@@ -490,7 +490,7 @@ package body et_routing is
 		
 		return result; 
 		
-	end compute_clearance_track_to_edge;
+	end compute_clearance;
 
 
 
@@ -518,14 +518,19 @@ package body et_routing is
 		-- A single fill line to be inserted in the result:
 		fill_line : type_fill_line; -- G====S
 
-		-- The stop/go signal for a line:
+		-- The stop/go signal issued by a domain for a line:
 		type type_stop_go is (
 			STOP,	-- the domain stops the line
 			GO);	-- the domain gives a go for the line
-
+		
+		
 		-- For each domain we have an individual flag:
-		board_line_status, polygon_line_status : type_stop_go := STOP;
+		type type_domain_status is record
+			board, polygon : type_stop_go := STOP;
+		end record;
 
+		domain_status : type_domain_status;
+		
 		-- After ANDing the status of the domains this the the final
 		-- signal for start and stop of a fill line:
 		final_line_status : type_stop_go := STOP;
@@ -534,34 +539,34 @@ package body et_routing is
 		-- the individual line flags must be initialized:
 		procedure init_line_statuses is begin
 			case board_domain.status is
-				when INSIDE		=> board_line_status := GO;
-				when OUTSIDE	=> board_line_status := STOP;
+				when INSIDE		=> domain_status.board := GO;
+				when OUTSIDE	=> domain_status.board := STOP;
 			end case;
 
 			case polygon_domain.status is
-				when INSIDE		=> polygon_line_status := GO;
-				when OUTSIDE	=> polygon_line_status := STOP;
+				when INSIDE		=> domain_status.polygon := GO;
+				when OUTSIDE	=> domain_status.polygon := STOP;
 			end case;
 
-			--log (text => "status board line: " & type_stop_go'image (board_line_status),
+			--log (text => "status board line: " & type_stop_go'image (domain_status.board),
 				--level => log_threshold + 1);
 
-			--log (text => "status polygon line: " & type_stop_go'image (polygon_line_status),
+			--log (text => "status polygon line: " & type_stop_go'image (domain_status.polygon),
 				--level => log_threshold + 1);
 			
 		end init_line_statuses;
 
 		procedure toggle_status_board_line is begin
-			case board_line_status is
-				when STOP	=> board_line_status := GO;
-				when GO		=> board_line_status := STOP;
+			case domain_status.board is
+				when STOP	=> domain_status.board := GO;
+				when GO		=> domain_status.board := STOP;
 			end case;
 		end toggle_status_board_line;
 
 		procedure toggle_status_polygon_line is begin
-			case polygon_line_status is
-				when STOP	=> polygon_line_status := GO;
-				when GO		=> polygon_line_status := STOP;
+			case domain_status.polygon is
+				when STOP	=> domain_status.polygon := GO;
+				when GO		=> domain_status.polygon := STOP;
 			end case;
 		end toggle_status_polygon_line;
 		
@@ -571,34 +576,57 @@ package body et_routing is
 		final_line_status_has_changed : boolean := false;
 
 		
+		
 		-- The switches are just a collection of x-positions.
-		-- For each domain we have a list of switches:
+		-- For each domain we have a list of switches. 
+		-- A switch point is the place where the STOP/GO status changes.
 		use pac_distances;				
-		board_switches, polygon_switches : pac_distances.list;
 
+		type type_switches is record
+			board, polygon : pac_distances.list;
+		end record;
 
+		switches : type_switches;
+		
+
+		
 		use pac_probe_line_intersections;
 
+		-- The result of an "inside-polyon-query" is a list of intersections where a probe
+		-- line intersects a polygon, board contours, tracks, pads or vector text.
+		-- This function takes the result of an "inside-polyon-query" and computes
+		-- the exact positions where the domain issues a STOP/GO signal. The exact positions
+		-- to be returned are the so called switches (see declarations above).
+		-- Optionally, an extra clearance may be taken into account. Extra clearance
+		-- is required for example when the given points are intersections with the board
+		-- contours.
 		function make_switches (
 			points			: in type_inside_polygon_query_result;
 			extra_clearance	: in boolean := false;					   
 			clearance		: in type_track_clearance := type_track_clearance'first)					   
 			return pac_distances.list
 		is 
-			switches : pac_distances.list;
+			switches : pac_distances.list; -- to be returned
 
 			status_inside_outside : type_point_status := points.status;
 
 			procedure query_intersection (c : in pac_probe_line_intersections.cursor) is
-				new_x : type_distance;
 
+				-- The space to be computed between intersection and switch.
 				spacing : type_track_clearance;
 
+				-- The position of the switch:
+				new_x : type_distance;
+
 			begin
+				-- At each intersection we have a transition from inside to outside
+				-- or the other way around. The initial status depends on the status of
+				-- the given list of intersection points. See declaration above.
 				toggle_status (status_inside_outside);
 
 				if extra_clearance then
-					spacing := compute_clearance_track_to_edge (
+					
+					spacing := compute_clearance (
 						status			=> status_inside_outside, -- transition to inside/outside area
 						y_position		=> y_position,
 						intersection	=> element (c),
@@ -609,7 +637,7 @@ package body et_routing is
 
 				else
 					
-					spacing := compute_clearance_track_to_edge (
+					spacing := compute_clearance (
 						status			=> status_inside_outside, -- transition to inside/outside area
 						y_position		=> y_position,
 						intersection	=> element (c),
@@ -621,7 +649,7 @@ package body et_routing is
 				
 				case status_inside_outside is
 					when INSIDE => -- A change from outside to inside occured.
-						-- Board area entered.
+						-- Fill area entered.
 						-- Create a new virtual intersection after the original
 						-- intersection. The original intersection is omitted.
 						new_x := element (c).x_position + spacing;
@@ -629,7 +657,7 @@ package body et_routing is
 						append (switches, new_x);
 						
 					when OUTSIDE => -- A change from inside to outside occured.
-						-- Board area left.
+						-- Fill area left.
 						-- Create a new virtual intersection before the original
 						-- intersection. The original intersection is omitted.
 						new_x := element (c).x_position - spacing;
@@ -682,7 +710,7 @@ package body et_routing is
 		-- ALL domains must give their go for the final fill line.
 		-- Sets the flag final_line_status_has_changed accordingly.
 		procedure update_final_line_status is begin
-			if board_line_status = GO and polygon_line_status = GO then
+			if domain_status.board = GO and domain_status.polygon = GO then
 
 				-- Detect a change of the status:
 				if final_line_status = STOP then
@@ -838,10 +866,10 @@ package body et_routing is
 			log_indentation_up;
 
 			-- Find the board switch that is nearest to the given forward-position:
-			iterate (board_switches, query_board_switch'access);
+			iterate (switches.board, query_board_switch'access);
 
 			-- Find the polygon switch that is nearest to the given forward-position:
-			iterate (polygon_switches, query_polygon_switch'access);
+			iterate (switches.polygon, query_polygon_switch'access);
 
 			case ms.status is
 				when VALID => 
@@ -887,14 +915,14 @@ package body et_routing is
 		-- The calculation of the board switches requires to observe
 		-- the DRU settings for clearance conductor to board edge. For this reason
 		-- we pass extra clearance:
-		board_switches := make_switches (
+		switches.board := make_switches (
 			points			=> board_domain,
 			extra_clearance	=> true,
 			clearance		=> design_rules.clearances.conductor_to_board_edge);
 
 		--log (text => "make polyon switches", level => log_threshold);
 		
-		polygon_switches := make_switches (
+		switches.polygon := make_switches (
 			points			=> polygon_domain);
 
 		init_line_statuses;

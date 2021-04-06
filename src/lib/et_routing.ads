@@ -60,10 +60,11 @@ package et_routing is
 	use et_board_shapes_and_text.pac_shapes;
 
 	-- Computes the clearance in x-direction of a 
-	-- fill line to its intersection with an edge.
-	-- The edge can belong to a polygon or board contour.
-	function compute_clearance_track_to_edge (
-		status			: in type_point_status; -- transition to board inside/outside area
+	-- fill line to its imaginary intersection with the edge of 
+	-- another object (board contour, side of a polygon, track,
+	-- pad, vector text).
+	function compute_clearance (
+		status			: in type_point_status; -- transition to inside/outside area
 		y_position		: in type_distance; -- the y-position of the fill line
 		intersection	: in type_probe_line_intersection; -- provides curvature, x-value, angle, ...
 		line_width		: in type_track_width;  -- the width of the fill line
