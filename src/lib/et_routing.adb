@@ -59,6 +59,41 @@ package body et_routing is
 
 	package functions_float is new ada.numerics.generic_elementary_functions (float);
 	use functions_float;
+
+	function get_polygon_proximity_points (
+		polygon			: in type_polygon_conductor;
+		start			: in type_point;
+		line_width		: in type_track_width;  -- the width of the fill line
+		log_threshold	: in type_log_level)
+		return pac_distances.list
+	is
+		result : pac_distances.list;
+
+		half_width : constant type_distance := line_width * 0.5;
+		lower_edge : constant type_distance := Y (start) - half_width;
+		upper_edge : constant type_distance := Y (start) + half_width;
+
+		
+		--segments : constant type_polygon_segments := get_segments (polygon);
+
+		--use pac_polygon_lines;
+		--use pac_polygon_arcs;
+		--use pac_polygon_circles;
+
+		--procedure query_line (c : in pac_polygon_lines.cursor) is
+		--begin
+			--null;
+		--end query_line;
+
+		--intersections_
+	begin -- get_polygon_proximity_points
+
+		--iterate (segments.lines, query_line'access);
+		
+		return result;
+	end get_polygon_proximity_points;
+
+
 	
 	function compute_clearance (
 		status			: in type_point_status; -- transition to inside/outside area
@@ -495,16 +530,16 @@ package body et_routing is
 
 
 	function compute_fill_lines (
-		module_cursor	: in pac_generic_modules.cursor;
-		design_rules	: in type_design_rules;
-		board_domain	: in type_inside_polygon_query_result;
-		polygon_domain	: in type_inside_polygon_query_result;
-		width			: in type_track_width; -- the width of a fill line
-		clearance		: in type_track_clearance;
-		isolation 		: in type_track_clearance; 
-		easing			: in type_easing;
-		log_threshold	: in type_log_level
-		)
+		module_cursor		: in pac_generic_modules.cursor;
+		design_rules		: in type_design_rules;
+		board_domain		: in type_inside_polygon_query_result;
+		polygon_domain		: in type_inside_polygon_query_result;
+		polygon_proximities	: in pac_distances.list;
+		width				: in type_track_width; -- the width of a fill line
+		clearance			: in type_track_clearance;
+		isolation 			: in type_track_clearance; 
+		easing				: in type_easing;
+		log_threshold		: in type_log_level)
 		return pac_fill_lines.list
 	is
 

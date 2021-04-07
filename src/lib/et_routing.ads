@@ -59,6 +59,16 @@ package et_routing is
 	use et_pcb_coordinates.pac_geometry_brd;
 	use et_board_shapes_and_text.pac_shapes;
 
+	-- Computes the x-positions where a probe line
+	-- of given width leaves the polygon:
+	function get_polygon_proximity_points (
+		polygon			: in type_polygon_conductor;
+		start			: in type_point;
+		line_width		: in type_track_width;  -- the width of the fill line
+		log_threshold	: in type_log_level)
+		return pac_distances.list;
+									  
+	
 	-- Computes the clearance in x-direction of a 
 	-- fill line to its imaginary intersection with the edge of 
 	-- another object (board contour, side of a polygon, track,
@@ -77,34 +87,37 @@ package et_routing is
 	-- Computes the fill lines required for a single
 	-- row (or a fixed y-position):
 	function compute_fill_lines (
-		module_cursor	: in pac_generic_modules.cursor;
+		module_cursor		: in pac_generic_modules.cursor;
 
 		-- The design rules of the board:
-		design_rules	: in type_design_rules;
+		design_rules		: in type_design_rules;
 		
 		-- The points of intersection with the board contours:
-		board_domain	: in type_inside_polygon_query_result;
+		board_domain		: in type_inside_polygon_query_result;
 
 		-- The points of intersection with the polygon contours:
-		polygon_domain	: in type_inside_polygon_query_result;
+		polygon_domain		: in type_inside_polygon_query_result;
 
+		-- The points where the fill line starts/stops to overlap
+		-- the polygon edge:
+		polygon_proximities	: in pac_distances.list;
+		
 		-- The width of a fill line:
-		width			: in type_track_width;
+		width				: in type_track_width;
 		
 		-- The clearance of the net the polygon is
 		-- connected with:
-		clearance		: in type_track_clearance;
+		clearance			: in type_track_clearance;
 
 		-- The isolation of the polygon:
-		isolation 		: in type_track_clearance; 
+		isolation 			: in type_track_clearance; 
 
 		-- The easing of the polygon:
-		easing			: in type_easing;
+		easing				: in type_easing;
 		
 		-- CS x-intersections with tracks, vias, pads, texts, ...
 
-		log_threshold	: in type_log_level
-		)
+		log_threshold		: in type_log_level)
 		return pac_fill_lines.list;
 
 	

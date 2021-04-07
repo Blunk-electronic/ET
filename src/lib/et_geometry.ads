@@ -1452,7 +1452,6 @@ package et_geometry is
 			status			: type_point_status := OUTSIDE;		
 
 			-- the intersections of the probe line with the polygon edges:
-			--intersections	: pac_distances.list;
 			intersections	: pac_probe_line_intersections.list;
 		end record;
 
@@ -1464,6 +1463,14 @@ package et_geometry is
 		-- Detects whether the given point is inside or outside
 		-- the polygon. The point is regarded as "outside" if
 		-- it sits exactly on the edge of the polygon.
+		-- A probe line will be formed which starts at the given point
+		-- and runs to the right (direction zero degree).
+		-- The places where the probe line intersects the polygon 
+		-- edges is returned in a list.
+		-- If a segment of the polygon crosses the imaginary probe line,
+		-- then it is regarded as intersection.
+		-- NOTE: A line segment that runs exactly along the probe line
+		-- is NOT regarded as "crossing" the probe line.
 		function in_polygon_status (
 			polygon		: in type_polygon_base;	
 			point		: in type_point)

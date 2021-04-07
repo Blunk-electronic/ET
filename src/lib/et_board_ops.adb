@@ -4527,7 +4527,6 @@ package body et_board_ops is
 					next (c);
 				end loop;
 			end floating_hatched;
-
 			
 		begin -- floating_polygons
 			log (text => "floating polygons ...", level => log_threshold + 1);
@@ -4601,13 +4600,18 @@ package body et_board_ops is
 						-- right (zero degree direction).
 						-- The probe line intersects board contours, tracks, vias, pads, texts 
 						-- and the current conductor polygon at certain x-positions.
+						-- The fill lines for a single row will later be drawn along the probe line.
 
-						-- Get the intersections with the board contours:
-						board_points : type_inside_polygon_query_result;
+						-- The intersections with the board contours:
+						board_intersections : type_inside_polygon_query_result;
 
-						-- Get the intersections with the current conductor polygon:
-						polygon_points : type_inside_polygon_query_result;
+						-- The intersections with the current conductor polygon:
+						polygon_intersections : type_inside_polygon_query_result;
 
+						-- The points where fill line comes too close to the polygon edges
+						-- or where the fill line comes in save distance from the edges.
+						polygon_proximities : pac_distances.list;
+						
 						-- The fill lines for the current row. Ordered from the left
 						-- to the right:
 						fill_lines : pac_fill_lines.list;
@@ -4625,24 +4629,32 @@ package body et_board_ops is
 
 						procedure make_fill_lines is begin
 							-- Get the intersections with the board contours:
-							board_points := on_board (start_point, module.board.contours, log_threshold + 3);
+							board_intersections := on_board (start_point, module.board.contours, log_threshold + 3);
 							
 							-- Get the intersections with the current conductor polygon:
-							polygon_points := in_polygon_status (element (p), start_point);
+							polygon_intersections := in_polygon_status (element (p), start_point);
 
-							log (text => to_string (polygon_points), level => log_threshold + 3);
-							
+							log (text => to_string (polygon_intersections), level => log_threshold + 3);
+
+							-- Compute the polygon proximity points:
+							polygon_proximities := get_polygon_proximity_points (
+								polygon			=> type_polygon_conductor (element (p)),
+								start			=> start_point,
+								line_width		=> line_width,
+								log_threshold	=> log_threshold + 3);
+								
 							-- Compute the fill lines required for the current row (y-position):
 							fill_lines := et_routing.compute_fill_lines (
-								module_cursor	=> module_cursor,
-								design_rules	=> design_rules,
-								board_domain	=> board_points, 
-								polygon_domain	=> polygon_points,
-								width			=> line_width,
-								clearance		=> net_class.clearance,
-								isolation		=> element (p).isolation,
-								easing			=> element (p).easing,
-								log_threshold	=> log_threshold + 3);
+								module_cursor		=> module_cursor,
+								design_rules		=> design_rules,
+								board_domain		=> board_intersections, 
+								polygon_domain		=> polygon_intersections,
+								polygon_proximities	=> polygon_proximities,
+								width				=> line_width,
+								clearance			=> net_class.clearance,
+								isolation			=> element (p).isolation,
+								easing				=> element (p).easing,
+								log_threshold		=> log_threshold + 3);
 
 							-- Add the fill lines to the conductor polygon:
 							update_element (
