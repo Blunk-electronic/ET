@@ -39,6 +39,7 @@
 
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
+with ada.containers.ordered_sets;
 
 with et_geometry;				use et_geometry;
 with et_design_rules;			use et_design_rules;
@@ -59,14 +60,36 @@ package et_routing is
 	use et_pcb_coordinates.pac_geometry_brd;
 	use et_board_shapes_and_text.pac_shapes;
 
+	type type_proximity is (
+		NEAR,
+		FAR);
+		
+	type type_proximity_point is record
+		status	: type_proximity := NEAR;
+		x		: type_distance := zero;
+	end record;
+
+	function "<" (left, right : in type_proximity_point) return boolean;
+	
+	package pac_proximity_points is new ordered_sets (type_proximity_point);
+	
 	-- Computes the x-positions where a probe line
 	-- of given width leaves the polygon:
 	function get_polygon_proximity_points (
 		polygon			: in type_polygon_conductor;
+
+		-- The length of the polygon in x-direction:									  
+		length			: in type_distance_positive;
+		
+		-- The start point of the probe line.
+		-- Must be outside the polygon !
 		start			: in type_point;
+
+		-- The width of the probe line:
 		line_width		: in type_track_width;  -- the width of the fill line
+		
 		log_threshold	: in type_log_level)
-		return pac_distances.list;
+		return pac_proximity_points.set;
 									  
 	
 	-- Computes the clearance in x-direction of a 
@@ -100,7 +123,7 @@ package et_routing is
 
 		-- The points where the fill line starts/stops to overlap
 		-- the polygon edge:
-		polygon_proximities	: in pac_distances.list;
+		polygon_proximities	: in pac_proximity_points.set;
 		
 		-- The width of a fill line:
 		width				: in type_track_width;

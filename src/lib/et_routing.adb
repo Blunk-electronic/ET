@@ -60,35 +60,86 @@ package body et_routing is
 	package functions_float is new ada.numerics.generic_elementary_functions (float);
 	use functions_float;
 
+	function "<" (left, right : in type_proximity_point) return boolean is begin
+		if left.x < right.x then
+			return true;
+		else
+			return false;
+		end if;
+	end "<";
+		
+	
 	function get_polygon_proximity_points (
 		polygon			: in type_polygon_conductor;
+		length			: in type_distance_positive;
 		start			: in type_point;
 		line_width		: in type_track_width;  -- the width of the fill line
 		log_threshold	: in type_log_level)
-		return pac_distances.list
+		return pac_proximity_points.set
 	is
-		result : pac_distances.list;
+		result : pac_proximity_points.set;
 
 		half_width : constant type_distance := line_width * 0.5;
 		lower_edge : constant type_distance := Y (start) - half_width;
 		upper_edge : constant type_distance := Y (start) + half_width;
 
+		boundaries_probe_line : type_boundaries;
 		
-		--segments : constant type_polygon_segments := get_segments (polygon);
+		segments : constant type_polygon_segments := get_segments (polygon);
 
-		--use pac_polygon_lines;
-		--use pac_polygon_arcs;
-		--use pac_polygon_circles;
+		use pac_polygon_lines;
+		use pac_polygon_arcs;
+		use pac_polygon_circles;
 
-		--procedure query_line (c : in pac_polygon_lines.cursor) is
-		--begin
-			--null;
-		--end query_line;
+		procedure query_line (c : in pac_polygon_lines.cursor) is
+			boundaries : type_boundaries := get_boundaries (
+				line	=> element (c),
+				width	=> zero);											   
+		begin
+			log (text => to_string (element (c))
+				& " " & to_string (boundaries),
+				 level => log_threshold + 2);
+			
 
-		--intersections_
+			if intersect (boundaries_probe_line, boundaries) then
+				log (text => "X",
+					level => log_threshold + 2);
+
+			end if;
+		end query_line;
+
+
 	begin -- get_polygon_proximity_points
+		log (text => "computing proximity points ...", level => log_threshold);
+		log_indentation_up;
 
-		--iterate (segments.lines, query_line'access);
+		log (text => "polygon length (x)" & to_string (length)
+			 & " start" & to_string (start)
+			 & " line width" & to_string (line_width),
+			 level => log_threshold + 1);
+		
+		-- Compute the boundaries of the probe line.
+		-- The probe line starts at start and ends at the far right
+		-- end of the polygon.
+		-- NOTE: The start point can have a negative x-value. For this reason
+		-- the absolute must be used.
+		boundaries_probe_line := get_boundaries (
+			point_one	=> start,
+			point_two	=> type_point (set (
+								x => abs (X (start)) + length,
+								y => Y (start))),
+			width		=> line_width);
+
+
+		log (text => "probe line " & to_string (boundaries_probe_line), level => log_threshold + 1);
+
+		log (text => "probing lines of polygon ...", level => log_threshold + 2);
+		log_indentation_up;
+		
+		iterate (segments.lines, query_line'access);
+
+		log_indentation_down;
+		log_indentation_down;
 		
 		return result;
 	end get_polygon_proximity_points;
@@ -534,7 +585,7 @@ package body et_routing is
 		design_rules		: in type_design_rules;
 		board_domain		: in type_inside_polygon_query_result;
 		polygon_domain		: in type_inside_polygon_query_result;
-		polygon_proximities	: in pac_distances.list;
+		polygon_proximities	: in pac_proximity_points.set;
 		width				: in type_track_width; -- the width of a fill line
 		clearance			: in type_track_clearance;
 		isolation 			: in type_track_clearance; 

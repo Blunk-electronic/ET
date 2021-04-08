@@ -240,6 +240,13 @@ package et_geometry is
 
 		
 		function to_string (boundaries : in type_boundaries) return string;
+
+		-- Returns true if the given boundaries intersect each other:
+		function intersect (
+			boundaries_one : in type_boundaries;
+			boundaries_two : in type_boundaries)
+			return boolean;
+			
 		
 		-- Adds two boundaries.
 		procedure add (

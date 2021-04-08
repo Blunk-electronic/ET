@@ -4609,8 +4609,8 @@ package body et_board_ops is
 						polygon_intersections : type_inside_polygon_query_result;
 
 						-- The points where fill line comes too close to the polygon edges
-						-- or where the fill line comes in save distance from the edges.
-						polygon_proximities : pac_distances.list;
+						-- or where the fill line comes to save distance from the edges.
+						polygon_proximities : pac_proximity_points.set;
 						
 						-- The fill lines for the current row. Ordered from the left
 						-- to the right:
@@ -4636,9 +4636,12 @@ package body et_board_ops is
 
 							log (text => to_string (polygon_intersections), level => log_threshold + 3);
 
-							-- Compute the polygon proximity points:
+							-- Compute the polygon proximity points (the places where the
+							-- fill line gets too close the polygon sides or where it reaches
+							-- safe distance from the polygon sides:
 							polygon_proximities := get_polygon_proximity_points (
 								polygon			=> type_polygon_conductor (element (p)),
+								length			=> get_width (boundaries),
 								start			=> start_point,
 								line_width		=> line_width,
 								log_threshold	=> log_threshold + 3);

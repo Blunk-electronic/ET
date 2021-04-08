@@ -219,6 +219,30 @@ package body et_geometry is
 				& " smallest y" & to_string (boundaries.smallest_y)
 				& " greatest y" & to_string (boundaries.greatest_y);
 		end;
+
+		function intersect (
+			boundaries_one : in type_boundaries;
+			boundaries_two : in type_boundaries)
+			return boolean
+		is begin
+			if	boundaries_two.greatest_x >= boundaries_one.smallest_x
+			and boundaries_two.smallest_x <= boundaries_one.greatest_x
+			then -- boundaries intersect in x-direction
+
+				if	boundaries_two.greatest_y >= boundaries_one.smallest_y
+				and boundaries_two.smallest_y <= boundaries_one.greatest_y
+				then -- boundaries intersect in y-direction
+					return true;
+				else
+					return false;
+				end if;
+				
+			else
+				return false;
+			end if;
+
+		end intersect;
+
 		
 		-- Adds two boundaries.
 		procedure add (
