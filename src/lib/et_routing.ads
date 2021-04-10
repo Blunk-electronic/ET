@@ -60,12 +60,17 @@ package et_routing is
 	use et_pcb_coordinates.pac_geometry_brd;
 	use et_board_shapes_and_text.pac_shapes;
 
-	type type_proximity is (
-		NEAR,
-		FAR);
+	-- The stop/go signal issued for a fill line:
+	type type_stop_go is (
+		STOP,
+		GO);
+	
+	--type type_proximity is (
+		--NEAR,
+		--FAR);
 		
 	type type_proximity_point is record
-		status	: type_proximity := NEAR;
+		status	: type_stop_go := STOP;
 		x		: type_distance := zero;
 	end record;
 

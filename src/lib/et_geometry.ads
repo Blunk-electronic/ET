@@ -216,7 +216,7 @@ package et_geometry is
 		function rotation (point : in type_point) return type_rotation;
 
 		
-		-- The area (a rectanglular box around an object)
+		-- The area (a rectangular box around an object)
 		-- occupied by the object.
 		-- The boundaries are always relative to a certain origin that
 		-- sits somewhere inside the rectangular box. 

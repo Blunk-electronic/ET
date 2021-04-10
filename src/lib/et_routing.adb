@@ -38,6 +38,7 @@
 -- 
 
 with ada.text_io;				use ada.text_io;
+with ada.strings.unbounded;
 with ada.tags;					use ada.tags;
 
 with ada.numerics.generic_elementary_functions;
@@ -68,6 +69,29 @@ package body et_routing is
 		end if;
 	end "<";
 		
+	function to_string (prox_points : in pac_proximity_points.set)
+		return string
+	is
+		use pac_proximity_points;
+		use ada.strings.unbounded;
+		
+		text : unbounded_string := to_unbounded_string ("proximity points (x/status):");
+		
+		procedure query_point (c : in pac_proximity_points.cursor) is begin
+			text := text & to_string (element (c).x) 
+				& "/" & type_stop_go'image (element (c).status);
+		end query_point;
+		
+	begin
+		if not is_empty (prox_points) then
+			iterate (prox_points, query_point'access);
+			return to_string (text);
+		else
+			return "no proximity points";
+		end if;
+	end to_string;
+
+
 	
 	function get_polygon_proximity_points (
 		polygon			: in type_polygon_conductor;
@@ -78,36 +102,107 @@ package body et_routing is
 		return pac_proximity_points.set
 	is
 		result : pac_proximity_points.set;
-
+		
 		half_width : constant type_distance := line_width * 0.5;
 		lower_edge : constant type_distance := Y (start) - half_width;
 		upper_edge : constant type_distance := Y (start) + half_width;
 
-		boundaries_probe_line : type_boundaries;
+		pl_l : constant type_line_vector := (
+			v_start		=> to_vector (type_point (set (X (start), lower_edge))),
+			v_direction	=> to_vector (type_point (set (1.0, 0.0))));
+
+		pl_c : constant type_line_vector := (
+			v_start		=> to_vector (start),
+			v_direction	=> to_vector (type_point (set (1.0, 0.0))));
 		
+		pl_h : constant type_line_vector := (
+			v_start		=> to_vector (type_point (set (X (start), upper_edge))),
+			v_direction	=> to_vector (type_point (set (1.0, 0.0))));
+
+			
+		boundaries_probe_line : type_boundaries;
+			
 		segments : constant type_polygon_segments := get_segments (polygon);
 
 		use pac_polygon_lines;
 		use pac_polygon_arcs;
 		use pac_polygon_circles;
-
+		
 		procedure query_line (c : in pac_polygon_lines.cursor) is
+			use pac_proximity_points;
+			
+			pl : constant type_polygon_line := element (c);
+			
 			boundaries : type_boundaries := get_boundaries (
-				line	=> element (c),
-				width	=> zero);											   
-		begin
-			log (text => to_string (element (c))
+				line	=> pl,
+				width	=> zero);
+
+			ix : type_distance := zero;
+			
+			procedure test_intersection is
+				i_h : constant type_intersection_of_two_lines := get_intersection (pl_h, pl);
+				i_c : constant type_intersection_of_two_lines := get_intersection (pl_c, pl);
+				i_l : constant type_intersection_of_two_lines := get_intersection (pl_l, pl);
+			begin
+				--if i_l.status = EXISTS and i_h.status = EXISTS 
+				if i_c.status = EXISTS
+				then
+					-- Ignore intersections with the center of the probe line.
+					-- This is not a proximity point.
+					null;
+				else
+					
+					case i_l.status is
+						when EXISTS =>
+							ix := X (to_point (i_l.intersection.point));
+						
+						when OVERLAP => null;
+							
+						when NOT_EXISTENT =>
+							-- Polygon line starts and ends somewhere above the lower
+							-- edge of the fill line:
+							
+							case i_h.status is
+								when EXISTS => ix := X (to_point (i_h.intersection.point));
+								
+								when OVERLAP => null;
+									
+								when NOT_EXISTENT => 
+									
+									-- Polygon line starts and ends somewhere below
+									-- the upper edge of the fill line:
+
+									-- The smallest x value of the line is where
+									-- the fill line has to stop:
+									ix := boundaries.smallest_x;
+									insert (result, (status => STOP, x => ix));
+
+									-- The greatest x value of the line is where
+									-- the fill line has to start:
+									ix := boundaries.greatest_x;
+									insert (result, (status => GO, x => ix));
+									
+							end case;
+
+					end case;
+				end if;
+			end test_intersection;
+				
+		begin -- query_line
+			log (text => to_string (pl)
 				& " " & to_string (boundaries),
 				 level => log_threshold + 2);
-			
+
+			--log (text => "lower probe line" & to_string (
 
 			if intersect (boundaries_probe_line, boundaries) then
 				log (text => "X",
 					level => log_threshold + 2);
 
+				test_intersection;
+				
 			end if;
 		end query_line;
-
 
 	begin -- get_polygon_proximity_points
 		log (text => "computing proximity points ...", level => log_threshold);
@@ -138,6 +233,8 @@ package body et_routing is
 		
 		iterate (segments.lines, query_line'access);
 
+		log (text => to_string (result), level => log_threshold + 2);
+		
 		log_indentation_down;
 		log_indentation_down;
 		
@@ -604,11 +701,6 @@ package body et_routing is
 		-- A single fill line to be inserted in the result:
 		fill_line : type_fill_line; -- G====S
 
-		-- The stop/go signal issued by a domain for a line:
-		type type_stop_go is (
-			STOP,	-- the domain stops the line
-			GO);	-- the domain gives a go for the line
-		
 		
 		-- For each domain we have an individual flag:
 		type type_domain_status is record
