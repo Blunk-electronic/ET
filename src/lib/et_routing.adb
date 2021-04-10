@@ -101,7 +101,7 @@ package body et_routing is
 		log_threshold	: in type_log_level)
 		return pac_proximity_points.set
 	is
-		result : pac_proximity_points.set;
+		points, result : pac_proximity_points.set;
 		
 		half_width : constant type_distance := line_width * 0.5;
 		lower_edge : constant type_distance := Y (start) - half_width;
@@ -175,12 +175,12 @@ package body et_routing is
 									-- The smallest x value of the line is where
 									-- the fill line has to stop:
 									ix := boundaries.smallest_x;
-									insert (result, (status => STOP, x => ix));
+									insert (points, (status => STOP, x => ix));
 
 									-- The greatest x value of the line is where
 									-- the fill line has to start:
 									ix := boundaries.greatest_x;
-									insert (result, (status => GO, x => ix));
+									insert (points, (status => GO, x => ix));
 									
 							end case;
 
@@ -204,6 +204,36 @@ package body et_routing is
 			end if;
 		end query_line;
 
+		-- The list "points" may contain successive stop or go marks. 
+		-- This procedure removes excessive stop/go marks and stores the result
+		-- in variable "result":
+		procedure reduce is
+			use pac_proximity_points;
+			
+			stop_region : boolean := false;
+
+			procedure query_point (c : in pac_proximity_points.cursor) is begin
+				case element (c).status is
+					when STOP => 
+						if not stop_region then
+							stop_region := true;
+							result.insert (element (c));
+						end if;
+						
+					when GO => 
+						if stop_region then
+							stop_region := false;
+							result.insert (element (c));
+						end if;
+				end case;
+			end query_point;
+			
+		begin -- reduce
+			log (text => "removing excessive stop/go marks ...", level => log_threshold + 3);
+
+			iterate (points, query_point'access);				
+		end reduce;
+		
 	begin -- get_polygon_proximity_points
 		log (text => "computing proximity points ...", level => log_threshold);
 		log_indentation_up;
@@ -233,6 +263,9 @@ package body et_routing is
 		
 		iterate (segments.lines, query_line'access);
 
+		-- Throw away excessive stop marks.
+		reduce;
+		
 		log (text => to_string (result), level => log_threshold + 2);
 		
 		log_indentation_down;
@@ -704,7 +737,7 @@ package body et_routing is
 		
 		-- For each domain we have an individual flag:
 		type type_domain_status is record
-			board, polygon : type_stop_go := STOP;
+			board, polygon, polygon_proximities : type_stop_go := STOP;
 		end record;
 
 		domain_status : type_domain_status;
@@ -758,10 +791,10 @@ package body et_routing is
 		-- The switches are just a collection of x-positions.
 		-- For each domain we have a list of switches. 
 		-- A switch point is the place where the STOP/GO status changes.
-		use pac_distances;				
+		use pac_distances;		
 
 		type type_switches is record
-			board, polygon : pac_distances.list;
+			board, polygon, polygon_proximities : pac_distances.list;
 		end record;
 
 		switches : type_switches;
@@ -888,7 +921,10 @@ package body et_routing is
 		-- ALL domains must give their go for the final fill line.
 		-- Sets the flag final_line_status_has_changed accordingly.
 		procedure update_final_line_status is begin
-			if domain_status.board = GO and domain_status.polygon = GO then
+			if  domain_status.board = GO
+			and domain_status.polygon = GO 
+			and domain_status.polygon_proximities = GO	
+			then
 
 				-- Detect a change of the status:
 				if final_line_status = STOP then
@@ -965,7 +1001,7 @@ package body et_routing is
 
 			-- These are the smallest distances found between "forward"
 			-- and the points in the domains:
-			type type_smallest_differences is array (1..2) of type_distance;
+			type type_smallest_differences is array (1..3) of type_distance;
 			sdx : type_smallest_differences := (others => type_distance'last);
 
 			procedure query_board_switch (c : in pac_distances.cursor) is
@@ -992,6 +1028,20 @@ package body et_routing is
 				end if;
 			end query_polygon_switch;
 
+			use pac_proximity_points;			
+			procedure query_polygon_proximities_switch (c : in pac_proximity_points.cursor) is
+				x : type_distance := element (c).x;
+			begin
+				if x > forward then
+					ms.status := VALID;
+
+					if x < sdx(3) then
+						sdx(3) := x;
+					end if;
+				end if;
+			end query_polygon_proximities_switch;
+
+			
 			-- Finds the smallest difference among the domains and sets the
 			-- absolute position of the milestone to be returned.
 			-- Toggles the status of the individual lines.
@@ -1026,6 +1076,9 @@ package body et_routing is
 							when 2 =>
 								toggle_status_polygon_line;
 
+							when 3 =>
+								null;
+								--domain_status.polygon_proximities
 							-- CS toggle others
 						end case;
 					end if;
@@ -1049,6 +1102,10 @@ package body et_routing is
 			-- Find the polygon switch that is nearest to the given forward-position:
 			iterate (switches.polygon, query_polygon_switch'access);
 
+			-- Find the polygon proximity switch that is nearest to the given forward-position:
+			--iterate (polygon_proximities, query_polygon_proximities_switch'access);
+
+			
 			case ms.status is
 				when VALID => 
 					-- If a valid milestone was found, then the milestone nearest to
