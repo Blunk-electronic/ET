@@ -101,20 +101,24 @@ package body et_routing is
 		log_threshold	: in type_log_level)
 		return pac_proximity_points.set
 	is
-		points, result : pac_proximity_points.set;
+		points_preliminary	: pac_proximity_points.set;
+		points_final		: pac_proximity_points.set; -- to be returned
 		
 		half_width : constant type_distance := line_width * 0.5;
 		lower_edge : constant type_distance := Y (start) - half_width;
 		upper_edge : constant type_distance := Y (start) + half_width;
 
+		-- Build a probe line that runs along the lower edge of the fill line:
 		pl_l : constant type_line_vector := (
 			v_start		=> to_vector (type_point (set (X (start), lower_edge))),
 			v_direction	=> to_vector (type_point (set (1.0, 0.0))));
 
+		-- Build a probe line that runs along the middle of the fill line:
 		pl_c : constant type_line_vector := (
 			v_start		=> to_vector (start),
 			v_direction	=> to_vector (type_point (set (1.0, 0.0))));
-		
+
+		-- Build a probe line that runs along the upper edge of the fill line:
 		pl_h : constant type_line_vector := (
 			v_start		=> to_vector (type_point (set (X (start), upper_edge))),
 			v_direction	=> to_vector (type_point (set (1.0, 0.0))));
@@ -131,30 +135,31 @@ package body et_routing is
 		procedure query_line (c : in pac_polygon_lines.cursor) is
 			use pac_proximity_points;
 			
-			pl : constant type_polygon_line := element (c);
-			
-			boundaries : type_boundaries := get_boundaries (
-				line	=> pl,
+			candidate_line : constant type_polygon_line := element (c);
+
+			-- Compute the boundaries of the candidate line.
+			-- NOTE: The candidate line is an edge of the polygon and thus has no width.
+			boundaries : constant type_boundaries := get_boundaries (
+				line	=> candidate_line,
 				width	=> zero);
 
-			ix : type_distance := zero;
+			-- The place in x-direction where the fill line has to start or to stop:
+			x_stop_go : type_distance := zero;
 			
 			procedure test_intersection is
-				i_h : constant type_intersection_of_two_lines := get_intersection (pl_h, pl);
-				i_c : constant type_intersection_of_two_lines := get_intersection (pl_c, pl);
-				i_l : constant type_intersection_of_two_lines := get_intersection (pl_l, pl);
+				i_h : constant type_intersection_of_two_lines := get_intersection (pl_h, candidate_line);
+				i_c : constant type_intersection_of_two_lines := get_intersection (pl_c, candidate_line);
+				i_l : constant type_intersection_of_two_lines := get_intersection (pl_l, candidate_line);
 			begin
-				--if i_l.status = EXISTS and i_h.status = EXISTS 
-				if i_c.status = EXISTS
-				then
-					-- Ignore intersections with the center of the probe line.
+				if i_c.status = EXISTS then
+					-- Ignore an intersection with the center of the probe line.
 					-- This is not a proximity point.
 					null;
 				else
 					
 					case i_l.status is
 						when EXISTS =>
-							ix := X (to_point (i_l.intersection.point));
+							x_stop_go := X (to_point (i_l.intersection.point));
 						
 						when OVERLAP => null;
 							
@@ -163,7 +168,7 @@ package body et_routing is
 							-- edge of the fill line:
 							
 							case i_h.status is
-								when EXISTS => ix := X (to_point (i_h.intersection.point));
+								when EXISTS => x_stop_go := X (to_point (i_h.intersection.point));
 								
 								when OVERLAP => null;
 									
@@ -172,15 +177,27 @@ package body et_routing is
 									-- Polygon line starts and ends somewhere below
 									-- the upper edge of the fill line:
 
-									-- The smallest x value of the line is where
-									-- the fill line has to stop:
-									ix := boundaries.smallest_x;
-									insert (points, (status => STOP, x => ix));
+									-- compute the STOP mark:
+									
+									-- The smallest x value of the candidate line is where
+									-- the fill line has to stop.
+									x_stop_go := boundaries.smallest_x;
 
+									-- Since the fill line has a width, the STOP mark is
+									-- at some distance left of the just computed position:
+									insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
+
+									
+									
+									-- compute the GO mark:
+									
 									-- The greatest x value of the line is where
 									-- the fill line has to start:
-									ix := boundaries.greatest_x;
-									insert (points, (status => GO, x => ix));
+									x_stop_go := boundaries.greatest_x;
+
+									-- Since the fill line has a width, the GO mark is
+									-- at some distance right of the just computed position:
+									insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
 									
 							end case;
 
@@ -189,11 +206,8 @@ package body et_routing is
 			end test_intersection;
 				
 		begin -- query_line
-			log (text => to_string (pl)
-				& " " & to_string (boundaries),
+			log (text => to_string (candidate_line) & " " & to_string (boundaries),
 				 level => log_threshold + 2);
-
-			--log (text => "lower probe line" & to_string (
 
 			if intersect (boundaries_probe_line, boundaries) then
 				log (text => "X",
@@ -204,35 +218,54 @@ package body et_routing is
 			end if;
 		end query_line;
 
-		-- The list "points" may contain successive stop or go marks. 
-		-- This procedure removes excessive stop/go marks and stores the result
-		-- in variable "result":
+		-- The list "points_preliminary" may contain successive STOP or GO marks. 
+		-- From a row of STOP marks only the first is required.
+		-- Likewise from a row of GO marks only the first is required.
+		-- This procedure removes those excessive stop/go marks and stores the result
+		-- in variable "points_final":
 		procedure reduce is
 			use pac_proximity_points;
-			
+
+			-- Since the probe line has started outside the polygon,
+			-- there is no obstacle, hence we are initially not in a stop region: -- CS comment correct ?
 			stop_region : boolean := false;
 
 			procedure query_point (c : in pac_proximity_points.cursor) is begin
+	
 				case element (c).status is
-					when STOP => 
+					when STOP =>
 						if not stop_region then
 							stop_region := true;
-							result.insert (element (c));
+							points_final.insert (element (c));
 						end if;
 						
-					when GO => 
+					when GO =>
 						if stop_region then
 							stop_region := false;
-							result.insert (element (c));
+							points_final.insert (element (c));
 						end if;
 				end case;
 			end query_point;
 			
 		begin -- reduce
 			log (text => "removing excessive stop/go marks ...", level => log_threshold + 3);
-
-			iterate (points, query_point'access);				
+			log (text => " old marks: " & to_string (points_preliminary), level => log_threshold + 4);
+			
+			iterate (points_preliminary, query_point'access);				
 		end reduce;
+
+		-- The resulting list of proximity points needs a start point with a GO mark.
+		-- The start point is where the probe line starts.
+		-- If not already there, this procedure inserts that start point:
+		procedure insert_start_point is
+			use pac_proximity_points;
+			sp : constant type_proximity_point := (x => X (start), status => GO);
+		begin
+			if not contains (points_final, sp) then
+				insert (points_final, sp);
+			end if;
+		end insert_start_point;
+
 		
 	begin -- get_polygon_proximity_points
 		log (text => "computing proximity points ...", level => log_threshold);
@@ -260,18 +293,22 @@ package body et_routing is
 
 		log (text => "probing lines of polygon ...", level => log_threshold + 2);
 		log_indentation_up;
-		
+
+		-- Probe the polygon contours for proximities with the probe line:		
 		iterate (segments.lines, query_line'access);
+		-- CS arcs and circles
 
 		-- Throw away excessive stop marks.
 		reduce;
 		
-		log (text => to_string (result), level => log_threshold + 2);
+		insert_start_point;
+		
+		log (text => to_string (points_final), level => log_threshold + 2);
 		
 		log_indentation_down;
 		log_indentation_down;
 		
-		return result;
+		return points_final;
 	end get_polygon_proximity_points;
 
 
@@ -737,7 +774,8 @@ package body et_routing is
 		
 		-- For each domain we have an individual flag:
 		type type_domain_status is record
-			board, polygon, polygon_proximities : type_stop_go := STOP;
+			board, polygon, -- CS rename to board_intersections, polygon_intersections ?
+			polygon_proximities : type_stop_go := STOP;
 		end record;
 
 		domain_status : type_domain_status;
@@ -748,7 +786,9 @@ package body et_routing is
 
 		-- At the start point of the domains (All start at the same x-position),
 		-- the individual line flags must be initialized:
-		procedure init_line_statuses is begin
+		procedure init_line_statuses is 
+			use pac_proximity_points;
+		begin
 			case board_domain.status is
 				when INSIDE		=> domain_status.board := GO;
 				when OUTSIDE	=> domain_status.board := STOP;
@@ -759,6 +799,14 @@ package body et_routing is
 				when OUTSIDE	=> domain_status.polygon := STOP;
 			end case;
 
+			-- The probe line of the proximity points has started outside
+			-- the polygon. So we there is no obstacle at this point:
+			if is_empty (polygon_proximities) then
+				domain_status.polygon_proximities := GO;
+			else
+				domain_status.polygon_proximities := element (polygon_proximities.first).status;
+			end if;
+			
 			--log (text => "status board line: " & type_stop_go'image (domain_status.board),
 				--level => log_threshold + 1);
 
@@ -781,6 +829,13 @@ package body et_routing is
 			end case;
 		end toggle_status_polygon_line;
 		
+		procedure toggle_status_polygon_proximities_line is begin
+			case domain_status.polygon_proximities is
+				when STOP	=> domain_status.polygon_proximities := GO;
+				when GO		=> domain_status.polygon_proximities := STOP;
+			end case;
+		end toggle_status_polygon_proximities_line;
+
 		
 		-- This flag indicates that the status for the final
 		-- fill line has changed from GO to STOP or from STOP to GO:
@@ -1065,7 +1120,8 @@ package body et_routing is
 				--log (text => "nearest" & to_string (dx), level => log_threshold + 1);
 				
 				-- Find the domains that have the current x_value.
-				-- There can be more than one domain having the current x_value:
+				-- There can be more than one domain having the current x_value
+				-- (This happens for example when board contour and polygon edge overlap.):
 				for i in type_smallest_differences'first .. type_smallest_differences'last loop
 
 					if sdx(i) = dx then
@@ -1077,8 +1133,8 @@ package body et_routing is
 								toggle_status_polygon_line;
 
 							when 3 =>
-								null;
-								--domain_status.polygon_proximities
+								toggle_status_polygon_proximities_line;
+
 							-- CS toggle others
 						end case;
 					end if;
@@ -1103,7 +1159,7 @@ package body et_routing is
 			iterate (switches.polygon, query_polygon_switch'access);
 
 			-- Find the polygon proximity switch that is nearest to the given forward-position:
-			--iterate (polygon_proximities, query_polygon_proximities_switch'access);
+			iterate (polygon_proximities, query_polygon_proximities_switch'access);
 
 			
 			case ms.status is

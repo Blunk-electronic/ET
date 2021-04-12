@@ -65,10 +65,6 @@ package et_routing is
 		STOP,
 		GO);
 	
-	--type type_proximity is (
-		--NEAR,
-		--FAR);
-		
 	type type_proximity_point is record
 		status	: type_stop_go := STOP;
 		x		: type_distance := zero;
@@ -77,9 +73,14 @@ package et_routing is
 	function "<" (left, right : in type_proximity_point) return boolean;
 	
 	package pac_proximity_points is new ordered_sets (type_proximity_point);
+
+	function to_string (prox_points : in pac_proximity_points.set)
+		return string;
 	
 	-- Computes the x-positions where a probe line
-	-- of given width leaves the polygon:
+	-- of given width gets too close to the polygon contours
+	-- or where it reaches safe distance from the polygon
+	-- contours:
 	function get_polygon_proximity_points (
 		polygon			: in type_polygon_conductor;
 
