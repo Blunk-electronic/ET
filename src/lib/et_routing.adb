@@ -174,7 +174,9 @@ package body et_routing is
 								when FALLING =>
 									insert (points_preliminary, (status => GO, x => x_stop_go)); -- + half_width));
 
-								when others =>
+								when VERTICAL => null; -- ignored. CS test required
+									
+								when HORIZONTAL =>
 									raise constraint_error;
 									-- CS should never happen. Already covered on overlap of probe
 									-- line with candidate line.
@@ -202,7 +204,9 @@ package body et_routing is
 										when FALLING =>
 											insert (points_preliminary, (status => STOP, x => x_stop_go)); -- + half_width));
 
-										when others =>
+										when VERTICAL => null; -- ignored. CS test required
+										
+										when HORIZONTAL =>
 											raise constraint_error;
 											-- CS should never happen. Already covered on overlap of probe
 											-- line with candidate line.
@@ -267,7 +271,7 @@ package body et_routing is
 
 		-- The list "points_preliminary" may contain successive STOP or GO marks. 
 		-- From a row of STOP marks only the first is required.
-		-- Likewise from a row of GO marks only the first is required.
+		-- Likewise from a row of GO marks only the first (last ?) is required.
 		-- This procedure removes those excessive stop/go marks and stores the result
 		-- in variable "points_final":
 		procedure reduce is
