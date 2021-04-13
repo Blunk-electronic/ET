@@ -756,6 +756,21 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+		
+		-- Indicates whether a line is increasing in y-direction
+		-- as it travels from left to right:
+		type type_line_direction is (
+			HORIZONTAL,					 
+			RISING,
+			VERTICAL,
+			FALLING);
+
+		-- Returns the direction of a line:
+		function get_direction (line : in type_line)
+			return type_line_direction;
+
+		
+		
 		-- If the start/end point of the candidate line is ABOVE-OR-ON the 
 		-- threshold AND if the end/start point of the candidate line is BELOW the
 		-- threshold then we consider the line to be threshold-crossing.

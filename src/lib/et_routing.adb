@@ -137,6 +137,8 @@ package body et_routing is
 			
 			candidate_line : constant type_polygon_line := element (c);
 
+			candidate_line_direction : constant type_line_direction := get_direction (candidate_line);
+			
 			-- Compute the boundaries of the candidate line.
 			-- NOTE: The candidate line is an edge of the polygon and thus has no width.
 			boundaries : constant type_boundaries := get_boundaries (
@@ -160,23 +162,63 @@ package body et_routing is
 					case i_l.status is
 						when EXISTS =>
 							x_stop_go := X (to_point (i_l.intersection.point));
-						
+
+							log (text => "intersects lower edge at" & to_string (x_stop_go)
+								 & " angle" & to_string (i_l.intersection.angle),
+								 level => log_threshold + 3);
+
+							case candidate_line_direction is
+								when RISING =>
+									insert (points_preliminary, (status => STOP, x => x_stop_go)); -- half_width));
+
+								when FALLING =>
+									insert (points_preliminary, (status => GO, x => x_stop_go)); -- + half_width));
+
+								when others =>
+									raise constraint_error;
+									-- CS should never happen. Already covered on overlap of probe
+									-- line with candidate line.
+							end case;
+									
 						when OVERLAP => null;
-							
+							log (text => "overlaps lower edge", level => log_threshold + 3);
+						
 						when NOT_EXISTENT =>
-							-- Polygon line starts and ends somewhere above the lower
-							-- edge of the fill line:
+							-- Candidate line of polygon line starts and ends somewhere 
+							-- above the lower edge of the fill line:
 							
 							case i_h.status is
-								when EXISTS => x_stop_go := X (to_point (i_h.intersection.point));
+								when EXISTS => 
+									x_stop_go := X (to_point (i_h.intersection.point));
+									
+									log (text => "intersects upper edge at" & to_string (x_stop_go)
+										& " angle" & to_string (i_h.intersection.angle),
+										level => log_threshold + 3);
+
+									case candidate_line_direction is
+										when RISING =>
+											insert (points_preliminary, (status => GO, x => x_stop_go)); -- half_width));
+
+										when FALLING =>
+											insert (points_preliminary, (status => STOP, x => x_stop_go)); -- + half_width));
+
+										when others =>
+											raise constraint_error;
+											-- CS should never happen. Already covered on overlap of probe
+											-- line with candidate line.
+									end case;
+
 								
-								when OVERLAP => null;
+								when OVERLAP =>
+									log (text => "overlaps upper edge", level => log_threshold + 3);
 									
 								when NOT_EXISTENT => 
 									
-									-- Polygon line starts and ends somewhere below
+									-- Candidate line of polygon line starts and ends somewhere below
 									-- the upper edge of the fill line:
 
+									log (text => "between lower and upper edge", level => log_threshold + 3);
+									
 									-- compute the STOP mark:
 									
 									-- The smallest x value of the candidate line is where
@@ -209,13 +251,18 @@ package body et_routing is
 			log (text => to_string (candidate_line) & " " & to_string (boundaries),
 				 level => log_threshold + 2);
 
-			if intersect (boundaries_probe_line, boundaries) then
-				log (text => "X",
-					level => log_threshold + 2);
+			log_indentation_up;
 
+			if intersect (boundaries_probe_line, boundaries) then
+				log (text => "boundaries intersect", level => log_threshold + 2);
+				log_indentation_up;
+				
 				test_intersection;
 				
+				log_indentation_down;
 			end if;
+
+			log_indentation_down;
 		end query_line;
 
 		-- The list "points_preliminary" may contain successive STOP or GO marks. 
@@ -292,7 +339,7 @@ package body et_routing is
 		log (text => "probe line " & to_string (boundaries_probe_line), level => log_threshold + 1);
 
 		log (text => "probing lines of polygon ...", level => log_threshold + 2);
-		log_indentation_up;
+		--log_indentation_up;
 
 		-- Probe the polygon contours for proximities with the probe line:		
 		iterate (segments.lines, query_line'access);
@@ -305,7 +352,7 @@ package body et_routing is
 		
 		log (text => to_string (points_final), level => log_threshold + 2);
 		
-		log_indentation_down;
+		--log_indentation_down;
 		log_indentation_down;
 		
 		return points_final;

@@ -1428,7 +1428,54 @@ package body et_geometry is
 			return type_rotation (arccos (X => a / b, cycle => float (units_per_cycle)));
 		end get_angle_of_itersection;
 
+		
+		function get_direction (line : in type_line)
+			return type_line_direction
+		is
+			result : type_line_direction := HORIZONTAL;
 
+			dx : constant type_distance := line.end_point.x - line.start_point.x;
+			dy : constant type_distance := line.end_point.y - line.start_point.y;
+		begin
+			if dx = zero then
+				-- no change in x -> line runs vertically
+				result := VERTICAL;
+				
+			elsif dy = zero then
+				-- no change in y -> line runs horizontally
+				result := HORIZONTAL;
+				
+			elsif dx > zero then
+				-- start point comes before end point
+				
+				if dy > zero then
+					-- start point is lower than end point
+					result := RISING;
+					
+				else -- dy < zero
+					-- start point is higher than end point
+					result := FALLING;
+				end if;
+
+			else -- dx < zero
+				-- start point comes after end point
+				
+				if dy > zero then
+					-- start point is higher than end point
+					result := FALLING;
+					
+				else -- dy < zero
+					-- start point is lower than end point
+					result := RISING;
+				end if;
+
+			end if;
+			
+			return result;
+		end get_direction;
+
+
+		
 		function crosses_threshold (
 			line		: in type_line;	
 			y_threshold	: in type_distance)
