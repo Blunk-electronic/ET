@@ -765,6 +765,9 @@ package et_geometry is
 			VERTICAL,
 			FALLING);
 
+		function to_string (direction : in type_line_direction)
+			return string;
+		
 		-- Returns the direction of a line:
 		function get_direction (line : in type_line)
 			return type_line_direction;

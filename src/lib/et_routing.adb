@@ -169,10 +169,10 @@ package body et_routing is
 
 							case candidate_line_direction is
 								when RISING =>
-									insert (points_preliminary, (status => STOP, x => x_stop_go)); -- half_width));
+									insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
 
 								when FALLING =>
-									insert (points_preliminary, (status => GO, x => x_stop_go)); -- + half_width));
+									insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
 
 								when VERTICAL => null; -- ignored. CS test required
 									
@@ -199,10 +199,10 @@ package body et_routing is
 
 									case candidate_line_direction is
 										when RISING =>
-											insert (points_preliminary, (status => GO, x => x_stop_go)); -- half_width));
+											insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
 
 										when FALLING =>
-											insert (points_preliminary, (status => STOP, x => x_stop_go)); -- + half_width));
+											insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
 
 										when VERTICAL => null; -- ignored. CS test required
 										
@@ -252,7 +252,9 @@ package body et_routing is
 			end test_intersection;
 				
 		begin -- query_line
-			log (text => to_string (candidate_line) & " " & to_string (boundaries),
+			log (text => to_string (candidate_line) 
+				 & to_string (candidate_line_direction) 
+				 & " " & to_string (boundaries),
 				 level => log_threshold + 2);
 
 			log_indentation_up;
@@ -270,15 +272,17 @@ package body et_routing is
 		end query_line;
 
 		-- The list "points_preliminary" may contain successive STOP or GO marks. 
-		-- From a row of STOP marks only the first is required.
-		-- Likewise from a row of GO marks only the first (last ?) is required.
+		-- From a row of STOP marks the first must be extracted.
+		-- From a row of GO marks the last must be extracted.
 		-- This procedure removes those excessive stop/go marks and stores the result
 		-- in variable "points_final":
 		procedure reduce is
 			use pac_proximity_points;
 
 			-- Since the probe line has started outside the polygon,
-			-- there is no obstacle, hence we are initially not in a stop region: -- CS comment correct ?
+			-- there is no obstacle, hence we are initially not in a stop region.
+			-- This flag changes to TRUE when a STOP region begins.
+			-- It changes to FALSE when a GO region begins:
 			stop_region : boolean := false;
 
 			procedure query_point (c : in pac_proximity_points.cursor) is begin
@@ -286,15 +290,38 @@ package body et_routing is
 				case element (c).status is
 					when STOP =>
 						if not stop_region then
+							-- We are leaving a GO region and are about
+							-- to enter a STOP region.
 							stop_region := true;
+
+							-- The the first STOP mark:
 							points_final.insert (element (c));
 						end if;
 						
 					when GO =>
 						if stop_region then
+							-- We are leaving a STOP region and are about
+							-- to enter a GO region.
 							stop_region := false;
-							points_final.insert (element (c));
 						end if;
+
+						-- Since we have to find the last GO mark in a row of
+						-- successive GO marks we must look ahead to the next
+						-- mark.
+						-- If this is the last proximity point then take it.
+						-- If this is NOT the last point, then take it if
+						-- the next point is a stop mark.
+						if next (c) = pac_proximity_points.no_element then
+							-- last point
+							points_final.insert (element (c));
+						else
+							-- not the last point
+							if element (next (c)).status = STOP then
+								-- next point is a stop mark
+								points_final.insert (element (c));
+							end if;
+						end if;
+
 				end case;
 			end query_point;
 			
@@ -377,14 +404,14 @@ package body et_routing is
 		result : type_distance_positive;
 
 		-- Since the cap of the fill line is round, the minimal distance to observe
-		-- from the center of the cap to the board edge is:
+		-- from the center of the cap to the polygon/board edge is:
 		clearance_min : constant float := float (clearance + line_width * 0.5);
 
 		type type_line is new et_board_shapes_and_text.pac_shapes.type_line with null record;
 			
 	
 		function compute_straight return type_track_clearance is
-			-- If the probe line intersects with a straight segment of the board
+			-- If the probe line intersects with a straight segment of the polygon/board
 			-- edge then we are dealing with a rectangular triangle.
 			
 			-- The total of inner angles of a rectangular triangle is 180 degrees.
@@ -393,8 +420,8 @@ package body et_routing is
 			-- The distance from center of line cap to board edge along the probe line:
 			side_c : float; -- to be returned
 
-			-- The distance from track end point to board edge.
-			-- A line perpendicular to the board edge:
+			-- The distance from track end point to polygon/board edge.
+			-- A line perpendicular to the polygon/board edge:
 			side_a : constant float := clearance_min;
 
 			-- The angle between side_a and side_c:
@@ -1252,7 +1279,7 @@ package body et_routing is
 
 		log_indentation_up;
 		
-		--log (text => "make board switches", level => log_threshold);
+		log (text => "make board switches", level => log_threshold);
 
 		-- The calculation of the board switches requires to observe
 		-- the DRU settings for clearance conductor to board edge. For this reason
@@ -1262,7 +1289,7 @@ package body et_routing is
 			extra_clearance	=> true,
 			clearance		=> design_rules.clearances.conductor_to_board_edge);
 
-		--log (text => "make polyon switches", level => log_threshold);
+		log (text => "make polyon switches", level => log_threshold);
 		
 		switches.polygon := make_switches (
 			points			=> polygon_domain);

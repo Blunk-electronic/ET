@@ -1428,6 +1428,13 @@ package body et_geometry is
 			return type_rotation (arccos (X => a / b, cycle => float (units_per_cycle)));
 		end get_angle_of_itersection;
 
+
+		function to_string (direction : in type_line_direction)
+			return string
+		is begin
+			return " " & type_line_direction'image (direction);
+		end to_string;
+
 		
 		function get_direction (line : in type_line)
 			return type_line_direction
