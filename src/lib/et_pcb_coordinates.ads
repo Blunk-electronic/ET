@@ -70,17 +70,18 @@ package et_pcb_coordinates is
 	procedure flip (face : in out type_face);
 	
 	-- The total distance between two objects:
-	type type_distance_total is delta 0.001 range -100_000_000.00 .. 100_000_000.00; -- unit is metric millimeter
-	for type_distance_total'small use 0.001; -- this is the accuracy required for layout
+	type type_distance_total is delta 0.0001 range -100_000_000.00 .. 100_000_000.00; -- unit is metric millimeter
+	for type_distance_total'small use 0.0001; -- this is the accuracy required for layout
+	-- CS increase accuracy if required
 
 	-- The x and y position of an object:
 	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 
 
 	
-	type type_rotation is delta 0.01 range -359.99 .. 359.99;
-	for type_rotation'small use 0.01;
-
+	type type_rotation is delta 0.001 range -359.999 .. 359.999;
+	for type_rotation'small use 0.001;
+	-- CS increase accuracy if required
 
 	
 	
