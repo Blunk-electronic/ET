@@ -410,14 +410,15 @@ package body et_routing is
 		type type_line is new et_board_shapes_and_text.pac_shapes.type_line with null record;
 			
 	
-		function compute_straight return type_track_clearance is
+		function compute_straight return type_distance_positive is
 			-- If the probe line intersects with a straight segment of the polygon/board
 			-- edge then we are dealing with a rectangular triangle.
 			
 			-- The total of inner angles of a rectangular triangle is 180 degrees.
 			-- Two angles are known. Hence:
 
-			-- The distance from center of line cap to board edge along the probe line:
+			-- The distance from center of the line cap to board edge
+			-- along the probe line (in x-direction):
 			side_c : float; -- to be returned
 
 			-- The distance from track end point to polygon/board edge.
@@ -434,7 +435,7 @@ package body et_routing is
 			side_c := side_a / cos (angle_b, float (units_per_cycle)); 
 			--put_line (" side_c " & float'image (side_c));
 
-			return type_track_clearance (side_c);
+			return type_distance_positive (side_c);
 		end compute_straight;
 
 
