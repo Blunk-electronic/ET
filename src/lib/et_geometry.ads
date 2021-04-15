@@ -789,6 +789,11 @@ package et_geometry is
 		function get_direction (line : in type_line)
 			return type_line_direction;
 
+		-- Converts the angle of a tangent to a
+		-- line direction.
+		function get_tangent_direction (angle : in type_tangent_angle)
+			return type_line_direction;
+
 		
 		
 		-- If the start/end point of the candidate line is ABOVE-OR-ON the 

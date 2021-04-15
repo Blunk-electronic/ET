@@ -349,7 +349,7 @@ package body et_routing is
 																 
 				end order_intersections;
 
-				tangent_direction : type_tangent_angle;
+				tangent_direction : type_line_direction;
 				
 			begin -- test_intersection
 				if i_c.status /= NONE_EXIST then
@@ -360,12 +360,37 @@ package body et_routing is
 					
 					case i_l.status is
 						when ONE_EXISTS =>
-							x_stop_go := X (to_point (i_l.intersection.point));
+							-- The intersection of lower edge and the arc must have the
+							-- nature of a secant. If it is a tangent, then the arc is
+							-- not entering the fill line and thus this would not be an obstacle.
+							if i_l.tangent_status = SECANT then
+								
+								x_stop_go := X (to_point (i_l.intersection.point));
 
-							log (text => str_lower_edge & to_string (x_stop_go)
-								 & " angle" & to_string (i_l.intersection.angle),
-								 level => log_threshold + 3);
-			
+								log (text => str_lower_edge & to_string (x_stop_go)
+									& " angle" & to_string (i_l.intersection.angle),
+									level => log_threshold + 3);
+
+								tangent_direction := get_tangent_direction (i_l.intersection.angle);
+
+								case tangent_direction is
+									when RISING =>
+										insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
+										-- CS the offset of half_width is probably too much
+
+									when FALLING =>
+										insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
+										-- CS the offset of half_width is probably too much
+										
+									when VERTICAL => null; -- ignored. CS test required
+										
+									when HORIZONTAL =>
+										raise constraint_error;
+										-- CS should never happen. Because the edge is not
+										-- a tangent to the candidate arc.
+								end case;
+							end if;
+							
 						when TWO_EXIST =>
 							-- Candidate arc intersects the lower edge twice. It comes from below
 							-- crosses the lower edge, enters the area of the fill line (but does 
@@ -377,13 +402,39 @@ package body et_routing is
 							-- Candidate arc of polygon intersects upper edge somewhere.
 							
 							case i_h.status is
-								when ONE_EXISTS => 
-									x_stop_go := X (to_point (i_h.intersection.point));
+								when ONE_EXISTS =>
+
+									-- The intersection of upper edge and the arc must have the
+									-- nature of a secant. If it is a tangent, then the arc is
+									-- not entering the fill line and thus this would not be an obstacle.
+									if i_h.tangent_status = SECANT then
 									
-									log (text => str_upper_edge & to_string (x_stop_go)
-										& " angle" & to_string (i_h.intersection.angle),
-										level => log_threshold + 3);
-								
+										x_stop_go := X (to_point (i_h.intersection.point));
+										
+										log (text => str_upper_edge & to_string (x_stop_go)
+											& " angle" & to_string (i_h.intersection.angle),
+											level => log_threshold + 3);
+
+										tangent_direction := get_tangent_direction (i_h.intersection.angle);
+
+										case tangent_direction is
+											when RISING =>
+												insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
+												-- CS the offset of half_width is probably too much
+																							
+											when FALLING =>
+												insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
+												-- CS the offset of half_width is probably too much
+												
+											when VERTICAL => null; -- ignored. CS test required
+											
+											when HORIZONTAL =>
+												raise constraint_error;
+												-- CS should never happen. Already covered on overlap of probe
+												-- line with candidate line.
+										end case;										
+									end if;
+									
 								when TWO_EXIST =>
 									-- Candidate arc intersects the upper edge twice. It comes from above
 									-- crosses the upper edge, enters the area of the fill line (but does 

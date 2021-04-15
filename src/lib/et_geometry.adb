@@ -192,7 +192,7 @@ package body et_geometry is
 			y : constant float := float (point.y);
 		begin
 			-- NOTE: If x and y are zero then the arctan operation is not possible. 
-			-- In this case we assume the resuling angle is zero.
+			-- In this case we assume the resulting angle is zero.
 			if x = 0.0 and y = 0.0 then
 				return zero_rotation;
 			else
@@ -730,7 +730,7 @@ package body et_geometry is
 
 			-- NOTE: If the total distance between the points is zero then
 			-- the arctan operation is not possible. In this case we assume
-			-- the resuling angle is zero.
+			-- the resulting angle is zero.
 			-- So we do the angle computation only if there is a distance between the points:
 			if result.absolute /= zero then
 				
@@ -1503,7 +1503,27 @@ package body et_geometry is
 			return result;
 		end get_direction;
 
+		function get_tangent_direction (angle : in type_tangent_angle)
+			return type_line_direction
+		is
+			result : type_line_direction := HORIZONTAL;
+		begin
+			if angle = 0.0 then
+				result := HORIZONTAL;
+				
+			elsif angle < 90.0 then
+				result := FALLING;
+				
+			elsif angle = 90.0 then
+				result := VERTICAL;
+				
+			else -- angle > 90.0
+				result := RISING;
+			end if;
 
+			return result;
+		end get_tangent_direction;
+		
 		
 		function crosses_threshold (
 			line		: in type_line;	
@@ -1654,7 +1674,7 @@ package body et_geometry is
 			--use pac_functions;
 		begin
 			-- NOTE: If dx and dy are zero then the arctan operation is not possible. 
-			-- In this case we assume the resuling angle is zero.
+			-- In this case we assume the resulting angle is zero.
 			if dx = 0.0 and dy = 0.0 then
 				return zero_rotation;
 			else
@@ -2290,7 +2310,7 @@ package body et_geometry is
 			-- calculate the angles where the arc begins and ends:
 
 			-- NOTE: If x and y are zero then the arctan operation is not possible. 
-			-- In this case we assume the resuling angle is zero.
+			-- In this case we assume the resulting angle is zero.
 			
 			if arc_tmp.start_point.x = zero and arc_tmp.start_point.y = zero then
 				result.angle_start := zero_rotation;
@@ -2705,7 +2725,7 @@ package body et_geometry is
 			-- calculate the angle where the arc begins:
 
 			-- NOTE: If x and y are zero then the arctan operation is not possible. 
-			-- In this case we assume the resuling angle is zero.
+			-- In this case we assume the resulting angle is zero.
 			if arc.start_point.x = zero and arc.start_point.y = zero then
 				angle_start := 0.0;
 			else
