@@ -1104,6 +1104,28 @@ package body et_geometry is
 
 	-- VECTOR OPERATIONS		
 
+		function get_x (
+			v	: in type_vector)
+			return type_distance is
+		begin
+			return v.x;
+		end get_x;
+		
+		function get_y (
+			v	: in type_vector)
+			return type_distance is
+		begin
+			return v.y;
+		end get_y;
+
+		function get_z (
+			v	: in type_vector)
+			return type_distance is
+		begin
+			return v.z;
+		end get_z;
+
+		
 		function to_vector (
 			point	: in type_point)
 			return type_vector is

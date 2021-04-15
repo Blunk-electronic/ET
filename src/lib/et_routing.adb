@@ -128,6 +128,11 @@ package body et_routing is
 			
 		segments : constant type_polygon_segments := get_segments (polygon);
 
+		str_bound_int	: constant string := "boundaries intersect";
+		str_lower_edge	: constant string := "intersects lower edge at";
+		str_upper_edge	: constant string := "intersects upper edge at";
+		str_between		: constant string := "between lower and upper edge";
+		
 		use pac_polygon_lines;
 		use pac_polygon_arcs;
 		use pac_polygon_circles;
@@ -163,17 +168,19 @@ package body et_routing is
 						when EXISTS =>
 							x_stop_go := X (to_point (i_l.intersection.point));
 
-							log (text => "intersects lower edge at" & to_string (x_stop_go)
+							log (text => str_lower_edge & to_string (x_stop_go)
 								 & " angle" & to_string (i_l.intersection.angle),
 								 level => log_threshold + 3);
 
 							case candidate_line_direction is
 								when RISING =>
 									insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
+									-- CS the offset of half_width is probably too much
 
 								when FALLING =>
 									insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
-
+									-- CS the offset of half_width is probably too much
+									
 								when VERTICAL => null; -- ignored. CS test required
 									
 								when HORIZONTAL =>
@@ -193,17 +200,19 @@ package body et_routing is
 								when EXISTS => 
 									x_stop_go := X (to_point (i_h.intersection.point));
 									
-									log (text => "intersects upper edge at" & to_string (x_stop_go)
+									log (text => str_upper_edge & to_string (x_stop_go)
 										& " angle" & to_string (i_h.intersection.angle),
 										level => log_threshold + 3);
 
 									case candidate_line_direction is
 										when RISING =>
 											insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
-
+											-- CS the offset of half_width is probably too much
+																						
 										when FALLING =>
 											insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
-
+											-- CS the offset of half_width is probably too much
+											
 										when VERTICAL => null; -- ignored. CS test required
 										
 										when HORIZONTAL =>
@@ -221,7 +230,7 @@ package body et_routing is
 									-- Candidate line of polygon line starts and ends somewhere below
 									-- the upper edge of the fill line:
 
-									log (text => "between lower and upper edge", level => log_threshold + 3);
+									log (text => str_between, level => log_threshold + 3);
 									
 									-- compute the STOP mark:
 									
@@ -260,7 +269,7 @@ package body et_routing is
 			log_indentation_up;
 
 			if intersect (boundaries_probe_line, boundaries) then
-				log (text => "boundaries intersect", level => log_threshold + 2);
+				log (text => str_bound_int, level => log_threshold + 2);
 				log_indentation_up;
 				
 				test_intersection;
@@ -271,6 +280,175 @@ package body et_routing is
 			log_indentation_down;
 		end query_line;
 
+		
+		procedure query_arc (c : in pac_polygon_arcs.cursor) is
+
+			use pac_proximity_points;
+			
+			candidate_arc : constant type_polygon_arc := element (c);
+
+			-- Compute the boundaries of the candidate arc.
+			-- NOTE: The candidate arc is an edge of the polygon and thus has no width.
+			boundaries : constant type_boundaries := get_boundaries (
+				arc			=> candidate_arc,
+				line_width	=> zero);
+
+			-- The place in x-direction where the fill line has to start or to stop:
+			x_stop_go : type_distance := zero;
+			
+			procedure test_intersection is
+				i_h : constant type_intersection_of_line_and_circle := get_intersection (pl_h, candidate_arc);
+				i_c : constant type_intersection_of_line_and_circle := get_intersection (pl_c, candidate_arc);
+				i_l : constant type_intersection_of_line_and_circle := get_intersection (pl_l, candidate_arc);
+
+				-- If we have two intersections, then the one that is on the left, will 
+				-- be the STOP mark. Because here the arc causes the fill line to stop.
+				-- The intersection on the right will be the GO mark, because here the fill
+				-- line has to start:
+				procedure order_intersections (i : in type_intersection_of_line_and_circle) is 
+					x1 : constant type_distance := get_x (i.intersection_1.point);
+					x2 : constant type_distance := get_x (i.intersection_2.point);
+				begin
+					if x1 < x2 then
+						-- x1 comes before x2 in x-direction. Means x1 provides the STOP mark
+						-- and x2 provides the GO mark:
+						log (text => str_upper_edge & to_string (x1) & " and" & to_string (x2),
+							 level => log_threshold +3); 
+
+						-- Since the fill line has a width, the STOP mark is
+						-- at some distance left of the just computed position:
+						insert (points_preliminary, (status => STOP, x => x1 - half_width));
+						-- CS the offset of half_width is probably too much
+						
+						-- Since the fill line has a width, the GO mark is
+						-- at some distance right of the just computed position:
+						insert (points_preliminary, (status => GO,   x => x2 + half_width));
+						-- CS the offset of half_width is probably too much
+						
+					elsif x1 > x2 then
+						-- x2 comes before x1 in x-direction. Means x2 provides the STOP mark
+						-- and x1 provides the GO mark:
+
+						log (text => str_upper_edge & to_string (x2) & " and" & to_string (x1),
+							 level => log_threshold +3); 
+
+						-- Since the fill line has a width, the STOP mark is
+						-- at some distance left of the just computed position:
+						insert (points_preliminary, (status => STOP, x => x2 - half_width));
+						-- CS the offset of half_width is probably too much
+						
+						-- Since the fill line has a width, the GO mark is
+						-- at some distance right of the just computed position:
+						insert (points_preliminary, (status => GO,   x => x1 + half_width));
+						-- CS the offset of half_width is probably too much
+						
+					else 
+						-- x1 and x2 are equal. CS should never happen
+						raise constraint_error; 
+					end if;
+																 
+				end order_intersections;
+
+				tangent_direction : type_line_direction;
+				
+			begin -- test_intersection
+				if i_c.status /= NONE_EXIST then
+					-- Ignore an intersection with the center of the probe line.
+					-- This is not a proximity point.
+					null;
+				else
+					
+					case i_l.status is
+						when ONE_EXISTS =>
+							x_stop_go := X (to_point (i_l.intersection.point));
+
+							log (text => str_lower_edge & to_string (x_stop_go)
+								 & " angle" & to_string (i_l.intersection.angle),
+								 level => log_threshold + 3);
+			
+						when TWO_EXIST =>
+							-- Candidate arc intersects the lower edge twice. It comes from below
+							-- crosses the lower edge, enters the area of the fill line (but does 
+							-- not cross the center line), goes down, crosses the lower edge again
+							-- and travels further down:
+							order_intersections (i_l);
+						
+						when NONE_EXIST =>
+							-- Candidate arc of polygon intersects upper edge somewhere.
+							
+							case i_h.status is
+								when ONE_EXISTS => 
+									x_stop_go := X (to_point (i_h.intersection.point));
+									
+									log (text => str_upper_edge & to_string (x_stop_go)
+										& " angle" & to_string (i_h.intersection.angle),
+										level => log_threshold + 3);
+								
+								when TWO_EXIST =>
+									-- Candidate arc intersects the upper edge twice. It comes from above
+									-- crosses the upper edge, enters the area of the fill line (but does 
+									-- not cross the center line), goes up, crosses the upper edge again
+									-- and travels further up:
+									order_intersections (i_h);
+									
+								when NONE_EXIST => 
+									
+									-- Candidate arc starts and ends somewhere between upper and lower edge
+									-- (but does not cross the center line):
+
+									log (text => str_between, level => log_threshold + 3);
+									
+									-- compute the STOP mark:
+									
+									-- The smallest x value of the candidate arc is where
+									-- the fill line has to stop.
+									x_stop_go := boundaries.smallest_x;
+
+									-- Since the fill line has a width, the STOP mark is
+									-- at some distance left of the just computed position:
+									insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
+
+									
+									
+									-- compute the GO mark:
+									
+									-- The greatest x value of the arc is where
+									-- the fill line has to start:
+									x_stop_go := boundaries.greatest_x;
+
+									-- Since the fill line has a width, the GO mark is
+									-- at some distance right of the just computed position:
+									insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
+									
+							end case;
+
+					end case;
+				end if;
+
+			end test_intersection;
+			
+		begin -- query_arc
+			log (text => to_string (candidate_arc) 
+				 --& to_string (candidate_line_direction) 
+				 & " " & to_string (boundaries),
+				 level => log_threshold + 2);
+
+			log_indentation_up;
+
+			if intersect (boundaries_probe_line, boundaries) then
+				log (text => str_bound_int, level => log_threshold + 2);
+				log_indentation_up;
+				
+				test_intersection;
+				
+				log_indentation_down;
+			end if;
+
+			log_indentation_down;
+		end query_arc;
+
+	
+		
 		-- The list "points_preliminary" may contain successive STOP or GO marks. 
 		-- From a row of STOP marks the first must be extracted.
 		-- From a row of GO marks the last must be extracted.
@@ -374,7 +552,11 @@ package body et_routing is
 
 		-- Probe the polygon contours for proximities with the probe line:		
 		iterate (segments.lines, query_line'access);
-		-- CS arcs and circles
+
+		log (text => "probing arcs of polygon ...", level => log_threshold + 2);
+		iterate (segments.arcs, query_arc'access);
+		
+		-- CS circles
 
 		-- Throw away excessive stop marks.
 		reduce;
@@ -418,11 +600,12 @@ package body et_routing is
 			-- Two angles are known. Hence:
 
 			-- The distance from center of the line cap to board edge
-			-- along the probe line (in x-direction):
+			-- along the probe line (in x-direction).
+			-- (It is the hypothenusis of the triangle.):	
 			side_c : float; -- to be returned
 
 			-- The distance from track end point to polygon/board edge.
-			-- A line perpendicular to the polygon/board edge:
+			-- A line perpendicular to the polygon/board edge.
 			side_a : constant float := clearance_min;
 
 			-- The angle between side_a and side_c:

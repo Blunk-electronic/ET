@@ -174,7 +174,8 @@ package et_geometry is
 		function to_positive_rotation (
 			rotation	: in type_rotation)
 			return type_rotation_positive;
-		
+
+		--subtype type_tangent_angle
 		subtype type_rotation_0_90 is type_rotation range 0.0 .. 90.0;
 		
 		
@@ -209,7 +210,8 @@ package et_geometry is
 		
 		function x (point : in type_point'class) return type_distance; -- CS class attr. not required ?
 		function y (point : in type_point'class) return type_distance;		
-
+		-- CS rename to get_x and get_y
+		
 		-- Returns the rotation of the given point around the origin.
 		-- If for example point is (1/1) then the return is 45 degree.
 		-- if point is (-1/-1) then the return is -135 degree.
@@ -629,6 +631,20 @@ package et_geometry is
 		null_vector : constant type_vector;
 
 		unity_vector : constant type_vector;
+
+		
+		function get_x (
+			v	: in type_vector)
+			return type_distance;
+
+		function get_y (
+			v	: in type_vector)
+			return type_distance;
+
+		function get_z (
+			v	: in type_vector)
+			return type_distance;
+
 		
 		function to_vector (
 			point	: in type_point)
