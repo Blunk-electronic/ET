@@ -349,7 +349,7 @@ package body et_routing is
 																 
 				end order_intersections;
 
-				tangent_direction : type_line_direction;
+				tangent_direction : type_tangent_angle;
 				
 			begin -- test_intersection
 				if i_c.status /= NONE_EXIST then

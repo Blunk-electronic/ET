@@ -175,7 +175,8 @@ package et_geometry is
 			rotation	: in type_rotation)
 			return type_rotation_positive;
 
-		--subtype type_tangent_angle
+		subtype type_tangent_angle is type_rotation range 0.0 .. 180.0 - type_rotation'small;
+		
 		subtype type_rotation_0_90 is type_rotation range 0.0 .. 90.0;
 		
 		
@@ -1165,7 +1166,7 @@ package et_geometry is
 
 		
 		-- The angle of a tangent to a circle:
-		subtype type_tangent_angle is type_rotation range -90.0 .. 90.0;
+		subtype type_tangent_angle_circle is type_rotation range -90.0 .. 90.0;
 		
 		-- Computes the angle of a tangent that touches a circle
 		-- at the given point. The center of the circle is assumed to be the origin.
@@ -1175,7 +1176,7 @@ package et_geometry is
 		-- - If it does not change in y, then the tangent runs horizontally and has zero angle.
 		-- - If it is vertical, then its angle is 90 degrees.
 		function get_tangent_angle (p : in type_point) 
-			return type_tangent_angle;
+			return type_tangent_angle_circle;
 
 
 		
