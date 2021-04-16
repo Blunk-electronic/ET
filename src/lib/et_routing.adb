@@ -575,11 +575,16 @@ package body et_routing is
 				
 				case element (points_final.first).status is
 					when GO =>
-						insert (points_final, sp_stop);
+						if not contains (points_final, sp_stop) then
+							insert (points_final, sp_stop);
+						end if;
 
 					when STOP =>
-						insert (points_final, sp_go);
+						if not contains (points_final, sp_go) then
+							insert (points_final, sp_go);
+						end if;
 				end case;
+				
 			end if;
 			
 		end insert_start_point;
