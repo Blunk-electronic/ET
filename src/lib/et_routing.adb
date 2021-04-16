@@ -480,7 +480,6 @@ package body et_routing is
 			
 		begin -- query_arc
 			log (text => to_string (candidate_arc) 
-				 --& to_string (candidate_line_direction) 
 				 & " " & to_string (boundaries),
 				 level => log_threshold + 2);
 
@@ -497,12 +496,10 @@ package body et_routing is
 
 			log_indentation_down;
 		end query_arc;
-
-	
 		
 		-- The list "points_preliminary" may contain successive STOP or GO marks. 
-		-- From a row of STOP marks the first must be extracted.
-		-- From a row of GO marks the last must be extracted.
+		-- From a row of STOP marks the FIRST must be extracted.
+		-- From a row of GO marks the LAST must be extracted.
 		-- This procedure removes those excessive stop/go marks and stores the result
 		-- in variable "points_final":
 		procedure reduce is
@@ -561,16 +558,30 @@ package body et_routing is
 			iterate (points_preliminary, query_point'access);				
 		end reduce;
 
-		-- The resulting list of proximity points needs a start point with a GO mark.
-		-- The start point is where the probe line starts.
-		-- If not already there, this procedure inserts that start point:
+		-- The resulting list of proximity points needs a well defined first point.
+		-- The x-position of the point is taken from the given start point.
+		-- If the resulting list points_final is empty (becaus no proximity
+		-- points have been detected) then we insert a GO mark.
+		-- If points_final starts with a GO mark, then we prepend a STOP mark.
+		-- If points_final starts with a STOP mark, then we prepend a GO mark.
 		procedure insert_start_point is
 			use pac_proximity_points;
-			sp : constant type_proximity_point := (x => X (start), status => GO);
+			sp_go	: constant type_proximity_point := (x => X (start), status => GO);
+			sp_stop	: constant type_proximity_point := (x => X (start), status => STOP);
 		begin
-			if not contains (points_final, sp) then
-				insert (points_final, sp);
+			if is_empty (points_final) then
+				insert (points_final, sp_go);
+			else
+				
+				case element (points_final.first).status is
+					when GO =>
+						insert (points_final, sp_stop);
+
+					when STOP =>
+						insert (points_final, sp_go);
+				end case;
 			end if;
+			
 		end insert_start_point;
 
 		
@@ -598,18 +609,16 @@ package body et_routing is
 
 		log (text => "probe line " & to_string (boundaries_probe_line), level => log_threshold + 1);
 
-		log (text => "probing lines of polygon ...", level => log_threshold + 2);
-		--log_indentation_up;
-
 		-- Probe the polygon contours for proximities with the probe line:		
+		log (text => "probing polygon lines ...", level => log_threshold + 2);
 		iterate (segments.lines, query_line'access);
 
-		log (text => "probing arcs of polygon ...", level => log_threshold + 2);
+		log (text => "probing polygon arcs ...", level => log_threshold + 2);
 		iterate (segments.arcs, query_arc'access);
 		
 		-- CS circles
 
-		-- Throw away excessive stop marks.
+		-- Discard excessive stop/go marks.
 		reduce;
 		
 		insert_start_point;
