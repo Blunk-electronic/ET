@@ -1310,6 +1310,25 @@ package body et_geometry is
 		
 		end to_line_vector;
 
+		function to_perpendicular_line_vector (
+			point	: in type_vector;
+			angle	: in type_rotation)
+			return type_line_vector 
+		is
+			ap : type_rotation; -- the angle of the resulting line
+			r : type_ray;
+		begin
+			ap := add (angle, 90.0); -- perpendicular
+
+			-- Build a ray that starts at point and travels
+			-- in direction ap:
+			r := (to_point (point), ap);
+
+			-- Convert the ray to a line vector:
+			return to_line_vector (r);
+		end to_perpendicular_line_vector;
+
+		
 		function to_string (intersection : in type_intersection)
 			return string
 		is begin

@@ -157,7 +157,108 @@ package body et_routing is
 				i_h : constant type_intersection_of_two_lines := get_intersection (pl_h, candidate_line);
 				i_c : constant type_intersection_of_two_lines := get_intersection (pl_c, candidate_line);
 				i_l : constant type_intersection_of_two_lines := get_intersection (pl_l, candidate_line);
-			begin
+
+				type type_edge is (UPPER, LOWER);
+				
+				function compute_for_slope (
+					center_line	: in type_line_vector;
+					edge_line	: in type_line_vector;							
+					intersection: in type_intersection;
+					edge		: in type_edge;
+					direction	: in type_line_direction)
+					return type_distance
+				is
+					clv : constant type_line_vector := to_line_vector (candidate_line);
+					m1, m2 : type_intersection_of_two_lines (status => EXISTS);
+
+					lv2 : type_line_vector;
+					ray : type_ray;
+
+				begin
+					m1 := get_intersection (edge_line, clv);
+					
+					ray.start_point := to_point (m1.intersection.point);
+
+					-- The given intersection.angle is of little use since it ranges between 0 and 180
+					-- degrees. Combined with the given direction we get the exact angle
+					-- of intersection.
+					
+					case edge is
+						when UPPER =>
+							case direction is
+								when RISING =>
+									if intersection.angle > 90.0 then
+										-- ray.direction := (180.0 - intersection.angle) * 0.5;
+										-- the simplified version:
+										ray.direction := 90.0 - intersection.angle * 0.5;
+										
+									elsif intersection.angle < 90.0 then
+										ray.direction := intersection.angle * 0.5;
+										
+									else
+										raise constraint_error; -- CS should never happen
+									end if;
+										
+									--log (text => "rising direction" & to_string (ray.direction), level => log_threshold + 3);
+									
+								when FALLING =>
+									if intersection.angle > 90.0 then
+										-- ray.direction := 180.0 - (180.0 - intersection.angle) * 0.5;
+										-- the simplified version:
+										ray.direction := 90.0 + intersection.angle * 0.5;
+										
+									elsif intersection.angle < 90.0 then
+										ray.direction := 180.0 - intersection.angle * 0.5;
+										
+									else
+										raise constraint_error; -- CS should never happen
+									end if;
+									
+									--log (text => "falling direction" & to_string (ray.direction), level => log_threshold + 3);
+									
+								when others => raise constraint_error; -- CS
+							end case;
+
+						when LOWER =>
+							case direction is
+								when RISING =>
+									if intersection.angle > 90.0 then
+										-- ray.direction := 180.0 + (180.0 - intersection.angle) * 0.5;
+										-- the simplified version:
+										ray.direction := 270.0 - intersection.angle * 0.5;
+										
+									elsif intersection.angle < 90.0 then
+										ray.direction := 180.0 + intersection.angle * 0.5;
+										
+									else
+										raise constraint_error; -- CS should never happen
+									end if;
+
+								when FALLING =>
+									if intersection.angle > 90.0 then
+										-- ray.direction := - (180.0 - intersection.angle) * 0.5;
+										-- the simplified version:
+										ray.direction := - 90.0 + intersection.angle * 0.5;
+										
+									elsif intersection.angle < 90.0 then
+										ray.direction := - (intersection.angle) * 0.5;
+										
+									else
+										raise constraint_error; -- CS should never happen
+									end if;
+
+								when others => raise constraint_error; -- CS
+							end case;
+					end case;
+							
+					lv2 := to_line_vector (ray);
+					m2 := get_intersection (center_line, lv2);
+					
+					return get_x (m2.intersection.point);
+				end compute_for_slope;
+				
+			begin -- test_intersection
+				
 				if i_c.status = EXISTS then
 					-- Ignore an intersection with the center of the probe line.
 					-- This is not a proximity point.
@@ -168,18 +269,18 @@ package body et_routing is
 						when EXISTS =>
 							x_stop_go := X (to_point (i_l.intersection.point));
 
-							log (text => str_lower_edge & to_string (x_stop_go)
-								 & " angle" & to_string (i_l.intersection.angle),
-								 level => log_threshold + 3);
+							log (text => str_lower_edge & to_string (x_stop_go), level => log_threshold + 3);
 
 							case candidate_line_direction is
 								when RISING =>
-									insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
-									-- CS the offset of half_width is probably too much
+									x_stop_go := compute_for_slope (pl_c, pl_h, i_l.intersection, LOWER, candidate_line_direction);
+									
+									insert (points_preliminary, (status => STOP, x => x_stop_go));
 
 								when FALLING =>
-									insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
-									-- CS the offset of half_width is probably too much
+									x_stop_go := compute_for_slope (pl_c, pl_h, i_l.intersection, LOWER, candidate_line_direction);
+							
+									insert (points_preliminary, (status => GO, x => x_stop_go));
 									
 								when VERTICAL => null; -- ignored. CS test required
 									
@@ -200,18 +301,18 @@ package body et_routing is
 								when EXISTS => 
 									x_stop_go := X (to_point (i_h.intersection.point));
 									
-									log (text => str_upper_edge & to_string (x_stop_go)
-										& " angle" & to_string (i_h.intersection.angle),
-										level => log_threshold + 3);
+									log (text => str_upper_edge & to_string (x_stop_go), level => log_threshold + 3);
 
 									case candidate_line_direction is
 										when RISING =>
-											insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
-											-- CS the offset of half_width is probably too much
-																						
+											x_stop_go := compute_for_slope (pl_c, pl_l, i_h.intersection, UPPER, candidate_line_direction);
+
+											insert (points_preliminary, (status => GO, x => x_stop_go));
+											
 										when FALLING =>
-											insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
-											-- CS the offset of half_width is probably too much
+											x_stop_go := compute_for_slope (pl_c, pl_l, i_h.intersection, UPPER, candidate_line_direction);
+											
+											insert (points_preliminary, (status => STOP, x => x_stop_go));
 											
 										when VERTICAL => null; -- ignored. CS test required
 										
