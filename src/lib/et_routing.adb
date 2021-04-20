@@ -409,6 +409,20 @@ package body et_routing is
 
 			-- The place in x-direction where the fill line has to start or to stop:
 			x_stop_go : type_distance := zero;
+
+			tangent_direction : type_line_direction;
+			
+			function to_line (i : in type_intersection)
+				return type_line_vector
+			is
+				v : type_line_vector;
+				r : type_ray;
+			begin
+				r.start_point := to_point (i.point);
+				r.direction := 180.0 - i.angle;
+
+				return to_line_vector (r);
+			end to_line;
 			
 			procedure test_intersection is
 				i_h : constant type_intersection_of_line_and_circle := get_intersection (pl_h, candidate_arc);
@@ -416,12 +430,12 @@ package body et_routing is
 				i_l : constant type_intersection_of_line_and_circle := get_intersection (pl_l, candidate_arc);
 
 				-- If we have two intersections, then the one that is on the left, will 
-				-- be the STOP mark. Because here the arc causes the fill line to stop.
-				-- The intersection on the right will be the GO mark, because here the fill
+				-- be the STOP mark. Because here the arc causes the fill line to stop there.
+				-- The intersection on the right will be the GO mark, because here a fill
 				-- line has to start:
 				procedure order_intersections (
 					i : in type_intersection_of_line_and_circle;
-					e : in type_edge)
+					edge : in type_edge)
 				is 
 					x1 : constant type_distance := get_x (i.intersection_1.point);
 					x2 : constant type_distance := get_x (i.intersection_2.point);
@@ -429,49 +443,117 @@ package body et_routing is
 					if x1 < x2 then
 						-- x1 comes before x2 in x-direction. Means x1 provides the STOP mark
 						-- and x2 provides the GO mark:
-						case e is
+						case edge is
 							when UPPER =>
 								log (text => str_upper_edge & to_string (x1) & " and" & to_string (x2),
-									level => log_threshold +3); 
+									level => log_threshold +3);
 
+								tangent_direction := get_tangent_direction (i.intersection_1.angle);
+
+								x_stop_go := compute_for_slope (
+										pl_c, pl_l, 
+										to_line (i.intersection_1),
+										i.intersection_1, edge, tangent_direction);
+
+								insert (points_preliminary, (status => STOP, x => x_stop_go));
+
+
+								
+								tangent_direction := get_tangent_direction (i.intersection_2.angle);
+
+								x_stop_go := compute_for_slope (
+										pl_c, pl_l,
+										to_line (i.intersection_2),
+										i.intersection_2, edge, tangent_direction);
+
+								insert (points_preliminary, (status => GO, x => x_stop_go));
+								
+								
+								
 							when LOWER =>
 								log (text => str_lower_edge & to_string (x1) & " and" & to_string (x2),
 									level => log_threshold +3); 
-						end case;
+
+								tangent_direction := get_tangent_direction (i.intersection_1.angle);
+
+								x_stop_go := compute_for_slope (
+										pl_c, pl_h, 
+										to_line (i.intersection_1),
+										i.intersection_1, edge, tangent_direction);
+
+								insert (points_preliminary, (status => STOP, x => x_stop_go));
 								
-						-- Since the fill line has a width, the STOP mark is
-						-- at some distance left of the just computed position:
-						insert (points_preliminary, (status => STOP, x => x1 - half_width));
-						-- CS the offset of half_width is probably too much
+
+								
+								tangent_direction := get_tangent_direction (i.intersection_2.angle);
+
+								x_stop_go := compute_for_slope (
+										pl_c, pl_h,
+										to_line (i.intersection_2),
+										i.intersection_2, edge, tangent_direction);
+
+								insert (points_preliminary, (status => GO, x => x_stop_go));
+						end case;
+
 						
-						-- Since the fill line has a width, the GO mark is
-						-- at some distance right of the just computed position:
-						insert (points_preliminary, (status => GO,   x => x2 + half_width));
-						-- CS the offset of half_width is probably too much
 						
 					elsif x1 > x2 then
 						-- x2 comes before x1 in x-direction. Means x2 provides the STOP mark
 						-- and x1 provides the GO mark:
 
-						case e is
+						case edge is
 							when UPPER =>
 								log (text => str_upper_edge & to_string (x2) & " and" & to_string (x1),
 									level => log_threshold +3); 
 
+
+								tangent_direction := get_tangent_direction (i.intersection_2.angle);
+
+								x_stop_go := compute_for_slope (
+										pl_c, pl_l, 
+										to_line (i.intersection_2),
+										i.intersection_2, edge, tangent_direction);
+
+								insert (points_preliminary, (status => STOP, x => x_stop_go));
+
+
+								
+								tangent_direction := get_tangent_direction (i.intersection_1.angle);
+
+								x_stop_go := compute_for_slope (
+										pl_c, pl_l,
+										to_line (i.intersection_1),
+										i.intersection_1, edge, tangent_direction);
+
+								insert (points_preliminary, (status => GO, x => x_stop_go));
+
+
+								
 							when LOWER =>
 								log (text => str_lower_edge & to_string (x2) & " and" & to_string (x1),
 									level => log_threshold +3); 
-						end case;
+
+								tangent_direction := get_tangent_direction (i.intersection_2.angle);
+
+								x_stop_go := compute_for_slope (
+										pl_c, pl_h, 
+										to_line (i.intersection_2),
+										i.intersection_2, edge, tangent_direction);
+
+								insert (points_preliminary, (status => STOP, x => x_stop_go));
+
+
 								
-						-- Since the fill line has a width, the STOP mark is
-						-- at some distance left of the just computed position:
-						insert (points_preliminary, (status => STOP, x => x2 - half_width));
-						-- CS the offset of half_width is probably too much
-						
-						-- Since the fill line has a width, the GO mark is
-						-- at some distance right of the just computed position:
-						insert (points_preliminary, (status => GO,   x => x1 + half_width));
-						-- CS the offset of half_width is probably too much
+								tangent_direction := get_tangent_direction (i.intersection_1.angle);
+
+								x_stop_go := compute_for_slope (
+										pl_c, pl_h,
+										to_line (i.intersection_1),
+										i.intersection_1, edge, tangent_direction);
+
+								insert (points_preliminary, (status => GO, x => x_stop_go));
+
+						end case;
 						
 					else 
 						-- x1 and x2 are equal. CS should never happen
@@ -479,21 +561,6 @@ package body et_routing is
 					end if;
 																 
 				end order_intersections;
-
-				tangent_direction : type_line_direction;
-				r : type_ray;
-
-				function to_line (i : in type_intersection)
-					return type_line_vector
-				is
-					v : type_line_vector;
-					r : type_ray;
-				begin
-					r.start_point := to_point (i.point);
-					r.direction := 180.0 - i.angle;
-
-					return to_line_vector (r);
-				end to_line;
 				
 			begin -- test_intersection
 				if i_c.status /= NONE_EXIST then
@@ -516,17 +583,13 @@ package body et_routing is
 									level => log_threshold + 3);
 
 								tangent_direction := get_tangent_direction (i_l.intersection.angle);
-
-								r.start_point := to_point (i_l.intersection.point);
-								r.direction := 180.0 - i_l.intersection.angle;
 								
 								case tangent_direction is
 									when RISING =>
 										
 										x_stop_go := compute_for_slope (
 														pl_c, pl_h, 
-														to_line_vector (r),
-														--to_line (i_l.intersection),
+														to_line (i_l.intersection),
 														i_l.intersection, LOWER, tangent_direction);
 
 										
@@ -538,7 +601,7 @@ package body et_routing is
 
 										x_stop_go := compute_for_slope (
 														pl_c, pl_h, 
-														to_line_vector (r),
+														to_line (i_l.intersection),
 														i_l.intersection, LOWER, tangent_direction);
 
 										--insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
@@ -580,14 +643,11 @@ package body et_routing is
 
 										tangent_direction := get_tangent_direction (i_h.intersection.angle);
 
-										r.start_point := to_point (i_h.intersection.point);
-										r.direction := 180.0 - i_h.intersection.angle;
-										
 										case tangent_direction is
 											when RISING =>
 												x_stop_go := compute_for_slope (
 																pl_c, pl_l,
-																to_line_vector (r),
+																to_line (i_h.intersection),
 																i_h.intersection, UPPER, tangent_direction);
 
 												
@@ -598,7 +658,7 @@ package body et_routing is
 											when FALLING =>
 												x_stop_go := compute_for_slope (
 																pl_c, pl_l,
-																to_line_vector (r),
+																to_line (i_h.intersection),
 																i_h.intersection, UPPER, tangent_direction);
 
 												--insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
