@@ -419,16 +419,26 @@ package body et_routing is
 				-- be the STOP mark. Because here the arc causes the fill line to stop.
 				-- The intersection on the right will be the GO mark, because here the fill
 				-- line has to start:
-				procedure order_intersections (i : in type_intersection_of_line_and_circle) is 
+				procedure order_intersections (
+					i : in type_intersection_of_line_and_circle;
+					e : in type_edge)
+				is 
 					x1 : constant type_distance := get_x (i.intersection_1.point);
 					x2 : constant type_distance := get_x (i.intersection_2.point);
 				begin
 					if x1 < x2 then
 						-- x1 comes before x2 in x-direction. Means x1 provides the STOP mark
 						-- and x2 provides the GO mark:
-						log (text => str_upper_edge & to_string (x1) & " and" & to_string (x2),
-							 level => log_threshold +3); 
+						case e is
+							when UPPER =>
+								log (text => str_upper_edge & to_string (x1) & " and" & to_string (x2),
+									level => log_threshold +3); 
 
+							when LOWER =>
+								log (text => str_lower_edge & to_string (x1) & " and" & to_string (x2),
+									level => log_threshold +3); 
+						end case;
+								
 						-- Since the fill line has a width, the STOP mark is
 						-- at some distance left of the just computed position:
 						insert (points_preliminary, (status => STOP, x => x1 - half_width));
@@ -443,9 +453,16 @@ package body et_routing is
 						-- x2 comes before x1 in x-direction. Means x2 provides the STOP mark
 						-- and x1 provides the GO mark:
 
-						log (text => str_upper_edge & to_string (x2) & " and" & to_string (x1),
-							 level => log_threshold +3); 
+						case e is
+							when UPPER =>
+								log (text => str_upper_edge & to_string (x2) & " and" & to_string (x1),
+									level => log_threshold +3); 
 
+							when LOWER =>
+								log (text => str_lower_edge & to_string (x2) & " and" & to_string (x1),
+									level => log_threshold +3); 
+						end case;
+								
 						-- Since the fill line has a width, the STOP mark is
 						-- at some distance left of the just computed position:
 						insert (points_preliminary, (status => STOP, x => x2 - half_width));
@@ -465,6 +482,18 @@ package body et_routing is
 
 				tangent_direction : type_line_direction;
 				r : type_ray;
+
+				function to_line (i : in type_intersection)
+					return type_line_vector
+				is
+					v : type_line_vector;
+					r : type_ray;
+				begin
+					r.start_point := to_point (i.point);
+					r.direction := 180.0 - i.angle;
+
+					return to_line_vector (r);
+				end to_line;
 				
 			begin -- test_intersection
 				if i_c.status /= NONE_EXIST then
@@ -489,7 +518,7 @@ package body et_routing is
 								tangent_direction := get_tangent_direction (i_l.intersection.angle);
 
 								r.start_point := to_point (i_l.intersection.point);
-								r.direction := i_l.intersection.angle;
+								r.direction := 180.0 - i_l.intersection.angle;
 								
 								case tangent_direction is
 									when RISING =>
@@ -497,6 +526,7 @@ package body et_routing is
 										x_stop_go := compute_for_slope (
 														pl_c, pl_h, 
 														to_line_vector (r),
+														--to_line (i_l.intersection),
 														i_l.intersection, LOWER, tangent_direction);
 
 										
@@ -505,6 +535,12 @@ package body et_routing is
 										insert (points_preliminary, (status => STOP, x => x_stop_go));
 
 									when FALLING =>
+
+										x_stop_go := compute_for_slope (
+														pl_c, pl_h, 
+														to_line_vector (r),
+														i_l.intersection, LOWER, tangent_direction);
+
 										--insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
 										-- CS the offset of half_width is probably too much
 										insert (points_preliminary, (status => GO, x => x_stop_go));
@@ -523,7 +559,7 @@ package body et_routing is
 							-- crosses the lower edge, enters the area of the fill line (but does 
 							-- not cross the center line), goes down, crosses the lower edge again
 							-- and travels further down:
-							order_intersections (i_l);
+							order_intersections (i_l, LOWER);
 						
 						when NONE_EXIST =>
 							-- Candidate arc of polygon intersects upper edge somewhere.
@@ -544,13 +580,27 @@ package body et_routing is
 
 										tangent_direction := get_tangent_direction (i_h.intersection.angle);
 
+										r.start_point := to_point (i_h.intersection.point);
+										r.direction := 180.0 - i_h.intersection.angle;
+										
 										case tangent_direction is
 											when RISING =>
+												x_stop_go := compute_for_slope (
+																pl_c, pl_l,
+																to_line_vector (r),
+																i_h.intersection, UPPER, tangent_direction);
+
+												
 												--insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
 												-- CS the offset of half_width is probably too much
 												insert (points_preliminary, (status => GO, x => x_stop_go));
 																							
 											when FALLING =>
+												x_stop_go := compute_for_slope (
+																pl_c, pl_l,
+																to_line_vector (r),
+																i_h.intersection, UPPER, tangent_direction);
+
 												--insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
 												-- CS the offset of half_width is probably too much
 												insert (points_preliminary, (status => STOP, x => x_stop_go));
@@ -569,7 +619,7 @@ package body et_routing is
 									-- crosses the upper edge, enters the area of the fill line (but does 
 									-- not cross the center line), goes up, crosses the upper edge again
 									-- and travels further up:
-									order_intersections (i_h);
+									order_intersections (i_h, UPPER);
 									
 								when NONE_EXIST => 
 									
