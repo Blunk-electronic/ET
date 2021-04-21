@@ -565,7 +565,7 @@ package body et_routing is
 			begin -- test_intersection
 				if i_c.status /= NONE_EXIST then
 					-- Ignore an intersection with the center of the probe line.
-					-- This is not a proximity point.
+					-- Because this is not a proximity point but an intersection point.
 					null;
 				else
 					
@@ -718,8 +718,7 @@ package body et_routing is
 			end test_intersection;
 			
 		begin -- query_arc
-			log (text => to_string (candidate_arc) 
-				 & " " & to_string (boundaries),
+			log (text => to_string (candidate_arc) & " " & to_string (boundaries),
 				 level => log_threshold + 2);
 
 			log_indentation_up;

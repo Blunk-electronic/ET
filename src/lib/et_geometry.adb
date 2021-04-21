@@ -2563,7 +2563,6 @@ package body et_geometry is
 			S : type_rotation_positive := to_positive_rotation (arc_angles.angle_start);
 			E : type_rotation_positive := to_positive_rotation (arc_angles.angle_end);
 
-			-- In 
 			procedure offset_ccw is 
 				T : type_rotation_positive;
 			begin
@@ -2583,12 +2582,21 @@ package body et_geometry is
 				S := S + T;
 				P := add (P, T);
 			end offset_cw;
+
+			distance_center_to_point : constant type_distance_positive := distance_total (point, arc.center);
 			
-		begin -- on_arc
+		begin
+			--log (text => "center" & to_string (arc.center) 
+				 --& " radius" & to_string (arc_angles.radius)
+				 --& " start" & to_string (arc.start_point)
+				 --& " end" & to_string (arc.end_point)
+				 --& " point" & to_string (point)
+				 --& " distance center to point" & to_string (distance_center_to_point));
 			
 			-- First test whether the given point is on the circumfence of
 			-- a virtual circle. The circle has the same radius as the arc.
-			if distance_total (point, arc.center) = arc_angles.radius then
+			if abs (distance_center_to_point - arc_angles.radius) <= type_distance'small then
+				-- Due to unavoidable rounding errors, a minimal error occurs.
 
 				-- Point is on circumfence of virtual circle.
 				--log (text => "on circumfence");
@@ -2687,6 +2695,9 @@ package body et_geometry is
 
 					-- Test whether the points where the secant meets the
 					-- circle are on the given arc:
+
+					--log (text => "p1" & to_string (to_point ((vi.intersection_1.point))));
+					--log (text => "p2" & to_string (to_point ((vi.intersection_2.point))));
 					
 					if	on_arc (to_point (vi.intersection_1.point), arc) 
 					and on_arc (to_point (vi.intersection_2.point), arc) then
