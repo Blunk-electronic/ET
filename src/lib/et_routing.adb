@@ -1480,7 +1480,7 @@ package body et_routing is
 				
 				case status_inside_outside is
 					when INSIDE => -- A change from outside to inside occured.
-						-- Fill area entered.
+						-- Fill area ENTERED.
 						-- Create a new virtual intersection after the original
 						-- intersection. The original intersection is omitted.
 						new_x := element (c).x_position + spacing;
@@ -1488,12 +1488,25 @@ package body et_routing is
 						append (switches, new_x);
 						
 					when OUTSIDE => -- A change from inside to outside occured.
-						-- Fill area left.
+						-- Fill area LEFT.
 						-- Create a new virtual intersection before the original
 						-- intersection. The original intersection is omitted.
 						new_x := element (c).x_position - spacing;
 
-						append (switches, new_x);
+						-- If the change to the outside comes before the
+						-- change into the inside then both points must be discarded.
+						-- Otherwise we would later get a fill line that has zero length or
+						-- runs from right to the left (Fill lines always run from left to right.).
+						if is_empty (switches) then
+							append (switches, new_x);
+						else
+							if last_element (switches) < new_x then
+								append (switches, new_x);
+							else
+								switches.delete_last;
+							end if;
+						end if;
+						
 				end case;
 				
 				log (text => "switch at" & to_string (new_x), level => log_threshold + 1);
@@ -1648,7 +1661,8 @@ package body et_routing is
 				end if;
 			end query_polygon_switch;
 
-			use pac_proximity_points;			
+			use pac_proximity_points;
+			
 			procedure query_polygon_proximities_switch (c : in pac_proximity_points.cursor) is
 				x : type_distance := element (c).x;
 			begin
@@ -1712,7 +1726,7 @@ package body et_routing is
 			
 		begin -- get_next_milestone
 			
-			log (text => "seaching milestone forward" & to_string (forward),
+			log (text => "seaching next milestone after" & to_string (forward),
 				level => log_threshold + 1);
 
 			log_indentation_up;
