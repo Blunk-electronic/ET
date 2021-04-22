@@ -83,7 +83,7 @@ package et_conductor_polygons is
 
 
 	
-	-- Polgon priority: 0 is weakest, 100 ist strongest.
+	-- Polgon priority: 0 is weakest, 100 is strongest.
 	keyword_priority : constant string := "priority";
 	
 	polygon_priority_max : constant natural := 100;

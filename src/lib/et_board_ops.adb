@@ -4645,7 +4645,9 @@ package body et_board_ops is
 								start			=> start_point,
 								line_width		=> line_width,
 								log_threshold	=> log_threshold + 3);
-								
+
+							-- CS intersections and proximities with cutout areas
+							
 							-- Compute the fill lines required for the current row (y-position):
 							fill_lines := et_routing.compute_fill_lines (
 								module_cursor		=> module_cursor,

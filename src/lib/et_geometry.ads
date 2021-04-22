@@ -1305,7 +1305,6 @@ package et_geometry is
 
 		package pac_polygon_arcs is new doubly_linked_lists (type_polygon_arc);
 
-		
 		type type_polygon_circle is new type_circle with record
 			id : type_polygon_segment_id := type_polygon_segment_id'first;
 		end record;
