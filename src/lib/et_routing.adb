@@ -798,31 +798,46 @@ package body et_routing is
 
 		-- The resulting list of proximity points needs a well defined first point.
 		-- The x-position of the point is taken from the given start point.
-		-- If the resulting list points_final is empty (becaus no proximity
-		-- points have been detected) then we insert a GO mark.
-		-- If points_final starts with a GO mark, then we prepend a STOP mark.
-		-- If points_final starts with a STOP mark, then we prepend a GO mark.
+		-- RULE 0:	If the resulting list points_final is empty (becaus no proximity
+		--			points have been detected) then we insert a GO mark.
+		-- RULE 1:	If points_final starts with a GO mark, then we prepend a STOP mark.
+		-- RULE 2:	If points_final starts with a STOP mark, then we prepend a GO mark.
+
+		-- RULE 3:	If there is only one GO mark at the end of the proximity points,
+		-- 			then it is to be replaced by a GO mark that sits at the begin of
+		--			the proximity points:
 		procedure insert_start_point is
 			use pac_proximity_points;
 			sp_go	: constant type_proximity_point := (x => X (start), status => GO);
 			sp_stop	: constant type_proximity_point := (x => X (start), status => STOP);
 		begin
 			if is_empty (points_final) then
+				-- apply RULE 0:
 				insert (points_final, sp_go);
+				
 			else
+				if points_final.length = 1 and element (points_final.first).status = GO then
+					-- apply RULE 3:
+					points_final.clear;
+					insert (points_final, sp_go);
+					
+				else
 				
-				case element (points_final.first).status is
-					when GO =>
-						if not contains (points_final, sp_stop) then
-							insert (points_final, sp_stop);
-						end if;
+					case element (points_final.first).status is
+						when GO =>
+							-- apply RULE 1:
+							if not contains (points_final, sp_stop) then
+								insert (points_final, sp_stop);
+							end if;
 
-					when STOP =>
-						if not contains (points_final, sp_go) then
-							insert (points_final, sp_go);
-						end if;
-				end case;
-				
+						when STOP =>
+							-- apply RULE 2:
+							if not contains (points_final, sp_go) then
+								insert (points_final, sp_go);
+							end if;
+					end case;
+					
+				end if;
 			end if;
 			
 		end insert_start_point;
