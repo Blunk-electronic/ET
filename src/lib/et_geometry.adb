@@ -2305,7 +2305,7 @@ package body et_geometry is
 				return false;
 			end if;
 		end is_valid;
-		
+
 		function to_arc_angles (arc : in type_arc) return type_arc_angles is
 		-- Returns the start and end angles of an arc.
 		-- The angles may be negative. For example instead of 270 degree
@@ -2549,7 +2549,7 @@ package body et_geometry is
 		function on_arc (
 			point		: in type_point;
 			arc			: in type_arc;
-			accuracy	: in type_catch_zone := zero)
+			catch_zone	: in type_catch_zone := type_distance'small)
 			return boolean 
 		is
 			-- The angle of the given point relative to the
@@ -2592,10 +2592,10 @@ package body et_geometry is
 				 --& " end" & to_string (arc.end_point)
 				 --& " point" & to_string (point)
 				 --& " distance center to point" & to_string (distance_center_to_point));
-			
+
 			-- First test whether the given point is on the circumfence of
 			-- a virtual circle. The circle has the same radius as the arc.
-			if abs (distance_center_to_point - arc_angles.radius) <= type_distance'small then
+			if abs (distance_center_to_point - arc_angles.radius) <= catch_zone then
 				-- Due to unavoidable rounding errors, a minimal error occurs.
 
 				-- Point is on circumfence of virtual circle.
@@ -2874,10 +2874,10 @@ package body et_geometry is
 		function on_circle (
 			point		: in type_point;
 			circle		: in type_circle;
-			accuracy	: in type_catch_zone := zero)
+			catch_zone	: in type_catch_zone := type_distance'small)
 			return boolean 
 		is begin
-			if distance_total (point, circle.center) - circle.radius <= accuracy then
+			if distance_total (point, circle.center) - circle.radius <= catch_zone then
 				return true;
 			else
 				return false; 

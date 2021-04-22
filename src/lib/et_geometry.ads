@@ -1057,12 +1057,14 @@ package et_geometry is
 			return type_boundaries;
 		
 		-- Returns true if the given point sits on the given arc.
-		-- The optional parameter accuracy may be used to specifiy the range at
+		-- The optional parameter catch_zone may be used to specifiy the range at
 		-- which the point is regarded as sitting on the arc.
+		-- If no catch_zone provided, then the minimal possible range
+		-- will be used:
 		function on_arc (
 			point		: in type_point;
 			arc			: in type_arc;
-			accuracy	: in type_catch_zone := zero) -- CS currently ignored
+			catch_zone	: in type_catch_zone := type_distance'small)
 			return boolean; 
 
 
@@ -1162,12 +1164,14 @@ package et_geometry is
 			return type_boundaries;
 		
 		-- Returns true if the given point sits on the given circle circumfence.
-		-- The optional parameter accuracy may be used to specifiy the range at
-		-- which the point is regarded as sitting on the circle.
+		-- The optional parameter catch_zone may be used to specifiy the range at
+		-- which the point is regarded as sitting on the arc.
+		-- If no catch_zone provided, then the minimal possible range
+		-- will be used:
 		function on_circle (
 			point		: in type_point;
 			circle		: in type_circle;
-			accuracy	: in type_catch_zone := zero)
+			catch_zone	: in type_catch_zone := type_distance'small)
 			return boolean;
 
 		-- Gives the status (inside/outside) of a point relative to a circle.
