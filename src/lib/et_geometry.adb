@@ -3177,6 +3177,68 @@ package body et_geometry is
 				& " radius" & to_string (circle.radius);
 		end to_string;
 
+
+		function get_left_end (
+			line		: in type_polygon_line;
+			boundaries	: in type_boundaries := boundaries_default)
+			return type_point
+		is
+			p : type_point; -- to be returned
+			b : type_boundaries := boundaries;								   
+		begin
+			-- If no boundaries provided, compute them.
+			-- Otherwise use provided boundaries as they are:
+			if b = boundaries_default then
+				b := get_boundaries (line, zero); -- a polygon line has zero width
+			end if;
+			
+			if b.smallest_x = line.start_point.x then
+				p := line.start_point;
+				
+			elsif b.smallest_x = line.end_point.x then
+				p := line.end_point;
+
+			else
+				-- If boundaries where provided and neither start nor end point
+				-- of line matches, issue exception:
+				raise constraint_error with to_string (b) 
+					& " invalid for line" & to_string (line) & " !";
+			end if;
+				
+			return p;
+		end get_left_end;
+
+		function get_right_end (
+			line		: in type_polygon_line;
+			boundaries	: in type_boundaries := boundaries_default)
+			return type_point
+		is
+			p : type_point; -- to be returned
+			b : type_boundaries := boundaries;								   
+		begin
+			-- If no boundaries provided, compute them.
+			-- Otherwise use provided boundaries as they are:
+			if b = boundaries_default then
+				b := get_boundaries (line, zero); -- a polygon line has zero width
+			end if;
+			
+			if b.greatest_x = line.start_point.x then
+				p := line.start_point;
+				
+			elsif b.greatest_x = line.end_point.x then
+				p := line.end_point;
+
+			else
+				-- If boundaries where provided and neither start nor end point
+				-- of line matches, issue exception:
+				raise constraint_error with to_string (b) 
+					& " invalid for line" & to_string (line) & " !";
+			end if;
+				
+			return p;
+		end get_right_end;
+
+		
 		
 		procedure append_segment_line (
 			polygon	: in out type_polygon_base'class;

@@ -320,7 +320,7 @@ package et_packages is
 		-- the minimum width:
 		width_min : type_track_width := type_track_width'first;
 
-		-- the space between the polygon and foreign conducor objects:
+		-- the space between the polygon and foreign conductor objects:
 		isolation : type_track_clearance := type_track_clearance'first; 
 	
 		easing : type_easing;

@@ -1286,6 +1286,24 @@ package et_geometry is
 			id : type_polygon_segment_id := type_polygon_segment_id'first;
 		end record;
 
+		-- Returns the start or the end point of a polygon line
+		-- that is on the left.
+		-- If no boundaries given, then they will be computed.
+		-- If boundaries given then the execution is slightly faster.
+		-- If boundaries where provided and neither start nor end point
+		-- of line match then an exception will be raised.
+		function get_left_end (
+			line		: in type_polygon_line;
+			boundaries	: in type_boundaries := boundaries_default)
+			return type_point;
+
+		-- Returns the start or the end point of a polygon line
+		-- that is on the right.
+		-- See comments on function get_left_end.
+		function get_right_end (
+			line		: in type_polygon_line;
+			boundaries	: in type_boundaries := boundaries_default)
+			return type_point;
 
 		
 		procedure append_segment_line (

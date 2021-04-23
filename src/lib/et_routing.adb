@@ -258,14 +258,34 @@ package body et_routing is
 				i_h : constant type_intersection_of_two_lines := get_intersection (pl_h, candidate_line);
 				i_c : constant type_intersection_of_two_lines := get_intersection (pl_c, candidate_line);
 				i_l : constant type_intersection_of_two_lines := get_intersection (pl_l, candidate_line);
+
+				function get_intersections (tp : in type_point) return type_ordered_line_circle_intersections is
+					-- build a circle about the given touch point:
+					type tc is new type_circle with null record;
+					c : constant tc := (center => tp, radius => half_width);
+
+					ilc : type_intersection_of_line_and_circle (status => TWO_EXIST);
+					-- NOTE: There must be two intersections of the probe line (center line)
+					-- and the circle !
+				begin
+					ilc := get_intersection (
+							line	=> pl_c,
+							circle	=> c);
+
+					-- Return the intersections ordered from left to right (relative to the given
+					-- start point):
+					return order_intersections (start, ilc);
+				end get_intersections;
+
+				oi_center_line : type_ordered_line_circle_intersections;
+				
 			begin -- test_intersection
 				
 				if i_c.status = EXISTS then
 					-- Ignore an intersection with the center of the probe line.
 					-- This is not a proximity point.
 					null;
-				else
-					
+				else					
 					case i_l.status is
 						when EXISTS =>
 							x_stop_go := X (to_point (i_l.intersection.point));
@@ -345,28 +365,28 @@ package body et_routing is
 									-- the upper edge of the fill line:
 
 									log (text => str_between, level => log_threshold + 3);
-									
-									-- compute the STOP mark:
-									
-									-- The smallest x value of the candidate line is where
-									-- the fill line has to stop.
-									x_stop_go := boundaries.smallest_x;
 
-									-- Since the fill line has a width, the STOP mark is
-									-- at some distance left of the just computed position:
-									insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
+									-- The border of the fill line cap touches the candidate line
+									-- at some point. But the ends of the candidate line have a
+									-- y position different from the probe line. So we imagine a circle
+									-- with the touch point as its center. The circle then intersects
+									-- the probe line (center line of fill line) on two points.
+
+									-- compute the STOP mark:
+									oi_center_line := get_intersections (get_left_end (candidate_line, boundaries));
+									
+									x_stop_go := get_x (oi_center_line.entry_point.point);
+
+									insert (points_preliminary, (status => STOP, x => x_stop_go));
 
 									
 									
 									-- compute the GO mark:
+									oi_center_line := get_intersections (get_right_end (candidate_line, boundaries));
 									
-									-- The greatest x value of the line is where
-									-- the fill line has to start:
-									x_stop_go := boundaries.greatest_x;
+									x_stop_go := get_x (oi_center_line.exit_point.point);
 
-									-- Since the fill line has a width, the GO mark is
-									-- at some distance right of the just computed position:
-									insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
+									insert (points_preliminary, (status => GO, x => x_stop_go));
 									
 							end case;
 
@@ -571,8 +591,7 @@ package body et_routing is
 					-- Ignore an intersection with the center of the probe line.
 					-- Because this is not a proximity point but an intersection point.
 					null;
-				else
-					
+				else					
 					case i_l.status is
 						when ONE_EXISTS =>
 							-- The intersection of lower edge and the arc must have the
@@ -846,7 +865,6 @@ package body et_routing is
 			end if;
 			
 		end insert_start_point;
-
 		
 	begin -- get_polygon_proximity_points
 		log (text => "computing proximity points ...", level => log_threshold);
