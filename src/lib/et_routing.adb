@@ -377,6 +377,10 @@ package body et_routing is
 									
 									x_stop_go := get_x (oi_center_line.entry_point.point);
 
+									-- CS: test number of intersections of candidate line with cap.
+									-- If there are two intersections then x_stop_go must be reduced
+									-- via a loop until there is only a tangent left.
+									
 									insert (points_preliminary, (status => STOP, x => x_stop_go));
 
 									
@@ -386,6 +390,10 @@ package body et_routing is
 									
 									x_stop_go := get_x (oi_center_line.exit_point.point);
 
+									-- CS: test number of intersections of candidate line with cap.
+									-- If there are two intersections then x_stop_go must be increased
+									-- via a loop until there is only a tangent left.
+									
 									insert (points_preliminary, (status => GO, x => x_stop_go));
 									
 							end case;
