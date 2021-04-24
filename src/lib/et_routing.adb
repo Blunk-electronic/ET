@@ -311,8 +311,7 @@ package body et_routing is
 									
 								when VERTICAL => null; -- ignored. CS test required
 									
-								when HORIZONTAL =>
-									raise constraint_error;
+								when HORIZONTAL => raise constraint_error;
 									-- CS should never happen. Already covered on overlap of probe
 									-- line with candidate line.
 							end case;
@@ -349,8 +348,7 @@ package body et_routing is
 											
 										when VERTICAL => null; -- ignored. CS test required
 										
-										when HORIZONTAL =>
-											raise constraint_error;
+										when HORIZONTAL => raise constraint_error;
 											-- CS should never happen. Already covered on overlap of probe
 											-- line with candidate line.
 									end case;
@@ -604,7 +602,8 @@ package body et_routing is
 						when ONE_EXISTS =>
 							-- The intersection of lower edge and the arc must have the
 							-- nature of a secant. If it is a tangent, then the arc is
-							-- not entering the fill line and thus this would not be an obstacle.
+							-- not entering the area of the fill line, hence this would 
+							-- not be an obstacle.
 							if i_l.tangent_status = SECANT then
 								
 								x_stop_go := X (to_point (i_l.intersection.point));
@@ -622,10 +621,7 @@ package body et_routing is
 														pl_c, pl_h, 
 														to_line (i_l.intersection),
 														i_l.intersection, LOWER, tangent_direction);
-
 										
-										--insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
-										-- CS the offset of half_width is probably too much
 										insert (points_preliminary, (status => STOP, x => x_stop_go));
 
 									when FALLING =>
@@ -635,15 +631,12 @@ package body et_routing is
 														to_line (i_l.intersection),
 														i_l.intersection, LOWER, tangent_direction);
 
-										--insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
-										-- CS the offset of half_width is probably too much
 										insert (points_preliminary, (status => GO, x => x_stop_go));
 										
 									when VERTICAL => null; -- ignored. CS test required
 										
-									when HORIZONTAL =>
-										raise constraint_error;
-										-- CS should never happen. Because the edge is not
+									when HORIZONTAL => raise constraint_error;
+										-- This should never happen. Because the edge is not
 										-- a tangent to the candidate arc.
 								end case;
 							end if;
@@ -660,10 +653,10 @@ package body et_routing is
 							
 							case i_h.status is
 								when ONE_EXISTS =>
-
 									-- The intersection of upper edge and the arc must have the
 									-- nature of a secant. If it is a tangent, then the arc is
-									-- not entering the fill line and thus this would not be an obstacle.
+									-- not entering the area of the fill line, hence this would 
+									-- not be an obstacle.
 									if i_h.tangent_status = SECANT then
 									
 										x_stop_go := X (to_point (i_h.intersection.point));
@@ -680,10 +673,7 @@ package body et_routing is
 																pl_c, pl_l,
 																to_line (i_h.intersection),
 																i_h.intersection, UPPER, tangent_direction);
-
 												
-												--insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
-												-- CS the offset of half_width is probably too much
 												insert (points_preliminary, (status => GO, x => x_stop_go));
 																							
 											when FALLING =>
@@ -692,16 +682,14 @@ package body et_routing is
 																to_line (i_h.intersection),
 																i_h.intersection, UPPER, tangent_direction);
 
-												--insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
-												-- CS the offset of half_width is probably too much
 												insert (points_preliminary, (status => STOP, x => x_stop_go));
 												
 											when VERTICAL => null; -- ignored. CS test required
 											
-											when HORIZONTAL =>
-												raise constraint_error;
-												-- CS should never happen. Already covered on overlap of probe
-												-- line with candidate line.
+											when HORIZONTAL => raise constraint_error;
+											-- This should never happen. Because the edge is not
+											-- a tangent to the candidate arc.
+
 										end case;										
 									end if;
 									
@@ -712,8 +700,7 @@ package body et_routing is
 									-- and travels further up:
 									order_intersections (i_h, UPPER);
 									
-								when NONE_EXIST => 
-									
+								when NONE_EXIST => 									
 									-- Candidate arc starts and ends somewhere between upper and lower edge
 									-- (but does not cross the center line):
 
