@@ -67,6 +67,8 @@ package body et_routing is
 		else
 			return false;
 		end if;
+
+		-- CS compare status ?
 	end "<";
 		
 	function to_string (prox_points : in pac_proximity_points.set)
@@ -301,6 +303,15 @@ package body et_routing is
 									
 									insert (points_preliminary, (status => STOP, x => x_stop_go));
 
+									-- The right end of the candidate_line creates a GO mark because 
+									-- here the obstacle comes to an end:
+									--insert (points_preliminary, (status => GO, x => boundaries.greatest_x));
+
+									oi_center_line := get_intersections (get_right_end (candidate_line, boundaries));
+									x_stop_go := get_x (oi_center_line.exit_point.point);
+									insert (points_preliminary, (status => GO, x => x_stop_go));
+									
+									
 								when FALLING =>
 									x_stop_go := compute_for_slope (
 														pl_c, pl_h,
@@ -308,6 +319,15 @@ package body et_routing is
 														i_l.intersection, LOWER, candidate_line_direction);
 							
 									insert (points_preliminary, (status => GO, x => x_stop_go));
+
+									-- The left end of the candidate_line creates a STOP mark because 
+									-- here the obstacle begins:
+									--insert (points_preliminary, (status => STOP, x => boundaries.smallest_x));
+
+									oi_center_line := get_intersections (get_left_end (candidate_line, boundaries));
+									x_stop_go := get_x (oi_center_line.entry_point.point);
+									insert (points_preliminary, (status => STOP, x => x_stop_go));
+
 									
 								when VERTICAL => null; -- ignored. CS test required
 									
@@ -337,6 +357,15 @@ package body et_routing is
 															i_h.intersection, UPPER, candidate_line_direction);
 
 											insert (points_preliminary, (status => GO, x => x_stop_go));
+
+											-- The left end of the candidate_line creates a STOP mark because 
+											-- here the obstacle begins:
+											--insert (points_preliminary, (status => STOP, x => boundaries.smallest_x));
+
+											oi_center_line := get_intersections (get_left_end (candidate_line, boundaries));
+											x_stop_go := get_x (oi_center_line.entry_point.point);
+											insert (points_preliminary, (status => STOP, x => x_stop_go));
+
 											
 										when FALLING =>
 											x_stop_go := compute_for_slope (
@@ -345,6 +374,15 @@ package body et_routing is
 															i_h.intersection, UPPER, candidate_line_direction);
 											
 											insert (points_preliminary, (status => STOP, x => x_stop_go));
+
+											-- The right end of the candidate_line creates a GO mark because 
+											-- here the obstacle comes to an end:
+											--insert (points_preliminary, (status => GO, x => boundaries.greatest_x));
+
+											oi_center_line := get_intersections (get_right_end (candidate_line, boundaries));
+											x_stop_go := get_x (oi_center_line.exit_point.point);
+											insert (points_preliminary, (status => GO, x => x_stop_go));
+
 											
 										when VERTICAL => null; -- ignored. CS test required
 										
