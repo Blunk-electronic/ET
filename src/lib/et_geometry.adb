@@ -3238,6 +3238,66 @@ package body et_geometry is
 			return p;
 		end get_right_end;
 
+		function get_lower_end (
+			line		: in type_polygon_line;
+			boundaries	: in type_boundaries := boundaries_default)
+			return type_point
+		is
+			p : type_point; -- to be returned
+			b : type_boundaries := boundaries;								   
+		begin
+			-- If no boundaries provided, compute them.
+			-- Otherwise use provided boundaries as they are:
+			if b = boundaries_default then
+				b := get_boundaries (line, zero); -- a polygon line has zero width
+			end if;
+			
+			if b.smallest_y = line.start_point.x then
+				p := line.start_point;
+				
+			elsif b.smallest_y = line.end_point.x then
+				p := line.end_point;
+
+			else
+				-- If boundaries where provided and neither start nor end point
+				-- of line matches, issue exception:
+				raise constraint_error with to_string (b) 
+					& " invalid for line" & to_string (line) & " !";
+			end if;
+				
+			return p;
+		end get_lower_end;
+
+		function get_upper_end (
+			line		: in type_polygon_line;
+			boundaries	: in type_boundaries := boundaries_default)
+			return type_point
+		is
+			p : type_point; -- to be returned
+			b : type_boundaries := boundaries;								   
+		begin
+			-- If no boundaries provided, compute them.
+			-- Otherwise use provided boundaries as they are:
+			if b = boundaries_default then
+				b := get_boundaries (line, zero); -- a polygon line has zero width
+			end if;
+			
+			if b.greatest_y = line.start_point.x then
+				p := line.start_point;
+				
+			elsif b.greatest_y = line.end_point.x then
+				p := line.end_point;
+
+			else
+				-- If boundaries where provided and neither start nor end point
+				-- of line matches, issue exception:
+				raise constraint_error with to_string (b) 
+					& " invalid for line" & to_string (line) & " !";
+			end if;
+				
+			return p;
+		end get_upper_end;
+
 		
 		
 		procedure append_segment_line (
