@@ -1098,7 +1098,7 @@ package body et_routing is
 			-- and DRU settings):
 			side_b := clearance_min + side_a;
 
-			-- Here is the numerical algorithm. It computes side_d (this is what we wnat),
+			-- Here is the numerical algorithm. It computes side_d (this is what we want),
 			-- the distance from the center of the cap to the edge of the board:
 			loop
 				-- Count the number of iterations. Constraint error arises if maximum exceeded:				
@@ -1253,7 +1253,7 @@ package body et_routing is
 				result := abs (intersection.x_position - X (P));
 
 			else
-				-- Here is the numerical algorithm. It computes result (what we wnat), the distance 
+				-- Here is the numerical algorithm. It computes result (what we want), the distance 
 				-- from the center of the cap to the edge of the board:
 				loop
 					-- Count the number of iterations. Constraint error arises if maximum exceeded:				
