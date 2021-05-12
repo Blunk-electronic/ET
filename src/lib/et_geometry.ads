@@ -776,14 +776,18 @@ package et_geometry is
 		
 		
 	-- LINE
-		type type_line is abstract tagged record
+		type type_line_base is abstract tagged record
 			start_point 	: type_point;
 			end_point   	: type_point;
 			-- CS locked : type_locked;
 		end record;
 
+		type type_line is new type_line_base with null record;
+		-- CS use this type wherever a type_line is declared unnessecarily.
+		
 		-- Swaps start and end point of a line:
-		--function reverse_line (line : in type_line'class) return type_line;
+		function reverse_line (line : in type_line) return type_line'class;
+		procedure reverse_line (line : in out type_line);
 		
 		-- Indicates whether a line is increasing in y-direction
 		-- as it travels from left to right:
@@ -1005,7 +1009,7 @@ package et_geometry is
 			return boolean; 
 		
 	-- ARC
-		type type_arc is abstract tagged record
+		type type_arc_base is abstract tagged record
 			center			: type_point;
 			start_point		: type_point;
 			end_point		: type_point;
@@ -1013,6 +1017,15 @@ package et_geometry is
 			-- CS locked : type_locked;		
 		end record;
 
+		type type_arc is new type_arc_base with null record;
+		-- CS use this type wherever a type_arc is declared unnessecarily.
+
+		
+		-- Swaps start and end point of an arc. Reverses the direction of the arc:
+		function reverse_arc (arc : in type_arc) return type_arc'class;
+		procedure reverse_arc (arc : in out type_arc);
+
+		
 		-- If start/end point of the candidate arc is ABOVE-OR-ON the 
 		-- threshold AND if the end/start point of the candidate arc is BELOW the
 		-- threshold then we consider the arc to be threshold-crossing.
@@ -1284,6 +1297,15 @@ package et_geometry is
 		subtype type_polygon_segment_id is type_polygon_segment_count 
 			range 1 .. type_polygon_segment_count'last;
 
+		-- Returns the corner point nearest to the given
+		-- reference point.
+		-- If the given polygon consists of just a single
+		-- circle then a exception is raised:		
+		function get_nearest_corner_point (
+			polygon		: in type_polygon_base;
+			reference	: in type_point)
+			return type_point;
+		
 		procedure reorder_segments (
 			polygon	: in out type_polygon_base);
 		
@@ -1345,6 +1367,9 @@ package et_geometry is
 			id : type_polygon_segment_id := type_polygon_segment_id'first;
 		end record;
 
+		-- NOTE: In this world a polygon may consist of just a single circle.
+		-- In that case no other segments are allowed.
+		-- CS: A procedure to check this rule is required.
 		procedure append_segment_circle (
 			polygon	: in out type_polygon_base'class;
 			segment	: in type_polygon_circle);

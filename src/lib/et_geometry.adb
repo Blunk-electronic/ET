@@ -1470,22 +1470,22 @@ package body et_geometry is
 		end get_angle_of_itersection;
 
 
-		--function reverse_line (line : in type_line'class) return type_line is 
-			----result : type_line'class := type_line (
-					   ----start_point	=> line.end_point,
-					   ----end_point	=> line.start_point);
+		function reverse_line (line : in type_line) return type_line'class is 
+			result : type_line'class := line;
+		begin
+			result.start_point := line.end_point;
+			result.end_point := line.start_point;
 
-		--begin
-			--return (
-					   --start_point	=> line.end_point,
-					   --end_point	=> line.start_point);
-
-			----result := (
-					   ----start_point	=> line.end_point,
-					   ----end_point	=> line.start_point);
-
-			----return result;
-		--end reverse_line;
+			return result;
+		end reverse_line;
+		
+		procedure reverse_line (line : in out type_line) is 
+			scratch : type_point := line.start_point;
+		begin
+			line.start_point := line.end_point;
+			line.end_point := scratch;
+		end reverse_line;
+		
 		
 		function to_string (direction : in type_line_direction)
 			return string
@@ -1559,7 +1559,6 @@ package body et_geometry is
 
 			return result;
 		end get_tangent_direction;
-		
 		
 		function crosses_threshold (
 			line		: in type_line;	
@@ -2260,6 +2259,34 @@ package body et_geometry is
 			end if;
 		end;
 
+
+		function reverse_arc (arc : in type_arc) return type_arc'class is
+			result : type_arc'class := arc;
+		begin
+			result.start_point := arc.end_point;
+			result.end_point := arc.start_point;
+
+			case arc.direction is
+				when CW  => result.direction := CCW;
+				when CCW => result.direction := CW;
+			end case;
+			
+			return result;
+		end reverse_arc;
+			
+		procedure reverse_arc (arc : in out type_arc) is
+			scratch : type_point := arc.start_point;
+		begin
+			arc.start_point := arc.end_point;
+			arc.end_point := scratch;
+
+			case arc.direction is
+				when CW	 => arc.direction := CCW;
+				when CCW => arc.direction := CW;
+			end case;
+		end reverse_arc;
+
+		
 		function crosses_threshold (
 			arc			: in type_arc;
 			y_threshold	: in type_distance)
@@ -3195,6 +3222,81 @@ package body et_geometry is
 		end to_string;
 
 
+		function get_nearest_corner_point (
+			polygon		: in type_polygon_base;
+			reference	: in type_point)
+			return type_point
+		is
+			use pac_polygon_lines;
+			use pac_polygon_arcs;
+			use pac_polygon_circles;
+		
+			result : type_point := origin;
+			
+			d1 : type_distance_positive := zero;
+			d2 : type_distance_positive := absolute (distance_polar (reference, far_upper_right));
+
+			procedure query_line (c : in pac_polygon_lines.cursor) is
+				line : constant type_polygon_line := element (c);
+			begin
+				-- test start point
+				d1 := absolute (distance_polar (reference, line.start_point));
+				
+				if d1 < d2 then
+					d2 := d1;
+					
+					result := line.start_point;
+				end if;
+
+				-- test end point
+				d1 := absolute (distance_polar (reference, line.end_point));
+				
+				if d1 < d2 then
+					d2 := d1;
+					
+					result := line.end_point;
+				end if;
+				
+			end query_line;
+			
+			procedure query_arc (c : in pac_polygon_arcs.cursor) is
+				arc : constant type_polygon_arc := element (c);
+			begin
+				-- test start point
+				d1 := absolute (distance_polar (reference, arc.start_point));
+				
+				if d1 < d2 then
+					d2 := d1;
+					
+					result := arc.start_point;
+				end if;
+
+				-- test end point
+				d1 := absolute (distance_polar (reference, arc.end_point));
+				
+				if d1 < d2 then
+					d2 := d1;
+					
+					result := arc.end_point;
+				end if;
+
+			end query_arc;
+			
+		begin
+			if is_empty (polygon.segments.lines) and is_empty (polygon.segments.arcs) then
+				if not is_empty (polygon.segments.circles) then
+					raise constraint_error with "Polygon consists of a single circle !";
+				end if;
+			end if;
+			
+			polygon.segments.lines.iterate (query_line'access);
+			polygon.segments.arcs.iterate (query_arc'access);
+			
+			return result;
+		end get_nearest_corner_point;
+
+		
+
 		procedure reorder_segments (
 			polygon	: in out type_polygon_base)
 		is
@@ -3206,7 +3308,7 @@ package body et_geometry is
 			use pac_polygon_lines;
 			use pac_polygon_arcs;
 			
-			function get_smallest_x (row : in type_distance) 
+			function get_smallest_x (row : in type_distance) -- CS no need
 				return type_distance 
 			is
 				sx : type_distance := type_distance'last;
@@ -3216,64 +3318,87 @@ package body et_geometry is
 				
 				procedure query_line (c : in pac_polygon_lines.cursor) is
 					line : constant type_polygon_line := element (c);
-					--left_end : constant type_point := get_left_end (element (c));
 				begin
-					--if left_end.y = row then
-						--if left_end.x < sx then
-							--sx := left_end.x;
-							--first_line := element (c);
-							--line_found := true;
-						--end if;
-					--end if;
+					-- skip a vertical line:
+					if line.start_point.x /= line.end_point.x then
 
-					if line.start_point.y = row then
-						if line.start_point.x < sx then
-							sx := line.start_point.x;
+						-- start or end point must be on the given row:
+						
+						if line.start_point.y = row then
+							if line.start_point.x < sx then
+								sx := line.start_point.x;
 
-							first_line := line;
-							line_found := true;
+								first_line := line;
+								line_found := true;
+							end if;
 						end if;
-					end if;
-					
-					if line.end_point.y = row then
-						if line.end_point.x < sx then
-							sx := line.end_point.x;
+						
+						if line.end_point.y = row then
+							if line.end_point.x < sx then
+								sx := line.end_point.x;
 
-							first_line := line;							
-							line_found := true;
-						end if;					
-					end if;					
+								first_line := type_polygon_line (reverse_line (line));
+								line_found := true;
+							end if;
+						end if;
+
+					end if;
 				end query_line;
 
 				arc_found : boolean := false;
 				first_arc : type_polygon_arc;
-				arc_start : boolean := false;
 
 				procedure query_arc (c : in pac_polygon_arcs.cursor) is
 					arc : constant type_polygon_arc := element (c);
-				begin
-					if arc.start_point.y = row then
+
+					start_or_end_on_row : boolean := false;
+
+					procedure compare_start is begin
 						if arc.start_point.x < sx then
 							sx := arc.start_point.x;
 							first_arc := arc;
 							arc_found := true;
-							arc_start := true;
 							
 							-- If a line was found earlier, then it does not matter anymore:
 							line_found := false;
 						end if;
-					end if;
-					
-					if arc.end_point.y = row then
+					end compare_start;
+
+					procedure compare_end is begin
 						if arc.end_point.x < sx then
 							sx := arc.end_point.x;
-							first_arc := arc;
+							first_arc := type_polygon_arc (reverse_arc (arc));
 							arc_found := true;
-							arc_start := false;
 							
 							-- If a line was found earlier, then it does not matter anymore:
 							line_found := false;
 						end if;					
+					end compare_end;
+					
+				begin -- query_arc
+					-- skip a "vertical" arc:
+					if arc.start_point.x /= arc.end_point.x then
+
+						-- Start or end point of arc must be on the given row.
+						if arc.start_point.y = row then
+							start_or_end_on_row := true;
+							compare_start;
+						end if;
+						
+						if arc.end_point.y = row then
+							start_or_end_on_row := true;
+							compare_end;
+						end if;
+
+						-- If none of them is on the given row, then
+						-- the lower edge of the arc boundaries must be on the row:
+						if not start_or_end_on_row then
+							if get_boundaries (arc, zero).smallest_y = row then
+								compare_start;
+								compare_end;							
+							end if;
+						end if;
+
 					end if;
 				end query_arc;
 				
@@ -3281,9 +3406,12 @@ package body et_geometry is
 				polygon.segments.lines.iterate (query_line'access);
 				polygon.segments.arcs.iterate (query_arc'access);
 
+				--if arc_found then
 				--if line_found then
 				return zero;
 			end get_smallest_x;
+
+			
 			
 		begin -- reorder_segments
 			case lower_left_corner.status is
@@ -3292,15 +3420,17 @@ package body et_geometry is
 					
 				when VIRTUAL =>
 
-					set (
-						axis	=> Y,
-						point	=> polygon_start_point,
-						value	=> lower_left_corner.point.y);
+					--set (
+						--axis	=> Y,
+						--point	=> polygon_start_point,
+						--value	=> lower_left_corner.point.y);
 
-					set (
-						axis	=> X,
-						point	=> polygon_start_point,
-						value	=> get_smallest_x (polygon_start_point.y));
+					--set (
+						--axis	=> X,
+						--point	=> polygon_start_point,
+						--value	=> get_smallest_x (polygon_start_point.y));
+
+					polygon_start_point := get_nearest_corner_point (polygon, lower_left_corner.point);
 			end case;
 				
 
