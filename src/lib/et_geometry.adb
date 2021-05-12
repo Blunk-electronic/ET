@@ -1470,12 +1470,29 @@ package body et_geometry is
 		end get_angle_of_itersection;
 
 
+		--function reverse_line (line : in type_line'class) return type_line is 
+			----result : type_line'class := type_line (
+					   ----start_point	=> line.end_point,
+					   ----end_point	=> line.start_point);
+
+		--begin
+			--return (
+					   --start_point	=> line.end_point,
+					   --end_point	=> line.start_point);
+
+			----result := (
+					   ----start_point	=> line.end_point,
+					   ----end_point	=> line.start_point);
+
+			----return result;
+		--end reverse_line;
+		
 		function to_string (direction : in type_line_direction)
 			return string
 		is begin
 			return " " & type_line_direction'image (direction);
 		end to_string;
-
+		
 		
 		function get_direction (line : in type_line)
 			return type_line_direction
@@ -3177,6 +3194,119 @@ package body et_geometry is
 				& " radius" & to_string (circle.radius);
 		end to_string;
 
+
+		procedure reorder_segments (
+			polygon	: in out type_polygon_base)
+		is
+			--boundaries : constant type_boundaries := get_boundaries (polygon, zero);
+
+			lower_left_corner : type_lower_left_corner := get_lower_left_corner (polygon);
+			polygon_start_point : type_point;
+			
+			use pac_polygon_lines;
+			use pac_polygon_arcs;
+			
+			function get_smallest_x (row : in type_distance) 
+				return type_distance 
+			is
+				sx : type_distance := type_distance'last;
+
+				line_found : boolean := false;
+				first_line : type_polygon_line;
+				
+				procedure query_line (c : in pac_polygon_lines.cursor) is
+					line : constant type_polygon_line := element (c);
+					--left_end : constant type_point := get_left_end (element (c));
+				begin
+					--if left_end.y = row then
+						--if left_end.x < sx then
+							--sx := left_end.x;
+							--first_line := element (c);
+							--line_found := true;
+						--end if;
+					--end if;
+
+					if line.start_point.y = row then
+						if line.start_point.x < sx then
+							sx := line.start_point.x;
+
+							first_line := line;
+							line_found := true;
+						end if;
+					end if;
+					
+					if line.end_point.y = row then
+						if line.end_point.x < sx then
+							sx := line.end_point.x;
+
+							first_line := line;							
+							line_found := true;
+						end if;					
+					end if;					
+				end query_line;
+
+				arc_found : boolean := false;
+				first_arc : type_polygon_arc;
+				arc_start : boolean := false;
+
+				procedure query_arc (c : in pac_polygon_arcs.cursor) is
+					arc : constant type_polygon_arc := element (c);
+				begin
+					if arc.start_point.y = row then
+						if arc.start_point.x < sx then
+							sx := arc.start_point.x;
+							first_arc := arc;
+							arc_found := true;
+							arc_start := true;
+							
+							-- If a line was found earlier, then it does not matter anymore:
+							line_found := false;
+						end if;
+					end if;
+					
+					if arc.end_point.y = row then
+						if arc.end_point.x < sx then
+							sx := arc.end_point.x;
+							first_arc := arc;
+							arc_found := true;
+							arc_start := false;
+							
+							-- If a line was found earlier, then it does not matter anymore:
+							line_found := false;
+						end if;					
+					end if;
+				end query_arc;
+				
+			begin
+				polygon.segments.lines.iterate (query_line'access);
+				polygon.segments.arcs.iterate (query_arc'access);
+
+				--if line_found then
+				return zero;
+			end get_smallest_x;
+			
+		begin -- reorder_segments
+			case lower_left_corner.status is
+				when REAL =>
+					polygon_start_point := lower_left_corner.point;
+					
+				when VIRTUAL =>
+
+					set (
+						axis	=> Y,
+						point	=> polygon_start_point,
+						value	=> lower_left_corner.point.y);
+
+					set (
+						axis	=> X,
+						point	=> polygon_start_point,
+						value	=> get_smallest_x (polygon_start_point.y));
+			end case;
+				
+
+		end reorder_segments;
+
+		
 
 		function get_left_end (
 			line		: in type_polygon_line;

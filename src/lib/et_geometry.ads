@@ -782,6 +782,8 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+		-- Swaps start and end point of a line:
+		--function reverse_line (line : in type_line'class) return type_line;
 		
 		-- Indicates whether a line is increasing in y-direction
 		-- as it travels from left to right:
@@ -1281,6 +1283,9 @@ package et_geometry is
 		
 		subtype type_polygon_segment_id is type_polygon_segment_count 
 			range 1 .. type_polygon_segment_count'last;
+
+		procedure reorder_segments (
+			polygon	: in out type_polygon_base);
 		
 		type type_polygon_line is new type_line with record
 			id : type_polygon_segment_id := type_polygon_segment_id'first;
