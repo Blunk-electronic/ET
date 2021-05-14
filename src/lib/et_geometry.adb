@@ -4142,6 +4142,8 @@ package body et_geometry is
 			end loop;
 		end rotate_by;
 
+
+
 		
 		procedure reorder_segments ( -- experimental
 			polygon	: in out type_polygon_base)

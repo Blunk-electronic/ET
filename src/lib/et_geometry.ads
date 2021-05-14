@@ -1159,12 +1159,15 @@ package et_geometry is
 	
 		
 	-- CIRCLE
-		type type_circle is abstract tagged record -- CS rename to type_circle_base
+		type type_circle_base is abstract tagged record
 			center			: type_point;
 			radius  		: type_distance_positive := zero;
 			-- CS locked : type_locked;
 		end record;
 
+		type type_circle is new type_circle_base with null record;
+		-- CS use this type wherever a type_arc is declared unnessecarily.
+		
 		procedure move_by (
 		-- Moves a circle by the given offset. 
 			circle	: in out type_circle;
@@ -1391,6 +1394,24 @@ package et_geometry is
 			circles	: pac_polygon_circles.list;
 		end record;
 
+		type type_polygon_segment_shape is (LINE, ARC);
+		type type_polygon_segment (shape : type_polygon_segment_shape) is record
+			case shape is
+				when LINE	=> segment_line : type_line;
+				when ARC	=> segment_arc : type_arc;
+			end case;
+		end record;
+		
+		package pac_polygon_segments is new indefinite_doubly_linked_lists (type_polygon_segment);
+		
+		type type_polygon_segments_2 (circular : boolean := false) is record
+			case circular is
+				when TRUE	=> segment : type_circle;
+				when FALSE	=> segments : pac_polygon_segments.list;
+			end case;
+		end record;
+
+		
 		-- Returns the segments of a polygon that start or end 
 		-- at the given corner point:
 		function get_segments_on_corner_point (
@@ -1655,7 +1676,8 @@ package et_geometry is
 		function get_lower_left_corner (polygon	: in type_polygon_base)
 			return type_lower_left_corner;
 
-	
+
+
 		
 	private
 		type type_vector is	record
@@ -1675,6 +1697,8 @@ package et_geometry is
 		type type_polygon_base is abstract tagged record
 			segments		: type_polygon_segments;
 			segments_total	: type_polygon_segment_count := type_polygon_segment_count'first;
+
+			segments_2		: type_polygon_segments_2;
 		end record;
 
 		type type_polygon is new type_polygon_base with null record;
