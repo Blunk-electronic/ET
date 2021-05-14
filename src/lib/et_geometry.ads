@@ -1695,10 +1695,10 @@ package et_geometry is
 		end record;
 
 		type type_polygon_base is abstract tagged record
-			segments		: type_polygon_segments;
-			segments_total	: type_polygon_segment_count := type_polygon_segment_count'first;
+			--segments		: type_polygon_segments;
+			--segments_total	: type_polygon_segment_count := type_polygon_segment_count'first;
 
-			segments_2		: type_polygon_segments_2;
+			contours	: type_polygon_segments_2;
 		end record;
 
 		type type_polygon is new type_polygon_base with null record;

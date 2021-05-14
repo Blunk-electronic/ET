@@ -3227,70 +3227,66 @@ package body et_geometry is
 			reference	: in type_point)
 			return type_point
 		is
-			use pac_polygon_lines;
-			use pac_polygon_arcs;
-			use pac_polygon_circles;
+			use pac_polygon_segments;
 		
 			result : type_point := origin;
 			
 			d1 : type_distance_positive := zero;
 			d2 : type_distance_positive := absolute (distance_polar (reference, far_upper_right));
 
-			procedure query_line (c : in pac_polygon_lines.cursor) is
-				line : constant type_polygon_line := element (c);
+			procedure query_segment (c : in pac_polygon_segments.cursor) is
+				s : constant type_polygon_segment := element (c);
 			begin
-				-- test start point
-				d1 := absolute (distance_polar (reference, line.start_point));
-				
-				if d1 < d2 then
-					d2 := d1;
-					
-					result := line.start_point;
-				end if;
+				case s.shape is
+					when LINE =>
 
-				-- test end point
-				d1 := absolute (distance_polar (reference, line.end_point));
-				
-				if d1 < d2 then
-					d2 := d1;
-					
-					result := line.end_point;
-				end if;
-				
-			end query_line;
-			
-			procedure query_arc (c : in pac_polygon_arcs.cursor) is
-				arc : constant type_polygon_arc := element (c);
-			begin
-				-- test start point
-				d1 := absolute (distance_polar (reference, arc.start_point));
-				
-				if d1 < d2 then
-					d2 := d1;
-					
-					result := arc.start_point;
-				end if;
+						-- test start point
+						d1 := absolute (distance_polar (reference, s.segment_line.start_point));
+						
+						if d1 < d2 then
+							d2 := d1;
+							
+							result := s.segment_line.start_point;
+						end if;
 
-				-- test end point
-				d1 := absolute (distance_polar (reference, arc.end_point));
-				
-				if d1 < d2 then
-					d2 := d1;
-					
-					result := arc.end_point;
-				end if;
+						-- test end point
+						d1 := absolute (distance_polar (reference, s.segment_line.end_point));
+						
+						if d1 < d2 then
+							d2 := d1;
+							
+							result := s.segment_line.end_point;
+						end if;
 
-			end query_arc;
+					when ARC =>
+						-- test start point
+						d1 := absolute (distance_polar (reference, s.segment_arc.start_point));
+						
+						if d1 < d2 then
+							d2 := d1;
+							
+							result := s.segment_arc.start_point;
+						end if;
+
+						-- test end point
+						d1 := absolute (distance_polar (reference, s.segment_arc.end_point));
+						
+						if d1 < d2 then
+							d2 := d1;
+							
+							result := s.segment_arc.end_point;
+						end if;
+						
+				end case;
+			end query_segment;
 			
 		begin
-			if is_empty (polygon.segments.lines) and is_empty (polygon.segments.arcs) then
-				if not is_empty (polygon.segments.circles) then
-					raise constraint_error with "Polygon consists of a single circle !";
-				end if;
-			end if;
-			
-			polygon.segments.lines.iterate (query_line'access);
-			polygon.segments.arcs.iterate (query_arc'access);
+			if polygon.contours.circular then
+				raise constraint_error with 
+				"Polygon consists of a single circle and thus nas no corners !";
+			else
+				polygon.contours.segments.iterate (query_segment'access);				
+			end if;			
 			
 			return result;
 		end get_nearest_corner_point;
