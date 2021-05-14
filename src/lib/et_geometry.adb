@@ -3744,29 +3744,31 @@ package body et_geometry is
 
 			half_width : constant type_distance_positive := line_width * 0.5;
 			
-			use pac_polygon_lines;
-			use pac_polygon_arcs;
-			use pac_polygon_circles;
-			
-			procedure query_line (c : in pac_polygon_lines.cursor) is begin
-				union (result, get_boundaries (element (c), zero));
-			end query_line;
+			use pac_polygon_segments;
 
-			procedure query_arc (c : in pac_polygon_arcs.cursor) is begin
-				union (result, get_boundaries (element (c), zero));
-			end query_arc;
+			procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+				case element (c).shape is
+					when LINE =>
+						union (result, get_boundaries (element (c).segment_line, zero));
 
-			procedure query_circle (c : in pac_polygon_circles.cursor) is begin
-				union (result, get_boundaries (element (c), zero));
-			end query_circle;
+					when ARC =>
+						union (result, get_boundaries (element (c).segment_arc, zero));
+				end case;						
+			end query_segment;
 			
-		begin
-			iterate (polygon.segments.lines, query_line'access);
-			iterate (polygon.segments.arcs, query_arc'access);
-			iterate (polygon.segments.circles, query_circle'access);
+		begin -- get_boundaries
+			if polygon.contours.circular then
 
-			
-			-- extend the boundaries by half the line width;
+				-- Get the boundaries of the single circle:
+				union (result, get_boundaries (polygon.contours.circle, zero));
+				
+			else
+				-- Iterate lines and arcs:
+				polygon.contours.segments.iterate (query_segment'access);
+			end if;
+
+						
+			-- Extend the boundaries by half the line width;
 			result.smallest_x := result.smallest_x - half_width;
 			result.smallest_y := result.smallest_y - half_width;
 
