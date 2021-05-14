@@ -201,8 +201,10 @@ package et_geometry is
 		type type_point is tagged private;
 
 		origin			: constant type_point;		
+		far_upper_left	: constant type_point;
 		far_upper_right	: constant type_point;
 		far_lower_left	: constant type_point;
+		far_lower_right	: constant type_point;
 		
 		function to_string (point : in type_point) return string;
 		
@@ -559,6 +561,10 @@ package et_geometry is
 		end record;
 		
 		origin : constant type_point := (others => zero);
+
+		far_upper_left : constant type_point :=
+			(x => type_distance'first,
+			 y => type_distance'last);
 		
 		far_upper_right : constant type_point :=
 			(x => type_distance'last,
@@ -566,6 +572,10 @@ package et_geometry is
 
 		far_lower_left : constant type_point :=
 			(x => type_distance'first,
+			 y => type_distance'first);
+		
+		far_lower_right : constant type_point :=
+			(x => type_distance'last,
 			 y => type_distance'first);
 
 		
@@ -1305,9 +1315,8 @@ package et_geometry is
 			polygon		: in type_polygon_base;
 			reference	: in type_point)
 			return type_point;
+
 		
-		procedure reorder_segments (
-			polygon	: in out type_polygon_base);
 		
 		type type_polygon_line is new type_line with record
 			id : type_polygon_segment_id := type_polygon_segment_id'first;
@@ -1382,6 +1391,14 @@ package et_geometry is
 			circles	: pac_polygon_circles.list;
 		end record;
 
+		-- Returns the segments of a polygon that start or end 
+		-- at the given corner point:
+		function get_segments_on_corner_point (
+			polygon	: in type_polygon_base;
+			corner	: in type_point)
+			return type_polygon_segments;
+
+		
 		-- Loads the given lines into given polygon.
 		-- NOTE: Overwrites already existing segments in the polygon.
 		procedure load_lines (
@@ -1479,6 +1496,10 @@ package et_geometry is
 			polygon		: in out type_polygon_base;
 			rotation	: in type_rotation);
 
+		procedure reorder_segments ( -- experimental
+			polygon	: in out type_polygon_base);
+
+		
 
 		-- POLYGON OFFSETTING:
 		-- See:
