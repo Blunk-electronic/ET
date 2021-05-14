@@ -1358,47 +1358,47 @@ package et_geometry is
 
 		
 		
-		procedure append_segment_line (
-			polygon	: in out type_polygon_base'class;
-			segment	: in type_polygon_line);
+		--procedure append_segment_line (
+			--polygon	: in out type_polygon_base'class;
+			--segment	: in type_polygon_line);
 		
-		package pac_polygon_lines is new doubly_linked_lists (type_polygon_line);
+		--package pac_polygon_lines is new doubly_linked_lists (type_polygon_line);
 
 		
-		type type_polygon_arc is new type_arc with record
-			id : type_polygon_segment_id := type_polygon_segment_id'first;
-		end record;
+		--type type_polygon_arc is new type_arc with record
+			--id : type_polygon_segment_id := type_polygon_segment_id'first;
+		--end record;
 		
-		procedure append_segment_arc (
-			polygon	: in out type_polygon_base'class;
-			segment	: in type_polygon_arc);
+		--procedure append_segment_arc (
+			--polygon	: in out type_polygon_base'class;
+			--segment	: in type_polygon_arc);
 
-		package pac_polygon_arcs is new doubly_linked_lists (type_polygon_arc);
+		--package pac_polygon_arcs is new doubly_linked_lists (type_polygon_arc);
 
-		type type_polygon_circle is new type_circle with record
-			id : type_polygon_segment_id := type_polygon_segment_id'first;
-		end record;
+		--type type_polygon_circle is new type_circle with record
+			--id : type_polygon_segment_id := type_polygon_segment_id'first;
+		--end record;
 
 		-- NOTE: In this world a polygon may consist of just a single circle.
 		-- In that case no other segments are allowed.
 		-- CS: A procedure to check this rule is required.
-		procedure append_segment_circle (
-			polygon	: in out type_polygon_base'class;
-			segment	: in type_polygon_circle);
+		--procedure append_segment_circle (
+			--polygon	: in out type_polygon_base'class;
+			--segment	: in type_polygon_circle);
 		
-		package pac_polygon_circles is new doubly_linked_lists (type_polygon_circle);
+		--package pac_polygon_circles is new doubly_linked_lists (type_polygon_circle);
 
-		type type_polygon_segments is record
-			lines	: pac_polygon_lines.list;
-			arcs	: pac_polygon_arcs.list;
-			circles	: pac_polygon_circles.list;
-		end record;
+		--type type_polygon_segments is record
+			--lines	: pac_polygon_lines.list;
+			--arcs	: pac_polygon_arcs.list;
+			--circles	: pac_polygon_circles.list;
+		--end record;
 
 		type type_polygon_segment_shape is (LINE, ARC);
 		type type_polygon_segment (shape : type_polygon_segment_shape) is record
 			case shape is
 				when LINE	=> segment_line : type_line;
-				when ARC	=> segment_arc : type_arc;
+				when ARC	=> segment_arc  : type_arc;
 			end case;
 		end record;
 		
@@ -1406,7 +1406,7 @@ package et_geometry is
 		
 		type type_polygon_segments_2 (circular : boolean := false) is record
 			case circular is
-				when TRUE	=> segment : type_circle;
+				when TRUE	=> circle : type_circle;
 				when FALSE	=> segments : pac_polygon_segments.list;
 			end case;
 		end record;
@@ -1414,38 +1414,38 @@ package et_geometry is
 		
 		-- Returns the segments of a polygon that start or end 
 		-- at the given corner point:
-		function get_segments_on_corner_point (
-			polygon	: in type_polygon_base;
-			corner	: in type_point)
-			return type_polygon_segments;
+		--function get_segments_on_corner_point (
+			--polygon	: in type_polygon_base;
+			--corner	: in type_point)
+			--return type_polygon_segments;
 
 		
 		-- Loads the given lines into given polygon.
 		-- NOTE: Overwrites already existing segments in the polygon.
-		procedure load_lines (
-			polygon		: in out type_polygon_base'class;
-			lines		: in pac_polygon_lines.list);
+		--procedure load_lines (
+			--polygon		: in out type_polygon_base'class;
+			--lines		: in pac_polygon_lines.list);
 
 		-- Loads the given circles into given polygon.
 		-- NOTE: Overwrites already existing segments in the polygon.
-		procedure load_circles (
-			polygon		: in out type_polygon_base'class;
-			circles		: in pac_polygon_circles.list);
+		--procedure load_circles (
+			--polygon		: in out type_polygon_base'class;
+			--circles		: in pac_polygon_circles.list);
 
 		
 		-- Loads the given segments into given polygon.
 		-- NOTE: Overwrites already existing segments in the polygon.
-		procedure load_segments (
-			polygon		: in out type_polygon_base'class;
-			segments	: in type_polygon_segments);
+		--procedure load_segments (
+			--polygon		: in out type_polygon_base'class;
+			--segments	: in type_polygon_segments);
 		
-		procedure delete_segments (polygon : in out type_polygon_base);
+		--procedure delete_segments (polygon : in out type_polygon_base);
 
-		function get_segments (polygon : in type_polygon_base) 
-			return type_polygon_segments;
+		--function get_segments (polygon : in type_polygon_base) 
+			--return type_polygon_segments;
 
-		function get_segments_total (polygon : in type_polygon_base)
-			return type_polygon_segment_count;
+		--function get_segments_total (polygon : in type_polygon_base)
+			--return type_polygon_segment_count;
 
 		-- Transposes a polygon in Y direction.
 		-- Each point of each segment gets shifted by
@@ -1461,7 +1461,14 @@ package et_geometry is
 		--  line 100 0 100 100 / 
 		--  arc 50 100 100 100 0 100 ccw / 
 		--  line 0 100 0 0"
-		-- and builds a polygon:
+		-- and builds a polygon.
+		-- A circle can only be read if it is the only shape.
+		-- Mixing a circle with lines and arcs is not allowed.
+		-- There must be only one circle.
+		-- Examples:
+		--  valid  : circle 9 4 10
+		--  invalid: circle 34 45 30 circle 9 4 10
+		--  invalid: line 0 0 100 0 circle 9 4 10
 		function to_polygon (
 			arguments : in type_fields_of_line)
 			return type_polygon_base'class;

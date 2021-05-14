@@ -3414,151 +3414,151 @@ package body et_geometry is
 
 		
 		
-		procedure append_segment_line (
-			polygon	: in out type_polygon_base'class;
-			segment	: in type_polygon_line)
-		is begin
-			polygon.segments.lines.append (segment);
+		--procedure append_segment_line (
+			--polygon	: in out type_polygon_base'class;
+			--segment	: in type_polygon_line)
+		--is begin
+			--polygon.segments.lines.append (segment);
 
-			polygon.segments_total := polygon.segments_total + 1;
-		end append_segment_line;
+			--polygon.segments_total := polygon.segments_total + 1;
+		--end append_segment_line;
 
-		procedure append_segment_arc (
-			polygon	: in out type_polygon_base'class;
-			segment	: in type_polygon_arc)
-		is begin
-			polygon.segments.arcs.append (segment);
+		--procedure append_segment_arc (
+			--polygon	: in out type_polygon_base'class;
+			--segment	: in type_polygon_arc)
+		--is begin
+			--polygon.segments.arcs.append (segment);
 
-			polygon.segments_total := polygon.segments_total + 1;
-		end append_segment_arc;
+			--polygon.segments_total := polygon.segments_total + 1;
+		--end append_segment_arc;
 
-		procedure append_segment_circle (
-			polygon	: in out type_polygon_base'class;
-			segment	: in type_polygon_circle)
-		is begin
-			polygon.segments.circles.append (segment);
+		--procedure append_segment_circle (
+			--polygon	: in out type_polygon_base'class;
+			--segment	: in type_polygon_circle)
+		--is begin
+			--polygon.segments.circles.append (segment);
 
-			polygon.segments_total := polygon.segments_total + 1;
-		end append_segment_circle;
+			--polygon.segments_total := polygon.segments_total + 1;
+		--end append_segment_circle;
 
 
-		function get_segments_on_corner_point (
-			polygon	: in type_polygon_base;
-			corner	: in type_point)
-			return type_polygon_segments
-		is
-			use pac_polygon_lines;
-			use pac_polygon_arcs;
+		--function get_segments_on_corner_point (
+			--polygon	: in type_polygon_base;
+			--corner	: in type_point)
+			--return type_polygon_segments
+		--is
+			--use pac_polygon_lines;
+			--use pac_polygon_arcs;
 			
-			result : type_polygon_segments;
+			--result : type_polygon_segments;
 
-			procedure query_line (c : in pac_polygon_lines.cursor) is
-				line : constant type_polygon_line := element (c);
-			begin
-				if line.start_point = corner then
-					result.lines.append (line);
+			--procedure query_line (c : in pac_polygon_lines.cursor) is
+				--line : constant type_polygon_line := element (c);
+			--begin
+				--if line.start_point = corner then
+					--result.lines.append (line);
 					
-				elsif line.end_point = corner then
-					result.lines.append (line);
-				end if;
-			end query_line;
+				--elsif line.end_point = corner then
+					--result.lines.append (line);
+				--end if;
+			--end query_line;
 
-			procedure query_arc (c : in pac_polygon_arcs.cursor) is
-				arc : constant type_polygon_arc := element (c);
-			begin
-				if arc.start_point = corner then
-					result.arcs.append (arc);
+			--procedure query_arc (c : in pac_polygon_arcs.cursor) is
+				--arc : constant type_polygon_arc := element (c);
+			--begin
+				--if arc.start_point = corner then
+					--result.arcs.append (arc);
 					
-				elsif arc.end_point = corner then
-					result.arcs.append (arc);
-				end if;
-			end query_arc;
+				--elsif arc.end_point = corner then
+					--result.arcs.append (arc);
+				--end if;
+			--end query_arc;
 			
-		begin
-			polygon.segments.lines.iterate (query_line'access);
-			polygon.segments.arcs.iterate (query_arc'access);
+		--begin
+			--polygon.segments.lines.iterate (query_line'access);
+			--polygon.segments.arcs.iterate (query_arc'access);
 			
-			-- circles are not tested, because a circle does not have corners
+			---- circles are not tested, because a circle does not have corners
 			
-			return result;
-		end get_segments_on_corner_point;
+			--return result;
+		--end get_segments_on_corner_point;
 
 
 		
-		procedure load_lines (
-			polygon		: in out type_polygon_base'class;
-			lines		: in pac_polygon_lines.list)
-		is
-			use pac_polygon_lines;
-			l : constant count_type := length (lines);
-		begin
-			-- set the total number of segments:
-			polygon.segments_total := type_polygon_segment_count (l);
+		--procedure load_lines (
+			--polygon		: in out type_polygon_base'class;
+			--lines		: in pac_polygon_lines.list)
+		--is
+			--use pac_polygon_lines;
+			--l : constant count_type := length (lines);
+		--begin
+			---- set the total number of segments:
+			--polygon.segments_total := type_polygon_segment_count (l);
 
-			-- Clear existing segments and 
-			-- assign the given list of lines:
-			polygon.segments := (others => <>);
-			polygon.segments.lines := lines;
-		end load_lines;
+			---- Clear existing segments and 
+			---- assign the given list of lines:
+			--polygon.segments := (others => <>);
+			--polygon.segments.lines := lines;
+		--end load_lines;
 
-		procedure load_circles (
-			polygon		: in out type_polygon_base'class;
-			circles		: in pac_polygon_circles.list)
-		is
-			use pac_polygon_circles;
-			c : constant count_type := length (circles);
-		begin
-			-- set the total number of segments:
-			polygon.segments_total := type_polygon_segment_count (c);
+		--procedure load_circles (
+			--polygon		: in out type_polygon_base'class;
+			--circles		: in pac_polygon_circles.list)
+		--is
+			--use pac_polygon_circles;
+			--c : constant count_type := length (circles);
+		--begin
+			---- set the total number of segments:
+			--polygon.segments_total := type_polygon_segment_count (c);
 
-			-- Clear existing segments and 
-			-- assign the given list of circles:
-			polygon.segments := (others => <>);
-			polygon.segments.circles := circles;
-		end load_circles;
+			---- Clear existing segments and 
+			---- assign the given list of circles:
+			--polygon.segments := (others => <>);
+			--polygon.segments.circles := circles;
+		--end load_circles;
 		
-		procedure load_segments (
-			polygon		: in out type_polygon_base'class;
-			segments	: in type_polygon_segments)
-		is
-			use pac_polygon_lines;
-			use pac_polygon_arcs;
-			use pac_polygon_circles;
+		--procedure load_segments (
+			--polygon		: in out type_polygon_base'class;
+			--segments	: in type_polygon_segments)
+		--is
+			--use pac_polygon_lines;
+			--use pac_polygon_arcs;
+			--use pac_polygon_circles;
 			
-			l : constant count_type := length (segments.lines);
-			a : constant count_type := length (segments.arcs);
-			c : constant count_type := length (segments.circles);
+			--l : constant count_type := length (segments.lines);
+			--a : constant count_type := length (segments.arcs);
+			--c : constant count_type := length (segments.circles);
 
-			t : type_polygon_segment_count;
-		begin
-			-- compute the total number of segments:
-			t := type_polygon_segment_count (l + a + c);
+			--t : type_polygon_segment_count;
+		--begin
+			---- compute the total number of segments:
+			--t := type_polygon_segment_count (l + a + c);
 
-			-- set the total number of segments:
-			polygon.segments_total := t;
+			---- set the total number of segments:
+			--polygon.segments_total := t;
 
-			-- assign the actual segments:
-			polygon.segments := segments;
+			---- assign the actual segments:
+			--polygon.segments := segments;
 
-		end load_segments;
+		--end load_segments;
 
-		procedure delete_segments (polygon : in out type_polygon_base) 
-		is begin
-			polygon.segments := (others => <>);
-			polygon.segments_total := 0;
-		end delete_segments;			
+		--procedure delete_segments (polygon : in out type_polygon_base) 
+		--is begin
+			--polygon.segments := (others => <>);
+			--polygon.segments_total := 0;
+		--end delete_segments;			
 		
-		function get_segments (polygon : in type_polygon_base) 
-			return type_polygon_segments
-		is begin
-			return polygon.segments;
-		end get_segments;
+		--function get_segments (polygon : in type_polygon_base) 
+			--return type_polygon_segments
+		--is begin
+			--return polygon.segments;
+		--end get_segments;
 
-		function get_segments_total (polygon : in type_polygon_base)
-			return type_polygon_segment_count
-		is begin
-			return polygon.segments_total;
-		end get_segments_total;
+		--function get_segments_total (polygon : in type_polygon_base)
+			--return type_polygon_segment_count
+		--is begin
+			--return polygon.segments_total;
+		--end get_segments_total;
 
 		procedure transpose_polygon (
 			polygon	: in out type_polygon_base'class;
@@ -3571,82 +3571,75 @@ package body et_geometry is
 				set (Y, new_y, point);
 			end move;
 
-			use pac_polygon_lines;
-			use pac_polygon_arcs;
-			use pac_polygon_circles;
+			use pac_polygon_segments;
 
-			procedure move (cursor : in pac_polygon_lines.cursor) is 
-				procedure do_it (line : in out type_polygon_line) is begin 
-					move (line.start_point);
-					move (line.end_point);
+			procedure move_segment (c : in pac_polygon_segments.cursor) is
+
+				procedure do_line (s : in out type_polygon_segment) is begin 
+					move (s.segment_line.start_point);
+					move (s.segment_arc.end_point);
 				end;
-			begin
-				update_element (
-					container	=> polygon.segments.lines,
-					position	=> cursor,
-					process		=> do_it'access);
-			end move;
-
-			procedure move (cursor : in pac_polygon_arcs.cursor) is
-				procedure do_it (arc : in out type_polygon_arc) is begin
-					move (arc.start_point);
-					move (arc.end_point); 
-					move (arc.center); 
+				
+				procedure do_arc (s : in out type_polygon_segment) is begin
+					move (s.segment_arc.start_point);
+					move (s.segment_arc.end_point); 
+					move (s.segment_arc.center); 
 				end;
-			begin
-				update_element (
-					container	=> polygon.segments.arcs,
-					position	=> cursor,
-					process		=> do_it'access);
-			end move;
 
-			procedure move (cursor : in pac_polygon_circles.cursor) is 
-				procedure do_it (circle : in out type_polygon_circle) is begin 
-					move (circle.center); 
-				end;
-			begin
-				update_element (
-					container	=> polygon.segments.circles,
-					position	=> cursor,
-					process		=> do_it'access);
-			end move;
+			begin -- move_segment
+				case element (c).shape is
+					
+					when LINE =>
+						update_element (
+							container	=> polygon.contours.segments,
+							position	=> c,
+							process		=> do_line'access);
 
+					when ARC =>
+						update_element (
+							container	=> polygon.contours.segments,
+							position	=> c,
+							process		=> do_arc'access);
+
+				end case;
+			end move_segment;
+			
 		begin -- transpose_polygon			
-			iterate (polygon.segments.lines, move'access);
-			iterate (polygon.segments.arcs, move'access);
-			iterate (polygon.segments.circles, move'access);
+			if polygon.contours.circular then
+
+				-- move the single circle that forms the polygon:
+				move (polygon.contours.circle.center);
+			else
+				-- move lines and arcs:
+				polygon.contours.segments.iterate (move_segment'access);
+			end if;
+			
 		end transpose_polygon;
 		
 		function to_polygon (
 			arguments : in type_fields_of_line)
 			return type_polygon_base'class
 		is
-			--type type_polygon_local is new type_polygon_base with null record;
-			
-			result : type_polygon; -- will be converted back to anchestor on return
+			result : type_polygon; -- will be converted back to class type on return
+			-- NOTE: The default discriminant if the result makes it a
+			-- polygon consisting of lines an arcs.
+			-- If a circle is to be added to the polygon then the discriminant
+			-- changes accordingly.
 
 			function f (place : in count_type) return string is begin
 				return to_lower (get_field (arguments, place));
 			end;
-
-			-- Each segment whether line, arc or circle gets an
-			-- id assigned. We start with id 1.
-			idx : type_polygon_segment_id := 1;
-
-			-- After processing a segment, the index must be incremented:
-			procedure increment_index is begin
-				idx := idx + 1;
-			end;
 			
-			l : type_polygon_line;
-			a : type_polygon_arc;
-			c : type_polygon_circle;
+			l : type_line;
+			a : type_arc;
+			c : type_circle;
 
 			-- The shape of the segment being processed:
 			shape : type_shape;
 
-			-- The place at which we fetch a field from:
+			-- The place in arguments at which we fetch a field from:
 			p : count_type := 1;
+
 		begin
 			-- Iterate all fields of given list of arguments:
 			while p <= field_count (arguments) loop
@@ -3665,6 +3658,15 @@ package body et_geometry is
 					--put_line ("circle");
 					shape := CIRCLE;
 
+					-- Once a circle occurs, only a single
+					-- circle can be assigned to the result.
+					-- The discriminant of the result mutates here.
+					-- An attempt to append a line or an arc to the
+					-- polygon segments will cause a exception.
+					result.contours := (
+						circular	=> true,
+						others		=> <>);
+					
 				end if;
 
 				-- Fetch the parameters for the shape by
@@ -3679,12 +3681,11 @@ package body et_geometry is
 								x => to_distance (f (p + 3)),
 								y => to_distance (f (p + 4))));
 
-						l.id := idx;
-						append_segment_line (result, l);
-						increment_index;
+						result.contours.segments.append (new_item => (LINE, l));
 
 						-- fast forward p to next shape:
 						p := p + 5;
+
 						
 					when ARC => -- arc 50 100 100 100 0 100 ccw
 						a.center := type_point (set (
@@ -3701,12 +3702,11 @@ package body et_geometry is
 
 						a.direction := to_direction (f (p + 7));
 						
-						a.id := idx;
-						append_segment_arc (result, a);
-						increment_index;
+						result.contours.segments.append (new_item => (ARC, a));
 
 						-- fast forward p to next shape:						
 						p := p + 8;
+
 						
 					when CIRCLE => -- circle 40 40 10
 						c.center := type_point (set (
@@ -3714,19 +3714,14 @@ package body et_geometry is
 								y => to_distance (f (p + 2))));
 
 						c.radius := to_distance (f (p + 3));
+
+						result.contours.circle := c;
 						
-						c.id := idx;
-						append_segment_circle (result, c);
-						increment_index;
-
-						-- fast forward p to next shape:						
-						p := p + 4;
-
+						-- NOTE: No further shape must follow.
+						-- So we do not move p further.
 				end case;
-				
 			end loop;
 
-			--put_line (type_polygon_segment_count'image (result.segments_total));
 			
 			return type_polygon_base (result);
 
