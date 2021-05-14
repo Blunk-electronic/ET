@@ -3805,83 +3805,85 @@ package body et_geometry is
 			polygon	: in type_polygon_base)
 			return type_polygon_status is
 
-			use pac_polygon_lines;
-			use pac_polygon_arcs;
-			use pac_polygon_circles;
+			use pac_polygon_segments;
+			
+			--use pac_polygon_lines;
+			--use pac_polygon_arcs;
+			--use pac_polygon_circles;
 
 			-- The functions get_line, get_arc and get_circle search for a polygon segment (by its id)
 			-- and return a cursor to the segment if it exists. Otherwise they return no_element:
 			
-			function get_line (segment : in type_polygon_segment_id) return pac_polygon_lines.cursor is
-				c : pac_polygon_lines.cursor := polygon.segments.lines.first;
-				found : boolean := false;
+			--function get_line (segment : in type_polygon_segment_id) return pac_polygon_lines.cursor is
+				--c : pac_polygon_lines.cursor := polygon.segments.lines.first;
+				--found : boolean := false;
 
-				procedure query_line (l : in type_polygon_line) is begin
-					if l.id = segment then
-						found := true;
-					end if;
-				end query_line;
+				--procedure query_line (l : in type_polygon_line) is begin
+					--if l.id = segment then
+						--found := true;
+					--end if;
+				--end query_line;
 
-			begin -- get_line
-				while c /= pac_polygon_lines.no_element loop
-					query_element (c, query_line'access);
+			--begin -- get_line
+				--while c /= pac_polygon_lines.no_element loop
+					--query_element (c, query_line'access);
 
-					if found = true then exit; end if;
+					--if found = true then exit; end if;
 					
-					next (c);
-				end loop;
+					--next (c);
+				--end loop;
 
-				return c; -- should be no_element if not found. points to the segment if found.
-			end get_line;
+				--return c; -- should be no_element if not found. points to the segment if found.
+			--end get_line;
 
-			function get_arc (segment : in type_polygon_segment_id) return pac_polygon_arcs.cursor is 
-				c : pac_polygon_arcs.cursor := polygon.segments.arcs.first;
-				found : boolean := false;
+			--function get_arc (segment : in type_polygon_segment_id) return pac_polygon_arcs.cursor is 
+				--c : pac_polygon_arcs.cursor := polygon.segments.arcs.first;
+				--found : boolean := false;
 
-				procedure query_arc (l : in type_polygon_arc) is begin
-					if l.id = segment then
-						found := true;
-					end if;
-				end query_arc;
+				--procedure query_arc (l : in type_polygon_arc) is begin
+					--if l.id = segment then
+						--found := true;
+					--end if;
+				--end query_arc;
 				
-			begin -- get_arc
-				while c /= pac_polygon_arcs.no_element loop
-					query_element (c, query_arc'access);
+			--begin -- get_arc
+				--while c /= pac_polygon_arcs.no_element loop
+					--query_element (c, query_arc'access);
 
-					if found = true then exit; end if;
+					--if found = true then exit; end if;
 					
-					next (c);
-				end loop;
+					--next (c);
+				--end loop;
 
-				return c; -- should be no_element if not found. points to the segment if found.
-			end get_arc;
+				--return c; -- should be no_element if not found. points to the segment if found.
+			--end get_arc;
 			
-			function get_circle (segment : in type_polygon_segment_id) return pac_polygon_circles.cursor is 
-				c : pac_polygon_circles.cursor := polygon.segments.circles.first;
-				found : boolean := false;
+			--function get_circle (segment : in type_polygon_segment_id) return pac_polygon_circles.cursor is 
+				--c : pac_polygon_circles.cursor := polygon.segments.circles.first;
+				--found : boolean := false;
 
-				procedure query_circle (l : in type_polygon_circle) is begin
-					if l.id = segment then
-						found := true;
-					end if;
-				end query_circle;
+				--procedure query_circle (l : in type_polygon_circle) is begin
+					--if l.id = segment then
+						--found := true;
+					--end if;
+				--end query_circle;
 				
-			begin -- get_circle
-				while c /= pac_polygon_circles.no_element loop
-					query_element (c, query_circle'access);
+			--begin -- get_circle
+				--while c /= pac_polygon_circles.no_element loop
+					--query_element (c, query_circle'access);
 
-					if found = true then exit; end if;
+					--if found = true then exit; end if;
 					
-					next (c);
-				end loop;
+					--next (c);
+				--end loop;
 
-				return c; -- should be no_element if not found. points to the segment if found.
-			end get_circle;
+				--return c; -- should be no_element if not found. points to the segment if found.
+			--end get_circle;
 
 			-- Here the result of get_line, get_arc and get_circle is stored temporarily:
-			cl : pac_polygon_lines.cursor;
-			ca : pac_polygon_arcs.cursor;
-			cc : pac_polygon_circles.cursor;
+			--cl : pac_polygon_lines.cursor;
+			--ca : pac_polygon_arcs.cursor;
+			--cc : pac_polygon_circles.cursor;
 
 			-- Goes false once a gap has been detected:
 			closed : boolean := true;
@@ -3918,48 +3920,71 @@ package body et_geometry is
 				end if;
 
 			end set_start_point;
-	
-		begin
+
+			procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+				case element (c).shape is
+					when LINE =>
+						set_start_point (element (c).segment_line.start_point);
+						last_end_point := element (c).segment_line.end_point;
+
+					when ARC =>
+						set_start_point (element (c).segment_arc.start_point);
+						last_end_point := element (c).segment_arc.end_point;
+						
+				end case;
+			end query_segment;
+			
+		begin -- is_closed
+			
 			-- Iterate segments of given polygon. For each iteration s indicates the
 			-- segment to be checked. It can be among lines (most likely), among arcs (less likely)
 			-- and among circles (least likely). The functions get_line, get_arc and get_circle
 			-- return a cursor to the segment if it is among lines, arcs or circles.
 			-- Otherwise get_line, get_arc or get_circle return no_element.
-			for s in type_polygon_segment_id'first .. polygon.segments_total loop
+			--for s in type_polygon_segment_id'first .. polygon.segments_total loop
 
-				-- Search the segment among the lines:
-				cl := get_line (s);
-				if cl /= pac_polygon_lines.no_element then
+				---- Search the segment among the lines:
+				--cl := get_line (s);
+				--if cl /= pac_polygon_lines.no_element then
 
-					set_start_point (element (cl).start_point);
-					last_end_point := element (cl).end_point;
+					--set_start_point (element (cl).start_point);
+					--last_end_point := element (cl).end_point;
 
-				-- If segment not found among lines, search among arcs:
-				else 
-					ca := get_arc (s);
-					if ca /= pac_polygon_arcs.no_element then
+				---- If segment not found among lines, search among arcs:
+				--else 
+					--ca := get_arc (s);
+					--if ca /= pac_polygon_arcs.no_element then
 						
-						set_start_point (element (ca).start_point);
-						last_end_point := element (ca).end_point;
+						--set_start_point (element (ca).start_point);
+						--last_end_point := element (ca).end_point;
 						
-					-- If segment not found among arcs, search among circles:
-					else
-						cc := get_circle (s);
-						if cc /= pac_polygon_circles.no_element then
+					---- If segment not found among arcs, search among circles:
+					--else
+						--cc := get_circle (s);
+						--if cc /= pac_polygon_circles.no_element then
 
-							set_start_point (element (cc).center);
-							last_end_point := element (cc).center;
+							--set_start_point (element (cc).center);
+							--last_end_point := element (cc).center;
 							
-						else
-							-- If segment is not among circles, we have a problem:
-							raise constraint_error; -- CS should never happen.
-						end if;
+						--else
+							---- If segment is not among circles, we have a problem:
+							--raise constraint_error; -- CS should never happen.
+						--end if;
 						
-					end if;
-				end if;
+					--end if;
+				--end if;
 
-			end loop;
+			--end loop;
 
+			
+			if polygon.contours.circular then
+				closed := true; -- because this is a single circle
+			else
+				-- Iterate lines and arcs:
+				polygon.contours.segments.iterate (query_segment'access);
+			end if;
+
+			
 			-- Start point and end point of polygon outline must match:
 			if last_end_point /= start_point then
 				closed := false;
