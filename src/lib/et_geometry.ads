@@ -1444,7 +1444,11 @@ package et_geometry is
 		procedure append_segment (
 			polygon	: in out type_polygon_base;
 			segment	: in type_polygon_segment);
-		
+
+		procedure set_circle (
+			polygon	: in out type_polygon_base;
+			circle	: in type_circle'class);
+			
 		function get_segments (
 			polygon : in type_polygon_base) 
 			return type_polygon_segments_2;

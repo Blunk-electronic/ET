@@ -3557,6 +3557,14 @@ package body et_geometry is
 			polygon.contours.segments.append (segment);			
 		end append_segment;
 
+		procedure set_circle (
+			polygon	: in out type_polygon_base;
+			circle	: in type_circle'class)
+		is begin
+			-- CS check discriminant and issue helpful error message ?
+			
+			polygon.contours.circle := type_circle (circle);
+		end set_circle;
 					
 		
 		function get_segments (
