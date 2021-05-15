@@ -3547,12 +3547,24 @@ package body et_geometry is
 			--polygon.segments := (others => <>);
 			--polygon.segments_total := 0;
 		--end delete_segments;			
+
+		procedure append_segment (
+			polygon	: in out type_polygon_base;
+			segment	: in type_polygon_segment)
+		is begin
+			-- CS check discriminant and issue helpful error message ?
+			
+			polygon.contours.segments.append (segment);			
+		end append_segment;
+
+					
 		
-		--function get_segments (polygon : in type_polygon_base) 
-			--return type_polygon_segments
-		--is begin
-			--return polygon.segments;
-		--end get_segments;
+		function get_segments (
+			polygon : in type_polygon_base) 
+			return type_polygon_segments_2
+		is begin
+			return polygon.contours;
+		end get_segments;
 
 		--function get_segments_total (polygon : in type_polygon_base)
 			--return type_polygon_segment_count

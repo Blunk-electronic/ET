@@ -1406,7 +1406,7 @@ package et_geometry is
 		
 		type type_polygon_segments_2 (circular : boolean := false) is record
 			case circular is
-				when TRUE	=> circle : type_circle;
+				when TRUE	=> circle   : type_circle;
 				when FALSE	=> segments : pac_polygon_segments.list;
 			end case;
 		end record;
@@ -1441,8 +1441,13 @@ package et_geometry is
 		
 		--procedure delete_segments (polygon : in out type_polygon_base);
 
-		--function get_segments (polygon : in type_polygon_base) 
-			--return type_polygon_segments;
+		procedure append_segment (
+			polygon	: in out type_polygon_base;
+			segment	: in type_polygon_segment);
+		
+		function get_segments (
+			polygon : in type_polygon_base) 
+			return type_polygon_segments_2;
 
 		--function get_segments_total (polygon : in type_polygon_base)
 			--return type_polygon_segment_count;
