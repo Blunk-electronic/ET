@@ -4000,164 +4000,138 @@ package body et_geometry is
 		end is_closed;
 		
 		procedure move_by (
-		-- Moves a polygon by the given offset. 
 			polygon	: in out type_polygon_base;
-			offset	: in type_point) is
+			offset	: in type_point) 
+		is
+			use pac_polygon_segments;
 
-			use pac_polygon_lines;
-			use pac_polygon_arcs;
-			use pac_polygon_circles;
+			procedure move_segment (c : in pac_polygon_segments.cursor) is
 
-			cl : pac_polygon_lines.cursor := polygon.segments.lines.first;
-			ca : pac_polygon_arcs.cursor := polygon.segments.arcs.first;
-			cc : pac_polygon_circles.cursor := polygon.segments.circles.first;
+				procedure do_line (s : in out type_polygon_segment) is begin 
+					move_by (s.segment_line, offset);
+				end;
+				
+				procedure do_arc (s : in out type_polygon_segment) is begin
+					move_by (s.segment_arc, offset);
+				end;
 
-			procedure move_line (l : in out type_polygon_line) is begin
-				move_by (l, offset);
-			end move_line;
+			begin -- move_segment
+				case element (c).shape is
+					
+					when LINE =>
+						update_element (
+							container	=> polygon.contours.segments,
+							position	=> c,
+							process		=> do_line'access);
 
-			procedure move_arc (a : in out type_polygon_arc) is begin
-				move_by (a, offset);
-			end move_arc;
+					when ARC =>
+						update_element (
+							container	=> polygon.contours.segments,
+							position	=> c,
+							process		=> do_arc'access);
 
-			procedure move_circle (c : in out type_polygon_circle) is begin
-				move_by (c, offset);
-			end move_circle;
+				end case;
+			end move_segment;
 			
 		begin -- move_by
-			while cl /= pac_polygon_lines.no_element loop
-				update_element (
-					container	=> polygon.segments.lines,
-					position	=> cl,
-					process		=> move_line'access);
+			if polygon.contours.circular then
 
-				next (cl);
-			end loop;
-
-			while ca /= pac_polygon_arcs.no_element loop
-				update_element (
-					container	=> polygon.segments.arcs,
-					position	=> ca,
-					process		=> move_arc'access);
-
-				next (ca);
-			end loop;
-
-			while cc /= pac_polygon_circles.no_element loop
-				update_element (
-					container	=> polygon.segments.circles,
-					position	=> cc,
-					process		=> move_circle'access);
-
-				next (cc);
-			end loop;
+				-- move the single circle that forms the polygon:
+				move_by (polygon.contours.circle, offset);
+			else
+				-- move lines and arcs:
+				polygon.contours.segments.iterate (move_segment'access);
+			end if;
 		end move_by;
 
 		procedure mirror (
-		-- Mirrors a polygon along the given axis.
 			polygon	: in out type_polygon_base;
-			axis	: in type_axis_2d) is
-			
-			use pac_polygon_lines;
-			use pac_polygon_arcs;
-			use pac_polygon_circles;
+			axis	: in type_axis_2d) 
+		is
+			use pac_polygon_segments;
 
-			cl : pac_polygon_lines.cursor := polygon.segments.lines.first;
-			ca : pac_polygon_arcs.cursor := polygon.segments.arcs.first;
-			cc : pac_polygon_circles.cursor := polygon.segments.circles.first;
+			procedure mirror_segment (c : in pac_polygon_segments.cursor) is
 
-			procedure mirror_line (l : in out type_polygon_line) is begin
-				mirror (l, axis);
-			end mirror_line;
+				procedure do_line (s : in out type_polygon_segment) is begin 
+					mirror (s.segment_line, axis);
+				end;
+				
+				procedure do_arc (s : in out type_polygon_segment) is begin
+					mirror (s.segment_arc, axis);
+				end;
 
-			procedure mirror_arc (a : in out type_polygon_arc) is begin
-				mirror (a, axis);
-			end mirror_arc;
+			begin -- move_segment
+				case element (c).shape is
+					
+					when LINE =>
+						update_element (
+							container	=> polygon.contours.segments,
+							position	=> c,
+							process		=> do_line'access);
 
-			procedure mirror_circle (c : in out type_polygon_circle) is begin
-				mirror (c, axis);
-			end mirror_circle;
+					when ARC =>
+						update_element (
+							container	=> polygon.contours.segments,
+							position	=> c,
+							process		=> do_arc'access);
+
+				end case;
+			end mirror_segment;
 			
 		begin -- mirror
-			while cl /= pac_polygon_lines.no_element loop
-				update_element (
-					container	=> polygon.segments.lines,
-					position	=> cl,
-					process		=> mirror_line'access);
+			if polygon.contours.circular then
 
-				next (cl);
-			end loop;
-
-			while ca /= pac_polygon_arcs.no_element loop
-				update_element (
-					container	=> polygon.segments.arcs,
-					position	=> ca,
-					process		=> mirror_arc'access);
-
-				next (ca);
-			end loop;
-
-			while cc /= pac_polygon_circles.no_element loop
-				update_element (
-					container	=> polygon.segments.circles,
-					position	=> cc,
-					process		=> mirror_circle'access);
-
-				next (cc);
-			end loop;
+				-- mirror the single circle that forms the polygon:
+				mirror (polygon.contours.circle, axis);
+			else
+				-- move lines and arcs:
+				polygon.contours.segments.iterate (mirror_segment'access);
+			end if;
 		end mirror;
 
 		procedure rotate_by (
 			polygon		: in out type_polygon_base;
-			rotation	: in type_rotation) is
+			rotation	: in type_rotation) 
+		is
+			use pac_polygon_segments;
 
-			use pac_polygon_lines;
-			use pac_polygon_arcs;
-			use pac_polygon_circles;
+			procedure rotate_segment (c : in pac_polygon_segments.cursor) is
 
-			cl : pac_polygon_lines.cursor := polygon.segments.lines.first;
-			ca : pac_polygon_arcs.cursor := polygon.segments.arcs.first;
-			cc : pac_polygon_circles.cursor := polygon.segments.circles.first;
+				procedure do_line (s : in out type_polygon_segment) is begin 
+					rotate_by (s.segment_line, rotation);
+				end;
+				
+				procedure do_arc (s : in out type_polygon_segment) is begin
+					rotate_by (s.segment_arc, rotation);
+				end;
 
-			procedure rotate_line (l : in out type_polygon_line) is begin
-				rotate_by (l, rotation);
-			end rotate_line;
+			begin -- rotate_segment
+				case element (c).shape is
+					
+					when LINE =>
+						update_element (
+							container	=> polygon.contours.segments,
+							position	=> c,
+							process		=> do_line'access);
 
-			procedure rotate_arc (a : in out type_polygon_arc) is begin
-				rotate_by (a, rotation);
-			end rotate_arc;
+					when ARC =>
+						update_element (
+							container	=> polygon.contours.segments,
+							position	=> c,
+							process		=> do_arc'access);
 
-			procedure rotate_circle (c : in out type_polygon_circle) is begin
-				rotate_by (c, rotation);
-			end rotate_circle;
+				end case;
+			end rotate_segment;
 			
-		begin -- mirror
-			while cl /= pac_polygon_lines.no_element loop
-				update_element (
-					container	=> polygon.segments.lines,
-					position	=> cl,
-					process		=> rotate_line'access);
+		begin -- rotate_by
+			if polygon.contours.circular then
 
-				next (cl);
-			end loop;
-
-			while ca /= pac_polygon_arcs.no_element loop
-				update_element (
-					container	=> polygon.segments.arcs,
-					position	=> ca,
-					process		=> rotate_arc'access);
-
-				next (ca);
-			end loop;
-
-			while cc /= pac_polygon_circles.no_element loop
-				update_element (
-					container	=> polygon.segments.circles,
-					position	=> cc,
-					process		=> rotate_circle'access);
-
-				next (cc);
-			end loop;
+				-- rotate the single circle that forms the polygon:
+				rotate_by (polygon.contours.circle.center, rotation);
+			else
+				-- rotate lines and arcs:
+				polygon.contours.segments.iterate (rotate_segment'access);
+			end if;			
 		end rotate_by;
 
 
