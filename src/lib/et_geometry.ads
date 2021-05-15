@@ -1298,6 +1298,9 @@ package et_geometry is
 	-- POLYGON
 		type type_polygon_base is abstract tagged private;
 
+		type type_polygon is new type_polygon_base with private;
+
+		
 		-- In contrast to the common definition of a polygon, a polygon
 		-- in this world is described as a finite number of elements 
 		-- like lines, arcs and even circles that form a polygonal circuit.
@@ -1570,8 +1573,6 @@ package et_geometry is
 
 		
 
-		--type type_polygon is new type_polygon_base with private;
-		-- not publicly visible. for internal use only.
 
 		-- In order to get the status of a point relative to
 		-- a polygon we need this stuff:
