@@ -1576,7 +1576,7 @@ package et_geometry is
 		-- This list provides the x values ordered according to their
 		-- distance to the start point of the ray. Lowest value first.
 		
-		type type_probe_line is new type_line with null record;
+		--type type_probe_line is new type_line with null record;
 							  
 
 		-- The intersection of a probe line with the polygon side can
