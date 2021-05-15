@@ -1305,10 +1305,10 @@ package et_geometry is
 		-- Every segment has an id.
 		-- CS: For the moment we limit the number of segments (that form the outline)
 		-- to a reasonable value. Increase if necessary:
-		type type_polygon_segment_count is range 0 .. 100;
+		--type type_polygon_segment_count is range 0 .. 100;
 		
-		subtype type_polygon_segment_id is type_polygon_segment_count 
-			range 1 .. type_polygon_segment_count'last;
+		--subtype type_polygon_segment_id is type_polygon_segment_count 
+			--range 1 .. type_polygon_segment_count'last;
 
 		-- Returns the corner point nearest to the given
 		-- reference point.
@@ -1321,38 +1321,38 @@ package et_geometry is
 
 		
 		
-		type type_polygon_line is new type_line with record
-			id : type_polygon_segment_id := type_polygon_segment_id'first;
-		end record;
+		--type type_polygon_line is new type_line with record
+			--id : type_polygon_segment_id := type_polygon_segment_id'first;
+		--end record;
 
-		-- Returns the end of a polygon line that is on the left.
+		-- Returns the end of a line that is on the left.
 		-- If no boundaries given, then they will be computed.
 		-- If boundaries given then the execution is slightly faster.
 		-- If boundaries where provided and neither start nor end point
 		-- of line match then an exception will be raised.
 		function get_left_end (
-			line		: in type_polygon_line;
+			line		: in type_line;
 			boundaries	: in type_boundaries := boundaries_default)
 			return type_point;
 
-		-- Returns the end of a polygon line that is on the right.
+		-- Returns the end of a line that is on the right.
 		-- See comments on function get_left_end.
 		function get_right_end (
-			line		: in type_polygon_line;
+			line		: in type_line;
 			boundaries	: in type_boundaries := boundaries_default)
 			return type_point;
 
-		-- Returns the lower end of a polygon line.
+		-- Returns the lower end of a line.
 		-- See comments on function get_left_end.
 		function get_lower_end (
-			line		: in type_polygon_line;
+			line		: in type_line;
 			boundaries	: in type_boundaries := boundaries_default)
 			return type_point;
 
-		-- Returns the upper end of a polygon line.
+		-- Returns the upper end of a line.
 		-- See comments on function get_left_end.
 		function get_upper_end (
-			line		: in type_polygon_line;
+			line		: in type_line;
 			boundaries	: in type_boundaries := boundaries_default)
 			return type_point;
 

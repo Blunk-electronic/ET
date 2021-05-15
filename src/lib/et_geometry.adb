@@ -3293,7 +3293,7 @@ package body et_geometry is
 
 
 		function get_left_end (
-			line		: in type_polygon_line;
+			line		: in type_line;
 			boundaries	: in type_boundaries := boundaries_default)
 			return type_point
 		is
@@ -3323,7 +3323,7 @@ package body et_geometry is
 		end get_left_end;
 
 		function get_right_end (
-			line		: in type_polygon_line;
+			line		: in type_line;
 			boundaries	: in type_boundaries := boundaries_default)
 			return type_point
 		is
@@ -3353,7 +3353,7 @@ package body et_geometry is
 		end get_right_end;
 
 		function get_lower_end (
-			line		: in type_polygon_line;
+			line		: in type_line;
 			boundaries	: in type_boundaries := boundaries_default)
 			return type_point
 		is
@@ -3383,7 +3383,7 @@ package body et_geometry is
 		end get_lower_end;
 
 		function get_upper_end (
-			line		: in type_polygon_line;
+			line		: in type_line;
 			boundaries	: in type_boundaries := boundaries_default)
 			return type_point
 		is
