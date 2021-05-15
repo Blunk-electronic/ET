@@ -1524,8 +1524,8 @@ package et_geometry is
 			polygon		: in out type_polygon_base;
 			rotation	: in type_rotation);
 
-		procedure reorder_segments ( -- experimental
-			polygon	: in out type_polygon_base);
+		--procedure reorder_segments ( -- experimental
+			--polygon	: in out type_polygon_base);
 
 		
 
@@ -1554,6 +1554,7 @@ package et_geometry is
 		end record;
 		
 		-- The procedure shrinks or expands the given polygon.
+		-- CS: Largely incomplete !!!
 		procedure offset_polygon (
 			polygon		: in out type_polygon_base;
 			offset		: in type_offset);
