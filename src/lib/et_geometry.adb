@@ -3517,36 +3517,17 @@ package body et_geometry is
 			--polygon.segments.circles := circles;
 		--end load_circles;
 		
-		--procedure load_segments (
-			--polygon		: in out type_polygon_base'class;
-			--segments	: in type_polygon_segments)
-		--is
-			--use pac_polygon_lines;
-			--use pac_polygon_arcs;
-			--use pac_polygon_circles;
-			
-			--l : constant count_type := length (segments.lines);
-			--a : constant count_type := length (segments.arcs);
-			--c : constant count_type := length (segments.circles);
+		procedure load_segments (
+			polygon		: in out type_polygon_base;
+			segments	: in type_polygon_segments_2)
+		is begin
+			polygon.contours := segments;
+		end load_segments;
 
-			--t : type_polygon_segment_count;
-		--begin
-			---- compute the total number of segments:
-			--t := type_polygon_segment_count (l + a + c);
-
-			---- set the total number of segments:
-			--polygon.segments_total := t;
-
-			---- assign the actual segments:
-			--polygon.segments := segments;
-
-		--end load_segments;
-
-		--procedure delete_segments (polygon : in out type_polygon_base) 
-		--is begin
-			--polygon.segments := (others => <>);
-			--polygon.segments_total := 0;
-		--end delete_segments;			
+		procedure delete_segments (polygon : in out type_polygon_base) 
+		is begin
+			polygon.contours := (others => <>);
+		end delete_segments;			
 
 		procedure append_segment (
 			polygon	: in out type_polygon_base;
@@ -3562,6 +3543,8 @@ package body et_geometry is
 			circle	: in type_circle'class)
 		is begin
 			-- CS check discriminant and issue helpful error message ?
+			--polygon := (
+				   --contours	=> (circular => true, circle => circle));
 			
 			polygon.contours.circle := type_circle (circle);
 		end set_circle;

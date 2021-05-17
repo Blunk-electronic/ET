@@ -4639,12 +4639,12 @@ package body et_board_ops is
 							-- Compute the polygon proximity points (the places where the
 							-- fill line gets too close the polygon sides or where it reaches
 							-- safe distance from the polygon sides:
-							polygon_proximities := get_polygon_proximity_points (
-								polygon			=> type_polygon_conductor (element (p)),
-								length			=> get_width (boundaries),
-								start			=> start_point,
-								line_width		=> line_width,
-								log_threshold	=> log_threshold + 3);
+							--polygon_proximities := get_polygon_proximity_points (
+								--polygon			=> type_polygon_conductor (element (p)),
+								--length			=> get_width (boundaries),
+								--start			=> start_point,
+								--line_width		=> line_width,
+								--log_threshold	=> log_threshold + 3);
 
 							-- CS intersections and proximities with cutout areas
 							

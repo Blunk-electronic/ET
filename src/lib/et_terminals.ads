@@ -134,11 +134,11 @@ package et_terminals is
 
 	
 	-- A pad outline is a polygon:
-	type type_pad_outline is new pac_shapes.type_polygon_base with null record;
+	--type type_pad_outline is new pac_shapes.type_polygon_base with null record;
 	
 	type type_pad_outline_tht is record
-		top		: type_pad_outline; -- The shape on the top side
-		bottom	: type_pad_outline; -- is not nessecarily the same as on the bottom side.
+		top		: type_polygon; -- The shape on the top side
+		bottom	: type_polygon; -- is not nessecarily the same as on the bottom side.
 	end record;
 
 
@@ -274,7 +274,7 @@ package et_terminals is
 				end case;
 				
 			when SMT =>
-				pad_shape_smt			: type_pad_outline;
+				pad_shape_smt			: type_polygon;
 				face					: type_face;
 				stop_mask_status_smt	: type_stop_mask_status := stop_mask_status_default;
 				stop_mask_shape_smt 	: type_stop_mask_smt;

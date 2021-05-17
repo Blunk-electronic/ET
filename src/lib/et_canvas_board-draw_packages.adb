@@ -2486,7 +2486,7 @@ is
 			end move;
 
 			procedure draw_tht_pad_with_circular_cutout (
-				outer_border	: in type_pad_outline;
+				outer_border	: in type_polygon;
 				drill_position	: in type_point;
 				drill_size		: in type_drill_size)
 			is 
@@ -2505,7 +2505,7 @@ is
 			end draw_tht_pad_with_circular_cutout;
 
 			procedure draw_tht_pad_with_arbitrary_cutout (
-				outer_border	: in type_pad_outline;
+				outer_border	: in type_polygon;
 				inner_border	: in type_plated_millings)
 			is begin
 				set_color_tht_pad (context.cr);
@@ -2601,13 +2601,13 @@ is
 				-- the signal layer is enabled.
 				procedure draw_pad_smt (
 					name			: in string;  -- H5, 5, 3
-					pad_outline_in	: in type_pad_outline; -- the outline of the solder pad (copper)
+					pad_outline_in	: in type_polygon; -- the outline of the solder pad (copper)
 					stop_mask_in	: in type_stop_mask_smt; -- the stop mask of the pad
 					stencil_in		: in et_terminals.type_stencil; -- the solder cream mask of the pad
 					pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
 					f				: in type_face) 
 				is
-					pad_outline : type_pad_outline := pad_outline_in;
+					pad_outline : type_polygon := pad_outline_in;
 					pad_pos : type_position := pad_pos_in;
 
 					stop_mask_contours	: type_stop_mask_contours;
@@ -2716,7 +2716,7 @@ is
 				-- th outer contour of the stop mask
 				-- in top/bottom signal layer (specified by caller).
 				procedure tht_outer_layer (
-					pad_outline_in	: in type_pad_outline; -- the outline of the solder pad
+					pad_outline_in	: in type_polygon; -- the outline of the solder pad
 					stop_mask_in	: in et_terminals.type_stop_mask; -- the stop mask in the outer layer
 					pad_pos_in		: in type_position; -- the center of the pad incl. its rotation
 					f				: in type_face;
@@ -2724,7 +2724,7 @@ is
 					drill_size		: in type_drill_size := type_drill_size'first;
 					hole_outline_in	: in type_plated_millings := plated_millings_default)
 				is
-					pad_outline_outer_layer : type_pad_outline := pad_outline_in;
+					pad_outline_outer_layer : type_polygon := pad_outline_in;
 					pad_pos : type_position := pad_pos_in;
 
 					hole_outline : type_plated_millings := hole_outline_in;
@@ -2827,7 +2827,7 @@ is
 					hole_outline : type_plated_millings := hole_outline_in;
 					pad_pos : type_position := pad_pos_in;
 
-					pad_outline_inner_layers : type_pad_outline;
+					pad_outline_inner_layers : type_polygon;
 				begin
 					if inner_conductors_enabled (bottom_layer) then
 								

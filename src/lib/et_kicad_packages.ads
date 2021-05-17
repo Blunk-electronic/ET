@@ -190,7 +190,7 @@ package et_kicad_packages is
 		position	: in type_position;
 		diameter	: in type_pad_size;
 		offset		: in type_point)	-- the offset of the pad from the center
-		return type_pad_outline;
+		return type_polygon;
 	
 	-- Converts the given position and dimensions of a rectangular pad
 	-- to a list with four lines (top, bottom, right, left).
@@ -200,7 +200,7 @@ package et_kicad_packages is
 		size_x		: in type_pad_size;	-- the size in x of the pad
 		size_y		: in type_pad_size;	-- the size in y of the pad
 		offset		: in type_point)	-- the offset of the pad from the center
-		return type_pad_outline;
+		return type_polygon;
 	
 	-- Converts the given position and dimensions of an oval pad
 	-- to a list with two vertical lines and two arcs (rotation assumed zero).
@@ -208,8 +208,8 @@ package et_kicad_packages is
 		center	: in type_position;	-- the pad center position (incl. angle)
 		size_x	: in type_pad_size;	-- the size in x of the pad
 		size_y	: in type_pad_size;	-- the size in y of the pad
-		offset	: in type_point)			-- the offset of the pad from the center
-		return type_pad_outline;
+		offset	: in type_point)	-- the offset of the pad from the center
+		return type_polygon;
 	
 	-- slotted holes	
 	tht_hole_shape_oval	: constant string := "oval";
@@ -221,14 +221,14 @@ package et_kicad_packages is
 	subtype type_pad_milling_size is et_pcb_coordinates.type_distance 
 		range et_drills.drill_size_min .. et_drills.drill_size_max;
 	
-	function to_pad_milling_contour (
 	-- Converts the given position and dimensions of a rectangular slotted hole
 	-- to a list with four lines (top, bottom, right, left).
+	function to_pad_milling_contour (
 		center	: in type_position; -- the terminal position (incl. angle, (z axis ignored))
 		size_x	: in type_pad_size;	-- the size in x of the hole
 		size_y	: in type_pad_size;	-- the size in y of the hole
 		offset	: in type_point)	-- the offset of the pad from the center
-		return pac_shapes.pac_polygon_lines.list;
+		return pac_polygon_segments.list;
 	
 	-- For packages, temporarily this type is required to handle texts in 
 	-- silk screen, assembly doc, ...

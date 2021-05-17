@@ -177,7 +177,7 @@ package body et_pcb is
 
 		result : type_inside_polygon_query_result := (start => point, others => <>);
 
-		line : constant type_probe_line := (
+		line : constant type_line := (
 				start_point	=> point,
 				end_point	=> type_point (set (X (point) + 1.0, Y (point))));
 		

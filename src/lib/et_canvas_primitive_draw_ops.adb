@@ -280,10 +280,12 @@ package body pac_draw is
 		-- backup previous line width
 		line_width_before : constant type_view_coordinate := get_line_width (context.cr);
 
+
+		use pac_polygon_segments;
 		
-		use pac_polygon_lines;
-		use pac_polygon_arcs;
-		use pac_polygon_circles;
+		--use pac_polygon_lines;
+		--use pac_polygon_arcs;
+		--use pac_polygon_circles;
 
 		
 		-- The functions get_line, get_arc and get_circle search for a polygon segment (by its id)
@@ -291,79 +293,79 @@ package body pac_draw is
 
 		-- Take a copy of the segments. Search operations will take 
 		-- place here:
-		segments : type_polygon_segments := get_segments (polygon);
+		--segments : type_polygon_segments := get_segments (polygon);
 
 		
-		function get_line (segment : in type_polygon_segment_id) return pac_polygon_lines.cursor is 
-			c : pac_polygon_lines.cursor := segments.lines.first;
-			found : boolean := false;
+		--function get_line (segment : in type_polygon_segment_id) return pac_polygon_lines.cursor is 
+			--c : pac_polygon_lines.cursor := segments.lines.first;
+			--found : boolean := false;
 
-			procedure query_line (l : in type_polygon_line) is begin
-				if l.id = segment then
-					found := true;
-				end if;
-			end query_line;
+			--procedure query_line (l : in type_polygon_line) is begin
+				--if l.id = segment then
+					--found := true;
+				--end if;
+			--end query_line;
 			
-		begin -- get_line
-			while c /= pac_polygon_lines.no_element loop
-				query_element (c, query_line'access);
+		--begin -- get_line
+			--while c /= pac_polygon_lines.no_element loop
+				--query_element (c, query_line'access);
 
-				if found = true then exit; end if;
+				--if found = true then exit; end if;
 				
-				next (c);
-			end loop;
+				--next (c);
+			--end loop;
 
-			return c; -- should be no_element if not found. points to the segment if found.
-		end get_line;
+			--return c; -- should be no_element if not found. points to the segment if found.
+		--end get_line;
 		
-		function get_arc (segment : in type_polygon_segment_id) return pac_polygon_arcs.cursor is 
-			c : pac_polygon_arcs.cursor := segments.arcs.first;
-			found : boolean := false;
+		--function get_arc (segment : in type_polygon_segment_id) return pac_polygon_arcs.cursor is 
+			--c : pac_polygon_arcs.cursor := segments.arcs.first;
+			--found : boolean := false;
 
-			procedure query_arc (l : in type_polygon_arc) is begin
-				if l.id = segment then
-					found := true;
-				end if;
-			end query_arc;
+			--procedure query_arc (l : in type_polygon_arc) is begin
+				--if l.id = segment then
+					--found := true;
+				--end if;
+			--end query_arc;
 			
-		begin -- get_arc
-			while c /= pac_polygon_arcs.no_element loop
-				query_element (c, query_arc'access);
+		--begin -- get_arc
+			--while c /= pac_polygon_arcs.no_element loop
+				--query_element (c, query_arc'access);
 
-				if found = true then exit; end if;
+				--if found = true then exit; end if;
 				
-				next (c);
-			end loop;
+				--next (c);
+			--end loop;
 
-			return c; -- should be no_element if not found. points to the segment if found.
-		end get_arc;
+			--return c; -- should be no_element if not found. points to the segment if found.
+		--end get_arc;
 		
-		function get_circle (segment : in type_polygon_segment_id) return pac_polygon_circles.cursor is 
-			c : pac_polygon_circles.cursor := segments.circles.first;
-			found : boolean := false;
+		--function get_circle (segment : in type_polygon_segment_id) return pac_polygon_circles.cursor is 
+			--c : pac_polygon_circles.cursor := segments.circles.first;
+			--found : boolean := false;
 
-			procedure query_circle (l : in type_polygon_circle) is begin
-				if l.id = segment then
-					found := true;
-				end if;
-			end query_circle;
+			--procedure query_circle (l : in type_polygon_circle) is begin
+				--if l.id = segment then
+					--found := true;
+				--end if;
+			--end query_circle;
 			
-		begin -- get_circle
-			while c /= pac_polygon_circles.no_element loop
-				query_element (c, query_circle'access);
+		--begin -- get_circle
+			--while c /= pac_polygon_circles.no_element loop
+				--query_element (c, query_circle'access);
 
-				if found = true then exit; end if;
+				--if found = true then exit; end if;
 				
-				next (c);
-			end loop;
+				--next (c);
+			--end loop;
 
-			return c; -- should be no_element if not found. points to the segment if found.
-		end get_circle;
+			--return c; -- should be no_element if not found. points to the segment if found.
+		--end get_circle;
 
-		-- Here the result of get_line, get_arc and get_circle is stored temporarily:
-		cl : pac_polygon_lines.cursor;
-		ca : pac_polygon_arcs.cursor;
-		cc : pac_polygon_circles.cursor;
+		---- Here the result of get_line, get_arc and get_circle is stored temporarily:
+		--cl : pac_polygon_lines.cursor;
+		--ca : pac_polygon_arcs.cursor;
+		--cc : pac_polygon_circles.cursor;
 
 		-- For cairo, en arc must be expressed by start and end arc:
 		arc_temp : type_arc_angles;
@@ -376,6 +378,64 @@ package body pac_draw is
 		-- according to the current scale:
 		dash_on, dash_off	: gdouble;
 		dash_pattern		: dash_array (1 .. 2);
+
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			case element (c).shape is
+				
+				when LINE =>
+
+					-- start point
+					line_to (
+						context.cr,
+						convert_x (element (c).segment_line.start_point.x),
+						shift_y (element (c).segment_line.start_point.y, height)
+						);
+						
+					-- end point
+					line_to (
+						context.cr,
+						convert_x (element (c).segment_line.end_point.x),
+						shift_y (element (c).segment_line.end_point.y, height)
+						);
+
+					
+				when ARC =>
+					-- Convert the segment to a type that uses start and end angles.
+					-- The angles of arc_temp will later be inverted for cairo draw operation:
+					arc_temp := to_arc_angles (element (c).segment_arc);
+					
+					if element (c).segment_arc.direction = CW then
+						--put_line ("CW");
+						
+						cairo.arc (
+							context.cr,
+							xc		=> convert_x (arc_temp.center.x),
+							yc		=> shift_y (arc_temp.center.y, height),
+							radius	=> type_view_coordinate (arc_temp.radius),
+							angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
+							angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
+							);
+
+					else -- CCW
+						--put_line ("CCW start" & to_string (element (ca).start_point) & " angle" 
+						--		  & to_string (arc_temp.angle_start));
+
+						--put_line ("CCW end  " & to_string (element (ca).end_point) & " angle" 
+						--		  & to_string (arc_temp.angle_end));
+						
+						cairo.arc_negative (
+							context.cr,
+							xc		=> convert_x (arc_temp.center.x),
+							yc		=> shift_y (arc_temp.center.y, height),
+							radius	=> type_view_coordinate (arc_temp.radius),
+							angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
+							angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
+							);
+					end if;
+
+			end case;
+		end query_segment;
+
 		
 	begin -- draw_polygon
 
@@ -400,103 +460,137 @@ package body pac_draw is
 			-- and among circles (least likely). The functions get_line, get_arc and get_circle
 			-- return a cursor to the segment if it is among lines, arcs or circles.
 			-- Otherwise get_line, get_arc or get_circle return no_element.
-			for s in type_polygon_segment_id'first .. get_segments_total (polygon) loop
+			--for s in type_polygon_segment_id'first .. get_segments_total (polygon) loop
 
-				--put_line ("id " & type_polygon_segment_count'image (s));
+				----put_line ("id " & type_polygon_segment_count'image (s));
 				
-				-- Search the segment among the lines:
-				cl := get_line (s);
-				if cl /= pac_polygon_lines.no_element then
+				---- Search the segment among the lines:
+				--cl := get_line (s);
+				--if cl /= pac_polygon_lines.no_element then
 
-					-- start point
-					line_to (
-						context.cr,
-						convert_x (element (cl).start_point.x),
-						shift_y (element (cl).start_point.y, height)
-						);
+					---- start point
+					--line_to (
+						--context.cr,
+						--convert_x (element (cl).start_point.x),
+						--shift_y (element (cl).start_point.y, height)
+						--);
 						
-					-- end point
-					line_to (
-						context.cr,
-						convert_x (element (cl).end_point.x),
-						shift_y (element (cl).end_point.y, height)
-						);
+					---- end point
+					--line_to (
+						--context.cr,
+						--convert_x (element (cl).end_point.x),
+						--shift_y (element (cl).end_point.y, height)
+						--);
 
-				-- If segment not found among lines, search among arcs:
-				else 
-					ca := get_arc (s);
-					if ca /= pac_polygon_arcs.no_element then
+				---- If segment not found among lines, search among arcs:
+				--else 
+					--ca := get_arc (s);
+					--if ca /= pac_polygon_arcs.no_element then
 
-						-- Convert the segment to a type that uses start and end angles.
-						-- The angles of arc_temp will later be inverted for cairo draw operation:
-						arc_temp := to_arc_angles (element (ca));
+						---- Convert the segment to a type that uses start and end angles.
+						---- The angles of arc_temp will later be inverted for cairo draw operation:
+						--arc_temp := to_arc_angles (element (ca));
 						
-						if element (ca).direction = CW then
-							--put_line ("CW");
+						--if element (ca).direction = CW then
+							----put_line ("CW");
 							
-							cairo.arc (
-								context.cr,
-								xc		=> convert_x (arc_temp.center.x),
-								yc		=> shift_y (arc_temp.center.y, height),
-								radius	=> type_view_coordinate (arc_temp.radius),
-								angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
-								angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
-								);
+							--cairo.arc (
+								--context.cr,
+								--xc		=> convert_x (arc_temp.center.x),
+								--yc		=> shift_y (arc_temp.center.y, height),
+								--radius	=> type_view_coordinate (arc_temp.radius),
+								--angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
+								--angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
+								--);
 
-						else -- CCW
-							--put_line ("CCW start" & to_string (element (ca).start_point) & " angle" 
-							--		  & to_string (arc_temp.angle_start));
+						--else -- CCW
+							----put_line ("CCW start" & to_string (element (ca).start_point) & " angle" 
+							----		  & to_string (arc_temp.angle_start));
 
-							--put_line ("CCW end  " & to_string (element (ca).end_point) & " angle" 
-							--		  & to_string (arc_temp.angle_end));
+							----put_line ("CCW end  " & to_string (element (ca).end_point) & " angle" 
+							----		  & to_string (arc_temp.angle_end));
 							
-							cairo.arc_negative (
-								context.cr,
-								xc		=> convert_x (arc_temp.center.x),
-								yc		=> shift_y (arc_temp.center.y, height),
-								radius	=> type_view_coordinate (arc_temp.radius),
-								angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
-								angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
-								);
-						end if;
+							--cairo.arc_negative (
+								--context.cr,
+								--xc		=> convert_x (arc_temp.center.x),
+								--yc		=> shift_y (arc_temp.center.y, height),
+								--radius	=> type_view_coordinate (arc_temp.radius),
+								--angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
+								--angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
+								--);
+						--end if;
 
-					-- If segment not found among arcs, search among circles:
-					else
-						cc := get_circle (s);
-						if cc /= pac_polygon_circles.no_element then
+					---- If segment not found among arcs, search among circles:
+					--else
+						--cc := get_circle (s);
+						--if cc /= pac_polygon_circles.no_element then
 
-							--put_line ("circle");
+							----put_line ("circle");
 							
-							if filled = YES then
-								fill (context.cr);
-							end if;
+							--if filled = YES then
+								--fill (context.cr);
+							--end if;
 							
-							-- CS: The intersection between circle and other segments
-							-- is still visible as a very thin line.
+							---- CS: The intersection between circle and other segments
+							---- is still visible as a very thin line.
 
-							-- CS: All segments of the polygon must have the same color.
-							-- Where the circle overlaps the polygon the brightness increases.
+							---- CS: All segments of the polygon must have the same color.
+							---- Where the circle overlaps the polygon the brightness increases.
 
-							cairo.arc (
-								context.cr,
-								xc		=> convert_x (element (cc).center.x),
-								yc		=> shift_y (element (cc).center.y, height),
-								radius	=> type_view_coordinate (element (cc).radius),
+							--cairo.arc (
+								--context.cr,
+								--xc		=> convert_x (element (cc).center.x),
+								--yc		=> shift_y (element (cc).center.y, height),
+								--radius	=> type_view_coordinate (element (cc).radius),
 
-								-- it must be a full circle starting at 0 degree and ending at 360 degree:
-								angle1	=> 0.0,
-								angle2	=> type_view_coordinate (2 * pi)				
-								);
+								---- it must be a full circle starting at 0 degree and ending at 360 degree:
+								--angle1	=> 0.0,
+								--angle2	=> type_view_coordinate (2 * pi)				
+								--);
 
-						else
-							-- If segment is not among circles, we have a problem:
-							raise constraint_error; -- CS should never happen. log message !
-						end if;
+						--else
+							---- If segment is not among circles, we have a problem:
+							--raise constraint_error; -- CS should never happen. log message !
+						--end if;
 						
-					end if;
+					--end if;
+				--end if;
+
+			--end loop;
+
+			if polygon.contours.circular then
+
+				-- Draw the single circle that forms the polygon:
+
+				if filled = YES then
+					fill (context.cr);
 				end if;
+				
+				-- CS: The intersection between circle and other segments
+				-- is still visible as a very thin line.
 
-			end loop;
+				-- CS: All segments of the polygon must have the same color.
+				-- Where the circle overlaps the polygon the brightness increases.
+
+				cairo.arc (
+					context.cr,
+					xc		=> convert_x (polygon.contours.circle.center.x),
+					yc		=> shift_y (polygon.contours.circle.center.y, height),
+					radius	=> type_view_coordinate (polygon.contours.circle.radius),
+
+					-- it must be a full circle starting at 0 degree and ending at 360 degree:
+					angle1	=> 0.0,
+					angle2	=> type_view_coordinate (2 * pi)				
+					);
+
+
+				
+			else
+				-- move lines and arcs:
+				polygon.contours.segments.iterate (query_segment'access);
+			end if;
+
+			
 			
 			case filled is
 				when YES => 

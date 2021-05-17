@@ -777,7 +777,7 @@ package body et_pcb_rw.device_packages is
 		terminal_name			: pac_terminal_name.bounded_string;
 		terminal_technology		: type_assembly_technology := assembly_technology_default;
 		tht_pad_shape			: type_pad_outline_tht;		
-		smt_pad_shape			: type_pad_outline;
+		smt_pad_shape			: type_polygon;
 
 		smt_pad_face			: et_pcb_coordinates.type_face := et_pcb_coordinates.face_default;
 

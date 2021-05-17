@@ -99,35 +99,32 @@ package body et_kicad_packages is
 		position	: in type_position;
 		diameter	: in type_pad_size;
 		offset		: in type_point)	-- the offset of the pad from the center
-		return type_pad_outline 
+		return type_polygon 
 	is
-		shape : type_pad_outline; -- to be returned
-		c : type_polygon_circle;
+		shape : type_polygon; -- to be returned
+		c : type_circle;
 	begin
 		c.center := type_point (position);
 		c.radius := diameter / 2.0;
 		move_by (c.center, offset);
 
-		c.id := 1;
-		shape.append_segment_circle (c);
+		shape.set_circle (c);
 		
 		return shape;
 	end to_pad_shape_circle;
 
 	function to_pad_shape_rectangle (
-	-- Converts the given position and dimensions of a rectangular pad
-	-- to a list with four lines (top, bottom, right, left).
 	-- CS: rework as in to_pad_shape_oval
 		center		: in type_position; -- the pad center position (incl. angle)
 		size_x		: in type_pad_size;	-- the size in x of the pad
 		size_y		: in type_pad_size;	-- the size in y of the pad
 		offset		: in type_point)	-- the offset of the pad from the center
-		return type_pad_outline 
+		return type_polygon 
 	is
 		use et_pcb_coordinates;
 		use pac_geometry_brd;
 
-		shape : type_pad_outline; -- to be returned
+		shape : type_polygon; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		--angle : constant type_angle := get_angle (center);
@@ -144,9 +141,11 @@ package body et_kicad_packages is
 		p11, p12 : type_point;
 		p21, p22 : type_point;
 
+		use pac_shapes;
+		
 		-- These are the four lines we need for the rectangular pad contour:
-		line_1, line_2 : type_polygon_line; -- left line, right line
-		line_3, line_4 : type_polygon_line; -- upper line, lower line
+		line_1, line_2 : pac_shapes.type_line; -- left line, right line
+		line_3, line_4 : pac_shapes.type_line; -- upper line, lower line
 
 	begin -- to_pad_shape_rectangle
 		-- set supportive cornert points
@@ -173,45 +172,39 @@ package body et_kicad_packages is
 		-- set left line
 		line_1.start_point := p11;
 		line_1.end_point := p12;
-		line_1.id := 1;
 
 		-- set lower line
 		line_4.start_point := p12;
 		line_4.end_point := p22;
-		line_4.id := 2;
 		
 		-- set right line
 		line_2.start_point := p22;
 		line_2.end_point := p21;
-		line_2.id := 3;
 
 		-- set upper line
 		line_3.start_point := p21;
 		line_3.end_point := p11;
-		line_3.id := 4;
 		
 		-- build shape
-		shape.append_segment_line (line_1);
-		shape.append_segment_line (line_4);
-		shape.append_segment_line (line_2);
-		shape.append_segment_line (line_3);
+		shape.append_segment ((LINE, line_1));
+		shape.append_segment ((LINE, line_4));
+		shape.append_segment ((LINE, line_2));
+		shape.append_segment ((LINE, line_3));
 		
 		return shape;
 	end to_pad_shape_rectangle;
 
 	function to_pad_shape_oval (
-	-- Converts the given position and dimensions of an oval pad
-	-- to a list with two vertical lines and two arcs (rotation assumed zero).
 		center	: in type_position;	-- the pad center position (incl. angle)
 		size_x	: in type_pad_size;	-- the size in x of the pad
 		size_y	: in type_pad_size;	-- the size in y of the pad
-		offset	: in type_point)			-- the offset of the pad from the center
-		return type_pad_outline 
+		offset	: in type_point)	-- the offset of the pad from the center
+		return type_polygon 
 	is
 		use et_pcb_coordinates;
 		use pac_geometry_brd;
 
-		shape : type_pad_outline; -- to be returned
+		shape : type_polygon; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		angle : constant type_rotation := rot (center);
@@ -230,10 +223,12 @@ package body et_kicad_packages is
 		p11, p12 : type_point; -- start/end point of upper line
 		p21, p22 : type_point; -- start/end point of lower line
 		p41, p42 : type_point; -- center of left/right arc
+
+		use pac_shapes;
 		
 		-- These are the two lines and the two arcs we need for the oval pad contour:
-		line_1, line_2 : type_polygon_line;	-- upper/lower line
-		arc_1, arc_2 : type_polygon_arc;	-- left/right arc
+		line_1, line_2	: pac_shapes.type_line;	-- upper/lower line
+		arc_1, arc_2	: pac_shapes.type_arc;	-- left/right arc
 		
 	begin -- to_pad_shape_oval
 
@@ -275,47 +270,42 @@ package body et_kicad_packages is
 		-- set upper line
 		line_1.start_point := p11;
 		line_1.end_point := p12;
-		line_1.id := 1;
 
 		-- set right arc
 		arc_2.start_point := p12;
 		arc_2.center := p42;
 		arc_2.end_point := p22;
-		arc_2.id := 2;
 		
 		-- set lower line
 		line_2.start_point := p22;
 		line_2.end_point := p21;
-		line_2.id := 3;
 		
 		-- set left arc
 		arc_1.start_point := p21;
 		arc_1.center := p41;
 		arc_1.end_point := p11;
-		arc_1.id := 4;
 		
 		-- build shape
-		shape.append_segment_line (line_1);
-		shape.append_segment_arc (arc_2);
-		shape.append_segment_line (line_2);
-		shape.append_segment_arc (arc_1);
+		shape.append_segment ((LINE, line_1));
+		shape.append_segment ((ARC, arc_2));
+		shape.append_segment ((LINE, line_2));
+		shape.append_segment ((ARC, arc_1));
 		
 		return shape;
 	end to_pad_shape_oval;
 	
 	function to_pad_milling_contour (
-	-- Converts the given position and dimensions of a rectangular slotted hole
-	-- to a list with four lines (top, bottom, right, left).
 		center	: in type_position; -- the terminal position (incl. angle, (z axis ignored))
 		size_x	: in type_pad_size;	-- the size in x of the hole
 		size_y	: in type_pad_size;	-- the size in y of the hole
 		offset	: in type_point)	-- the offset of the pad from the center
-		return pac_shapes.pac_polygon_lines.list 
+		return pac_polygon_segments.list 
 	is
 		use et_pcb_coordinates;
 		use pac_geometry_brd;
 
-		lines : pac_polygon_lines.list; -- to be returned
+		use pac_polygon_segments;
+		lines : pac_polygon_segments.list; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		angle : constant type_rotation := rot (center);
@@ -332,8 +322,8 @@ package body et_kicad_packages is
 		p21, p22 : type_point;
 
 		-- These are the four lines we need for the rectangular pad contour:
-		line_1, line_2 : type_polygon_line; -- left line, right line
-		line_3, line_4 : type_polygon_line; -- upper line, lower line
+		line_1, line_2 : pac_shapes.type_line; -- left line, right line
+		line_3, line_4 : pac_shapes.type_line; -- upper line, lower line
 
 	begin -- to_pad_milling_contour
 		-- set supportive cornert points
@@ -376,20 +366,11 @@ package body et_kicad_packages is
 		
 		-- Assemble milling contour:
 
-		-- The lines must be given an id because
-		-- they will end up in a polygon later.
 		-- The lines are appended in counterclockwise direction.
-		line_1.id := 1;
-		lines.append (line_1); -- left
-
-		line_4.id := 2;
-		lines.append (line_4); -- lower
-
-		line_2.id := 3;
-		lines.append (line_2); -- right
-
-		line_3.id := 4;
-		lines.append (line_3); -- upper
+		lines.append ((shape => LINE, segment_line => line_1)); -- left
+		lines.append ((shape => LINE, segment_line => line_4)); -- lower
+		lines.append ((shape => LINE, segment_line => line_2)); -- right
+		lines.append ((shape => LINE, segment_line => line_3)); -- upper
 		
 		return lines;
 	end to_pad_milling_contour;
@@ -1911,7 +1892,7 @@ package body et_kicad_packages is
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
 
-				shape : type_pad_outline;
+				shape : type_polygon;
 
 				procedure insert_tht is begin 
 				-- NOTE: The pad shape (stored in shape) now must be assigned to
@@ -1950,18 +1931,16 @@ package body et_kicad_packages is
 							declare
 								-- KiCad does not allow arcs or circles for plated millings.
 								-- So we have only lines and nothing else.
-								lines : pac_polygon_lines.list := to_pad_milling_contour (
+								lines : pac_polygon_segments.list := to_pad_milling_contour (
 											center	=> terminal_position,
 											size_x	=> terminal_milling_size_x,
 											size_y	=> terminal_milling_size_y,
 											offset	=> terminal_pad_drill_offset);
 
-								segments : type_polygon_segments;
 								millings : type_plated_millings;
 								
 							begin
-								segments.lines := lines;
-								load_segments (millings, segments);
+								load_segments (millings, (circular => false, segments => lines));
 
 								terminals.insert (
 									key 		=> terminal_name,

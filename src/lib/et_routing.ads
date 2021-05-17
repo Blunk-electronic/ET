@@ -81,21 +81,21 @@ package et_routing is
 	-- of given width gets too close to the polygon contours
 	-- or where it reaches safe distance from the polygon
 	-- contours:
-	function get_polygon_proximity_points (
-		polygon			: in type_polygon_conductor;
+	--function get_polygon_proximity_points (
+		--polygon			: in type_polygon_conductor;
 
-		-- The length of the polygon in x-direction:									  
-		length			: in type_distance_positive;
+		---- The length of the polygon in x-direction:									  
+		--length			: in type_distance_positive;
 		
-		-- The start point of the probe line.
-		-- Must be outside the polygon !
-		start			: in type_point;
+		---- The start point of the probe line.
+		---- Must be outside the polygon !
+		--start			: in type_point;
 
-		-- The width of the probe line:
-		line_width		: in type_track_width;  -- the width of the fill line
+		---- The width of the probe line:
+		--line_width		: in type_track_width;  -- the width of the fill line
 		
-		log_threshold	: in type_log_level)
-		return pac_proximity_points.set;
+		--log_threshold	: in type_log_level)
+		--return pac_proximity_points.set;
 									  
 	
 	-- Computes the clearance in x-direction of a 

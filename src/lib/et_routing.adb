@@ -95,856 +95,856 @@ package body et_routing is
 
 
 	
-	function get_polygon_proximity_points (
-		polygon			: in type_polygon_conductor;
-		length			: in type_distance_positive;
-		start			: in type_point;
-		line_width		: in type_track_width;  -- the width of the fill line
-		log_threshold	: in type_log_level)
-		return pac_proximity_points.set
-	is
-		points_preliminary	: pac_proximity_points.set;
-		points_final		: pac_proximity_points.set; -- to be returned
+	--function get_polygon_proximity_points (
+		--polygon			: in type_polygon_conductor;
+		--length			: in type_distance_positive;
+		--start			: in type_point;
+		--line_width		: in type_track_width;  -- the width of the fill line
+		--log_threshold	: in type_log_level)
+		--return pac_proximity_points.set
+	--is
+		--points_preliminary	: pac_proximity_points.set;
+		--points_final		: pac_proximity_points.set; -- to be returned
 		
-		half_width : constant type_distance := line_width * 0.5;
-		lower_edge : constant type_distance := Y (start) - half_width;
-		upper_edge : constant type_distance := Y (start) + half_width;
+		--half_width : constant type_distance := line_width * 0.5;
+		--lower_edge : constant type_distance := Y (start) - half_width;
+		--upper_edge : constant type_distance := Y (start) + half_width;
 
-		-- Build a probe line that runs along the lower edge of the fill line:
-		pl_l : constant type_line_vector := (
-			v_start		=> to_vector (type_point (set (X (start), lower_edge))),
-			v_direction	=> to_vector (type_point (set (1.0, 0.0))));
+		---- Build a probe line that runs along the lower edge of the fill line:
+		--pl_l : constant type_line_vector := (
+			--v_start		=> to_vector (type_point (set (X (start), lower_edge))),
+			--v_direction	=> to_vector (type_point (set (1.0, 0.0))));
 
-		-- Build a probe line that runs along the middle of the fill line:
-		pl_c : constant type_line_vector := (
-			v_start		=> to_vector (start),
-			v_direction	=> to_vector (type_point (set (1.0, 0.0))));
+		---- Build a probe line that runs along the middle of the fill line:
+		--pl_c : constant type_line_vector := (
+			--v_start		=> to_vector (start),
+			--v_direction	=> to_vector (type_point (set (1.0, 0.0))));
 
-		-- Build a probe line that runs along the upper edge of the fill line:
-		pl_h : constant type_line_vector := (
-			v_start		=> to_vector (type_point (set (X (start), upper_edge))),
-			v_direction	=> to_vector (type_point (set (1.0, 0.0))));
+		---- Build a probe line that runs along the upper edge of the fill line:
+		--pl_h : constant type_line_vector := (
+			--v_start		=> to_vector (type_point (set (X (start), upper_edge))),
+			--v_direction	=> to_vector (type_point (set (1.0, 0.0))));
 
 			
-		boundaries_probe_line : type_boundaries;
+		--boundaries_probe_line : type_boundaries;
 			
-		segments : constant type_polygon_segments := get_segments (polygon);
+		--segments : constant type_polygon_segments := get_segments (polygon);
 
-		str_bound_int	: constant string := "boundaries intersect";
-		str_lower_edge	: constant string := "intersects lower edge at";
-		str_upper_edge	: constant string := "intersects upper edge at";
-		str_between		: constant string := "between lower and upper edge";
+		--str_bound_int	: constant string := "boundaries intersect";
+		--str_lower_edge	: constant string := "intersects lower edge at";
+		--str_upper_edge	: constant string := "intersects upper edge at";
+		--str_between		: constant string := "between lower and upper edge";
 
-		type type_edge is (UPPER, LOWER);
+		--type type_edge is (UPPER, LOWER);
 		
-		function compute_for_slope (
-			center_line	: in type_line_vector;
-			edge_line	: in type_line_vector;
-			intersection_tangent : in type_line_vector;
-			intersection: in type_intersection;
-			edge		: in type_edge;
-			direction	: in type_line_direction)
-			return type_distance
-		is
-			--clv : constant type_line_vector := to_line_vector (candidate_line);
-			m1, m2 : type_intersection_of_two_lines (status => EXISTS);
+		--function compute_for_slope (
+			--center_line	: in type_line_vector;
+			--edge_line	: in type_line_vector;
+			--intersection_tangent : in type_line_vector;
+			--intersection: in type_intersection;
+			--edge		: in type_edge;
+			--direction	: in type_line_direction)
+			--return type_distance
+		--is
+			----clv : constant type_line_vector := to_line_vector (candidate_line);
+			--m1, m2 : type_intersection_of_two_lines (status => EXISTS);
 
-			lv2 : type_line_vector;
-			ray : type_ray;
+			--lv2 : type_line_vector;
+			--ray : type_ray;
 
-		begin
-			m1 := get_intersection (edge_line, intersection_tangent);
+		--begin
+			--m1 := get_intersection (edge_line, intersection_tangent);
 			
-			ray.start_point := to_point (m1.intersection.point);
+			--ray.start_point := to_point (m1.intersection.point);
 
-			-- The given intersection.angle is of little use since it ranges between 0 and 180
-			-- degrees. Combined with the given direction we get the exact angle
-			-- of intersection.
+			---- The given intersection.angle is of little use since it ranges between 0 and 180
+			---- degrees. Combined with the given direction we get the exact angle
+			---- of intersection.
 			
-			case edge is
-				when UPPER =>
-					case direction is
-						when RISING =>
-							if intersection.angle > 90.0 then
-								-- ray.direction := (180.0 - intersection.angle) * 0.5;
-								-- the simplified version:
-								ray.direction := 90.0 - intersection.angle * 0.5;
+			--case edge is
+				--when UPPER =>
+					--case direction is
+						--when RISING =>
+							--if intersection.angle > 90.0 then
+								---- ray.direction := (180.0 - intersection.angle) * 0.5;
+								---- the simplified version:
+								--ray.direction := 90.0 - intersection.angle * 0.5;
 								
-							elsif intersection.angle < 90.0 then
-								ray.direction := intersection.angle * 0.5;
+							--elsif intersection.angle < 90.0 then
+								--ray.direction := intersection.angle * 0.5;
 								
-							else
-								raise constraint_error; -- CS should never happen
-							end if;
+							--else
+								--raise constraint_error; -- CS should never happen
+							--end if;
 								
-							--log (text => "rising direction" & to_string (ray.direction), level => log_threshold + 3);
+							----log (text => "rising direction" & to_string (ray.direction), level => log_threshold + 3);
 							
-						when FALLING =>
-							if intersection.angle > 90.0 then
-								-- ray.direction := 180.0 - (180.0 - intersection.angle) * 0.5;
-								-- the simplified version:
-								ray.direction := 90.0 + intersection.angle * 0.5;
+						--when FALLING =>
+							--if intersection.angle > 90.0 then
+								---- ray.direction := 180.0 - (180.0 - intersection.angle) * 0.5;
+								---- the simplified version:
+								--ray.direction := 90.0 + intersection.angle * 0.5;
 								
-							elsif intersection.angle < 90.0 then
-								ray.direction := 180.0 - intersection.angle * 0.5;
+							--elsif intersection.angle < 90.0 then
+								--ray.direction := 180.0 - intersection.angle * 0.5;
 								
-							else
-								raise constraint_error; -- CS should never happen
-							end if;
+							--else
+								--raise constraint_error; -- CS should never happen
+							--end if;
 							
-							--log (text => "falling direction" & to_string (ray.direction), level => log_threshold + 3);
+							----log (text => "falling direction" & to_string (ray.direction), level => log_threshold + 3);
 							
-						when others => raise constraint_error; -- CS
-					end case;
+						--when others => raise constraint_error; -- CS
+					--end case;
 
-				when LOWER =>
-					case direction is
-						when RISING =>
-							if intersection.angle > 90.0 then
-								-- ray.direction := 180.0 + (180.0 - intersection.angle) * 0.5;
-								-- the simplified version:
-								ray.direction := 270.0 - intersection.angle * 0.5;
+				--when LOWER =>
+					--case direction is
+						--when RISING =>
+							--if intersection.angle > 90.0 then
+								---- ray.direction := 180.0 + (180.0 - intersection.angle) * 0.5;
+								---- the simplified version:
+								--ray.direction := 270.0 - intersection.angle * 0.5;
 								
-							elsif intersection.angle < 90.0 then
-								ray.direction := 180.0 + intersection.angle * 0.5;
+							--elsif intersection.angle < 90.0 then
+								--ray.direction := 180.0 + intersection.angle * 0.5;
 								
-							else
-								raise constraint_error; -- CS should never happen
-							end if;
+							--else
+								--raise constraint_error; -- CS should never happen
+							--end if;
 
-						when FALLING =>
-							if intersection.angle > 90.0 then
-								-- ray.direction := - (180.0 - intersection.angle) * 0.5;
-								-- the simplified version:
-								ray.direction := - 90.0 + intersection.angle * 0.5;
+						--when FALLING =>
+							--if intersection.angle > 90.0 then
+								---- ray.direction := - (180.0 - intersection.angle) * 0.5;
+								---- the simplified version:
+								--ray.direction := - 90.0 + intersection.angle * 0.5;
 								
-							elsif intersection.angle < 90.0 then
-								ray.direction := - (intersection.angle) * 0.5;
+							--elsif intersection.angle < 90.0 then
+								--ray.direction := - (intersection.angle) * 0.5;
 								
-							else
-								raise constraint_error; -- CS should never happen
-							end if;
+							--else
+								--raise constraint_error; -- CS should never happen
+							--end if;
 
-						when others => raise constraint_error; -- CS
-					end case;
-			end case;
+						--when others => raise constraint_error; -- CS
+					--end case;
+			--end case;
 					
-			lv2 := to_line_vector (ray);
-			m2 := get_intersection (center_line, lv2);
+			--lv2 := to_line_vector (ray);
+			--m2 := get_intersection (center_line, lv2);
 			
-			return get_x (m2.intersection.point);
-		end compute_for_slope;
+			--return get_x (m2.intersection.point);
+		--end compute_for_slope;
 
 		
-		use pac_polygon_lines;
-		use pac_polygon_arcs;
-		use pac_polygon_circles;
+		--use pac_polygon_lines;
+		--use pac_polygon_arcs;
+		--use pac_polygon_circles;
 		
-		procedure query_line (c : in pac_polygon_lines.cursor) is
-			use pac_proximity_points;
+		--procedure query_line (c : in pac_polygon_lines.cursor) is
+			--use pac_proximity_points;
 			
-			candidate_line : constant type_polygon_line := element (c);
+			--candidate_line : constant type_polygon_line := element (c);
 
-			candidate_line_direction : constant type_line_direction := get_direction (candidate_line);
+			--candidate_line_direction : constant type_line_direction := get_direction (candidate_line);
 			
-			-- Compute the boundaries of the candidate line.
-			-- NOTE: The candidate line is an edge of the polygon and thus has no width.
-			boundaries : constant type_boundaries := get_boundaries (
-				line	=> candidate_line,
-				width	=> zero);
+			---- Compute the boundaries of the candidate line.
+			---- NOTE: The candidate line is an edge of the polygon and thus has no width.
+			--boundaries : constant type_boundaries := get_boundaries (
+				--line	=> candidate_line,
+				--width	=> zero);
 
-			-- The place in x-direction where the fill line has to start or to stop:
-			x_stop_go : type_distance := zero;
+			---- The place in x-direction where the fill line has to start or to stop:
+			--x_stop_go : type_distance := zero;
 			
-			procedure test_intersection is
-				i_h : constant type_intersection_of_two_lines := get_intersection (pl_h, candidate_line);
-				i_c : constant type_intersection_of_two_lines := get_intersection (pl_c, candidate_line);
-				i_l : constant type_intersection_of_two_lines := get_intersection (pl_l, candidate_line);
+			--procedure test_intersection is
+				--i_h : constant type_intersection_of_two_lines := get_intersection (pl_h, candidate_line);
+				--i_c : constant type_intersection_of_two_lines := get_intersection (pl_c, candidate_line);
+				--i_l : constant type_intersection_of_two_lines := get_intersection (pl_l, candidate_line);
 
-				function get_intersections (tp : in type_point) return type_ordered_line_circle_intersections is
-					-- build a circle about the given touch point:
-					type tc is new type_circle with null record;
-					c : constant tc := (center => tp, radius => half_width);
+				--function get_intersections (tp : in type_point) return type_ordered_line_circle_intersections is
+					---- build a circle about the given touch point:
+					--type tc is new type_circle with null record;
+					--c : constant tc := (center => tp, radius => half_width);
 
-					ilc : type_intersection_of_line_and_circle (status => TWO_EXIST);
-					-- NOTE: There must be two intersections of the probe line (center line)
-					-- and the circle !
-				begin
-					ilc := get_intersection (
-							line	=> pl_c,
-							circle	=> c);
+					--ilc : type_intersection_of_line_and_circle (status => TWO_EXIST);
+					---- NOTE: There must be two intersections of the probe line (center line)
+					---- and the circle !
+				--begin
+					--ilc := get_intersection (
+							--line	=> pl_c,
+							--circle	=> c);
 
-					-- Return the intersections ordered from left to right (relative to the given
-					-- start point):
-					return order_intersections (start, ilc);
-				end get_intersections;
+					---- Return the intersections ordered from left to right (relative to the given
+					---- start point):
+					--return order_intersections (start, ilc);
+				--end get_intersections;
 
-				oi_center_line : type_ordered_line_circle_intersections;
+				--oi_center_line : type_ordered_line_circle_intersections;
 				
-			begin -- test_intersection
+			--begin -- test_intersection
 				
-				if i_c.status = EXISTS then
-					-- Ignore an intersection with the center of the probe line.
-					-- This is not a proximity point.
-					null;
-				else					
-					case i_l.status is
-						when EXISTS =>
-							x_stop_go := X (to_point (i_l.intersection.point));
+				--if i_c.status = EXISTS then
+					---- Ignore an intersection with the center of the probe line.
+					---- This is not a proximity point.
+					--null;
+				--else					
+					--case i_l.status is
+						--when EXISTS =>
+							--x_stop_go := X (to_point (i_l.intersection.point));
 
-							log (text => str_lower_edge & to_string (x_stop_go), level => log_threshold + 3);
+							--log (text => str_lower_edge & to_string (x_stop_go), level => log_threshold + 3);
 
-							case candidate_line_direction is
-								when RISING =>
-									x_stop_go := compute_for_slope (
-														pl_c, pl_h, 
-														to_line_vector (candidate_line),
-														i_l.intersection, LOWER, candidate_line_direction);
+							--case candidate_line_direction is
+								--when RISING =>
+									--x_stop_go := compute_for_slope (
+														--pl_c, pl_h, 
+														--to_line_vector (candidate_line),
+														--i_l.intersection, LOWER, candidate_line_direction);
 									
-									insert (points_preliminary, (status => STOP, x => x_stop_go));
+									--insert (points_preliminary, (status => STOP, x => x_stop_go));
 
-									-- The right end of the candidate_line creates a GO mark because 
-									-- here the obstacle comes to an end:
-									--insert (points_preliminary, (status => GO, x => boundaries.greatest_x));
+									---- The right end of the candidate_line creates a GO mark because 
+									---- here the obstacle comes to an end:
+									----insert (points_preliminary, (status => GO, x => boundaries.greatest_x));
 
-									oi_center_line := get_intersections (get_right_end (candidate_line, boundaries));
-									x_stop_go := get_x (oi_center_line.exit_point.point);
-									insert (points_preliminary, (status => GO, x => x_stop_go));
+									--oi_center_line := get_intersections (get_right_end (candidate_line, boundaries));
+									--x_stop_go := get_x (oi_center_line.exit_point.point);
+									--insert (points_preliminary, (status => GO, x => x_stop_go));
 									
 									
-								when FALLING =>
-									x_stop_go := compute_for_slope (
-														pl_c, pl_h,
-														to_line_vector (candidate_line),
-														i_l.intersection, LOWER, candidate_line_direction);
+								--when FALLING =>
+									--x_stop_go := compute_for_slope (
+														--pl_c, pl_h,
+														--to_line_vector (candidate_line),
+														--i_l.intersection, LOWER, candidate_line_direction);
 							
-									insert (points_preliminary, (status => GO, x => x_stop_go));
+									--insert (points_preliminary, (status => GO, x => x_stop_go));
 
-									-- The left end of the candidate_line creates a STOP mark because 
-									-- here the obstacle begins:
-									--insert (points_preliminary, (status => STOP, x => boundaries.smallest_x));
+									---- The left end of the candidate_line creates a STOP mark because 
+									---- here the obstacle begins:
+									----insert (points_preliminary, (status => STOP, x => boundaries.smallest_x));
 
-									oi_center_line := get_intersections (get_left_end (candidate_line, boundaries));
-									x_stop_go := get_x (oi_center_line.entry_point.point);
-									insert (points_preliminary, (status => STOP, x => x_stop_go));
+									--oi_center_line := get_intersections (get_left_end (candidate_line, boundaries));
+									--x_stop_go := get_x (oi_center_line.entry_point.point);
+									--insert (points_preliminary, (status => STOP, x => x_stop_go));
 
 									
-								when VERTICAL => null; -- ignored. CS test required
+								--when VERTICAL => null; -- ignored. CS test required
 									
-								when HORIZONTAL => raise constraint_error;
-									-- CS should never happen. Already covered on overlap of probe
-									-- line with candidate line.
-							end case;
+								--when HORIZONTAL => raise constraint_error;
+									---- CS should never happen. Already covered on overlap of probe
+									---- line with candidate line.
+							--end case;
 									
-						when OVERLAP => null;
-							log (text => "overlaps lower edge", level => log_threshold + 3);
+						--when OVERLAP => null;
+							--log (text => "overlaps lower edge", level => log_threshold + 3);
 						
-						when NOT_EXISTENT =>
-							-- Candidate line of polygon line starts and ends somewhere 
-							-- above the lower edge of the fill line:
+						--when NOT_EXISTENT =>
+							---- Candidate line of polygon line starts and ends somewhere 
+							---- above the lower edge of the fill line:
 							
-							case i_h.status is
-								when EXISTS => 
-									x_stop_go := X (to_point (i_h.intersection.point));
+							--case i_h.status is
+								--when EXISTS => 
+									--x_stop_go := X (to_point (i_h.intersection.point));
 									
-									log (text => str_upper_edge & to_string (x_stop_go), level => log_threshold + 3);
+									--log (text => str_upper_edge & to_string (x_stop_go), level => log_threshold + 3);
 
-									case candidate_line_direction is
-										when RISING =>
-											x_stop_go := compute_for_slope (
-															pl_c, pl_l, 
-															to_line_vector (candidate_line),
-															i_h.intersection, UPPER, candidate_line_direction);
+									--case candidate_line_direction is
+										--when RISING =>
+											--x_stop_go := compute_for_slope (
+															--pl_c, pl_l, 
+															--to_line_vector (candidate_line),
+															--i_h.intersection, UPPER, candidate_line_direction);
 
-											insert (points_preliminary, (status => GO, x => x_stop_go));
+											--insert (points_preliminary, (status => GO, x => x_stop_go));
 
-											-- The left end of the candidate_line creates a STOP mark because 
-											-- here the obstacle begins:
-											--insert (points_preliminary, (status => STOP, x => boundaries.smallest_x));
+											---- The left end of the candidate_line creates a STOP mark because 
+											---- here the obstacle begins:
+											----insert (points_preliminary, (status => STOP, x => boundaries.smallest_x));
 
-											oi_center_line := get_intersections (get_left_end (candidate_line, boundaries));
-											x_stop_go := get_x (oi_center_line.entry_point.point);
-											insert (points_preliminary, (status => STOP, x => x_stop_go));
-
-											
-										when FALLING =>
-											x_stop_go := compute_for_slope (
-															pl_c, pl_l,
-															to_line_vector (candidate_line),
-															i_h.intersection, UPPER, candidate_line_direction);
-											
-											insert (points_preliminary, (status => STOP, x => x_stop_go));
-
-											-- The right end of the candidate_line creates a GO mark because 
-											-- here the obstacle comes to an end:
-											--insert (points_preliminary, (status => GO, x => boundaries.greatest_x));
-
-											oi_center_line := get_intersections (get_right_end (candidate_line, boundaries));
-											x_stop_go := get_x (oi_center_line.exit_point.point);
-											insert (points_preliminary, (status => GO, x => x_stop_go));
+											--oi_center_line := get_intersections (get_left_end (candidate_line, boundaries));
+											--x_stop_go := get_x (oi_center_line.entry_point.point);
+											--insert (points_preliminary, (status => STOP, x => x_stop_go));
 
 											
-										when VERTICAL => null; -- ignored. CS test required
+										--when FALLING =>
+											--x_stop_go := compute_for_slope (
+															--pl_c, pl_l,
+															--to_line_vector (candidate_line),
+															--i_h.intersection, UPPER, candidate_line_direction);
+											
+											--insert (points_preliminary, (status => STOP, x => x_stop_go));
+
+											---- The right end of the candidate_line creates a GO mark because 
+											---- here the obstacle comes to an end:
+											----insert (points_preliminary, (status => GO, x => boundaries.greatest_x));
+
+											--oi_center_line := get_intersections (get_right_end (candidate_line, boundaries));
+											--x_stop_go := get_x (oi_center_line.exit_point.point);
+											--insert (points_preliminary, (status => GO, x => x_stop_go));
+
+											
+										--when VERTICAL => null; -- ignored. CS test required
 										
-										when HORIZONTAL => raise constraint_error;
-											-- CS should never happen. Already covered on overlap of probe
-											-- line with candidate line.
-									end case;
+										--when HORIZONTAL => raise constraint_error;
+											---- CS should never happen. Already covered on overlap of probe
+											---- line with candidate line.
+									--end case;
 
 								
-								when OVERLAP =>
-									log (text => "overlaps upper edge", level => log_threshold + 3);
+								--when OVERLAP =>
+									--log (text => "overlaps upper edge", level => log_threshold + 3);
 									
-								when NOT_EXISTENT => 
+								--when NOT_EXISTENT => 
 									
-									-- Candidate line of polygon line starts and ends somewhere below
-									-- the upper edge of the fill line:
+									---- Candidate line of polygon line starts and ends somewhere below
+									---- the upper edge of the fill line:
 
-									log (text => str_between, level => log_threshold + 3);
+									--log (text => str_between, level => log_threshold + 3);
 
-									-- The border of the fill line cap touches the candidate line
-									-- at some point. But the ends of the candidate line have a
-									-- y position different from the probe line. So we imagine a circle
-									-- with the touch point as its center. The circle then intersects
-									-- the probe line (center line of fill line) on two points.
+									---- The border of the fill line cap touches the candidate line
+									---- at some point. But the ends of the candidate line have a
+									---- y position different from the probe line. So we imagine a circle
+									---- with the touch point as its center. The circle then intersects
+									---- the probe line (center line of fill line) on two points.
 
-									-- compute the STOP mark:
-									oi_center_line := get_intersections (get_left_end (candidate_line, boundaries));
+									---- compute the STOP mark:
+									--oi_center_line := get_intersections (get_left_end (candidate_line, boundaries));
 									
-									x_stop_go := get_x (oi_center_line.entry_point.point);
+									--x_stop_go := get_x (oi_center_line.entry_point.point);
 
-									-- CS: test number of intersections of candidate line with cap.
-									-- If there are two intersections then x_stop_go must be reduced
-									-- via a loop until there is only a tangent left.
+									---- CS: test number of intersections of candidate line with cap.
+									---- If there are two intersections then x_stop_go must be reduced
+									---- via a loop until there is only a tangent left.
 									
-									insert (points_preliminary, (status => STOP, x => x_stop_go));
+									--insert (points_preliminary, (status => STOP, x => x_stop_go));
 
 									
 									
-									-- compute the GO mark:
-									oi_center_line := get_intersections (get_right_end (candidate_line, boundaries));
+									---- compute the GO mark:
+									--oi_center_line := get_intersections (get_right_end (candidate_line, boundaries));
 									
-									x_stop_go := get_x (oi_center_line.exit_point.point);
+									--x_stop_go := get_x (oi_center_line.exit_point.point);
 
-									-- CS: test number of intersections of candidate line with cap.
-									-- If there are two intersections then x_stop_go must be increased
-									-- via a loop until there is only a tangent left.
+									---- CS: test number of intersections of candidate line with cap.
+									---- If there are two intersections then x_stop_go must be increased
+									---- via a loop until there is only a tangent left.
 									
-									insert (points_preliminary, (status => GO, x => x_stop_go));
+									--insert (points_preliminary, (status => GO, x => x_stop_go));
 									
-							end case;
+							--end case;
 
-					end case;
-				end if;
-			end test_intersection;
+					--end case;
+				--end if;
+			--end test_intersection;
 				
-		begin -- query_line
-			log (text => to_string (candidate_line) 
-				 & to_string (candidate_line_direction) 
-				 & " " & to_string (boundaries),
-				 level => log_threshold + 2);
+		--begin -- query_line
+			--log (text => to_string (candidate_line) 
+				 --& to_string (candidate_line_direction) 
+				 --& " " & to_string (boundaries),
+				 --level => log_threshold + 2);
 
-			log_indentation_up;
+			--log_indentation_up;
 
-			if intersect (boundaries_probe_line, boundaries) then
-				log (text => str_bound_int, level => log_threshold + 2);
-				log_indentation_up;
+			--if intersect (boundaries_probe_line, boundaries) then
+				--log (text => str_bound_int, level => log_threshold + 2);
+				--log_indentation_up;
 				
-				test_intersection;
+				--test_intersection;
 				
-				log_indentation_down;
-			end if;
+				--log_indentation_down;
+			--end if;
 
-			log_indentation_down;
-		end query_line;
+			--log_indentation_down;
+		--end query_line;
 
 
-		-- Generates a line vector of the given intersection.
-		-- The line can be regarded as a tangent to the polygon edge
-		-- on the point of intersection.
-		function to_line (i : in type_intersection)
-			return type_line_vector
-		is
-			v : type_line_vector;
-			r : type_ray;
-		begin
-			r.start_point := to_point (i.point);
-			r.direction := 180.0 - i.angle;
+		---- Generates a line vector of the given intersection.
+		---- The line can be regarded as a tangent to the polygon edge
+		---- on the point of intersection.
+		--function to_line (i : in type_intersection)
+			--return type_line_vector
+		--is
+			--v : type_line_vector;
+			--r : type_ray;
+		--begin
+			--r.start_point := to_point (i.point);
+			--r.direction := 180.0 - i.angle;
 
-			return to_line_vector (r);
-		end to_line;
+			--return to_line_vector (r);
+		--end to_line;
 		
 		
-		procedure query_arc (c : in pac_polygon_arcs.cursor) is
+		--procedure query_arc (c : in pac_polygon_arcs.cursor) is
 
-			use pac_proximity_points;
+			--use pac_proximity_points;
 			
-			candidate_arc : constant type_polygon_arc := element (c);
+			--candidate_arc : constant type_polygon_arc := element (c);
 
-			-- Compute the boundaries of the candidate arc.
-			-- NOTE: The candidate arc is an edge of the polygon and thus has no width.
-			boundaries : constant type_boundaries := get_boundaries (
-				arc			=> candidate_arc,
-				line_width	=> zero);
+			---- Compute the boundaries of the candidate arc.
+			---- NOTE: The candidate arc is an edge of the polygon and thus has no width.
+			--boundaries : constant type_boundaries := get_boundaries (
+				--arc			=> candidate_arc,
+				--line_width	=> zero);
 
-			-- The place in x-direction where the fill line has to start or to stop:
-			x_stop_go : type_distance := zero;
+			---- The place in x-direction where the fill line has to start or to stop:
+			--x_stop_go : type_distance := zero;
 
-			tangent_direction : type_line_direction;
+			--tangent_direction : type_line_direction;
 			
-			procedure test_intersection is
-				i_h : constant type_intersection_of_line_and_circle := get_intersection (pl_h, candidate_arc);
-				i_c : constant type_intersection_of_line_and_circle := get_intersection (pl_c, candidate_arc);
-				i_l : constant type_intersection_of_line_and_circle := get_intersection (pl_l, candidate_arc);
+			--procedure test_intersection is
+				--i_h : constant type_intersection_of_line_and_circle := get_intersection (pl_h, candidate_arc);
+				--i_c : constant type_intersection_of_line_and_circle := get_intersection (pl_c, candidate_arc);
+				--i_l : constant type_intersection_of_line_and_circle := get_intersection (pl_l, candidate_arc);
 
-				-- If we have two intersections, then the one that is on the left, will 
-				-- be the STOP mark. Because here the arc causes the fill line to stop.
-				-- The intersection on the right will be the GO mark, because here a fill
-				-- line has to start:
-				procedure order_intersections (
-					i : in type_intersection_of_line_and_circle;
-					edge : in type_edge)
-				is 
-					x1 : constant type_distance := get_x (i.intersection_1.point);
-					x2 : constant type_distance := get_x (i.intersection_2.point);
-				begin
-					if x1 < x2 then
-						-- x1 comes before x2 in x-direction. Means x1 provides the STOP mark
-						-- and x2 provides the GO mark:
-						case edge is
-							when UPPER =>
-								log (text => str_upper_edge & to_string (x1) & " and" & to_string (x2),
-									level => log_threshold +3);
+				---- If we have two intersections, then the one that is on the left, will 
+				---- be the STOP mark. Because here the arc causes the fill line to stop.
+				---- The intersection on the right will be the GO mark, because here a fill
+				---- line has to start:
+				--procedure order_intersections (
+					--i : in type_intersection_of_line_and_circle;
+					--edge : in type_edge)
+				--is 
+					--x1 : constant type_distance := get_x (i.intersection_1.point);
+					--x2 : constant type_distance := get_x (i.intersection_2.point);
+				--begin
+					--if x1 < x2 then
+						---- x1 comes before x2 in x-direction. Means x1 provides the STOP mark
+						---- and x2 provides the GO mark:
+						--case edge is
+							--when UPPER =>
+								--log (text => str_upper_edge & to_string (x1) & " and" & to_string (x2),
+									--level => log_threshold +3);
 
-								tangent_direction := get_tangent_direction (i.intersection_1.angle);
+								--tangent_direction := get_tangent_direction (i.intersection_1.angle);
 
-								x_stop_go := compute_for_slope (
-										pl_c, pl_l, 
-										to_line (i.intersection_1),
-										i.intersection_1, edge, tangent_direction);
+								--x_stop_go := compute_for_slope (
+										--pl_c, pl_l, 
+										--to_line (i.intersection_1),
+										--i.intersection_1, edge, tangent_direction);
 
-								insert (points_preliminary, (status => STOP, x => x_stop_go));
+								--insert (points_preliminary, (status => STOP, x => x_stop_go));
 
-
-								
-								tangent_direction := get_tangent_direction (i.intersection_2.angle);
-
-								x_stop_go := compute_for_slope (
-										pl_c, pl_l,
-										to_line (i.intersection_2),
-										i.intersection_2, edge, tangent_direction);
-
-								insert (points_preliminary, (status => GO, x => x_stop_go));
-								
-								
-								
-							when LOWER =>
-								log (text => str_lower_edge & to_string (x1) & " and" & to_string (x2),
-									level => log_threshold +3); 
-
-								tangent_direction := get_tangent_direction (i.intersection_1.angle);
-
-								x_stop_go := compute_for_slope (
-										pl_c, pl_h, 
-										to_line (i.intersection_1),
-										i.intersection_1, edge, tangent_direction);
-
-								insert (points_preliminary, (status => STOP, x => x_stop_go));
-								
 
 								
-								tangent_direction := get_tangent_direction (i.intersection_2.angle);
+								--tangent_direction := get_tangent_direction (i.intersection_2.angle);
 
-								x_stop_go := compute_for_slope (
-										pl_c, pl_h,
-										to_line (i.intersection_2),
-										i.intersection_2, edge, tangent_direction);
+								--x_stop_go := compute_for_slope (
+										--pl_c, pl_l,
+										--to_line (i.intersection_2),
+										--i.intersection_2, edge, tangent_direction);
 
-								insert (points_preliminary, (status => GO, x => x_stop_go));
-						end case;
+								--insert (points_preliminary, (status => GO, x => x_stop_go));
+								
+								
+								
+							--when LOWER =>
+								--log (text => str_lower_edge & to_string (x1) & " and" & to_string (x2),
+									--level => log_threshold +3); 
+
+								--tangent_direction := get_tangent_direction (i.intersection_1.angle);
+
+								--x_stop_go := compute_for_slope (
+										--pl_c, pl_h, 
+										--to_line (i.intersection_1),
+										--i.intersection_1, edge, tangent_direction);
+
+								--insert (points_preliminary, (status => STOP, x => x_stop_go));
+								
+
+								
+								--tangent_direction := get_tangent_direction (i.intersection_2.angle);
+
+								--x_stop_go := compute_for_slope (
+										--pl_c, pl_h,
+										--to_line (i.intersection_2),
+										--i.intersection_2, edge, tangent_direction);
+
+								--insert (points_preliminary, (status => GO, x => x_stop_go));
+						--end case;
 
 						
 						
-					elsif x1 > x2 then
-						-- x2 comes before x1 in x-direction. Means x2 provides the STOP mark
-						-- and x1 provides the GO mark:
+					--elsif x1 > x2 then
+						---- x2 comes before x1 in x-direction. Means x2 provides the STOP mark
+						---- and x1 provides the GO mark:
 
-						case edge is
-							when UPPER =>
-								log (text => str_upper_edge & to_string (x2) & " and" & to_string (x1),
-									level => log_threshold +3); 
-
-
-								tangent_direction := get_tangent_direction (i.intersection_2.angle);
-
-								x_stop_go := compute_for_slope (
-										pl_c, pl_l, 
-										to_line (i.intersection_2),
-										i.intersection_2, edge, tangent_direction);
-
-								insert (points_preliminary, (status => STOP, x => x_stop_go));
+						--case edge is
+							--when UPPER =>
+								--log (text => str_upper_edge & to_string (x2) & " and" & to_string (x1),
+									--level => log_threshold +3); 
 
 
-								
-								tangent_direction := get_tangent_direction (i.intersection_1.angle);
+								--tangent_direction := get_tangent_direction (i.intersection_2.angle);
 
-								x_stop_go := compute_for_slope (
-										pl_c, pl_l,
-										to_line (i.intersection_1),
-										i.intersection_1, edge, tangent_direction);
+								--x_stop_go := compute_for_slope (
+										--pl_c, pl_l, 
+										--to_line (i.intersection_2),
+										--i.intersection_2, edge, tangent_direction);
 
-								insert (points_preliminary, (status => GO, x => x_stop_go));
+								--insert (points_preliminary, (status => STOP, x => x_stop_go));
 
 
 								
-							when LOWER =>
-								log (text => str_lower_edge & to_string (x2) & " and" & to_string (x1),
-									level => log_threshold +3); 
+								--tangent_direction := get_tangent_direction (i.intersection_1.angle);
 
-								tangent_direction := get_tangent_direction (i.intersection_2.angle);
+								--x_stop_go := compute_for_slope (
+										--pl_c, pl_l,
+										--to_line (i.intersection_1),
+										--i.intersection_1, edge, tangent_direction);
 
-								x_stop_go := compute_for_slope (
-										pl_c, pl_h, 
-										to_line (i.intersection_2),
-										i.intersection_2, edge, tangent_direction);
-
-								insert (points_preliminary, (status => STOP, x => x_stop_go));
+								--insert (points_preliminary, (status => GO, x => x_stop_go));
 
 
 								
-								tangent_direction := get_tangent_direction (i.intersection_1.angle);
+							--when LOWER =>
+								--log (text => str_lower_edge & to_string (x2) & " and" & to_string (x1),
+									--level => log_threshold +3); 
 
-								x_stop_go := compute_for_slope (
-										pl_c, pl_h,
-										to_line (i.intersection_1),
-										i.intersection_1, edge, tangent_direction);
+								--tangent_direction := get_tangent_direction (i.intersection_2.angle);
 
-								insert (points_preliminary, (status => GO, x => x_stop_go));
+								--x_stop_go := compute_for_slope (
+										--pl_c, pl_h, 
+										--to_line (i.intersection_2),
+										--i.intersection_2, edge, tangent_direction);
 
-						end case;
+								--insert (points_preliminary, (status => STOP, x => x_stop_go));
+
+
+								
+								--tangent_direction := get_tangent_direction (i.intersection_1.angle);
+
+								--x_stop_go := compute_for_slope (
+										--pl_c, pl_h,
+										--to_line (i.intersection_1),
+										--i.intersection_1, edge, tangent_direction);
+
+								--insert (points_preliminary, (status => GO, x => x_stop_go));
+
+						--end case;
 						
-					else 
-						-- x1 and x2 are equal. CS should never happen
-						raise constraint_error; 
-					end if;
+					--else 
+						---- x1 and x2 are equal. CS should never happen
+						--raise constraint_error; 
+					--end if;
 																 
-				end order_intersections;
+				--end order_intersections;
 				
-			begin -- test_intersection
-				if i_c.status /= NONE_EXIST then
-					-- Ignore an intersection with the center of the probe line.
-					-- Because this is not a proximity point but an intersection point.
-					null;
-				else					
-					case i_l.status is
-						when ONE_EXISTS =>
-							-- The intersection of lower edge and the arc must have the
-							-- nature of a secant. If it is a tangent, then the arc is
-							-- not entering the area of the fill line, hence this would 
-							-- not be an obstacle.
-							if i_l.tangent_status = SECANT then
+			--begin -- test_intersection
+				--if i_c.status /= NONE_EXIST then
+					---- Ignore an intersection with the center of the probe line.
+					---- Because this is not a proximity point but an intersection point.
+					--null;
+				--else					
+					--case i_l.status is
+						--when ONE_EXISTS =>
+							---- The intersection of lower edge and the arc must have the
+							---- nature of a secant. If it is a tangent, then the arc is
+							---- not entering the area of the fill line, hence this would 
+							---- not be an obstacle.
+							--if i_l.tangent_status = SECANT then
 								
-								x_stop_go := X (to_point (i_l.intersection.point));
+								--x_stop_go := X (to_point (i_l.intersection.point));
 
-								log (text => str_lower_edge & to_string (x_stop_go)
-									& " angle" & to_string (i_l.intersection.angle),
-									level => log_threshold + 3);
+								--log (text => str_lower_edge & to_string (x_stop_go)
+									--& " angle" & to_string (i_l.intersection.angle),
+									--level => log_threshold + 3);
 
-								tangent_direction := get_tangent_direction (i_l.intersection.angle);
+								--tangent_direction := get_tangent_direction (i_l.intersection.angle);
 								
-								case tangent_direction is
-									when RISING =>
+								--case tangent_direction is
+									--when RISING =>
 										
-										x_stop_go := compute_for_slope (
-														pl_c, pl_h, 
-														to_line (i_l.intersection),
-														i_l.intersection, LOWER, tangent_direction);
+										--x_stop_go := compute_for_slope (
+														--pl_c, pl_h, 
+														--to_line (i_l.intersection),
+														--i_l.intersection, LOWER, tangent_direction);
 										
-										insert (points_preliminary, (status => STOP, x => x_stop_go));
+										--insert (points_preliminary, (status => STOP, x => x_stop_go));
 
-									when FALLING =>
+									--when FALLING =>
 
-										x_stop_go := compute_for_slope (
-														pl_c, pl_h, 
-														to_line (i_l.intersection),
-														i_l.intersection, LOWER, tangent_direction);
+										--x_stop_go := compute_for_slope (
+														--pl_c, pl_h, 
+														--to_line (i_l.intersection),
+														--i_l.intersection, LOWER, tangent_direction);
 
-										insert (points_preliminary, (status => GO, x => x_stop_go));
+										--insert (points_preliminary, (status => GO, x => x_stop_go));
 										
-									when VERTICAL => null; -- ignored. CS test required
+									--when VERTICAL => null; -- ignored. CS test required
 										
-									when HORIZONTAL => raise constraint_error;
-										-- This should never happen. Because the edge is not
-										-- a tangent to the candidate arc.
-								end case;
-							end if;
+									--when HORIZONTAL => raise constraint_error;
+										---- This should never happen. Because the edge is not
+										---- a tangent to the candidate arc.
+								--end case;
+							--end if;
 							
-						when TWO_EXIST =>
-							-- Candidate arc intersects the lower edge twice. It comes from below
-							-- crosses the lower edge, enters the area of the fill line (but does 
-							-- not cross the center line), goes down, crosses the lower edge again
-							-- and travels further down:
-							order_intersections (i_l, LOWER);
+						--when TWO_EXIST =>
+							---- Candidate arc intersects the lower edge twice. It comes from below
+							---- crosses the lower edge, enters the area of the fill line (but does 
+							---- not cross the center line), goes down, crosses the lower edge again
+							---- and travels further down:
+							--order_intersections (i_l, LOWER);
 						
-						when NONE_EXIST =>
-							-- Candidate arc of polygon intersects upper edge somewhere.
+						--when NONE_EXIST =>
+							---- Candidate arc of polygon intersects upper edge somewhere.
 							
-							case i_h.status is
-								when ONE_EXISTS =>
-									-- The intersection of upper edge and the arc must have the
-									-- nature of a secant. If it is a tangent, then the arc is
-									-- not entering the area of the fill line, hence this would 
-									-- not be an obstacle.
-									if i_h.tangent_status = SECANT then
+							--case i_h.status is
+								--when ONE_EXISTS =>
+									---- The intersection of upper edge and the arc must have the
+									---- nature of a secant. If it is a tangent, then the arc is
+									---- not entering the area of the fill line, hence this would 
+									---- not be an obstacle.
+									--if i_h.tangent_status = SECANT then
 									
-										x_stop_go := X (to_point (i_h.intersection.point));
+										--x_stop_go := X (to_point (i_h.intersection.point));
 										
-										log (text => str_upper_edge & to_string (x_stop_go)
-											& " angle" & to_string (i_h.intersection.angle),
-											level => log_threshold + 3);
+										--log (text => str_upper_edge & to_string (x_stop_go)
+											--& " angle" & to_string (i_h.intersection.angle),
+											--level => log_threshold + 3);
 
-										tangent_direction := get_tangent_direction (i_h.intersection.angle);
+										--tangent_direction := get_tangent_direction (i_h.intersection.angle);
 
-										case tangent_direction is
-											when RISING =>
-												x_stop_go := compute_for_slope (
-																pl_c, pl_l,
-																to_line (i_h.intersection),
-																i_h.intersection, UPPER, tangent_direction);
+										--case tangent_direction is
+											--when RISING =>
+												--x_stop_go := compute_for_slope (
+																--pl_c, pl_l,
+																--to_line (i_h.intersection),
+																--i_h.intersection, UPPER, tangent_direction);
 												
-												insert (points_preliminary, (status => GO, x => x_stop_go));
+												--insert (points_preliminary, (status => GO, x => x_stop_go));
 																							
-											when FALLING =>
-												x_stop_go := compute_for_slope (
-																pl_c, pl_l,
-																to_line (i_h.intersection),
-																i_h.intersection, UPPER, tangent_direction);
+											--when FALLING =>
+												--x_stop_go := compute_for_slope (
+																--pl_c, pl_l,
+																--to_line (i_h.intersection),
+																--i_h.intersection, UPPER, tangent_direction);
 
-												insert (points_preliminary, (status => STOP, x => x_stop_go));
+												--insert (points_preliminary, (status => STOP, x => x_stop_go));
 												
-											when VERTICAL => null; -- ignored. CS test required
+											--when VERTICAL => null; -- ignored. CS test required
 											
-											when HORIZONTAL => raise constraint_error;
-											-- This should never happen. Because the edge is not
-											-- a tangent to the candidate arc.
+											--when HORIZONTAL => raise constraint_error;
+											---- This should never happen. Because the edge is not
+											---- a tangent to the candidate arc.
 
-										end case;										
-									end if;
+										--end case;										
+									--end if;
 									
-								when TWO_EXIST =>
-									-- Candidate arc intersects the upper edge twice. It comes from above
-									-- crosses the upper edge, enters the area of the fill line (but does 
-									-- not cross the center line), goes up, crosses the upper edge again
-									-- and travels further up:
-									order_intersections (i_h, UPPER);
+								--when TWO_EXIST =>
+									---- Candidate arc intersects the upper edge twice. It comes from above
+									---- crosses the upper edge, enters the area of the fill line (but does 
+									---- not cross the center line), goes up, crosses the upper edge again
+									---- and travels further up:
+									--order_intersections (i_h, UPPER);
 									
-								when NONE_EXIST => 									
-									-- Candidate arc starts and ends somewhere between upper and lower edge
-									-- (but does not cross the center line):
+								--when NONE_EXIST => 									
+									---- Candidate arc starts and ends somewhere between upper and lower edge
+									---- (but does not cross the center line):
 
-									log (text => str_between, level => log_threshold + 3);
+									--log (text => str_between, level => log_threshold + 3);
 									
-									-- compute the STOP mark:
+									---- compute the STOP mark:
 									
-									-- The smallest x value of the candidate arc is where
-									-- the fill line has to stop.
-									x_stop_go := boundaries.smallest_x;
+									---- The smallest x value of the candidate arc is where
+									---- the fill line has to stop.
+									--x_stop_go := boundaries.smallest_x;
 
-									-- Since the fill line has a width, the STOP mark is
-									-- at some distance left of the just computed position:
-									insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
+									---- Since the fill line has a width, the STOP mark is
+									---- at some distance left of the just computed position:
+									--insert (points_preliminary, (status => STOP, x => x_stop_go - half_width));
 
 									
 									
-									-- compute the GO mark:
+									---- compute the GO mark:
 									
-									-- The greatest x value of the arc is where
-									-- the fill line has to start:
-									x_stop_go := boundaries.greatest_x;
+									---- The greatest x value of the arc is where
+									---- the fill line has to start:
+									--x_stop_go := boundaries.greatest_x;
 
-									-- Since the fill line has a width, the GO mark is
-									-- at some distance right of the just computed position:
-									insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
+									---- Since the fill line has a width, the GO mark is
+									---- at some distance right of the just computed position:
+									--insert (points_preliminary, (status => GO, x => x_stop_go + half_width));
 									
-							end case;
+							--end case;
 
-					end case;
-				end if;
+					--end case;
+				--end if;
 
-			end test_intersection;
+			--end test_intersection;
 			
-		begin -- query_arc
-			log (text => to_string (candidate_arc) & " " & to_string (boundaries),
-				 level => log_threshold + 2);
+		--begin -- query_arc
+			--log (text => to_string (candidate_arc) & " " & to_string (boundaries),
+				 --level => log_threshold + 2);
 
-			log_indentation_up;
+			--log_indentation_up;
 
-			if intersect (boundaries_probe_line, boundaries) then
-				log (text => str_bound_int, level => log_threshold + 2);
-				log_indentation_up;
+			--if intersect (boundaries_probe_line, boundaries) then
+				--log (text => str_bound_int, level => log_threshold + 2);
+				--log_indentation_up;
 				
-				test_intersection;
+				--test_intersection;
 				
-				log_indentation_down;
-			end if;
+				--log_indentation_down;
+			--end if;
 
-			log_indentation_down;
-		end query_arc;
+			--log_indentation_down;
+		--end query_arc;
 
 			
-		-- The list "points_preliminary" may contain successive STOP or GO marks. 
-		-- From a row of STOP marks the FIRST must be extracted.
-		-- From a row of GO marks the LAST must be extracted.
-		-- This procedure removes those excessive stop/go marks and stores the result
-		-- in variable "points_final":
-		procedure reduce is
-			use pac_proximity_points;
+		---- The list "points_preliminary" may contain successive STOP or GO marks. 
+		---- From a row of STOP marks the FIRST must be extracted.
+		---- From a row of GO marks the LAST must be extracted.
+		---- This procedure removes those excessive stop/go marks and stores the result
+		---- in variable "points_final":
+		--procedure reduce is
+			--use pac_proximity_points;
 
-			-- Since the probe line has started outside the polygon,
-			-- there is no obstacle, hence we are initially not in a stop region.
-			-- This flag changes to TRUE when a STOP region begins.
-			-- It changes to FALSE when a GO region begins:
-			stop_region : boolean := false;
+			---- Since the probe line has started outside the polygon,
+			---- there is no obstacle, hence we are initially not in a stop region.
+			---- This flag changes to TRUE when a STOP region begins.
+			---- It changes to FALSE when a GO region begins:
+			--stop_region : boolean := false;
 
-			procedure query_point (c : in pac_proximity_points.cursor) is begin
+			--procedure query_point (c : in pac_proximity_points.cursor) is begin
 	
-				case element (c).status is
-					when STOP =>
-						if not stop_region then
-							-- We are leaving a GO region and are about
-							-- to enter a STOP region.
-							stop_region := true;
+				--case element (c).status is
+					--when STOP =>
+						--if not stop_region then
+							---- We are leaving a GO region and are about
+							---- to enter a STOP region.
+							--stop_region := true;
 
-							-- The the first STOP mark:
-							points_final.insert (element (c));
-						end if;
+							---- The the first STOP mark:
+							--points_final.insert (element (c));
+						--end if;
 						
-					when GO =>
-						if stop_region then
-							-- We are leaving a STOP region and are about
-							-- to enter a GO region.
-							stop_region := false;
-						end if;
+					--when GO =>
+						--if stop_region then
+							---- We are leaving a STOP region and are about
+							---- to enter a GO region.
+							--stop_region := false;
+						--end if;
 
-						-- Since we have to find the last GO mark in a row of
-						-- successive GO marks we must look ahead to the next
-						-- mark.
-						-- If this is the last proximity point then take it.
-						-- If this is NOT the last point, then take it if
-						-- the next point is a stop mark.
-						if next (c) = pac_proximity_points.no_element then
-							-- last point
-							points_final.insert (element (c));
-						else
-							-- not the last point
-							if element (next (c)).status = STOP then
-								-- next point is a stop mark
-								points_final.insert (element (c));
-							end if;
-						end if;
+						---- Since we have to find the last GO mark in a row of
+						---- successive GO marks we must look ahead to the next
+						---- mark.
+						---- If this is the last proximity point then take it.
+						---- If this is NOT the last point, then take it if
+						---- the next point is a stop mark.
+						--if next (c) = pac_proximity_points.no_element then
+							---- last point
+							--points_final.insert (element (c));
+						--else
+							---- not the last point
+							--if element (next (c)).status = STOP then
+								---- next point is a stop mark
+								--points_final.insert (element (c));
+							--end if;
+						--end if;
 
-				end case;
-			end query_point;
+				--end case;
+			--end query_point;
 			
-		begin -- reduce
-			log (text => "removing excessive stop/go marks ...", level => log_threshold + 3);
-			log (text => " old marks: " & to_string (points_preliminary), level => log_threshold + 4);
+		--begin -- reduce
+			--log (text => "removing excessive stop/go marks ...", level => log_threshold + 3);
+			--log (text => " old marks: " & to_string (points_preliminary), level => log_threshold + 4);
 			
-			iterate (points_preliminary, query_point'access);				
-		end reduce;
+			--iterate (points_preliminary, query_point'access);				
+		--end reduce;
 
-		-- The resulting list of proximity points needs a well defined first point.
-		-- The x-position of the point is taken from the given start point.
-		-- RULE 0:	If the resulting list points_final is empty (becaus no proximity
-		--			points have been detected) then we insert a GO mark.
-		-- RULE 1:	If points_final starts with a GO mark, then we prepend a STOP mark.
-		-- RULE 2:	If points_final starts with a STOP mark, then we prepend a GO mark.
+		---- The resulting list of proximity points needs a well defined first point.
+		---- The x-position of the point is taken from the given start point.
+		---- RULE 0:	If the resulting list points_final is empty (becaus no proximity
+		----			points have been detected) then we insert a GO mark.
+		---- RULE 1:	If points_final starts with a GO mark, then we prepend a STOP mark.
+		---- RULE 2:	If points_final starts with a STOP mark, then we prepend a GO mark.
 
-		-- RULE 3:	If there is only one GO mark at the end of the proximity points,
-		-- 			then it is to be replaced by a GO mark that sits at the begin of
-		--			the proximity points:
-		procedure insert_start_point is
-			use pac_proximity_points;
-			sp_go	: constant type_proximity_point := (x => X (start), status => GO);
-			sp_stop	: constant type_proximity_point := (x => X (start), status => STOP);
-		begin
-			if is_empty (points_final) then
-				-- apply RULE 0:
-				insert (points_final, sp_go);
+		---- RULE 3:	If there is only one GO mark at the end of the proximity points,
+		---- 			then it is to be replaced by a GO mark that sits at the begin of
+		----			the proximity points:
+		--procedure insert_start_point is
+			--use pac_proximity_points;
+			--sp_go	: constant type_proximity_point := (x => X (start), status => GO);
+			--sp_stop	: constant type_proximity_point := (x => X (start), status => STOP);
+		--begin
+			--if is_empty (points_final) then
+				---- apply RULE 0:
+				--insert (points_final, sp_go);
 				
-			else
-				if points_final.length = 1 and element (points_final.first).status = GO then
-					-- apply RULE 3:
-					points_final.clear;
-					insert (points_final, sp_go);
+			--else
+				--if points_final.length = 1 and element (points_final.first).status = GO then
+					---- apply RULE 3:
+					--points_final.clear;
+					--insert (points_final, sp_go);
 					
-				else
+				--else
 				
-					case element (points_final.first).status is
-						when GO =>
-							-- apply RULE 1:
-							if not contains (points_final, sp_stop) then
-								insert (points_final, sp_stop);
-							end if;
+					--case element (points_final.first).status is
+						--when GO =>
+							---- apply RULE 1:
+							--if not contains (points_final, sp_stop) then
+								--insert (points_final, sp_stop);
+							--end if;
 
-						when STOP =>
-							-- apply RULE 2:
-							if not contains (points_final, sp_go) then
-								insert (points_final, sp_go);
-							end if;
-					end case;
+						--when STOP =>
+							---- apply RULE 2:
+							--if not contains (points_final, sp_go) then
+								--insert (points_final, sp_go);
+							--end if;
+					--end case;
 					
-				end if;
-			end if;
+				--end if;
+			--end if;
 			
-		end insert_start_point;
+		--end insert_start_point;
 		
-	begin -- get_polygon_proximity_points
-		log (text => "computing proximity points ...", level => log_threshold);
-		log_indentation_up;
+	--begin -- get_polygon_proximity_points
+		--log (text => "computing proximity points ...", level => log_threshold);
+		--log_indentation_up;
 
-		log (text => "polygon length (x)" & to_string (length)
-			 & " start" & to_string (start)
-			 & " line width" & to_string (line_width),
-			 level => log_threshold + 1);
+		--log (text => "polygon length (x)" & to_string (length)
+			 --& " start" & to_string (start)
+			 --& " line width" & to_string (line_width),
+			 --level => log_threshold + 1);
 		
-		-- Compute the boundaries of the probe line.
-		-- The probe line starts at start and ends at the far right
-		-- end of the polygon.
-		-- NOTE: The start point can have a negative x-value. For this reason
-		-- the absolute must be used.
-		boundaries_probe_line := get_boundaries (
-			point_one	=> start,
-			point_two	=> type_point (set (
-								x => abs (X (start)) + length,
-								y => Y (start))),
-			width		=> line_width);
+		---- Compute the boundaries of the probe line.
+		---- The probe line starts at start and ends at the far right
+		---- end of the polygon.
+		---- NOTE: The start point can have a negative x-value. For this reason
+		---- the absolute must be used.
+		--boundaries_probe_line := get_boundaries (
+			--point_one	=> start,
+			--point_two	=> type_point (set (
+								--x => abs (X (start)) + length,
+								--y => Y (start))),
+			--width		=> line_width);
 
 
-		log (text => "probe line " & to_string (boundaries_probe_line), level => log_threshold + 1);
+		--log (text => "probe line " & to_string (boundaries_probe_line), level => log_threshold + 1);
 
-		-- Probe the polygon contours for proximities with the probe line:		
-		log (text => "probing polygon lines ...", level => log_threshold + 2);
-		iterate (segments.lines, query_line'access);
+		---- Probe the polygon contours for proximities with the probe line:		
+		--log (text => "probing polygon lines ...", level => log_threshold + 2);
+		--iterate (segments.lines, query_line'access);
 
-		log (text => "probing polygon arcs ...", level => log_threshold + 2);
-		iterate (segments.arcs, query_arc'access);
+		--log (text => "probing polygon arcs ...", level => log_threshold + 2);
+		--iterate (segments.arcs, query_arc'access);
 
-		-- NOTE: The circles will NOT be probed.
-		-- They are outer edges of the polygon ! They are not cutout zones !
-		-- The circles cause no proximity points.		
+		---- NOTE: The circles will NOT be probed.
+		---- They are outer edges of the polygon ! They are not cutout zones !
+		---- The circles cause no proximity points.		
 
-		-- Discard excessive stop/go marks.
-		reduce;
+		---- Discard excessive stop/go marks.
+		--reduce;
 		
-		insert_start_point;
+		--insert_start_point;
 		
-		log (text => to_string (points_final), level => log_threshold + 2);
+		--log (text => to_string (points_final), level => log_threshold + 2);
 		
-		log_indentation_down;
+		--log_indentation_down;
 		
-		return points_final;
-	end get_polygon_proximity_points;
+		--return points_final;
+	--end get_polygon_proximity_points;
 
 
 	

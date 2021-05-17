@@ -132,8 +132,9 @@ package et_pcb_rw is
 	procedure write_circle_conductor (circle : in et_pcb.type_conductor_circle);	
 	
 	
-	procedure write_polygon_segments (polygon : in pac_shapes.type_polygon_base);
-	-- writes the segments of a polygon (lines, arcs and circles)
+	-- writes the segments of a polygon (lines, arcs or a single circle):
+	procedure write_polygon_segments (
+		polygon : in pac_shapes.type_polygon_base);
 
 	
 	
@@ -177,30 +178,18 @@ package et_pcb_rw is
 
 -- BASIC GEOMETRIC OBJECTS USED IN PACKAGES AND BOARDS
 	
-	type type_board_line is new pac_shapes.type_line with null record;
-
-	procedure add_polygon_line (line : in out type_board_line);
-
-	board_line : type_board_line;
-
+	board_line : type_line;
 	procedure board_reset_line;
+	procedure add_polygon_line (l : in out type_line);
 
-	
-	type type_board_arc is new pac_shapes.type_arc with null record;
-
-	procedure add_polygon_arc (arc : in out type_board_arc);
-
-	board_arc : type_board_arc;
-
+	board_arc : type_arc;
 	procedure board_reset_arc;
+	procedure add_polygon_arc (a : in out type_arc);
 
-	
-	type type_board_circle is new pac_shapes.type_circle with null record;
-
-	procedure add_polygon_circle (circle : in out type_board_circle);
-	
-	board_circle : type_board_circle;
+	board_circle : type_circle;
 	procedure board_reset_circle;
+	procedure add_polygon_circle (c : in out type_circle);
+	
 
 
 	
@@ -234,18 +223,17 @@ package et_pcb_rw is
 	board_easing : et_packages.type_easing;
 
 	
-	type type_board_polygon is new pac_shapes.type_polygon_base with null record;
 
 
 	procedure check_outline (
-		polygon			: in type_board_polygon;
+		polygon			: in pac_shapes.type_polygon;
 		log_threshold	: in et_string_processing.type_log_level);
 	-- Ensures that the polygon outline is properly closed. Issues a warning
 	-- if it detects gaps.
 
 
 	-- A temporarily storage place when reading a polygon:
-	polygon : type_board_polygon;
+	polygon : type_polygon;
 	
 	
 	polygon_isolation : type_track_clearance := type_track_clearance'first;

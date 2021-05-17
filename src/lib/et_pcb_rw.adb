@@ -285,152 +285,40 @@ package body et_pcb_rw is
 	end write_circle_conductor;
 
 	
-	procedure write_polygon_segments (polygon : in pac_shapes.type_polygon_base) is
-		use pac_shapes.pac_polygon_lines;
-		use pac_shapes.pac_polygon_arcs;
-		use pac_shapes.pac_polygon_circles;		
-
-		-- Take a copy of the segments. Further search operations will take 
-		-- place here:
-		segments : type_polygon_segments := get_segments (polygon);
+	procedure write_polygon_segments (
+		polygon : in pac_shapes.type_polygon_base)
+	is
+		use pac_shapes.pac_polygon_segments;
 		
-		-- The functions get_line, get_arc and get_circle search for a polygon segment (by its id)
-		-- and return a cursor to the segment if it exists. Otherwise they return no_element:
-		
-		function get_line (segment : in type_polygon_segment_id) return pac_polygon_lines.cursor is
-			c : pac_polygon_lines.cursor := segments.lines.first;
-			found : boolean := false;
-
-			procedure query_line (l : in type_polygon_line) is begin
-				if l.id = segment then
-					found := true;
-				end if;
-			end query_line;
-			
-		begin -- get_line
-			while c /= pac_polygon_lines.no_element loop
-				query_element (c, query_line'access);
-
-				if found = true then exit; end if;
+		procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+			case element (c).shape is
 				
-				next (c);
-			end loop;
+				when LINE =>
+					line_begin;
+					write_line (element (c).segment_line);
+					line_end;
 
-			return c; -- should be no_element if not found. points to the segment if found.
-		end get_line;
+				when ARC =>
+					arc_begin;
+					write_arc (element (c).segment_arc);
+					arc_end;
+
+			end case;
+		end query_segment;		
+
+		contours : type_polygon_segments_2 := get_segments (polygon);
 		
-		function get_arc (segment : in type_polygon_segment_id) return pac_polygon_arcs.cursor is 
-			c : pac_polygon_arcs.cursor := segments.arcs.first;
-			found : boolean := false;
+	begin				
+		if contours.circular then
 
-			procedure query_arc (l : in type_polygon_arc) is begin
-				if l.id = segment then
-					found := true;
-				end if;
-			end query_arc;
-			
-		begin -- get_arc
-			while c /= pac_polygon_arcs.no_element loop
-				query_element (c, query_arc'access);
-
-				if found = true then exit; end if;
-				
-				next (c);
-			end loop;
-
-			return c; -- should be no_element if not found. points to the segment if found.
-		end get_arc;
-		
-		function get_circle (segment : in type_polygon_segment_id) return pac_polygon_circles.cursor is 
-			c : pac_polygon_circles.cursor := segments.circles.first;
-			found : boolean := false;
-
-			procedure query_circle (l : in type_polygon_circle) is begin
-				if l.id = segment then
-					found := true;
-				end if;
-			end query_circle;
-			
-		begin -- get_circle
-			while c /= pac_polygon_circles.no_element loop
-				query_element (c, query_circle'access);
-
-				if found = true then exit; end if;
-				
-				next (c);
-			end loop;
-
-			return c; -- should be no_element if not found. points to the segment if found.
-		end get_circle;
-
-		-- Here the result of get_line, get_arc and get_circle is stored temporarily:
-		cl : pac_polygon_lines.cursor;
-		ca : pac_polygon_arcs.cursor;
-		cc : pac_polygon_circles.cursor;
-		
-		procedure write_line (cursor : in pac_shapes.pac_polygon_lines.cursor) is begin
-			line_begin;
-			write_line (element (cursor));
-			line_end;
-		end;
-
-		procedure write_arc (cursor : in pac_shapes.pac_polygon_arcs.cursor) is begin
-			arc_begin;
-			write_arc (element (cursor));
-			arc_end;
-		end;
-
-		procedure write_circle (cursor : in pac_shapes.pac_polygon_circles.cursor) is begin
 			circle_begin;
-			write_circle (element (cursor));
+			write_circle (contours.circle);
 			circle_end;
-		end;
 
-	begin -- write_polygon_segments
+		else
+			contours.segments.iterate (query_segment'access);
+		end if;
 		
-		-- Iterate segments of given polygon. For each iteration s indicates the
-		-- segment to be processed. It can be among lines (most likely), among arcs (less likely)
-		-- and among circles (least likely). The functions get_line, get_arc and get_circle
-		-- return a cursor to the segment if it is among lines, arcs or circles.
-		-- Otherwise get_line, get_arc or get_circle return no_element.
-
-		--put_line (standard_output, "ct " & type_polygon_segment_count'image (get_segments_total (polygon)));
-		
-		for s in type_polygon_segment_id'first .. get_segments_total (polygon) loop
-
-			--put_line (standard_output, "id A " & type_polygon_segment_count'image (s));
-			
-			-- Search the segment among the lines:
-			cl := get_line (s);
-
-			--put_line (standard_output, "id B " & type_polygon_segment_count'image (s));
-			
-			if cl /= pac_polygon_lines.no_element then
-
-				write_line (cl);
-
-			-- If segment not found among lines, search among arcs:
-			else 
-				ca := get_arc (s);
-				if ca /= pac_polygon_arcs.no_element then
-					
-					write_arc (ca);
-
-				-- If segment not found among arcs, search among circles:
-				else
-					cc := get_circle (s);
-					if cc /= pac_polygon_circles.no_element then
-
-						write_circle (cc);
-					else
-						-- If segment is not among circles, we have a problem:
-						raise constraint_error; -- CS should never happen. log message !
-					end if;
-					
-				end if;
-			end if;
-
-		end loop;
 	end write_polygon_segments;
 	
 
@@ -673,58 +561,27 @@ package body et_pcb_rw is
 	
 -- BASIC GEOMETRIC OBJECTS USED IN PACKAGES AND BOARDS
 
-	procedure add_polygon_line (line : in out type_board_line) is
-		use pac_shapes.pac_polygon_lines;
-
-		-- make a polygon line:
-		l : type_polygon_line := (pac_shapes.type_line (line) with others => <>);
-	begin
-		-- Use the current total of segments as id for the current segment:
-		l.id := get_segments_total (polygon) + 1;
-		
-		--put_line ("id " & type_polygon_segment_count'image (l.id));
-															   
-		--append (polygon.segments.lines, l);
-		append_segment_line (polygon, l);
-
-		board_reset_line;
-	end;
-	
 	procedure board_reset_line is begin board_line := (others => <>); end;
 
-	
-	procedure add_polygon_arc (arc : in out type_board_arc) is
-		use pac_shapes.pac_polygon_arcs;
+	procedure add_polygon_line (l : in out type_line) is begin
+		pac_shapes.append_segment (polygon, (LINE, l));
+		board_reset_line;
+	end;	
 
-		-- make a polygon arc:
-		a : type_polygon_arc := (pac_shapes.type_arc (arc) with others => <>);
-	begin
-		-- Use the current total of segments as id for the current segment:
-		a.id := get_segments_total (polygon) + 1;
-
-		append_segment_arc (polygon, a);
-
-		board_reset_arc;
-	end;
-	
 	procedure board_reset_arc is begin board_arc := (others => <>); end;
-
-
-	procedure add_polygon_circle (circle : in out type_board_circle) is
-		use pac_shapes.pac_polygon_circles;
-
-		-- make a polygon circle:
-		c : type_polygon_circle := (pac_shapes.type_circle (circle) with others => <>);
-	begin
-		-- Use the current total of segments as id for the current segment:
-		c.id := get_segments_total (polygon) + 1;
-		
-		append_segment_circle (polygon, c);
-
-		board_reset_circle;
+	
+	procedure add_polygon_arc (a : in out type_arc) is begin
+		pac_shapes.append_segment (polygon, (ARC, a));
+		board_reset_arc;
 	end;
 
 	procedure board_reset_circle is begin board_circle := (others => <>); end;
+	
+	procedure add_polygon_circle (c : in out type_circle) is begin
+		pac_shapes.set_circle (polygon, c);
+		board_reset_circle;
+	end;
+
 
 	
 	procedure read_board_line (line : et_string_processing.type_fields_of_line) is
@@ -902,7 +759,7 @@ package body et_pcb_rw is
 
 
 	procedure check_outline (
-		polygon			: in type_board_polygon;
+		polygon			: in pac_shapes.type_polygon;
 		log_threshold	: in et_string_processing.type_log_level) 
 	is
 		use et_string_processing;
@@ -1026,12 +883,14 @@ package body et_pcb_rw is
 	end;
 	
 	procedure board_reset_polygon is
-	-- This procdure resets polygon properties to their defaults.
-	-- This procdure is used by both package and board parsing procedures read_package and read_module_file.
+	-- This procedure resets the global variable "polygon" to its default.
+	-- This proecdure is used by both package and board parsing procedures 
+	-- read_package and read_module_file.
 	-- Some properties have no meaning in packages as remarked below.
 		use et_pcb_stack;
 	begin
-		delete_segments (polygon);
+		-- reset polygon:
+		polygon := (others => <>);
 		
 		board_filled		:= filled_default;
 		board_fill_style	:= fill_style_default;

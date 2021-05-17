@@ -1296,9 +1296,8 @@ package et_geometry is
 		
 
 	-- POLYGON
-		type type_polygon_base is abstract tagged private;
+		--type type_polygon_base is abstract tagged private;
 
-		type type_polygon is new type_polygon_base with private;
 
 		
 		-- In contrast to the common definition of a polygon, a polygon
@@ -1312,15 +1311,6 @@ package et_geometry is
 		
 		--subtype type_polygon_segment_id is type_polygon_segment_count 
 			--range 1 .. type_polygon_segment_count'last;
-
-		-- Returns the corner point nearest to the given
-		-- reference point.
-		-- If the given polygon consists of just a single
-		-- circle then a exception is raised:		
-		function get_nearest_corner_point (
-			polygon		: in type_polygon_base;
-			reference	: in type_point)
-			return type_point;
 
 		
 		
@@ -1414,6 +1404,22 @@ package et_geometry is
 			end case;
 		end record;
 
+		type type_polygon_base is abstract tagged record
+			contours	: type_polygon_segments_2;
+		end record;
+
+		-- Returns the corner point nearest to the given
+		-- reference point.
+		-- If the given polygon consists of just a single
+		-- circle then a exception is raised:		
+		function get_nearest_corner_point (
+			polygon		: in type_polygon_base;
+			reference	: in type_point)
+			return type_point;
+
+
+
+		
 		
 		-- Returns the segments of a polygon that start or end 
 		-- at the given corner point:
@@ -1438,11 +1444,12 @@ package et_geometry is
 		
 		-- Loads the given segments into given polygon.
 		-- NOTE: Overwrites already existing segments in the polygon.
-		--procedure load_segments (
-			--polygon		: in out type_polygon_base'class;
-			--segments	: in type_polygon_segments);
+		procedure load_segments (
+			polygon		: in out type_polygon_base;
+			segments	: in type_polygon_segments_2);
 		
-		--procedure delete_segments (polygon : in out type_polygon_base);
+		procedure delete_segments (
+			polygon : in out type_polygon_base);
 
 		procedure append_segment (
 			polygon	: in out type_polygon_base;
@@ -1695,6 +1702,7 @@ package et_geometry is
 			return type_lower_left_corner;
 
 
+		type type_polygon is new type_polygon_base with null record;
 
 		
 	private
@@ -1711,15 +1719,6 @@ package et_geometry is
 			sits_on_end		: boolean := false;
 			out_of_range	: boolean := true;
 		end record;
-
-		type type_polygon_base is abstract tagged record
-			--segments		: type_polygon_segments;
-			--segments_total	: type_polygon_segment_count := type_polygon_segment_count'first;
-
-			contours	: type_polygon_segments_2;
-		end record;
-
-		type type_polygon is new type_polygon_base with null record;
 		
 	end generic_pac_shapes;
 	

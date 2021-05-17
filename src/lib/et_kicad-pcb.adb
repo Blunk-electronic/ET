@@ -3829,7 +3829,8 @@ package body et_kicad.pcb is
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
 
-				shape : et_terminals.type_pad_outline;
+				--shape : et_terminals.type_pad_outline;
+				shape : pac_shapes.type_polygon;
 
 				procedure insert_tht is 
 					use et_packages;
@@ -3873,18 +3874,16 @@ package body et_kicad.pcb is
 							declare
 								-- KiCad does not allow arcs or circles for plated millings.
 								-- So we have only lines and nothing else.
-								lines : pac_polygon_lines.list := to_pad_milling_contour (
+								lines : pac_polygon_segments.list := to_pad_milling_contour (
 											center	=> terminal_position,
 											size_x	=> terminal_milling_size_x,
 											size_y	=> terminal_milling_size_y,
 											offset	=> terminal_pad_drill_offset);
 
-								segments : type_polygon_segments;
 								millings : type_plated_millings;
 
 							begin
-								segments.lines := lines;
-								load_segments (millings, segments);
+								load_segments (millings, (circular => false, segments => lines));
 								
 								terminals.insert (
 									key 		=> terminal_name,
@@ -4564,43 +4563,40 @@ package body et_kicad.pcb is
 		return board;
 	end to_board;
 
-	function corners_to_lines (corners : type_polygon_points.list)
-		return pac_shapes.pac_polygon_lines.list is
 	-- The polygon in kicad is a list of points. This list is here converted
 	-- to a list of lines. This implies that the kicad polygon must have at least
 	-- two corners, and the number of corners must be even. Otherwise an exception arises here.
+	function corners_to_lines (corners : type_polygon_points.list)
+		return pac_shapes.pac_polygon_segments.list 
+	is
 		use type_polygon_points;
 		corner : type_polygon_points.cursor := corners.first;
-		
-		use pac_shapes.pac_polygon_lines;
-		lines : pac_polygon_lines.list; -- to be returned
-		line : type_polygon_line;
 
-		-- The segments must be given an id so that their order can be restored
-		-- later when a path is required:
-		id : type_polygon_segment_id := type_polygon_segment_id'first;
+		use pac_shapes;
+		use pac_polygon_segments;
+
+		lines : pac_polygon_segments.list; -- to be returned
+		l : pac_shapes.type_line;
+
 	begin
-		while corner /= corners.last loop -- type_polygon_points.no_element loop
-			line.start_point := element (corner);
-			line.end_point := element (next (corner));
+		while corner /= corners.last loop
+			l.start_point := element (corner);
+			l.end_point := element (next (corner));
 
-			line.id := id; -- assign id
-			append (lines, line);
-			id := id + 1; -- prepare id for next segment
+			lines.append ((shape => LINE, segment_line => l));
 			
 			next (corner);
 		end loop;
 
-		-- corner now points to the last point
+		-- Corner is now pointing to the last point.
 
 		-- The last line starts where corner points at.
-		line.start_point := element (corner);
+		l.start_point := element (corner);
 
 		-- The last line ends at the first point.
-		line.end_point := element (corners.first);
+		l.end_point := element (corners.first);
 
-		line.id := id;
-		append (lines, line);
+		lines.append ((shape => LINE, segment_line => l));
 		
 		return lines;
 	end corners_to_lines;
@@ -4950,8 +4946,11 @@ package body et_kicad.pcb is
 													gap			=> element (polygon_cursor).thermal_gap,
 													width		=> element (polygon_cursor).thermal_width);
 
-										-- convert the polygon corner point to a list of lines:
-										load_lines (p, corners_to_lines (element (polygon_cursor).corners));
+										
+										load_segments (p, (
+											circular => false,															  
+											-- convert the polygon corner points to a list of lines:
+											segments => corners_to_lines (element (polygon_cursor).corners)));
 										
 										route.polygons.solid.append (p);																					  
 									end;
@@ -4972,9 +4971,11 @@ package body et_kicad.pcb is
 										p.properties.layer := et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1);
 										
 										p.technology := element (polygon_cursor).pad_technology;
-
-										-- convert the polygon corner point to a list of lines:
-										load_lines (p, corners_to_lines (element (polygon_cursor).corners));
+										
+										load_segments (p, (
+											circular => false,															  
+											-- convert the polygon corner points to a list of lines:
+											segments => corners_to_lines (element (polygon_cursor).corners)));
 										
 										route.polygons.solid.append (p);																					  
 									end;
@@ -5279,8 +5280,14 @@ package body et_kicad.pcb is
 							-- net_id, timestamp, hatch_style, hatch_width, filled, fill_mode_segment, arc_segments
 
 							-- convert the polygon corner point to a list of lines:
-							load_lines (p, corners_to_lines (element (polygon_cursor).corners));
+							--load_lines (p, corners_to_lines (element (polygon_cursor).corners));
 
+							load_segments (p, (
+								circular => false,															  
+								-- convert the polygon corner points to a list of lines:
+								segments => corners_to_lines (element (polygon_cursor).corners)));
+
+							
 							-- set the minimal line width:
 							p.width_min	:= element (polygon_cursor).min_thickness;
 
