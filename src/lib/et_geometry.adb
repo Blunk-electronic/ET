@@ -3664,7 +3664,10 @@ package body et_geometry is
 						result.contours.circle := c;
 						
 						-- NOTE: No further shape must follow.
-						-- So we do not move p further.
+						-- So we do not move p further forward 
+						-- and abort this loop:
+						exit;
+						
 				end case;
 			end loop;
 
