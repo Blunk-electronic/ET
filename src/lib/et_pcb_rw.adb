@@ -578,14 +578,20 @@ package body et_pcb_rw is
 	procedure board_reset_circle is begin board_circle := (others => <>); end;
 	
 	procedure add_polygon_circle (c : in out type_circle) is begin
+		-- The global polygon variable "mutates" so that the contours
+		-- consist of a single circle:
+		polygon := (contours => (circular => true, others => <>));
+
+		-- Assign the circle to the polygon contours:
 		pac_shapes.set_circle (polygon, c);
 		board_reset_circle;
 	end;
 
 
 	
-	procedure read_board_line (line : et_string_processing.type_fields_of_line) is
-	-- Reads start and end point of the board_line. If the statement is invalid then an error issued.
+	procedure read_board_line (
+		line : et_string_processing.type_fields_of_line)
+	is
 		kw : string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -606,8 +612,10 @@ package body et_pcb_rw is
 		end if;
 	end;
 
-	function read_board_line (line : et_string_processing.type_fields_of_line) return boolean is
-	-- Reads start and end point of the board_line. If the statement is invalid then it returns a false.
+	function read_board_line (
+		line : et_string_processing.type_fields_of_line)
+		return boolean 
+	is
 		kw : string := f (line, 1);
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3

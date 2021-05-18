@@ -1295,28 +1295,8 @@ package et_geometry is
 
 		
 
-	-- POLYGON
-		--type type_polygon_base is abstract tagged private;
 
 
-		
-		-- In contrast to the common definition of a polygon, a polygon
-		-- in this world is described as a finite number of elements 
-		-- like lines, arcs and even circles that form a polygonal circuit.
-		
-		-- Every segment has an id.
-		-- CS: For the moment we limit the number of segments (that form the outline)
-		-- to a reasonable value. Increase if necessary:
-		--type type_polygon_segment_count is range 0 .. 100;
-		
-		--subtype type_polygon_segment_id is type_polygon_segment_count 
-			--range 1 .. type_polygon_segment_count'last;
-
-		
-		
-		--type type_polygon_line is new type_line with record
-			--id : type_polygon_segment_id := type_polygon_segment_id'first;
-		--end record;
 
 		-- Returns the end of a line that is on the left.
 		-- If no boundaries given, then they will be computed.
@@ -1349,45 +1329,20 @@ package et_geometry is
 			boundaries	: in type_boundaries := boundaries_default)
 			return type_point;
 
-		
-		
-		--procedure append_segment_line (
-			--polygon	: in out type_polygon_base'class;
-			--segment	: in type_polygon_line);
-		
-		--package pac_polygon_lines is new doubly_linked_lists (type_polygon_line);
 
 		
-		--type type_polygon_arc is new type_arc with record
-			--id : type_polygon_segment_id := type_polygon_segment_id'first;
-		--end record;
+	-- POLYGON
 		
-		--procedure append_segment_arc (
-			--polygon	: in out type_polygon_base'class;
-			--segment	: in type_polygon_arc);
-
-		--package pac_polygon_arcs is new doubly_linked_lists (type_polygon_arc);
-
-		--type type_polygon_circle is new type_circle with record
-			--id : type_polygon_segment_id := type_polygon_segment_id'first;
-		--end record;
-
-		-- NOTE: In this world a polygon may consist of just a single circle.
+		-- IMPORTANT NOTE: 
+		-- In contrast to the common definition of a polygon, a polygon
+		-- in this world is described as a finite number of elements 
+		-- like lines, arcs and even circles that form a polygonal circuit.
+		-- In this world a polygon may consist of just a single circle.
 		-- In that case no other segments are allowed.
-		-- CS: A procedure to check this rule is required.
-		--procedure append_segment_circle (
-			--polygon	: in out type_polygon_base'class;
-			--segment	: in type_polygon_circle);
-		
-		--package pac_polygon_circles is new doubly_linked_lists (type_polygon_circle);
-
-		--type type_polygon_segments is record
-			--lines	: pac_polygon_lines.list;
-			--arcs	: pac_polygon_arcs.list;
-			--circles	: pac_polygon_circles.list;
-		--end record;
-
+		-- On the other hand, a polygon may consist of lines and arcs. In that
+		-- case no circle is allowed:
 		type type_polygon_segment_shape is (LINE, ARC);
+		
 		type type_polygon_segment (shape : type_polygon_segment_shape) is record
 			case shape is
 				when LINE	=> segment_line : type_line;
@@ -1429,19 +1384,6 @@ package et_geometry is
 			--return type_polygon_segments;
 
 		
-		-- Loads the given lines into given polygon.
-		-- NOTE: Overwrites already existing segments in the polygon.
-		--procedure load_lines (
-			--polygon		: in out type_polygon_base'class;
-			--lines		: in pac_polygon_lines.list);
-
-		-- Loads the given circles into given polygon.
-		-- NOTE: Overwrites already existing segments in the polygon.
-		--procedure load_circles (
-			--polygon		: in out type_polygon_base'class;
-			--circles		: in pac_polygon_circles.list);
-
-		
 		-- Loads the given segments into given polygon.
 		-- NOTE: Overwrites already existing segments in the polygon.
 		procedure load_segments (
@@ -1463,8 +1405,13 @@ package et_geometry is
 			polygon : in type_polygon_base) 
 			return type_polygon_segments_2;
 
-		--function get_segments_total (polygon : in type_polygon_base)
-			--return type_polygon_segment_count;
+		-- Returns 1 if the polygon contours consist of just a single circle.
+		-- Returns the number of segments if the contours consist of lines
+		-- and/or arcs:
+		function get_segments_total (
+			polygon : in type_polygon_base)
+			return count_type;
+
 
 		-- Transposes a polygon in Y direction.
 		-- Each point of each segment gets shifted by

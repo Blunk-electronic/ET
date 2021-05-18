@@ -3412,35 +3412,6 @@ package body et_geometry is
 			return p;
 		end get_upper_end;
 
-		
-		
-		--procedure append_segment_line (
-			--polygon	: in out type_polygon_base'class;
-			--segment	: in type_polygon_line)
-		--is begin
-			--polygon.segments.lines.append (segment);
-
-			--polygon.segments_total := polygon.segments_total + 1;
-		--end append_segment_line;
-
-		--procedure append_segment_arc (
-			--polygon	: in out type_polygon_base'class;
-			--segment	: in type_polygon_arc)
-		--is begin
-			--polygon.segments.arcs.append (segment);
-
-			--polygon.segments_total := polygon.segments_total + 1;
-		--end append_segment_arc;
-
-		--procedure append_segment_circle (
-			--polygon	: in out type_polygon_base'class;
-			--segment	: in type_polygon_circle)
-		--is begin
-			--polygon.segments.circles.append (segment);
-
-			--polygon.segments_total := polygon.segments_total + 1;
-		--end append_segment_circle;
-
 
 		--function get_segments_on_corner_point (
 			--polygon	: in type_polygon_base;
@@ -3482,40 +3453,7 @@ package body et_geometry is
 			
 			--return result;
 		--end get_segments_on_corner_point;
-
-
-		
-		--procedure load_lines (
-			--polygon		: in out type_polygon_base'class;
-			--lines		: in pac_polygon_lines.list)
-		--is
-			--use pac_polygon_lines;
-			--l : constant count_type := length (lines);
-		--begin
-			---- set the total number of segments:
-			--polygon.segments_total := type_polygon_segment_count (l);
-
-			---- Clear existing segments and 
-			---- assign the given list of lines:
-			--polygon.segments := (others => <>);
-			--polygon.segments.lines := lines;
-		--end load_lines;
-
-		--procedure load_circles (
-			--polygon		: in out type_polygon_base'class;
-			--circles		: in pac_polygon_circles.list)
-		--is
-			--use pac_polygon_circles;
-			--c : constant count_type := length (circles);
-		--begin
-			---- set the total number of segments:
-			--polygon.segments_total := type_polygon_segment_count (c);
-
-			---- Clear existing segments and 
-			---- assign the given list of circles:
-			--polygon.segments := (others => <>);
-			--polygon.segments.circles := circles;
-		--end load_circles;
+	
 		
 		procedure load_segments (
 			polygon		: in out type_polygon_base;
@@ -3543,8 +3481,6 @@ package body et_geometry is
 			circle	: in type_circle'class)
 		is begin
 			-- CS check discriminant and issue helpful error message ?
-			--polygon := (
-				   --contours	=> (circular => true, circle => circle));
 			
 			polygon.contours.circle := type_circle (circle);
 		end set_circle;
@@ -3557,11 +3493,18 @@ package body et_geometry is
 			return polygon.contours;
 		end get_segments;
 
-		--function get_segments_total (polygon : in type_polygon_base)
-			--return type_polygon_segment_count
-		--is begin
-			--return polygon.segments_total;
-		--end get_segments_total;
+		function get_segments_total (
+			polygon : in type_polygon_base)
+			return count_type
+		is 
+			use pac_polygon_segments;
+		begin
+			if polygon.contours.circular then
+				return 1;
+			else
+				return length (polygon.contours.segments);
+			end if;
+		end get_segments_total;
 
 		procedure transpose_polygon (
 			polygon	: in out type_polygon_base'class;
