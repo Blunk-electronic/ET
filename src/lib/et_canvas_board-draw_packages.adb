@@ -399,7 +399,7 @@ is
 			use pac_silk_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out type_cutout_zone;
+				cutout	: in out type_polygon;
 				f		: in type_face)
 			is begin
 				if silkscreen_enabled (f) then
@@ -422,14 +422,14 @@ is
 			end draw_cutout;
 			
 			procedure query_cutout_top (c : in pac_silk_cutouts.cursor) is
-				cutout : type_cutout_zone := element (c);
+				cutout : type_polygon := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_silk_cutouts.cursor) is
-				cutout : type_cutout_zone := element (c);
+				cutout : type_polygon := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
@@ -766,7 +766,7 @@ is
 			use pac_doc_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out et_packages.type_cutout_zone;
+				cutout	: in out type_polygon;
 				f		: in type_face)
 			is begin
 				if assy_doc_enabled (f) then
@@ -790,14 +790,14 @@ is
 			end draw_cutout;
 			
 			procedure query_cutout_top (c : in pac_doc_cutouts.cursor) is
-				cutout : type_cutout_zone := element (c);
+				cutout : type_polygon := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_doc_cutouts.cursor) is
-				cutout : type_cutout_zone := element (c);
+				cutout : type_polygon := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
@@ -1100,7 +1100,7 @@ is
 			use pac_keepout_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out type_cutout_zone;
+				cutout	: in out type_polygon;
 				f		: in type_face)
 			is begin
 				if keepout_enabled (f) then
@@ -1124,14 +1124,14 @@ is
 			end draw_cutout;
 			
 			procedure query_cutout_top (c : in pac_keepout_cutouts.cursor) is
-				cutout : et_packages.type_cutout_zone := element (c);
+				cutout : type_polygon := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_keepout_cutouts.cursor) is
-				cutout : et_packages.type_cutout_zone := element (c);
+				cutout : type_polygon := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
@@ -1347,7 +1347,7 @@ is
 			use pac_stop_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out type_cutout_zone;
+				cutout	: in out type_polygon;
 				f		: in type_face)
 			is begin
 				if stop_mask_enabled (f) then
@@ -1371,14 +1371,14 @@ is
 			end draw_cutout;
 			
 			procedure query_cutout_top (c : in pac_stop_cutouts.cursor) is
-				cutout : et_packages.type_cutout_zone := element (c);
+				cutout : type_polygon := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_stop_cutouts.cursor) is
-				cutout : et_packages.type_cutout_zone := element (c);
+				cutout : type_polygon := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
@@ -1630,7 +1630,7 @@ is
 			use pac_stencil_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out type_cutout_zone;
+				cutout	: in out type_polygon;
 				f		: in type_face)
 			is begin
 				if stencil_enabled (f) then
@@ -1654,14 +1654,14 @@ is
 			end draw_cutout;
 			
 			procedure query_cutout_top (c : in pac_stencil_cutouts.cursor) is
-				cutout : et_packages.type_cutout_zone := element (c);
+				cutout : type_polygon := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_stencil_cutouts.cursor) is
-				cutout : et_packages.type_cutout_zone := element (c);
+				cutout : type_polygon := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);
@@ -2330,7 +2330,7 @@ is
 			use pac_conductor_cutouts;
 
 			procedure draw_cutout (
-				cutout	: in out et_packages.type_cutout_zone;
+				cutout	: in out type_polygon;
 				f		: in type_face) is
 				ly : constant type_signal_layer := face_to_layer (f);
 			begin
@@ -2354,14 +2354,14 @@ is
 			end draw_cutout;
 			
 			procedure query_cutout_top (c : in pac_conductor_cutouts.cursor) is
-				cutout : type_cutout_zone := element (c);
+				cutout : type_polygon := element (c);
 			begin
 				set_destination;
 				draw_cutout (cutout, destination);
 			end query_cutout_top;
 
 			procedure query_cutout_bottom (c : in pac_conductor_cutouts.cursor) is
-				cutout : type_cutout_zone := element (c);
+				cutout : type_polygon := element (c);
 			begin
 				set_destination (INVERSE);
 				draw_cutout (cutout, destination);

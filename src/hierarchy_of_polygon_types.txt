@@ -12,7 +12,6 @@ et_packages
 	- discriminiant: fill_style
 	- selectors: width_min, isolation, easing
 	
- - type_cutout_zone
  - type_keepout_polygon
  - type_route_restrict_polygon
  - type_via_restrict_polygon
@@ -49,7 +48,7 @@ et_conductor_polygons:
 	- selectors: properties.layer, properties.priority, properties.filled_areas
  
  
-- derived from et_packages.type_cutout_zone
+- derived from type_polygon:
  - type_conductor_cutout
 	- selector: layer
  

@@ -63,7 +63,6 @@ with et_drills;					use et_drills;
 with et_vias;					use et_vias;
 with et_packages;				use et_packages;
 with et_pcb_stack;				use et_pcb_stack;
---with et_frames;
 with et_design_rules;			use et_design_rules;
 
 package et_conductor_polygons is
@@ -74,8 +73,8 @@ package et_conductor_polygons is
 	
 
 	
-	-- Cutout-polygons in conductor layers:
-	type type_conductor_cutout is new et_packages.type_cutout_zone with record
+	-- Cutout-areas in conductor layers:
+	type type_conductor_cutout is new type_polygon with record
 		layer 	: type_signal_layer := type_signal_layer'first;
 	end record;
 
