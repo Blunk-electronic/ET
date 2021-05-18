@@ -3457,7 +3457,7 @@ package body et_geometry is
 		
 		procedure load_segments (
 			polygon		: in out type_polygon_base;
-			segments	: in type_polygon_segments_2)
+			segments	: in type_polygon_segments)
 		is begin
 			polygon.contours := segments;
 		end load_segments;
@@ -3488,7 +3488,7 @@ package body et_geometry is
 		
 		function get_segments (
 			polygon : in type_polygon_base) 
-			return type_polygon_segments_2
+			return type_polygon_segments
 		is begin
 			return polygon.contours;
 		end get_segments;

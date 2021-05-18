@@ -1352,7 +1352,7 @@ package et_geometry is
 		
 		package pac_polygon_segments is new indefinite_doubly_linked_lists (type_polygon_segment);
 		
-		type type_polygon_segments_2 (circular : boolean := false) is record
+		type type_polygon_segments (circular : boolean := false) is record
 			case circular is
 				when TRUE	=> circle   : type_circle;
 				when FALSE	=> segments : pac_polygon_segments.list;
@@ -1360,7 +1360,7 @@ package et_geometry is
 		end record;
 
 		type type_polygon_base is abstract tagged record
-			contours	: type_polygon_segments_2;
+			contours	: type_polygon_segments;
 		end record;
 
 		-- Returns the corner point nearest to the given
@@ -1388,7 +1388,7 @@ package et_geometry is
 		-- NOTE: Overwrites already existing segments in the polygon.
 		procedure load_segments (
 			polygon		: in out type_polygon_base;
-			segments	: in type_polygon_segments_2);
+			segments	: in type_polygon_segments);
 		
 		procedure delete_segments (
 			polygon : in out type_polygon_base);
@@ -1403,7 +1403,7 @@ package et_geometry is
 			
 		function get_segments (
 			polygon : in type_polygon_base) 
-			return type_polygon_segments_2;
+			return type_polygon_segments;
 
 		-- Returns 1 if the polygon contours consist of just a single circle.
 		-- Returns the number of segments if the contours consist of lines

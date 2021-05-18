@@ -306,7 +306,7 @@ package body et_pcb_rw is
 			end case;
 		end query_segment;		
 
-		contours : type_polygon_segments_2 := get_segments (polygon);
+		contours : type_polygon_segments := get_segments (polygon);
 		
 	begin				
 		if contours.circular then
