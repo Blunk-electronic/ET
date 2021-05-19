@@ -3083,12 +3083,15 @@ package body et_kicad.pcb is
 								route_restrict	=> (others => <>), -- kicad does not know route restrict
 								via_restrict	=> (others => <>), -- kicad does not know via restrict
 								assembly_documentation	=> package_assy_doc,
-								pcb_contour		=> (others => <>) -- kicad does not allow pcb contours in a package,
-								
-								--pcb_contour_plated	=> (others => <>), -- kicad does not allow plated pcb contours in a package
+
+								-- kicad does not allow pcb contours in a package
+								pcb_contour		=> pac_pcb_cutouts.empty_list 
+
+								-- kicad does not allow plated pcb contours in a package
+								--pcb_contour_plated	=> (others => <>), 
 								-- CS: currently no need
 								
--- 								package_contour		=> package_contour
+								-- package_contour		=> package_contour
 								)
 							);
 						
@@ -3114,9 +3117,12 @@ package body et_kicad.pcb is
 								route_restrict	=> (others => <>), -- kicad does not know route restrict
 								via_restrict	=> (others => <>), -- kicad does not know via restrict
 								assembly_documentation	=> package_assy_doc,
-								pcb_contour		=> (others => <>) -- kicad does not allow pcb contours in a package
-								
-								--pcb_contour_plated	=> (others => <>) -- kicad does not allow plated pcb contours in a package
+
+								-- kicad does not allow pcb contours in a package
+								pcb_contour		=> pac_pcb_cutouts.empty_list 
+
+								-- kicad does not allow plated pcb contours in a package
+								--pcb_contour_plated	=> (others => <>) 
 								-- CS: currently no need
 								
 								-- a virtual package does not have contours

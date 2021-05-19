@@ -64,6 +64,7 @@ package et_pcb_rw.device_packages is
 		SEC_INIT,
 		SEC_TOP,
 		SEC_BOTTOM,
+		SEC_HOLE,
 		SEC_LINE,
 		SEC_ARC,
 		SEC_CIRCLE,
@@ -89,23 +90,23 @@ package et_pcb_rw.device_packages is
 		SEC_PACKAGE_3D_CONTOURS
 		);
 
-	procedure create_package (
 	-- Creates a package and stores the package in container et_packages.packages.								 
+	procedure create_package (
 		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
 		appearance		: in type_package_appearance;
 		log_threshold	: in et_string_processing.type_log_level);
 	
-	procedure save_package (
 	-- Saves the given package model in a file specified by file_name.							   
+	procedure save_package (
 		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
 		packge			: in type_package_lib; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 	
-	procedure read_package (
 	-- Opens the package file and stores the package in container et_packages.packages.
 	-- If check_layers.check is YES, then a check will be done that tests
 	-- whether all conductor layers are are in 
 	-- range type_signal_layer'first .. deepest conductor layer.
+	procedure read_package (
 		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in et_string_processing.type_log_level);

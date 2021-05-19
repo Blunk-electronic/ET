@@ -2482,9 +2482,12 @@ package body et_kicad_packages is
 				return (
 					appearance				=> REAL,
 					--package_contour			=> (others => <>), -- CS to be filled from 3d model
-					pcb_contour				=> (others => <>), -- kicad does allow pcb contours in a package
 
-					--pcb_contour_plated 		=> (others => <>), -- kicad does allow plated pcb contours in a package
+					 -- kicad does allow pcb contours in a package model:
+					pcb_contour				=> pac_pcb_cutouts.empty_list,
+
+					-- kicad does allow plated pcb contours in a package model
+					--pcb_contour_plated 		=> (others => <>), 
 					-- CS: currently no need
 					
 					terminals				=> terminals,
@@ -2493,8 +2496,13 @@ package body et_kicad_packages is
 					keepout					=> keepout,
 					stop_mask				=> stop_mask,
 					stencil					=> stencil,
-					route_restrict 			=> (others => <>), -- kicad does not know route restrict
-					via_restrict 			=> (others => <>), -- kicad does not know via restrict
+
+					-- kicad does not know route restrict
+					route_restrict 			=> (others => <>),
+
+					-- kicad does not know via restrict
+					via_restrict 			=> (others => <>),
+					
 					assembly_documentation 	=> assy_doc,
 					time_stamp				=> time_stamp,
 					description				=> description,
@@ -2504,9 +2512,12 @@ package body et_kicad_packages is
 			when VIRTUAL => -- no package_contours
 				return (
 					appearance				=> VIRTUAL,
-					pcb_contour				=> (others => <>), -- kicad does allow pcb contours in a package
-					
-					--pcb_contour_plated 		=> (others => <>), -- kicad does allow plated pcb contours in a package
+						   
+					-- kicad does allow pcb contours in a package						   
+					pcb_contour				=> pac_pcb_cutouts.empty_list,
+
+					-- kicad does allow plated pcb contours in a package
+					--pcb_contour_plated 		=> (others => <>),
 					-- CS: currently no need
 					
 					terminals				=> terminals,
@@ -2515,8 +2526,13 @@ package body et_kicad_packages is
 					keepout					=> keepout,
 					stop_mask				=> stop_mask,
 					stencil					=> stencil,
-					route_restrict 			=> (others => <>), -- kicad does not know route restrict
-					via_restrict 			=> (others => <>), -- kicad does not know via restrict
+
+					-- kicad does not know route restrict
+					route_restrict 			=> (others => <>),
+
+					-- kicad does not know via restrict
+					via_restrict 			=> (others => <>),
+					
 					assembly_documentation 	=> assy_doc,
 					time_stamp				=> time_stamp,
 					description				=> description,

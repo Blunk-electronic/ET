@@ -208,6 +208,7 @@ package et_project.modules is
 		SEC_CUTOUT_ZONE,
 		SEC_DRAWING_GRID,
 		SEC_FILL_ZONE,
+		-- CS SEC_HOLE,
 		SEC_INIT,
 		SEC_NET_CLASSES,
 		SEC_NET_CLASS,

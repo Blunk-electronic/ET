@@ -52,7 +52,6 @@ with et_terminals;				use et_terminals;
 package body et_pcb_rw.device_packages is
 	
 	procedure create_package (
-	-- Creates a package and stores the package in container "packages".
 		package_name 	: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
 		appearance		: in type_package_appearance;
 		log_threshold	: in et_string_processing.type_log_level) 
@@ -89,7 +88,6 @@ package body et_pcb_rw.device_packages is
 
 
 	procedure save_package (
-	-- Saves the given package model in a file specified by file_name.
 		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac							   
 		packge			: in type_package_lib; -- the actual package model
 		log_threshold	: in et_string_processing.type_log_level) 
@@ -402,19 +400,26 @@ package body et_pcb_rw.device_packages is
 			section_mark (section_via_restrict, FOOTER);			
 		end write_via_restrict;
 
-		procedure write_contour is -- about PCB contours
-			use pac_pcb_contour_lines;
-			use pac_pcb_contour_arcs;
-			use pac_pcb_contour_circles;
+		procedure write_holes is
+			use pac_pcb_cutouts;
+			use pac_polygon_segments;
+
+			procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
+				section_mark (section_hole, HEADER);		
+				write_polygon_segments (element (c));		
+				section_mark (section_hole, FOOTER);		
+			end query_hole;
+
 		begin
-			section_mark (section_pcb_contours, HEADER);
+			if not is_empty (packge.pcb_contour) then
+				
+				section_mark (section_pcb_contours, HEADER);		
+				packge.pcb_contour.iterate (query_hole'access);				
+				section_mark (section_pcb_contours, FOOTER);
+				
+			end if;
+		end write_holes;
 
-			iterate (packge.pcb_contour.lines, write_line'access);
-			iterate (packge.pcb_contour.arcs, write_arc'access);
-			iterate (packge.pcb_contour.circles, write_circle'access);
-
-			section_mark (section_pcb_contours, FOOTER);
-		end write_contour;
 		
 		-- CS currently no need for plated millings not terminal related
 -- 		procedure write_contour_plated is begin
@@ -684,7 +689,7 @@ package body et_pcb_rw.device_packages is
 		write_stencil;
 		write_route_restrict;
 		write_via_restrict;
-		write_contour; -- pcb contour plated
+		write_holes; -- pcb cutouts
 		-- write_contour_plated; -- pcb contour -- CS currently no need
 		write_terminals; -- incl. pad properties, drill sizes, millings, ...
 
@@ -760,7 +765,8 @@ package body et_pcb_rw.device_packages is
 		pac_text				: et_packages.type_text_with_content;
 		pac_text_placeholder	: et_packages.type_text_placeholder;
 
-
+		hole					: type_polygon; -- pcb cutout
+		
 		terminal_position		: type_position := origin_zero_rotation;
 
 		tht_stop_mask_status			: type_stop_mask_status := stop_mask_status_default;
@@ -1494,6 +1500,40 @@ package body et_pcb_rw.device_packages is
 					et_pcb_stack.type_signal_layers.clear (signal_layers);
 				end;
 
+				-- pcb cutouts/holes
+				procedure append_line_to_hole is begin
+					pac_shapes.append_segment (hole, (
+						shape => pac_shapes.LINE, segment_line => board_line));
+
+					-- clean up for next line
+					board_reset_line;
+				end append_line_to_hole;
+
+				procedure append_arc_to_hole is begin
+					pac_shapes.append_segment (hole, (
+						shape => pac_shapes.ARC, segment_arc => board_arc));
+
+					-- clean up for next arc
+					board_reset_arc;
+				end append_arc_to_hole;
+
+				procedure assign_circle_to_hole is begin
+					hole := (contours => (circular => true, circle => board_circle));
+					-- From now on the hole consists of just a single circle.
+					-- Any attempt to append a line or an arc causes a discriminant error.
+
+					-- clean up for next circle
+					board_reset_circle;
+				end assign_circle_to_hole;
+
+				procedure append_hole is begin
+					packge.pcb_contour.append (hole);
+
+					-- clean up for next hole
+					hole := (others => <>);
+					-- NOTE: Hole by default consists of lines and arcs.					
+				end append_hole;
+				
 			begin -- execute_section
 				case stack.current is
 
@@ -1671,14 +1711,8 @@ package body et_pcb_rw.device_packages is
 									when others => invalid_section;
 								end case;
 								
-							when SEC_PCB_CONTOURS_NON_PLATED =>
-								
-								et_packages.pac_pcb_contour_lines.append (
-									container	=> packge.pcb_contour.lines,
-									new_item	=> (type_line (board_line) with null record));
-
-								-- clean up for next line
-								board_reset_line;
+							when SEC_HOLE =>
+								append_line_to_hole;
 								
 							when SEC_ROUTE_RESTRICT =>
 								
@@ -1845,14 +1879,8 @@ package body et_pcb_rw.device_packages is
 									when others => invalid_section;
 								end case;
 
-							when SEC_PCB_CONTOURS_NON_PLATED =>
-								
-								et_packages.pac_pcb_contour_arcs.append (
-									container	=> packge.pcb_contour.arcs,
-									new_item	=> (type_arc (board_arc) with null record));
-
-								-- clean up for next arc
-								board_reset_arc;
+							when SEC_HOLE =>
+								append_arc_to_hole;
 								
 							when SEC_ROUTE_RESTRICT =>
 								
@@ -1989,14 +2017,8 @@ package body et_pcb_rw.device_packages is
 									when others => invalid_section;
 								end case;
 
-							when SEC_PCB_CONTOURS_NON_PLATED =>
-								
-								et_packages.pac_pcb_contour_circles.append (
-									container	=> packge.pcb_contour.circles,
-									new_item	=> (type_circle (board_circle) with null record));
-
-								-- clean up for next circle
-								board_reset_circle;
+							when SEC_HOLE =>
+								assign_circle_to_hole;
 								
 							when SEC_ROUTE_RESTRICT =>
 								
@@ -2331,6 +2353,14 @@ package body et_pcb_rw.device_packages is
 								
 							when others => invalid_section;
 						end case;
+
+					when SEC_HOLE =>
+						case stack.parent is
+							when SEC_PCB_CONTOURS_NON_PLATED =>
+								append_hole;
+							
+							when others => invalid_section;
+						end case;
 						
 					when SEC_INIT => raise constraint_error;
 						
@@ -2399,6 +2429,7 @@ package body et_pcb_rw.device_packages is
 			elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;			
 			elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
 			elsif set (section_pcb_contours, SEC_PCB_CONTOURS_NON_PLATED) then null;
+			elsif set (section_hole, SEC_HOLE) then null;
 			elsif set (section_pad_contours_smt, SEC_PAD_CONTOURS_SMT) then null;
 			elsif set (section_pad_contours_tht, SEC_PAD_CONTOURS_THT) then null;
 			elsif set (section_stencil_contours, SEC_STENCIL_CONTOURS) then null;
@@ -2514,7 +2545,7 @@ package body et_pcb_rw.device_packages is
 									when others => invalid_section;
 								end case;
 
-							when SEC_PCB_CONTOURS_NON_PLATED => read_board_line (line);
+							when SEC_HOLE => read_board_line (line);
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								if not read_board_line (line) then
@@ -2579,7 +2610,7 @@ package body et_pcb_rw.device_packages is
 									when others => invalid_section;
 								end case;
 
-							when SEC_PCB_CONTOURS_NON_PLATED => read_board_arc (line);
+							when SEC_HOLE => read_board_arc (line);
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								if not read_board_arc (line) then
@@ -2708,8 +2739,8 @@ package body et_pcb_rw.device_packages is
 									when others => invalid_section;
 								end case;
 
-							when SEC_PCB_CONTOURS_NON_PLATED => read_board_circle (line);
-
+							when SEC_HOLE => read_board_circle (line);
+							
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								if not read_board_circle (line) then
 									declare
@@ -2993,6 +3024,12 @@ package body et_pcb_rw.device_packages is
 					when SEC_PAD_CONTOURS_SMT | SEC_STENCIL_CONTOURS | SEC_PAD_CONTOURS_THT | SEC_MILLINGS =>
 						case stack.parent is
 							when SEC_TERMINAL => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_HOLE =>
+						case stack.parent is
+							when SEC_PCB_CONTOURS_NON_PLATED => null;
 							when others => invalid_section;
 						end case;
 						

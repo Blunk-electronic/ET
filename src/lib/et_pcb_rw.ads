@@ -73,6 +73,7 @@ package et_pcb_rw is
 	section_via_restrict		: constant string	:= "[VIA_RESTRICT";
 	section_conductor			: constant string	:= "[CONDUCTOR";
 	section_pcb_contours		: constant string	:= "[PCB_CONTOURS_NON_PLATED";
+	section_hole				: constant string	:= "[HOLE";
 	--section_pcb_contours_plated	: constant string	:= "[PCB_CONTOURS_PLATED"; 
 	section_pac_3d_contours		: constant string	:= "[PACKAGE_3D_CONTOURS";
 	
@@ -134,7 +135,7 @@ package et_pcb_rw is
 	
 	-- writes the segments of a polygon (lines, arcs or a single circle):
 	procedure write_polygon_segments (
-		polygon : in pac_shapes.type_polygon_base);
+		polygon : in pac_shapes.type_polygon_base'class);
 
 	
 	
@@ -350,9 +351,6 @@ package et_pcb_rw is
 	procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor);
 
 -- BOARD CONTOUR
-	procedure write_line (cursor : in pac_pcb_contour_lines.cursor);
-	procedure write_arc (cursor : in pac_pcb_contour_arcs.cursor);
-	procedure write_circle (cursor : in pac_pcb_contour_circles.cursor);	
 	procedure write_line (cursor : in et_pcb.pac_pcb_contour_lines.cursor);	
 	procedure write_arc (cursor : in et_pcb.pac_pcb_contour_arcs.cursor);
 	procedure write_circle (cursor : in et_pcb.pac_pcb_contour_circles.cursor);

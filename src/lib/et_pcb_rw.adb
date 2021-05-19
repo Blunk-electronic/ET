@@ -286,7 +286,7 @@ package body et_pcb_rw is
 
 	
 	procedure write_polygon_segments (
-		polygon : in pac_shapes.type_polygon_base)
+		polygon : in pac_shapes.type_polygon_base'class)
 	is
 		use pac_shapes.pac_polygon_segments;
 		
@@ -1317,31 +1317,8 @@ package body et_pcb_rw is
 		cutout_zone_end;
 	end;
 
--- BOARD CONTOUR
-	procedure write_line (cursor : in pac_pcb_contour_lines.cursor) is 
-		use pac_pcb_contour_lines;
-	begin
-		line_begin;
-		write_line (element (cursor));
-		line_end;
-	end write_line;
-
-	procedure write_arc (cursor : in pac_pcb_contour_arcs.cursor) is 
-		use pac_pcb_contour_arcs;
-	begin
-		arc_begin;
-		write_arc (element (cursor));
-		arc_end;
-	end write_arc;
-
-	procedure write_circle (cursor : in pac_pcb_contour_circles.cursor) is 
-		use pac_pcb_contour_circles;
-	begin
-		circle_begin;
-		write_circle (element (cursor));
-		circle_end;
-	end write_circle;
 	
+-- BOARD CONTOUR
 	procedure write_line (cursor : in et_pcb.pac_pcb_contour_lines.cursor) is 
 		use et_pcb;
 		use et_pcb.pac_pcb_contour_lines;

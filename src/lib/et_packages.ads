@@ -800,37 +800,25 @@ package et_packages is
 
 
 	
--- PCB CONTOURS
+-- PCB CUTOUTS OR HOLES
 
-	-- The outline of a pcb is a collection of lines, arcs and circles.
-	-- Unlike plated millings of terminals (see below) one can not assume a single
-	-- circumfence. There may be circles, rectangles and other objects that are not
-	-- nessecarily connected with each other. DON'T try to model the pcb outline with a polygon !
+	-- As this is the model of a package, we have only
+	-- pcb contours that form holes inside the board area.
+	-- There may be multiple cutout areas. Each of them
+	-- has a closed circumfence.
+	-- So we use the simple polygon type and collect them
+	-- in a simple list:
+	package pac_pcb_cutouts is new doubly_linked_lists (type_polygon);
 
 	-- GUI relevant only: The line width of contours:
 	pcb_contour_line_width : constant type_general_line_width := text_parameters_fab.width_min;
-	
-	type type_pcb_contour_line is new type_line with null record;
-	package pac_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
-	
-	type type_pcb_contour_arc is new type_arc with null record;
-	package pac_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
-	
-	type type_pcb_contour_circle is new type_circle with null record;
-	package pac_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
-	-- Circles in outline are never filled.
-	
-	type type_pcb_contour is record
-		lines 	: pac_pcb_contour_lines.list;
-		arcs	: pac_pcb_contour_arcs.list;
-		circles	: pac_pcb_contour_circles.list;
-	end record;
 
 	-- NOTE: There is no reason to allow texts in contours here.
 	-- The text would most likely end up somewhere inside the board area. 
 	-- This in turn would cause the DRC to output errors.
 	
 
+	
 	
 -- APPEARANCE
 
@@ -857,6 +845,7 @@ package et_packages is
 	function to_package_description (description : in string) 
 		return pac_package_description.bounded_string;
 
+
 	
 
 -- PACKAGE MODEL
@@ -872,11 +861,14 @@ package et_packages is
 		route_restrict 	: type_route_restrict;
 		via_restrict 	: type_via_restrict;
 		
-		-- CS holes
-		-- PCB contour or so called "non-plated millings"
-		pcb_contour			: type_pcb_contour; 
+		-- CS holes		
+		-- PCB contour or so called "non-plated millings".
+		-- These structures are cutout areas inside the
+		-- board area:
+		pcb_contour			: pac_pcb_cutouts.list; -- CS rename to pcb_cutouts_non_plated
 
-		-- Plated millings. NOTE: NOT FOR SLITTED HOLES ! See type_terminal instead.
+		-- Plated millings:
+		-- NOTE: NOT FOR SLITTED HOLES ! See type_terminal instead.
 		-- CS: currently no need for such things
 		--pcb_contour_plated 		: type_plated_millings;
 		
@@ -1124,20 +1116,20 @@ package et_packages is
 	
 
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
-	procedure line_pcb_contour_properties (
-	-- Logs the properties of the given line of pcb contour
-		cursor			: in pac_pcb_contour_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+	--procedure line_pcb_contour_properties (
+	---- Logs the properties of the given line of pcb contour
+		--cursor			: in pac_pcb_contour_lines.cursor;
+		--log_threshold 	: in et_string_processing.type_log_level);
 
-	procedure arc_pcb_contour_properties (
-	-- Logs the properties of the given arc of pcb contour
-		cursor			: in pac_pcb_contour_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+	--procedure arc_pcb_contour_properties (
+	---- Logs the properties of the given arc of pcb contour
+		--cursor			: in pac_pcb_contour_arcs.cursor;
+		--log_threshold 	: in et_string_processing.type_log_level);
 
-	procedure circle_pcb_contour_properties (
-	-- Logs the properties of the given circle of pcb contour
-		cursor			: in pac_pcb_contour_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+	--procedure circle_pcb_contour_properties (
+	---- Logs the properties of the given circle of pcb contour
+		--cursor			: in pac_pcb_contour_circles.cursor;
+		--log_threshold 	: in et_string_processing.type_log_level);
 	
 
 	
