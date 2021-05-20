@@ -411,10 +411,10 @@ package body et_pcb_rw.device_packages is
 			end query_hole;
 
 		begin
-			if not is_empty (packge.pcb_contour) then
+			if not is_empty (packge.holes) then
 				
 				section_mark (section_pcb_contours, HEADER);		
-				packge.pcb_contour.iterate (query_hole'access);				
+				packge.holes.iterate (query_hole'access);				
 				section_mark (section_pcb_contours, FOOTER);
 				
 			end if;
@@ -1527,7 +1527,7 @@ package body et_pcb_rw.device_packages is
 				end assign_circle_to_hole;
 
 				procedure append_hole is begin
-					packge.pcb_contour.append (hole);
+					packge.holes.append (hole);
 
 					-- clean up for next hole
 					hole := (others => <>);

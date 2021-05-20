@@ -2145,8 +2145,8 @@ is
 				set_color_outline (context.cr);
 				set_line_width (context.cr, type_view_coordinate (pcb_contour_line_width));
 				
-				if not is_empty (element (package_cursor).pcb_contour) then
-					iterate (element (package_cursor).pcb_contour, query_hole'access);
+				if not is_empty (element (package_cursor).holes) then
+					iterate (element (package_cursor).holes, query_hole'access);
 				end if;
 
 			end if;

@@ -2480,28 +2480,26 @@ package body et_kicad_packages is
 		case package_appearance is
 			when REAL =>
 				return (
-					appearance				=> REAL,
+					appearance			=> REAL,
 					--package_contour			=> (others => <>), -- CS to be filled from 3d model
 
-					 -- kicad does allow pcb contours in a package model:
-					pcb_contour				=> pac_pcb_cutouts.empty_list,
+					-- CS: pcb contours in a package
+					holes				=> pac_pcb_cutouts.empty_list,
 
-					-- kicad does allow plated pcb contours in a package model
-					--pcb_contour_plated 		=> (others => <>), 
-					-- CS: currently no need
+					-- CS: plated pcb contours ?
 					
-					terminals				=> terminals,
-					conductors				=> copper, -- non electric !
-					silk_screen				=> silk_screen,
-					keepout					=> keepout,
-					stop_mask				=> stop_mask,
-					stencil					=> stencil,
+					terminals			=> terminals,
+					conductors			=> copper, -- non electric !
+					silk_screen			=> silk_screen,
+					keepout				=> keepout,
+					stop_mask			=> stop_mask,
+					stencil				=> stencil,
 
 					-- kicad does not know route restrict
-					route_restrict 			=> (others => <>),
+					route_restrict 		=> (others => <>),
 
 					-- kicad does not know via restrict
-					via_restrict 			=> (others => <>),
+					via_restrict 		=> (others => <>),
 					
 					assembly_documentation 	=> assy_doc,
 					time_stamp				=> time_stamp,
@@ -2511,27 +2509,25 @@ package body et_kicad_packages is
 
 			when VIRTUAL => -- no package_contours
 				return (
-					appearance				=> VIRTUAL,
+					appearance			=> VIRTUAL,
 						   
-					-- kicad does allow pcb contours in a package						   
-					pcb_contour				=> pac_pcb_cutouts.empty_list,
+					-- CS: pcb contours in a package						   
+					holes				=> pac_pcb_cutouts.empty_list,
 
-					-- kicad does allow plated pcb contours in a package
-					--pcb_contour_plated 		=> (others => <>),
-					-- CS: currently no need
+					-- CS: plated pcb contours ?
 					
-					terminals				=> terminals,
-					conductors				=> copper, -- non electric !
-					silk_screen				=> silk_screen,
-					keepout					=> keepout,
-					stop_mask				=> stop_mask,
-					stencil					=> stencil,
+					terminals			=> terminals,
+					conductors			=> copper, -- non electric !
+					silk_screen			=> silk_screen,
+					keepout				=> keepout,
+					stop_mask			=> stop_mask,
+					stencil				=> stencil,
 
 					-- kicad does not know route restrict
-					route_restrict 			=> (others => <>),
+					route_restrict 		=> (others => <>),
 
 					-- kicad does not know via restrict
-					via_restrict 			=> (others => <>),
+					via_restrict 		=> (others => <>),
 					
 					assembly_documentation 	=> assy_doc,
 					time_stamp				=> time_stamp,

@@ -861,16 +861,8 @@ package et_packages is
 		route_restrict 	: type_route_restrict;
 		via_restrict 	: type_via_restrict;
 		
-		-- CS holes		
-		-- PCB contour or so called "non-plated millings".
-		-- These structures are cutout areas inside the
-		-- board area:
-		pcb_contour			: pac_pcb_cutouts.list; -- CS rename to pcb_cutouts_non_plated
-
-		-- Plated millings:
-		-- NOTE: NOT FOR SLITTED HOLES ! See type_terminal instead.
-		-- CS: currently no need for such things
-		--pcb_contour_plated 		: type_plated_millings;
+		-- These structures are cutout areas inside the board area:
+		holes			: pac_pcb_cutouts.list;
 		
 		technology			: type_assembly_technology := SMT; -- set by majority of terminals
 		
