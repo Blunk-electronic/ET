@@ -303,14 +303,13 @@ is
 					when 9 =>
 						draw_outline_line (
 							module_name 	=> module,
-							line			=> (
+							line_add		=> (
 								start_point	=> type_point (set (
 									x => to_distance (f (6)),
 									y => to_distance (f (7)))),
 								end_point	=> type_point (set (
 									x => to_distance (f (8)),
-									y => to_distance (f (9)))),
-								locked		=> lock_status_default
+									y => to_distance (f (9))))
 								),
 							log_threshold	=> log_threshold + 1
 							);
@@ -327,7 +326,7 @@ is
 					when 12 =>
 						draw_outline_arc (
 							module_name 	=> module,
-							arc				=> (
+							arc_add			=> (
 								center		=> type_point (set (
 									x => to_distance (f (6)),
 									y => to_distance (f (7)))),
@@ -337,8 +336,7 @@ is
 								end_point	=> type_point (set (
 									x => to_distance (f (10)),
 									y => to_distance (f (11)))),
-								direction	=> to_direction (f (12)),
-								locked	=> lock_status_default
+								direction	=> to_direction (f (12))
 								),
 
 							log_threshold	=> log_threshold + 1
@@ -356,12 +354,11 @@ is
 					when 8 =>
 						draw_outline_circle (
 							module_name 	=> module,
-							circle			=> (
+							circle_add		=> (
 								center	=> type_point (set (
 									x => to_distance (f (6)),
 									y => to_distance (f (7)))),
-								radius	=> to_distance (f (8)),
-								locked	=> lock_status_default
+								radius	=> to_distance (f (8))
 								),
 
 							log_threshold	=> log_threshold + 1

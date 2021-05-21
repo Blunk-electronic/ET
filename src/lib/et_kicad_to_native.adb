@@ -1684,100 +1684,93 @@ package body et_kicad_to_native is
 			end move_keepout;
 
 			procedure move_contour is
-				use et_pcb.pac_pcb_contour_lines;
-				lines_cursor : et_pcb.pac_pcb_contour_lines.cursor;
-
-				use et_pcb.pac_pcb_contour_arcs;
-				arcs_cursor : et_pcb.pac_pcb_contour_arcs.cursor;
-
-				use et_pcb.pac_pcb_contour_circles;
-				circles_cursor : et_pcb.pac_pcb_contour_circles.cursor;
-
+				use et_pcb_coordinates;
+				use pac_geometry_brd;
+				use et_board_shapes_and_text;
+				use pac_shapes;
+				use pac_polygon_segments;
+				
 				contour : constant string := "board contour ";
 				
-				procedure move_line (line : in out et_pcb.type_pcb_contour_line) is
-					use et_pcb;
-				begin
+				procedure move_line (s : in out type_polygon_segment) is begin
 					log (text => contour & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
+					log (text => before & to_string (s.segment_line), level => log_threshold + log_threshold_add);
 
-					move (line.start_point);
-					move (line.end_point);
+					move (s.segment_line.start_point);
+					move (s.segment_line.end_point);
 					
-					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
+					log (text => now & to_string (s.segment_line), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_line;
 
-				procedure move_arc (arc : in out et_pcb.type_pcb_contour_arc) is
-					use et_pcb;
-				begin
+				procedure move_arc (s : in out type_polygon_segment) is begin
 					log (text => contour & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
+					log (text => before & to_string (s.segment_arc), level => log_threshold + log_threshold_add);
 
-					move (arc.center);
-					move (arc.start_point);
-					move (arc.end_point);
+					move (s.segment_arc.center);
+					move (s.segment_arc.start_point);
+					move (s.segment_arc.end_point);
 					
-					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
+					log (text => now & to_string (s.segment_arc), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_pcb_contour_circle) is
-					use et_pcb_coordinates.pac_geometry_brd;
-				begin
-					log (text => contour & "circle", level => log_threshold + log_threshold_add);
-					log_indentation_up;
-
-					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
-
-					move (circle.center);
-					
-					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
+				procedure move_segment (c : in pac_polygon_segments.cursor) is begin
+					case element (c).shape is
+						
+						when LINE => 
+							update_element (
+								container	=> module.board.contours.outline.contours.segments,
+								position	=> c,
+								process		=> move_line'access);
 							
-					log_indentation_down;
-				end move_circle;
+						when ARC =>
+							update_element (
+								container	=> module.board.contours.outline.contours.segments,
+								position	=> c,
+								process		=> move_arc'access);
 
-			begin -- move_contour
+					end case;
+				end move_segment;
+
+				procedure move_outline is begin
+					if module.board.contours.outline.contours.circular then
+
+						-- move the single circle the outline consists of:
+						log (text => contour & "circle", level => log_threshold + log_threshold_add);
+						log_indentation_up;
+
+						log (text => before & " center" 
+							& to_string (module.board.contours.outline.contours.circle.center), 
+							level => log_threshold + log_threshold_add);
+
+						move (module.board.contours.outline.contours.circle.center);
+						
+						log (text => now & " center" 
+							& to_string (module.board.contours.outline.contours.circle.center), 
+							level => log_threshold + log_threshold_add);
+								
+						log_indentation_down;
+					else
+						-- move the segments of the outline:
+						iterate (module.board.contours.outline.contours.segments, move_segment'access);
+					end if;
+				end move_outline;
 				
-				-- LINES
-				lines_cursor := module.board.contours.lines.first;
-				while lines_cursor /= et_pcb.pac_pcb_contour_lines.no_element loop
-					et_pcb.pac_pcb_contour_lines.update_element (
-						container	=> module.board.contours.lines,
-						position	=> lines_cursor,
-						process		=> move_line'access);
-					
-					next (lines_cursor);
-				end loop;
+			begin -- move_contour
+				move_outline;
 
-				-- ARCS
-				arcs_cursor := module.board.contours.arcs.first;
-				while arcs_cursor /= et_pcb.pac_pcb_contour_arcs.no_element loop
-					et_pcb.pac_pcb_contour_arcs.update_element (
-						container	=> module.board.contours.arcs,
-						position	=> arcs_cursor,
-						process		=> move_arc'access);
-					
-					next (arcs_cursor);
-				end loop;
-
-				-- CIRCLES TOP
-				circles_cursor := module.board.contours.circles.first;
-				while circles_cursor /= et_pcb.pac_pcb_contour_circles.no_element loop
-					et_pcb.pac_pcb_contour_circles.update_element (
-						container	=> module.board.contours.circles,
-						position	=> circles_cursor,
-						process		=> move_circle'access);
-					
-					next (circles_cursor);
-				end loop;
-
+				-- CS:
+				-- kicad does not distinguish between pcb outline and holes.
+				-- So the holes should be extracted here from the outline segments.
+				-- Holes are completely inside the board area and are thus detectable.
+				
 			end move_contour;
 			
 			procedure move_copper is

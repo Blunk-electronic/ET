@@ -384,28 +384,28 @@ package et_board_ops is
 	
 -- BOARD OUTLINE / CONTOUR
 
-	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
+	procedure draw_outline_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		line			: in et_pcb.type_pcb_contour_line;
+		line_add		: in type_line;
 		log_threshold	: in type_log_level);
 
-	procedure draw_outline_arc (
 	-- Draws an arc in the PCB outline.
+	procedure draw_outline_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		arc				: in et_pcb.type_pcb_contour_arc;
+		arc_add			: in type_arc;
 		log_threshold	: in type_log_level);
 
-	procedure draw_outline_circle (
 	-- Draws a circle in the PCB outline.
+	procedure draw_outline_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		circle			: in et_pcb.type_pcb_contour_circle;
+		circle_add		: in type_circle;
 		log_threshold	: in type_log_level);
-
-	procedure delete_outline (
+	
 	-- Deletes the segment of the outline that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+	procedure delete_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;

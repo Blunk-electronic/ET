@@ -47,43 +47,32 @@ procedure draw_outline (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) 
 is	
-	use pac_draw_fab;
-	
-	use pac_pcb_contour_lines;
-	use pac_pcb_contour_arcs;
-	use pac_pcb_contour_circles;
+	use pac_draw_fab;	
+	use et_board_shapes_and_text.pac_shapes;
+	use pac_polygon_segments;
 	
 	use et_packages.pac_texts_with_content;
 	
-	procedure query_line (c : in pac_pcb_contour_lines.cursor) is begin
-		draw_line (
-			area		=> in_area,
-			context		=> context,
-			line		=> element (c),
-			width		=> et_packages.pcb_contour_line_width,
-			height		=> self.frame_height);
+	procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+		case element (c).shape is
+			when LINE =>
+				draw_line (
+					area		=> in_area,
+					context		=> context,
+					line		=> element (c).segment_line,
+					width		=> et_packages.pcb_contour_line_width,
+					height		=> self.frame_height);
 
-	end query_line;
-
-	procedure query_arc (c : in pac_pcb_contour_arcs.cursor) is begin
-		draw_arc (
-			area		=> in_area,
-			context		=> context,
-			arc			=> element (c),
-			width		=> et_packages.pcb_contour_line_width,
-			height		=> self.frame_height);
-	end query_arc;
-
-	procedure query_circle (c : in pac_pcb_contour_circles.cursor) is begin
-		draw_circle (
-			area		=> in_area,
-			context		=> context,
-			circle		=> element (c),
-			filled		=> NO, -- circles in outline are never filled
-			width		=> et_packages.pcb_contour_line_width,
-			height		=> self.frame_height);
-	end query_circle;
-
+			when ARC =>
+				draw_arc (
+					area		=> in_area,
+					context		=> context,
+					arc			=> element (c).segment_arc,
+					width		=> et_packages.pcb_contour_line_width,
+					height		=> self.frame_height);
+		end case;
+	end query_segment;
+				
 	procedure query_text (c : in et_packages.pac_texts_with_content.cursor) is 
 		use et_board_shapes_and_text;
 		use pac_text_fab.pac_vector_text_lines;
@@ -110,29 +99,43 @@ is
 		
 	end query_text;
 	
-	procedure query_segments (
+	procedure query_outline_segments (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module) is
 	begin
 		-- All outline segments will be drawn with the same line width and color:
-		cairo.set_line_width (context.cr, type_view_coordinate (et_packages.pcb_contour_line_width));
+		set_line_width (context.cr, type_view_coordinate (et_packages.pcb_contour_line_width));
 		set_color_outline (context.cr);
+
 		
-		iterate (module.board.contours.lines, query_line'access);
-		iterate (module.board.contours.arcs, query_arc'access);
-		iterate (module.board.contours.circles, query_circle'access);
+		if module.board.contours.outline.contours.circular then
+
+			draw_circle (
+				area		=> in_area,
+				context		=> context,
+				circle		=> module.board.contours.outline.contours.circle,
+				filled		=> NO, -- circles in outline are never filled
+				width		=> et_packages.pcb_contour_line_width,
+				height		=> self.frame_height);
+			
+		else
+			iterate (module.board.contours.outline.contours.segments, query_segment'access);
+		end if;
+		
 		iterate (module.board.contours.texts, query_text'access);
 		
-	end query_segments;
+	end query_outline_segments;
 	
 begin -- draw_outline
 -- 	put_line ("draw board outline ...");
 	
 	pac_generic_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
-		process		=> query_segments'access);
+		process		=> query_outline_segments'access);
 
 	draw_text_being_placed_in_outline (self, in_area, context);
+
+	-- CS draw holes
 	
 end draw_outline;
 

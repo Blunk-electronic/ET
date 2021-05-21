@@ -1161,10 +1161,6 @@ is
 
 		use et_packages.pac_conductor_texts;
 
-		use et_pcb.pac_pcb_contour_lines;
-		use et_pcb.pac_pcb_contour_arcs;
-		use et_pcb.pac_pcb_contour_circles;
-		
 		-- general stuff
 		use pac_text_placeholders_conductors;
 		procedure write_placeholder (cursor : in et_pcb.pac_text_placeholders.cursor) is
@@ -1569,12 +1565,17 @@ is
 		section_mark (section_conductor, FOOTER);
 
 		-- BOARD CONTOUR
+
+		-- outline
 		section_mark (section_pcb_contours, HEADER);
-			iterate (element (module_cursor).board.contours.lines, write_line'access);
-			iterate (element (module_cursor).board.contours.arcs, write_arc'access);
-			iterate (element (module_cursor).board.contours.circles, write_circle'access);
-			iterate (element (module_cursor).board.contours.texts, write_text'access);
+			--iterate (element (module_cursor).board.contours.lines, write_line'access);
+			--iterate (element (module_cursor).board.contours.arcs, write_arc'access);
+			--iterate (element (module_cursor).board.contours.circles, write_circle'access);
+			--iterate (element (module_cursor).board.contours.texts, write_text'access);
 		section_mark (section_pcb_contours, FOOTER);
+
+		-- holes
+		-- CS
 		
 		---BOARD END-----
 		section_mark (section_board, FOOTER);

@@ -1413,6 +1413,19 @@ package et_geometry is
 			return count_type;
 
 
+		type type_dimensions is record
+			greatest : type_point := far_lower_left;
+			smallest : type_point := far_upper_right;
+		end record;
+		
+		-- Returns the greatest and smallest x and y values
+		-- used by the polygon:
+		function get_dimensions (
+			polygon : in type_polygon_base)
+			return type_dimensions;
+
+
+		
 		-- Transposes a polygon in Y direction.
 		-- Each point of each segment gets shifted by
 		-- the formula new_y = offset - old_y:

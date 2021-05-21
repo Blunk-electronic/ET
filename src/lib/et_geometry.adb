@@ -3506,6 +3506,78 @@ package body et_geometry is
 			end if;
 		end get_segments_total;
 
+		function get_dimensions (
+			polygon : in type_polygon_base)
+			return type_dimensions
+		is
+			result : type_dimensions;
+
+			procedure update_greatest_x (p : in type_point) is 
+				d : type_distance := X (p);
+			begin
+				if d > X (result.greatest) then
+					--put_line ("X" & to_string (d));
+					set (axis => X, value => d, point => result.greatest);
+				end if;
+			end update_greatest_x;
+				
+			procedure update_greatest_y (p : in type_point) is 
+				d : type_distance := Y (p);
+			begin
+				if d > Y (result.greatest) then
+					set (axis => Y, value => d, point => result.greatest);
+				end if;
+			end update_greatest_y;
+
+			procedure update_smallest_x (p : in type_point) is 
+				d : type_distance := X (p);
+			begin
+				if d < X (result.smallest) then
+					set (axis => X, value => d, point => result.smallest);
+				end if;
+			end update_smallest_x;
+				
+			procedure update_smallest_y (p : in type_point) is 
+				d : type_distance := Y (p);
+			begin
+				if d < Y (result.smallest) then
+					set (axis => Y, value => d, point => result.smallest);
+				end if;
+			end update_smallest_y;
+
+			use pac_polygon_segments;
+
+			procedure query_segment (c : in pac_polygon_segments.cursor) is 
+			begin
+				case element (c).shape is
+					when LINE =>
+						update_greatest_x (element (c).segment_line.start_point);
+						update_greatest_y (element (c).segment_line.start_point);
+						update_smallest_x (element (c).segment_line.start_point);
+						update_smallest_y (element (c).segment_line.start_point);
+
+						update_greatest_x (element (c).segment_line.end_point);
+						update_greatest_y (element (c).segment_line.end_point);
+						update_smallest_x (element (c).segment_line.end_point);
+						update_smallest_y (element (c).segment_line.end_point);
+
+					when ARC =>
+						null;
+
+				end case;
+			end query_segment;
+			
+		begin
+			if polygon.contours.circular then
+				null;
+			else
+				iterate (polygon.contours.segments, query_segment'access);
+			end if;
+			
+			return result;
+		end get_dimensions;
+
+		
 		procedure transpose_polygon (
 			polygon	: in out type_polygon_base'class;
 			offset	: in type_distance)

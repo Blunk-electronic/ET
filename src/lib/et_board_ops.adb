@@ -2770,29 +2770,27 @@ package body et_board_ops is
 
 	procedure draw_outline_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		line			: in et_pcb.type_pcb_contour_line;
-		log_threshold	: in type_log_level) is
-
+		line_add		: in type_line;
+		log_threshold	: in type_log_level)
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.pac_pcb_contour_lines;
+			module		: in out type_module) 
+		is 
+			use pac_polygon_segments;
 		begin
 			append (
-				container	=> module.board.contours.lines,
-				new_item	=> line);
+				container	=> module.board.contours.outline.contours.segments,
+				new_item	=> (LINE, line_add));
 		end;
 							   
 	begin -- draw_outline_line
-		log (text => "module " & to_string (module_name) &
-				" drawing outline line" &
-				to_string (line),
+		log (text => "module " & to_string (module_name) 
+			 & " drawing outline line" & to_string (line_add),
 			level => log_threshold);
 
-		-- locate module
 		module_cursor := locate_module (module_name);
 		
 		update_element (
@@ -2804,29 +2802,27 @@ package body et_board_ops is
 
 	procedure draw_outline_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		arc				: in et_pcb.type_pcb_contour_arc;
-		log_threshold	: in type_log_level) is
-
+		arc_add			: in type_arc;
+		log_threshold	: in type_log_level)
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.pac_pcb_contour_arcs;
+			module		: in out type_module) 
+		is
+			use pac_polygon_segments;
 		begin
 			append (
-				container	=> module.board.contours.arcs,
-				new_item	=> arc);
+				container	=> module.board.contours.outline.contours.segments,
+				new_item	=> (ARC, arc_add));
 		end;
 							   
 	begin -- draw_outline_arc
-		log (text => "module " & to_string (module_name) &
-				" drawing outline arc" &
-				to_string (arc),
+		log (text => "module " & to_string (module_name) 
+			 & " drawing outline arc" & to_string (arc_add),
 			level => log_threshold);
 
-		-- locate module
 		module_cursor := locate_module (module_name);
 		
 		update_element (
@@ -2837,31 +2833,24 @@ package body et_board_ops is
 	end draw_outline_arc;
 
 	procedure draw_outline_circle (
-	-- Draws a circle in the PCB outline.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		circle			: in et_pcb.type_pcb_contour_circle;
-		log_threshold	: in type_log_level) is
-
+		circle_add		: in type_circle;
+		log_threshold	: in type_log_level)
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.pac_pcb_contour_circles;
-		begin
-			append (
-				container	=> module.board.contours.circles,
-				new_item	=> circle);
+			module		: in out type_module)
+		is begin
+			module.board.contours.outline.contours.circle := circle_add;
 		end;
 							   
 	begin -- draw_outline_circle
-		log (text => "module " & to_string (module_name) &
-				" drawing outline circle" &
-				to_string (circle),
+		log (text => "module " & to_string (module_name) 
+			 & " drawing outline circle" & to_string (circle_add),
 			level => log_threshold);
 
-		-- locate module
 		module_cursor := locate_module (module_name);
 		
 		update_element (
@@ -2875,75 +2864,70 @@ package body et_board_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_point; -- x/y
 		accuracy		: in type_catch_zone;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level)
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-
-			use et_pcb.pac_pcb_contour_lines;
-			use et_pcb.pac_pcb_contour_arcs;
-			use et_pcb.pac_pcb_contour_circles;
-			line_cursor   : et_pcb.pac_pcb_contour_lines.cursor   := module.board.contours.lines.first;
-			arc_cursor    : et_pcb.pac_pcb_contour_arcs.cursor    := module.board.contours.arcs.first;
-			circle_cursor : et_pcb.pac_pcb_contour_circles.cursor := module.board.contours.circles.first;
-
+			module		: in out type_module) 
+		is			
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
-		begin
-			-- first search for a matching segment among the lines
-			while line_cursor /= et_pcb.pac_pcb_contour_lines.no_element loop
-				if on_line (point, element (line_cursor), accuracy) then
-					delete (module.board.contours.lines, line_cursor);
+
+			procedure delete_segment is 
+				use pac_polygon_segments;
+				c : pac_polygon_segments.cursor;
+			begin
+				c := module.board.contours.outline.contours.segments.first;
+				
+				while c /= pac_polygon_segments.no_element loop
+
+					case element (c).shape is
+						when LINE =>
+							if on_line (point, element (c).segment_line, accuracy) then
+								delete (module.board.contours.outline.contours.segments, c);
+								deleted := true;
+								exit; -- CS no exit if all segments are to be deleted
+							end if;
+
+						when ARC =>
+							if on_arc (point, element (c).segment_arc, accuracy) then
+								delete (module.board.contours.outline.contours.segments, c);
+								deleted := true;
+								exit; -- CS no exit if all segments are to be deleted
+							end if;
+
+					end case;
+					
+					next (c);
+				end loop;
+			end delete_segment;
+
+			procedure delete_circle is begin
+				if on_circle (point, module.board.contours.outline.contours.circle, accuracy) then					
+					module.board.contours.outline.contours := (others => <>);					
 					deleted := true;
-					exit;
 				end if;
-				next (line_cursor);
-			end loop;
-
-			-- if no line found, search among arcs
-			if not deleted then
-				while arc_cursor /= et_pcb.pac_pcb_contour_arcs.no_element loop
-					
-					if on_arc (point, element (arc_cursor), accuracy) then
-						delete (module.board.contours.arcs, arc_cursor);
-						deleted := true;
-						exit;
-					end if;
-					
-					next (arc_cursor);
-				end loop;
-			end if;
-
-			-- if no arc found, search among circles
-			if not deleted then
-				while circle_cursor /= et_pcb.pac_pcb_contour_circles.no_element loop
-					
-					if on_circle (point, element (circle_cursor), accuracy) then
-						delete (module.board.contours.circles, circle_cursor);
-						deleted := true;
-						exit;
-					end if;
-					
-					next (circle_cursor);
-				end loop;
-			end if;
-
-			if not deleted then
-				no_segment_found (point, accuracy);
+			end delete_circle;
+			
+		begin -- delete
+			if module.board.contours.outline.contours.circular then
+				delete_circle;				
+			else
+				delete_segment;
 			end if;
 			
+			if not deleted then
+				no_segment_found (point, accuracy);
+			end if;			
 		end delete;
 		
 	begin -- delete_outline
-		log (text => "module " & to_string (module_name) &
-			" deleting outline segment" &
-			" at" & to_string (point) &
-			" accuracy" & to_string (accuracy),
+		log (text => "module " & to_string (module_name) 
+			& " deleting outline segment at" & to_string (point) 
+			& " accuracy" & to_string (accuracy),
 			level => log_threshold);
 
-		-- locate module
 		module_cursor := locate_module (module_name);
 
 		update_element (
@@ -2953,6 +2937,7 @@ package body et_board_ops is
 		
 	end delete_outline;
 
+	
 -- SILK SCREEN
 
 	procedure draw_silk_screen_line (

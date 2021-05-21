@@ -1319,34 +1319,34 @@ package body et_pcb_rw is
 
 	
 -- BOARD CONTOUR
-	procedure write_line (cursor : in et_pcb.pac_pcb_contour_lines.cursor) is 
-		use et_pcb;
-		use et_pcb.pac_pcb_contour_lines;
-	begin
-		line_begin;
-		write_line (element (cursor));
-		write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
-		line_end;
-	end write_line;
+	--procedure write_line (cursor : in et_pcb.pac_pcb_contour_lines.cursor) is 
+		--use et_pcb;
+		--use et_pcb.pac_pcb_contour_lines;
+	--begin
+		--line_begin;
+		--write_line (element (cursor));
+		--write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
+		--line_end;
+	--end write_line;
 	
-	procedure write_arc (cursor : in et_pcb.pac_pcb_contour_arcs.cursor) is 
-		use et_pcb;
-		use et_pcb.pac_pcb_contour_arcs;
-	begin
-		arc_begin;
-		write_arc (element (cursor));
-		write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
-		arc_end;
-	end write_arc;
+	--procedure write_arc (cursor : in et_pcb.pac_pcb_contour_arcs.cursor) is 
+		--use et_pcb;
+		--use et_pcb.pac_pcb_contour_arcs;
+	--begin
+		--arc_begin;
+		--write_arc (element (cursor));
+		--write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
+		--arc_end;
+	--end write_arc;
 
-	procedure write_circle (cursor : in et_pcb.pac_pcb_contour_circles.cursor) is 
-		use et_pcb;
-		use et_pcb.pac_pcb_contour_circles;
-	begin
-		circle_begin;
-		write_circle (element (cursor));
-		write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
-		circle_end;
-	end write_circle;
+	--procedure write_circle (cursor : in et_pcb.pac_pcb_contour_circles.cursor) is 
+		--use et_pcb;
+		--use et_pcb.pac_pcb_contour_circles;
+	--begin
+		--circle_begin;
+		--write_circle (element (cursor));
+		--write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
+		--circle_end;
+	--end write_circle;
 	
 end et_pcb_rw;

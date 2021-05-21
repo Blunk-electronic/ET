@@ -88,485 +88,13 @@ package body et_pcb is
 	end to_meaning;
 
 
-	function get_dimensions (
-		contours		: in type_pcb_contours)
-		return type_dimensions
-	is
-		use et_geometry;
-		
-		result : type_dimensions;
-
-		procedure update_greatest_x (p : in type_point) is 
-			d : type_distance := X (p);
-		begin
-			if d > X (result.greatest) then
-				--put_line ("X" & to_string (d));
-				set (axis => X, value => d, point => result.greatest);
-			end if;
-		end update_greatest_x;
-			
-		procedure update_greatest_y (p : in type_point) is 
-			d : type_distance := Y (p);
-		begin
-			if d > Y (result.greatest) then
-				set (axis => Y, value => d, point => result.greatest);
-			end if;
-		end update_greatest_y;
-
-		procedure update_smallest_x (p : in type_point) is 
-			d : type_distance := X (p);
-		begin
-			if d < X (result.smallest) then
-				set (axis => X, value => d, point => result.smallest);
-			end if;
-		end update_smallest_x;
-			
-		procedure update_smallest_y (p : in type_point) is 
-			d : type_distance := Y (p);
-		begin
-			if d < Y (result.smallest) then
-				set (axis => Y, value => d, point => result.smallest);
-			end if;
-		end update_smallest_y;
-
-		
-		use pac_pcb_contour_lines;
-		use pac_pcb_contour_arcs;
-		--use pac_pcb_contour_circles;
-
-		procedure query_line (c : in pac_pcb_contour_lines.cursor) is 
-		begin
-			update_greatest_x (element (c).start_point);
-			update_greatest_y (element (c).start_point);
-			update_smallest_x (element (c).start_point);
-			update_smallest_y (element (c).start_point);
-
-			update_greatest_x (element (c).end_point);
-			update_greatest_y (element (c).end_point);
-			update_smallest_x (element (c).end_point);
-			update_smallest_y (element (c).end_point);
-		end query_line;
-		
-	begin
-		iterate (contours.lines, query_line'access);
-		-- CS arcs, circles
-		
-		return result;
-	end get_dimensions;
-	
 	function on_board (
 		point			: in type_point;
 		contours		: in type_pcb_contours;
 		log_threshold 	: in type_log_level)
 		return type_inside_polygon_query_result
 	is 
-		-- This function bases on the algorithm published at
-		-- <http://www.alienryderflex.com/polygon//>
-		-- The algorithm has further been extended to detect intersections
-		-- with arcs and even circles.
-		
-		-- The approach to detect whether the given point lies inside or outside the
-		-- board area is as follows:
-		-- 1. Build a probe line (starting at point) that runs at zero degrees
-		--    to the right. The probe line divides the area in two: an upper half and a
-		--    lower half. Special situations arise if objects start or end exactly at
-		--    the probe line.
-		-- 2. The number of intersections then tells us:
-		--    - odd -> point is inside board area
-		--    - zero or even -> point is outside board area
-
-		result : type_inside_polygon_query_result := (start => point, others => <>);
-
-		line : constant type_line := (
-				start_point	=> point,
-				end_point	=> type_point (set (X (point) + 1.0, Y (point))));
-		
-		probe_line : constant type_line_vector := to_line_vector (line);
-
-		-- For segments that end or start exactly on the Y value of the probe line
-		-- we define a threshold:
-		y_threshold : constant type_distance := Y (point);
-
-		-- This is the variable for the number of intersections detected.
-		-- From this number we will later deduce the position of the given point,
-		-- means whether it is inside or outside the board area:
-		it : count_type := 0;
-		
-		-- This procedure iterates lines, arcs and circles of the given
-		-- contours and counts the intersections of the probe line
-		-- with each of them:
-		procedure find_intersections is 
-			use pac_probe_line_intersections;
-
-			-- This procedure collects the intersection in the return value.
-			-- NOTE: The angle of intersection with the board contour can be 
-			-- greater 90 degrees, which is
-			-- an obtuse angle (German: "stumpfer Winkel"). 
-			-- For computing the clearance between objects (tracks. fill lines, vias, ...)
-			-- and the board contours
-			-- we are interested in the acute portion (german: "spitzer Winkel") of the 
-			-- intersection. So we must subtract 180 degrees in case it is greater 90 degrees.
-			-- See: <https://www.splashlearn.com/math-vocabulary/geometry/acute-angle/> for
-			-- terminology:
-			procedure collect_intersection (
-				intersection: in type_intersection; -- incl. point and angle
-				curvature	: in type_curvature := STRAIGHT;
-				center		: in type_point := origin;
-				radius		: in type_distance_positive := zero)
-			is 
-				angle_sub : type_rotation := subtract_180_if_greater_90 (intersection.angle);
-			begin
-				log (text => " intersects at"
-					& to_string (to_point (intersection.point)) 
-					& " angle" & to_string (intersection.angle)
-					& " curvature " & type_curvature'image (curvature),
-					level => log_threshold + 2);
-
-				case curvature is
-					when STRAIGHT =>
-						
-						append (result.intersections, (
-							x_position	=> X (to_point (intersection.point)),
-							angle		=> angle_sub,
-							curvature	=> STRAIGHT
-							));
-
-					when CONVEX =>
-
-						append (result.intersections, (
-							x_position	=> X (to_point (intersection.point)),
-							angle		=> angle_sub,
-							curvature	=> CONVEX,
-							center		=> center,
-							radius		=> radius
-							));
-
-					when CONCAVE =>
-
-						append (result.intersections, (
-							x_position	=> X (to_point (intersection.point)),
-							angle		=> angle_sub,
-							curvature	=> CONCAVE,
-							center		=> center,
-							radius		=> radius
-							));
-				end case;
-			end collect_intersection;
-	
-
-			
-			use pac_pcb_contour_lines;
-			use pac_pcb_contour_arcs;
-			use pac_pcb_contour_circles;
-			
-			procedure query_line (c : in pac_pcb_contour_lines.cursor) is
-				-- Find out whether there is an intersection of the probe line
-				-- and the candidate line of the contour.
-				i : constant type_intersection_of_two_lines := 
-					get_intersection (probe_line, element (c));
-			
-			begin -- query_line				
-				log (text => "probing" & to_string (element (c)), level => log_threshold + 2);
-				
-				if i.status = EXISTS then
-
-					-- If the candidate line segment crosses the y_threshold then 
-					-- count the intersection:
-					if crosses_threshold (element (c), y_threshold) then
-						
-						--log (text => " intersects line"
-							--& " at" & to_string (i.intersection),
-							--level => log_threshold + 2);
-
-						-- Add the intersection to the result:
-						collect_intersection (
-							intersection	=> i.intersection);
-						
-					end if;
-				end if;
-			end query_line;
-
-			procedure query_arc (c : in pac_pcb_contour_arcs.cursor) is
-
-				-- the candidate arc:
-				arc : constant type_pcb_contour_arc := element (c);
-
-				-- the radius of the arc:
-				radius : constant type_distance_positive := radius_start (arc);
-				
-				-- Find out whether there is an intersection of the probe line
-				-- and the candidate arc of the contour.
-				i : constant type_intersection_of_line_and_circle := 
-					get_intersection (probe_line, arc);
-
-				-- In case we get two intersections (which speaks for a secant)
-				-- then they need to be ordered according to their distance to
-				-- the start point of the probe line (starts at given point);
-				ordered_intersections : type_ordered_line_circle_intersections;
-
-				--procedure count_one is begin
-					----log (text => " intersects arc" --& to_string (arc)
-							----& " at" & to_string (i.intersection),
-						----level => log_threshold + 2);
-
-					---- Add the intersection to the result:
-					--collect_intersection (i.intersection);
-				--end count_one;
-
-				-- Collects the entry and exit point:
-				procedure count_two is begin
-
-					--log (text => " intersects arc" --& to_string (arc)
-							--& " at" & to_string (i.intersection_1)
-							--& " and" & to_string (i.intersection_2),
-						--level => log_threshold + 2);
-
-					collect_intersection (
-						intersection=> ordered_intersections.entry_point,	
-						curvature	=> CONVEX, -- entry point is always convex
-						center		=> arc.center,
-						radius		=> radius);
-
-					collect_intersection (
-						intersection=> ordered_intersections.exit_point,	
-						curvature	=> CONCAVE, -- exit point is always concave
-						center		=> arc.center,
-						radius		=> radius);
-					
-				end count_two;
-				
-			begin -- query_arc		
-				log (text => "probing " & to_string (arc), level => log_threshold + 2);
-				
-				case i.status is
-					when NONE_EXIST => null;
-						--log (text => "none", level => log_threshold + 2);
-					
-					when ONE_EXISTS =>
-						case i.tangent_status is
-							when TANGENT => null; -- not counted
-								--log (text => "tangent", level => log_threshold + 2);
-							
-							when SECANT =>
-								--log (text => "secant", level => log_threshold + 2);
-								
-								if crosses_threshold (arc, y_threshold) then
-									-- The line intersects the arc at one point.
-									-- Start and end point of the arc are opposide 
-									-- of each other with the probe line betweeen them:
-
-									collect_intersection (
-										intersection	=> i.intersection,	
-
-										-- If there is only one intersection, deduce
-										-- the curvature at the point of intersection:
-										curvature		=> get_curvature (arc), -- depends on CW/CCW
-										
-										center			=> arc.center,
-										radius			=> radius);
-									
-								end if;
-						end case;
-
-					when TWO_EXIST =>
-						--log (text => "two exist", level => log_threshold + 2);
-						
-						-- Order the intersections by their distance to the start point
-						-- of the probe line:
-						ordered_intersections := order_intersections (
-							start_point		=> point,
-							intersections	=> i);
-							
-						if Y (arc.start_point) /= y_threshold then
-							-- Since we have TWO intersections, the end point of the arc
-							-- must be in the same half as the start point of the arc.
-							-- The arc crosses the threshold line twice:
-							count_two;
-							
-						else
-							-- Special case: Start or end point of arc lies exactly
-							-- at the probe line.
-							
-							-- If start or end point of the candidate arc is ABOVE-OR-ON the 
-							-- threshold then we consider the arc to be threshold-crossing.
-							-- The remaining question is: How often does the arc intersect
-							-- the probe line ?
-
-							-- If start point at probe line:
-							if Y (arc.start_point) = y_threshold then
-
-								-- If the arc starts ON the probe line and ends ABOVE
-								-- the probe line, then it runs first downwards through the lower half,
-								-- goes up, crosses the threshold at point P and ends somewhere 
-								-- in the upper half:
-								if Y (arc.end_point) > y_threshold then
-
-									-- Count the point P as intersection:
-									case arc.direction is
-										when CCW => 
-											collect_intersection (
-												intersection=> ordered_intersections.exit_point,	
-												curvature	=> CONCAVE, -- exit point is always concave
-												center		=> arc.center,
-												radius		=> radius);
-
-										when CW => 
-											collect_intersection (
-												intersection=> ordered_intersections.entry_point,	
-												curvature	=> CONVEX, -- entry point is always convex
-												center		=> arc.center,
-												radius		=> radius);
-									end case;
-											
-								-- If the arc starts ON the probe line and ends BELOW
-								-- the probe line, then it runs first upwards through the upper half,
-								-- goes down, crosses the threshold at point P1 and ends somewhere 
-								-- in the lower half.
-								elsif Y (arc.end_point) < y_threshold then
-
-									-- Count the start point and point P1 as intersections:
-									count_two;
-								end if;
-
-								
-							-- If end point at probe line:
-							elsif Y (arc.end_point) = y_threshold then
-
-								-- If the arc starts somewhere in the upper half, then it runs
-								-- down, crosses the threshold at point P, runs through the 
-								-- lower half, goes up and ends ON the threshold line:
-								if Y (arc.start_point) > y_threshold then
-
-									-- Count the point P as intersection:
-									case arc.direction is
-										when CCW => 
-											collect_intersection (
-												intersection=> ordered_intersections.entry_point,	
-												curvature	=> CONVEX, -- entry point is always convex
-												center		=> arc.center,
-												radius		=> radius);
-
-										when CW => 
-											collect_intersection (
-												intersection=> ordered_intersections.exit_point,	
-												curvature	=> CONCAVE, -- exit point is always concave
-												center		=> arc.center,
-												radius		=> radius);
-									end case;
-								
-
-								-- If the arc starts somewhere in the lower half, then it runs
-								-- up, crosses the threshold at point P, runs through the
-								-- upper half, goes down and ends ON the threshold line:
-								elsif Y (arc.start_point) < y_threshold then
-
-									-- Count the end point and point P as intersections:
-									count_two;
-								end if;
-								
-							end if;
-						end if;
-					
-				end case;
-			end query_arc;
-
-			procedure query_circle (c : in pac_pcb_contour_circles.cursor) is
-				-- Find out whether there is an intersection of the probe line
-				-- and the candidate circle of the contour.
-				i : constant type_intersection_of_line_and_circle := 
-					get_intersection (probe_line, element (c));
-
-				-- In case we get two intersections (which speaks for a secant)
-				-- then they need to be ordered according to their distance to
-				-- the start point of the probe line (starts at given point);
-				ordered_intersections : type_ordered_line_circle_intersections;
-				
-			begin				
-				log (text => "probing" & to_string (element (c)), level => log_threshold + 2);
-				
-				case i.status is
-					when NONE_EXIST | ONE_EXISTS => null;
-						-- NOTE: If the probe line is a tangent to the
-						-- circle, then we threat this NOT as intersection.
-					
-					when TWO_EXIST =>
-						-- The probe line intersects the circle at two points:
-
-						-- Order the intersections by their distance to the start point:
-						ordered_intersections := order_intersections (
-							start_point		=> point,
-							intersections	=> i);
-
-						
-						--log (text => " intersects circle" -- & to_string (element (c))
-							 --& " at" & to_string (i.intersection_1)
-							 --& " and" & to_string (i.intersection_2),
-							--level => log_threshold + 2);
-
-						-- Add the intersections to the result:
-						collect_intersection (
-							intersection=> ordered_intersections.entry_point,	
-							curvature	=> CONVEX, -- entry point is always convex
-							center		=> element (c).center,
-							radius		=> element (c).radius);
-
-						collect_intersection (
-							intersection=> ordered_intersections.exit_point,	
-							curvature	=> CONCAVE, -- exit point is always concave
-							center		=> element (c).center,
-							radius		=> element (c).radius);
-							
-				end case;
-			end query_circle;
-			
-		begin -- find_intersections			
-			log (text => "lines ...", level => log_threshold + 2);
-			log_indentation_up;
-			iterate (contours.lines, query_line'access);
-			log_indentation_down;
-
-			log (text => "arcs ...", level => log_threshold + 2);
-			log_indentation_up;
-			iterate (contours.arcs, query_arc'access);
-			log_indentation_down;
-
-			log (text => "circles ...", level => log_threshold + 2);
-			log_indentation_up;
-			iterate (contours.circles, query_circle'access);
-			log_indentation_down;
-
-		end find_intersections;
-
-		-- This procedure logs the x-intersections if the current
-		-- log level exceedes the given log level.
-		procedure collect_intersection is 
-			use ada.strings.unbounded;
-			use pac_probe_line_intersections;
-
-			x_intersections : unbounded_string := to_unbounded_string ("x/angle:");
-			
-			procedure query_intersection (
-				c : pac_probe_line_intersections.cursor) 
-			is begin
-				x_intersections := x_intersections & to_string (element (c).x_position)
-					& "/" & trim (to_string (element (c).angle), left);
-			end query_intersection;
-						
-		begin
-			if log_level > log_threshold + 1 then
-				iterate (result.intersections, query_intersection'access);
-
-				log (text => to_string (x_intersections));
-			end if;
-			
-		end collect_intersection;
-
-		procedure sort_intersections is
-			package pac_sort_intersections is new pac_probe_line_intersections.generic_sorting;
-			use pac_sort_intersections;
-		begin
-			sort (result.intersections);
-		end sort_intersections;
+		outline : type_inside_polygon_query_result;
 		
 	begin -- on_board		
 		log (text => "determining position of point" & to_string (point)
@@ -574,51 +102,16 @@ package body et_pcb is
 
 		log_indentation_up;
 
-		log (text => "using a probe line: start" 
-			 & to_string (to_point (probe_line.v_start))
-			 & " direction 0 degrees ...", 
-			 level => log_threshold + 1);
-			
-		log (text => "counting intersections of probe line with board outline ...",
-			 level => log_threshold + 1);
+		-- CS currently we look at the outline only. cutouts ignored.
+		outline := in_polygon_status (contours.outline, point);
 
-		log_indentation_up;
-		
-		-- Find the intersections of the probe line with the
-		-- segments of the board countour:
-		find_intersections;
+		--holes := in_polygon_status (contours.holes, point);
 
-		-- The intersections are not sorted yet. We need them sorted with the
-		-- smallest x first:
-		sort_intersections;
+		log (text => "point is " & to_string (outline.status), level => log_threshold);
 		
 		log_indentation_down;
 
-		-- get the total number of intersections
-		it := pac_probe_line_intersections.length (result.intersections);
-		
-		log (text => "intersections total:" & count_type'image (it), level => log_threshold + 1);
-
-		-- Log intersections where the probe line intersects the board contours
-		-- to the right of the given point:
-		if it > 0 then
-			collect_intersection;
-		end if;
-		
-		log_indentation_down;
-
-		-- If the total number of intersections is an odd number, then the given point
-		-- is on the board.
-		-- If the total is even, then the point is outside the board area.
-		if (it rem 2) = 1 then
-			log (text => "point IS on board", level => log_threshold);
-			result.status := INSIDE; -- point is in usable board area 
-		else 
-			log (text => "point is NOT on board", level => log_threshold);
-			result.status := OUTSIDE; -- point is outside board area
-		end if;
-		
-		return result;
+		return outline;
 	end on_board;
 
 	
@@ -763,46 +256,37 @@ package body et_pcb is
 
 		
 
--- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
-	procedure line_pcb_contour_properties (
-	-- Logs the properties of the given line of pcb contour
-		cursor			: in pac_pcb_contour_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use pac_pcb_contour_lines;
-		line : type_pcb_contour_line;
-	begin
-		line := element (cursor);
-		log (text => "PCB contour (edge cuts / outline) line" & latin_1.space
-			 & to_string (type_line (line)), level => log_threshold);
-			-- CS lock status
-	end line_pcb_contour_properties;
 
-	procedure arc_pcb_contour_properties (
-	-- Logs the properties of the given arc of pcb contour
-		cursor			: in pac_pcb_contour_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use pac_pcb_contour_arcs;
-		arc : type_pcb_contour_arc;
-	begin
-		arc := element (cursor);
-		log (text => "PCB contour (edge cuts / outline) arc" & latin_1.space 
-			 & to_string (type_arc (arc)), level => log_threshold);
-			-- CS lock status
-	end arc_pcb_contour_properties;
 
-	procedure circle_pcb_contour_properties (
-	-- Logs the properties of the given circle of pcb contour
-		cursor			: in pac_pcb_contour_circles.cursor;
-		log_threshold 	: in et_string_processing.type_log_level) is
-		use pac_pcb_contour_circles;
-		circle : type_pcb_contour_circle;
+	procedure pcb_contour_segment_properties (
+		cursor			: in pac_polygon_segments.cursor;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is 
+		use pac_polygon_segments;
 	begin
-		circle := element (cursor);
-		log (text => "PCB contour (edge cuts / outline) circle" & latin_1.space 
-			 & to_string (type_circle (circle)), level => log_threshold);
-			-- CS lock status
-	end circle_pcb_contour_properties;
+		case element (cursor).shape is
+			when LINE =>
+				log (text => "PCB contour (edge cuts / outline) line" & space
+					 & to_string (element (cursor).segment_line),
+					 level => log_threshold);
 
+			when ARC =>
+				log (text => "PCB contour (edge cuts / outline) arc" & space
+					 & to_string (element (cursor).segment_arc),
+					 level => log_threshold);
+				
+		end case;
+	end pcb_contour_segment_properties;
+
+	procedure pcb_contour_circle_properties (
+		circle			: in type_circle;
+		log_threshold 	: in et_string_processing.type_log_level)
+	is begin
+		log (text => "PCB contour (edge cuts / outline) circle" & space 
+			 & to_string (circle),
+			 level => log_threshold);
+	end pcb_contour_circle_properties;
+	
 
 	
 end et_pcb;

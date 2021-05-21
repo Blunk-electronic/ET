@@ -3304,6 +3304,7 @@ package body et_kicad.pcb is
 
 			procedure insert_board_arc is 
 				use et_packages;
+				use pac_polygon_segments;
 			begin
 				-- Compute the arc end point from its center, start point and angle.
 				-- Later the angle is discarded.
@@ -3370,8 +3371,8 @@ package body et_kicad.pcb is
 						arc_keepout_properties (BOTTOM, board.keepout.bottom.arcs.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
-						board.contours.arcs.append ((pac_shapes.type_arc (board_arc) with locked => NO));
-						arc_pcb_contour_properties (board.contours.arcs.last, log_threshold + 1);
+						append (board.contours.outline.contours.segments, (ARC, pac_shapes.type_arc (board_arc)));
+						pcb_contour_segment_properties (board.contours.outline.contours.segments.last, log_threshold + 1);
 						
 					when others => invalid_layer;
 				end case;
@@ -3379,6 +3380,7 @@ package body et_kicad.pcb is
 
 			procedure insert_board_circle is 
 				use et_packages;
+				use pac_polygon_segments;
 			begin
 				-- Compute the circle radius from its center and point at circle.
 				-- Later the angle is discarded.
@@ -3450,8 +3452,9 @@ package body et_kicad.pcb is
 						circle_keepout_properties (BOTTOM, board.keepout.bottom.circles.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
-						board.contours.circles.append ((pac_shapes.type_circle (board_circle) with locked => NO));
-						circle_pcb_contour_properties (board.contours.circles.last, log_threshold + 1);
+						board.contours.outline.contours.circle := pac_shapes.type_circle (board_circle);
+						pcb_contour_circle_properties (board.contours.outline.contours.circle, log_threshold + 1);
+						
 						
 					when others => invalid_layer;
 				end case;
@@ -3460,6 +3463,7 @@ package body et_kicad.pcb is
 
 			procedure insert_board_line is 
 				use et_packages;
+				use pac_polygon_segments;
 			begin
 				-- The board_line is converted back to its anchestor, and
 				-- depending on the layer, extended with specific properties.
@@ -3517,9 +3521,10 @@ package body et_kicad.pcb is
 
 						
 					when EDGE_CUTS =>
-						board.contours.lines.append ((pac_shapes.type_line (board_line) with locked => NO));
-						line_pcb_contour_properties (board.contours.lines.last, log_threshold + 1);
+						append (board.contours.outline.contours.segments, (LINE, pac_shapes.type_line (board_line)));
+						pcb_contour_segment_properties (board.contours.outline.contours.segments.last, log_threshold + 1);
 
+						
 					when others => invalid_layer;
 				end case;
 					

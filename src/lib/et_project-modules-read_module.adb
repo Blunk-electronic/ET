@@ -4146,9 +4146,12 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					pac_pcb_contour_lines.append (
-						container	=> module.board.contours.lines,
-						new_item	=> (et_board_shapes_and_text.pac_shapes.type_line (board_line) with board_lock_status));
+					null;
+
+					-- CS
+					--pac_pcb_contour_lines.append (
+						--container	=> module.board.contours.lines,
+						--new_item	=> (et_board_shapes_and_text.pac_shapes.type_line (board_line) with board_lock_status));
 				end do_it;
 									
 			begin -- insert_line_contour
@@ -4169,9 +4172,12 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					pac_pcb_contour_arcs.append (
-						container	=> module.board.contours.arcs,
-						new_item	=> (et_board_shapes_and_text.pac_shapes.type_arc (board_arc) with board_lock_status));
+					null;
+					
+					-- CS
+					--pac_pcb_contour_arcs.append (
+						--container	=> module.board.contours.arcs,
+						--new_item	=> (et_board_shapes_and_text.pac_shapes.type_arc (board_arc) with board_lock_status));
 				end do_it;
 									
 			begin -- insert_arc_contour
@@ -4192,9 +4198,12 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					pac_pcb_contour_circles.append (
-						container	=> module.board.contours.circles,
-						new_item	=> (et_board_shapes_and_text.pac_shapes.type_circle (board_circle) with board_lock_status));
+					null;
+
+					-- CS
+					--pac_pcb_contour_circles.append (
+						--container	=> module.board.contours.circles,
+						--new_item	=> (et_board_shapes_and_text.pac_shapes.type_circle (board_circle) with board_lock_status));
 				end do_it;
 									
 			begin -- insert_circle_contour

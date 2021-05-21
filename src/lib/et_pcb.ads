@@ -165,48 +165,36 @@ package et_pcb is
 
 	
 -- CONTOUR / OUTLINE / EDGE CUTS
-	type type_pcb_contour_line is new type_line with record
-		locked : type_locked := type_locked'first;
-	end record;
-	package pac_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
+	--type type_pcb_contour_line is new type_line with record
+		--locked : type_locked := type_locked'first;
+	--end record;
+	--package pac_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
 
 	
-	type type_pcb_contour_arc is new type_arc with record
-		locked : type_locked := type_locked'first;
-	end record;
-	package pac_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
+	--type type_pcb_contour_arc is new type_arc with record
+		--locked : type_locked := type_locked'first;
+	--end record;
+	--package pac_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
 
 	
-	type type_pcb_contour_circle is new type_circle with record
-		locked : type_locked := type_locked'first;
-	end record;
-	package pac_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
+	--type type_pcb_contour_circle is new type_circle with record
+		--locked : type_locked := type_locked'first;
+	--end record;
+	--package pac_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
 
 	
 	type type_pcb_contours is record -- PCB contour defined for the PCB as a whole
-		lines 	: pac_pcb_contour_lines.list;
-		arcs	: pac_pcb_contour_arcs.list;
-		circles	: pac_pcb_contour_circles.list;
-		--holes	: pac_pcb_cutouts.list;
+		outline	: type_polygon;
+		holes	: pac_pcb_cutouts.list;
 		texts	: pac_texts_with_content.list;
 	end record;
 
 	-- CS
 	-- The DRC shall:
 	-- - detect gaps in outline
-	-- - detect texts in outline and output an error if texts are
-	--   inside the board area.
+	-- - detect texts inside board area and output an error
 
-	type type_dimensions is record
-		greatest : type_point := far_lower_left;
-		smallest : type_point := far_upper_right;
-	end record;
 
-	-- Returns the greatest and smallest x and y values
-	-- used by the board contours:
-	function get_dimensions (
-		contours		: in type_pcb_contours)
-		return type_dimensions;
 
 
 	
@@ -403,23 +391,19 @@ package et_pcb is
 		cursor			: in pac_vias.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
-	
-	procedure line_pcb_contour_properties (
-	-- Logs the properties of the given line of pcb contour
-		cursor			: in pac_pcb_contour_lines.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
 
-	procedure arc_pcb_contour_properties (
-	-- Logs the properties of the given arc of pcb contour
-		cursor			: in pac_pcb_contour_arcs.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
-	procedure circle_pcb_contour_properties (
-	-- Logs the properties of the given circle of pcb contour
-		cursor			: in pac_pcb_contour_circles.cursor;
+	-- Logs the properties of the given contour segment:
+	procedure pcb_contour_segment_properties (
+		cursor			: in pac_polygon_segments.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
+	-- Logs the properties of the given contour circle:
+	procedure pcb_contour_circle_properties (
+		circle			: in type_circle;
+		log_threshold 	: in et_string_processing.type_log_level);
 
+
+	
 	-- The board origin is positioned x/y away from the lower left
 	-- corner of the drawing frame.
 	-- Unless specified by operator the board origin default is:
