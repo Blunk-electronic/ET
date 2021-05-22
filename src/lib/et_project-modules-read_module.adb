@@ -4188,7 +4188,7 @@ is
 			end insert_arc_outline;
 
 			procedure insert_circle_outline is
-				
+
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) 
@@ -4210,6 +4210,30 @@ is
 				board_reset_circle;
 			end insert_circle_outline;
 
+			-- holes in PCB (or cutouts)
+			procedure append_hole is 
+				use et_packages;
+				use pac_pcb_cutouts;
+				
+				procedure do_it (
+					module_name	: in pac_module_name.bounded_string;
+					module		: in out et_schematic.type_module) 
+				is begin
+					append (
+						container 	=> module.board.contours.holes,
+						new_item	=> polygon);
+				end do_it;
+
+			begin
+				update_element (
+					container	=> generic_modules,
+					position	=> module_cursor,
+					process		=> do_it'access);
+				
+				-- clean up for next hole
+				board_reset_polygon;
+			end append_hole;
+			
 			--procedure insert_text_contour is
 				--use et_pcb;
 				
@@ -5008,7 +5032,7 @@ is
 							insert_line_outline;
 
 						when SEC_HOLE =>
-							null; -- CS
+							add_polygon_line (board_line);
 							
 						when others => invalid_section;
 					end case;
@@ -5056,7 +5080,7 @@ is
 							insert_arc_outline;
 
 						when SEC_HOLE =>
-							null; -- CS
+							add_polygon_arc (board_arc);
 							
 						when others => invalid_section;
 					end case;
@@ -5084,7 +5108,7 @@ is
 							insert_circle_outline;
 
 						when SEC_HOLE =>
-							null; -- CS
+							add_polygon_circle (board_circle);
 							
 						when others => invalid_section;
 					end case;
@@ -5562,13 +5586,15 @@ is
 
 				when SEC_OUTLINE =>
 					case stack.parent is
-						when SEC_PCB_CONTOURS_NON_PLATED => null; -- CS
+						when SEC_PCB_CONTOURS_NON_PLATED => null;
 						when others => invalid_section;
 					end case;
 
 				when SEC_HOLE =>
 					case stack.parent is
-						when SEC_PCB_CONTOURS_NON_PLATED => null; -- CS
+						when SEC_PCB_CONTOURS_NON_PLATED =>
+							append_hole;
+							
 						when others => invalid_section;
 					end case;
 
