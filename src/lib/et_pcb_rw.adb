@@ -582,15 +582,14 @@ package body et_pcb_rw is
 		-- consist of a single circle:
 		polygon := (contours => (circular => true, others => <>));
 
+		-- From now on the polygon consists of just a single circle.
+		-- Any attempt to append a line or an arc causes a discriminant error.
+		
 		-- Assign the circle to the polygon contours:
 		pac_shapes.set_circle (polygon, c);
 		board_reset_circle;
 	end;
 
-	procedure board_reset_hole is begin
-		board_hole := (others => <>);
-		-- NOTE: Hole by default consists of lines and arcs.					
-	end;
 
 	
 	procedure read_board_line (
@@ -902,6 +901,7 @@ package body et_pcb_rw is
 	begin
 		-- reset polygon:
 		polygon := (others => <>);
+		-- NOTE: A polygon by default consists of lines and arcs.
 		
 		board_filled		:= filled_default;
 		board_fill_style	:= fill_style_default;

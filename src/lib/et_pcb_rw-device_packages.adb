@@ -1498,37 +1498,12 @@ package body et_pcb_rw.device_packages is
 					et_pcb_stack.type_signal_layers.clear (signal_layers);
 				end;
 
-				-- pcb cutouts/holes
-				procedure append_line_to_hole is begin
-					pac_shapes.append_segment (board_hole, (
-						shape => pac_shapes.LINE, segment_line => board_line));
-
-					-- clean up for next line
-					board_reset_line;
-				end append_line_to_hole;
-
-				procedure append_arc_to_hole is begin
-					pac_shapes.append_segment (board_hole, (
-						shape => pac_shapes.ARC, segment_arc => board_arc));
-
-					-- clean up for next arc
-					board_reset_arc;
-				end append_arc_to_hole;
-
-				procedure assign_circle_to_hole is begin
-					board_hole := (contours => (circular => true, circle => board_circle));
-					-- From now on the hole consists of just a single circle.
-					-- Any attempt to append a line or an arc causes a discriminant error.
-
-					-- clean up for next circle
-					board_reset_circle;
-				end assign_circle_to_hole;
-
+				-- holes in PCB (or cutouts)
 				procedure append_hole is begin
-					packge.holes.append (board_hole);
+					packge.holes.append (polygon);
 
 					-- clean up for next hole
-					board_reset_hole;
+					board_reset_polygon;
 				end append_hole;
 				
 			begin -- execute_section
@@ -1709,7 +1684,7 @@ package body et_pcb_rw.device_packages is
 								end case;
 								
 							when SEC_HOLE =>
-								append_line_to_hole;
+								add_polygon_line (board_line);
 								
 							when SEC_ROUTE_RESTRICT =>
 								
@@ -1877,7 +1852,7 @@ package body et_pcb_rw.device_packages is
 								end case;
 
 							when SEC_HOLE =>
-								append_arc_to_hole;
+								add_polygon_arc (board_arc);
 								
 							when SEC_ROUTE_RESTRICT =>
 								
@@ -2015,7 +1990,7 @@ package body et_pcb_rw.device_packages is
 								end case;
 
 							when SEC_HOLE =>
-								assign_circle_to_hole;
+								add_polygon_circle (board_circle);
 								
 							when SEC_ROUTE_RESTRICT =>
 								
