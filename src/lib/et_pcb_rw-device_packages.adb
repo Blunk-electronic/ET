@@ -764,9 +764,7 @@ package body et_pcb_rw.device_packages is
 	
 		pac_text				: et_packages.type_text_with_content;
 		pac_text_placeholder	: et_packages.type_text_placeholder;
-
-		hole					: type_polygon; -- pcb cutout
-		
+	
 		terminal_position		: type_position := origin_zero_rotation;
 
 		tht_stop_mask_status			: type_stop_mask_status := stop_mask_status_default;
@@ -1502,7 +1500,7 @@ package body et_pcb_rw.device_packages is
 
 				-- pcb cutouts/holes
 				procedure append_line_to_hole is begin
-					pac_shapes.append_segment (hole, (
+					pac_shapes.append_segment (board_hole, (
 						shape => pac_shapes.LINE, segment_line => board_line));
 
 					-- clean up for next line
@@ -1510,7 +1508,7 @@ package body et_pcb_rw.device_packages is
 				end append_line_to_hole;
 
 				procedure append_arc_to_hole is begin
-					pac_shapes.append_segment (hole, (
+					pac_shapes.append_segment (board_hole, (
 						shape => pac_shapes.ARC, segment_arc => board_arc));
 
 					-- clean up for next arc
@@ -1518,7 +1516,7 @@ package body et_pcb_rw.device_packages is
 				end append_arc_to_hole;
 
 				procedure assign_circle_to_hole is begin
-					hole := (contours => (circular => true, circle => board_circle));
+					board_hole := (contours => (circular => true, circle => board_circle));
 					-- From now on the hole consists of just a single circle.
 					-- Any attempt to append a line or an arc causes a discriminant error.
 
@@ -1527,11 +1525,10 @@ package body et_pcb_rw.device_packages is
 				end assign_circle_to_hole;
 
 				procedure append_hole is begin
-					packge.holes.append (hole);
+					packge.holes.append (board_hole);
 
 					-- clean up for next hole
-					hole := (others => <>);
-					-- NOTE: Hole by default consists of lines and arcs.					
+					board_reset_hole;
 				end append_hole;
 				
 			begin -- execute_section

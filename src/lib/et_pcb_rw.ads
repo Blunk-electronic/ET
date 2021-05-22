@@ -191,8 +191,8 @@ package et_pcb_rw is
 	procedure board_reset_circle;
 	procedure add_polygon_circle (c : in out type_circle);
 	
-
-
+	board_hole : type_polygon; -- pcb cutout
+	procedure board_reset_hole;
 	
 	-- Reads start and end point of the board_line. 
 	-- If the statement is invalid then an error issued.

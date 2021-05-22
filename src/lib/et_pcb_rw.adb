@@ -587,6 +587,10 @@ package body et_pcb_rw is
 		board_reset_circle;
 	end;
 
+	procedure board_reset_hole is begin
+		board_hole := (others => <>);
+		-- NOTE: Hole by default consists of lines and arcs.					
+	end;
 
 	
 	procedure read_board_line (
