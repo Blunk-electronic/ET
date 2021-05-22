@@ -38,7 +38,6 @@
 with ada.text_io;				use ada.text_io;
 with et_general;				use et_general;
 with et_pcb;					use et_pcb;
---with et_canvas_primitive_draw_ops;
 
 separate (et_canvas_board)
 
@@ -101,13 +100,8 @@ is
 	
 	procedure query_outline_segments (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in et_schematic.type_module) is
-	begin
-		-- All outline segments will be drawn with the same line width and color:
-		set_line_width (context.cr, type_view_coordinate (et_packages.pcb_contour_line_width));
-		set_color_outline (context.cr);
-
-		
+		module		: in et_schematic.type_module)
+	is begin
 		if module.board.contours.outline.contours.circular then
 
 			draw_circle (
@@ -123,11 +117,43 @@ is
 		end if;
 		
 		iterate (module.board.contours.texts, query_text'access);
-		
 	end query_outline_segments;
+
+	
+	procedure query_holes (
+		module_name	: in pac_module_name.bounded_string;
+		module		: in et_schematic.type_module) 
+	is
+		use et_packages;
+		use pac_pcb_cutouts;
+		
+		procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
+			if element (c).contours.circular then
+
+				draw_circle (
+					area		=> in_area,
+					context		=> context,
+					circle		=> element (c).contours.circle,
+					filled		=> NO, -- holes are never filled
+					width		=> et_packages.pcb_contour_line_width,
+					height		=> self.frame_height);
+				
+			else
+				iterate (element (c).contours.segments, query_segment'access);
+			end if;
+		end query_hole;
+		
+	begin
+		iterate (module.board.contours.holes, query_hole'access);
+	end query_holes;
+
 	
 begin -- draw_outline
 -- 	put_line ("draw board outline ...");
+
+	-- All outline and holes segments will be drawn with the same color:
+	set_color_outline (context.cr);
+
 	
 	pac_generic_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
@@ -135,7 +161,11 @@ begin -- draw_outline
 
 	draw_text_being_placed_in_outline (self, in_area, context);
 
-	-- CS draw holes
+	
+	pac_generic_modules.query_element (
+		position	=> et_canvas_schematic.current_active_module,
+		process		=> query_holes'access);
+
 	
 end draw_outline;
 
