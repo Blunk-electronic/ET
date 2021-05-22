@@ -1401,6 +1401,33 @@ is
 			section_mark (section_user_settings, FOOTER);
 		end query_user_settings;
 		
+
+
+		procedure write_board_contours is 
+			use et_packages;
+			use pac_pcb_cutouts;
+			
+			procedure write_hole (c : in pac_pcb_cutouts.cursor) is begin
+				section_mark (section_hole, HEADER);		
+				write_polygon_segments (element (c));		
+				section_mark (section_hole, FOOTER);		
+			end write_hole;
+
+		begin
+			section_mark (section_pcb_contours, HEADER);
+
+			-- board outline and texts
+			section_mark (section_outline, HEADER);
+			write_polygon_segments (element (module_cursor).board.contours.outline);
+			iterate (element (module_cursor).board.contours.texts, write_text'access);
+			section_mark (section_outline, FOOTER);
+
+			-- holes
+			iterate (element (module_cursor).board.contours.holes, write_hole'access);
+			
+			section_mark (section_pcb_contours, FOOTER);
+		end write_board_contours;
+	
 		
 	begin -- query_board
 		section_mark (section_board, HEADER);
@@ -1565,17 +1592,7 @@ is
 		section_mark (section_conductor, FOOTER);
 
 		-- BOARD CONTOUR
-
-		-- outline
-		section_mark (section_pcb_contours, HEADER);
-			--iterate (element (module_cursor).board.contours.lines, write_line'access);
-			--iterate (element (module_cursor).board.contours.arcs, write_arc'access);
-			--iterate (element (module_cursor).board.contours.circles, write_circle'access);
-			--iterate (element (module_cursor).board.contours.texts, write_text'access);
-		section_mark (section_pcb_contours, FOOTER);
-
-		-- holes
-		-- CS
+		write_board_contours;
 		
 		---BOARD END-----
 		section_mark (section_board, FOOTER);

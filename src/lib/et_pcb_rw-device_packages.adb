@@ -420,17 +420,6 @@ package body et_pcb_rw.device_packages is
 			end if;
 		end write_holes;
 
-		
-		-- CS currently no need for plated millings not terminal related
--- 		procedure write_contour_plated is begin
--- 			section_mark (section_pcb_contour_plated, HEADER);
--- 
--- 			iterate (packge.pcb_contour_plated.lines, write_line'access);
--- 			iterate (packge.pcb_contour_plated.arcs, write_arc'access);
--- 			iterate (packge.pcb_contour_plated.circles, write_circle'access);
--- 
--- 			section_mark (section_pcb_contour_plated, FOOTER);
--- 		end write_contour_plated;
 
 		procedure write_package_contour is begin
 			section_mark (section_pac_3d_contours, HEADER);

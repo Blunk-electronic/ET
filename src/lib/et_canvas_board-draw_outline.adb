@@ -151,16 +151,22 @@ is
 begin -- draw_outline
 -- 	put_line ("draw board outline ...");
 
-	-- All outline and holes segments will be drawn with the same color:
+	-- All outline segments, holes and texts will be 
+	-- drawn with the same color:
 	set_color_outline (context.cr);
 
+	-- All outline segments and holes be 
+	-- drawn with the same line width:
+	set_line_width (context.cr, type_view_coordinate (et_packages.pcb_contour_line_width));
+
+	-- The line width of texts is a property of a particular text and is
+	-- NOT set here.
 	
 	pac_generic_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_outline_segments'access);
 
 	draw_text_being_placed_in_outline (self, in_area, context);
-
 	
 	pac_generic_modules.query_element (
 		position	=> et_canvas_schematic.current_active_module,
