@@ -592,7 +592,7 @@ package body et_pcb_rw is
 	procedure read_board_line (
 		line : et_string_processing.type_fields_of_line)
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_start then -- start x 22.3 y 23.3
@@ -616,7 +616,7 @@ package body et_pcb_rw is
 		line : et_string_processing.type_fields_of_line)
 		return boolean 
 	is
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -647,9 +647,9 @@ package body et_pcb_rw is
 		end if;
 	end board_check_arc;
 	
-	procedure read_board_arc (line : et_string_processing.type_fields_of_line) is
 	-- Reads start and end point of the board_arc. If the statement is invalid then an error issued.
-		kw : string := f (line, 1);
+	procedure read_board_arc (line : et_string_processing.type_fields_of_line) is
+		kw : constant string := f (line, 1);
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -679,9 +679,9 @@ package body et_pcb_rw is
 		end if;
 	end;
 
-	function read_board_arc (line : et_string_processing.type_fields_of_line) return boolean is
 	-- Reads start and end point of the board_arc. If the statement is invalid then it returns a false.
-		kw : string := f (line, 1);
+	function read_board_arc (line : et_string_processing.type_fields_of_line) return boolean is
+		kw : constant string := f (line, 1);
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -718,11 +718,10 @@ package body et_pcb_rw is
 			return false;
 		end if;
 	end;
-
 	
-	procedure read_board_circle (line : et_string_processing.type_fields_of_line) is
 	-- Reads center and radius of the board_circle. If the statement is invalid then an error issued.
-		kw : string := f (line, 1);
+	procedure read_board_circle (line : et_string_processing.type_fields_of_line) is
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_center then -- center x 150 y 45
@@ -740,9 +739,9 @@ package body et_pcb_rw is
 		end if;
 	end;
 
-	function read_board_circle (line : et_string_processing.type_fields_of_line) return boolean is
 	-- Reads center and radius of the board_circle. If the statement is invalid then it returns false.
-		kw : string := f (line, 1);
+	function read_board_circle (line : et_string_processing.type_fields_of_line) return boolean is
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_center then -- center x 150 y 45

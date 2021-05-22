@@ -200,6 +200,7 @@ package et_project.modules is
 
 	section_user_settings		: constant string := "[USER_SETTINGS";
 
+	section_outline				: constant string	:= "[OUTLINE";
 	
 	type type_section is ( -- CS: sort aphabetically
 		SEC_DEVICES_NON_ELECTRIC,
@@ -208,7 +209,7 @@ package et_project.modules is
 		SEC_CUTOUT_ZONE,
 		SEC_DRAWING_GRID,
 		SEC_FILL_ZONE,
-		-- CS SEC_HOLE,
+		SEC_HOLE,
 		SEC_INIT,
 		SEC_NET_CLASSES,
 		SEC_NET_CLASS,
@@ -247,6 +248,7 @@ package et_project.modules is
 		SEC_TEXT,
 		SEC_UNITS,
 		SEC_UNIT,
+		SEC_OUTLINE,
 		SEC_PACKAGE,
 		SEC_PLACEHOLDER,
 		SEC_PLACEHOLDERS,

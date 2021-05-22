@@ -1869,7 +1869,7 @@ is
 	procedure read_board_text_conductor is
 		use et_pcb_coordinates.pac_geometry_brd;
 		use et_pcb_stack;
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
@@ -2095,7 +2095,7 @@ is
 		use et_terminals;
 		use et_packages;
 		use et_pcb_stack;
-		kw : string := f (line, 1);
+		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_position then -- position x 22.3 y 23.3
@@ -4139,22 +4139,21 @@ is
 				board_text_conductor_placeholder := (others => <>);
 			end insert_board_text_placeholder;
 			
-			procedure insert_line_contour is
-				use et_pcb;
+			procedure insert_line_outline is
+				use et_board_shapes_and_text;
+				use pac_shapes;
+				use pac_polygon_segments;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
-				begin
-					null;
-
-					-- CS
-					--pac_pcb_contour_lines.append (
-						--container	=> module.board.contours.lines,
-						--new_item	=> (et_board_shapes_and_text.pac_shapes.type_line (board_line) with board_lock_status));
+					module		: in out et_schematic.type_module) 
+				is begin
+					append (
+						container	=> module.board.contours.outline.contours.segments,
+						new_item	=> (pac_shapes.LINE, board_line));
 				end do_it;
 									
-			begin -- insert_line_contour
+			begin -- insert_line_outline
 				update_element (
 					container	=> generic_modules,
 					position	=> module_cursor,
@@ -4162,25 +4161,23 @@ is
 
 				-- clean up for next pcb contour line
 				board_reset_line;
-				board_reset_lock_status;
-			end insert_line_contour;
+			end insert_line_outline;
 			
-			procedure insert_arc_contour is
-				use et_pcb;
+			procedure insert_arc_outline is
+				use et_board_shapes_and_text;
+				use pac_shapes;
+				use pac_polygon_segments;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
-				begin
-					null;
-					
-					-- CS
-					--pac_pcb_contour_arcs.append (
-						--container	=> module.board.contours.arcs,
-						--new_item	=> (et_board_shapes_and_text.pac_shapes.type_arc (board_arc) with board_lock_status));
+					module		: in out et_schematic.type_module) 
+				is begin
+					append (
+						container	=> module.board.contours.outline.contours.segments,
+						new_item	=> (pac_shapes.ARC, board_arc));
 				end do_it;
 									
-			begin -- insert_arc_contour
+			begin -- insert_arc_outline
 				update_element (
 					container	=> generic_modules,
 					position	=> module_cursor,
@@ -4188,34 +4185,30 @@ is
 
 				-- clean up for next pcb contour arc
 				board_reset_arc;
-				board_reset_lock_status;
-			end insert_arc_contour;
+			end insert_arc_outline;
 
-			procedure insert_circle_contour is
-				use et_pcb;
+			procedure insert_circle_outline is
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in out et_schematic.type_module) is
-				begin
-					null;
-
-					-- CS
-					--pac_pcb_contour_circles.append (
-						--container	=> module.board.contours.circles,
-						--new_item	=> (et_board_shapes_and_text.pac_shapes.type_circle (board_circle) with board_lock_status));
+					module		: in out et_schematic.type_module) 
+				is begin
+					module.board.contours.outline.contours := (
+						circular	=> true,
+						circle		=> board_circle);
 				end do_it;
 									
-			begin -- insert_circle_contour
+			begin -- insert_circle_outline
 				update_element (
 					container	=> generic_modules,
 					position	=> module_cursor,
 					process		=> do_it'access);
 
-				-- clean up for next pcb contour circle
+				-- Clean up for next pcb contour circle.
+				-- NOTE: There should not be another circle for the outline,
+				-- because only a single circle is allowed.
 				board_reset_circle;
-				board_reset_lock_status;
-			end insert_circle_contour;
+			end insert_circle_outline;
 
 			--procedure insert_text_contour is
 				--use et_pcb;
@@ -5011,8 +5004,11 @@ is
 						when SEC_CONDUCTOR =>
 							insert_line_track;
 
-						when SEC_PCB_CONTOURS_NON_PLATED =>
-							insert_line_contour;
+						when SEC_OUTLINE =>
+							insert_line_outline;
+
+						when SEC_HOLE =>
+							null; -- CS
 							
 						when others => invalid_section;
 					end case;
@@ -5055,9 +5051,12 @@ is
 							board_check_arc (log_threshold + 1);
 							insert_arc_track;
 
-						when SEC_PCB_CONTOURS_NON_PLATED =>
+						when SEC_OUTLINE =>
 							board_check_arc (log_threshold + 1);
-							insert_arc_contour;
+							insert_arc_outline;
+
+						when SEC_HOLE =>
+							null; -- CS
 							
 						when others => invalid_section;
 					end case;
@@ -5081,8 +5080,11 @@ is
 						when SEC_CONDUCTOR =>
 							insert_circle_track;
 
-						when SEC_PCB_CONTOURS_NON_PLATED =>
-							insert_circle_contour;
+						when SEC_OUTLINE =>
+							insert_circle_outline;
+
+						when SEC_HOLE =>
+							null; -- CS
 							
 						when others => invalid_section;
 					end case;
@@ -5557,6 +5559,19 @@ is
 
 						when others => invalid_section;
 					end case;
+
+				when SEC_OUTLINE =>
+					case stack.parent is
+						when SEC_PCB_CONTOURS_NON_PLATED => null; -- CS
+						when others => invalid_section;
+					end case;
+
+				when SEC_HOLE =>
+					case stack.parent is
+						when SEC_PCB_CONTOURS_NON_PLATED => null; -- CS
+						when others => invalid_section;
+					end case;
+
 					
 				when SEC_INIT => null; -- CS: should never happen
 			end case;
@@ -5673,6 +5688,8 @@ is
 		elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
 		elsif set (section_conductor, SEC_CONDUCTOR) then null;				
 		elsif set (section_pcb_contours, SEC_PCB_CONTOURS_NON_PLATED) then null;
+		elsif set (section_hole, SEC_HOLE) then null;
+		elsif set (section_outline, SEC_OUTLINE) then null;
 		elsif set (section_user_settings, SEC_USER_SETTINGS) then null;
 		elsif set (section_vias, SEC_VIAS) then null;
 		else
@@ -5930,22 +5947,9 @@ is
 									end if;
 								end;
 							end if;
-							
-						when SEC_PCB_CONTOURS_NON_PLATED =>
-							if not read_board_line (line) then
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_locked then -- locked no
-										expect_field_count (line, 2);
-										board_lock_status := et_pcb.to_lock_status (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-							end if;
+
+						when SEC_OUTLINE | SEC_HOLE =>
+							read_board_line (line);
 							
 						when others => invalid_section;
 					end case;
@@ -6048,23 +6052,9 @@ is
 									end if;
 								end;
 							end if;
-							
-						when SEC_PCB_CONTOURS_NON_PLATED =>
-							if not read_board_arc (line) then
-								declare
-									kw : string := f (line, 1);
-									use et_board_shapes_and_text.pac_shapes;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_locked then -- locked no
-										expect_field_count (line, 2);
-										board_lock_status := et_pcb.to_lock_status (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-							end if;
+
+						when SEC_OUTLINE | SEC_HOLE =>
+							read_board_arc (line);
 							
 						when others => invalid_section;
 					end case;
@@ -6205,24 +6195,9 @@ is
 									end if;
 								end;
 							end if;
-							
-						when SEC_PCB_CONTOURS_NON_PLATED =>
-							if not read_board_circle (line) then
-								declare
-									use et_pcb_coordinates.pac_geometry_brd;
-									use et_board_shapes_and_text.pac_shapes;
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_locked then -- locked no
-										expect_field_count (line, 2);
-										board_lock_status := et_pcb.to_lock_status (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-							end if;
+
+						when SEC_OUTLINE | SEC_HOLE =>
+							read_board_circle (line);
 							
 						when others => invalid_section;
 					end case;
@@ -6459,6 +6434,11 @@ is
 						when others => invalid_section;
 					end case;
 
+				when SEC_OUTLINE | SEC_HOLE =>
+					case stack.parent is
+						when SEC_PCB_CONTOURS_NON_PLATED => null;
+						when others => invalid_section;
+					end case;
 					
 				when SEC_INIT => null; -- CS: should never happen
 			end case;

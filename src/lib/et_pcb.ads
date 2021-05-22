@@ -165,23 +165,6 @@ package et_pcb is
 
 	
 -- CONTOUR / OUTLINE / EDGE CUTS
-	--type type_pcb_contour_line is new type_line with record
-		--locked : type_locked := type_locked'first;
-	--end record;
-	--package pac_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
-
-	
-	--type type_pcb_contour_arc is new type_arc with record
-		--locked : type_locked := type_locked'first;
-	--end record;
-	--package pac_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
-
-	
-	--type type_pcb_contour_circle is new type_circle with record
-		--locked : type_locked := type_locked'first;
-	--end record;
-	--package pac_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
-
 	
 	type type_pcb_contours is record -- PCB contour defined for the PCB as a whole
 		outline	: type_polygon;

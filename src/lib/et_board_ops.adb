@@ -2843,7 +2843,9 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
-			module.board.contours.outline.contours.circle := circle_add;
+			module.board.contours.outline.contours := (
+				circular	=> true,
+				circle		=> circle_add);
 		end;
 							   
 	begin -- draw_outline_circle
