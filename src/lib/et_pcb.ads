@@ -164,7 +164,7 @@ package et_pcb is
 	
 
 	
--- CONTOUR / OUTLINE / EDGE CUTS
+-- CONTOUR / OUTLINE / HOLES / EDGE CUTS
 	
 	type type_pcb_contours is record -- PCB contour defined for the PCB as a whole
 		outline	: type_polygon;

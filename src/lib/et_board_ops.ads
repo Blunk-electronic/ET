@@ -401,6 +401,19 @@ package et_board_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		circle_add		: in type_circle;
 		log_threshold	: in type_log_level);
+
+	-- Draws the PCB outline:
+	procedure draw_outline (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		outline			: in type_polygon;
+		log_threshold	: in type_log_level);
+
+	-- Draws a hole in the board area:
+	procedure draw_hole (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		hole			: in type_polygon;
+		log_threshold	: in type_log_level);
+
 	
 	-- Deletes the segment of the outline that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.

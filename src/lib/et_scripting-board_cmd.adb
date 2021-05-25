@@ -295,83 +295,92 @@ is
 	end display_restrict_layer;
 
 	procedure draw_outline is
-		shape : type_shape := to_shape (f (5));
+		--shape : type_shape := to_shape (f (5));
+
+		-- Extract from the given command the polygon arguments (everything after "outline"):
+		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
+
+		-- Build a basic polygon from the arguments:
+		p0 : constant type_polygon_base'class := to_polygon (arguments);
+		
 	begin
-		case shape is
-			when LINE =>
-				case fields is
-					when 9 =>
-						draw_outline_line (
-							module_name 	=> module,
-							line_add		=> (
-								start_point	=> type_point (set (
-									x => to_distance (f (6)),
-									y => to_distance (f (7)))),
-								end_point	=> type_point (set (
-									x => to_distance (f (8)),
-									y => to_distance (f (9))))
-								),
-							log_threshold	=> log_threshold + 1
-							);
+		draw_outline (module, type_polygon (p0), log_threshold + 1);
+		
+		--case shape is
+			--when LINE =>
+				--case fields is
+					--when 9 =>
+						--draw_outline_line (
+							--module_name 	=> module,
+							--line_add		=> (
+								--start_point	=> type_point (set (
+									--x => to_distance (f (6)),
+									--y => to_distance (f (7)))),
+								--end_point	=> type_point (set (
+									--x => to_distance (f (8)),
+									--y => to_distance (f (9))))
+								--),
+							--log_threshold	=> log_threshold + 1
+							--);
 
-					when 10 .. count_type'last =>
-						command_too_long (single_cmd_status.cmd, fields - 1);
+					--when 10 .. count_type'last =>
+						--command_too_long (single_cmd_status.cmd, fields - 1);
 						
-					when others =>
-						command_incomplete;
-				end case;
+					--when others =>
+						--command_incomplete;
+				--end case;
 				
-			when ARC =>
-				case fields is
-					when 12 =>
-						draw_outline_arc (
-							module_name 	=> module,
-							arc_add			=> (
-								center		=> type_point (set (
-									x => to_distance (f (6)),
-									y => to_distance (f (7)))),
-								start_point	=> type_point (set (
-									x => to_distance (f (8)),
-									y => to_distance (f (9)))),
-								end_point	=> type_point (set (
-									x => to_distance (f (10)),
-									y => to_distance (f (11)))),
-								direction	=> to_direction (f (12))
-								),
+			--when ARC =>
+				--case fields is
+					--when 12 =>
+						--draw_outline_arc (
+							--module_name 	=> module,
+							--arc_add			=> (
+								--center		=> type_point (set (
+									--x => to_distance (f (6)),
+									--y => to_distance (f (7)))),
+								--start_point	=> type_point (set (
+									--x => to_distance (f (8)),
+									--y => to_distance (f (9)))),
+								--end_point	=> type_point (set (
+									--x => to_distance (f (10)),
+									--y => to_distance (f (11)))),
+								--direction	=> to_direction (f (12))
+								--),
 
-							log_threshold	=> log_threshold + 1
-							);
+							--log_threshold	=> log_threshold + 1
+							--);
 
-					when 13 .. count_type'last =>
-						command_too_long (single_cmd_status.cmd, fields - 1);
+					--when 13 .. count_type'last =>
+						--command_too_long (single_cmd_status.cmd, fields - 1);
 						
-					when others =>
-						command_incomplete;
-				end case;
+					--when others =>
+						--command_incomplete;
+				--end case;
 
-			when CIRCLE =>
-				case fields is
-					when 8 =>
-						draw_outline_circle (
-							module_name 	=> module,
-							circle_add		=> (
-								center	=> type_point (set (
-									x => to_distance (f (6)),
-									y => to_distance (f (7)))),
-								radius	=> to_distance (f (8))
-								),
+			--when CIRCLE =>
+				--case fields is
+					--when 8 =>
+						--draw_outline_circle (
+							--module_name 	=> module,
+							--circle_add		=> (
+								--center	=> type_point (set (
+									--x => to_distance (f (6)),
+									--y => to_distance (f (7)))),
+								--radius	=> to_distance (f (8))
+								--),
 
-							log_threshold	=> log_threshold + 1
-							);
+							--log_threshold	=> log_threshold + 1
+							--);
 
-					when 9 .. count_type'last =>
-						command_too_long (single_cmd_status.cmd, fields - 1);
+					--when 9 .. count_type'last =>
+						--command_too_long (single_cmd_status.cmd, fields - 1);
 						
-					when others =>
-						command_incomplete;
-				end case;
+					--when others =>
+						--command_incomplete;
+				--end case;
 
-		end case;
+		--end case;
 	end draw_outline;
 
 	procedure draw_silkscreen is
