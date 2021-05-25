@@ -313,6 +313,45 @@ is
 	begin
 		draw_hole (module, type_polygon (p0), log_threshold + 1);
 	end draw_hole;
+
+	procedure delete_outline_segment is begin
+		case fields is
+			when 7 =>
+				-- delete a segment of board outline
+				delete_outline (
+					module_name 	=> module,
+					point			=> type_point (set (
+							x => to_distance (f (5)),
+							y => to_distance (f (6)))),
+					accuracy		=> to_distance (f (7)),
+					
+					log_threshold	=> log_threshold + 1);
+
+			when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+				
+			when others => command_incomplete;
+		end case;
+	end delete_outline_segment;
+
+	procedure delete_hole_segment is begin
+		case fields is
+			when 7 =>
+				-- delete a segment of a hole
+				delete_hole (
+					module_name 	=> module,
+					point			=> type_point (set (
+							x => to_distance (f (5)),
+							y => to_distance (f (6)))),
+					accuracy		=> to_distance (f (7)),
+					
+					log_threshold	=> log_threshold + 1);
+
+			when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+				
+			when others => command_incomplete;
+		end case;
+	end delete_hole_segment;
+
 	
 	procedure draw_silkscreen is
 		shape : type_shape := to_shape (f (6));
@@ -2649,24 +2688,12 @@ is
 
 						end case;
 
+					when NOUN_HOLE =>
+						delete_hole_segment;
+
 					when NOUN_OUTLINE =>
-						case fields is
-							when 7 =>
-								-- delete a segment of board outline
-								delete_outline (
-									module_name 	=> module,
-									point			=> type_point (set (
-											x => to_distance (f (5)),
-											y => to_distance (f (6)))),
-									accuracy		=> to_distance (f (7)),
-									
-									log_threshold	=> log_threshold + 1);
-
-							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
-								
-							when others => command_incomplete;
-						end case;
-
+						delete_outline_segment;
+						
 					when NOUN_SILKSCREEN =>
 						-- board led_driver delete silkscreen top 40 50 1
 						case fields is

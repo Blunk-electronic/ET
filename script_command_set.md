@@ -1092,14 +1092,12 @@ Pick and place:
 board led_driver make pnp
 ```
 
-## BOARD OUTLINE
-Board outlines (or contours) are milled in the PCB factory. For this reason there is
-no line width parameter.
+## BOARD CONTOURS
+Board outlines and holes are milled. Thus there is parameter for the line width.
+
+Outline:
 ```
-board led_driver draw outline line 0 0 160 0 # from 0/0 to 160/0
-```
-```
-board led_driver draw outline arc 50 50 50 0 50 100 cw # center 50/50 from 50/0 to 50/100, clockwise
+board led_driver draw outline line 0 0 160 0 line 160 0 160 80 line 160 80 0 80 line 0 80 0 0
 ```
 ```
 board led_driver draw outline circle 50 50 50 # center 50/50 radius 50
@@ -1108,7 +1106,19 @@ board led_driver draw outline circle 50 50 50 # center 50/50 radius 50
 board led_driver delete outline 40 50 1 # crossing 40/50, accuracy 1
 ```
 
-To place a text in the outline layer:
+Holes are objects inside the board area. They can be of any shape and are used for mounting
+purposes, housings, air convection, etc.:
+```
+board led_driver draw hole line 0 0 160 0 line 160 0 160 80 line 160 80 0 80 line 0 80 0 0
+```
+```
+board led_driver draw hole circle 50 50 50 # center 50/50 radius 50
+```
+```
+board led_driver delete hole 40 50 1 # crossing 40/50, accuracy 1
+```
+
+To place a text in the contour layer:
 ```
 board led_driver place text outline 0.2 5 54 1 0 "SOME TEXT" # line width 0.2, size 5, x/y 54/1, rotation zero
 ```

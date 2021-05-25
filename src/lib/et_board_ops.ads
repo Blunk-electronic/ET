@@ -398,7 +398,6 @@ package et_board_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		hole			: in type_polygon;
 		log_threshold	: in type_log_level);
-
 	
 	-- Deletes the segment of the outline that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
@@ -409,6 +408,15 @@ package et_board_ops is
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
+	-- Deletes the segment of a hole that crosses the given point.
+	-- CS currently rips up the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+	procedure delete_hole (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		point			: in type_point; -- x/y
+		accuracy		: in type_catch_zone;
+		log_threshold	: in type_log_level);
+	
 -- SILK SCREEN
 
 	procedure draw_silk_screen_line (

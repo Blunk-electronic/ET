@@ -2854,6 +2854,9 @@ package body et_board_ops is
 							if on_line (point, element (c).segment_line, accuracy) then
 								delete (module.board.contours.outline.contours.segments, c);
 								deleted := true;
+
+								-- CS update start/end point of predecessor/successor segment
+								
 								exit; -- CS no exit if all segments are to be deleted
 							end if;
 
@@ -2861,6 +2864,9 @@ package body et_board_ops is
 							if on_arc (point, element (c).segment_arc, accuracy) then
 								delete (module.board.contours.outline.contours.segments, c);
 								deleted := true;
+
+								-- CS update start/end point of predecessor/successor segment
+								
 								exit; -- CS no exit if all segments are to be deleted
 							end if;
 
@@ -2904,7 +2910,33 @@ package body et_board_ops is
 		
 	end delete_outline;
 
-	
+
+	procedure delete_hole (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		point			: in type_point; -- x/y
+		accuracy		: in type_catch_zone;
+		log_threshold	: in type_log_level)
+	is
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
+
+	begin -- delete_hole
+		log (text => "module " & to_string (module_name) 
+			& " deleting hole segment at" & to_string (point) 
+			& " accuracy" & to_string (accuracy),
+			level => log_threshold);
+
+		module_cursor := locate_module (module_name);
+
+		--update_element (
+			--container	=> generic_modules,
+			--position	=> module_cursor,
+			--process		=> delete'access);
+
+		-- CS
+		
+	end delete_hole;
+
+		
 -- SILK SCREEN
 
 	procedure draw_silk_screen_line (
