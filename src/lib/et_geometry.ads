@@ -1363,6 +1363,11 @@ package et_geometry is
 			contours	: type_polygon_segments;
 		end record;
 
+		-- Returns the segments of a polygon in human readable form:
+		function to_string (
+			polygon	: in type_polygon_base)
+			return string;
+		
 		-- Returns the corner point nearest to the given
 		-- reference point.
 		-- If the given polygon consists of just a single
@@ -1463,7 +1468,9 @@ package et_geometry is
 		package pac_polygon_gaps is new doubly_linked_lists (type_point); 
 
 		-- Returns the points where gaps of a polygon outline begin:
-		function to_string (gaps : in pac_polygon_gaps.list) return string;
+		function to_string (
+			gaps : in pac_polygon_gaps.list)
+			return string;
 		
 
 		-- The result of an outline check is a parameterized type:

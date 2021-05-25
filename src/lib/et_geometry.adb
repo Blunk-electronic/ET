@@ -40,7 +40,7 @@ with ada.strings;				use ada.strings;
 with ada.strings.fixed;			use ada.strings.fixed;
 with ada.strings.unbounded;
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
 with et_string_processing;		use et_string_processing;
@@ -101,7 +101,7 @@ package body et_geometry is
 	
 	
 	function to_string (coordinates : in type_coordinates) return string is begin
-		return latin_1.space & to_lower (type_coordinates'image (coordinates));
+		return space & to_lower (type_coordinates'image (coordinates));
 	end;
 
 	function to_coordinates (coordinates : in string) return type_coordinates is begin
@@ -173,7 +173,7 @@ package body et_geometry is
 		
 		function to_string (distance : in type_distance) return string is begin
 			if distance < zero then
-				return latin_1.space & type_distance'image (distance);
+				return space & type_distance'image (distance);
 			else
 				return type_distance'image (distance);
 			end if;
@@ -773,7 +773,7 @@ package body et_geometry is
 
 		function to_string (rotation : in type_rotation) return string is begin
 			if rotation < zero_rotation then
-				return latin_1.space & type_rotation'image (rotation);
+				return space & type_rotation'image (rotation);
 			else
 				return type_rotation'image (rotation);
 			end if;
@@ -3199,29 +3199,36 @@ package body et_geometry is
 		
 		
 		function to_string (line : in type_line) return string is begin
-			return latin_1.space 
+			return space 
 				& "start" & to_string (line.start_point) 
 				& " end" & to_string (line.end_point);
 		end;
 
-		function to_string (arc : in type_arc) return string is
-		-- Returns the start, end point and angle of the given arc as string.
-		begin
-			return latin_1.space 
+		function to_string (arc : in type_arc) return string is begin
+			return space 
 				& "center" & to_string (arc.center) 
 				& " start" & to_string (arc.start_point) 
 				& " end" & to_string (arc.end_point);
 		end to_string;
 
-		function to_string (circle : in type_circle) return string is
-		-- Returns the center and radius of the given circle as string.
-		begin
-			return latin_1.space
+		function to_string (circle : in type_circle) return string is begin
+			return space
 				& "center" & to_string (circle.center) 
 				& " radius" & to_string (circle.radius);
 		end to_string;
 
 
+		function to_string (
+			polygon	: in type_polygon_base)
+			return string
+		is
+		begin
+			-- CS
+			return "";
+		end to_string;
+
+
+		
 		function get_nearest_corner_point (
 			polygon		: in type_polygon_base;
 			reference	: in type_point)
@@ -3799,9 +3806,14 @@ package body et_geometry is
 			return result;
 		end get_boundaries;
 		
-		function to_string (gaps : in pac_polygon_gaps.list) return string is
+		function to_string (
+			gaps : in pac_polygon_gaps.list) 
+			return string 
+		is
 			use pac_polygon_gaps;
 			use ada.strings.unbounded;
+			use ada.characters.latin_1;
+			
 			result : unbounded_string;
 			
 			procedure query_gap (g : in pac_polygon_gaps.cursor) is 
