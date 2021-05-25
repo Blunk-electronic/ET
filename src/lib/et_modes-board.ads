@@ -82,6 +82,7 @@ package et_modes.board is
 		NOUN_FREETRACK,
 		NOUN_FIT,
 		NOUN_GRID,
+		NOUN_HOLE,
 		NOUN_KEEPOUT,
 		NOUN_LAYER, 	-- signal layer with dielectic
 		NOUN_LEVEL,

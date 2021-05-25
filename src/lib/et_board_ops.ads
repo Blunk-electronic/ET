@@ -382,33 +382,18 @@ package et_board_ops is
 		log_threshold	: in type_log_level);
 
 	
--- BOARD OUTLINE / CONTOUR
+-- BOARD OUTLINE / HOLES / CONTOUR / EDGE CUTS
 
-	-- Draws a line in the PCB outline.
-	procedure draw_outline_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		line_add		: in type_line;
-		log_threshold	: in type_log_level);
-
-	-- Draws an arc in the PCB outline.
-	procedure draw_outline_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		arc_add			: in type_arc;
-		log_threshold	: in type_log_level);
-
-	-- Draws a circle in the PCB outline.
-	procedure draw_outline_circle (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		circle_add		: in type_circle;
-		log_threshold	: in type_log_level);
-
-	-- Draws the PCB outline:
+	-- Draws the PCB outline.
+	-- Overwrites the already existing outline as there can
+	-- be only one outline:
 	procedure draw_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		outline			: in type_polygon;
 		log_threshold	: in type_log_level);
 
-	-- Draws a hole in the board area:
+	-- Draws a hole in the board area. Adds the hole to the
+	-- already existing holes:
 	procedure draw_hole (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		hole			: in type_polygon;
