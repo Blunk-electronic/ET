@@ -1418,16 +1418,16 @@ package et_geometry is
 			return count_type;
 
 
-		type type_dimensions is record
-			greatest : type_point := far_lower_left;
-			smallest : type_point := far_upper_right;
-		end record;
+		--type type_dimensions is record
+			--greatest : type_point := far_lower_left;
+			--smallest : type_point := far_upper_right;
+		--end record;
 		
 		-- Returns the greatest and smallest x and y values
 		-- used by the polygon:
-		function get_dimensions (
-			polygon : in type_polygon_base)
-			return type_dimensions;
+		--function get_dimensions (
+			--polygon : in type_polygon_base)
+			--return type_dimensions;
 
 
 		
@@ -1466,7 +1466,7 @@ package et_geometry is
 			return type_boundaries;
 
 		-- A polygon must have a properly closed outline.
-		-- The outline check requires a list of points (where the gaps are):
+		-- The outline check returns a list of points (where the gaps are):
 		package pac_polygon_gaps is new doubly_linked_lists (type_point); 
 
 		-- Returns the points where gaps of a polygon outline begin:
@@ -1497,23 +1497,20 @@ package et_geometry is
 			polygon	: in type_polygon_base)
 			return type_polygon_status;
 
-		procedure move_by (
 		-- Moves a polygon by the given offset. 
+		procedure move_by (
 			polygon	: in out type_polygon_base;
 			offset	: in type_point);
 
-		procedure mirror (
 		-- Mirrors a polygon along the given axis.
+		procedure mirror (
 			polygon	: in out type_polygon_base;
 			axis	: in type_axis_2d);
 
-		procedure rotate_by (
 		-- Rotates a polygon about the origin by the given rotation.
+		procedure rotate_by (
 			polygon		: in out type_polygon_base;
 			rotation	: in type_rotation);
-
-		--procedure reorder_segments ( -- experimental
-			--polygon	: in out type_polygon_base);
 
 		
 
@@ -1667,7 +1664,8 @@ package et_geometry is
 		end record;
 
 		-- Searches the lower left corner of a polygon:
-		function get_lower_left_corner (polygon	: in type_polygon_base)
+		function get_lower_left_corner (
+			polygon	: in type_polygon_base)
 			return type_lower_left_corner;
 
 

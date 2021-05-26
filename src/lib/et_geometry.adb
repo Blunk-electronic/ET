@@ -2430,7 +2430,7 @@ package body et_geometry is
 			procedure set_sy is begin result.smallest_y := - radius; end;
 			procedure set_gy is begin result.greatest_y :=   radius; end;
 			
-		begin -- boundaries
+		begin -- get_boundaries
 			-- move arc_tmp so that its center is at 0/0
 			move_to (arc_tmp, origin);
 
@@ -3222,9 +3222,30 @@ package body et_geometry is
 			polygon	: in type_polygon_base)
 			return string
 		is
+			use pac_polygon_segments;
+			use ada.strings.unbounded;
+			
+			result : unbounded_string := to_unbounded_string ("polygon properties:");
+
+			procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+				case element (c).shape is
+					when LINE =>
+						result := result & space & to_unbounded_string (to_string (element (c).segment_line));
+						
+					when ARC =>
+						result := result & space & to_unbounded_string (to_string (element (c).segment_arc));
+						
+				end case;
+			end query_segment;
+			
 		begin
-			-- CS
-			return "";
+			if polygon.contours.circular then
+				result := result & space & to_unbounded_string (to_string (polygon.contours.circle));
+			else
+				polygon.contours.segments.iterate (query_segment'access);
+			end if;
+			
+			return to_string (result);
 		end to_string;
 
 
@@ -3513,76 +3534,76 @@ package body et_geometry is
 			end if;
 		end get_segments_total;
 
-		function get_dimensions (
-			polygon : in type_polygon_base)
-			return type_dimensions
-		is
-			result : type_dimensions;
+		--function get_dimensions (
+			--polygon : in type_polygon_base)
+			--return type_dimensions
+		--is
+			--result : type_dimensions;
 
-			procedure update_greatest_x (p : in type_point) is 
-				d : type_distance := X (p);
-			begin
-				if d > X (result.greatest) then
-					--put_line ("X" & to_string (d));
-					set (axis => X, value => d, point => result.greatest);
-				end if;
-			end update_greatest_x;
+			--procedure update_greatest_x (p : in type_point) is 
+				--d : type_distance := X (p);
+			--begin
+				--if d > X (result.greatest) then
+					----put_line ("X" & to_string (d));
+					--set (axis => X, value => d, point => result.greatest);
+				--end if;
+			--end update_greatest_x;
 				
-			procedure update_greatest_y (p : in type_point) is 
-				d : type_distance := Y (p);
-			begin
-				if d > Y (result.greatest) then
-					set (axis => Y, value => d, point => result.greatest);
-				end if;
-			end update_greatest_y;
+			--procedure update_greatest_y (p : in type_point) is 
+				--d : type_distance := Y (p);
+			--begin
+				--if d > Y (result.greatest) then
+					--set (axis => Y, value => d, point => result.greatest);
+				--end if;
+			--end update_greatest_y;
 
-			procedure update_smallest_x (p : in type_point) is 
-				d : type_distance := X (p);
-			begin
-				if d < X (result.smallest) then
-					set (axis => X, value => d, point => result.smallest);
-				end if;
-			end update_smallest_x;
+			--procedure update_smallest_x (p : in type_point) is 
+				--d : type_distance := X (p);
+			--begin
+				--if d < X (result.smallest) then
+					--set (axis => X, value => d, point => result.smallest);
+				--end if;
+			--end update_smallest_x;
 				
-			procedure update_smallest_y (p : in type_point) is 
-				d : type_distance := Y (p);
-			begin
-				if d < Y (result.smallest) then
-					set (axis => Y, value => d, point => result.smallest);
-				end if;
-			end update_smallest_y;
+			--procedure update_smallest_y (p : in type_point) is 
+				--d : type_distance := Y (p);
+			--begin
+				--if d < Y (result.smallest) then
+					--set (axis => Y, value => d, point => result.smallest);
+				--end if;
+			--end update_smallest_y;
 
-			use pac_polygon_segments;
+			--use pac_polygon_segments;
 
-			procedure query_segment (c : in pac_polygon_segments.cursor) is 
-			begin
-				case element (c).shape is
-					when LINE =>
-						update_greatest_x (element (c).segment_line.start_point);
-						update_greatest_y (element (c).segment_line.start_point);
-						update_smallest_x (element (c).segment_line.start_point);
-						update_smallest_y (element (c).segment_line.start_point);
+			--procedure query_segment (c : in pac_polygon_segments.cursor) is 
+			--begin
+				--case element (c).shape is
+					--when LINE =>
+						--update_greatest_x (element (c).segment_line.start_point);
+						--update_greatest_y (element (c).segment_line.start_point);
+						--update_smallest_x (element (c).segment_line.start_point);
+						--update_smallest_y (element (c).segment_line.start_point);
 
-						update_greatest_x (element (c).segment_line.end_point);
-						update_greatest_y (element (c).segment_line.end_point);
-						update_smallest_x (element (c).segment_line.end_point);
-						update_smallest_y (element (c).segment_line.end_point);
+						--update_greatest_x (element (c).segment_line.end_point);
+						--update_greatest_y (element (c).segment_line.end_point);
+						--update_smallest_x (element (c).segment_line.end_point);
+						--update_smallest_y (element (c).segment_line.end_point);
 
-					when ARC =>
-						null;
+					--when ARC =>
+						--null; -- CS
 
-				end case;
-			end query_segment;
+				--end case;
+			--end query_segment;
 			
-		begin
-			if polygon.contours.circular then
-				null;
-			else
-				iterate (polygon.contours.segments, query_segment'access);
-			end if;
+		--begin
+			--if polygon.contours.circular then
+				--null; -- CS
+			--else
+				--iterate (polygon.contours.segments, query_segment'access);
+			--end if;
 			
-			return result;
-		end get_dimensions;
+			--return result;
+		--end get_dimensions;
 
 		
 		procedure transpose_polygon (
@@ -3904,87 +3925,9 @@ package body et_geometry is
 		
 		function is_closed (
 			polygon	: in type_polygon_base)
-			return type_polygon_status is
-
+			return type_polygon_status 
+		is
 			use pac_polygon_segments;
-			
-			--use pac_polygon_lines;
-			--use pac_polygon_arcs;
-			--use pac_polygon_circles;
-
-			-- The functions get_line, get_arc and get_circle search for a polygon segment (by its id)
-			-- and return a cursor to the segment if it exists. Otherwise they return no_element:
-			
-			--function get_line (segment : in type_polygon_segment_id) return pac_polygon_lines.cursor is
-				--c : pac_polygon_lines.cursor := polygon.segments.lines.first;
-				--found : boolean := false;
-
-				--procedure query_line (l : in type_polygon_line) is begin
-					--if l.id = segment then
-						--found := true;
-					--end if;
-				--end query_line;
-
-			--begin -- get_line
-				--while c /= pac_polygon_lines.no_element loop
-					--query_element (c, query_line'access);
-
-					--if found = true then exit; end if;
-					
-					--next (c);
-				--end loop;
-
-				--return c; -- should be no_element if not found. points to the segment if found.
-			--end get_line;
-
-			--function get_arc (segment : in type_polygon_segment_id) return pac_polygon_arcs.cursor is 
-				--c : pac_polygon_arcs.cursor := polygon.segments.arcs.first;
-				--found : boolean := false;
-
-				--procedure query_arc (l : in type_polygon_arc) is begin
-					--if l.id = segment then
-						--found := true;
-					--end if;
-				--end query_arc;
-				
-			--begin -- get_arc
-				--while c /= pac_polygon_arcs.no_element loop
-					--query_element (c, query_arc'access);
-
-					--if found = true then exit; end if;
-					
-					--next (c);
-				--end loop;
-
-				--return c; -- should be no_element if not found. points to the segment if found.
-			--end get_arc;
-			
-			--function get_circle (segment : in type_polygon_segment_id) return pac_polygon_circles.cursor is 
-				--c : pac_polygon_circles.cursor := polygon.segments.circles.first;
-				--found : boolean := false;
-
-				--procedure query_circle (l : in type_polygon_circle) is begin
-					--if l.id = segment then
-						--found := true;
-					--end if;
-				--end query_circle;
-				
-			--begin -- get_circle
-				--while c /= pac_polygon_circles.no_element loop
-					--query_element (c, query_circle'access);
-
-					--if found = true then exit; end if;
-					
-					--next (c);
-				--end loop;
-
-				--return c; -- should be no_element if not found. points to the segment if found.
-			--end get_circle;
-
-			-- Here the result of get_line, get_arc and get_circle is stored temporarily:
-			--cl : pac_polygon_lines.cursor;
-			--ca : pac_polygon_arcs.cursor;
-			--cc : pac_polygon_circles.cursor;
 
 			-- Goes false once a gap has been detected:
 			closed : boolean := true;
@@ -4036,47 +3979,6 @@ package body et_geometry is
 			end query_segment;
 			
 		begin -- is_closed
-			
-			-- Iterate segments of given polygon. For each iteration s indicates the
-			-- segment to be checked. It can be among lines (most likely), among arcs (less likely)
-			-- and among circles (least likely). The functions get_line, get_arc and get_circle
-			-- return a cursor to the segment if it is among lines, arcs or circles.
-			-- Otherwise get_line, get_arc or get_circle return no_element.
-			--for s in type_polygon_segment_id'first .. polygon.segments_total loop
-
-				---- Search the segment among the lines:
-				--cl := get_line (s);
-				--if cl /= pac_polygon_lines.no_element then
-
-					--set_start_point (element (cl).start_point);
-					--last_end_point := element (cl).end_point;
-
-				---- If segment not found among lines, search among arcs:
-				--else 
-					--ca := get_arc (s);
-					--if ca /= pac_polygon_arcs.no_element then
-						
-						--set_start_point (element (ca).start_point);
-						--last_end_point := element (ca).end_point;
-						
-					---- If segment not found among arcs, search among circles:
-					--else
-						--cc := get_circle (s);
-						--if cc /= pac_polygon_circles.no_element then
-
-							--set_start_point (element (cc).center);
-							--last_end_point := element (cc).center;
-							
-						--else
-							---- If segment is not among circles, we have a problem:
-							--raise constraint_error; -- CS should never happen.
-						--end if;
-						
-					--end if;
-				--end if;
-
-			--end loop;
-
 			
 			if polygon.contours.circular then
 				closed := true; -- because this is a single circle
@@ -4234,204 +4136,6 @@ package body et_geometry is
 				polygon.contours.segments.iterate (rotate_segment'access);
 			end if;			
 		end rotate_by;
-
-
-
-		
-		--procedure reorder_segments ( -- experimental
-			--polygon	: in out type_polygon_base)
-		--is
-			--lower_left_corner : type_lower_left_corner := get_lower_left_corner (polygon);
-			--polygon_start_point : type_point;
-			
-			--use pac_polygon_lines;
-			--use pac_polygon_arcs;
-			
-			--function get_smallest_x (row : in type_distance) -- CS no need
-				--return type_distance 
-			--is
-				--sx : type_distance := type_distance'last;
-
-				--line_found : boolean := false;
-				--first_line : type_polygon_line;
-				
-				--procedure query_line (c : in pac_polygon_lines.cursor) is
-					--line : constant type_polygon_line := element (c);
-				--begin
-					---- skip a vertical line:
-					--if line.start_point.x /= line.end_point.x then
-
-						---- start or end point must be on the given row:
-						
-						--if line.start_point.y = row then
-							--if line.start_point.x < sx then
-								--sx := line.start_point.x;
-
-								--first_line := line;
-								--line_found := true;
-							--end if;
-						--end if;
-						
-						--if line.end_point.y = row then
-							--if line.end_point.x < sx then
-								--sx := line.end_point.x;
-
-								--first_line := type_polygon_line (reverse_line (line));
-								--line_found := true;
-							--end if;
-						--end if;
-
-					--end if;
-				--end query_line;
-
-				--arc_found : boolean := false;
-				--first_arc : type_polygon_arc;
-
-				--procedure query_arc (c : in pac_polygon_arcs.cursor) is
-					--arc : constant type_polygon_arc := element (c);
-
-					--start_or_end_on_row : boolean := false;
-
-					--procedure compare_start is begin
-						--if arc.start_point.x < sx then
-							--sx := arc.start_point.x;
-							--first_arc := arc;
-							--arc_found := true;
-							
-							---- If a line was found earlier, then it does not matter anymore:
-							--line_found := false;
-						--end if;
-					--end compare_start;
-
-					--procedure compare_end is begin
-						--if arc.end_point.x < sx then
-							--sx := arc.end_point.x;
-							--first_arc := type_polygon_arc (reverse_arc (arc));
-							--arc_found := true;
-							
-							---- If a line was found earlier, then it does not matter anymore:
-							--line_found := false;
-						--end if;					
-					--end compare_end;
-					
-				--begin -- query_arc
-					---- skip a "vertical" arc:
-					--if arc.start_point.x /= arc.end_point.x then
-
-						---- Start or end point of arc must be on the given row.
-						--if arc.start_point.y = row then
-							--start_or_end_on_row := true;
-							--compare_start;
-						--end if;
-						
-						--if arc.end_point.y = row then
-							--start_or_end_on_row := true;
-							--compare_end;
-						--end if;
-
-						---- If none of them is on the given row, then
-						---- the lower edge of the arc boundaries must be on the row:
-						--if not start_or_end_on_row then
-							--if get_boundaries (arc, zero).smallest_y = row then
-								--compare_start;
-								--compare_end;							
-							--end if;
-						--end if;
-
-					--end if;
-				--end query_arc;
-				
-			--begin
-				--polygon.segments.lines.iterate (query_line'access);
-				--polygon.segments.arcs.iterate (query_arc'access);
-
-				----if arc_found then
-				----if line_found then
-				--return zero;
-			--end get_smallest_x;
-
-			--type type_segment_category is (LINE, ARC);
-			--type type_first_segment (cat : type_segment_category) is record
-				--case cat is
-					--when LINE	=> line_segment : type_polygon_line;
-					--when ARC	=> arc_segment : type_polygon_arc;
-				--end case;
-			--end record;
-
-			--function get_lowest_right_segment (
-				--corner		: in type_point;
-				--segments	: in type_polygon_segments)
-				--return type_first_segment
-			--is
-				--result : type_first_segment (cat => LINE) := (cat => LINE, others => <>);
-
-				--subtype type_direction is type_rotation range 
-					--(-90.0 + type_rotation'small) .. (+90.0 - type_rotation'small);
-					
-				--d1 : type_rotation := zero_rotation;
-				--d2 : type_direction := type_direction'last;
-
-				--selected_line : type_polygon_line;
-				--line_found : boolean := false;
-				
-				--procedure query_line (c : in pac_polygon_lines.cursor) is
-					--line : constant type_polygon_line := element (c);
-				--begin
-					--if line.start_point = corner then
-						--d1 := direction (line);
-
-						--if d1 in type_direction then
-							--if d1 < d2 then
-								--d2 := d1;
-
-								--selected_line := line;
-								--line_found := true;
-							--end if;
-						--end if;
-					--end if;
-				--end query_line;
-				
-				--procedure query_arc (c : in pac_polygon_arcs.cursor) is
-					--arc : constant type_polygon_arc := element (c);
-				--begin
-					--null;
-				--end query_arc;
-
-					
-			--begin
-				--segments.lines.iterate (query_line'access);
-				--segments.arcs.iterate (query_arc'access);
-
-				--return result;
-			--end get_lowest_right_segment;
-			
-			--segments_on_start_point : type_polygon_segments;
-
-			
-			
-		--begin -- reorder_segments
-			--case lower_left_corner.status is
-				--when REAL =>
-					--polygon_start_point := lower_left_corner.point;
-					
-				--when VIRTUAL =>
-
-					----set (
-						----axis	=> Y,
-						----point	=> polygon_start_point,
-						----value	=> lower_left_corner.point.y);
-
-					----set (
-						----axis	=> X,
-						----point	=> polygon_start_point,
-						----value	=> get_smallest_x (polygon_start_point.y));
-
-					--polygon_start_point := get_nearest_corner_point (polygon, lower_left_corner.point);
-			--end case;
-
-			--segments_on_start_point := get_segments_on_corner_point (polygon, polygon_start_point);
-			
-		--end reorder_segments;
 
 		
 		function to_string (scale : in type_polygon_scale) return string is begin
@@ -4958,7 +4662,8 @@ package body et_geometry is
 		end get_first_intersection;
 		
 		
-		function get_lower_left_corner (polygon	: in type_polygon_base)
+		function get_lower_left_corner (
+			polygon	: in type_polygon_base)
 			return type_lower_left_corner
 		is
 			result : type_lower_left_corner;
