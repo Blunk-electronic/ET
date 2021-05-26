@@ -94,24 +94,40 @@ package body et_pcb is
 		log_threshold 	: in type_log_level)
 		return type_inside_polygon_query_result
 	is 
-		outline : type_inside_polygon_query_result;
+		use pac_pcb_cutouts;
 		
+		result : type_inside_polygon_query_result;
+
+		procedure query_hole (c : in pac_pcb_cutouts.cursor) is 
+			holes : type_inside_polygon_query_result;
+		begin
+			holes := in_polygon_status (element (c), point);
+
+			-- Merge hole and outline intersections:
+			merge_query_results (result, holes);
+		end query_hole;
+	
 	begin -- on_board		
 		log (text => "determining position of point" & to_string (point)
 			 & " relative to board outline ...", level => log_threshold);
 
 		log_indentation_up;
 
-		-- CS currently we look at the outline only. cutouts ignored.
-		outline := in_polygon_status (contours.outline, point);
+		-- Starting at given point we imagine a horizontal line that
+		-- runs to the right. The line may intersect the board outline 
+		-- and the holes:
 
-		--holes := in_polygon_status (contours.holes, point);
+		-- Get intersections with outline:
+		result := in_polygon_status (contours.outline, point);
 
-		log (text => "point is " & to_string (outline.status), level => log_threshold);
+		-- Get intersections with holes:
+		iterate (contours.holes, query_hole'access);
 		
+		
+		log (text => "point is " & to_string (result.status), level => log_threshold);
 		log_indentation_down;
 
-		return outline;
+		return result;
 	end on_board;
 
 	

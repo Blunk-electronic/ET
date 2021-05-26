@@ -4447,7 +4447,7 @@ package body et_board_ops is
 		use et_routing;
 
 		-- Get the design rules:
-		design_rules : type_design_rules := get_pcb_design_rules (module_cursor);
+		design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
 		
 		-- We fill the polygons with lines from left to right.
 		lower_left_corner : type_point;
@@ -4543,7 +4543,7 @@ package body et_board_ops is
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net)
 				is 
-					-- The cursor that points to the current polygon:
+					-- The cursor that points to the polygon being filled:
 					p : pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
 
 					-- Get the net class settings of the class the net is member of:
@@ -4553,7 +4553,7 @@ package body et_board_ops is
 					line_width : type_track_width;
 
 					-- The effective line width of a fill line is smaller than line_width
-					-- because the fill lines overlap slightly:
+					-- because the fill lines must overlap slightly:
 					effective_line_width : type_distance_positive;
 
 					-- The boundaries of the polygon (greatest/smallest x/y):

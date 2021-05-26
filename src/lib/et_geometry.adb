@@ -4258,6 +4258,42 @@ package body et_geometry is
 		end subtract_180_if_greater_90;
 
 
+		procedure merge_query_results (
+			query_1 : in out type_inside_polygon_query_result;
+			query_2 : in type_inside_polygon_query_result)
+		is
+			query_2_tmp : type_inside_polygon_query_result := query_2;
+			
+			use pac_probe_line_intersections;
+		begin
+			if query_1.start = query_2.start then
+
+				-- Append query_2_tmp to query_1. query_2_tmp will be 
+				-- cleared afterwards.
+				splice (
+					target	=> query_1.intersections,
+					before	=> no_element,	   
+					source	=> query_2_tmp.intersections);
+
+				-- If the total number of intersections is an odd number,
+				-- then the start point is inside the polygon.
+				-- If the total is even, then the point is outside.				
+				if (length (query_1.intersections) rem 2) = 1 then
+					query_1.status := INSIDE;
+				else 
+					query_1.status := OUTSIDE;
+				end if;
+				
+			else
+				raise constraint_error with 
+					"ERROR: Start points of given queries do not match:"
+					& to_string (query_1.start) 
+					& to_string (query_2.start);
+			end if;
+			
+		end merge_query_results;
+		
+		
 		
 		function to_string (
 			i : in type_inside_polygon_query_result)

@@ -1610,6 +1610,14 @@ package et_geometry is
 			intersections	: pac_probe_line_intersections.list;
 		end record;
 
+
+		-- Append the intersections of query_2 to query_1.
+		-- Updates the status accordingly. 
+		procedure merge_query_results (
+			query_1 : in out type_inside_polygon_query_result;
+			query_2 : in type_inside_polygon_query_result);
+
+		
 		-- Returns the query result as a human readable string:
 		function to_string (
 			i : in type_inside_polygon_query_result)
