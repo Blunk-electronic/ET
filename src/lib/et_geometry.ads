@@ -1439,20 +1439,22 @@ package et_geometry is
 			offset	: in type_distance);
 
 
+
 		-- Reads the segments provided in a row of
-		-- arguments in a form like 
-		-- "line 0 0 100 0 /
-		--  line 100 0 100 100 / 
-		--  arc 50 100 100 100 0 100 ccw / 
-		--  line 0 100 0 0"
+		-- arguments in a form like:
+		-- "line 0 0 line 160 0 line 160 80 line 0 80"
+		-- or:
+		-- line 50 50 70 50 arc 60 50 70 50 50 50 ccw
 		-- and builds a polygon.
-		-- A circle can only be read if it is the only shape.
-		-- Mixing a circle with lines and arcs is not allowed.
-		-- There must be only one circle.
-		-- Examples:
-		--  valid  : circle 9 4 10
-		--  invalid: circle 34 45 30 circle 9 4 10
-		--  invalid: line 0 0 100 0 circle 9 4 10
+		-- 1. The end point of a segment must not be specified.
+		--    It is deduced from the start point of the successor segment.
+		-- 2. A circle can only be read if it is the only shape.
+		--    Mixing a circle with lines and arcs is not allowed.
+		--    There must be only one circle.
+		--    Examples:
+		--     - valid  : circle 9 4 10
+		--     - invalid: circle 34 45 30 circle 9 4 10
+		--     - invalid: line 0 0 circle 9 4 10
 		function to_polygon (
 			arguments : in type_fields_of_line)
 			return type_polygon_base'class;

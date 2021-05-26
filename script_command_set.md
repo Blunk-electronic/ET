@@ -1093,11 +1093,13 @@ board led_driver make pnp
 ```
 
 ## BOARD CONTOURS
-Board outlines and holes are milled. Thus there is parameter for the line width.
+Board outlines and holes are milled. Thus there is parameter for the line width. <br/>
+Entry format: The end point of a segment must not be specified. It is automatically
+deduced from the start point of the successor segment.
 
-Outline:
+Outline (of a 160x80mm Euro-Card):
 ```
-board led_driver draw outline line 0 0 160 0 line 160 0 160 80 line 160 80 0 80 line 0 80 0 0
+board led_driver draw outline line 0 0 line 160 0 line 160 80 line 0 80
 ```
 ```
 board led_driver draw outline circle 50 50 50 # center 50/50 radius 50
@@ -1109,7 +1111,7 @@ board led_driver delete outline 40 50 1 # crossing 40/50, accuracy 1
 Holes are objects inside the board area. They can be of any shape and are used for mounting
 purposes, housings, air convection, etc.:
 ```
-board led_driver draw hole line 0 0 160 0 line 160 0 160 80 line 160 80 0 80 line 0 80 0 0
+board led_driver draw hole line 50 50 arc 60 50 70 50 ccw
 ```
 ```
 board led_driver draw hole circle 50 50 50 # center 50/50 radius 50

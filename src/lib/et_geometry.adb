@@ -3642,7 +3642,7 @@ package body et_geometry is
 		end transpose_polygon;
 		
 		function to_polygon (
-			arguments : in type_fields_of_line)
+			arguments : in type_fields_of_line) -- line 0 0 line 160 0 line 160 80 line 0 80
 			return type_polygon_base'class
 		is
 			result : type_polygon; -- will be converted back to class type on return
@@ -3665,6 +3665,23 @@ package body et_geometry is
 			-- The place in arguments at which we fetch a field from:
 			p : count_type := 1;
 
+			start_point_set : boolean := false;
+			polygon_start_point : type_point; -- start point of polygon
+
+			end_point_previous : type_point;
+
+			use pac_polygon_segments;
+			
+			procedure update_end_point (s : in out type_polygon_segment) is begin
+				case s.shape is
+					when LINE =>						
+						s.segment_line.end_point := end_point_previous;
+						
+					when ARC =>
+						s.segment_arc.end_point := end_point_previous;
+				end case;
+			end update_end_point;
+			
 		begin
 			-- Iterate all fields of given list of arguments:
 			while p <= field_count (arguments) loop
@@ -3697,47 +3714,83 @@ package body et_geometry is
 				-- Fetch the parameters for the shape by
 				-- looking ahead of p:
 				case shape is
-					when LINE => -- line 0 0 100 0
+					when LINE => -- line 0 0
+
+						-- assign start point of line
 						l.start_point := type_point (set (
 								x => to_distance (f (p + 1)),
 								y => to_distance (f (p + 2))));
 
-						l.end_point := type_point (set (
-								x => to_distance (f (p + 3)),
-								y => to_distance (f (p + 4))));
+						-- The start point of the line is also the end point of
+						-- the previous segment:
+						end_point_previous := l.start_point;
 
+						if start_point_set then
+							-- assign the end point of the previous segment:
+							update_element (
+								container	=> result.contours.segments,
+								position	=> result.contours.segments.last,
+								process		=> update_end_point'access);
+						
+						else
+							-- register the start point of the polygon
+							polygon_start_point := l.start_point;
+							start_point_set := true;
+						end if;
+						
 						result.contours.segments.append (new_item => (LINE, l));
 
 						-- fast forward p to next shape:
-						p := p + 5;
+						p := p + 3;
 
 						
-					when ARC => -- arc 50 100 100 100 0 100 ccw
+					when ARC => -- arc 50 100 100 100 ccw
+
+						-- assign center of arc
 						a.center := type_point (set (
 								x => to_distance (f (p + 1)),
 								y => to_distance (f (p + 2))));
 							
+						-- assign start point of arc
 						a.start_point := type_point (set (
 								x => to_distance (f (p + 3)),
 								y => to_distance (f (p + 4))));
 
-						a.end_point := type_point (set (
-								x => to_distance (f (p + 5)),
-								y => to_distance (f (p + 6))));
+						-- The start point of the arc is also the end point
+						-- of the previous segment:
+						end_point_previous := a.start_point;
 
-						a.direction := to_direction (f (p + 7));
+						if start_point_set then
+							-- assign the end point of the previous segment:
+							update_element (
+								container	=> result.contours.segments,
+								position	=> result.contours.segments.last,
+								process		=> update_end_point'access);
+						
+						else
+							-- register the start point of the polygon
+							polygon_start_point := a.start_point;
+							start_point_set := true;
+						end if;
+
+						-- assign direction of arc
+						a.direction := to_direction (f (p + 5));
 						
 						result.contours.segments.append (new_item => (ARC, a));
 
 						-- fast forward p to next shape:						
-						p := p + 8;
+						p := p + 6;
 
 						
+						
 					when CIRCLE => -- circle 40 40 10
+
+						-- assign center of circle
 						c.center := type_point (set (
 								x => to_distance (f (p + 1)),
 								y => to_distance (f (p + 2))));
 
+						-- assigne radius of circle
 						c.radius := to_distance (f (p + 3));
 
 						result.contours.circle := c;
@@ -3751,6 +3804,21 @@ package body et_geometry is
 			end loop;
 
 			
+			-- If the polygon consists of lines and/or arcs then 
+			-- the end point of the last segment is where the polygon
+			-- has started:
+			if shape /= CIRCLE then
+				
+				end_point_previous := polygon_start_point;
+				
+				-- Assign the end point of the last segment:
+				update_element (
+					container	=> result.contours.segments,
+					position	=> result.contours.segments.last,
+					process		=> update_end_point'access);
+
+			end if;
+				
 			return type_polygon_base (result);
 
 			-- CS exception handler required for invalid fields:
