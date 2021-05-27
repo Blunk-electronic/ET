@@ -120,9 +120,8 @@ package body et_pcb is
 		-- Get intersections with outline:
 		result := in_polygon_status (contours.outline, point);
 
-		-- Get intersections with holes:
-		iterate (contours.holes, query_hole'access);
-		
+		-- Get intersections with holes and merge them with result:
+		iterate (contours.holes, query_hole'access);		
 		
 		log (text => "point is " & to_string (result.status), level => log_threshold);
 		log_indentation_down;

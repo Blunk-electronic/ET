@@ -4265,6 +4265,7 @@ package body et_geometry is
 			query_2_tmp : type_inside_polygon_query_result := query_2;
 			
 			use pac_probe_line_intersections;
+			use pac_probe_line_intersections_sorting;
 		begin
 			if query_1.start = query_2.start then
 
@@ -4283,14 +4284,15 @@ package body et_geometry is
 				else 
 					query_1.status := OUTSIDE;
 				end if;
+
+				sort (query_1.intersections);
 				
 			else
 				raise constraint_error with 
 					"ERROR: Start points of given queries do not match:"
 					& to_string (query_1.start) 
 					& to_string (query_2.start);
-			end if;
-			
+			end if;			
 		end merge_query_results;
 		
 		
@@ -4641,8 +4643,7 @@ package body et_geometry is
 			end query_circle;
 
 			procedure sort_x_values is
-				package pac_sort_x_values is new pac_probe_line_intersections.generic_sorting;
-				use pac_sort_x_values;
+				use pac_probe_line_intersections_sorting;
 			begin
 				sort (result.intersections);
 			end sort_x_values;

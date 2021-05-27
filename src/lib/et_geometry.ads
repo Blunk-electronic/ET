@@ -1598,7 +1598,7 @@ package et_geometry is
 		package pac_probe_line_intersections is new
 			indefinite_doubly_linked_lists (type_probe_line_intersection);
 
-			
+		package pac_probe_line_intersections_sorting is new pac_probe_line_intersections.generic_sorting;
 			
 		type type_inside_polygon_query_result is record
 			-- the point where the probe line has started:
@@ -1611,8 +1611,10 @@ package et_geometry is
 		end record;
 
 
-		-- Append the intersections of query_2 to query_1.
-		-- Updates the status accordingly. 
+		-- Merges the intersections of query_2 with query_1.
+		-- Updates the status accordingly.
+		-- Sorts the intersections in query_1 finally by their 
+		-- x-position (from left to right):
 		procedure merge_query_results (
 			query_1 : in out type_inside_polygon_query_result;
 			query_2 : in type_inside_polygon_query_result);
