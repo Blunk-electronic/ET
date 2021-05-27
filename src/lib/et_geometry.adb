@@ -4379,6 +4379,7 @@ package body et_geometry is
 			-- This procedure collects the intersection in the return value.
 			procedure collect_intersection (
 				intersection: in type_intersection; -- incl. point and angle
+				segment		: in type_intersected_segment;
 				curvature	: in type_curvature := STRAIGHT;
 				center		: in type_point := origin;
 				radius		: in type_distance_positive := zero)
@@ -4389,6 +4390,7 @@ package body et_geometry is
 						append (result.intersections, (
 							x_position	=> X (to_point (intersection.point)),
 							angle		=> intersection.angle,
+							segment		=> segment,
 							curvature	=> STRAIGHT
 							));
 
@@ -4397,6 +4399,7 @@ package body et_geometry is
 						append (result.intersections, (
 							x_position	=> X (to_point (intersection.point)),
 							angle		=> intersection.angle,
+							segment		=> segment,
 							curvature	=> CONVEX,
 							center		=> center,
 							radius		=> radius
@@ -4407,6 +4410,7 @@ package body et_geometry is
 						append (result.intersections, (
 							x_position	=> X (to_point (intersection.point)),
 							angle		=> intersection.angle,
+							segment		=> segment,
 							curvature	=> CONCAVE,
 							center		=> center,
 							radius		=> radius
@@ -4426,7 +4430,7 @@ package body et_geometry is
 					if crosses_threshold (l, y_threshold) then
 						
 						-- Add the intersection to the result:
-						collect_intersection (i.intersection);
+						collect_intersection (i.intersection, (LINE, l));
 					end if;
 				end if;				
 			end query_line;
@@ -4449,13 +4453,15 @@ package body et_geometry is
 				procedure count_two is begin
 					-- Add the two intersections to the result:
 					collect_intersection (
-						intersection=> ordered_intersections.entry_point,	
+						intersection=> ordered_intersections.entry_point,
+						segment		=> (ARC, a),					 
 						curvature	=> CONVEX, -- entry point is always convex
 						center		=> a.center,
 						radius		=> radius);
 
 					collect_intersection (
 						intersection=> ordered_intersections.exit_point,	
+						segment		=> (ARC, a),
 						curvature	=> CONCAVE, -- exit point is always concave
 						center		=> a.center,
 						radius		=> radius);
@@ -4478,7 +4484,8 @@ package body et_geometry is
 
 									collect_intersection (
 										intersection	=> i.intersection,	
-
+										segment			=> (ARC, a),
+										
 										-- If there is only one intersection, deduce
 										-- the curvature at the point of intersection:
 										curvature		=> get_curvature (a), -- depends on CW/CCW
@@ -4524,14 +4531,16 @@ package body et_geometry is
 									case a.direction is
 										when CCW => 
 											collect_intersection (
-												intersection=> ordered_intersections.exit_point,	
+												intersection=> ordered_intersections.exit_point,
+												segment		=> (ARC, a),
 												curvature	=> CONCAVE, -- exit point is always concave
 												center		=> a.center,
 												radius		=> radius);
 
 										when CW => 
 											collect_intersection (
-												intersection=> ordered_intersections.entry_point,	
+												intersection=> ordered_intersections.entry_point,
+												segment		=> (ARC, a),																	 
 												curvature	=> CONVEX, -- entry point is always convex
 												center		=> a.center,
 												radius		=> radius);
@@ -4560,7 +4569,8 @@ package body et_geometry is
 									case a.direction is
 										when CCW => 
 											collect_intersection (
-												intersection=> ordered_intersections.entry_point,	
+												intersection=> ordered_intersections.entry_point,
+												segment		=> (ARC, a),					 
 												curvature	=> CONVEX, -- entry point is always convex
 												center		=> a.center,
 												radius		=> radius);
@@ -4568,6 +4578,7 @@ package body et_geometry is
 										when CW => 
 											collect_intersection (
 												intersection=> ordered_intersections.exit_point,	
+												segment		=> (ARC, a),
 												curvature	=> CONCAVE, -- exit point is always concave
 												center		=> a.center,
 												radius		=> radius);
@@ -4591,14 +4602,12 @@ package body et_geometry is
 
 			use pac_polygon_segments;
 			
-			procedure query_segment (c : in pac_polygon_segments.cursor) is
-			begin
+			procedure query_segment (c : in pac_polygon_segments.cursor) is begin
 				case element (c).shape is					
 					when LINE	=> query_line (element (c).segment_line);
 					when ARC	=> query_arc (element (c).segment_arc);
 				end case;
 			end query_segment;
-
 			
 			procedure query_circle (c : in type_circle) is
 				-- Find out whether there is an intersection of the probe line
@@ -4610,7 +4619,6 @@ package body et_geometry is
 				-- then they need to be ordered according to their distance to
 				-- the start point of the probe line (starts at given point);
 				ordered_intersections : type_ordered_line_circle_intersections;
-
 			begin				
 				case i.status is
 					when NONE_EXIST | ONE_EXISTS => null;
@@ -4629,12 +4637,14 @@ package body et_geometry is
 						-- Add the intersections to the result:
 						collect_intersection (
 							intersection=> ordered_intersections.entry_point,	
+							segment		=> (CIRCLE, c),
 							curvature	=> CONVEX, -- entry point is always convex
 							center		=> c.center,
 							radius		=> c.radius);
 
 						collect_intersection (
 							intersection=> ordered_intersections.exit_point,	
+							segment		=> (CIRCLE, c),
 							curvature	=> CONCAVE, -- exit point is always concave
 							center		=> c.center,
 							radius		=> c.radius);

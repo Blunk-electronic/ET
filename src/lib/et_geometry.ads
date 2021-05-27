@@ -1558,9 +1558,14 @@ package et_geometry is
 		-- the original point where the probe line has started is also provided.
 		-- This list provides the x values ordered according to their
 		-- distance to the start point of the ray. Lowest value first.
-		
-		--type type_probe_line is new type_line with null record;
-							  
+
+		type type_intersected_segment (shape : type_shape := LINE) is record
+			case shape is 
+				when LINE	=> segment_line : type_line;
+				when ARC	=> segment_arc : type_arc;
+				when CIRCLE	=> segment_circle : type_circle;
+			end case;
+		end record;
 
 		-- The intersection of a probe line with the polygon side can
 		-- be described as:
@@ -1571,6 +1576,8 @@ package et_geometry is
 			x_position	: type_distance;
 			angle		: type_rotation := zero_rotation;
 
+			segment : type_intersected_segment;
+			
 			case curvature is
 				when STRAIGHT => null;
 				
@@ -1579,6 +1586,7 @@ package et_geometry is
 					center	: type_point := origin;
 					radius	: type_distance_positive := zero;
 			end case;
+
 		end record;
 
 		
