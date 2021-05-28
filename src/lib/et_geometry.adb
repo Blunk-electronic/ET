@@ -4258,7 +4258,7 @@ package body et_geometry is
 		end subtract_180_if_greater_90;
 
 
-		procedure merge_query_results (
+		procedure merge_intersections (
 			query_1 : in out type_inside_polygon_query_result;
 			query_2 : in type_inside_polygon_query_result)
 		is
@@ -4293,7 +4293,7 @@ package body et_geometry is
 					& to_string (query_1.start) 
 					& to_string (query_2.start);
 			end if;			
-		end merge_query_results;
+		end merge_intersections;
 		
 		
 		

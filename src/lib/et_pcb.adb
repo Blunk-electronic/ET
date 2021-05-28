@@ -88,7 +88,7 @@ package body et_pcb is
 	end to_meaning;
 
 
-	function on_board (
+	function get_probe_line_intersections (
 		point			: in type_point;
 		contours		: in type_pcb_contours;
 		log_threshold 	: in type_log_level)
@@ -104,12 +104,12 @@ package body et_pcb is
 			holes := in_polygon_status (element (c), point);
 
 			-- Merge hole and outline intersections:
-			merge_query_results (result, holes);
+			merge_intersections (result, holes);
 		end query_hole;
 	
-	begin -- on_board		
-		log (text => "determining position of point" & to_string (point)
-			 & " relative to board outline ...", level => log_threshold);
+	begin -- get_probe_line_intersections		
+		log (text => "computing intersections with board contours ...",
+			 level => log_threshold);
 
 		log_indentation_up;
 
@@ -122,12 +122,60 @@ package body et_pcb is
 
 		-- Get intersections with holes and merge them with result:
 		iterate (contours.holes, query_hole'access);		
+
+		log (text => to_string (result), level => log_threshold);
 		
-		log (text => "point is " & to_string (result.status), level => log_threshold);
 		log_indentation_down;
 
 		return result;
-	end on_board;
+	end get_probe_line_intersections;
+
+	
+	function get_probe_line_intersections (
+		point			: in type_point;
+		fill_area		: in type_polygon_conductor;
+		layer			: in type_signal_layer;
+		cutouts			: in et_conductor_polygons.pac_conductor_cutouts.list;
+		log_threshold 	: in type_log_level)
+		return type_inside_polygon_query_result
+	is
+		use et_conductor_polygons.pac_conductor_cutouts;
+		
+		result : type_inside_polygon_query_result;
+
+		procedure query_cutout (c : in et_conductor_polygons.pac_conductor_cutouts.cursor) is 
+			cutouts : type_inside_polygon_query_result;
+		begin
+			if element (c).layer = layer then
+				cutouts := in_polygon_status (element (c), point);
+
+				-- Merge cutouts and outline intersections:
+				merge_intersections (result, cutouts);
+			end if;
+		end query_cutout;
+
+	begin -- get_probe_line_intersections
+		log (text => "computing intersections with fill area ...",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		-- Starting at given point we imagine a horizontal line that
+		-- runs to the right. The line may intersect the fill area
+		-- outline and the cutout areas.
+
+		-- Get intersections with outline:
+		result := in_polygon_status (fill_area, point);
+
+		-- Get intersections with cutouts and merge them with result:
+		iterate (cutouts, query_cutout'access);		
+		
+		log (text => to_string (result), level => log_threshold);
+		
+		log_indentation_down;
+		
+		return result;
+	end get_probe_line_intersections;
 
 	
 	function on_segment (

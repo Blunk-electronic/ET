@@ -4586,11 +4586,9 @@ package body et_board_ops is
 						-- and the current conductor polygon at certain x-positions.
 						-- The fill lines for a single row will later be drawn along the probe line.
 
-						-- The intersections with the board contours:
-						board_intersections : type_inside_polygon_query_result;
+						intersections_with_board_contours : type_inside_polygon_query_result;
 
-						-- The intersections with the current conductor polygon:
-						polygon_intersections : type_inside_polygon_query_result;
+						intersections_with_fill_area : type_inside_polygon_query_result;
 
 						-- The points where fill line comes too close to the polygon edges
 						-- or where the fill line comes to save distance from the edges.
@@ -4612,13 +4610,24 @@ package body et_board_ops is
 						end add_lines;
 
 						procedure make_fill_lines is begin
-							-- Get the intersections with the board contours:
-							board_intersections := on_board (start_point, module.board.contours, log_threshold + 3);
+
+							intersections_with_board_contours := get_probe_line_intersections (
+								point			=> start_point,
+								contours		=> module.board.contours,
+								log_threshold	=> log_threshold + 3);
+
+							intersections_with_fill_area := get_probe_line_intersections (
+								point			=> start_point,
+								fill_area		=> type_polygon_conductor (element (p)),
+								layer			=> element (p).properties.layer,
+								cutouts			=> module.board.conductors.cutouts,
+								log_threshold	=> log_threshold + 3);
+
 							
 							-- Get the intersections with the current conductor polygon:
-							polygon_intersections := in_polygon_status (element (p), start_point);
+							--polygon_intersections := in_polygon_status (element (p), start_point);
 
-							log (text => to_string (polygon_intersections), level => log_threshold + 3);
+							--log (text => to_string (polygon_intersections), level => log_threshold + 3);
 
 							-- Compute the polygon proximity points (the places where the
 							-- fill line gets too close the polygon sides or where it reaches
@@ -4633,17 +4642,17 @@ package body et_board_ops is
 							-- CS intersections and proximities with cutout areas
 							
 							-- Compute the fill lines required for the current row (y-position):
-							fill_lines := et_routing.compute_fill_lines (
-								module_cursor		=> module_cursor,
-								design_rules		=> design_rules,
-								board_domain		=> board_intersections, 
-								polygon_domain		=> polygon_intersections,
-								polygon_proximities	=> polygon_proximities,
-								width				=> line_width,
-								clearance			=> net_class.clearance,
-								isolation			=> element (p).isolation,
-								easing				=> element (p).easing,
-								log_threshold		=> log_threshold + 3);
+							--fill_lines := et_routing.compute_fill_lines (
+								--module_cursor		=> module_cursor,
+								--design_rules		=> design_rules,
+								--board_domain		=> board_intersections, 
+								--polygon_domain		=> polygon_intersections,
+								--polygon_proximities	=> polygon_proximities,
+								--width				=> line_width,
+								--clearance			=> net_class.clearance,
+								--isolation			=> element (p).isolation,
+								--easing				=> element (p).easing,
+								--log_threshold		=> log_threshold + 3);
 
 							-- Add the fill lines to the conductor polygon:
 							update_element (

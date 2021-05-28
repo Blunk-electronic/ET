@@ -1623,7 +1623,7 @@ package et_geometry is
 		-- Updates the status accordingly.
 		-- Sorts the intersections in query_1 finally by their 
 		-- x-position (from left to right):
-		procedure merge_query_results (
+		procedure merge_intersections (
 			query_1 : in out type_inside_polygon_query_result;
 			query_2 : in type_inside_polygon_query_result);
 

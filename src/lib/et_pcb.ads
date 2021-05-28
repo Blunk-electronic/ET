@@ -183,16 +183,33 @@ package et_pcb is
 	
 
 	
-	-- This function detects whether the given point is in the usable
+	-- This function returns the intersections of a 
+	-- probe line with the board edges. 
+	-- The probe line starts at point and runs horizontally
+	-- the right.
+	-- It detects whether the given point is in the usable
 	-- area of the board. The point is regarded as "outside" if
 	-- it sits exactly on the edge of the board.
-	function on_board (
+	function get_probe_line_intersections (
 		point			: in type_point;
 		contours		: in type_pcb_contours;
 		log_threshold 	: in type_log_level)
 		return type_inside_polygon_query_result;
 
-
+	-- This function returns the intersections of a 
+	-- probe line with a conductor fill area. 
+	-- The probe line starts at point and runs horizontally
+	-- the right.
+	-- It detects whether the given point is inside the fill
+	-- area. The point is regarded as "outside" if
+	-- it sits exactly on the edge of the fill area.
+	function get_probe_line_intersections (
+		point			: in type_point;
+		fill_area		: in type_polygon_conductor;
+		layer			: in type_signal_layer;
+		cutouts			: in et_conductor_polygons.pac_conductor_cutouts.list;
+		log_threshold 	: in type_log_level)
+		return type_inside_polygon_query_result;
 
 
 
@@ -247,7 +264,7 @@ package et_pcb is
 		-- CS: It is probably no good idea to allow floating 
 		-- conductor polygons.
 		polygons		: type_conductor_polygons_floating; 
-		cutouts			: et_conductor_polygons.pac_conductor_cutouts.list;		
+		cutouts			: et_conductor_polygons.pac_conductor_cutouts.list;
 		
 		texts			: pac_conductor_texts.list;
 		placeholders	: pac_text_placeholders_conductors.list;
