@@ -261,9 +261,11 @@ package et_pcb is
 		arcs			: pac_conductor_arcs.list;
 		circles			: pac_conductor_circles.list;
 
-		-- CS: It is probably no good idea to allow floating 
-		-- conductor polygons.
+		-- floating conductor polygons/fill areas:
 		polygons		: type_conductor_polygons_floating; 
+		-- CS: It is probably no good idea to allow floating conductor polygons.
+
+		-- global cutout areas for conductor polygons:
 		cutouts			: et_conductor_polygons.pac_conductor_cutouts.list;
 		
 		texts			: pac_conductor_texts.list;
@@ -281,7 +283,11 @@ package et_pcb is
 		arcs		: pac_conductor_arcs.list;
 		-- CS: circles ?
 		vias		: pac_vias.list;
+
+		-- fill areas:
 		polygons	: type_signal_polygons;
+
+		-- route specific cutout areas:
 		cutouts		: et_conductor_polygons.pac_conductor_cutouts.list;
 	end record;
 	

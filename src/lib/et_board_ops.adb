@@ -4621,6 +4621,7 @@ package body et_board_ops is
 								fill_area		=> type_polygon_conductor (element (p)),
 								layer			=> element (p).properties.layer,
 								cutouts			=> module.board.conductors.cutouts,
+								--cutouts_route	=> net.route.cutouts,
 								log_threshold	=> log_threshold + 3);
 
 							
