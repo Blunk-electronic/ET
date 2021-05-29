@@ -1367,6 +1367,7 @@ package et_geometry is
 		function to_string (
 			polygon	: in type_polygon_base)
 			return string;
+
 		
 		-- Returns the corner point nearest to the given
 		-- reference point.
@@ -1577,6 +1578,7 @@ package et_geometry is
 			angle		: type_rotation := zero_rotation;
 
 			segment : type_intersected_segment;
+			-- CS cursor of segment instead ?
 			
 			case curvature is
 				when STRAIGHT => null;
@@ -1618,6 +1620,8 @@ package et_geometry is
 			intersections	: pac_probe_line_intersections.list;
 		end record;
 
+		package pac_intersections is new 
+			doubly_linked_lists (type_inside_polygon_query_result);
 
 		-- Merges the intersections of query_2 with query_1.
 		-- Updates the status accordingly.
@@ -1649,6 +1653,17 @@ package et_geometry is
 			point		: in type_point)
 			return type_inside_polygon_query_result;
 
+		type type_stop_go is (STOP, GO);
+		
+		function make_switches (
+			polygon			: in type_polygon_base;
+			intersections	: in type_inside_polygon_query_result;
+			width			: in type_distance_positive;
+			first			: in type_stop_go;
+			clearance		: in type_distance_positive := zero)
+			return pac_distances.list;
+
+		
 							   
 		-- Returns true if the given query result contains at least
 		-- one x-value of an intersection:

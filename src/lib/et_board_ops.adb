@@ -4438,6 +4438,7 @@ package body et_board_ops is
 	end place_polygon_conductor;
 
 
+
 	procedure fill_conductor_polygons (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level;
@@ -4586,13 +4587,13 @@ package body et_board_ops is
 						-- and the current conductor polygon at certain x-positions.
 						-- The fill lines for a single row will later be drawn along the probe line.
 
-						intersections_with_board_contours : type_inside_polygon_query_result;
+						--intersections_with_board_contours : type_inside_polygon_query_result;
 
-						intersections_with_fill_area : type_inside_polygon_query_result;
+						--intersections_with_fill_area : type_inside_polygon_query_result;
 
 						-- The points where fill line comes too close to the polygon edges
 						-- or where the fill line comes to save distance from the edges.
-						polygon_proximities : pac_proximity_points.set;
+						--polygon_proximities : pac_proximity_points.set;
 						
 						-- The fill lines for the current row. Ordered from the left
 						-- to the right:
@@ -4609,19 +4610,29 @@ package body et_board_ops is
 								source	=> fill_lines);
 						end add_lines;
 
-						procedure make_fill_lines is begin
+						procedure make_fill_lines is 
+							marks : type_fill_line_marks;
+						begin
 
-							intersections_with_board_contours := get_probe_line_intersections (
+							marks.outline := get_probe_line_intersections (
 								point			=> start_point,
-								contours		=> module.board.contours,
+								outline			=> module.board.contours.outline,
 								log_threshold	=> log_threshold + 3);
 
-							intersections_with_fill_area := get_probe_line_intersections (
+							marks.holes := get_probe_line_intersections (
 								point			=> start_point,
-								fill_area		=> type_polygon_conductor (element (p)),
+								holes			=> module.board.contours.holes,
+								log_threshold	=> log_threshold + 3);
+							
+							marks.area := get_probe_line_intersections (
+								point			=> start_point,
+								area			=> type_polygon_conductor (element (p)),
+								log_threshold	=> log_threshold + 3);
+
+							marks.cutouts_global := get_probe_line_intersections (
+								point			=> start_point,
 								layer			=> element (p).properties.layer,
 								cutouts			=> module.board.conductors.cutouts,
-								--cutouts_route	=> net.route.cutouts,
 								log_threshold	=> log_threshold + 3);
 
 							

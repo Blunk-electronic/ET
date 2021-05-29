@@ -190,12 +190,34 @@ package et_pcb is
 	-- It detects whether the given point is in the usable
 	-- area of the board. The point is regarded as "outside" if
 	-- it sits exactly on the edge of the board.
+
+	--function get_probe_line_intersections (
+		--point			: in type_point;
+		--contours		: in type_pcb_contours;
+		--log_threshold 	: in type_log_level)
+		--return type_inside_polygon_query_result;
+
+	type type_fill_line_marks is record
+		outline	: type_inside_polygon_query_result;
+		holes	: pac_intersections.list;
+		
+		area			: type_inside_polygon_query_result;
+		cutouts_global	: pac_intersections.list;
+	end record;
+	
 	function get_probe_line_intersections (
 		point			: in type_point;
-		contours		: in type_pcb_contours;
+		outline			: in type_polygon;
 		log_threshold 	: in type_log_level)
 		return type_inside_polygon_query_result;
+	
+	function get_probe_line_intersections (
+		point			: in type_point;
+		holes			: in pac_pcb_cutouts.list;
+		log_threshold 	: in type_log_level)
+		return pac_intersections.list;
 
+	
 	-- This function returns the intersections of a 
 	-- probe line with a conductor fill area. 
 	-- The probe line starts at point and runs horizontally
@@ -205,13 +227,18 @@ package et_pcb is
 	-- it sits exactly on the edge of the fill area.
 	function get_probe_line_intersections (
 		point			: in type_point;
-		fill_area		: in type_polygon_conductor;
-		layer			: in type_signal_layer;
-		cutouts			: in et_conductor_polygons.pac_conductor_cutouts.list;
+		area			: in type_polygon_conductor;
 		log_threshold 	: in type_log_level)
 		return type_inside_polygon_query_result;
 
+	function get_probe_line_intersections (
+		point			: in type_point;
+		cutouts			: in et_conductor_polygons.pac_conductor_cutouts.list;
+		layer			: in type_signal_layer;
+		log_threshold 	: in type_log_level)
+		return pac_intersections.list;
 
+	
 
 	
 -- CONDUCTOR OBJECTS

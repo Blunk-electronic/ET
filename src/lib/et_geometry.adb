@@ -3249,6 +3249,8 @@ package body et_geometry is
 		end to_string;
 
 
+
+		
 		
 		function get_nearest_corner_point (
 			polygon		: in type_polygon_base;
@@ -4686,6 +4688,42 @@ package body et_geometry is
 			return result;
 		end in_polygon_status;
 
+
+		function make_switches (
+			polygon			: in type_polygon_base;
+			intersections	: in type_inside_polygon_query_result;
+			width			: in type_distance_positive;
+			first			: in type_stop_go;
+			clearance		: in type_distance_positive := zero)
+			return pac_distances.list
+		is
+			result : pac_distances.list;
+
+			status : type_stop_go := first;
+			
+			procedure toggle_status is begin
+				case status is
+					when STOP => status := GO;
+					when GO => status := STOP;
+				end case;
+			end toggle_status;
+
+			use pac_probe_line_intersections;
+			
+			procedure query_intersection (c : in pac_probe_line_intersections.cursor)
+			is
+			begin
+				null;
+			end query_intersection;
+			
+		begin
+
+			iterate (intersections.intersections, query_intersection'access);
+			
+			return result;
+		end make_switches;
+
+		
 		function intersections_found (
 			i : in type_inside_polygon_query_result)
 			return boolean
