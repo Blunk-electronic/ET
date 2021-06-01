@@ -1908,106 +1908,259 @@ package body et_routing is
 		return result;
 	end compute_fill_lines;
 		
+
+	function get_overlap (
+		track	: in type_track;
+		line	: in type_line;
+		target	: in type_target)
+		return type_overlap
+	is
+		result : type_overlap;
+	begin
+
+
+		return result;
+	end get_overlap;
+
 	
-	function get_distance_to_obstacle (
+	function get_overlap (
+		track	: in type_track;
+		arc		: in type_arc;
+		target	: in type_target)
+		return type_overlap
+	is
+		result : type_overlap;
+	begin
+
+
+		return result;
+	end get_overlap;
+
+
+	function get_overlap (
+		track	: in type_track;
+		circle	: in type_circle;
+		target	: in type_target)
+		return type_overlap
+	is
+		result : type_overlap;
+	begin
+
+
+		return result;
+	end get_overlap;
+
+	
+	function get_distance (
 		module_cursor	: in pac_generic_modules.cursor;
 		start_point		: in type_point;
+		target			: in type_target := BEFORE;
 		direction		: in type_rotation;
 		net_name		: in pac_net_name.bounded_string := no_name;
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
-		clearance		: in type_track_observe_clearance := track_observe_clearance_default;
 		log_threshold	: in type_log_level)
-		return type_distance
+		return type_route_distance
 	is
-		distance : type_distance := zero;
-	begin
-		null;
+		use pac_generic_modules;
 
-		return distance;
-	end get_distance_to_obstacle;
+		probe_ray : constant type_ray := (start_point, direction);
+		probe_line : constant type_line_vector := to_line_vector (probe_ray);
+
+		design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
+		
+		track : type_track := (
+			center		=> probe_line,
+			width		=> width,
+			others		=> <>);
+
+		distance_to_obstacle : type_distance_positive := type_distance'last;
+		status : type_valid := VALID;
+		
+		procedure process_overlap (ol : in type_overlap) is
+			
+			procedure update_nearest is 
+				n : type_point := to_point (ol.nearest);
+				d : type_distance_positive := distance_total (start_point, n);
+			begin
+				if d < distance_to_obstacle then
+					distance_to_obstacle := d;
+				end if;
+
+				if distance_to_obstacle = zero then
+					status := INVALID;
+				end if;
+			end update_nearest;
+
+			procedure collect_overlap is begin
+				null;
+			end collect_overlap;
 	
-	function get_distance_to_obstacle_in_polygon (
-		module_cursor	: in pac_generic_modules.cursor;
-		polygon			: in type_polygon_conductor'class;
-		start_point		: in type_point;
-		net_name		: in pac_net_name.bounded_string := no_name;
-		clearance		: in type_track_observe_clearance := track_observe_clearance_default;
-		log_threshold	: in type_log_level)
-		return type_distance_positive
-	is
-		use et_conductor_polygons;
-		
-		distance : type_distance_positive := zero;
-
-		layer : type_signal_layer;
-		width : type_track_width := polygon.width_min;
-
-		procedure floating_solid is
-			p : type_polygon_conductor_solid_floating := type_polygon_conductor_solid_floating (polygon);
 		begin
-			layer := p.properties.layer;
-		end floating_solid;
+			case target is
+				when BEFORE => update_nearest;
+				when AFTER => collect_overlap;
+			end case;
+		end process_overlap;
+
 		
-		procedure floating_hatched is
-			p : type_polygon_conductor_hatched_floating := type_polygon_conductor_hatched_floating (polygon);
-		begin
-			layer := p.properties.layer;
-		end floating_hatched;
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module) 
+		is
+
+			use pac_polygon_segments;
 			
-		procedure route_solid is
-			p : type_polygon_conductor_route_solid := type_polygon_conductor_route_solid (polygon);
-		begin
-			layer := p.properties.layer;
-		end route_solid;
+			procedure query_contours is
 
-		procedure route_hatched is
-			p : type_polygon_conductor_route_hatched := type_polygon_conductor_route_hatched (polygon);
-		begin
-			layer := p.properties.layer;
-		end route_hatched;
+				procedure query_segment (c : in pac_polygon_segments.cursor)
+				is
+					procedure test_line is
+						ol : constant type_overlap := 
+							get_overlap (track, element (c).segment_line, target);
+					begin
+						process_overlap (ol);
+					end test_line;
 
-		
-	begin -- get_distance_to_obstacle_in_polygon
-		
-		if polygon'tag = type_polygon_conductor_solid_floating'tag then
-			floating_solid;
+					procedure test_arc is
+						ol : constant type_overlap := 
+							get_overlap (track, element (c).segment_arc, target);
+					begin
+						process_overlap (ol);
+					end test_arc;
+					
+				begin -- query_segment
+					case element (c).shape is
+						when LINE	=> test_line;
+						when ARC	=> test_arc;
+					end case;
+				end query_segment;
 
-		elsif polygon'tag = type_polygon_conductor_hatched_floating'tag then
-			floating_hatched;
+				procedure query_circle is
+					ol : constant type_overlap :=
+						get_overlap (track, module.board.contours.outline.contours.circle, target);
+				begin
+					null; -- CS
+				end query_circle;
+				
+			begin -- query_contours
+				track.clearance	:= design_rules.clearances.conductor_to_board_edge;
+				
+				-- board outline:
+				if module.board.contours.outline.contours.circular then
+					query_circle;
+				else
+					iterate (module.board.contours.outline.contours.segments, query_segment'access);
+				end if;
+			end query_contours;
 			
-		elsif polygon'tag = type_polygon_conductor_route_solid'tag then
-			route_solid;
+		begin -- query_module
+			query_contours;
 
-		elsif polygon'tag = type_polygon_conductor_route_hatched'tag then
-			route_hatched;
+			-- CS abort if status is invalid.
+			
+			-- query tracks, texts, pads, ...
+		end query_module;
+		
+	begin
+		query_element (module_cursor, query_module'access);
 
-		end if;
+		case target is
+			when BEFORE =>
+				case status is 
+					when VALID		=> return (VALID, distance_to_obstacle);
+					when INVALID	=> return (status => INVALID);
+				end case;
+				
+			when AFTER =>
+				return (status => INVALID); -- CS
 
-		distance := 3.0;
+		end case;
+	end get_distance;
+
+
+	
+	--function get_distance_to_obstacle_in_polygon (
+		--module_cursor	: in pac_generic_modules.cursor;
+		--polygon			: in type_polygon_conductor'class;
+		--start_point		: in type_point;
+		--net_name		: in pac_net_name.bounded_string := no_name;
+		--clearance		: in type_track_observe_clearance := track_observe_clearance_default;
+		--log_threshold	: in type_log_level)
+		--return type_distance_positive
+	--is
+		--use et_conductor_polygons;
+		
+		--distance : type_distance_positive := zero;
+
+		--layer : type_signal_layer;
+		--width : type_track_width := polygon.width_min;
+
+		--procedure floating_solid is
+			--p : type_polygon_conductor_solid_floating := type_polygon_conductor_solid_floating (polygon);
+		--begin
+			--layer := p.properties.layer;
+		--end floating_solid;
+		
+		--procedure floating_hatched is
+			--p : type_polygon_conductor_hatched_floating := type_polygon_conductor_hatched_floating (polygon);
+		--begin
+			--layer := p.properties.layer;
+		--end floating_hatched;
+			
+		--procedure route_solid is
+			--p : type_polygon_conductor_route_solid := type_polygon_conductor_route_solid (polygon);
+		--begin
+			--layer := p.properties.layer;
+		--end route_solid;
+
+		--procedure route_hatched is
+			--p : type_polygon_conductor_route_hatched := type_polygon_conductor_route_hatched (polygon);
+		--begin
+			--layer := p.properties.layer;
+		--end route_hatched;
+
+		
+	--begin -- get_distance_to_obstacle_in_polygon
+		
+		--if polygon'tag = type_polygon_conductor_solid_floating'tag then
+			--floating_solid;
+
+		--elsif polygon'tag = type_polygon_conductor_hatched_floating'tag then
+			--floating_hatched;
+			
+		--elsif polygon'tag = type_polygon_conductor_route_solid'tag then
+			--route_solid;
+
+		--elsif polygon'tag = type_polygon_conductor_route_hatched'tag then
+			--route_hatched;
+
+		--end if;
+
+		--distance := 3.0;
+		----null;
+
+		--return distance;
+	--end get_distance_to_obstacle_in_polygon;
+
+	
+	--function get_start_point_beyond_obstacle (
+		--module_cursor	: in pac_generic_modules.cursor;
+		--end_point		: in type_point;
+		--direction		: in type_rotation;
+		----net_name		: in pac_net_name.bounded_string := no_name;
+		--layer			: in type_signal_layer;
+		--width			: in type_track_width;
+		--clearance		: in type_track_observe_clearance := track_observe_clearance_default;
+		--log_threshold	: in type_log_level)
+		--return type_point
+	--is
+		--point : type_point;
+	--begin
 		--null;
 
-		return distance;
-	end get_distance_to_obstacle_in_polygon;
-
-	
-	function get_start_point_beyond_obstacle (
-		module_cursor	: in pac_generic_modules.cursor;
-		end_point		: in type_point;
-		direction		: in type_rotation;
-		--net_name		: in pac_net_name.bounded_string := no_name;
-		layer			: in type_signal_layer;
-		width			: in type_track_width;
-		clearance		: in type_track_observe_clearance := track_observe_clearance_default;
-		log_threshold	: in type_log_level)
-		return type_point
-	is
-		point : type_point;
-	begin
-		null;
-
-		return point;
-	end get_start_point_beyond_obstacle;
+		--return point;
+	--end get_start_point_beyond_obstacle;
 
 	
 end et_routing;

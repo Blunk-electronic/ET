@@ -41,12 +41,14 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_sets;
 
+with et_general;				use et_general;
 with et_geometry;				use et_geometry;
 with et_design_rules;			use et_design_rules;
 with et_nets;					use et_nets;
 with et_vias;					use et_vias;
 with et_terminals;				use et_terminals;
 with et_packages;				use et_packages;
+with et_schematic;
 with et_pcb;					use et_pcb;
 with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
@@ -151,25 +153,69 @@ package et_routing is
 
 	
 	
-	type type_track_observe_clearance is (
-		RIGHT,
-		LEFT,
-		BOTH);
+	--type type_track_observe_clearance is (
+		--RIGHT,
+		--LEFT,
+		--BOTH);
 
-	track_observe_clearance_default : constant type_track_observe_clearance := BOTH;
+	--track_observe_clearance_default : constant type_track_observe_clearance := BOTH;
 
+
+	type type_track is record
+		center		: type_line_vector;
+		width		: type_track_width;
+		clearance	: type_track_clearance;
+	end record;
+
+	type type_target is (
+		BEFORE,
+		AFTER);					
+
+	type type_overlap is record
+		nearest, farest : type_vector;
+	end record;
+	
+	function get_overlap (
+		track	: in type_track;
+		line	: in type_line;
+		target	: in type_target)
+		return type_overlap;
+
+	function get_overlap (
+		track	: in type_track;
+		arc		: in type_arc;
+		target	: in type_target)
+		return type_overlap;
+
+	function get_overlap (
+		track	: in type_track;
+		circle	: in type_circle;
+		target	: in type_target)
+		return type_overlap;
+
+	
+
+	type type_valid is (VALID, INVALID);
+	
+	type type_route_distance (status : type_valid) is record
+		case status is
+			when VALID		=> distance : type_distance_positive;
+			when INVALID	=> null;
+		end case;
+	end record;
+	
 	-- Returns the distance from start_point to the next obstacle
 	-- in the given direction:
-	function get_distance_to_obstacle (
+	function get_distance (
 		module_cursor	: in pac_generic_modules.cursor;
 		start_point		: in type_point;
+		target			: in type_target := BEFORE;
 		direction		: in type_rotation;
 		net_name		: in pac_net_name.bounded_string := no_name;
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
-		clearance		: in type_track_observe_clearance := track_observe_clearance_default;
 		log_threshold	: in type_log_level)
-		return type_distance;
+		return type_route_distance;
 
 	-- Calculates the distance in direction 0 degree from given
 	-- start_point to the next obstacle.
@@ -182,33 +228,33 @@ package et_routing is
 	-- - cutout areas
 	-- - the contour/edge of the conductor polygon
 	-- The clearances as specified in DRU are also taken into account.
-	function get_distance_to_obstacle_in_polygon (
-		module_cursor	: in pac_generic_modules.cursor;
-		polygon			: in type_polygon_conductor'class;
+	--function get_distance_to_obstacle_in_polygon (
+		--module_cursor	: in pac_generic_modules.cursor;
+		--polygon			: in type_polygon_conductor'class;
 		
-		-- The start point must be on the edge or inside the polygon:
-		start_point		: in type_point;
+		---- The start point must be on the edge or inside the polygon:
+		--start_point		: in type_point;
 
-		-- The net name is relevant if the polygon is connected
-		-- with a net (depends on the type of the given polygon):
-		net_name		: in pac_net_name.bounded_string := no_name;
+		---- The net name is relevant if the polygon is connected
+		---- with a net (depends on the type of the given polygon):
+		--net_name		: in pac_net_name.bounded_string := no_name;
 		
-		clearance		: in type_track_observe_clearance := track_observe_clearance_default;
-		log_threshold	: in type_log_level)
-		return type_distance_positive;
+		--clearance		: in type_track_observe_clearance := track_observe_clearance_default;
+		--log_threshold	: in type_log_level)
+		--return type_distance_positive;
 
 	
 	-- CS not final. just an approach:
-	function get_start_point_beyond_obstacle (
-		module_cursor	: in pac_generic_modules.cursor;
-		end_point		: in type_point;
-		direction		: in type_rotation;
-		--net_name		: in pac_net_name.bounded_string := no_name;
-		layer			: in type_signal_layer;
-		width			: in type_track_width;
-		clearance		: in type_track_observe_clearance := track_observe_clearance_default;
-		log_threshold	: in type_log_level)
-		return type_point;
+	--function get_start_point_beyond_obstacle (
+		--module_cursor	: in pac_generic_modules.cursor;
+		--end_point		: in type_point;
+		--direction		: in type_rotation;
+		----net_name		: in pac_net_name.bounded_string := no_name;
+		--layer			: in type_signal_layer;
+		--width			: in type_track_width;
+		--clearance		: in type_track_observe_clearance := track_observe_clearance_default;
+		--log_threshold	: in type_log_level)
+		--return type_point;
 
 
 	
