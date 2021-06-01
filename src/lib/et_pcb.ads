@@ -204,7 +204,7 @@ package et_pcb is
 		area			: type_inside_polygon_query_result;
 		cutouts_global	: pac_intersections.list;
 	end record;
-	
+
 	function get_probe_line_intersections (
 		point			: in type_point;
 		outline			: in type_polygon;
@@ -239,7 +239,16 @@ package et_pcb is
 		return pac_intersections.list;
 
 	
+	type type_switches is record
+		outline	: pac_distances.list;
+		holes	: pac_switches.list;
 
+		area			: pac_distances.list;
+		cutouts_global	: pac_switches.list;
+	end record;
+
+	
+	
 	
 -- CONDUCTOR OBJECTS
 	

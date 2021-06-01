@@ -1578,7 +1578,6 @@ package et_geometry is
 			angle		: type_rotation := zero_rotation;
 
 			segment : type_intersected_segment;
-			-- CS cursor of segment instead ?
 			
 			case curvature is
 				when STRAIGHT => null;
@@ -1620,9 +1619,13 @@ package et_geometry is
 			intersections	: pac_probe_line_intersections.list;
 		end record;
 
+		function invert_status (
+			intersections	: in type_inside_polygon_query_result)
+			return type_inside_polygon_query_result;
+		
 		package pac_intersections is new 
 			doubly_linked_lists (type_inside_polygon_query_result);
-
+			
 		-- Merges the intersections of query_2 with query_1.
 		-- Updates the status accordingly.
 		-- Sorts the intersections in query_1 finally by their 
@@ -1654,15 +1657,20 @@ package et_geometry is
 			return type_inside_polygon_query_result;
 
 		type type_stop_go is (STOP, GO);
+
+		type type_switches is record
+			initial		: type_point_status;
+			switches	: pac_distances.list;
+		end record;
 		
 		function make_switches (
 			polygon			: in type_polygon_base;
 			intersections	: in type_inside_polygon_query_result;
 			width			: in type_distance_positive;
-			first			: in type_stop_go;
 			clearance		: in type_distance_positive := zero)
-			return pac_distances.list;
+			return type_switches;
 
+		package pac_switches is new doubly_linked_lists (type_switches);
 		
 							   
 		-- Returns true if the given query result contains at least

@@ -4467,6 +4467,31 @@ package body et_board_ops is
 				level => log_threshold);
 		end log_lower_left_corner;
 	
+		type type_switches_all is record
+			y_position	: type_distance;
+			outline	: et_board_shapes_and_text.pac_shapes.type_switches;
+		end record;
+
+		
+		function fill_row (
+			switches		: in type_switches_all;
+			log_threshold	: in type_log_level)				  
+			return pac_fill_lines.list 
+		is
+			result : pac_fill_lines.list;
+
+			-- This is the y position of all fill lines. All fill lines
+			-- are in the same row:
+			--y_position : constant type_distance := pac_geometry_brd.Y (switches.outline.initial); 
+
+			-- A single fill line to be inserted in the result:
+			fill_line : type_fill_line; -- G====S
+
+		begin
+
+			return result;
+		end fill_row;
+		
 		
 		procedure floating_polygons is
 			use pac_conductor_polygons_floating_solid;
@@ -4612,6 +4637,8 @@ package body et_board_ops is
 
 						procedure make_fill_lines is 
 							marks : type_fill_line_marks;
+							switches : type_switches_all;
+							
 						begin
 
 							marks.outline := get_probe_line_intersections (
@@ -4623,7 +4650,7 @@ package body et_board_ops is
 								point			=> start_point,
 								holes			=> module.board.contours.holes,
 								log_threshold	=> log_threshold + 3);
-							
+
 							marks.area := get_probe_line_intersections (
 								point			=> start_point,
 								area			=> type_polygon_conductor (element (p)),
@@ -4635,6 +4662,13 @@ package body et_board_ops is
 								cutouts			=> module.board.conductors.cutouts,
 								log_threshold	=> log_threshold + 3);
 
+							switches.y_position := Y (start_point);
+							
+							switches.outline := make_switches (
+								polygon			=> element (p),
+								intersections	=> marks.outline,
+								width			=> line_width,
+								clearance		=> design_rules.clearances.conductor_to_board_edge);
 							
 							-- Get the intersections with the current conductor polygon:
 							--polygon_intersections := in_polygon_status (element (p), start_point);
@@ -4654,17 +4688,9 @@ package body et_board_ops is
 							-- CS intersections and proximities with cutout areas
 							
 							-- Compute the fill lines required for the current row (y-position):
-							--fill_lines := et_routing.compute_fill_lines (
-								--module_cursor		=> module_cursor,
-								--design_rules		=> design_rules,
-								--board_domain		=> board_intersections, 
-								--polygon_domain		=> polygon_intersections,
-								--polygon_proximities	=> polygon_proximities,
-								--width				=> line_width,
-								--clearance			=> net_class.clearance,
-								--isolation			=> element (p).isolation,
-								--easing				=> element (p).easing,
-								--log_threshold		=> log_threshold + 3);
+							fill_lines := fill_row (
+								switches		=> switches,
+								log_threshold	=> log_threshold + 3);
 
 							-- Add the fill lines to the conductor polygon:
 							update_element (

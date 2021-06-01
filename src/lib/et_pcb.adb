@@ -171,7 +171,7 @@ package body et_pcb is
 		procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
 			append (
 				container	=> result, 
-				new_item 	=> in_polygon_status (element (c), point));
+				new_item 	=> invert_status (in_polygon_status (element (c), point)));
 		end query_hole;
 	
 	begin -- get_probe_line_intersections		
@@ -236,7 +236,7 @@ package body et_pcb is
 
 				append (
 					container	=> result,
-					new_item	=> in_polygon_status (element (c), point));
+					new_item	=> invert_status (in_polygon_status (element (c), point)));
 			end if;
 		end query_cutout;
 

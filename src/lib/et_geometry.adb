@@ -4260,6 +4260,21 @@ package body et_geometry is
 		end subtract_180_if_greater_90;
 
 
+		function invert_status (
+			intersections	: in type_inside_polygon_query_result)
+			return type_inside_polygon_query_result
+		is 
+			result : type_inside_polygon_query_result := intersections;
+		begin
+			case intersections.status is
+				when INSIDE => result.status := OUTSIDE;
+				when OUTSIDE => result.status := INSIDE;
+			end case;
+
+			return result;
+		end invert_status;
+
+		
 		procedure merge_intersections (
 			query_1 : in out type_inside_polygon_query_result;
 			query_2 : in type_inside_polygon_query_result)
@@ -4693,31 +4708,55 @@ package body et_geometry is
 			polygon			: in type_polygon_base;
 			intersections	: in type_inside_polygon_query_result;
 			width			: in type_distance_positive;
-			first			: in type_stop_go;
 			clearance		: in type_distance_positive := zero)
-			return pac_distances.list
+			return type_switches
 		is
-			result : pac_distances.list;
+			use pac_distances;
+			result : type_switches := (initial => intersections.status, others => <>);
 
-			status : type_stop_go := first;
+			status_inside_outside : type_point_status := intersections.status;
 			
-			procedure toggle_status is begin
-				case status is
-					when STOP => status := GO;
-					when GO => status := STOP;
-				end case;
-			end toggle_status;
-
 			use pac_probe_line_intersections;
 			
 			procedure query_intersection (c : in pac_probe_line_intersections.cursor)
 			is
+				use pac_polygon_segments;
+				segment_cursor : pac_polygon_segments.cursor;
+
+				l : type_line;
+				a : type_arc;
 			begin
-				null;
+				toggle_status (status_inside_outside);
+				
+				case element (c).segment.shape is
+					
+					when LINE =>
+						l := element (c).segment.segment_line;
+						
+						segment_cursor := find (
+							container	=> polygon.contours.segments,
+							item		=> (LINE, l));
+
+						append (result.switches, element (c).x_position); -- CS
+
+						
+					when ARC =>
+						a := element (c).segment.segment_arc;
+						
+						segment_cursor := find (
+							container	=> polygon.contours.segments,
+							item		=> (ARC, a));
+
+						append (result.switches, element (c).x_position); -- CS
+
+						
+					when CIRCLE =>
+						append (result.switches, element (c).x_position); -- CS
+
+				end case;
 			end query_intersection;
 			
 		begin
-
 			iterate (intersections.intersections, query_intersection'access);
 			
 			return result;
