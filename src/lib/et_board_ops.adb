@@ -4458,6 +4458,17 @@ package body et_board_ops is
 		-- This measure is required in order to let the fill lines start inside
 		-- the polygon and not at the polygon edge:
 		offset : type_point;
+
+		fill_line : type_line;
+
+		procedure set_start (p : in type_point) is begin
+			fill_line.start_point := p;
+		end set_start;
+
+		procedure set_end (p : in type_point) is begin
+			fill_line.end_point := p;
+		end set_end;
+
 		
 		procedure log_lower_left_corner (log_threshold : in type_log_level) is begin
 			log (text => "lower left corner" 
@@ -4466,32 +4477,7 @@ package body et_board_ops is
 				--& type_lower_left_corner_status'image (lower_left_corner.status),
 				level => log_threshold);
 		end log_lower_left_corner;
-	
-		type type_switches_all is record
-			y_position	: type_distance;
-			outline	: et_board_shapes_and_text.pac_shapes.type_switches;
-		end record;
-
-		
-		function fill_row (
-			switches		: in type_switches_all;
-			log_threshold	: in type_log_level)				  
-			return pac_fill_lines.list 
-		is
-			result : pac_fill_lines.list;
-
-			-- This is the y position of all fill lines. All fill lines
-			-- are in the same row:
-			--y_position : constant type_distance := pac_geometry_brd.Y (switches.outline.initial); 
-
-			-- A single fill line to be inserted in the result:
-			fill_line : type_fill_line; -- G====S
-
-		begin
-
-			return result;
-		end fill_row;
-		
+			
 		
 		procedure floating_polygons is
 			use pac_conductor_polygons_floating_solid;
@@ -4606,22 +4592,7 @@ package body et_board_ops is
 						-- change its position in the course of this procedure:
 						start_point : type_point := start_point_in;
 						
-						-- We imagine a probe line that starts at start point and travels to the
-						-- right (zero degree direction).
-						-- The probe line intersects board contours, tracks, vias, pads, texts 
-						-- and the current conductor polygon at certain x-positions.
-						-- The fill lines for a single row will later be drawn along the probe line.
-
-						--intersections_with_board_contours : type_inside_polygon_query_result;
-
-						--intersections_with_fill_area : type_inside_polygon_query_result;
-
-						-- The points where fill line comes too close to the polygon edges
-						-- or where the fill line comes to save distance from the edges.
-						--polygon_proximities : pac_proximity_points.set;
-						
-						-- The fill lines for the current row. Ordered from the left
-						-- to the right:
+						-- The fill lines for the current row. Ordered from the left to the right:
 						fill_lines : pac_fill_lines.list;
 
 						procedure add_lines (
@@ -4635,11 +4606,16 @@ package body et_board_ops is
 								source	=> fill_lines);
 						end add_lines;
 
-						procedure make_fill_lines is 
+						procedure fill_row is 
+
+							use pac_fill_lines;
 							
-							procedure get_distance_to_obstacle (
-								start	: in type_point)					   
-							is 
+							point : type_point := start_point;
+							row : type_distance := Y (point);
+							status : type_valid;
+							distance : type_distance_positive;
+							
+							procedure get_distance_to_obstacle (start : in type_point) is 
 								d : constant type_route_distance := get_distance (
 								module_cursor	=> module_cursor,
 								start_point		=> start,
@@ -4651,14 +4627,84 @@ package body et_board_ops is
 								width			=> element (p).width_min,
 								log_threshold	=> log_threshold + 3);
 							begin
-								--d.distance 
-								null;
+								status := d.status;
+
+								if d.status = VALID then
+									distance := d.distance;
+								end if;
 							end get_distance_to_obstacle;
-						
-						begin
+
+							procedure get_distance_after_obstacle (start : in type_point) is 
+								d : constant type_route_distance := get_distance (
+								module_cursor	=> module_cursor,
+								start_point		=> start,
+								target			=> AFTER,
+								direction		=> zero_rotation,
+								net				=> n,
+								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
+								layer			=> element (p).properties.layer,
+								width			=> element (p).width_min,
+								log_threshold	=> log_threshold + 3);
+							begin
+								status := d.status;
+
+								if d.status = VALID then
+									distance := d.distance;
+								end if;
+							end get_distance_after_obstacle;
+
+							-- Safety measure to prevent infinite looping.
+							-- Increase maximum to reasonable value:
+							subtype type_line_count is positive range 1 .. 100;
 							
-							null;
-							--get_distance;
+						begin -- fill_row
+							for lc in 1.. type_line_count'last loop
+								
+								get_distance_to_obstacle (point);
+
+								if distance = type_distance'last then
+									raise constraint_error with 
+									"ERROR: No end point for Fill line found !";
+								end if;
+								
+								if status = VALID then
+									set_start (point);
+
+									point := type_point (set (
+										x => X (point) + distance,
+										y => row));
+										
+									set_end (point);
+
+									append (fill_lines, fill_line);
+										
+
+									get_distance_after_obstacle (point);
+
+									if status = VALID then
+										point := type_point (set (
+											x => X (point) + distance,
+											y => row));
+
+									else
+										exit;
+									end if;
+
+								else -- INVALID
+									get_distance_after_obstacle (point);
+
+									if status = VALID then
+										point := type_point (set (
+											x => X (point) + distance,
+											y => row));
+
+									else
+										exit;
+									end if;
+									
+								end if;
+							
+							end loop;
 
 							-- Add the fill lines to the conductor polygon:
 							update_element (
@@ -4666,7 +4712,7 @@ package body et_board_ops is
 								position	=> p,
 								process		=> add_lines'access);
 
-						end make_fill_lines;
+						end fill_row;
 						
 					begin -- compute_fill_lines
 						
@@ -4698,8 +4744,7 @@ package body et_board_ops is
 								move_by (start_point, offset);
 							end if;
 
-							make_fill_lines;
-						
+							fill_row;						
 						end loop;
 
 						-- If an extra row is required, then compute its start point starting
@@ -4720,7 +4765,7 @@ package body et_board_ops is
 
 							move_by (start_point, offset);
 
-							make_fill_lines;
+							fill_row;
 						end if;
 						
 					end compute_fill_lines;

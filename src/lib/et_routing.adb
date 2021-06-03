@@ -1406,7 +1406,7 @@ package body et_routing is
 		y_position : constant type_distance := Y (board_domain.start); 
 
 		-- A single fill line to be inserted in the result:
-		fill_line : type_fill_line; -- G====S
+		fill_line : type_line; -- G====S
 
 		
 		-- For each domain we have an individual flag:
@@ -1988,10 +1988,6 @@ package body et_routing is
 		distance_to_obstacle : type_distance_positive := type_distance'last;
 		distance_after_obstacle : type_distance_positive := type_distance'last;
 		status : type_valid := VALID;
-		
-
-		--use pac_distances_positive;
-		--distances_after_obstacles : pac_distances_positive.list;
 
 		package pac_points_after_obstacles is new doubly_linked_lists (type_point);
 		points_after_obstacles : pac_points_after_obstacles.list;
@@ -2084,7 +2080,6 @@ package body et_routing is
 		end query_module;
 
 
-
 		procedure find_valid_point_after_obstacles is
 			c : pac_points_after_obstacles.cursor;
 		begin
@@ -2110,12 +2105,17 @@ package body et_routing is
 		end find_valid_point_after_obstacles;
 
 		
-	begin
+	begin -- get_distance
 		case target is
 			when BEFORE =>
 				-- test whether start_point is suitable to start a track
 				if clear_for_track (module_cursor, start_point, net, layer, width) then
 					query_element (module_cursor, query_module'access);
+
+					--if distance_to_obstacle = type_distance'last then
+						--raise constraint_error;
+					--end if;
+						
 					return (VALID, distance_to_obstacle);
 				else
 					return (status => INVALID);

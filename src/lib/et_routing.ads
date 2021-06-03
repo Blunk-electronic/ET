@@ -212,6 +212,7 @@ package et_routing is
 	
 	-- If target is BEFORE: 
 	--  - Returns the distance from start_point to the nearest obstacle
+	--    with status VALID.
 	--  - If the start point does not qualify to start a track then
 	--    the return is INVALID.
 	--  - If there is no obstacle then the return is VALID and the
