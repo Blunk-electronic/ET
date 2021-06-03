@@ -1907,48 +1907,58 @@ package body et_routing is
 		
 		return result;
 	end compute_fill_lines;
-		
 
-	function get_overlap (
-		track	: in type_track;
-		line	: in type_line;
-		target	: in type_target)
-		return type_overlap
+
+	function clear_for_track (
+		module_cursor	: in pac_generic_modules.cursor;
+		start_point		: in type_point;
+		net				: in et_schematic.pac_nets.cursor;
+		layer			: in type_signal_layer;
+		width			: in type_track_width)
+		return boolean
 	is
-		result : type_overlap;
+	begin
+		return true;
+	end clear_for_track;
+
+		
+	function get_break (
+		track	: in type_track;
+		line	: in type_line)
+		return type_break
+	is
+		result : type_break;
 	begin
 
 
 		return result;
-	end get_overlap;
+	end get_break;
 
 	
-	function get_overlap (
+	function get_break (
 		track	: in type_track;
-		arc		: in type_arc;
-		target	: in type_target)
-		return type_overlap
+		arc		: in type_arc)
+		return type_break
 	is
-		result : type_overlap;
+		result : type_break;
 	begin
 
 
 		return result;
-	end get_overlap;
+	end get_break;
 
 
-	function get_overlap (
+	function get_break (
 		track	: in type_track;
-		circle	: in type_circle;
-		target	: in type_target)
-		return type_overlap
+		circle	: in type_circle)
+		return type_break
 	is
-		result : type_overlap;
+		result : type_break;
 	begin
 
 
 		return result;
-	end get_overlap;
+	end get_break;
 
 	
 	function get_distance (
@@ -1956,7 +1966,8 @@ package body et_routing is
 		start_point		: in type_point;
 		target			: in type_target := BEFORE;
 		direction		: in type_rotation;
-		net_name		: in pac_net_name.bounded_string := no_name;
+		net				: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
+		fill_zone		: in type_fill_zone;
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		log_threshold	: in type_log_level)
@@ -1975,58 +1986,61 @@ package body et_routing is
 			others		=> <>);
 
 		distance_to_obstacle : type_distance_positive := type_distance'last;
+		distance_after_obstacle : type_distance_positive := type_distance'last;
 		status : type_valid := VALID;
 		
-		procedure process_overlap (ol : in type_overlap) is
-			
-			procedure update_nearest is 
-				n : type_point := to_point (ol.nearest);
-				d : type_distance_positive := distance_total (start_point, n);
-			begin
-				if d < distance_to_obstacle then
-					distance_to_obstacle := d;
-				end if;
 
-				if distance_to_obstacle = zero then
-					status := INVALID;
-				end if;
-			end update_nearest;
+		--use pac_distances_positive;
+		--distances_after_obstacles : pac_distances_positive.list;
 
-			procedure collect_overlap is begin
-				null;
-			end collect_overlap;
-	
+		package pac_points_after_obstacles is new doubly_linked_lists (type_point);
+		points_after_obstacles : pac_points_after_obstacles.list;
+		use pac_points_after_obstacles;
+		package pac_sorting is new pac_points_after_obstacles.generic_sorting;
+		
+		procedure process_break (break : in type_break) is
+			p : type_point;
+			d : type_distance_positive;
 		begin
 			case target is
-				when BEFORE => update_nearest;
-				when AFTER => collect_overlap;
+				when BEFORE =>
+					p := to_point (break.near);
+					d := distance_total (start_point, p);
+					
+					if d < distance_to_obstacle then
+						distance_to_obstacle := d;
+					end if;
+
+				when AFTER =>
+					p := to_point (break.far);
+					append (points_after_obstacles, p);
+					
 			end case;
-		end process_overlap;
+		end process_break;
 
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) 
 		is
-
 			use pac_polygon_segments;
 			
 			procedure query_contours is
 
-				procedure query_segment (c : in pac_polygon_segments.cursor)
-				is
+				procedure query_segment (c : in pac_polygon_segments.cursor) is
+					
 					procedure test_line is
-						ol : constant type_overlap := 
-							get_overlap (track, element (c).segment_line, target);
+						b : constant type_break := 
+							get_break (track, element (c).segment_line);
 					begin
-						process_overlap (ol);
+						process_break (b);
 					end test_line;
 
 					procedure test_arc is
-						ol : constant type_overlap := 
-							get_overlap (track, element (c).segment_arc, target);
+						b : constant type_break := 
+							get_break (track, element (c).segment_arc);
 					begin
-						process_overlap (ol);
+						process_break (b);
 					end test_arc;
 					
 				begin -- query_segment
@@ -2037,10 +2051,10 @@ package body et_routing is
 				end query_segment;
 
 				procedure query_circle is
-					ol : constant type_overlap :=
-						get_overlap (track, module.board.contours.outline.contours.circle, target);
+					b : constant type_break :=
+						get_break (track, module.board.contours.outline.contours.circle);
 				begin
-					null; -- CS
+					process_break (b);
 				end query_circle;
 				
 			begin -- query_contours
@@ -2057,25 +2071,66 @@ package body et_routing is
 		begin -- query_module
 			query_contours;
 
+			-- holes
+
+			-- if fill_zone.observe then query 
+			-- - fill_zone.outline
+			-- - global cutout areas
+			-- - net specific cutout areas
+			
 			-- CS abort if status is invalid.
 			
 			-- query tracks, texts, pads, ...
 		end query_module;
+
+
+
+		procedure find_valid_point_after_obstacles is
+			c : pac_points_after_obstacles.cursor;
+		begin
+			query_element (module_cursor, query_module'access);
+			pac_sorting.sort (points_after_obstacles);
+
+			c := points_after_obstacles.first;
+			while c /= pac_points_after_obstacles.no_element loop
+
+				if clear_for_track (module_cursor, element (c), net, layer, width) then
+					distance_after_obstacle := distance_total (start_point, element (c));
+					exit;
+				end if;
+				
+				next (c);
+			end loop;
+
+			if c = pac_points_after_obstacles.no_element then
+				status := INVALID;
+			else
+				status := VALID;
+			end if;
+		end find_valid_point_after_obstacles;
+
 		
 	begin
-		query_element (module_cursor, query_module'access);
-
 		case target is
 			when BEFORE =>
-				case status is 
-					when VALID		=> return (VALID, distance_to_obstacle);
-					when INVALID	=> return (status => INVALID);
-				end case;
+				-- test whether start_point is suitable to start a track
+				if clear_for_track (module_cursor, start_point, net, layer, width) then
+					query_element (module_cursor, query_module'access);
+					return (VALID, distance_to_obstacle);
+				else
+					return (status => INVALID);
+				end if;
 				
 			when AFTER =>
-				return (status => INVALID); -- CS
 
+				find_valid_point_after_obstacles;
+				
+				case status is
+					when VALID => return (VALID, distance_after_obstacle);
+					when INVALID => return (status => INVALID);
+				end case;
 		end case;
+
 	end get_distance;
 
 

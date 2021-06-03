@@ -331,8 +331,6 @@ package et_packages is
 		end case;
 	end record;
 
-
-
 	
 
 	type type_conductor_line is new type_line with record

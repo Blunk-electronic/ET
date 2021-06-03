@@ -4571,7 +4571,7 @@ package body et_board_ops is
 				is 
 					-- The cursor that points to the polygon being filled:
 					p : pac_signal_polygons_solid.cursor := net.route.polygons.solid.first;
-
+					
 					-- Get the net class settings of the class the net is member of:
 					net_class : constant type_net_class := get_net_class (module_cursor, net.class);
 
@@ -4636,61 +4636,29 @@ package body et_board_ops is
 						end add_lines;
 
 						procedure make_fill_lines is 
-							marks : type_fill_line_marks;
-							switches : type_switches_all;
 							
-						begin
-
-							marks.outline := get_probe_line_intersections (
-								point			=> start_point,
-								outline			=> module.board.contours.outline,
-								log_threshold	=> log_threshold + 3);
-
-							marks.holes := get_probe_line_intersections (
-								point			=> start_point,
-								holes			=> module.board.contours.holes,
-								log_threshold	=> log_threshold + 3);
-
-							marks.area := get_probe_line_intersections (
-								point			=> start_point,
-								area			=> type_polygon_conductor (element (p)),
-								log_threshold	=> log_threshold + 3);
-
-							marks.cutouts_global := get_probe_line_intersections (
-								point			=> start_point,
+							procedure get_distance_to_obstacle (
+								start	: in type_point)					   
+							is 
+								d : constant type_route_distance := get_distance (
+								module_cursor	=> module_cursor,
+								start_point		=> start,
+								target			=> BEFORE,
+								direction		=> zero_rotation,
+								net				=> n,
+								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
 								layer			=> element (p).properties.layer,
-								cutouts			=> module.board.conductors.cutouts,
+								width			=> element (p).width_min,
 								log_threshold	=> log_threshold + 3);
-
-							switches.y_position := Y (start_point);
+							begin
+								--d.distance 
+								null;
+							end get_distance_to_obstacle;
+						
+						begin
 							
-							switches.outline := make_switches (
-								polygon			=> element (p),
-								intersections	=> marks.outline,
-								width			=> line_width,
-								clearance		=> design_rules.clearances.conductor_to_board_edge);
-							
-							-- Get the intersections with the current conductor polygon:
-							--polygon_intersections := in_polygon_status (element (p), start_point);
-
-							--log (text => to_string (polygon_intersections), level => log_threshold + 3);
-
-							-- Compute the polygon proximity points (the places where the
-							-- fill line gets too close the polygon sides or where it reaches
-							-- safe distance from the polygon sides:
-							--polygon_proximities := get_polygon_proximity_points (
-								--polygon			=> type_polygon_conductor (element (p)),
-								--length			=> get_width (boundaries),
-								--start			=> start_point,
-								--line_width		=> line_width,
-								--log_threshold	=> log_threshold + 3);
-
-							-- CS intersections and proximities with cutout areas
-							
-							-- Compute the fill lines required for the current row (y-position):
-							fill_lines := fill_row (
-								switches		=> switches,
-								log_threshold	=> log_threshold + 3);
+							null;
+							--get_distance;
 
 							-- Add the fill lines to the conductor polygon:
 							update_element (

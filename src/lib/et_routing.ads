@@ -171,27 +171,24 @@ package et_routing is
 		BEFORE,
 		AFTER);					
 
-	type type_overlap is record
-		nearest, farest : type_vector;
+	type type_break is record
+		near, far : type_vector;
 	end record;
 	
-	function get_overlap (
+	function get_break (
 		track	: in type_track;
-		line	: in type_line;
-		target	: in type_target)
-		return type_overlap;
+		line	: in type_line)
+		return type_break;
 
-	function get_overlap (
+	function get_break (
 		track	: in type_track;
-		arc		: in type_arc;
-		target	: in type_target)
-		return type_overlap;
+		arc		: in type_arc)
+		return type_break;
 
-	function get_overlap (
+	function get_break (
 		track	: in type_track;
-		circle	: in type_circle;
-		target	: in type_target)
-		return type_overlap;
+		circle	: in type_circle)
+		return type_break;
 
 	
 
@@ -203,15 +200,34 @@ package et_routing is
 			when INVALID	=> null;
 		end case;
 	end record;
+
+	type type_fill_zone (observe : boolean := FALSE) is record
+		case observe is
+			when TRUE => outline : type_polygon_conductor (SOLID);
+				-- The fill style does not matter.
+			
+			when FALSE => null;
+		end case;
+	end record;
 	
-	-- Returns the distance from start_point to the next obstacle
-	-- in the given direction:
+	-- If target is BEFORE: 
+	--  - Returns the distance from start_point to the nearest obstacle
+	--  - If the start point does not qualify to start a track then
+	--    the return is INVALID.
+	--  - If there is no obstacle then the return is VALID and the
+	--    returned distance is the maxium (type_distance'last).
+	-- If target is AFTER: 
+	--  - Returns the distance from start_point to the nearest point,
+	--    after one or more obstacles, that qualifies to start a track.
+	--  - If no suitable point found then the return is INVALID.
+	--  - If no obstacle found then the return is INVALID.
 	function get_distance (
 		module_cursor	: in pac_generic_modules.cursor;
 		start_point		: in type_point;
 		target			: in type_target := BEFORE;
 		direction		: in type_rotation;
-		net_name		: in pac_net_name.bounded_string := no_name;
+		net				: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
+		fill_zone		: in type_fill_zone;
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		log_threshold	: in type_log_level)
