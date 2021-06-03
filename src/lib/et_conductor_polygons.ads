@@ -92,36 +92,18 @@ package et_conductor_polygons is
 
 
 
-	-- After filling a polygon the polygon may be reduced to a single
-	-- smaller filled area or it may break into several separated filled
-	-- areas. These areas are always computed automatically
-	-- on filling a conductor polygon.
-		
-	type type_filled_area is new type_polygon_base with null record;
-	package pac_filled_areas is new doubly_linked_lists (type_filled_area);
+	package pac_fill_lines is new doubly_linked_lists (type_line);
 
-	type type_fill_line is new type_line with null record;
-	package pac_fill_lines is new doubly_linked_lists (type_fill_line);
+	no_fill_lines : constant pac_fill_lines.list := pac_fill_lines.empty_list;
 
+	
 	-- The factor that causes the fill lines to overlap slightly.
 	-- It is required in order to avoid a possible small gap between them
 	-- that could occur during manufacturing.
 	-- The lower the factor the more overlap. 1.0 means no overlap.
 	fill_line_overlap_factor : constant type_distance_positive := 0.99;
 	
-	--type type_cutout_area is new type_polygon_base with null record;
-	--package pac_cutout_areas is new doubly_linked_lists (type_cutout_area);
 
-	--type type_filled_area_2 is record
-		--contours	: pac_filled_areas.list;
-		--cutouts		: pac_cutout_areas.list;
-	--end record;
-
-	no_filled_areas : constant pac_filled_areas.list := pac_filled_areas.empty_list;
-	no_fill_lines : constant pac_fill_lines.list := pac_fill_lines.empty_list;
-	--no_filled_areas : constant type_filled_area_2 := (
-			--contours	=> pac_filled_areas.empty_list,	
-			--cutouts		=> pac_cutout_areas.empty_list);
 														 
 	
 	-- All fill zones in conductor layers have these common
@@ -129,9 +111,7 @@ package et_conductor_polygons is
 	type type_conductor_polygon_properties is record
 		layer 			: type_signal_layer := type_signal_layer'first;
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
-		--filled_areas	: pac_filled_areas.list;
 		fill_lines		: pac_fill_lines.list;
-		--filled_areas	: type_filled_area_2 := no_filled_areas;
 	end record;
 
 	
