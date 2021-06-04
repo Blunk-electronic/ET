@@ -171,8 +171,11 @@ package et_routing is
 		BEFORE,
 		AFTER);					
 
-	type type_break is record
-		near, far : type_vector;
+	type type_break (exists : boolean) is record
+		case exists is
+			when TRUE => point : type_point;
+			when FALSE => null;
+		end case;
 	end record;
 	
 	function get_break (

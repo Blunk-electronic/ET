@@ -4655,16 +4655,20 @@ package body et_board_ops is
 
 							-- Safety measure to prevent infinite looping.
 							-- Increase maximum to reasonable value:
-							subtype type_line_count is positive range 1 .. 100;
+							subtype type_line_count is positive range 1 .. 10;
 							
 						begin -- fill_row
+							log_indentation_up;
+							
 							for lc in 1.. type_line_count'last loop
+
+								put_line ("test" & positive'image (lc));
 								
 								get_distance_to_obstacle (point);
 
 								if distance = type_distance'last then
 									raise constraint_error with 
-									"ERROR: No end point for Fill line found !";
+									"ERROR: No end point for fill line found !";
 								end if;
 								
 								if status = VALID then
@@ -4712,6 +4716,7 @@ package body et_board_ops is
 								position	=> p,
 								process		=> add_lines'access);
 
+							log_indentation_down;
 						end fill_row;
 						
 					begin -- compute_fill_lines
@@ -4744,7 +4749,8 @@ package body et_board_ops is
 								move_by (start_point, offset);
 							end if;
 
-							fill_row;						
+							log (text => "row" & natural'image (r), level => log_threshold + 2);							
+							fill_row;					
 						end loop;
 
 						-- If an extra row is required, then compute its start point starting
@@ -4765,6 +4771,7 @@ package body et_board_ops is
 
 							move_by (start_point, offset);
 
+							log (text => "extra row", level => log_threshold + 2);							
 							fill_row;
 						end if;
 						

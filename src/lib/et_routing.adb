@@ -1917,8 +1917,38 @@ package body et_routing is
 		width			: in type_track_width)
 		return boolean
 	is
+		result : boolean := true;
+		
+		use pac_generic_modules;
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module) 
+		is
+		begin -- query_module
+			if in_polygon_status (module.board.contours.outline, start_point).status = OUTSIDE then
+				result := false;
+			else
+				null;
+				-- CS distance to nearest outline segment
+			end if;
+			
+			-- holes
+
+			-- if fill_zone.observe then query 
+			-- - fill_zone.outline
+			-- - global cutout areas
+			-- - net specific cutout areas
+			
+			-- CS abort if status is invalid.
+			
+			-- query tracks, texts, pads, ...
+		end query_module;
+
 	begin
-		return true;
+		query_element (module_cursor, query_module'access);
+		
+		return result;
 	end clear_for_track;
 
 		
@@ -1928,11 +1958,46 @@ package body et_routing is
 		place	: in type_place)
 		return type_break
 	is
-		result : type_break;
+		track_direction : constant type_rotation := get_angle (track.center);
+		track_start : constant type_point := to_point (track.center.v_start);
+		
+		--distance : type_distance_polar;
+		
+		line_vector : constant type_line_vector := to_line_vector (line);
+		i : constant type_intersection_of_two_lines := get_intersection (track.center, line_vector);
+
+		--break_exists : boolean;
+		break_point : type_point;
+		
+		--result : type_break (exists => true);
+
 	begin
+		
+		case i.status is
+			when EXISTS => 
+				--break_exists := true;
+				break_point := to_point (i.intersection.point);
 
+				if angle (distance_polar (track_start, break_point)) = track_direction then
+				
+					case place is
+						when BEFORE => move_by (break_point, type_point (set (- type_distance'small, zero)));
+						when AFTER  => move_by (break_point, type_point (set (+ type_distance'small, zero)));
+					end case;
+					
+					return (exists => true, point => break_point);
 
-		return result;
+				else
+					return (exists => false);
+				end if;
+				
+			when OVERLAP | NOT_EXISTENT =>
+				--break_exists := false;
+
+				return (exists => false);
+		end case;
+		
+		--return result;
 	end get_break;
 
 	
@@ -1942,10 +2007,9 @@ package body et_routing is
 		place	: in type_place)
 		return type_break
 	is
-		result : type_break;
+		result : type_break (exists => false);
 	begin
-
-
+		
 		return result;
 	end get_break;
 
@@ -1956,9 +2020,8 @@ package body et_routing is
 		place	: in type_place)
 		return type_break
 	is
-		result : type_break;
+		result : type_break (exists => false);
 	begin
-
 
 		return result;
 	end get_break;
@@ -1997,22 +2060,19 @@ package body et_routing is
 		use pac_points_after_obstacles;
 		package pac_sorting is new pac_points_after_obstacles.generic_sorting;
 		
-		procedure process_break (break : in type_break) is
-			p : type_point;
+		procedure process_break (break : in type_point) is
 			d : type_distance_positive;
 		begin
 			case place is
 				when BEFORE =>
-					p := to_point (break.near);
-					d := distance_total (start_point, p);
+					d := distance_total (start_point, break);
 					
 					if d < distance_to_obstacle then
 						distance_to_obstacle := d;
 					end if;
 
 				when AFTER =>
-					p := to_point (break.far);
-					append (points_after_obstacles, p);
+					append (points_after_obstacles, break);
 					
 			end case;
 		end process_break;
@@ -2028,18 +2088,20 @@ package body et_routing is
 
 				procedure query_segment (c : in pac_polygon_segments.cursor) is
 					
-					procedure test_line is
-						b : constant type_break := 
-							get_break (track, element (c).segment_line, place);
+					procedure test_line is 
+						b : constant type_break := get_break (track, element (c).segment_line, place);
 					begin
-						process_break (b);
+						if b.exists then
+							process_break (b.point);
+						end if;
 					end test_line;
 
 					procedure test_arc is
-						b : constant type_break := 
-							get_break (track, element (c).segment_arc, place);
+						b : constant type_break := get_break (track, element (c).segment_arc, place);
 					begin
-						process_break (b);
+						if b.exists then
+							process_break (b.point);
+						end if;						
 					end test_arc;
 					
 				begin -- query_segment
@@ -2049,11 +2111,12 @@ package body et_routing is
 					end case;
 				end query_segment;
 
-				procedure query_circle is
-					b : constant type_break :=
-						get_break (track, module.board.contours.outline.contours.circle, place);
+				procedure query_circle is 
+					b : constant type_break := get_break (track, module.board.contours.outline.contours.circle, place);
 				begin
-					process_break (b);
+					if b.exists then
+						process_break (b.point);
+					end if;
 				end query_circle;
 				
 			begin -- query_contours
@@ -2111,6 +2174,13 @@ package body et_routing is
 	begin -- get_distance
 		case place is
 			when BEFORE =>
+				log (text => "distance to obstacle from point" 
+					 & to_string (start_point)
+					 & " direction" & to_string (direction),
+					 level => log_threshold);
+
+				log_indentation_up;
+				
 				-- test whether start_point is suitable to start a track
 				if clear_for_track (module_cursor, start_point, net, layer, width) then
 					query_element (module_cursor, query_module'access);
@@ -2118,20 +2188,55 @@ package body et_routing is
 					--if distance_to_obstacle = type_distance'last then
 						--raise constraint_error;
 					--end if;
-						
+
+					log (text => to_string (distance_to_obstacle),
+						level => log_threshold);
+
+					log_indentation_down;
+					
 					return (VALID, distance_to_obstacle);
 				else
+
+					log (text => "no obstacle found",
+						level => log_threshold);
+
+					log_indentation_down;
+					
 					return (status => INVALID);
 				end if;
+
+
 				
 			when AFTER =>
+				log (text => "distance after obstacles from point" 
+					 & to_string (start_point)
+					 & " direction" & to_string (direction),
+					 level => log_threshold);
 
+				log_indentation_up;
+				
 				find_valid_point_after_obstacles;
 				
 				case status is
-					when VALID => return (VALID, distance_after_obstacle);
-					when INVALID => return (status => INVALID);
+					when VALID =>
+						log (text => to_string (distance_after_obstacle),
+							level => log_threshold);
+
+						log_indentation_down;
+						
+						return (VALID, distance_after_obstacle);
+
+						
+					when INVALID => 
+						log (text => "no obstacle found",
+							level => log_threshold);
+
+						log_indentation_down;
+						
+						return (status => INVALID);
 				end case;
+
+				
 		end case;
 
 	end get_distance;
