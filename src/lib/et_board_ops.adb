@@ -4619,7 +4619,7 @@ package body et_board_ops is
 								d : constant type_route_distance := get_distance (
 								module_cursor	=> module_cursor,
 								start_point		=> start,
-								target			=> BEFORE,
+								place			=> BEFORE,
 								direction		=> zero_rotation,
 								net				=> n,
 								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),
@@ -4638,7 +4638,7 @@ package body et_board_ops is
 								d : constant type_route_distance := get_distance (
 								module_cursor	=> module_cursor,
 								start_point		=> start,
-								target			=> AFTER,
+								place			=> AFTER,
 								direction		=> zero_rotation,
 								net				=> n,
 								fill_zone		=> (observe => true, outline => type_polygon_conductor (element (p))),

@@ -63,21 +63,21 @@ package et_routing is
 	use et_board_shapes_and_text.pac_shapes;
 
 	-- The stop/go signal issued for a fill line:
-	type type_stop_go is (
-		STOP,
-		GO);
+	--type type_stop_go is (
+		--STOP,
+		--GO);
 	
-	type type_proximity_point is record
-		status	: type_stop_go := STOP;
-		x		: type_distance := zero;
-	end record;
+	--type type_proximity_point is record
+		--status	: type_stop_go := STOP;
+		--x		: type_distance := zero;
+	--end record;
 
-	function "<" (left, right : in type_proximity_point) return boolean;
+	--function "<" (left, right : in type_proximity_point) return boolean;
 	
-	package pac_proximity_points is new ordered_sets (type_proximity_point);
+	--package pac_proximity_points is new ordered_sets (type_proximity_point);
 
-	function to_string (prox_points : in pac_proximity_points.set)
-		return string;
+	--function to_string (prox_points : in pac_proximity_points.set)
+		--return string;
 	
 	-- Computes the x-positions where a probe line
 	-- of given width gets too close to the polygon contours
@@ -117,39 +117,39 @@ package et_routing is
 
 	-- Computes the fill lines required for a single
 	-- row (or a fixed y-position):
-	function compute_fill_lines (
-		module_cursor		: in pac_generic_modules.cursor;
+	--function compute_fill_lines (
+		--module_cursor		: in pac_generic_modules.cursor;
 
-		-- The design rules of the board:
-		design_rules		: in type_design_rules;
+		---- The design rules of the board:
+		--design_rules		: in type_design_rules;
 		
-		-- The points of intersection with the board contours:
-		board_domain		: in type_inside_polygon_query_result;
+		---- The points of intersection with the board contours:
+		--board_domain		: in type_inside_polygon_query_result;
 
-		-- The points of intersection with the polygon contours:
-		polygon_domain		: in type_inside_polygon_query_result;
+		---- The points of intersection with the polygon contours:
+		--polygon_domain		: in type_inside_polygon_query_result;
 
-		-- The points where the fill line starts/stops to overlap
-		-- the polygon edge:
-		polygon_proximities	: in pac_proximity_points.set;
+		---- The points where the fill line starts/stops to overlap
+		---- the polygon edge:
+		--polygon_proximities	: in pac_proximity_points.set;
 		
-		-- The width of a fill line:
-		width				: in type_track_width;
+		---- The width of a fill line:
+		--width				: in type_track_width;
 		
-		-- The clearance of the net the polygon is
-		-- connected with:
-		clearance			: in type_track_clearance;
+		---- The clearance of the net the polygon is
+		---- connected with:
+		--clearance			: in type_track_clearance;
 
-		-- The isolation of the polygon:
-		isolation 			: in type_track_clearance; 
+		---- The isolation of the polygon:
+		--isolation 			: in type_track_clearance; 
 
-		-- The easing of the polygon:
-		easing				: in type_easing;
+		---- The easing of the polygon:
+		--easing				: in type_easing;
 		
-		-- CS x-intersections with tracks, vias, pads, texts, ...
+		---- CS x-intersections with tracks, vias, pads, texts, ...
 
-		log_threshold		: in type_log_level)
-		return pac_fill_lines.list;
+		--log_threshold		: in type_log_level)
+		--return pac_fill_lines.list;
 
 	
 	
@@ -167,7 +167,7 @@ package et_routing is
 		clearance	: type_track_clearance;
 	end record;
 
-	type type_target is (
+	type type_place is (
 		BEFORE,
 		AFTER);					
 
@@ -177,17 +177,20 @@ package et_routing is
 	
 	function get_break (
 		track	: in type_track;
-		line	: in type_line)
+		line	: in type_line;
+		place	: in type_place)
 		return type_break;
 
 	function get_break (
 		track	: in type_track;
-		arc		: in type_arc)
+		arc		: in type_arc;
+		place	: in type_place)
 		return type_break;
 
 	function get_break (
 		track	: in type_track;
-		circle	: in type_circle)
+		circle	: in type_circle;
+		place	: in type_place)
 		return type_break;
 
 	
@@ -210,14 +213,14 @@ package et_routing is
 		end case;
 	end record;
 	
-	-- If target is BEFORE: 
+	-- If place is BEFORE: 
 	--  - Returns the distance from start_point to the nearest obstacle
 	--    with status VALID.
 	--  - If the start point does not qualify to start a track then
 	--    the return is INVALID.
 	--  - If there is no obstacle then the return is VALID and the
 	--    returned distance is the maxium (type_distance'last).
-	-- If target is AFTER: 
+	-- If place is AFTER: 
 	--  - Returns the distance from start_point to the nearest point,
 	--    after one or more obstacles, that qualifies to start a track.
 	--  - If no suitable point found then the return is INVALID.
@@ -225,7 +228,7 @@ package et_routing is
 	function get_distance (
 		module_cursor	: in pac_generic_modules.cursor;
 		start_point		: in type_point;
-		target			: in type_target := BEFORE;
+		place			: in type_place := BEFORE;
 		direction		: in type_rotation;
 		net				: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
 		fill_zone		: in type_fill_zone;

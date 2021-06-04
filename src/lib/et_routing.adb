@@ -61,37 +61,37 @@ package body et_routing is
 	package functions_float is new ada.numerics.generic_elementary_functions (float);
 	use functions_float;
 
-	function "<" (left, right : in type_proximity_point) return boolean is begin
-		if left.x < right.x then
-			return true;
-		else
-			return false;
-		end if;
+	--function "<" (left, right : in type_proximity_point) return boolean is begin
+		--if left.x < right.x then
+			--return true;
+		--else
+			--return false;
+		--end if;
 
-		-- CS compare status ?
-	end "<";
+		---- CS compare status ?
+	--end "<";
 		
-	function to_string (prox_points : in pac_proximity_points.set)
-		return string
-	is
-		use pac_proximity_points;
-		use ada.strings.unbounded;
+	--function to_string (prox_points : in pac_proximity_points.set)
+		--return string
+	--is
+		--use pac_proximity_points;
+		--use ada.strings.unbounded;
 		
-		text : unbounded_string := to_unbounded_string ("proximity points (x/status):");
+		--text : unbounded_string := to_unbounded_string ("proximity points (x/status):");
 		
-		procedure query_point (c : in pac_proximity_points.cursor) is begin
-			text := text & to_string (element (c).x) 
-				& "/" & type_stop_go'image (element (c).status);
-		end query_point;
+		--procedure query_point (c : in pac_proximity_points.cursor) is begin
+			--text := text & to_string (element (c).x) 
+				--& "/" & type_stop_go'image (element (c).status);
+		--end query_point;
 		
-	begin
-		if not is_empty (prox_points) then
-			iterate (prox_points, query_point'access);
-			return to_string (text);
-		else
-			return "no proximity points";
-		end if;
-	end to_string;
+	--begin
+		--if not is_empty (prox_points) then
+			--iterate (prox_points, query_point'access);
+			--return to_string (text);
+		--else
+			--return "no proximity points";
+		--end if;
+	--end to_string;
 
 
 	
@@ -1384,529 +1384,529 @@ package body et_routing is
 
 
 
-	function compute_fill_lines (
-		module_cursor		: in pac_generic_modules.cursor;
-		design_rules		: in type_design_rules;
-		board_domain		: in type_inside_polygon_query_result;
-		polygon_domain		: in type_inside_polygon_query_result;
-		polygon_proximities	: in pac_proximity_points.set;
-		width				: in type_track_width; -- the width of a fill line
-		clearance			: in type_track_clearance;
-		isolation 			: in type_track_clearance; 
-		easing				: in type_easing;
-		log_threshold		: in type_log_level)
-		return pac_fill_lines.list
-	is
+	--function compute_fill_lines (
+		--module_cursor		: in pac_generic_modules.cursor;
+		--design_rules		: in type_design_rules;
+		--board_domain		: in type_inside_polygon_query_result;
+		--polygon_domain		: in type_inside_polygon_query_result;
+		--polygon_proximities	: in pac_proximity_points.set;
+		--width				: in type_track_width; -- the width of a fill line
+		--clearance			: in type_track_clearance;
+		--isolation 			: in type_track_clearance; 
+		--easing				: in type_easing;
+		--log_threshold		: in type_log_level)
+		--return pac_fill_lines.list
+	--is
 
-		-- We will return a bunch of fill lines which are in a single row:
-		result : pac_fill_lines.list;
+		---- We will return a bunch of fill lines which are in a single row:
+		--result : pac_fill_lines.list;
 
-		-- This is the y position of all fill lines. All fill lines
-		-- are in the same row:
-		y_position : constant type_distance := Y (board_domain.start); 
+		---- This is the y position of all fill lines. All fill lines
+		---- are in the same row:
+		--y_position : constant type_distance := Y (board_domain.start); 
 
-		-- A single fill line to be inserted in the result:
-		fill_line : type_line; -- G====S
-
-		
-		-- For each domain we have an individual flag:
-		type type_domain_status is record
-			board, polygon, -- CS rename to board_intersections, polygon_intersections ?
-			polygon_proximities : type_stop_go := STOP;
-		end record;
-
-		domain_status : type_domain_status;
-		
-		-- After ANDing the status of the domains this the the final
-		-- signal for start and stop of a fill line:
-		final_line_status : type_stop_go := STOP;
-
-		-- At the start point of the domains (All start at the same x-position),
-		-- the individual line flags must be initialized:
-		procedure init_line_statuses is 
-			use pac_proximity_points;
-		begin
-			case board_domain.status is
-				when INSIDE		=> domain_status.board := GO;
-				when OUTSIDE	=> domain_status.board := STOP;
-			end case;
-
-			case polygon_domain.status is
-				when INSIDE		=> domain_status.polygon := GO;
-				when OUTSIDE	=> domain_status.polygon := STOP;
-			end case;
-
-			-- The probe line of the proximity points has started outside
-			-- the polygon. So we there is no obstacle at this point:
-			if is_empty (polygon_proximities) then
-				domain_status.polygon_proximities := GO;
-			else
-				domain_status.polygon_proximities := element (polygon_proximities.first).status;
-			end if;
-			
-			--log (text => "status board line: " & type_stop_go'image (domain_status.board),
-				--level => log_threshold + 1);
-
-			--log (text => "status polygon line: " & type_stop_go'image (domain_status.polygon),
-				--level => log_threshold + 1);
-			
-		end init_line_statuses;
-
-		procedure toggle_status_board_line is begin
-			case domain_status.board is
-				when STOP	=> domain_status.board := GO;
-				when GO		=> domain_status.board := STOP;
-			end case;
-		end toggle_status_board_line;
-
-		procedure toggle_status_polygon_line is begin
-			case domain_status.polygon is
-				when STOP	=> domain_status.polygon := GO;
-				when GO		=> domain_status.polygon := STOP;
-			end case;
-		end toggle_status_polygon_line;
-		
-		procedure toggle_status_polygon_proximities_line is begin
-			case domain_status.polygon_proximities is
-				when STOP	=> domain_status.polygon_proximities := GO;
-				when GO		=> domain_status.polygon_proximities := STOP;
-			end case;
-		end toggle_status_polygon_proximities_line;
+		---- A single fill line to be inserted in the result:
+		--fill_line : type_line; -- G====S
 
 		
-		-- This flag indicates that the status for the final
-		-- fill line has changed from GO to STOP or from STOP to GO:
-		final_line_status_has_changed : boolean := false;
+		---- For each domain we have an individual flag:
+		--type type_domain_status is record
+			--board, polygon, -- CS rename to board_intersections, polygon_intersections ?
+			--polygon_proximities : type_stop_go := STOP;
+		--end record;
 
+		--domain_status : type_domain_status;
 		
-		
-		-- The switches are just a collection of x-positions.
-		-- For each domain we have a list of switches. 
-		-- A switch point is the place where the STOP/GO status changes.
-		use pac_distances;		
+		---- After ANDing the status of the domains this the the final
+		---- signal for start and stop of a fill line:
+		--final_line_status : type_stop_go := STOP;
 
-		type type_switches is record
-			board, polygon, polygon_proximities : pac_distances.list;
-		end record;
+		---- At the start point of the domains (All start at the same x-position),
+		---- the individual line flags must be initialized:
+		--procedure init_line_statuses is 
+			--use pac_proximity_points;
+		--begin
+			--case board_domain.status is
+				--when INSIDE		=> domain_status.board := GO;
+				--when OUTSIDE	=> domain_status.board := STOP;
+			--end case;
 
-		switches : type_switches;
-		
+			--case polygon_domain.status is
+				--when INSIDE		=> domain_status.polygon := GO;
+				--when OUTSIDE	=> domain_status.polygon := STOP;
+			--end case;
 
-		
-		use pac_probe_line_intersections;
-
-		-- The result of an "inside-polyon-query" is a list of intersections where a probe
-		-- line intersects a polygon, board contours, tracks, pads or vector text.
-		-- This function takes the result of an "inside-polyon-query" and computes
-		-- the exact positions where the domain issues a STOP/GO signal. The exact positions
-		-- to be returned are the so called switches (see declarations above).
-		-- Optionally, an extra clearance may be taken into account. Extra clearance
-		-- is required for example when the given points are intersections with the board
-		-- contours.
-		function make_switches (
-			points			: in type_inside_polygon_query_result;
-			extra_clearance	: in boolean := false;					   
-			clearance		: in type_track_clearance := type_track_clearance'first)					   
-			return pac_distances.list
-		is 
-			switches : pac_distances.list; -- to be returned
-
-			status_inside_outside : type_point_status := points.status;
-
-			procedure query_intersection (c : in pac_probe_line_intersections.cursor) is
-
-				-- The space to be computed between intersection and switch.
-				spacing : type_track_clearance;
-
-				-- The position of the switch:
-				new_x : type_distance;
-
-			begin
-				-- At each intersection we have a transition from inside to outside
-				-- or the other way around. The initial status depends on the status of
-				-- the given list of intersection points. See declaration above.
-				toggle_status (status_inside_outside);
-
-				if extra_clearance then
-					
-					spacing := compute_clearance (
-						status			=> status_inside_outside, -- transition to inside/outside area
-						y_position		=> y_position,
-						intersection	=> element (c),
-						line_width		=> width,
-						extra_clearance	=> true,
-						clearance		=> clearance,
-						log_threshold	=> log_threshold + 1);
-
-				else
-					
-					spacing := compute_clearance (
-						status			=> status_inside_outside, -- transition to inside/outside area
-						y_position		=> y_position,
-						intersection	=> element (c),
-						line_width		=> width,
-						log_threshold	=> log_threshold + 1);
-
-				end if;
-
-				
-				case status_inside_outside is
-					when INSIDE => -- A change from outside to inside occured.
-						-- Fill area ENTERED.
-						-- Create a new virtual intersection after the original
-						-- intersection. The original intersection is omitted.
-						new_x := element (c).x_position + spacing;
-
-						append (switches, new_x);
-						
-					when OUTSIDE => -- A change from inside to outside occured.
-						-- Fill area LEFT.
-						-- Create a new virtual intersection before the original
-						-- intersection. The original intersection is omitted.
-						new_x := element (c).x_position - spacing;
-
-						-- If the change to the outside comes before the
-						-- change into the inside then both points must be discarded.
-						-- Otherwise we would later get a fill line that has zero length or
-						-- runs from right to the left (Fill lines always run from left to right.).
-						if is_empty (switches) then
-							append (switches, new_x);
-						else
-							if last_element (switches) < new_x then
-								append (switches, new_x);
-							else
-								switches.delete_last;
-							end if;
-						end if;
-						
-				end case;
-				
-				log (text => "switch at" & to_string (new_x), level => log_threshold + 1);
-				
-			end query_intersection;
-				
-		begin -- make_switches
-			log_indentation_up;
-			
-			iterate (points.intersections, query_intersection'access);
-
-			log_indentation_down;
-			
-			return switches;
-		end make_switches;
-
-
-
-
-		-- A milestone is a point in x-direction where the fill line
-		-- starts or where it comes to an end.
-		-- When searching a milestone after a certain point in x-direction
-		-- no further milestone could exist. For this reason astatus flag
-		-- is required:
-
-		type type_milestone_status is (
-			VALID,		-- there is a milestone after a certain point in x-direction
-			INVALID);	-- there is no milestone after a certain point in x-direction
-
-		type type_milestone is record
-			status	: type_milestone_status := INVALID;
-
-			-- The absolute x-position of the milestone 
-			-- after a certain point in x-direction:
-			x		: type_distance := zero;
-		end record;
-
-		milestone : type_milestone;
-
-
-		
-
-		-- Computes the final_line_status by ANDing the individual
-		-- domain statuses. 
-		-- ALL domains must give their go for the final fill line.
-		-- Sets the flag final_line_status_has_changed accordingly.
-		procedure update_final_line_status is begin
-			if  domain_status.board = GO
-			and domain_status.polygon = GO 
-			and domain_status.polygon_proximities = GO	
-			then
-
-				-- Detect a change of the status:
-				if final_line_status = STOP then
-					final_line_status_has_changed := true;
-				else
-					final_line_status_has_changed := false;
-				end if;
-
-				-- Set the line status:
-				final_line_status := GO;
-			else
-
-				-- Detect a change of the status:
-				if final_line_status = GO then
-					final_line_status_has_changed := true;
-				else
-					final_line_status_has_changed := false;
-				end if;
-
-				-- Set the line status:
-				final_line_status := STOP;
-			end if;
-
-			--if final_line_status_has_changed then
-				--log (text => "line status " & type_stop_go'image (final_line_status),
-					--level => log_threshold);
+			---- The probe line of the proximity points has started outside
+			---- the polygon. So we there is no obstacle at this point:
+			--if is_empty (polygon_proximities) then
+				--domain_status.polygon_proximities := GO;
+			--else
+				--domain_status.polygon_proximities := element (polygon_proximities.first).status;
 			--end if;
-				
-		end update_final_line_status;
+			
+			----log (text => "status board line: " & type_stop_go'image (domain_status.board),
+				----level => log_threshold + 1);
 
+			----log (text => "status polygon line: " & type_stop_go'image (domain_status.polygon),
+				----level => log_threshold + 1);
+			
+		--end init_line_statuses;
+
+		--procedure toggle_status_board_line is begin
+			--case domain_status.board is
+				--when STOP	=> domain_status.board := GO;
+				--when GO		=> domain_status.board := STOP;
+			--end case;
+		--end toggle_status_board_line;
+
+		--procedure toggle_status_polygon_line is begin
+			--case domain_status.polygon is
+				--when STOP	=> domain_status.polygon := GO;
+				--when GO		=> domain_status.polygon := STOP;
+			--end case;
+		--end toggle_status_polygon_line;
+		
+		--procedure toggle_status_polygon_proximities_line is begin
+			--case domain_status.polygon_proximities is
+				--when STOP	=> domain_status.polygon_proximities := GO;
+				--when GO		=> domain_status.polygon_proximities := STOP;
+			--end case;
+		--end toggle_status_polygon_proximities_line;
 
 		
-		-- Sets the start or end point of a fill line if the current milestone
-		-- is valid.
-		-- The fill line always starts at the
-		-- current milestone where the final_line_status changes to GO.
-		-- The fill line ends when the final_line_status changes to STOP.
-		procedure make_fill_line is
-			use pac_fill_lines;
-		begin
-			if milestone.status = VALID then
-				
-				case final_line_status is 
-					when GO =>
-						fill_line.start_point := type_point (set (milestone.x, y_position));
-						
-					when STOP =>
-						--if milestone.x_value > x_position then
+		---- This flag indicates that the status for the final
+		---- fill line has changed from GO to STOP or from STOP to GO:
+		--final_line_status_has_changed : boolean := false;
 
-						-- Its end point is assigned when the final_line_status has just CHANGED
-						-- into a STOP mark.
+		
+		
+		---- The switches are just a collection of x-positions.
+		---- For each domain we have a list of switches. 
+		---- A switch point is the place where the STOP/GO status changes.
+		--use pac_distances;		
+
+		--type type_switches is record
+			--board, polygon, polygon_proximities : pac_distances.list;
+		--end record;
+
+		--switches : type_switches;
+		
+
+		
+		--use pac_probe_line_intersections;
+
+		---- The result of an "inside-polyon-query" is a list of intersections where a probe
+		---- line intersects a polygon, board contours, tracks, pads or vector text.
+		---- This function takes the result of an "inside-polyon-query" and computes
+		---- the exact positions where the domain issues a STOP/GO signal. The exact positions
+		---- to be returned are the so called switches (see declarations above).
+		---- Optionally, an extra clearance may be taken into account. Extra clearance
+		---- is required for example when the given points are intersections with the board
+		---- contours.
+		--function make_switches (
+			--points			: in type_inside_polygon_query_result;
+			--extra_clearance	: in boolean := false;					   
+			--clearance		: in type_track_clearance := type_track_clearance'first)					   
+			--return pac_distances.list
+		--is 
+			--switches : pac_distances.list; -- to be returned
+
+			--status_inside_outside : type_point_status := points.status;
+
+			--procedure query_intersection (c : in pac_probe_line_intersections.cursor) is
+
+				---- The space to be computed between intersection and switch.
+				--spacing : type_track_clearance;
+
+				---- The position of the switch:
+				--new_x : type_distance;
+
+			--begin
+				---- At each intersection we have a transition from inside to outside
+				---- or the other way around. The initial status depends on the status of
+				---- the given list of intersection points. See declaration above.
+				--toggle_status (status_inside_outside);
+
+				--if extra_clearance then
+					
+					--spacing := compute_clearance (
+						--status			=> status_inside_outside, -- transition to inside/outside area
+						--y_position		=> y_position,
+						--intersection	=> element (c),
+						--line_width		=> width,
+						--extra_clearance	=> true,
+						--clearance		=> clearance,
+						--log_threshold	=> log_threshold + 1);
+
+				--else
+					
+					--spacing := compute_clearance (
+						--status			=> status_inside_outside, -- transition to inside/outside area
+						--y_position		=> y_position,
+						--intersection	=> element (c),
+						--line_width		=> width,
+						--log_threshold	=> log_threshold + 1);
+
+				--end if;
+
+				
+				--case status_inside_outside is
+					--when INSIDE => -- A change from outside to inside occured.
+						---- Fill area ENTERED.
+						---- Create a new virtual intersection after the original
+						---- intersection. The original intersection is omitted.
+						--new_x := element (c).x_position + spacing;
+
+						--append (switches, new_x);
 						
-							if final_line_status_has_changed then
-								fill_line.end_point := type_point (set (milestone.x, y_position));
-								
-								append (result, fill_line);
-							end if;
-							
+					--when OUTSIDE => -- A change from inside to outside occured.
+						---- Fill area LEFT.
+						---- Create a new virtual intersection before the original
+						---- intersection. The original intersection is omitted.
+						--new_x := element (c).x_position - spacing;
+
+						---- If the change to the outside comes before the
+						---- change into the inside then both points must be discarded.
+						---- Otherwise we would later get a fill line that has zero length or
+						---- runs from right to the left (Fill lines always run from left to right.).
+						--if is_empty (switches) then
+							--append (switches, new_x);
+						--else
+							--if last_element (switches) < new_x then
+								--append (switches, new_x);
+							--else
+								--switches.delete_last;
+							--end if;
 						--end if;
-				end case;
+						
+				--end case;
 				
-			end if;			
-		end make_fill_line;
-
-		-- Locates the next milestone in x-direction forward the given 
-		-- x-value "forward".
-		-- If a valid milestone was found, updates the final line status by
-		-- calling procedure update_final_line_status.
-		function get_next_milestone (forward : in type_distance)
-			return type_milestone
-		is
-			-- the milestone being build and to be returned:
-			ms : type_milestone;
-
-			-- These are the smallest distances found between "forward"
-			-- and the points in the domains:
-			type type_smallest_differences is array (1..3) of type_distance;
-			sdx : type_smallest_differences := (others => type_distance'last);
-
-			procedure query_board_switch (c : in pac_distances.cursor) is
-				x : type_distance := element (c);
-			begin
-				if x > forward then
-					ms.status := VALID;
-
-					if x < sdx(1) then
-						sdx(1) := x;
-					end if;
-				end if;
-			end query_board_switch;
-
-			procedure query_polygon_switch (c : in pac_distances.cursor) is
-				x : type_distance := element (c);
-			begin
-				if x > forward then
-					ms.status := VALID;
-
-					if x < sdx(2) then
-						sdx(2) := x;
-					end if;
-				end if;
-			end query_polygon_switch;
-
-			use pac_proximity_points;
+				--log (text => "switch at" & to_string (new_x), level => log_threshold + 1);
+				
+			--end query_intersection;
+				
+		--begin -- make_switches
+			--log_indentation_up;
 			
-			procedure query_polygon_proximities_switch (c : in pac_proximity_points.cursor) is
-				x : type_distance := element (c).x;
-			begin
-				if x > forward then
-					ms.status := VALID;
+			--iterate (points.intersections, query_intersection'access);
 
-					if x < sdx(3) then
-						sdx(3) := x;
-					end if;
-				end if;
-			end query_polygon_proximities_switch;
-
+			--log_indentation_down;
 			
-			-- Finds the smallest difference among the domains and sets the
-			-- absolute position of the milestone to be returned.
-			-- Toggles the status of the individual lines.
-			procedure set_x is
-				dx : type_distance := type_distance'last;
-			begin
-				-- Find the nearest milestone among the domains
-				-- by finding the smallest difference stored in array sdx:
+			--return switches;
+		--end make_switches;
+
+
+
+
+		---- A milestone is a point in x-direction where the fill line
+		---- starts or where it comes to an end.
+		---- When searching a milestone after a certain point in x-direction
+		---- no further milestone could exist. For this reason astatus flag
+		---- is required:
+
+		--type type_milestone_status is (
+			--VALID,		-- there is a milestone after a certain point in x-direction
+			--INVALID);	-- there is no milestone after a certain point in x-direction
+
+		--type type_milestone is record
+			--status	: type_milestone_status := INVALID;
+
+			---- The absolute x-position of the milestone 
+			---- after a certain point in x-direction:
+			--x		: type_distance := zero;
+		--end record;
+
+		--milestone : type_milestone;
+
+
+		
+
+		---- Computes the final_line_status by ANDing the individual
+		---- domain statuses. 
+		---- ALL domains must give their go for the final fill line.
+		---- Sets the flag final_line_status_has_changed accordingly.
+		--procedure update_final_line_status is begin
+			--if  domain_status.board = GO
+			--and domain_status.polygon = GO 
+			--and domain_status.polygon_proximities = GO	
+			--then
+
+				---- Detect a change of the status:
+				--if final_line_status = STOP then
+					--final_line_status_has_changed := true;
+				--else
+					--final_line_status_has_changed := false;
+				--end if;
+
+				---- Set the line status:
+				--final_line_status := GO;
+			--else
+
+				---- Detect a change of the status:
+				--if final_line_status = GO then
+					--final_line_status_has_changed := true;
+				--else
+					--final_line_status_has_changed := false;
+				--end if;
+
+				---- Set the line status:
+				--final_line_status := STOP;
+			--end if;
+
+			----if final_line_status_has_changed then
+				----log (text => "line status " & type_stop_go'image (final_line_status),
+					----level => log_threshold);
+			----end if;
 				
-				--log (text => "sdx 1" & to_string (sdx(1)), level => log_threshold + 1);
-				--log (text => "sdx 2" & to_string (sdx(2)), level => log_threshold + 1);
+		--end update_final_line_status;
 
-				for i in type_smallest_differences'first .. type_smallest_differences'last loop
 
-					if sdx(i) < dx then
-						dx := sdx(i);
-					end if;
-
-				end loop;
-
-				--log (text => "nearest" & to_string (dx), level => log_threshold + 1);
+		
+		---- Sets the start or end point of a fill line if the current milestone
+		---- is valid.
+		---- The fill line always starts at the
+		---- current milestone where the final_line_status changes to GO.
+		---- The fill line ends when the final_line_status changes to STOP.
+		--procedure make_fill_line is
+			--use pac_fill_lines;
+		--begin
+			--if milestone.status = VALID then
 				
-				-- Find the domains that have the current x_value.
-				-- There can be more than one domain having the current x_value
-				-- (This happens for example when board contour and polygon edge overlap.):
-				for i in type_smallest_differences'first .. type_smallest_differences'last loop
+				--case final_line_status is 
+					--when GO =>
+						--fill_line.start_point := type_point (set (milestone.x, y_position));
+						
+					--when STOP =>
+						----if milestone.x_value > x_position then
 
-					if sdx(i) = dx then
-						case i is
-							when 1 =>
-								toggle_status_board_line;
+						---- Its end point is assigned when the final_line_status has just CHANGED
+						---- into a STOP mark.
+						
+							--if final_line_status_has_changed then
+								--fill_line.end_point := type_point (set (milestone.x, y_position));
+								
+								--append (result, fill_line);
+							--end if;
 							
-							when 2 =>
-								toggle_status_polygon_line;
+						----end if;
+				--end case;
+				
+			--end if;			
+		--end make_fill_line;
 
-							when 3 =>
-								toggle_status_polygon_proximities_line;
+		---- Locates the next milestone in x-direction forward the given 
+		---- x-value "forward".
+		---- If a valid milestone was found, updates the final line status by
+		---- calling procedure update_final_line_status.
+		--function get_next_milestone (forward : in type_distance)
+			--return type_milestone
+		--is
+			---- the milestone being build and to be returned:
+			--ms : type_milestone;
 
-							-- CS toggle others
-						end case;
-					end if;
+			---- These are the smallest distances found between "forward"
+			---- and the points in the domains:
+			--type type_smallest_differences is array (1..3) of type_distance;
+			--sdx : type_smallest_differences := (others => type_distance'last);
 
-				end loop;				
+			--procedure query_board_switch (c : in pac_distances.cursor) is
+				--x : type_distance := element (c);
+			--begin
+				--if x > forward then
+					--ms.status := VALID;
 
-				-- The absolute position in x of the switch point is:
-				ms.x := dx;
-			end set_x;
+					--if x < sdx(1) then
+						--sdx(1) := x;
+					--end if;
+				--end if;
+			--end query_board_switch;
+
+			--procedure query_polygon_switch (c : in pac_distances.cursor) is
+				--x : type_distance := element (c);
+			--begin
+				--if x > forward then
+					--ms.status := VALID;
+
+					--if x < sdx(2) then
+						--sdx(2) := x;
+					--end if;
+				--end if;
+			--end query_polygon_switch;
+
+			--use pac_proximity_points;
 			
-		begin -- get_next_milestone
-			
-			log (text => "seaching next milestone after" & to_string (forward),
-				level => log_threshold + 1);
+			--procedure query_polygon_proximities_switch (c : in pac_proximity_points.cursor) is
+				--x : type_distance := element (c).x;
+			--begin
+				--if x > forward then
+					--ms.status := VALID;
 
-			log_indentation_up;
-
-			-- Find the board switch that is nearest to the given forward-position:
-			iterate (switches.board, query_board_switch'access);
-
-			-- Find the polygon switch that is nearest to the given forward-position:
-			iterate (switches.polygon, query_polygon_switch'access);
-
-			-- Find the polygon proximity switch that is nearest to the given forward-position:
-			iterate (polygon_proximities, query_polygon_proximities_switch'access);
+					--if x < sdx(3) then
+						--sdx(3) := x;
+					--end if;
+				--end if;
+			--end query_polygon_proximities_switch;
 
 			
-			case ms.status is
-				when VALID => 
-					-- If a valid milestone was found, then the milestone nearest to
-					-- the given "forward" is to be found:
-					-- Set the absolute x-position of the milestone.
-					set_x;
+			---- Finds the smallest difference among the domains and sets the
+			---- absolute position of the milestone to be returned.
+			---- Toggles the status of the individual lines.
+			--procedure set_x is
+				--dx : type_distance := type_distance'last;
+			--begin
+				---- Find the nearest milestone among the domains
+				---- by finding the smallest difference stored in array sdx:
+				
+				----log (text => "sdx 1" & to_string (sdx(1)), level => log_threshold + 1);
+				----log (text => "sdx 2" & to_string (sdx(2)), level => log_threshold + 1);
 
-					--log (text => "",
-						--level => log_threshold);
+				--for i in type_smallest_differences'first .. type_smallest_differences'last loop
+
+					--if sdx(i) < dx then
+						--dx := sdx(i);
+					--end if;
+
+				--end loop;
+
+				----log (text => "nearest" & to_string (dx), level => log_threshold + 1);
+				
+				---- Find the domains that have the current x_value.
+				---- There can be more than one domain having the current x_value
+				---- (This happens for example when board contour and polygon edge overlap.):
+				--for i in type_smallest_differences'first .. type_smallest_differences'last loop
+
+					--if sdx(i) = dx then
+						--case i is
+							--when 1 =>
+								--toggle_status_board_line;
+							
+							--when 2 =>
+								--toggle_status_polygon_line;
+
+							--when 3 =>
+								--toggle_status_polygon_proximities_line;
+
+							---- CS toggle others
+						--end case;
+					--end if;
+
+				--end loop;				
+
+				---- The absolute position in x of the switch point is:
+				--ms.x := dx;
+			--end set_x;
+			
+		--begin -- get_next_milestone
+			
+			--log (text => "seaching next milestone after" & to_string (forward),
+				--level => log_threshold + 1);
+
+			--log_indentation_up;
+
+			---- Find the board switch that is nearest to the given forward-position:
+			--iterate (switches.board, query_board_switch'access);
+
+			---- Find the polygon switch that is nearest to the given forward-position:
+			--iterate (switches.polygon, query_polygon_switch'access);
+
+			---- Find the polygon proximity switch that is nearest to the given forward-position:
+			--iterate (polygon_proximities, query_polygon_proximities_switch'access);
+
+			
+			--case ms.status is
+				--when VALID => 
+					---- If a valid milestone was found, then the milestone nearest to
+					---- the given "forward" is to be found:
+					---- Set the absolute x-position of the milestone.
+					--set_x;
+
+					----log (text => "",
+						----level => log_threshold);
 					
-					--log (text => "switch at" & to_string (ms.x_value),
-						--level => log_threshold);
+					----log (text => "switch at" & to_string (ms.x_value),
+						----level => log_threshold);
 
-					log (text => "milestone is at" & to_string (ms.x), level => log_threshold + 1);
+					--log (text => "milestone is at" & to_string (ms.x), level => log_threshold + 1);
 
 					
-					update_final_line_status;
+					--update_final_line_status;
 					
-				when INVALID =>					
-					-- If no valid milestone was found, then the milestone to be returned
-					-- is INVALID.
-					null;
+				--when INVALID =>					
+					---- If no valid milestone was found, then the milestone to be returned
+					---- is INVALID.
+					--null;
 
-					log (text => "none found", level => log_threshold + 1);
+					--log (text => "none found", level => log_threshold + 1);
 
-			end case;
+			--end case;
 
-			log_indentation_down;
+			--log_indentation_down;
 			
-			return ms;
-		end get_next_milestone;
+			--return ms;
+		--end get_next_milestone;
 		
-	begin -- compute_fill_lines
+	--begin -- compute_fill_lines
 		
-		log (text => "evaluating milestones after" & to_string (board_domain.start),
-			 level => log_threshold);
+		--log (text => "evaluating milestones after" & to_string (board_domain.start),
+			 --level => log_threshold);
 
-		log_indentation_up;
+		--log_indentation_up;
 		
-		log (text => "make board switches", level => log_threshold);
+		--log (text => "make board switches", level => log_threshold);
 
-		-- The calculation of the board switches requires to observe
-		-- the DRU settings for clearance conductor to board edge. For this reason
-		-- we pass extra clearance:
-		switches.board := make_switches (
-			points			=> board_domain,
-			extra_clearance	=> true,
-			clearance		=> design_rules.clearances.conductor_to_board_edge);
+		---- The calculation of the board switches requires to observe
+		---- the DRU settings for clearance conductor to board edge. For this reason
+		---- we pass extra clearance:
+		--switches.board := make_switches (
+			--points			=> board_domain,
+			--extra_clearance	=> true,
+			--clearance		=> design_rules.clearances.conductor_to_board_edge);
 
-		log (text => "make polyon switches", level => log_threshold);
+		--log (text => "make polyon switches", level => log_threshold);
 		
-		switches.polygon := make_switches (
-			points			=> polygon_domain);
+		--switches.polygon := make_switches (
+			--points			=> polygon_domain);
 
-		init_line_statuses;
+		--init_line_statuses;
 
-		-- Set the initial x-position of the milestone.
-		-- So the first milestone is where the board domain begins:
-		milestone.x := X (board_domain.start);
-		milestone.status := VALID; -- the first milestone is always valid
+		---- Set the initial x-position of the milestone.
+		---- So the first milestone is where the board domain begins:
+		--milestone.x := X (board_domain.start);
+		--milestone.status := VALID; -- the first milestone is always valid
 		
-		update_final_line_status;
+		--update_final_line_status;
 
-		-- Assign start to the fill_line if the milestone is valid
-		-- and if the final_line_status is GO.
-		-- Otherwise nothing happens here:
-		make_fill_line;
+		---- Assign start to the fill_line if the milestone is valid
+		---- and if the final_line_status is GO.
+		---- Otherwise nothing happens here:
+		--make_fill_line;
 
 		
-		-- Get the 2nd milestone. If there is a 2nd milestone, then
-		-- milestone.x_value assumes the x-position of the 2nd milestone.
-		-- If there is no 2nd milestone, then the status of milestone will be set INVALID.
-		-- In this case no further milestones will be searched for.
-		milestone := get_next_milestone (milestone.x);
+		---- Get the 2nd milestone. If there is a 2nd milestone, then
+		---- milestone.x_value assumes the x-position of the 2nd milestone.
+		---- If there is no 2nd milestone, then the status of milestone will be set INVALID.
+		---- In this case no further milestones will be searched for.
+		--milestone := get_next_milestone (milestone.x);
 
-		-- Assign start or end point to the fill_line if the milestone is valid:
-		-- Otherwise nothing happens here:
-		make_fill_line;
+		---- Assign start or end point to the fill_line if the milestone is valid:
+		---- Otherwise nothing happens here:
+		--make_fill_line;
 		
-		-- Look for more milestones:
-		while milestone.status = VALID loop
+		---- Look for more milestones:
+		--while milestone.status = VALID loop
 
-			milestone := get_next_milestone (milestone.x);
+			--milestone := get_next_milestone (milestone.x);
 
-			-- Assign start or end point to the fill_line if the milestone is valid:
-			-- Otherwise nothing happens here:
-			make_fill_line;
+			---- Assign start or end point to the fill_line if the milestone is valid:
+			---- Otherwise nothing happens here:
+			--make_fill_line;
 			
-		end loop;
+		--end loop;
 
-		log_indentation_down;
+		--log_indentation_down;
 		
-		return result;
-	end compute_fill_lines;
+		--return result;
+	--end compute_fill_lines;
 
 
 	function clear_for_track (
@@ -1924,7 +1924,8 @@ package body et_routing is
 		
 	function get_break (
 		track	: in type_track;
-		line	: in type_line)
+		line	: in type_line;
+		place	: in type_place)
 		return type_break
 	is
 		result : type_break;
@@ -1937,7 +1938,8 @@ package body et_routing is
 	
 	function get_break (
 		track	: in type_track;
-		arc		: in type_arc)
+		arc		: in type_arc;
+		place	: in type_place)
 		return type_break
 	is
 		result : type_break;
@@ -1950,7 +1952,8 @@ package body et_routing is
 
 	function get_break (
 		track	: in type_track;
-		circle	: in type_circle)
+		circle	: in type_circle;
+		place	: in type_place)
 		return type_break
 	is
 		result : type_break;
@@ -1964,7 +1967,7 @@ package body et_routing is
 	function get_distance (
 		module_cursor	: in pac_generic_modules.cursor;
 		start_point		: in type_point;
-		target			: in type_target := BEFORE;
+		place			: in type_place := BEFORE;
 		direction		: in type_rotation;
 		net				: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
 		fill_zone		: in type_fill_zone;
@@ -1998,7 +2001,7 @@ package body et_routing is
 			p : type_point;
 			d : type_distance_positive;
 		begin
-			case target is
+			case place is
 				when BEFORE =>
 					p := to_point (break.near);
 					d := distance_total (start_point, p);
@@ -2027,14 +2030,14 @@ package body et_routing is
 					
 					procedure test_line is
 						b : constant type_break := 
-							get_break (track, element (c).segment_line);
+							get_break (track, element (c).segment_line, place);
 					begin
 						process_break (b);
 					end test_line;
 
 					procedure test_arc is
 						b : constant type_break := 
-							get_break (track, element (c).segment_arc);
+							get_break (track, element (c).segment_arc, place);
 					begin
 						process_break (b);
 					end test_arc;
@@ -2048,7 +2051,7 @@ package body et_routing is
 
 				procedure query_circle is
 					b : constant type_break :=
-						get_break (track, module.board.contours.outline.contours.circle);
+						get_break (track, module.board.contours.outline.contours.circle, place);
 				begin
 					process_break (b);
 				end query_circle;
@@ -2106,7 +2109,7 @@ package body et_routing is
 
 		
 	begin -- get_distance
-		case target is
+		case place is
 			when BEFORE =>
 				-- test whether start_point is suitable to start a track
 				if clear_for_track (module_cursor, start_point, net, layer, width) then
