@@ -1925,16 +1925,42 @@ package body et_routing is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) 
 		is
-		begin -- query_module
-			if in_polygon_status (module.board.contours.outline, start_point).status = OUTSIDE then
-				result := false;
-			else
-				null;
-				-- CS distance to nearest outline segment
-			end if;
-			
-			-- holes
 
+			procedure query_outline is begin
+				if in_polygon_status (module.board.contours.outline, start_point).status = OUTSIDE then
+					-- start point is in the usable board area
+					result := false;
+				else
+					null;
+					-- CS distance to nearest outline segment
+				end if;
+			end query_outline;
+			
+			
+			procedure query_holes is
+				use pac_pcb_cutouts;
+				c : pac_pcb_cutouts.cursor := module.board.contours.holes.first;
+			begin
+				while c /= pac_pcb_cutouts.no_element loop
+
+					if in_polygon_status (element (c), start_point).status = INSIDE then
+						-- start point is inside a hole
+						result := false;
+						exit; -- no need to test other holes
+					end if;
+					
+					next (c);
+				end loop;
+			end query_holes;
+			
+		begin -- query_module
+
+			-- test board outline:
+			query_outline;
+		
+			-- test holes in board:
+			query_holes;
+			
 			-- if fill_zone.observe then query 
 			-- - fill_zone.outline
 			-- - global cutout areas
@@ -2007,10 +2033,24 @@ package body et_routing is
 		place	: in type_place)
 		return type_break
 	is
+		i : constant type_intersection_of_line_and_circle := get_intersection (track.center, arc);
+		
 		result : type_break (exists => false);
 	begin
-		
-		return result;
+		case i.status is
+			when NONE_EXIST => return (exists => false);
+			when ONE_EXISTS => 
+				if i.tangent_status = SECANT then
+					return (exists => true, point => to_point (i.intersection.point));
+				else
+					return (exists => false);
+				end if;
+				
+			when TWO_EXIST => 
+				return (exists => false);
+
+		end case;
+		--return result;
 	end get_break;
 
 
@@ -2022,7 +2062,7 @@ package body et_routing is
 	is
 		result : type_break (exists => false);
 	begin
-
+		-- first intersection with circle after track start point only !
 		return result;
 	end get_break;
 
@@ -2083,57 +2123,71 @@ package body et_routing is
 			module		: in et_schematic.type_module) 
 		is
 			use pac_polygon_segments;
-			
-			procedure query_contours is
 
-				procedure query_segment (c : in pac_polygon_segments.cursor) is
-					
-					procedure test_line is 
-						b : constant type_break := get_break (track, element (c).segment_line, place);
-					begin
-						if b.exists then
-							process_break (b.point);
-						end if;
-					end test_line;
-
-					procedure test_arc is
-						b : constant type_break := get_break (track, element (c).segment_arc, place);
-					begin
-						if b.exists then
-							process_break (b.point);
-						end if;						
-					end test_arc;
-					
-				begin -- query_segment
-					case element (c).shape is
-						when LINE	=> test_line;
-						when ARC	=> test_arc;
-					end case;
-				end query_segment;
-
-				procedure query_circle is 
-					b : constant type_break := get_break (track, module.board.contours.outline.contours.circle, place);
+			procedure query_segment (c : in pac_polygon_segments.cursor) is
+				
+				procedure test_line is 
+					b : constant type_break := get_break (track, element (c).segment_line, place);
 				begin
 					if b.exists then
 						process_break (b.point);
 					end if;
-				end query_circle;
+				end test_line;
+
+				procedure test_arc is
+					b : constant type_break := get_break (track, element (c).segment_arc, place);
+				begin
+					if b.exists then
+						process_break (b.point);
+					end if;						
+				end test_arc;
 				
-			begin -- query_contours
-				track.clearance	:= design_rules.clearances.conductor_to_board_edge;
-				
-				-- board outline:
+			begin -- query_segment
+				case element (c).shape is
+					when LINE	=> test_line;
+					when ARC	=> test_arc;
+				end case;
+			end query_segment;
+
+			
+			procedure query_circle (c : in type_circle) is 
+				b : constant type_break := get_break (track, c, place);
+			begin
+				if b.exists then
+					process_break (b.point);
+				end if;
+			end query_circle;
+
+			
+			procedure query_contours is begin
 				if module.board.contours.outline.contours.circular then
-					query_circle;
+					query_circle (module.board.contours.outline.contours.circle);
 				else
 					iterate (module.board.contours.outline.contours.segments, query_segment'access);
 				end if;
 			end query_contours;
+
+			procedure query_holes is
+				use pac_pcb_cutouts;
+
+				procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
+					if element (c).contours.circular then
+						query_circle (element (c).contours.circle);
+					else
+						iterate (element (c).contours.segments, query_segment'access);
+					end if;
+				end query_hole;
+				
+			begin
+				iterate (module.board.contours.holes, query_hole'access);
+			end query_holes;
 			
 		begin -- query_module
-			query_contours;
 
-			-- holes
+			track.clearance	:= design_rules.clearances.conductor_to_board_edge;
+			
+			query_contours;
+			query_holes;
 
 			-- if fill_zone.observe then query 
 			-- - fill_zone.outline
@@ -2156,6 +2210,7 @@ package body et_routing is
 			while c /= pac_points_after_obstacles.no_element loop
 
 				if clear_for_track (module_cursor, element (c), net, layer, width) then
+				-- CS sufficient to be inside board and inside polygon ?
 					distance_after_obstacle := distance_total (start_point, element (c));
 					exit;
 				end if;
