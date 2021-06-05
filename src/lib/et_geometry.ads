@@ -1122,6 +1122,29 @@ package et_geometry is
 
 
 		-- Computes the intersections of a line with an arc:
+
+		-- - If there is no intersection then it returns NONE_EXIST.
+		-- - If there is only one intersection then the given line is a tangent.
+		--   The return status will then be ONE_EXISTS and the 
+		--   actual intersection (with point and angle).
+		--   The tangent status will be TANGENT.
+		-- - If there are two intersections then the given line is a secant.
+		--   The return status will be TWO_EXIST along with the two intersections
+		--   (with their point and angle).
+		--   NOTE: There is no information about the order of the two intersections
+		--   as the line travels through the arc/circle. Use function order_intersections
+		--   to get the intersections ordered.
+		--
+		-- See details of type type_intersection_of_line_and_circle.
+		--
+		-- IMPORTANT: CONVENTION ON INTERSECTION ANGLE OF A SECANT:
+		-- The angle of intersection is defined as follows:
+		-- The given line enters and leaves the arc/circle at some point and angle.
+		-- As the given line is a line vector, it has a direction. Imagine
+		-- sitting on this line as it enters/leveas the circle. 
+		-- The angle BETWEEN the line and the circle circumfence visible
+		-- on your LEFT is the angle of intersection.
+		-- The angle of intersection is always greater zero and less than 180 degrees.
 		function get_intersection (
 			line	: in type_line_vector;
 			arc		: in type_arc)
@@ -1229,28 +1252,7 @@ package et_geometry is
 
 		
 		-- Computes the intersections of a line with a circle.
-		-- - If there is no intersection then it returns NONE_EXIST.
-		-- - If there is only one intersection then the given line is a tangent.
-		--   The return status will then be ONE_EXISTS and the 
-		--   actual intersection (with point and angle).
-		--   The tangent status will be TANGENT. See 
-		-- - If there are two intersections then the given line is a secant.
-		--   The return status will be TWO_EXIST and the two intersections
-		--   (with their point and angle).
-		--   NOTE: There is no information on the order of the two intersections
-		--   as the line travels through the circle. Use function order_intersections
-		--   to get the intersections ordered.
-		--
-		-- See details of type type_intersection_of_line_and_circle.
-		--
-		-- IMPORTANT: CONVENTION ON INTERSECTION ANGLE OF A SECANT:
-		-- The angle of intersection is defined as follows:
-		-- The given line enters and leaves the circle at some point and angle.
-		-- As the given line is a line vector, it has a direction. Imagine
-		-- sitting on this line as it enters/leveas the circle. 
-		-- The angle BETWEEN the line and the circle circumfence visible
-		-- on your LEFT is the angle of intersection.
-		-- The angle of intersection is always greater zero and less than 180 degrees.
+		-- See more on overloaded function get_intersection (line, arc):
 		function get_intersection (
 			line	: in type_line_vector;
 			circle	: in type_circle)
@@ -1266,8 +1268,8 @@ package et_geometry is
 			exit_point	: type_intersection;
 		end record;
 
-		-- Sorts the intersections of a line with a circle in the order
-		-- as they appear as the line crosses the circle:
+		-- Sorts the intersections of a line with an arc or a circle in the order
+		-- as they appear as the line crosses the circle or the arc:
 		-- start point of line, entry point, exit point.
 		-- The given intersections must contain two intersections (discrimintant status),
 		-- otherwise a constraint error will be raised.
