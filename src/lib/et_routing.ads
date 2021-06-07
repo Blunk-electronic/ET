@@ -161,12 +161,43 @@ package et_routing is
 	--track_observe_clearance_default : constant type_track_observe_clearance := BOTH;
 
 
+	-- A track starts at a certain point and travels into
+	-- a certain direction. It has a width and a
+	-- clearance to other objects:
 	type type_track is record
-		center		: type_line_vector;
-		width		: type_track_width;
+		center		: type_line_vector; -- incl. start point and direction
+		width		: type_track_width; -- of the conductor (usually copper)
 		clearance	: type_track_clearance;
 	end record;
 
+	-- Returns the sum of track.width and track.clearance:
+	function get_total_width (
+		track	: in type_track)
+		return type_track_clearance;
+		
+	type type_overlap (exists : boolean) is record
+		case exists is 
+			when TRUE => start_point, end_point : type_point;
+			when FALSE => null;
+		end case;
+	end record;
+	
+	-- Returns the begin and end point of an overlap of
+	-- a track with a line.
+	-- If there is an overlap:
+	--  - Returns the start and end point along the track
+	--    where the overlap begins and ends.
+	--  - Start and end point are on the center line of the track.
+	--  - If the overlap begins right at the start of the track, then
+	--    the returned start point of overlap is the same as the 
+	--    start point of the track.
+	-- If there is no overlap:
+	--  - Returns false (non exists).
+	function get_overlap (
+		track	: in type_track;
+		line	: in type_line)
+		return type_overlap;
+	
 	type type_place is (
 		BEFORE,
 		AFTER);					
@@ -177,13 +208,32 @@ package et_routing is
 			when FALSE => null;
 		end case;
 	end record;
-	
-	function get_break (
+
+	-- Returns true if the given point comes after the 
+	-- start point of the given track. 
+	-- Assumes that the point is on the center line of the track. 
+	-- If the point is not on the track, raises constraint error:
+	function comes_after (
 		track	: in type_track;
+		point	: in type_point)
+		return boolean;
+	
+	-- Returns the point where a track is broken/interrupted
+	-- by a line that crosses or overlaps the track.
+	-- If place is BEFORE: 
+	--  - Returns the point, after the start point of the track, where the break begins.
+	--  - If the computed break begins before the start point of the track, then
+	--    the return is false (means no break).
+	-- If place is AFTER:
+	--  - Returns the point, after the start point of the track, where the break ends.
+	function get_break (
+		track	: in type_track; -- incl. start point, width and clearance
 		line	: in type_line;
 		place	: in type_place)
 		return type_break;
 
+	-- Returns the first point where a track is broken/interrupted
+	-- by an arc that crosses or overlaps the track.
 	function get_break (
 		track	: in type_track;
 		arc		: in type_arc;
