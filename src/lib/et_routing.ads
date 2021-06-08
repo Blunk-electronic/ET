@@ -161,6 +161,16 @@ package et_routing is
 	--track_observe_clearance_default : constant type_track_observe_clearance := BOTH;
 
 
+	-- Tests whether the given point is in the usable board area. 
+	-- Returns false if the point is outside the board or inside a hole.
+	-- Returns false if the point is exactly on the edge of the board.
+	-- Returns true if the point is exactly on the edge of a hole.
+	function on_board (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point)
+		return boolean;
+
+	
 	-- A track starts at a certain point and travels into
 	-- a certain direction. It has a width and a
 	-- clearance to other objects:

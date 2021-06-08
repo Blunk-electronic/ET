@@ -1908,7 +1908,60 @@ package body et_routing is
 		--return result;
 	--end compute_fill_lines;
 
+	function on_board (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point)
+		return boolean
+	is
+		result : boolean := true;
+		
+		use pac_generic_modules;
 
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module) 
+		is
+			procedure query_outline is begin
+				if in_polygon_status (module.board.contours.outline, point).status = OUTSIDE then
+					result := false;
+				end if;
+			end query_outline;
+			
+			
+			procedure query_holes is
+				use pac_pcb_cutouts;
+				c : pac_pcb_cutouts.cursor := module.board.contours.holes.first;
+			begin
+				while c /= pac_pcb_cutouts.no_element loop
+
+					if in_polygon_status (element (c), point).status = INSIDE then
+						-- point is inside a hole
+						result := false;
+						exit; -- no need to test other holes
+					end if;
+					
+					next (c);
+				end loop;
+			end query_holes;
+			
+		begin
+			-- test board outline:
+			query_outline;
+
+			if result = true then -- point is within board outlines
+				
+				-- test holes in board:
+				query_holes;
+			end if;
+		end query_module;
+
+	begin
+		query_element (module_cursor, query_module'access);
+
+		return result;
+	end on_board;
+
+						  
 	function clear_for_track (
 		module_cursor	: in pac_generic_modules.cursor;
 		start_point		: in type_point;
@@ -1925,41 +1978,9 @@ package body et_routing is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) 
 		is
-
-			procedure query_outline is begin
-				if in_polygon_status (module.board.contours.outline, start_point).status = OUTSIDE then
-					-- start point is in the usable board area
-					result := false;
-				else
-					null;
-					-- CS distance to nearest outline segment
-				end if;
-			end query_outline;
-			
-			
-			procedure query_holes is
-				use pac_pcb_cutouts;
-				c : pac_pcb_cutouts.cursor := module.board.contours.holes.first;
-			begin
-				while c /= pac_pcb_cutouts.no_element loop
-
-					if in_polygon_status (element (c), start_point).status = INSIDE then
-						-- start point is inside a hole
-						result := false;
-						exit; -- no need to test other holes
-					end if;
-					
-					next (c);
-				end loop;
-			end query_holes;
-			
 		begin -- query_module
 
-			-- test board outline:
-			query_outline;
-		
-			-- test holes in board:
-			query_holes;
+			null;
 			
 			-- if fill_zone.observe then query 
 			-- - fill_zone.outline
@@ -1972,10 +1993,13 @@ package body et_routing is
 		end query_module;
 
 	begin
-		query_element (module_cursor, query_module'access);
+		if on_board (module_cursor, start_point) then
+			result := true;
+			--query_element (module_cursor, query_module'access);
+		else
+			result := false;
+		end if;
 
-		-- CS separate function on_board ?
-		
 		return result;
 	end clear_for_track;
 
@@ -2368,7 +2392,8 @@ package body et_routing is
 					return (VALID, distance_to_obstacle);
 				else
 
-					log (text => "no obstacle found",
+					--log (text => "no obstacle found",
+					log (text => "track not allowed here",
 						level => log_threshold);
 
 					log_indentation_down;
