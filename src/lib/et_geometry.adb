@@ -131,6 +131,34 @@ package body et_geometry is
 	
 	package body generic_pac_geometry is
 
+		function get_greatest (
+			left, right : in type_distance)
+			return type_distance
+		is begin
+			if left > right then
+				return left;
+			elsif left < right then
+				return right;
+			else
+				return right;
+			end if;
+		end get_greatest;
+
+		
+		function get_smallest (
+			left, right : in type_distance)
+			return type_distance
+		is begin
+			if left < right then
+				return left;
+			elsif left > right then
+				return right;
+			else
+				return right;
+			end if;
+		end get_smallest;
+
+		
 		function to_positive_rotation (
 			rotation	: in type_rotation)
 			return type_rotation_positive
@@ -242,6 +270,29 @@ package body et_geometry is
 			end if;
 
 		end intersect;
+
+
+		function get_intersection (
+			boundaries_one : in type_boundaries;
+			boundaries_two : in type_boundaries)
+			return type_boundaries_intersection
+		is
+			i : type_boundaries;
+		begin
+			if intersect (boundaries_one, boundaries_two) then
+				
+				i.smallest_x := get_greatest (boundaries_one.smallest_x, boundaries_two.smallest_x);
+				i.greatest_x := get_smallest (boundaries_one.greatest_x, boundaries_two.greatest_x);
+
+				i.smallest_y := get_greatest (boundaries_one.smallest_y, boundaries_two.smallest_y);
+				i.greatest_y := get_smallest (boundaries_one.greatest_y, boundaries_two.greatest_y);
+
+				return (exists => true, intersection => i);
+			else
+				return (exists => false);
+			end if;
+		end get_intersection;
+
 
 		
 		-- Adds two boundaries.

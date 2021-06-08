@@ -4662,7 +4662,7 @@ package body et_board_ops is
 							
 							for lc in 1.. type_line_count'last loop
 
-								put_line ("test" & positive'image (lc));
+								--put_line ("test" & positive'image (lc));
 								
 								get_distance_to_obstacle (point);
 

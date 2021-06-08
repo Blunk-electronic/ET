@@ -161,6 +161,18 @@ package et_geometry is
 		zero 		: constant type_distance := 0.0;
 		far_right	: constant type_distance := type_distance'last;
 		far_left	: constant type_distance := type_distance'first;
+
+		-- Returns the greatest of the given distances. 
+		-- If both are equal then "right" will be returned.
+		function get_greatest (
+			left, right : in type_distance)
+			return type_distance;
+
+		-- Returns the smallest of the given distances. 
+		-- If both are equal then "right" will be returned.
+		function get_smallest (
+			left, right : in type_distance)
+			return type_distance;
 		
 		subtype type_distance_positive is type_distance range zero .. type_distance'last;
 		subtype type_catch_zone is type_distance_positive range zero .. type_distance_positive'last/1000;
@@ -251,7 +263,21 @@ package et_geometry is
 			boundaries_one : in type_boundaries;
 			boundaries_two : in type_boundaries)
 			return boolean;
-			
+
+		type type_boundaries_intersection (exists : boolean := true) is record
+			case exists is
+				when TRUE => intersection : type_boundaries;
+				when FALSE => null;
+			end case;
+		end record;
+		
+		-- Returns the intersection area (german: Schnittmenge) of two
+		-- boundaries. If the boundaries do not overlap each other
+		-- then a constraint error is raised:
+		function get_intersection (
+			boundaries_one : in type_boundaries;
+			boundaries_two : in type_boundaries)
+			return type_boundaries_intersection;
 		
 		-- Adds two boundaries.
 		procedure add (
@@ -318,6 +344,7 @@ package et_geometry is
 			& "rotation)";
 
 		function "<" (left, right : in type_point) return boolean;
+
 		
 		function set (x, y : in type_distance) return type_point'class;
 

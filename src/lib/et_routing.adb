@@ -1995,31 +1995,54 @@ package body et_routing is
 	is
 		track_start : type_point := to_point (track.center.v_start);
 		track_direction : constant type_rotation := get_angle (track.center);
-
+		track_width_total : constant type_track_width := get_total_width (track);
+		
 		offset : constant type_point := track_start;
 		track_line : type_line := (
 					start_point	=> track_start,
-					end_point	=> type_point (set (far_right, zero)));
+					end_point	=> type_point (set (
+									x => far_right - track_width_total * 0.5,
+									y => zero)));
 		
 		track_boundaries : type_boundaries;
 
 
 		line_tmp : type_line := line;
 		line_boundaries : type_boundaries;
-	begin
-		track_boundaries := get_boundaries (track_line, get_total_width (track));
 
+		bi : type_boundaries_intersection;
+		ol_start, ol_end : type_point;
+	begin
+		-- build the boundaries of the track:
+		track_boundaries := get_boundaries (track_line, track_width_total);
+
+		-- build the boundaries of the line:
 		move_by (line_tmp, type_point (invert (offset)));
-		
 		rotate_by (line_tmp, - track_direction);
 		line_boundaries := get_boundaries (line_tmp, zero);
-		
-		return (exists => false);
+
+		bi := get_intersection (track_boundaries, line_boundaries);
+
+		if bi.exists then
+			ol_start := type_point (set (bi.intersection.smallest_x, zero));
+			ol_end   := type_point (set (bi.intersection.greatest_x, zero));
+
+			rotate_to (ol_start, track_direction);
+			move_by (ol_start, offset);
+			
+			rotate_to (ol_end, track_direction);
+			move_by (ol_end, offset);
+			
+			return (true, ol_start, ol_end);
+			
+		else
+			return (exists => false);
+		end if;
 	end get_overlap;
 
 	
 
-	function comes_after (
+	function after_start_of_track (
 		track	: in type_track;
 		point	: in type_point)
 		return boolean
@@ -2041,7 +2064,7 @@ package body et_routing is
 			
 			--return false;
 		end if;
-	end comes_after;
+	end after_start_of_track;
 
 	
 	function get_break (
@@ -2055,30 +2078,24 @@ package body et_routing is
 		ol : constant type_overlap := get_overlap (track, line);
 		
 		line_vector : constant type_line_vector := to_line_vector (line);
-		i : constant type_intersection_of_two_lines := get_intersection (track.center, line_vector);
 
 		break_point : type_point;
 	begin
 		if ol.exists then
 		
-			case i.status is
-				when EXISTS =>
-					-- line crosses the center line of the track
-					break_point := to_point (i.intersection.point);
+			case place is
+				when BEFORE =>
 
-					-- The center of the break must be after the start of the track:
-					if comes_after (track, break_point) then
+					break_point := ol.start_point;
+
+					-- The break must be after the start of the track:
+					if after_start_of_track (track, break_point) then
 					
-						case place is
-							when BEFORE => move_by (break_point, type_point (set (- type_distance'small, zero)));
-								-- CS
+						move_by (break_point, type_point (set (- type_distance'small, zero)));
+						-- CS
 							
-							when AFTER  => move_by (break_point, type_point (set (+ type_distance'small, zero)));
-								-- CS
-						end case;
-
 						-- The begin of the break must be after the start of the track:
-						if comes_after (track, break_point) then
+						if after_start_of_track (track, break_point) then
 							return (exists => true, point => break_point);
 						else
 							return (exists => false);
@@ -2089,10 +2106,27 @@ package body et_routing is
 					end if;
 
 					
-				when OVERLAP | NOT_EXISTENT =>
-					-- line does not cross the center line of the track but it may
-					-- overlap the track somewhere.
-					return (exists => false);
+				when AFTER =>
+					break_point := ol.end_point;
+
+					-- The break must be after the start of the track:
+					if after_start_of_track (track, break_point) then
+					
+						move_by (break_point, type_point (set (+ type_distance'small, zero)));
+						-- CS
+
+						-- The end of the break must be after the start of the track:
+						if after_start_of_track (track, break_point) then
+							return (exists => true, point => break_point);
+						else
+							return (exists => false);
+						end if;
+
+					else
+						return (exists => false);
+					end if;
+
+					
 			end case;
 
 		else
@@ -2107,31 +2141,32 @@ package body et_routing is
 		place	: in type_place)
 		return type_break
 	is
-		track_start : constant type_point := to_point (track.center.v_start);
+		--track_start : constant type_point := to_point (track.center.v_start);
 		
-		i : constant type_intersection_of_line_and_circle := get_intersection (track.center, arc);
+		--i : constant type_intersection_of_line_and_circle := get_intersection (track.center, arc);
 		--oi : type_ordered_line_circle_intersections;
 		
 		result : type_break (exists => false);
 	begin
-		case i.status is
-			when NONE_EXIST => return (exists => false);
-			when ONE_EXISTS => 
-				if i.tangent_status = SECANT then
-					return (exists => true, point => to_point (i.intersection.point));
-				else
-					return (exists => false);
-				end if;
+		--case i.status is
+			--when NONE_EXIST => return (exists => false);
+			--when ONE_EXISTS => 
+				--if i.tangent_status = SECANT then
+					--return (exists => true, point => to_point (i.intersection.point));
+				--else
+					--return (exists => false);
+				--end if;
 				
-			when TWO_EXIST => 
-				-- first intersection with circle after track start point only !
-				--get_first
-				--oi := order_intersections (track_start, i);
+			--when TWO_EXIST => 
+				---- first intersection with circle after track start point only !
+				----get_first
+				----oi := order_intersections (track_start, i);
 				
-				return (exists => false);
+				--return (exists => false);
 
-		end case;
-		--return result;
+		--end case;
+		
+		return result;
 	end get_break;
 
 

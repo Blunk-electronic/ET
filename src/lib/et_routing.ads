@@ -213,7 +213,7 @@ package et_routing is
 	-- start point of the given track. 
 	-- Assumes that the point is on the center line of the track. 
 	-- If the point is not on the track, raises constraint error:
-	function comes_after (
+	function after_start_of_track (
 		track	: in type_track;
 		point	: in type_point)
 		return boolean;
