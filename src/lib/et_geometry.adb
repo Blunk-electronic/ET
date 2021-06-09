@@ -2146,6 +2146,10 @@ package body et_geometry is
 			return d.distance;
 		end distance;
 
+		function get_intersection (d : in type_distance_point_line) return type_point is begin
+			return d.intersection;
+		end get_intersection;
+		
 		function on_start_point (d : in type_distance_point_line) return boolean is begin
 			return d.sits_on_start;
 		end on_start_point;
@@ -2153,15 +2157,16 @@ package body et_geometry is
 		function on_end_point (d : in type_distance_point_line) return boolean is begin
 			return d.sits_on_end;
 		end on_end_point;
+
 		
 		function distance_point_line (
 			point		: in type_point;
 			line		: in type_line;
 			line_range	: in type_line_range;
 			catch_zone	: in type_catch_zone := zero)
-			return type_distance_point_line is
-
-			result : type_distance_point_line; -- to be returned
+			return type_distance_point_line 
+		is
+			result : type_distance_point_line;
 
 			line_direction : type_rotation;
 			line_direction_vector : type_vector;
@@ -2222,7 +2227,7 @@ package body et_geometry is
 
 			end if;
 			
-			-- Compute the distance of the point from the line.
+			-- Compute the distance from point to line.
 			-- This computation does not care about end or start point of the line.
 			-- It assumes an indefinite long line without start or end point.
 			result.distance := distance (line, point);
@@ -2247,7 +2252,7 @@ package body et_geometry is
 				if distance (line, exact_point) /= zero then
 					exact_point := type_point (move (point, line_direction - 90.0, result.distance));
 				end if;
-			
+
 				exact_point_vector := to_vector (exact_point);
 
 				-- Any point on a line can be computed by this formula (see textbook on vector algebra):
@@ -2315,6 +2320,7 @@ package body et_geometry is
 			return result;
 		end distance_point_line;
 
+		
 		function on_line (
 			point		: in type_point;
 			line		: in type_line;

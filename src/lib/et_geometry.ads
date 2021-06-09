@@ -917,10 +917,10 @@ package et_geometry is
 			line	: in type_line)
 			return type_line_vector;
 			
-		-- Computes the distance of the point from the line.
+		-- Computes the distance between a point and a line.
 		-- This computation does not care about end or start point of the line.
 		-- It assumes an indefinite long line without start or end point.
-		function distance (
+		function distance ( -- CS rename to get_distance
 			line	: in type_line;
 			point	: in type_point)
 			return type_distance_positive;
@@ -1026,9 +1026,10 @@ package et_geometry is
 
 		type type_distance_point_line is private;
 
-		-- These function return the status of the components of the given type_distance_point_line:
+		-- These functions return the components of the given type_distance_point_line:
 		function out_of_range (d : in type_distance_point_line) return boolean;
-		function distance (d : in type_distance_point_line) return type_distance_positive;
+		function distance (d : in type_distance_point_line) return type_distance_positive; -- CS rename to get_distance
+		function get_intersection (d : in type_distance_point_line) return type_point;
 		function on_start_point (d : in type_distance_point_line) return boolean;
 		function on_end_point (d : in type_distance_point_line) return boolean;
 		
@@ -1798,6 +1799,11 @@ package et_geometry is
 			sits_on_start	: boolean := false;
 			sits_on_end		: boolean := false;
 			out_of_range	: boolean := true;
+
+			-- A virtual line runs from the given point perpendicular
+			-- to the given line. This is where the virtual line intersects
+			-- the given line:
+			intersection	: type_point;
 		end record;
 		
 	end generic_pac_shapes;
