@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -179,19 +179,19 @@ is
 			-- Compute the position of the origin of the terminal name regarding 
 			-- its distance from the line of the port:
 			if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
-				set (axis => Y, value => y (start_point) + terminal_name_spacing_line, point => pos_terminal_name);
+				set (axis => Y, value => get_y (start_point) + terminal_name_spacing_line, point => pos_terminal_name);
 				alignment.horizontal := RIGHT;
 
 			elsif rotation_total = 90.0 or rotation_total = -270.0 then
-				set (axis => X, value => x (start_point) - terminal_name_spacing_line, point => pos_terminal_name);
+				set (axis => X, value => get_x (start_point) - terminal_name_spacing_line, point => pos_terminal_name);
 				alignment.horizontal := RIGHT;
 				
 			elsif rotation_total = 180.0 or rotation_total = -180.0 then
-				set (axis => Y, value => y (start_point) + terminal_name_spacing_line, point => pos_terminal_name);
+				set (axis => Y, value => get_y (start_point) + terminal_name_spacing_line, point => pos_terminal_name);
 				alignment.horizontal := LEFT;
 				
 			elsif rotation_total = -90.0 or rotation_total = 270.0 then
-				set (axis => X, value => x (start_point) - terminal_name_spacing_line, point => pos_terminal_name);
+				set (axis => X, value => get_x (start_point) - terminal_name_spacing_line, point => pos_terminal_name);
 				alignment.horizontal := LEFT;
 				
 			else
@@ -245,52 +245,52 @@ is
 		-- assume the unit is not rotated. We look at the default rotation of the ports.
 		-- The the final port positions will be computed later.
 		if element (c).rotation = 0.0 then -- end point points to the left
-			set (axis => X, value => x (start_point) - element (c).length, point => end_point);
+			set (axis => X, value => get_x (start_point) - element (c).length, point => end_point);
 
 			-- compute the position of the port name:
 			pos_port_name := end_point;
-			set (axis => X, value => x (end_point) - port_name_spacing, point => pos_port_name);
+			set (axis => X, value => get_x (end_point) - port_name_spacing, point => pos_port_name);
 
 			-- Compute the position of the origin of the terminal name regarding its distance
 			-- from the start point:
 			pos_terminal_name := start_point;				
-			set (axis => X, value => x (start_point) - terminal_name_spacing_start, point => pos_terminal_name);
+			set (axis => X, value => get_x (start_point) - terminal_name_spacing_start, point => pos_terminal_name);
 			
 		elsif element (c).rotation = 90.0 then -- end point points downwards
-			set (axis => Y, value => y (start_point) - element (c).length, point => end_point);
+			set (axis => Y, value => get_y (start_point) - element (c).length, point => end_point);
 
 			-- compute the position of the port name:
 			pos_port_name := end_point;
-			set (axis => Y, value => y (end_point) - port_name_spacing, point => pos_port_name);
+			set (axis => Y, value => get_y (end_point) - port_name_spacing, point => pos_port_name);
 
 			-- Compute the position of the origin of the terminal name regarding its distance
 			-- from the start point:
 			pos_terminal_name := start_point;				
-			set (axis => Y, value => y (start_point) - terminal_name_spacing_start, point => pos_terminal_name);
+			set (axis => Y, value => get_y (start_point) - terminal_name_spacing_start, point => pos_terminal_name);
 			
 		elsif element (c).rotation = 180.0 then  -- end point points to the left
-			set (axis => X, value => x (start_point) + element (c).length, point => end_point);
+			set (axis => X, value => get_x (start_point) + element (c).length, point => end_point);
 
 			-- compute the position of the port name:
 			pos_port_name := end_point;
-			set (axis => X, value => x (end_point) + port_name_spacing, point => pos_port_name);
+			set (axis => X, value => get_x (end_point) + port_name_spacing, point => pos_port_name);
 
 			-- Compute the position of the origin of the terminal name regarding its distance
 			-- from the start point:
 			pos_terminal_name := start_point;				
-			set (axis => X, value => x (start_point) + terminal_name_spacing_start, point => pos_terminal_name);
+			set (axis => X, value => get_x (start_point) + terminal_name_spacing_start, point => pos_terminal_name);
 			
 		elsif element (c).rotation = 270.0 or element (c).rotation = -90.0 then -- end point points upwards
-			set (axis => Y, value => y (start_point) + element (c).length, point => end_point);
+			set (axis => Y, value => get_y (start_point) + element (c).length, point => end_point);
 
 			-- compute the position of the port name:
 			pos_port_name := end_point;
-			set (axis => Y, value => y (end_point) + port_name_spacing, point => pos_port_name);
+			set (axis => Y, value => get_y (end_point) + port_name_spacing, point => pos_port_name);
 
 			-- Compute the position of the origin of the terminal name regarding its distance
 			-- from the start point:
 			pos_terminal_name := start_point;
-			set (axis => Y, value => y (start_point) + terminal_name_spacing_start, point => pos_terminal_name);
+			set (axis => Y, value => get_y (start_point) + terminal_name_spacing_start, point => pos_terminal_name);
 			
 		else
 			raise constraint_error; -- CS do something helpful. should never happen
@@ -490,21 +490,21 @@ is
 		
 		line_horizontal : constant type_line := ( -- from left to right
 			start_point		=> type_point (set (
-								x => x (unit_position) - ohz,
-								y => y (unit_position))),
+								x => get_x (unit_position) - ohz,
+								y => get_y (unit_position))),
 			
 			end_point		=> type_point (set (
-								x => x (unit_position) + ohz,
-								y => y (unit_position))));
+								x => get_x (unit_position) + ohz,
+								y => get_y (unit_position))));
 
 		line_vertical : constant type_line := ( -- from bottom to top
 			start_point		=> type_point (set (
-								x => x (unit_position),
-								y => y (unit_position) - ohz)),
+								x => get_x (unit_position),
+								y => get_y (unit_position) - ohz)),
 			
 			end_point		=> type_point (set (
-								x => x (unit_position),
-								y => y (unit_position) + ohz)));
+								x => get_x (unit_position),
+								y => get_y (unit_position) + ohz)));
 
 	begin
 	-- NOTE: This is about the origin of the symbol !

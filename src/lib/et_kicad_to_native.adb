@@ -179,7 +179,7 @@ package body et_kicad_to_native is
 
 			-- calculate the new y position
 			--new_y				:= sheet_height - distance (axis => Y, point => point);
-			new_y				:= sheet_height - y (point);
+			new_y				:= sheet_height - get_y (point);
 
 			-- assign the new y position to the given point
 			--set_y (point, new_y);
@@ -214,7 +214,7 @@ package body et_kicad_to_native is
 			-- calculate the new y position
 			--new_y				:= sheet_height - distance_y (point_actual);
 			--new_y				:= sheet_height - distance (axis => Y, point => point_actual);
-			new_y				:= sheet_height - y (point_actual);
+			new_y				:= sheet_height - get_y (point_actual);
 
 			-- assign the new y position to the given point
 			--set_y (point_actual, new_y);
@@ -247,7 +247,7 @@ package body et_kicad_to_native is
 			use pac_geometry_brd;
 			new_y : et_pcb_coordinates.type_distance;
 		begin
-			new_y := layout_sheet_height - y (point);
+			new_y := layout_sheet_height - get_y (point);
 			set (Y, new_y, point);
 		end move;
 			
@@ -2277,14 +2277,14 @@ package body et_kicad_to_native is
 
 			-- corner_C is the lower right corner:
 			corner_C := type_point (set (
-				x => x (rectangle.corner_A) + width,
-				y => y (rectangle.corner_A)
+				x => get_x (rectangle.corner_A) + width,
+				y => get_y (rectangle.corner_A)
 				));
 
 			-- corner_D is the upper left corner:
 			corner_D := type_point (set (
-				x => x (rectangle.corner_A),
-				y => y (rectangle.corner_A) + height
+				x => get_x (rectangle.corner_A),
+				y => get_y (rectangle.corner_A) + height
 				));
 			
 			-- lower horizontal line

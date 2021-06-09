@@ -125,15 +125,15 @@ package body pac_draw is
 			-- start point
 			move_to (
 				context.cr,
-				convert_x (line.start_point.x),
-				shift_y (line.start_point.y, height)
+				convert_x (get_x (line.start_point)),
+				shift_y (get_y (line.start_point), height)
 				);
 
 			-- end point
 			line_to (
 				context.cr,
-				convert_x (line.end_point.x),
-				shift_y (line.end_point.y, height)
+				convert_x (get_x (line.end_point)),
+				shift_y (get_y (line.end_point), height)
 				);
 
 			stroke (context.cr);
@@ -177,8 +177,8 @@ package body pac_draw is
 				
 				cairo.arc (
 					context.cr,
-					xc		=> convert_x (arc_temp.center.x),
-					yc		=> shift_y (arc_temp.center.y, height),
+					xc		=> convert_x (get_x (arc_temp.center)),
+					yc		=> shift_y (get_y (arc_temp.center), height),
 					radius	=> type_view_coordinate (arc_temp.radius),
 					angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
 					angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
@@ -188,8 +188,8 @@ package body pac_draw is
 				
 				cairo.arc_negative (
 					context.cr,
-					xc		=> convert_x (arc_temp.center.x),
-					yc		=> shift_y (arc_temp.center.y, height),
+					xc		=> convert_x (get_x (arc_temp.center)),
+					yc		=> shift_y (get_y (arc_temp.center), height),
 					radius	=> type_view_coordinate (arc_temp.radius),
 					angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
 					angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
@@ -234,8 +234,8 @@ package body pac_draw is
 
 			cairo.arc (
 				context.cr,
-				xc		=> convert_x (circle.center.x),
-				yc		=> shift_y (circle.center.y, height),
+				xc		=> convert_x (get_x (circle.center)),
+				yc		=> shift_y (get_y (circle.center), height),
 				radius	=> type_view_coordinate (circle.radius),
 
 				-- it must be a full circle starting at 0 degree and ending at 360 degree:
@@ -387,15 +387,15 @@ package body pac_draw is
 					-- start point
 					line_to (
 						context.cr,
-						convert_x (element (c).segment_line.start_point.x),
-						shift_y (element (c).segment_line.start_point.y, height)
+						convert_x (get_x (element (c).segment_line.start_point)),
+						shift_y (get_y (element (c).segment_line.start_point), height)
 						);
 						
 					-- end point
 					line_to (
 						context.cr,
-						convert_x (element (c).segment_line.end_point.x),
-						shift_y (element (c).segment_line.end_point.y, height)
+						convert_x (get_x (element (c).segment_line.end_point)),
+						shift_y (get_y (element (c).segment_line.end_point), height)
 						);
 
 					
@@ -409,8 +409,8 @@ package body pac_draw is
 						
 						cairo.arc (
 							context.cr,
-							xc		=> convert_x (arc_temp.center.x),
-							yc		=> shift_y (arc_temp.center.y, height),
+							xc		=> convert_x (get_x (arc_temp.center)),
+							yc		=> shift_y (get_y (arc_temp.center), height),
 							radius	=> type_view_coordinate (arc_temp.radius),
 							angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
 							angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
@@ -425,8 +425,8 @@ package body pac_draw is
 						
 						cairo.arc_negative (
 							context.cr,
-							xc		=> convert_x (arc_temp.center.x),
-							yc		=> shift_y (arc_temp.center.y, height),
+							xc		=> convert_x (get_x (arc_temp.center)),
+							yc		=> shift_y (get_y (arc_temp.center), height),
 							radius	=> type_view_coordinate (arc_temp.radius),
 							angle1	=> - type_view_coordinate (to_radians (arc_temp.angle_start)),
 							angle2	=> - type_view_coordinate (to_radians (arc_temp.angle_end))
@@ -574,8 +574,8 @@ package body pac_draw is
 
 				cairo.arc (
 					context.cr,
-					xc		=> convert_x (polygon.contours.circle.center.x),
-					yc		=> shift_y (polygon.contours.circle.center.y, height),
+					xc		=> convert_x (get_x (polygon.contours.circle.center)),
+					yc		=> shift_y (get_y (polygon.contours.circle.center), height),
 					radius	=> type_view_coordinate (polygon.contours.circle.radius),
 
 					-- it must be a full circle starting at 0 degree and ending at 360 degree:
@@ -687,10 +687,10 @@ package body pac_draw is
 
 		-- compute the boundaries (greatest/smallest x/y) of the given arc:
 		boundaries : type_boundaries := (
-			smallest_x	=> position.x,
-			greatest_x	=> position.x + width,
-			smallest_y	=> position.y,
-			greatest_y	=> position.y + height,
+			smallest_x	=> get_x (position),
+			greatest_x	=> get_x (position) + width,
+			smallest_y	=> get_y (position),
+			greatest_y	=> get_y (position) + height,
 			others		=> <>);
 
 		-- compute the bounding box of the given arc
@@ -721,56 +721,56 @@ package body pac_draw is
 			-- start point
 			move_to (
 				context.cr,
-				convert_x (position.x),
-				shift_y (position.y, frame_height));
+				convert_x (get_x (position)),
+				shift_y (get_y (position), frame_height));
 
 			-- end point
 			line_to (
 				context.cr,
-				convert_x (position.x + width),
-				shift_y (position.y, frame_height));
+				convert_x (get_x (position) + width),
+				shift_y (get_y (position), frame_height));
 
 			-- LINE 2:
 			
 			-- start point
 			move_to (
 				context.cr,
-				convert_x (position.x + width),
-				shift_y (position.y, frame_height));
+				convert_x (get_x (position) + width),
+				shift_y (get_y (position), frame_height));
 
 			-- end point
 			line_to (
 				context.cr,
-				convert_x (position.x + width),
-				shift_y (position.y + height, frame_height));
+				convert_x (get_x (position) + width),
+				shift_y (get_y (position) + height, frame_height));
 
 			-- LINE 3:
 			
 			-- start point
 			move_to (
 				context.cr,
-				convert_x (position.x + width),
-				shift_y (position.y + height, frame_height));
+				convert_x (get_x (position) + width),
+				shift_y (get_y (position) + height, frame_height));
 
 			-- end point
 			line_to (
 				context.cr,
-				convert_x (position.x),
-				shift_y (position.y + height, frame_height));
+				convert_x (get_x (position)),
+				shift_y (get_y (position) + height, frame_height));
 
 			-- LINE 4:
 			
 			-- start point
 			move_to (
 				context.cr,
-				convert_x (position.x),
-				shift_y (position.y + height, frame_height));
+				convert_x (get_x (position)),
+				shift_y (get_y (position) + height, frame_height));
 
 			-- end point
 			line_to (
 				context.cr,
-				convert_x (position.x),
-				shift_y (position.y, frame_height));
+				convert_x (get_x (position)),
+				shift_y (get_y (position), frame_height));
 
 			stroke (context.cr);
 			
@@ -968,8 +968,8 @@ package body pac_draw is
 		sp : type_view_point;
 
 		-- The position of the origin:
-		ox : constant type_view_coordinate := convert_x (x (position));
-		oy : constant type_view_coordinate := shift_y (y (position), height);
+		ox : constant type_view_coordinate := convert_x (get_x (position));
+		oy : constant type_view_coordinate := shift_y (get_y (position), height);
 
 	begin
 		select_font_face (
@@ -1078,15 +1078,15 @@ package body pac_draw is
 				-- start point
 				move_to (
 					context.cr,
-					convert_x (element (c).start_point.x),
-					shift_y (element (c).start_point.y, height)
+					convert_x (get_x (element (c).start_point)),
+					shift_y (get_y (element (c).start_point), height)
 					);
 
 				-- end point
 				line_to (
 					context.cr,
-					convert_x (element (c).end_point.x),
-					shift_y (element (c).end_point.y, height)
+					convert_x (get_x (element (c).end_point)),
+					shift_y (get_y (element (c).end_point), height)
 					);
 
 			end if;

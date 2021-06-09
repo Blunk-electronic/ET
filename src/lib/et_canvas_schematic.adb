@@ -172,12 +172,12 @@ package body et_canvas_schematic is
 	begin
 		set (point	=> p,
 			 axis	=> X, 
-			 value	=> model_point.x - self.frame_bounding_box.x);
+			 value	=> get_x (model_point) - self.frame_bounding_box.x);
 		
 		set (point	=> p,
 			 axis	=> Y,
 			 value	=> type_distance (self.frame_height) 
-						- model_point.y 
+						- get_y (model_point)
 						+ self.frame_bounding_box.y);
 	
 		return p;
@@ -191,12 +191,12 @@ package body et_canvas_schematic is
 	begin
 		set (point	=> p,
 			 axis	=> X, 
-			 value	=> drawing_point.x + self.frame_bounding_box.x);
+			 value	=> get_x (drawing_point) + self.frame_bounding_box.x);
 		
 		set (point	=> p,
 			 axis	=> Y,
 			 value	=> type_distance (self.frame_height) 
-						- drawing_point.y 
+						- get_y (drawing_point) 
 						+ self.frame_bounding_box.y);
 
 		return p;
@@ -773,21 +773,21 @@ package body et_canvas_schematic is
 		
 		-- set start and end point of horizontal line
 		lh.start_point := type_point (set (
-			x	=> x (cursor.position) - size,
-			y	=> y (cursor.position)));
+			x	=> get_x (cursor.position) - size,
+			y	=> get_y (cursor.position)));
 
 		lh.end_point := type_point (set (
-			x	=> x (cursor.position) + size,
-			y	=> y (cursor.position)));
+			x	=> get_x (cursor.position) + size,
+			y	=> get_y (cursor.position)));
 
 		-- set start and end point of vertical line
 		lv.start_point := type_point (set (
-			x	=> x (cursor.position),
-			y	=> y (cursor.position) + size));
+			x	=> get_x (cursor.position),
+			y	=> get_y (cursor.position) + size));
 
 		lv.end_point := type_point (set (
-			x	=> x (cursor.position),
-			y	=> y (cursor.position) - size));
+			x	=> get_x (cursor.position),
+			y	=> get_y (cursor.position) - size));
 
 
 		-- The line width is inversely proportional to the scale:

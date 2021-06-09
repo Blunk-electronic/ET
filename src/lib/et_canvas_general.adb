@@ -483,14 +483,14 @@ package body pac_canvas is
 		-- NOTE: The update of the mouse pointer position is done by function on_mouse_movement.
 		
 		-- update distance display:
-		gtk_entry (distances.display_x.get_child).set_text (to_string (x (distance_xy)));
-		gtk_entry (distances.display_y.get_child).set_text (to_string (y (distance_xy)));
+		gtk_entry (distances.display_x.get_child).set_text (to_string (get_x (distance_xy)));
+		gtk_entry (distances.display_y.get_child).set_text (to_string (get_y (distance_xy)));
 		gtk_entry (distances.display_abs.get_child).set_text (to_string (get_absolute (distance_pol)));
 		gtk_entry (distances.display_angle.get_child).set_text (to_string (get_angle (distance_pol)));
 
 		-- update cursor position
-		gtk_entry (cursor_position_x.get_child).set_text (trim (to_string (x (cursor_main.position)), left));
-		gtk_entry (cursor_position_y.get_child).set_text (trim (to_string (y (cursor_main.position)), left));
+		gtk_entry (cursor_position_x.get_child).set_text (trim (to_string (get_x (cursor_main.position)), left));
+		gtk_entry (cursor_position_y.get_child).set_text (trim (to_string (get_y (cursor_main.position)), left));
 
 	end update_coordinates_display;
 
@@ -817,8 +817,8 @@ package body pac_canvas is
 		return type_point is
 	begin
 		return type_point (set (
-			x	=> type_distance (view_point.x / scale) + (x (topleft)),
-			y	=> type_distance (view_point.y / scale) + (y (topleft))
+			x	=> type_distance (view_point.x / scale) + (get_x (topleft)),
+			y	=> type_distance (view_point.y / scale) + (get_y (topleft))
 			));
 	end;
 	
@@ -838,8 +838,8 @@ package body pac_canvas is
 		-- get the position of the given rectangle in drawing coordinatess
 		p1 : type_point := vtm ((rect.x, rect.y), self.scale, self.topleft);
 	begin
-		return (x      => p1.x,
-				y      => p1.y,
+		return (x      => get_x (p1),
+				y      => get_y (p1),
 				width  => type_distance (rect.width / self.scale),
 				height => type_distance (rect.height / self.scale));
 	end view_to_model;
@@ -851,8 +851,12 @@ package body pac_canvas is
 		return type_view_point is
 	begin
 		return (
-			x => type_view_coordinate (drawing_point.x - topleft.x) * scale,
-			y => type_view_coordinate (drawing_point.y - topleft.y) * scale
+			--x => type_view_coordinate (drawing_point.x - topleft.x) * scale,
+			--y => type_view_coordinate (drawing_point.y - topleft.y) * scale
+
+			x => type_view_coordinate (get_x (drawing_point) - get_x (topleft)) * scale,
+			y => type_view_coordinate (get_y (drawing_point) - get_y (topleft)) * scale
+			
 			);
 	end mtv;
 	
@@ -1088,8 +1092,8 @@ package body pac_canvas is
 		--put_line (to_string (x (drawing_point)));
 
 		-- Update mouse position display (left of the canvas).
-		gtk_entry (mouse_position_x.get_child).set_text (to_string (x (drawing_point)));
-		gtk_entry (mouse_position_y.get_child).set_text (to_string (y (drawing_point)));
+		gtk_entry (mouse_position_x.get_child).set_text (to_string (get_x (drawing_point)));
+		gtk_entry (mouse_position_y.get_child).set_text (to_string (get_y (drawing_point)));
 		
 		canvas.update_coordinates_display;
 
@@ -1110,8 +1114,8 @@ package body pac_canvas is
 
 		-- Calculate the new topleft corner:
 		pos  : constant type_point := type_point (set (
-			center_on_model.x - area.width * 0.5,
-			center_on_model.y - area.height * 0.5));
+			get_x (center_on_model) - area.width * 0.5,
+			get_y (center_on_model) - area.height * 0.5));
 	begin
 		self.scale_to_fit_requested := 0.0;
 		self.topleft := pos;
@@ -1137,8 +1141,8 @@ package body pac_canvas is
 
 		-- Build the area of the drawing:
 		a : constant type_rectangle := (
-							x 		=> x (p),
-							y 		=> y (p), 
+							x 		=> get_x (p),
+							y 		=> get_y (p), 
 							width 	=> area.width,
 							height 	=> area.height);
 
@@ -1147,10 +1151,10 @@ package body pac_canvas is
 		border_top		: constant type_distance := a.y;
 		border_bottom	: constant type_distance := a.y - a.height;
 		
-		dxr : constant type_distance := x (cursor.position) - border_right;
-		dxl : constant type_distance := border_left - x (cursor.position);
-		dyt : constant type_distance := y (cursor.position) - border_top;
-		dyb : constant type_distance := border_bottom - y (cursor.position);
+		dxr : constant type_distance := get_x (cursor.position) - border_right;
+		dxl : constant type_distance := border_left - get_x (cursor.position);
+		dyt : constant type_distance := get_y (cursor.position) - border_top;
+		dyb : constant type_distance := border_bottom - get_y (cursor.position);
 	begin
 		if dxr >= zero then
 			self.center_on (type_point (move (point => area_center_drawing, direction => 0.0, distance => dxr)));
@@ -1476,15 +1480,15 @@ package body pac_canvas is
 		-- the point must not change. So topleft is now moved so that
 		-- function view_to_model returns for the same view point the same
 		-- model point.
-		cx := p.x - self.topleft.x;
+		cx := get_x (p) - get_x (self.topleft);
 		cx := cx * old_scale;
 		
-		cy := p.y - self.topleft.y;
+		cy := get_y (p) - get_y (self.topleft);
 		cy := cy * old_scale;
 		
 		self.topleft := type_point (set (
-			p.x - cx / new_scale,
-			p.y - cy / new_scale)
+			get_x (p) - cx / new_scale,
+			get_y (p) - cy / new_scale)
 			);
 		
 		self.scale_to_fit_requested := 0.0;

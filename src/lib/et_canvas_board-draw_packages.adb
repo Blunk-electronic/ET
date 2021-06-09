@@ -141,12 +141,12 @@ is
 			type type_line is new pac_shapes.type_line with null record;
 			
 			line_horizontal : constant type_line := ( -- from left to right
-				start_point		=> type_point (set (x => x (p) - pac_text_fab.origin_half_size, y => y (p))),
-				end_point		=> type_point (set (x => x (p) + pac_text_fab.origin_half_size, y => y (p))));
+				start_point		=> type_point (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
+				end_point		=> type_point (set (x => get_x (p) + pac_text_fab.origin_half_size, y => get_y (p))));
 
 			line_vertical : constant type_line := ( -- from bottom to top
-				start_point		=> type_point (set (x => x (p), y => y (p) - pac_text_fab.origin_half_size)),
-				end_point		=> type_point (set (x => x (p), y => y (p) + pac_text_fab.origin_half_size)));
+				start_point		=> type_point (set (x => get_x (p), y => get_y (p) - pac_text_fab.origin_half_size)),
+				end_point		=> type_point (set (x => get_x (p), y => get_y (p) + pac_text_fab.origin_half_size)));
 
 		begin -- draw_text_origin
 			if device_origins_enabled (f) then
@@ -3061,12 +3061,12 @@ is
 			type type_line is new pac_shapes.type_line with null record;
 			
 			line_horizontal : constant type_line := ( -- from left to right
-				start_point		=> type_point (set (x => x (package_position) - et_packages.origin_half_size, y => y (package_position))),
-				end_point		=> type_point (set (x => x (package_position) + et_packages.origin_half_size, y => y (package_position))));
+				start_point		=> type_point (set (x => get_x (package_position) - et_packages.origin_half_size, y => get_y (package_position))),
+				end_point		=> type_point (set (x => get_x (package_position) + et_packages.origin_half_size, y => get_y (package_position))));
 
 			line_vertical : constant type_line := ( -- from bottom to top
-				start_point		=> type_point (set (x => x (package_position), y => y (package_position) - et_packages.origin_half_size)),
-				end_point		=> type_point (set (x => x (package_position), y => y (package_position) + et_packages.origin_half_size)));
+				start_point		=> type_point (set (x => get_x (package_position), y => get_y (package_position) - et_packages.origin_half_size)),
+				end_point		=> type_point (set (x => get_x (package_position), y => get_y (package_position) + et_packages.origin_half_size)));
 
 		begin -- draw_package_origin
 			if face = get_face (package_position) then

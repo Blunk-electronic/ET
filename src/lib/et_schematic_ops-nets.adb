@@ -2228,7 +2228,7 @@ package body et_schematic_ops.nets is
 							procedure query_labels_horizontal (cursor : in pac_net_labels.cursor) is begin
 								-- All labels left of place go into segment_1,
 								-- whereas labels on the right go into segment_2:
-								if x (element (cursor).position) < x (place) then
+								if get_x (element (cursor).position) < get_x (place) then
 									append (segment_1.labels, element (cursor));
 								else
 									append (segment_2.labels, element (cursor));
@@ -2238,7 +2238,7 @@ package body et_schematic_ops.nets is
 							procedure query_labels_vertical (cursor : in pac_net_labels.cursor) is begin
 								-- All labels below place go into segment_1,
 								-- whereas labels above go into segment_2:
-								if y (element (cursor).position) < y (place) then
+								if get_y (element (cursor).position) < get_y (place) then
 									append (segment_1.labels, element (cursor));
 								else
 									append (segment_2.labels, element (cursor));

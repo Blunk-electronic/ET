@@ -456,10 +456,10 @@ package body et_text is
 			text_height_half : constant type_distance_positive := size * 0.5;
 			
 			procedure scale_line (l : in out type_vector_text_line) is 
-				Sx : constant type_distance := x (l.start_point);
-				Sy : constant type_distance := y (l.start_point);
-				Ex : constant type_distance := x (l.end_point);
-				Ey : constant type_distance := y (l.end_point);
+				Sx : constant type_distance := get_x (l.start_point);
+				Sy : constant type_distance := get_y (l.start_point);
+				Ex : constant type_distance := get_x (l.end_point);
+				Ey : constant type_distance := get_y (l.end_point);
 			begin
 				l.start_point := type_point (set (Sx * M, Sy * M));
 				l.end_point   := type_point (set (Ex * M, Ey * M));

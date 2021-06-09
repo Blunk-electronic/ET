@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -44,8 +44,8 @@ package body et_schematic_rw is
 	-- Returns something like "sheet 3 x 12.34 y 45.0".
 
 		function text return string is begin return 
-			space & keyword_x & to_string (x (pos)) 
-			& space & keyword_y & to_string (y (pos));
+			space & keyword_x & to_string (get_x (pos)) 
+			& space & keyword_y & to_string (get_y (pos));
 		end text;
 		
 	begin
@@ -56,3 +56,10 @@ package body et_schematic_rw is
 
 	
 end et_schematic_rw;
+
+-- Soli Deo Gloria
+
+-- For God so loved the world that he gave 
+-- his one and only Son, that whoever believes in him 
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16

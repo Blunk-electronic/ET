@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -242,23 +242,23 @@ package body et_kicad_coordinates is
 					& to_string (position.path) & latin_1.space & hierarchy_separator & latin_1.space
 					& to_sheet (position.sheet_number) 
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (x (position))
+					& to_string (get_x (position))
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (y (position));
+					& to_string (get_y (position));
 				
 			when SHEET =>
 				return coordinates_preamble_sheet
 					& to_sheet (position.sheet_number) 
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (x (position))
+					& to_string (get_x (position))
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (y (position));
+					& to_string (get_y (position));
 
 			when XY =>
 				return coordinates_preamble_xy
-					& to_string (x (position))
+					& to_string (get_x (position))
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (y (position));
+					& to_string (get_y (position));
 
 		end case;
 	end to_string;

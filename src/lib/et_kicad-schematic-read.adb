@@ -205,7 +205,7 @@ is
 						-- If the search starts from the end_point of the given net, find a segment whose start or end point matches.
 						when end_point =>
 							--if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
-							if x (line_start) = x (seg_in.coordinates_end) and y (line_start) = y (seg_in.coordinates_end) then
+							if get_x (line_start) = get_x (seg_in.coordinates_end) and get_y (line_start) = get_y (seg_in.coordinates_end) then
 								sc.valid := true;
 								sc.side := start_point;
 								sc.cursor := cursor;
@@ -213,7 +213,7 @@ is
 							end if;
 
 							--if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
-							if x (line_end) = x (seg_in.coordinates_end) and y (line_end) = y (seg_in.coordinates_end) then
+							if get_x (line_end) = get_x (seg_in.coordinates_end) and get_y (line_end) = get_y (seg_in.coordinates_end) then
 								sc.valid := true;
 								sc.side := end_point;
 								sc.cursor := cursor;
@@ -223,7 +223,7 @@ is
 						-- If the search starts from the start_point of the given net, find a segment whose start or end point matches.									
 						when start_point =>
 							--if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
-							if x (line_start) = x (seg_in.coordinates_start) and y (line_start) = y (seg_in.coordinates_start) then
+							if get_x (line_start) = get_x (seg_in.coordinates_start) and get_y (line_start) = get_y (seg_in.coordinates_start) then
 								sc.valid := true;
 								sc.side := start_point;
 								sc.cursor := cursor;
@@ -231,7 +231,7 @@ is
 							end if;
 
 							--if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
-							if x (line_end) = x (seg_in.coordinates_start) and y (line_end) = y (seg_in.coordinates_start) then
+							if get_x (line_end) = get_x (seg_in.coordinates_start) and get_y (line_end) = get_y (seg_in.coordinates_start) then
 								sc.valid := true;
 								sc.side := end_point;
 								sc.cursor := cursor;
@@ -266,7 +266,7 @@ is
 						-- If the search starts from the end_point of the given net, find a segment whose start or end point matches.
 						when end_point =>
 							--if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
-							if x (line_start) = x (seg_in.coordinates_end) and y (line_start) = y (seg_in.coordinates_end) then
+							if get_x (line_start) = get_x (seg_in.coordinates_end) and get_y (line_start) = get_y (seg_in.coordinates_end) then
 								sc.valid := true;
 								sc.side := start_point;
 								sc.cursor := cursor;
@@ -274,7 +274,7 @@ is
 							end if;
 
 							--if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
-							if x (line_end) = x (seg_in.coordinates_end) and y (line_end) = y (seg_in.coordinates_end) then
+							if get_x (line_end) = get_x (seg_in.coordinates_end) and get_y (line_end) = get_y (seg_in.coordinates_end) then
 								sc.valid := true;
 								sc.side := end_point;
 								sc.cursor := cursor;
@@ -284,7 +284,7 @@ is
 						-- If the search starts from the start_point of the given net, find a segment whose start or end point matches.
 						when start_point =>
 							--if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
-							if x (line_start) = x (seg_in.coordinates_start) and y (line_start) = y (seg_in.coordinates_start) then
+							if get_x (line_start) = get_x (seg_in.coordinates_start) and get_y (line_start) = get_y (seg_in.coordinates_start) then
 								sc.valid := true;
 								sc.side := start_point;
 								sc.cursor := cursor;
@@ -292,7 +292,7 @@ is
 							end if;
 
 							--if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
-							if x (line_end) = x (seg_in.coordinates_start) and y (line_end) = y (seg_in.coordinates_start) then
+							if get_x (line_end) = get_x (seg_in.coordinates_start) and get_y (line_end) = get_y (seg_in.coordinates_start) then
 								sc.valid := true;
 								sc.side := end_point;
 								sc.cursor := cursor;
@@ -2622,7 +2622,7 @@ is
 				raise constraint_error;
 			end if;
 			
-			if x (unit_position) /= mil_to_distance (f (line,2)) then
+			if get_x (unit_position) /= mil_to_distance (f (line,2)) then
 -- 					log (text => "position invalid. expected '" & to_string (position.x) 
 -- 						& "' found '" 
 -- 						& field (line,2)
@@ -2630,7 +2630,7 @@ is
 				raise constraint_error; -- CS: write useful message
 			end if;
 
-			if y (unit_position) /= mil_to_distance (f (line,3)) then
+			if get_y (unit_position) /= mil_to_distance (f (line,3)) then
 				raise constraint_error; -- CS: write useful message
 			end if;
 

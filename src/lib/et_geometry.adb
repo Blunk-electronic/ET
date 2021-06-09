@@ -207,11 +207,11 @@ package body et_geometry is
 			end if;
 		end;
 		
-		function x (point : in type_point'class) return type_distance is begin
+		function get_x (point : in type_point'class) return type_distance is begin
 			return point.x;
 		end;
 
-		function y (point : in type_point'class) return type_distance is begin
+		function get_y (point : in type_point'class) return type_distance is begin
 			return point.y;
 		end;
 
@@ -714,15 +714,15 @@ package body et_geometry is
 			if point_one = point_two then
 				distance := zero;
 				
-			elsif x (point_one) = x (point_two) then -- points are in a vertical line
-				distance := abs (y (point_two) - y (point_one));
+			elsif get_x (point_one) = get_x (point_two) then -- points are in a vertical line
+				distance := abs (get_y (point_two) - get_y (point_one));
 				
-			elsif y (point_one) = y (point_two) then -- points are in a horizontal line
-				distance := abs (x (point_two) - x (point_one));
+			elsif get_y (point_one) = get_y (point_two) then -- points are in a horizontal line
+				distance := abs (get_x (point_two) - get_x (point_one));
 				
 			else
-				delta_x := float (x (point_one) - x (point_two));
-				delta_y := float (y (point_one) - y (point_two));
+				delta_x := float (get_x (point_one) - get_x (point_two));
+				delta_y := float (get_y (point_one) - get_y (point_two));
 
 				-- put_line (float'image (delta_x) & " " & float'image (delta_y));
 				
@@ -807,8 +807,8 @@ package body et_geometry is
 			-- So we do the angle computation only if there is a distance between the points:
 			if result.absolute /= zero then
 				
-				delta_x := float (x (point_two) - x (point_one));
-				delta_y := float (y (point_two) - y (point_one));
+				delta_x := float (get_x (point_two) - get_x (point_one));
+				delta_y := float (get_y (point_two) - get_y (point_one));
 
 				result.angle := type_rotation (arctan (
 						x 		=> delta_x,
@@ -950,36 +950,43 @@ package body et_geometry is
 			if rotation /= 0.0 then
 
 				-- compute distance of given point to origin
-				if x (point) = zero and y (point) = zero then
+				if get_x (point) = zero and get_y (point) = zero then
 					distance_to_origin := float (zero);
-				elsif x (point) = zero then
-					distance_to_origin := float (abs (y (point)));
-				elsif y (point) = zero then
-					distance_to_origin := float (abs (x (point)));
+					
+				elsif get_x (point) = zero then
+					distance_to_origin := float (abs (get_y (point)));
+					
+				elsif get_y (point) = zero then
+					distance_to_origin := float (abs (get_x (point)));
+					
 				else
 					distance_to_origin := sqrt (
-						float (abs (x (point))) ** float (2) 
+						float (abs (get_x (point))) ** float (2) 
 						+
-						float (abs (y (point))) ** float (2)
+						float (abs (get_y (point))) ** float (2)
 						);
 				end if;
 				
 				-- compute the current angle of the given point (in degrees)
 
-				if x (point) = zero then
-					if y (point) > zero then
+				if get_x (point) = zero then
+					if get_y (point) > zero then
 						angle_out := 90.0;
-					elsif y (point) < zero then
+						
+					elsif get_y (point) < zero then
 						angle_out := -90.0;
+						
 					else
 						angle_out := 0.0;
 					end if;
 
-				elsif y (point) = zero then
-					if x (point) > zero then
+				elsif get_y (point) = zero then
+					if get_x (point) > zero then
 						angle_out := 0.0;
-					elsif x (point) < zero then
+						
+					elsif get_x (point) < zero then
 						angle_out := 180.0;
+						
 					else
 						angle_out := 0.0;
 					end if;
@@ -987,8 +994,8 @@ package body et_geometry is
 				else
 					-- neither x nor y of point is zero
 					angle_out := type_float_angle (arctan (
-						x => float (x (point)),
-						y => float (y (point)),
+						x => float (get_x (point)),
+						y => float (get_y (point)),
 						cycle => float (units_per_cycle))
 						);
 				end if;
@@ -1025,17 +1032,20 @@ package body et_geometry is
 		begin -- rotate
 
 			-- compute distance of given point to origin
-			if x (point) = zero and y (point) = zero then
+			if get_x (point) = zero and get_y (point) = zero then
 				distance_to_origin := float (zero);
-			elsif x (point) = zero then
-				distance_to_origin := float (abs (y (point)));
-			elsif y (point) = zero then
-				distance_to_origin := float (abs (x (point)));
+				
+			elsif get_x (point) = zero then
+				distance_to_origin := float (abs (get_y (point)));
+				
+			elsif get_y (point) = zero then
+				distance_to_origin := float (abs (get_x (point)));
+				
 			else
 				distance_to_origin := sqrt (
-					float (abs (x (point))) ** float (2) 
+					float (abs (get_x (point))) ** float (2) 
 					+
-					float (abs (y (point))) ** float (2)
+					float (abs (get_y (point))) ** float (2)
 					);
 			end if;
 
@@ -1133,21 +1143,21 @@ package body et_geometry is
 			point		: in type_point) is
 		begin
 			-- X axis
-			if point.x < boundaries.smallest_x then 
-				boundaries.smallest_x := point.x; 
+			if get_x (point) < boundaries.smallest_x then 
+				boundaries.smallest_x := get_x (point); 
 			end if;
 			
-			if point.x > boundaries.greatest_x then
-				boundaries.greatest_x := point.x; 
+			if get_x (point) > boundaries.greatest_x then
+				boundaries.greatest_x := get_x (point); 
 			end if;
 
 			-- Y axis
-			if point.y < boundaries.smallest_y then
-				boundaries.smallest_y := point.y;
+			if get_y (point) < boundaries.smallest_y then
+				boundaries.smallest_y := get_y (point);
 			end if;
 			
-			if point.y > boundaries.greatest_y then
-				boundaries.greatest_y := point.y;
+			if get_y (point) > boundaries.greatest_y then
+				boundaries.greatest_y := get_y (point);
 			end if;
 		end;
 		
@@ -1210,8 +1220,8 @@ package body et_geometry is
 			return type_vector is
 		begin
 			return (
-				x => point.x,
-				y => point.y,
+				x => get_x (point),
+				y => get_y (point),
 				z => zero
 				);
 		end to_vector;
@@ -1336,8 +1346,8 @@ package body et_geometry is
 		is
 			v : type_vector;
 		begin
-			v.x := ray.start_point.x;
-			v.y := ray.start_point.y;
+			v.x := get_x (ray.start_point);
+			v.y := get_y (ray.start_point);
 			v.z := zero;
 
 			return v;
@@ -1578,8 +1588,8 @@ package body et_geometry is
 		is
 			result : type_line_direction := HORIZONTAL;
 
-			dx : constant type_distance := line.end_point.x - line.start_point.x;
-			dy : constant type_distance := line.end_point.y - line.start_point.y;
+			dx : constant type_distance := get_x (line.end_point) - get_x (line.start_point);
+			dy : constant type_distance := get_y (line.end_point) - get_y (line.start_point);
 		begin
 			if dx = zero then
 				-- no change in x -> line runs vertically
@@ -1645,13 +1655,13 @@ package body et_geometry is
 			return boolean
 		is begin
 			if	
-				Y (line.start_point) >= y_threshold and 
-				Y (line.end_point)   <  y_threshold then
+				get_y (line.start_point) >= y_threshold and 
+				get_y (line.end_point)   <  y_threshold then
 				return true;
 				
 			elsif
-				Y (line.end_point)   >= y_threshold and 
-				Y (line.start_point) <  y_threshold then
+				get_y (line.end_point)   >= y_threshold and 
+				get_y (line.start_point) <  y_threshold then
 				return true;
 				
 			else
@@ -1689,7 +1699,7 @@ package body et_geometry is
 				
 					-- The intersection must be ON OR AFTER the start point
 					-- of probe_line, means in direction of travel.
-					if X (to_point (i.intersection.point)) >= X (to_point (probe_line.v_start)) then
+					if get_x (to_point (i.intersection.point)) >= get_x (to_point (probe_line.v_start)) then
 
 						-- The intersection must be between start and end point of
 						-- the candidate line (start and end point itself included).
@@ -1719,8 +1729,8 @@ package body et_geometry is
 			return type_vector is
 		begin
 			return (
-				x => line.start_point.x,
-				y => line.start_point.y,
+				x => get_x (line.start_point),
+				y => get_y (line.start_point),
 				z => zero
 				);
 		end start_vector;
@@ -1730,8 +1740,8 @@ package body et_geometry is
 			return type_vector is
 		begin
 			return (
-				x => line.end_point.x,
-				y => line.end_point.y,
+				x => get_x (line.end_point),
+				y => get_y (line.end_point),
 				z => zero
 				);
 		end end_vector;
@@ -1741,8 +1751,8 @@ package body et_geometry is
 			return type_vector is
 		begin
 			return (
-				x => line.end_point.x - line.start_point.x,
-				y => line.end_point.y - line.start_point.y,
+				x => get_x (line.end_point) - get_x (line.start_point),
+				y => get_y (line.end_point) - get_y (line.start_point),
 				z => zero
 				);
 		end direction_vector;
@@ -1781,8 +1791,8 @@ package body et_geometry is
 			line	: in type_line)
 			return type_rotation is
 
-			dx : constant float := float (x (line.end_point) - x (line.start_point));
-			dy : constant float := float (y (line.end_point) - y (line.start_point));
+			dx : constant float := float (get_x (line.end_point) - get_x (line.start_point));
+			dy : constant float := float (get_y (line.end_point) - get_y (line.start_point));
 
 			--package pac_functions is new ada.numerics.generic_elementary_functions (float);
 			--use pac_functions;
@@ -1931,27 +1941,27 @@ package body et_geometry is
 								-- The first line must run straight from start point:
 								--if wider_than_tall then
 								if abs (dx) > abs (dy) then -- wider than tall
-									sup_start := type_point (set (start_point.x + ds, start_point.y));
+									sup_start := type_point (set (get_x (start_point) + ds, get_y (start_point)));
 								else -- taller than wide
-									sup_start := type_point (set (start_point.x, start_point.y + ds));
+									sup_start := type_point (set (get_x (start_point), get_y (start_point) + ds));
 								end if;
 
 								-- compute support point near end point:
 								-- The second line must run angled from end point:
 								if dx > zero then -- to the right
 									if dy > zero then -- upwards
-										sup_end := type_point (set (end_point.x + ds, end_point.y + ds));
+										sup_end := type_point (set (get_x (end_point) + ds, get_y (end_point) + ds));
 										--  45 degree
 									else
-										sup_end := type_point (set (end_point.x + ds, end_point.y - ds));
+										sup_end := type_point (set (get_x (end_point) + ds, get_y (end_point) - ds));
 										-- -45 degree
 									end if;
 								else -- to the left
 									if dy > zero then -- upwards
-										sup_end := type_point (set (end_point.x - ds, end_point.y + ds));
+										sup_end := type_point (set (get_x (end_point) - ds, get_y (end_point) + ds));
 										-- 135 degree
 									else
-										sup_end := type_point (set (end_point.x - ds, end_point.y - ds));
+										sup_end := type_point (set (get_x (end_point) - ds, get_y (end_point) - ds));
 										-- 225 degree
 									end if;
 								end if;
@@ -1971,18 +1981,18 @@ package body et_geometry is
 								-- The first line must run angled from start point:
 								if dx > zero then -- to the right
 									if dy > zero then -- upwards
-										sup_start := type_point (set (start_point.x + ds, start_point.y + ds));
+										sup_start := type_point (set (get_x (start_point) + ds, get_y (start_point) + ds));
 										--  45 degree
 									else -- downwards
-										sup_start := type_point (set (start_point.x + ds, start_point.y - ds));
+										sup_start := type_point (set (get_x (start_point) + ds, get_y (start_point) - ds));
 										-- -45 degree
 									end if;
 								else -- to the left
 									if dy > zero then -- upwards
-										sup_start := type_point (set (start_point.x - ds, start_point.y + ds));
+										sup_start := type_point (set (get_x (start_point) - ds, get_y (start_point) + ds));
 										-- 135 degree
 									else -- downwards
-										sup_start := type_point (set (start_point.x - ds, start_point.y - ds));
+										sup_start := type_point (set (get_x (start_point) - ds, get_y (start_point) - ds));
 										-- 225 degree
 									end if;
 								end if;
@@ -1990,10 +2000,10 @@ package body et_geometry is
 								-- compute support point near end point:
 								-- The second line must run straight from end point:
 								if abs (dx) > abs (dy) then -- wider than tall
-									sup_end := type_point (set (end_point.x + ds, end_point.y));
+									sup_end := type_point (set (get_x (end_point) + ds, get_y (end_point)));
 									-- horizontally
 								else -- taller than wide
-									sup_end := type_point (set (end_point.x, end_point.y + ds));
+									sup_end := type_point (set (get_x (end_point), get_y (end_point) + ds));
 									-- vertically
 								end if;
 
@@ -2003,11 +2013,11 @@ package body et_geometry is
 						when VERTICAL_THEN_HORIZONTAL =>
 							-- Compute support point near start point:
 							-- The first line must run vertically from start point:
-							sup_start := type_point (set (start_point.x, start_point.y + ds));
+							sup_start := type_point (set (get_x (start_point), get_y (start_point) + ds));
 							-- vertically
 
 							-- The second line must run horizontally from end point:
-							sup_end := type_point (set (end_point.x + ds, end_point.y));
+							sup_end := type_point (set (get_x (end_point) + ds, get_y (end_point)));
 							-- horizontally
 
 							compute_bend_point;
@@ -2015,12 +2025,12 @@ package body et_geometry is
 						when HORIZONTAL_THEN_VERTICAL =>
 							-- Compute support point near start point:
 							-- The first line must run horizontal from start point:
-							sup_start := type_point (set (start_point.x + ds, start_point.y));
+							sup_start := type_point (set (get_x (start_point) + ds, get_y (start_point)));
 							-- horizontally
 
 							-- compute support point near end point:
 							-- The second line must run vertically from end point:
-							sup_end := type_point (set (end_point.x, end_point.y + ds));
+							sup_end := type_point (set (get_x (end_point), get_y (end_point) + ds));
 							-- vertically
 
 							compute_bend_point;
@@ -2087,11 +2097,11 @@ package body et_geometry is
 				line_length := distance_abs (line.start_point, line.end_point, X);
 				zone_border := line_length / type_distance (line_zone_division_factor);
 
-				if x (line.start_point) < x (line.end_point) then 
+				if get_x (line.start_point) < get_x (line.end_point) then 
 				-- DRAWN FROM LEFT TO THE RIGHT
-					if x (point) < x (line.start_point) + zone_border then
+					if get_x (point) < get_x (line.start_point) + zone_border then
 						zone := START_POINT; -- point is in the zone of line.start_point
-					elsif x (point) > x (line.end_point) - zone_border then
+					elsif get_x (point) > get_x (line.end_point) - zone_border then
 						zone := END_POINT; -- point is in the zone of line.end_point
 					else
 						zone := CENTER;
@@ -2099,9 +2109,9 @@ package body et_geometry is
 
 				else 
 				-- DRAWN FROM RIGHT TO THE LEFT
-					if x (point) > x (line.start_point) - zone_border then
+					if get_x (point) > get_x (line.start_point) - zone_border then
 						zone := START_POINT; -- point is in the zone of line.start_point
-					elsif x (point) < x (line.end_point) + zone_border then
+					elsif get_x (point) < get_x (line.end_point) + zone_border then
 						zone := END_POINT; -- point is in the zone of line.end_point
 					else
 						zone := CENTER;
@@ -2117,11 +2127,11 @@ package body et_geometry is
 				line_length := distance_abs (line.start_point, line.end_point, Y);
 				zone_border := line_length / type_distance (line_zone_division_factor);
 
-				if y (line.start_point) < y (line.end_point) then 
+				if get_y (line.start_point) < get_y (line.end_point) then 
 				-- DRAWN UPWARDS
-					if y (point) < y (line.start_point) + zone_border then
+					if get_y (point) < get_y (line.start_point) + zone_border then
 						zone := START_POINT; -- point is in the zone of line.start_point
-					elsif y (point) > y (line.end_point) - zone_border then
+					elsif get_y (point) > get_y (line.end_point) - zone_border then
 						zone := END_POINT; -- point is in the zone of line.end_point
 					else
 						zone := CENTER;
@@ -2129,9 +2139,9 @@ package body et_geometry is
 						
 				else 
 				-- DRAWN DOWNWARDS
-					if y (point) > y (line.start_point) - zone_border then
+					if get_y (point) > get_y (line.start_point) - zone_border then
 						zone := START_POINT; -- point is in the zone of line.start_point
-					elsif y (point) < y (line.end_point) + zone_border then
+					elsif get_y (point) < get_y (line.end_point) + zone_border then
 						zone := END_POINT; -- point is in the zone of line.end_point
 					else
 						zone := CENTER;
@@ -2420,13 +2430,13 @@ package body et_geometry is
 			return boolean
 		is begin
 			if	
-				Y (arc.start_point) >= y_threshold and 
-				Y (arc.end_point)   <  y_threshold then
+				get_y (arc.start_point) >= y_threshold and 
+				get_y (arc.end_point)   <  y_threshold then
 				return true;
 				
 			elsif
-				Y (arc.end_point)   >= y_threshold and 
-				Y (arc.start_point) <  y_threshold then
+				get_y (arc.end_point)   >= y_threshold and 
+				get_y (arc.start_point) <  y_threshold then
 				return true;
 				
 			else
@@ -2443,14 +2453,14 @@ package body et_geometry is
 		begin
 			case arc.direction is
 				when CW =>
-					if  Y (arc.start_point) > Y (arc.end_point) then
+					if  get_y (arc.start_point) > get_y (arc.end_point) then
 						c := CONCAVE; 
 					else
 						c := CONVEX; 
 					end if;
 					
 				when CCW =>
-					if Y (arc.start_point) > Y (arc.end_point) then
+					if get_y (arc.start_point) > get_y (arc.end_point) then
 						c := CONVEX;								
 					else
 						c := CONCAVE; 
@@ -2502,20 +2512,20 @@ package body et_geometry is
 			-- NOTE: If x and y are zero then the arctan operation is not possible. 
 			-- In this case we assume the resulting angle is zero.
 			
-			if arc_tmp.start_point.x = zero and arc_tmp.start_point.y = zero then
+			if get_x (arc_tmp.start_point) = zero and get_y (arc_tmp.start_point) = zero then
 				result.angle_start := zero_rotation;
 			else
 				result.angle_start := to_degrees (arctan (
-						y => float (arc_tmp.start_point.y),
-						x => float (arc_tmp.start_point.x)));
+						y => float (get_y (arc_tmp.start_point)),
+						x => float (get_x (arc_tmp.start_point))));
 			end if;
 
-			if arc_tmp.end_point.x = zero and arc_tmp.end_point.y = zero then
+			if get_x (arc_tmp.end_point) = zero and get_y (arc_tmp.end_point) = zero then
 				result.angle_end := zero_rotation;
 			else
 				result.angle_end := to_degrees (arctan (
-						y => float (arc_tmp.end_point.y),
-						x => float (arc_tmp.end_point.x)));
+						y => float (get_y (arc_tmp.end_point)),
+						x => float (get_x (arc_tmp.end_point))));
 			end if;
 	
 			-- make sure start and end angle are not equal
@@ -2900,7 +2910,7 @@ package body et_geometry is
 			return type_point'class
 		is						
 			-- Take a copy of the given arc in arc.
-			type type_arc_tmp is new type_arc with null record;
+			type type_arc_tmp is new type_arc with null record; -- CS no need for new type
 			arc : type_arc_tmp; -- := (arc with null record);
 
 			radius : float;
@@ -2927,12 +2937,12 @@ package body et_geometry is
 
 			-- NOTE: If x and y are zero then the arctan operation is not possible. 
 			-- In this case we assume the resulting angle is zero.
-			if arc.start_point.x = zero and arc.start_point.y = zero then
+			if get_x (arc.start_point) = zero and get_y (arc.start_point) = zero then
 				angle_start := 0.0;
 			else
 				angle_start := arctan (
-						y => float (arc.start_point.y),
-						x => float (arc.start_point.x));
+						y => float (get_y (arc.start_point)),
+						x => float (get_x (arc.start_point)));
 			end if;
 			
 			-- the angle where the arc ends:
@@ -3038,12 +3048,12 @@ package body et_geometry is
 			half_width : constant type_distance_positive := line_width * 0.5;
 		begin
 			-- X axis
-			result.smallest_x := circle.center.x - circle.radius;
-			result.greatest_x := circle.center.x + circle.radius;
+			result.smallest_x := get_x (circle.center) - circle.radius;
+			result.greatest_x := get_x (circle.center) + circle.radius;
 
 			-- Y axis
-			result.smallest_y := circle.center.y - circle.radius;
-			result.greatest_y := circle.center.y + circle.radius;
+			result.smallest_y := get_y (circle.center) - circle.radius;
+			result.greatest_y := get_y (circle.center) + circle.radius;
 
 			
 			-- extend the boundaries by half the line width;
@@ -3203,11 +3213,11 @@ package body et_geometry is
 			--put_line ("o start " & to_string (ps));
 			--put_line ("o end   " & to_string (pe));
 
-			x1 := float (ps.x);
-			y1 := float (ps.y);
+			x1 := float (get_x (ps));
+			y1 := float (get_y (ps));
 			
-			x2 := float (pe.x);
-			y2 := float (pe.y);
+			x2 := float (get_x (pe));
+			y2 := float (get_y (pe));
 			
 			dx := x2 - x1;
 			dy := y2 - y1;
@@ -3520,10 +3530,10 @@ package body et_geometry is
 				b := get_boundaries (line, zero); -- a polygon line has zero width
 			end if;
 			
-			if b.smallest_x = line.start_point.x then
+			if b.smallest_x = get_x (line.start_point) then
 				p := line.start_point;
 				
-			elsif b.smallest_x = line.end_point.x then
+			elsif b.smallest_x = get_x (line.end_point) then
 				p := line.end_point;
 
 			else
@@ -3550,10 +3560,10 @@ package body et_geometry is
 				b := get_boundaries (line, zero); -- a polygon line has zero width
 			end if;
 			
-			if b.greatest_x = line.start_point.x then
+			if b.greatest_x = get_x (line.start_point) then
 				p := line.start_point;
 				
-			elsif b.greatest_x = line.end_point.x then
+			elsif b.greatest_x = get_x (line.end_point) then
 				p := line.end_point;
 
 			else
@@ -3580,10 +3590,10 @@ package body et_geometry is
 				b := get_boundaries (line, zero); -- a polygon line has zero width
 			end if;
 			
-			if b.smallest_y = line.start_point.x then
+			if b.smallest_y = get_x (line.start_point) then
 				p := line.start_point;
 				
-			elsif b.smallest_y = line.end_point.x then
+			elsif b.smallest_y = get_x (line.end_point) then
 				p := line.end_point;
 
 			else
@@ -3610,10 +3620,10 @@ package body et_geometry is
 				b := get_boundaries (line, zero); -- a polygon line has zero width
 			end if;
 			
-			if b.greatest_y = line.start_point.x then
+			if b.greatest_y = get_x (line.start_point) then
 				p := line.start_point;
 				
-			elsif b.greatest_y = line.end_point.x then
+			elsif b.greatest_y = get_x (line.end_point) then
 				p := line.end_point;
 
 			else
@@ -3799,7 +3809,7 @@ package body et_geometry is
 			procedure move (point : in out type_point) is
 				new_y : type_distance;
 			begin
-				new_y := offset - y (point);
+				new_y := offset - get_y (point);
 				set (Y, new_y, point);
 			end move;
 
@@ -4339,8 +4349,8 @@ package body et_geometry is
 			use pac_polygon_segments;
 
 			function scale_point (point	: in type_point) return type_point is
-				x_new : type_distance := x (point) * offset.scale;
-				y_new : type_distance := y (point) * offset.scale;
+				x_new : type_distance := get_x (point) * offset.scale;
+				y_new : type_distance := get_y (point) * offset.scale;
 			begin
 				return type_point (set (x_new, y_new));
 			end scale_point;
@@ -4562,13 +4572,13 @@ package body et_geometry is
 
 			line_pre : constant type_line := (
 					start_point	=> point,
-					end_point	=> type_point (set (X (point) + 1.0, Y (point))));
+					end_point	=> type_point (set (get_x (point) + 1.0, get_y (point))));
 			
 			probe_line : constant type_line_vector := to_line_vector (line_pre);
 
 			-- For segments that end or start exactly on the Y value of the probe line
 			-- we define a threshold:
-			y_threshold : constant type_distance := Y (point);
+			y_threshold : constant type_distance := get_y (point);
 			
 			-- This is the variable for the number of intersections detected.
 			-- From this number we will later deduce the position of the given point,
@@ -4589,7 +4599,7 @@ package body et_geometry is
 					when STRAIGHT =>
 						
 						append (result.intersections, (
-							x_position	=> X (to_point (intersection.point)),
+							x_position	=> get_x (to_point (intersection.point)),
 							angle		=> intersection.angle,
 							segment		=> segment,
 							curvature	=> STRAIGHT
@@ -4598,7 +4608,7 @@ package body et_geometry is
 					when CONVEX =>
 
 						append (result.intersections, (
-							x_position	=> X (to_point (intersection.point)),
+							x_position	=> get_x (to_point (intersection.point)),
 							angle		=> intersection.angle,
 							segment		=> segment,
 							curvature	=> CONVEX,
@@ -4609,7 +4619,7 @@ package body et_geometry is
 					when CONCAVE =>
 
 						append (result.intersections, (
-							x_position	=> X (to_point (intersection.point)),
+							x_position	=> get_x (to_point (intersection.point)),
 							angle		=> intersection.angle,
 							segment		=> segment,
 							curvature	=> CONCAVE,
@@ -4704,7 +4714,7 @@ package body et_geometry is
 							start_point		=> point,
 							intersections	=> i);
 						
-						if Y (a.start_point) /= y_threshold then
+						if get_y (a.start_point) /= y_threshold then
 							-- Since we have TWO intersections, the end point of the arc
 							-- must be in the same half as the start point of the arc.
 							-- The arc crosses the threshold line twice:
@@ -4720,13 +4730,13 @@ package body et_geometry is
 							-- the probe line ?
 
 							-- If start point at probe line:
-							if Y (a.start_point) = y_threshold then
+							if get_y (a.start_point) = y_threshold then
 
 								-- If the arc starts ON the probe line and ends ABOVE
 								-- the probe line, then it runs first downwards through the lower half,
 								-- goes up, crosses the threshold at point P and ends somewhere 
 								-- in the upper half:
-								if Y (a.end_point) > y_threshold then
+								if get_y (a.end_point) > y_threshold then
 
 									-- Count the point P as intersection:
 									case a.direction is
@@ -4751,7 +4761,7 @@ package body et_geometry is
 								-- the probe line, then it runs first upwards through the upper half,
 								-- goes down, crosses the threshold at point P1 and ends somewhere 
 								-- in the lower half.
-								elsif Y (a.end_point) < y_threshold then
+								elsif get_y (a.end_point) < y_threshold then
 
 									-- Count the start point and point P1 as intersections:
 									count_two;
@@ -4759,12 +4769,12 @@ package body et_geometry is
 
 								
 							-- If end point at probe line:
-							elsif Y (a.end_point) = y_threshold then
+							elsif get_y (a.end_point) = y_threshold then
 
 								-- If the arc starts somewhere in the upper half, then it runs
 								-- down, crosses the threshold at point P, runs through the 
 								-- lower half, goes up and ends ON the threshold line:
-								if Y (a.start_point) > y_threshold then
+								if get_y (a.start_point) > y_threshold then
 
 									-- Count the point P as intersection:
 									case a.direction is
@@ -4789,7 +4799,7 @@ package body et_geometry is
 								-- If the arc starts somewhere in the lower half, then it runs
 								-- up, crosses the threshold at point P, runs through the
 								-- upper half, goes down and ends ON the threshold line:
-								elsif Y (a.start_point) < y_threshold then
+								elsif get_y (a.start_point) < y_threshold then
 
 									-- Count the end point and point P as intersections:
 									count_two;

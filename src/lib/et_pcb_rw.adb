@@ -403,8 +403,8 @@ package body et_pcb_rw is
 	function position (point : in type_point'class) return string is
 		use ada.tags;
 
-		xy : constant string := space & keyword_x & to_string (x (point)) 
-				& space & keyword_y & to_string (y (point));
+		xy : constant string := space & keyword_x & to_string (get_x (point)) 
+				& space & keyword_y & to_string (get_y (point));
 	begin
 		if point'tag = type_point'tag then
 			return xy;

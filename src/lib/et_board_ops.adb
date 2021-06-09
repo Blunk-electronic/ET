@@ -4611,7 +4611,7 @@ package body et_board_ops is
 							use pac_fill_lines;
 							
 							point : type_point := start_point;
-							row : type_distance := Y (point);
+							row : type_distance := get_y (point);
 							status : type_valid;
 							distance : type_distance_positive;
 							
@@ -4675,7 +4675,7 @@ package body et_board_ops is
 									set_start (point);
 
 									point := type_point (set (
-										x => X (point) + distance,
+										x => get_x (point) + distance,
 										y => row));
 										
 									set_end (point);
@@ -4687,7 +4687,7 @@ package body et_board_ops is
 
 									if status = VALID then
 										point := type_point (set (
-											x => X (point) + distance,
+											x => get_x (point) + distance,
 											y => row));
 
 									else
@@ -4699,7 +4699,7 @@ package body et_board_ops is
 
 									if status = VALID then
 										point := type_point (set (
-											x => X (point) + distance,
+											x => get_x (point) + distance,
 											y => row));
 
 									else

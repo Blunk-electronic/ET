@@ -1057,7 +1057,7 @@ package body et_routing is
 					-- center of the arc. So the x_position must be mirrored so that
 					-- it comes before the x-position of the center of the arc:
 					declare
-						center_x : type_distance := X (intersection.center);
+						center_x : type_distance := get_x (intersection.center);
 						delta_x : type_distance_positive := intersection.x_position - center_x;
 						x_pos_mirrored : type_distance := center_x - delta_x;
 					begin
@@ -1184,7 +1184,7 @@ package body et_routing is
 			-- The initial position of the cap is at maximum distance away from the point
 			-- of intersection. It is right below the center of the arc:
 			P : type_point := type_point (set (
-				x => X (intersection.center), -- the x-value of the center of the arc
+				x => get_x (intersection.center), -- the x-value of the center of the arc
 				y => y_position));
 
 			type type_direction is (RIGHT, LEFT);
@@ -1250,7 +1250,7 @@ package body et_routing is
 			if clearance < clearance_min_concave then
 				-- If the initial clearance from cap to board edge is already less than the minimum
 				-- clearance then the result is:
-				result := abs (intersection.x_position - X (P));
+				result := abs (intersection.x_position - get_x (P));
 
 			else
 				-- Here is the numerical algorithm. It computes result (what we want), the distance 
@@ -1313,7 +1313,7 @@ package body et_routing is
 
 				end loop;
 
-				result := abs (intersection.x_position - X (P));
+				result := abs (intersection.x_position - get_x (P));
 			end if;
 
 			log_indentation_down;

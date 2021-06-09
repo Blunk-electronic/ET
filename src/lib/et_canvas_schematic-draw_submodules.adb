@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -130,8 +130,8 @@ is
 					y => - (3.0 * text_spacing + instance_font_size + file_font_size)));
 
 			use et_pcb_coordinates.pac_geometry_brd;
-			pos_x : constant string := to_string (x (element (cursor).position_in_board));
-			pos_y : constant string := to_string (y (element (cursor).position_in_board));
+			pos_x : constant string := to_string (get_x (element (cursor).position_in_board));
+			pos_y : constant string := to_string (get_y (element (cursor).position_in_board));
 			rotation : constant string := to_string (rot (element (cursor).position_in_board));
 			
 			text : constant string := "board (x/y/rot.):" &
@@ -199,7 +199,7 @@ is
 				-- its lower left corner.
 				
 				-- Does the port sit on the LEFT edge of the box ?
-				if x (element (pc).position) + x (submod_position) = x (submod_position) then 
+				if get_x (element (pc).position) + get_x (submod_position) = get_x (submod_position) then 
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text 
@@ -236,7 +236,7 @@ is
 					draw_horizontal;
 					
 				-- Does the port sit on the RIGHT edge of the box ?
-				elsif x (element (pc).position) + x (submod_position) = x (submod_position) + element (cursor).size.x then 
+				elsif get_x (element (pc).position) + get_x (submod_position) = get_x (submod_position) + element (cursor).size.x then 
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text 
@@ -273,7 +273,7 @@ is
 					draw_horizontal;
 
 				-- Does the port sit on the LOWER edge of the box ?
-				elsif y (element (pc).position) + y (submod_position) = y (submod_position) then
+				elsif get_y (element (pc).position) + get_y (submod_position) = get_y (submod_position) then
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text 
@@ -310,7 +310,7 @@ is
 					draw_vertical;
 
 				-- Does the port sit on the UPPER edge of the box ?
-				elsif y (element (pc).position) + y (submod_position) = y (submod_position) + element (cursor).size.y then 
+				elsif get_y (element (pc).position) + get_y (submod_position) = get_y (submod_position) + element (cursor).size.y then 
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text 

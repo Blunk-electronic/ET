@@ -79,9 +79,9 @@ package body et_pcb_coordinates is
 
 	function to_string (p : in type_package_position) return string is begin
 		return position_preamble
-				& to_string (p.x)
+				& to_string (get_x (p))
 				& axis_separator
-				& to_string (p.y)
+				& to_string (get_y (p))
 				& axis_separator
 				& to_string (rot (p))
 				& axis_separator

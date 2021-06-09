@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -61,22 +61,22 @@ package body et_submodules is
 		result : boolean := false;
 	begin
 		-- If P is at the left or right edge:
-		if x (point) = zero or x (point) = size.x then
+		if get_x (point) = zero or get_x (point) = size.x then
 
 			-- If P is within y extension of box:
-			if y (point) >= zero and y (point) <= size.y then
+			if get_y (point) >= zero and get_y (point) <= size.y then
 				result := true;
 			end if;
 		
 		else
 			-- If P is at the lower or upper edge:
-			if y (point) = zero or y (point) = size.y  then
+			if get_y (point) = zero or get_y (point) = size.y  then
 
 				-- If P is within x extension of box:
-				if x (point) >= zero and x (point) <= size.x then
+				if get_x (point) >= zero and get_x (point) <= size.x then
 					result := true;
 
-					if y (point) = zero then
+					if get_y (point) = zero then
 						log (WARNING, "Net connected with port at lower edge of submodule at" & 
 							to_string (point) & " may overlap with texts !");
 					end if;

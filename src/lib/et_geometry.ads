@@ -223,9 +223,9 @@ package et_geometry is
 		function to_distance (distance : in string) return type_distance;		
 		function to_string (distance : in type_distance) return string;
 		
-		function x (point : in type_point'class) return type_distance; -- CS class attr. not required ?
-		function y (point : in type_point'class) return type_distance;		
-		-- CS rename to get_x and get_y
+		function get_x (point : in type_point'class) return type_distance; -- CS class attr. not required ?
+		function get_y (point : in type_point'class) return type_distance;		
+
 		
 		-- Returns the rotation of the given point around the origin.
 		-- If for example point is (1/1) then the return is 45 degree.

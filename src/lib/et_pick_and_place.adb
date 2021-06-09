@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -124,8 +124,8 @@ package body et_pick_and_place is
 				put_field (file => pnp_handle); -- CS item number
 				put_field (file => pnp_handle, text => to_string (key (cursor))); -- R4
 				put_field (file => pnp_handle, text => to_string (get_face (element (cursor).position))); -- top/bottom
-				put_field (file => pnp_handle, text => to_string (x (element (cursor).position))); -- X
-				put_field (file => pnp_handle, text => to_string (y (element (cursor).position))); -- Y
+				put_field (file => pnp_handle, text => to_string (get_x (element (cursor).position))); -- X
+				put_field (file => pnp_handle, text => to_string (get_y (element (cursor).position))); -- Y
 				put_field (file => pnp_handle, text => to_string (rot (element (cursor).position))); -- rotation
 -- 				put_field (file => pnp_handle, text => to_string (element (cursor).value)); -- 100R
 -- 				put_field (file => pnp_handle, text => to_string (element (cursor).packge)); -- S_0805.pac

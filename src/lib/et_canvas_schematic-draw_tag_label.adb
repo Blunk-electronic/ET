@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -78,38 +78,38 @@ begin
 					+ 2.0 * tag_label_text_offset;
 
 	if label.rotation_tag = zero_rotation then
-		box_position := type_point (set (x (label.position), y (label.position) - box_height * 0.5));
+		box_position := type_point (set (get_x (label.position), get_y (label.position) - box_height * 0.5));
 		draw_rectangle (in_area, context, box_position, box_width, box_height, self.frame_height);
 
 		text_rotation := zero_rotation;
-		text_position := type_point (set (x (label.position) + tag_label_text_offset, y (label.position)));
+		text_position := type_point (set (get_x (label.position) + tag_label_text_offset, get_y (label.position)));
 		text_alignment.horizontal := LEFT;
 	end if;
 
 	if label.rotation_tag = 90.0 then
-		box_position := type_point (set (x (label.position) - box_height * 0.5, y (label.position)));
+		box_position := type_point (set (get_x (label.position) - box_height * 0.5, get_y (label.position)));
 		draw_rectangle (in_area, context, box_position, box_height, box_width, self.frame_height);
 
 		text_rotation := 90.0;
-		text_position := type_point (set (x (label.position), y (label.position) + tag_label_text_offset));
+		text_position := type_point (set (get_x (label.position), get_y (label.position) + tag_label_text_offset));
 		text_alignment.horizontal := LEFT;
 	end if;
 
 	if label.rotation_tag = 180.0 then
-		box_position := type_point (set (x (label.position) - box_width, y (label.position) - box_height * 0.5));
+		box_position := type_point (set (get_x (label.position) - box_width, get_y (label.position) - box_height * 0.5));
 		draw_rectangle (in_area, context, box_position, box_width, box_height, self.frame_height);
 
 		text_rotation := zero_rotation;
-		text_position := type_point (set (x (label.position) - tag_label_text_offset, y (label.position)));
+		text_position := type_point (set (get_x (label.position) - tag_label_text_offset, get_y (label.position)));
 		text_alignment.horizontal := RIGHT;
 	end if;
 
 	if label.rotation_tag = -90.0 then
-		box_position := type_point (set (x (label.position) - box_height * 0.5, y (label.position) - box_width));
+		box_position := type_point (set (get_x (label.position) - box_height * 0.5, get_y (label.position) - box_width));
 		draw_rectangle (in_area, context, box_position, box_height, box_width, self.frame_height);
 
 		text_rotation := 90.0;
-		text_position := type_point (set (x (label.position), y (label.position) - tag_label_text_offset));
+		text_position := type_point (set (get_x (label.position), get_y (label.position) - tag_label_text_offset));
 		text_alignment.horizontal := RIGHT;
 	end if;
 		

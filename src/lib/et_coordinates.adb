@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -99,16 +99,16 @@ package body et_coordinates is
 		else
 			-- sheet numbers are equal -> compare x
 			
-			if left.x < right.x then
+			if get_x (left) < get_x (right) then
 				result := true;
-			elsif left.x > right.x then
+			elsif get_x (left) > get_x (right) then
 				result := false;
 			else 
 				-- x positions equal -> compare y
 				
-				if left.y < right.y then
+				if get_y (left) < get_y (right) then
 					result := true;
-				elsif left.y > right.y then
+				elsif get_y (left) > get_y (right) then
 					result := false;
 				else
 					-- y positions equal -> compare rotation
@@ -135,10 +135,10 @@ package body et_coordinates is
 		use et_string_processing;
 	begin
 -- 		position.x := position.x + offset.x;
-		set (X, x (position) + x (offset), position);
+		set (X, get_x (position) + get_x (offset), position);
 		
 -- 		position.y := position.y + offset.y;
-		set (Y, y (position) + y (offset), position);
+		set (Y, get_y (position) + get_y (offset), position);
 
 		-- Constraint error will arise here if resulting sheet number is less than 1.
 		position.sheet := type_sheet (type_sheet_relative (position.sheet) + offset.sheet);
@@ -184,9 +184,9 @@ package body et_coordinates is
 		return coordinates_preamble_sheet
 			& to_sheet (position.sheet) 
 			& space & axis_separator & space
-			& to_string (x (position))
+			& to_string (get_x (position))
 			& space & axis_separator & space
-			& to_string (y (position));
+			& to_string (get_y (position));
 	end to_string;
 
 	function sheet (position : in type_position) return type_sheet is

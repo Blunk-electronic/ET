@@ -188,17 +188,17 @@ package body et_canvas_board is
 	begin
 		set (point	=> p,
 			 axis	=> X, 
-			 value	=> model_point.x 
+			 value	=> get_x (model_point) 
 						- self.frame_bounding_box.x
-						- x (self.board_origin) -- because board origin is not the same as drawing origin
+						- get_x (self.board_origin) -- because board origin is not the same as drawing origin
 			);
 		
 		set (point	=> p,
 			 axis	=> Y,
 			 value	=> type_distance (self.frame_height) 
-						- model_point.y 
+						- get_y (model_point) 
 						+ self.frame_bounding_box.y
-						- y (self.board_origin)  -- because board origin is not the same as drawing origin
+						- get_y (self.board_origin)  -- because board origin is not the same as drawing origin
 			);
 
 		return p;
@@ -213,17 +213,17 @@ package body et_canvas_board is
 	begin
 		set (point	=> p,
 			 axis	=> X, 
-			 value	=> drawing_point.x 
+			 value	=> get_x (drawing_point) 
 						+ self.frame_bounding_box.x
-						+ x (self.board_origin) -- because board origin is not the same as drawing origin
+						+ get_x (self.board_origin) -- because board origin is not the same as drawing origin
 			);
 		
 		set (point	=> p,
 			 axis	=> Y,
 			 value	=> type_distance (self.frame_height) 
-						- drawing_point.y 
+						- get_y (drawing_point) 
 						+ self.frame_bounding_box.y
-						- y (self.board_origin)  -- because board origin is not the same as drawing origin
+						- get_y (self.board_origin)  -- because board origin is not the same as drawing origin
 			);
 
 		return p;
@@ -464,12 +464,12 @@ package body et_canvas_board is
 		type type_line is new pac_shapes.type_line with null record;
 		
 		line_horizontal : constant type_line := ( -- from left to right
-			start_point		=> type_point (set (x => x (p) - pac_text_fab.origin_half_size, y => y (p))),
-			end_point		=> type_point (set (x => x (p) + pac_text_fab.origin_half_size, y => y (p))));
+			start_point		=> type_point (set (x => get_x (p) - pac_text_fab.origin_half_size, y => get_y (p))),
+			end_point		=> type_point (set (x => get_x (p) + pac_text_fab.origin_half_size, y => get_y (p))));
 
 		line_vertical : constant type_line := ( -- from bottom to top
-			start_point		=> type_point (set (x => x (p), y => y (p) - pac_text_fab.origin_half_size)),
-			end_point		=> type_point (set (x => x (p), y => y (p) + pac_text_fab.origin_half_size)));
+			start_point		=> type_point (set (x => get_x (p), y => get_y (p) - pac_text_fab.origin_half_size)),
+			end_point		=> type_point (set (x => get_x (p), y => get_y (p) + pac_text_fab.origin_half_size)));
 
 		use pac_draw_fab;
 	begin -- draw_text_origin
@@ -919,8 +919,8 @@ package body et_canvas_board is
 		-- The board origin is now somewhere inside the frame.
 		translate (
 			context.cr,
-			convert_x (self.frame_bounding_box.x + x (self.board_origin)),
-			convert_y (self.frame_bounding_box.y - y (self.board_origin)));
+			convert_x (self.frame_bounding_box.x + get_x (self.board_origin)),
+			convert_y (self.frame_bounding_box.y - get_y (self.board_origin)));
 
 
 		-- draw packages, tracks, vias, silkscreen, pcb outline, ...
@@ -1019,21 +1019,21 @@ package body et_canvas_board is
 		
 		-- set start and end point of horizontal line
 		lh.start_point := type_point (set (
-			x	=> x (cursor.position) - size,
-			y	=> y (cursor.position)));
+			x	=> get_x (cursor.position) - size,
+			y	=> get_y (cursor.position)));
 
 		lh.end_point := type_point (set (
-			x	=> x (cursor.position) + size,
-			y	=> y (cursor.position)));
+			x	=> get_x (cursor.position) + size,
+			y	=> get_y (cursor.position)));
 
 		-- set start and end point of vertical line
 		lv.start_point := type_point (set (
-			x	=> x (cursor.position),
-			y	=> y (cursor.position) + size));
+			x	=> get_x (cursor.position),
+			y	=> get_y (cursor.position) + size));
 
 		lv.end_point := type_point (set (
-			x	=> x (cursor.position),
-			y	=> y (cursor.position) - size));
+			x	=> get_x (cursor.position),
+			y	=> get_y (cursor.position) - size));
 
 
 		-- The line width is inversely proportional to the scale:

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -106,8 +106,8 @@ package body et_schematic is
 		
 		result : type_net_segment_orientation;
 		
-		dx : constant et_coordinates.type_distance := x (element (segment).start_point) - x (element (segment).end_point);
-		dy : constant et_coordinates.type_distance := y (element (segment).start_point) - y (element (segment).end_point);
+		dx : constant et_coordinates.type_distance := get_x (element (segment).start_point) - get_x (element (segment).end_point);
+		dy : constant et_coordinates.type_distance := get_y (element (segment).start_point) - get_y (element (segment).end_point);
 	begin
 		if dx = zero then 
 			result := VERTICAL;
@@ -303,24 +303,24 @@ package body et_schematic is
 	begin
 		case orientation is
 			when HORIZONTAL =>
-				if x (point) >= x (element (segment).start_point) and
-					x (point) >= x (element (segment).end_point) then
+				if get_x (point) >= get_x (element (segment).start_point) and
+					get_x (point) >= get_x (element (segment).end_point) then
 					direction := RIGHT;
 				end if;
 
-				if x (point) <= x (element (segment).start_point) and
-					x (point) <= x (element (segment).end_point) then
+				if get_x (point) <= get_x (element (segment).start_point) and
+					get_x (point) <= get_x (element (segment).end_point) then
 					direction := LEFT;
 				end if;
 				
 			when VERTICAL =>
-				if y (point) >= y (element (segment).start_point) and
-					y (point) >= y (element (segment).end_point) then
+				if get_y (point) >= get_y (element (segment).start_point) and
+					get_y (point) >= get_y (element (segment).end_point) then
 					direction := UP;
 				end if;
 
-				if y (point) <= y (element (segment).start_point) and
-					y (point) <= y (element (segment).end_point) then
+				if get_y (point) <= get_y (element (segment).start_point) and
+					get_y (point) <= get_y (element (segment).end_point) then
 					direction := DOWN;
 				end if;
 				
