@@ -223,7 +223,7 @@ package et_geometry is
 		function to_distance (distance : in string) return type_distance;		
 		function to_string (distance : in type_distance) return string;
 		
-		function get_x (point : in type_point'class) return type_distance; -- CS class attr. not required ?
+		function get_x (point : in type_point'class) return type_distance;
 		function get_y (point : in type_point'class) return type_distance;		
 
 		
