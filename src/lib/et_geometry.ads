@@ -599,8 +599,8 @@ package et_geometry is
 		end record;
 
 		type type_distance_polar is record
-			absolute: type_distance_positive; -- CS default
-			angle	: type_rotation; -- ranges from -180 to 180 degrees -- CS default
+			absolute: type_distance_positive := zero;
+			angle	: type_rotation := zero_rotation; -- ranges from -180 to 180 degrees
 		end record;
 		
 		origin : constant type_point := (others => zero);
