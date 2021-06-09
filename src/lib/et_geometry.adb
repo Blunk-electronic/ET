@@ -1756,7 +1756,7 @@ package body et_geometry is
 				v_direction	=> direction_vector (line));
 		end to_line_vector;
 		
-		function distance (
+		function get_distance (
 			line	: in type_line;
 			point	: in type_point)
 			return type_distance_positive
@@ -1772,7 +1772,7 @@ package body et_geometry is
 			n := absolute (dv);
 			
 			return (m / n);
-		end distance;
+		end get_distance;
 
 
 		
@@ -2236,7 +2236,7 @@ package body et_geometry is
 			-- Compute the distance from point to line.
 			-- This computation does not care about end or start point of the line.
 			-- It assumes an indefinite long line without start or end point.
-			result.distance := distance (line, point);
+			result.distance := get_distance (line, point);
 
 			--put_line ("distance " & to_string (result.distance));
 			
@@ -2255,7 +2255,7 @@ package body et_geometry is
 				-- is not zero, then we try in -90 degree direction.
 				exact_point := type_point (move (point, line_direction + 90.0, result.distance));
 				
-				if distance (line, exact_point) /= zero then
+				if get_distance (line, exact_point) /= zero then
 					exact_point := type_point (move (point, line_direction - 90.0, result.distance));
 				end if;
 

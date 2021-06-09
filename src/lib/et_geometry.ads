@@ -922,7 +922,7 @@ package et_geometry is
 		-- Computes the distance between a point and a line.
 		-- This computation does not care about end or start point of the line.
 		-- It assumes an indefinite long line without start or end point.
-		function distance ( -- CS rename to get_distance
+		function get_distance (
 			line	: in type_line;
 			point	: in type_point)
 			return type_distance_positive;
