@@ -2142,9 +2142,9 @@ package body et_geometry is
 			return d.out_of_range;
 		end out_of_range;
 
-		function distance (d : in type_distance_point_line) return type_distance_positive is begin
+		function get_distance (d : in type_distance_point_line) return type_distance_positive is begin
 			return d.distance;
-		end distance;
+		end get_distance;
 
 		function get_intersection (d : in type_distance_point_line) return type_point is begin
 			return d.intersection;
@@ -2359,7 +2359,7 @@ package body et_geometry is
 			elsif on_end_point (d) then
 				null;
 			else
-				set_absolute (result, distance (d));
+				set_absolute (result, get_distance (d));
 				-- CS set_angle (result,
 			end if;
 

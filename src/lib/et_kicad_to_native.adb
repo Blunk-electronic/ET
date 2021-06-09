@@ -2891,7 +2891,7 @@ package body et_kicad_to_native is
 							end;
 							
 							-- If port sits on segment, append it to ports_of_segment.
-							if (not out_of_range (dist)) and distance (dist) = zero then
+							if (not out_of_range (dist)) and get_distance (dist) = zero then
 
 								-- Get the name of the unit:
 								terminal := to_terminal (

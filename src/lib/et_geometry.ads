@@ -1028,7 +1028,7 @@ package et_geometry is
 
 		-- These functions return the components of the given type_distance_point_line:
 		function out_of_range (d : in type_distance_point_line) return boolean;
-		function distance (d : in type_distance_point_line) return type_distance_positive; -- CS rename to get_distance
+		function get_distance (d : in type_distance_point_line) return type_distance_positive;
 		function get_intersection (d : in type_distance_point_line) return type_point;
 		function on_start_point (d : in type_distance_point_line) return boolean;
 		function on_end_point (d : in type_distance_point_line) return boolean;
