@@ -475,7 +475,8 @@ package et_geometry is
 			return type_distance_polar;
 
 		-- Returns the angle of the given polar distance:
-		function angle (distance : in type_distance_polar) -- CS rename to get_angle
+		function get_angle (
+			distance : in type_distance_polar)
 			return type_rotation;
 
 		-- Returns the absolute of the given polar distance:

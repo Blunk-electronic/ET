@@ -822,9 +822,12 @@ package body et_geometry is
 			return result;
 		end distance_polar;
 
-		function angle (distance : in type_distance_polar) return type_rotation is begin
+		function get_angle (
+			distance : in type_distance_polar) 
+			return type_rotation 
+		is begin
 			return distance.angle;
-		end angle;
+		end get_angle;
 	
 		function absolute (distance : in type_distance_polar) return type_distance_positive is begin
 			return distance.absolute;
@@ -1663,7 +1666,7 @@ package body et_geometry is
 		begin
 			return type_point (move (
 				point		=> line.start_point,
-				direction	=> angle (dp),
+				direction	=> get_angle (dp),
 				distance	=> absolute (dp) * 0.5));
 
 		end get_center;
@@ -2771,7 +2774,7 @@ package body et_geometry is
 				
 				-- Compute the angle of the point relative to the center
 				-- of the given arc:
-				P := to_positive_rotation (angle (distance_polar (arc.center, point)));
+				P := to_positive_rotation (get_angle (distance_polar (arc.center, point)));
 				--log (text => "P" & to_string (P));
 				
 				-- The angle of the point must be between start and end point
@@ -3081,7 +3084,7 @@ package body et_geometry is
 		function get_tangent_angle (p : in type_point) 
 			return type_tangent_angle_circle
 		is
-			a : type_rotation := angle (distance_polar (origin, p));
+			a : type_rotation := get_angle (distance_polar (origin, p));
 		begin
 			--put_line (to_string (a));
 
