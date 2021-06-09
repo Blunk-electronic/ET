@@ -829,9 +829,12 @@ package body et_geometry is
 			return distance.angle;
 		end get_angle;
 	
-		function absolute (distance : in type_distance_polar) return type_distance_positive is begin
+		function get_absolute (
+			distance : in type_distance_polar) 
+			return type_distance_positive
+		is begin
 			return distance.absolute;
-		end absolute;
+		end get_absolute;
 
 
 		
@@ -1667,7 +1670,7 @@ package body et_geometry is
 			return type_point (move (
 				point		=> line.start_point,
 				direction	=> get_angle (dp),
-				distance	=> absolute (dp) * 0.5));
+				distance	=> get_absolute (dp) * 0.5));
 
 		end get_center;
 
@@ -2998,7 +3001,7 @@ package body et_geometry is
 			result : type_distance_polar;
 		begin
 			result := distance_polar (point, circle.center);
-			set_absolute (result, absolute (result) - circle.radius);
+			set_absolute (result, get_absolute (result) - circle.radius);
 
 			return result;
 		end get_shortest_distance;
@@ -3401,7 +3404,7 @@ package body et_geometry is
 			result : type_point := origin;
 			
 			d1 : type_distance_positive := zero;
-			d2 : type_distance_positive := absolute (distance_polar (reference, far_upper_right));
+			d2 : type_distance_positive := get_absolute (distance_polar (reference, far_upper_right));
 
 			procedure query_segment (c : in pac_polygon_segments.cursor) is
 				s : constant type_polygon_segment := element (c);
@@ -3410,7 +3413,7 @@ package body et_geometry is
 					when LINE =>
 
 						-- test start point
-						d1 := absolute (distance_polar (reference, s.segment_line.start_point));
+						d1 := get_absolute (distance_polar (reference, s.segment_line.start_point));
 						
 						if d1 < d2 then
 							d2 := d1;
@@ -3419,7 +3422,7 @@ package body et_geometry is
 						end if;
 
 						-- test end point
-						d1 := absolute (distance_polar (reference, s.segment_line.end_point));
+						d1 := get_absolute (distance_polar (reference, s.segment_line.end_point));
 						
 						if d1 < d2 then
 							d2 := d1;
@@ -3429,7 +3432,7 @@ package body et_geometry is
 
 					when ARC =>
 						-- test start point
-						d1 := absolute (distance_polar (reference, s.segment_arc.start_point));
+						d1 := get_absolute (distance_polar (reference, s.segment_arc.start_point));
 						
 						if d1 < d2 then
 							d2 := d1;
@@ -3438,7 +3441,7 @@ package body et_geometry is
 						end if;
 
 						-- test end point
-						d1 := absolute (distance_polar (reference, s.segment_arc.end_point));
+						d1 := get_absolute (distance_polar (reference, s.segment_arc.end_point));
 						
 						if d1 < d2 then
 							d2 := d1;
@@ -3471,7 +3474,7 @@ package body et_geometry is
 			result : type_distance_polar := to_polar (type_distance_positive'last, zero_rotation);
 			
 			procedure update (d : in type_distance_polar) is begin
-				if absolute (d) < absolute (result) then
+				if get_absolute (d) < get_absolute (result) then
 					result := d;
 				end if;
 			end update;

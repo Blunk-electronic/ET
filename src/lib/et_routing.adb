@@ -1916,7 +1916,7 @@ package body et_routing is
 		result : type_distance_polar := to_polar (type_distance_positive'last, zero_rotation);
 
 		procedure update (d : in type_distance_polar) is begin
-			if absolute (d) < absolute (result) then
+			if get_absolute (d) < get_absolute (result) then
 				result := d;
 			end if;
 		end update;
@@ -2038,7 +2038,7 @@ package body et_routing is
 	begin
 		if on_board (module_cursor, start_point) then
 
-			distance_to_edge := absolute (get_distance_to_edge (module_cursor, start_point));
+			distance_to_edge := get_absolute (get_distance_to_edge (module_cursor, start_point));
 
 			if distance_to_edge >= design_rules.clearances.conductor_to_board_edge then
 				result := true;

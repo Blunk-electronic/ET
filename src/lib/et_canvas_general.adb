@@ -485,7 +485,7 @@ package body pac_canvas is
 		-- update distance display:
 		gtk_entry (distances.display_x.get_child).set_text (to_string (x (distance_xy)));
 		gtk_entry (distances.display_y.get_child).set_text (to_string (y (distance_xy)));
-		gtk_entry (distances.display_abs.get_child).set_text (to_string (absolute (distance_pol)));
+		gtk_entry (distances.display_abs.get_child).set_text (to_string (get_absolute (distance_pol)));
 		gtk_entry (distances.display_angle.get_child).set_text (to_string (get_angle (distance_pol)));
 
 		-- update cursor position
