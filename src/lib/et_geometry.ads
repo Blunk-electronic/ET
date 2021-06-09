@@ -449,6 +449,20 @@ package et_geometry is
 		
 		type type_distance_polar is private;
 
+		function to_polar (
+			absolute	: in type_distance_positive;
+			angle		: in type_rotation)
+			return type_distance_polar;
+
+		procedure set_absolute (
+			distance : in out type_distance_polar;
+			absolute : in type_distance_positive);
+
+		procedure set_angle (
+			distance : in out type_distance_polar;
+			angle    : in type_rotation);
+
+		
 		-- Returns the distance of point_two to point_one.	
 		-- Subtracts point_one.x from point_two.x and point_one.y from point_two.y
 		-- returns	total := sqrt ((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
@@ -461,11 +475,11 @@ package et_geometry is
 			return type_distance_polar;
 
 		-- Returns the angle of the given polar distance:
-		function angle (distance : in type_distance_polar) 
+		function angle (distance : in type_distance_polar) -- CS rename to get_angle
 			return type_rotation;
 
 		-- Returns the absolute of the given polar distance:
-		function absolute (distance : in type_distance_polar) 
+		function absolute (distance : in type_distance_polar) -- CS rename to get_absolute
 			return type_distance_positive;
 
 
@@ -583,8 +597,8 @@ package et_geometry is
 		end record;
 
 		type type_distance_polar is record
-			absolute: type_distance_positive;
-			angle	: type_rotation; -- ranges from -180 to 180 degrees
+			absolute: type_distance_positive; -- CS default
+			angle	: type_rotation; -- ranges from -180 to 180 degrees -- CS default
 		end record;
 		
 		origin : constant type_point := (others => zero);
@@ -1014,7 +1028,7 @@ package et_geometry is
 
 		-- These function return the status of the components of the given type_distance_point_line:
 		function out_of_range (d : in type_distance_point_line) return boolean;
-		function distance (d : in type_distance_point_line) return type_distance;
+		function distance (d : in type_distance_point_line) return type_distance_positive;
 		function on_start_point (d : in type_distance_point_line) return boolean;
 		function on_end_point (d : in type_distance_point_line) return boolean;
 		
@@ -1044,6 +1058,14 @@ package et_geometry is
 			line		: in type_line;
 			catch_zone	: in type_catch_zone := zero)
 			return boolean; 
+
+		-- Returns the shortest distance from the given point to the
+		-- given line:
+		function get_shortest_distance (
+			point	: in type_point;
+			line	: in type_line)
+			return type_distance_polar;
+			
 		
 	-- ARC
 		type type_arc_base is abstract tagged record
@@ -1061,6 +1083,14 @@ package et_geometry is
 		-- Swaps start and end point of an arc. Reverses the direction of the arc:
 		function reverse_arc (arc : in type_arc) return type_arc'class;
 		procedure reverse_arc (arc : in out type_arc);
+
+		
+		-- Returns the shortest distance from the given point to the
+		-- given arc:
+		function get_shortest_distance (
+			point	: in type_point;
+			arc		: in type_arc)
+			return type_distance_polar;
 
 		
 		-- If start/end point of the candidate arc is ABOVE-OR-ON the 
@@ -1217,6 +1247,13 @@ package et_geometry is
 
 		type type_circle is new type_circle_base with null record;
 		-- CS use this type wherever a type_arc is declared unnessecarily.
+
+		-- Returns the shortest distance from the given point to the
+		-- given circle:
+		function get_shortest_distance (
+			point	: in type_point;
+			circle	: in type_circle)
+			return type_distance_polar;
 		
 		procedure move_by (
 		-- Moves a circle by the given offset. 
@@ -1407,6 +1444,12 @@ package et_geometry is
 			reference	: in type_point)
 			return type_point;
 
+		-- Returns the distance from the given reference point to
+		-- to the nearest point on the polygon edges.
+		function get_shortest_distance (
+			polygon	: in type_polygon_base;
+			point	: in type_point)
+			return type_distance_polar;
 
 
 		

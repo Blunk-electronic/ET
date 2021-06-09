@@ -769,6 +769,28 @@ package body et_geometry is
 		end;
 
 
+		function to_polar (
+			absolute	: in type_distance_positive;
+			angle		: in type_rotation)
+			return type_distance_polar
+		is begin
+			return (absolute, angle);
+		end to_polar;
+
+		procedure set_absolute (
+			distance : in out type_distance_polar;
+			absolute : in type_distance_positive)
+		is begin
+			distance.absolute := absolute;
+		end set_absolute;
+
+		procedure set_angle (
+			distance : in out type_distance_polar;
+			angle    : in type_rotation)
+		is begin
+			distance.angle := angle;
+		end set_angle;
+		
 		
 		function distance_polar (point_one, point_two : in type_point) 
 			return type_distance_polar 
@@ -2120,7 +2142,7 @@ package body et_geometry is
 			return d.out_of_range;
 		end out_of_range;
 
-		function distance (d : in type_distance_point_line) return type_distance is begin
+		function distance (d : in type_distance_point_line) return type_distance_positive is begin
 			return d.distance;
 		end distance;
 
@@ -2308,8 +2330,37 @@ package body et_geometry is
 			else
 				return false;
 			end if;
-		end;
+		end on_line;
 
+
+		function get_shortest_distance (
+			point	: in type_point;
+			line	: in type_line)
+			return type_distance_polar
+		is
+			result : type_distance_polar;
+
+			d : constant type_distance_point_line := distance_point_line (
+				point		=> point,
+				line		=> line,
+				line_range	=> WITH_END_POINTS);
+			
+		begin
+			if out_of_range (d) then
+				null;
+			elsif on_start_point (d) then
+				null;
+			elsif on_end_point (d) then
+				null;
+			else
+				set_absolute (result, distance (d));
+				-- CS set_angle (result,
+			end if;
+
+			return result;
+		end get_shortest_distance;
+
+		
 
 		function reverse_arc (arc : in type_arc) return type_arc'class is
 			result : type_arc'class := arc;
@@ -2337,6 +2388,19 @@ package body et_geometry is
 			end case;
 		end reverse_arc;
 
+
+		function get_shortest_distance (
+			point	: in type_point;
+			arc		: in type_arc)
+			return type_distance_polar
+		is
+			result : type_distance_polar;
+		begin
+			-- CS
+			return result;
+		end get_shortest_distance;
+
+				
 		
 		function crosses_threshold (
 			arc			: in type_arc;
@@ -2915,6 +2979,21 @@ package body et_geometry is
 			rotate_by (arc.start_point, rotation);
 			rotate_by (arc.end_point, rotation);
 		end;
+
+		
+		function get_shortest_distance (
+			point	: in type_point;
+			circle	: in type_circle)
+			return type_distance_polar
+		is
+			result : type_distance_polar;
+		begin
+			result := distance_polar (point, circle.center);
+			set_absolute (result, absolute (result) - circle.radius);
+
+			return result;
+		end get_shortest_distance;
+
 		
 		procedure move_by (
 			circle	: in out type_circle;
@@ -3372,7 +3451,49 @@ package body et_geometry is
 			return result;
 		end get_nearest_corner_point;
 
+		
+		function get_shortest_distance (
+			polygon	: in type_polygon_base;
+			point	: in type_point)
+			return type_distance_polar
+		is
+			use pac_polygon_segments;
+		
+			result : type_distance_polar := to_polar (type_distance_positive'last, zero_rotation);
+			
+			procedure update (d : in type_distance_polar) is begin
+				if absolute (d) < absolute (result) then
+					result := d;
+				end if;
+			end update;
 
+			
+			procedure query_segment (c : in pac_polygon_segments.cursor) is
+				s : constant type_polygon_segment := element (c);
+			begin
+				case s.shape is
+					when LINE =>
+						update (get_shortest_distance (point, s.segment_line));
+
+					when ARC =>
+						update (get_shortest_distance (point, s.segment_arc));
+						
+				end case;
+			end query_segment;
+
+		begin -- get_shortest_distance
+			if polygon.contours.circular then
+
+				result := get_shortest_distance (point, polygon.contours.circle);
+						
+			else
+				polygon.contours.segments.iterate (query_segment'access);				
+			end if;			
+			
+			return result;
+		end get_shortest_distance;
+
+		
 		function get_left_end (
 			line		: in type_line;
 			boundaries	: in type_boundaries := boundaries_default)

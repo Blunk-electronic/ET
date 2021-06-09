@@ -160,6 +160,13 @@ package et_routing is
 
 	--track_observe_clearance_default : constant type_track_observe_clearance := BOTH;
 
+	-- Returns the distance to the nearest point
+	-- on the board edge:
+	function get_distance_to_edge (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point)
+		return type_distance_polar;
+	
 
 	-- Tests whether the given point is in the usable board area. 
 	-- Returns false if the point is outside the board or inside a hole.

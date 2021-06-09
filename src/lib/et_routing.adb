@@ -1908,6 +1908,45 @@ package body et_routing is
 		--return result;
 	--end compute_fill_lines;
 
+	function get_distance_to_edge (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_point)
+		return type_distance_polar
+	is
+		result : type_distance_polar := to_polar (type_distance_positive'last, zero_rotation);
+
+		procedure update (d : in type_distance_polar) is begin
+			if absolute (d) < absolute (result) then
+				result := d;
+			end if;
+		end update;
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module) 
+		is
+			use pac_pcb_cutouts;
+			procedure query_hole (c : pac_pcb_cutouts.cursor) is begin
+				update (get_shortest_distance (element (c), point));
+			end query_hole;
+			
+		begin
+			-- test board outline:
+			result := get_shortest_distance (module.board.contours.outline, point);
+			
+			-- test holes in board:
+			iterate (module.board.contours.holes, query_hole'access);
+		end query_module;
+
+		use pac_generic_modules;
+
+	begin
+		query_element (module_cursor, query_module'access);
+		
+		return result;
+	end get_distance_to_edge;
+	
+	
 	function on_board (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_point)
@@ -1970,10 +2009,12 @@ package body et_routing is
 		width			: in type_track_width)
 		return boolean
 	is
-		result : boolean := true;
+		result : boolean := false;
 		
 		use pac_generic_modules;
 
+		design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) 
@@ -1992,12 +2033,18 @@ package body et_routing is
 			-- query tracks, texts, pads, ...
 		end query_module;
 
+		distance_to_edge : type_distance_positive;
+		
 	begin
 		if on_board (module_cursor, start_point) then
-			result := true;
+
+			distance_to_edge := absolute (get_distance_to_edge (module_cursor, start_point));
+
+			if distance_to_edge >= design_rules.clearances.conductor_to_board_edge then
+				result := true;
+			end if;
+				
 			--query_element (module_cursor, query_module'access);
-		else
-			result := false;
 		end if;
 
 		return result;

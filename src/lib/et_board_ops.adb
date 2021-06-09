@@ -4654,7 +4654,7 @@ package body et_board_ops is
 							end get_distance_after_obstacle;
 
 							-- Safety measure to prevent infinite looping.
-							-- Increase maximum to reasonable value:
+							-- CS: Increase maximum to reasonable value:
 							subtype type_line_count is positive range 1 .. 10;
 							
 						begin -- fill_row
