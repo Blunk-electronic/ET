@@ -2163,9 +2163,9 @@ package body et_geometry is
 			return d.distance;
 		end get_distance;
 
-		--function get_intersection (d : in type_distance_point_line) return type_point is begin
-			--return d.intersection;
-		--end get_intersection;
+		function get_intersection (d : in type_distance_point_line) return type_point is begin
+			return d.intersection;
+		end get_intersection;
 
 		function get_direction (d : in type_distance_point_line) return type_rotation is begin
 			return d.direction;
@@ -2218,6 +2218,9 @@ package body et_geometry is
 
 				-- Assign the direction (from point to intersection) to the result:
 				result.direction := get_angle (get_distance (point, ip));
+
+				-- Assign the virtual point of intersection to the result:
+				result.intersection := ip;
 			end compute_intersection;
 			
 			lambda_forward, lambda_backward : type_distance;
@@ -2277,7 +2280,7 @@ package body et_geometry is
 			-- It assumes an indefinite long line without start or end point.
 			result.distance := get_distance (line, point);
 
-			--put_line ("distance " & to_string (result.distance));
+			--log (text => "distance " & to_string (result.distance));
 
 			-- Set intersection_vector so that it points to the intersection. The
 			-- intersection can be between start and end point of the given line or beyond.
@@ -2386,31 +2389,42 @@ package body et_geometry is
 
 			d_to_start, d_to_end : type_distance_polar;
 		begin
-
+			--log (text => "point" & to_string (point) & " line " & to_string (line));
+			
 			if on_start_point (d) or on_end_point (d) then
+				-- Point is on top of start or end point of line.
+				--log (text => "on start or end");
 				null; -- result keeps its default (zero distance, zero angle)
-
-			elsif out_of_range (d) then 
-				-- No imaginary line can be drawn perpendicular from
-				-- point to line.
-
-				-- Compare the distances to the end points of the line:
-				d_to_start := get_distance (point, line.start_point);
-				d_to_end   := get_distance (point, line.end_point);
-
-				if get_absolute (d_to_start) < get_absolute (d_to_end) then
-					result := d_to_start;
-				else
-					result := d_to_end;
-				end if;
-				
 			else
-				-- An imaginary line can be drawn perpendicular from
-				-- point to line. Both intersect each other.
-				set_absolute (result, get_distance (d));
-				set_angle (result, get_direction (d));
-			end if;
 
+				if on_line (get_intersection (d), line) then 
+					--log (text => "in range");
+					
+					-- An imaginary line can be drawn perpendicular from
+					-- point to line. Both intersect each other.
+					set_absolute (result, get_distance (d));
+					set_angle (result, get_direction (d));
+				else
+
+					--log (text => "out of range");
+					
+					-- No imaginary line can be drawn perpendicular from
+					-- point to line.
+
+					-- Compare the distances to the end points of the line:
+					d_to_start := get_distance (point, line.start_point);
+					d_to_end   := get_distance (point, line.end_point);
+
+					if get_absolute (d_to_start) < get_absolute (d_to_end) then
+						result := d_to_start;
+					else
+						result := d_to_end;
+					end if;
+					
+				end if;
+
+			end if;
+			
 			return result;
 		end get_shortest_distance;
 
@@ -3538,9 +3552,7 @@ package body et_geometry is
 
 		begin -- get_shortest_distance
 			if polygon.contours.circular then
-
 				result := get_shortest_distance (point, polygon.contours.circle);
-						
 			else
 				polygon.contours.segments.iterate (query_segment'access);				
 			end if;			

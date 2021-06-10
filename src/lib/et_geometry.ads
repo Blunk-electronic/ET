@@ -1032,7 +1032,7 @@ package et_geometry is
 		-- These functions return the components of the given type_distance_point_line:
 		function out_of_range (d : in type_distance_point_line) return boolean;
 		function get_distance (d : in type_distance_point_line) return type_distance_positive;
-		--function get_intersection (d : in type_distance_point_line) return type_point;
+		function get_intersection (d : in type_distance_point_line) return type_point;
 		function get_direction (d : in type_distance_point_line) return type_rotation;
 		function on_start_point (d : in type_distance_point_line) return boolean;
 		function on_end_point (d : in type_distance_point_line) return boolean;
@@ -1806,6 +1806,7 @@ package et_geometry is
 			-- A virtual line runs from the given point perpendicular
 			-- to the given line. This is where the virtual line intersects
 			-- the given line:
+			intersection	: type_point := origin;
 			distance		: type_distance_positive := zero;
 			direction		: type_rotation := zero_rotation;
 		end record;

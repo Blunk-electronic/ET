@@ -2040,6 +2040,9 @@ package body et_routing is
 
 			distance_to_edge := get_absolute (get_distance_to_edge (module_cursor, start_point));
 
+			distance_to_edge := distance_to_edge - 0.5 * width;
+			--log (text => "d to edge:" & to_string (distance_to_edge));
+			
 			if distance_to_edge >= design_rules.clearances.conductor_to_board_edge then
 				result := true;
 			end if;
