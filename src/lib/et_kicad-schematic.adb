@@ -3352,7 +3352,7 @@ package body et_kicad.schematic is
 		
 	begin
 		-- calculate the shortes distance of point from line.
-		d := distance_point_line (
+		d := get_distance (
 			point 		=> type_point (junction.coordinates),
 			line		=> line,
 			line_range	=> BETWEEN_END_POINTS);
@@ -3743,7 +3743,7 @@ package body et_kicad.schematic is
 			if same_path_and_sheet (port.coordinates, segment.coordinates_start) then
 
 				-- calculate the shortes distance of point from line.
-				distance_port_segment := distance_point_line (
+				distance_port_segment := get_distance (
 					point 		=> type_point (port.coordinates),
 					line		=> line,
 					line_range	=> WITH_END_POINTS);
@@ -5357,7 +5357,7 @@ package body et_kicad.schematic is
 								begin
 									-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
 									-- exit prematurely and return the coordinates of the expected junction.
-									dist := distance_point_line (
+									dist := get_distance (
 										point 		=> type_point (element (segment_cursor_prim).coordinates_start),
 										line		=> line,
 										line_range	=> BETWEEN_END_POINTS);
@@ -5371,7 +5371,7 @@ package body et_kicad.schematic is
 									-- If END point of primary segment sits BETWEEN start and end point of secondary segment,
 									-- exit prematurely and return the coordinates of the expected junction.
 
-									dist := distance_point_line (
+									dist := get_distance (
 										point 		=> type_point (element (segment_cursor_prim).coordinates_end),
 										line		=> line,
 										line_range	=> BETWEEN_END_POINTS);

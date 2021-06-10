@@ -2163,9 +2163,13 @@ package body et_geometry is
 			return d.distance;
 		end get_distance;
 
-		function get_intersection (d : in type_distance_point_line) return type_point is begin
-			return d.intersection;
-		end get_intersection;
+		--function get_intersection (d : in type_distance_point_line) return type_point is begin
+			--return d.intersection;
+		--end get_intersection;
+
+		function get_direction (d : in type_distance_point_line) return type_rotation is begin
+			return d.direction;
+		end get_direction;
 		
 		function on_start_point (d : in type_distance_point_line) return boolean is begin
 			return d.sits_on_start;
@@ -2176,7 +2180,7 @@ package body et_geometry is
 		end on_end_point;
 
 		
-		function distance_point_line (
+		function get_distance (
 			point		: in type_point;
 			line		: in type_line;
 			line_range	: in type_line_range;
@@ -2335,7 +2339,7 @@ package body et_geometry is
 			end if;
 			
 			return result;
-		end distance_point_line;
+		end get_distance;
 
 		
 		function on_line (
@@ -2346,7 +2350,7 @@ package body et_geometry is
 			distance : type_distance_point_line;
 		begin
 			--distance := distance_point_line (point, line, BETWEEN_END_POINTS);
-			distance := distance_point_line (point, line, WITH_END_POINTS, catch_zone);
+			distance := get_distance (point, line, WITH_END_POINTS, catch_zone);
 
 			if not distance.out_of_range and distance.distance <= catch_zone then
 				return true;
@@ -2363,25 +2367,36 @@ package body et_geometry is
 		is
 			result : type_distance_polar;
 
-			d : constant type_distance_point_line := distance_point_line (
+			d : constant type_distance_point_line := get_distance (
 				point		=> point,
 				line		=> line,
 				line_range	=> WITH_END_POINTS);
 
 			d_to_start, d_to_end : type_distance_polar;
 		begin
-			if out_of_range (d) then 
+
+			if on_start_point (d) or on_end_point (d) then
+				null; -- result keeps its default (zero distance, zero angle)
+
+			elsif out_of_range (d) then 
 				-- No imaginary line can be drawn perpendicular from
-				-- point to line:
-				null;
-				--d_to_start := get_distance (
-			elsif on_start_point (d) then
-				null;
-			elsif on_end_point (d) then
-				null;
+				-- point to line.
+
+				-- Compare the distances to the end points of the line:
+				d_to_start := get_distance (point, line.start_point);
+				d_to_end   := get_distance (point, line.end_point);
+
+				if get_absolute (d_to_start) < get_absolute (d_to_end) then
+					result := d_to_start;
+				else
+					result := d_to_end;
+				end if;
+				
 			else
+				-- An imaginary line can be drawn perpendicular from
+				-- point to line. Both intersect each other.
 				set_absolute (result, get_distance (d));
-				-- CS set_angle (result,
+				set_angle (result, get_direction (d));
 			end if;
 
 			return result;

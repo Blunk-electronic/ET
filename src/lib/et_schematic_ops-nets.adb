@@ -61,7 +61,7 @@ package body et_schematic_ops.nets is
 		dist : type_distance_point_line;
 		use pac_net_segments;
 	begin
-		dist := distance_point_line (
+		dist := get_distance (
 			point 		=> point,
 			line		=> element (segment),
 			line_range	=> BETWEEN_END_POINTS,
@@ -83,7 +83,7 @@ package body et_schematic_ops.nets is
 		dist : type_distance_point_line;
 		use pac_net_segments;
 	begin
-		dist := distance_point_line (
+		dist := get_distance (
 			point 		=> point,
 			line		=> element (segment),
 			line_range	=> WITH_END_POINTS,

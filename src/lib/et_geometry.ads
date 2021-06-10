@@ -1032,7 +1032,8 @@ package et_geometry is
 		-- These functions return the components of the given type_distance_point_line:
 		function out_of_range (d : in type_distance_point_line) return boolean;
 		function get_distance (d : in type_distance_point_line) return type_distance_positive;
-		function get_intersection (d : in type_distance_point_line) return type_point;
+		--function get_intersection (d : in type_distance_point_line) return type_point;
+		function get_direction (d : in type_distance_point_line) return type_rotation;
 		function on_start_point (d : in type_distance_point_line) return boolean;
 		function on_end_point (d : in type_distance_point_line) return boolean;
 		
@@ -1047,7 +1048,7 @@ package et_geometry is
 		-- as stitting on the line.
 		-- In the result the flag out_of_range will be cleared if the point sits on the line
 		-- or within the catch_zone.
-		function distance_point_line (
+		function get_distance (
 			point		: in type_point; 
 			line		: in type_line;
 			line_range	: in type_line_range;
@@ -1806,7 +1807,8 @@ package et_geometry is
 			-- A virtual line runs from the given point perpendicular
 			-- to the given line. This is where the virtual line intersects
 			-- the given line:
-			intersection	: type_point;
+			--intersection	: type_point;
+			direction		: type_rotation;
 		end record;
 		
 	end generic_pac_shapes;

@@ -2884,7 +2884,7 @@ package body et_kicad_to_native is
 									start_point	=> type_point (segment.coordinates_start), 
 									end_point	=> type_point (segment.coordinates_end));
 							begin
-								dist := et_symbols.pac_shapes.distance_point_line (
+								dist := et_symbols.pac_shapes.get_distance (
 									point 		=> type_point (element (port_cursor_kicad).coordinates),
 									line 		=> type_line (line),
 									line_range	=> WITH_END_POINTS);
