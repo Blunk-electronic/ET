@@ -2189,20 +2189,44 @@ package body et_geometry is
 		is
 			result : type_distance_point_line;
 
-			line_direction : type_rotation;
-			line_direction_vector : type_vector;
+			-- Imagine a line that starts at point, travels perpendicular towards
+			-- the given line and finally intersects the given line somewhere.
+			-- The intersection may be betweeen the start and end point of the given line.
+			-- The intersection may be virtual, beyond start or end point of the given line.
+			
+			line_direction : constant type_rotation := direction (line);
+			line_direction_vector : constant type_vector := direction_vector (line);
 			line_start_vector, line_end_vector : type_vector;
 
-			exact_point : type_point;
-			exact_point_vector : type_vector;
+			intersection_vector : type_vector;
+
+			procedure compute_intersection is
+				ip : type_point;
+			begin
+				-- Compute the point of intersection: The intersection of a line that runs
+				-- from the given point perpendicular to the given line.
+				-- At this stage we do not know in which direction to go. So we just try
+				-- to go in 90 degree direction. If the distance of ip to the line
+				-- is not zero, then we try in -90 degree direction.
+				ip := type_point (move (point, line_direction + 90.0, result.distance));
+				
+				if get_distance (line, ip) /= zero then
+					ip := type_point (move (point, line_direction - 90.0, result.distance));
+				end if;
+
+				intersection_vector := to_vector (ip);
+
+				-- Assign the direction (from point to intersection) to the result:
+				result.direction := get_angle (get_distance (point, ip));
+			end compute_intersection;
 			
 			lambda_forward, lambda_backward : type_distance;
+			
 		begin
 			-- The first and simplest test is to figure out whether
 			-- the given point sits at the start or end point of the line.
 			-- Mind: result.distance has default zero.
-			-- This test applies for a range that includes the start and end 
-			-- points of the line. 
+			-- This test includes the start and end points of the line. 
 			-- On match we exit this function prematurely and return the result
 			-- with the appropiate flags set.
 			case line_range is
@@ -2254,40 +2278,28 @@ package body et_geometry is
 			result.distance := get_distance (line, point);
 
 			--put_line ("distance " & to_string (result.distance));
+
+			-- Set intersection_vector so that it points to the intersection. The
+			-- intersection can be between start and end point of the given line or beyond.
+			compute_intersection;
 			
 			-- If the point sits somewhere on the line, we must figure out
 			-- where exactly it is. If it is not on the line, then there is
 			-- nothing to do.
 			if result.distance <= catch_zone then -- on the line
-
-				line_direction := direction (line);
-				line_direction_vector := direction_vector (line);
-				
-				-- Compute the exact point on the line: The intersection of a line that runs
-				-- from the given point perpendicular to the given line.
-				-- At this stage we do not know in which direction to go. So we just try
-				-- to go in 90 degree direction. If the distance of exact_point from the line
-				-- is not zero, then we try in -90 degree direction.
-				exact_point := type_point (move (point, line_direction + 90.0, result.distance));
-				
-				if get_distance (line, exact_point) /= zero then
-					exact_point := type_point (move (point, line_direction - 90.0, result.distance));
-				end if;
-
-				exact_point_vector := to_vector (exact_point);
-
+			
 				-- Any point on a line can be computed by this formula (see textbook on vector algebra):
-				-- exact_point = line.start_point + lambda_forward  * line_direction_vector
-				-- exact_point = line.end_point   + lambda_backward * line_direction_vector
+				-- intersection_vector = line.start_point + lambda_forward  * line_direction_vector
+				-- intersection_vector = line.end_point   + lambda_backward * line_direction_vector
 
-				-- Using these formula we can calculate whether exact_point sits between 
-				-- (or at) the start and end point of the line:
+				-- Using these formula we can calculate whether intersection_vector points between 
+				-- (or to) the start and/or end points of the line:
 				
 				line_start_vector := start_vector (line);
-				lambda_forward := divide (subtract (exact_point_vector, line_start_vector), line_direction_vector);
+				lambda_forward := divide (subtract (intersection_vector, line_start_vector), line_direction_vector);
 
 				if lambda_forward < zero then -- point sits before start of line
--- 					log (text => "before start point");
+					-- log (text => "before start point");
 					case line_range is
 						when BEYOND_END_POINTS => result.out_of_range := false;
 						when others => result.out_of_range := true;
@@ -2297,7 +2309,7 @@ package body et_geometry is
 				end if;
 				
 				if lambda_forward = zero then -- point sits at start of line
--- 					log (text => "at start point");
+					-- log (text => "at start point");
 					result.sits_on_start := true;
 					case line_range is
 						when BETWEEN_END_POINTS => result.out_of_range := true;
@@ -2307,13 +2319,13 @@ package body et_geometry is
 					return result; -- no more computations required
 				end if;
 
--- 				log (text => "after start point");
+				-- log (text => "after start point");
 				
 				line_end_vector := end_vector (line);
-				lambda_backward := divide (subtract (exact_point_vector, line_end_vector), line_direction_vector);
+				lambda_backward := divide (subtract (intersection_vector, line_end_vector), line_direction_vector);
 
 				if lambda_backward > zero then -- point sits after end of line
--- 					log (text => "after end point");
+					-- log (text => "after end point");
 					case line_range is
 						when BEYOND_END_POINTS => result.out_of_range := false;
 						when others => result.out_of_range := true;
@@ -2323,7 +2335,7 @@ package body et_geometry is
 				end if;
 
 				if lambda_backward = zero then -- point sits at end of line
--- 					log (text => "at end point");
+					-- log (text => "at end point");
 					result.sits_on_end := true;
 					case line_range is
 						when BETWEEN_END_POINTS => result.out_of_range := true;
@@ -2333,7 +2345,7 @@ package body et_geometry is
 					return result; -- no more computations required
 				end if;
 
--- 				log (text => "before end point");
+				-- log (text => "before end point");
 
 				result.out_of_range := false;
 			end if;
@@ -2439,6 +2451,8 @@ package body et_geometry is
 			result : type_distance_polar;
 		begin
 			-- CS
+			set_absolute (result, type_distance_positive'last);
+			
 			return result;
 		end get_shortest_distance;
 
@@ -2979,7 +2993,6 @@ package body et_geometry is
 		end arc_end_point;
 
 		procedure move_by (
-		-- Moves an arc by the given offset.
 			arc		: in out type_arc;
 			offset	: in type_point) is
 		begin

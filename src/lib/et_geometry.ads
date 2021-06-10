@@ -899,17 +899,17 @@ package et_geometry is
 
 		
 		-- Returns the location vector of the start point of a line:
-		function start_vector (
+		function start_vector ( -- CS rename to get_start_vector
 			line	: in type_line)
 			return type_vector;
 
 		-- Returns the location vector of the end point of a line:
-		function end_vector (
+		function end_vector ( -- CS rename to get_end_vector
 			line	: in type_line)
 			return type_vector;
 
 		-- Returns the direction vector of a line:
-		function direction_vector (
+		function direction_vector ( -- CS rename to get_direction_vector
 			line	: in type_line)
 			return type_vector;
 
@@ -931,7 +931,7 @@ package et_geometry is
 		-- Returns the direction in degrees of a line.
 		-- Example: If a line runs from 0/0 to 1/1 then the result is 45 degree.
 		-- Example: If a line runs from -1/-1 to -4/-4 then the result is 225 degree.
-		function direction (
+		function direction ( -- CS rename to get_direction
 			line	: in type_line)
 			return type_rotation;
 
@@ -1799,7 +1799,6 @@ package et_geometry is
 		unity_vector	: constant type_vector := (others => 1.0);
 		
 		type type_distance_point_line is record
-			distance		: type_distance_positive := zero;
 			sits_on_start	: boolean := false;
 			sits_on_end		: boolean := false;
 			out_of_range	: boolean := true;
@@ -1807,8 +1806,8 @@ package et_geometry is
 			-- A virtual line runs from the given point perpendicular
 			-- to the given line. This is where the virtual line intersects
 			-- the given line:
-			--intersection	: type_point;
-			direction		: type_rotation;
+			distance		: type_distance_positive := zero;
+			direction		: type_rotation := zero_rotation;
 		end record;
 		
 	end generic_pac_shapes;
