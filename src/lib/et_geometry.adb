@@ -1863,9 +1863,8 @@ package body et_geometry is
 			-- CS use function get_intersection with S1, R1, S2, R2 as input
 			-- to compute intersection I.
 			procedure compute_bend_point is 
-				type type_line_here is new type_line with null record;
-				first_line	: constant type_line_here := (start_point, sup_start);
-				second_line	: constant type_line_here := (end_point, sup_end);
+				first_line	: constant type_line := (start_point, sup_start);
+				second_line	: constant type_line := (end_point, sup_end);
 
 				-- first line start vector:
 				S1 : constant type_vector := start_vector (first_line);
@@ -2542,8 +2541,7 @@ package body et_geometry is
 			result : type_arc_angles;
 						
 			-- Take a copy of the given arc in arc_tmp.
-			type type_arc_tmp is new type_arc with null record;
-			arc_tmp : type_arc_tmp := (arc with null record);
+			arc_tmp : type_arc := arc;
 
 		begin
 			-- move arc_tmp so that its center is at 0/0
@@ -2600,8 +2598,7 @@ package body et_geometry is
 			result : type_boundaries; -- to be returned
 
 			-- Take a copy of the given arc in arc_tmp.
-			type type_arc_tmp is new type_arc with null record;
-			arc_tmp : type_arc_tmp := (arc with null record);
+			arc_tmp : type_arc := arc;
 
 			-- Calculate the radius of the arc:
 			radius : type_distance_positive := distance_total (arc.center, arc.start_point);
@@ -2892,8 +2889,7 @@ package body et_geometry is
 			-- intersections of the line with the virtual circle.
 			
 			-- Build a virtual circle from the given arc:
-			type type_virtual_circle is new type_circle with null record;
-			vc : constant type_virtual_circle := (
+			vc : constant type_circle := (
 					center => arc.center, 
 					radius => radius_start (arc));
 
@@ -2957,9 +2953,7 @@ package body et_geometry is
 			angle 		: in type_rotation) -- unit is degrees
 			return type_point'class
 		is						
-			-- Take a copy of the given arc in arc.
-			type type_arc_tmp is new type_arc with null record; -- CS no need for new type
-			arc : type_arc_tmp; -- := (arc with null record);
+			arc : type_arc;
 
 			radius : float;
 			angle_start, angle_end : float; -- unit is radians
