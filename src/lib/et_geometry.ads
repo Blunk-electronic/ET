@@ -471,7 +471,8 @@ package et_geometry is
 		-- NOTE 2: If the total distance between the points is zero then
 		--         the returned angle is zero. So it is wise to test the two points
 		--         for equality befor calling this function.
-		function distance_polar (point_one, point_two : in type_point) 
+		function get_distance (
+			point_one, point_two : in type_point)
 			return type_distance_polar;
 
 		-- Returns the angle of the given polar distance:

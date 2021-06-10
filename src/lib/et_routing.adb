@@ -2120,7 +2120,7 @@ package body et_routing is
 	is
 		track_start : constant type_point := to_point (track.center.v_start);
 		track_direction : constant type_rotation := get_angle (track.center);
-		point_direction : constant type_rotation := get_angle (distance_polar (track_start, point));
+		point_direction : constant type_rotation := get_angle (get_distance (track_start, point));
 	begin
 		if point_direction = track_direction then
 			return true;

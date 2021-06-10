@@ -792,7 +792,8 @@ package body et_geometry is
 		end set_angle;
 		
 		
-		function distance_polar (point_one, point_two : in type_point) 
+		function get_distance (
+			point_one, point_two : in type_point) 
 			return type_distance_polar 
 		is
 			result : type_distance_polar;
@@ -820,7 +821,7 @@ package body et_geometry is
 			end if;
 			
 			return result;
-		end distance_polar;
+		end get_distance;
 
 		function get_angle (
 			distance : in type_distance_polar) 
@@ -1675,7 +1676,7 @@ package body et_geometry is
 			return type_point
 		is
 			dp : constant type_distance_polar := 
-				distance_polar (line.start_point, line.end_point);
+				get_distance (line.start_point, line.end_point);
 		begin
 			return type_point (move (
 				point		=> line.start_point,
@@ -2366,10 +2367,14 @@ package body et_geometry is
 				point		=> point,
 				line		=> line,
 				line_range	=> WITH_END_POINTS);
-			
+
+			d_to_start, d_to_end : type_distance_polar;
 		begin
-			if out_of_range (d) then
+			if out_of_range (d) then 
+				-- No imaginary line can be drawn perpendicular from
+				-- point to line:
 				null;
+				--d_to_start := get_distance (
 			elsif on_start_point (d) then
 				null;
 			elsif on_end_point (d) then
@@ -2787,7 +2792,7 @@ package body et_geometry is
 				
 				-- Compute the angle of the point relative to the center
 				-- of the given arc:
-				P := to_positive_rotation (get_angle (distance_polar (arc.center, point)));
+				P := to_positive_rotation (get_angle (get_distance (arc.center, point)));
 				--log (text => "P" & to_string (P));
 				
 				-- The angle of the point must be between start and end point
@@ -3010,7 +3015,7 @@ package body et_geometry is
 		is
 			result : type_distance_polar;
 		begin
-			result := distance_polar (point, circle.center);
+			result := get_distance (point, circle.center);
 			set_absolute (result, get_absolute (result) - circle.radius);
 
 			return result;
@@ -3097,7 +3102,7 @@ package body et_geometry is
 		function get_tangent_angle (p : in type_point) 
 			return type_tangent_angle_circle
 		is
-			a : type_rotation := get_angle (distance_polar (origin, p));
+			a : type_rotation := get_angle (get_distance (origin, p));
 		begin
 			--put_line (to_string (a));
 
@@ -3414,7 +3419,7 @@ package body et_geometry is
 			result : type_point := origin;
 			
 			d1 : type_distance_positive := zero;
-			d2 : type_distance_positive := get_absolute (distance_polar (reference, far_upper_right));
+			d2 : type_distance_positive := get_absolute (get_distance (reference, far_upper_right));
 
 			procedure query_segment (c : in pac_polygon_segments.cursor) is
 				s : constant type_polygon_segment := element (c);
@@ -3423,7 +3428,7 @@ package body et_geometry is
 					when LINE =>
 
 						-- test start point
-						d1 := get_absolute (distance_polar (reference, s.segment_line.start_point));
+						d1 := get_absolute (get_distance (reference, s.segment_line.start_point));
 						
 						if d1 < d2 then
 							d2 := d1;
@@ -3432,7 +3437,7 @@ package body et_geometry is
 						end if;
 
 						-- test end point
-						d1 := get_absolute (distance_polar (reference, s.segment_line.end_point));
+						d1 := get_absolute (get_distance (reference, s.segment_line.end_point));
 						
 						if d1 < d2 then
 							d2 := d1;
@@ -3442,7 +3447,7 @@ package body et_geometry is
 
 					when ARC =>
 						-- test start point
-						d1 := get_absolute (distance_polar (reference, s.segment_arc.start_point));
+						d1 := get_absolute (get_distance (reference, s.segment_arc.start_point));
 						
 						if d1 < d2 then
 							d2 := d1;
@@ -3451,7 +3456,7 @@ package body et_geometry is
 						end if;
 
 						-- test end point
-						d1 := get_absolute (distance_polar (reference, s.segment_arc.end_point));
+						d1 := get_absolute (get_distance (reference, s.segment_arc.end_point));
 						
 						if d1 < d2 then
 							d2 := d1;

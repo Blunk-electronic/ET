@@ -478,7 +478,7 @@ package body pac_canvas is
 		distance_xy := self.snap_to_grid (distance_xy);
 
 		-- Get the distance (in x and y) from cursor to mouse position:
-		distance_pol := distance_polar (cursor_main.position, drawing_point);
+		distance_pol := get_distance (cursor_main.position, drawing_point);
 
 		-- NOTE: The update of the mouse pointer position is done by function on_mouse_movement.
 		
