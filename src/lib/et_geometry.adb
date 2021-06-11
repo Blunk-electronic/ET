@@ -2461,10 +2461,77 @@ package body et_geometry is
 			arc		: in type_arc)
 			return type_distance_polar
 		is
+			-- Build a line that runs from point to the center of the arc:
+			line : constant type_line_vector := to_line_vector (line => (point, arc.center));
+
+			-- Get the intersection(s) of the line with the arc:
+			i : constant type_intersection_of_line_and_circle := get_intersection (line, arc);
+			
 			result : type_distance_polar;
-		begin
-			-- CS
-			set_absolute (result, type_distance_positive'last);
+
+
+			procedure compare_start_and_end_point is 
+				d_to_start, d_to_end : type_distance_polar;
+			begin
+				d_to_start := get_distance (point, arc.start_point);
+				d_to_end   := get_distance (point, arc.end_point);
+
+				if get_absolute (d_to_start) < get_absolute (d_to_end) then
+					result := d_to_start;
+				else
+					result := d_to_end;
+				end if;
+			end compare_start_and_end_point;
+
+			procedure on_circumfence is begin
+				-- The arc can be threated like a circle:
+				result := get_distance (point, arc.center);
+				set_absolute (result, get_absolute (result) - radius_start (arc));
+			end on_circumfence;
+			
+			function after_center (v : in type_vector) return boolean is
+				d_to_center : constant type_distance_polar := 
+					get_distance (point, arc.center);
+
+				d_to_intersection : constant type_distance_polar := 
+					get_distance (point, to_point (v));
+			begin
+				if get_absolute (d_to_intersection) > get_absolute (d_to_center) then
+					return true;
+				else 
+					return false;
+				end if;
+			end after_center;
+			
+		begin -- get_shortest_distance
+
+			case i.status is
+				when NONE_EXIST =>
+					-- line travels past the arc
+					compare_start_and_end_point;
+
+				when ONE_EXISTS =>
+					if i.tangent_status = SECANT then
+					-- line intersects the arc only once
+						
+						if after_center (i.intersection.point) then
+							-- intersection after center of arc
+							compare_start_and_end_point;
+						else
+							-- intersection between point and center of arc
+							on_circumfence;
+						end if;
+						
+					else
+						-- a tangent should never be the case
+						raise constraint_error;
+					end if;
+
+				when TWO_EXIST =>
+					-- line intersects the arce twice
+					on_circumfence;
+					
+			end case;
 			
 			return result;
 		end get_shortest_distance;
