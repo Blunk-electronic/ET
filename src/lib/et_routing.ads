@@ -61,43 +61,6 @@ package et_routing is
 	
 	use et_pcb_coordinates.pac_geometry_brd;
 	use et_board_shapes_and_text.pac_shapes;
-
-	-- The stop/go signal issued for a fill line:
-	--type type_stop_go is (
-		--STOP,
-		--GO);
-	
-	--type type_proximity_point is record
-		--status	: type_stop_go := STOP;
-		--x		: type_distance := zero;
-	--end record;
-
-	--function "<" (left, right : in type_proximity_point) return boolean;
-	
-	--package pac_proximity_points is new ordered_sets (type_proximity_point);
-
-	--function to_string (prox_points : in pac_proximity_points.set)
-		--return string;
-	
-	-- Computes the x-positions where a probe line
-	-- of given width gets too close to the polygon contours
-	-- or where it reaches safe distance from the polygon
-	-- contours:
-	--function get_polygon_proximity_points (
-		--polygon			: in type_polygon_conductor;
-
-		---- The length of the polygon in x-direction:									  
-		--length			: in type_distance_positive;
-		
-		---- The start point of the probe line.
-		---- Must be outside the polygon !
-		--start			: in type_point;
-
-		---- The width of the probe line:
-		--line_width		: in type_track_width;  -- the width of the fill line
-		
-		--log_threshold	: in type_log_level)
-		--return pac_proximity_points.set;
 									  
 	
 	-- Computes the clearance in x-direction of a 
@@ -114,51 +77,6 @@ package et_routing is
 		log_threshold	: in type_log_level)
 		return type_distance_positive;
 
-
-	-- Computes the fill lines required for a single
-	-- row (or a fixed y-position):
-	--function compute_fill_lines (
-		--module_cursor		: in pac_generic_modules.cursor;
-
-		---- The design rules of the board:
-		--design_rules		: in type_design_rules;
-		
-		---- The points of intersection with the board contours:
-		--board_domain		: in type_inside_polygon_query_result;
-
-		---- The points of intersection with the polygon contours:
-		--polygon_domain		: in type_inside_polygon_query_result;
-
-		---- The points where the fill line starts/stops to overlap
-		---- the polygon edge:
-		--polygon_proximities	: in pac_proximity_points.set;
-		
-		---- The width of a fill line:
-		--width				: in type_track_width;
-		
-		---- The clearance of the net the polygon is
-		---- connected with:
-		--clearance			: in type_track_clearance;
-
-		---- The isolation of the polygon:
-		--isolation 			: in type_track_clearance; 
-
-		---- The easing of the polygon:
-		--easing				: in type_easing;
-		
-		---- CS x-intersections with tracks, vias, pads, texts, ...
-
-		--log_threshold		: in type_log_level)
-		--return pac_fill_lines.list;
-
-	
-	
-	--type type_track_observe_clearance is (
-		--RIGHT,
-		--LEFT,
-		--BOTH);
-
-	--track_observe_clearance_default : constant type_track_observe_clearance := BOTH;
 
 	-- Returns the distance to the nearest point
 	-- on the board edge:
@@ -306,46 +224,6 @@ package et_routing is
 		width			: in type_track_width;
 		log_threshold	: in type_log_level)
 		return type_route_distance;
-
-	-- Calculates the distance in direction 0 degree from given
-	-- start_point to the next obstacle.
-	-- Use this function for filling conductor polygons.
-	-- Objects that are regarded as obstacles are: 
-	-- - pads (SMT and THT)
-	-- - tracks
-	-- - board outlines
-	-- - route restrict lines, arcs, circles, polygons
-	-- - cutout areas
-	-- - the contour/edge of the conductor polygon
-	-- The clearances as specified in DRU are also taken into account.
-	--function get_distance_to_obstacle_in_polygon (
-		--module_cursor	: in pac_generic_modules.cursor;
-		--polygon			: in type_polygon_conductor'class;
-		
-		---- The start point must be on the edge or inside the polygon:
-		--start_point		: in type_point;
-
-		---- The net name is relevant if the polygon is connected
-		---- with a net (depends on the type of the given polygon):
-		--net_name		: in pac_net_name.bounded_string := no_name;
-		
-		--clearance		: in type_track_observe_clearance := track_observe_clearance_default;
-		--log_threshold	: in type_log_level)
-		--return type_distance_positive;
-
-	
-	-- CS not final. just an approach:
-	--function get_start_point_beyond_obstacle (
-		--module_cursor	: in pac_generic_modules.cursor;
-		--end_point		: in type_point;
-		--direction		: in type_rotation;
-		----net_name		: in pac_net_name.bounded_string := no_name;
-		--layer			: in type_signal_layer;
-		--width			: in type_track_width;
-		--clearance		: in type_track_observe_clearance := track_observe_clearance_default;
-		--log_threshold	: in type_log_level)
-		--return type_point;
-
 
 	
 end et_routing;

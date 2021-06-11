@@ -5003,65 +5003,6 @@ package body et_geometry is
 			return result;
 		end in_polygon_status;
 
-
-		function make_switches (
-			polygon			: in type_polygon_base;
-			intersections	: in type_inside_polygon_query_result;
-			width			: in type_distance_positive;
-			clearance		: in type_distance_positive := zero)
-			return type_switches
-		is
-			use pac_distances;
-			result : type_switches := (initial => intersections.status, others => <>);
-
-			status_inside_outside : type_point_status := intersections.status;
-			
-			use pac_probe_line_intersections;
-			
-			procedure query_intersection (c : in pac_probe_line_intersections.cursor)
-			is
-				use pac_polygon_segments;
-				segment_cursor : pac_polygon_segments.cursor;
-
-				l : type_line;
-				a : type_arc;
-			begin
-				toggle_status (status_inside_outside);
-				
-				case element (c).segment.shape is
-					
-					when LINE =>
-						l := element (c).segment.segment_line;
-						
-						segment_cursor := find (
-							container	=> polygon.contours.segments,
-							item		=> (LINE, l));
-
-						append (result.switches, element (c).x_position); -- CS
-
-						
-					when ARC =>
-						a := element (c).segment.segment_arc;
-						
-						segment_cursor := find (
-							container	=> polygon.contours.segments,
-							item		=> (ARC, a));
-
-						append (result.switches, element (c).x_position); -- CS
-
-						
-					when CIRCLE =>
-						append (result.switches, element (c).x_position); -- CS
-
-				end case;
-			end query_intersection;
-			
-		begin
-			iterate (intersections.intersections, query_intersection'access);
-			
-			return result;
-		end make_switches;
-
 		
 		function intersections_found (
 			i : in type_inside_polygon_query_result)
@@ -5076,6 +5017,7 @@ package body et_geometry is
 			end if;
 		end intersections_found;
 
+		
 		function get_first_intersection (
 			i : in type_inside_polygon_query_result)
 			return type_probe_line_intersection
@@ -5093,7 +5035,6 @@ package body et_geometry is
 			result : type_lower_left_corner;
 
 			boundaries : constant type_boundaries := get_boundaries (polygon, zero);
-			
 		begin
 			-- compose the lower left corner point:
 			result.point := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
