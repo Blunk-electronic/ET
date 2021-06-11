@@ -61,6 +61,8 @@ package body et_routing is
 	package functions_float is new ada.numerics.generic_elementary_functions (float);
 	use functions_float;
 
+	use pac_generic_modules;
+	
 	
 	function compute_clearance (
 		status			: in type_point_status; -- transition to inside/outside area
@@ -531,11 +533,8 @@ package body et_routing is
 			iterate (module.board.contours.holes, query_hole'access);
 		end query_module;
 
-		use pac_generic_modules;
-
 	begin
-		query_element (module_cursor, query_module'access);
-		
+		query_element (module_cursor, query_module'access);		
 		return result;
 	end get_distance_to_edge;
 	
@@ -547,8 +546,6 @@ package body et_routing is
 	is
 		result : boolean := true;
 		
-		use pac_generic_modules;
-
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) 
@@ -603,8 +600,6 @@ package body et_routing is
 		return boolean
 	is
 		result : boolean := false;
-		
-		use pac_generic_modules;
 
 		design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
 		
@@ -862,8 +857,6 @@ package body et_routing is
 		log_threshold	: in type_log_level)
 		return type_route_distance
 	is
-		use pac_generic_modules;
-
 		probe_ray : constant type_ray := (start_point, direction);
 		probe_line : constant type_line_vector := to_line_vector (probe_ray);
 

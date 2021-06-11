@@ -79,7 +79,8 @@ package et_routing is
 
 
 	-- Returns the distance to the nearest point
-	-- on the board edge:
+	-- on the board edge. Objects that are regarded as board
+	-- edges are outline segments and hole segments:
 	function get_distance_to_edge (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_point)
@@ -167,7 +168,7 @@ package et_routing is
 		place	: in type_place)
 		return type_break;
 
-	-- Returns the first point where a track is broken/interrupted
+	-- Returns the point where a track is broken/interrupted
 	-- by an arc that crosses or overlaps the track.
 	function get_break (
 		track	: in type_track;
@@ -175,6 +176,8 @@ package et_routing is
 		place	: in type_place)
 		return type_break;
 
+	-- Returns the point where a track is broken/interrupted
+	-- by a circle that crosses or overlaps the track.
 	function get_break (
 		track	: in type_track;
 		circle	: in type_circle;
