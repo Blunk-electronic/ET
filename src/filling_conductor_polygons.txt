@@ -38,3 +38,8 @@ procedure compute_fill_lines takes start_point_in.
 			 the obstacle, where it is allowed to start a fill line. 
 			 Move start_point to that place. If no place found, abort
 			 filling the current row and proceed wit next row above.
+			 
+		- 5. A fill line is not the same as a track. So the procedures
+			 get_distance_to_obstacle and get_distance_after_obstacle do not
+			 see them as obstacles.
+			 
