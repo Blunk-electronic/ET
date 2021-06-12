@@ -174,6 +174,9 @@ package et_routing is
 
 	-- Returns the point where a track is broken/interrupted
 	-- by an arc that crosses or overlaps the track.
+	-- An arc may cause up to two breaks. This function looks at
+	-- the first break only.
+	-- See more details in comments on function get_break above.
 	function get_break (
 		track	: in type_track;
 		arc		: in type_arc;
@@ -182,6 +185,9 @@ package et_routing is
 
 	-- Returns the point where a track is broken/interrupted
 	-- by a circle that crosses or overlaps the track.
+	-- A circlec may cause up to two breaks. This function looks at
+	-- the first break only.
+	-- See more details in comments on function get_break above.
 	function get_break (
 		track	: in type_track;
 		circle	: in type_circle;
