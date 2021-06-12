@@ -4584,6 +4584,7 @@ package body et_board_ops is
 					extra_row : boolean := false;
 					
 					-- Computes the fill lines required after given start point.
+					-- Creates fill lines from the left to the right.
 					-- Appends the fill lines to the polygon indicated by
 					-- polygon cursor p:
 					procedure compute_fill_lines (start_point_in : in type_point) is
@@ -4614,7 +4615,11 @@ package body et_board_ops is
 							row : type_distance := get_y (point);
 							status : type_valid;
 							distance : type_distance_positive;
-							
+
+							-- Queries the distance after a given point to the next
+							-- obstacle. Updates variables "status" and "distance".
+							-- If it sets status to INVALID then the given point is
+							-- NOT allowed to start a fill line:
 							procedure get_distance_to_obstacle (start : in type_point) is 
 								d : constant type_route_distance := get_distance (
 								module_cursor	=> module_cursor,
@@ -4634,6 +4639,11 @@ package body et_board_ops is
 								end if;
 							end get_distance_to_obstacle;
 
+							-- Queries the distance after a given point to the next place
+							-- where it is allowed to start a fill line.
+							-- Updates variables "status" and "distance":
+							-- If it sets status to INVALID then NO place after the given point
+							-- has been found to start a fill line:
 							procedure get_distance_after_obstacle (start : in type_point) is 
 								d : constant type_route_distance := get_distance (
 								module_cursor	=> module_cursor,
@@ -4655,15 +4665,21 @@ package body et_board_ops is
 
 							-- Safety measure to prevent infinite looping.
 							-- CS: Increase maximum to reasonable value:
-							subtype type_line_count is positive range 1 .. 10;
+							subtype type_line_count is positive range 1 .. 100;
 							
 						begin -- fill_row
 							log_indentation_up;
-							
-							for lc in 1.. type_line_count'last loop
 
-								--put_line ("test" & positive'image (lc));
+							-- For the current row we compute fill line per fill line
+							-- from the left to the right. This loop counts the
+							-- fill lines per row. 
+							-- Each iteration computes a single fill line.
+							for lc in 1.. type_line_count'last loop
 								
+								-- MARK A
+								--put_line ("test" & positive'image (lc));
+
+								-- find the distance to next obstacle after point
 								get_distance_to_obstacle (point);
 
 								if distance = type_distance'last then
@@ -4671,38 +4687,62 @@ package body et_board_ops is
 									"ERROR: No end point for fill line found !";
 								end if;
 								
-								if status = VALID then
+								if status = VALID then -- MARK C
+									-- it is allowed to start a fill line at point.
+
+									-- the fill line starts at point
 									set_start (point);
 
+									-- move point to the place where the obstacle
+									-- has been found:
 									point := type_point (set (
 										x => get_x (point) + distance,
 										y => row));
-										
+
+									-- the fill line ends at point
 									set_end (point);
 
+									-- collect the fill line
 									append (fill_lines, fill_line);
 										
-
+									-- Find the nearest point after the obstacle:
 									get_distance_after_obstacle (point);
 
-									if status = VALID then
+									if status = VALID then -- (MARK D)
+										-- there is a place to start another fill line
+
+										-- move point to the place where the obstacle ends:
 										point := type_point (set (
 											x => get_x (point) + distance,
 											y => row));
 
+										-- jump back to mark A
+										
 									else
+										-- no place to start another fill line.
+										-- Abort this row.
 										exit;
 									end if;
 
-								else -- INVALID
+								else -- INVALID (MARK B)
+									
+									-- The given start point for this row is not 
+									-- valid to start a fill line.
+
+									-- Find the next place to the right
+									-- where it is allowed to start a fill line:
 									get_distance_after_obstacle (point);
 
-									if status = VALID then
+									if status = VALID then -- there is a place to start a fill line
+
+										-- move point to that place after the obstacle
 										point := type_point (set (
 											x => get_x (point) + distance,
 											y => row));
 
 									else
+										-- no place to start another fill line.
+										-- abort this row
 										exit;
 									end if;
 									
@@ -4710,7 +4750,10 @@ package body et_board_ops is
 							
 							end loop;
 
-							-- Add the fill lines to the conductor polygon:
+							-- Row finished.
+							
+							-- Add the fill lines, that have been collected for the current row,
+							-- to the conductor polygon:
 							update_element (
 								container	=> net.route.polygons.solid,
 								position	=> p,
@@ -4858,6 +4901,11 @@ package body et_board_ops is
 					
 					update_element (module.nets, n, route_solid'access);
 					--update_element (module.nets, n, route_hatched'access);
+
+
+					-- CS draw contours around obstacles ?
+					
+					-- CS draw thermals ?
 					
 					next (n);
 				end loop;

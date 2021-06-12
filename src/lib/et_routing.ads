@@ -185,7 +185,7 @@ package et_routing is
 
 	-- Returns the point where a track is broken/interrupted
 	-- by a circle that crosses or overlaps the track.
-	-- A circlec may cause up to two breaks. This function looks at
+	-- A circle may cause up to two breaks. This function looks at
 	-- the first break only.
 	-- See more details in comments on function get_break above.
 	function get_break (

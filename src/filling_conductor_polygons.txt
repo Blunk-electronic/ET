@@ -1,0 +1,40 @@
+FILLING OF CONDUCTOR POLYGONS (FILL AREAS)
+==========================================
+
+package et_board_ops
+--------------------
+
+FILLING SOLID AREAS:
+
+procedure route_solid
+
+start_point_in is the lower left corner of the polygon.
+
+procedure compute_fill_lines takes start_point_in.
+ 
+	- A copy of start_point_in, now just called "start_point", 
+	- moves up from row to row until the topmost row of the fill area.
+
+	- procedure fill_row computes fill lines required for a single row.
+		- 1. rows are filled from left to right with horizontal fill lines
+		- 2. query distance from start_point to next obstacle by calling
+		     get_distance_to_obstacle (mark A)
+		- 3. If start_point is valid to start a fill line (mark C):
+			1. start_point becomes the start of the fill line
+			2. move start_point right to the place where the obstacle
+			   has been found.
+			3. start_point becomes the end of the current fill line
+			4. collect the current fill line
+			5. Find the nearest point after the next obstacle (to the right) 
+			   after start_point by calling get_distance_after_obstacle.
+			6. If the point is valid to start another fill line (mark D),
+			   move start_point
+			   to that place and compute next fill line (jump back to mark A).
+			   If the point is NOT valid (means there is no place to
+			   start another fill line), abort filling the current row
+			   and proceed with next row above.
+		- 4. If start_point is NOT valid to start a fill line (mark B), then
+			 call get_distance_after_obstacle to find the next place, after
+			 the obstacle, where it is allowed to start a fill line. 
+			 Move start_point to that place. If no place found, abort
+			 filling the current row and proceed wit next row above.
