@@ -118,21 +118,25 @@ package et_routing is
 		end case;
 	end record;
 	
-	-- Returns the begin and end point of an overlap of
-	-- a track with a line.
+	-- Returns the begin and end of an overlap of a track with a line.
 	-- If there is an overlap:
 	--  - Returns the start and end point along the track
 	--    where the overlap begins and ends.
 	--  - Start and end point are on the center line of the track.
-	--  - If the overlap begins right at the start of the track, then
-	--    the returned start point of overlap is the same as the 
-	--    start point of the track.
+	--  - The computed start point can be before the start
+	--    of the track.
 	-- If there is no overlap:
 	--  - Returns false (non exists).
 	function get_overlap (
 		track	: in type_track;
 		line	: in type_line)
 		return type_overlap;
+
+	function get_overlap (
+		track	: in type_track;
+		arc		: in type_arc)
+		return type_overlap;
+
 	
 	type type_place is (
 		BEFORE,

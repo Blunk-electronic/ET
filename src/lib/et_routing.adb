@@ -628,10 +628,11 @@ package body et_routing is
 
 			distance_to_edge := get_absolute (get_distance_to_edge (module_cursor, start_point));
 
-			distance_to_edge := distance_to_edge - 0.5 * width;
 			--log (text => "d to edge:" & to_string (distance_to_edge));
+			--distance_to_edge := distance_to_edge - 0.5 * width;
 			
-			if distance_to_edge >= design_rules.clearances.conductor_to_board_edge then
+			--if distance_to_edge >= design_rules.clearances.conductor_to_board_edge then
+			if distance_to_edge >= design_rules.clearances.conductor_to_board_edge + 0.5 * width then
 				result := true;
 			end if;
 				
@@ -655,39 +656,61 @@ package body et_routing is
 		line	: in type_line)
 		return type_overlap
 	is
-		track_start : type_point := to_point (track.center.v_start);
+		-- here the given track starts:
+		track_start : constant type_point := to_point (track.center.v_start);
+
+		-- the given track travels in this direction:
 		track_direction : constant type_rotation := get_angle (track.center);
+
+		-- the total track width (incl. clearance) is:
 		track_width_total : constant type_track_width := get_total_width (track);
-		
+
+		-- the offset of the track relative to the origin is:
 		offset : constant type_point := track_start;
-		track_line : type_line := (
-					start_point	=> track_start,
+
+		-- build a horizontally traveling track that starts at the origin
+		-- and runs to the far right:
+		track_line : constant type_line := (
+					--start_point	=> track_start,
+					start_point	=> origin,
 					end_point	=> type_point (set (
 									x => far_right - track_width_total * 0.5,
 									y => zero)));
-		
-		track_boundaries : type_boundaries;
 
+		-- build the boundaries of the track:
+		track_boundaries : constant type_boundaries := 
+			get_boundaries (track_line, track_width_total);
 
 		line_tmp : type_line := line;
 		line_boundaries : type_boundaries;
 
 		bi : type_boundaries_intersection;
 		ol_start, ol_end : type_point;
+		
 	begin
-		-- build the boundaries of the track:
-		track_boundaries := get_boundaries (track_line, track_width_total);
-
+		-- Move the given line by the offset towards the origin,
+		-- rotate the line by the track direction and 
 		-- build the boundaries of the line:
 		move_by (line_tmp, type_point (invert (offset)));
 		rotate_by (line_tmp, - track_direction);
 		line_boundaries := get_boundaries (line_tmp, zero);
 
+		-- Get the intersection of track and line boundaries:
 		bi := get_intersection (track_boundaries, line_boundaries);
 
 		if bi.exists then
+			-- Compute the points of overlap begin and end,
+			-- rotate them by the track direction and
+			-- move them by the offset:
 			ol_start := type_point (set (bi.intersection.smallest_x, zero));
 			ol_end   := type_point (set (bi.intersection.greatest_x, zero));
+
+			-- CS numerical approch that moves ol_start to the right
+			-- and ol_end to the left until the cap of the track
+			-- barely touches the line.
+			-- CS if we investigate the intersections with the upper
+			-- and lower edge of the track, then the analytical solution could be better.
+			-- See get_overlap for arc below.
 
 			rotate_to (ol_start, track_direction);
 			move_by (ol_start, offset);
@@ -702,6 +725,125 @@ package body et_routing is
 		end if;
 	end get_overlap;
 
+
+	function get_overlap (
+		track	: in type_track;
+		arc		: in type_arc)
+		return type_overlap
+	is
+		-- here the given track starts:
+		track_start : constant type_point := to_point (track.center.v_start);
+
+		-- the given track travels in this direction:
+		track_direction : constant type_rotation := get_angle (track.center);
+
+		-- the total track width (incl. clearance) is:
+		track_width_total : constant type_track_width := get_total_width (track);
+
+		-- the offset of the track relative to the origin is:		
+		offset : constant type_point := track_start;
+
+		-- build a horizontally traveling track that starts at the origin
+		-- and runs to the far right:
+		track_line : constant type_line := (
+					start_point	=> origin,
+					end_point	=> type_point (set (
+									x => far_right - track_width_total * 0.5,
+									y => zero)));
+		
+		-- build the boundaries of the track:
+		track_boundaries : constant type_boundaries :=
+			get_boundaries (track_line, track_width_total);
+
+		--
+		track_upper_edge_start : constant type_point := type_point (
+				set (track_boundaries.smallest_x, track_boundaries.greatest_y));
+
+		track_upper_edge_end : constant type_point := type_point (
+				set (track_boundaries.greatest_x, track_boundaries.greatest_y));
+
+		--
+		track_lower_edge_start : constant type_point := type_point (
+				set (track_boundaries.smallest_x, track_boundaries.smallest_y));
+
+		track_lower_edge_end : constant type_point := type_point (
+				set (track_boundaries.greatest_x, track_boundaries.smallest_y));
+
+		--
+		track_upper_edge : constant type_line := (track_upper_edge_start, track_upper_edge_end);
+		track_lower_edge : constant type_line := (track_lower_edge_start, track_lower_edge_end);
+
+		--
+		function move_and_rotate_arc (arc : in type_arc) return type_arc is
+			a : type_arc := arc;
+		begin
+			move_by (a, type_point (invert (offset)));
+			rotate_by (a, - track_direction);
+			return a;
+		end move_and_rotate_arc;
+
+		-- The arc we will work with from now on.
+		-- (It is now moved and rotated in the same way as the track_line):
+		arc_tmp : constant type_arc := move_and_rotate_arc (arc);
+		arc_boundaries : constant type_boundaries := get_boundaries (arc_tmp, zero);
+		-- (The arc has zero line width.)
+
+		
+		-- the intersections of the upper and lower edge of the track
+		-- with the arc:
+		i_upper : constant type_intersection_of_line_and_circle :=
+			get_intersection (to_line_vector (track_upper_edge), arc);
+
+		i_lower : constant type_intersection_of_line_and_circle :=
+			get_intersection (to_line_vector (track_lower_edge), arc);
+
+		-- the area where track and arc boundaries intersect:
+		bi : constant type_boundaries_intersection := 
+			get_intersection (track_boundaries, arc_boundaries);
+		
+		ol_start, ol_end : type_point;
+
+		procedure rotate_and_move_back is begin
+			rotate_to (ol_start, track_direction);
+			move_by (ol_start, offset);
+			
+			rotate_to (ol_end, track_direction);
+			move_by (ol_end, offset);
+		end rotate_and_move_back;
+		
+	begin -- get_overlap
+
+		if bi.exists then -- arc and track do intersect in some way
+			
+			if 
+			 (i_upper.status = ONE_EXISTS and i_lower.status = ONE_EXISTS) 
+			or 
+			 (i_upper.status = ONE_EXISTS and i_lower.status = NONE_EXIST)
+			or
+			 (i_upper.status = NONE_EXIST and i_lower.status = ONE_EXISTS)
+			or
+			 (i_upper.status = NONE_EXIST and i_lower.status = NONE_EXIST)
+			then
+				
+				ol_start := type_point (set (bi.intersection.smallest_x, zero));
+				ol_end   := type_point (set (bi.intersection.greatest_x, zero));
+
+				-- CS numerical approch that moves ol_start to the right
+				-- and ol_end to the left until the cap of the track
+				-- barely touches the arc.
+				
+				rotate_and_move_back;				
+			
+				return (true, ol_start, ol_end);
+			end if;
+			
+		else
+			-- If no boundaries exist, then there is no overlap:
+			return (exists => false);
+		end if;
+
+		return (exists => false);
+	end get_overlap;
 	
 
 	function after_start_of_track (
