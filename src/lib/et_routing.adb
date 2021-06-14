@@ -1018,7 +1018,11 @@ package body et_routing is
 		points_after_obstacles : pac_points_after_obstacles.list;
 		use pac_points_after_obstacles;
 		package pac_sorting is new pac_points_after_obstacles.generic_sorting;
-		
+
+		-- If given place is BEFORE then this procedure updates distance_to_obstacle
+		-- so that the smallest distance from start_point to the break points is kept.
+		-- If place is AFTER then the procedure collects the given break point
+		-- in container "points_after_obstacles":
 		procedure process_break (break : in type_point) is
 			d : type_distance_positive;
 		begin
@@ -1036,51 +1040,54 @@ package body et_routing is
 			end case;
 		end process_break;
 
+		-- Test whether the given line causes a break in the track.
+		-- Parameter "place" determines whether we are interested in the
+		-- start or the end of the break.
+		-- If there is a break then its position is sent to procedure
+		-- process_break for further processing.
+		procedure test_line (l : in type_line) is 
+			b : constant type_break := get_break (track, l, place);
+		begin
+			if b.exists then
+				process_break (b.point);
+			end if;
+		end test_line;
+
+		-- See procedure test_line for details.
+		procedure test_arc (a : in type_arc) is
+			b : constant type_break := get_break (track, a, place);
+		begin
+			if b.exists then
+				process_break (b.point);
+			end if;						
+		end test_arc;
+
+		-- See procedure test_line for details.
+		procedure test_circle (c : in type_circle) is 
+			b : constant type_break := get_break (track, c, place);
+		begin
+			if b.exists then
+				process_break (b.point);
+			end if;
+		end test_circle;
+
 		
-		procedure query_module (
+		procedure query_obstacles (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) 
 		is
 			use pac_polygon_segments;
 
-			procedure query_segment (c : in pac_polygon_segments.cursor) is
-				
-				procedure test_line is 
-					b : constant type_break := get_break (track, element (c).segment_line, place);
-				begin
-					if b.exists then
-						process_break (b.point);
-					end if;
-				end test_line;
-
-				procedure test_arc is
-					b : constant type_break := get_break (track, element (c).segment_arc, place);
-				begin
-					if b.exists then
-						process_break (b.point);
-					end if;						
-				end test_arc;
-				
-			begin -- query_segment
+			procedure query_segment (c : in pac_polygon_segments.cursor) is begin
 				case element (c).shape is
-					when LINE	=> test_line;
-					when ARC	=> test_arc;
+					when LINE	=> test_line (element (c).segment_line);
+					when ARC	=> test_arc (element (c).segment_arc);
 				end case;
 			end query_segment;
-
-			
-			procedure query_circle (c : in type_circle) is 
-				b : constant type_break := get_break (track, c, place);
-			begin
-				if b.exists then
-					process_break (b.point);
-				end if;
-			end query_circle;
-
 			
 			procedure query_outline is begin
 				if module.board.contours.outline.contours.circular then
-					query_circle (module.board.contours.outline.contours.circle);
+					test_circle (module.board.contours.outline.contours.circle);
 				else
 					iterate (module.board.contours.outline.contours.segments, query_segment'access);
 				end if;
@@ -1091,7 +1098,7 @@ package body et_routing is
 
 				procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
 					if element (c).contours.circular then
-						query_circle (element (c).contours.circle);
+						test_circle (element (c).contours.circle);
 					else
 						iterate (element (c).contours.segments, query_segment'access);
 					end if;
@@ -1101,7 +1108,7 @@ package body et_routing is
 				iterate (module.board.contours.holes, query_hole'access);
 			end query_holes;
 			
-		begin -- query_module
+		begin -- query_obstacles
 
 			track.clearance	:= design_rules.clearances.conductor_to_board_edge;
 
@@ -1109,6 +1116,8 @@ package body et_routing is
 			query_outline;
 			query_holes;
 
+			-- track.clearance
+			
 			-- if fill_zone.observe then query 
 			-- - fill_zone.outline
 			-- - global cutout areas
@@ -1117,13 +1126,16 @@ package body et_routing is
 			-- CS abort if status is invalid.
 			
 			-- query tracks, texts, pads, ...
-		end query_module;
+		end query_obstacles;
 
 
+		-- Collects after start_point all the points where obstacles end.
+		-- Detects the nearest point where it is allowed to start a track.
+		-- If a suitable point was found then status changes to VALID.
 		procedure find_valid_point_after_obstacles is
 			c : pac_points_after_obstacles.cursor;
 		begin
-			query_element (module_cursor, query_module'access);
+			query_element (module_cursor, query_obstacles'access);
 			pac_sorting.sort (points_after_obstacles);
 
 			c := points_after_obstacles.first;
@@ -1155,13 +1167,17 @@ package body et_routing is
 
 				log_indentation_up;
 				
-				-- test whether start_point is suitable to start a track
+				-- Test whether start_point is suitable to start a track.
+				-- At the given start_point or in its vicinity could be an obstacle already.
 				if clear_for_track (module_cursor, start_point, net, layer, width) then
-					query_element (module_cursor, query_module'access);
 
-					--if distance_to_obstacle = type_distance'last then
-						--raise constraint_error;
-					--end if;
+					-- start_point qualifies to start a track
+
+					-- Probe everything on the board that could be an obstacle
+					-- for track in the given direction, net, layer. The distance to 
+					-- the nearest obstacle will finally be stored in variable
+					-- distance_to_obstacle:
+					query_element (module_cursor, query_obstacles'access);
 
 					log (text => to_string (distance_to_obstacle),
 						level => log_threshold);
@@ -1169,9 +1185,10 @@ package body et_routing is
 					log_indentation_down;
 					
 					return (VALID, distance_to_obstacle);
-				else
+					
+				else 
+					-- start_point does NOT qualify to start a track
 
-					--log (text => "no obstacle found",
 					log (text => "track not allowed here",
 						level => log_threshold);
 
@@ -1189,11 +1206,17 @@ package body et_routing is
 					 level => log_threshold);
 
 				log_indentation_up;
-				
+
+				-- There can be more than one obstacle. They may overlap in some way.
+				-- So a point must be found after a cluster of obstacles where 
+				-- it is allowed to start a track:
 				find_valid_point_after_obstacles;
+
+				-- Now the variable "status" indicates whether a valid point has 
+				-- been found or not.
 				
 				case status is
-					when VALID =>
+					when VALID => -- suitable point found
 						log (text => to_string (distance_after_obstacle),
 							level => log_threshold);
 
@@ -1202,7 +1225,7 @@ package body et_routing is
 						return (VALID, distance_after_obstacle);
 
 						
-					when INVALID => 
+					when INVALID => -- NO suitable point found 
 						log (text => "no obstacle found",
 							level => log_threshold);
 

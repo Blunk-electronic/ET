@@ -4677,7 +4677,7 @@ package body et_board_ops is
 							for lc in 1.. type_line_count'last loop
 								
 								-- MARK A
-								--put_line ("test" & positive'image (lc));
+								log (text => "fill line" & positive'image (lc), level => log_threshold + 3);
 
 								-- find the distance to next obstacle after point
 								get_distance_to_obstacle (point);
