@@ -2983,9 +2983,9 @@ package body et_geometry is
 				get_intersection (line, vc);
 			
 		begin
-			log (text => "line: " & to_string (line));
-			log (text => "arc: " & to_string (arc));
-			log (text => "");
+			--log (text => "line: " & to_string (line));
+			--log (text => "arc: " & to_string (arc));
+			--log (text => "");
 			
 			case vi.status is
 				when NONE_EXIST => 
