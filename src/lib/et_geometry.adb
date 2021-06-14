@@ -1194,6 +1194,15 @@ package body et_geometry is
 
 	-- VECTOR OPERATIONS		
 
+		function to_string (
+			v	: in type_vector)
+			return string
+		is begin
+			return " x" & to_string (v.x) & " y" & to_string (v.y);
+			--& " z" & to_string (v.z);
+		end to_string;
+
+		
 		function get_x (
 			v	: in type_vector)
 			return type_distance is
@@ -1372,6 +1381,15 @@ package body et_geometry is
 		end direction_vector;
 
 
+		function to_string (
+			lv : in type_line_vector)
+			return string
+		is begin
+			return "location vector start:" & to_string (lv.v_start) 
+				& " direction vector" & to_string (lv.v_direction)
+				& " angle" & to_string (get_angle (lv));
+		end to_string;
+		
 		function get_angle (
 			line	: in type_line_vector)
 			return type_rotation
@@ -2965,6 +2983,10 @@ package body et_geometry is
 				get_intersection (line, vc);
 			
 		begin
+			log (text => "line: " & to_string (line));
+			log (text => "arc: " & to_string (arc));
+			log (text => "");
+			
 			case vi.status is
 				when NONE_EXIST => 
 					-- line does not meet the virtual circle
@@ -3005,9 +3027,8 @@ package body et_geometry is
 						return (ONE_EXISTS, vi.intersection_2, SECANT);
 						
 					else
-						--log (text => "x none");
-						raise constraint_error;
-						--return (status => NONE_EXIST); -- CS should never happen
+						-- none intersection is on the arc
+						return (status => NONE_EXIST);
 					end if;					
 			end case;
 			

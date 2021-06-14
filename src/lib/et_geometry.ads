@@ -687,6 +687,9 @@ package et_geometry is
 
 		unity_vector : constant type_vector;
 
+		function to_string (
+			v	: in type_vector)
+			return string;
 		
 		function get_x (
 			v	: in type_vector)
@@ -767,6 +770,10 @@ package et_geometry is
 			v_direction	: type_vector; -- direction vector of line
 		end record;
 
+		function to_string (
+			lv : in type_line_vector)
+			return string;
+			
 		-- Returns the direction of travel of the given line
 		-- in degrees:
 		function get_angle (
