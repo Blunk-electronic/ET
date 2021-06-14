@@ -88,6 +88,7 @@ package et_pcb_coordinates is
 	
 	-- instantiation of the geometry package:	
 	package pac_geometry_brd is new et_geometry.generic_pac_geometry (
+		type_distance_total	=> type_distance_total,
 		type_distance		=> type_distance_total,
 		type_rotation 		=> type_rotation);
 

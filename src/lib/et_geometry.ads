@@ -153,6 +153,7 @@ package et_geometry is
 	-------------------------
 	
 	generic
+		type type_distance_total is delta <>;
 		type type_distance is delta <>;
 		type type_rotation is delta <>;
 		
