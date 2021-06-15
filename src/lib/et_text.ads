@@ -236,9 +236,6 @@ package et_text is
 -- 		type type_line_with_to_size_ratio is range 1 .. 50; -- in percent
 -- 		line_width_to_size_ratio_default : constant type_line_with_to_size_ratio := 15;
 
-		type type_vector_text_line is new pac_shapes.type_line with null record;
-		-- CS no need. just juse pac_shapes.type_line
-
 		subtype type_character_height is type_position_axis range -0.4 .. 1.0;
 		subtype type_character_width  is type_position_axis range zero .. 0.7;
 		character_width : constant type_character_height := 0.7;
@@ -816,7 +813,7 @@ package et_text is
 			 );
 
 		
-		package pac_vector_text_lines is new doubly_linked_lists (type_vector_text_line);
+		package pac_vector_text_lines is new doubly_linked_lists (pac_shapes.type_line);
 
 		-- Converts a character to a list of lines:
 		function to_lines (char : in type_character) return pac_vector_text_lines.list;

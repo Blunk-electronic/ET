@@ -392,7 +392,7 @@ package body et_text is
 		-- This function sorts lines by the distance of their start points
 		-- to the origin.
 		-- CS: The sorting could be improved but seems sufficient for now.
-		function "<" (left, right : in type_vector_text_line) return boolean is 
+		function "<" (left, right : in type_line) return boolean is 
 			--result : boolean := false;
 		begin
 			if left.start_point < right.start_point then
@@ -455,7 +455,7 @@ package body et_text is
 			text_height : constant type_distance_positive := size;
 			text_height_half : constant type_distance_positive := size * 0.5;
 			
-			procedure scale_line (l : in out type_vector_text_line) is 
+			procedure scale_line (l : in out type_line) is 
 				Sx : constant type_distance := get_x (l.start_point);
 				Sy : constant type_distance := get_y (l.start_point);
 				Ex : constant type_distance := get_x (l.end_point);
@@ -472,7 +472,7 @@ package body et_text is
 				scratch : pac_vector_text_lines.list;
 
 				procedure query_line (c : in pac_vector_text_lines.cursor) is
-					l : type_vector_text_line := element (c);
+					l : type_line := element (c);
 				begin
 					-- According to the given text size, the line is now 
 					-- to be scaled:
@@ -514,7 +514,7 @@ package body et_text is
 				scratch : pac_vector_text_lines.list;
 
 				procedure query_line (c : in pac_vector_text_lines.cursor) is 
-					l : type_vector_text_line := element (c);
+					l : type_line := element (c);
 
 					procedure align_vertical is begin
 						case alignment.vertical is
