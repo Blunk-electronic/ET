@@ -70,7 +70,7 @@ package et_pcb_coordinates is
 	procedure flip (face : in out type_face);
 	
 
-	-- NOTE: UNIT IS METRIC MILLIMETERS !!
+	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
 	type type_distance is delta 0.0001 
 		range -100_000_000.00 .. 100_000_000.00; 
 		
