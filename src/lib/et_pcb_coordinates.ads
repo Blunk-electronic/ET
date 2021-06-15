@@ -79,6 +79,10 @@ package et_pcb_coordinates is
 
 
 	
+	-- Angle or rotation is in mathematical sense, means:
+	-- positive rotation -> counter clock wise
+	-- negative rotation -> clock wise
+	
 	type type_rotation is delta 0.001 range -359.999 .. 359.999;
 	for type_rotation'small use 0.001;
 	-- CS increase accuracy if required
@@ -88,8 +92,9 @@ package et_pcb_coordinates is
 	
 	-- instantiation of the geometry package:	
 	package pac_geometry_brd is new et_geometry.generic_pac_geometry (
-		type_distance_total	=> type_distance_total,
 		type_distance		=> type_distance_total,
+		axis_max			=> +10_000_000.0,
+		axis_min			=> -10_000_000.0,
 		type_rotation 		=> type_rotation);
 
 	use pac_geometry_brd;

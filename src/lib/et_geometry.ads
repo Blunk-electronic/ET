@@ -153,16 +153,34 @@ package et_geometry is
 	-------------------------
 	
 	generic
-		type type_distance_total is delta <>;
 		type type_distance is delta <>;
+		axis_min, axis_max : type_distance;
 		type type_rotation is delta <>;
 		
 	package generic_pac_geometry is
 		
 		zero 		: constant type_distance := 0.0;
-		far_right	: constant type_distance := type_distance'last;
-		far_left	: constant type_distance := type_distance'first;
+		far_right	: constant type_distance := axis_max;
+		far_left	: constant type_distance := axis_min;
 
+		-- The position along an axis:
+		subtype type_position_axis is type_distance 
+			range axis_min .. axis_max;
+
+		-- The distance between two objects:
+		subtype type_distance_positive is type_distance 
+			range zero .. type_distance'last;
+		
+		subtype type_catch_zone is type_distance_positive
+			range zero .. type_distance_positive'last/1000;
+
+		
+		subtype type_rotation_positive is type_rotation
+			range 0.0 .. type_rotation'last;
+
+		
+		
+		
 		-- Returns the greatest of the given distances. 
 		-- If both are equal then "right" will be returned.
 		function get_greatest (
@@ -174,11 +192,7 @@ package et_geometry is
 		function get_smallest (
 			left, right : in type_distance)
 			return type_distance;
-		
-		subtype type_distance_positive is type_distance range zero .. type_distance'last;
-		subtype type_catch_zone is type_distance_positive range zero .. type_distance_positive'last/1000;
 
-		subtype type_rotation_positive is type_rotation range 0.0 .. type_rotation'last;
 
 		
 		-- Converts an angle like -90.0 degrees to 270 degrees.
