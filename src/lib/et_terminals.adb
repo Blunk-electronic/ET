@@ -43,7 +43,7 @@ with et_exceptions;				use et_exceptions;
 
 package body et_terminals is
 
-	procedure validate_pad_size (size : in type_distance_total) is begin
+	procedure validate_pad_size (size : in type_distance) is begin
 		if size not in type_pad_size then
 			raise semantic_error_1 with
 				"ERROR: Pad size invalid ! Allowed range is" 

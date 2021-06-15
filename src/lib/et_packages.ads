@@ -170,7 +170,7 @@ package et_packages is
 		range text_parameters_fab.width_min .. text_parameters_fab.width_max;
 	
 	-- Checks whether given line width is in range of type_general_line_width
-	procedure validate_general_line_width (width : in type_distance_total);
+	procedure validate_general_line_width (width : in type_distance);
 
 
 	

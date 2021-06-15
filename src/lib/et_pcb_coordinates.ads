@@ -69,13 +69,13 @@ package et_pcb_coordinates is
 	-- Changes top to bottom and vice versa:
 	procedure flip (face : in out type_face);
 	
-	-- The total distance between two objects:
-	type type_distance_total is delta 0.0001 range -100_000_000.00 .. 100_000_000.00; -- unit is metric millimeter
-	for type_distance_total'small use 0.0001; -- this is the accuracy required for layout
-	-- CS increase accuracy if required
 
-	-- The x and y position of an object:
-	--subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
+	-- NOTE: UNIT IS METRIC MILLIMETERS !!
+	type type_distance is delta 0.0001 
+		range -100_000_000.00 .. 100_000_000.00; 
+		
+	for type_distance'small use 0.0001;
+	-- CS increase accuracy if required
 
 
 	
@@ -92,17 +92,20 @@ package et_pcb_coordinates is
 	
 	-- instantiation of the geometry package:	
 	package pac_geometry_brd is new et_geometry.generic_pac_geometry (
-		type_distance		=> type_distance_total,
+		type_distance		=> type_distance,
 		axis_max			=> +10_000_000.0,
 		axis_min			=> -10_000_000.0,
 		type_rotation 		=> type_rotation);
 
 	use pac_geometry_brd;
+
+
 	
 	-- PCB thickness (limited to reasonable range. CS adjust if required) -- CS move to design rules
 	pcb_thickness_min : constant type_distance_positive := 0.1;
 	pcb_thickness_max : constant type_distance_positive := 20.0;	
-	subtype type_pcb_thickness is type_distance_total range pcb_thickness_min .. pcb_thickness_max;
+	subtype type_pcb_thickness is type_distance_positive 
+		range pcb_thickness_min .. pcb_thickness_max;
 	
 	type type_package_position is new pac_geometry_brd.type_position with private;
 

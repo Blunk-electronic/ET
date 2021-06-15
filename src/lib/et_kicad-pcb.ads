@@ -394,10 +394,10 @@ package et_kicad.pcb is
 	type type_general_board_info is record
 		links		: type_general_links;
 		no_connects	: type_general_no_connects;
-		area_x1		: et_pcb_coordinates.type_distance_total; -- CS meaning not clear yet. unit mm ?
-		area_y1		: et_pcb_coordinates.type_distance_total; -- CS meaning not clear yet. unit mm ?
-		area_x2		: et_pcb_coordinates.type_distance_total; -- CS meaning not clear yet. unit mm ?
-		area_y2		: et_pcb_coordinates.type_distance_total; -- CS meaning not clear yet. unit mm ?
+		area_x1		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
+		area_y1		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
+		area_x2		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
+		area_y2		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
 		thickness	: et_pcb_coordinates.type_pcb_thickness;
 		drawings	: type_general_drawings;
 		tracks		: type_general_tracks;

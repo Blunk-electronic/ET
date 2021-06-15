@@ -70,7 +70,7 @@ package et_terminals is
 	subtype type_pad_size is type_distance_positive range pad_size_min .. pad_size_max;
 
 	-- Checks whether given pad size is in range of type_pad_size
-	procedure validate_pad_size (size : in type_distance_total);
+	procedure validate_pad_size (size : in type_distance);
 
 	
 

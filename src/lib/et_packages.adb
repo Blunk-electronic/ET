@@ -117,7 +117,7 @@ package body et_packages is
 	
 
 
-	procedure validate_general_line_width (width : in type_distance_total) is
+	procedure validate_general_line_width (width : in type_distance) is
 	begin
 		if width not in type_general_line_width then
 			log (ERROR, "line width invalid ! Allowed range is" 
@@ -128,7 +128,7 @@ package body et_packages is
 		end if;
 	end validate_general_line_width;
 
-	procedure validate_pad_size (size : in type_distance_total) is
+	procedure validate_pad_size (size : in type_distance) is
 	begin
 		if size not in type_pad_size then
 			log (ERROR, "pad size invalid ! Allowed range is" 

@@ -74,7 +74,7 @@ package et_design_rules is
 		range conductor_clearance_min .. type_distance_positive'last;
 
 	-- Checks whether the given track clearance is in range of type_track_clearance.
-	procedure validate_track_clearance (clearance : in type_distance_total);
+	procedure validate_track_clearance (clearance : in type_distance);
 
 	
 
@@ -129,7 +129,7 @@ package et_design_rules is
 
 	-- Checks whether the given restring width is in range of type_restring_width.
 	procedure validate_restring_width (
-		restring_width : in type_distance_total);
+		restring_width : in type_distance);
 
 
 	
@@ -140,7 +140,8 @@ package et_design_rules is
 		range conductor_width_min .. track_width_max;
 
 	-- Checks whether the given track width is in range of type_track_width.
-	procedure validate_track_width (track_width : in type_distance_positive);
+	procedure validate_track_width (
+		track_width : in type_distance);
 
 	
 	

@@ -43,7 +43,7 @@ with et_string_processing;		use et_string_processing;
 
 package body et_drills is
 
-	procedure validate_drill_size (drill : in et_pcb_coordinates.type_distance_total) is begin
+	procedure validate_drill_size (drill : in type_distance) is begin
 		if drill not in type_drill_size then
 			log (ERROR, "drill size invalid ! Allowed range is" 
 				 & to_string (type_drill_size'first) & " .."
