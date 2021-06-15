@@ -96,10 +96,10 @@ package body et_pcb is
 	
 	
 	function on_segment (
-		point			: in type_point; -- x/y
-		layer			: in type_signal_layer;
-		line			: in pac_conductor_lines.cursor;
-		accuracy		: in type_catch_zone)
+		point		: in type_point; -- x/y
+		layer		: in type_signal_layer;
+		line		: in pac_conductor_lines.cursor;
+		accuracy	: in type_catch_zone)
 		return boolean 
 	is
 		result : boolean := false; -- to be returned
@@ -118,11 +118,12 @@ package body et_pcb is
 		return result;
 	end on_segment;
 
+	
 	function on_segment (
-		point			: in type_point; -- x/y
-		layer			: in type_signal_layer;
-		arc				: in pac_conductor_arcs.cursor;
-		accuracy		: in type_distance)
+		point		: in type_point; -- x/y
+		layer		: in type_signal_layer;
+		arc			: in pac_conductor_arcs.cursor;
+		accuracy	: in type_catch_zone)
 		return boolean 
 	is
 		result : boolean := false; -- to be returned

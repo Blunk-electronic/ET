@@ -131,11 +131,11 @@ package body et_kicad_packages is
 		angle : constant type_rotation := rot (center);
 
 		-- supportive frequently used values
-		xp : constant type_distance := size_x / 2;
-		xn : constant type_distance := -(xp);
+		xp : constant type_position_axis := size_x / 2;
+		xn : constant type_position_axis := -(xp);
 
-		yp : constant type_distance := size_y / 2;
-		yn : constant type_distance := -(yp);
+		yp : constant type_position_axis := size_y / 2;
+		yn : constant type_position_axis := -(yp);
 
  		-- supportive corner points:
 		p11, p12 : type_point;
@@ -194,6 +194,7 @@ package body et_kicad_packages is
 		return shape;
 	end to_pad_shape_rectangle;
 
+	
 	function to_pad_shape_oval (
 		center	: in type_position;	-- the pad center position (incl. angle)
 		size_x	: in type_pad_size;	-- the size in x of the pad
@@ -210,14 +211,14 @@ package body et_kicad_packages is
 		angle : constant type_rotation := rot (center);
 		
 		-- supportive frequently used values
-		x1p : constant type_distance := size_x / 2;
-		x1n : constant type_distance := -(x1p);
+		x1p : constant type_position_axis := size_x / 2;
+		x1n : constant type_position_axis := -(x1p);
 
-		y1p : constant type_distance := size_y / 2;
-		y1n : constant type_distance := -(y1p);
+		y1p : constant type_position_axis := size_y / 2;
+		y1n : constant type_position_axis := -(y1p);
 
-		x2p : constant type_distance := x1p - y1p;
-		x2n : constant type_distance := -(x2p);
+		x2p : constant type_position_axis := x1p - y1p;
+		x2n : constant type_position_axis := -(x2p);
 
 		-- supportive points:
 		p11, p12 : type_point; -- start/end point of upper line
@@ -311,11 +312,11 @@ package body et_kicad_packages is
 		angle : constant type_rotation := rot (center);
 		
 		-- supportive frequently used values
-		xp : constant type_distance := size_x / 2;
-		xn : constant type_distance := -(xp);
+		xp : constant type_position_axis := size_x / 2;
+		xn : constant type_position_axis := -(xp);
 
-		yp : constant type_distance := size_y / 2;
-		yn : constant type_distance := -(yp);
+		yp : constant type_position_axis := size_y / 2;
+		yn : constant type_position_axis := -(yp);
 
  		-- supportive corner points:
 		p11, p12 : type_point;
@@ -562,7 +563,7 @@ package body et_kicad_packages is
 		pad_size_y : type_pad_size;
 
 -- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
-		terminal_copper_width_inner_layers : et_pcb_coordinates.type_distance := 1.0; -- CS load from DRU ?
+		terminal_copper_width_inner_layers : type_distance_positive := 1.0; -- CS load from DRU ?
 
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
 		-- They are initialized by procedure init_terminal_layers and validated by

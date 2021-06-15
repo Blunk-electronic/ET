@@ -61,7 +61,7 @@ package body et_design_rules is
 		return pac_file_name.to_string (file);
 	end to_string;
 
-	procedure validate_track_clearance (clearance : in type_distance) is begin
+	procedure validate_track_clearance (clearance : in type_distance_total) is begin
 		if clearance not in type_track_clearance then
 			raise semantic_error_1 with
 				"ERROR: Track clearance invalid ! Allowed range is" 
@@ -99,7 +99,7 @@ package body et_design_rules is
 		return result;
 	end auto_set_restring;
 
-	procedure validate_restring_width (restring_width : in type_distance) is begin
+	procedure validate_restring_width (restring_width : in type_distance_total) is begin
 		if restring_width not in type_restring_width then
 			raise semantic_error_1 with
 				"ERROR: Restring width invalid ! Allowed range is" 

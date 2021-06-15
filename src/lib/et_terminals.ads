@@ -69,8 +69,8 @@ package et_terminals is
 	pad_size_max : constant type_track_width := 10.0;
 	subtype type_pad_size is type_distance_positive range pad_size_min .. pad_size_max;
 
-	procedure validate_pad_size (size : in et_pcb_coordinates.type_distance);
 	-- Checks whether given pad size is in range of type_pad_size
+	procedure validate_pad_size (size : in type_distance_total);
 
 	
 

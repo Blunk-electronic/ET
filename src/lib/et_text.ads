@@ -237,9 +237,10 @@ package et_text is
 -- 		line_width_to_size_ratio_default : constant type_line_with_to_size_ratio := 15;
 
 		type type_vector_text_line is new pac_shapes.type_line with null record;
+		-- CS no need. just juse pac_shapes.type_line
 
-		subtype type_character_height is type_distance range -0.4 .. 1.0;
-		subtype type_character_width  is type_distance_positive range zero .. 0.7;		
+		subtype type_character_height is type_position_axis range -0.4 .. 1.0;
+		subtype type_character_width  is type_position_axis range zero .. 0.7;
 		character_width : constant type_character_height := 0.7;
 
 		-- A single segment of a character is defined as:

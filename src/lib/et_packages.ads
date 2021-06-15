@@ -169,8 +169,8 @@ package et_packages is
 	subtype type_general_line_width is type_distance_positive
 		range text_parameters_fab.width_min .. text_parameters_fab.width_max;
 	
-	procedure validate_general_line_width (width : in et_pcb_coordinates.type_distance);
 	-- Checks whether given line width is in range of type_general_line_width
+	procedure validate_general_line_width (width : in type_distance_total);
 
 
 	

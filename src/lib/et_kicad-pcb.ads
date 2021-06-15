@@ -163,15 +163,15 @@ package et_kicad.pcb is
 	type type_plot_hpgl_pen_speed is range 20..20; -- CS so far nothing more known
 
 	-- hpglpendiameter -- given in mil
-	hpgl_pen_diameter_min : constant et_pcb_coordinates.type_distance := 0.1;
-	hpgl_pen_diameter_max : constant et_pcb_coordinates.type_distance := 1.0;
-	subtype type_plot_hpgl_pen_diameter is et_pcb_coordinates.type_distance 
+	hpgl_pen_diameter_min : constant type_distance_positive := 0.1;
+	hpgl_pen_diameter_max : constant type_distance_positive := 1.0;
+	subtype type_plot_hpgl_pen_diameter is type_distance_positive 
 		range hpgl_pen_diameter_min .. hpgl_pen_diameter_max;
 
 	-- hpglpenoverlay
-	plot_hpgl_pen_overlay_min : constant et_pcb_coordinates.type_distance := 0.05; -- CS refine range if required
-	plot_hpgl_pen_overlay_max : constant et_pcb_coordinates.type_distance := 0.1;  -- CS refine range if required
-	subtype type_plot_hpgl_pen_overlay is et_pcb_coordinates.type_distance
+	plot_hpgl_pen_overlay_min : constant type_distance_positive := 0.05; -- CS refine range if required
+	plot_hpgl_pen_overlay_max : constant type_distance_positive := 0.1;  -- CS refine range if required
+	subtype type_plot_hpgl_pen_overlay is type_distance_positive
 		range plot_hpgl_pen_overlay_min .. plot_hpgl_pen_overlay_max;
 
 	-- psnegative
@@ -262,16 +262,16 @@ package et_kicad.pcb is
 	-- Reason: The manufacturer is to cut or mill along these lines and must calculate
 	-- the center of the line. However, as kicad allows line with here, it must 
 	-- fit in a reasonable range, thus a subtype:
-	edge_cut_line_width_min : constant et_pcb_coordinates.type_distance := 0.1;
-	edge_cut_line_width_max : constant et_pcb_coordinates.type_distance := 1.0;
-	subtype type_edge_cut_line_width is et_pcb_coordinates.type_distance 
+	edge_cut_line_width_min : constant type_distance_positive := 0.1;
+	edge_cut_line_width_max : constant type_distance_positive := 1.0;
+	subtype type_edge_cut_line_width is type_distance_positive 
 		range edge_cut_line_width_min .. edge_cut_line_width_max;
 
 	-- The via diameter is the drill size + 2*restring width. 
 	-- We fit the via diameter (incl. microvias) in a reasonable range via a subtype:
-	via_diameter_min : constant et_pcb_coordinates.type_distance := 0.1;
-	via_diameter_max : constant et_pcb_coordinates.type_distance := 10.0;
-	subtype type_via_diameter is et_pcb_coordinates.type_distance
+	via_diameter_min : constant type_distance_positive := 0.1;
+	via_diameter_max : constant type_distance_positive := 10.0;
+	subtype type_via_diameter is type_distance_positive
 		range via_diameter_min .. via_diameter_max;
 
 
@@ -286,9 +286,9 @@ package et_kicad.pcb is
 		 );
 
 	-- CS it is not fully clear what aux_axis_origin is good for:
-	aux_axis_origin_min : constant et_pcb_coordinates.type_distance := pac_geometry_brd.zero;
-	aux_axis_origin_max : constant et_pcb_coordinates.type_distance := 500.0;
-	subtype type_aux_axis_origin is et_pcb_coordinates.type_distance 
+	aux_axis_origin_min : constant type_distance_positive := zero;
+	aux_axis_origin_max : constant type_distance_positive := 500.0;
+	subtype type_aux_axis_origin is type_distance_positive 
 		range aux_axis_origin_min .. aux_axis_origin_max;
 
 	-- CS meaning not clear yet
@@ -394,10 +394,10 @@ package et_kicad.pcb is
 	type type_general_board_info is record
 		links		: type_general_links;
 		no_connects	: type_general_no_connects;
-		area_x1		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
-		area_y1		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
-		area_x2		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
-		area_y2		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
+		area_x1		: et_pcb_coordinates.type_distance_total; -- CS meaning not clear yet. unit mm ?
+		area_y1		: et_pcb_coordinates.type_distance_total; -- CS meaning not clear yet. unit mm ?
+		area_x2		: et_pcb_coordinates.type_distance_total; -- CS meaning not clear yet. unit mm ?
+		area_y2		: et_pcb_coordinates.type_distance_total; -- CS meaning not clear yet. unit mm ?
 		thickness	: et_pcb_coordinates.type_pcb_thickness;
 		drawings	: type_general_drawings;
 		tracks		: type_general_tracks;
@@ -566,7 +566,7 @@ package et_kicad.pcb is
 	
 	type type_via is new type_drill with record
 		net_id			: type_net_id;
-		diameter_total	: et_pcb_coordinates.type_distance; -- drill + 2 * restring
+		diameter_total	: type_distance_positive; -- drill + 2 * restring
 		layer_start		: type_signal_layer_id;
 		layer_end		: type_signal_layer_id;		
 		status			: type_via_status.bounded_string;  -- holds lock status and differential status
@@ -610,7 +610,7 @@ package et_kicad.pcb is
 		layer				: type_signal_layer_id;
 		timestamp			: type_timestamp;
 		gui_hatch_style		: type_polygon_hatch := EDGE;
-		gui_hatch_width		: et_pcb_coordinates.type_distance;	-- see spec for type_polygon_hatch. always 0.508. CS use subtype
+		gui_hatch_width		: type_distance_positive;	-- see spec for type_polygon_hatch. always 0.508.
 		min_thickness		: type_track_width;	-- minimum line width
 		filled				: boolean; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"

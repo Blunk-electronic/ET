@@ -64,8 +64,8 @@ package body et_board_ops is
 	procedure no_net_segment_found (
 		layer		: in et_pcb_stack.type_signal_layer;
 		point		: in type_point; 
-		accuracy	: in type_distance) is
-	begin
+		accuracy	: in type_catch_zone) 
+	is begin
 		log (importance => WARNING, 
 			 text => "no net segment found in layer" & to_string (layer) &
 			 " at" & to_string (point) &
@@ -74,8 +74,8 @@ package body et_board_ops is
 
 	procedure no_segment_found (
 		point		: in type_point; 
-		accuracy	: in type_distance) is
-	begin
+		accuracy	: in type_catch_zone)
+	is begin
 		log (importance => WARNING, 
 			 text => "nothing found at" & to_string (point) &
 			 " in vicinity of" & to_string (accuracy));
@@ -4612,7 +4612,7 @@ package body et_board_ops is
 							use pac_fill_lines;
 							
 							point : type_point := start_point;
-							row : type_distance := get_y (point);
+							row : type_position_axis := get_y (point);
 							status : type_valid;
 							distance : type_distance_positive;
 
@@ -4682,7 +4682,7 @@ package body et_board_ops is
 								-- find the distance to next obstacle after point
 								get_distance_to_obstacle (point);
 
-								if distance = type_distance'last then
+								if distance = type_distance_positive'last then
 									raise constraint_error with 
 									"ERROR: No end point for fill line found !";
 								end if;

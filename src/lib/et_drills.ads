@@ -47,8 +47,8 @@ package et_drills is
 	drill_size_max : constant type_distance_positive := 10.0;
 	subtype type_drill_size is type_distance_positive range drill_size_min .. drill_size_max;
 	
-	procedure validate_drill_size (drill : in et_pcb_coordinates.type_distance);
 	-- Checks whether given drill size is in range of type_drill_size
+	procedure validate_drill_size (drill : in et_pcb_coordinates.type_distance_total);
 
 	-- DRILLS
 	type type_drill is tagged record

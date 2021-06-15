@@ -66,7 +66,7 @@ package body et_routing is
 	
 	function compute_clearance (
 		status			: in type_point_status; -- transition to inside/outside area
-		y_position		: in type_distance; -- the y-position of the fill line
+		y_position		: in type_position_axis; -- the y-position of the fill line
 		intersection	: in type_probe_line_intersection; -- provides curvature, x-value, angle, ...
 		line_width		: in type_track_width; -- the width of the fill line
 		extra_clearance	: in boolean := false;
@@ -150,11 +150,11 @@ package body et_routing is
 			i : type_iteration := 0;
 
 			error : float;
-			min_error : constant float := float (type_distance'small);
+			min_error : constant float := float (type_distance_positive'small);
 			
 		begin -- compute_convex
 			log (text => "computing convex. targeted clearance" 
-				 & to_string (type_distance (clearance_min)),
+				 & to_string (type_distance_positive (clearance_min)),
 				 level => log_threshold + 2);
 
 			log_indentation_up;
@@ -173,9 +173,9 @@ package body et_routing is
 					-- center of the arc. So the x_position must be mirrored so that
 					-- it comes before the x-position of the center of the arc:
 					declare
-						center_x : type_distance := get_x (intersection.center);
-						delta_x : type_distance_positive := intersection.x_position - center_x;
-						x_pos_mirrored : type_distance := center_x - delta_x;
+						center_x : type_position_axis := get_x (intersection.center);
+						delta_x : type_position_axis := intersection.x_position - center_x;
+						x_pos_mirrored : type_position_axis := center_x - delta_x;
 					begin
 						PI := type_point (set (x_pos_mirrored, y_position));
 					end;					
@@ -241,7 +241,7 @@ package body et_routing is
 
 				error := abs (side_d - clearance_min);
 
-				log (text => " error" & to_string (type_distance (error)), level => log_threshold + 2);
+				log (text => " error" & to_string (type_distance_positive (error)), level => log_threshold + 2);
 
 				-- If the deviation is less than the minimal allowed error then exit
 				-- the algorithm. The computed side_d is then the result of this function.
@@ -295,7 +295,7 @@ package body et_routing is
 		function compute_concave return type_track_clearance is
 
 			error : type_distance_positive;
-			min_error : constant type_distance_positive := type_distance'small;
+			min_error : constant type_distance_positive := type_distance_positive'small;
 			
 			-- The initial position of the cap is at maximum distance away from the point
 			-- of intersection. It is right below the center of the arc:
@@ -346,7 +346,7 @@ package body et_routing is
 			i : type_iteration := 0;
 
 			-- Take a copy of clearance_min and convert it to type_distance:
-			clearance_min_concave : constant type_distance_positive := type_distance (clearance_min);
+			clearance_min_concave : constant type_distance_positive := type_distance_positive (clearance_min);
 			
 			clearance : type_distance_positive;
 
@@ -706,8 +706,8 @@ package body et_routing is
 			--ol_start := type_point (set (bi.intersection.smallest_x, zero));
 			--ol_end   := type_point (set (bi.intersection.greatest_x, zero));
 
-			ol_start := type_point (set (bi.intersection.smallest_x - type_distance'small, zero));
-			ol_end   := type_point (set (bi.intersection.greatest_x + type_distance'small, zero));
+			ol_start := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
+			ol_end   := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
 
 			
 			-- CS numerical approch that moves ol_start to the right
@@ -833,8 +833,8 @@ package body et_routing is
 				--ol_start := type_point (set (bi.intersection.smallest_x, zero));
 				--ol_end   := type_point (set (bi.intersection.greatest_x, zero));
 				
-				ol_start := type_point (set (bi.intersection.smallest_x - type_distance'small, zero));
-				ol_end   := type_point (set (bi.intersection.greatest_x + type_distance'small, zero));
+				ol_start := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
+				ol_end   := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
 
 
 				
@@ -1013,8 +1013,8 @@ package body et_routing is
 			width		=> width,
 			others		=> <>);
 
-		distance_to_obstacle : type_distance_positive := type_distance'last;
-		distance_after_obstacle : type_distance_positive := type_distance'last;
+		distance_to_obstacle : type_distance_positive := type_distance_positive'last;
+		distance_after_obstacle : type_distance_positive := type_distance_positive'last;
 		status : type_valid := VALID;
 
 		package pac_points_after_obstacles is new doubly_linked_lists (type_point);

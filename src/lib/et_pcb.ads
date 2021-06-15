@@ -192,8 +192,8 @@ package et_pcb is
 	end record;
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
 
-	function on_segment (
 	-- Returns true if the given point sits on the given line.
+	function on_segment (
 		point		: in type_point; -- x/y
 		layer		: in type_signal_layer;
 		line		: in pac_conductor_lines.cursor;
@@ -205,12 +205,12 @@ package et_pcb is
 	end record;
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
 
-	function on_segment (
 	-- Returns true if the given point sits on the given arc.
-		point			: in type_point; -- x/y
-		layer			: in type_signal_layer;
-		arc				: in pac_conductor_arcs.cursor;
-		accuracy		: in type_distance)
+	function on_segment (
+		point		: in type_point; -- x/y
+		layer		: in type_signal_layer;
+		arc			: in pac_conductor_arcs.cursor;
+		accuracy	: in type_catch_zone)
 		return boolean;
 	
 	type type_conductor_circle is new et_packages.type_conductor_circle with record

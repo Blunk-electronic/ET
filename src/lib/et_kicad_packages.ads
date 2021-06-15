@@ -218,7 +218,7 @@ package et_kicad_packages is
 
 	-- "Slotted drills" or "plated millings" for terminals are limited by drill sizes because
 	-- the PCB manufacturer starts the milling with a drill.
-	subtype type_pad_milling_size is et_pcb_coordinates.type_distance 
+	subtype type_pad_milling_size is type_distance_positive
 		range et_drills.drill_size_min .. et_drills.drill_size_max;
 	
 	-- Converts the given position and dimensions of a rectangular slotted hole

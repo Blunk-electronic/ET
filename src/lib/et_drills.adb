@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -43,7 +43,7 @@ with et_string_processing;		use et_string_processing;
 
 package body et_drills is
 
-	procedure validate_drill_size (drill : in et_pcb_coordinates.type_distance) is begin
+	procedure validate_drill_size (drill : in et_pcb_coordinates.type_distance_total) is begin
 		if drill not in type_drill_size then
 			log (ERROR, "drill size invalid ! Allowed range is" 
 				 & to_string (type_drill_size'first) & " .."

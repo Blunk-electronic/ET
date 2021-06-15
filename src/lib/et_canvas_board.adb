@@ -195,7 +195,7 @@ package body et_canvas_board is
 		
 		set (point	=> p,
 			 axis	=> Y,
-			 value	=> type_distance (self.frame_height) 
+			 value	=> type_distance_total (self.frame_height) 
 						- get_y (model_point) 
 						+ self.frame_bounding_box.y
 						- get_y (self.board_origin)  -- because board origin is not the same as drawing origin
@@ -220,7 +220,7 @@ package body et_canvas_board is
 		
 		set (point	=> p,
 			 axis	=> Y,
-			 value	=> type_distance (self.frame_height) 
+			 value	=> type_distance_total (self.frame_height) 
 						- get_y (drawing_point) 
 						+ self.frame_bounding_box.y
 						- get_y (self.board_origin)  -- because board origin is not the same as drawing origin

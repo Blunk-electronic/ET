@@ -66,16 +66,15 @@ package et_design_rules is
 	file_extension : constant string := "dru";
 
 
-	conductor_width_min : constant et_pcb_coordinates.type_distance := 0.05;
+	conductor_width_min : constant type_distance_positive := 0.05;
 	
-	conductor_clearance_min : constant 
-		et_pcb_coordinates.type_distance := conductor_width_min;
+	conductor_clearance_min : constant type_distance_positive := conductor_width_min;
 	
 	subtype type_track_clearance is type_distance_positive 
-		range conductor_clearance_min .. et_pcb_coordinates.type_distance'last;
+		range conductor_clearance_min .. type_distance_positive'last;
 
 	-- Checks whether the given track clearance is in range of type_track_clearance.
-	procedure validate_track_clearance (clearance : in type_distance);
+	procedure validate_track_clearance (clearance : in type_distance_total);
 
 	
 
@@ -130,7 +129,7 @@ package et_design_rules is
 
 	-- Checks whether the given restring width is in range of type_restring_width.
 	procedure validate_restring_width (
-		restring_width : in type_distance);
+		restring_width : in type_distance_total);
 
 
 	

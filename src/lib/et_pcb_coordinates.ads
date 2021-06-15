@@ -75,7 +75,7 @@ package et_pcb_coordinates is
 	-- CS increase accuracy if required
 
 	-- The x and y position of an object:
-	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
+	--subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 
 
 	

@@ -459,9 +459,9 @@ package body et_kicad.pcb is
 		netlist_net 		: type_netlist_net;
 		
 		-- NET CLASSES
-		net_class_via_diameter			: et_pcb_coordinates.type_distance;
-		net_class_micro_via_diameter	: et_pcb_coordinates.type_distance;
-		net_class_via_restring			: et_pcb_coordinates.type_distance;		
+		net_class_via_diameter			: type_distance_positive;
+		net_class_micro_via_diameter	: type_distance_positive;
+		net_class_via_restring			: type_distance_positive;
 		
 		net_class_name 	: pac_net_class_name.bounded_string;	-- PWR, HIGH_CURRENT, ...
 		net_class 		: type_net_class;
@@ -547,7 +547,7 @@ package body et_kicad.pcb is
 		terminal_net_id		: type_net_id_terminal;
 	
 -- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
-		terminal_copper_width_inner_layers : et_pcb_coordinates.type_distance := 1.0; -- CS load from DRU ?
+		terminal_copper_width_inner_layers : type_distance_positive := 1.0; -- CS load from DRU ?
 
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
 		-- They are initialized by procedure init_terminal_layers and validated by
