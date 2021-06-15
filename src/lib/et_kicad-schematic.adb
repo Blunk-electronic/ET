@@ -526,8 +526,7 @@ package body et_kicad.schematic is
 			
 	function to_point (x_in, y_in : in string) return type_point is
 		point : type_point;
-		x, y : et_coordinates.type_distance_xy;
-
+		x, y : type_position_axis;
 	begin
 		x := mil_to_distance (x_in);
 		y := mil_to_distance (y_in);

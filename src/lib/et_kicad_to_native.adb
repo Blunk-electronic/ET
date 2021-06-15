@@ -165,7 +165,7 @@ package body et_kicad_to_native is
 			sheet_number 		: type_sheet;
 			sheet_paper_size	: et_frames.type_paper_size;
 			sheet_height		: type_distance_positive;
-			new_y				: type_distance_xy;
+			new_y				: type_position_axis;
 		begin -- move
 			-- get the sheet number where the given point resides
 			sheet_number		:= et_kicad_coordinates.sheet (point); 
@@ -199,7 +199,7 @@ package body et_kicad_to_native is
 			sheet_number 		: type_sheet;
 			sheet_paper_size	: et_frames.type_paper_size;
 			sheet_height		: type_distance_positive;
-			new_y				: type_distance_xy;
+			new_y				: type_position_axis;
 		begin -- move
 			-- get the sheet number where the given point resides
 			sheet_number		:= et_kicad_coordinates.sheet (point_help); 

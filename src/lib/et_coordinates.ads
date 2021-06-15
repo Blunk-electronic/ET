@@ -50,15 +50,14 @@ with et_geometry;				use et_geometry;
 
 package et_coordinates is
 -- 	pragma assertion_policy (check);
-	
-	
-	-- The total distance between two objects:
-	type type_distance is delta 0.01 range -100_000_000.00 .. 100_000_000.00; -- CS rename to type_distance_total
-	for type_distance'small use 0.01; -- this is the accuracy required for schematic
 
+	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
+	type type_distance is delta 0.01
+		range -10_000.00 .. 10_000.00;
+		
+	for type_distance'small use 0.01; 
+	-- this is the accuracy required for schematic
 
-	-- The x and y position of an object:
-	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter, CS rename to type_distance
 
 	
 	-- Angle or rotation is in mathematical sense, means:
@@ -67,15 +66,17 @@ package et_coordinates is
 
 	type type_rotation is delta 0.1 range -360.0 .. 360.0;
 	for type_rotation'small use 0.1;
+
 	
 	-- instantiation of the geometry package:
 	package pac_geometry_sch is new et_geometry.generic_pac_geometry (
 		type_distance		=> type_distance,
-		axis_max			=> 2000.0,
-		axis_min			=> -100.0,
+		axis_max			=> 2_000.0,
+		axis_min			=>  -100.0,
 		type_rotation		=> type_rotation);
 	
 	use pac_geometry_sch;
+
 	
 	catch_zone_default : constant type_catch_zone := 2.0; -- CS: should be a system setting in the future
 	

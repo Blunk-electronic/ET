@@ -190,8 +190,8 @@ package body et_schematic is
 		
 		-- init point_1 as the farest possible point from drawing origin
 		point_1 := type_point (set (
-					x => type_distance_xy'last,
-					y => type_distance_xy'last));
+					x => type_position_axis'last,
+					y => type_position_axis'last));
 
 		-- loop through segments and keep the nearest point to origin
 		iterate (strand.segments, query_strand'access);
