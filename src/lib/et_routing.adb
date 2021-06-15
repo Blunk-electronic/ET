@@ -674,8 +674,7 @@ package body et_routing is
 					--start_point	=> track_start,
 					start_point	=> origin,
 					end_point	=> type_point (set (
-								--x => far_right - track_width_total * 0.5,
-									x => et_pcb_coordinates.type_distance'last - track_width_total * 0.5,
+									x => far_right - track_width_total * 0.5,
 									y => zero)));
 
 		-- build the boundaries of the track:
@@ -754,8 +753,7 @@ package body et_routing is
 		track_line : constant type_line := (
 					start_point	=> origin,
 					end_point	=> type_point (set (
-								   --x => far_right - track_width_total * 0.5,
-									x => et_pcb_coordinates.type_distance'last - track_width_total * 0.5,
+									x => far_right - track_width_total * 0.5,
 									y => zero)));
 		
 		-- build the boundaries of the track:

@@ -160,8 +160,8 @@ package et_geometry is
 	package generic_pac_geometry is
 		
 		zero 		: constant type_distance := 0.0;
-		far_right	: constant type_distance := axis_max;
 		far_left	: constant type_distance := axis_min;
+		far_right	: constant type_distance := axis_max;
 
 		-- The position along an axis:
 		subtype type_position_axis is type_distance 
