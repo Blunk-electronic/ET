@@ -555,7 +555,8 @@ package body et_canvas_schematic is
 		area_shifted : type_rectangle := area;
 
 		-- Calculate the new position of area_shifted:
-		area_shifted_new_position : type_point := type_point (set (
+		area_shifted_new_position : constant type_distance_relative := 
+			to_distance_relative (set (
 						x => - self.frame_bounding_box.x,
 						y => - self.frame_bounding_box.y));
 		

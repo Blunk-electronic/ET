@@ -117,13 +117,13 @@ package body et_submodules is
 	-- Moves the given ports by the given offset.
 		ports	: in out pac_submodule_ports.map; -- the portlist
 		offset	: in et_coordinates.type_position) -- the offset (only x/y matters)
-		is
+	is
 
 		procedure move (
 			name	: in pac_net_name.bounded_string;
 			port	: in out type_submodule_port) is
 		begin
-			move_by (port.position, offset);
+			move_by (port.position, to_distance_relative (offset));
 		end;
 
 		procedure query_port (cursor : in pac_submodule_ports.cursor) is begin
@@ -171,7 +171,8 @@ package body et_submodules is
 	function netchanger_ports (
 	-- Returns the absolute x/y positions of the given netchanger.
 		netchanger_cursor	: in pac_netchangers.cursor)
-		return type_netchanger_ports is
+		return type_netchanger_ports 
+	is
 		use pac_netchangers;
 		ports : type_netchanger_ports;
 	begin
@@ -180,8 +181,8 @@ package body et_submodules is
 		rotate_by (ports.slave,  rot (element (netchanger_cursor).position_sch));
 
 		-- move the ports according to position in schematic
-		move_by (ports.master, element (netchanger_cursor).position_sch);
-		move_by (ports.slave,  element (netchanger_cursor).position_sch);
+		move_by (ports.master, to_distance_relative (element (netchanger_cursor).position_sch));
+		move_by (ports.slave,  to_distance_relative (element (netchanger_cursor).position_sch));
 				
 		return ports;
 	end netchanger_ports;

@@ -2699,7 +2699,8 @@ package body et_kicad_to_native is
 					-- CS: The offset should depend on the direction of the segment.
 					-- Currently this simple minded approach shifts to the right and up
 					-- no matter whether the segment runs horizontally or vertically.
-					offset : constant type_point := type_point (pac_geometry_sch.set (x => 1.0, y => 1.0));
+					offset : constant type_distance_relative := 
+						to_distance_relative (pac_geometry_sch.set (x => 1.0, y => 1.0));
 
 					-- the new label position after applying the offset:
 					simple_label_position : type_point;

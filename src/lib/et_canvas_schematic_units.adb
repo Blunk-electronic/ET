@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -1543,7 +1543,7 @@ package body et_canvas_schematic_units is
 				begin
 					-- The current placeholder_position is relative to the unit position.
 					-- It must be moved by the unit position in order to get the absolute position:
-					move_by (placeholder_position, element (unit_cursor).position);
+					move_by (placeholder_position, to_distance_relative (element (unit_cursor).position));
 
 					-- Add the sheet information to the position:
 					pos_abs := to_position (placeholder_position, sheet (place));

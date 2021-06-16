@@ -347,7 +347,7 @@ procedure draw_units (
 									-- Calculate the absolute position of the NAME placeholder 
 									-- as it was according to database BEFORE the move:
 									placeholder_move.absolute_position := sch_placeholder_name.position;
-									move_by (placeholder_move.absolute_position, unit_position);
+									move_by (placeholder_move.absolute_position, to_distance_relative (unit_position));
 
 									-- Depending on the tool used, calculate the new position of the 
 									-- placeholder relative to the unit position:
@@ -369,7 +369,7 @@ procedure draw_units (
 									-- Calculate the absolute position of the PURPOSE placeholder 
 									-- as it was according to database BEFORE the move:
 									placeholder_move.absolute_position := sch_placeholder_purpose.position;
-									move_by (placeholder_move.absolute_position, unit_position);
+									move_by (placeholder_move.absolute_position, to_distance_relative (unit_position));
 
 									-- Depending on the tool used, calculate the new position of the 
 									-- placeholder relative to the unit position:
@@ -391,7 +391,7 @@ procedure draw_units (
 									-- Calculate the absolute position of the VALUE placeholder 
 									-- as it was according to database BEFORE the move:
 									placeholder_move.absolute_position := sch_placeholder_value.position;
-									move_by (placeholder_move.absolute_position, unit_position);
+									move_by (placeholder_move.absolute_position, to_distance_relative (unit_position));
 
 									-- Depending on the tool used, calculate the new position of the 
 									-- placeholder relative to the unit position:

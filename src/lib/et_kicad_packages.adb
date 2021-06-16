@@ -98,7 +98,7 @@ package body et_kicad_packages is
 	function to_pad_shape_circle (
 		position	: in type_position;
 		diameter	: in type_pad_size;
-		offset		: in type_point)	-- the offset of the pad from the center
+		offset		: in type_distance_relative)	-- the offset of the pad from the center
 		return type_polygon 
 	is
 		shape : type_polygon; -- to be returned
@@ -118,7 +118,7 @@ package body et_kicad_packages is
 		center		: in type_position; -- the pad center position (incl. angle)
 		size_x		: in type_pad_size;	-- the size in x of the pad
 		size_y		: in type_pad_size;	-- the size in y of the pad
-		offset		: in type_point)	-- the offset of the pad from the center
+		offset		: in type_distance_relative)	-- the offset of the pad from the center
 		return type_polygon 
 	is
 		use et_pcb_coordinates;
@@ -199,7 +199,7 @@ package body et_kicad_packages is
 		center	: in type_position;	-- the pad center position (incl. angle)
 		size_x	: in type_pad_size;	-- the size in x of the pad
 		size_y	: in type_pad_size;	-- the size in y of the pad
-		offset	: in type_point)	-- the offset of the pad from the center
+		offset	: in type_distance_relative)	-- the offset of the pad from the center
 		return type_polygon 
 	is
 		use et_pcb_coordinates;
@@ -299,7 +299,7 @@ package body et_kicad_packages is
 		center	: in type_position; -- the terminal position (incl. angle, (z axis ignored))
 		size_x	: in type_pad_size;	-- the size in x of the hole
 		size_y	: in type_pad_size;	-- the size in y of the hole
-		offset	: in type_point)	-- the offset of the pad from the center
+		offset	: in type_distance_relative)	-- the offset of the pad from the center
 		return pac_polygon_segments.list 
 	is
 		use et_pcb_coordinates;
@@ -395,8 +395,8 @@ package body et_kicad_packages is
 		file_name		: in string; -- S_0201.kicad_mod
 		lines			: in pac_lines_of_file.list;
 		log_threshold	: in et_string_processing.type_log_level)
-		return type_package_library is
-
+		return type_package_library 
+	is
 		use pac_lines_of_file;
 		use et_drills;
 		use et_terminals;
@@ -1936,7 +1936,7 @@ package body et_kicad_packages is
 											center	=> terminal_position,
 											size_x	=> terminal_milling_size_x,
 											size_y	=> terminal_milling_size_y,
-											offset	=> terminal_pad_drill_offset);
+											offset	=> to_distance_relative (terminal_pad_drill_offset));
 
 								millings : type_plated_millings;
 								
@@ -1986,7 +1986,7 @@ package body et_kicad_packages is
 								-- Therefore the size in x serves as diameter.
 								shape := to_pad_shape_circle (
 											terminal_position, pad_size_x, 
-											terminal_pad_drill_offset);
+											to_distance_relative (terminal_pad_drill_offset));
 								
 								terminals.insert (
 									key 		=> terminal_name,
@@ -2021,7 +2021,7 @@ package body et_kicad_packages is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset		=> terminal_pad_drill_offset);
+											offset		=> to_distance_relative (terminal_pad_drill_offset));
 
 								insert_tht;
 
@@ -2031,7 +2031,7 @@ package body et_kicad_packages is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset		=> terminal_pad_drill_offset);
+											offset		=> to_distance_relative (terminal_pad_drill_offset));
 
 								insert_tht;
 
@@ -2050,7 +2050,7 @@ package body et_kicad_packages is
 								-- Therefore the size in x serves as diameter.
 								shape := to_pad_shape_circle (
 											terminal_position, pad_size_x, 
-											terminal_pad_drill_offset);
+											to_distance_relative (terminal_pad_drill_offset));
 								
 								terminals.insert (
 									key 		=> terminal_name, 
@@ -2084,7 +2084,7 @@ package body et_kicad_packages is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset 		=> terminal_pad_drill_offset);
+											offset 		=> to_distance_relative (terminal_pad_drill_offset));
 
 								terminals.insert (
 									key 		=> terminal_name, 
@@ -2119,7 +2119,7 @@ package body et_kicad_packages is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset		=> terminal_pad_drill_offset);
+											offset		=> to_distance_relative (terminal_pad_drill_offset));
 
 								terminals.insert (
 									key 		=> terminal_name, 

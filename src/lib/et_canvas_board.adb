@@ -790,7 +790,8 @@ package body et_canvas_board is
 		area_shifted : type_rectangle := area;
 
 		-- Calculate the new position of area_shifted:
-		area_shifted_new_position : type_point := type_point (set (
+		area_shifted_new_position : constant type_distance_relative := 
+			to_distance_relative (set (
 						x => - self.frame_bounding_box.x,
 						y => - self.frame_bounding_box.y));
 
@@ -908,7 +909,7 @@ package body et_canvas_board is
 
 		
 		-- move area_shifted according to board position:
-		move_by (area_shifted, type_point (invert (self.board_origin, X)));
+		move_by (area_shifted, to_distance_relative (invert (self.board_origin, X)));
 		
 		save (context.cr);
 		-- Prepare the current transformation matrix (CTM) so that

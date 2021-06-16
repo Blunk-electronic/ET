@@ -77,7 +77,7 @@ is
 		-- Position and size are fixed and can not be changed by the operator:
 		procedure draw_instance_name is
 			position : type_point := submod_position;
-			offset : constant type_point := type_point (set (
+			offset : constant type_distance_relative := to_distance_relative (set (
 					x => zero,
 					y => - text_spacing));
 		begin
@@ -101,7 +101,7 @@ is
 		-- Position and size are fixed and can not be changed by the operator:
 		procedure draw_file_name is
 			position : type_point := submod_position;
-			offset : constant type_point := type_point (set (
+			offset : constant type_distance_relative := to_distance_relative (set (
 					x => zero,
 					y => - (2.0 * text_spacing + instance_font_size)));
 		begin
@@ -125,7 +125,7 @@ is
 		-- Position and size are fixed and can not be changed by the operator:
 		procedure draw_position_in_board is
 			position : type_point := submod_position;
-			offset : constant type_point := type_point (set (
+			offset : constant type_distance_relative := to_distance_relative (set (
 					x => zero,
 					y => - (3.0 * text_spacing + instance_font_size + file_font_size)));
 
@@ -192,7 +192,7 @@ is
 
 				-- Move pos by the position of the port. 
 				-- The port position is relative to the module (box) position:
-				move_by (pos, element (pc).position);
+				move_by (pos, to_distance_relative (element (pc).position));
 
 				-- According to the edge where the port sits, pos will now be fine
 				-- adjusted, because the port is a rectangle which position is at 
@@ -231,7 +231,7 @@ is
 					
 					-- Move pos down so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, set (x => zero, y => - port_symbol_height / 2.0));
+					move_by (pos, to_distance_relative (set (x => zero, y => - port_symbol_height / 2.0)));
 
 					draw_horizontal;
 					
@@ -268,7 +268,7 @@ is
 					
 					-- Move pos down and left so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, set (x => - port_symbol_width, y => - port_symbol_height / 2.0));
+					move_by (pos, to_distance_relative (set (x => - port_symbol_width, y => - port_symbol_height / 2.0)));
 
 					draw_horizontal;
 
@@ -305,7 +305,7 @@ is
 					
 					-- Move pos left so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, set (x => - port_symbol_height / 2.0, y => zero));
+					move_by (pos, to_distance_relative (set (x => - port_symbol_height / 2.0, y => zero)));
 
 					draw_vertical;
 
@@ -342,7 +342,7 @@ is
 					
 					-- Move pos up and left so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, set (x => - port_symbol_height / 2.0, y => - port_symbol_width));
+					move_by (pos, to_distance_relative (set (x => - port_symbol_height / 2.0, y => - port_symbol_width)));
 
 					draw_vertical;
 					

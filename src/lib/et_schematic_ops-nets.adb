@@ -878,11 +878,11 @@ package body et_schematic_ops.nets is
 	is 
 		-- Calculate the displacement of the start and end point:
 		
-		delta_start : constant type_point := type_point (
-			distance_relative (segment_before.start_point, segment_after.start_point));
+		delta_start : constant type_distance_relative :=
+			distance_relative (segment_before.start_point, segment_after.start_point);
 		
-		delta_end	: constant type_point := type_point (
-			distance_relative (segment_before.end_point, segment_after.end_point));
+		delta_end	: constant type_distance_relative :=
+			distance_relative (segment_before.end_point, segment_after.end_point);
 															
 		use pac_net_labels;
 		label_cursor : pac_net_labels.cursor := segment_after.labels.first;
@@ -992,7 +992,7 @@ package body et_schematic_ops.nets is
 
 											move_by (
 												point	=> segment.start_point,
-												offset	=> set (dx, dy));
+												offset	=> to_distance_relative (set (dx, dy)));
 										
 										else
 											segment.start_point := destination;
@@ -1001,7 +1001,7 @@ package body et_schematic_ops.nets is
 									when RELATIVE =>
 										move_by (
 											point	=> segment.start_point,
-											offset	=> destination);
+											offset	=> to_distance_relative (destination));
 								end case;
 								
 							when END_POINT =>
@@ -1011,7 +1011,7 @@ package body et_schematic_ops.nets is
 
 											move_by (
 												point	=> segment.end_point,
-												offset	=> set (dx, dy));
+												offset	=> to_distance_relative (set (dx, dy)));
 
 										else
 											segment.end_point := destination;
@@ -1020,7 +1020,7 @@ package body et_schematic_ops.nets is
 									when RELATIVE =>
 										move_by (
 											point	=> segment.end_point,
-											offset	=> destination);
+											offset	=> to_distance_relative (destination));
 								end case;
 
 							when CENTER =>
@@ -1028,21 +1028,21 @@ package body et_schematic_ops.nets is
 									when ABSOLUTE =>
 										move_by (
 											point	=> segment.start_point,
-											offset	=> set (dx, dy));
+											offset	=> to_distance_relative (set (dx, dy)));
 
 										move_by (
 											point	=> segment.end_point,
-											offset	=> set (dx, dy));
+											offset	=> to_distance_relative (set (dx, dy)));
 
 									when RELATIVE =>
 										move_by (
 											point	=> segment.start_point,
-											offset	=> destination -- the given position is relative
+											offset	=> to_distance_relative (destination) -- the given position is relative
 											);
 
 										move_by (
 											point	=> segment.end_point,
-											offset	=> destination -- the given position is relative
+											offset	=> to_distance_relative (destination) -- the given position is relative
 											);
 										
 								end case;
@@ -2619,7 +2619,7 @@ package body et_schematic_ops.nets is
 					begin
 						-- label_position is relative to segment_position
 						label.position := label_position;
-						move_by (label.position, segment_position);
+						move_by (label.position, to_distance_relative (segment_position));
 						-- now label.position is absolute
 						
 						-- CS: label size, style and line width assume default. could be provided by further

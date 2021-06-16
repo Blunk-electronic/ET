@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -775,7 +775,8 @@ package body et_schematic_ops.units is
 
 				procedure move_unit (
 					unit_name	: in pac_unit_name.bounded_string;
-					unit		: in out et_schematic.type_unit) is
+					unit		: in out et_schematic.type_unit) 
+				is
 					use et_coordinates;
 
 					-- Load the current sheet number where the unit is.
@@ -795,7 +796,7 @@ package body et_schematic_ops.units is
 						when RELATIVE =>
 							move_by (
 								point	=> unit.position,
-								offset	=> point);
+								offset	=> to_distance_relative (point));
 					end case;
 					
 					exception

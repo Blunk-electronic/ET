@@ -74,7 +74,7 @@ is
 		line : type_line := (pac_shapes.type_line (element (c)) with null record);
 	begin
 		rotate_by (line, unit_rotation);
-		move_by (line, unit_position);
+		move_by (line, to_distance_relative (unit_position));
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 		draw_line (in_area, context, line, element (c).width, self.frame_height);
 	end draw_line;
@@ -84,7 +84,7 @@ is
 		arc : type_arc := (pac_shapes.type_arc (element (c)) with null record);
 	begin
 		rotate_by (arc, unit_rotation);
-		move_by (arc, unit_position);
+		move_by (arc, to_distance_relative (unit_position));
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 		draw_arc (in_area, context, arc, element (c).width, self.frame_height);
 	end draw_arc;
@@ -93,7 +93,7 @@ is
 		circle : type_circle := (pac_shapes.type_circle (element (c)) with null record);
 	begin
 		rotate_by (circle, unit_rotation);
-		move_by (circle, unit_position);
+		move_by (circle, to_distance_relative (unit_position));
 		set_line_width (context.cr, type_view_coordinate (element (c).width));
 
 		-- the circle is not filled -> actual "filled" is NO
@@ -138,7 +138,7 @@ is
 			rotate_by (pos_port_name, unit_rotation);
 
 			-- Move the name by the unit position:
-			move_by (pos_port_name, unit_position);
+			move_by (pos_port_name, to_distance_relative (unit_position));
 			
 			set_color_symbols (context.cr, brightness);
 
@@ -199,7 +199,7 @@ is
 			end if;
 
 			-- Move the name by the unit position:
-			move_by (pos_terminal_name, unit_position);
+			move_by (pos_terminal_name, to_distance_relative (unit_position));
 			
 			set_color_symbols (context.cr, brightness);
 
@@ -302,7 +302,7 @@ is
 
 		line.start_point := start_point;
 		line.end_point := end_point;
-		move_by (line, unit_position);
+		move_by (line, to_distance_relative (unit_position));
 		
 		-- Draw the line of the port:
 		draw_line (in_area, context, line, port_line_width, self.frame_height);
@@ -362,7 +362,7 @@ is
 		rotate_by (p, unit_rotation);
 
 		-- Move text by unit position
-		move_by (p, unit_position);
+		move_by (p, to_distance_relative (unit_position));
 		
 		draw_text 
 			(
@@ -400,7 +400,7 @@ is
 		if device_names_enabled then
 
 			-- Move placeholder by unit position
-			move_by (p, unit_position);
+			move_by (p, to_distance_relative (unit_position));
 			
 			draw_text (
 				area		=> in_area,
@@ -430,7 +430,7 @@ is
 				p := sch_placeholder_value.position;
 
 				-- Move text by unit position
-				move_by (p, unit_position);
+				move_by (p, to_distance_relative (unit_position));
 				
 				draw_text (
 					area		=> in_area,
@@ -461,7 +461,7 @@ is
 				p := sch_placeholder_purpose.position;
 
 				-- Move text by unit position
-				move_by (p, unit_position);
+				move_by (p, to_distance_relative (unit_position));
 				
 				draw_text (
 					area		=> in_area,

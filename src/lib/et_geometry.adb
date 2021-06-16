@@ -189,6 +189,31 @@ package body et_geometry is
 				& axis_separator
 				& to_string (point.y);
 		end to_string;
+
+		
+		function to_point (d : in type_distance_relative)
+			return type_point'class
+		is 
+			p : type_point;
+		begin
+			p.x := d.x;
+			p.y := d.y;
+			return p;
+		end to_point;
+
+		function to_distance_relative (p : in type_point)
+			return type_distance_relative
+		is begin
+			return (p.x, p.y);
+		end to_distance_relative;
+
+		function invert (d : in type_distance_relative)
+			return type_distance_relative
+		is begin
+			return (-1.0 * d.x, -1.0 * d.y);
+		end invert;
+
+		
 		
 		function to_distance (distance : in string) return type_distance is begin
 			return type_distance'value (distance);
@@ -207,11 +232,11 @@ package body et_geometry is
 			end if;
 		end;
 		
-		function get_x (point : in type_point'class) return type_distance is begin
+		function get_x (point : in type_point'class) return type_position_axis is begin
 			return point.x;
 		end;
 
-		function get_y (point : in type_point'class) return type_distance is begin
+		function get_y (point : in type_point'class) return type_position_axis is begin
 			return point.y;
 		end;
 
@@ -358,10 +383,9 @@ package body et_geometry is
 		end get_boundaries;
 
 		procedure move_by (
-		-- Moves the boundaries by the given offset.
 			boundaries	: in out type_boundaries;
-			offset		: in type_point) is
-		begin
+			offset		: in type_distance_relative)
+		is begin
 			boundaries.smallest_x := boundaries.smallest_x + offset.x;
 			boundaries.greatest_x := boundaries.greatest_x + offset.x;
 			
@@ -447,11 +471,12 @@ package body et_geometry is
 
 		procedure move_by (
 			rectangle	: in out type_rectangle;
-			offset		: in type_point) is
-		begin
+			offset		: in type_distance_relative)
+		is begin
 			rectangle.x := rectangle.x + offset.x;
 			rectangle.y := rectangle.y + offset.y;
 		end move_by;
+
 		
 		function intersects (rect1, rect2 : type_rectangle) return boolean is begin
 			return not (
@@ -512,7 +537,10 @@ package body et_geometry is
 		end;
 
 		
-		function set (x, y : in type_distance) return type_point'class is
+		function set (
+			x, y : in type_position_axis)
+			return type_point'class 
+		is
 			point : type_point;
 		begin
 			point.x := x;
@@ -522,7 +550,7 @@ package body et_geometry is
 
 		procedure set (
 			axis 	: in type_axis_2d;
-			value	: in type_distance;					 
+			value	: in type_position_axis;					 
 			point	: in out type_point'class) is
 		begin
 			case axis is
@@ -588,10 +616,9 @@ package body et_geometry is
 		end;
 
 		procedure move_by (
-		-- Moves a point by the given offset.
 			point	: in out type_point'class;
-			offset	: in type_point) is
-		begin
+			offset	: in type_distance_relative) 
+		is begin
 			point.x := point.x + offset.x;
 			point.y := point.y + offset.y;
 		end move_by;
@@ -695,9 +722,15 @@ package body et_geometry is
 			d.y := point_one.y - point_two.y;
 			return d;
 		end;
+
+
+
 		
-		function distance_relative (point_one, point_two : in type_point) return type_point'class is
-			d : type_point;
+		function distance_relative (
+			point_one, point_two : in type_point)
+			return type_distance_relative
+		is
+			d : type_distance_relative;
 		begin
 			d.x := point_two.x - point_one.x;
 			d.y := point_two.y - point_one.y;
@@ -1837,7 +1870,7 @@ package body et_geometry is
 		
 		procedure move_by (
 			line	: in out type_line;
-			offset	: in type_point)
+			offset	: in type_distance_relative)
 		is begin
 			move_by (point	=> line.start_point,	offset => offset);
 			move_by (point	=> line.end_point,		offset => offset);
@@ -2845,7 +2878,7 @@ package body et_geometry is
 
 			-- The boundaries held in "result" are still relative to the origin (0/0).
 			-- They must be moved back to where the given arc is positioned.
-			move_by (result, arc.center);
+			move_by (result, to_distance_relative (arc.center));
 
 			-- extend the boundaries by half the line width;
 			result.smallest_x := result.smallest_x - half_width;
@@ -3090,8 +3123,8 @@ package body et_geometry is
 
 		procedure move_by (
 			arc		: in out type_arc;
-			offset	: in type_point) is
-		begin
+			offset	: in type_distance_relative)
+		is begin
 			move_by (point => arc.center,      offset => offset);
 			move_by (point => arc.start_point, offset => offset);
 			move_by (point => arc.end_point,   offset => offset);
@@ -3099,10 +3132,9 @@ package body et_geometry is
 
 		procedure move_to (
 			arc			: in out type_arc;
-			position	: in type_point) is
-
-			-- compute the offset:
-			offset : type_point := type_point (distance_relative (arc.center, position));
+			position	: in type_point)
+		is
+			offset : constant type_distance_relative := distance_relative (arc.center, position);
 		begin
 			-- move the center of the arc to the given position
 			move_to (arc.center, position);
@@ -3148,7 +3180,7 @@ package body et_geometry is
 		
 		procedure move_by (
 			circle	: in out type_circle;
-			offset	: in type_point)
+			offset	: in type_distance_relative)
 		is begin
 			move_by (point	=> circle.center,	offset => offset);
 		end move_by;
@@ -3261,7 +3293,7 @@ package body et_geometry is
 			-- So we must first move the line by
 			-- the given center of the circle. The intersections,
 			-- if any exist, must finally be moved back by this offset:
-			offset : constant type_point := circle.center;
+			offset : constant type_distance_relative := to_distance_relative (circle.center);
 			
 			-- The circle radius is:
 			r : constant float := float (circle.radius);
@@ -3336,8 +3368,8 @@ package body et_geometry is
 			
 			-- Move start and end point of line by offset 
 			-- (which is the center of the given circle):
-			move_by (ps, type_point (invert (offset)));
-			move_by (pe, type_point (invert (offset)));
+			move_by (ps, invert (offset));
+			move_by (pe, invert (offset));
 
 			--put_line ("o start " & to_string (ps));
 			--put_line ("o end   " & to_string (pe));
@@ -4327,7 +4359,7 @@ package body et_geometry is
 		
 		procedure move_by (
 			polygon	: in out type_polygon_base;
-			offset	: in type_point) 
+			offset	: in type_distance_relative) 
 		is
 			use pac_polygon_segments;
 

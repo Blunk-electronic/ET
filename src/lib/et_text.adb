@@ -430,8 +430,8 @@ package body et_text is
 			use sorting;
 
 			-- Since there is a line width, the text position must be changed slightly:
-			offset_due_to_line_width : constant type_point := type_point (
-				set (x => line_width * 0.5, y => line_width * 0.5));
+			offset_due_to_line_width : constant type_distance_relative :=
+				to_distance_relative (set (x => line_width * 0.5, y => line_width * 0.5));
 			
 			-- This indicates the position of the character being processed:
 			place : positive := 1;
@@ -488,7 +488,7 @@ package body et_text is
 					-- CS: depends on alignment ?
 					pac_shapes.move_by (
 						line	=> pac_shapes.type_line (l),
-						offset	=> type_point (set (
+						offset	=> to_distance_relative (set (
 									x => (place - 1) * spacing,
 									y => zero)));
 
@@ -524,12 +524,12 @@ package body et_text is
 							when CENTER =>
 								pac_shapes.move_by (
 									line	=> pac_shapes.type_line (l),
-									offset	=> type_point (set (zero, - text_height_half)));
+									offset	=> to_distance_relative (set (zero, - text_height_half)));
 
 							when TOP =>
 								pac_shapes.move_by (
 									line	=> pac_shapes.type_line (l),
-									offset	=> type_point (set (zero, - text_height)));
+									offset	=> to_distance_relative (set (zero, - text_height)));
 
 						end case;
 					end align_vertical;
@@ -545,14 +545,14 @@ package body et_text is
 						when CENTER =>
 							pac_shapes.move_by (
 								line	=> pac_shapes.type_line (l),
-								offset	=> type_point (set (- text_length_half, zero)));
+								offset	=> to_distance_relative (set (- text_length_half, zero)));
 
 							align_vertical;
 							
 						when RIGHT =>
 							pac_shapes.move_by (
 								line	=> pac_shapes.type_line (l),
-								offset	=> type_point (set (- text_length, zero)));
+								offset	=> to_distance_relative (set (- text_length, zero)));
 							
 							align_vertical;
 					end case;
@@ -575,7 +575,7 @@ package body et_text is
 					-- The given position is the anchor point of the text.
 					pac_shapes.move_by (
 						line	=> pac_shapes.type_line (l),
-						offset	=> position);
+						offset	=> to_distance_relative (position));
 
 					append (scratch, l);
 				end query_line;

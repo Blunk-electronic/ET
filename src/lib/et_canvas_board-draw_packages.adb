@@ -75,6 +75,10 @@ is
 		flip			: in et_pcb.type_flipped;
 		placeholders	: in et_packages.type_text_placeholders) -- specified in the board. will override default positions
 	is
+		-- CS should improve performance:
+		-- package_offset : constant type_distance_relative := to_distance_relative (package_position)
+		-- use package_offset instead of many calls of to_distance_relative (package_position)
+		
 		use pac_draw_fab;
 		use et_board_shapes_and_text;
 		use et_board_shapes_and_text.pac_text_fab;
@@ -192,7 +196,7 @@ is
 
 			-- Move the text by the package position to 
 			-- its final position:
-			move_by (t.position, type_point (package_position));
+			move_by (t.position, to_distance_relative (package_position));
 
 			draw_text_origin (type_point (t.position), f);
 
@@ -230,7 +234,7 @@ is
 						
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, type_point (package_position));
+						move_by (line, to_distance_relative (package_position));
 
 						set_color_silkscreen (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
@@ -265,7 +269,7 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, type_point (package_position));
+						move_by (arc, to_distance_relative (package_position));
 
 						set_color_silkscreen (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
@@ -302,7 +306,7 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, type_point (package_position));
+						move_by (circle, to_distance_relative (package_position));
 
 						set_color_silkscreen (context.cr, f);
 
@@ -356,7 +360,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, type_point (package_position));
+						move_by (polygon, to_distance_relative (package_position));
 
 						set_color_silkscreen (context.cr, f);
 
@@ -409,7 +413,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, type_point (package_position));
+						move_by (cutout, to_distance_relative (package_position));
 
 						set_color_background (context.cr);
 
@@ -462,7 +466,7 @@ is
 
 						-- Move the placeholder by the package position to 
 						-- its final position:
-						move_by (ph.position, type_point (package_position));
+						move_by (ph.position, to_distance_relative (package_position));
 
 						set_color_silkscreen (context.cr, f);
 
@@ -596,7 +600,7 @@ is
 						
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, type_point (package_position));
+						move_by (line, to_distance_relative (package_position));
 
 						set_color_assy_doc (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (line.width));
@@ -631,7 +635,7 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, type_point (package_position));
+						move_by (arc, to_distance_relative (package_position));
 
 						set_color_assy_doc (context.cr, f);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
@@ -668,7 +672,7 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, type_point (package_position));
+						move_by (circle, to_distance_relative (package_position));
 
 						set_color_assy_doc (context.cr, f);
 
@@ -722,7 +726,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, type_point (package_position));
+						move_by (polygon, to_distance_relative (package_position));
 
 						set_color_assy_doc (context.cr, f);
 
@@ -776,7 +780,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, type_point (package_position));
+						move_by (cutout, to_distance_relative (package_position));
 
 						set_color_background (context.cr);
 
@@ -830,7 +834,7 @@ is
 
 						-- Move the placeholder by the package position to 
 						-- its final position:
-						move_by (ph.position, type_point (package_position));
+						move_by (ph.position, to_distance_relative (package_position));
 
 						set_color_assy_doc (context.cr, f);
 
@@ -958,7 +962,7 @@ is
 						
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, type_point (package_position));
+						move_by (line, to_distance_relative (package_position));
 
 						set_color_keepout (context.cr, f);
 						draw_line (in_area, context, line, keepout_line_width, self.frame_height);
@@ -992,7 +996,7 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, type_point (package_position));
+						move_by (arc, to_distance_relative (package_position));
 
 						set_color_keepout (context.cr, f);
 						draw_arc (in_area, context, arc, keepout_line_width, self.frame_height);
@@ -1028,7 +1032,7 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, type_point (package_position));
+						move_by (circle, to_distance_relative (package_position));
 
 						set_color_keepout (context.cr, f);
 
@@ -1069,7 +1073,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, type_point (package_position));
+						move_by (polygon, to_distance_relative (package_position));
 
 						set_color_keepout (context.cr, f);
 
@@ -1110,7 +1114,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, type_point (package_position));
+						move_by (cutout, to_distance_relative (package_position));
 
 						set_color_background (context.cr);
 
@@ -1178,7 +1182,7 @@ is
 						
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, type_point (package_position));
+						move_by (line, to_distance_relative (package_position));
 
 						set_color_stop_mask (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (line.width));
@@ -1213,7 +1217,7 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, type_point (package_position));
+						move_by (arc, to_distance_relative (package_position));
 
 						set_color_stop_mask (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
@@ -1250,7 +1254,7 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, type_point (package_position));
+						move_by (circle, to_distance_relative (package_position));
 
 						set_color_stop_mask (context.cr, f, self.scale);
 
@@ -1304,7 +1308,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, type_point (package_position));
+						move_by (polygon, to_distance_relative (package_position));
 
 						set_color_stop_mask (context.cr, f, self.scale);
 
@@ -1357,7 +1361,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, type_point (package_position));
+						move_by (cutout, to_distance_relative (package_position));
 
 						set_color_background (context.cr);
 
@@ -1460,7 +1464,7 @@ is
 						
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, type_point (package_position));
+						move_by (line, to_distance_relative (package_position));
 
 						set_color_stencil (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (line.width));
@@ -1495,7 +1499,7 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, type_point (package_position));
+						move_by (arc, to_distance_relative (package_position));
 
 						set_color_stencil (context.cr, f, self.scale);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
@@ -1532,7 +1536,7 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, type_point (package_position));
+						move_by (circle, to_distance_relative (package_position));
 
 						set_color_stencil (context.cr, f, self.scale);
 
@@ -1587,7 +1591,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, type_point (package_position));
+						move_by (polygon, to_distance_relative (package_position));
 
 						set_color_stencil (context.cr, f, self.scale);
 
@@ -1640,7 +1644,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, type_point (package_position));
+						move_by (cutout, to_distance_relative (package_position));
 
 						set_color_background (context.cr);
 
@@ -1713,7 +1717,7 @@ is
 						mirror (line, Y);
 					end if;
 					
-					move_by (line, type_point (package_position));
+					move_by (line, to_distance_relative (package_position));
 
 					draw_line (in_area, context, line, route_restrict_line_width, self.frame_height);
 				end if;
@@ -1738,7 +1742,7 @@ is
 						mirror (arc, Y); 
 					end if;
 
-					move_by (arc, type_point (package_position));
+					move_by (arc, to_distance_relative (package_position));
 
 					draw_arc (in_area, context, arc, route_restrict_line_width, self.frame_height);
 				end if;
@@ -1763,7 +1767,7 @@ is
 						mirror (circle, Y);
 					end if;
 					
-					move_by (circle, type_point (package_position));
+					move_by (circle, to_distance_relative (package_position));
 
 					draw_circle (in_area, context, circle, circle.filled,
 						route_restrict_line_width, self.frame_height);
@@ -1790,7 +1794,7 @@ is
 						mirror (polygon, Y);
 					end if;
 
-					move_by (polygon, type_point (package_position));
+					move_by (polygon, to_distance_relative (package_position));
 
 					draw_polygon (in_area, context, polygon, YES,
 						zero, self.frame_height);
@@ -1817,7 +1821,7 @@ is
 						mirror (cutout, Y); 
 					end if;
 
-					move_by (cutout, type_point (package_position));
+					move_by (cutout, to_distance_relative (package_position));
 
 					set_color_background (context.cr);
 
@@ -1870,7 +1874,7 @@ is
 						mirror (line, Y);
 					end if;
 
-					move_by (line, type_point (package_position));
+					move_by (line, to_distance_relative (package_position));
 
 					draw_line (in_area, context, line, via_restrict_line_width, self.frame_height);
 				end if;
@@ -1895,7 +1899,7 @@ is
 						mirror (arc, Y); 
 					end if;
 
-					move_by (arc, type_point (package_position));
+					move_by (arc, to_distance_relative (package_position));
 
 					draw_arc (in_area, context, arc, via_restrict_line_width, self.frame_height);
 				end if;
@@ -1920,7 +1924,7 @@ is
 						mirror (circle, Y);
 					end if;
 
-					move_by (circle, type_point (package_position));
+					move_by (circle, to_distance_relative (package_position));
 
 					draw_circle (in_area, context, circle, circle.filled,
 						via_restrict_line_width, self.frame_height);
@@ -1947,7 +1951,7 @@ is
 						mirror (polygon, Y);
 					end if;
 
-					move_by (polygon, type_point (package_position));
+					move_by (polygon, to_distance_relative (package_position));
 
 					draw_polygon (in_area, context, polygon, YES,
 						zero, self.frame_height);
@@ -1974,7 +1978,7 @@ is
 						mirror (cutout, Y); 
 					end if;
 					
-					move_by (cutout, type_point (package_position));
+					move_by (cutout, to_distance_relative (package_position));
 
 					set_color_background (context.cr);
 
@@ -2021,7 +2025,7 @@ is
 				
 					--if flipped then mirror (line, Y); end if;
 					
-					--move_by (line, type_point (package_position));
+					--move_by (line, to_distance_relative (package_position));
 
 					--draw_line (in_area, context, line,
 						--pcb_contour_line_width, self.frame_height);
@@ -2043,7 +2047,7 @@ is
 					
 					--if flipped then mirror (arc, Y); end if;
 					
-					--move_by (arc, type_point (package_position));
+					--move_by (arc, to_distance_relative (package_position));
 
 					--draw_arc (in_area, context, arc, 
 						--pcb_contour_line_width, self.frame_height);
@@ -2063,7 +2067,7 @@ is
 					
 					--if flipped then mirror (circle, Y); end if;
 						
-					--move_by (circle, type_point (package_position));
+					--move_by (circle, to_distance_relative (package_position));
 
 					--draw_circle (in_area, context, circle, NO,
 						--pcb_contour_line_width, self.frame_height);
@@ -2081,7 +2085,7 @@ is
 				
 				if flipped then mirror (circle, Y); end if;
 					
-				move_by (circle, type_point (package_position));
+				move_by (circle, to_distance_relative (package_position));
 
 				draw_circle (in_area, context, circle, NO,
 					pcb_contour_line_width, self.frame_height);
@@ -2100,7 +2104,7 @@ is
 				
 						if flipped then mirror (l, Y); end if;
 						
-						move_by (l, type_point (package_position));
+						move_by (l, to_distance_relative (package_position));
 
 						draw_line (in_area, context, l,
 							pcb_contour_line_width, self.frame_height);
@@ -2112,7 +2116,7 @@ is
 						
 						if flipped then mirror (a, Y); end if;
 						
-						move_by (a, type_point (package_position));
+						move_by (a, to_distance_relative (package_position));
 
 						draw_arc (in_area, context, a, 
 							pcb_contour_line_width, self.frame_height);
@@ -2181,7 +2185,7 @@ is
 
 						if flipped then mirror (line, Y); end if;
 						
-						move_by (line, type_point (package_position));
+						move_by (line, to_distance_relative (package_position));
 
 						set_color_conductor (context.cr, ly);
 						set_line_width (context.cr, type_view_coordinate (line.width));
@@ -2218,7 +2222,7 @@ is
 						
 						if flipped then mirror (arc, Y); end if;
 						
-						move_by (arc, type_point (package_position));
+						move_by (arc, to_distance_relative (package_position));
 
 						set_color_conductor (context.cr, ly);
 						set_line_width (context.cr, type_view_coordinate (arc.width));
@@ -2256,7 +2260,7 @@ is
 						
 						if flipped then mirror (circle, Y); end if;
 						
-						move_by (circle, type_point (package_position));
+						move_by (circle, to_distance_relative (package_position));
 
 						set_color_conductor (context.cr, ly);
 
@@ -2313,7 +2317,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, type_point (package_position));
+						move_by (polygon, to_distance_relative (package_position));
 
 						set_color_conductor (context.cr, ly);
 
@@ -2360,7 +2364,7 @@ is
 						
 						if flipped then mirror (polygon, Y); end if;
 						
-						move_by (polygon, type_point (package_position));
+						move_by (polygon, to_distance_relative (package_position));
 
 						set_color_conductor (context.cr, ly);
 
@@ -2407,7 +2411,7 @@ is
 						
 						if flipped then mirror (cutout, Y); end if;
 						
-						move_by (cutout, type_point (package_position));
+						move_by (cutout, to_distance_relative (package_position));
 
 						set_color_background (context.cr);
 
@@ -2524,7 +2528,7 @@ is
 				if flipped then mirror (term_pos, Y); end if;
 				
 				-- Move the given terminal position by the position of the package.
-				move_by (term_pos, type_point (package_position));
+				move_by (term_pos, to_distance_relative (package_position));
 				-- The terminal position is now ready for drawing the terminal
 				-- name and the pad outline.
 
@@ -2548,7 +2552,7 @@ is
 				end if;
 				
 				-- Move the outline to its final position:
-				move_by (outline, type_point (term_pos));
+				move_by (outline, to_distance_relative (term_pos));
 			end move;
 
 			procedure draw_tht_pad_with_circular_cutout (
@@ -2640,7 +2644,7 @@ is
 							if flipped then mirror (pad_pos, Y); end if;
 							
 							-- Move the pad by the position of the package:
-							move_by (pad_pos, type_point (package_position));
+							move_by (pad_pos, to_distance_relative (package_position));
 							
 							set_color_terminal_name (context.cr);
 							
@@ -2939,7 +2943,7 @@ is
 						if flipped then mirror (pad_pos, Y); end if;
 
 						-- Move the drill by the position of the package:
-						move_by (pad_pos, type_point (package_position));
+						move_by (pad_pos, to_distance_relative (package_position));
 
 
 						-- Build a circle to show the restring of inner layers:

@@ -438,7 +438,7 @@ is
 		procedure draw_numbers (from, to : in string) is 
 			use et_text;
 			position : type_point := circle.center;
-			offset : type_point := type_point (
+			offset : constant type_distance_relative := to_distance_relative (
 				set (zero, + radius_base * text_position_layer_and_drill_factor));
 		begin
 			move_by (position, offset);
@@ -465,11 +465,11 @@ is
 		procedure draw_drill_size is 
 			use et_text;
 			position : type_point := circle.center;
-			offset : type_point;
+			offset : type_distance_relative;
 		begin
 			if not drill_size_drawn then
 
-				offset := type_point (
+				offset := to_distance_relative (
 					set (zero, - radius_base * text_position_layer_and_drill_factor));
 				
 				move_by (position, offset);

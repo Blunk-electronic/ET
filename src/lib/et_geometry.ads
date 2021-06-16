@@ -234,18 +234,37 @@ package et_geometry is
 		far_lower_right	: constant type_point;
 		
 		function to_string (point : in type_point) return string;
+
+		
+		type type_distance_relative is record
+			x, y : type_distance := zero;
+		end record;
+
+		function to_point (d : in type_distance_relative)
+			return type_point'class;
+
+		function to_distance_relative (p : in type_point)
+			return type_distance_relative;
+
+		-- Inverts the given relative distance by 
+		-- multiplying x by -1 and y by -1.
+		function invert (d : in type_distance_relative) 
+			return type_distance_relative;
+
+		
+		
 		
 		function to_distance (distance : in string) return type_distance;		
 		function to_string (distance : in type_distance) return string;
 		
-		function get_x (point : in type_point'class) return type_distance;
-		function get_y (point : in type_point'class) return type_distance;		
+		function get_x (point : in type_point'class) return type_position_axis;
+		function get_y (point : in type_point'class) return type_position_axis;		
 
 		
-		-- Returns the rotation of the given point around the origin.
+		-- Returns the rotation of the given point about the origin.
 		-- If for example point is (1/1) then the return is 45 degree.
 		-- if point is (-1/-1) then the return is -135 degree.
-		function rotation (point : in type_point) return type_rotation;
+		function rotation (point : in type_point) return type_rotation; -- CS rename to get_rotation
 
 		
 		-- The area (a rectangular box around an object)
@@ -253,8 +272,8 @@ package et_geometry is
 		-- The boundaries are always relative to a certain origin that
 		-- sits somewhere inside the rectangular box. 
 		type type_boundaries is record
-			smallest_x, smallest_y : type_distance := type_distance'last;
-			greatest_x, greatest_y : type_distance := type_distance'first;
+			smallest_x, smallest_y : type_position_axis := type_position_axis'last;
+			greatest_x, greatest_y : type_position_axis := type_position_axis'first;
 			distance_of_topleft_to_default : type_point := origin;
 		end record;
 
@@ -312,7 +331,7 @@ package et_geometry is
 		-- Moves the boundaries by the given offset:
 		procedure move_by (
 			boundaries	: in out type_boundaries;
-			offset		: in type_point);
+			offset		: in type_distance_relative);
 
 		-- Rotates the given boundaries by given rotation.
 		procedure rotate (
@@ -334,7 +353,7 @@ package et_geometry is
 		-- Moves the rectangle by the given offset:
 		procedure move_by (
 			rectangle	: in out type_rectangle;
-			offset		: in type_point);
+			offset		: in type_distance_relative);
 		
 		-- Returns true if the given two rectangles intersect each other in some way:
 		function intersects (rect1, rect2 : type_rectangle) return boolean;
@@ -361,11 +380,13 @@ package et_geometry is
 		function "<" (left, right : in type_point) return boolean;
 
 		
-		function set (x, y : in type_distance) return type_point'class;
+		function set (
+			x, y : in type_position_axis) 
+			return type_point'class;
 
 		procedure set (
 			axis 	: in type_axis_2d;
-			value	: in type_distance;					 
+			value	: in type_position_axis;					 
 			point	: in out type_point'class);
 
 		procedure set (
@@ -395,10 +416,10 @@ package et_geometry is
 		procedure reset (point : in out type_point'class);
 		-- Moves the given point to the origin (0/0).
 
-		procedure move_by (
 		-- Moves a point by the given offset.
+		procedure move_by (
 			point	: in out type_point'class;
-			offset	: in type_point);
+			offset	: in type_distance_relative);
 
 		procedure move_to (
 		-- Moves a point to the given position.
@@ -435,13 +456,19 @@ package et_geometry is
 
 		function "+" (point_one, point_two : in type_point) return type_point'class;
 		function "-" (point_one, point_two : in type_point) return type_point'class;
+
+
 		
-		function distance_relative (point_one, point_two : in type_point) return type_point'class;
+		
 		-- Returns the relative distance of point_two to point_one.	
 		-- Subtracts point_one.x from point_two.y and point_one.y from point_two.y
 		-- returns	d.x := point_two.x - point_one.x
 		--			d.y := point_two.y - point_one.y;
+		function distance_relative ( -- CS rename to get_distance_relative
+			point_one, point_two : in type_point) 
+			return type_distance_relative;
 
+		
 		
 		-- Computes the total distance between point_one and point_two.
 		function distance_total (
@@ -611,7 +638,7 @@ package et_geometry is
 		-- CS need an abstract type_point_abstract ?
 		
 		type type_point is tagged record
-			x, y : type_distance := zero;
+			x, y : type_position_axis := zero;
 		end record;
 
 		type type_distance_polar is record
@@ -622,20 +649,20 @@ package et_geometry is
 		origin : constant type_point := (others => zero);
 
 		far_upper_left : constant type_point :=
-			(x => type_distance'first,
-			 y => type_distance'last);
+			(x => type_position_axis'first,
+			 y => type_position_axis'last);
 		
 		far_upper_right : constant type_point :=
-			(x => type_distance'last,
-			 y => type_distance'last);
+			(x => type_position_axis'last,
+			 y => type_position_axis'last);
 
 		far_lower_left : constant type_point :=
-			(x => type_distance'first,
-			 y => type_distance'first);
+			(x => type_position_axis'first,
+			 y => type_position_axis'first);
 		
 		far_lower_right : constant type_point :=
-			(x => type_distance'last,
-			 y => type_distance'first);
+			(x => type_position_axis'last,
+			 y => type_position_axis'first);
 
 		
 		type type_position is new type_point with record
@@ -963,10 +990,10 @@ package et_geometry is
 			direction	: in type_rotation;
 			distance	: in type_distance_positive);
 							  
-		procedure move_by (
 		-- Moves a line by the given offset. 
+		procedure move_by (
 			line	: in out type_line;
-			offset	: in type_point);
+			offset	: in type_distance_relative);
 
 		-- Mirrors a line along the given axis.
 		procedure mirror (
@@ -1243,10 +1270,10 @@ package et_geometry is
 			angle 		: in type_rotation) -- unit is degrees
 			return type_point'class;
 
-		procedure move_by (
 		-- Moves an arc by the given offset. 
+		procedure move_by (
 			arc		: in out type_arc;
-			offset	: in type_point);
+			offset	: in type_distance_relative);
 
 		procedure move_to (
 		-- Moves an arc to the given position. 
@@ -1282,10 +1309,10 @@ package et_geometry is
 			circle	: in type_circle)
 			return type_distance_polar;
 		
-		procedure move_by (
 		-- Moves a circle by the given offset. 
+		procedure move_by (
 			circle	: in out type_circle;
-			offset	: in type_point);
+			offset	: in type_distance_relative);
 		
 		procedure mirror (
 		-- Mirrors the center of a circle along the given axis.
@@ -1600,7 +1627,7 @@ package et_geometry is
 		-- Moves a polygon by the given offset. 
 		procedure move_by (
 			polygon	: in out type_polygon_base;
-			offset	: in type_point);
+			offset	: in type_distance_relative);
 
 		-- Mirrors a polygon along the given axis.
 		procedure mirror (
@@ -1798,7 +1825,7 @@ package et_geometry is
 		
 	private
 		type type_vector is	record
-			x, y, z : type_distance := zero;
+			x, y, z : type_position_axis := zero;
 		end record;
 
 		null_vector		: constant type_vector := (others => zero);

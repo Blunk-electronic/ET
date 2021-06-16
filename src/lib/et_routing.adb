@@ -306,7 +306,7 @@ package body et_routing is
 			type type_direction is (RIGHT, LEFT);
 			
 			procedure shift_cap (direction : in type_direction) is
-				offset : type_point;
+				offset : type_distance_relative;
 
 				-- The amount by which the cap will be shifted right or left:
 				dx : type_distance_positive := zero;
@@ -321,14 +321,14 @@ package body et_routing is
 						dx := error;
 
 						-- The cap wil be moved right. So dx must be positive:
-						offset := type_point (set (x => + dx, y => zero));
+						offset := to_distance_relative (set (x => + dx, y => zero));
 						
 					when LEFT =>
 
 						dx := error;
 						
 						-- The cap wil be moved left. So dx must be negative:
-						offset := type_point (set (x => - dx, y => zero));
+						offset := to_distance_relative (set (x => - dx, y => zero));
 				end case;
 				
 				-- Move the cap by the offset:
@@ -666,7 +666,7 @@ package body et_routing is
 		track_width_total : constant type_track_width := get_total_width (track);
 
 		-- the offset of the track relative to the origin is:
-		offset : constant type_point := track_start;
+		offset : constant type_distance_relative := to_distance_relative (track_start);
 
 		-- build a horizontally traveling track that starts at the origin
 		-- and runs to the far right:
@@ -691,7 +691,7 @@ package body et_routing is
 		-- Move the given line by the offset towards the origin,
 		-- rotate the line by the track direction and 
 		-- build the boundaries of the line:
-		move_by (line_tmp, type_point (invert (offset)));
+		move_by (line_tmp, invert (offset));
 		rotate_by (line_tmp, - track_direction);
 		line_boundaries := get_boundaries (line_tmp, zero);
 
@@ -746,7 +746,7 @@ package body et_routing is
 		track_width_total : constant type_track_width := get_total_width (track);
 
 		-- the offset of the track relative to the origin is:		
-		offset : constant type_point := track_start;
+		offset : constant type_distance_relative := to_distance_relative (track_start);
 
 		-- build a horizontally traveling track that starts at the origin
 		-- and runs to the far right:
@@ -782,7 +782,7 @@ package body et_routing is
 		function move_and_rotate_arc (arc : in type_arc) return type_arc is
 			a : type_arc := arc;
 		begin
-			move_by (a, type_point (invert (offset)));
+			move_by (a, invert (offset));
 			rotate_by (a, - track_direction);
 			return a;
 		end move_and_rotate_arc;

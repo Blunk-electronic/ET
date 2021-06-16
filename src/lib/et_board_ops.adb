@@ -57,6 +57,8 @@ package body et_board_ops is
 	use et_schematic;
 	use et_pcb_stack;
 
+	-- CS use pac_generic_modules; and clean up
+	
 	use pac_devices_sch;
 	use pac_devices_non_electric;
 	use pac_nets;
@@ -93,8 +95,8 @@ package body et_board_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure set_origin (
@@ -106,7 +108,7 @@ package body et_board_ops is
 					module.board.origin := point;
 
 				when RELATIVE =>
-					move_by (module.board.origin, point);
+					move_by (module.board.origin, to_distance_relative (point));
 			end case;
 		end set_origin;
 		
@@ -354,8 +356,8 @@ package body et_board_ops is
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
@@ -371,10 +373,12 @@ package body et_board_ops is
 			begin
 				case coordinates is
 					when ABSOLUTE =>
-						set (point => device.position, position => point); -- preserve angle and face
+						set (point => device.position, position => point); 
+						-- preserve angle and face
 
 					when RELATIVE =>
-						move_by (point => device.position, offset => point); -- preserve angle and face
+						move_by (point => device.position, offset => to_distance_relative (point));
+						-- preserve angle and face
 						
 				end case;
 			end;
@@ -385,10 +389,12 @@ package body et_board_ops is
 			begin
 				case coordinates is
 					when ABSOLUTE =>
-						set (point => device.position, position => point); -- preserve angle and face
+						set (point => device.position, position => point); 
+						-- preserve angle and face
 
 					when RELATIVE =>
-						move_by (point => device.position, offset => point); -- preserve angle and face
+						move_by (point => device.position, offset => to_distance_relative (point)); 
+						-- preserve angle and face
 						
 				end case;
 			end;
@@ -860,8 +866,8 @@ package body et_board_ops is
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_point; -- x/y
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level)
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_submodules (
@@ -879,7 +885,7 @@ package body et_board_ops is
 						set (submodule.position_in_board, point);
 
 					when RELATIVE =>
-						move_by (submodule.position_in_board, point);
+						move_by (submodule.position_in_board, to_distance_relative (point));
 				end case;
 
 				exception
@@ -981,7 +987,7 @@ package body et_board_ops is
 						-- Get the device position in the generic submodule.
 						-- Then move it according
 						-- to the position of the submodule instance in the parent module:
-						move_by (device_position, type_point (position_in_board));
+						move_by (device_position, to_distance_relative (position_in_board));
 
 						log (text => "generic" & to_string (position_generic) &
 							" -> " & "in instance" & to_string (device_position),
@@ -1243,7 +1249,7 @@ package body et_board_ops is
 
 					-- The new position_in_board is a vector sum of the position_in_board of the parent module
 					-- and the position_in_board of the current submodule:
-					move_by (position_in_board, type_point (get_position (parent_name, module_instance)));
+					move_by (position_in_board, to_distance_relative (get_position (parent_name, module_instance)));
 
 					-- CS position_in_board must be rotated according to rotation specified where
 					-- the submodule has been instanciated. 
@@ -1477,7 +1483,7 @@ package body et_board_ops is
 		rotate_by (point => terminal_position_base, rotation => rot (package_position));
 
 		-- move
-		move_by (point => terminal_position_base, offset => package_position);
+		move_by (point => terminal_position_base, offset => to_distance_relative (package_position));
 
 		-- compose the return depending on the terminal technology:
 		case terminal_technology is
@@ -4457,7 +4463,7 @@ package body et_board_ops is
 		-- half of the minimal line widht to the right and up.
 		-- This measure is required in order to let the fill lines start inside
 		-- the polygon and not at the polygon edge:
-		offset : type_point;
+		offset : type_distance_relative;
 
 		fill_line : type_line;
 
@@ -4772,7 +4778,7 @@ package body et_board_ops is
 						--   (The fill line has round caps at start and end point !).
 						-- - Further-on move the start point up so that the lower edge
 						--   of the fill line lies on the lower edge of the polygon:
-						offset := type_point (set (
+						offset := to_distance_relative (set (
 								x => - line_width * 0.5, -- to the left
 								y => + line_width * 0.5)); -- up
 
@@ -4785,7 +4791,7 @@ package body et_board_ops is
 							-- computed. For each of the follwing lines the start point
 							-- moves up by the effective line width (lines must overlap):
 							if r > 1 then
-								offset := type_point (set (
+								offset := to_distance_relative (set (
 										x => zero, -- no change
 										y => effective_line_width)); -- up
 								
@@ -4808,7 +4814,7 @@ package body et_board_ops is
 							--   (The fill line has round caps at start and end point !).
 							-- - Further-on move the start point down so that the upper edge
 							--   of the fill line lies on the upper edge of the polygon:
-							offset := type_point (set (
+							offset := to_distance_relative (set (
 									x => - line_width * 0.5, -- to the left
 									y => - line_width * 0.5)); -- down
 

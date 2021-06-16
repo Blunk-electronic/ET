@@ -626,7 +626,7 @@ is
 
 								move_by (
 									point	=> primary_segment.start_point,
-									offset	=> set (dx, dy));
+									offset	=> to_distance_relative (set (dx, dy)));
 							
 							else
 								primary_segment.start_point := destination;
@@ -639,7 +639,7 @@ is
 
 								move_by (
 									point	=> primary_segment.end_point,
-									offset	=> set (dx, dy));
+									offset	=> to_distance_relative (set (dx, dy)));
 							
 							else
 								primary_segment.end_point := destination;
@@ -650,11 +650,11 @@ is
 						when CENTER =>
 							move_by (
 								point	=> primary_segment.start_point,
-								offset	=> set (dx, dy));
+								offset	=> to_distance_relative (set (dx, dy)));
 
 							move_by (
 								point	=> primary_segment.end_point,
-								offset	=> set (dx, dy));
+								offset	=> to_distance_relative (set (dx, dy)));
 
 							move_labels_and_secondary_nets;
 
@@ -678,7 +678,7 @@ is
 		s : in pac_net_segments.cursor) -- the original segment as given in database
 	is
 		tool_position : type_point;
-		displacement : type_point;
+		displacement : type_distance_relative;
 		
 		use pac_segments_being_dragged;
 
@@ -731,7 +731,7 @@ is
 			end case;
 
 			-- This is the displacement of the attached segments:
-			displacement := type_point (distance_relative (unit_move.original_position, tool_position));
+			displacement := distance_relative (unit_move.original_position, tool_position);
 
 -- 			log (text => "original    " & to_string (unit.original_position), console => true);
 -- 			log (text => "displacement" & to_string (displacement), console => true);

@@ -189,7 +189,7 @@ package et_kicad_packages is
 	function to_pad_shape_circle (
 		position	: in type_position;
 		diameter	: in type_pad_size;
-		offset		: in type_point)	-- the offset of the pad from the center
+		offset		: in type_distance_relative)	-- the offset of the pad from the center
 		return type_polygon;
 	
 	-- Converts the given position and dimensions of a rectangular pad
@@ -199,7 +199,7 @@ package et_kicad_packages is
 		center		: in type_position; -- the pad center position (incl. angle)
 		size_x		: in type_pad_size;	-- the size in x of the pad
 		size_y		: in type_pad_size;	-- the size in y of the pad
-		offset		: in type_point)	-- the offset of the pad from the center
+		offset		: in type_distance_relative)	-- the offset of the pad from the center
 		return type_polygon;
 	
 	-- Converts the given position and dimensions of an oval pad
@@ -208,7 +208,7 @@ package et_kicad_packages is
 		center	: in type_position;	-- the pad center position (incl. angle)
 		size_x	: in type_pad_size;	-- the size in x of the pad
 		size_y	: in type_pad_size;	-- the size in y of the pad
-		offset	: in type_point)	-- the offset of the pad from the center
+		offset	: in type_distance_relative)	-- the offset of the pad from the center
 		return type_polygon;
 	
 	-- slotted holes	
@@ -227,7 +227,7 @@ package et_kicad_packages is
 		center	: in type_position; -- the terminal position (incl. angle, (z axis ignored))
 		size_x	: in type_pad_size;	-- the size in x of the hole
 		size_y	: in type_pad_size;	-- the size in y of the hole
-		offset	: in type_point)	-- the offset of the pad from the center
+		offset	: in type_distance_relative) -- the offset of the pad from the center
 		return pac_polygon_segments.list;
 	
 	-- For packages, temporarily this type is required to handle texts in 

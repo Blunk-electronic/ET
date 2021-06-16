@@ -472,7 +472,7 @@ package body pac_canvas is
 		-- CS: Assumes a random value if mouse outside the window.
 		
 		-- Get the distance (in x and y) from cursor to mouse position:
-		distance_xy := type_point (distance_relative (cursor_main.position, drawing_point));
+		distance_xy := type_point (to_point (distance_relative (cursor_main.position, drawing_point)));
 
 		-- Snap the distance to the current grid:
 		distance_xy := self.snap_to_grid (distance_xy);

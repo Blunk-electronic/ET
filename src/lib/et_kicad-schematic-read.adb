@@ -2019,7 +2019,7 @@ is
 
 			-- Kicad provides the absolute position of a text placeholder.
 			-- But ET requires the position relative to the unit:
-			text_position := type_point (distance_relative (text_position, type_point (unit_position)));
+			text_position := type_point (to_point (distance_relative (text_position, type_point (unit_position))));
 			
 			size := mil_to_distance (f (element (line_cursor), 7));
 
