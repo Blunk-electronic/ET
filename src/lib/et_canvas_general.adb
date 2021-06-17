@@ -1453,6 +1453,7 @@ package body pac_canvas is
 
 		-- for calculating the new topleft point we need those tempoarily variables:
 		cx, cy : type_distance;
+		dx, dy : type_distance;
 		
 		box : type_rectangle;
 		p   : type_point;
@@ -1485,11 +1486,16 @@ package body pac_canvas is
 		
 		cy := get_y (p) - get_y (self.topleft);
 		cy := cy * old_scale;
-		
-		self.topleft := type_point (set (
-			get_x (p) - cx / new_scale,
-			get_y (p) - cy / new_scale)
-			);
+
+		dx := get_x (p) - cx / new_scale;
+		dy := get_y (p) - cy / new_scale;
+
+		if dx in type_position_axis and dy in type_position_axis then
+			self.topleft := type_point (set (dx, dy));
+			--get_x (p) - cx / new_scale,
+			--get_y (p) - cy / new_scale)
+			--);
+		end if;
 		
 		self.scale_to_fit_requested := 0.0;
 		self.set_adjustment_values;
