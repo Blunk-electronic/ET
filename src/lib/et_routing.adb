@@ -688,6 +688,8 @@ package body et_routing is
 		ol_start, ol_end : type_point;
 		
 	begin
+		--log (text => "get overlap A");
+		
 		-- Move the given line by the offset towards the origin,
 		-- rotate the line by the track direction and 
 		-- build the boundaries of the line:
@@ -722,6 +724,8 @@ package body et_routing is
 			
 			rotate_to (ol_end, track_direction);
 			move_by (ol_end, offset);
+
+			--log (text => "get overlap B");
 			
 			return (true, ol_start, ol_end);
 			
@@ -736,6 +740,12 @@ package body et_routing is
 		arc		: in type_arc)
 		return type_overlap
 	is
+
+		--function debug return boolean is begin
+			--log (text => "test X");
+			--return true;
+		--end debug;
+	
 		-- here the given track starts:
 		track_start : constant type_point := to_point (track.center.v_start);
 
@@ -755,7 +765,8 @@ package body et_routing is
 					end_point	=> type_point (set (
 									x => far_right - track_width_total * 0.5,
 									y => zero)));
-		
+
+	
 		-- build the boundaries of the track:
 		track_boundaries : constant type_boundaries :=
 			get_boundaries (track_line, track_width_total);
@@ -778,6 +789,7 @@ package body et_routing is
 		track_upper_edge : constant type_line := (track_upper_edge_start, track_upper_edge_end);
 		track_lower_edge : constant type_line := (track_lower_edge_start, track_lower_edge_end);
 
+	
 		--
 		function move_and_rotate_arc (arc : in type_arc) return type_arc is
 			a : type_arc := arc;
@@ -799,12 +811,14 @@ package body et_routing is
 		i_upper : constant type_intersection_of_line_and_circle :=
 			get_intersection (to_line_vector (track_upper_edge), arc);
 
+	
 		i_lower : constant type_intersection_of_line_and_circle :=
 			get_intersection (to_line_vector (track_lower_edge), arc);
 
 		-- the area where track and arc boundaries intersect:
 		bi : constant type_boundaries_intersection := 
 			get_intersection (track_boundaries, arc_boundaries);
+		
 		
 		ol_start, ol_end : type_point;
 
@@ -815,9 +829,11 @@ package body et_routing is
 			rotate_to (ol_end, track_direction);
 			move_by (ol_end, offset);
 		end rotate_and_move_back;
+
 		
 	begin -- get_overlap
-
+		--log (text => "get overlap C");
+		
 		if bi.exists then -- arc and track do intersect in some way
 			
 			if 
@@ -925,6 +941,8 @@ package body et_routing is
 		ol : constant type_overlap := get_overlap (track, arc);
 		break_point : type_point;
 	begin
+		--log (text => "get break arc");
+		
 		if ol.exists then
 		
 			case place is
@@ -1051,6 +1069,8 @@ package body et_routing is
 		procedure test_line (l : in type_line) is 
 			b : constant type_break := get_break (track, l, place);
 		begin
+			--log (text => "test line");
+			
 			if b.exists then
 				process_break (b.point);
 			end if;
@@ -1060,6 +1080,8 @@ package body et_routing is
 		procedure test_arc (a : in type_arc) is
 			b : constant type_break := get_break (track, a, place);
 		begin
+			--log (text => "test arc");
+			
 			if b.exists then
 				process_break (b.point);
 			end if;						
@@ -1082,13 +1104,24 @@ package body et_routing is
 			use pac_polygon_segments;
 
 			procedure query_segment (c : in pac_polygon_segments.cursor) is begin
+				--log (text => "track start: " & to_string (track.center.v_start));
 				case element (c).shape is
-					when LINE	=> test_line (element (c).segment_line);
-					when ARC	=> test_arc (element (c).segment_arc);
+					when LINE => 
+						--log (text => " line" & to_string (element (c).segment_line));
+						test_line (element (c).segment_line);
+						
+					when ARC =>
+						--log (text => " arc" & to_string (element (c).segment_arc));
+						test_arc (element (c).segment_arc);
+						
 				end case;
+
+				--log (text => "test end");				
 			end query_segment;
 			
 			procedure query_outline is begin
+				log (text => "probing outline ...", level => log_threshold + 1);
+				
 				if module.board.contours.outline.contours.circular then
 					test_circle (module.board.contours.outline.contours.circle);
 				else
@@ -1108,6 +1141,8 @@ package body et_routing is
 				end query_hole;
 				
 			begin
+				log (text => "probing holes ...", level => log_threshold + 1);
+				
 				iterate (module.board.contours.holes, query_hole'access);
 			end query_holes;
 			

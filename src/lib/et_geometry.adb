@@ -1295,7 +1295,7 @@ package body et_geometry is
 			v	: in type_vector)
 			return type_point is
 		begin
-			log (text => "to point: vector" & to_string (v));
+			--log (text => "to point: vector" & to_string (v));
 			
 			-- Since the return is a 2D point,
 			-- the z component of v must be zero:
