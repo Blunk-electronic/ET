@@ -240,7 +240,10 @@ package et_geometry is
 			x, y : type_distance := zero;
 		end record;
 
-		function to_point (d : in type_distance_relative)
+		
+		function to_point (
+			d 		: in type_distance_relative;
+			clip	: in boolean := false)
 			return type_point'class;
 
 		function to_distance_relative (p : in type_point)

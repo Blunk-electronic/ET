@@ -191,13 +191,37 @@ package body et_geometry is
 		end to_string;
 
 		
-		function to_point (d : in type_distance_relative)
+		function to_point (
+			d 		: in type_distance_relative;
+			clip	: in boolean := false)
 			return type_point'class
 		is 
 			p : type_point;
 		begin
-			p.x := d.x;
-			p.y := d.y;
+			if clip then
+
+				if d.x > type_position_axis'last then
+					p.x := type_position_axis'last;
+				elsif d.x < type_position_axis'first then
+					p.x := type_position_axis'first;
+				else
+					p.x := d.x;
+				end if;
+
+				if d.y > type_position_axis'last then
+					p.y := type_position_axis'last;
+				elsif d.y < type_position_axis'first then
+					p.y := type_position_axis'first;
+				else
+					p.y := d.y;
+				end if;
+				
+			else
+				p.x := d.x;
+				p.y := d.y;
+			end if;
+
+			
 			return p;
 
 			exception
