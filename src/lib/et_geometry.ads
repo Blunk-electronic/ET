@@ -745,6 +745,12 @@ package et_geometry is
 			v	: in type_vector)
 			return type_distance;
 
+		-- Moves the given vector by given offset.
+		-- Leaves z unchanged.
+		function move_by (
+			v		: in type_vector;
+			offset	: in type_distance_relative)
+			return type_vector;
 		
 		function to_vector (
 			point	: in type_point)
@@ -815,7 +821,15 @@ package et_geometry is
 		function to_string (
 			lv : in type_line_vector)
 			return string;
-			
+
+		-- Moves a line vector by the given offset.
+		-- Changes only the start vector. Leaves the
+		-- direction vector unchanged.
+		function move_by (
+			lv		: in type_line_vector;
+			offset	: in type_distance_relative)
+			return type_line_vector;
+		
 		-- Returns the direction of travel of the given line
 		-- in degrees:
 		function get_angle (
@@ -848,7 +862,7 @@ package et_geometry is
 		-- In general an intersection is composed of a point, where 
 		-- the two objects meet, and and the angle at which they intersect:
 		type type_intersection is record
-			point	: type_vector; -- location vector -- CS should be a type_point
+			point	: type_vector; -- location vector -- CS rename to vector
 			angle	: type_rotation := zero_rotation;
 		end record;
 		
@@ -1825,7 +1839,7 @@ package et_geometry is
 		
 	private
 		type type_vector is	record
-			x, y, z : type_position_axis := zero;
+			x, y, z : type_distance := zero;
 		end record;
 
 		null_vector		: constant type_vector := (others => zero);

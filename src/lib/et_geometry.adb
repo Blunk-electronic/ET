@@ -199,6 +199,15 @@ package body et_geometry is
 			p.x := d.x;
 			p.y := d.y;
 			return p;
+
+			exception
+				when constraint_error =>
+					log (text => "distance too great: x/y" 
+						& to_string (d.x)
+						& "/"
+						& to_string (d.y));
+					raise;
+			
 		end to_point;
 
 		function to_distance_relative (p : in type_point)
@@ -1258,6 +1267,19 @@ package body et_geometry is
 		end get_z;
 
 		
+		function move_by (
+			v		: in type_vector;
+			offset	: in type_distance_relative)
+			return type_vector
+		is
+			result : type_vector := v;
+		begin
+			result.x := result.x + offset.x;
+			result.y := result.y + offset.y;
+			return result;
+		end move_by;
+
+		
 		function to_vector (
 			point	: in type_point)
 			return type_vector is
@@ -1273,6 +1295,8 @@ package body et_geometry is
 			v	: in type_vector)
 			return type_point is
 		begin
+			log (text => "to point: vector" & to_string (v));
+			
 			-- Since the return is a 2D point,
 			-- the z component of v must be zero:
 			if v.z /= zero then
@@ -1281,8 +1305,13 @@ package body et_geometry is
 						
 			return type_point (set (
 				x => v.x,
-				y => v.y
-				));
+				y => v.y));
+
+			exception
+				when constraint_error =>
+					log (text => "vector component too great:" & to_string (v));
+					raise;
+
 		end to_point;
 		
 		function absolute (
@@ -1422,6 +1451,21 @@ package body et_geometry is
 				& " direction vector" & to_string (lv.v_direction)
 				& " angle" & to_string (get_angle (lv));
 		end to_string;
+
+
+		function move_by (
+			lv		: in type_line_vector;
+			offset	: in type_distance_relative)
+			return type_line_vector
+		is 
+			result : type_line_vector := lv;
+		begin
+			result.v_start.x := result.v_start.x + offset.x;
+			result.v_start.y := result.v_start.y + offset.y;
+
+			return result;
+		end move_by;
+		
 		
 		function get_angle (
 			line	: in type_line_vector)
@@ -3299,19 +3343,18 @@ package body et_geometry is
 			r : constant float := float (circle.radius);
 			
 			-- The line starts here:
-			ps : type_point;
 			x1, y1 : float;
 
 			-- The line ends here:
-			pe : type_point;
 			x2, y2 : float;
 			
 			x, y, dx, dy, dr, DI : float;
 
 			-- scratch variables:
-			v1 : type_vector;
+			line_moved : type_line_vector;
+			v_end : type_vector;
 			a, b, c, d : float;
-
+			
 			zero : constant float := 0.0;
 
 			s : type_intersection_status_of_line_and_circle;
@@ -3358,30 +3401,19 @@ package body et_geometry is
 			
 		begin -- get_intersection
 			
-			-- compute start and end point of given line:
-			ps := to_point (line.v_start);
-			--put_line ("start " & to_string (ps));
+			-- Move the line by an offset (which is the center of the given circle):
+			line_moved := move_by (line, invert (offset));
+			v_end := add (line_moved.v_start, line_moved.v_direction);
 			
-			v1 := scale (line.v_direction, 1.0);
-			pe := to_point (add (line.v_start, v1));
-			--put_line ("end   " & to_string (pe));
+			-- compute start and end point of line:
+			x1 := float (get_x (line_moved.v_start));
+			y1 := float (get_y (line_moved.v_start));
 			
-			-- Move start and end point of line by offset 
-			-- (which is the center of the given circle):
-			move_by (ps, invert (offset));
-			move_by (pe, invert (offset));
+			x2 := float (get_x (v_end));
+			y2 := float (get_y (v_end));
 
-			--put_line ("o start " & to_string (ps));
-			--put_line ("o end   " & to_string (pe));
-
-			x1 := float (get_x (ps));
-			y1 := float (get_y (ps));
-			
-			x2 := float (get_x (pe));
-			y2 := float (get_y (pe));
-			
-			dx := x2 - x1;
-			dy := y2 - y1;
+			dx := x2 - x1; -- the delta in x
+			dy := y2 - y1; -- the delta in y
 			--put_line ("dx" & float'image (dx) & " dy" & float'image (dy));
 
 			dr := sqrt (dx ** 2 + dy ** 2);
@@ -3408,6 +3440,8 @@ package body et_geometry is
 				y := (-DI * dx) / b;
 
 				intersection_1 := type_point (set (type_distance (x), type_distance (y)));
+				-- NOTE: A constraint error is raised here if x or y is not in range 
+				-- of type_position_axis !
 				
 				-- Move computed intersection back by offset
 				-- (Which is the center of the given circle):
@@ -3429,7 +3463,9 @@ package body et_geometry is
 
 				-- Compose the point of intersection 1:
 				intersection_1 := type_point (set (type_distance (x), type_distance (y)));
-
+				-- NOTE: A constraint error is raised here if x or y is not in range 
+				-- of type_position_axis !
+				
 				intersection_angle_1 := compute_intersection_angle (intersection_1);
 					
 				-- Move computed intersection 1 back by offset
@@ -3444,6 +3480,8 @@ package body et_geometry is
 					  
 				-- Compose the point of intersection 2:
 				intersection_2 := type_point (set (type_distance (x), type_distance (y)));
+				-- NOTE: A constraint error is raised here if x or y is not in range 
+				-- of type_position_axis !
 
 				intersection_angle_2 := compute_intersection_angle (intersection_2);
 				
