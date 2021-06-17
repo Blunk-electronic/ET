@@ -167,6 +167,12 @@ package et_geometry is
 		subtype type_position_axis is type_distance 
 			range axis_min .. axis_max;
 
+		function clip_distance (d : in type_distance)
+			return type_position_axis;
+
+		procedure clip_distance (d : in out type_distance);
+
+		
 		-- The distance between two objects:
 		subtype type_distance_positive is type_distance 
 			range zero .. type_distance'last;
@@ -424,16 +430,17 @@ package et_geometry is
 			point	: in out type_point'class;
 			offset	: in type_distance_relative);
 
-		procedure move_to (
 		-- Moves a point to the given position.
+		procedure move_to (
 			point		: in out type_point'class;
 			position	: in type_point);
 		
-		function move (
 		-- Moves a point into direction at distance.
+		function move (
 			point		: in type_point;
 			direction	: in type_rotation;
-			distance	: in type_distance_positive)
+			distance	: in type_distance_positive;
+			clip		: in boolean := false)
 			return type_point'class;
 		
 		procedure mirror (
