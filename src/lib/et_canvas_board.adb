@@ -985,16 +985,16 @@ package body et_canvas_board is
 	begin
 		case direction is
 			when RIGHT =>
-				cursor.position := type_point (move (position_snapped, 0.0, grid.x));
+				cursor.position := type_point (move (position_snapped, 0.0, grid.x, clip => true));
 
 			when LEFT =>
-				cursor.position := type_point (move (position_snapped, 180.0, grid.x));
+				cursor.position := type_point (move (position_snapped, 180.0, grid.x, clip => true));
 
 			when UP =>
-				cursor.position := type_point (move (position_snapped, 90.0, grid.y));
+				cursor.position := type_point (move (position_snapped, 90.0, grid.y, clip => true));
 
 			when DOWN =>
-				cursor.position := type_point (move (position_snapped, -90.0, grid.y));
+				cursor.position := type_point (move (position_snapped, -90.0, grid.y, clip => true));
 		end case;
 		
 		update_coordinates_display (self);
@@ -1059,6 +1059,12 @@ package body et_canvas_board is
 			height		=> self.frame_height);
 		
 		cairo.stroke (context.cr);		
+
+		exception
+			when constraint_error => null;
+				--put_line ("Layout: " & message_border_reached);
+			-- CS put in status bar ?
+			
 	end draw_cursor;
 
 	function get_grid (

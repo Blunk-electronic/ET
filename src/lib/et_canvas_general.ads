@@ -99,6 +99,7 @@ package et_canvas_general is
 		--& " Confirm selection with LEFT click or SPACE key.";
 
 
+	message_border_reached	: constant string := "Border of drawing area reached !";
 
 	
 	primary_tool_default : constant type_tool := MOUSE;

@@ -172,16 +172,18 @@ package body et_canvas_schematic is
 	begin
 		set (point	=> p,
 			 axis	=> X, 
-			 value	=> get_x (model_point) - self.frame_bounding_box.x);
+			 value	=> clip_distance (get_x (model_point) - self.frame_bounding_box.x));
 		
 		set (point	=> p,
 			 axis	=> Y,
-			 value	=> type_distance (self.frame_height) 
+			 value	=> clip_distance (type_distance (self.frame_height) 
 						- get_y (model_point)
-						+ self.frame_bounding_box.y);
+						+ self.frame_bounding_box.y));
 	
 		return p;
-	end;
+
+	end model_to_drawing;
+		
 
 	function drawing_to_model (
 		self			: not null access type_view;
@@ -741,16 +743,16 @@ package body et_canvas_schematic is
 	begin
 		case direction is
 			when RIGHT =>
-				cursor.position := type_point (move (position_snapped, 0.0, grid.x));
+				cursor.position := type_point (move (position_snapped, 0.0, grid.x, clip => true));
 
 			when LEFT =>
-				cursor.position := type_point (move (position_snapped, 180.0, grid.x));
+				cursor.position := type_point (move (position_snapped, 180.0, grid.x, clip => true));
 
 			when UP =>
-				cursor.position := type_point (move (position_snapped, 90.0, grid.y));
+				cursor.position := type_point (move (position_snapped, 90.0, grid.y, clip => true));
 
 			when DOWN =>
-				cursor.position := type_point (move (position_snapped, -90.0, grid.y));
+				cursor.position := type_point (move (position_snapped, -90.0, grid.y, clip => true));
 		end case;
 		
 		update_coordinates_display (self);
@@ -813,6 +815,12 @@ package body et_canvas_schematic is
 			height		=> self.frame_height);
 		
 		cairo.stroke (context.cr);		
+
+		exception
+			when constraint_error => null;
+			--put_line ("Schematic: " & message_border_reached);
+			-- CS put in status bar ?
+				
 	end draw_cursor;
 
 	function get_grid (
@@ -2738,6 +2746,7 @@ package body et_canvas_schematic is
 		
 	end button_pressed;
 
+	
 	procedure reset_properties_selection (
 		self : not null access type_view)
 	is 
@@ -2776,6 +2785,7 @@ package body et_canvas_schematic is
 		-- Show a brief message in the board status bar:
 		et_canvas_board.pac_canvas.set_status (status_text_module_saved);
 	end save_module;
+
 	
 	procedure save_drawing (
 		self : not null access type_view)

@@ -1372,6 +1372,7 @@ package body pac_canvas is
 		return event_handled;
 	end on_key_pressed_event;
 
+	
 	function to_string (b : in type_mouse_button) return string is 
 		button : constant string := " button clicked";
 	begin
@@ -1382,6 +1383,7 @@ package body pac_canvas is
 			when others => return "button" & type_mouse_button'image (b);
 		end case;
 	end to_string;
+
 	
 	function on_button_event (
 		view  : access gtk_widget_record'class;
@@ -1397,7 +1399,7 @@ package body pac_canvas is
 		model_point		: constant type_point := canvas.view_to_model (view_point);
 		drawing_point	: constant type_point := canvas.model_to_drawing (model_point);
 	begin
--- 		put_line ("mouse button " & positive'image (mouse_button) & " pressed");
+		--put_line ("mouse button " & to_string (mouse_button) & " at pos. " & to_string (drawing_point));
 
 		-- After any click somewhere in the canvas, the canvas gets the keyboard focus:
 		canvas.grab_focus;
@@ -1406,6 +1408,7 @@ package body pac_canvas is
 		
 		return true; -- indicates the caller that the event has been handled
 	end on_button_event;
+
 	
 	procedure init (
 		self  : not null access type_view'class) is
@@ -1504,6 +1507,7 @@ package body pac_canvas is
 		self.queue_draw;
 	end set_scale;
 
+	
 	function get_visible_area (self : not null access type_view'class)
 		return type_rectangle is
 	begin
