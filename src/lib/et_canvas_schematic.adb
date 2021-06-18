@@ -2067,6 +2067,7 @@ package body et_canvas_schematic is
 		
 	end evaluate_key;
 
+	
 	overriding procedure evaluate_mouse_position (
 		self	: not null access type_view;
 		point	: in type_point) 
@@ -2133,6 +2134,7 @@ package body et_canvas_schematic is
 			when others => null;
 		end case;
 	end evaluate_mouse_position;
+
 	
 	overriding procedure button_pressed (
 		self	: not null access type_view;

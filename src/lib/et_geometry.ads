@@ -623,11 +623,11 @@ package et_geometry is
 -- 			center		: in type_point;
 -- 			rotation	: in type_rotation);
 		
-		-- Returns a distance rounded according to given grid.		
+		-- Returns a position along an axis rounded according to given grid.		
 		function round (
-			distance	: in type_distance;
+			distance	: in type_position_axis;
 			grid		: in type_distance_grid)
-			return type_distance;
+			return type_position_axis;
 		
 		-- Returns x/y of point rounded according to given grid.
 		function round_to_string (
@@ -755,13 +755,33 @@ package et_geometry is
 			v	: in type_vector)
 			return type_distance;
 
+		-- Returns the distance of location vector_one to vector_two.	
+		-- Subtracts vector_one.x from vector_two.x and vector_one.y from vector_two.y
+		-- returns	total := sqrt ((vector_two.x - vector_one.x)**2 + (vector_two.y - vector_one.y)**2)
+		--			angle := arctan ((vector_two.y - vector_one.y) / (vector_two.x - vector_one.x)
+		-- Ignores z of both vectors because this is a 2D world.
+		-- NOTE 1: The angle ranges from -180 to 180 degrees.
+		-- NOTE 2: If the total distance between the location vectors is zero then
+		--         the returned angle is zero. So it is wise to test the two vectors
+		--         for equality befor calling this function.
+		function get_distance (
+			vector_one, vector_two : in type_vector)
+			return type_distance_polar;
+		
 		-- Moves the given vector by given offset.
 		-- Leaves z unchanged.
 		function move_by (
 			v		: in type_vector;
 			offset	: in type_distance_relative)
 			return type_vector;
-		
+
+		-- Moves a location vector into given direction
+		-- by given distance. Leaves z unchanged.
+		procedure move_by (
+			v			: in out type_vector;
+			direction	: in type_rotation;
+			distance	: in type_distance);
+							 		
 		function to_vector (
 			point	: in type_point)
 			return type_vector;
@@ -1000,6 +1020,15 @@ package et_geometry is
 			line	: in type_line;
 			point	: in type_point)
 			return type_distance_positive;
+
+		-- Computes the distance between a location vector and a line.
+		-- This computation does not care about end or start point of the line.
+		-- It assumes an indefinite long line without start or end point.
+		function get_distance (
+			line	: in type_line;
+			vector	: in type_vector)
+			return type_distance_positive;
+
 		
 		-- Returns the direction in degrees of a line.
 		-- Example: If a line runs from 0/0 to 1/1 then the result is 45 degree.

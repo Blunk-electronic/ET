@@ -1149,11 +1149,11 @@ package body et_geometry is
 -- 		end rotate_by;
 
 		function round (
-			distance	: in type_distance;
+			distance	: in type_position_axis;
 			grid		: in type_distance_grid)
-			return type_distance is
+			return type_position_axis is
 		begin
-			return type_distance (integer (distance / grid)) * grid;
+			return type_position_axis (integer (distance / grid)) * grid;
 		end round;
 			
 		function round_to_string (
@@ -1299,6 +1299,43 @@ package body et_geometry is
 			return v.z;
 		end get_z;
 
+
+		function get_distance (
+			vector_one, vector_two : in type_vector)
+			return type_distance_polar
+		is
+			result : type_distance_polar;
+
+			dx : constant float := float (vector_two.x - vector_one.x);
+			dy : constant float := float (vector_two.y - vector_one.y);
+
+			abs_dx : constant float := abs (dx);
+			abs_dy : constant float := abs (dy);
+		begin
+			--put_line ("dx " & float'image (abs_dx));
+			--put_line ("dy " & float'image (abs_dy));
+			
+			set_absolute (result, type_distance (sqrt (abs_dx ** 2.0 + abs_dy ** 2.0)));
+			
+			-- NOTE: If the total distance between the location vectors is zero then
+			-- the arctan operation is not possible. In this case we assume
+			-- the resulting angle is zero.
+			-- So we do the angle computation only if there is a distance between the vectors:
+			if get_absolute (result) /= zero then
+				
+				set_angle (result, type_rotation (arctan (
+						x 		=> dx,
+						y		=> dy,
+						cycle	=> float (units_per_cycle))));
+			else
+				-- distance is zero
+				set_angle (result, zero_rotation);
+			end if;
+			
+			return result;
+		end get_distance;
+
+
 		
 		function move_by (
 			v		: in type_vector;
@@ -1310,6 +1347,24 @@ package body et_geometry is
 			result.x := result.x + offset.x;
 			result.y := result.y + offset.y;
 			return result;
+		end move_by;
+
+
+		procedure move_by (
+			v			: in out type_vector;
+			direction	: in type_rotation;
+			distance	: in type_distance)
+		is
+			delta_x, delta_y : float := 0.0;
+		begin
+			-- sin (direction) * distance = delta y
+			-- cos (direction) * distance = delty x
+
+			delta_y := sin (float (direction), float (units_per_cycle)) * float (distance);
+			delta_x := cos (float (direction), float (units_per_cycle)) * float (distance);
+
+			v.x := v.x + type_distance (delta_x);
+			v.y := v.y + type_distance (delta_y);
 		end move_by;
 
 		
@@ -1894,6 +1949,7 @@ package body et_geometry is
 				v_start		=> start_vector (line),
 				v_direction	=> direction_vector (line));
 		end to_line_vector;
+
 		
 		function get_distance (
 			line	: in type_line;
@@ -1913,7 +1969,25 @@ package body et_geometry is
 			return (m / n);
 		end get_distance;
 
+		
+		function get_distance (
+			line	: in type_line;
+			vector	: in type_vector)
+			return type_distance_positive
+		is
+			dv : constant type_vector := direction_vector (line);
+			sv : constant type_vector := start_vector (line);
+			
+			d1 : constant type_vector := subtract (vector, sv);
+			m, n : type_distance_positive;
+		begin
+			m := absolute (cross_product (dv, d1));
+			n := absolute (dv);
+			
+			return (m / n);
+		end get_distance;
 
+		
 		
 		
 		function direction (
@@ -2325,29 +2399,39 @@ package body et_geometry is
 			line_direction_vector : constant type_vector := direction_vector (line);
 			line_start_vector, line_end_vector : type_vector;
 
-			intersection_vector : type_vector;
+			intersection_vector : type_vector; -- CS rename to iv
 
 			procedure compute_intersection is
-				ip : type_point;
+				--ip : type_point;
 			begin
 				-- Compute the point of intersection: The intersection of a line that runs
 				-- from the given point perpendicular to the given line.
 				-- At this stage we do not know in which direction to go. So we just try
 				-- to go in 90 degree direction. If the distance of ip to the line
 				-- is not zero, then we try in -90 degree direction.
-				ip := type_point (move (point, line_direction + 90.0, result.distance));
-				
-				if get_distance (line, ip) /= zero then
-					ip := type_point (move (point, line_direction - 90.0, result.distance));
-				end if;
+				--ip := type_point (move (point, line_direction + 90.0, result.distance));
 
-				intersection_vector := to_vector (ip);
+				intersection_vector := to_vector (point);
+				move_by (intersection_vector, line_direction + 90.0, result.distance);
+				
+				--if get_distance (line, ip) /= zero then
+					--ip := type_point (move (point, line_direction - 90.0, result.distance));
+				--end if;
+
+				if get_distance (line, intersection_vector) /= zero then
+					intersection_vector := to_vector (point);
+					move_by (intersection_vector, line_direction - 90.0, result.distance);
+				end if;
+				
+				--intersection_vector := to_vector (ip);
 
 				-- Assign the direction (from point to intersection) to the result:
-				result.direction := get_angle (get_distance (point, ip));
+				--result.direction := get_angle (get_distance (point, ip));
+				result.direction := get_angle (get_distance (to_vector (point), intersection_vector));
 
 				-- Assign the virtual point of intersection to the result:
-				result.intersection := ip;
+				--result.intersection := ip;
+				result.intersection := to_point (intersection_vector);
 			end compute_intersection;
 			
 			lambda_forward, lambda_backward : type_distance;

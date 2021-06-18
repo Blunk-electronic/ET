@@ -53,7 +53,7 @@ package et_coordinates is
 
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
 	type type_distance is delta 0.01
-		range -10_000.00 .. 10_000.00;
+		range -100_000.00 .. 100_000.00;
 		
 	for type_distance'small use 0.01; 
 	-- this is the accuracy required for schematic

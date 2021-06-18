@@ -1104,6 +1104,7 @@ package body pac_canvas is
 		return true; -- indicates that event has been handled
 	end on_mouse_movement;
 
+	
 	procedure center_on (
 		self		: not null access type_view'class;
 		center_on	: type_point) -- in drawing
@@ -1125,6 +1126,7 @@ package body pac_canvas is
 		self.queue_draw;
 	end center_on;
 
+	
 	procedure shift_area (
 		self		: not null access type_view'class;
 		cursor		: in type_cursor) is
