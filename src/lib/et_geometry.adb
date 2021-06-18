@@ -2399,39 +2399,30 @@ package body et_geometry is
 			line_direction_vector : constant type_vector := direction_vector (line);
 			line_start_vector, line_end_vector : type_vector;
 
-			intersection_vector : type_vector; -- CS rename to iv
+			iv : type_vector;
 
-			procedure compute_intersection is
-				--ip : type_point;
-			begin
+			procedure compute_intersection is begin
 				-- Compute the point of intersection: The intersection of a line that runs
 				-- from the given point perpendicular to the given line.
 				-- At this stage we do not know in which direction to go. So we just try
 				-- to go in 90 degree direction. If the distance of ip to the line
 				-- is not zero, then we try in -90 degree direction.
-				--ip := type_point (move (point, line_direction + 90.0, result.distance));
 
-				intersection_vector := to_vector (point);
-				move_by (intersection_vector, line_direction + 90.0, result.distance);
+				iv := to_vector (point);
+				move_by (iv, line_direction + 90.0, result.distance);
 				
-				--if get_distance (line, ip) /= zero then
-					--ip := type_point (move (point, line_direction - 90.0, result.distance));
-				--end if;
-
-				if get_distance (line, intersection_vector) /= zero then
-					intersection_vector := to_vector (point);
-					move_by (intersection_vector, line_direction - 90.0, result.distance);
+				if get_distance (line, iv) /= zero then
+					iv := to_vector (point);
+					move_by (iv, line_direction - 90.0, result.distance);
 				end if;
 				
-				--intersection_vector := to_vector (ip);
-
 				-- Assign the direction (from point to intersection) to the result:
 				--result.direction := get_angle (get_distance (point, ip));
-				result.direction := get_angle (get_distance (to_vector (point), intersection_vector));
+				result.direction := get_angle (get_distance (to_vector (point), iv));
 
 				-- Assign the virtual point of intersection to the result:
 				--result.intersection := ip;
-				result.intersection := to_point (intersection_vector);
+				result.intersection := to_point (iv);
 			end compute_intersection;
 			
 			lambda_forward, lambda_backward : type_distance;
@@ -2493,7 +2484,7 @@ package body et_geometry is
 
 			--log (text => "distance " & to_string (result.distance));
 
-			-- Set intersection_vector so that it points to the intersection. The
+			-- Set iv so that it points to the intersection. The
 			-- intersection can be between start and end point of the given line or beyond.
 			compute_intersection;
 			
@@ -2503,14 +2494,14 @@ package body et_geometry is
 			if result.distance <= catch_zone then -- on the line
 			
 				-- Any point on a line can be computed by this formula (see textbook on vector algebra):
-				-- intersection_vector = line.start_point + lambda_forward  * line_direction_vector
-				-- intersection_vector = line.end_point   + lambda_backward * line_direction_vector
+				-- iv = line.start_point + lambda_forward  * line_direction_vector
+				-- iv = line.end_point   + lambda_backward * line_direction_vector
 
-				-- Using these formula we can calculate whether intersection_vector points between 
+				-- Using these formula we can calculate whether iv points between 
 				-- (or to) the start and/or end points of the line:
 				
 				line_start_vector := start_vector (line);
-				lambda_forward := divide (subtract (intersection_vector, line_start_vector), line_direction_vector);
+				lambda_forward := divide (subtract (iv, line_start_vector), line_direction_vector);
 
 				if lambda_forward < zero then -- point sits before start of line
 					-- log (text => "before start point");
@@ -2536,7 +2527,7 @@ package body et_geometry is
 				-- log (text => "after start point");
 				
 				line_end_vector := end_vector (line);
-				lambda_backward := divide (subtract (intersection_vector, line_end_vector), line_direction_vector);
+				lambda_backward := divide (subtract (iv, line_end_vector), line_direction_vector);
 
 				if lambda_backward > zero then -- point sits after end of line
 					-- log (text => "after end point");
