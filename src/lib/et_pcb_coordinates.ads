@@ -72,7 +72,7 @@ package et_pcb_coordinates is
 
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
 	type type_distance is delta 0.0001 
-		range -100_000_000.00 .. 100_000_000.00; 
+		range -10_000_000_000.00 .. 10_000_000_000.00; 
 		
 	for type_distance'small use 0.0001;
 	-- CS increase accuracy if required

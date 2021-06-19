@@ -717,58 +717,86 @@ package body et_routing is
 		return type_break
 	is
 		track_dimensions : constant type_track_dimensions := get_dimensions (track);
-		
-		line_tmp : type_line := line;
-		line_boundaries : type_boundaries;
 
-		bi : type_boundaries_intersection;
+		function move_and_rotate_line (line: in type_line) return type_line is
+			l : type_line := line;
+		begin
+			move_by (l, invert (track_dimensions.offset));
+			rotate_by (l, - track_dimensions.direction);
+			return l;
+		end move_and_rotate_line;
+
+		-- The line we will work with from now on:
+		line_tmp : constant type_line := move_and_rotate_line (line);
+
+		-- the boundaries of the rotated line
+		line_boundaries : constant type_boundaries := get_boundaries (line_tmp, zero);
+		-- (The line has zero line width.)
+		
+		
+		-- the intersections of the upper and lower edge of the track 
+		-- with the rotated line:
+		i_upper : constant type_intersection_of_two_lines :=
+			get_intersection (to_line_vector (track_dimensions.upper_edge), line_tmp);
+	
+		i_lower : constant type_intersection_of_two_lines :=
+			get_intersection (to_line_vector (track_dimensions.lower_edge), line_tmp);
+
+		-- the area where track and line boundaries intersect:
+		bi : constant type_boundaries_intersection :=
+			  get_intersection (track_dimensions.boundaries, line_boundaries);
+
+		
 		bp : type_point;
 		
 	begin
-		-- Move the given line by the offset towards the origin,
-		-- rotate the line by the track direction and 
-		-- build the boundaries of the line:
-		move_by (line_tmp, invert (track_dimensions.offset));
-		rotate_by (line_tmp, - track_dimensions.direction);
-		line_boundaries := get_boundaries (line_tmp, zero);
+		if bi.exists then -- line and track do intersect in some way
 
-		-- Get the intersection of track and line boundaries:
-		bi := get_intersection (track_dimensions.boundaries, line_boundaries);
+			if 
+			 (i_upper.status = EXISTS and i_lower.status = EXISTS) 
+			or 
+			 (i_upper.status = EXISTS and i_lower.status = NOT_EXISTENT)
+			or
+			 (i_upper.status = NOT_EXISTENT and i_lower.status = EXISTS)
+			or
+			 (i_upper.status = NOT_EXISTENT and i_lower.status = NOT_EXISTENT)
+			then
 
-		if bi.exists then
-			-- Compute the points of overlap begin and end,
-			-- rotate them by the track direction and
-			-- move them by the offset:
 
-			--ol_start := type_point (set (bi.intersection.smallest_x, zero));
-			--ol_end   := type_point (set (bi.intersection.greatest_x, zero));
+				--ol_start := type_point (set (bi.intersection.smallest_x, zero));
+				--ol_end   := type_point (set (bi.intersection.greatest_x, zero));
 
-			case place is
-				when BEFORE =>
-					bp := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
+				case place is
+					when BEFORE =>
+						bp := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
 
-				when AFTER =>
-					bp := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
-			end case;
+					when AFTER =>
+						bp := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
+				end case;
 
-			
-			-- CS numerical approch that moves ol_start to the right
-			-- and ol_end to the left until the cap of the track
-			-- barely touches the line.
-			-- CS if we investigate the intersections with the upper
-			-- and lower edge of the track, then the analytical solution could be better.
-			-- See get_break for arc below.
-
-			-- The break point must be after the start of the track.
-			if get_x (bp) > zero then
-			
-				rotate_to (bp, track_dimensions.direction);
-				move_by (bp, track_dimensions.offset);
 				
-				return (exists => true, point => bp);
+				-- CS numerical approch that moves ol_start to the right
+				-- and ol_end to the left until the cap of the track
+				-- barely touches the line.
+				-- CS if we investigate the intersections with the upper
+				-- and lower edge of the track, then the analytical solution could be better.
+				-- See get_break for arc below.
+
+				-- The break point must be after the start of the track.
+				if get_x (bp) > zero then
+				
+					rotate_to (bp, track_dimensions.direction);
+					move_by (bp, track_dimensions.offset);
+					
+					return (exists => true, point => bp);
+				else
+					return (exists => false);
+				end if;
+
 			else
 				return (exists => false);
 			end if;
+
 			
 		else
 			-- If no boundaries exist, then there is no overlap:
@@ -785,7 +813,6 @@ package body et_routing is
 	is
 		track_dimensions : constant type_track_dimensions := get_dimensions (track);
 
-
 		function move_and_rotate_arc (arc : in type_arc) return type_arc is
 			a : type_arc := arc;
 		begin
@@ -795,19 +822,20 @@ package body et_routing is
 		end move_and_rotate_arc;
 
 		-- The arc we will work with from now on.
-		-- (It is now moved and rotated in the same way as the track_line):
 		arc_tmp : constant type_arc := move_and_rotate_arc (arc);
+
+		-- the boundaries of the rotated arc:
 		arc_boundaries : constant type_boundaries := get_boundaries (arc_tmp, zero);
 		-- (The arc has zero line width.)
 
 		
 		-- the intersections of the upper and lower edge of the track
-		-- with the arc:
+		-- with the rotated arc:
 		i_upper : constant type_intersection_of_line_and_circle :=
-			get_intersection (to_line_vector (track_dimensions.upper_edge), arc);
+			get_intersection (to_line_vector (track_dimensions.upper_edge), arc_tmp);
 	
 		i_lower : constant type_intersection_of_line_and_circle :=
-			get_intersection (to_line_vector (track_dimensions.lower_edge), arc);
+			get_intersection (to_line_vector (track_dimensions.lower_edge), arc_tmp);
 
 		-- the area where track and arc boundaries intersect:
 		bi : constant type_boundaries_intersection := 
