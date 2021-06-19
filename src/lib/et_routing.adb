@@ -651,7 +651,7 @@ package body et_routing is
 	end get_total_width;
 
 	
-	function get_overlap (
+	function get_break (
 		track	: in type_track;
 		line	: in type_line;
 		place	: in type_place)
@@ -672,7 +672,6 @@ package body et_routing is
 		-- build a horizontally traveling track that starts at the origin
 		-- and runs to the far right:
 		track_line : constant type_line := (
-					--start_point	=> track_start,
 					start_point	=> origin,
 					end_point	=> type_point (set (
 									x => far_right - track_width_total * 0.5,
@@ -686,12 +685,9 @@ package body et_routing is
 		line_boundaries : type_boundaries;
 
 		bi : type_boundaries_intersection;
-		--ol_start, ol_end : type_point;
 		bp : type_point;
 		
 	begin
-		--log (text => "get overlap A");
-		
 		-- Move the given line by the offset towards the origin,
 		-- rotate the line by the track direction and 
 		-- build the boundaries of the line:
@@ -724,20 +720,27 @@ package body et_routing is
 			-- barely touches the line.
 			-- CS if we investigate the intersections with the upper
 			-- and lower edge of the track, then the analytical solution could be better.
-			-- See get_overlap for arc below.
+			-- See get_break for arc below.
 
-			rotate_to (bp, track_direction);
-			move_by (bp, offset);
+			-- The break point must be after the start of the track.
+			if get_x (bp) > zero then
 			
-			return (exists => true, point => bp);
+				rotate_to (bp, track_direction);
+				move_by (bp, offset);
+				
+				return (exists => true, point => bp);
+			else
+				return (exists => false);
+			end if;
 			
 		else
+			-- If no boundaries exist, then there is no overlap:
 			return (exists => false);
 		end if;
-	end get_overlap;
+	end get_break;
 
 
-	function get_overlap (
+	function get_break (
 		track	: in type_track;
 		arc		: in type_arc;
 		place	: in type_place)
@@ -823,21 +826,9 @@ package body et_routing is
 			get_intersection (track_boundaries, arc_boundaries);
 		
 		
-		--ol_start, ol_end : type_point;
 		bp : type_point;
 		
-		procedure rotate_and_move_back is begin
-			rotate_to (bp, track_direction);
-			move_by (bp, offset);
-			
-			--rotate_to (ol_end, track_direction);
-			--move_by (ol_end, offset);
-		end rotate_and_move_back;
-
-		
-	begin -- get_overlap
-		--log (text => "get overlap C");
-		
+	begin
 		if bi.exists then -- arc and track do intersect in some way
 			
 			if 
@@ -868,10 +859,20 @@ package body et_routing is
 				-- CS numerical approch that moves ol_start to the right
 				-- and ol_end to the left until the cap of the track
 				-- barely touches the arc.
+
+				-- The break point must be after the start of the track.
+				if get_x (bp) > zero then
 				
-				rotate_and_move_back;				
-			
-				return (exists => true, point => bp);
+					rotate_to (bp, track_direction);
+					move_by (bp, offset);
+					
+					return (exists => true, point => bp);
+				else
+					return (exists => false);
+				end if;
+
+			else
+				return (exists => false); -- CS
 			end if;
 			
 		else
@@ -879,8 +880,19 @@ package body et_routing is
 			return (exists => false);
 		end if;
 
+	end get_break;
+
+
+	function get_break (
+		track	: in type_track;
+		circle	: in type_circle;
+		place	: in type_place)
+		return type_break
+	is
+	begin
 		return (exists => false);
-	end get_overlap;
+	end get_break;
+
 	
 
 	function after_start_of_track (
@@ -906,77 +918,6 @@ package body et_routing is
 			--return false;
 		end if;
 	end after_start_of_track;
-
-	
-	function get_break (
-		track	: in type_track;
-		line	: in type_line;
-		place	: in type_place)
-		return type_break
-	is
-		br : constant type_break := get_overlap (track, line, place);
-	begin
-		if br.exists then
-		
-			-- The break must be after the start of the track:
-			if after_start_of_track (track, br.point) then
-				return (br);
-			else
-				return (exists => false);
-			end if;
-			
-		else
-			return (exists => false);
-		end if;
-	end get_break;
-
-	
-	function get_break (
-		track	: in type_track;
-		arc		: in type_arc;
-		place	: in type_place)
-		return type_break
-	is
-		br : constant type_break := get_overlap (track, arc, place);
-	begin
-		if br.exists then
-		
-			-- The break must be after the start of the track:
-			if after_start_of_track (track, br.point) then
-				return (br);
-			else
-				return (exists => false);
-			end if;
-			
-		else
-			return (exists => false);
-		end if;
-	end get_break;
-
-
-	function get_break (
-		track	: in type_track;
-		circle	: in type_circle;
-		place	: in type_place)
-		return type_break
-	is
-		--br : constant type_break := get_overlap (track, circle, place);
-	begin
-		--if br.exists then
-		
-			---- The break must be after the start of the track:
-			--if after_start_of_track (track, br.point) then
-				--return (br);
-			--else
-				--return (exists => false);
-			--end if;
-			
-		--else
-			return (exists => false);
-		--end if;
-	end get_break;
-
-
 
 	
 	function get_distance (
