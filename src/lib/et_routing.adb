@@ -650,6 +650,48 @@ package body et_routing is
 		return track.width + track.clearance;
 	end get_total_width;
 
+
+	function get_dimensions (
+		width : in type_track_width) -- total track width incl. clearance
+		return type_track_dimensions
+	is
+		result : type_track_dimensions;
+
+		upper_edge_start, upper_edge_end,
+		lower_edge_start, lower_edge_end : type_point;
+	begin
+		-- build the line in the center of the track:
+		result.center_line := (
+				start_point	=> origin,
+				end_point	=> type_point (set (
+								x => far_right - width * 0.5,
+								y => zero)));
+
+		-- build the boundaries of the track
+		result.boundaries := get_boundaries (result.center_line, width);
+
+		
+		-- build start and end points of upper and lower edge
+		upper_edge_start := type_point (
+			set (result.boundaries.smallest_x, result.boundaries.greatest_y));
+
+		upper_edge_end := type_point (
+			set (result.boundaries.greatest_x, result.boundaries.greatest_y));
+
+		--
+		lower_edge_start := type_point (
+			set (result.boundaries.smallest_x, result.boundaries.smallest_y));
+
+		lower_edge_end := type_point (
+			set (result.boundaries.greatest_x, result.boundaries.smallest_y));
+
+		-- build upper and lower edge:
+		result.upper_edge := (upper_edge_start, upper_edge_end);
+		result.lower_edge := (lower_edge_start, lower_edge_end);
+		
+		return result;
+	end get_dimensions;
+
 	
 	function get_break (
 		track	: in type_track;
@@ -671,16 +713,9 @@ package body et_routing is
 
 		-- build a horizontally traveling track that starts at the origin
 		-- and runs to the far right:
-		track_line : constant type_line := (
-					start_point	=> origin,
-					end_point	=> type_point (set (
-									x => far_right - track_width_total * 0.5,
-									y => zero)));
+		track_dimensions : constant type_track_dimensions := get_dimensions (track_width_total);
 
-		-- build the boundaries of the track:
-		track_boundaries : constant type_boundaries := 
-			get_boundaries (track_line, track_width_total);
-
+		
 		line_tmp : type_line := line;
 		line_boundaries : type_boundaries;
 
@@ -696,7 +731,7 @@ package body et_routing is
 		line_boundaries := get_boundaries (line_tmp, zero);
 
 		-- Get the intersection of track and line boundaries:
-		bi := get_intersection (track_boundaries, line_boundaries);
+		bi := get_intersection (track_dimensions.boundaries, line_boundaries);
 
 		if bi.exists then
 			-- Compute the points of overlap begin and end,
@@ -766,35 +801,8 @@ package body et_routing is
 
 		-- build a horizontally traveling track that starts at the origin
 		-- and runs to the far right:
-		track_line : constant type_line := (
-					start_point	=> origin,
-					end_point	=> type_point (set (
-									x => far_right - track_width_total * 0.5,
-									y => zero)));
-
-	
-		-- build the boundaries of the track:
-		track_boundaries : constant type_boundaries :=
-			get_boundaries (track_line, track_width_total);
-
-		--
-		track_upper_edge_start : constant type_point := type_point (
-				set (track_boundaries.smallest_x, track_boundaries.greatest_y));
-
-		track_upper_edge_end : constant type_point := type_point (
-				set (track_boundaries.greatest_x, track_boundaries.greatest_y));
-
-		--
-		track_lower_edge_start : constant type_point := type_point (
-				set (track_boundaries.smallest_x, track_boundaries.smallest_y));
-
-		track_lower_edge_end : constant type_point := type_point (
-				set (track_boundaries.greatest_x, track_boundaries.smallest_y));
-
-		--
-		track_upper_edge : constant type_line := (track_upper_edge_start, track_upper_edge_end);
-		track_lower_edge : constant type_line := (track_lower_edge_start, track_lower_edge_end);
-
+		track_dimensions : constant type_track_dimensions := get_dimensions (track_width_total);
+		
 	
 		--
 		function move_and_rotate_arc (arc : in type_arc) return type_arc is
@@ -815,15 +823,14 @@ package body et_routing is
 		-- the intersections of the upper and lower edge of the track
 		-- with the arc:
 		i_upper : constant type_intersection_of_line_and_circle :=
-			get_intersection (to_line_vector (track_upper_edge), arc);
-
+			get_intersection (to_line_vector (track_dimensions.upper_edge), arc);
 	
 		i_lower : constant type_intersection_of_line_and_circle :=
-			get_intersection (to_line_vector (track_lower_edge), arc);
+			get_intersection (to_line_vector (track_dimensions.lower_edge), arc);
 
 		-- the area where track and arc boundaries intersect:
 		bi : constant type_boundaries_intersection := 
-			get_intersection (track_boundaries, arc_boundaries);
+			get_intersection (track_dimensions.boundaries, arc_boundaries);
 		
 		
 		bp : type_point;

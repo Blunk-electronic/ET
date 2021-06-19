@@ -123,7 +123,21 @@ package et_routing is
 		end case;
 	end record;
 
+	-- The dimensions of a horizontally running track that
+	-- starts at the origin and ends in the far right:
+	type type_track_dimensions is record
+		boundaries	: type_boundaries; -- incl. clearance
+		upper_edge	: type_line;
+		center_line	: type_line;
+		lower_edge	: type_line;
+	end record;
 
+	-- Calculates the dimensions of a track with a total width:
+	function get_dimensions (
+		width : in type_track_width) -- total track width incl. clearance
+		return type_track_dimensions;
+	
+	
 	-- Returns the point where a track is broken/interrupted
 	-- by a line that crosses or overlaps the track.
 	-- If place is BEFORE: 
