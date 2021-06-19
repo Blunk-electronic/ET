@@ -652,14 +652,28 @@ package body et_routing is
 
 
 	function get_dimensions (
-		width : in type_track_width) -- total track width incl. clearance
+		track : in type_track)
 		return type_track_dimensions
 	is
 		result : type_track_dimensions;
 
+		-- here the given track starts:
+		track_start : constant type_point := to_point (track.center.v_start);
+
+		-- the total track width (incl. clearance) is:
+		width : constant type_track_width := get_total_width (track);
+
+		-- the start and end points of the upper and lower edge:
 		upper_edge_start, upper_edge_end,
 		lower_edge_start, lower_edge_end : type_point;
+		
 	begin
+		-- the given track travels in this direction:
+		result.direction := get_angle (track.center);
+
+		-- the offset of the track relative to the origin is:
+		result.offset := to_distance_relative (track_start);
+		
 		-- build the line in the center of the track:
 		result.center_line := (
 				start_point	=> origin,
@@ -667,6 +681,9 @@ package body et_routing is
 								x => far_right - width * 0.5,
 								y => zero)));
 
+		
+		-- build the horizontally running track:
+		
 		-- build the boundaries of the track
 		result.boundaries := get_boundaries (result.center_line, width);
 
@@ -688,7 +705,7 @@ package body et_routing is
 		-- build upper and lower edge:
 		result.upper_edge := (upper_edge_start, upper_edge_end);
 		result.lower_edge := (lower_edge_start, lower_edge_end);
-		
+
 		return result;
 	end get_dimensions;
 
@@ -699,22 +716,7 @@ package body et_routing is
 		place	: in type_place)
 		return type_break
 	is
-		-- here the given track starts:
-		track_start : constant type_point := to_point (track.center.v_start);
-
-		-- the given track travels in this direction:
-		track_direction : constant type_rotation := get_angle (track.center);
-
-		-- the total track width (incl. clearance) is:
-		track_width_total : constant type_track_width := get_total_width (track);
-
-		-- the offset of the track relative to the origin is:
-		offset : constant type_distance_relative := to_distance_relative (track_start);
-
-		-- build a horizontally traveling track that starts at the origin
-		-- and runs to the far right:
-		track_dimensions : constant type_track_dimensions := get_dimensions (track_width_total);
-
+		track_dimensions : constant type_track_dimensions := get_dimensions (track);
 		
 		line_tmp : type_line := line;
 		line_boundaries : type_boundaries;
@@ -726,8 +728,8 @@ package body et_routing is
 		-- Move the given line by the offset towards the origin,
 		-- rotate the line by the track direction and 
 		-- build the boundaries of the line:
-		move_by (line_tmp, invert (offset));
-		rotate_by (line_tmp, - track_direction);
+		move_by (line_tmp, invert (track_dimensions.offset));
+		rotate_by (line_tmp, - track_dimensions.direction);
 		line_boundaries := get_boundaries (line_tmp, zero);
 
 		-- Get the intersection of track and line boundaries:
@@ -760,8 +762,8 @@ package body et_routing is
 			-- The break point must be after the start of the track.
 			if get_x (bp) > zero then
 			
-				rotate_to (bp, track_direction);
-				move_by (bp, offset);
+				rotate_to (bp, track_dimensions.direction);
+				move_by (bp, track_dimensions.offset);
 				
 				return (exists => true, point => bp);
 			else
@@ -781,35 +783,14 @@ package body et_routing is
 		place	: in type_place)
 		return type_break
 	is
+		track_dimensions : constant type_track_dimensions := get_dimensions (track);
 
-		--function debug return boolean is begin
-			--log (text => "test X");
-			--return true;
-		--end debug;
-	
-		-- here the given track starts:
-		track_start : constant type_point := to_point (track.center.v_start);
 
-		-- the given track travels in this direction:
-		track_direction : constant type_rotation := get_angle (track.center);
-
-		-- the total track width (incl. clearance) is:
-		track_width_total : constant type_track_width := get_total_width (track);
-
-		-- the offset of the track relative to the origin is:		
-		offset : constant type_distance_relative := to_distance_relative (track_start);
-
-		-- build a horizontally traveling track that starts at the origin
-		-- and runs to the far right:
-		track_dimensions : constant type_track_dimensions := get_dimensions (track_width_total);
-		
-	
-		--
 		function move_and_rotate_arc (arc : in type_arc) return type_arc is
 			a : type_arc := arc;
 		begin
-			move_by (a, invert (offset));
-			rotate_by (a, - track_direction);
+			move_by (a, invert (track_dimensions.offset));
+			rotate_by (a, - track_dimensions.direction);
 			return a;
 		end move_and_rotate_arc;
 
@@ -870,8 +851,8 @@ package body et_routing is
 				-- The break point must be after the start of the track.
 				if get_x (bp) > zero then
 				
-					rotate_to (bp, track_direction);
-					move_by (bp, offset);
+					rotate_to (bp, track_dimensions.direction);
+					move_by (bp, track_dimensions.offset);
 					
 					return (exists => true, point => bp);
 				else
@@ -896,7 +877,12 @@ package body et_routing is
 		place	: in type_place)
 		return type_break
 	is
+		track_dimensions : constant type_track_dimensions := get_dimensions (track);
+
+		bp : type_point;
+		
 	begin
+		-- CS
 		return (exists => false);
 	end get_break;
 
