@@ -111,12 +111,25 @@ package et_routing is
 		track	: in type_track)
 		return type_track_clearance;
 		
-	type type_overlap (exists : boolean) is record
-		case exists is 
-			when TRUE => start_point, end_point : type_point;
+	--type type_overlap (exists : boolean) is record
+		--case exists is 
+			--when TRUE => start_point, end_point : type_point;
+			--when FALSE => null;
+		--end case;
+	--end record;
+
+
+	type type_place is (
+		BEFORE,
+		AFTER);					
+
+	type type_break (exists : boolean) is record
+		case exists is
+			when TRUE => point : type_point;
 			when FALSE => null;
 		end case;
 	end record;
+
 	
 	-- Returns the begin and end of an overlap of a track with a line.
 	-- If there is an overlap:
@@ -129,25 +142,17 @@ package et_routing is
 	--  - Returns false (non exists).
 	function get_overlap (
 		track	: in type_track;
-		line	: in type_line)
-		return type_overlap;
+		line	: in type_line;
+		place	: in type_place)
+		return type_break;
 
 	function get_overlap (
 		track	: in type_track;
-		arc		: in type_arc)
-		return type_overlap;
+		arc		: in type_arc;
+		place	: in type_place)		
+		return type_break;
 
 	
-	type type_place is (
-		BEFORE,
-		AFTER);					
-
-	type type_break (exists : boolean) is record
-		case exists is
-			when TRUE => point : type_point;
-			when FALSE => null;
-		end case;
-	end record;
 
 	-- Returns true if the given point comes after the 
 	-- start point of the given track. 

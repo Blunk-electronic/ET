@@ -653,8 +653,9 @@ package body et_routing is
 	
 	function get_overlap (
 		track	: in type_track;
-		line	: in type_line)
-		return type_overlap
+		line	: in type_line;
+		place	: in type_place)
+		return type_break
 	is
 		-- here the given track starts:
 		track_start : constant type_point := to_point (track.center.v_start);
@@ -685,7 +686,8 @@ package body et_routing is
 		line_boundaries : type_boundaries;
 
 		bi : type_boundaries_intersection;
-		ol_start, ol_end : type_point;
+		--ol_start, ol_end : type_point;
+		bp : type_point;
 		
 	begin
 		--log (text => "get overlap A");
@@ -708,8 +710,13 @@ package body et_routing is
 			--ol_start := type_point (set (bi.intersection.smallest_x, zero));
 			--ol_end   := type_point (set (bi.intersection.greatest_x, zero));
 
-			ol_start := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
-			ol_end   := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
+			case place is
+				when BEFORE =>
+					bp := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
+
+				when AFTER =>
+					bp := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
+			end case;
 
 			
 			-- CS numerical approch that moves ol_start to the right
@@ -719,15 +726,10 @@ package body et_routing is
 			-- and lower edge of the track, then the analytical solution could be better.
 			-- See get_overlap for arc below.
 
-			rotate_to (ol_start, track_direction);
-			move_by (ol_start, offset);
+			rotate_to (bp, track_direction);
+			move_by (bp, offset);
 			
-			rotate_to (ol_end, track_direction);
-			move_by (ol_end, offset);
-
-			--log (text => "get overlap B");
-			
-			return (true, ol_start, ol_end);
+			return (exists => true, point => bp);
 			
 		else
 			return (exists => false);
@@ -737,8 +739,9 @@ package body et_routing is
 
 	function get_overlap (
 		track	: in type_track;
-		arc		: in type_arc)
-		return type_overlap
+		arc		: in type_arc;
+		place	: in type_place)
+		return type_break
 	is
 
 		--function debug return boolean is begin
@@ -820,14 +823,15 @@ package body et_routing is
 			get_intersection (track_boundaries, arc_boundaries);
 		
 		
-		ol_start, ol_end : type_point;
-
+		--ol_start, ol_end : type_point;
+		bp : type_point;
+		
 		procedure rotate_and_move_back is begin
-			rotate_to (ol_start, track_direction);
-			move_by (ol_start, offset);
+			rotate_to (bp, track_direction);
+			move_by (bp, offset);
 			
-			rotate_to (ol_end, track_direction);
-			move_by (ol_end, offset);
+			--rotate_to (ol_end, track_direction);
+			--move_by (ol_end, offset);
 		end rotate_and_move_back;
 
 		
@@ -848,10 +852,17 @@ package body et_routing is
 				
 				--ol_start := type_point (set (bi.intersection.smallest_x, zero));
 				--ol_end   := type_point (set (bi.intersection.greatest_x, zero));
-				
-				ol_start := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
-				ol_end   := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
 
+				--ol_start := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
+				--ol_end   := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
+
+				case place is
+					when BEFORE =>
+						bp := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
+
+					when AFTER =>
+						bp := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
+				end case;
 
 				
 				-- CS numerical approch that moves ol_start to the right
@@ -860,7 +871,7 @@ package body et_routing is
 				
 				rotate_and_move_back;				
 			
-				return (true, ol_start, ol_end);
+				return (exists => true, point => bp);
 			end if;
 			
 		else
@@ -903,25 +914,13 @@ package body et_routing is
 		place	: in type_place)
 		return type_break
 	is
-		ol : constant type_overlap := get_overlap (track, line);
-		break_point : type_point;
+		br : constant type_break := get_overlap (track, line, place);
 	begin
-		if ol.exists then
+		if br.exists then
 		
-			case place is
-				when BEFORE =>
-					break_point := ol.start_point;
-					
-				when AFTER =>
-					break_point := ol.end_point;
-					
-			end case;
-
-
 			-- The break must be after the start of the track:
-			if after_start_of_track (track, break_point) then
-			
-				return (exists => true, point => break_point);
+			if after_start_of_track (track, br.point) then
+				return (br);
 			else
 				return (exists => false);
 			end if;
@@ -938,27 +937,13 @@ package body et_routing is
 		place	: in type_place)
 		return type_break
 	is
-		ol : constant type_overlap := get_overlap (track, arc);
-		break_point : type_point;
+		br : constant type_break := get_overlap (track, arc, place);
 	begin
-		--log (text => "get break arc");
+		if br.exists then
 		
-		if ol.exists then
-		
-			case place is
-				when BEFORE =>
-					break_point := ol.start_point;
-					
-				when AFTER =>
-					break_point := ol.end_point;
-					
-			end case;
-
-
 			-- The break must be after the start of the track:
-			if after_start_of_track (track, break_point) then
-			
-				return (exists => true, point => break_point);
+			if after_start_of_track (track, br.point) then
+				return (br);
 			else
 				return (exists => false);
 			end if;
@@ -966,9 +951,6 @@ package body et_routing is
 		else
 			return (exists => false);
 		end if;
-
-		--return (exists => false);
-				
 	end get_break;
 
 
@@ -978,25 +960,13 @@ package body et_routing is
 		place	: in type_place)
 		return type_break
 	is
-		--ol : constant type_overlap := get_overlap (track, circle);
-		--break_point : type_point;
+		--br : constant type_break := get_overlap (track, circle, place);
 	begin
-		--if ol.exists then
+		--if br.exists then
 		
-			--case place is
-				--when BEFORE =>
-					--break_point := ol.start_point;
-					
-				--when AFTER =>
-					--break_point := ol.end_point;
-					
-			--end case;
-
-
 			---- The break must be after the start of the track:
-			--if after_start_of_track (track, break_point) then
-			
-				--return (exists => true, point => break_point);
+			--if after_start_of_track (track, br.point) then
+				--return (br);
 			--else
 				--return (exists => false);
 			--end if;
