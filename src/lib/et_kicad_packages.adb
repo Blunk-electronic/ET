@@ -1734,7 +1734,7 @@ package body et_kicad_packages is
 
 				
 				-- Compute the circle radius from its center and point at circle:
-				circle.radius := distance_total (circle.center, circle.point);
+				circle.radius := get_distance_total (circle.center, circle.point);
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor

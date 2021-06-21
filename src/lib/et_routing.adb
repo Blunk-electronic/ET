@@ -361,7 +361,7 @@ package body et_routing is
 
 			--log (text => "intersection x" & to_string (intersection.x_position));
 
-			clearance := intersection.radius - distance_total (intersection.center, P);
+			clearance := intersection.radius - get_distance_total (intersection.center, P);
 
 			if clearance < clearance_min_concave then
 				-- If the initial clearance from cap to board edge is already less than the minimum
@@ -378,7 +378,7 @@ package body et_routing is
 					--log (text => "");
 					log (text => "iteration" & natural'image (i), level => log_threshold + 2);
 					
-					clearance := intersection.radius - distance_total (intersection.center, P);
+					clearance := intersection.radius - get_distance_total (intersection.center, P);
 
 					error := abs (clearance - clearance_min_concave);
 
@@ -1070,7 +1070,7 @@ package body et_routing is
 		begin
 			case place is
 				when BEFORE =>
-					d := distance_total (start_point, break);
+					d := get_distance_total (start_point, break);
 					
 					if d < distance_to_obstacle then
 						distance_to_obstacle := d;
@@ -1201,7 +1201,7 @@ package body et_routing is
 			while c /= pac_points_after_obstacles.no_element loop
 
 				if clear_for_track (module_cursor, element (c), net, layer, width) then
-					distance_after_obstacle := distance_total (start_point, element (c));
+					distance_after_obstacle := get_distance_total (start_point, element (c));
 					exit;
 				end if;
 				

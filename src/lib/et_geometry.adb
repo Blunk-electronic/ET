@@ -783,7 +783,7 @@ package body et_geometry is
 		end get_distance_relative;
 
 		
-		function distance_total (
+		function get_distance_total (
 			point_one, point_two : in type_point) 
 			return type_distance_positive 
 		is
@@ -809,7 +809,8 @@ package body et_geometry is
 			end if;
 				
 			return distance;
-		end distance_total;
+		end get_distance_total;
+		
 
 		function in_catch_zone (
 			point_1		: in type_point; -- the reference point
@@ -817,7 +818,7 @@ package body et_geometry is
 			point_2 	: in type_point) -- the point being tested
 			return boolean 
 		is
-			d : type_distance_positive := distance_total (point_1, point_2);
+			d : type_distance_positive := get_distance_total (point_1, point_2);
 		begin
 			if d <= catch_zone then
 				return true;
@@ -825,7 +826,8 @@ package body et_geometry is
 				return false;
 			end if;
 		end in_catch_zone;
-				
+
+		
 		function add (left, right : in type_rotation) return type_rotation is
 		-- Adds two angles.
 		-- If result greater 360 degree then 360 degree is subtracted from result.
@@ -879,7 +881,7 @@ package body et_geometry is
 
 			delta_x, delta_y : float := 0.0;
 		begin
-			result.absolute := distance_total (point_one, point_two);
+			result.absolute := get_distance_total (point_one, point_two);
 
 			-- NOTE: If the total distance between the points is zero then
 			-- the arctan operation is not possible. In this case we assume
@@ -2464,7 +2466,7 @@ package body et_geometry is
 			if line_range = WITH_END_POINTS then
 
 				-- compute distance of point to start of line:
-				result.distance := distance_total (point, line.start_point);
+				result.distance := get_distance_total (point, line.start_point);
 				
 				if result.distance <= catch_zone then
 					result.out_of_range := false;
@@ -2472,7 +2474,7 @@ package body et_geometry is
 				end if;
 
 				-- compute distance of point to end of line:
-				result.distance := distance_total (point, line.end_point);
+				result.distance := get_distance_total (point, line.end_point);
 				
 				if result.distance <= catch_zone then
 					result.out_of_range := false;
@@ -2793,13 +2795,14 @@ package body et_geometry is
 		
 		
 		function radius_start (arc : in type_arc) return type_distance_positive is begin
-			return distance_total (arc.center, arc.start_point);
+			return get_distance_total (arc.center, arc.start_point);
 		end radius_start;
 
 		function radius_end (arc : in type_arc) return type_distance_positive is begin
-			return distance_total (arc.center, arc.end_point);
+			return get_distance_total (arc.center, arc.end_point);
 		end radius_end;
 
+		
 		function is_valid (arc : in type_arc) return boolean is begin
 			if radius_start (arc) = radius_end (arc) then
 				return true;
@@ -2808,6 +2811,7 @@ package body et_geometry is
 			end if;
 		end is_valid;
 
+		
 		function to_arc_angles (arc : in type_arc) return type_arc_angles is
 		-- Returns the start and end angles of an arc.
 		-- The angles may be negative. For example instead of 270 degree
@@ -2816,7 +2820,6 @@ package body et_geometry is
 						
 			-- Take a copy of the given arc in arc_tmp.
 			arc_tmp : type_arc := arc;
-
 		begin
 			-- move arc_tmp so that its center is at 0/0
 			move_to (arc_tmp, origin);
@@ -2825,7 +2828,7 @@ package body et_geometry is
 			result.center := arc.center;
 			
 			-- calculate the radius of the arc
-			result.radius := distance_total (arc_tmp.center, arc_tmp.start_point);
+			result.radius := get_distance_total (arc_tmp.center, arc_tmp.start_point);
 
 			-- calculate the angles where the arc begins and ends:
 
@@ -2858,6 +2861,7 @@ package body et_geometry is
 			
 			return result;
 		end to_arc_angles;
+
 		
 		function get_boundaries (
 			arc			: in type_arc;
@@ -2875,7 +2879,7 @@ package body et_geometry is
 			arc_tmp : type_arc := arc;
 
 			-- Calculate the radius of the arc:
-			radius : type_distance_positive := distance_total (arc.center, arc.start_point);
+			radius : type_distance_positive := get_distance_total (arc.center, arc.start_point);
 
 			-- The quadrant where start and end point are in:
 			q_start : type_quadrant;
@@ -3083,7 +3087,8 @@ package body et_geometry is
 				P := add (P, T);
 			end offset_cw;
 
-			distance_center_to_point : constant type_distance_positive := distance_total (point, arc.center);
+			distance_center_to_point : constant type_distance_positive :=
+				get_distance_total (point, arc.center);
 			
 		begin
 			--log (text => "center" & to_string (arc.center) 
@@ -3250,7 +3255,7 @@ package body et_geometry is
 			move_to (arc, origin);
 
 			-- calculate the radius of the arc
-			radius := float (distance_total (arc.center, arc.start_point));
+			radius := float (get_distance_total (arc.center, arc.start_point));
 
 			-- calculate the angle where the arc begins:
 
@@ -3391,7 +3396,7 @@ package body et_geometry is
 			catch_zone	: in type_catch_zone := type_distance'small)
 			return boolean 
 		is begin
-			if distance_total (point, circle.center) - circle.radius <= catch_zone then
+			if get_distance_total (point, circle.center) - circle.radius <= catch_zone then
 				return true;
 			else
 				return false; 
@@ -3404,7 +3409,7 @@ package body et_geometry is
 			circle		: in type_circle)
 			return type_point_status
 		is begin
-			if distance_total (point, circle.center) < circle.radius then
+			if get_distance_total (point, circle.center) < circle.radius then
 				return INSIDE;
 			else
 				return OUTSIDE; 
@@ -3436,11 +3441,11 @@ package body et_geometry is
 
 			-- the distance from center to start of line:
 			ds : constant type_distance_positive := 
-				distance_total (circle.center, line.start_point);
+				get_distance_total (circle.center, line.start_point);
 			
 			-- the distance from center to end of line:
 			de : constant type_distance_positive := 
-				distance_total (circle.center, line.end_point);
+				get_distance_total (circle.center, line.end_point);
 
 			-- the distance from center perpendicular to line:
 			dp : constant type_distance_point_line :=
@@ -3686,10 +3691,10 @@ package body et_geometry is
 			ip2 := to_point (i.intersection_2.point);
 			
 			-- the distance from start point to intersection point 1:
-			d1 := distance_total (start_point, ip1);
+			d1 := get_distance_total (start_point, ip1);
 
 			-- the distance from start point to intersection point 2:
-			d2 := distance_total (start_point, ip2);
+			d2 := get_distance_total (start_point, ip2);
 
 			if d1 < d2 then -- point ip1 is closer to start point that ip2
 				result.entry_point := i.intersection_1;
