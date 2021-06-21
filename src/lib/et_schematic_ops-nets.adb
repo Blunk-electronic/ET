@@ -879,10 +879,10 @@ package body et_schematic_ops.nets is
 		-- Calculate the displacement of the start and end point:
 		
 		delta_start : constant type_distance_relative :=
-			distance_relative (segment_before.start_point, segment_after.start_point);
+			get_distance_relative (segment_before.start_point, segment_after.start_point);
 		
 		delta_end	: constant type_distance_relative :=
-			distance_relative (segment_before.end_point, segment_after.end_point);
+			get_distance_relative (segment_before.end_point, segment_after.end_point);
 															
 		use pac_net_labels;
 		label_cursor : pac_net_labels.cursor := segment_after.labels.first;

@@ -771,7 +771,7 @@ package body et_geometry is
 
 
 		
-		function distance_relative (
+		function get_distance_relative (
 			point_one, point_two : in type_point)
 			return type_distance_relative
 		is
@@ -780,7 +780,8 @@ package body et_geometry is
 			d.x := point_two.x - point_one.x;
 			d.y := point_two.y - point_one.y;
 			return d;
-		end distance_relative;
+		end get_distance_relative;
+
 		
 		function distance_total (
 			point_one, point_two : in type_point) 
@@ -3289,7 +3290,8 @@ package body et_geometry is
 			arc			: in out type_arc;
 			position	: in type_point)
 		is
-			offset : constant type_distance_relative := distance_relative (arc.center, position);
+			offset : constant type_distance_relative :=
+				get_distance_relative (arc.center, position);
 		begin
 			-- move the center of the arc to the given position
 			move_to (arc.center, position);

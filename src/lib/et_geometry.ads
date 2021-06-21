@@ -464,7 +464,14 @@ package et_geometry is
 			axis	: in type_axis_2d) 
 			return type_distance_positive;
 
+		-- Adds x and y of given points as:
+		-- result.x = point_one.x + point_two.x and
+		-- result.y = point_one.y + point_two.y and
 		function "+" (point_one, point_two : in type_point) return type_point'class;
+
+		-- Subtracts x and y of given points as:
+		-- result.x = point_one.x - point_two.x and
+		-- result.y = point_one.y - point_two.y and
 		function "-" (point_one, point_two : in type_point) return type_point'class;
 
 
@@ -474,7 +481,7 @@ package et_geometry is
 		-- Subtracts point_one.x from point_two.y and point_one.y from point_two.y
 		-- returns	d.x := point_two.x - point_one.x
 		--			d.y := point_two.y - point_one.y;
-		function distance_relative ( -- CS rename to get_distance_relative
+		function get_distance_relative (
 			point_one, point_two : in type_point) 
 			return type_distance_relative;
 

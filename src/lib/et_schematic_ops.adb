@@ -1132,8 +1132,8 @@ package body et_schematic_ops is
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
 		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level)
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_symbols;
@@ -1157,7 +1157,7 @@ package body et_schematic_ops is
 					-- In case absolute movement is required, calculate the
 					-- new position of the placeholder relative to the unit origin:
 					pos_abs : constant type_point := type_point (
-						to_point (distance_relative (type_point (unit.position), point)));
+						to_point (get_distance_relative (type_point (unit.position), point)));
 						
 				begin -- move_placeholder
 					

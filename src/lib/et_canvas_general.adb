@@ -473,7 +473,7 @@ package body pac_canvas is
 		
 		-- Get the distance (in x and y) from cursor to mouse position:
 		distance_xy := type_point (to_point (
-			d		=> distance_relative (cursor_main.position, drawing_point),
+			d		=> get_distance_relative (cursor_main.position, drawing_point),
 			clip	=> true));
 
 		-- Snap the distance to the current grid:

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -355,12 +355,14 @@ procedure draw_units (
 										when MOUSE =>
 											move_by (
 												point	=> sch_placeholder_name.position,
-												offset	=> distance_relative (placeholder_move.absolute_position, self.snap_to_grid (self.mouse_position)));
+												offset	=> get_distance_relative (
+													placeholder_move.absolute_position, self.snap_to_grid (self.mouse_position)));
 
 										when KEYBOARD =>
 											move_by (
 												point	=> sch_placeholder_name.position,
-												offset	=> distance_relative (placeholder_move.absolute_position, cursor_main.position));
+												offset	=> get_distance_relative (
+													placeholder_move.absolute_position, cursor_main.position));
 
 									end case;
 
@@ -377,12 +379,14 @@ procedure draw_units (
 										when MOUSE =>
 											move_by (
 												point	=> sch_placeholder_purpose.position,
-												offset	=> distance_relative (placeholder_move.absolute_position, self.snap_to_grid (self.mouse_position)));
+												offset	=> get_distance_relative (
+													placeholder_move.absolute_position, self.snap_to_grid (self.mouse_position)));
 
 										when KEYBOARD =>
 											move_by (
 												point	=> sch_placeholder_purpose.position,
-												offset	=> distance_relative (placeholder_move.absolute_position, cursor_main.position));
+												offset	=> get_distance_relative (
+													placeholder_move.absolute_position, cursor_main.position));
 
 									end case;
 
@@ -399,12 +403,14 @@ procedure draw_units (
 										when MOUSE =>
 											move_by (
 												point	=> sch_placeholder_value.position,
-												offset	=> distance_relative (placeholder_move.absolute_position, self.snap_to_grid (self.mouse_position)));
+												offset	=> get_distance_relative (
+													placeholder_move.absolute_position, self.snap_to_grid (self.mouse_position)));
 
 										when KEYBOARD =>
 											move_by (
 												point	=> sch_placeholder_value.position,
-												offset	=> distance_relative (placeholder_move.absolute_position, cursor_main.position));
+												offset	=> get_distance_relative (
+													placeholder_move.absolute_position, cursor_main.position));
 
 									end case;
 
