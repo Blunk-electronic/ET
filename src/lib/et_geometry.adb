@@ -948,13 +948,17 @@ package body et_geometry is
 			return type_direction_of_rotation'value (direction);
 		end to_direction;
 
-		function direction_of_rotation (rotation : in type_rotation) return type_direction_of_rotation is begin
+		
+		function get_direction (rotation : in type_rotation) 
+			return type_direction_of_rotation
+		is begin
 			if rotation < zero_rotation then
 				return CW;
 			else
 				return CCW;
 			end if;
-		end direction_of_rotation;
+		end get_direction;
+		
 
 		function reverse_direction (direction : in type_direction_of_rotation)
 			return type_direction_of_rotation is
@@ -3248,7 +3252,7 @@ package body et_geometry is
 				center		=> center,
 				start_point	=> start_point,
 				end_point	=> origin, -- not determined yet
-				direction	=> direction_of_rotation (angle)
+				direction	=> get_direction (angle)
 				);
 			
 			-- move arc so that its center is at 0/0

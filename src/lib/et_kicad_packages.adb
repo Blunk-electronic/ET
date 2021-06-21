@@ -1680,7 +1680,7 @@ package body et_kicad_packages is
 							center 		=> arc.center,
 							start_point	=> arc.start_point, 
 							end_point	=> arc.end_point,
-							direction	=> direction_of_rotation (arc.angle)
+							direction	=> get_direction (arc.angle)
 							));
 						
 						arc_keepout_properties (TOP, keepout.top.arcs.last, log_threshold + 1);
@@ -1690,7 +1690,7 @@ package body et_kicad_packages is
 							center 		=> arc.center,
 							start_point	=> arc.start_point, 
 							end_point	=> arc.end_point,
-							direction	=> direction_of_rotation (arc.angle)
+							direction	=> get_direction (arc.angle)
 							));
 
 						arc_keepout_properties (BOTTOM, keepout.bottom.arcs.last, log_threshold + 1);

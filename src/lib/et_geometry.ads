@@ -548,10 +548,6 @@ package et_geometry is
 		
 		type type_position is new type_point with private;
 
--- 		function create (
--- 			point		: in type_point'class;
--- 			rotation	: in type_rotation) 
--- 			return type_position;
 		
 		function to_rotation (rotation : in string) return type_rotation;
 		function to_string (rotation : in type_rotation) return string;
@@ -564,8 +560,10 @@ package et_geometry is
 		function to_string (direction : in type_direction_of_rotation) return string;
 		function to_direction (direction : in string) return type_direction_of_rotation;
 
-		function direction_of_rotation (rotation : in type_rotation) return type_direction_of_rotation;
-		-- Returns CW if rotation is negative. Returns CCW if rotation is positive or zero.
+		-- Returns CW if rotation is negative. 
+		-- Returns CCW if rotation is positive or zero.
+		function get_direction (rotation : in type_rotation) 
+			return type_direction_of_rotation;
 
 		-- Changes CCW to CW and vice versa.
 		function reverse_direction (direction : in type_direction_of_rotation)

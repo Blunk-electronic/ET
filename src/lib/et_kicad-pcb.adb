@@ -3355,7 +3355,7 @@ package body et_kicad.pcb is
 							center 		=> board_arc.center, 
 							start_point	=> board_arc.start_point,
 							end_point	=> board_arc.end_point,
-							direction	=> direction_of_rotation (board_arc.angle)
+							direction	=> get_direction (board_arc.angle)
 							));
 						
 						arc_keepout_properties (TOP, board.keepout.top.arcs.last, log_threshold + 1);
@@ -3365,7 +3365,7 @@ package body et_kicad.pcb is
 							center 		=> board_arc.center, 
 							start_point	=> board_arc.start_point,
 							end_point	=> board_arc.end_point,
-							direction	=> direction_of_rotation (board_arc.angle)
+							direction	=> get_direction (board_arc.angle)
 							));
 
 						arc_keepout_properties (BOTTOM, board.keepout.bottom.arcs.last, log_threshold + 1);
@@ -3626,7 +3626,7 @@ package body et_kicad.pcb is
 							center 		=> package_arc.center,
 							start_point	=> package_arc.start_point, 
 							end_point	=> package_arc.end_point,
-							direction	=> direction_of_rotation (package_arc.angle)
+							direction	=> get_direction (package_arc.angle)
 							));
 
 						arc_keepout_properties (TOP, package_keepout.top.arcs.last, log_threshold + 1);
@@ -3636,7 +3636,7 @@ package body et_kicad.pcb is
 							center 		=> package_arc.center,
 							start_point	=> package_arc.start_point, 
 							end_point	=> package_arc.end_point,
-							direction	=> direction_of_rotation (package_arc.angle)
+							direction	=> get_direction (package_arc.angle)
 							));
 						
 						arc_keepout_properties (BOTTOM, package_keepout.bottom.arcs.last, log_threshold + 1);
