@@ -450,7 +450,7 @@ package et_geometry is
 			axis	: in type_axis_2d);	
 
 		-- Returns the distance along the given axis between the given points.
-		function distance (
+		function get_distance (
 			point_1	: in type_point;
 			point_2	: in type_point;
 			axis	: in type_axis_2d) 

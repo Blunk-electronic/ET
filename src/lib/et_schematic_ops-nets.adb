@@ -978,8 +978,8 @@ package body et_schematic_ops.nets is
 
 					procedure move_targeted_segment (segment : in out type_net_segment) is 
 						-- In case absolute movement is required we need these values:
-						dx : constant type_distance := distance (type_point (point_of_attack), destination, X);
-						dy : constant type_distance := distance (type_point (point_of_attack), destination, Y);
+						dx : constant type_distance := get_distance (type_point (point_of_attack), destination, X);
+						dy : constant type_distance := get_distance (type_point (point_of_attack), destination, Y);
 
 						-- backup the segment as it was before the move/drag:
 						segment_before : constant type_net_segment := segment;

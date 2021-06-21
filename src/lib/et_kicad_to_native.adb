@@ -2247,7 +2247,7 @@ package body et_kicad_to_native is
 				 level => log_threshold + 2);
 			
 			-- compute width and height of the rectangle:
-			width  := distance (axis => X, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
+			width  := get_distance (axis => X, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
 
 			log (text => "width" & to_string (width), level => log_threshold + 2);
 			
@@ -2257,7 +2257,7 @@ package body et_kicad_to_native is
 				width := - width;
 			end if;
 			
-			height := distance (axis => Y, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
+			height := get_distance (axis => Y, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
 
 			log (text => "height" & to_string (height), level => log_threshold + 2);
 			

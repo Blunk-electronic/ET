@@ -700,11 +700,9 @@ package body et_geometry is
 
 		
 		procedure mirror (
-		-- If axis is Y then it swaps right x with left x.
-		-- If axis is X then it swaps upper y with lower y.
 			point	: in out type_point;
-			axis	: in type_axis_2d) is
-		begin
+			axis	: in type_axis_2d) 
+		is begin
 			case axis is
 				when X =>
 					point.y := point.y * (-1.0);
@@ -713,11 +711,13 @@ package body et_geometry is
 			end case;
 		end mirror;
 
-		function distance (
+		
+		function get_distance (
 			point_1	: in type_point;
 			point_2	: in type_point;
 			axis	: in type_axis_2d) 
-			return type_distance is
+			return type_distance 
+		is
 			d : type_distance;
 		begin
 			case axis is
@@ -729,7 +729,8 @@ package body et_geometry is
 			end case;
 
 			return d;
-		end distance;
+		end get_distance;
+
 		
 		function distance_abs (
 			point_1	: in type_point;
@@ -2046,12 +2047,12 @@ package body et_geometry is
 		function to_route (
 			start_point, end_point	: in type_point;
 			style					: in type_bend_style)
-			return type_route is
-
+			return type_route
+		is
 			-- The area required for the route is a rectangle.
 			-- We will need to figure out whether it is wider than tall:
-			dx : constant type_distance := distance (start_point, end_point, X);
-			dy : constant type_distance := distance (start_point, end_point, Y);
+			dx : constant type_distance := get_distance (start_point, end_point, X);
+			dy : constant type_distance := get_distance (start_point, end_point, Y);
 
 			sup_start, sup_end : type_point; -- support points near given start and end point
 

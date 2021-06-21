@@ -612,8 +612,8 @@ is
 			end case;
 
 			-- calculate the distance in x and y from point of attack to destination:
-			dx := distance (segment.point_of_attack, destination, X);
-			dy := distance (segment.point_of_attack, destination, Y);
+			dx := get_distance (segment.point_of_attack, destination, X);
+			dy := get_distance (segment.point_of_attack, destination, Y);
 			
 			case verb is
 				when VERB_DRAG =>
