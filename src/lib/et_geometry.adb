@@ -602,9 +602,8 @@ package body et_geometry is
 			point.y := position.y;
 		end;
 
-		function quadrant (point : in type_point) return type_quadrant is
-		-- Returns the quadrant the point is located in.
-		begin
+		
+		function get_quadrant (point : in type_point) return type_quadrant is begin
 			if point.x >= zero then -- we are right of the y-axis or on top of it
 				if point.y >= zero then -- we are above the x-axis or on top of it
 					return ONE; 
@@ -619,7 +618,8 @@ package body et_geometry is
 					return THREE;
 				end if;
 			end if;
-		end quadrant;
+		end get_quadrant;
+
 		
 		function invert (point : in type_point'class) return type_point'class is
 		-- Inverts the given point by multiplying x by -1 and y by -1.
@@ -2887,8 +2887,8 @@ package body et_geometry is
 			move_to (arc_tmp, origin);
 
 			-- Calculate the quadrant where start and end point are in:
-			q_start := quadrant (arc_tmp.start_point);
-			q_end   := quadrant (arc_tmp.end_point);
+			q_start := get_quadrant (arc_tmp.start_point);
+			q_end   := get_quadrant (arc_tmp.end_point);
 			
 			-- Calculate the boundaries of start and end point.
 			-- For the moment we regard start and end point of the arc being
@@ -3463,7 +3463,7 @@ package body et_geometry is
 
 			-- The angle a ranges from -180 to 180 degrees.
 			
-			case quadrant (p) is
+			case get_quadrant (p) is
 				when ONE	=> a := a - 90.0;
 				when TWO	=> a := a - 90.0;
 				when THREE	=> a := a + 90.0;

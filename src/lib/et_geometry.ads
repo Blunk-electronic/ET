@@ -406,15 +406,15 @@ package et_geometry is
 		-- Quadrant ONE is top right.
 		type type_quadrant is (ONE, TWO, THREE, FOUR);
 
-		function quadrant (point : in type_point) return type_quadrant;
 		-- Returns the quadrant the point is located in.
 		-- ONE  : point is right of the y-axis or on top of it AND above the x-axis or on top of it
 		-- TWO  : point is left of the y-axis AND above the x-axis or on top of it
 		-- THREE: point is left of the y-axis AND below the x-axis
 		-- FOUR : point is right of the y-axis or on top of it AND below the x-axis
+		function get_quadrant (point : in type_point) return type_quadrant;
 		
-		function invert (point : in type_point'class) return type_point'class;
 		-- Inverts the given point by multiplying x by -1 and y by -1.
+		function invert (point : in type_point'class) return type_point'class;
 
 		-- Inverts the point on the given axis.
 		function invert (
@@ -443,9 +443,9 @@ package et_geometry is
 			clip		: in boolean := false)
 			return type_point'class;
 		
-		procedure mirror (
 		-- If axis is Y then it swaps right x with left x.
 		-- If axis is X then it swaps upper y with lower y.
+		procedure mirror (
 			point	: in out type_point;
 			axis	: in type_axis_2d);	
 
