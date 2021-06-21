@@ -458,7 +458,7 @@ package et_geometry is
 		
 		-- Returns the absolute distance along the given axis between the given points.
 		-- NOTE: The result in both x and y is always greater or equal zero.
-		function distance_abs (
+		function get_distance_abs (
 			point_1	: in type_point;
 			point_2	: in type_point;
 			axis	: in type_axis_2d) 
