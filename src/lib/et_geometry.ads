@@ -273,7 +273,7 @@ package et_geometry is
 		-- Returns the rotation of the given point about the origin.
 		-- If for example point is (1/1) then the return is 45 degree.
 		-- if point is (-1/-1) then the return is -135 degree.
-		function rotation (point : in type_point) return type_rotation; -- CS rename to get_rotation
+		function get_rotation (point : in type_point) return type_rotation;
 
 		
 		-- The area (a rectangular box around an object)

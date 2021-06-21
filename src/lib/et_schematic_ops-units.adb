@@ -963,7 +963,7 @@ package body et_schematic_ops.units is
 						
 						-- Rotates the position by the given rotation rot:
 						function add_rot (p : in type_point) return type_rotation is begin
-							return pac_geometry_sch.rotation (p) + rot;
+							return get_rotation (p) + rot;
 						end;
 
 					begin

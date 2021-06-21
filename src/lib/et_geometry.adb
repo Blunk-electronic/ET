@@ -275,7 +275,7 @@ package body et_geometry is
 			return point.y;
 		end;
 
-		function rotation (point : in type_point) return type_rotation is
+		function get_rotation (point : in type_point) return type_rotation is
 			x : constant float := float (point.x);
 			y : constant float := float (point.y);
 		begin
@@ -286,7 +286,7 @@ package body et_geometry is
 			else
 				return type_rotation (arctan (y, x, float (units_per_cycle)));
 			end if;
-		end rotation;
+		end get_rotation;
 
 		
 		function get_height (boundaries : in type_boundaries)
