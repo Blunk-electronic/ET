@@ -3406,6 +3406,53 @@ package body et_geometry is
 			end if;
 		end get_point_to_circle_status;
 		
+
+		function intersect (
+			circle	: in type_circle'class;
+			line	: in type_line'class)
+			return boolean
+		is
+			l : constant type_line_vector := to_line_vector (line);
+		begin
+			if get_intersection (l, circle).status = NONE_EXIST then
+				return false;
+			else
+				return true;
+			end if;
+		end intersect;
+
+		
+		function get_distance (
+			circle	: in type_circle'class;
+			line	: in type_line'class)
+			return type_distance_positive
+		is
+			result : type_distance_positive := zero;
+
+			-- the distance from center to start of line:
+			ds : constant type_distance_positive := 
+				distance_total (circle.center, line.start_point);
+			
+			-- the distance from center to end of line:
+			de : constant type_distance_positive := 
+				distance_total (circle.center, line.end_point);
+
+			-- the distance from center perpendicular to line:
+			dp : constant type_distance_point_line :=
+				get_distance (circle.center, line, WITH_END_POINTS);
+			
+		begin
+			-- select among ds, de and dp the smallest:
+			result := get_smallest (ds, de);
+			result := get_smallest (result, get_distance (dp));
+
+			-- We are interested in the distance of the circumfence to
+			-- the line. Therefore the radius must be subtracted:
+			result := result - circle.radius;
+			return result;
+		end get_distance;
+
+		
 		
 		function get_tangent_angle (p : in type_point) 
 			return type_tangent_angle_circle

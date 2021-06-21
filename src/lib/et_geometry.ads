@@ -1403,8 +1403,22 @@ package et_geometry is
 			circle		: in type_circle)
 			return type_point_status;
 
+		-- Returns true if the given circle and line do intersect
+		-- in some way.
+		function intersect (
+			circle	: in type_circle'class;
+			line	: in type_line'class)
+			return boolean;
 
-	
+		-- Returns the distance between a circle and a line.
+		-- Assumes that cirlce and line do not intersect in any way.
+		-- Otherwise the result is nonsense.
+		-- Use function intersect (see above) to ensure that they 
+		-- do not intersect.
+		function get_distance (
+			circle	: in type_circle'class;
+			line	: in type_line'class)
+			return type_distance_positive;
 
 		
 		-- The angle of a tangent to a circle:

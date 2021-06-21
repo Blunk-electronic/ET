@@ -746,15 +746,103 @@ package body et_routing is
 		bi : constant type_boundaries_intersection :=
 			  get_intersection (track_dimensions.boundaries, line_boundaries);
 
-		
-		bp : type_point;
-		
-	begin
-		if bi.exists then -- line and track do intersect in some way
 
-			if 
-			 (i_upper.status = EXISTS and i_lower.status = EXISTS) 
-			or 
+		bp : type_point;
+		break_exists : boolean := false;
+
+		
+		procedure two_intersectons is 
+			-- The intersection of the center_line of the track with the candidate line:
+			i_center : constant type_intersection_of_two_lines :=
+				get_intersection (to_line_vector (track_dimensions.center_line), line_tmp);
+
+			-- We are dealing with a rectangular triangle.			
+			-- The distance from the center of the cap of the track to the 
+			-- candidate line (in x-direction).
+			-- (It is the hypothenusis of the triangle.):	
+			spacing : type_distance_positive;
+
+			-- The distance from center of the cap of the track to the
+			-- candidate line. It is a line perpendicular to the candidate line:
+			clearance : constant float := float (track.width * 0.5) + float (track.clearance);
+
+			-- The angle between clearance and spacing:
+			angle : constant float := float (90.0 - i_center.intersection.angle);
+
+		begin
+			spacing := type_distance_positive (clearance / cos (angle, float (units_per_cycle))); 
+
+			-- Depending on the given place, the break point must be moved back or forward
+			-- by the spacing:
+			case place is
+				when BEFORE =>
+					bp := type_point (set (get_x (i_center.intersection.point) - spacing, zero));
+					
+				when AFTER =>
+					bp := type_point (set (get_x (i_center.intersection.point) + spacing, zero));
+			end case;
+			
+			break_exists := true;
+		end two_intersectons;
+
+
+		procedure irregular_intersection is
+			c : type_circle := (radius => track.width * 0.5 + track.clearance,
+								others => <>);
+
+			c1 : type_point;
+			
+			d : type_distance_positive;
+		begin
+
+			case place is
+				when BEFORE =>
+					c.center := type_point (set (line_boundaries.smallest_x - c.radius, zero));
+
+					if not intersect (c, line) then
+						
+						for i in 2 .. 100 loop
+							d := get_distance (c, line);
+
+							if d <= type_distance'small then
+								exit;
+							end if;
+							
+							c1 := c.center;
+							c.center := type_point (move (c.center, 0.0, d/type_distance (i)));
+
+							if intersect (c, line) then
+								c.center := c1;
+							end if;
+
+						end loop;
+						
+					else
+						bp := get_left_end (line);
+					end if;
+					
+				when AFTER =>
+					c.center := type_point (set (line_boundaries.greatest_x + c.radius, zero));
+
+					if not intersect (c, line) then
+						d := get_distance (c, line);
+					else
+						bp := get_right_end (line);
+					end if;
+					
+			end case;
+			
+		end irregular_intersection;
+		
+		
+	begin -- get_break
+		if bi.exists then -- line and track do intersect in some way
+			
+			if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
+				-- The candidate line intersects the upper and lower edge of the track.
+				two_intersectons;
+				
+			elsif 
 			 (i_upper.status = EXISTS and i_lower.status = NOT_EXISTENT)
 			or
 			 (i_upper.status = NOT_EXISTENT and i_lower.status = EXISTS)
@@ -774,6 +862,7 @@ package body et_routing is
 						bp := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
 				end case;
 
+				break_exists := true;
 				
 				-- CS numerical approch that moves ol_start to the right
 				-- and ol_end to the left until the cap of the track
@@ -782,24 +871,24 @@ package body et_routing is
 				-- and lower edge of the track, then the analytical solution could be better.
 				-- See get_break for arc below.
 
-				-- The break point must be after the start of the track.
-				if get_x (bp) > zero then
-				
-					rotate_to (bp, track_dimensions.direction);
-					move_by (bp, track_dimensions.offset);
-					
-					return (exists => true, point => bp);
-				else
-					return (exists => false);
-				end if;
+			end if;
+		end if;
 
+		
+		if break_exists then
+		
+			-- The break point must be after the start of the track.
+			if get_x (bp) > zero then
+			
+				rotate_to (bp, track_dimensions.direction);
+				move_by (bp, track_dimensions.offset);
+				
+				return (exists => true, point => bp);
 			else
 				return (exists => false);
 			end if;
 
-			
 		else
-			-- If no boundaries exist, then there is no overlap:
 			return (exists => false);
 		end if;
 	end get_break;
