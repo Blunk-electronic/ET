@@ -340,6 +340,9 @@ package body et_geometry is
 			i : type_boundaries;
 		begin
 			if intersect (boundaries_one, boundaries_two) then
+
+				--log (text => "b1" & to_string (boundaries_one));
+				--log (text => "b2" & to_string (boundaries_two));
 				
 				i.smallest_x := get_greatest (boundaries_one.smallest_x, boundaries_two.smallest_x);
 				i.greatest_x := get_smallest (boundaries_one.greatest_x, boundaries_two.greatest_x);
@@ -347,6 +350,8 @@ package body et_geometry is
 				i.smallest_y := get_greatest (boundaries_one.smallest_y, boundaries_two.smallest_y);
 				i.greatest_y := get_smallest (boundaries_one.greatest_y, boundaries_two.greatest_y);
 
+				--log (text => "b " & to_string (i));
+				
 				return (exists => true, intersection => i);
 			else
 				return (exists => false);

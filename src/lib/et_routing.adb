@@ -721,8 +721,10 @@ package body et_routing is
 		function move_and_rotate_line (line: in type_line) return type_line is
 			l : type_line := line;
 		begin
+			log (text => "line in " & to_string (line));
 			move_by (l, invert (track_dimensions.offset));
 			rotate_by (l, - track_dimensions.direction);
+			log (text => "line tmp" & to_string (l));
 			return l;
 		end move_and_rotate_line;
 
@@ -748,7 +750,7 @@ package body et_routing is
 
 
 		bp : type_point;
-		break_exists : boolean := false;
+		--break_exists : boolean := false;
 
 		
 		procedure two_intersectons is 
@@ -782,7 +784,7 @@ package body et_routing is
 					bp := type_point (set (get_x (i_center.intersection.point) + spacing, zero));
 			end case;
 			
-			break_exists := true;
+			--break_exists := true;
 		end two_intersectons;
 
 
@@ -791,79 +793,103 @@ package body et_routing is
 								others => <>);
 
 			c1 : type_point;
-			
 			d : type_distance_positive;
-		begin
 
+			function direction return type_rotation is begin
+				case place is
+					when BEFORE => return 0.0;
+					when AFTER => return 180.0;
+				end case;
+			end direction;
+			
+		begin -- irregular_intersection
+			log (text => "irregular_intersection");
+			log (text => "line " & to_string (line_tmp));
+			--log (text => "line " & to_string (line_boundaries));
+			--log (text => "track" & to_string (track_dimensions.boundaries));
+
+			
 			case place is
 				when BEFORE =>
-					c.center := type_point (set (line_boundaries.smallest_x - c.radius, zero));
-
-					if not intersect (c, line) then
-						
-						for i in 2 .. 100 loop
-							d := get_distance (c, line);
-
-							if d <= type_distance'small then
-								exit;
-							end if;
-							
-							c1 := c.center;
-							c.center := type_point (move (c.center, 0.0, d/type_distance (i)));
-
-							if intersect (c, line) then
-								c.center := c1;
-							end if;
-
-						end loop;
-						
-					else
-						bp := get_left_end (line);
-					end if;
-					
+					--log (text => "by sx" & to_string (bi.intersection.smallest_x));
+					c.center := type_point (set (bi.intersection.smallest_x - c.radius, zero));
 				when AFTER =>
-					c.center := type_point (set (line_boundaries.greatest_x + c.radius, zero));
+					--log (text => "by gx" & to_string (bi.intersection.greatest_x));
+					c.center := type_point (set (bi.intersection.greatest_x + c.radius, zero));
+			end case;
 
-					if not intersect (c, line) then
-						d := get_distance (c, line);
-					else
-						bp := get_right_end (line);
+			log (text => "circle A" & to_string (c));
+			
+			if not intersect (c, line_tmp) then
+				log (text => "circle B" & to_string (c));
+				
+				for i in 2 .. 10000 loop
+					d := get_distance (c, line_tmp);
+					log (text => "d" & to_string (d));
+					
+
+					if d <= 0.1 then --type_distance'small then
+						exit;
 					end if;
 					
-			end case;
-			
+					c1 := c.center;
+					--log (text => "pos before" & to_string (c.center));
+					--c.center := type_point (move (c.center, direction, d/type_distance (i)));
+					c.center := type_point (move (c.center, direction, 0.1));
+					--log (text => "pos after" & to_string (c.center));
+					
+					if intersect (c, line_tmp) then
+						c.center := c1;
+					end if;
+
+				end loop;
+				
+			else
+				case place is
+					when BEFORE	=> c.center := get_left_end (line_tmp);
+					when AFTER	=> c.center := get_right_end (line_tmp);
+				end case;
+					
+			end if;
+		
+			bp := c.center;
 		end irregular_intersection;
 		
 		
 	begin -- get_break
+		--log (text => "break line");
+		
 		if bi.exists then -- line and track do intersect in some way
 			
 			if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
 				-- The candidate line intersects the upper and lower edge of the track.
 				two_intersectons;
 				
-			elsif 
-			 (i_upper.status = EXISTS and i_lower.status = NOT_EXISTENT)
-			or
-			 (i_upper.status = NOT_EXISTENT and i_lower.status = EXISTS)
-			or
-			 (i_upper.status = NOT_EXISTENT and i_lower.status = NOT_EXISTENT)
-			then
+			--elsif 
+			 --(i_upper.status = EXISTS and i_lower.status = NOT_EXISTENT)
+			--or
+			 --(i_upper.status = NOT_EXISTENT and i_lower.status = EXISTS)
+			--or
+			 --(i_upper.status = NOT_EXISTENT and i_lower.status = NOT_EXISTENT)
+			--then
 
 
-				--ol_start := type_point (set (bi.intersection.smallest_x, zero));
-				--ol_end   := type_point (set (bi.intersection.greatest_x, zero));
+				----ol_start := type_point (set (bi.intersection.smallest_x, zero));
+				----ol_end   := type_point (set (bi.intersection.greatest_x, zero));
 
-				case place is
-					when BEFORE =>
-						bp := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
+				--case place is
+					--when BEFORE =>
+						--bp := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
 
-					when AFTER =>
-						bp := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
-				end case;
+					--when AFTER =>
+						--bp := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
+				--end case;
 
-				break_exists := true;
-				
+			else
+				--break_exists := true;
+				irregular_intersection;
+
+
 				-- CS numerical approch that moves ol_start to the right
 				-- and ol_end to the left until the cap of the track
 				-- barely touches the line.
@@ -872,10 +898,10 @@ package body et_routing is
 				-- See get_break for arc below.
 
 			end if;
-		end if;
+		--end if;
 
 		
-		if break_exists then
+		--if break_exists then
 		
 			-- The break point must be after the start of the track.
 			if get_x (bp) > zero then
@@ -934,6 +960,8 @@ package body et_routing is
 		bp : type_point;
 		
 	begin
+		--log (text => "break arc");
+		
 		if bi.exists then -- arc and track do intersect in some way
 			
 			if 
@@ -994,7 +1022,7 @@ package body et_routing is
 		place	: in type_place)
 		return type_break
 	is
-		track_dimensions : constant type_track_dimensions := get_dimensions (track);
+		--track_dimensions : constant type_track_dimensions := get_dimensions (track);
 
 		bp : type_point;
 		
@@ -1112,6 +1140,8 @@ package body et_routing is
 		procedure test_circle (c : in type_circle) is 
 			b : constant type_break := get_break (track, c, place);
 		begin
+			--log (text => "test circle");
+				 
 			if b.exists then
 				process_break (b.point);
 			end if;
@@ -1155,8 +1185,10 @@ package body et_routing is
 
 				procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
 					if element (c).contours.circular then
+						--log (text => "circular hole");
 						test_circle (element (c).contours.circle);
-					else
+					else		
+						--log (text => "n-shaped hole");
 						iterate (element (c).contours.segments, query_segment'access);
 					end if;
 				end query_hole;
@@ -1175,6 +1207,8 @@ package body et_routing is
 			query_outline;
 			query_holes;
 
+			--log (text => "holes done");
+				 
 			-- track.clearance
 			
 			-- if fill_zone.observe then query 
