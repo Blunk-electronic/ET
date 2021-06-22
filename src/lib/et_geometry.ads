@@ -513,6 +513,9 @@ package et_geometry is
 			angle		: in type_rotation)
 			return type_distance_polar;
 
+		-- Sets the absolute component of a polar distance.
+		-- If the given absolute is zero, then the angle component
+		-- is NOT changed.
 		procedure set_absolute (
 			distance : in out type_distance_polar;
 			absolute : in type_distance_positive);
@@ -1360,8 +1363,17 @@ package et_geometry is
 		type type_circle is new type_circle_base with null record;
 		-- CS use this type wherever a type_arc is declared unnessecarily.
 
+		-- Returns the distance of point to circumfence of circle.
+		-- Assumes the point is INSIDE the circle or ON the circumfence of the circle.
+		-- The point must not be OUTSIDE the circle !
+		function get_distance_to_circumfence (
+			point	: in type_point;
+			circle	: in type_circle)
+			return type_distance_polar;
+			
+		
 		-- Returns the shortest distance from the given point to the
-		-- given circle:
+		-- given circle. Assumes the point is INSIDE the circle.
 		function get_shortest_distance (
 			point	: in type_point;
 			circle	: in type_circle)
