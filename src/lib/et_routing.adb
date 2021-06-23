@@ -713,18 +713,22 @@ package body et_routing is
 	function get_break (
 		track	: in type_track;
 		line	: in type_line;
-		place	: in type_place)
+		place	: in type_place;
+		lth		: in type_log_level)
 		return type_break
 	is
 		track_dimensions : constant type_track_dimensions := get_dimensions (track);
 
+		-- the clearance between center of cap and line:
+		clearance : constant type_distance_positive := track.width * 0.5 + track.clearance;
+		
 		function move_and_rotate_line (line: in type_line) return type_line is
 			l : type_line := line;
 		begin
-			log (text => "line in " & to_string (line));
+			--log (text => "line in " & to_string (line));
 			move_by (l, invert (track_dimensions.offset));
 			rotate_by (l, - track_dimensions.direction);
-			log (text => "line tmp" & to_string (l));
+			--log (text => "line tmp" & to_string (l));
 			return l;
 		end move_and_rotate_line;
 
@@ -748,12 +752,12 @@ package body et_routing is
 		bi : constant type_boundaries_intersection :=
 			  get_intersection (track_dimensions.boundaries, line_boundaries);
 
-
+		
 		bp : type_point;
-		--break_exists : boolean := false;
+		break_exists : boolean := false;
 
 		
-		procedure two_intersectons is 
+		procedure full_intersection is 
 			-- The intersection of the center_line of the track with the candidate line:
 			i_center : constant type_intersection_of_two_lines :=
 				get_intersection (to_line_vector (track_dimensions.center_line), line_tmp);
@@ -764,18 +768,29 @@ package body et_routing is
 			-- (It is the hypothenusis of the triangle.):	
 			spacing : type_distance_positive;
 
-			-- The distance from center of the cap of the track to the
-			-- candidate line. It is a line perpendicular to the candidate line:
-			clearance : constant float := float (track.width * 0.5) + float (track.clearance);
-
 			-- The angle between clearance and spacing:
 			angle : constant float := float (90.0 - i_center.intersection.angle);
 
 		begin
-			spacing := type_distance_positive (clearance / cos (angle, float (units_per_cycle))); 
+			log_indentation_up;
 
-			-- Depending on the given place, the break point must be moved back or forward
-			-- by the spacing:
+			log (text => "line " & to_string (line_tmp) 
+				 & " intersects center of track at" & to_string (i_center.intersection.point)
+				 & " angle" & to_string (i_center.intersection.angle),
+				 level => lth + 2);
+			
+			-- CS log messages
+
+			-- clearance is the distance from center of the cap perpendicular to the line.
+			spacing := type_distance_positive (
+					float (clearance) / cos (angle, float (units_per_cycle)));
+
+			--spacing := 0.0;
+			log (text => "required spacing" & to_string (spacing), level => lth + 2);
+
+			
+			-- Depending on the given place, the break point must be moved 
+			-- left or right by the spacing:
 			case place is
 				when BEFORE =>
 					bp := type_point (set (get_x (i_center.intersection.point) - spacing, zero));
@@ -784,31 +799,35 @@ package body et_routing is
 					bp := type_point (set (get_x (i_center.intersection.point) + spacing, zero));
 			end case;
 			
-			--break_exists := true;
-		end two_intersectons;
+			log_indentation_down;
+		end full_intersection;
 
 
-		procedure irregular_intersection is
-			c : type_circle := (radius => track.width * 0.5 + track.clearance,
-								others => <>);
+		-- This procedure uses a numerical method to find the break point.
+		procedure partial_intersection is
+			-- Build a circle that models the cap of the track.
+			-- The circle covers the clearance required for the track:
+			c : type_circle := (radius => clearance, others => <>);
 
-			c1 : type_point;
-			d : type_distance_positive;
+			-- Here we well backup the position of the circle during the iterations:
+			c_pos_bak : type_point;
 
-			function direction return type_rotation is begin
-				case place is
-					when BEFORE => return 0.0;
-					when AFTER => return 180.0;
-				end case;
-			end direction;
+			-- the distance between center of cap and line:
+			d_cap_to_line : type_distance_positive;
+
+			-- There is a maximum of iterations. If maximum reached
+			-- a constraint_error is raised.
+			max_iterations : constant positive := 1000; -- CS increase if necessary
 			
-		begin -- irregular_intersection
-			log (text => "irregular_intersection");
-			log (text => "line " & to_string (line_tmp));
+		begin -- partial_intersection
+			log_indentation_up;
+			
+			--log (text => "partial_intersection");
+			--log (text => "line " & to_string (line_tmp));
 			--log (text => "line " & to_string (line_boundaries));
 			--log (text => "track" & to_string (track_dimensions.boundaries));
 
-			
+			-- Set the inital position of the cap:
 			case place is
 				when BEFORE =>
 					--log (text => "by sx" & to_string (bi.intersection.smallest_x));
@@ -818,112 +837,117 @@ package body et_routing is
 					c.center := type_point (set (bi.intersection.greatest_x + c.radius, zero));
 			end case;
 
-			log (text => "circle A" & to_string (c));
 			
 			if not intersect (c, line_tmp) then
-				log (text => "circle B" & to_string (c));
+				-- Cap and line are far away from each other. They do not overlap.
 				
-				for i in 2 .. 10000 loop
-					d := get_distance (c, line_tmp);
-					log (text => "d" & to_string (d));
-					
+				log (text => "starting numerical search ...", level => lth + 2);
+				
+				for i in 1 .. max_iterations loop
 
-					if d <= 0.1 then --type_distance'small then
+					-- Calculate the distance between the cap and the line:
+					d_cap_to_line := get_distance (c, line_tmp);
+					log (text => " distance" & to_string (d_cap_to_line), level => lth + 3);
+
+					-- Cancel this loop once the distance is sufficiently small:
+					if d_cap_to_line <= type_distance'small then
+						log (text => " break point found after" & positive'image (i) & " iterations",
+							 level => lth + 2);
 						exit;
 					end if;
-					
-					c1 := c.center;
-					--log (text => "pos before" & to_string (c.center));
-					--c.center := type_point (move (c.center, direction, d/type_distance (i)));
-					c.center := type_point (move (c.center, direction, 0.1));
-					--log (text => "pos after" & to_string (c.center));
-					
-					if intersect (c, line_tmp) then
-						c.center := c1;
-					end if;
 
+					-- backup the cap position
+					c_pos_bak := c.center;
+					
+					-- Depending on place, we move the cap to the right (0 degrees) or 
+					-- left (180 degrees):
+					case place is
+						when BEFORE =>
+							c.center := type_point (move (c.center,   0.0, d_cap_to_line/2.0));
+						when AFTER =>
+							c.center := type_point (move (c.center, 180.0, d_cap_to_line/2.0));
+					end case;
+
+					-- if the cap has been moved too far, restore its old position:
+					if intersect (c, line_tmp) then
+						log (text => " moved too far. restoring old cap position ...", level => lth + 3);
+						c.center := c_pos_bak;
+					end if;
+					-- CS not sure if this is a good idea
+
+					-- Once the maximum of iterations has been reached, raise exception:
+					if i = max_iterations then
+						raise constraint_error with "ERROR: Max. interations of " & positive'image (i) &
+						" reached !";
+					end if;
 				end loop;
 				
 			else
-				case place is
-					when BEFORE	=> c.center := get_left_end (line_tmp);
-					when AFTER	=> c.center := get_right_end (line_tmp);
-				end case;
-					
+				-- Cap and line barely touch each other. Nothing to do.
+				log (text => "line already tangents tip of track", level => lth + 2);					
 			end if;
 		
 			bp := c.center;
-		end irregular_intersection;
+
+			log_indentation_down;
+		end partial_intersection;
 		
 		
 	begin -- get_break
-		--log (text => "break line");
+		--log (text => "computing break with line" & to_string (line), level => lth);
 		
-		if bi.exists then -- line and track do intersect in some way
+		if bi.exists then -- line and track boundaries do intersect in some way
+
+			log (text => "break with line:" & to_string (line), level => lth);
+			log_indentation_up;
 			
 			if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
 				-- The candidate line intersects the upper and lower edge of the track.
-				two_intersectons;
+
+				log (text => "line intersects track upper and lower edge", level => lth + 1);
+				full_intersection;
 				
-			--elsif 
-			 --(i_upper.status = EXISTS and i_lower.status = NOT_EXISTENT)
-			--or
-			 --(i_upper.status = NOT_EXISTENT and i_lower.status = EXISTS)
-			--or
-			 --(i_upper.status = NOT_EXISTENT and i_lower.status = NOT_EXISTENT)
-			--then
-
-
-				----ol_start := type_point (set (bi.intersection.smallest_x, zero));
-				----ol_end   := type_point (set (bi.intersection.greatest_x, zero));
-
-				--case place is
-					--when BEFORE =>
-						--bp := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
-
-					--when AFTER =>
-						--bp := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
-				--end case;
-
 			else
-				--break_exists := true;
-				irregular_intersection;
-
-
-				-- CS numerical approch that moves ol_start to the right
-				-- and ol_end to the left until the cap of the track
-				-- barely touches the line.
-				-- CS if we investigate the intersections with the upper
-				-- and lower edge of the track, then the analytical solution could be better.
-				-- See get_break for arc below.
-
+				-- The candidate line intersects only one edge or none at all.
+				log (text => "line intersects track partially", level => lth + 1);
+				partial_intersection;
 			end if;
-		--end if;
 
 		
-		--if break_exists then
-		
-			-- The break point must be after the start of the track.
+			-- The computed break point must be after the start of the track.
+			-- If it is before the start of the track, then it is discarded.
 			if get_x (bp) > zero then
-			
+
+				-- Rotate and move the break point back according to
+				-- the track direction and offset:
 				rotate_to (bp, track_dimensions.direction);
 				move_by (bp, track_dimensions.offset);
-				
-				return (exists => true, point => bp);
-			else
-				return (exists => false);
+
+				break_exists := true;
+
+				log (text => "break point " & type_place'image (place) & " line:" & to_string (bp),
+					 level => lth + 2);
 			end if;
 
+			log_indentation_down;
+
+		end if;
+
+		
+		if break_exists then
+			return (exists => true, point => bp);
 		else
 			return (exists => false);
 		end if;
+			
 	end get_break;
 
 
 	function get_break (
 		track	: in type_track;
 		arc		: in type_arc;
-		place	: in type_place)
+		place	: in type_place;
+		lth		: in type_log_level)
 		return type_break
 	is
 		track_dimensions : constant type_track_dimensions := get_dimensions (track);
@@ -1019,7 +1043,8 @@ package body et_routing is
 	function get_break (
 		track	: in type_track;
 		circle	: in type_circle;
-		place	: in type_place)
+		place	: in type_place;
+		lth		: in type_log_level)
 		return type_break
 	is
 		--track_dimensions : constant type_track_dimensions := get_dimensions (track);
@@ -1116,7 +1141,7 @@ package body et_routing is
 		-- If there is a break then its position is sent to procedure
 		-- process_break for further processing.
 		procedure test_line (l : in type_line) is 
-			b : constant type_break := get_break (track, l, place);
+			b : constant type_break := get_break (track, l, place, log_threshold + 2);
 		begin
 			--log (text => "test line");
 			
@@ -1127,7 +1152,7 @@ package body et_routing is
 
 		-- See procedure test_line for details.
 		procedure test_arc (a : in type_arc) is
-			b : constant type_break := get_break (track, a, place);
+			b : constant type_break := get_break (track, a, place, log_threshold + 2);
 		begin
 			--log (text => "test arc");
 			
@@ -1138,7 +1163,7 @@ package body et_routing is
 
 		-- See procedure test_line for details.
 		procedure test_circle (c : in type_circle) is 
-			b : constant type_break := get_break (track, c, place);
+			b : constant type_break := get_break (track, c, place, log_threshold + 2);
 		begin
 			--log (text => "test circle");
 				 
@@ -1172,18 +1197,24 @@ package body et_routing is
 			
 			procedure query_outline is begin
 				log (text => "probing outline ...", level => log_threshold + 1);
+				log_indentation_up;
 				
 				if module.board.contours.outline.contours.circular then
 					test_circle (module.board.contours.outline.contours.circle);
 				else
 					iterate (module.board.contours.outline.contours.segments, query_segment'access);
 				end if;
+
+				log_indentation_down;
 			end query_outline;
 
+			
 			procedure query_holes is
 				use pac_pcb_cutouts;
 
 				procedure query_hole (c : in pac_pcb_cutouts.cursor) is begin
+					log_indentation_up;
+					
 					if element (c).contours.circular then
 						--log (text => "circular hole");
 						test_circle (element (c).contours.circle);
@@ -1191,6 +1222,8 @@ package body et_routing is
 						--log (text => "n-shaped hole");
 						iterate (element (c).contours.segments, query_segment'access);
 					end if;
+
+					log_indentation_down;
 				end query_hole;
 				
 			begin
@@ -1253,7 +1286,7 @@ package body et_routing is
 	begin -- get_distance
 		case place is
 			when BEFORE =>
-				log (text => "distance to obstacle from point" 
+				log (text => "computing distance to obstacle from point" 
 					 & to_string (start_point)
 					 & " direction" & to_string (direction),
 					 level => log_threshold);
@@ -1272,20 +1305,20 @@ package body et_routing is
 					-- distance_to_obstacle:
 					query_element (module_cursor, query_obstacles'access);
 
-					log (text => to_string (distance_to_obstacle),
-						level => log_threshold);
-
 					log_indentation_down;
+					
+					log (text => "distance to obstacle:" & to_string (distance_to_obstacle),
+						level => log_threshold);
 					
 					return (VALID, distance_to_obstacle);
 					
 				else 
 					-- start_point does NOT qualify to start a track
 
+					log_indentation_down;
+					
 					log (text => "track not allowed here",
 						level => log_threshold);
-
-					log_indentation_down;
 					
 					return (status => INVALID);
 				end if;
@@ -1293,7 +1326,7 @@ package body et_routing is
 
 				
 			when AFTER =>
-				log (text => "distance after obstacles from point" 
+				log (text => "computing distance after obstacles from point" 
 					 & to_string (start_point)
 					 & " direction" & to_string (direction),
 					 level => log_threshold);
@@ -1310,19 +1343,19 @@ package body et_routing is
 				
 				case status is
 					when VALID => -- suitable point found
-						log (text => to_string (distance_after_obstacle),
-							level => log_threshold);
-
 						log_indentation_down;
+
+						log (text => "distance after obstacle:" & to_string (distance_after_obstacle),
+							level => log_threshold);
 						
 						return (VALID, distance_after_obstacle);
 
 						
 					when INVALID => -- NO suitable point found 
+						log_indentation_down;
+						
 						log (text => "no obstacle found",
 							level => log_threshold);
-
-						log_indentation_down;
 						
 						return (status => INVALID);
 				end case;

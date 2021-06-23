@@ -102,7 +102,7 @@ package et_routing is
 	-- clearance to other objects:
 	type type_track is record
 		center		: type_line_vector; -- incl. start point and direction
-		width		: type_track_width; -- of the conductor (usually copper)
+		width		: type_track_width; -- of the conductor (usually copper) -- CS rename to conductor_width
 		clearance	: type_track_clearance;
 	end record;
 
@@ -153,19 +153,22 @@ package et_routing is
 	function get_break (
 		track	: in type_track;
 		line	: in type_line;
-		place	: in type_place)
+		place	: in type_place;
+		lth		: in type_log_level)
 		return type_break;
 
 	function get_break (
 		track	: in type_track;
 		arc		: in type_arc;
-		place	: in type_place)		
+		place	: in type_place;
+		lth		: in type_log_level)
 		return type_break;
 
 	function get_break (
 		track	: in type_track;
 		circle	: in type_circle;
-		place	: in type_place)		
+		place	: in type_place;
+		lth		: in type_log_level)
 		return type_break;
 	
 
