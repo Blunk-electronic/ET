@@ -1150,19 +1150,19 @@ package et_geometry is
 		type type_line_range is (
 			BETWEEN_END_POINTS,	-- start and end point excluded
 			WITH_END_POINTS,	-- start and end point included
-			BEYOND_END_POINTS	-- unlimited line assumed. extends beyond both start and end point into infinity
+			BEYOND_END_POINTS	-- indefinite long line assumed. extends beyond both start and end point into infinity
 			);
 		
 		-- Computes the shortest distance (perpendicular) of a point to a line. 
 		-- The optional parameter catch_zone specifies the range at which 
-		-- the point is regarded as stitting on the line.
+		-- the point is regarded as sitting on the line.
 		-- In the result the flag out_of_range will be cleared if the point
-		-- sits on the line or within the catch_zone.
+		-- sits on the line or inside the catch_zone.
 		function get_distance (
 			point		: in type_point; 
 			line		: in type_line;
 			line_range	: in type_line_range;
-			catch_zone	: in type_catch_zone := zero)
+			catch_zone	: in type_catch_zone := zero) -- CS remove ?
 			return type_distance_point_line;
 
 		-- Returns true if the given point sits on the given line.

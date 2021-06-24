@@ -2410,7 +2410,8 @@ package body et_geometry is
 			-- Imagine a line that starts at point, travels perpendicular towards
 			-- the given line and finally intersects the given line somewhere.
 			-- The intersection may be betweeen the start and end point of the given line.
-			-- The intersection may be virtual, beyond start or end point of the given line.
+			-- The intersection may be virtual, before start or after end point 
+			-- of the given line.
 			
 			line_direction : constant type_rotation := direction (line);
 			line_direction_vector : constant type_vector := direction_vector (line);
@@ -2446,7 +2447,7 @@ package body et_geometry is
 			
 		begin
 			-- The first and simplest test is to figure out whether
-			-- the given point sits at the start or end point of the line.
+			-- the given point sits exactly on the start or end point of the line.
 			-- Mind: result.distance has default zero.
 			-- This test includes the start and end points of the line. 
 			-- On match we exit this function prematurely and return the result
@@ -2502,7 +2503,7 @@ package body et_geometry is
 			--log (text => "distance " & to_string (result.distance));
 
 			-- Set iv so that it points to the intersection. The
-			-- intersection can be between start and end point of the given line or beyond.
+			-- intersection can be anywhere on that indefinite long line.
 			compute_intersection;
 			
 			-- If the point sits somewhere on the line, we must figure out
@@ -3518,6 +3519,9 @@ package body et_geometry is
 		is
 			result : type_distance := zero;
 
+			debug : constant boolean := false;
+			--debug : constant boolean := true;
+			
 			-- the distance from circumfence to start of line:
 			ds : type_distance_positive;
 			
@@ -3529,22 +3533,44 @@ package body et_geometry is
 				get_distance (circle.center, line, WITH_END_POINTS);
 			
 		begin
-			if on_line (get_intersection (dp), line) then
+			--log (text => "circle" & to_string (circle));
+			--log (text => "line  " & to_string (line));
+
+			if debug then
+				put_line ("get_distance:");
+				put_line ( "dl" & to_string (get_distance (dp)));
+				put_line ( "ds" & to_string (get_distance_total (circle.center, line.start_point)));
+				put_line ( "de" & to_string (get_distance_total (circle.center, line.end_point)));
+			end if;
+			
+			
+			--if on_line (get_intersection (dp), line) then
+			if not dp.out_of_range then -- line passes the circle
 				result := get_distance (dp);
-			else
+				--log (text => "on line");
+
+				--if debug then
+					--put_line ("on line");
+				--end if;
+				
+			else -- line does not pass the circle
 				ds := get_distance_total (circle.center, line.start_point);
 				de := get_distance_total (circle.center, line.end_point);
 				
 				-- select among ds and de the smallest:
 				result := get_smallest (ds, de);
 			end if;
-
+			
 			-- We are interested in the distance of the circumfence to
 			-- the line. Therefore the radius must be subtracted:
 			result := result - circle.radius;
 			
 			--log (text => "dp" & to_string (result));
 
+			if debug then
+				put_line ("d " & to_string (result));
+			end if;
+			
 			return result;
 		end get_distance;
 

@@ -965,13 +965,14 @@ package body et_routing is
 		bi : constant type_boundaries_intersection := 
 			get_intersection (track_dimensions.boundaries, arc_boundaries);
 		
-		
+		break_exists : boolean := false;
 		bp : type_point;
 		
 	begin
-		--log (text => "break arc");
-		
 		if bi.exists then -- arc and track do intersect in some way
+
+			log (text => "break with arc:" & to_string (arc), level => lth);
+			log_indentation_up;
 			
 			if 
 			 (i_upper.status = ONE_EXISTS and i_lower.status = ONE_EXISTS) 
@@ -997,31 +998,34 @@ package body et_routing is
 						bp := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
 				end case;
 
-				
-				-- CS numerical approch that moves ol_start to the right
-				-- and ol_end to the left until the cap of the track
-				-- barely touches the arc.
-
-				-- The break point must be after the start of the track.
-				if get_x (bp) > zero then
-				
-					rotate_to (bp, track_dimensions.direction);
-					move_by (bp, track_dimensions.offset);
-					
-					return (exists => true, point => bp);
-				else
-					return (exists => false);
-				end if;
-
-			else
-				return (exists => false); -- CS
 			end if;
 			
-		else
-			-- If no boundaries exist, then there is no overlap:
-			return (exists => false);
+
+			-- The computed break point must be after the start of the track.
+			-- If it is before the start of the track, then it is discarded.
+			if get_x (bp) > zero then
+
+				-- Rotate and move the break point back according to
+				-- the track direction and offset:
+				rotate_to (bp, track_dimensions.direction);
+				move_by (bp, track_dimensions.offset);
+
+				break_exists := true;
+
+				log (text => "break point " & type_place'image (place) & " arc:" & to_string (bp),
+					 level => lth + 2);
+			end if;
+
+			log_indentation_down;
 		end if;
 
+		
+		if break_exists then
+			return (exists => true, point => bp);
+		else
+			return (exists => false);
+		end if;
+		
 	end get_break;
 
 

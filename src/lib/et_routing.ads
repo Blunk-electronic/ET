@@ -116,6 +116,9 @@ package et_routing is
 		BEFORE,
 		AFTER);					
 
+	-- A break may or may not exist. If it exists, then the point
+	-- is where a track ends (before an obstacle) or where it starts
+	-- (after an obstacle). Point is the center of the cap of the track.
 	type type_break (exists : boolean) is record
 		case exists is
 			when TRUE => point : type_point;
@@ -150,6 +153,7 @@ package et_routing is
 	--  - Returns the point, after the start point of the track, where the break ends.
 	-- If track and line do not overlap:
 	--  - Returns false (no break).
+	-- The returned break is the center of the cap of the track.
 	function get_break (
 		track	: in type_track;
 		line	: in type_line;
