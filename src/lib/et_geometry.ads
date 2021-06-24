@@ -1153,11 +1153,11 @@ package et_geometry is
 			BEYOND_END_POINTS	-- unlimited line assumed. extends beyond both start and end point into infinity
 			);
 		
-		-- Computes the shortest distance (perpendicular) of a given point from the given line. 
-		-- The optional parameter catch_zone specifies the range at which the point is regarded
-		-- as stitting on the line.
-		-- In the result the flag out_of_range will be cleared if the point sits on the line
-		-- or within the catch_zone.
+		-- Computes the shortest distance (perpendicular) of a point to a line. 
+		-- The optional parameter catch_zone specifies the range at which 
+		-- the point is regarded as stitting on the line.
+		-- In the result the flag out_of_range will be cleared if the point
+		-- sits on the line or within the catch_zone.
 		function get_distance (
 			point		: in type_point; 
 			line		: in type_line;
@@ -1427,15 +1427,13 @@ package et_geometry is
 			line	: in type_line'class)
 			return boolean;
 
-		-- Returns the distance between a circle and a line.
-		-- Assumes that cirlce and line do not intersect in any way.
-		-- Otherwise the result is nonsense.
-		-- Use function intersect (see above) to ensure that they 
-		-- do not intersect.
+		-- Returns the shortest distance between a circle and a line.
+		-- If circle and line do intersect in some way, then the return
+		-- is a negative number.
 		function get_distance (
 			circle	: in type_circle'class;
 			line	: in type_line'class)
-			return type_distance_positive;
+			return type_distance;
 
 		
 		-- The angle of a tangent to a circle:

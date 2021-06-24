@@ -2580,7 +2580,8 @@ package body et_geometry is
 			point		: in type_point;
 			line		: in type_line;
 			catch_zone	: in type_catch_zone := zero)
-			return boolean is
+			return boolean
+		is
 			distance : type_distance_point_line;
 		begin
 			--distance := distance_point_line (point, line, BETWEEN_END_POINTS);
@@ -3482,43 +3483,68 @@ package body et_geometry is
 			line	: in type_line'class)
 			return boolean
 		is
+			result : boolean := false;
+			
 			l : constant type_line_vector := to_line_vector (line);
+			i : constant type_intersection_of_line_and_circle := get_intersection (l, circle);
 		begin
-			if get_intersection (l, circle).status = NONE_EXIST then
-				return false;
-			else
-				return true;
-			end if;
-		end intersect;
+			case i.status is
+				when NONE_EXIST => null;
+				
+				when ONE_EXISTS => 
+					if on_line (to_point (i.intersection.point), line) then
+						result := true;
+					end if;		
 
+				when TWO_EXIST =>
+					if on_line (to_point (i.intersection_1.point), line) then
+						result := true;
+					end if;
+					
+					if on_line (to_point (i.intersection_2.point), line) then
+						result := true;
+					end if;
+					
+			end case;
+			
+			return result;			
+		end intersect;
+		
 		
 		function get_distance (
 			circle	: in type_circle'class;
 			line	: in type_line'class)
-			return type_distance_positive
+			return type_distance
 		is
-			result : type_distance_positive := zero;
+			result : type_distance := zero;
 
-			-- the distance from center to start of line:
-			ds : constant type_distance_positive := 
-				get_distance_total (circle.center, line.start_point);
+			-- the distance from circumfence to start of line:
+			ds : type_distance_positive;
 			
-			-- the distance from center to end of line:
-			de : constant type_distance_positive := 
-				get_distance_total (circle.center, line.end_point);
+			-- the distance from circumfence to end of line:
+			de : type_distance_positive;
 
 			-- the distance from center perpendicular to line:
 			dp : constant type_distance_point_line :=
 				get_distance (circle.center, line, WITH_END_POINTS);
 			
 		begin
-			-- select among ds, de and dp the smallest:
-			result := get_smallest (ds, de);
-			result := get_smallest (result, get_distance (dp));
+			if on_line (get_intersection (dp), line) then
+				result := get_distance (dp);
+			else
+				ds := get_distance_total (circle.center, line.start_point);
+				de := get_distance_total (circle.center, line.end_point);
+				
+				-- select among ds and de the smallest:
+				result := get_smallest (ds, de);
+			end if;
 
 			-- We are interested in the distance of the circumfence to
 			-- the line. Therefore the radius must be subtracted:
 			result := result - circle.radius;
+			
+			--log (text => "dp" & to_string (result));
+
 			return result;
 		end get_distance;
 

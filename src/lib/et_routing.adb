@@ -725,10 +725,8 @@ package body et_routing is
 		function move_and_rotate_line (line: in type_line) return type_line is
 			l : type_line := line;
 		begin
-			--log (text => "line in " & to_string (line));
 			move_by (l, invert (track_dimensions.offset));
 			rotate_by (l, - track_dimensions.direction);
-			--log (text => "line tmp" & to_string (l));
 			return l;
 		end move_and_rotate_line;
 
@@ -751,7 +749,6 @@ package body et_routing is
 		-- the area where track and line boundaries intersect:
 		bi : constant type_boundaries_intersection :=
 			  get_intersection (track_dimensions.boundaries, line_boundaries);
-
 		
 		bp : type_point;
 		break_exists : boolean := false;
@@ -779,15 +776,12 @@ package body et_routing is
 				 & " angle" & to_string (i_center.intersection.angle),
 				 level => lth + 2);
 			
-			-- CS log messages
-
 			-- clearance is the distance from center of the cap perpendicular to the line.
 			spacing := type_distance_positive (
 					float (clearance) / cos (angle, float (units_per_cycle)));
 
 			--spacing := 0.0;
 			log (text => "required spacing" & to_string (spacing), level => lth + 2);
-
 			
 			-- Depending on the given place, the break point must be moved 
 			-- left or right by the spacing:
@@ -809,11 +803,9 @@ package body et_routing is
 			-- The circle covers the clearance required for the track:
 			c : type_circle := (radius => clearance, others => <>);
 
-			-- Here we well backup the position of the circle during the iterations:
-			c_pos_bak : type_point;
-
 			-- the distance between center of cap and line:
-			d_cap_to_line : type_distance_positive;
+			d_cap_to_line : type_distance;
+			d_cap_to_line_abs : type_distance_positive;
 
 			-- There is a maximum of iterations. If maximum reached
 			-- a constraint_error is raised.
@@ -822,11 +814,8 @@ package body et_routing is
 		begin -- partial_intersection
 			log_indentation_up;
 			
-			--log (text => "partial_intersection");
-			--log (text => "line " & to_string (line_tmp));
-			--log (text => "line " & to_string (line_boundaries));
-			--log (text => "track" & to_string (track_dimensions.boundaries));
-
+			log (text => "starting numerical search ...", level => lth + 2);
+			
 			-- Set the inital position of the cap:
 			case place is
 				when BEFORE =>
@@ -836,57 +825,54 @@ package body et_routing is
 					--log (text => "by gx" & to_string (bi.intersection.greatest_x));
 					c.center := type_point (set (bi.intersection.greatest_x + c.radius, zero));
 			end case;
-
+		
 			
-			if not intersect (c, line_tmp) then
-				-- Cap and line are far away from each other. They do not overlap.
+			for i in 1 .. max_iterations loop
+
+				-- Calculate the distance between the cap and the line:
+				d_cap_to_line := get_distance (c, line_tmp);
+				log (text => " distance" & to_string (d_cap_to_line), level => lth + 3);
+
+				d_cap_to_line_abs := abs (d_cap_to_line);
 				
-				log (text => "starting numerical search ...", level => lth + 2);
-				
-				for i in 1 .. max_iterations loop
-
-					-- Calculate the distance between the cap and the line:
-					d_cap_to_line := get_distance (c, line_tmp);
-					log (text => " distance" & to_string (d_cap_to_line), level => lth + 3);
-
-					-- Cancel this loop once the distance is sufficiently small:
-					if d_cap_to_line <= type_distance'small then
-						log (text => " break point found after" & positive'image (i) & " iterations",
-							 level => lth + 2);
-						exit;
-					end if;
-
-					-- backup the cap position
-					c_pos_bak := c.center;
+				-- Cancel this loop once the distance is sufficiently small.
+				-- Otherwise take half of the distance and move cap to new position:
+				if d_cap_to_line_abs <= type_distance'small then
+					log (text => " break point found after" & positive'image (i) & " iterations",
+							level => lth + 2);
+					exit;
+				else
+					d_cap_to_line_abs := d_cap_to_line_abs * 0.5;
 					
-					-- Depending on place, we move the cap to the right (0 degrees) or 
-					-- left (180 degrees):
 					case place is
 						when BEFORE =>
-							c.center := type_point (move (c.center,   0.0, d_cap_to_line/2.0));
+							if d_cap_to_line > zero then
+								-- move cap right towards the line:
+								c.center := type_point (move (c.center, 0.0, d_cap_to_line_abs));
+							else
+								-- move cap left away from the line:
+								c.center := type_point (move (c.center, 180.0, d_cap_to_line_abs));
+							end if;
+							
 						when AFTER =>
-							c.center := type_point (move (c.center, 180.0, d_cap_to_line/2.0));
+							if d_cap_to_line > zero then
+								-- move cap left towards the line::
+								c.center := type_point (move (c.center, 180.0, d_cap_to_line_abs));
+							else
+								-- move cap right away from the line:
+								c.center := type_point (move (c.center, 0.0, d_cap_to_line_abs));
+							end if;
 					end case;
+				end if;
 
-					-- if the cap has been moved too far, restore its old position:
-					if intersect (c, line_tmp) then
-						log (text => " moved too far. restoring old cap position ...", level => lth + 3);
-						c.center := c_pos_bak;
-					end if;
-					-- CS not sure if this is a good idea
-
-					-- Once the maximum of iterations has been reached, raise exception:
-					if i = max_iterations then
-						raise constraint_error with "ERROR: Max. interations of " & positive'image (i) &
-						" reached !";
-					end if;
-				end loop;
 				
-			else
-				-- Cap and line barely touch each other. Nothing to do.
-				log (text => "line already tangents tip of track", level => lth + 2);					
-			end if;
-		
+				-- Once the maximum of iterations has been reached, raise exception:
+				if i = max_iterations then
+					raise constraint_error with "ERROR: Max. interations of " & positive'image (i) &
+					" reached !";
+				end if;
+			end loop;
+						
 			bp := c.center;
 
 			log_indentation_down;
@@ -930,7 +916,6 @@ package body et_routing is
 			end if;
 
 			log_indentation_down;
-
 		end if;
 
 		
