@@ -1,0 +1,15 @@
+with "gtkada.gpr";
+
+project testbench is
+
+	--for exec_dir use external ("HOME") & "/bin";
+	for exec_dir use ".";
+	for object_dir use "obj";
+ 	for source_dirs use ("." , "../lib");
+ 	for main use ("testbench");
+
+end testbench;
+
+-- build with command "gprbuild -j2 testbench"
+-- build with command "gprbuild -j2 -g testbench"
+-- clean up with command "gprclean"
