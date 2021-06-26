@@ -807,9 +807,23 @@ package body et_routing is
 			d_cap_to_line : type_distance;
 			d_cap_to_line_abs : type_distance_positive;
 
+			c_bak : type_circle;
+			step : type_distance_positive := 0.5;
+			
 			-- There is a maximum of iterations. If maximum reached
 			-- a constraint_error is raised.
 			max_iterations : constant positive := 1000; -- CS increase if necessary
+
+			dyn_width : boolean := true;
+
+			procedure set_step_width is begin
+				if dyn_width then
+					step := d_cap_to_line_abs * 0.5;
+				else
+					step := type_distance'small;
+				end if;
+			end set_step_width;
+								
 			
 		begin -- partial_intersection
 			log_indentation_up;
@@ -828,8 +842,8 @@ package body et_routing is
 		
 			
 			for i in 1 .. max_iterations loop
-
-				-- Calculate the distance between the cap and the line:
+				
+				-- Calculate the distance between the cap (incl. clearance) and the line:
 				d_cap_to_line := get_distance (c, line_tmp);
 				log (text => " distance" & to_string (d_cap_to_line), level => lth + 3);
 
@@ -842,25 +856,34 @@ package body et_routing is
 							level => lth + 2);
 					exit;
 				else
-					d_cap_to_line_abs := d_cap_to_line_abs * 0.5;
 					
 					case place is
 						when BEFORE =>
 							if d_cap_to_line > zero then
 								-- move cap right towards the line:
-								c.center := type_point (move (c.center, 0.0, d_cap_to_line_abs));
+								set_step_width;								
+								c_bak := c;
+								c.center := type_point (move (c.center, 0.0, step));
+								--c.center := type_point (move (c.center, 0.0, type_distance'small));
 							else
 								-- move cap left away from the line:
-								c.center := type_point (move (c.center, 180.0, d_cap_to_line_abs));
+								--c.center := type_point (move (c.center, 180.0, type_distance'small));
+								c := c_bak;
+								dyn_width := false;
 							end if;
 							
 						when AFTER =>
 							if d_cap_to_line > zero then
-								-- move cap left towards the line::
-								c.center := type_point (move (c.center, 180.0, d_cap_to_line_abs));
+								-- move cap left towards the line:
+								set_step_width;
+								c_bak := c;
+								c.center := type_point (move (c.center, 180.0, step));
+								--c.center := type_point (move (c.center, 180.0, type_distance'small));
 							else
 								-- move cap right away from the line:
-								c.center := type_point (move (c.center, 0.0, d_cap_to_line_abs));
+								--c.center := type_point (move (c.center, 0.0, type_distance'small));
+								c := c_bak;
+								dyn_width := false;
 							end if;
 					end case;
 				end if;
@@ -890,6 +913,9 @@ package body et_routing is
 			if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
 				-- The candidate line intersects the upper and lower edge of the track.
 
+				log (text => "upper/lower" & to_string (i_upper.intersection.point) 
+					 & to_string (i_lower.intersection.point));
+				
 				log (text => "line intersects track upper and lower edge", level => lth + 1);
 				full_intersection;
 				
