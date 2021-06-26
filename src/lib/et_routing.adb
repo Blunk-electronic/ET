@@ -647,7 +647,7 @@ package body et_routing is
 		track	: in type_track)
 		return type_track_clearance
 	is begin
-		return track.width + track.clearance;
+		return track.width + 2.0 * track.clearance;
 	end get_total_width;
 
 
@@ -913,9 +913,6 @@ package body et_routing is
 			if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
 				-- The candidate line intersects the upper and lower edge of the track.
 
-				log (text => "upper/lower" & to_string (i_upper.intersection.point) 
-					 & to_string (i_lower.intersection.point));
-				
 				log (text => "line intersects track upper and lower edge", level => lth + 1);
 				full_intersection;
 				
