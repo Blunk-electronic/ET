@@ -1005,43 +1005,37 @@ package body et_routing is
 			d_cap_to_arc : type_distance;
 			d_cap_to_arc_abs : type_distance_positive;
 
-			c_bak : type_circle;
-			step : type_distance_positive := 0.5;
+			--c_bak : type_circle;
+			step : type_distance_positive; -- := 0.5;
 			
 			-- There is a maximum of iterations. If maximum reached
 			-- a constraint_error is raised.
 			max_iterations : constant positive := 1000; -- CS increase if necessary
 
-			dyn_width : boolean := true;
+			--dyn_width : boolean := true;
 
-			procedure set_step_width is begin
-				if dyn_width then
-					step := d_cap_to_arc_abs * 0.5;
-				else
-					step := type_distance'small;
-				end if;
-			end set_step_width;
-								
-			
+			--procedure set_step_width is begin
+				--if dyn_width then
+					--step := d_cap_to_arc_abs * 0.5;
+				--else
+					--step := type_distance'small;
+				--end if;
+			--end set_step_width;
+
 		begin
 			log_indentation_up;
 			
 			log (text => "starting numerical search ...", level => lth + 2);
 
-			log (text => "arc " & to_string (arc_boundaries));
-			log (text => "line " & to_string (track_dimensions.boundaries));
-			
 			-- Set the inital position of the cap:
 			case place is
 				when BEFORE =>
-					log (text => "by sx" & to_string (bi.intersection.smallest_x));
 					c.center := type_point (set (bi.intersection.smallest_x - c.radius, zero));
+
 				when AFTER =>
-					--log (text => "by gx" & to_string (bi.intersection.greatest_x));
 					c.center := type_point (set (bi.intersection.greatest_x + c.radius, zero));
 			end case;
 
-			log (text => "c:" & to_string (c));
 			
 			for i in 1 .. max_iterations loop
 				
@@ -1058,34 +1052,38 @@ package body et_routing is
 							level => lth + 2);
 					exit;
 				else
+
+					step := d_cap_to_arc_abs * 0.5;
 					
 					case place is
 						when BEFORE =>
 							if d_cap_to_arc > zero then
 								-- move cap right towards the arc:
-								set_step_width;								
-								c_bak := c;
+								--set_step_width;
+								--c_bak := c;
 								c.center := type_point (move (c.center, 0.0, step));
 								--c.center := type_point (move (c.center, 0.0, type_distance'small));
 							else
 								-- move cap left away from the arc:
-								--c.center := type_point (move (c.center, 180.0, type_distance'small));
-								c := c_bak;
-								dyn_width := false;
+								--set_step_width;
+								c.center := type_point (move (c.center, 180.0, step));
+								--c := c_bak;
+								--dyn_width := false;
 							end if;
 							
 						when AFTER =>
 							if d_cap_to_arc > zero then
 								-- move cap left towards the arc:
-								set_step_width;
-								c_bak := c;
+								--set_step_width;
+								--c_bak := c;
 								c.center := type_point (move (c.center, 180.0, step));
 								--c.center := type_point (move (c.center, 180.0, type_distance'small));
 							else
 								-- move cap right away from the arc:
-								--c.center := type_point (move (c.center, 0.0, type_distance'small));
-								c := c_bak;
-								dyn_width := false;
+								--set_step_width;
+								c.center := type_point (move (c.center, 0.0, step));
+								--c := c_bak;
+								--dyn_width := false;
 							end if;
 					end case;
 				end if;
@@ -1107,54 +1105,38 @@ package body et_routing is
 	begin
 		if bi.exists then -- arc and track do intersect in some way
 
-			log (text => "break with arc:" & to_string (arc), level => lth);
-			log_indentation_up;
-			
-			--if 
-			 --(i_upper.status = ONE_EXISTS and i_lower.status = ONE_EXISTS) 
-			--or 
-			 --(i_upper.status = ONE_EXISTS and i_lower.status = NONE_EXIST)
-			--or
-			 --(i_upper.status = NONE_EXIST and i_lower.status = ONE_EXISTS)
-			--or
-			 --(i_upper.status = NONE_EXIST and i_lower.status = NONE_EXIST)
-			--then
+			-- If we search for a break before the arc, then it makes sense
+			-- only if the area of overlap begins after the start of the track.
+			-- This condition test should avoid useless searching for a break. 
+			-- CS: not verified ! Remove this test if assumption is wrong.
+			if (place = BEFORE and bi.intersection.smallest_x >= zero) 
 
-			--if (i_upper.status /= NONE_EXIST or i_lower.status /= NONE_EXIST) then
-				--ol_start := type_point (set (bi.intersection.smallest_x, zero));
-				--ol_end   := type_point (set (bi.intersection.greatest_x, zero));
+			-- CS: A similar optimization when place is AFTER ?				
+			or place = AFTER 
+			then
+				
+				log (text => "break with arc:" & to_string (arc), level => lth);
+				log_indentation_up;
 
-				--ol_start := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
-				--ol_end   := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
+				intersection;
 
-				--case place is
-					--when BEFORE =>
-						--bp := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
+				-- The computed break point must be after the start of the track.
+				-- If it is before the start of the track, then it is discarded.
+				if get_x (bp) > zero then
 
-					--when AFTER =>
-						--bp := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
-				--end case;
+					-- Rotate and move the break point back according to
+					-- the track direction and offset:
+					rotate_to (bp, track_dimensions.direction);
+					move_by (bp, track_dimensions.offset);
 
-			--end if;
+					break_exists := true;
 
-			intersection;
+					log (text => "break point " & type_place'image (place) & " arc:" & to_string (bp),
+						level => lth + 2);
+				end if;
 
-			-- The computed break point must be after the start of the track.
-			-- If it is before the start of the track, then it is discarded.
-			if get_x (bp) > zero then
-
-				-- Rotate and move the break point back according to
-				-- the track direction and offset:
-				rotate_to (bp, track_dimensions.direction);
-				move_by (bp, track_dimensions.offset);
-
-				break_exists := true;
-
-				log (text => "break point " & type_place'image (place) & " arc:" & to_string (bp),
-					 level => lth + 2);
+				log_indentation_down;
 			end if;
-
-			log_indentation_down;
 		end if;
 
 		
