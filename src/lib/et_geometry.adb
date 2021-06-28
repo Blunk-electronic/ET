@@ -3576,6 +3576,46 @@ package body et_geometry is
 			return result;
 		end get_distance;
 
+
+		function get_distance (
+			circle	: in type_circle'class;
+			arc		: in type_arc'class)
+			return type_distance
+		is
+			result : type_distance := zero;
+
+			-- the distance from circumfence to start of arc:
+			--ds : type_distance_positive;
+			
+			-- the distance from circumfence to end of arc:
+			--de : type_distance_positive;
+
+			dp : type_distance_polar;
+			d : type_distance;
+		begin
+			--ds := get_distance_total (circle.center, arc.start_point);
+			--de := get_distance_total (circle.center, arc.end_point);
+
+			--put_line ("circle" & to_string (circle));
+			--put_line ("arc" & to_string (arc));
+
+			log (text => "circle" & to_string (circle));
+			log (text => "arc" & to_string (arc));
+
+			
+			dp := get_shortest_distance (circle.center, arc);
+			--put_line ("shortest distance" & to_string (get_absolute (dp)));
+			log (text => "shortest distance" & to_string (get_absolute (dp)));
+			
+			d := get_absolute (dp) - circle.radius;
+
+			--put_line ("sd - r" & to_string (d));
+			--log (text => "sd - r" & to_string (d));
+			
+			result := get_absolute (dp) - circle.radius;
+			return result;
+		end get_distance;
+
 		
 		
 		function get_tangent_angle (p : in type_point) 

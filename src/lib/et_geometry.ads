@@ -1325,8 +1325,8 @@ package et_geometry is
 
 		
 		
-		function arc_end_point (
 		-- Computes the end point of an arc.
+		function arc_end_point (
 			center		: in type_point;
 			start_point	: in type_point;	
 			angle 		: in type_rotation) -- unit is degrees
@@ -1352,7 +1352,9 @@ package et_geometry is
 			arc			: in out type_arc;
 			rotation	: in type_rotation);
 
-	
+
+
+
 		
 	-- CIRCLE
 		type type_circle_base is abstract tagged record
@@ -1436,6 +1438,13 @@ package et_geometry is
 			line	: in type_line'class)
 			return type_distance;
 
+		-- Returns the shortest distance between a circle and an arc.
+		-- If circle and arc do intersect in some way, then the return
+		-- is a negative number.
+		function get_distance (
+			circle	: in type_circle'class;
+			arc		: in type_arc'class)
+			return type_distance;
 		
 		-- The angle of a tangent to a circle:
 		subtype type_tangent_angle_circle is type_rotation range -90.0 .. 90.0;

@@ -960,6 +960,9 @@ package body et_routing is
 	is
 		track_dimensions : constant type_track_dimensions := get_dimensions (track);
 
+		-- the clearance between center of cap and arc:
+		clearance : constant type_distance_positive := track.width * 0.5 + track.clearance;
+		
 		function move_and_rotate_arc (arc : in type_arc) return type_arc is
 			a : type_arc := arc;
 		begin
@@ -990,6 +993,116 @@ package body et_routing is
 		
 		break_exists : boolean := false;
 		bp : type_point;
+
+		
+		-- This procedure uses a numerical method to find the break point.
+		procedure intersection is
+			-- Build a circle that models the cap of the track.
+			-- The circle covers the clearance required for the track:
+			c : type_circle := (radius => clearance, others => <>);
+
+			-- the distance between center of cap and arc:
+			d_cap_to_arc : type_distance;
+			d_cap_to_arc_abs : type_distance_positive;
+
+			c_bak : type_circle;
+			step : type_distance_positive := 0.5;
+			
+			-- There is a maximum of iterations. If maximum reached
+			-- a constraint_error is raised.
+			max_iterations : constant positive := 1000; -- CS increase if necessary
+
+			dyn_width : boolean := true;
+
+			procedure set_step_width is begin
+				if dyn_width then
+					step := d_cap_to_arc_abs * 0.5;
+				else
+					step := type_distance'small;
+				end if;
+			end set_step_width;
+								
+			
+		begin
+			log_indentation_up;
+			
+			log (text => "starting numerical search ...", level => lth + 2);
+
+			log (text => "arc " & to_string (arc_boundaries));
+			log (text => "line " & to_string (track_dimensions.boundaries));
+			
+			-- Set the inital position of the cap:
+			case place is
+				when BEFORE =>
+					log (text => "by sx" & to_string (bi.intersection.smallest_x));
+					c.center := type_point (set (bi.intersection.smallest_x - c.radius, zero));
+				when AFTER =>
+					--log (text => "by gx" & to_string (bi.intersection.greatest_x));
+					c.center := type_point (set (bi.intersection.greatest_x + c.radius, zero));
+			end case;
+
+			log (text => "c:" & to_string (c));
+			
+			for i in 1 .. max_iterations loop
+				
+				-- Calculate the distance between the cap (incl. clearance) and the arc:
+				d_cap_to_arc := get_distance (c, arc_tmp);
+				log (text => " distance" & to_string (d_cap_to_arc), level => lth + 3);
+
+				d_cap_to_arc_abs := abs (d_cap_to_arc);
+				
+				-- Cancel this loop once the distance is sufficiently small.
+				-- Otherwise take half of the distance and move cap to new position:
+				if d_cap_to_arc_abs <= type_distance'small then
+					log (text => " break point found after" & positive'image (i) & " iterations",
+							level => lth + 2);
+					exit;
+				else
+					
+					case place is
+						when BEFORE =>
+							if d_cap_to_arc > zero then
+								-- move cap right towards the arc:
+								set_step_width;								
+								c_bak := c;
+								c.center := type_point (move (c.center, 0.0, step));
+								--c.center := type_point (move (c.center, 0.0, type_distance'small));
+							else
+								-- move cap left away from the arc:
+								--c.center := type_point (move (c.center, 180.0, type_distance'small));
+								c := c_bak;
+								dyn_width := false;
+							end if;
+							
+						when AFTER =>
+							if d_cap_to_arc > zero then
+								-- move cap left towards the arc:
+								set_step_width;
+								c_bak := c;
+								c.center := type_point (move (c.center, 180.0, step));
+								--c.center := type_point (move (c.center, 180.0, type_distance'small));
+							else
+								-- move cap right away from the arc:
+								--c.center := type_point (move (c.center, 0.0, type_distance'small));
+								c := c_bak;
+								dyn_width := false;
+							end if;
+					end case;
+				end if;
+
+				
+				-- Once the maximum of iterations has been reached, raise exception:
+				if i = max_iterations then
+					raise constraint_error with "ERROR: Max. interations of " & positive'image (i) &
+					" reached !";
+				end if;
+			end loop;
+						
+			bp := c.center;
+
+			log_indentation_down;
+		end intersection;
+
 		
 	begin
 		if bi.exists then -- arc and track do intersect in some way
@@ -997,32 +1110,34 @@ package body et_routing is
 			log (text => "break with arc:" & to_string (arc), level => lth);
 			log_indentation_up;
 			
-			if 
-			 (i_upper.status = ONE_EXISTS and i_lower.status = ONE_EXISTS) 
-			or 
-			 (i_upper.status = ONE_EXISTS and i_lower.status = NONE_EXIST)
-			or
-			 (i_upper.status = NONE_EXIST and i_lower.status = ONE_EXISTS)
-			or
-			 (i_upper.status = NONE_EXIST and i_lower.status = NONE_EXIST)
-			then
-				
+			--if 
+			 --(i_upper.status = ONE_EXISTS and i_lower.status = ONE_EXISTS) 
+			--or 
+			 --(i_upper.status = ONE_EXISTS and i_lower.status = NONE_EXIST)
+			--or
+			 --(i_upper.status = NONE_EXIST and i_lower.status = ONE_EXISTS)
+			--or
+			 --(i_upper.status = NONE_EXIST and i_lower.status = NONE_EXIST)
+			--then
+
+			--if (i_upper.status /= NONE_EXIST or i_lower.status /= NONE_EXIST) then
 				--ol_start := type_point (set (bi.intersection.smallest_x, zero));
 				--ol_end   := type_point (set (bi.intersection.greatest_x, zero));
 
 				--ol_start := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
 				--ol_end   := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
 
-				case place is
-					when BEFORE =>
-						bp := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
+				--case place is
+					--when BEFORE =>
+						--bp := type_point (set (bi.intersection.smallest_x - type_distance_positive'small, zero));
 
-					when AFTER =>
-						bp := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
-				end case;
+					--when AFTER =>
+						--bp := type_point (set (bi.intersection.greatest_x + type_distance_positive'small, zero));
+				--end case;
 
-			end if;
-			
+			--end if;
+
+			intersection;
 
 			-- The computed break point must be after the start of the track.
 			-- If it is before the start of the track, then it is discarded.
