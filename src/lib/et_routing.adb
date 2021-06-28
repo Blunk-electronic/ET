@@ -807,22 +807,22 @@ package body et_routing is
 			d_cap_to_line : type_distance;
 			d_cap_to_line_abs : type_distance_positive;
 
-			c_bak : type_circle;
-			step : type_distance_positive := 0.5;
+			--c_bak : type_circle;
+			step : type_distance_positive; --:= 0.5;
 			
 			-- There is a maximum of iterations. If maximum reached
 			-- a constraint_error is raised.
 			max_iterations : constant positive := 1000; -- CS increase if necessary
 
-			dyn_width : boolean := true;
+			--dyn_width : boolean := true;
 
-			procedure set_step_width is begin
-				if dyn_width then
-					step := d_cap_to_line_abs * 0.5;
-				else
-					step := type_distance'small;
-				end if;
-			end set_step_width;
+			--procedure set_step_width is begin
+				--if dyn_width then
+					--step := d_cap_to_line_abs * 0.5;
+				--else
+					--step := type_distance'small;
+				--end if;
+			--end set_step_width;
 								
 			
 		begin -- partial_intersection
@@ -856,34 +856,36 @@ package body et_routing is
 							level => lth + 2);
 					exit;
 				else
+
+					step := d_cap_to_line_abs * 0.5;
 					
 					case place is
 						when BEFORE =>
 							if d_cap_to_line > zero then
 								-- move cap right towards the line:
-								set_step_width;								
-								c_bak := c;
+								--set_step_width;								
+								--c_bak := c;
 								c.center := type_point (move (c.center, 0.0, step));
 								--c.center := type_point (move (c.center, 0.0, type_distance'small));
 							else
 								-- move cap left away from the line:
-								--c.center := type_point (move (c.center, 180.0, type_distance'small));
-								c := c_bak;
-								dyn_width := false;
+								c.center := type_point (move (c.center, 180.0, step));
+								--c := c_bak;
+								--dyn_width := false;
 							end if;
 							
 						when AFTER =>
 							if d_cap_to_line > zero then
 								-- move cap left towards the line:
-								set_step_width;
-								c_bak := c;
+								--set_step_width;
+								--c_bak := c;
 								c.center := type_point (move (c.center, 180.0, step));
 								--c.center := type_point (move (c.center, 180.0, type_distance'small));
 							else
 								-- move cap right away from the line:
-								--c.center := type_point (move (c.center, 0.0, type_distance'small));
-								c := c_bak;
-								dyn_width := false;
+								c.center := type_point (move (c.center, 0.0, step));
+								--c := c_bak;
+								--dyn_width := false;
 							end if;
 					end case;
 				end if;
@@ -902,43 +904,52 @@ package body et_routing is
 		end partial_intersection;
 		
 		
-	begin -- get_break
-		--log (text => "computing break with line" & to_string (line), level => lth);
-		
+	begin
 		if bi.exists then -- line and track boundaries do intersect in some way
 
-			log (text => "break with line:" & to_string (line), level => lth);
-			log_indentation_up;
+			-- If we search for a break before the line, then it makes sense
+			-- only if the area of overlap begins after the start of the track.
+			-- This condition test should avoid useless searching for a break. 
+			-- CS: not verified ! Remove this test if assumption is wrong.
+			if (place = BEFORE and bi.intersection.smallest_x >= zero) 
+
+			-- CS: A similar optimization when place is AFTER ?				
+			or place = AFTER 
+			then
 			
-			if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
-				-- The candidate line intersects the upper and lower edge of the track.
-
-				log (text => "line intersects track upper and lower edge", level => lth + 1);
-				full_intersection;
+				log (text => "break with line:" & to_string (line), level => lth);
+				log_indentation_up;
 				
-			else
-				-- The candidate line intersects only one edge or none at all.
-				log (text => "line intersects track partially", level => lth + 1);
-				partial_intersection;
+				if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
+					-- The candidate line intersects the upper and lower edge of the track.
+
+					log (text => "line intersects track upper and lower edge", level => lth + 1);
+					full_intersection;
+					
+				else
+					-- The candidate line intersects only one edge or none at all.
+					log (text => "line intersects track partially", level => lth + 1);
+					partial_intersection;
+				end if;
+
+			
+				-- The computed break point must be after the start of the track.
+				-- If it is before the start of the track, then it is discarded.
+				if get_x (bp) > zero then
+
+					-- Rotate and move the break point back according to
+					-- the track direction and offset:
+					rotate_to (bp, track_dimensions.direction);
+					move_by (bp, track_dimensions.offset);
+
+					break_exists := true;
+
+					log (text => "break point " & type_place'image (place) & " line:" & to_string (bp),
+						level => lth + 2);
+				end if;
+
+				log_indentation_down;
 			end if;
-
-		
-			-- The computed break point must be after the start of the track.
-			-- If it is before the start of the track, then it is discarded.
-			if get_x (bp) > zero then
-
-				-- Rotate and move the break point back according to
-				-- the track direction and offset:
-				rotate_to (bp, track_dimensions.direction);
-				move_by (bp, track_dimensions.offset);
-
-				break_exists := true;
-
-				log (text => "break point " & type_place'image (place) & " line:" & to_string (bp),
-					 level => lth + 2);
-			end if;
-
-			log_indentation_down;
 		end if;
 
 		
