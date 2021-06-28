@@ -1158,6 +1158,7 @@ package et_geometry is
 		-- the point is regarded as sitting on the line.
 		-- In the result the flag out_of_range will be cleared if the point
 		-- sits on the line or inside the catch_zone.
+		-- CS insufficiend ! More details !!!
 		function get_distance (
 			point		: in type_point; 
 			line		: in type_line;
