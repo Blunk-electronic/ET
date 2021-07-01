@@ -2499,7 +2499,7 @@ package body et_geometry is
 			-- It assumes an indefinite long line without start or end point.
 			result.distance := get_distance (line, point);
 
-			--log (text => "distance " & to_string (result.distance));
+			--put_line ("distance " & to_string (result.distance));
 
 			-- Set iv so that it points to the intersection. The
 			-- intersection can be anywhere on that indefinite long line.
@@ -2583,6 +2583,7 @@ package body et_geometry is
 			distance := get_distance (point, line, WITH_END_POINTS, catch_zone);
 
 			if not distance.out_of_range and distance.distance <= catch_zone then
+				-- CS consider rounding errors !!
 				return true;
 			else
 				return false;
@@ -2604,7 +2605,7 @@ package body et_geometry is
 
 			d_to_start, d_to_end : type_distance_polar;
 		begin
-			--log (text => "point" & to_string (point) & " line " & to_string (line));
+			--put_line ("point" & to_string (point) & " line " & to_string (line));
 			
 			if on_start_point (d) or on_end_point (d) then
 				-- Point is on top of start or end point of line.
@@ -2612,16 +2613,14 @@ package body et_geometry is
 				null; -- result keeps its default (zero distance, zero angle)
 			else
 
-				if on_line (get_intersection (d), line) then 
-					--log (text => "in range");
+				--if on_line (get_intersection (d), line) then 
+				if not out_of_range (d) then
 					
 					-- An imaginary line can be drawn perpendicular from
 					-- point to line. Both intersect each other.
 					set_absolute (result, get_distance (d));
 					set_angle (result, get_direction (d));
 				else
-
-					--log (text => "out of range");
 					
 					-- No imaginary line can be drawn perpendicular from
 					-- point to line.

@@ -505,12 +505,14 @@ package body et_routing is
 
 	function get_distance_to_edge (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point)
+		point			: in type_point;
+		lth				: in type_log_level)
 		return type_distance_polar
 	is
 		result : type_distance_polar := to_polar (type_distance_positive'last, zero_rotation);
 
 		procedure update (d : in type_distance_polar) is begin
+			--log (text => " dh" & to_string (get_absolute (d)), level => lth + 1);
 			if get_absolute (d) < get_absolute (result) then
 				result := d;
 			end if;
@@ -527,14 +529,29 @@ package body et_routing is
 			
 		begin
 			-- test board outline:
+			log (text => "probing outline ...", level => lth + 1);
 			result := get_shortest_distance (module.board.contours.outline, point);
+
+			log (text => " distance to outline" & to_string (get_absolute (result)),
+				 level => lth + 1);
 			
-			-- test holes in board:
-			iterate (module.board.contours.holes, query_hole'access);
+			-- test holes in board (if there are any):
+			if not is_empty (module.board.contours.holes) then
+				log (text => "probing holes...", level => lth + 1);			
+				iterate (module.board.contours.holes, query_hole'access);
+
+				log (text => " distance to hole" & to_string (get_absolute (result)),
+					 level => lth + 1);
+			end if;
 		end query_module;
 
 	begin
-		query_element (module_cursor, query_module'access);		
+		log (text => "computing distance of point" & to_string (point) 
+			 & " to board edge ...", level => lth);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);	
+		log_indentation_down;
 		return result;
 	end get_distance_to_edge;
 	
@@ -596,7 +613,8 @@ package body et_routing is
 		start_point		: in type_point;
 		net				: in et_schematic.pac_nets.cursor;
 		layer			: in type_signal_layer;
-		width			: in type_track_width)
+		width			: in type_track_width;
+		lth				: in type_log_level)		
 		return boolean
 	is
 		result : boolean := false;
@@ -608,7 +626,8 @@ package body et_routing is
 			module		: in et_schematic.type_module) 
 		is
 		begin -- query_module
-
+			result := true;
+			
 			null;
 			
 			-- if fill_zone.observe then query 
@@ -621,24 +640,59 @@ package body et_routing is
 			-- query tracks, texts, pads, ...
 		end query_module;
 
-		distance_to_edge : type_distance_positive;
+		distance_to_edge : type_distance;
 		
-	begin
+	begin -- clear_for_track
+		log (text => "probing whether point" & to_string (start_point) 
+			 & " qualifies to start a track of width" & to_string (width)
+			 & " in layer " & to_string (layer),
+			 level => lth);
+
+		log_indentation_up;
+			 
 		if on_board (module_cursor, start_point) then
+			log (text => "point is in board area", level => lth + 1);
 
-			distance_to_edge := get_absolute (get_distance_to_edge (module_cursor, start_point));
+			-- the distance of the point to the board edge:
+			distance_to_edge := get_absolute (
+				get_distance_to_edge (module_cursor, start_point, lth + 1));
 
-			--log (text => "d to edge:" & to_string (distance_to_edge));
-			--distance_to_edge := distance_to_edge - 0.5 * width;
+			log (text => "distance point to board edge" & to_string (distance_to_edge),
+				level => lth + 1);
 			
-			--if distance_to_edge >= design_rules.clearances.conductor_to_board_edge then
-			if distance_to_edge >= design_rules.clearances.conductor_to_board_edge + 0.5 * width then
-				result := true;
+			-- the distance of the conductor to the board edge:
+			distance_to_edge := distance_to_edge - 0.5 * width;
+
+			log (text => "distance conductor to board edge" & to_string (distance_to_edge),
+				level => lth + 1);
+
+			-- Due to unavoidable rounding errors the difference between 
+			-- distance_to_edge and DRU given minimal clearance to edge can
+			-- be -type_distance'small:
+			if (distance_to_edge - design_rules.clearances.conductor_to_board_edge) 
+				>= -type_distance'small 
+			then				
+				log (text => "point is in safe distance to board edge", level => lth + 1);
+
+				-- probe other objects:
+				query_element (module_cursor, query_module'access);
+			else
+				log (text => "point is too close to board edge", level => lth + 1);			
 			end if;
 				
-			--query_element (module_cursor, query_module'access);
+		else
+			log (text => "point is not in board area", level => lth + 1);			
 		end if;
 
+		
+		if result = TRUE then
+			log (text => "positive", level => lth);
+		else
+			log (text => "negative", level => lth);
+		end if;
+		
+		log_indentation_down;
+		
 		return result;
 	end clear_for_track;
 
@@ -771,10 +825,10 @@ package body et_routing is
 		begin
 			log_indentation_up;
 
-			log (text => "line " & to_string (line_tmp) 
-				 & " intersects center of track at" & to_string (i_center.intersection.point)
-				 & " angle" & to_string (i_center.intersection.angle),
-				 level => lth + 2);
+			--log (text => "line " & to_string (line_tmp) 
+				 --& " intersects center of track at" & to_string (i_center.intersection.point)
+				 --& " angle" & to_string (i_center.intersection.angle),
+				 --level => lth + 2);
 			
 			-- clearance is the distance from center of the cap perpendicular to the line.
 			spacing := type_distance_positive (
@@ -1220,16 +1274,6 @@ package body et_routing is
 			-- a constraint_error is raised.
 			max_iterations : constant positive := 1000; -- CS increase if necessary
 
-			--dyn_width : boolean := true;
-
-			--procedure set_step_width is begin
-				--if dyn_width then
-					--step := d_cap_to_circle_abs * 0.5;
-				--else
-					--step := type_distance'small;
-				--end if;
-			--end set_step_width;
-
 		begin
 			log_indentation_up;
 			
@@ -1267,31 +1311,19 @@ package body et_routing is
 						when BEFORE =>
 							if d_cap_to_circle > zero then
 								-- move cap right towards the circle:
-								--set_step_width;
-								--c_bak := c;
 								c.center := type_point (move (c.center, 0.0, step));
-								--c.center := type_point (move (c.center, 0.0, type_distance'small));
 							else
 								-- move cap left away from the circle:
-								--set_step_width;
 								c.center := type_point (move (c.center, 180.0, step));
-								--c := c_bak;
-								--dyn_width := false;
 							end if;
 							
 						when AFTER =>
 							if d_cap_to_circle > zero then
 								-- move cap left towards the circle:
-								--set_step_width;
-								--c_bak := c;
 								c.center := type_point (move (c.center, 180.0, step));
-								--c.center := type_point (move (c.center, 180.0, type_distance'small));
 							else
 								-- move cap right away from the circle:
-								--set_step_width;
 								c.center := type_point (move (c.center, 0.0, step));
-								--c := c_bak;
-								--dyn_width := false;
 							end if;
 					end case;
 				end if;
@@ -1567,7 +1599,7 @@ package body et_routing is
 			c := points_after_obstacles.first;
 			while c /= pac_points_after_obstacles.no_element loop
 
-				if clear_for_track (module_cursor, element (c), net, layer, width) then
+				if clear_for_track (module_cursor, element (c), net, layer, width, log_threshold + 1) then
 					distance_after_obstacle := get_distance_total (start_point, element (c));
 					exit;
 				end if;
@@ -1595,7 +1627,7 @@ package body et_routing is
 				
 				-- Test whether start_point is suitable to start a track.
 				-- At the given start_point or in its vicinity could be an obstacle already.
-				if clear_for_track (module_cursor, start_point, net, layer, width) then
+				if clear_for_track (module_cursor, start_point, net, layer, width, log_threshold + 1) then
 
 					-- start_point qualifies to start a track
 
