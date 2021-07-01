@@ -83,7 +83,8 @@ package et_routing is
 	-- edges are outline segments and hole segments:
 	function get_distance_to_edge (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point)
+		point			: in type_point;
+		lth				: in type_log_level)
 		return type_distance_polar;
 	
 
