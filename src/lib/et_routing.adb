@@ -1167,13 +1167,193 @@ package body et_routing is
 		lth		: in type_log_level)
 		return type_break
 	is
-		--track_dimensions : constant type_track_dimensions := get_dimensions (track);
+		track_dimensions : constant type_track_dimensions := get_dimensions (track);
 
+		-- the clearance between center of cap and arc:
+		clearance : constant type_distance_positive := track.width * 0.5 + track.clearance;
+		
+		function move_circle (circle : in type_circle) return type_circle is
+			c : type_circle := circle;
+		begin
+			move_by (c, invert (track_dimensions.offset));
+			return c;
+		end move_circle;
+
+		-- The circle we will work with from now on.
+		circle_tmp : constant type_circle := move_circle (circle);
+
+		-- the boundaries of the rotated arc:
+		circle_boundaries : constant type_boundaries := get_boundaries (circle_tmp, zero);
+		-- (The circle has zero line width.)
+
+		
+		-- the intersections of the upper and lower edge of the track
+		-- with the circle:
+		i_upper : constant type_intersection_of_line_and_circle :=
+			get_intersection (to_line_vector (track_dimensions.upper_edge), circle_tmp);
+	
+		i_lower : constant type_intersection_of_line_and_circle :=
+			get_intersection (to_line_vector (track_dimensions.lower_edge), circle_tmp);
+
+		-- the area where track and circle boundaries intersect:
+		bi : constant type_boundaries_intersection := 
+			get_intersection (track_dimensions.boundaries, circle_boundaries);
+		
+		break_exists : boolean := false;
 		bp : type_point;
+
+
+		-- This procedure uses a numerical method to find the break point.
+		procedure intersection is
+			-- Build a circle that models the cap of the track.
+			-- The circle covers the clearance required for the track:
+			c : type_circle := (radius => clearance, others => <>);
+
+			-- the distance between center of cap and circle:
+			d_cap_to_circle : type_distance;
+			d_cap_to_circle_abs : type_distance_positive;
+
+			--c_bak : type_circle;
+			step : type_distance_positive; -- := 0.5;
+			
+			-- There is a maximum of iterations. If maximum reached
+			-- a constraint_error is raised.
+			max_iterations : constant positive := 1000; -- CS increase if necessary
+
+			--dyn_width : boolean := true;
+
+			--procedure set_step_width is begin
+				--if dyn_width then
+					--step := d_cap_to_circle_abs * 0.5;
+				--else
+					--step := type_distance'small;
+				--end if;
+			--end set_step_width;
+
+		begin
+			log_indentation_up;
+			
+			log (text => "starting numerical search ...", level => lth + 2);
+
+			-- Set the inital position of the cap:
+			case place is
+				when BEFORE =>
+					c.center := type_point (set (bi.intersection.smallest_x - c.radius, zero));
+
+				when AFTER =>
+					c.center := type_point (set (bi.intersection.greatest_x + c.radius, zero));
+			end case;
+
+			
+			for i in 1 .. max_iterations loop
+				
+				-- Calculate the distance between the cap (incl. clearance) and the circle:
+				d_cap_to_circle := get_distance (c, circle_tmp);
+				log (text => " distance" & to_string (d_cap_to_circle), level => lth + 3);
+
+				d_cap_to_circle_abs := abs (d_cap_to_circle);
+				
+				-- Cancel this loop once the distance is sufficiently small.
+				-- Otherwise take half of the distance and move cap to new position:
+				if d_cap_to_circle_abs <= type_distance'small then
+					log (text => " break point found after" & positive'image (i) & " iterations",
+							level => lth + 2);
+					exit;
+				else
+
+					step := d_cap_to_circle_abs * 0.5;
+					
+					case place is
+						when BEFORE =>
+							if d_cap_to_circle > zero then
+								-- move cap right towards the circle:
+								--set_step_width;
+								--c_bak := c;
+								c.center := type_point (move (c.center, 0.0, step));
+								--c.center := type_point (move (c.center, 0.0, type_distance'small));
+							else
+								-- move cap left away from the circle:
+								--set_step_width;
+								c.center := type_point (move (c.center, 180.0, step));
+								--c := c_bak;
+								--dyn_width := false;
+							end if;
+							
+						when AFTER =>
+							if d_cap_to_circle > zero then
+								-- move cap left towards the circle:
+								--set_step_width;
+								--c_bak := c;
+								c.center := type_point (move (c.center, 180.0, step));
+								--c.center := type_point (move (c.center, 180.0, type_distance'small));
+							else
+								-- move cap right away from the circle:
+								--set_step_width;
+								c.center := type_point (move (c.center, 0.0, step));
+								--c := c_bak;
+								--dyn_width := false;
+							end if;
+					end case;
+				end if;
+
+				
+				-- Once the maximum of iterations has been reached, raise exception:
+				if i = max_iterations then
+					raise constraint_error with "ERROR: Max. interations of " & positive'image (i) &
+					" reached !";
+				end if;
+			end loop;
+						
+			bp := c.center;
+
+			log_indentation_down;
+		end intersection;
+
 		
 	begin
-		-- CS
-		return (exists => false);
+		if bi.exists then -- circle and track do intersect in some way
+
+			-- If we search for a break before the circle, then it makes sense
+			-- only if the area of overlap begins after the start of the track.
+			-- This condition test should avoid useless searching for a break. 
+			-- CS: not verified ! Remove this test if assumption is wrong.
+			if (place = BEFORE and bi.intersection.smallest_x >= zero) 
+
+			-- CS: A similar optimization when place is AFTER ?				
+			or place = AFTER 
+			then
+				
+				log (text => "break with circle:" & to_string (circle), level => lth);
+				log_indentation_up;
+
+				intersection;
+
+				-- The computed break point must be after the start of the track.
+				-- If it is before the start of the track, then it is discarded.
+				if get_x (bp) > zero then
+
+					-- Rotate and move the break point back according to
+					-- the track direction and offset:
+					rotate_to (bp, track_dimensions.direction);
+					move_by (bp, track_dimensions.offset);
+
+					break_exists := true;
+
+					log (text => "break point " & type_place'image (place) & " circle:" & to_string (bp),
+						level => lth + 2);
+				end if;
+
+				log_indentation_down;
+			end if;
+		end if;
+
+		
+		if break_exists then
+			return (exists => true, point => bp);
+		else
+			return (exists => false);
+		end if;
+
 	end get_break;
 
 	

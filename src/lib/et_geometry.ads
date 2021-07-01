@@ -1445,6 +1445,15 @@ package et_geometry is
 			circle	: in type_circle'class;
 			arc		: in type_arc'class)
 			return type_distance;
+
+		-- Returns the shortest distance between two circles.
+		-- If the circles do intersect in some way, then the return
+		-- is a negative number.
+		function get_distance (
+			circle_1	: in type_circle'class;
+			circle_2	: in type_circle'class)
+			return type_distance;
+
 		
 		-- The angle of a tangent to a circle:
 		subtype type_tangent_angle_circle is type_rotation range -90.0 .. 90.0;

@@ -3600,6 +3600,21 @@ package body et_geometry is
 			return result;
 		end get_distance;
 
+
+
+		function get_distance (
+			circle_1	: in type_circle'class;
+			circle_2	: in type_circle'class)
+			return type_distance
+		is
+			result : type_distance := zero;
+			dp : type_distance_polar;
+		begin
+			dp := get_distance (circle_1.center, circle_2.center);
+			result := get_absolute (dp) - circle_1.radius - circle_2.radius;
+			return result;
+		end get_distance;
+
 		
 		
 		function get_tangent_angle (p : in type_point) 
