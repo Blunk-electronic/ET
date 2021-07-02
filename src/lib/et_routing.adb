@@ -558,7 +558,8 @@ package body et_routing is
 	
 	function on_board (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point)
+		point			: in type_point;
+		lth				: in type_log_level)
 		return boolean
 	is
 		result : boolean := true;
@@ -569,6 +570,7 @@ package body et_routing is
 		is
 			procedure query_outline is begin
 				if in_polygon_status (module.board.contours.outline, point).status = OUTSIDE then
+					--log (text => "outside", level => lth + 1);
 					result := false;
 				end if;
 			end query_outline;
@@ -579,10 +581,11 @@ package body et_routing is
 				c : pac_pcb_cutouts.cursor := module.board.contours.holes.first;
 			begin
 				while c /= pac_pcb_cutouts.no_element loop
-
 					if in_polygon_status (element (c), point).status = INSIDE then
-						-- point is inside a hole
+
+						log (text => "point is in a hole", level => lth + 1);
 						result := false;
+						
 						exit; -- no need to test other holes
 					end if;
 					
@@ -590,20 +593,30 @@ package body et_routing is
 				end loop;
 			end query_holes;
 			
-		begin
-			-- test board outline:
+		begin -- query_module
+			log (text => "probing outline ...", level => lth + 1);
 			query_outline;
 
-			if result = true then -- point is within board outlines
-				
-				-- test holes in board:
+			if result = true then -- point is inside board outlines
+				log (text => "point is inside board outlines. probing holes ...", level => lth + 1);
 				query_holes;
 			end if;
 		end query_module;
 
-	begin
+	begin -- on_board
+		log (text => "probing whether point" & to_string (point) 
+			 & " is on board ...", level => lth);
+
+		log_indentation_up;
 		query_element (module_cursor, query_module'access);
 
+		if result = true then
+			log (text => "point is on board", level => lth);
+		else
+			log (text => "point is not on board", level => lth);
+		end if;
+		
+		log_indentation_down;
 		return result;
 	end on_board;
 
@@ -612,6 +625,7 @@ package body et_routing is
 		module_cursor	: in pac_generic_modules.cursor;
 		start_point		: in type_point;
 		net				: in et_schematic.pac_nets.cursor;
+		fill_zone		: in type_fill_zone;
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
 		lth				: in type_log_level)		
@@ -625,13 +639,41 @@ package body et_routing is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) 
 		is
+			procedure query_fill_zone is 
+				distance_to_edge : type_distance_positive;
+			begin
+				log (text => "probing fill zone ...", level => lth + 1);
+				log_indentation_up;
+
+				if in_polygon_status (fill_zone.outline, start_point).status = INSIDE then
+					log (text => "point is inside fill zone", level => lth + 1);
+
+					distance_to_edge := get_absolute (get_shortest_distance (fill_zone.outline, start_point));
+
+					if distance_to_edge >= width * 0.5 then
+						log (text => "point is in safe distance to border", level => lth + 1);
+						result := true;
+					else
+						log (text => "point is too close to border", level => lth + 1);
+						result := false;
+					end if;
+					
+				else
+					log (text => "point is outside fill zone", level => lth + 1);
+					result := false;
+				end if;
+
+				log_indentation_down;
+			end query_fill_zone;
+
+			
 		begin -- query_module
 			result := true;
 			
-			null;
-			
-			-- if fill_zone.observe then query 
-			-- - fill_zone.outline
+			if fill_zone.observe then 
+				query_fill_zone;
+			end if;
+
 			-- - global cutout areas
 			-- - net specific cutout areas
 			
@@ -650,8 +692,7 @@ package body et_routing is
 
 		log_indentation_up;
 			 
-		if on_board (module_cursor, start_point) then
-			log (text => "point is in board area", level => lth + 1);
+		if on_board (module_cursor, start_point, lth) then
 
 			-- the distance of the point to the board edge:
 			distance_to_edge := get_absolute (
@@ -1563,6 +1604,21 @@ package body et_routing is
 				
 				iterate (module.board.contours.holes, query_hole'access);
 			end query_holes;
+
+
+			procedure query_fill_zone is begin
+				log (text => "probing fill zone ...", level => log_threshold + 1);
+				log_indentation_up;
+				
+				if fill_zone.outline.contours.circular then
+					test_circle (fill_zone.outline.contours.circle);
+				else
+					iterate (fill_zone.outline.contours.segments, query_segment'access);
+				end if;
+
+				log_indentation_down;
+			end query_fill_zone;
+
 			
 		begin -- query_obstacles
 
@@ -1574,9 +1630,12 @@ package body et_routing is
 
 			--log (text => "holes done");
 				 
-			-- track.clearance
+			track.clearance := zero;
 			
-			-- if fill_zone.observe then query 
+			if fill_zone.observe then 
+				query_fill_zone;
+			end if;
+			
 			-- - fill_zone.outline
 			-- - global cutout areas
 			-- - net specific cutout areas
@@ -1599,7 +1658,7 @@ package body et_routing is
 			c := points_after_obstacles.first;
 			while c /= pac_points_after_obstacles.no_element loop
 
-				if clear_for_track (module_cursor, element (c), net, layer, width, log_threshold + 1) then
+				if clear_for_track (module_cursor, element (c), net, fill_zone, layer, width, log_threshold + 1) then
 					distance_after_obstacle := get_distance_total (start_point, element (c));
 					exit;
 				end if;
@@ -1627,7 +1686,7 @@ package body et_routing is
 				
 				-- Test whether start_point is suitable to start a track.
 				-- At the given start_point or in its vicinity could be an obstacle already.
-				if clear_for_track (module_cursor, start_point, net, layer, width, log_threshold + 1) then
+				if clear_for_track (module_cursor, start_point, net, fill_zone, layer, width, log_threshold + 1) then
 
 					-- start_point qualifies to start a track
 

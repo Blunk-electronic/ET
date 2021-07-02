@@ -94,17 +94,20 @@ package et_routing is
 	-- Returns true if the point is exactly on the edge of a hole.
 	function on_board (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point)
+		point			: in type_point;
+		lth				: in type_log_level)
 		return boolean;
 
 	
 	-- A track starts at a certain point and travels into
 	-- a certain direction. It has a width and a
-	-- clearance to other objects:
+	-- clearance to other objects. 
+	-- The clearance may assume zero if a fill zones is to be filled
+	-- because in that case the track reaches the border of the fill area.
 	type type_track is record
 		center		: type_line_vector; -- incl. start point and direction
 		width		: type_track_width; -- of the conductor (usually copper) -- CS rename to conductor_width
-		clearance	: type_track_clearance;
+		clearance	: type_distance_positive;
 	end record;
 
 	-- Returns the sum of track.width and track.clearance:
