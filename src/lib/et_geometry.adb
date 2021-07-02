@@ -5078,7 +5078,7 @@ package body et_geometry is
 			--    to the right. The probe line divides the area in two: an upper half and a
 			--    lower half. Special situations arise if objects start or end exactly at
 			--    the probe line.
-			-- 2. The number of intersections then tells us:
+			-- 2. The number of intersections after the start point then tells us:
 			--    - odd -> point is inside the polygon area
 			--    - zero or even -> point is outside the polygon area
 			
@@ -5108,39 +5108,45 @@ package body et_geometry is
 				curvature	: in type_curvature := STRAIGHT;
 				center		: in type_point := origin;
 				radius		: in type_distance_positive := zero)
-			is begin	
-				case curvature is
-					when STRAIGHT =>
-						
-						append (result.intersections, (
-							x_position	=> get_x (to_point (intersection.point)),
-							angle		=> intersection.angle,
-							segment		=> segment,
-							curvature	=> STRAIGHT
-							));
+			is begin
+				-- The intersection will be collected if it is ON or
+				-- AFTER the given start point. If it is before the start
+				-- point then we ignore it:
+				if get_x (to_point (intersection.point)) >= get_x (point) then
+					
+					case curvature is
+						when STRAIGHT =>
+							
+							append (result.intersections, (
+								x_position	=> get_x (to_point (intersection.point)),
+								angle		=> intersection.angle,
+								segment		=> segment,
+								curvature	=> STRAIGHT
+								));
 
-					when CONVEX =>
+						when CONVEX =>
 
-						append (result.intersections, (
-							x_position	=> get_x (to_point (intersection.point)),
-							angle		=> intersection.angle,
-							segment		=> segment,
-							curvature	=> CONVEX,
-							center		=> center,
-							radius		=> radius
-							));
+							append (result.intersections, (
+								x_position	=> get_x (to_point (intersection.point)),
+								angle		=> intersection.angle,
+								segment		=> segment,
+								curvature	=> CONVEX,
+								center		=> center,
+								radius		=> radius
+								));
 
-					when CONCAVE =>
+						when CONCAVE =>
 
-						append (result.intersections, (
-							x_position	=> get_x (to_point (intersection.point)),
-							angle		=> intersection.angle,
-							segment		=> segment,
-							curvature	=> CONCAVE,
-							center		=> center,
-							radius		=> radius
-							));
-				end case;
+							append (result.intersections, (
+								x_position	=> get_x (to_point (intersection.point)),
+								angle		=> intersection.angle,
+								segment		=> segment,
+								curvature	=> CONCAVE,
+								center		=> center,
+								radius		=> radius
+								));
+					end case;
+				end if;
 			end collect_intersection;
 			
 			procedure query_line (l : in type_line) is 
@@ -5380,7 +5386,7 @@ package body et_geometry is
 			procedure sort_x_values is
 				use pac_probe_line_intersections_sorting;
 			begin
-				sort (result.intersections);
+				sort (result.intersections);				
 			end sort_x_values;
 			
 		begin -- in_polygon_status

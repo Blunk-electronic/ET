@@ -1872,8 +1872,8 @@ package et_geometry is
 		-- it sits exactly on the edge of the polygon.
 		-- A probe line will be formed which starts at the given point
 		-- and runs to the right (direction zero degree).
-		-- The places where the probe line intersects the polygon 
-		-- edges is returned in a list.
+		-- The places, after the given start point, where the probe line 
+		-- intersects the polygon edges are returned in a list.
 		-- If a segment of the polygon crosses the imaginary probe line,
 		-- then it is regarded as intersection.
 		-- NOTE: A line segment that runs exactly along the probe line
