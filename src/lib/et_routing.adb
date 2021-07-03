@@ -640,7 +640,7 @@ package body et_routing is
 			module		: in et_schematic.type_module) 
 		is
 			procedure query_fill_zone is 
-				distance_to_edge : type_distance_positive;
+				distance_to_edge : type_distance;
 			begin
 				log (text => "probing fill zone ...", level => lth + 1);
 				log_indentation_up;
@@ -648,9 +648,18 @@ package body et_routing is
 				if in_polygon_status (fill_zone.outline, start_point).status = INSIDE then
 					log (text => "point is inside fill zone", level => lth + 1);
 
+					-- the distance of the point to the border of the fill zone:
 					distance_to_edge := get_absolute (get_shortest_distance (fill_zone.outline, start_point));
 
-					if distance_to_edge >= width * 0.5 then
+					log (text => "distance point to border" & to_string (distance_to_edge),
+						level => lth + 1);
+					
+					-- the distance of the fill line to the border:
+					distance_to_edge := distance_to_edge - 0.5 * width;
+
+					-- Due to unavoidable rounding errors the difference between 
+					-- distance_to_edge and border can be -type_distance'small:
+					if distance_to_edge >= - type_distance'small then
 						log (text => "point is in safe distance to border", level => lth + 1);
 						result := true;
 					else
@@ -691,7 +700,10 @@ package body et_routing is
 			 level => lth);
 
 		log_indentation_up;
-			 
+
+		-- The first an basic test is to figure out whether the point is on
+		-- board and not inside a hole. If both conditions are true, then
+		-- other objects will be probed:
 		if on_board (module_cursor, start_point, lth) then
 
 			-- the distance of the point to the board edge:
@@ -727,9 +739,9 @@ package body et_routing is
 
 		
 		if result = TRUE then
-			log (text => "positive", level => lth);
+			log (text => "point accepted", level => lth);
 		else
-			log (text => "negative", level => lth);
+			log (text => "point not accepted", level => lth);
 		end if;
 		
 		log_indentation_down;

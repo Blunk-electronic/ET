@@ -4681,79 +4681,8 @@ package body et_board_ops is
 							-- Each iteration computes a single fill line.
 							for lc in 1.. type_line_count'last loop
 								
-								-- MARK A
 								log (text => "fill line" & positive'image (lc), level => log_threshold + 3);
 
-								---- find the distance to next obstacle after point
-								--get_distance_to_obstacle (point);
-
-								--if distance = type_distance_positive'last then
-									--raise constraint_error with 
-									--"ERROR: No end point for fill line found !";
-								--end if;
-								
-								--if status = VALID then -- MARK C
-									---- it is allowed to start a fill line at point.
-
-									---- the fill line starts at point
-									--set_start (point);
-
-									---- move point to the place where the obstacle
-									---- has been found:
-									--point := type_point (set (
-										--x => get_x (point) + distance,
-										--y => row));
-
-									---- the fill line ends at point
-									--set_end (point);
-
-									---- collect the fill line
-									--append (fill_lines, fill_line);
-										
-									---- Find the nearest point after the obstacle:
-									--get_distance_after_obstacle (point);
-
-									--if status = VALID then -- (MARK D)
-										---- there is a place to start another fill line
-
-										---- move point to the place where the obstacle ends:
-										--point := type_point (set (
-											--x => get_x (point) + distance,
-											--y => row));
-
-										---- jump back to mark A
-										
-									--else
-										---- no place to start another fill line.
-										---- Abort this row.
-										--exit;
-									--end if;
-
-								--else -- INVALID (MARK B)
-									
-									---- The given start point for this row is not 
-									---- valid to start a fill line.
-
-									---- Find the next place to the right
-									---- where it is allowed to start a fill line:
-									--get_distance_after_obstacle (point);
-
-									--if status = VALID then -- there is a place to start a fill line
-
-										---- move point to that place after the obstacle
-										--point := type_point (set (
-											--x => get_x (point) + distance,
-											--y => row));
-
-									--else
-										---- no place to start another fill line.
-										---- abort this row
-										--exit;
-									--end if;
-									
-								--end if;
-
-							---
 								get_distance_after_obstacle (point);
 								
 								if status = VALID then 
