@@ -704,7 +704,7 @@ package body et_routing is
 		-- The first an basic test is to figure out whether the point is on
 		-- board and not inside a hole. If both conditions are true, then
 		-- other objects will be probed:
-		if on_board (module_cursor, start_point, lth) then
+		if on_board (module_cursor, start_point, lth + 1) then
 
 			-- the distance of the point to the board edge:
 			distance_to_edge := get_absolute (
@@ -1612,8 +1612,7 @@ package body et_routing is
 				end query_hole;
 				
 			begin
-				log (text => "probing holes ...", level => log_threshold + 1);
-				
+				log (text => "probing holes ...", level => log_threshold + 1);				
 				iterate (module.board.contours.holes, query_hole'access);
 			end query_holes;
 
@@ -1648,7 +1647,7 @@ package body et_routing is
 				query_fill_zone;
 			end if;
 			
-			-- - fill_zone.outline
+
 			-- - global cutout areas
 			-- - net specific cutout areas
 			
