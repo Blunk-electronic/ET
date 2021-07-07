@@ -192,13 +192,19 @@ package et_routing is
 
 	type type_valid is (VALID, INVALID);
 	
-	type type_route_distance (status : type_valid) is record
-		case status is
-			when VALID		=> distance : type_distance_positive;
-			when INVALID	=> null;
-		end case;
+	--type type_route_distance (status : type_valid) is record
+		--case status is
+			--when VALID		=> distance : type_distance_positive;
+			--when INVALID	=> null;
+		--end case;
+	--end record;
+
+	type type_route_distance is record
+		status		: type_valid;
+		distance	: type_distance_positive;
 	end record;
 
+	
 	type type_fill_zone (observe : boolean := FALSE) is record
 		case observe is
 			when TRUE => outline : type_polygon_conductor (SOLID);

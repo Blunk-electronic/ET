@@ -4639,9 +4639,9 @@ package body et_board_ops is
 							begin
 								status := d.status;
 
-								if d.status = VALID then
+								--if d.status = VALID then
 									distance := d.distance;
-								end if;
+								--end if;
 							end get_distance_to_obstacle;
 
 							-- Queries the distance after a given point to the next place
@@ -4663,9 +4663,9 @@ package body et_board_ops is
 							begin
 								status := d.status;
 
-								if d.status = VALID then
+								--if d.status = VALID then
 									distance := d.distance;
-								end if;
+								--end if;
 							end get_distance_after_obstacle;
 
 							-- Safety measure to prevent infinite looping.
@@ -4700,8 +4700,9 @@ package body et_board_ops is
 									get_distance_to_obstacle (point);
 
 									if distance = type_distance_positive'last then
-										raise constraint_error with 
-										"ERROR: No end point for fill line found !";
+										--raise constraint_error with 
+										--"ERROR: No end point for fill line found !";
+										exit;
 									end if;
 
 									
@@ -4719,7 +4720,28 @@ package body et_board_ops is
 								else
 									-- no place to start another fill line.
 									-- Abort this row.
-									exit;
+									--exit;
+
+									--log (text => "d" & to_string (distance));
+									
+									-- move point to the place where the obstacle ends:
+									point := type_point (set (
+										x => get_x (point) + distance,
+										y => row));
+
+									get_distance_to_obstacle (point);
+
+									if distance = type_distance_positive'last then
+										--raise constraint_error with 
+										--"ERROR: No end point for fill line found !";
+										exit;
+									end if;
+									
+									point := type_point (set (
+										x => get_x (point) + distance,
+										y => row));
+
+									--get_distance_after_obstacle (point);
 								end if;
 							
 							end loop;

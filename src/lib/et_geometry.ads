@@ -213,9 +213,11 @@ package et_geometry is
 		subtype type_rotation_0_90 is type_rotation range 0.0 .. 90.0;
 		
 		
-		-- For collecting distances:
+		-- For collecting and sorting distances:
 		package pac_distances_positive is new doubly_linked_lists (type_distance_positive);
+
 		package pac_distances is new doubly_linked_lists (type_distance);
+		package pac_distances_sorting is new pac_distances.generic_sorting;
 		
 		grid_max : constant type_distance_positive := type_distance_positive'last/1000;
 		subtype type_distance_grid is type_distance_positive range zero .. grid_max;
