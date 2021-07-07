@@ -1258,9 +1258,9 @@ package body et_routing is
 			log_indentation_down;
 		end intersection;
 
-		use pac_distances;
-		use pac_distances_sorting;
-		x_values_pre, x_values_post : pac_distances.list;
+		--use pac_distances;
+		--use pac_distances_sorting;
+		--x_values_pre, x_values_post : pac_distances.list;
 
 
 		procedure use_boundaries is begin
@@ -1273,28 +1273,28 @@ package body et_routing is
 			end case;
 		end use_boundaries;
 		
-		procedure query_intersection_x (c : in pac_distances.cursor) is begin
-			--log (text => "x:" & to_string (element (c)), level => lth);
-			intersection (element (c));
+		--procedure query_intersection_x (c : in pac_distances.cursor) is begin
+			----log (text => "x:" & to_string (element (c)), level => lth);
+			--intersection (element (c));
 
-			x_values_post.append (get_x (bp));
-		end query_intersection_x;
+			--x_values_post.append (get_x (bp));
+		--end query_intersection_x;
 
-		procedure find_first is
-			c : pac_distances.cursor := x_values_post.first;
-		begin
-			while c /= pac_distances.no_element loop
+		--procedure find_first is
+			--c : pac_distances.cursor := x_values_post.first;
+		--begin
+			--while c /= pac_distances.no_element loop
 
-				if element (c) > zero then
-					bp := type_point (set (element (c), zero));
-					exit;
-				end if;
+				--if element (c) > zero then
+					--bp := type_point (set (element (c), zero));
+					--exit;
+				--end if;
 				
-				next (c);
-			end loop;
-		end find_first;
+				--next (c);
+			--end loop;
+		--end find_first;
 
-		l : count_type;
+		--l : count_type;
 		
 	begin
 		if bi.exists then -- arc and track do intersect in some way
@@ -1303,38 +1303,39 @@ package body et_routing is
 			-- only if the area of overlap begins after the start of the track.
 			-- This condition test should avoid useless searching for a break. 
 			-- CS: not verified ! Remove this test if assumption is wrong.
-			--if (place = BEFORE and bi.intersection.smallest_x >= zero) 
+			if (place = BEFORE and bi.intersection.smallest_x >= zero) 
 
 			-- CS: A similar optimization when place is AFTER ?				
-			--or place = AFTER 
-			--then
+			or place = AFTER 
+			then
 				
 				log (text => "break with arc:" & to_string (arc), level => lth);
 				log_indentation_up;
 
-				x_values_pre := get_x_values (i_upper, i_lower);			
-				l := length (x_values_pre);
+				--x_values_pre := get_x_values (i_upper, i_lower);			
+				--l := length (x_values_pre);
 
-				log (text => "intersections total: " & count_type'image (l), level => lth);
+				--log (text => "intersections total: " & count_type'image (l), level => lth);
 				
-				case l is
-					when 0 .. 2 => 
-						log (text => "use boundaries", level => lth);
-						use_boundaries;
-
-					when 3 .. 4 =>
+				--case l is
+					--when 0 .. 2 => 
+						--log (text => "use boundaries", level => lth);
 						--use_boundaries;
+
+					--when 3 .. 4 =>
+						----use_boundaries;
 						
-						x_values_pre.iterate (query_intersection_x'access);
+						--x_values_pre.iterate (query_intersection_x'access);
 
-						sort (x_values_post);
+						--sort (x_values_post);
 
-						find_first;
+						--find_first;
 
 						
-					when others => raise constraint_error; -- CS should never happen
-				end case;
-					
+					--when others => raise constraint_error; -- CS should never happen
+				--end case;
+
+				use_boundaries;
 					
 				-- The computed break point must be after the start of the track.
 				-- If it is before the start of the track, then it is discarded.
@@ -1352,7 +1353,7 @@ package body et_routing is
 				end if;
 
 				log_indentation_down;
-			--end if;
+			end if;
 		end if;
 
 		
@@ -1578,8 +1579,6 @@ package body et_routing is
 		log_threshold	: in type_log_level)
 		return type_route_distance
 	is
-		result : type_route_distance;
-		
 		probe_ray : constant type_ray := (start_point, direction);
 		probe_line : constant type_line_vector := to_line_vector (probe_ray);
 
@@ -1778,9 +1777,7 @@ package body et_routing is
 			end loop;
 
 			if c = pac_points_after_obstacles.no_element then
-				-- no suitable point found
 				status := INVALID;
-				distance_after_obstacle := get_distance_total (start_point, points_after_obstacles.first_element);
 			else
 				status := VALID;
 			end if;
@@ -1796,16 +1793,6 @@ package body et_routing is
 					 level => log_threshold);
 
 				log_indentation_up;
-
-				-- Probe everything on the board that could be an obstacle
-				-- for the track in the given direction, net, layer. The distance to 
-				-- the nearest obstacle will finally be stored in variable
-				-- distance_to_obstacle:
-				query_element (module_cursor, query_obstacles'access);
-
-				log (text => "distance to obstacle:" & to_string (distance_to_obstacle),
-					level => log_threshold);
-				
 				
 				-- Test whether start_point is suitable to start a track.
 				-- At the given start_point or in its vicinity could be an obstacle already.
@@ -1813,38 +1800,31 @@ package body et_routing is
 
 					-- start_point qualifies to start a track
 
-					---- Probe everything on the board that could be an obstacle
-					---- for the track in the given direction, net, layer. The distance to 
-					---- the nearest obstacle will finally be stored in variable
-					---- distance_to_obstacle:
-					--query_element (module_cursor, query_obstacles'access);
+					-- Probe everything on the board that could be an obstacle
+					-- for track in the given direction, net, layer. The distance to 
+					-- the nearest obstacle will finally be stored in variable
+					-- distance_to_obstacle:
+					query_element (module_cursor, query_obstacles'access);
 
-					--log_indentation_down;
+					log_indentation_down;
 					
-					log (text => "Track IS allowed here.",
+					log (text => "distance to obstacle:" & to_string (distance_to_obstacle),
 						level => log_threshold);
 					
-					--return (VALID, distance_to_obstacle);
-					result := (VALID, distance_to_obstacle);
+					return (VALID, distance_to_obstacle);
 					
 				else 
 					-- start_point does NOT qualify to start a track
 
-					--log_indentation_down;
+					log_indentation_down;
 					
-					--log (text => "track not allowed here",
-						--level => log_threshold);
-
-					log (text => "Track NOT allowed here.",
+					log (text => "track not allowed here",
 						level => log_threshold);
 					
-					--return (status => INVALID);
-					--return (INVALID, distance_to_obstacle);
-					result := (INVALID, distance_to_obstacle);
+					return (status => INVALID);
 				end if;
 
-				log_indentation_down;
-				
+
 				
 			when AFTER =>
 				log (text => "computing distance after obstacles from point" 
@@ -1859,41 +1839,30 @@ package body et_routing is
 				-- it is allowed to start a track:
 				find_valid_point_after_obstacles;
 
-				log (text => "distance after obstacle:" & to_string (distance_after_obstacle),
-					level => log_threshold);
-				
 				-- Now the variable "status" indicates whether a valid point has 
 				-- been found or not.
 				
 				case status is
 					when VALID => -- suitable point found
-						--log_indentation_down;
+						log_indentation_down;
 
-						log (text => "track IS allowed here.",
+						log (text => "distance after obstacle:" & to_string (distance_after_obstacle),
 							level => log_threshold);
 						
-						--return (VALID, distance_after_obstacle);
-						result := (VALID, distance_after_obstacle);
+						return (VALID, distance_after_obstacle);
 
 						
 					when INVALID => -- NO suitable point found 
-						--log_indentation_down;
+						log_indentation_down;
 						
-						--log (text => "no obstacle found",
-						log (text => "track NOT allowed here.",
+						log (text => "no obstacle found",
 							level => log_threshold);
 						
-						--return (status => INVALID);
-						--return (INVALID, distance_after_obstacle);
-						result := (INVALID, distance_after_obstacle);
+						return (status => INVALID);
 				end case;
 
-				log_indentation_down;
 				
 		end case;
-
-		
-		return result;
 
 	end get_distance;
 
