@@ -313,6 +313,7 @@ package body et_geometry is
 			boundaries_two : in type_boundaries)
 			return boolean
 		is begin
+			-- CS remove "="
 			if	boundaries_two.greatest_x >= boundaries_one.smallest_x
 			and boundaries_two.smallest_x <= boundaries_one.greatest_x
 			then -- boundaries intersect in x-direction
@@ -2671,6 +2672,7 @@ package body et_geometry is
 		end reverse_arc;
 
 
+		
 		function get_shortest_distance (
 			point	: in type_point;
 			arc		: in type_arc)
@@ -3368,6 +3370,74 @@ package body et_geometry is
 		end;
 
 
+		function split_arc (arc_in : in type_arc) 
+			return type_arcs
+		is
+			arc : type_arc := arc_in;
+			
+			-- the x-position of the center, start and end point of the given arc:
+			CX : constant type_distance := get_x (arc.center);
+			SX : type_distance;
+			EX : type_distance;
+
+			-- the direction of the given arc:
+			--DIR : constant type_direction_of_rotation := arc.direction;
+
+			-- the boundaries of the given arc:
+			by : type_boundaries := get_boundaries (arc, zero);
+
+			S_left, E_left : boolean := false;
+
+			function left_of_center (x : in type_distance) return boolean is begin
+				if x < CX then return true; -- x is left of center.x
+				else return false; -- x is equal or right of center.x or 
+				end if;
+			end left_of_center;
+			
+			result : type_arcs (1..1) := (1..1 => arc);
+		begin
+			-- test whether the arc can be split at all:
+			if by.smallest_x < CX and by.greatest_x > CX then
+				-- arc extends to the right and to the left of its center
+
+				-- normalize the given arc so that its direction is always CCW
+				if arc.direction = CW then
+					reverse_arc (arc);
+				end if;
+
+				-- get x of start and end of arc:
+				SX := get_x (arc.start_point);
+				EX := get_x (arc.end_point);
+
+				-- get position of start and end point (relative to center):
+				S_left := left_of_center (SX);
+				E_left := left_of_center (EX);
+				
+				if S_left then
+					if E_left then
+						null;
+					else
+						null;
+					end if;
+
+				else -- start point is on the right
+					if E_left then
+						null;
+					else
+						null;
+					end if;
+				end if;
+				
+				
+			else
+				raise constraint_error with "can not split arc" & to_string (arc) & " !";
+			end if;
+
+			return result;
+		end split_arc;
+
+		
+
 		function get_distance_to_circumfence (
 			point	: in type_point;
 			circle	: in type_circle)
@@ -4028,6 +4098,8 @@ package body et_geometry is
 			
 			return result;
 		end get_shortest_distance;
+
+
 
 		
 		function get_left_end (

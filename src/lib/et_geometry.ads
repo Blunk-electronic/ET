@@ -303,9 +303,10 @@ package et_geometry is
 		
 		function to_string (boundaries : in type_boundaries) return string;
 
-		-- Returns true if the given boundaries intersect each other:
+		-- Returns true if the given boundaries intersect or touch each other.
+		-- CS should return false if they touch each other:
 		function intersect (
-			boundaries_one : in type_boundaries;
+			boundaries_one : in type_boundaries; -- CS rename to b1,b2. do so with other functions below
 			boundaries_two : in type_boundaries)
 			return boolean;
 
@@ -1198,11 +1199,15 @@ package et_geometry is
 		-- CS use this type wherever a type_arc is declared unnessecarily.
 
 		
+
+		
 		-- Swaps start and end point of an arc. Reverses the direction of the arc:
 		function reverse_arc (arc : in type_arc) return type_arc'class;
 		procedure reverse_arc (arc : in out type_arc);
 
-		
+
+
+			
 		-- Returns the shortest distance from the given point to the
 		-- given arc:
 		function get_shortest_distance (
@@ -1356,7 +1361,12 @@ package et_geometry is
 
 
 
+		type type_arcs is array (positive range <>) of type_arc;
 
+		function split_arc (arc_in : in type_arc) 
+			return type_arcs;
+
+		
 		
 	-- CIRCLE
 		type type_circle_base is abstract tagged record
@@ -1513,6 +1523,7 @@ package et_geometry is
 		
 		function to_string (circle : in type_circle) return string;
 		-- Returns the center and radius of the given circle as string.
+
 
 
 

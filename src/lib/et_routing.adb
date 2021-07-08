@@ -1145,37 +1145,26 @@ package body et_routing is
 			get_intersection (track_dimensions.boundaries, arc_boundaries);
 		
 		break_exists : boolean := false;
-		bp : type_point;
+		bp : type_point; -- CS sufficient to handle only the x position
 
 		
 		-- This procedure uses a numerical method to find the break point.
-		procedure intersection (
-			init : in type_distance) 
+		function get_intersection (init : in type_distance) 
+			return type_point
 		is
 			-- Build a circle that models the cap of the track.
 			-- The circle covers the clearance required for the track:
 			c : type_circle := (radius => clearance, others => <>);
-
+			
 			-- the distance between center of cap and arc:
 			d_cap_to_arc : type_distance;
 			d_cap_to_arc_abs : type_distance_positive;
 
-			--c_bak : type_circle;
-			step : type_distance_positive; -- := 0.5;
+			step : type_distance_positive;
 			
 			-- There is a maximum of iterations. If maximum reached
 			-- a constraint_error is raised.
 			max_iterations : constant positive := 1000; -- CS increase if necessary
-
-			--dyn_width : boolean := true;
-
-			--procedure set_step_width is begin
-				--if dyn_width then
-					--step := d_cap_to_arc_abs * 0.5;
-				--else
-					--step := type_distance'small;
-				--end if;
-			--end set_step_width;
 
 		begin
 			log_indentation_up;
@@ -1185,11 +1174,9 @@ package body et_routing is
 			-- Set the inital position of the cap:
 			case place is
 				when BEFORE =>
-					--c.center := type_point (set (bi.intersection.smallest_x - c.radius, zero));
 					c.center := type_point (set (init - c.radius, zero));
 
 				when AFTER =>
-					--c.center := type_point (set (bi.intersection.greatest_x + c.radius, zero));
 					c.center := type_point (set (init + c.radius, zero));
 			end case;
 
@@ -1216,31 +1203,19 @@ package body et_routing is
 						when BEFORE =>
 							if d_cap_to_arc > zero then
 								-- move cap right towards the arc:
-								--set_step_width;
-								--c_bak := c;
 								c.center := type_point (move (c.center, 0.0, step));
-								--c.center := type_point (move (c.center, 0.0, type_distance'small));
 							else
 								-- move cap left away from the arc:
-								--set_step_width;
 								c.center := type_point (move (c.center, 180.0, step));
-								--c := c_bak;
-								--dyn_width := false;
 							end if;
 							
 						when AFTER =>
 							if d_cap_to_arc > zero then
 								-- move cap left towards the arc:
-								--set_step_width;
-								--c_bak := c;
 								c.center := type_point (move (c.center, 180.0, step));
-								--c.center := type_point (move (c.center, 180.0, type_distance'small));
 							else
 								-- move cap right away from the arc:
-								--set_step_width;
 								c.center := type_point (move (c.center, 0.0, step));
-								--c := c_bak;
-								--dyn_width := false;
 							end if;
 					end case;
 				end if;
@@ -1252,49 +1227,58 @@ package body et_routing is
 					" reached !";
 				end if;
 			end loop;
-						
-			bp := c.center;
 
 			log_indentation_down;
-		end intersection;
+			
+			return c.center;
+		end get_intersection;
 
-		--use pac_distances;
-		--use pac_distances_sorting;
-		--x_values_pre, x_values_post : pac_distances.list;
+		
+		use pac_distances;
+		x_values_pre : pac_distances.list;
 
 
 		procedure use_boundaries is begin
 			case place is
 				when BEFORE =>
-					intersection (bi.intersection.smallest_x);
+					bp := get_intersection (bi.intersection.smallest_x);
 
 				when AFTER =>
-					intersection (bi.intersection.greatest_x);
+					bp := get_intersection (bi.intersection.greatest_x);
 			end case;
 		end use_boundaries;
 		
-		--procedure query_intersection_x (c : in pac_distances.cursor) is begin
-			----log (text => "x:" & to_string (element (c)), level => lth);
-			--intersection (element (c));
+		procedure split_arc is
+			arcs : type_arcs := split_arc (arc_tmp);
+			ba : type_boundaries;
 
-			--x_values_post.append (get_x (bp));
-		--end query_intersection_x;
+			x_values : pac_distances.list;
 
-		--procedure find_first is
-			--c : pac_distances.cursor := x_values_post.first;
-		--begin
-			--while c /= pac_distances.no_element loop
+			use pac_distances_sorting;
+		begin
+			for i in arcs'first .. arcs'last loop
+				ba := get_boundaries (arcs (i), zero);
 
-				--if element (c) > zero then
-					--bp := type_point (set (element (c), zero));
-					--exit;
-				--end if;
-				
-				--next (c);
-			--end loop;
-		--end find_first;
+				declare
+					bi : constant type_boundaries_intersection := 
+						get_intersection (track_dimensions.boundaries, ba);
+				begin
+					if bi.exists then			
+						case place is
+							when BEFORE =>
+								x_values.append (get_x (get_intersection (bi.intersection.smallest_x)));
 
-		--l : count_type;
+							when AFTER =>
+								x_values.append (get_x (get_intersection (bi.intersection.greatest_x)));
+						end case;
+					end if;
+				end;
+			end loop;
+
+			sort (x_values);
+
+			bp := type_point (set (x_values.first_element, zero));
+		end split_arc;
 		
 	begin
 		if bi.exists then -- arc and track do intersect in some way
@@ -1312,34 +1296,15 @@ package body et_routing is
 				log (text => "break with arc:" & to_string (arc), level => lth);
 				log_indentation_up;
 
-				--x_values_pre := get_x_values (i_upper, i_lower);			
-				--l := length (x_values_pre);
-
-				--log (text => "intersections total: " & count_type'image (l), level => lth);
-				
-				--case l is
-					--when 0 .. 2 => 
-						--log (text => "use boundaries", level => lth);
-						--use_boundaries;
-
-					--when 3 .. 4 =>
-						----use_boundaries;
-						
-						--x_values_pre.iterate (query_intersection_x'access);
-
-						--sort (x_values_post);
-
-						--find_first;
-
-						
-					--when others => raise constraint_error; -- CS should never happen
-				--end case;
-
-				use_boundaries;
+				if length (x_values_pre) <= 2 then
+					use_boundaries;
+				else
+					split_arc;
+				end if;
 					
 				-- The computed break point must be after the start of the track.
 				-- If it is before the start of the track, then it is discarded.
-				if get_x (bp) > zero then
+				if get_x (bp) > zero then -- CS really necessary ?
 
 					-- Rotate and move the break point back according to
 					-- the track direction and offset:
