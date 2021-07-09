@@ -303,8 +303,9 @@ package et_geometry is
 		
 		function to_string (boundaries : in type_boundaries) return string;
 
-		-- Returns true if the given boundaries intersect or touch each other.
-		-- CS should return false if they touch each other:
+		-- Returns true if the given boundaries intersect each other.
+		-- Returns false if boundaries do not intersect and if they
+		-- touch each other:
 		function intersect (
 			boundaries_one : in type_boundaries; -- CS rename to b1,b2. do so with other functions below
 			boundaries_two : in type_boundaries)

@@ -313,13 +313,12 @@ package body et_geometry is
 			boundaries_two : in type_boundaries)
 			return boolean
 		is begin
-			-- CS remove "="
-			if	boundaries_two.greatest_x >= boundaries_one.smallest_x
-			and boundaries_two.smallest_x <= boundaries_one.greatest_x
+			if	boundaries_two.greatest_x > boundaries_one.smallest_x
+			and boundaries_two.smallest_x < boundaries_one.greatest_x
 			then -- boundaries intersect in x-direction
 
-				if	boundaries_two.greatest_y >= boundaries_one.smallest_y
-				and boundaries_two.smallest_y <= boundaries_one.greatest_y
+				if	boundaries_two.greatest_y > boundaries_one.smallest_y
+				and boundaries_two.smallest_y < boundaries_one.greatest_y
 				then -- boundaries intersect in y-direction
 					return true;
 				else
@@ -329,7 +328,7 @@ package body et_geometry is
 			else
 				return false;
 			end if;
-
+			
 		end intersect;
 
 
