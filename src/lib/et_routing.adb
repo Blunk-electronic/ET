@@ -1235,7 +1235,7 @@ package body et_routing is
 
 		
 		use pac_distances;
-		x_values_pre : pac_distances.list;
+		x_values_pre : pac_distances.list := get_x_values (i_upper, i_lower);
 
 
 		procedure use_boundaries is begin
@@ -1252,6 +1252,7 @@ package body et_routing is
 			arcs : type_arcs := split_arc (arc_tmp);
 			ba : type_boundaries;
 
+			x_pre : type_distance;
 			x_values : pac_distances.list;
 
 			use pac_distances_sorting;
@@ -1266,10 +1267,18 @@ package body et_routing is
 					if bi.exists then			
 						case place is
 							when BEFORE =>
-								x_values.append (get_x (get_intersection (bi.intersection.smallest_x)));
+								x_pre := get_x (get_intersection (bi.intersection.smallest_x));
+
+								if x_pre > zero then
+									x_values.append (x_pre);
+								end if;
 
 							when AFTER =>
-								x_values.append (get_x (get_intersection (bi.intersection.greatest_x)));
+								x_pre := get_x (get_intersection (bi.intersection.greatest_x));
+
+								if x_pre > zero then
+									x_values.append (x_pre);
+								end if;
 						end case;
 					end if;
 				end;
@@ -1287,7 +1296,7 @@ package body et_routing is
 			-- only if the area of overlap begins after the start of the track.
 			-- This condition test should avoid useless searching for a break. 
 			-- CS: not verified ! Remove this test if assumption is wrong.
-			if (place = BEFORE and bi.intersection.smallest_x >= zero) 
+			if (place = BEFORE) --and bi.intersection.smallest_x >= zero) 
 
 			-- CS: A similar optimization when place is AFTER ?				
 			or place = AFTER 
@@ -1299,6 +1308,7 @@ package body et_routing is
 				if length (x_values_pre) <= 2 then
 					use_boundaries;
 				else
+					log (text => "splitting of arc required", level => lth);
 					split_arc;
 				end if;
 					

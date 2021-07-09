@@ -3380,9 +3380,10 @@ package body et_geometry is
 			SX : type_distance;
 			EX : type_distance;
 
-			-- the direction of the given arc:
-			--DIR : constant type_direction_of_rotation := arc.direction;
-
+			R  : constant type_distance_positive := radius_start (arc);
+			PU : constant type_point := type_point (set (CX, + R));
+			PL : constant type_point := type_point (set (CX, - R));
+			
 			-- the boundaries of the given arc:
 			by : type_boundaries := get_boundaries (arc, zero);
 
@@ -3393,8 +3394,12 @@ package body et_geometry is
 				else return false; -- x is equal or right of center.x or 
 				end if;
 			end left_of_center;
+
+			-- There can be up to 3 segments after splitting the arc.
+			-- All arc segments have the same center and direction:
+			result : type_arcs (1..3);
+				--:= (others => (center => arc.center, direction => CCW, others => <>));
 			
-			result : type_arcs (1..1) := (1..1 => arc);
 		begin
 			-- test whether the arc can be split at all:
 			if by.smallest_x < CX and by.greatest_x > CX then
@@ -3415,16 +3420,100 @@ package body et_geometry is
 				
 				if S_left then
 					if E_left then
-						null;
-					else
-						null;
+						-- start point is below end point
+
+						-- the lower left segment:
+						result (1) := (
+							center		=> arc.center, 
+							start_point	=> arc.start_point,
+							end_point	=> PL,
+							direction 	=> CCW);
+
+						-- the segment on the right
+						result (2) := (
+							center		=> arc.center, 
+							start_point	=> PL,
+							end_point	=> PU,
+							direction 	=> CCW);
+
+						-- the upper left segment:
+						result (3) := (
+							center		=> arc.center, 
+							start_point	=> PU,
+							end_point	=> arc.end_point,
+							direction 	=> CCW);
+
+						-- return all segments
+						return result;
+						
+					else -- end point is on the right
+
+						-- the segment on the left:
+						result (1) := (
+							center		=> arc.center, 
+							start_point	=> arc.start_point,
+							end_point	=> PL,
+							direction 	=> CCW);
+
+						-- the segment on the right
+						result (2) := (
+							center		=> arc.center, 
+							start_point	=> PL,
+							end_point	=> arc.end_point,
+							direction 	=> CCW);
+
+						-- return only segment 1 and 2
+						return result (1..2);
 					end if;
 
+					
 				else -- start point is on the right
 					if E_left then
-						null;
+
+						-- the segment on the right:
+						result (1) := (
+							center		=> arc.center, 
+							start_point	=> arc.start_point,
+							end_point	=> PU,
+							direction 	=> CCW);
+
+						-- the segment on the left
+						result (2) := (
+							center		=> arc.center, 
+							start_point	=> PU,
+							end_point	=> arc.end_point,
+							direction 	=> CCW);
+
+						-- return only segment 1 and 2
+						return result (1..2);
+
+						
 					else
-						null;
+						-- start point is above end point
+
+						-- the upper right segment:
+						result (1) := (
+							center		=> arc.center, 
+							start_point	=> arc.start_point,
+							end_point	=> PU,
+							direction 	=> CCW);
+
+						-- the segment on the left
+						result (2) := (
+							center		=> arc.center, 
+							start_point	=> PU,
+							end_point	=> PL,
+							direction 	=> CCW);
+
+						result (3) := (
+							center		=> arc.center, 
+							start_point	=> PL,
+							end_point	=> arc.end_point,
+							direction 	=> CCW);
+
+						-- return all segments
+						return result;
+						
 					end if;
 				end if;
 				
@@ -3433,7 +3522,7 @@ package body et_geometry is
 				raise constraint_error with "can not split arc" & to_string (arc) & " !";
 			end if;
 
-			return result;
+			--return result;
 		end split_arc;
 
 		
