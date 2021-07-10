@@ -1109,7 +1109,7 @@ package body et_routing is
 		arc		: in type_arc;
 		place	: in type_place;
 		lth		: in type_log_level)
-		return type_break
+		return type_break_double
 	is
 		track_dimensions : constant type_track_dimensions := get_dimensions (track);
 
@@ -1144,8 +1144,8 @@ package body et_routing is
 		bi : constant type_boundaries_intersection := 
 			get_intersection (track_dimensions.boundaries, arc_boundaries);
 		
-		break_exists : boolean := false;
-		bp : type_point; -- CS sufficient to handle only the x position
+		break_count : type_break_count := 0;
+		bp1, bp2 : type_point; -- CS sufficient to handle only the x position
 
 		
 		-- This procedure uses a numerical method to find the break point.
@@ -1241,19 +1241,20 @@ package body et_routing is
 		procedure use_boundaries is begin
 			case place is
 				when BEFORE =>
-					bp := get_intersection (bi.intersection.smallest_x);
+					bp1 := get_intersection (bi.intersection.smallest_x);
 
 				when AFTER =>
-					bp := get_intersection (bi.intersection.greatest_x);
+					bp1 := get_intersection (bi.intersection.greatest_x);
 			end case;
 		end use_boundaries;
 		
 		procedure split_arc is
-			arcs : type_arcs := split_arc (arc_tmp);
+			arcs : constant type_arcs := split_arc (arc_tmp);
 			ba : type_boundaries;
 
 			x_pre : type_distance;
 			x_values : pac_distances.list;
+			x_cursor : pac_distances.cursor;
 
 			use pac_distances_sorting;
 		begin
@@ -1286,58 +1287,109 @@ package body et_routing is
 
 			sort (x_values);
 
-			bp := type_point (set (x_values.first_element, zero));
+			--case place is
+				--when BEFORE =>
+					--bp1 := type_point (set (x_values.first_element, zero));
+					--break_count := 1;
+					
+				--when AFTER =>
+					--log (text => "break count" & natural'image (break_count), level => lth);
+					break_count := type_break_count (length (x_values));
+					
+					case break_count is
+						when 0 => null;
+						when 1 => 
+							x_cursor := x_values.first;
+							bp1 := type_point (set (element (x_cursor), zero));
+							
+						when 2 =>
+							x_cursor := x_values.first;					
+							bp1 := type_point (set (element (x_cursor), zero));
+							next (x_cursor);
+							bp2 := type_point (set (element (x_cursor), zero));
+					end case;
+					
+			--end case;
 		end split_arc;
 		
 	begin
 		if bi.exists then -- arc and track do intersect in some way
 
-			-- If we search for a break before the arc, then it makes sense
-			-- only if the area of overlap begins after the start of the track.
-			-- This condition test should avoid useless searching for a break. 
-			-- CS: not verified ! Remove this test if assumption is wrong.
-			if (place = BEFORE) --and bi.intersection.smallest_x >= zero) 
+			log (text => "break with arc:" & to_string (arc), level => lth);
+			log_indentation_up;
 
-			-- CS: A similar optimization when place is AFTER ?				
-			or place = AFTER 
-			then
-				
-				log (text => "break with arc:" & to_string (arc), level => lth);
-				log_indentation_up;
+			if length (x_values_pre) <= 2 then
 
-				if length (x_values_pre) <= 2 then
+				-- If we search for a break before the arc, then it makes sense
+				-- only if the area of overlap begins after the start of the track.
+				if (place = BEFORE and bi.intersection.smallest_x >= zero)
+
+				-- CS: A similar optimization when place is AFTER ?				
+				or place = AFTER 
+				then
+
+					log (text => "use boundaries", level => lth);
+
 					use_boundaries;
-				else
-					log (text => "splitting of arc required", level => lth);
-					split_arc;
+
+					-- The computed break point must be after the start of the track.
+					-- If it is before the start of the track, then it is discarded.
+					if get_x (bp1) > zero then -- CS really necessary ?
+
+						-- Rotate and move the break point back according to
+						-- the track direction and offset:
+						rotate_to (bp1, track_dimensions.direction);
+						move_by (bp1, track_dimensions.offset);
+
+						break_count := 1;
+
+						log (text => "break point " & type_place'image (place) & " arc:" & to_string (bp1),
+							level => lth + 2);
+					end if;
+
 				end if;
-					
-				-- The computed break point must be after the start of the track.
-				-- If it is before the start of the track, then it is discarded.
-				if get_x (bp) > zero then -- CS really necessary ?
+				
+			else
+				log (text => "splitting of arc required", level => lth);
+				split_arc;
 
-					-- Rotate and move the break point back according to
-					-- the track direction and offset:
-					rotate_to (bp, track_dimensions.direction);
-					move_by (bp, track_dimensions.offset);
+				case break_count is
+					when 0 => null;
+					when 1 =>
 
-					break_exists := true;
+						-- Rotate and move the break point back according to
+						-- the track direction and offset:
+						rotate_to (bp1, track_dimensions.direction);
+						move_by (bp1, track_dimensions.offset);
 
-					log (text => "break point " & type_place'image (place) & " arc:" & to_string (bp),
-						level => lth + 2);
-				end if;
+						log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
+								level => lth + 2);
 
-				log_indentation_down;
+					when 2 =>
+						rotate_to (bp1, track_dimensions.direction);
+						move_by (bp1, track_dimensions.offset);
+
+						log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
+								level => lth + 2);
+
+						rotate_to (bp2, track_dimensions.direction);
+						move_by (bp2, track_dimensions.offset);
+						
+						log (text => "break point 2 " & type_place'image (place) & " arc:" & to_string (bp2),
+							level => lth + 2);
+
+				end case;
 			end if;
+			
+			log_indentation_down;
 		end if;
 
-		
-		if break_exists then
-			return (exists => true, point => bp);
-		else
-			return (exists => false);
-		end if;
-		
+
+		case break_count is
+			when 0 => return (count => 0);
+			when 1 => return (1, bp1);
+			when 2 => return (2, bp1, bp2);
+		end case;
 	end get_break;
 
 
@@ -1611,13 +1663,15 @@ package body et_routing is
 
 		-- See procedure test_line for details.
 		procedure test_arc (a : in type_arc) is
-			b : constant type_break := get_break (track, a, place, log_threshold + 2);
+			b : constant type_break_double := get_break (track, a, place, log_threshold + 2);
 		begin
 			--log (text => "test arc");
-			
-			if b.exists then
-				process_break (b.point);
-			end if;						
+
+			case b.count is
+				when 0 => null;
+				when 1 => process_break (b.point);
+				when 2 => process_break (b.point_1); process_break (b.point_2);
+			end case;
 		end test_arc;
 
 		-- See procedure test_line for details.

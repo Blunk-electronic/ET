@@ -130,6 +130,15 @@ package et_routing is
 		end case;
 	end record;
 
+	subtype type_break_count is natural range 0..2;
+	type type_break_double (count : type_break_count) is record
+		case count is
+			when 0 => null;
+			when 1 => point : type_point;
+			when 2 => point_1, point_2 : type_point;
+		end case;
+	end record;
+
 	
 	-- The dimensions of a track:
 	type type_track_dimensions is record
@@ -170,7 +179,7 @@ package et_routing is
 		arc		: in type_arc;
 		place	: in type_place;
 		lth		: in type_log_level)
-		return type_break;
+		return type_break_double;
 
 	function get_break (
 		track	: in type_track;
