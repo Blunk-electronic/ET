@@ -120,24 +120,7 @@ package et_routing is
 		BEFORE,
 		AFTER);					
 
-	-- A break may or may not exist. If it exists, then the point
-	-- is where a track ends (before an obstacle) or where it starts
-	-- (after an obstacle). Point is the center of the cap of the track.
-	type type_break (exists : boolean) is record
-		case exists is
-			when TRUE => point : type_point;
-			when FALSE => null;
-		end case;
-	end record;
 
-	subtype type_break_count is natural range 0..2;
-	type type_break_double (count : type_break_count) is record
-		case count is
-			when 0 => null;
-			when 1 => point : type_point;
-			when 2 => point_1, point_2 : type_point;
-		end case;
-	end record;
 
 	
 	-- The dimensions of a track:
@@ -155,18 +138,26 @@ package et_routing is
 		track	:  in type_track)
 		return type_track_dimensions;
 	
+
+	-- A break may or may not exist. If it exists, then the point
+	-- is where a track ends (before an obstacle) or where it starts
+	-- (after an obstacle). Point is the center of the cap of the track.
+	type type_break (exists : boolean) is record
+		case exists is
+			when TRUE => point : type_point;
+			when FALSE => null;
+		end case;
+	end record;
 	
 	-- Returns the point where a track is broken/interrupted
 	-- by a line that crosses or overlaps the track.
 	-- If place is BEFORE: 
-	--  - Returns the point, after the start point of the track, where the break begins.
-	--  - If the computed break begins before the start point of the track, then
-	--    the return is false (means no break).
+	--  - Returns the point, after the start of the track, where the break begins.
 	-- If place is AFTER:
-	--  - Returns the point, after the start point of the track, where the break ends.
+	--  - Returns the point, after the start of the track, where the break ends.
 	-- If track and line do not overlap:
 	--  - Returns false (no break).
-	-- The returned break is the center of the cap of the track.
+	-- The returned break point is the center of the cap of the track.
 	function get_break (
 		track	: in type_track;
 		line	: in type_line;
@@ -174,6 +165,27 @@ package et_routing is
 		lth		: in type_log_level)
 		return type_break;
 
+	
+	-- A break of a track with an arc may consist of up to
+	-- two points where the arc intersects the track:
+	subtype type_break_count is natural range 0..2;
+	type type_break_double (count : type_break_count) is record
+		case count is
+			when 0 => null;
+			when 1 => point : type_point;
+			when 2 => point_1, point_2 : type_point;
+		end case;
+	end record;
+	
+	-- Returns the point where a track is broken/interrupted
+	-- by an arc that crosses or overlaps the track.
+	-- If place is BEFORE: 
+	--  - Returns the points, after the start of the track, where the break begins.
+	-- If place is AFTER:
+	--  - Returns the points, after the start of the track, where the break ends.
+	-- If track and line do not overlap:
+	--  - Returns a count zero (means no break).
+	-- The returned break points are the center of the cap of the track.
 	function get_break (
 		track	: in type_track;
 		arc		: in type_arc;
@@ -181,6 +193,8 @@ package et_routing is
 		lth		: in type_log_level)
 		return type_break_double;
 
+
+	
 	function get_break (
 		track	: in type_track;
 		circle	: in type_circle;
