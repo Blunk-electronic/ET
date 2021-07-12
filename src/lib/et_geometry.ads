@@ -1362,8 +1362,14 @@ package et_geometry is
 
 
 
+		-- This type is required when an arc or a circle is to be 
+		-- split into smaller arc segments:
 		type type_arcs is array (positive range <>) of type_arc;
 
+		-- Splits an arc in 2 or 3 smaller arcs.
+		-- The arc will be split by a vertical line that crosses the center.
+		-- The resulting arcs have all the same center, radius  and direction as the
+		-- given arc.
 		function split_arc (arc_in : in type_arc) 
 			return type_arcs;
 
@@ -1379,6 +1385,14 @@ package et_geometry is
 		type type_circle is new type_circle_base with null record;
 		-- CS use this type wherever a type_arc is declared unnessecarily.
 
+		-- Splits a circle in 2 arcs.
+		-- The circle will be split by a vertical line that crosses the center.
+		-- The resulting arcs have all the same center and radius as the given circle.
+		-- The resulting arcs have both direction CCW:
+		function split_circle (circle_in : in type_circle) 
+			return type_arcs;
+
+		
 		-- Returns the distance of point to circumfence of circle.
 		-- Assumes the point is INSIDE the circle or ON the circumfence of the circle.
 		-- The point must not be OUTSIDE the circle !

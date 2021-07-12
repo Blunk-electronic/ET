@@ -3374,14 +3374,20 @@ package body et_geometry is
 		is
 			arc : type_arc := arc_in;
 			
-			-- the x-position of the center, start and end point of the given arc:
+			-- the x and y-position of the center, start and end point of the given arc:
 			CX : constant type_distance := get_x (arc.center);
+			CY : constant type_distance := get_y (arc.center);			
 			SX : type_distance;
 			EX : type_distance;
 
+			-- the radius of the given arc:
 			R  : constant type_distance_positive := radius_start (arc);
-			PU : constant type_point := type_point (set (CX, + R));
-			PL : constant type_point := type_point (set (CX, - R));
+
+			-- The connecting points between the resulting arcs are where an
+			-- imaginary vertical line intersects an imaginary circle at its highest and 
+			-- lowest point:
+			PU : constant type_point := type_point (set (CX, CY + R));
+			PL : constant type_point := type_point (set (CX, CY - R));
 			
 			-- the boundaries of the given arc:
 			by : type_boundaries := get_boundaries (arc, zero);
@@ -3397,7 +3403,6 @@ package body et_geometry is
 			-- There can be up to 3 segments after splitting the arc.
 			-- All arc segments have the same center and direction:
 			result : type_arcs (1..3);
-				--:= (others => (center => arc.center, direction => CCW, others => <>));
 			
 		begin
 			-- test whether the arc can be split at all:
@@ -3524,6 +3529,34 @@ package body et_geometry is
 			--return result;
 		end split_arc;
 
+
+		function split_circle (circle_in : in type_circle) 
+			return type_arcs
+		is
+			-- the x and y-position of the center of the given circle:
+			CX : constant type_distance := get_x (circle_in.center);
+			CY : constant type_distance := get_y (circle_in.center);
+			R  : constant type_distance_positive := circle_in.radius;
+
+			-- The connecting points between the resulting arcs are where an
+			-- imaginary vertical line intersects the circle at its highest and 
+			-- lowest point:
+			PU : constant type_point := type_point (set (CX, CY + R));
+			PL : constant type_point := type_point (set (CX, CY - R));
+
+			-- There will be only 2 arcs.
+			result : type_arcs (1..2);
+		begin
+			-- the arc on the left:
+			result (1) := (center => circle_in.center, start_point => PU, 
+						   end_point => PL, direction => CCW);
+
+			-- the arc on the right:
+			result (2) := (center => circle_in.center, start_point => PL,
+						   end_point => PU, direction => CCW);			
+
+			return result;
+		end split_circle;
 		
 
 		function get_distance_to_circumfence (

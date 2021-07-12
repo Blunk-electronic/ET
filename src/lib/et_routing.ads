@@ -193,14 +193,21 @@ package et_routing is
 		lth		: in type_log_level)
 		return type_break_double;
 
-
-	
+	-- Returns the point where a track is broken/interrupted
+	-- by a circle that crosses or overlaps the track.
+	-- If place is BEFORE: 
+	--  - Returns the points, after the start of the track, where the break begins.
+	-- If place is AFTER:
+	--  - Returns the points, after the start of the track, where the break ends.
+	-- If track and line do not overlap:
+	--  - Returns a count zero (means no break).
+	-- The returned break points are the center of the cap of the track.
 	function get_break (
 		track	: in type_track;
 		circle	: in type_circle;
 		place	: in type_place;
 		lth		: in type_log_level)
-		return type_break;
+		return type_break_double;
 	
 
 	-- Returns true if the given point comes after the 
