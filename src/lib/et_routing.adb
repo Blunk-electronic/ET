@@ -1144,9 +1144,10 @@ package body et_routing is
 		-- the area where track and arc boundaries intersect:
 		bi : constant type_boundaries_intersection := 
 			get_intersection (track_dimensions.boundaries, arc_boundaries);
-		
+
+		-- the possible break points and the number of break points:
 		break_count : type_break_count := 0;
-		bp1, bp2 : type_point; -- CS sufficient to handle only the x position
+		bp1, bp2 : type_point;
 
 		
 		-- This procedure uses a numerical method to find the break point.
