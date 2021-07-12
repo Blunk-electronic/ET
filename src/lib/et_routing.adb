@@ -1068,7 +1068,8 @@ package body et_routing is
 			
 	end get_break;
 
-
+	-- This function sorts the given intersections (of line and circle)
+	-- and returns them in a simple list of distances along the x-axis:
 	function get_x_values (
 		i_upper, i_lower : in type_intersection_of_line_and_circle)
 		return pac_distances.list
