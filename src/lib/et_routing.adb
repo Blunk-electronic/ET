@@ -646,12 +646,12 @@ package body et_routing is
 				log_indentation_up;
 
 				if in_polygon_status (fill_zone.outline, start_point).status = INSIDE then
-					log (text => "point is inside fill zone", level => lth + 1);
+					log (text => "point is in fill zone", level => lth + 1);
 
 					-- the distance of the point to the border of the fill zone:
 					distance_to_edge := get_absolute (get_shortest_distance (fill_zone.outline, start_point));
 
-					log (text => "distance point to border" & to_string (distance_to_edge),
+					log (text => "distance to border" & to_string (distance_to_edge),
 						level => lth + 1);
 					
 					-- the distance of the fill line to the border:
@@ -815,6 +815,102 @@ package body et_routing is
 
 		return result;
 	end get_dimensions;
+
+	
+	function get_intersection (
+		init		: in type_distance;
+		place		: in type_place;
+		obstacle	: in type_obstacle;
+		clearance	: in type_distance_positive;
+		lth			: in type_log_level) 
+		return type_point
+	is
+		-- Build a circle that models the cap of the track.
+		-- The circle covers the clearance required for the track:
+		c : type_circle := (radius => clearance, others => <>);
+		
+		-- the distance between center of cap and obstacle:
+		d_cap_to_obstacle : type_distance;
+		d_cap_to_obstacle_abs : type_distance_positive;
+
+		step : type_distance_positive;
+		
+		-- There is a maximum of iterations. If maximum reached
+		-- a constraint_error is raised.
+		max_iterations : constant positive := 1000; -- CS increase if necessary
+
+	begin		
+		log (text => "starting numerical search ...", level => lth);
+		log_indentation_up;
+
+		-- Set the inital position of the cap:
+		case place is
+			when BEFORE =>
+				c.center := type_point (set (init - c.radius, zero));
+
+			when AFTER =>
+				c.center := type_point (set (init + c.radius, zero));
+		end case;
+
+		
+		for i in 1 .. max_iterations loop
+			
+			-- Calculate the distance between the cap (incl. clearance) and the obstacle:
+			case obstacle.shape is
+				when LINE =>
+					d_cap_to_obstacle := get_distance (c, obstacle.line);
+				when ARC =>
+					d_cap_to_obstacle := get_distance (c, obstacle.arc);
+				when CIRCLE =>
+					d_cap_to_obstacle := get_distance (c, obstacle.circle);
+			end case;
+					
+			log (text => " distance" & to_string (d_cap_to_obstacle), level => lth + 1);
+
+			d_cap_to_obstacle_abs := abs (d_cap_to_obstacle);
+			
+			-- Cancel this loop once the distance is sufficiently small.
+			-- Otherwise take half of the distance and move cap to new position:
+			if d_cap_to_obstacle_abs <= type_distance'small then
+				log (text => " break point found after" & positive'image (i) & " iterations",
+					level => lth + 2);
+				exit;
+			else
+				step := d_cap_to_obstacle_abs * 0.5;
+				
+				case place is
+					when BEFORE =>
+						if d_cap_to_obstacle > zero then
+							-- move cap right towards the obstacle:
+							c.center := type_point (move (c.center, 0.0, step));
+						else
+							-- move cap left away from the obstacle:
+							c.center := type_point (move (c.center, 180.0, step));
+						end if;
+						
+					when AFTER =>
+						if d_cap_to_obstacle > zero then
+							-- move cap left towards the obstacle:
+							c.center := type_point (move (c.center, 180.0, step));
+						else
+							-- move cap right away from the obstacle:
+							c.center := type_point (move (c.center, 0.0, step));
+						end if;
+				end case;
+			end if;
+
+			
+			-- Once the maximum of iterations has been reached, raise exception:
+			if i = max_iterations then
+				raise constraint_error with "ERROR: Max. interations of " & positive'image (i) &
+				" reached !";
+			end if;
+		end loop;
+
+		log_indentation_down;
+		
+		return c.center;
+	end get_intersection;
 
 	
 	function get_break (
@@ -1009,8 +1105,7 @@ package body et_routing is
 
 			log_indentation_down;
 		end partial_intersection;
-		
-		
+			
 	begin
 		if bi.exists then -- line and track boundaries do intersect in some way
 
@@ -1149,93 +1244,6 @@ package body et_routing is
 		break_count : type_break_count := 0;
 		bp1, bp2 : type_point;
 
-		
-		-- This procedure uses a numerical method to find the break point.
-		function get_intersection (init : in type_distance) 
-			return type_point
-		is
-			-- Build a circle that models the cap of the track.
-			-- The circle covers the clearance required for the track:
-			c : type_circle := (radius => clearance, others => <>);
-			
-			-- the distance between center of cap and arc:
-			d_cap_to_arc : type_distance;
-			d_cap_to_arc_abs : type_distance_positive;
-
-			step : type_distance_positive;
-			
-			-- There is a maximum of iterations. If maximum reached
-			-- a constraint_error is raised.
-			max_iterations : constant positive := 1000; -- CS increase if necessary
-
-		begin
-			log_indentation_up;
-			
-			log (text => "starting numerical search ...", level => lth + 2);
-
-			-- Set the inital position of the cap:
-			case place is
-				when BEFORE =>
-					c.center := type_point (set (init - c.radius, zero));
-
-				when AFTER =>
-					c.center := type_point (set (init + c.radius, zero));
-			end case;
-
-			
-			for i in 1 .. max_iterations loop
-				
-				-- Calculate the distance between the cap (incl. clearance) and the arc:
-				d_cap_to_arc := get_distance (c, arc_tmp);
-				log (text => " distance" & to_string (d_cap_to_arc), level => lth + 3);
-
-				d_cap_to_arc_abs := abs (d_cap_to_arc);
-				
-				-- Cancel this loop once the distance is sufficiently small.
-				-- Otherwise take half of the distance and move cap to new position:
-				if d_cap_to_arc_abs <= type_distance'small then
-					log (text => " break point found after" & positive'image (i) & " iterations",
-							level => lth + 2);
-					exit;
-				else
-
-					step := d_cap_to_arc_abs * 0.5;
-					
-					case place is
-						when BEFORE =>
-							if d_cap_to_arc > zero then
-								-- move cap right towards the arc:
-								c.center := type_point (move (c.center, 0.0, step));
-							else
-								-- move cap left away from the arc:
-								c.center := type_point (move (c.center, 180.0, step));
-							end if;
-							
-						when AFTER =>
-							if d_cap_to_arc > zero then
-								-- move cap left towards the arc:
-								c.center := type_point (move (c.center, 180.0, step));
-							else
-								-- move cap right away from the arc:
-								c.center := type_point (move (c.center, 0.0, step));
-							end if;
-					end case;
-				end if;
-
-				
-				-- Once the maximum of iterations has been reached, raise exception:
-				if i = max_iterations then
-					raise constraint_error with "ERROR: Max. interations of " & positive'image (i) &
-					" reached !";
-				end if;
-			end loop;
-
-			log_indentation_down;
-			
-			return c.center;
-		end get_intersection;
-
-
 		-- Get all the intersections of the track with the arc.
 		-- The arc may intersect the upper and lower edge of the track.
 		use pac_distances;
@@ -1273,8 +1281,15 @@ package body et_routing is
 							when BEFORE =>
 								-- Use the LEFT border of the overlap area as start point for the
 								-- search operation:
-								x_pre := get_x (get_intersection (bi.intersection.smallest_x));
+								--x_pre := get_x (get_intersection (bi.intersection.smallest_x));
 
+								x_pre := get_x (get_intersection (
+									init		=> bi.intersection.smallest_x,
+									place		=> place,
+									obstacle	=> (et_geometry.ARC, arcs (i)),
+									clearance	=> clearance,
+									lth			=> lth + 1));
+								
 								-- The break must be after the start of the track.
 								-- Otherwise the break is ignored.
 								-- Collect the x-position of the break in container x_values.
@@ -1285,8 +1300,15 @@ package body et_routing is
 							when AFTER =>
 								-- Use the RIGHT border of the overlap area as start point for the
 								-- search operation:
-								x_pre := get_x (get_intersection (bi.intersection.greatest_x));
+								--x_pre := get_x (get_intersection (bi.intersection.greatest_x));
 
+								x_pre := get_x (get_intersection (
+									init		=> bi.intersection.greatest_x,
+									place		=> place,
+									obstacle	=> (et_geometry.ARC, arcs (i)),
+									clearance	=> clearance,
+									lth			=> lth + 1));
+								
 								-- The break must be after the start of the track.
 								-- Otherwise the break is ignored.
 								-- Collect the x-position of the break in container x_values.
@@ -1317,7 +1339,6 @@ package body et_routing is
 					bp2 := type_point (set (element (x_cursor), zero));
 			end case;
 		end set_break_points;
-
 		
 	begin -- get_break
 		if bi.exists then -- arc and track do intersect in some way
@@ -1340,17 +1361,29 @@ package body et_routing is
 					-- The search for the break point (before or after) can be 
 					-- done by means of the boundaries of the whole overlapping area.
 					log (text => "using boundaries of whole overlapping area", level => lth);
-
+					log_indentation_up;
+					
 					case place is
 						when BEFORE =>
 							-- The start point of the search is the LEFT border of the
 							-- overlapping area:
-							bp1 := get_intersection (bi.intersection.smallest_x);
-
+							bp1 := get_intersection (
+								init		=> bi.intersection.smallest_x,
+								place		=> place,
+								obstacle	=> (et_geometry.ARC, arc_tmp),
+								clearance	=> clearance,
+								lth			=> lth + 1);
+									
 						when AFTER =>
 							-- The start point of the search is the RIGHT border of the
 							-- overlapping area:
-							bp1 := get_intersection (bi.intersection.greatest_x);
+							bp1 := get_intersection (
+								init		=> bi.intersection.greatest_x,
+								place		=> place,
+								obstacle	=> (et_geometry.ARC, arc_tmp),
+								clearance	=> clearance,
+								lth			=> lth + 1);
+
 					end case;
 
 
@@ -1369,6 +1402,7 @@ package body et_routing is
 							level => lth + 2);
 					end if;
 
+					log_indentation_down;
 				else
 					log (text => "boundaries of arc before start of track -> arc skipped" , level => lth);
 				end if;
@@ -1378,6 +1412,7 @@ package body et_routing is
 				-- So the arc must be split in 2 or 3 segments. Each of them
 				-- will then be treated separately.
 				log (text => "splitting of arc required", level => lth);
+				log_indentation_up;
 				
 				set_break_points (arc_tmp);
 
@@ -1407,6 +1442,8 @@ package body et_routing is
 							level => lth + 2);
 
 				end case;
+
+				log_indentation_down;
 			end if;
 			
 			log_indentation_down;
@@ -1464,93 +1501,6 @@ package body et_routing is
 		break_count : type_break_count := 0;
 		bp1, bp2 : type_point;
 
-
-		-- This procedure uses a numerical method to find the break point.
-		function get_intersection (init : type_distance) 
-			return type_point
-		is
-			-- Build a circle that models the cap of the track.
-			-- The circle covers the clearance required for the track:
-			c : type_circle := (radius => clearance, others => <>);
-
-			-- the distance between center of cap and circle:
-			d_cap_to_circle : type_distance;
-			d_cap_to_circle_abs : type_distance_positive;
-
-			step : type_distance_positive;
-			
-			-- There is a maximum of iterations. If maximum reached
-			-- a constraint_error is raised.
-			max_iterations : constant positive := 1000; -- CS increase if necessary
-
-		begin
-			log_indentation_up;
-			
-			log (text => "starting numerical search ...", level => lth + 2);
-
-			-- Set the inital position of the cap:
-			case place is
-				when BEFORE =>
-					c.center := type_point (set (init - c.radius, zero));
-
-				when AFTER =>
-					c.center := type_point (set (init + c.radius, zero));
-					log (text => to_string (init + c.radius), level => lth + 2);
-			end case;
-
-			
-			for i in 1 .. max_iterations loop
-				
-				-- Calculate the distance between the cap (incl. clearance) and the circle:
-				d_cap_to_circle := get_distance (c, circle_tmp);
-				log (text => " distance" & to_string (d_cap_to_circle), level => lth + 3);
-
-				d_cap_to_circle_abs := abs (d_cap_to_circle);
-				
-				-- Cancel this loop once the distance is sufficiently small.
-				-- Otherwise take half of the distance and move cap to new position:
-				if d_cap_to_circle_abs <= type_distance'small then
-					log (text => " break point found after" & positive'image (i) & " iterations",
-							level => lth + 2);
-					exit;
-				else
-
-					step := d_cap_to_circle_abs * 0.5;
-					
-					case place is
-						when BEFORE =>
-							if d_cap_to_circle > zero then
-								-- move cap right towards the circle:
-								c.center := type_point (move (c.center, 0.0, step));
-							else
-								-- move cap left away from the circle:
-								c.center := type_point (move (c.center, 180.0, step));
-							end if;
-							
-						when AFTER =>
-							if d_cap_to_circle > zero then
-								-- move cap left towards the circle:
-								c.center := type_point (move (c.center, 180.0, step));
-							else
-								-- move cap right away from the circle:
-								c.center := type_point (move (c.center, 0.0, step));
-							end if;
-					end case;
-				end if;
-
-				
-				-- Once the maximum of iterations has been reached, raise exception:
-				if i = max_iterations then
-					raise constraint_error with "ERROR: Max. interations of " & positive'image (i) &
-					" reached !";
-				end if;
-			end loop;
-						
-			log_indentation_down;
-			
-			return c.center;
-		end get_intersection;
-
 		-- Get all the intersections of the track with the arc.
 		-- The arc may intersect the upper and lower edge of the track.
 		use pac_distances;
@@ -1578,7 +1528,7 @@ package body et_routing is
 				-- Get the boundaries of the candidate arc:
 				arc_boundaries := get_boundaries (arcs (i), zero); -- arc has zero width
 
-				log (text => "arc boundaries" & to_string (arc_boundaries));
+				--log (text => "arc boundaries" & to_string (arc_boundaries));
 				
 				declare
 					-- Get the overlap area of the track and arc boundaries:
@@ -1586,14 +1536,18 @@ package body et_routing is
 						get_intersection (track_dimensions.boundaries, arc_boundaries);
 				begin
 					if bi.exists then
-
 						
 						case place is
 							when BEFORE =>
 								-- Use the LEFT border of the overlap area as start point for the
 								-- search operation:
-								x_pre := get_x (get_intersection (bi.intersection.smallest_x));
-
+								x_pre := get_x (get_intersection (
+									init		=> bi.intersection.smallest_x,
+									place		=> place,
+									obstacle	=> (et_geometry.ARC, arcs (i)),
+									clearance	=> clearance,
+									lth			=> lth + 1));
+								
 								-- The break must be after the start of the track.
 								-- Otherwise the break is ignored.
 								-- Collect the x-position of the break in container x_values.
@@ -1604,8 +1558,13 @@ package body et_routing is
 							when AFTER =>
 								-- Use the RIGHT border of the overlap area as start point for the
 								-- search operation:
-								x_pre := get_x (get_intersection (bi.intersection.greatest_x));
-
+								x_pre := get_x (get_intersection (
+									init		=> bi.intersection.greatest_x,
+									place		=> place,
+									obstacle	=> (et_geometry.ARC, arcs (i)),
+									clearance	=> clearance,
+									lth			=> lth + 1));
+								
 								-- The break must be after the start of the track.
 								-- Otherwise the break is ignored.
 								-- Collect the x-position of the break in container x_values.
@@ -1669,17 +1628,29 @@ package body et_routing is
 						-- The search for the break point (before or after) can be 
 						-- done by means of the boundaries of the whole overlapping area.
 						log (text => "using boundaries of whole overlapping area", level => lth);
-
+						log_indentation_up;
+						
 						case place is
 							when BEFORE =>
 								-- The start point of the search is the LEFT border of the
 								-- overlapping area:
-								bp1 := get_intersection (bi.intersection.smallest_x);
+								bp1 := get_intersection (
+									init		=> bi.intersection.smallest_x,
+									place		=> place,
+									obstacle	=> (et_geometry.CIRCLE, circle_tmp),
+									clearance	=> clearance,
+									lth			=> lth + 1);
+								
 
 							when AFTER =>
 								-- The start point of the search is the RIGHT border of the
 								-- overlapping area:
-								bp1 := get_intersection (bi.intersection.greatest_x);
+								bp1 := get_intersection (
+									init		=> bi.intersection.greatest_x,
+									place		=> place,
+									obstacle	=> (et_geometry.CIRCLE, circle_tmp),
+									clearance	=> clearance,
+									lth			=> lth + 1);
 						end case;
 
 
@@ -1698,6 +1669,7 @@ package body et_routing is
 								level => lth + 2);
 						end if;
 
+						log_indentation_down;
 					else
 						log (text => "boundaries of circle before start of track -> circle skipped" , level => lth);
 					end if;
@@ -1707,6 +1679,7 @@ package body et_routing is
 					-- So the circle must be split in 2 arcs. Each arc
 					-- will then be treated separately.
 					log (text => "splitting of circle required", level => lth);
+					log_indentation_up;
 					
 					set_break_points (circle_tmp);
 
@@ -1720,23 +1693,25 @@ package body et_routing is
 							move_by (bp1, track_dimensions.offset);
 
 							log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
-									level => lth + 2);
+									level => lth + 1);
 
 						when 2 =>
 							rotate_to (bp1, track_dimensions.direction);
 							move_by (bp1, track_dimensions.offset);
 
 							log (text => "break point 1 " & type_place'image (place) & " arc:" & to_string (bp1),
-									level => lth + 2);
+									level => lth + 1);
 
 							rotate_to (bp2, track_dimensions.direction);
 							move_by (bp2, track_dimensions.offset);
 							
 							log (text => "break point 2 " & type_place'image (place) & " arc:" & to_string (bp2),
-								level => lth + 2);
+								level => lth + 1);
 
 					end case;
 
+					log_indentation_down;
+					
 				when others =>
 					raise constraint_error; -- CS useful message
 			end case;

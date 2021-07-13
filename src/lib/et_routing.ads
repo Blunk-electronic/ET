@@ -137,8 +137,27 @@ package et_routing is
 	function get_dimensions (
 		track	:  in type_track)
 		return type_track_dimensions;
+
+	type type_obstacle (shape : type_shape) is record
+		case shape is
+			when LINE	=> line : type_line;
+			when ARC	=> arc : type_arc;
+			when CIRCLE	=> circle : type_circle;
+		end case;
+	end record;
 	
 
+	-- This function searches the break point before or after
+	-- an obstacle.
+	function get_intersection (
+		init		: in type_distance; -- the start point of the search
+		place		: in type_place; -- before/after
+		obstacle	: in type_obstacle;
+		clearance	: in type_distance_positive; -- the clearance to the obstacle
+		lth			: in type_log_level) 
+		return type_point;
+
+	
 	-- A break may or may not exist. If it exists, then the point
 	-- is where a track ends (before an obstacle) or where it starts
 	-- (after an obstacle). Point is the center of the cap of the track.
