@@ -3578,10 +3578,44 @@ package body et_geometry is
 			return type_distance_polar
 		is
 			result : type_distance_polar;
-		begin
-			result := get_distance (point, circle.center);
-			set_absolute (result, get_absolute (result) - circle.radius);
 
+			-- Two cases can exist:
+			-- 1. point is inside the circle
+			-- 2. point is outside the circle
+			
+			-- the polar distance from center to point:
+			d_cp : constant type_distance_polar := get_distance (circle.center, point);
+
+			-- the polar distance from point to center:
+			d_pc : constant type_distance_polar := get_distance (point, circle.center);
+			
+			dd : type_distance;
+		begin
+			--result := get_distance (point, circle.center);
+			--set_absolute (result, get_absolute (result) - circle.radius);
+
+			dd := get_absolute (d_pc) - circle.radius;
+			
+			if dd > zero then -- point outside of circle
+			-- CS consider the unavoidable rounding error. compare with type_distance'small ?
+
+				-- Now the polar distance from point to center matters:
+				result := d_pc;
+
+				-- Since we are interested in the distance to the circumfence
+				-- the radius must be subtracted from the total distance:
+				set_absolute (result, get_absolute (d_pc) - circle.radius);
+				
+			else -- point inside circle or on circumfence
+
+				-- Now the polar distance from center to point matters:
+				result := d_cp;
+				
+				-- Since we are interested in the distance to the circumfence
+				-- the total distance must be subtracted from the radius:
+				set_absolute (result, circle.radius - get_absolute (d_pc));
+			end if;
+			
 			return result;
 		end get_shortest_distance;
 

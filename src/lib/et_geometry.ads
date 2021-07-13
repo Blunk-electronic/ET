@@ -1403,7 +1403,8 @@ package et_geometry is
 			
 		
 		-- Returns the shortest distance from the given point to the
-		-- given circle. Assumes the point is INSIDE the circle.
+		-- given circle. The point may be inside or outside the circle.
+		-- However, the return is the distance to the circumfence of the circle.
 		function get_shortest_distance (
 			point	: in type_point;
 			circle	: in type_circle)
