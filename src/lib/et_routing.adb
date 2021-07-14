@@ -823,7 +823,7 @@ package body et_routing is
 		obstacle	: in type_obstacle;
 		clearance	: in type_distance_positive;
 		lth			: in type_log_level) 
-		return type_point
+		return type_distance
 	is
 		-- Build a circle that models the cap of the track.
 		-- The circle covers the clearance required for the track:
@@ -909,7 +909,7 @@ package body et_routing is
 
 		log_indentation_down;
 		
-		return c.center;
+		return get_x (c.center);
 	end get_intersection;
 
 	
@@ -1240,6 +1240,9 @@ package body et_routing is
 		bi : constant type_boundaries_intersection := 
 			get_intersection (track_dimensions.boundaries, arc_boundaries);
 
+		-- the place along the x-axis where the search for the break is to begin:
+		start_point : type_distance;
+		
 		-- the possible break points and the number of break points:
 		break_count : type_break_count := 0;
 		bp1, bp2 : type_point;
@@ -1281,41 +1284,27 @@ package body et_routing is
 							when BEFORE =>
 								-- Use the LEFT border of the overlap area as start point for the
 								-- search operation:
-								--x_pre := get_x (get_intersection (bi.intersection.smallest_x));
-
-								x_pre := get_x (get_intersection (
-									init		=> bi.intersection.smallest_x,
-									place		=> place,
-									obstacle	=> (et_geometry.ARC, arcs (i)),
-									clearance	=> clearance,
-									lth			=> lth + 1));
-								
-								-- The break must be after the start of the track.
-								-- Otherwise the break is ignored.
-								-- Collect the x-position of the break in container x_values.
-								if x_pre > zero then
-									x_values.append (x_pre);
-								end if;
+								start_point := bi.intersection.smallest_x;
 
 							when AFTER =>
 								-- Use the RIGHT border of the overlap area as start point for the
 								-- search operation:
-								--x_pre := get_x (get_intersection (bi.intersection.greatest_x));
-
-								x_pre := get_x (get_intersection (
-									init		=> bi.intersection.greatest_x,
-									place		=> place,
-									obstacle	=> (et_geometry.ARC, arcs (i)),
-									clearance	=> clearance,
-									lth			=> lth + 1));
-								
-								-- The break must be after the start of the track.
-								-- Otherwise the break is ignored.
-								-- Collect the x-position of the break in container x_values.
-								if x_pre > zero then -- CS really necessary ?
-									x_values.append (x_pre);
-								end if;
+								start_point := bi.intersection.greatest_x;
 						end case;
+
+						x_pre := get_intersection (
+							init		=> start_point,
+							place		=> place,
+							obstacle	=> (et_geometry.ARC, arcs (i)),
+							clearance	=> clearance,
+							lth			=> lth + 1);
+						
+						-- The break must be after the start of the track.
+						-- Otherwise the break is ignored.
+						-- Collect the x-position of the break in container x_values.
+						if x_pre > zero then
+							x_values.append (x_pre);
+						end if;
 					end if;
 				end;
 			end loop;
@@ -1367,25 +1356,21 @@ package body et_routing is
 						when BEFORE =>
 							-- The start point of the search is the LEFT border of the
 							-- overlapping area:
-							bp1 := get_intersection (
-								init		=> bi.intersection.smallest_x,
-								place		=> place,
-								obstacle	=> (et_geometry.ARC, arc_tmp),
-								clearance	=> clearance,
-								lth			=> lth + 1);
-									
+							start_point := bi.intersection.smallest_x;
+																
 						when AFTER =>
 							-- The start point of the search is the RIGHT border of the
 							-- overlapping area:
-							bp1 := get_intersection (
-								init		=> bi.intersection.greatest_x,
-								place		=> place,
-								obstacle	=> (et_geometry.ARC, arc_tmp),
-								clearance	=> clearance,
-								lth			=> lth + 1);
-
+							start_point := bi.intersection.greatest_x;
 					end case;
 
+					bp1 := type_point (set (get_intersection (
+						init		=> start_point,
+						place		=> place,
+						obstacle	=> (et_geometry.ARC, arc_tmp),
+						clearance	=> clearance,
+						lth			=> lth + 1),
+						zero));
 
 					-- The computed break point must be after the start of the track.
 					-- If it is before the start of the track, then it is discarded.
@@ -1496,6 +1481,9 @@ package body et_routing is
 		-- the area where track and circle boundaries intersect:
 		bi : constant type_boundaries_intersection := 
 			get_intersection (track_dimensions.boundaries, circle_boundaries);
+
+		-- the place along the x-axis where the search for the break is to begin:
+		start_point : type_distance;
 		
 		-- the possible break points and the number of break points:
 		break_count : type_break_count := 0;
@@ -1527,8 +1515,6 @@ package body et_routing is
 
 				-- Get the boundaries of the candidate arc:
 				arc_boundaries := get_boundaries (arcs (i), zero); -- arc has zero width
-
-				--log (text => "arc boundaries" & to_string (arc_boundaries));
 				
 				declare
 					-- Get the overlap area of the track and arc boundaries:
@@ -1541,37 +1527,28 @@ package body et_routing is
 							when BEFORE =>
 								-- Use the LEFT border of the overlap area as start point for the
 								-- search operation:
-								x_pre := get_x (get_intersection (
-									init		=> bi.intersection.smallest_x,
-									place		=> place,
-									obstacle	=> (et_geometry.ARC, arcs (i)),
-									clearance	=> clearance,
-									lth			=> lth + 1));
-								
-								-- The break must be after the start of the track.
-								-- Otherwise the break is ignored.
-								-- Collect the x-position of the break in container x_values.
-								if x_pre > zero then
-									x_values.append (x_pre);
-								end if;
+								start_point := bi.intersection.smallest_x;
 
 							when AFTER =>
 								-- Use the RIGHT border of the overlap area as start point for the
 								-- search operation:
-								x_pre := get_x (get_intersection (
-									init		=> bi.intersection.greatest_x,
-									place		=> place,
-									obstacle	=> (et_geometry.ARC, arcs (i)),
-									clearance	=> clearance,
-									lth			=> lth + 1));
-								
-								-- The break must be after the start of the track.
-								-- Otherwise the break is ignored.
-								-- Collect the x-position of the break in container x_values.
-								if x_pre > zero then -- CS really necessary ?
-									x_values.append (x_pre);
-								end if;
+								start_point := bi.intersection.greatest_x;
 						end case;
+
+						x_pre := get_intersection (
+							init		=> start_point,
+							place		=> place,
+							obstacle	=> (et_geometry.ARC, arcs (i)),
+							clearance	=> clearance,
+							lth			=> lth + 1);
+						
+						-- The break must be after the start of the track.
+						-- Otherwise the break is ignored.
+						-- Collect the x-position of the break in container x_values.
+						if x_pre > zero then
+							x_values.append (x_pre);
+						end if;
+						
 					end if;
 				end;
 			end loop;
@@ -1634,24 +1611,21 @@ package body et_routing is
 							when BEFORE =>
 								-- The start point of the search is the LEFT border of the
 								-- overlapping area:
-								bp1 := get_intersection (
-									init		=> bi.intersection.smallest_x,
-									place		=> place,
-									obstacle	=> (et_geometry.CIRCLE, circle_tmp),
-									clearance	=> clearance,
-									lth			=> lth + 1);
-								
-
+								start_point := bi.intersection.smallest_x;
+							
 							when AFTER =>
 								-- The start point of the search is the RIGHT border of the
 								-- overlapping area:
-								bp1 := get_intersection (
-									init		=> bi.intersection.greatest_x,
-									place		=> place,
-									obstacle	=> (et_geometry.CIRCLE, circle_tmp),
-									clearance	=> clearance,
-									lth			=> lth + 1);
+								start_point := bi.intersection.greatest_x;
 						end case;
+
+						bp1 := type_point (set (get_intersection (
+							init		=> start_point,
+							place		=> place,
+							obstacle	=> (et_geometry.CIRCLE, circle_tmp),
+							clearance	=> clearance,
+							lth			=> lth + 1),
+							zero));
 
 
 						-- The computed break point must be after the start of the track.

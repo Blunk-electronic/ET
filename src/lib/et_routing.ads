@@ -148,14 +148,15 @@ package et_routing is
 	
 
 	-- This function searches the break point before or after
-	-- an obstacle.
+	-- an obstacle along the x-axis. The result is an x-position
+	-- before or after the obstacle.
 	function get_intersection (
 		init		: in type_distance; -- the start point of the search
 		place		: in type_place; -- before/after
 		obstacle	: in type_obstacle;
 		clearance	: in type_distance_positive; -- the clearance to the obstacle
 		lth			: in type_log_level) 
-		return type_point;
+		return type_distance;
 
 	
 	-- A break may or may not exist. If it exists, then the point
