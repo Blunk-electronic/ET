@@ -952,6 +952,9 @@ package body et_routing is
 		-- the area where track and line boundaries intersect:
 		bi : constant type_boundaries_intersection :=
 			  get_intersection (track_dimensions.boundaries, line_boundaries);
+
+		-- the place along the x-axis where the search for the break is to begin:
+		start_point : type_distance;
 		
 		bp : type_point;
 		break_exists : boolean := false;
@@ -998,113 +1001,6 @@ package body et_routing is
 			
 			log_indentation_down;
 		end full_intersection;
-
-
-		-- This procedure uses a numerical method to find the break point.
-		procedure partial_intersection is
-			-- Build a circle that models the cap of the track.
-			-- The circle covers the clearance required for the track:
-			c : type_circle := (radius => clearance, others => <>);
-
-			-- the distance between center of cap and line:
-			d_cap_to_line : type_distance;
-			d_cap_to_line_abs : type_distance_positive;
-
-			--c_bak : type_circle;
-			step : type_distance_positive; --:= 0.5;
-			
-			-- There is a maximum of iterations. If maximum reached
-			-- a constraint_error is raised.
-			max_iterations : constant positive := 1000; -- CS increase if necessary
-
-			--dyn_width : boolean := true;
-
-			--procedure set_step_width is begin
-				--if dyn_width then
-					--step := d_cap_to_line_abs * 0.5;
-				--else
-					--step := type_distance'small;
-				--end if;
-			--end set_step_width;
-								
-			
-		begin -- partial_intersection
-			log_indentation_up;
-			
-			log (text => "starting numerical search ...", level => lth + 2);
-			
-			-- Set the inital position of the cap:
-			case place is
-				when BEFORE =>
-					--log (text => "by sx" & to_string (bi.intersection.smallest_x));
-					c.center := type_point (set (bi.intersection.smallest_x - c.radius, zero));
-				when AFTER =>
-					--log (text => "by gx" & to_string (bi.intersection.greatest_x));
-					c.center := type_point (set (bi.intersection.greatest_x + c.radius, zero));
-			end case;
-		
-			
-			for i in 1 .. max_iterations loop
-				
-				-- Calculate the distance between the cap (incl. clearance) and the line:
-				d_cap_to_line := get_distance (c, line_tmp);
-				log (text => " distance" & to_string (d_cap_to_line), level => lth + 3);
-
-				d_cap_to_line_abs := abs (d_cap_to_line);
-				
-				-- Cancel this loop once the distance is sufficiently small.
-				-- Otherwise take half of the distance and move cap to new position:
-				if d_cap_to_line_abs <= type_distance'small then
-					log (text => " break point found after" & positive'image (i) & " iterations",
-							level => lth + 2);
-					exit;
-				else
-
-					step := d_cap_to_line_abs * 0.5;
-					
-					case place is
-						when BEFORE =>
-							if d_cap_to_line > zero then
-								-- move cap right towards the line:
-								--set_step_width;								
-								--c_bak := c;
-								c.center := type_point (move (c.center, 0.0, step));
-								--c.center := type_point (move (c.center, 0.0, type_distance'small));
-							else
-								-- move cap left away from the line:
-								c.center := type_point (move (c.center, 180.0, step));
-								--c := c_bak;
-								--dyn_width := false;
-							end if;
-							
-						when AFTER =>
-							if d_cap_to_line > zero then
-								-- move cap left towards the line:
-								--set_step_width;
-								--c_bak := c;
-								c.center := type_point (move (c.center, 180.0, step));
-								--c.center := type_point (move (c.center, 180.0, type_distance'small));
-							else
-								-- move cap right away from the line:
-								c.center := type_point (move (c.center, 0.0, step));
-								--c := c_bak;
-								--dyn_width := false;
-							end if;
-					end case;
-				end if;
-
-				
-				-- Once the maximum of iterations has been reached, raise exception:
-				if i = max_iterations then
-					raise constraint_error with "ERROR: Max. interations of " & positive'image (i) &
-					" reached !";
-				end if;
-			end loop;
-						
-			bp := c.center;
-
-			log_indentation_down;
-		end partial_intersection;
 			
 	begin
 		if bi.exists then -- line and track boundaries do intersect in some way
@@ -1127,11 +1023,32 @@ package body et_routing is
 
 					log (text => "line intersects track upper and lower edge", level => lth + 1);
 					full_intersection;
+					-- bp is now set
 					
 				else
 					-- The candidate line intersects only one edge or none at all.
 					log (text => "line intersects track partially", level => lth + 1);
-					partial_intersection;
+
+					case place is
+						when BEFORE =>
+							-- Use the LEFT border of the overlap area as start point for the
+							-- search operation:
+							start_point := bi.intersection.smallest_x;
+
+						when AFTER =>
+							-- Use the RIGHT border of the overlap area as start point for the
+							-- search operation:
+							start_point := bi.intersection.greatest_x;
+					end case;
+					
+					bp := type_point (set (get_intersection (
+							init		=> start_point,
+							place		=> place,
+							obstacle	=> (et_geometry.LINE, line_tmp),
+							clearance	=> clearance,
+							lth			=> lth + 1),
+							zero));
+					
 				end if;
 
 			
@@ -1162,6 +1079,7 @@ package body et_routing is
 		end if;
 			
 	end get_break;
+	
 
 	-- This function sorts the given intersections (of line and circle)
 	-- and returns them in a simple list of distances along the x-axis:
