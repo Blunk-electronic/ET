@@ -817,7 +817,7 @@ package body et_routing is
 	end get_dimensions;
 
 	
-	function get_intersection (
+	function get_break (
 		init		: in type_distance;
 		place		: in type_place;
 		obstacle	: in type_obstacle;
@@ -910,10 +910,10 @@ package body et_routing is
 		log_indentation_down;
 		
 		return get_x (c.center);
-	end get_intersection;
+	end get_break;
 
 	
-	function get_break (
+	function get_break_by_line (
 		track	: in type_track;
 		line	: in type_line;
 		place	: in type_place;
@@ -1002,7 +1002,7 @@ package body et_routing is
 			log_indentation_down;
 		end full_intersection;
 			
-	begin
+	begin -- get_break_by_line
 		if bi.exists then -- line and track boundaries do intersect in some way
 
 			-- If we search for a break before the line, then it makes sense
@@ -1041,7 +1041,7 @@ package body et_routing is
 							start_point := bi.intersection.greatest_x;
 					end case;
 					
-					bp := type_point (set (get_intersection (
+					bp := type_point (set (get_break (
 							init		=> start_point,
 							place		=> place,
 							obstacle	=> (et_geometry.LINE, line_tmp),
@@ -1078,7 +1078,7 @@ package body et_routing is
 			return (exists => false);
 		end if;
 			
-	end get_break;
+	end get_break_by_line;
 	
 
 	-- This function sorts the given intersections (of line and circle)
@@ -1118,7 +1118,7 @@ package body et_routing is
 	end get_x_values;
 
 	
-	function get_break (
+	function get_break_by_arc (
 		track	: in type_track;
 		arc		: in type_arc;
 		place	: in type_place;
@@ -1210,7 +1210,7 @@ package body et_routing is
 								start_point := bi.intersection.greatest_x;
 						end case;
 
-						x_pre := get_intersection (
+						x_pre := get_break (
 							init		=> start_point,
 							place		=> place,
 							obstacle	=> (et_geometry.ARC, arcs (i)),
@@ -1247,7 +1247,7 @@ package body et_routing is
 			end case;
 		end set_break_points;
 		
-	begin -- get_break
+	begin -- get_break_by_arc
 		if bi.exists then -- arc and track do intersect in some way
 
 			log (text => "break with arc:" & to_string (arc), level => lth);
@@ -1282,7 +1282,7 @@ package body et_routing is
 							start_point := bi.intersection.greatest_x;
 					end case;
 
-					bp1 := type_point (set (get_intersection (
+					bp1 := type_point (set (get_break (
 						init		=> start_point,
 						place		=> place,
 						obstacle	=> (et_geometry.ARC, arc_tmp),
@@ -1358,10 +1358,10 @@ package body et_routing is
 			when 1 => return (1, bp1);
 			when 2 => return (2, bp1, bp2);
 		end case;
-	end get_break;
+	end get_break_by_arc;
 
 
-	function get_break (
+	function get_break_by_circle (
 		track	: in type_track;
 		circle	: in type_circle;
 		place	: in type_place;
@@ -1453,7 +1453,7 @@ package body et_routing is
 								start_point := bi.intersection.greatest_x;
 						end case;
 
-						x_pre := get_intersection (
+						x_pre := get_break (
 							init		=> start_point,
 							place		=> place,
 							obstacle	=> (et_geometry.ARC, arcs (i)),
@@ -1492,7 +1492,7 @@ package body et_routing is
 		end set_break_points;
 
 		
-	begin -- get_break
+	begin -- get_break_by_circle
 		if bi.exists then -- circle and track do intersect in some way
 
 			log (text => "break with circle:" & to_string (circle), level => lth);
@@ -1537,7 +1537,7 @@ package body et_routing is
 								start_point := bi.intersection.greatest_x;
 						end case;
 
-						bp1 := type_point (set (get_intersection (
+						bp1 := type_point (set (get_break (
 							init		=> start_point,
 							place		=> place,
 							obstacle	=> (et_geometry.CIRCLE, circle_tmp),
@@ -1617,7 +1617,7 @@ package body et_routing is
 			when 1 => return (1, bp1);
 			when 2 => return (2, bp1, bp2);
 		end case;
-	end get_break;
+	end get_break_by_circle;
 
 	
 
@@ -1704,7 +1704,7 @@ package body et_routing is
 		-- If there is a break then its position is sent to procedure
 		-- process_break for further processing.
 		procedure test_line (l : in type_line) is 
-			b : constant type_break := get_break (track, l, place, log_threshold + 2);
+			b : constant type_break := get_break_by_line (track, l, place, log_threshold + 2);
 		begin
 			--log (text => "test line");
 			
@@ -1715,7 +1715,7 @@ package body et_routing is
 
 		-- See procedure test_line for details.
 		procedure test_arc (a : in type_arc) is
-			b : constant type_break_double := get_break (track, a, place, log_threshold + 2);
+			b : constant type_break_double := get_break_by_arc (track, a, place, log_threshold + 2);
 		begin
 			--log (text => "test arc");
 
@@ -1728,7 +1728,7 @@ package body et_routing is
 
 		-- See procedure test_line for details.
 		procedure test_circle (c : in type_circle) is 
-			b : constant type_break_double := get_break (track, c, place, log_threshold + 2);
+			b : constant type_break_double := get_break_by_circle (track, c, place, log_threshold + 2);
 		begin
 			--log (text => "test circle");
 				 

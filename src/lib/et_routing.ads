@@ -150,7 +150,7 @@ package et_routing is
 	-- This function searches the break point before or after
 	-- an obstacle along the x-axis. The result is an x-position
 	-- before or after the obstacle.
-	function get_intersection (
+	function get_break (
 		init		: in type_distance; -- the start point of the search
 		place		: in type_place; -- before/after
 		obstacle	: in type_obstacle;
@@ -178,7 +178,7 @@ package et_routing is
 	-- If track and line do not overlap:
 	--  - Returns false (no break).
 	-- The returned break point is the center of the cap of the track.
-	function get_break (
+	function get_break_by_line (
 		track	: in type_track;
 		line	: in type_line;
 		place	: in type_place;
@@ -206,7 +206,7 @@ package et_routing is
 	-- If track and line do not overlap:
 	--  - Returns a count zero (means no break).
 	-- The returned break points are the center of the cap of the track.
-	function get_break (
+	function get_break_by_arc (
 		track	: in type_track;
 		arc		: in type_arc;
 		place	: in type_place;
@@ -222,7 +222,7 @@ package et_routing is
 	-- If track and line do not overlap:
 	--  - Returns a count zero (means no break).
 	-- The returned break points are the center of the cap of the track.
-	function get_break (
+	function get_break_by_circle (
 		track	: in type_track;
 		circle	: in type_circle;
 		place	: in type_place;
