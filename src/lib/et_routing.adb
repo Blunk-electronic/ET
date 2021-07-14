@@ -1005,6 +1005,9 @@ package body et_routing is
 	begin -- get_break_by_line
 		if bi.exists then -- line and track boundaries do intersect in some way
 
+			log (text => "break by line:" & to_string (line), level => lth);
+			log_indentation_up;
+			
 			-- If we search for a break before the line, then it makes sense
 			-- only if the area of overlap begins after the start of the track.
 			-- This condition test should avoid useless searching for a break. 
@@ -1014,21 +1017,20 @@ package body et_routing is
 			-- CS: A similar optimization when place is AFTER ?				
 			or place = AFTER 
 			then
-			
-				log (text => "break with line:" & to_string (line), level => lth);
-				log_indentation_up;
 				
 				if (i_upper.status = EXISTS and i_lower.status = EXISTS) then
 					-- The candidate line intersects the upper and lower edge of the track.
 
 					log (text => "line intersects track upper and lower edge", level => lth + 1);
+			
 					full_intersection;
 					-- bp is now set
 					
 				else
 					-- The candidate line intersects only one edge or none at all.
 					log (text => "line intersects track partially", level => lth + 1);
-
+					log_indentation_up;
+					
 					case place is
 						when BEFORE =>
 							-- Use the LEFT border of the overlap area as start point for the
@@ -1048,7 +1050,8 @@ package body et_routing is
 							clearance	=> clearance,
 							lth			=> lth + 1),
 							zero));
-					
+
+					log_indentation_down;
 				end if;
 
 			
@@ -1067,8 +1070,9 @@ package body et_routing is
 						level => lth + 2);
 				end if;
 
-				log_indentation_down;
 			end if;
+
+			log_indentation_down;
 		end if;
 
 		
@@ -1250,7 +1254,7 @@ package body et_routing is
 	begin -- get_break_by_arc
 		if bi.exists then -- arc and track do intersect in some way
 
-			log (text => "break with arc:" & to_string (arc), level => lth);
+			log (text => "break by arc:" & to_string (arc), level => lth);
 			log_indentation_up;
 
 			if length (x_values_pre) <= 2 then
@@ -1495,7 +1499,7 @@ package body et_routing is
 	begin -- get_break_by_circle
 		if bi.exists then -- circle and track do intersect in some way
 
-			log (text => "break with circle:" & to_string (circle), level => lth);
+			log (text => "break by circle:" & to_string (circle), level => lth);
 			log_indentation_up;
 			
 			case length (x_values_pre) is
