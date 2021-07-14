@@ -23,13 +23,31 @@ Commands and Verb-Noun key sequences
 
 
 
-++++++++++++++++++++++++++++
-Polygons in Conductor Layers
-++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++
+Polygons/Fill Zones in Conductor Layers
++++++++++++++++++++++++++++++++++++++++
 
 Commands and Verb-Noun key sequences
 ------------------------------------
 
+#. Define outline
+
+	.. code-block::
+
+		route net gnd 1 polygon line 23 0 line 232 0 line 232 33 line 100 33
+		route net gnd 1 polygon line 25 25 arc 30 25 27 25 ccw line 30 28 line 25 28
+		route net gnd 1 polygon circle 35 30 3
+		
+		
+		
+#. Set width of fill lines
+
+	.. code-block::
+	
+		set polygon width 0.2
+
+		
+		
 #. (Re)fill or pour polygons
 
 	.. code-block::
