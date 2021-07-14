@@ -39,17 +39,8 @@
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.unbounded;
-with ada.tags;					use ada.tags;
 
 with ada.numerics.generic_elementary_functions;
-
-with et_vias;					use et_vias;
-with et_terminals;				use et_terminals;
-with et_packages;				use et_packages;
-with et_pcb;					use et_pcb;
-with et_pcb_stack;				use et_pcb_stack;
-with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_board_shapes_and_text;
 
 
 
@@ -640,7 +631,7 @@ package body et_routing is
 			module		: in et_schematic.type_module) 
 		is
 			procedure query_fill_zone is 
-				distance_to_edge : type_distance;
+				distance_to_edge : type_distance; -- CS rename to distance_to_border
 			begin
 				log (text => "probing fill zone ...", level => lth + 1);
 				log_indentation_up;
@@ -654,7 +645,7 @@ package body et_routing is
 					log (text => "distance to border" & to_string (distance_to_edge),
 						level => lth + 1);
 					
-					-- the distance of the fill line to the border:
+					-- the distance of the start point to the border:
 					distance_to_edge := distance_to_edge - 0.5 * width;
 
 					-- Due to unavoidable rounding errors the difference between 
@@ -676,6 +667,54 @@ package body et_routing is
 			end query_fill_zone;
 
 			
+			procedure query_global_cutouts is 
+				use et_conductor_polygons.pac_conductor_cutouts;
+
+				procedure query_cutout (c : in et_conductor_polygons.pac_conductor_cutouts.cursor) is 
+					distance_to_border : type_distance;
+				begin
+					if element (c).layer = layer then
+						log_indentation_up;
+							
+						if in_polygon_status (element (c), start_point).status = OUTSIDE then
+							log (text => "point is outside global cutout area", level => lth + 1);
+
+							-- the distance of the point to the border of the cutout area:
+							distance_to_border := get_absolute (get_shortest_distance (element (c), start_point));
+
+							log (text => "distance to border" & to_string (distance_to_border),
+								level => lth + 1);
+							
+							-- the distance of the start point line to the border:
+							distance_to_border := distance_to_border - 0.5 * width;
+
+							-- Due to unavoidable rounding errors the difference between 
+							-- distance_to_edge and border can be -type_distance'small:
+							if distance_to_border >= - type_distance'small then
+								log (text => "point is in safe distance to border", level => lth + 1);
+								result := true;
+							else
+								log (text => "point is too close to border", level => lth + 1);
+								result := false;
+							end if;
+							
+						else
+							log (text => "point is in global cutout area", level => lth + 1);
+							result := false;
+						end if;
+						
+						log_indentation_down;
+					end if;
+				end query_cutout;
+
+			begin
+				log (text => "probing global cutout areas ...", level => lth + 1);
+				iterate (module.board.conductors.cutouts, query_cutout'access);
+				-- CS use a loop instead of iterate. if result goes false, there is no need
+				-- to probe other cutouts.
+			end query_global_cutouts;
+
+			
 		begin -- query_module
 			result := true;
 			
@@ -683,7 +722,10 @@ package body et_routing is
 				query_fill_zone;
 			end if;
 
-			-- - global cutout areas
+			if result = true then
+				query_global_cutouts;
+			end if;
+			
 			-- - net specific cutout areas
 			
 			-- CS abort if status is invalid.
@@ -1816,6 +1858,29 @@ package body et_routing is
 				log_indentation_down;
 			end query_fill_zone;
 
+
+			procedure query_global_cutouts is 
+				use et_conductor_polygons.pac_conductor_cutouts;
+				
+				procedure query_cutout (c : in et_conductor_polygons.pac_conductor_cutouts.cursor) is begin
+					if element (c).layer = layer then
+						log_indentation_up;
+							
+						if element (c).contours.circular then
+							test_circle (element (c).contours.circle);
+						else		
+							iterate (element (c).contours.segments, query_segment'access);
+						end if;
+
+						log_indentation_down;
+					end if;
+				end query_cutout;
+			
+			begin
+				log (text => "probing global cutout areas ...", level => log_threshold + 1);
+				iterate (module.board.conductors.cutouts, query_cutout'access);
+			end query_global_cutouts;
+
 			
 		begin -- query_obstacles
 
@@ -1833,8 +1898,8 @@ package body et_routing is
 				query_fill_zone;
 			end if;
 			
-
-			-- - global cutout areas
+			query_global_cutouts;
+			
 			-- - net specific cutout areas
 			
 			-- CS abort if status is invalid.

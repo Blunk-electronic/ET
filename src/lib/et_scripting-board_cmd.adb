@@ -34,6 +34,8 @@
 --
 --   history of changes:
 --
+--   ToDo:
+--   - command to define a global cutout area
 
 with et_board_shapes_and_text;
 with et_drills;
