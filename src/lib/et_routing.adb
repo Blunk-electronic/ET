@@ -1807,7 +1807,8 @@ package body et_routing is
 
 				--log (text => "test end");				
 			end query_segment;
-			
+
+			-- BOARD OUTLINE
 			procedure query_outline is begin
 				log (text => "probing outline ...", level => log_threshold + 1);
 				log_indentation_up;
@@ -1821,7 +1822,7 @@ package body et_routing is
 				log_indentation_down;
 			end query_outline;
 
-			
+			-- holes
 			procedure query_holes is
 				use pac_pcb_cutouts;
 
@@ -1839,12 +1840,13 @@ package body et_routing is
 					log_indentation_down;
 				end query_hole;
 				
-			begin
+			begin -- query_holes
 				log (text => "probing holes ...", level => log_threshold + 1);				
 				iterate (module.board.contours.holes, query_hole'access);
 			end query_holes;
 
-
+			
+			-- CONDUCTOR FILL ZONES
 			procedure query_fill_zone is begin
 				log (text => "probing fill zone ...", level => log_threshold + 1);
 				log_indentation_up;
@@ -1859,6 +1861,7 @@ package body et_routing is
 			end query_fill_zone;
 
 
+			-- GLOBAL CUTOUT AREAS
 			procedure query_global_cutouts is 
 				use et_conductor_polygons.pac_conductor_cutouts;
 				
@@ -1876,10 +1879,43 @@ package body et_routing is
 					end if;
 				end query_cutout;
 			
-			begin
+			begin -- query_global_cutouts
 				log (text => "probing global cutout areas ...", level => log_threshold + 1);
 				iterate (module.board.conductors.cutouts, query_cutout'access);
 			end query_global_cutouts;
+
+
+			-- TRACKS
+			procedure query_tracks is
+				use et_schematic;
+				use pac_nets;
+
+				procedure query_net (c : in pac_nets.cursor) is
+					use et_nets.pac_net_name;
+					use et_pcb.pac_conductor_lines;
+
+					procedure query_line (c : in et_pcb.pac_conductor_lines.cursor) is
+					begin
+						if element (c).layer = layer then
+							log (text => "segment" & to_string (element (c)), level => log_threshold + 3);
+						end if;
+					end query_line;
+					
+				begin -- query_net
+					log (text => "net " & to_string (key (c)), level => log_threshold + 2);
+					log_indentation_up;
+					iterate (element (c).route.lines, query_line'access);
+					log_indentation_down;
+				end query_net;
+				
+			begin -- query_tracks
+				log (text => "probing tracks ...", level => log_threshold + 1);
+				log_indentation_up;
+				
+				iterate (module.nets, query_net'access);
+
+				log_indentation_down;
+			end query_tracks;
 
 			
 		begin -- query_obstacles
@@ -1899,12 +1935,16 @@ package body et_routing is
 			end if;
 			
 			query_global_cutouts;
+
+			--query_tracks;
 			
 			-- - net specific cutout areas
 			
 			-- CS abort if status is invalid.
 			
 			-- query tracks, texts, pads, ...
+
+			-- CS: submodules ?
 		end query_obstacles;
 
 
