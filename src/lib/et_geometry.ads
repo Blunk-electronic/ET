@@ -1045,7 +1045,7 @@ package et_geometry is
 		-- Returns the direction in degrees of a line.
 		-- Example: If a line runs from 0/0 to 1/1 then the result is 45 degree.
 		-- Example: If a line runs from -1/-1 to -4/-4 then the result is 225 degree.
-		function direction ( -- CS rename to get_direction
+		function get_direction (
 			line	: in type_line)
 			return type_rotation;
 

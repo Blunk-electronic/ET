@@ -2007,7 +2007,7 @@ package body et_geometry is
 		
 		
 		
-		function direction (
+		function get_direction (
 			line	: in type_line)
 			return type_rotation is
 
@@ -2024,7 +2024,7 @@ package body et_geometry is
 			else
 				return type_rotation (arctan (dy, dx, float (units_per_cycle)));
 			end if;
-		end direction;
+		end get_direction;
 
 		procedure move_by (
 			line		: in out type_line;
@@ -2413,7 +2413,7 @@ package body et_geometry is
 			-- The intersection may be virtual, before start or after end point 
 			-- of the given line.
 			
-			line_direction : constant type_rotation := direction (line);
+			line_direction : constant type_rotation := get_direction (line);
 			line_direction_vector : constant type_vector := direction_vector (line);
 			line_start_vector, line_end_vector : type_vector;
 
