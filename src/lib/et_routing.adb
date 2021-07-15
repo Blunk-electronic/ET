@@ -692,7 +692,6 @@ package body et_routing is
 							-- distance_to_edge and border can be -type_distance'small:
 							if distance_to_border >= - type_distance'small then
 								log (text => "point is in safe distance to border", level => lth + 1);
-								result := true;
 							else
 								log (text => "point is too close to border", level => lth + 1);
 								result := false;
@@ -1893,11 +1892,19 @@ package body et_routing is
 				procedure query_net (c : in pac_nets.cursor) is
 					use et_nets.pac_net_name;
 					use et_pcb.pac_conductor_lines;
-
+	
+					
 					procedure query_line (c : in et_pcb.pac_conductor_lines.cursor) is
+						--left_edge : type_line;
+						--right_edge : type_line;
+						--direction : type_rotation;
 					begin
 						if element (c).layer = layer then
 							log (text => "segment" & to_string (element (c)), level => log_threshold + 3);
+							--direction := direction (element (c));
+							--left_edge := type_line (element (c));
+							--move_by (left_edge, 
+							
 						end if;
 					end query_line;
 					
@@ -1936,7 +1943,7 @@ package body et_routing is
 			
 			query_global_cutouts;
 
-			--query_tracks;
+			query_tracks;
 			
 			-- - net specific cutout areas
 			
