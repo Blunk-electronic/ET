@@ -336,10 +336,30 @@ package et_packages is
 	type type_conductor_line is new type_line with record
 		width	: type_track_width;
 	end record;
+
+	type type_conductor_line_segment is private;
+
+	function to_line_segment (line : in type_conductor_line)
+		return type_conductor_line_segment;
+
+	function get_left_edge (segment : in type_conductor_line_segment)
+		return type_line;
+
+	function get_right_edge (segment : in type_conductor_line_segment)
+		return type_line;
+
+	function get_start_cap (segment : in type_conductor_line_segment)
+		return type_arc;
+
+	function get_end_cap (segment : in type_conductor_line_segment)
+		return type_arc;
+
 	
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
 	use pac_conductor_lines;
 
+	
+	
 	
 	type type_conductor_arc is new type_arc with record
 		width	: type_track_width;
@@ -1121,6 +1141,12 @@ package et_packages is
 		--cursor			: in pac_pcb_contour_circles.cursor;
 		--log_threshold 	: in et_string_processing.type_log_level);
 	
+private
+
+	type type_conductor_line_segment is record
+		left_edge, right_edge : type_line;
+		cap_start, cap_end : type_arc;
+	end record;
 
 	
 end et_packages;

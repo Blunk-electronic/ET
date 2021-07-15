@@ -630,6 +630,7 @@ package body et_routing is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) 
 		is
+			-- FILL ZONES
 			procedure query_fill_zone is 
 				distance_to_edge : type_distance; -- CS rename to distance_to_border
 			begin
@@ -667,6 +668,7 @@ package body et_routing is
 			end query_fill_zone;
 
 			
+			-- GLOBAL CUTOUTS
 			procedure query_global_cutouts is 
 				use et_conductor_polygons.pac_conductor_cutouts;
 
@@ -714,6 +716,37 @@ package body et_routing is
 			end query_global_cutouts;
 
 			
+			-- TRACKS
+			procedure query_tracks is
+				use et_nets.pac_net_name;
+				use et_schematic;
+				use pac_nets;
+				n : pac_nets.cursor := module.nets.first;
+
+				procedure query_lines is
+					use et_pcb.pac_conductor_lines;
+					l : et_pcb.pac_conductor_lines.cursor := element (n).route.lines.first;
+				begin
+					while l /= et_pcb.pac_conductor_lines.no_element and result = true loop
+						null;
+
+						next (l);
+					end loop;
+				end query_lines;
+				
+			begin -- query_tracks
+				log (text => "probing tracks ...", level => lth + 1);
+				log_indentation_up;
+				while n /= pac_nets.no_element and result = true loop
+					log (text => "net " & to_string (key (n)), level => lth + 2);
+
+					query_lines;
+					next (n);
+				end loop;
+				log_indentation_down;
+			end query_tracks;
+
+			
 		begin -- query_module
 			result := true;
 			
@@ -729,7 +762,13 @@ package body et_routing is
 			
 			-- CS abort if status is invalid.
 			
-			-- query tracks, texts, pads, ...
+			-- cs texts, pads, ...
+
+			if result = true then
+				query_tracks;
+			end if;
+
+			
 		end query_module;
 
 		distance_to_edge : type_distance;
@@ -1895,23 +1934,28 @@ package body et_routing is
 	
 					
 					procedure query_line (c : in et_pcb.pac_conductor_lines.cursor) is
-						--left_edge : type_line;
-						--right_edge : type_line;
-						--direction : type_rotation;
+						segment : type_conductor_line_segment;
 					begin
 						if element (c).layer = layer then
 							log (text => "segment" & to_string (element (c)), level => log_threshold + 3);
-							--direction := direction (element (c));
-							--left_edge := type_line (element (c));
-							--move_by (left_edge, 
-							
+
+							segment := to_line_segment (element (c));
+
+							test_line (get_left_edge (segment));
+							test_line (get_right_edge (segment));
+							test_arc (get_start_cap (segment));
+							test_arc (get_end_cap (segment));
+
 						end if;
 					end query_line;
 					
 				begin -- query_net
 					log (text => "net " & to_string (key (c)), level => log_threshold + 2);
+					-- CS set track.clearance according to net class
+					
 					log_indentation_up;
 					iterate (element (c).route.lines, query_line'access);
+					-- CS arcs, ... see et_pcb.type_route
 					log_indentation_down;
 				end query_net;
 				

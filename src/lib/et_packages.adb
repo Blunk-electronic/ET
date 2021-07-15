@@ -254,7 +254,63 @@ package body et_packages is
 -- -- 		iterate (millings.circles, circle'access);
 -- 	end log_plated_millings;
 	
+
+	function to_line_segment (line : in type_conductor_line)
+		return type_conductor_line_segment
+	is
+		result : type_conductor_line_segment;
+
+		direction : constant type_rotation := get_direction (line);
+		distance : constant type_track_width := line.width * 0.5;
 		
+	begin
+		result.left_edge := type_line (line);
+		move_by (result.left_edge, add (direction, +90.0), distance);
+
+		result.right_edge := type_line (line);
+		move_by (result.right_edge, add (direction, -90.0), distance);
+
+		-- cap on the start of segment
+		result.cap_start.center := line.start_point;
+		result.cap_start.start_point := result.left_edge.start_point;
+		result.cap_start.end_point := result.right_edge.start_point;
+		result.cap_start.direction := CCW;
+
+		-- cap on the end of the segment
+		result.cap_end.center := line.end_point;
+		result.cap_end.start_point := result.left_edge.end_point;
+		result.cap_end.end_point := result.right_edge.end_point;
+		result.cap_end.direction := CW;
+
+		return result;
+	end to_line_segment;
+
+
+	function get_left_edge (segment : in type_conductor_line_segment)
+		return type_line
+	is begin
+		return segment.left_edge;
+	end get_left_edge;
+
+	function get_right_edge (segment : in type_conductor_line_segment)
+		return type_line
+	is begin
+		return segment.right_edge;
+	end get_right_edge;
+	
+	function get_start_cap (segment : in type_conductor_line_segment)
+		return type_arc
+	is begin
+		return segment.cap_start;
+	end get_start_cap;
+
+	function get_end_cap (segment : in type_conductor_line_segment)
+		return type_arc
+	is begin
+		return segment.cap_end;
+	end get_end_cap;
+
+	
 	
 	function to_string (appearance : in type_package_appearance) return string is begin
 		return to_lower (type_package_appearance'image (appearance));
