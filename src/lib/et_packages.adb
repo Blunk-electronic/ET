@@ -372,19 +372,13 @@ package body et_packages is
 		--log (text => "p" & to_string (point));
 		--log (text => "d" & to_string (get_absolute (distance)));
 
-		if get_absolute (distance) = zero then
-			result := zero;
-		else
-			
-			case in_polygon_status (polygon, point).status is
-				when INSIDE =>
-					result := - get_absolute (distance);
-					
-				when OUTSIDE =>
-					result := get_absolute (distance);
-			end case;
-
-		end if;
+		case in_polygon_status (polygon, point).status is
+			when INSIDE =>
+				result := - get_absolute (distance);
+				
+			when OUTSIDE =>
+				result := get_absolute (distance);
+		end case;
 		
 		return result;
 	end get_shortest_distance;
