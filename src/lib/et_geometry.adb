@@ -1760,6 +1760,13 @@ package body et_geometry is
 		end get_angle_of_itersection;
 
 
+		function get_length (line : in type_line)
+			return type_distance_positive
+		is begin
+			return get_distance_total (line.start_point, line.end_point);
+		end get_length;
+
+
 		function reverse_line (line : in type_line) return type_line'class is 
 			result : type_line'class := line;
 		begin
@@ -5298,6 +5305,15 @@ package body et_geometry is
 			-- <http://www.alienryderflex.com/polygon//>
 			-- The algorithm has further been extended to detect intersections
 			-- with arcs and even circles.
+
+			-- A probe line will be formed which starts at the given point
+			-- and runs to the right (direction zero degree).
+			-- The places, after the given start point, where the probe line 
+			-- intersects the polygon edges are returned in a list.
+			-- If a segment of the polygon crosses the imaginary probe line,
+			-- then it is regarded as intersection.
+			-- NOTE: A line segment that runs exactly along the probe line
+			-- is NOT regarded as "crossing" the probe line.
 			
 			-- The approach to detect whether the given point lies inside or outside 
 			-- the polygon area is as follows:

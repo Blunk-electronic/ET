@@ -943,6 +943,10 @@ package et_geometry is
 
 		type type_line is new type_line_base with null record;
 		-- CS use this type wherever a type_line is declared unnessecarily.
+
+		-- Returns the length of a line:
+		function get_length (line : in type_line)
+			return type_distance_positive;
 		
 		-- Swaps start and end point of a line:
 		function reverse_line (line : in type_line) return type_line'class;
@@ -1609,7 +1613,7 @@ package et_geometry is
 			end case;
 		end record;
 
-		type type_polygon_base is abstract tagged record
+		type type_polygon_base is abstract tagged record -- CS rename to type_polygon ?
 			contours	: type_polygon_segments;
 		end record;
 
@@ -1630,6 +1634,7 @@ package et_geometry is
 
 		-- Returns the distance from the given reference point to
 		-- to the nearest point on the polygon edges.
+		-- The point may be inside or outside the polygon.
 		function get_shortest_distance (
 			polygon	: in type_polygon_base;
 			point	: in type_point)
@@ -1899,14 +1904,6 @@ package et_geometry is
 		-- Detects whether the given point is inside or outside
 		-- the polygon. The point is regarded as "outside" if
 		-- it sits exactly on the edge of the polygon.
-		-- A probe line will be formed which starts at the given point
-		-- and runs to the right (direction zero degree).
-		-- The places, after the given start point, where the probe line 
-		-- intersects the polygon edges are returned in a list.
-		-- If a segment of the polygon crosses the imaginary probe line,
-		-- then it is regarded as intersection.
-		-- NOTE: A line segment that runs exactly along the probe line
-		-- is NOT regarded as "crossing" the probe line.
 		function in_polygon_status (
 			polygon		: in type_polygon_base;	
 			point		: in type_point)
