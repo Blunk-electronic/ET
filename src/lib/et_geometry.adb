@@ -3227,9 +3227,9 @@ package body et_geometry is
 				get_intersection (line, vc);
 			
 		begin
-			--log (text => "line: " & to_string (line));
-			--log (text => "arc: " & to_string (arc));
-			--log (text => "");
+			--new_line;
+			--put_line (to_string (line));
+			--put_line (to_string (arc));
 			
 			case vi.status is
 				when NONE_EXIST => 
@@ -3239,6 +3239,8 @@ package body et_geometry is
 
 				when ONE_EXISTS => 
 					-- line is a tangent to the virtual circle
+					
+					--put_line ("one");					
 
 					-- Test whether the point where the tangent meets the
 					-- circle is on the given arc:
@@ -3250,12 +3252,14 @@ package body et_geometry is
 					
 				when TWO_EXIST => 
 					-- line is a secant to the virtual circle:
+					
+					--put_line ("two");
 
 					-- Test whether the points where the secant meets the
 					-- circle are on the given arc:
 
-					--log (text => "p1" & to_string (to_point ((vi.intersection_1.point))));
-					--log (text => "p2" & to_string (to_point ((vi.intersection_2.point))));
+					--put_line ("p1" & to_string (to_point ((vi.intersection_1.point))));
+					--put_line ("p2" & to_string (to_point ((vi.intersection_2.point))));
 					
 					if	on_arc (to_point (vi.intersection_1.point), arc) 
 					and on_arc (to_point (vi.intersection_2.point), arc) then
@@ -3949,6 +3953,8 @@ package body et_geometry is
 
 			
 		begin -- get_intersection
+			--put_line (to_string (line));
+			--put_line (to_string (circle));
 			
 			-- Move the line by an offset (which is the center of the given circle):
 			line_moved := move_by (line, invert (offset));
@@ -3977,12 +3983,20 @@ package body et_geometry is
 			
 			d := a * b - c; -- incidence of line and circle
 
-			if d < zero then
+			-- if d < zero then 
+			-- works theoretically. due to unavoidable rounding error we must do this:
+			if d < - type_distance'small then
+				--put_line ("none" & float'image (d));
+				
 				s := NONE_EXIST;
 				
 				return (status => NONE_EXIST);
 				
-			elsif d = zero then
+			--elsif d = zero then
+			-- works theoretically. due to unavoidable rounding error we must do this:				
+			elsif abs (d) <= type_distance'small then
+				--put_line ("one");
+				
 				s := ONE_EXISTS; -- tangent
 
 				x := (DI * dy) / b;
@@ -4004,6 +4018,8 @@ package body et_geometry is
 				-- is now the angle of the tangent at this single intersection point.
 				
 			else -- d > zero
+				--put_line ("two" & float'image (d));
+				
 				s := TWO_EXIST; -- two intersections
 
 				-- COMPUTE 1ST INTERSECTION:
@@ -4109,7 +4125,7 @@ package body et_geometry is
 				& "arc: S:" & to_string (arc.start_point) 
 				& " E:" & to_string (arc.end_point)
 				& " C:" & to_string (arc.center) 
-				& " D:" & to_string (arc.direction);
+				& " D: " & to_string (arc.direction);
 		end to_string;
 
 		function to_string (circle : in type_circle) return string is begin
@@ -5411,7 +5427,6 @@ package body et_geometry is
 			end query_line;
 
 			procedure query_arc (a : in type_arc) is
-
 				-- the radius of the arc:
 				radius : constant type_distance_positive := radius_start (a);
 				
@@ -5443,7 +5458,7 @@ package body et_geometry is
 
 				end count_two;
 				
-			begin -- query_arc		
+			begin -- query_arc
 				case i.status is
 					when NONE_EXIST => null;
 					
@@ -5472,6 +5487,9 @@ package body et_geometry is
 						end case;
 
 					when TWO_EXIST =>
+						--put_line ("i1" & to_string (i.intersection_1));
+						--put_line ("i2" & to_string (i.intersection_2));
+						
 						-- Order the intersections by their distance to the start point
 						-- of the probe line:
 						ordered_intersections := order_intersections (
