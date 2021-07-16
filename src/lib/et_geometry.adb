@@ -4100,21 +4100,22 @@ package body et_geometry is
 		
 		function to_string (line : in type_line) return string is begin
 			return space 
-				& "start" & to_string (line.start_point) 
-				& " end" & to_string (line.end_point);
+				& "line: S:" & to_string (line.start_point) 
+				& " E:" & to_string (line.end_point);
 		end;
 
 		function to_string (arc : in type_arc) return string is begin
 			return space 
-				& "center" & to_string (arc.center) 
-				& " start" & to_string (arc.start_point) 
-				& " end" & to_string (arc.end_point);
+				& "arc: S:" & to_string (arc.start_point) 
+				& " E:" & to_string (arc.end_point)
+				& " C:" & to_string (arc.center) 
+				& " D:" & to_string (arc.direction);
 		end to_string;
 
 		function to_string (circle : in type_circle) return string is begin
 			return space
-				& "center" & to_string (circle.center) 
-				& " radius" & to_string (circle.radius);
+				& "circle: C:" & to_string (circle.center) 
+				& " R:" & to_string (circle.radius);
 		end to_string;
 
 
@@ -4125,7 +4126,7 @@ package body et_geometry is
 			use pac_polygon_segments;
 			use ada.strings.unbounded;
 			
-			result : unbounded_string := to_unbounded_string ("polygon properties:");
+			result : unbounded_string := to_unbounded_string ("polygon:");
 
 			procedure query_segment (c : in pac_polygon_segments.cursor) is begin
 				case element (c).shape is

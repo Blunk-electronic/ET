@@ -632,7 +632,7 @@ package body et_routing is
 		is
 			-- FILL ZONES
 			procedure query_fill_zone is 
-				distance_to_edge : type_distance; -- CS rename to distance_to_border
+				distance_to_border : type_distance; -- CS rename to distance_to_border
 			begin
 				log (text => "probing fill zone ...", level => lth + 1);
 				log_indentation_up;
@@ -641,17 +641,17 @@ package body et_routing is
 					log (text => "point is in fill zone", level => lth + 1);
 
 					-- the distance of the point to the border of the fill zone:
-					distance_to_edge := get_absolute (get_shortest_distance (fill_zone.outline, start_point));
+					distance_to_border := get_absolute (get_shortest_distance (fill_zone.outline, start_point));
 
-					log (text => "distance to border" & to_string (distance_to_edge),
+					log (text => "distance to border" & to_string (distance_to_border),
 						level => lth + 1);
 					
 					-- the distance of the start point to the border:
-					distance_to_edge := distance_to_edge - 0.5 * width;
+					distance_to_border := distance_to_border - 0.5 * width;
 
 					-- Due to unavoidable rounding errors the difference between 
-					-- distance_to_edge and border can be -type_distance'small:
-					if distance_to_edge >= - type_distance'small then
+					-- distance_to_border and border can be -type_distance'small:
+					if distance_to_border >= - type_distance'small then
 						log (text => "point is in safe distance to border", level => lth + 1);
 						result := true;
 					else
@@ -723,26 +723,62 @@ package body et_routing is
 				use pac_nets;
 				n : pac_nets.cursor := module.nets.first;
 
-				procedure query_lines is
+				procedure query_net (
+					name : in pac_net_name.bounded_string;
+					net  : in type_net) 
+				is
 					use et_pcb.pac_conductor_lines;
-					l : et_pcb.pac_conductor_lines.cursor := element (n).route.lines.first;
+					l : et_pcb.pac_conductor_lines.cursor := net.route.lines.first;
+					segment : type_conductor_line_segment;
+					distance : type_distance;
 				begin
-					while l /= et_pcb.pac_conductor_lines.no_element and result = true loop
-						null;
+					log (text => "net " & to_string (name), level => lth + 2);
 
+					-- LINES
+					while l /= et_pcb.pac_conductor_lines.no_element and result = true loop
+						segment := to_line_segment (element (l));
+						log (text => to_string (segment), level => lth + 3);
+						distance := get_shortest_distance (start_point, segment);
+
+						if distance <= zero then 
+							-- start_point is inside segment or on the edge of the segment
+							log (text => "point is in segment", level => lth + 3);
+							result := false;
+						else
+							-- start_point is outside the segment
+							log (text => "point is outside the segment", level => lth + 3);
+							
+							-- the distance of the start point to the border of the segment:
+							distance := distance - width * 0.5;
+
+							-- Due to unavoidable rounding errors the difference between 
+							-- distance and border can be -type_distance'small:
+							if distance >= - type_distance'small then
+								log (text => "point is in safe distance to segment", level => lth + 3);
+							else
+								log (text => "point is too close to segment", level => lth + 3);
+								result := false;
+							end if;							
+						end if;
+						
+						-- CS clearance polygon.isolation, clearance 
+						-- given net, clearance candidate net
 						next (l);
 					end loop;
-				end query_lines;
+
+					-- ARCS
+					-- CS
+				end query_net;
 				
 			begin -- query_tracks
 				log (text => "probing tracks ...", level => lth + 1);
 				log_indentation_up;
+				
 				while n /= pac_nets.no_element and result = true loop
-					log (text => "net " & to_string (key (n)), level => lth + 2);
-
-					query_lines;
+					query_element (n, query_net'access);
 					next (n);
 				end loop;
+				
 				log_indentation_down;
 			end query_tracks;
 
@@ -1952,6 +1988,7 @@ package body et_routing is
 				begin -- query_net
 					log (text => "net " & to_string (key (c)), level => log_threshold + 2);
 					-- CS set track.clearance according to net class
+					-- CS or polygon isolation. take the greater one
 					
 					log_indentation_up;
 					iterate (element (c).route.lines, query_line'access);

@@ -1520,7 +1520,7 @@ package et_geometry is
 		end record;
 
 		-- Sorts the intersections of a line with an arc or a circle in the order
-		-- as they appear as the line crosses the circle or the arc:
+		-- as they occur as the line crosses the circle or the arc:
 		-- start point of line, entry point, exit point.
 		-- The given intersections must contain two intersections (discrimintant status),
 		-- otherwise a constraint error will be raised.

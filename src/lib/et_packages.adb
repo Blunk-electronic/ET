@@ -253,8 +253,18 @@ package body et_packages is
 -- -- 		iterate (millings.arcs, arc'access);
 -- -- 		iterate (millings.circles, circle'access);
 -- 	end log_plated_millings;
-	
 
+	function to_string (segment : in type_conductor_line_segment)
+		return string
+	is begin
+		return ("line segment:" 
+			& " edge left:" & to_string (segment.left_edge)
+			& " cap end" & to_string (segment.cap_end)
+			& " edge right:" & to_string (segment.right_edge)
+			& " cap start:" & to_string (segment.cap_start));
+	end to_string;
+
+	
 	function to_line_segment (line : in type_conductor_line)
 		return type_conductor_line_segment
 	is
@@ -282,6 +292,7 @@ package body et_packages is
 		result.cap_end.end_point := result.right_edge.end_point;
 		result.cap_end.direction := CW;
 
+		--log (text => to_string (result));
 		return result;
 	end to_line_segment;
 
@@ -309,6 +320,75 @@ package body et_packages is
 	is begin
 		return segment.cap_end;
 	end get_end_cap;
+
+
+	function get_shortest_distance (
+		point	: in type_point;
+		segment	: in type_conductor_line_segment)
+		return type_distance
+	is 
+		result : type_distance := zero;
+
+		type type_segment_area is new type_polygon_base with null record;
+		polygon : type_segment_area;
+
+		length_left_edge  : constant type_distance_positive := get_length (segment.left_edge);
+		length_right_edge : constant type_distance_positive := get_length (segment.right_edge);
+
+		procedure build_polygon is begin
+			if length_left_edge = zero and length_right_edge = zero then
+				-- rare case: the segment has no straight section between the
+				-- start and end cap. It is basically a circle.
+				declare
+					s : type_polygon_segments := (circular => true, others => <>);
+				begin
+					s.circle.center := segment.cap_start.center;
+					s.circle.radius := radius_start (segment.cap_start);
+					polygon.contours := s;
+				end;
+			else
+				-- the most common case: the segment has a straight section between
+				-- its start and end cap:
+				declare
+					use pac_polygon_segments;
+					s : type_polygon_segments := (circular => false, others => <>);
+				begin
+					append (s.segments, (LINE, segment.left_edge));
+					append (s.segments, (ARC, segment.cap_end));
+					append (s.segments, (LINE, type_line (reverse_line (segment.right_edge))));
+					append (s.segments, (ARC, type_arc (reverse_arc (segment.cap_start))));
+					polygon.contours := s;
+				end;
+			end if;			
+		end build_polygon;
+
+		distance : type_distance_polar;
+	begin
+		-- build a polygon from the given segment:
+		build_polygon;
+
+		distance := get_shortest_distance (polygon, point);
+		--log (text => to_string (polygon));
+		--log (text => "p" & to_string (point));
+		--log (text => "d" & to_string (get_absolute (distance)));
+
+		if get_absolute (distance) = zero then
+			result := zero;
+		else
+			
+			case in_polygon_status (polygon, point).status is
+				when INSIDE =>
+					result := - get_absolute (distance);
+					
+				when OUTSIDE =>
+					result := get_absolute (distance);
+			end case;
+
+		end if;
+		
+		return result;
+	end get_shortest_distance;
+
 
 	
 	
